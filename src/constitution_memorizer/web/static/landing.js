@@ -10,6 +10,11 @@
  * Nothing here ever writes the scroll position except an explicit nav-anchor
  * smooth scroll: CSS scroll-snap owns every landing, the letter field only
  * moves pixels, and the mobile mode-intro reads scroll but never touches it.
+ *
+ * Frame budget (especially on coarse-pointer / narrow phones):
+ *   cache DOM at boot → measure geometry rarely → apply scroll from cache →
+ *   requestAnimationFrame only while something is dirty or still easing.
+ * Android Chrome toolbar height changes do not rebuild animation geometry.
  */
 (function () {
   'use strict';
@@ -21,6 +26,13 @@
   // 1 = sphere fully formed).
   var FIELD = { hero: 0, s01: 0.5, s02: 0.8, s03: 1, s05: 1, close: 1 };
 
+  // Desktop keeps the original 1250-glyph field. Coarse/narrow phones use a
+  // denser-looking ~62% budget — same contours, fewer offscreen samples.
+  var FIELD_BUDGET_DESKTOP = 1250;
+  var FIELD_BUDGET_MOBILE = 780;
+  var WIDTH_SLACK = 8;
+  var FOLLOW = 0.07;
+
   // The only mutable page state that outlives a frame: how many closing lines
   // are lit. (`stage` drove the removed running-head marker and is gone.)
   var state = { lit: 0 };
@@ -30,9 +42,145 @@
   var gatherP = 0, morphP = 0, gatherT, morphT;
   var introPlaying = false;            // set by setupModeIntro on ≤640
   var introMs = 0, t0 = Date.now();
-  var lastY = -1, lastH = -1;
+
+  // Cached nodes — never querySelector inside the hot frame.
+  var els = {
+    bar: null,
+    canvas: null,
+    probe: null,
+    pin: null,
+    pinStmt: null,
+    cards: [],
+    method: null,
+    learn: null,
+    stage5: null,
+    close: null,
+    circlesWrap: null,
+    circles: [],
+    litLines: [],
+    reveals: [],
+    scrims: [],
+    cardGeom: []
+  };
+
+  // Geometry in document coordinates. Rebuilt on load / fonts / orientation /
+  // meaningful width change — not on Android toolbar height flicker.
+  var geo = {
+    ready: false,
+    vw: 0,
+    vh: 800,
+    canvasW: 0,
+    canvasH: 0,
+    pinDocTop: 0,
+    pinHeight: 0,
+    stmtDocTop: 0,
+    stmtHeight: 0,
+    methodDocTop: 0,
+    methodHeight: 0,
+    learnDocTop: 0,
+    learnHeight: 0,
+    stage5DocTop: 0,
+    stage5Height: 0,
+    closeDocTop: 0,
+    closeHeight: 0,
+    circlesDocTop: 0,
+    circlesHeight: 0,
+    revealTops: [],
+    keys: [],
+    spherePos: null,
+    closePos: null,
+    pinEnd: null
+  };
+
+  var lastY = -1;
+  var lastWidth = 0;
+  var lastInnerH = 0;
+  var raf = 0;
+  var idleTo = 0;
+  var resizeTo = 0;
+  var fieldDirty = true;
+  var lastBar = '';
+  var lastCnvOp = '';
+  var modeIntroResize = null;
+  var modeIntroKick = null;
 
   var clamp = function (v) { return v < 0 ? 0 : v > 1 ? 1 : v; };
+
+  function pageY() {
+    return window.pageYOffset || document.documentElement.scrollTop || 0;
+  }
+
+  // Capability profile — viewport + pointer, never UA sniffing.
+  function coarseLayout() {
+    var w = window.innerWidth || 0;
+    var coarse = false;
+    try {
+      coarse = !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+    } catch (e) { /* ignore */ }
+    return w <= 900 || (coarse && w <= 1100);
+  }
+
+  function fieldDpr() {
+    var raw = window.devicePixelRatio || 1;
+    // Phone: 1.5 is sharp enough for 8–12px glyphs without 3× backing stores.
+    // Desktop retina may go to 2.
+    return Math.min(raw, coarseLayout() ? 1.5 : 2);
+  }
+
+  function fieldBudget() {
+    return coarseLayout() ? FIELD_BUDGET_MOBILE : FIELD_BUDGET_DESKTOP;
+  }
+
+  function readStableVh() {
+    var probe = els.probe;
+    if (!probe || !probe.isConnected) {
+      probe = document.querySelector('[data-vh-probe]');
+      els.probe = probe;
+    }
+    var svh = probe && probe.offsetHeight;
+    if (svh > 0) return svh;
+    if (coarseLayout()) {
+      return document.documentElement.clientHeight || window.innerHeight || 800;
+    }
+    return window.innerHeight || 800;
+  }
+
+  function setStyle(el, prop, value) {
+    if (!el) return;
+    if (el.style[prop] !== value) el.style[prop] = value;
+  }
+
+  function docTop(rect, y) {
+    return rect.top + y;
+  }
+
+  function cacheDom() {
+    els.bar = document.querySelector('[data-progress-bar]');
+    els.canvas = document.querySelector('[data-brain]');
+    els.probe = document.querySelector('[data-vh-probe]');
+    els.pin = document.querySelector('[data-pin-src]');
+    els.pinStmt = els.pin ? els.pin.querySelector('[data-pin] [data-reveal]') : null;
+    els.cards = els.pin
+      ? Array.prototype.slice.call(els.pin.querySelectorAll('[data-pcard]'))
+      : [];
+    els.method = document.getElementById('method');
+    els.learn = document.getElementById('learn');
+    els.stage5 = document.querySelector('[data-stage="5"]');
+    els.close = document.querySelector('[data-lit-src]');
+    els.circlesWrap = document.querySelector('[data-circles]');
+    els.circles = els.circlesWrap
+      ? Array.prototype.slice.call(els.circlesWrap.querySelectorAll('[data-circ]'))
+      : [];
+    els.litLines = els.close
+      ? Array.prototype.slice.call(els.close.querySelectorAll('[data-l]'))
+      : [];
+    els.reveals = Array.prototype.slice.call(document.querySelectorAll('[data-reveal]'));
+    els.scrims = Array.prototype.slice.call(document.querySelectorAll('[data-scrim]'));
+    if (els.canvas) {
+      canvas = els.canvas;
+      if (!ctx) ctx = canvas.getContext('2d');
+    }
+  }
 
   // ── Letter field → sphere → brain ─────────────────────────────
   function setupField() {
@@ -51,28 +199,28 @@
 
     // Measure every subpath first, then hand out a fixed particle budget in
     // proportion to length, so long contours read and hairline folds survive.
-    var els = [], lens = [], total = 0, i;
+    var elsP = [], lens = [], total = 0, i;
     for (i = 0; i < D.length; i++) {
       var path = document.createElementNS(ns, 'path');
       path.setAttribute('d', D[i]);
       svg.appendChild(path);
       var L = path.getTotalLength();
-      els.push(path);
+      elsP.push(path);
       lens.push(L);
       total += L;
     }
 
-    var step = total / 1250;
+    var step = total / fieldBudget();
     var CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789§';
     parts = [];
     groups = [];
 
-    for (i = 0; i < els.length; i++) {
+    for (i = 0; i < elsP.length; i++) {
       var Li = lens[i];
       var n = Math.max(2, Math.round(Li / step));
       var idx = [];
       for (var k = 0; k < n; k++) {
-        var pt = els[i].getPointAtLength((k / (n - 1)) * Li);
+        var pt = elsP[i].getPointAtLength((k / (n - 1)) * Li);
         idx.push(parts.length);
         parts.push({ bx: pt.x, by: pt.y, ch: CHARS[(Math.random() * CHARS.length) | 0] });
       }
@@ -101,31 +249,29 @@
   }
 
   function drawField() {
-    // Lazy attach: the canvas may appear after first frame.
     if (!canvas || !canvas.isConnected) {
-      var el = document.querySelector('[data-brain]');
-      if (!el) return;
-      canvas = el;
-      ctx = el.getContext('2d');
+      if (!els.canvas || !els.canvas.isConnected) cacheDom();
+      canvas = els.canvas;
+      if (canvas && !ctx) ctx = canvas.getContext('2d');
     }
     if (!parts) setupField();
     var c = canvas;
-    if (!c || !parts) return;
-    var rect = c.getBoundingClientRect();
-    if (!rect.width || !rect.height) return;
+    if (!c || !parts) return false;
 
-    var dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-    if (c.width !== Math.round(rect.width * dpr) || c.height !== Math.round(rect.height * dpr)) {
-      c.width = Math.round(rect.width * dpr);
-      c.height = Math.round(rect.height * dpr);
+    var w = geo.canvasW, hgt = geo.canvasH;
+    if (!w || !hgt) return false;
+
+    var dpr = fieldDpr();
+    var bw = Math.round(w * dpr), bh = Math.round(hgt * dpr);
+    if (c.width !== bw || c.height !== bh) {
+      c.width = bw;
+      c.height = bh;
     }
-    var w = rect.width, hgt = rect.height;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, w, hgt);
 
     // Follow the scroll-derived targets rather than jumping to them. This is the
     // ONLY smoothing in the page and it moves pixels, never the scroll position.
-    var FOLLOW = 0.07;
     if (typeof gatherT === 'number') {
       var dg = gatherT - gatherP;
       gatherP = Math.abs(dg) < 0.0005 ? gatherT : gatherP + dg * FOLLOW;
@@ -152,7 +298,7 @@
     var gScale = Math.max(0.52, Math.min(1, Math.min(w, hgt * 1.4) / 1280)) * 0.72;
     var box = window.BRAIN_BOX || [940, 670];
     var bScale = Math.min(w * 0.00066, hgt * 0.00116);
-    var bw = box[0] * bScale, bh = box[1] * bScale;
+    var bwBox = box[0] * bScale, bhBox = box[1] * bScale;
 
     var cosR = Math.cos(spin), sinR = Math.sin(spin);
 
@@ -166,6 +312,9 @@
     var spreadX = w * 0.5;
     var spreadY = hgt * 0.5;
     if (spreadY > spreadX) spreadY = spreadX;
+
+    var pad = 24;
+    var xMin = -pad, xMax = w + pad, yMin = -pad, yMax = hgt + pad;
 
     for (var i = 0; i < parts.length; i++) {
       var q = parts[i];
@@ -195,14 +344,15 @@
 
       if (morph > 0) {
         var bob = reduced ? 0 : morph * bScale * 9;
-        var bX = cx - bw / 2 + q.bx * bScale + Math.sin(t * 0.00021 + q.by * 0.006) * bob;
-        var bY = cy - bh / 2 + q.by * bScale + Math.sin(t * 0.00027 + q.bx * 0.005) * bob * 0.7;
+        var bX = cx - bwBox / 2 + q.bx * bScale + Math.sin(t * 0.00021 + q.by * 0.006) * bob;
+        var bY = cy - bhBox / 2 + q.by * bScale + Math.sin(t * 0.00027 + q.bx * 0.005) * bob * 0.7;
         x += (bX - x) * morph;
         y += (bY - y) * morph;
       }
       q.x = x;
       q.y = y;
       q.depth = persp;
+      q.on = x >= xMin && x <= xMax && y >= yMin && y <= yMax;
     }
 
     // Lines take over from the letters as the brain resolves. Accent contours
@@ -228,7 +378,7 @@
       }
     }
 
-    // Letters fade out as the lines arrive.
+    // Letters fade out as the lines arrive. Skip offscreen / faded glyphs.
     var glyphA = 1 - clamp((morph - 0.8) / 0.2);
     if (glyphA > 0.02) {
       ctx.textAlign = 'center';
@@ -236,7 +386,9 @@
       var lastFont = '';
       for (var j = 0; j < parts.length; j++) {
         var p = parts[j];
+        if (!p.on) continue;
         var a = glyphA * (0.3 + p.depth * 0.5) * (p.introA == null ? 1 : p.introA);
+        if (a < 0.02) continue;
         var f = Math.max(3, Math.round(p.size * gScale * (0.75 + p.depth * 0.4))) + 'px "Source Sans 3", system-ui, sans-serif';
         if (f !== lastFont) { ctx.font = f; lastFont = f; }
         ctx.fillStyle = p.accent
@@ -245,6 +397,14 @@
         ctx.fillText(p.ch, p.x, p.y);
       }
     }
+    return true;
+  }
+
+  function fieldStillMoving() {
+    if (introMs > 0 && (Date.now() - t0) < introMs + 80) return true;
+    if (typeof gatherT === 'number' && Math.abs(gatherT - gatherP) > 0.0005) return true;
+    if (typeof morphT === 'number' && Math.abs(morphT - morphP) > 0.0005) return true;
+    return false;
   }
 
   // ── Reveals ───────────────────────────────────────────────────
@@ -257,179 +417,293 @@
   }
 
   function revealAll() {
-    Array.prototype.forEach.call(document.querySelectorAll('[data-reveal]'), reveal);
+    if (!els.reveals.length) cacheDom();
+    els.reveals.forEach(reveal);
   }
 
-  // ── Scroll-driven measurement ─────────────────────────────────
-  function measure() {
-    var vh = window.innerHeight || 800;
-    var doc = document.documentElement;
-    if (doc.scrollHeight < vh * 1.4) return; // still laying out
+  function centreOfStored(docTopVal, height) {
+    return docTopVal + height / 2 - geo.vh / 2;
+  }
 
-    var y = window.pageYOffset || doc.scrollTop || 0;
+  // Expensive layout read. Not called from the hot scroll/idle path.
+  function measureGeometry() {
+    cacheDom();
+    var vh = readStableVh();
+    var y = pageY();
+    var vw = window.innerWidth || 0;
+    if (document.documentElement.scrollHeight < vh * 1.4) return;
 
-    // Top progress rail — always true page scroll.
-    var max = doc.scrollHeight - vh;
-    var trueP = max > 0 ? Math.min(1, y / max) : 0;
-    var bar = document.querySelector('[data-progress-bar]');
-    if (bar) bar.style.width = (trueP * 100).toFixed(2) + '%';
+    geo.vw = vw;
+    geo.vh = vh;
 
-    var centreOf = function (sel) {
-      var el = document.querySelector(sel);
-      if (!el) return null;
-      var r = el.getBoundingClientRect();
-      return r.top + y - (vh / 2 - r.height / 2);
-    };
-    var pinEl = document.querySelector('[data-pin-src]');
-    var pinEnd = null;
-    if (pinEl) {
-      var pr = pinEl.getBoundingClientRect();
-      pinEnd = pr.top + y + Math.max(0, pr.height - vh);
+    if (els.canvas) {
+      var cr = els.canvas.getBoundingClientRect();
+      geo.canvasW = cr.width;
+      geo.canvasH = cr.height;
     }
-    var closeEl = document.querySelector('[data-lit-src]');
-    var closePos = closeEl ? closeEl.getBoundingClientRect().top + y : null;
-    var keys = [
+
+    var pinR = els.pin ? els.pin.getBoundingClientRect() : null;
+    geo.pinDocTop = pinR ? docTop(pinR, y) : 0;
+    geo.pinHeight = pinR ? pinR.height : 0;
+    geo.pinEnd = pinR ? geo.pinDocTop + Math.max(0, pinR.height - vh) : null;
+
+    var stmtR = els.pinStmt ? els.pinStmt.getBoundingClientRect() : null;
+    geo.stmtDocTop = stmtR ? docTop(stmtR, y) : 0;
+    geo.stmtHeight = stmtR ? stmtR.height : 0;
+
+    var methodR = els.method ? els.method.getBoundingClientRect() : null;
+    geo.methodDocTop = methodR ? docTop(methodR, y) : 0;
+    geo.methodHeight = methodR ? methodR.height : 0;
+
+    var learnR = els.learn ? els.learn.getBoundingClientRect() : null;
+    geo.learnDocTop = learnR ? docTop(learnR, y) : 0;
+    geo.learnHeight = learnR ? learnR.height : 0;
+
+    var s5R = els.stage5 ? els.stage5.getBoundingClientRect() : null;
+    geo.stage5DocTop = s5R ? docTop(s5R, y) : 0;
+    geo.stage5Height = s5R ? s5R.height : 0;
+
+    var closeR = els.close ? els.close.getBoundingClientRect() : null;
+    geo.closeDocTop = closeR ? docTop(closeR, y) : 0;
+    geo.closeHeight = closeR ? closeR.height : 0;
+    geo.closePos = closeR ? geo.closeDocTop : null;
+
+    var circR = els.circlesWrap ? els.circlesWrap.getBoundingClientRect() : null;
+    geo.circlesDocTop = circR ? docTop(circR, y) : 0;
+    geo.circlesHeight = circR ? circR.height : 0;
+
+    els.cardGeom = els.cards.map(function (el) {
+      return { top: el.offsetTop, height: el.offsetHeight };
+    });
+
+    geo.revealTops = els.reveals.map(function (el) {
+      return docTop(el.getBoundingClientRect(), y);
+    });
+
+    geo.keys = [
       { name: 'Hero', pos: 0, k: FIELD.hero },
-      { name: '§01', pos: pinEnd, k: FIELD.s01 },
-      { name: '§02', pos: centreOf('#method'), k: FIELD.s02 },
-      { name: '§03', pos: centreOf('#learn'), k: FIELD.s03 },
-      { name: '§05', pos: centreOf('[data-stage="5"]'), k: FIELD.s05 },
-      { name: 'Close', pos: closePos, k: FIELD.close }
+      { name: '§01', pos: geo.pinEnd, k: FIELD.s01 },
+      { name: '§02', pos: methodR ? centreOfStored(geo.methodDocTop, geo.methodHeight) : null, k: FIELD.s02 },
+      { name: '§03', pos: learnR ? centreOfStored(geo.learnDocTop, geo.learnHeight) : null, k: FIELD.s03 },
+      { name: '§05', pos: s5R ? centreOfStored(geo.stage5DocTop, geo.stage5Height) : null, k: FIELD.s05 },
+      { name: 'Close', pos: geo.closePos, k: FIELD.close }
     ].filter(function (kf) { return kf.pos !== null && isFinite(kf.pos); });
-    keys.sort(function (a, b) { return a.pos - b.pos; });
+    geo.keys.sort(function (a, b) { return a.pos - b.pos; });
 
-    var easeK = function (t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; };
-    var gatherAt = function (pos) {
-      if (!keys.length) return 0;
-      if (pos <= keys[0].pos) return keys[0].k;
-      for (var i = 0; i < keys.length - 1; i++) {
-        var a = keys[i], b = keys[i + 1];
-        if (pos <= b.pos) {
-          var t = Math.max(0, Math.min(1, (pos - a.pos) / Math.max(1, b.pos - a.pos)));
-          return a.k + (b.k - a.k) * easeK(t);
-        }
-      }
-      return keys[keys.length - 1].k;
-    };
-
-    var spherePos = null;
-    for (var ki = 0; ki < keys.length; ki++) {
-      if (keys[ki].k >= 0.999) { spherePos = keys[ki].pos; break; }
+    geo.spherePos = null;
+    for (var ki = 0; ki < geo.keys.length; ki++) {
+      if (geo.keys[ki].k >= 0.999) { geo.spherePos = geo.keys[ki].pos; break; }
     }
-    var morphAt = function (pos) {
-      if (spherePos === null || closePos === null || closePos <= spherePos) return 0;
-      return Math.max(0, Math.min(1, (pos - spherePos) / (closePos - spherePos)));
-    };
+    geo.ready = true;
+  }
 
-    // Targets, not final values: drawField eases toward them each frame.
+  function gatherAt(pos) {
+    var keys = geo.keys;
+    if (!keys.length) return 0;
+    if (pos <= keys[0].pos) return keys[0].k;
+    for (var i = 0; i < keys.length - 1; i++) {
+      var a = keys[i], b = keys[i + 1];
+      if (pos <= b.pos) {
+        var t = Math.max(0, Math.min(1, (pos - a.pos) / Math.max(1, b.pos - a.pos)));
+        var easeK = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+        return a.k + (b.k - a.k) * easeK;
+      }
+    }
+    return keys[keys.length - 1].k;
+  }
+
+  function morphAt(pos) {
+    if (geo.spherePos === null || geo.closePos === null || geo.closePos <= geo.spherePos) return 0;
+    return Math.max(0, Math.min(1, (pos - geo.spherePos) / (geo.closePos - geo.spherePos)));
+  }
+
+  // Scroll apply: uses cached geometry. No querySelector / getBoundingClientRect
+  // / offsetTop in this path.
+  function applyScroll(y) {
+    if (!geo.ready) return;
+    var vh = geo.vh;
+    var max = document.documentElement.scrollHeight - vh;
+    var trueP = max > 0 ? Math.min(1, y / max) : 0;
+    var barVal = (trueP * 100).toFixed(2) + '%';
+    if (els.bar && barVal !== lastBar) {
+      lastBar = barVal;
+      els.bar.style.width = barVal;
+    }
+
     gatherT = gatherAt(y);
     morphT = morphAt(y);
 
-    // Per-section scrims (none in this build, but kept for parity).
-    Array.prototype.forEach.call(document.querySelectorAll('[data-scrim]'), function (el) {
-      var r = el.getBoundingClientRect();
-      var enter = Math.max(0, Math.min(1, (vh - r.top) / (vh * 0.22)));
-      var exit = Math.max(0, Math.min(1, r.bottom / (vh * 0.16)));
-      el.style.opacity = Math.min(enter, exit).toFixed(3);
-    });
+    var i, el;
+    // No scrims ship on this page; keep the hook without layout reads.
 
-    // Section reveals — re-assert every pass.
-    Array.prototype.forEach.call(document.querySelectorAll('[data-reveal]'), function (el) {
-      if (el.getBoundingClientRect().top < vh * 0.9) reveal(el);
+    for (i = 0; i < els.reveals.length; i++) {
+      el = els.reveals[i];
+      if ((geo.revealTops[i] - y) < vh * 0.9) reveal(el);
       if (el.getAttribute('data-shown') && el.style.opacity !== '1') {
         el.style.opacity = '1';
         el.style.transform = 'none';
       }
-    });
+    }
 
-    // Part cards arrive one at a time while the arithmetic block is pinned.
-    var pin = document.querySelector('[data-pin-src]');
-    if (pin) {
-      var r = pin.getBoundingClientRect();
-      var span = r.height - vh;
-      var p = span > 40 ? Math.max(0, Math.min(1, -r.top / span)) : 1;
-      // The field holds here (its clock is frozen) but dims down so the squares
-      // read cleanly, then comes back up on the way out.
-      var cnv = document.querySelector('[data-brain]');
-      if (cnv) {
-        var enter = Math.min(1, p / 0.12);
+    if (els.pin) {
+      var pinTop = geo.pinDocTop - y;
+      var span = geo.pinHeight - vh;
+      var p = span > 40 ? Math.max(0, Math.min(1, -pinTop / span)) : 1;
+      if (els.canvas) {
+        var enterP = Math.min(1, p / 0.12);
         var hold = 1;
-        var stmt = pin.querySelector('[data-pin] [data-reveal]');
-        if (stmt) {
-          var sr = stmt.getBoundingClientRect();
-          hold = Math.max(0, Math.min(1, sr.bottom / Math.max(1, vh * 0.3)));
+        if (els.pinStmt) {
+          var stmtBottom = geo.stmtDocTop + geo.stmtHeight - y;
+          hold = Math.max(0, Math.min(1, stmtBottom / Math.max(1, vh * 0.3)));
         }
-        var dim = Math.max(0, Math.min(enter, hold));
-        cnv.style.opacity = (1 - 0.75 * dim).toFixed(3);
+        var dim = Math.max(0, Math.min(enterP, hold));
+        var op = (1 - 0.75 * dim).toFixed(3);
+        if (op !== lastCnvOp) {
+          lastCnvOp = op;
+          els.canvas.style.opacity = op;
+        }
       }
 
-      var cards = pin.querySelectorAll('[data-pcard]');
+      var cards = els.cards;
       var n = cards.length;
-      var narrow = window.innerWidth <= 900;
-      Array.prototype.forEach.call(cards, function (el, i) {
+      var narrow = geo.vw <= 900;
+      for (i = 0; i < n; i++) {
+        el = cards[i];
         if (narrow && !reduced) {
           var kk = Math.max(0, Math.min(1, (p - (i / n) * 0.7) / 0.3));
-          el.style.opacity = '1';
-          el.style.transform = 'translate3d(0,' + ((110 - 160 * kk) * vh / 100).toFixed(1) + 'px,0)';
-          return;
+          setStyle(el, 'opacity', '1');
+          setStyle(el, 'transform', 'translate3d(0,' + ((110 - 160 * kk) * vh / 100).toFixed(1) + 'px,0)');
+          continue;
         }
         var start = 0.16 + (i / n) * 0.62;
-        var k = reduced ? 1 : Math.max(0, Math.min(1, (p - start) / 0.22));
-        var e = 1 - Math.pow(1 - k, 3);
-        var frameH = r.height > vh ? vh : r.height;
-        var lift = Math.max(0, el.offsetTop + el.offsetHeight - frameH + 10);
-        var travel = Math.max(0, frameH - el.offsetTop + lift);
-        el.style.opacity = k > 0 ? '1' : '0';
-        el.style.transform = 'translate3d(0,' + ((1 - e) * travel - lift).toFixed(1) + 'px,0)';
-      });
+        var kCard = reduced ? 1 : Math.max(0, Math.min(1, (p - start) / 0.22));
+        var e = 1 - Math.pow(1 - kCard, 3);
+        var cg = els.cardGeom[i] || { top: 0, height: 0 };
+        var frameH = geo.pinHeight > vh ? vh : geo.pinHeight;
+        var lift = Math.max(0, cg.top + cg.height - frameH + 10);
+        var travel = Math.max(0, frameH - cg.top + lift);
+        setStyle(el, 'opacity', kCard > 0 ? '1' : '0');
+        setStyle(el, 'transform', 'translate3d(0,' + ((1 - e) * travel - lift).toFixed(1) + 'px,0)');
+      }
     }
 
-    // Six mode circles: overlapped when the section arrives, spaced out as it
-    // passes. On ≤640 the mode-intro owns them while it is playing.
-    var wrap = introPlaying ? null : document.querySelector('[data-circles]');
+    var wrap = introPlaying ? null : els.circlesWrap;
     if (wrap) {
-      var wide = window.innerWidth > 820;
-      var wr = wrap.getBoundingClientRect();
-      var pc = Math.max(0, Math.min(1, (vh * 0.92 - wr.top) / (vh * 0.72)));
+      var wide = geo.vw > 820;
+      var wrTop = geo.circlesDocTop - y;
+      var pc = Math.max(0, Math.min(1, (vh * 0.92 - wrTop) / (vh * 0.72)));
       var ml = (-24 + 27 * pc).toFixed(2) + '%';
       var gml = (-30 + 26 * pc).toFixed(2) + '%';
-      var circles = wrap.querySelectorAll('[data-circ]');
-      Array.prototype.forEach.call(circles, function (el, i) {
+      var circles = els.circles;
+      for (i = 0; i < circles.length; i++) {
+        el = circles[i];
         if (wide) {
-          if (i > 0) el.style.marginLeft = ml;
-          el.style.marginTop = '';
+          if (i > 0) setStyle(el, 'marginLeft', ml);
+          setStyle(el, 'marginTop', '');
         } else {
-          el.style.marginLeft = i % 3 === 0 ? '0%' : gml;
-          el.style.marginTop = i > 2 ? gml : '';
+          setStyle(el, 'marginLeft', i % 3 === 0 ? '0%' : gml);
+          setStyle(el, 'marginTop', i > 2 ? gml : '');
         }
         var on = pc * 6.4 > i + 0.15;
-        el.style.color = on ? '#f4f1ea' : 'rgba(244,241,234,0.62)';
-        el.style.borderColor = on ? 'rgba(244,241,234,0.34)' : 'rgba(244,241,234,0.14)';
-      });
+        setStyle(el, 'color', on ? '#f4f1ea' : 'rgba(244,241,234,0.62)');
+        setStyle(el, 'borderColor', on ? 'rgba(244,241,234,0.34)' : 'rgba(244,241,234,0.14)');
+      }
     }
 
-    // Closing statement lights line by line across its pinned scroll.
     var lit = state.lit;
-    var src = document.querySelector('[data-lit-src]');
-    if (src) {
-      var sr2 = src.getBoundingClientRect();
-      var span2 = sr2.height - vh;
-      var pp = span2 > 0 ? Math.max(0, Math.min(1, -sr2.top / span2)) : 0;
-      var pinned = sr2.top <= 1;
-      var nLines = src.querySelectorAll('[data-l]').length || 1;
+    if (els.close) {
+      var srTop = geo.closeDocTop - y;
+      var span2 = geo.closeHeight - vh;
+      var pp = span2 > 0 ? Math.max(0, Math.min(1, -srTop / span2)) : 0;
+      var pinned = srTop <= 1;
+      var nLines = els.litLines.length || 1;
       lit = !pinned ? 0 : Math.max(1, Math.min(nLines, 1 + Math.floor(pp * nLines * 1.15)));
-
-      var spans = src.querySelectorAll('[data-l]');
-      Array.prototype.forEach.call(spans, function (el, i) {
-        var on = reduced || (pinned && i < lit);
+      var spans = els.litLines;
+      for (i = 0; i < spans.length; i++) {
+        el = spans[i];
+        var lineOn = reduced || (pinned && i < lit);
         var boxed = el.hasAttribute('data-lbox');
-        el.style.color = on
+        setStyle(el, 'color', lineOn
           ? ((!boxed && i === spans.length - 1 && lit >= spans.length) ? '#6E82C8' : '#ffffff')
-          : 'rgba(244,241,234,0.26)';
-      });
+          : 'rgba(244,241,234,0.26)');
+      }
     }
 
     state.lit = lit;
+  }
+
+  function cancelIdle() {
+    if (idleTo) { clearTimeout(idleTo); idleTo = 0; }
+  }
+
+  function requestTick() {
+    if (document.hidden) return;
+    if (!raf) raf = requestAnimationFrame(tick);
+  }
+
+  function tick() {
+    raf = 0;
+    if (document.hidden) return;
+    if (!geo.ready) measureGeometry();
+    var y = pageY();
+    var scrolled = y !== lastY;
+    if (scrolled) {
+      lastY = y;
+      applyScroll(y);
+    }
+    var moving = fieldStillMoving();
+    if (fieldDirty || scrolled || moving) {
+      drawField();
+      fieldDirty = false;
+    }
+    var introMoving = modeIntroKick ? modeIntroKick() : false;
+    if (moving || introMoving) {
+      requestTick();
+      return;
+    }
+    // Time-driven idle spin: full frame rate on desktop; ~12fps on coarse/narrow
+    // so parked phones are not filling 780 glyphs sixty times a second.
+    if (!reduced && parts) {
+      if (coarseLayout()) {
+        if (!idleTo) {
+          idleTo = setTimeout(function () {
+            idleTo = 0;
+            fieldDirty = true;
+            requestTick();
+          }, 80);
+        }
+      } else {
+        fieldDirty = true;
+        requestTick();
+      }
+    }
+  }
+
+  function rebuildAndTick() {
+    cacheDom();
+    measureGeometry();
+    fieldDirty = true;
+    lastY = -1;
+    if (modeIntroResize) modeIntroResize();
+    requestTick();
+  }
+
+  function onResize() {
+    var w = window.innerWidth || 0;
+    var h = window.innerHeight || 0;
+    var widthChanged = Math.abs(w - lastWidth) >= WIDTH_SLACK;
+    var oriented = lastWidth > 0 && lastInnerH > 0 && ((lastWidth > lastInnerH) !== (w > h));
+    if (coarseLayout() && !widthChanged && !oriented) {
+      // Android Chrome toolbar: height-only. Do not rebuild field geometry.
+      return;
+    }
+    var delay = (widthChanged || oriented) ? 40 : 120;
+    clearTimeout(resizeTo);
+    resizeTo = setTimeout(function () {
+      lastWidth = window.innerWidth || 0;
+      lastInnerH = window.innerHeight || 0;
+      rebuildAndTick();
+    }, delay);
   }
 
   /* Three scrolling regimes, one scroll engine. This state machine only
@@ -443,9 +717,9 @@
     if (!ok) return;
     var root = document.documentElement;
     var posY = function () { return window.pageYOffset || root.scrollTop || 0; };
-    var topOf = function (sel) {
-      var el = document.querySelector(sel);
-      return el ? Math.round(el.getBoundingClientRect().top + posY()) : null;
+    var topOf = function (node) {
+      if (!node) return null;
+      return Math.round(node.getBoundingClientRect().top + posY());
     };
     var prevY = posY(), active = false, suspended = false;
     // Set when the reader has been released at a boundary; cleared once they are
@@ -461,8 +735,8 @@
     var snapCheck = function () {
       if (suspended) { prevY = posY(); return; }
       var y = posY(), vh = window.innerHeight;
-      var first = topOf('#method');
-      var last = topOf('[data-stage="5"]');
+      var first = topOf(els.method);
+      var last = topOf(els.stage5);
       if (first === null || last === null) return;
       var down = y > prevY;
       if (released === 'up' && (y < first - vh * 0.45 || y > first + vh * 0.3)) released = null;
@@ -497,8 +771,8 @@
         else return;
       } else return;
       var y = posY();
-      var first = topOf('#method');
-      var last = topOf('[data-stage="5"]');
+      var first = topOf(els.method);
+      var last = topOf(els.stage5);
       if (up === true && first !== null && Math.abs(y - first) < 48) release('up');
       else if (up === false && last !== null && Math.abs(y - last) < 48) release('down');
     };
@@ -538,9 +812,12 @@
      lock. Reduced motion renders progress 1 immediately. */
   function setupModeIntro() {
     if (window.innerWidth > 640) return;
-    var wrap = document.querySelector('[data-circles]');
+    if (!els.circlesWrap) cacheDom();
+    var wrap = els.circlesWrap;
     if (!wrap) { setTimeout(setupModeIntro, 200); return; }
-    var circles = Array.prototype.slice.call(wrap.querySelectorAll('[data-circ]'));
+    var circles = els.circles.length >= 6
+      ? els.circles
+      : Array.prototype.slice.call(wrap.querySelectorAll('[data-circ]'));
     if (circles.length < 6) { setTimeout(setupModeIntro, 200); return; }
 
     var CLUSTER = 0.09, SCALE = 0.34, STAG = 0.035;
@@ -581,7 +858,8 @@
     field.setAttribute('aria-hidden', 'true');
     field.style.cssText = 'position:absolute;inset:-16%;pointer-events:none;overflow:hidden;z-index:0';
     var bits = [];
-    for (var i = 0; i < 54; i++) {
+    var bitN = 36;
+    for (var i = 0; i < bitN; i++) {
       var s = document.createElement('span');
       var ang = Math.random() * Math.PI * 2;
       var rad = 0.18 + Math.random() * 0.34;
@@ -638,11 +916,13 @@
       strip();
       if (field.parentNode) field.parentNode.removeChild(field);
       introDone = true;
+      modeIntroKick = null;
+      modeIntroResize = null;
     };
     var render = function (p) {
       if (p > 0.9995) { if (!resolved) strip(); curP = 1; return; }
       if (resolved) { field.style.display = ''; resolved = false; }
-      introPlaying = true;   // measure() leaves the circles alone meanwhile
+      introPlaying = true;   // applyScroll leaves the circles alone meanwhile
       paint(p);
     };
 
@@ -650,42 +930,56 @@
 
     // One progress variable, derived from the section's travel through the
     // viewport — read only, never written. ~78% of a viewport of real scroll.
-    var visual = 0, target = 0, raf = 0, painted = -1;
+    var visual = 0, target = 0, painted = -1;
     var readTarget = function () {
-      var r = wrap.getBoundingClientRect();
-      var vh = window.innerHeight || 800;
-      return Math.max(0, Math.min(1, (vh * 0.92 - r.top) / (vh * 0.78)));
+      var vh = geo.vh || window.innerHeight || 800;
+      var top = geo.circlesDocTop ? (geo.circlesDocTop - pageY()) : 0;
+      if (!geo.circlesDocTop && wrap) {
+        top = wrap.getBoundingClientRect().top;
+      }
+      return Math.max(0, Math.min(1, (vh * 0.92 - top) / (vh * 0.78)));
     };
     target = readTarget();
     visual = target;
     render(visual);
-    var loop = function () {
-      raf = requestAnimationFrame(loop);
-      var r = wrap.getBoundingClientRect();
-      var vh = window.innerHeight || 800;
-      if (r.bottom < -vh * 0.5 || r.top > vh * 2) return;
-      target = Math.max(0, Math.min(1, (vh * 0.92 - r.top) / (vh * 0.78)));
+    var introNeedsFrame = false;
+    modeIntroKick = function () {
+      if (introDone || document.hidden) {
+        introNeedsFrame = false;
+        return false;
+      }
+      var rTop, vh;
+      if (geo.ready) {
+        rTop = geo.circlesDocTop - pageY();
+        vh = geo.vh;
+      } else {
+        rTop = wrap.getBoundingClientRect().top;
+        vh = window.innerHeight || 800;
+      }
+      if (rTop + (geo.circlesHeight || 0) < -vh * 0.5 || rTop > vh * 2) {
+        introNeedsFrame = false;
+        return false;
+      }
+      target = Math.max(0, Math.min(1, (vh * 0.92 - rTop) / (vh * 0.78)));
       var d = target - visual;
-      // Direction reversal is continuous: the same variable travels the other way.
       visual = Math.abs(d) < 0.0008 ? target : visual + d * 0.12;
-      if (Math.abs(visual - painted) < 0.0008) return;
-      painted = visual;
-      render(visual);
+      introNeedsFrame = Math.abs(target - visual) >= 0.0008;
+      if (Math.abs(visual - painted) >= 0.0008) {
+        painted = visual;
+        render(visual);
+      }
+      return introNeedsFrame;
     };
 
-    var onResize = function () {
+    modeIntroResize = function () {
       if (introDone) return;
       if (window.innerWidth > 640) {
-        if (raf) cancelAnimationFrame(raf);
         clear();
-        window.removeEventListener('resize', onResize);
         return;
       }
       measureSeed();
       render(curP);
     };
-    window.addEventListener('resize', onResize);
-    raf = requestAnimationFrame(loop);
   }
 
   // ── §02 cloze: tap a blank to reveal its word ─────────────────
@@ -707,31 +1001,46 @@
 
   // ── Boot ──────────────────────────────────────────────────────
   function boot() {
+    cacheDom();
+    lastWidth = window.innerWidth || 0;
+    lastInnerH = window.innerHeight || 0;
+
     // Arrival: on a fresh load the letters fly in from deep space. Skipped for
     // reduced motion, and skipped when the browser restores scroll down the page.
     introMs = reduced ? 0 : 2400;
     t0 = Date.now();
     if ((window.pageYOffset || 0) > (window.innerHeight || 800) * 0.4) introMs = 0;
 
-    // The document does not reliably emit scroll events, so read scroll off a
-    // frame loop and only re-measure when it actually moved.
-    var tick = function () {
-      var y = window.pageYOffset || document.documentElement.scrollTop || 0;
-      var h = document.documentElement.scrollHeight;
-      if (y !== lastY || h !== lastH) { lastY = y; lastH = h; measure(); }
-      drawField();
-      requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
+    measureGeometry();
+    applyScroll(pageY());
+    fieldDirty = true;
+    requestTick();
 
-    measure();
-    setTimeout(measure, 160);
-    // rAF is paused while the tab is hidden; timers keep running.
-    setInterval(function () { if (document.hidden) { measure(); drawField(); } }, 250);
-    var onVis = function () { measure(); drawField(); };
-    document.addEventListener('visibilitychange', onVis);
-    window.addEventListener('scroll', onVis, { passive: true });
-    window.addEventListener('resize', onVis);
+    setTimeout(rebuildAndTick, 160);
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(function () { rebuildAndTick(); });
+    }
+
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) {
+        if (raf) { cancelAnimationFrame(raf); raf = 0; }
+        cancelIdle();
+        return;
+      }
+      fieldDirty = true;
+      lastY = -1;
+      requestTick();
+    });
+    window.addEventListener('scroll', function () {
+      cancelIdle();
+      requestTick();
+    }, { passive: true });
+    window.addEventListener('resize', onResize);
+    window.addEventListener('orientationchange', function () {
+      clearTimeout(resizeTo);
+      resizeTo = setTimeout(rebuildAndTick, 80);
+    });
+
     // Content must never stay permanently invisible.
     setTimeout(revealAll, 1400);
 
