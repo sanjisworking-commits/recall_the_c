@@ -11,6 +11,7 @@ import argparse
 import json
 import re
 import sys
+import unicodedata
 from collections import Counter
 from pathlib import Path
 
@@ -32,6 +33,7 @@ OFF_TONE = (
     "moonlit garden",
     "hyenas of hate",
     "jackals of hypocrisy",
+    "xoxoxo",
 )
 
 AUTHOR_CANON = (
@@ -65,6 +67,79 @@ _JUNK_WORD = re.compile(
     r"\bquotes?\b|\bimages?\b|\bcollected works\b|\bmemo \d+",
     re.I,
 )
+_FOOTNOTE = re.compile(r"\[\d+\]|\[f\.\d+\]")
+_ENDS_FUNCTION = re.compile(
+    r"\b(and|or|but|the|a|an|of|to|in|for|with|that|which|who|as|"
+    r"by|from|at|on|if|when|while|because|than|into|about|"
+    r"has|have|had|be|been)\s*$",
+    re.I,
+)
+_ENDS_CONNECTOR = re.compile(r"[,;:—–-]\s*$")
+_TRAILING_ELLIPSIS = re.compile(r"\.\.\.\s*$")
+_ENDS_STUB_SENTENCE = re.compile(r"[.!?]\s+I\s*$")
+# Keep diacritics so "habría" / "für" stay one token.
+_WORD = re.compile(r"[A-Za-zÀ-ÖØ-öø-ÿ']+")
+
+# Closed-class English words — enough to tell English from Spanish/French/Hindi/etc.
+_EN_STOP = frozenset(
+    """
+    the a an of to and in is that it for on with as was be by at or from this
+    which are not have has been but they their you we i our your he she him her
+    his its who what when where how if then than into about over after before
+    while because would could should will can may must do does did done being
+    were am upon without within among against between through during never
+    always like than all no so just only even also more most such own other
+    each every both few many much any some these those there here too very
+    still yet already once again
+    """.split()
+)
+# Distinctive markers that are not English closed-class words. Overlap
+# tokens like "no"/"en"/"a"/"die" are omitted so English quotes survive.
+_ES_MARK = frozenset(
+    """
+    el la los las un una es se con por para del al lo como más mas pero
+    sus hay quien cuando porque también tambien está estan están son
+    este esta estos estas muy ya nos le les su fue eran fueras que
+    """.split()
+)
+_FR_MARK = frozenset(
+    """
+    le les des une dans pour avec cette vous nous aux qui est pas ne
+    je tu elle ils elles mes tes sa ses
+    autres puissent sont avons vivez vivre simplement
+    """.split()
+)
+_IT_MARK = frozenset(
+    """
+    il gli dal cui suo sua suoi sue sono possono della degli nel nei
+    anche più questo questa sono siamo siete loro
+    """.split()
+)
+_DE_MARK = frozenset(
+    """
+    der das und den dem des ein eine einer eines nicht ich du er
+    wir ihr einem einen
+    """.split()
+)
+_ID_MARK = frozenset(
+    """
+    yang tidak untuk dalam adalah dengan orang pernah terlalu keinginan
+    sungguh murni terkabul berputus takkan sibuk memahami asalnya iman
+    tempat kekerasan senjata jiwanya lemah ada
+    """.split()
+)
+_SL_MARK = frozenset(
+    """
+    nije nisu koji koja koje kada samo kao smo ste svoju svaki nekom
+    nijeste dvojica kaficu oftamolog makedonski dubrovniku odnekud
+    pojavi upita sede
+    """.split()
+)
+_PT_MARK = frozenset(
+    """
+    não voce você pelo pela também tambem estão uma dos das são está
+    """.split()
+)
 
 
 def _norm_space(text: str) -> str:
@@ -72,7 +147,7 @@ def _norm_space(text: str) -> str:
 
 
 def _canonicalize_author(author: str) -> str:
-    compact = _norm_space(author)
+    compact = _norm_space(author).strip('"“”\'’«»')
     for pattern, canon in AUTHOR_CANON:
         if pattern.search(compact):
             return canon
@@ -99,6 +174,113 @@ def _author_is_fragment(author: str) -> bool:
     if _VOLUME.search(author) or _DATE_LIKE.search(author):
         return True
     if _JUNK_WORD.search(author) or _URL.search(author):
+        return True
+    # Scrape leftovers sitting in the author field.
+    if author[:1].islower():
+        return True
+    if author.startswith(("“", '"', "‘", "'")):
+        return True
+    if author.endswith(('."', ".”", '"', "”", "’")) and len(author.split()) >= 3:
+        return True
+    return False
+
+
+def _letter_script_counts(text: str) -> tuple[int, int]:
+    latin = other = 0
+    for ch in text:
+        if not ch.isalpha():
+            continue
+        name = unicodedata.name(ch, "")
+        if "LATIN" in name:
+            latin += 1
+        else:
+            other += 1
+    return latin, other
+
+
+_INDIC_ROMAN = frozenset(
+    """
+    hai hain hey par ki ke ko mein hum meri mujhe nahi nahin kaa bhi jo
+    zindgi zindagi apne jati uthaye janaje khayenge banyenge damm tohh
+    shirf kandhe jiyi
+    """.split()
+)
+
+
+def _accented_letter_count(text: str) -> int:
+    n = 0
+    for ch in text:
+        decomp = unicodedata.normalize("NFD", ch)
+        if any(unicodedata.combining(c) for c in decomp):
+            n += 1
+        elif ch.lower() in "łøßæœđħ":
+            n += 1
+    return n
+
+
+def _mark_count(tokens: list[str], marks: frozenset[str]) -> int:
+    return sum(1 for w in tokens if w in marks)
+
+
+def _is_non_english(text: str) -> bool:
+    """Drop Hindi/Arabic/Cyrillic script and Latin-script non-English."""
+    latin, other = _letter_script_counts(text)
+    letters = latin + other
+    if letters and other / letters >= 0.15:
+        return True
+    raw_tokens = _WORD.findall(text.lower())
+    tokens: list[str] = []
+    for word in raw_tokens:
+        tokens.extend(part for part in word.split("'") if part)
+    if len(tokens) < 6:
+        return False
+    en = sum(1 for w in tokens if w in _EN_STOP)
+    es = _mark_count(tokens, _ES_MARK)
+    fr = _mark_count(tokens, _FR_MARK)
+    de = _mark_count(tokens, _DE_MARK)
+    ident = _mark_count(tokens, _ID_MARK)
+    slavic = _mark_count(tokens, _SL_MARK)
+    pt = _mark_count(tokens, _PT_MARK)
+    italian = _mark_count(tokens, _IT_MARK)
+    if (
+        es >= 3
+        or fr >= 3
+        or de >= 3
+        or ident >= 2
+        or slavic >= 2
+        or pt >= 2
+        or italian >= 2
+    ):
+        return True
+    indic = sum(1 for w in tokens if w in _INDIC_ROMAN)
+    if indic >= 3:
+        return True
+    accents = _accented_letter_count(text)
+    if accents >= 3:
+        return True
+    ratio = en / len(tokens)
+    if accents >= 1 and ratio < 0.12:
+        return True
+    if len(tokens) >= 8 and en == 0:
+        return True
+    return False
+
+
+def _is_incomplete_text(text: str) -> bool:
+    """Drop truncated scrapes, not merely unpunctuated aphorisms."""
+    if _ENDS_CONNECTOR.search(text) or _ENDS_FUNCTION.search(text):
+        return True
+    if _TRAILING_ELLIPSIS.search(text):
+        return True
+    if _ENDS_STUB_SENTENCE.search(text):
+        return True
+    if _FOOTNOTE.search(text):
+        return True
+    if text.count("“") != text.count("”"):
+        return True
+    if text.count('"') % 2 == 1:
+        return True
+    if text[:1].islower():
         return True
     return False
 
@@ -137,6 +319,12 @@ def curate(rows: list[dict]) -> tuple[list[dict[str, str]], Counter]:
             continue
         if _text_is_junk(text):
             stats["junk_text"] += 1
+            continue
+        if _is_non_english(text):
+            stats["non_english"] += 1
+            continue
+        if _is_incomplete_text(text):
+            stats["incomplete"] += 1
             continue
         if _author_is_fragment(author):
             stats["junk_author"] += 1
@@ -186,6 +374,8 @@ def main(argv: list[str] | None = None) -> int:
     print(f"  too short (<{MIN_LEN}) {stats['too_short']}")
     print(f"  too long (>{MAX_LEN})  {stats['too_long']}")
     print(f"  junk text        {stats['junk_text']}")
+    print(f"  non-English      {stats['non_english']}")
+    print(f"  incomplete       {stats['incomplete']}")
     print(f"  junk author      {stats['junk_author']}")
     print(f"  duplicate        {stats['duplicate']}")
     print(f"  kept             {stats['kept']}")
