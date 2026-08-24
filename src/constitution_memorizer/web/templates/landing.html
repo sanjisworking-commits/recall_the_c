@@ -27,6 +27,15 @@
      motion; nothing in JS moves the page. */
   html.snap-active{scroll-snap-type:block mandatory}
   body{margin:0;background:#0b0b0b;color:#f4f1ea;font-family:"Source Sans 3",system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:clip}
+  /* Stable small-viewport heights: Android Chrome toolbar show/hide must not
+     restretch pinned frames or the 600vh arithmetic track. svh is ignored on
+     engines that lack it, leaving the inline 100vh/600vh fallback. */
+  [data-vh-probe]{position:absolute;left:0;top:0;width:0;height:100vh;height:100svh;pointer-events:none;visibility:hidden}
+  [data-pin-src]{height:600svh}
+  [data-pin]{height:100svh}
+  [data-lit-src]{height:165svh}
+  [data-lit-src] > [data-lit]{height:100svh}
+  #top{min-height:calc(100svh - 60px)}
   *,*::before,*::after{box-sizing:border-box}
   a{color:inherit;text-decoration:none}
   a:hover{color:#6E82C8}
@@ -117,7 +126,7 @@
     [data-lbl-short]{display:inline}
     [data-herocta] a{padding:13px 20px !important;font-size:14.5px !important}
     /* Cut the dead space: shorten the pinned closing block, trim section padding. */
-    [data-lit-src]{height:140vh !important}
+    [data-lit-src]{height:140vh !important;height:140svh !important}
     main > section:not(#top){padding-top:clamp(44px,7vh,72px) !important;padding-bottom:clamp(44px,7vh,72px) !important}
     [data-lede-hide]{display:none !important}
     [data-fit]{font-size:clamp(22px,6.2vw,30px) !important;line-height:1.14 !important;max-width:none !important}
@@ -172,6 +181,7 @@
 </style>
 </head>
 <body>
+<div data-vh-probe="1" aria-hidden="true"></div>
 <div style="width:100%;overflow-x:clip;background:#0b0b0b;position:relative">
 
 <div data-progress-track="1" style="position:fixed;top:0;left:0;right:0;height:2px;background:rgba(244,241,234,0.1);z-index:80">
@@ -210,7 +220,7 @@
 
 
 <!-- ══ HERO ══ -->
-<section id="top" data-stage="0" style="position:relative;min-height:calc(100vh - 60px);display:flex;flex-direction:column;justify-content:center;padding:clamp(60px,8vh,110px) clamp(20px,4vw,80px) clamp(70px,9vh,120px);max-width:1500px;margin:0 auto">
+<section id="top" data-stage="0" style="position:relative;min-height:calc(100vh - 60px);min-height:calc(100svh - 60px);display:flex;flex-direction:column;justify-content:center;padding:clamp(60px,8vh,110px) clamp(20px,4vw,80px) clamp(70px,9vh,120px);max-width:1500px;margin:0 auto">
   <div aria-hidden="true" style="position:absolute;top:0;bottom:0;left:50%;margin-left:-50vw;width:100vw;z-index:0;pointer-events:none;background:radial-gradient(ellipse 78% 74% at 50% 50%,rgba(11,11,11,0.92) 0%,rgba(11,11,11,0.86) 46%,rgba(11,11,11,0.4) 74%,rgba(11,11,11,0) 100%)"></div>
   <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;text-align:center">
   
@@ -241,9 +251,9 @@
 </section>
 
 <!-- ══ § 01 THE ARITHMETIC ══ -->
-<section id="arithmetic" data-stage="1" data-pin-src="1" style="position:relative;padding:clamp(70px,11vh,150px) clamp(20px,4vw,80px) 0;max-width:1500px;margin:0 auto;height:600vh">
+<section id="arithmetic" data-stage="1" data-pin-src="1" style="position:relative;padding:clamp(70px,11vh,150px) clamp(20px,4vw,80px) 0;max-width:1500px;margin:0 auto;height:600vh;height:600svh">
   <div data-snapgate="1" aria-hidden="true" style="position:absolute;left:0;bottom:100vh;width:1px;height:1px;pointer-events:none"></div>
-  <div data-pin="1" style="position:sticky;top:0;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center">
+  <div data-pin="1" style="position:sticky;top:0;height:100vh;height:100svh;display:flex;flex-direction:column;align-items:center;justify-content:center">
     <div data-reveal="1" data-delay="90" style="position:relative;z-index:0;width:min(620px,72%);text-align:center;opacity:0;transform:translateY(18px);transition:opacity .8s ease,transform .8s ease">
       <h2 style="font-family:Fraunces,Georgia,serif;font-size:clamp(28px,3.4vw,54px);line-height:1.05;letter-spacing:-0.03em;font-weight:700;margin:0 auto;max-width:16ch;text-wrap:balance">Three Articles a day.<br><span style="color:rgba(244,241,234,0.5)">Six months of them.</span></h2>
     </div>
@@ -411,8 +421,8 @@
 
 
 <!-- ══ CLOSE — scrubbed statement ══ -->
-<div data-lit-src="1" data-v="3" style="height:165vh;position:relative">
-  <div data-lit="0" style="position:sticky;top:0;height:100vh;display:flex;flex-direction:column;justify-content:center;padding:0 clamp(20px,4vw,80px);max-width:1500px;margin:0 auto">
+<div data-lit-src="1" data-v="3" style="height:165vh;height:165svh;position:relative">
+  <div data-lit="0" style="position:sticky;top:0;height:100vh;height:100svh;display:flex;flex-direction:column;justify-content:center;padding:0 clamp(20px,4vw,80px);max-width:1500px;margin:0 auto">
     <p style="margin:0 0 clamp(24px,3.4vh,44px);font-size:11.5px;text-transform:uppercase;letter-spacing:0.22em;font-weight:700;color:rgba(244,241,234,0.42)">Day 001</p>
     <p style="margin:0;font-family:Fraunces,Georgia,serif;font-size:clamp(32px,6.2vw,98px);line-height:1.04;letter-spacing:-0.04em;font-weight:700;text-wrap:balance">
       <span data-l="0" style="display:block">Don&rsquo;t just learn it.</span>
