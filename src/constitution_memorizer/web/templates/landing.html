@@ -52,6 +52,12 @@
   [data-pcard]:hover [data-fill]{opacity:1}
   [data-pcard]:hover p{color:#0b0b0b !important}
   [data-pcard] [data-fill]{border-radius:0}
+  /* Phone: the block crossing the viewport middle lights up. JS adds .is-lit
+     (mobile only) to the card nearest centre; it reuses the hover treatment and
+     the same transitions, so it fades in and reverts as the spotlight travels. */
+  [data-pcard].is-lit{z-index:9 !important}
+  [data-pcard].is-lit [data-fill]{opacity:1}
+  [data-pcard].is-lit p{color:#0b0b0b !important}
   [data-lbl-short]{display:none}
   /* Mode circles: the hovered disc lifts to the front and a texture wipes up
      from the bottom of the circle. */
@@ -126,17 +132,18 @@
     [data-navlinks]{display:none !important}
     /* Phone: the squares stream up through the pinned frame and leave at the
        top rather than settling. Three columns; position comes from transform. */
-    [data-pcard]{top:0 !important;width:30vw !important;height:30vw !important;padding:12px !important}
-    [data-pcard]:nth-of-type(3n+1){left:2% !important;right:auto !important}
-    [data-pcard]:nth-of-type(3n+2){left:35% !important;right:auto !important}
-    [data-pcard]:nth-of-type(3n){left:68% !important;right:auto !important}
-    [data-pcard] p{font-size:10px !important}
-    [data-pcard] p:nth-child(2){font-size:13px !important}
+    /* Two big columns. Boxes scale with the screen (44vw) so larger phones get
+       larger squares; min(340px,…) only caps portrait tablets near this edge. */
+    [data-pcard]{top:0 !important;width:min(340px,44vw) !important;height:min(340px,44vw) !important;padding:clamp(12px,3.4vw,20px) !important}
+    [data-pcard]:nth-of-type(2n+1){left:5% !important;right:auto !important}
+    [data-pcard]:nth-of-type(2n){left:51% !important;right:auto !important}
+    [data-pcard] p{font-size:clamp(10px,2.9vw,14px) !important}
+    [data-pcard] p:nth-child(2){font-size:clamp(13px,3.9vw,19px) !important}
   }
   @media (max-width:900px) and (prefers-reduced-motion:reduce){
     [data-pin-src]{height:auto !important;padding-bottom:clamp(70px,11vh,150px) !important}
     [data-pin]{position:static !important;height:auto !important}
-    [data-pgrid]{position:static !important;overflow:visible !important;left:auto !important;margin-left:0 !important;width:auto !important;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:34px}
+    [data-pgrid]{position:static !important;overflow:visible !important;left:auto !important;margin-left:0 !important;width:auto !important;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:34px}
     [data-pcard]{position:static !important;left:auto !important;top:auto !important;width:auto !important;height:auto !important;min-height:120px;transform:none !important;opacity:1 !important}
   }
   @media (prefers-reduced-motion:reduce){
