@@ -17,6 +17,17 @@ _PART_RUNNING_HEADER_RE = re.compile(
     r"\s*\(Part\s+[IVXLC]+[A-Z]?\s*\.?\s*-\s*[^)]+\)\s*",
     re.IGNORECASE,
 )
+# Bare Act omission marker in a HEADING, e.g. "THE STATES 1 ***" — the "***"
+# stands for words repealed by an amendment and the leading digit is the
+# footnote reference that explains which one. Part VI reads that way because
+# the Seventh Amendment (1956) dropped "IN PART A OF THE FIRST SCHEDULE" when
+# it abolished the Part A/B/C classification of States.
+#
+# Faithful in a printed Bare Act, meaningless as a title in this app: nobody
+# memorises a footnote marker. Only ever applied to headings — an omission
+# inside article body text is real Bare Act wording and is left alone.
+_HEADING_OMISSION_RE = re.compile(r"\s*\d*\s*\*{2,}\s*$")
+
 _WS_RE = re.compile(r"\s+")
 _CLAUSE_ONE_IN_BODY_RE = re.compile(r"(?:^|\n)\(1\)\s")
 _CLAUSE_LABEL_RE = re.compile(r"^\((\d+)([A-Za-z]*)\)$")
@@ -52,6 +63,14 @@ def scrub_display_text(text: str) -> str:
     cleaned = _MULTI_BLANK_RE.sub("\n\n", cleaned)
     cleaned = "\n".join(line.rstrip() for line in cleaned.split("\n"))
     return cleaned.strip()
+
+
+def strip_heading_omission_marker(title: str | None) -> str | None:
+    """Drop a trailing amendment-omission marker from a heading."""
+    if not title:
+        return title
+    cleaned = _HEADING_OMISSION_RE.sub("", title)
+    return _norm_ws(cleaned) or title
 
 
 def strip_part_running_headers(text: str) -> str:
@@ -304,6 +323,10 @@ def scrub_document(doc: ConstitutionDocument) -> list[str]:
     """Scrub every article and schedule field in a reviewed document copy."""
     notes: list[str] = []
     for part in doc.parts:
+        cleaned_title = strip_heading_omission_marker(part.title)
+        if cleaned_title != part.title:
+            notes.append(f"part {part.part_number}: title {part.title!r} -> {cleaned_title!r}")
+            part.title = cleaned_title
         for article in part.articles:
             notes.extend(scrub_article(article))
         for chapter in part.chapters:
