@@ -489,6 +489,17 @@ html[data-theme="dark"] .theme-toggle {
   color: var(--muted);
 }
 
+.calendar-chip.is-new-planned {
+  background: var(--paper);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+}
+
+.calendar-swatch.is-new-planned {
+  border: 1px solid var(--accent);
+  background: var(--paper);
+}
+
 .calendar-chip.is-memorized:hover,
 .calendar-chip.is-review-done:hover {
   color: var(--on-accent);
@@ -4166,6 +4177,51 @@ html[data-theme="dark"] .nav-signin {
   gap: 16px;
   margin-bottom: 16px;
   align-items: start;
+}
+
+.dash-top.is-single {
+  grid-template-columns: 1fr;
+}
+
+.plan-day-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.plan-day-actions .btn {
+  margin: 0;
+}
+
+.exit-revision-dialog {
+  border: 1px solid var(--ink);
+  padding: 0;
+  max-width: 28rem;
+}
+
+.exit-revision-dialog::backdrop {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.exit-revision-card {
+  padding: 22px 24px 20px;
+}
+
+.exit-revision-title {
+  margin: 0 0 8px;
+  font-size: 1.25rem;
+}
+
+.exit-revision-body {
+  margin: 0 0 16px;
+  color: var(--muted);
+}
+
+.exit-revision-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 .dash-card {

@@ -703,7 +703,7 @@
     cta.type = "button";
     cta.addEventListener("click", function () {
       teardown();
-      window.location.href = "/browse";
+      window.location.href = "/onboarding/plan";
     });
     actions.appendChild(cta);
     sContent.appendChild(actions);

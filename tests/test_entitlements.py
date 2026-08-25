@@ -30,6 +30,21 @@ def test_is_subscribed_seam_is_false_until_billing() -> None:
     assert ent.is_subscribed(object()) is False
 
 
+def test_can_use_auto_plan_follows_subscribed_level() -> None:
+    class _State:
+        def __init__(self, **kwargs):
+            self.__dict__.update(kwargs)
+
+    class _Req:
+        def __init__(self, *, multiuser: bool, user: object | None):
+            self.app = _State(state=_State(multiuser_enabled=multiuser))
+            self.state = _State(current_user=user)
+
+    assert ent.can_use_auto_plan(_Req(multiuser=False, user=None)) is True
+    assert ent.can_use_auto_plan(_Req(multiuser=True, user=None)) is False
+    assert ent.can_use_auto_plan(_Req(multiuser=True, user=object())) is False
+
+
 # --------------------------------------------------------------------------- #
 # mode sets                                                                    #
 # --------------------------------------------------------------------------- #

@@ -8,7 +8,13 @@ from typing import Any
 
 from constitution_memorizer.learning.schemas import LearningUnit
 from constitution_memorizer.progress.repository import LEARN_MODES
+from constitution_memorizer.progress.planner import project_new_capacity
 from constitution_memorizer.progress.scheduler import ReminderEngine
+from constitution_memorizer.progress.study_session import (
+    active_same_day_session,
+    close_stale_sessions,
+    get_learning_plan,
+)
 from constitution_memorizer.web.progress_stats import (
     _is_completed,
     all_article_progress,
@@ -231,9 +237,11 @@ def build_dashboard_context(
     display_label: str,
     as_of: date | None = None,
     now: datetime | None = None,
+    entitled: bool = True,
 ) -> dict[str, Any]:
     today = as_of or date.today()
     now = now or datetime.now(timezone.utc)
+    close_stale_sessions(eng, today=today)
     name = first_name(display_label)
     due_units = due_checklist(eng, as_of=today)
     chips, chips_more = due_article_chips(due_units)
@@ -276,6 +284,48 @@ def build_dashboard_context(
     )
 
     first_due_id = due_units[0].id if due_units else None
+    plan = get_learning_plan(eng)
+    active = active_same_day_session(eng, today=today)
+    today_mode = "caught_up"
+    revision_left = 0
+    learning_count = 0
+    pace_label = plan.pace_label
+    show_plan_prompt = False
+    if (
+        active is not None
+        and active.kind == "revision"
+        and active.pending_count > 0
+        and active.plan_date == today
+    ):
+        today_mode = "continue_revision"
+        revision_left = active.pending_count
+        first_due_id = active.next_pending().learning_unit_id if active.next_pending() else first_due_id
+    elif due_units:
+        today_mode = "start_revision"
+    elif entitled and plan.is_auto:
+        today_mode = "auto_learning"
+        learning_count = int(plan.daily_target or 0)
+        from constitution_memorizer.progress.mix_selector import eligible_new_units
+
+        if not eligible_new_units(eng):
+            today_mode = "caught_up"
+            learning_count = 0
+    else:
+        today_mode = "self_paced"
+        from constitution_memorizer.progress.mix_selector import eligible_new_units
+
+        eligible = eligible_new_units(eng)
+        dismissed = plan.plan_prompt_dismissed_on == today
+        show_plan_prompt = bool(eligible) and not dismissed
+        if not eligible and not cont_unit:
+            today_mode = "caught_up"
+
+    next_learning_day = None
+    if plan.is_anchored and entitled:
+        capacity = project_new_capacity(eng, plan, today=today, entitled=True)
+        future = [d for d in sorted(capacity) if d >= today]
+        next_learning_day = future[0] if future else None
+
     return {
         "display_label": display_label,
         "first_name": name,
@@ -295,4 +345,13 @@ def build_dashboard_context(
         "strip": strip,
         "recent": recent,
         "upcoming": upcoming_revisions(eng, as_of=today),
+        "today_mode": today_mode,
+        "revision_left": revision_left,
+        "learning_count": learning_count,
+        "pace_label": pace_label,
+        "show_plan_prompt": show_plan_prompt,
+        "learning_plan": plan,
+        "next_learning_day": next_learning_day,
+        "active_session_id": active.id if active is not None else "",
+        "can_auto_plan": entitled,
     }

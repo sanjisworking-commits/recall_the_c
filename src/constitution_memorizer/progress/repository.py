@@ -897,6 +897,286 @@ class ProgressRepository:
         assert row is not None
         return _row_to_progress(row)
 
+    def get_learning_plan(self, user_id: UUID | str):
+        from constitution_memorizer.progress.learning_plan import (
+            default_learning_plan,
+            learning_plan_from_row,
+        )
+
+        uid = as_user_id(user_id)
+        row = self._conn.execute(
+            "SELECT * FROM user_learning_plan WHERE user_id = ?",
+            (uid,),
+        ).fetchone()
+        if row is None:
+            return default_learning_plan(uid)
+        return learning_plan_from_row(row, uid)
+
+    def upsert_learning_plan(
+        self,
+        user_id: UUID | str,
+        *,
+        mode: str,
+        daily_target: int | None,
+        activated_at: date | None = None,
+        plan_prompt_dismissed_on: date | None = None,
+    ):
+        from constitution_memorizer.progress.learning_plan import (
+            learning_plan_from_row,
+            validate_mode,
+            validate_target,
+        )
+
+        uid = as_user_id(user_id)
+        mode = validate_mode(mode)
+        target = validate_target(daily_target)
+        now = _utc_now_iso()
+        self._conn.execute(
+            """
+            INSERT INTO user_learning_plan (
+                user_id, mode, daily_target, activated_at,
+                plan_prompt_dismissed_on, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?)
+            ON CONFLICT(user_id) DO UPDATE SET
+                mode = excluded.mode,
+                daily_target = excluded.daily_target,
+                activated_at = excluded.activated_at,
+                plan_prompt_dismissed_on = excluded.plan_prompt_dismissed_on,
+                updated_at = excluded.updated_at
+            """,
+            (
+                uid,
+                mode,
+                target,
+                _date_iso(activated_at),
+                _date_iso(plan_prompt_dismissed_on),
+                now,
+            ),
+        )
+        self._conn.commit()
+        row = self._conn.execute(
+            "SELECT * FROM user_learning_plan WHERE user_id = ?",
+            (uid,),
+        ).fetchone()
+        assert row is not None
+        return learning_plan_from_row(row, uid)
+
+    def _session_with_items(self, row) :
+        from constitution_memorizer.progress.study_models import (
+            study_session_from_row,
+            study_session_item_from_row,
+        )
+
+        if row is None:
+            return None
+        items = self._conn.execute(
+            """
+            SELECT * FROM study_session_item
+            WHERE session_id = ?
+            ORDER BY position
+            """,
+            (str(row["id"]),),
+        ).fetchall()
+        return study_session_from_row(
+            row, tuple(study_session_item_from_row(item) for item in items)
+        )
+
+    def get_study_session(self, user_id: UUID | str, session_id: str):
+        row = self._conn.execute(
+            """
+            SELECT * FROM study_session
+            WHERE id = ? AND user_id = ?
+            """,
+            (session_id, as_user_id(user_id)),
+        ).fetchone()
+        return self._session_with_items(row)
+
+    def get_active_revision_session(self, user_id: UUID | str):
+        row = self._conn.execute(
+            """
+            SELECT * FROM study_session
+            WHERE user_id = ? AND kind = 'revision' AND status = 'active'
+            """,
+            (as_user_id(user_id),),
+        ).fetchone()
+        return self._session_with_items(row)
+
+    def get_active_learning_session(self, user_id: UUID | str, plan_date: date):
+        row = self._conn.execute(
+            """
+            SELECT * FROM study_session
+            WHERE user_id = ? AND plan_date = ? AND status = 'active'
+              AND kind IN ('auto_learning', 'one_day_learning')
+            """,
+            (as_user_id(user_id), _date_iso(plan_date)),
+        ).fetchone()
+        return self._session_with_items(row)
+
+    def insert_study_session(
+        self,
+        user_id: UUID | str,
+        *,
+        session_id: str,
+        kind: str,
+        plan_date: date,
+        unit_ids: list[str],
+    ):
+        from constitution_memorizer.progress.study_models import VALID_KINDS
+
+        if kind not in VALID_KINDS:
+            raise ValueError(f"Invalid study session kind: {kind}")
+        uid = as_user_id(user_id)
+        now = _utc_now_iso()
+        try:
+            self._conn.execute("BEGIN")
+            self._conn.execute(
+                """
+                INSERT INTO study_session (
+                    id, user_id, kind, plan_date, status, created_at, completed_at
+                ) VALUES (?, ?, ?, ?, 'active', ?, NULL)
+                """,
+                (session_id, uid, kind, _date_iso(plan_date), now),
+            )
+            for position, unit_id in enumerate(unit_ids):
+                self._conn.execute(
+                    """
+                    INSERT INTO study_session_item (
+                        session_id, position, learning_unit_id, state,
+                        completed_at, deferred_at
+                    ) VALUES (?, ?, ?, 'pending', NULL, NULL)
+                    """,
+                    (session_id, position, unit_id),
+                )
+            self._conn.commit()
+        except sqlite3.IntegrityError:
+            self._conn.rollback()
+            existing = self.get_study_session(uid, session_id)
+            if existing is not None:
+                return existing
+            if kind == "revision":
+                existing = self.get_active_revision_session(uid)
+            else:
+                existing = self.get_active_learning_session(uid, plan_date)
+            if existing is not None:
+                return existing
+            raise
+        except Exception:
+            self._conn.rollback()
+            raise
+        loaded = self.get_study_session(uid, session_id)
+        assert loaded is not None
+        return loaded
+
+    def set_study_session_status(
+        self,
+        user_id: UUID | str,
+        session_id: str,
+        status: str,
+        *,
+        completed_at: str | None = None,
+    ) -> None:
+        from constitution_memorizer.progress.study_models import VALID_STATUSES
+
+        if status not in VALID_STATUSES:
+            raise ValueError(f"Invalid study session status: {status}")
+        now = _utc_now_iso()
+        stamp = completed_at
+        if status == "completed" and stamp is None:
+            stamp = now
+        self._conn.execute(
+            """
+            UPDATE study_session
+            SET status = ?, completed_at = ?
+            WHERE id = ? AND user_id = ?
+            """,
+            (status, stamp, session_id, as_user_id(user_id)),
+        )
+        self._conn.commit()
+
+    def abandon_stale_sessions(self, user_id: UUID | str, local_today: date) -> int:
+        cur = self._conn.execute(
+            """
+            UPDATE study_session
+            SET status = 'abandoned'
+            WHERE user_id = ? AND status = 'active' AND plan_date < ?
+            """,
+            (as_user_id(user_id), _date_iso(local_today)),
+        )
+        self._conn.commit()
+        return int(cur.rowcount or 0)
+
+    def abandon_unstarted_learning_sessions(self, user_id: UUID | str) -> int:
+        cur = self._conn.execute(
+            """
+            UPDATE study_session
+            SET status = 'abandoned'
+            WHERE user_id = ?
+              AND status = 'active'
+              AND kind IN ('auto_learning', 'one_day_learning')
+              AND NOT EXISTS (
+                  SELECT 1 FROM study_session_item
+                  WHERE study_session_item.session_id = study_session.id
+                    AND study_session_item.state = 'completed'
+              )
+            """,
+            (as_user_id(user_id),),
+        )
+        self._conn.commit()
+        return int(cur.rowcount or 0)
+
+    def set_session_item_state(
+        self,
+        user_id: UUID | str,
+        session_id: str,
+        unit_id: str,
+        state: str,
+        *,
+        completed_at: str | None = None,
+        deferred_at: str | None = None,
+    ):
+        from constitution_memorizer.progress.study_models import VALID_ITEM_STATES
+
+        if state not in VALID_ITEM_STATES:
+            raise ValueError(f"Invalid session item state: {state}")
+        session = self.get_study_session(user_id, session_id)
+        if session is None:
+            return None
+        now = _utc_now_iso()
+        self._conn.execute(
+            """
+            UPDATE study_session_item
+            SET state = ?, completed_at = ?, deferred_at = ?
+            WHERE session_id = ? AND learning_unit_id = ?
+            """,
+            (
+                state,
+                completed_at if state == "completed" else None,
+                deferred_at if state == "deferred" else None,
+                session_id,
+                unit_id,
+            ),
+        )
+        if state in ("completed", "deferred"):
+            pending = self._conn.execute(
+                """
+                SELECT COUNT(*) AS n FROM study_session_item
+                WHERE session_id = ? AND state = 'pending'
+                """,
+                (session_id,),
+            ).fetchone()
+            if pending is not None and int(pending["n"]) == 0:
+                self._conn.execute(
+                    """
+                    UPDATE study_session
+                    SET status = 'completed', completed_at = ?
+                    WHERE id = ? AND user_id = ? AND status = 'active'
+                    """,
+                    (now, session_id, as_user_id(user_id)),
+                )
+        self._conn.commit()
+        return self.get_study_session(user_id, session_id)
+
 
 # Backward-compatible alias used by docs/plan wording.
 SQLiteProgressRepository = ProgressRepository
+

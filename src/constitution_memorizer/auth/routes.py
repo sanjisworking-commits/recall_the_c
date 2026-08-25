@@ -381,7 +381,15 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
         # Later /welcome visits (name edits) never restart or downgrade it.
         if first_welcome and repo.get_setting(user.id, ONBOARDING_KEY) is None:
             repo.set_setting(user.id, ONBOARDING_KEY, "active")
-        return RedirectResponse(url="/dashboard", status_code=303)
+        dest = "/dashboard"
+        try:
+            from constitution_memorizer.web.entitlements import can_use_auto_plan
+
+            if can_use_auto_plan(request):
+                dest = "/onboarding/plan"
+        except Exception:  # noqa: BLE001 — welcome must never fail
+            dest = "/dashboard"
+        return RedirectResponse(url=dest, status_code=303)
 
     @router.get("/dashboard", response_class=HTMLResponse)
     async def dashboard(request: Request) -> HTMLResponse:
@@ -410,9 +418,14 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
         )
         try:
             from constitution_memorizer.web.dashboard import build_dashboard_context
+            from constitution_memorizer.web.entitlements import can_use_auto_plan
 
             started = time.perf_counter()
-            ctx = build_dashboard_context(eng, display_label=label)
+            ctx = build_dashboard_context(
+                eng,
+                display_label=label,
+                entitled=can_use_auto_plan(request),
+            )
             record_request_timing("dashboard_build", started)
             ctx["user"] = user
             ctx["dashboard_state"] = "ok"

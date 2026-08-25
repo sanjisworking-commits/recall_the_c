@@ -3,7 +3,10 @@
 {% block mobile_screen %}learn{% endblock %}
 {% block content %}
 {% set mode_requested = request.query_params.get('mode') %}
-<section class="panel learn" data-mobile-view="{{ 'mode' if mode_requested else 'deck' }}" data-unit-id="{{ unit.id }}" data-mode="{{ learn_mode }}" data-done-unlocked="{{ 'true' if done_unlocked else 'false' }}" data-modes-seen="{% if modes_seen is defined %}{{ modes_seen | join(',') }}{% endif %}" data-locked-modes="{{ locked_modes | default(()) | join(',') }}" data-required-modes="{{ required_modes | default(()) | join(',') }}"{% if seen_provisional|default(false) %} data-seen-provisional="true"{% endif %}{% if is_guest|default(false) %} data-guest-learn="true"{% endif %}>
+<section class="panel learn" data-mobile-view="{{ 'mode' if mode_requested else 'deck' }}" data-unit-id="{{ unit.id }}" data-mode="{{ learn_mode }}" data-done-unlocked="{{ 'true' if done_unlocked else 'false' }}" data-modes-seen="{% if modes_seen is defined %}{{ modes_seen | join(',') }}{% endif %}" data-locked-modes="{{ locked_modes | default(()) | join(',') }}" data-required-modes="{{ required_modes | default(()) | join(',') }}"{% if seen_provisional|default(false) %} data-seen-provisional="true"{% endif %}{% if is_guest|default(false) %} data-guest-learn="true"{% endif %}{% if study_session_id|default('') %} data-session-id="{{ study_session_id }}" data-study-kind="{{ study_kind|default('') }}"{% endif %}{% if show_exit_revision|default(false) %} data-exit-revision="true"{% endif %}>
+  {% set sess = study_session_id|default('') %}
+  {% set sess_q = ('&session=' ~ sess) if sess else '' %}
+  {% set sess_qs = ('?session=' ~ sess) if sess else '' %}
   {% include "_completion_banner.html" %}
   {% if is_guest|default(false) %}
   <div class="guest-learn-banner" role="status">
@@ -23,9 +26,10 @@
       <form method="post" action="/learn/{{ unit.id }}/done">
         <input type="hidden" name="claim_article" value="1">
         <input type="hidden" name="modes" value="" data-claim-modes>
+        {% if sess %}<input type="hidden" name="session" value="{{ sess }}">{% endif %}
         <button type="submit" class="btn btn-accent">Add Article {{ claim_prompt.article_number }}</button>
       </form>
-      <a class="btn btn-ghost" href="/learn/{{ unit.id }}">Not now</a>
+      <a class="btn btn-ghost" href="/learn/{{ unit.id }}{{ sess_qs }}">Not now</a>
     </div>
     <p class="claim-panel-note muted">
       {{ claim_prompt.slots_remaining }} of 3 Free Article slot{{ 's' if claim_prompt.slots_remaining != 1 }} remaining.
@@ -78,7 +82,7 @@
       {% else %}
       <a
         class="sibling-chip{% if chip.state == 'done' %} is-done{% endif %}"
-        href="/learn/{{ chip.unit_id }}"
+        href="/learn/{{ chip.unit_id }}{{ sess_qs }}"
       >{{ chip.label }}</a>
       {% endif %}
     {% endfor %}
@@ -133,7 +137,7 @@
     {% set locked = mode in locked_modes|default(()) %}
     <a class="learn-deck-card{% if mode in seen %} is-done{% endif %}{% if locked %} is-locked{% endif %}"
        data-learn-mode="{{ mode }}"
-       href="/learn/{{ unit.id }}?mode={{ mode }}">
+       href="/learn/{{ unit.id }}?mode={{ mode }}{{ sess_q }}">
       <span class="learn-deck-card-eyebrow">{{ '%02d' % loop.index }} · {{ mode_labels[mode]|upper }}</span>
       <span class="learn-deck-card-title">{{ deck_copy[mode][0] }}</span>
       <span class="learn-deck-card-lede">{{ deck_copy[mode][1] }}</span>
@@ -158,12 +162,12 @@
   {# Six recall modes — always render explicitly (Read → Test). #}
   {% set seen = modes_seen if modes_seen is defined else [] %}
   <div class="mode-tabs" role="tablist" aria-label="Recall modes">
-    <a class="mode-tab{% if learn_mode == 'read' %} is-active{% endif %}" role="tab" aria-selected="{{ 'true' if learn_mode == 'read' else 'false' }}" data-learn-mode="read" href="/learn/{{ unit.id }}?mode=read">Read{% if 'read' in seen %} ✓{% endif %}</a>
-    <a class="mode-tab{% if learn_mode == 'cloze' %} is-active{% endif %}" role="tab" aria-selected="{{ 'true' if learn_mode == 'cloze' else 'false' }}" data-learn-mode="cloze" href="/learn/{{ unit.id }}?mode=cloze">Cloze{% if 'cloze' in seen %} ✓{% endif %}</a>
-    <a class="mode-tab{% if learn_mode == 'letters' %} is-active{% endif %}" role="tab" aria-selected="{{ 'true' if learn_mode == 'letters' else 'false' }}" data-learn-mode="letters" href="/learn/{{ unit.id }}?mode=letters">Letters{% if 'letters' in seen %} ✓{% endif %}</a>
-    <a class="mode-tab{% if learn_mode == 'type' %} is-active{% endif %}{% if 'type' in locked_modes|default(()) %} is-locked{% endif %}" role="tab" aria-selected="{{ 'true' if learn_mode == 'type' else 'false' }}" data-learn-mode="type" href="/learn/{{ unit.id }}?mode=type"{% if 'type' in locked_modes|default(()) %} aria-label="Type — part of full Recall access"{% endif %}>Type{% if 'type' in locked_modes|default(()) %} 🔒{% elif 'type' in seen %} ✓{% endif %}</a>
-    <a class="mode-tab{% if learn_mode == 'recite' %} is-active{% endif %}{% if 'recite' in locked_modes|default(()) %} is-locked{% endif %}" role="tab" aria-selected="{{ 'true' if learn_mode == 'recite' else 'false' }}" data-learn-mode="recite" href="/learn/{{ unit.id }}?mode=recite"{% if 'recite' in locked_modes|default(()) %} aria-label="Recite — part of full Recall access"{% endif %}>Recite{% if 'recite' in locked_modes|default(()) %} 🔒{% elif 'recite' in seen %} ✓{% endif %}</a>
-    <a class="mode-tab{% if learn_mode == 'test' %} is-active{% endif %}" role="tab" aria-selected="{{ 'true' if learn_mode == 'test' else 'false' }}" data-learn-mode="test" href="/learn/{{ unit.id }}?mode=test">Test{% if 'test' in seen %} ✓{% endif %}</a>
+    <a class="mode-tab{% if learn_mode == 'read' %} is-active{% endif %}" role="tab" aria-selected="{{ 'true' if learn_mode == 'read' else 'false' }}" data-learn-mode="read" href="/learn/{{ unit.id }}?mode=read{{ sess_q }}">Read{% if 'read' in seen %} ✓{% endif %}</a>
+    <a class="mode-tab{% if learn_mode == 'cloze' %} is-active{% endif %}" role="tab" aria-selected="{{ 'true' if learn_mode == 'cloze' else 'false' }}" data-learn-mode="cloze" href="/learn/{{ unit.id }}?mode=cloze{{ sess_q }}">Cloze{% if 'cloze' in seen %} ✓{% endif %}</a>
+    <a class="mode-tab{% if learn_mode == 'letters' %} is-active{% endif %}" role="tab" aria-selected="{{ 'true' if learn_mode == 'letters' else 'false' }}" data-learn-mode="letters" href="/learn/{{ unit.id }}?mode=letters{{ sess_q }}">Letters{% if 'letters' in seen %} ✓{% endif %}</a>
+    <a class="mode-tab{% if learn_mode == 'type' %} is-active{% endif %}{% if 'type' in locked_modes|default(()) %} is-locked{% endif %}" role="tab" aria-selected="{{ 'true' if learn_mode == 'type' else 'false' }}" data-learn-mode="type" href="/learn/{{ unit.id }}?mode=type{{ sess_q }}"{% if 'type' in locked_modes|default(()) %} aria-label="Type — part of full Recall access"{% endif %}>Type{% if 'type' in locked_modes|default(()) %} 🔒{% elif 'type' in seen %} ✓{% endif %}</a>
+    <a class="mode-tab{% if learn_mode == 'recite' %} is-active{% endif %}{% if 'recite' in locked_modes|default(()) %} is-locked{% endif %}" role="tab" aria-selected="{{ 'true' if learn_mode == 'recite' else 'false' }}" data-learn-mode="recite" href="/learn/{{ unit.id }}?mode=recite{{ sess_q }}"{% if 'recite' in locked_modes|default(()) %} aria-label="Recite — part of full Recall access"{% endif %}>Recite{% if 'recite' in locked_modes|default(()) %} 🔒{% elif 'recite' in seen %} ✓{% endif %}</a>
+    <a class="mode-tab{% if learn_mode == 'test' %} is-active{% endif %}" role="tab" aria-selected="{{ 'true' if learn_mode == 'test' else 'false' }}" data-learn-mode="test" href="/learn/{{ unit.id }}?mode=test{{ sess_q }}">Test{% if 'test' in seen %} ✓{% endif %}</a>
   </div>
   {% if modes_seen is not defined %}
   <p class="methods-tracker" id="methods-tracker" data-count="0">
@@ -393,6 +397,7 @@
       <span class="learn-guest-note muted" data-guest-done-note hidden role="status">Not saved — sign in to keep progress.</span>
       {% else %}
       <form class="learn-action-done" method="post" action="/learn/{{ unit.id }}/done">
+        {% if sess %}<input type="hidden" name="session" value="{{ sess }}">{% endif %}
         <button
           type="submit"
           class="btn {% if done_unlocked %}btn-accent{% else %}btn-done-locked{% endif %}"
@@ -401,18 +406,34 @@
         >{{ done_label }}</button>
       </form>
       <form class="learn-action-again" method="post" action="/learn/{{ unit.id }}/again">
+        {% if sess %}<input type="hidden" name="session" value="{{ sess }}">{% endif %}
         <button type="submit" class="btn btn-ghost">Again tomorrow</button>
       </form>
       {% endif %}
     </div>
     <span class="learn-meta">{{ learn_meta }}</span>
     {% if not is_guest|default(false) %}
-    <form class="learn-action-reset" method="post" action="/learn/{{ unit.id }}/reset">
+    <form class="learn-action-reset" method="post" action="/learn/{{ unit.id }}/reset{% if sess %}?session={{ sess }}{% endif %}">
       <button type="submit" class="link-reset">Reset unit</button>
     </form>
     {% endif %}
   </div>
 </section>
+{% if show_exit_revision|default(false) %}
+<dialog class="exit-revision-dialog" data-exit-revision-dialog>
+  <form method="dialog" class="exit-revision-card">
+    <h2 class="exit-revision-title">Exit revision?</h2>
+    <p class="exit-revision-body">Your completed revisions are saved. You can return later to finish the remaining ones.</p>
+    <div class="exit-revision-actions">
+      <button type="submit" class="btn" value="keep" data-exit-keep>Keep revising</button>
+      <button type="submit" class="btn btn-ghost" value="exit" data-exit-confirm>Exit revision</button>
+    </div>
+  </form>
+  <form method="post" action="/study/revision/exit" hidden data-exit-revision-form>
+    {% if sess %}<input type="hidden" name="session" value="{{ sess }}">{% endif %}
+  </form>
+</dialog>
+{% endif %}
 {% if is_guest|default(false) %}
 {% include "partials/guest_modal.html" %}
 {% endif %}

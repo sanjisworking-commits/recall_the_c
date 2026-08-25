@@ -35,7 +35,7 @@ def test_learn_enables_recite_tab_and_panel_markup(client: TestClient):
     assert "Hold to peek" in html
     assert "Start reciting" in html
     assert "Speak the Bare Act aloud" in html
-    assert "app.js?v=main31" in html
+    assert "app.js?v=main32" in html
     assert "Coming in later sprints" not in html
 
 

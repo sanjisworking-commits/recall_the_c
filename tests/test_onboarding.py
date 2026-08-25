@@ -228,3 +228,36 @@ def test_guest_cannot_post_onboarding_state(tmp_path: Path):
         headers={"X-Requested-With": "XMLHttpRequest"},
     )
     assert resp.status_code == 401
+
+
+def test_onboarding_plan_locked_for_free_user(tmp_path: Path):
+    client, app, provider = _client(tmp_path)
+    _sign_in_phone(client, provider)
+    _post_welcome(client)
+    resp = client.get("/onboarding/plan", follow_redirects=False)
+    assert resp.status_code == 303
+    assert resp.headers["location"] == "/dashboard"
+
+
+def test_onboarding_plan_page_for_local_owner(tmp_path: Path):
+    app = create_app(
+        units_path=MINI_UNITS,
+        db_path=tmp_path / "progress.db",
+    )
+    client = TestClient(app)
+    resp = client.get("/onboarding/plan")
+    assert resp.status_code == 200
+    assert "Set a learning plan" in resp.text
+    assert "Auto Plan" in resp.text
+    saved = client.post(
+        "/onboarding/plan",
+        data={"learning_plan_mode": "auto", "daily_target": "5"},
+        follow_redirects=False,
+    )
+    assert saved.status_code == 303
+    from constitution_memorizer.progress.study_session import get_learning_plan
+
+    plan = get_learning_plan(app.state.engine)
+    assert plan.mode == "auto"
+    assert plan.daily_target == 5
+    assert plan.activated_at is None

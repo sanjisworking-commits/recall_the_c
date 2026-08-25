@@ -35,8 +35,14 @@ def next_learn_url(
     *,
     done_unit_id: str | None = None,
     multiuser: bool = False,
+    session_id: str | None = None,
 ) -> str:
-    suffix = f"?done={done_unit_id}" if done_unit_id else ""
+    suffix_parts: list[str] = []
+    if done_unit_id:
+        suffix_parts.append(f"done={done_unit_id}")
+    if session_id:
+        suffix_parts.append(f"session={session_id}")
+    suffix = ("?" + "&".join(suffix_parts)) if suffix_parts else ""
     if next_unit_id and eng.get_unit(next_unit_id):
         nxt = eng.get_unit(next_unit_id)
         assert nxt is not None
@@ -44,8 +50,58 @@ def next_learn_url(
             return f"/learn/{next_unit_id}/choose{suffix}"
         return f"/learn/{next_unit_id}{suffix}"
     if multiuser:
-        return f"/dashboard{suffix}" if suffix else "/dashboard"
+        dash = "/dashboard"
+        return f"{dash}{suffix}" if suffix else dash
     return f"/{suffix}" if suffix else "/"
+
+
+def with_session(url: str, session_id: str | None) -> str:
+    if not session_id:
+        return url
+    parts = urlsplit(url)
+    query = dict(parse_qsl(parts.query, keep_blank_values=True))
+    query["session"] = session_id
+    return urlunsplit(
+        (parts.scheme, parts.netloc, parts.path, urlencode(query), parts.fragment)
+    )
+
+
+def resolve_post_action_navigation(
+    eng: ReminderEngine,
+    *,
+    unit_id: str,
+    sequential_next_id: str | None,
+    session_id: str | None = None,
+    done_unit_id: str | None = None,
+    multiuser: bool = False,
+) -> str:
+    """Shared next URL for HTML Done, JSON Done, Again, and completion continue."""
+    from constitution_memorizer.progress.study_session import get_session
+
+    session = get_session(eng, session_id)
+    if session is not None and session.item_for(unit_id):
+        nxt = session.next_pending(after_unit_id=unit_id)
+        if nxt is not None and session.status == "active":
+            return next_learn_url(
+                eng,
+                nxt.learning_unit_id,
+                done_unit_id=done_unit_id,
+                multiuser=multiuser,
+                session_id=session.id,
+            )
+        dest = "/dashboard" if multiuser else "/"
+        extra = []
+        if done_unit_id:
+            extra.append(f"done={done_unit_id}")
+        extra.append("caught_up=1")
+        return f"{dest}?{'&'.join(extra)}"
+    return next_learn_url(
+        eng,
+        sequential_next_id,
+        done_unit_id=done_unit_id,
+        multiuser=multiuser,
+        session_id=None,
+    )
 
 
 def _quote_user_id(request: Request | None) -> str:
@@ -114,15 +170,22 @@ def done_json_payload(
     result: Any,
     request: Request | None,
     multiuser: bool,
+    session_id: str | None = None,
 ) -> dict[str, Any]:
     progress = result.progress
-    next_url = next_learn_url(
+    next_url = resolve_post_action_navigation(
         eng,
-        result.next_unit_id,
+        unit_id=unit.id,
+        sequential_next_id=result.next_unit_id,
+        session_id=session_id,
         done_unit_id=unit.id,
         multiuser=multiuser,
     )
-    next_unit = eng.get_unit(result.next_unit_id) if result.next_unit_id else None
+    next_unit = None
+    next_path = urlsplit(next_url).path
+    if next_path.startswith("/learn/") and not next_path.endswith("/choose"):
+        next_id = next_path[len("/learn/") :].strip("/")
+        next_unit = eng.get_unit(next_id)
     uid = _quote_user_id(request)
     seed = f"{uid}:{unit.id}:{progress.last_completed}:{progress.times_completed}"
     mastered = progress.status == "mastered" or progress.next_revision is None

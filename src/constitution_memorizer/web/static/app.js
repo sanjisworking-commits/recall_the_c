@@ -3028,11 +3028,91 @@
     }
   }
 
+  function initExitRevisionGuard() {
+    const learn = document.querySelector(".learn[data-exit-revision]");
+    const dialog = document.querySelector("[data-exit-revision-dialog]");
+    if (!learn || !dialog) {
+      return;
+    }
+    const exitForm = document.querySelector("[data-exit-revision-form]");
+
+    function isLeaveHref(href) {
+      if (!href) {
+        return false;
+      }
+      let url;
+      try {
+        url = new URL(href, window.location.origin);
+      } catch (_err) {
+        return false;
+      }
+      if (url.origin !== window.location.origin) {
+        return false;
+      }
+      const path = url.pathname;
+      if (path.indexOf("/learn") === 0) {
+        return false;
+      }
+      return (
+        path === "/" ||
+        path === "/dashboard" ||
+        path.indexOf("/browse") === 0 ||
+        path.indexOf("/search") === 0 ||
+        path.indexOf("/calendar") === 0 ||
+        path.indexOf("/settings") === 0 ||
+        path.indexOf("/progress") === 0 ||
+        path.indexOf("/tables") === 0 ||
+        path.indexOf("/profile") === 0
+      );
+    }
+
+    document.addEventListener("click", function (event) {
+      if (
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey ||
+        event.button !== 0
+      ) {
+        return;
+      }
+      if (event.target.closest("[data-deck-back]")) {
+        return;
+      }
+      if (event.target.closest("[data-learn-mode]")) {
+        return;
+      }
+      const link = event.target.closest("a[href]");
+      if (!link || !isLeaveHref(link.getAttribute("href"))) {
+        return;
+      }
+      event.preventDefault();
+      if (typeof dialog.showModal === "function") {
+        dialog.showModal();
+      } else {
+        dialog.setAttribute("open", "");
+      }
+    });
+
+    const confirm = dialog.querySelector("[data-exit-confirm]");
+    if (confirm) {
+      confirm.addEventListener("click", function (event) {
+        event.preventDefault();
+        if (exitForm) {
+          exitForm.submit();
+        } else {
+          window.location.assign("/dashboard");
+        }
+      });
+    }
+  }
+
   function bootInteraction() {
     syncRtcAnim();
     getDoneAudio();
     initHeadingReveal();
     initDoneInterceptor();
+    initExitRevisionGuard();
     initServerAffirmation();
     initExperienceControls();
     initPricing();

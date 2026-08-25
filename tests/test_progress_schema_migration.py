@@ -446,3 +446,22 @@ def test_ladder_day15_reslots_interval_14(tmp_path: Path) -> None:
     ).fetchone()
     assert int(row["interval_days"]) == 14
     conn.close()
+
+
+def test_fresh_db_creates_learning_plan_and_session_tables(tmp_path: Path):
+    conn = open_progress_db(tmp_path / "fresh.db")
+    names = {
+        row[0]
+        for row in conn.execute(
+            "SELECT name FROM sqlite_master WHERE type = 'table'"
+        )
+    }
+    assert "user_learning_plan" in names
+    assert "study_session" in names
+    assert "study_session_item" in names
+    item_sql = conn.execute(
+        "SELECT sql FROM sqlite_master WHERE name = 'study_session_item'"
+    ).fetchone()[0]
+    assert "pending" in item_sql
+    assert "deferred" in item_sql
+    conn.close()

@@ -436,7 +436,7 @@ def test_dashboard_multiuser_layout(tmp_path: Path):
     html = dash.text
     assert 'class="eyebrow"' not in html
     assert "Welcome, User." in html or "Good morning, User." in html
-    assert "Due today" in html
+    assert "Today" in html
     assert "Continue learning" in html
     assert "Articles started" in html
     assert "Units completed" in html

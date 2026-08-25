@@ -17,7 +17,7 @@ from datetime import date, timedelta
 
 from constitution_memorizer.learning.schemas import LearningUnitType
 from constitution_memorizer.progress.scheduler import ReminderEngine
-from constitution_memorizer.web.calendar_view import remaining_review_schedule
+from constitution_memorizer.progress.review_projection import remaining_review_schedule
 from constitution_memorizer.web.service import unit_visible_for_preference
 
 # A freshly memorized unit's ladder ends ~116 days out

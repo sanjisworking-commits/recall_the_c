@@ -251,6 +251,67 @@
     </div>
   </div>
 
+  <h2 class="section-title">Learning plan</h2>
+  <p class="settings-note">
+    Self-paced is the default — pick a mix when you want one. Auto Plan places
+    3, 5, or 7 new clauses on revision-free days. Revisions always come first.
+  </p>
+  <form class="settings-form settings-plan-form" method="post" action="/settings">
+    <fieldset class="settings-fieldset">
+      <legend class="visually-hidden">Learning plan</legend>
+      <label class="settings-option">
+        <input type="radio" name="learning_plan_mode" value="self_paced"
+          {% if not learning_plan or learning_plan.mode != 'auto' %}checked{% endif %}>
+        <span>
+          <strong>Self-paced</strong>
+          <span class="settings-option-note">No future NEW on the calendar. Use Plan my day from Today when you want a mix.</span>
+        </span>
+      </label>
+      {% if can_auto_plan|default(false) %}
+      <label class="settings-option">
+        <input type="radio" name="learning_plan_mode" value="auto"
+          {% if learning_plan and learning_plan.mode == 'auto' %}checked{% endif %}>
+        <span>
+          <strong>Auto Plan</strong>
+          <span class="settings-option-note">New clauses on days with no revisions due, at the pace you pick below.</span>
+        </span>
+      </label>
+      <label class="memory-field">
+        <span class="memory-field-label">Daily target</span>
+        <select name="daily_target">
+          <option value="3"{% if learning_plan and learning_plan.daily_target == 3 %} selected{% endif %}>Steady · 3</option>
+          <option value="5"{% if not learning_plan or learning_plan.daily_target not in (3, 7) %} selected{% endif %}>Balanced · 5</option>
+          <option value="7"{% if learning_plan and learning_plan.daily_target == 7 %} selected{% endif %}>Intensive · 7</option>
+        </select>
+      </label>
+      {% else %}
+      <label class="settings-option is-locked">
+        <input type="radio" name="learning_plan_mode" value="auto" disabled>
+        <span>
+          <strong>Auto Plan</strong>
+          <span class="settings-option-note">Part of unlocking every Article — your saved history is never deleted.</span>
+          {% if pricing_enabled|default(false) %}
+          <a href="/pricing">Unlock every Article →</a>
+          {% endif %}
+        </span>
+      </label>
+      {% endif %}
+    </fieldset>
+    {% if learning_plan and learning_plan.is_auto %}
+    <p class="settings-note">
+      Plan started
+      {% if learning_plan.activated_at %}{{ learning_plan.activated_at.strftime('%d %b %Y') }}
+      {% else %}Not started{% endif %}
+      {% if next_learning_day %}
+      · Next learning day {{ next_learning_day.strftime('%d %b %Y') }}
+      {% endif %}
+    </p>
+    {% endif %}
+    <p class="actions">
+      <button type="submit" class="btn">Save learning plan</button>
+    </p>
+  </form>
+
   <form class="settings-form" method="post" action="/settings">
     <h2 class="section-title">Browse — In news</h2>
     <p class="settings-note">

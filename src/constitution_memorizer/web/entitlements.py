@@ -157,6 +157,11 @@ def access_level(request: object) -> str:
     )
 
 
+def can_use_auto_plan(request: object) -> bool:
+    """Auto Plan is for subscribed capability (including admin/grant)."""
+    return access_level(request) == SUBSCRIBED
+
+
 # --------------------------------------------------------------------------- #
 # Per-Article Learn access                                                      #
 # --------------------------------------------------------------------------- #

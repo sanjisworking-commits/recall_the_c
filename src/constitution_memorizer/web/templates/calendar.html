@@ -71,6 +71,7 @@
     <span class="calendar-legend-item"><span class="calendar-swatch is-review-done" aria-hidden="true"></span>Review done</span>
     <span class="calendar-legend-item"><span class="calendar-swatch is-due" aria-hidden="true"></span>Review due</span>
     <span class="calendar-legend-item"><span class="calendar-swatch is-scheduled" aria-hidden="true"></span>Scheduled</span>
+    <span class="calendar-legend-item"><span class="calendar-swatch is-new-planned" aria-hidden="true"></span>New</span>
   </div>
 
   <div class="calendar-grid" role="grid" aria-label="{{ calendar.title }}">
@@ -88,11 +89,18 @@
       >
         <div class="calendar-daynum">{{ day.day }}</div>
         {% for chip in day.chips %}
+        {% if chip.unit_id %}
         <a
           class="calendar-chip is-{{ chip.kind | replace('_', '-') }}"
           href="/learn/{{ chip.unit_id }}"
           title="{{ chip.title }}"
         >{{ chip.label }}</a>
+        {% else %}
+        <span
+          class="calendar-chip is-{{ chip.kind | replace('_', '-') }}"
+          title="{{ chip.title }}"
+        >{{ chip.label }}</span>
+        {% endif %}
         {% endfor %}
       </div>
       {% endif %}

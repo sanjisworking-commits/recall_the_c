@@ -11,10 +11,12 @@
 
   <div class="choose-actions">
     <form method="post" action="/learn/{{ unit.id }}/choose">
+      {% if study_session_id|default('') %}<input type="hidden" name="session" value="{{ study_session_id }}">{% endif %}
       <input type="hidden" name="mode" value="whole">
       <button type="submit" class="btn btn-accent">Learn whole clause</button>
     </form>
     <form method="post" action="/learn/{{ unit.id }}/choose">
+      {% if study_session_id|default('') %}<input type="hidden" name="session" value="{{ study_session_id }}">{% endif %}
       <input type="hidden" name="mode" value="letters">
       <button type="submit" class="btn btn-accent-outline">Split into letters</button>
     </form>

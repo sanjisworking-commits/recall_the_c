@@ -8,13 +8,13 @@ from datetime import date, timedelta
 from typing import Literal
 
 from constitution_memorizer.progress.repository import ProgressRecord
+from constitution_memorizer.progress.review_projection import remaining_review_schedule
 from constitution_memorizer.progress.scheduler import (
     INTERVAL_LADDER,
     ReminderEngine,
-    advance_interval,
 )
 
-ChipKind = Literal["memorized", "review_done", "due", "scheduled"]
+ChipKind = Literal["memorized", "review_done", "due", "scheduled", "new_planned"]
 
 WEEKDAYS = ("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
 
@@ -75,29 +75,6 @@ def _chip_label(display_title: str) -> str:
     return text
 
 
-def remaining_review_schedule(row: ProgressRecord) -> list[tuple[date, int]]:
-    """
-    Project remaining spaced-repetition dates for a progress row.
-
-    Starts at ``next_revision`` (current rung = ``interval_days``), then assumes
-    on-time completion for each later step of ``INTERVAL_LADDER``
-    (1 → 3 → 7 → 15 → 30 → 60).
-    """
-    if row.next_revision is None or row.status not in ("review", "mastered"):
-        return []
-    cursor = row.next_revision
-    current = row.interval_days if row.interval_days > 0 else INTERVAL_LADDER[0]
-    out: list[tuple[date, int]] = [(cursor, current)]
-    while True:
-        nxt = advance_interval(current)
-        if nxt is None:
-            break
-        cursor = cursor + timedelta(days=nxt)
-        out.append((cursor, nxt))
-        current = nxt
-    return out
-
-
 def completed_review_history(
     row: ProgressRecord,
 ) -> list[tuple[date, ChipKind, int | None]]:
@@ -132,6 +109,7 @@ def build_calendar_month(
     year: int,
     month: int,
     today: date | None = None,
+    entitled: bool = True,
 ) -> CalendarMonth:
     """Build a Sunday-first month grid with progress + projected ladder chips."""
     if month < 1 or month > 12:
@@ -201,6 +179,56 @@ def build_calendar_month(
                     label=label,
                     title=tip,
                 )
+            )
+
+    from constitution_memorizer.progress.planner import project_new_capacity
+
+    horizon_end = max(month_end, today + timedelta(days=62))
+    new_capacity = project_new_capacity(
+        engine, today=today, horizon_end=horizon_end, entitled=entitled
+    )
+    for when, n in new_capacity.items():
+        if not (month_start <= when <= month_end) or n <= 0:
+            continue
+        by_day[when.day].insert(
+            0,
+            CalendarChip(
+                kind="new_planned",
+                unit_id="",
+                label=f"NEW · {n}",
+                title=f"{n} new clauses planned",
+            ),
+        )
+
+    try:
+        from constitution_memorizer.progress.study_session import close_stale_sessions
+
+        close_stale_sessions(engine, today=today)
+        learning = engine.repo.get_active_learning_session(engine.user_id, today)
+    except Exception:  # noqa: BLE001 — missing table in old fixtures
+        learning = None
+    if (
+        learning is not None
+        and learning.kind in ("auto_learning", "one_day_learning")
+        and month_start <= today <= month_end
+    ):
+        by_day[today.day] = [
+            chip
+            for chip in by_day[today.day]
+            if not (chip.kind == "new_planned" and not chip.unit_id)
+        ]
+        for item in reversed(learning.items):
+            unit = engine.get_unit(item.learning_unit_id)
+            if unit is None:
+                continue
+            by_day[today.day].insert(
+                0,
+                CalendarChip(
+                    kind="new_planned",
+                    unit_id=item.learning_unit_id,
+                    label=_chip_label(unit.display_title),
+                    title=f"{unit.display_title} — new today",
+                ),
             )
 
     days: list[CalendarDay] = []

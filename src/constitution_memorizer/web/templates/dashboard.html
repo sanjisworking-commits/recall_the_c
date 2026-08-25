@@ -89,8 +89,28 @@
   </p>
   {% endif %}
 
-  <div class="dash-top">
-    <article class="dash-card dash-hero dash-due{% if due_count == 0 %} is-empty{% else %} is-due{% endif %}">
+  <div class="dash-top{% if today_mode in ('continue_revision', 'start_revision', 'auto_learning') %} is-single{% endif %}">
+    {% if today_mode == 'continue_revision' %}
+    <article class="dash-card dash-hero dash-due is-due">
+      <header class="dash-card-head">
+        <h2 class="dash-eyebrow">
+          <span class="dash-dot" aria-hidden="true"></span>
+          Today
+        </h2>
+      </header>
+      <div class="dash-card-body">
+        <p class="dash-due-line">
+          <span class="dash-due-count">{{ revision_left }}</span>
+          <span class="dash-due-units">revision{% if revision_left != 1 %}s{% endif %} left</span>
+        </p>
+        <p class="actions">
+          <a class="btn dash-btn-full" href="/learn/{{ first_due_id }}{% if active_session_id %}?session={{ active_session_id }}{% endif %}">Continue revision · {{ revision_left }} left</a>
+        </p>
+      </div>
+    </article>
+
+    {% elif today_mode == 'start_revision' %}
+    <article class="dash-card dash-hero dash-due is-due">
       <header class="dash-card-head">
         <h2 class="dash-eyebrow">
           <span class="dash-dot" aria-hidden="true"></span>
@@ -98,20 +118,9 @@
         </h2>
       </header>
       <div class="dash-card-body">
-        {% if due_count == 0 %}
-        <p class="dash-due-empty-title">Nothing is due today</p>
-        <p class="muted">You're caught up. Browse when you're ready for something new.</p>
-        {% if caught_up_quote %}
-        <blockquote class="caught-up-quote">{{ caught_up_quote.text }}</blockquote>
-        <p class="caught-up-quote-attr">— {{ caught_up_quote.author }}</p>
-        {% endif %}
-        <p class="actions">
-          <a class="btn btn-ghost dash-btn-outline" href="/browse">Browse the Constitution</a>
-        </p>
-        {% else %}
         <p class="dash-due-line">
           <span class="dash-due-count">{{ due_count }}</span>
-          <span class="dash-due-units">learning unit{% if due_count != 1 %}s{% endif %} due</span>
+          <span class="dash-due-units">revision{% if due_count != 1 %}s{% endif %} due</span>
         </p>
         <p class="dash-load">About {{ due_minutes }} minute{% if due_minutes != 1 %}s{% endif %} of review.</p>
         {% if due_chips %}
@@ -125,7 +134,67 @@
         </ul>
         {% endif %}
         <p class="actions">
-          <a class="btn dash-btn-full" href="{% if first_due_id %}/learn/{{ first_due_id }}{% else %}/learn{% endif %}">Start revision</a>
+          <form method="post" action="/study/revision/start">
+            <button type="submit" class="btn dash-btn-full">Start revision</button>
+          </form>
+        </p>
+      </div>
+    </article>
+
+    {% elif today_mode == 'auto_learning' %}
+    <article class="dash-card dash-hero dash-due is-empty">
+      <header class="dash-card-head">
+        <h2 class="dash-eyebrow">
+          <span class="dash-dot" aria-hidden="true"></span>
+          Today
+        </h2>
+      </header>
+      <div class="dash-card-body">
+        <p class="dash-due-line">
+          <span class="dash-due-count">{{ learning_count }}</span>
+          <span class="dash-due-units">new clause{% if learning_count != 1 %}s{% endif %}</span>
+        </p>
+        {% if pace_label %}<p class="dash-load">{{ pace_label }} pace.</p>{% endif %}
+        <p class="actions">
+          <form method="post" action="/study/learning/start">
+            <button type="submit" class="btn dash-btn-full">Start learning</button>
+          </form>
+        </p>
+      </div>
+    </article>
+
+    {% else %}
+    <article class="dash-card dash-hero dash-due{% if due_count == 0 %} is-empty{% else %} is-due{% endif %}">
+      <header class="dash-card-head">
+        <h2 class="dash-eyebrow">
+          <span class="dash-dot" aria-hidden="true"></span>
+          Today
+        </h2>
+      </header>
+      <div class="dash-card-body">
+        <p class="dash-due-empty-title">Nothing is due today</p>
+        <p class="muted">You're caught up. Browse when you're ready for something new.</p>
+        {% if caught_up_quote %}
+        <blockquote class="caught-up-quote">{{ caught_up_quote.text }}</blockquote>
+        <p class="caught-up-quote-attr">— {{ caught_up_quote.author }}</p>
+        {% endif %}
+        {% if show_plan_prompt %}
+        <p class="dash-load">Plan a short mix for today — this does not turn Auto Plan on.</p>
+        <div class="plan-day-actions">
+          {% for n, label in ((3, 'Steady · 3'), (5, 'Balanced · 5'), (7, 'Intensive · 7')) %}
+          <form method="post" action="/study/plan-my-day">
+            <input type="hidden" name="count" value="{{ n }}">
+            <button type="submit" class="btn {% if n == 5 %}dash-btn-full{% else %}btn-ghost dash-btn-outline{% endif %}">{{ label }}</button>
+          </form>
+          {% endfor %}
+          <form method="post" action="/study/plan-my-day">
+            <input type="hidden" name="dismiss" value="1">
+            <button type="submit" class="btn btn-ghost dash-btn-outline">Not today</button>
+          </form>
+        </div>
+        {% else %}
+        <p class="actions">
+          <a class="btn btn-ghost dash-btn-outline" href="/browse">Browse the Constitution</a>
         </p>
         {% endif %}
       </div>
@@ -155,6 +224,7 @@
         {% endif %}
       </div>
     </article>
+    {% endif %}
   </div>
 
   <section class="dash-strip" aria-label="Progress summary">

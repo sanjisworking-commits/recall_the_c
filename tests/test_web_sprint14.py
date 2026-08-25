@@ -35,7 +35,7 @@ def test_learn_enables_cloze_tab_and_panel_markup(client: TestClient):
     assert 'data-cloze-density="light"' in html
     assert 'data-cloze-density="medium"' in html
     assert 'data-cloze-density="heavy"' in html
-    assert "app.js?v=main31" in html
+    assert "app.js?v=main32" in html
 
 
 def test_cloze_mode_query_param_renders_cloze_active(client: TestClient):

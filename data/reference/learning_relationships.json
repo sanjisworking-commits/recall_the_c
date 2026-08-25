@@ -1,0 +1,19 @@
+{
+  "themes": [
+    {"id": "equality", "label": "Equality", "article_numbers": ["14", "15", "16", "17", "18"]},
+    {"id": "liberty", "label": "Liberty", "article_numbers": ["19", "20", "21", "22"]},
+    {"id": "remedies", "label": "Constitutional remedies", "article_numbers": ["32", "226"]},
+    {"id": "pardoning", "label": "Pardoning powers", "article_numbers": ["72", "161"]},
+    {"id": "council_of_ministers", "label": "Council of Ministers", "article_numbers": ["74", "75", "163", "164"]},
+    {"id": "ordinance", "label": "Ordinance powers", "article_numbers": ["123", "213"]},
+    {"id": "emergency", "label": "Emergency", "article_numbers": ["352", "356", "358", "359", "360"]},
+    {"id": "elections", "label": "Elections", "article_numbers": ["324", "325", "326", "327", "328", "329"]}
+  ],
+  "pairs": [
+    {"articles": ["32", "226"], "label": "Constitutional remedies"},
+    {"articles": ["72", "161"], "label": "Pardoning powers"},
+    {"articles": ["74", "163"], "label": "Council of Ministers"},
+    {"articles": ["123", "213"], "label": "Ordinance powers"},
+    {"articles": ["352", "356"], "label": "Emergency provisions"}
+  ]
+}

@@ -211,6 +211,58 @@ class ReminderRepositoryProtocol(Protocol):
         claim_article: str | None = None,
     ) -> ProgressRecord: ...
 
+    def get_learning_plan(self, user_id: UUID | str): ...
+
+    def upsert_learning_plan(
+        self,
+        user_id: UUID | str,
+        *,
+        mode: str,
+        daily_target: int | None,
+        activated_at: date | None = None,
+        plan_prompt_dismissed_on: date | None = None,
+    ): ...
+
+    def get_study_session(self, user_id: UUID | str, session_id: str): ...
+
+    def get_active_revision_session(self, user_id: UUID | str): ...
+
+    def get_active_learning_session(self, user_id: UUID | str, plan_date: date): ...
+
+    def insert_study_session(
+        self,
+        user_id: UUID | str,
+        *,
+        session_id: str,
+        kind: str,
+        plan_date: date,
+        unit_ids: list[str],
+    ): ...
+
+    def set_study_session_status(
+        self,
+        user_id: UUID | str,
+        session_id: str,
+        status: str,
+        *,
+        completed_at: datetime | str | None = None,
+    ) -> None: ...
+
+    def abandon_stale_sessions(self, user_id: UUID | str, local_today: date) -> int: ...
+
+    def abandon_unstarted_learning_sessions(self, user_id: UUID | str) -> int: ...
+
+    def set_session_item_state(
+        self,
+        user_id: UUID | str,
+        session_id: str,
+        unit_id: str,
+        state: str,
+        *,
+        completed_at: datetime | str | None = None,
+        deferred_at: datetime | str | None = None,
+    ): ...
+
 
 # Backward-compatible name used in earlier plan wording.
 class ProgressRepositoryProtocol(ReminderRepositoryProtocol, Protocol):

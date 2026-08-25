@@ -137,3 +137,42 @@ def test_progress_strip_and_new_user_context(engine: ReminderEngine):
     assert ctx2["greeting"] == "Good morning, Priya."
     assert ctx2["recent"]
     assert "Article 20" in ctx2["recent"][0]["text"]
+
+
+def test_dashboard_today_mode_revision_first(engine: ReminderEngine):
+    today = date(2026, 8, 3)
+    engine.mark_all_modes_seen("u1")
+    engine.mark_done("u1", as_of=today - timedelta(days=1))
+    ctx = build_dashboard_context(
+        engine,
+        display_label="Priya Sharma",
+        as_of=today,
+        entitled=True,
+    )
+    assert ctx["today_mode"] == "start_revision"
+    assert ctx["due_count"] == 1
+
+    from constitution_memorizer.progress.study_session import start_or_resume_revision
+
+    session = start_or_resume_revision(engine, today=today)
+    assert session is not None
+    ctx2 = build_dashboard_context(
+        engine,
+        display_label="Priya Sharma",
+        as_of=today,
+        entitled=True,
+    )
+    assert ctx2["today_mode"] == "continue_revision"
+    assert ctx2["revision_left"] == session.pending_count
+
+
+def test_dashboard_today_mode_self_paced_when_caught_up(engine: ReminderEngine):
+    today = date(2026, 8, 3)
+    ctx = build_dashboard_context(
+        engine,
+        display_label="Priya Sharma",
+        as_of=today,
+        entitled=False,
+    )
+    assert ctx["today_mode"] in ("self_paced", "caught_up")
+    assert ctx["nothing_due"] is True
