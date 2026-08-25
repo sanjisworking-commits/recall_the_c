@@ -3,14 +3,102 @@
 from __future__ import annotations
 
 import re
+import uuid
 from dataclasses import dataclass
-from datetime import date
+from datetime import date, datetime
+from zoneinfo import ZoneInfo
 
 from constitution_memorizer.learning.schemas import LearningUnit, LearningUnitType
-from constitution_memorizer.progress.repository import LEARN_MODES, LEARN_MODES_SET
+from constitution_memorizer.progress.repository import (
+    LEARN_MODES,
+    LEARN_MODES_SET,
+    StudySession,
+)
 from constitution_memorizer.progress.scheduler import ReminderEngine
 
 _CHIP_LABEL_RE = re.compile(r"\([^)]+\)")
+
+REVISION_KIND = "revision"
+USER_TIMEZONE_KEY = "user_timezone"
+
+
+def user_today(engine: ReminderEngine) -> date:
+    """The user's local calendar date for schedule anchoring.
+
+    With a stored IANA ``user_timezone`` the revision ladder anchors on the
+    USER'S today, not the server's — a 00:30 IST completion lands on the IST
+    date even though Railway's clock still reads yesterday (UTC). Unset or
+    invalid → the historical server-local behavior.
+
+    Every date that has to agree with a completion goes through here: the
+    ladder anchor, a session's ``plan_date``, and the dashboard's decision
+    about which hero to show. Otherwise they disagree across midnight.
+    """
+    tz_name = ""
+    try:
+        tz_name = engine.repo.get_setting(engine.user_id, USER_TIMEZONE_KEY) or ""
+    except Exception:  # noqa: BLE001 — anchoring must never break Done
+        pass
+    if tz_name:
+        try:
+            return datetime.now(ZoneInfo(tz_name)).date()
+        except (KeyError, ValueError):
+            pass
+    return date.today()
+
+
+def active_revision_session(
+    engine: ReminderEngine,
+    *,
+    as_of: date | None = None,
+) -> StudySession | None:
+    """Today's active revision session, if one is under way.
+
+    Scoped to ``plan_date`` so yesterday's abandoned queue — built from due
+    dates that have since moved — never resurfaces as today's work.
+    """
+    today = as_of or user_today(engine)
+    return engine.active_study_session(kind=REVISION_KIND, plan_date=today)
+
+
+def start_or_resume_revision(
+    engine: ReminderEngine,
+    *,
+    as_of: date | None = None,
+) -> StudySession | None:
+    """Resume today's revision session, or snapshot the due list into a new one.
+
+    Idempotent by construction: a double-tapped CTA resumes rather than
+    duplicating, and a mid-session refresh keeps walking the original
+    snapshot even though completing an item pushed its ``next_revision``
+    forward and shrank the live due list.
+    """
+    today = as_of or user_today(engine)
+    existing = active_revision_session(engine, as_of=today)
+    if existing is not None:
+        return existing
+    unit_ids = [unit.id for unit in due_checklist(engine, as_of=today)]
+    if not unit_ids:
+        return None
+    return engine.create_study_session(
+        session_id=uuid.uuid4().hex,
+        kind=REVISION_KIND,
+        plan_date=today,
+        unit_ids=unit_ids,
+    )
+
+
+def revision_position_label(session: StudySession, unit_id: str) -> str | None:
+    """"Revision 2 of 6" — the walk position, not lifetime mastery.
+
+    ``session_progress`` cannot supply this: it counts mastered units across
+    the whole Constitution, which has nothing to do with where you are in
+    today's queue.
+    """
+    position = session.position_of(unit_id)
+    if position is None or not session.items:
+        return None
+    return f"Revision {position} of {len(session.items)}"
 
 
 @dataclass(frozen=True)

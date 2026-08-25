@@ -25,6 +25,9 @@ from constitution_memorizer.progress.repository import (
     ProgressRepository,
     RequestBootstrap,
     SplitMode,
+    StudyItemStatus,
+    StudySession,
+    StudySessionKind,
     ThemePreference,
     _frequency_from_raw,
     _news_from_raw,
@@ -406,6 +409,56 @@ class ReminderEngine:
         self.repo.claim_article(self.user_id, key)
         if self._claimed_cache is not None:
             self._claimed_cache.add(key)
+
+    # ------------------------------------------------------------------ #
+    # Study sessions — snapshotted queues the web layer navigates by.     #
+    # The engine is a pass-through here: a session records what the user  #
+    # set out to do, and never influences the revision ladder.            #
+    # ------------------------------------------------------------------ #
+    def active_study_session(
+        self,
+        *,
+        kind: StudySessionKind,
+        plan_date: date | None = None,
+    ) -> StudySession | None:
+        return self.repo.active_study_session(
+            self.user_id, kind=kind, plan_date=plan_date
+        )
+
+    def get_study_session(self, session_id: str) -> StudySession | None:
+        if not session_id:
+            return None
+        return self.repo.get_study_session(self.user_id, session_id)
+
+    def create_study_session(
+        self,
+        *,
+        session_id: str,
+        kind: StudySessionKind,
+        plan_date: date,
+        unit_ids: list[str],
+    ) -> StudySession:
+        return self.repo.create_study_session(
+            self.user_id,
+            session_id=session_id,
+            kind=kind,
+            plan_date=plan_date,
+            unit_ids=unit_ids,
+        )
+
+    def set_study_item_status(
+        self,
+        *,
+        session_id: str,
+        unit_id: str,
+        status: StudyItemStatus,
+    ) -> None:
+        self.repo.set_study_item_status(
+            self.user_id, session_id=session_id, unit_id=unit_id, status=status
+        )
+
+    def complete_study_session(self, session_id: str) -> None:
+        self.repo.complete_study_session(self.user_id, session_id)
 
     def latest_paid_billing_order(self) -> BillingOrder | None:
         if self._billing_loaded:

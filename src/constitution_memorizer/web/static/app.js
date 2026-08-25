@@ -1985,6 +1985,71 @@
     });
   }
 
+  // Leaving an active revision queue asks first. Deliberately outside
+  // initLearn: the guard is about history, not mode state, and initLearn is
+  // pinned by tests to contain no pushState of its own.
+  //
+  // The sentinel works because nothing else in this app pushes history —
+  // switchModeLocal and the phone's showDeck both use replaceState, so they
+  // add no entry and structurally cannot fire popstate. A popstate here can
+  // only mean the user pressed Back.
+  function initRevisionGuard() {
+    const learn = document.querySelector(".learn[data-session-id]");
+    const modal = document.querySelector("[data-revision-exit-modal]");
+    if (!learn || !modal || typeof modal.showModal !== "function") {
+      return;
+    }
+    let leaving = false;
+    let pendingHref = "/dashboard";
+
+    function arm() {
+      history.pushState({ rtcRevisionGuard: true }, "", window.location.href);
+    }
+
+    function ask(href) {
+      pendingHref = href || "/dashboard";
+      if (!modal.open) modal.showModal();
+    }
+
+    arm();
+
+    window.addEventListener("popstate", function () {
+      if (leaving) {
+        return;
+      }
+      // Put the sentinel back before asking, so Keep revising leaves the URL
+      // and the current unit exactly as they were.
+      arm();
+      ask("/dashboard");
+    });
+
+    // The deck header's "← Article N" genuinely leaves the queue. The phone's
+    // deck-back control is a button that only returns to the deck WITHIN this
+    // unit, and the mode tabs stay inside it — neither is guarded.
+    document.addEventListener("click", function (event) {
+      if (leaving) {
+        return;
+      }
+      const link = event.target.closest("a.mobile-back[href]");
+      if (!link || !learn.contains(link)) {
+        return;
+      }
+      event.preventDefault();
+      ask(link.getAttribute("href"));
+    });
+
+    const exitBtn = modal.querySelector("[data-revision-exit]");
+    if (exitBtn) {
+      exitBtn.addEventListener("click", function () {
+        // Exiting never destroys the session: completed items stay completed,
+        // pending items stay pending, and Today resumes with "N left".
+        leaving = true;
+        modal.close();
+        window.location.assign(pendingHref);
+      });
+    }
+  }
+
   function initLearn() {
     const learn = document.querySelector(".learn");
     if (!learn) {
@@ -3377,6 +3442,7 @@
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", () => {
       initLearn();
+      initRevisionGuard();
       initBrowseArticle();
       initBrowseIndex();
       initExplainBack();
@@ -3385,6 +3451,7 @@
     });
   } else {
     initLearn();
+    initRevisionGuard();
     initBrowseArticle();
     initBrowseIndex();
     initExplainBack();

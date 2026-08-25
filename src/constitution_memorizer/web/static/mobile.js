@@ -165,7 +165,18 @@
       stowControls();
       learn.setAttribute("data-mobile-view", "deck");
       syncBodyClass();
-      if (unitId) history.replaceState({}, "", "/learn/" + encodeURIComponent(unitId));
+      if (unitId) {
+        // Rebuild from the live query so the revision session survives the
+        // round-trip; only `mode` is dropped, because the deck IS no mode.
+        var params = new URLSearchParams(window.location.search);
+        params.delete("mode");
+        var query = params.toString();
+        history.replaceState(
+          {},
+          "",
+          "/learn/" + encodeURIComponent(unitId) + (query ? "?" + query : "")
+        );
+      }
       window.scrollTo(0, 0);
     }
 

@@ -4291,6 +4291,22 @@ html[data-theme="dark"] .nav-signin {
   margin: 0;
 }
 
+/* "Revision 2 of 6" — the walk position in today's queue. */
+.learn-revision-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 10px 0 0;
+  padding: 3px 9px;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--browse-due);
+}
+
 .guest-modal {
   border: 1px solid var(--sheet-border);
   padding: 0;
@@ -4403,6 +4419,17 @@ html[data-theme="dark"] .nav-signin {
   gap: 16px;
   margin-bottom: 16px;
   align-items: start;
+}
+
+/* Today shows revision OR learning, never both, so the hero row is a single
+   column — the two-column split above is for .dash-bottom. */
+.dash-top {
+  grid-template-columns: 1fr;
+}
+
+.dash-revision-form {
+  margin: 0;
+  width: 100%;
 }
 
 .dash-card {

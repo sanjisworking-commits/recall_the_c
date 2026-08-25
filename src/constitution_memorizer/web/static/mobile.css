@@ -1659,6 +1659,12 @@
     color: var(--mid);
   }
 
+  .learn-revision-badge {
+    margin: 10px 0 0;
+    padding: 2px 8px;
+    font-size: 11.5px;
+  }
+
   .learn-deck-track {
     height: 2px;
     margin-top: 12px;
