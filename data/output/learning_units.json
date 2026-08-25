@@ -125,8 +125,8 @@
       "parent_id": "part-vi",
       "article_number": null,
       "display_title": "Part VI overview",
-      "title": "THE STATES 1 ***",
-      "text": "THE STATES 1 ***",
+      "title": "THE STATES",
+      "text": "THE STATES",
       "difficulty": 2,
       "estimated_learning_time": 30,
       "revision_order": 6,
@@ -134,7 +134,7 @@
       "previous_unit": "part-v-overview",
       "tags": [
         "Part VI",
-        "THE STATES 1 ***"
+        "THE STATES"
       ],
       "allows_letter_split": false,
       "child_unit_ids": [],

@@ -9,7 +9,9 @@ from constitution_memorizer.corrections.apply_corrections import (
 )
 from constitution_memorizer.corrections.artefact_scrub import (
     scrub_display_text,
+    scrub_document,
     should_include_opening,
+    strip_heading_omission_marker,
 )
 from constitution_memorizer.learning.learning_unit_generator import generate_learning_units
 from constitution_memorizer.schemas import (
@@ -109,3 +111,42 @@ def test_should_include_opening_helper():
     assert should_include_opening("same", "same") is False
     assert should_include_opening("stem", "stem\n(a) more") is False
     assert should_include_opening("extra note", "body text") is True
+
+
+def test_heading_omission_marker_stripped_from_part_titles():
+    """"THE STATES 1 ***" is Bare Act typography, not a name.
+
+    The "***" stands for words repealed by an amendment and the leading digit
+    is the footnote that names it — for Part VI, the Seventh Amendment (1956)
+    dropping "IN PART A OF THE FIRST SCHEDULE". Faithful in print, noise as a
+    title here. scrub_document used to walk only articles and schedules, so
+    the marker reached the Learn deck verbatim.
+    """
+    doc = ConstitutionDocument(
+        document=DocumentMetadata(title="t", schema_version="1.0.0"),
+        parts=[
+            Part(id="part-vi", part_number="VI", title="THE STATES 1 ***"),
+            Part(id="part-i", part_number="I", title="THE UNION AND ITS TERRITORY"),
+        ],
+        extraction_summary=ExtractionSummary(),
+    )
+    scrub_document(doc)
+    assert doc.parts[0].title == "THE STATES"
+    # Untouched titles stay byte-identical.
+    assert doc.parts[1].title == "THE UNION AND ITS TERRITORY"
+
+
+def test_heading_omission_scrub_leaves_body_omissions_alone():
+    """An omission inside article text is real Bare Act wording."""
+    body = "(2) The President may, notwithstanding anything in 2 *** the proviso"
+    assert scrub_display_text(body) == body
+    # And the heading rule never fires mid-string, only at the end.
+    assert strip_heading_omission_marker(body) == body
+
+
+def test_heading_omission_scrub_is_conservative():
+    assert strip_heading_omission_marker("THE STATES") == "THE STATES"
+    assert strip_heading_omission_marker("") == ""
+    assert strip_heading_omission_marker(None) is None
+    # Never empties a title that is nothing but the marker.
+    assert strip_heading_omission_marker("***") == "***"
