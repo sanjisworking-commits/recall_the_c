@@ -616,3 +616,62 @@ def test_a_real_database_error_is_not_swallowed(tmp_path: Path):
     assert not _is_missing_study_session_table(
         Exception('relation "learning_unit_progress" does not exist')
     )
+
+
+# --------------------------------------------------------------------------- #
+# The queue opens units, it does not offer a picker                            #
+# --------------------------------------------------------------------------- #
+
+
+def test_start_revision_opens_a_mode_not_the_deck(tmp_path: Path):
+    """A Learn URL with no `mode` renders the phone's six-card mode deck — a
+    picker. Inside a queue that is a tap of friction per unit."""
+    client = _client(tmp_path)
+    _make_due(client, ["clause-1", "article-end"])
+    resp = client.post("/revision/start", follow_redirects=False)
+    location = resp.headers["location"]
+    assert parse_qs(urlsplit(location).query)["mode"] == ["read"]
+
+    html = client.get(location).text
+    assert 'data-mobile-view="mode"' in html
+    assert 'data-mobile-view="deck"' not in html
+
+
+def test_every_queue_hop_opens_a_mode(tmp_path: Path):
+    """Entering unit 1 directly but dropping unit 2 on a picker would read as
+    a bug, so Done carries the entry mode too."""
+    client = _client(tmp_path)
+    _make_due(client, ["clause-1", "article-end"])
+    session_id, _first = _start(client)
+    location = _finish(client, "clause-1", session_id)
+    query = parse_qs(urlsplit(location).query)
+    assert urlsplit(location).path == "/learn/article-end"
+    assert query["mode"] == ["read"]
+    assert query["session"] == [session_id]
+
+
+def test_sequential_navigation_keeps_landing_on_the_deck(tmp_path: Path):
+    """The entry mode is a property of the queue, not of Learn in general."""
+    client = _client(tmp_path)
+    location = _finish(client, "clause-1")
+    assert "mode=" not in location
+
+
+def test_split_choice_still_wins_over_the_entry_mode(tmp_path: Path):
+    """`mode` means whole-vs-letters on /choose, so it must not be appended."""
+    client = _client(tmp_path)
+    _make_due(client, ["clause-2", "clause-1"])
+    resp = client.post("/revision/start", follow_redirects=False)
+    location = resp.headers["location"]
+    assert urlsplit(location).path == "/learn/clause-2/choose"
+    assert "mode=" not in location
+
+
+def test_unmigrated_fallback_also_opens_a_mode(tmp_path: Path):
+    client = _client(tmp_path, multiuser=True)
+    _sign_in(client)
+    _make_due(client, ["clause-1", "article-end"])
+    _drop_session_tables(client)
+    location = client.post("/revision/start", follow_redirects=False).headers["location"]
+    assert urlsplit(location).path == "/learn/clause-1"
+    assert parse_qs(urlsplit(location).query)["mode"] == ["read"]

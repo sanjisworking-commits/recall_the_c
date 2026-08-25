@@ -42,6 +42,14 @@ def with_params(path: str, params: dict[str, str]) -> str:
     return f"{path}?{query}" if query else path
 
 
+# Landing on a Learn URL with no `mode` shows the phone's six-card mode deck —
+# a picker. Inside a revision queue that is one tap of friction per unit, so
+# the queue opens its units straight into a mode instead. Read first: it is the
+# design's own opening step ("Read it twice, then pick a recall mode"), and it
+# needs no extra query to work out, unlike "first mode not yet seen".
+REVISION_ENTRY_MODE = "read"
+
+
 def next_learn_url(
     eng: ReminderEngine,
     next_unit_id: str | None,
@@ -49,6 +57,7 @@ def next_learn_url(
     done_unit_id: str | None = None,
     multiuser: bool = False,
     session_id: str | None = None,
+    mode: str | None = None,
 ) -> str:
     params = {"done": done_unit_id or ""}
     if next_unit_id and eng.get_unit(next_unit_id):
@@ -58,7 +67,10 @@ def next_learn_url(
         # position to keep.
         params["session"] = session_id or ""
         if needs_split_choice(eng, nxt):
+            # `mode` is deliberately dropped: on /choose that key means
+            # whole-vs-letters, not a recall mode.
             return with_params(f"/learn/{next_unit_id}/choose", params)
+        params["mode"] = mode or ""
         return with_params(f"/learn/{next_unit_id}", params)
     if multiuser:
         return with_params("/dashboard", params)
@@ -139,6 +151,7 @@ def resolve_learn_navigation(
             done_unit_id=done_unit_id,
             multiuser=multiuser,
             session_id=session.id,
+            mode=REVISION_ENTRY_MODE,
         ),
         session_id=session.id,
         remaining=updated.remaining,
