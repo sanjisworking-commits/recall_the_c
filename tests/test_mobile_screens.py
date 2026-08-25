@@ -264,7 +264,7 @@ def test_learn_mode_view_keeps_session_on_deck_back_contract(tmp_path: Path):
     today = date.today()
     engine.mark_all_modes_seen("clause-1")
     engine.mark_done("clause-1", as_of=today - timedelta(days=1))
-    start = client.post("/study/revision/start", follow_redirects=False)
+    start = client.post("/revision/start", follow_redirects=False)
     loc = start.headers["location"]
     assert "session=" in loc
     sid = loc.rsplit("session=", 1)[-1].split("&")[0]
@@ -277,7 +277,7 @@ def test_learn_mode_view_keeps_session_on_deck_back_contract(tmp_path: Path):
     js = Path("src/constitution_memorizer/web/static/mobile.js").read_text(
         encoding="utf-8"
     )
-    assert 'searchParams.delete("mode")' in js
+    assert 'params.delete("mode")' in js
 
 
 # ── Learn action bar (Next → … → Done → quote) ───────────────────────────────
