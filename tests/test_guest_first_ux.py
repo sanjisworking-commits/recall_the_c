@@ -453,7 +453,7 @@ def test_dashboard_multiuser_layout(tmp_path: Path):
     assert "Recent activity" in html
     assert "dash-card-head" in html
     assert "dash-card-body" in html
-    assert "Nothing is due today" in html
+    assert "Nothing to review today." in html
     assert "dash-btn-outline" in html
     assert 'dash-btn-full" href="/browse">Browse the Constitution' not in html
     # Account dropdown identity header + menu order

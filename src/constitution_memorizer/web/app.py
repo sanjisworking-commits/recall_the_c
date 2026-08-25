@@ -902,6 +902,12 @@ def create_app(
         )
         if not is_guest_early:
             eng.bootstrap_request()
+            if session_id:
+                from constitution_memorizer.progress.study_session import (
+                    get_session as _get_sess_early,
+                )
+
+                _get_sess_early(eng, session_id)
 
         # Guests skip split preference (no personal data); show the clause as-is.
         if not is_guest_early and needs_split_choice(eng, unit):

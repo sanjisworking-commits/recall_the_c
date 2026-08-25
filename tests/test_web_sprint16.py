@@ -34,7 +34,7 @@ def test_learn_enables_type_tab_and_panel_markup(client: TestClient):
     assert "Start typing…" in html
     assert "Type it from memory" in html
     assert "words · 0 correct" in html
-    assert "app.js?v=main32" in html
+    assert "app.js?v=main33" in html
 
 
 def test_type_mode_query_param_renders_type_active(client: TestClient):
