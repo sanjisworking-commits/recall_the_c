@@ -157,4 +157,5 @@ def test_completion_done_sound_asset_is_served(tmp_path: Path):
     js = client.get("/static/app.js").text
     assert "/static/completion-done.mp3" in js
     html = client.get("/").text
-    assert "app.js?v=main33" in html
+
+    assert "app.js?v=main44" in html

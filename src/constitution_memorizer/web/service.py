@@ -2,15 +2,123 @@
 
 from __future__ import annotations
 
+import logging
 import re
+import uuid
 from dataclasses import dataclass
 from datetime import date
 
 from constitution_memorizer.learning.schemas import LearningUnit, LearningUnitType
-from constitution_memorizer.progress.repository import LEARN_MODES_SET
+from constitution_memorizer.progress.repository import (
+    LEARN_MODES,
+    LEARN_MODES_SET,
+    StudySession,
+)
 from constitution_memorizer.progress.scheduler import ReminderEngine
 
+logger = logging.getLogger(__name__)
+
 _CHIP_LABEL_RE = re.compile(r"\([^)]+\)")
+
+REVISION_KIND = "revision"
+
+
+def user_today(engine: ReminderEngine) -> date:
+    """The user's local calendar date for schedule anchoring.
+
+    Delegates to ``progress.local_date.user_today`` so a dashboard bootstrap
+    that already loaded settings never pays a second ``get_setting`` roundtrip.
+    """
+    from constitution_memorizer.progress.local_date import user_today as _user_today
+
+    return _user_today(engine)
+
+
+# Deploys and migrations are separate manual steps in this project (the start
+# command does not run Alembic), so there is always a window where new code is
+# live against an older schema. Today must survive that window: a revision
+# session is optional context, and the whole dashboard failing to build because
+# an optional table is absent is a far worse outcome than showing no session.
+# Narrow on purpose — anything that is not a missing relation still raises.
+_MISSING_TABLE_MARKERS = ("study_session", )
+
+
+def _is_missing_study_session_table(error: Exception) -> bool:
+    """True only for "that table does not exist" from SQLite or Postgres."""
+    message = str(error).lower()
+    if not any(marker in message for marker in _MISSING_TABLE_MARKERS):
+        return False
+    return (
+        "does not exist" in message  # psycopg UndefinedTable
+        or "no such table" in message  # sqlite3 OperationalError
+    )
+
+
+def active_revision_session(
+    engine: ReminderEngine,
+    *,
+    as_of: date | None = None,
+) -> StudySession | None:
+    """Today's active revision session, if one is under way.
+
+    Scoped to ``plan_date`` so yesterday's abandoned queue — built from due
+    dates that have since moved — never resurfaces as today's work.
+
+    Returns None when the study-session tables have not been migrated yet;
+    the caller then renders Today exactly as it did before sessions existed,
+    and starts working the moment the migration lands.
+    """
+    today = as_of or user_today(engine)
+    try:
+        return engine.active_study_session(kind=REVISION_KIND, plan_date=today)
+    except Exception as error:  # noqa: BLE001 — re-raised unless it is the schema gap
+        if not _is_missing_study_session_table(error):
+            raise
+        logger.warning(
+            "study_session tables are missing; Today is falling back to the "
+            "pre-session view. Run `alembic upgrade head` against this database."
+        )
+        return None
+
+
+def start_or_resume_revision(
+    engine: ReminderEngine,
+    *,
+    as_of: date | None = None,
+) -> StudySession | None:
+    """Resume today's revision session, or snapshot the due list into a new one.
+
+    Idempotent by construction: a double-tapped CTA resumes rather than
+    duplicating, and a mid-session refresh keeps walking the original
+    snapshot even though completing an item pushed its ``next_revision``
+    forward and shrank the live due list.
+    """
+    today = as_of or user_today(engine)
+    existing = active_revision_session(engine, as_of=today)
+    if existing is not None:
+        return existing
+    unit_ids = [unit.id for unit in due_checklist(engine, as_of=today)]
+    if not unit_ids:
+        return None
+    return engine.create_study_session(
+        session_id=uuid.uuid4().hex,
+        kind=REVISION_KIND,
+        plan_date=today,
+        unit_ids=unit_ids,
+    )
+
+
+def revision_position_label(session: StudySession, unit_id: str) -> str | None:
+    """"Revision 2 of 6" — the walk position, not lifetime mastery.
+
+    ``session_progress`` cannot supply this: it counts mastered units across
+    the whole Constitution, which has nothing to do with where you are in
+    today's queue.
+    """
+    position = session.position_of(unit_id)
+    if position is None or not session.items:
+        return None
+    return f"Revision {position} of {len(session.items)}"
 
 
 @dataclass(frozen=True)
@@ -20,6 +128,11 @@ class SiblingChip:
     unit_id: str
     label: str
     state: str  # current | done | idle
+    # How many recall modes this sibling has been through. Free only when the
+    # caller has bootstrapped with include_modes=True — otherwise every chip
+    # costs its own roundtrip.
+    modes_done: int = 0
+    modes_total: int = len(LEARN_MODES)
 
 
 def unit_visible_for_preference(engine: ReminderEngine, unit: LearningUnit) -> bool:
@@ -326,6 +439,7 @@ def sibling_chips(
                 current_id=unit.id,
                 mark_done=mark_done,
             ),
+            modes_done=len(engine.modes_seen(item.id)),
         )
         for item in siblings
     ]

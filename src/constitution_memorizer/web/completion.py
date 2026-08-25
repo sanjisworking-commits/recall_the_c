@@ -2,13 +2,16 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass, replace
 from datetime import date
-from typing import Any
+from typing import Any, Literal
 from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 from fastapi import Request
 
 from constitution_memorizer.learning.schemas import LearningUnit
+from constitution_memorizer.progress.local_date import user_today
+from constitution_memorizer.progress.repository import StudySession
 from constitution_memorizer.progress.scheduler import ReminderEngine
 from constitution_memorizer.progress.user_ids import LOCAL_USER_ID
 from constitution_memorizer.web.quotes import get_quote_for
@@ -29,6 +32,17 @@ def strip_done_param(url: str) -> str:
     )
 
 
+def with_params(path: str, params: dict[str, str]) -> str:
+    """Append query parameters to a path, dropping empty values.
+
+    Hand-built f-string queries were the bug this replaces: a second
+    parameter emitted ``?done=x?session=y``, which the next request reads as
+    a single ``done`` value.
+    """
+    query = urlencode({k: v for k, v in params.items() if v})
+    return f"{path}?{query}" if query else path
+
+
 def next_learn_url(
     eng: ReminderEngine,
     next_unit_id: str | None,
@@ -37,70 +51,98 @@ def next_learn_url(
     multiuser: bool = False,
     session_id: str | None = None,
 ) -> str:
-    suffix_parts: list[str] = []
-    if done_unit_id:
-        suffix_parts.append(f"done={done_unit_id}")
-    if session_id:
-        suffix_parts.append(f"session={session_id}")
-    suffix = ("?" + "&".join(suffix_parts)) if suffix_parts else ""
+    params = {"done": done_unit_id or ""}
     if next_unit_id and eng.get_unit(next_unit_id):
         nxt = eng.get_unit(next_unit_id)
         assert nxt is not None
+        # `session` rides only on Learn URLs; the dashboard has no queue
+        # position to keep.
+        params["session"] = session_id or ""
         if needs_split_choice(eng, nxt):
-            return f"/learn/{next_unit_id}/choose{suffix}"
-        return f"/learn/{next_unit_id}{suffix}"
+            return with_params(f"/learn/{next_unit_id}/choose", params)
+        return with_params(f"/learn/{next_unit_id}", params)
     if multiuser:
-        dash = "/dashboard"
-        return f"{dash}{suffix}" if suffix else dash
-    return f"/{suffix}" if suffix else "/"
+        return with_params("/dashboard", params)
+    return with_params("/", params)
 
 
-def with_session(url: str, session_id: str | None) -> str:
-    if not session_id:
-        return url
-    parts = urlsplit(url)
-    query = dict(parse_qsl(parts.query, keep_blank_values=True))
-    query["session"] = session_id
-    return urlunsplit(
-        (parts.scheme, parts.netloc, parts.path, urlencode(query), parts.fragment)
-    )
+@dataclass(frozen=True)
+class LearnNavigation:
+    """Where Done / Again goes next — resolved once, used by HTML and JSON.
+
+    The HTML redirect and the AJAX payload used to compute this separately
+    (the payload from ``result.next_unit_id``), so a fix to one silently left
+    the other walking the static Constitution graph.
+    """
+
+    next_unit_id: str | None
+    next_url: str
+    session_id: str | None
+    remaining: int
 
 
-def resolve_post_action_navigation(
-    eng: ReminderEngine,
+def resolve_learn_navigation(
     *,
+    eng: ReminderEngine,
     unit_id: str,
-    sequential_next_id: str | None,
-    session_id: str | None = None,
+    fallback_next_unit_id: str | None,
+    session: StudySession | None,
+    outcome: Literal["completed", "deferred"],
+    multiuser: bool,
     done_unit_id: str | None = None,
-    multiuser: bool = False,
-) -> str:
-    """Shared next URL for HTML Done, JSON Done, Again, and completion continue."""
-    from constitution_memorizer.progress.study_session import get_session
+) -> LearnNavigation:
+    """Advance the queue if there is one; otherwise keep sequential order.
 
-    session = get_session(eng, session_id)
-    if session is not None and session.item_for(unit_id):
-        nxt = session.next_pending(after_unit_id=unit_id)
-        if nxt is not None and session.status == "active":
-            return next_learn_url(
+    Writes the item's terminal status and closes an exhausted session — the
+    only place either happens, so "what comes next" and "what was recorded"
+    cannot drift apart.
+    """
+    if session is None or not session.contains(unit_id):
+        return LearnNavigation(
+            next_unit_id=fallback_next_unit_id,
+            next_url=next_learn_url(
                 eng,
-                nxt.learning_unit_id,
+                fallback_next_unit_id,
                 done_unit_id=done_unit_id,
                 multiuser=multiuser,
-                session_id=session.id,
-            )
-        dest = "/dashboard" if multiuser else "/"
-        extra = []
-        if done_unit_id:
-            extra.append(f"done={done_unit_id}")
-        extra.append("caught_up=1")
-        return f"{dest}?{'&'.join(extra)}"
-    return next_learn_url(
-        eng,
-        sequential_next_id,
-        done_unit_id=done_unit_id,
-        multiuser=multiuser,
-        session_id=None,
+            ),
+            session_id=None,
+            remaining=0,
+        )
+
+    eng.set_study_item_status(
+        session_id=session.id, unit_id=unit_id, status=outcome
+    )
+    # Re-derive the queue from the write we just made rather than re-reading:
+    # one roundtrip saved on a path that already does several.
+    items = tuple(
+        item if item.learning_unit_id != unit_id else replace(item, status=outcome)
+        for item in session.items
+    )
+    updated = replace(session, items=items)
+    next_unit_id = updated.next_pending_after(unit_id)
+    if next_unit_id is None:
+        eng.complete_study_session(session.id)
+        return LearnNavigation(
+            next_unit_id=None,
+            next_url=with_params(
+                "/dashboard" if multiuser else "/",
+                {"done": done_unit_id or ""},
+            ),
+            session_id=session.id,
+            remaining=0,
+        )
+    return LearnNavigation(
+        next_unit_id=next_unit_id,
+        next_url=next_learn_url(
+            eng,
+            next_unit_id,
+            done_unit_id=done_unit_id,
+            multiuser=multiuser,
+            session_id=session.id,
+        ),
+        session_id=session.id,
+        remaining=updated.remaining,
     )
 
 
@@ -137,7 +179,7 @@ def build_completion(
     """Return template/JSON context only for a persisted completion today."""
     if not done_id or is_guest:
         return None
-    today = today or date.today()
+    today = today or user_today(eng)
     unit = eng.get_unit(done_id)
     if unit is None:
         return None
@@ -170,22 +212,24 @@ def done_json_payload(
     result: Any,
     request: Request | None,
     multiuser: bool,
-    session_id: str | None = None,
+    navigation: LearnNavigation | None = None,
 ) -> dict[str, Any]:
     progress = result.progress
-    next_url = resolve_post_action_navigation(
-        eng,
-        unit_id=unit.id,
-        sequential_next_id=result.next_unit_id,
-        session_id=session_id,
-        done_unit_id=unit.id,
-        multiuser=multiuser,
+    # Resolved navigation is authoritative when present — inside a session the
+    # next unit is the next QUEUED one, not the sequentially adjacent one.
+    if navigation is None:
+        navigation = LearnNavigation(
+            next_unit_id=result.next_unit_id,
+            next_url=next_learn_url(
+                eng, result.next_unit_id, done_unit_id=unit.id, multiuser=multiuser
+            ),
+            session_id=None,
+            remaining=0,
+        )
+    next_url = navigation.next_url
+    next_unit = (
+        eng.get_unit(navigation.next_unit_id) if navigation.next_unit_id else None
     )
-    next_unit = None
-    next_path = urlsplit(next_url).path
-    if next_path.startswith("/learn/") and not next_path.endswith("/choose"):
-        next_id = next_path[len("/learn/") :].strip("/")
-        next_unit = eng.get_unit(next_id)
     uid = _quote_user_id(request)
     seed = f"{uid}:{unit.id}:{progress.last_completed}:{progress.times_completed}"
     mastered = progress.status == "mastered" or progress.next_revision is None
@@ -201,6 +245,8 @@ def done_json_payload(
         "eyebrow": "Mastered" if mastered else "Review complete",
         "ledger": _ledger_line(progress),
         "continue_label": next_unit.display_title if next_unit is not None else None,
+        "session_id": navigation.session_id,
+        "session_remaining": navigation.remaining,
     }
 
 

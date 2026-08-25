@@ -31,7 +31,12 @@ from constitution_memorizer.progress.repository import (
     ProgressStatus,
     RequestBootstrap,
     SplitMode,
+    StudyItemStatus,
+    StudySession,
+    StudySessionKind,
     ThemePreference,
+    _STUDY_SESSION_COLUMNS,
+    _study_session_from_rows,
 )
 from constitution_memorizer.progress.user_ids import as_user_id
 
@@ -467,6 +472,127 @@ class PostgresProgressRepository:
                 ON CONFLICT (user_id, article_number) DO NOTHING
                 """,
                 (as_user_id(user_id), str(article_number), _utc_now()),
+            )
+            conn.commit()
+
+    # ------------------------------------------------------------------ #
+    # Study sessions (revision / auto-learning / day-plan queues)         #
+    # ------------------------------------------------------------------ #
+    def create_study_session(
+        self,
+        user_id: UUID | str,
+        *,
+        session_id: str,
+        kind: StudySessionKind,
+        plan_date: date,
+        unit_ids: list[str],
+    ) -> StudySession:
+        now = _utc_now()
+        uid = as_user_id(user_id)
+        ordered: list[str] = []
+        for unit_id in unit_ids:
+            if unit_id not in ordered:
+                ordered.append(unit_id)
+        with self._cursor() as (conn, cur):
+            cur.execute(
+                """
+                INSERT INTO study_session (
+                    id, user_id, kind, plan_date, status, created_at, completed_at
+                ) VALUES (%s, %s, %s, %s, 'active', %s, NULL)
+                """,
+                (session_id, uid, kind, plan_date, now),
+            )
+            if ordered:
+                cur.executemany(
+                    """
+                    INSERT INTO study_session_item (
+                        session_id, learning_unit_id, position, status, completed_at
+                    ) VALUES (%s, %s, %s, 'pending', NULL)
+                    """,
+                    [(session_id, unit, index) for index, unit in enumerate(ordered)],
+                )
+            conn.commit()
+        session = self.get_study_session(user_id, session_id)
+        assert session is not None
+        return session
+
+    def get_study_session(
+        self, user_id: UUID | str, session_id: str
+    ) -> StudySession | None:
+        with self._cursor() as (_conn, cur):
+            cur.execute(
+                f"""
+                SELECT {_STUDY_SESSION_COLUMNS}
+                FROM study_session s
+                LEFT JOIN study_session_item i ON i.session_id = s.id
+                WHERE s.user_id = %s AND s.id = %s
+                ORDER BY i.position ASC
+                """,
+                (as_user_id(user_id), session_id),
+            )
+            rows = cur.fetchall()
+        return _study_session_from_rows(rows)
+
+    def active_study_session(
+        self,
+        user_id: UUID | str,
+        *,
+        kind: StudySessionKind,
+        plan_date: date | None = None,
+    ) -> StudySession | None:
+        clause = "" if plan_date is None else " AND s.plan_date = %s"
+        params: list[Any] = [as_user_id(user_id), kind]
+        if plan_date is not None:
+            params.append(plan_date)
+        with self._cursor() as (_conn, cur):
+            cur.execute(
+                f"""
+                SELECT {_STUDY_SESSION_COLUMNS}
+                FROM study_session s
+                LEFT JOIN study_session_item i ON i.session_id = s.id
+                WHERE s.user_id = %s AND s.kind = %s AND s.status = 'active'{clause}
+                ORDER BY s.created_at DESC, s.id DESC, i.position ASC
+                """,
+                params,
+            )
+            rows = cur.fetchall()
+        if not rows:
+            return None
+        newest = rows[0]["session_id"]
+        return _study_session_from_rows(
+            [row for row in rows if row["session_id"] == newest]
+        )
+
+    def set_study_item_status(
+        self,
+        user_id: UUID | str,
+        *,
+        session_id: str,
+        unit_id: str,
+        status: StudyItemStatus,
+    ) -> None:
+        completed_at = _utc_now() if status == "completed" else None
+        with self._cursor() as (conn, cur):
+            cur.execute(
+                """
+                UPDATE study_session_item
+                SET status = %s, completed_at = %s
+                WHERE session_id = %s AND learning_unit_id = %s
+                  AND session_id IN (SELECT id FROM study_session WHERE user_id = %s)
+                """,
+                (status, completed_at, session_id, unit_id, as_user_id(user_id)),
+            )
+            conn.commit()
+
+    def complete_study_session(self, user_id: UUID | str, session_id: str) -> None:
+        with self._cursor() as (conn, cur):
+            cur.execute(
+                """
+                UPDATE study_session
+                SET status = 'complete', completed_at = %s
+                WHERE id = %s AND user_id = %s
+                """,
+                (_utc_now(), session_id, as_user_id(user_id)),
             )
             conn.commit()
 
@@ -936,7 +1062,7 @@ class PostgresProgressRepository:
                 cur.execute(
                     """
                     UPDATE study_session_item
-                    SET state = 'completed', completed_at = %s, deferred_at = NULL
+                    SET status = 'completed', completed_at = %s
                     WHERE session_id = %s AND learning_unit_id = %s
                       AND EXISTS (
                           SELECT 1 FROM study_session
@@ -948,7 +1074,7 @@ class PostgresProgressRepository:
                 cur.execute(
                     """
                     SELECT COUNT(*) AS n FROM study_session_item
-                    WHERE session_id = %s AND state = 'pending'
+                    WHERE session_id = %s AND status = 'pending'
                     """,
                     (session_id,),
                 )
@@ -957,7 +1083,7 @@ class PostgresProgressRepository:
                     cur.execute(
                         """
                         UPDATE study_session
-                        SET status = 'completed', completed_at = %s
+                        SET status = 'complete', completed_at = %s
                         WHERE id = %s AND user_id = %s AND status = 'active'
                         """,
                         (now, session_id, uid),
@@ -1018,238 +1144,11 @@ class PostgresProgressRepository:
                 """,
                 (uid, mode, target, activated_at, plan_prompt_dismissed_on, now),
             )
-            conn.commit()
             cur.execute(
                 "SELECT * FROM user_learning_plan WHERE user_id = %s",
                 (uid,),
             )
             row = cur.fetchone()
+            conn.commit()
         assert row is not None
         return learning_plan_from_row(row, uid)
-
-    def _session_with_items(self, row):
-        from constitution_memorizer.progress.study_models import (
-            study_session_from_row,
-            study_session_item_from_row,
-        )
-
-        if row is None:
-            return None
-        with self._cursor() as (_conn, cur):
-            cur.execute(
-                """
-                SELECT * FROM study_session_item
-                WHERE session_id = %s
-                ORDER BY position
-                """,
-                (str(row["id"]),),
-            )
-            items = cur.fetchall()
-        return study_session_from_row(
-            row, tuple(study_session_item_from_row(item) for item in items)
-        )
-
-    def get_study_session(self, user_id: UUID | str, session_id: str):
-        with self._cursor() as (_conn, cur):
-            cur.execute(
-                """
-                SELECT * FROM study_session
-                WHERE id = %s AND user_id = %s
-                """,
-                (session_id, as_user_id(user_id)),
-            )
-            row = cur.fetchone()
-        return self._session_with_items(row)
-
-    def get_active_revision_session(self, user_id: UUID | str):
-        with self._cursor() as (_conn, cur):
-            cur.execute(
-                """
-                SELECT * FROM study_session
-                WHERE user_id = %s AND kind = 'revision' AND status = 'active'
-                """,
-                (as_user_id(user_id),),
-            )
-            row = cur.fetchone()
-        return self._session_with_items(row)
-
-    def get_active_learning_session(self, user_id: UUID | str, plan_date: date):
-        with self._cursor() as (_conn, cur):
-            cur.execute(
-                """
-                SELECT * FROM study_session
-                WHERE user_id = %s AND plan_date = %s AND status = 'active'
-                  AND kind IN ('auto_learning', 'one_day_learning')
-                """,
-                (as_user_id(user_id), plan_date),
-            )
-            row = cur.fetchone()
-        return self._session_with_items(row)
-
-    def insert_study_session(
-        self,
-        user_id: UUID | str,
-        *,
-        session_id: str,
-        kind: str,
-        plan_date: date,
-        unit_ids: list[str],
-    ):
-        from constitution_memorizer.progress.study_models import VALID_KINDS
-
-        if kind not in VALID_KINDS:
-            raise ValueError(f"Invalid study session kind: {kind}")
-        uid = as_user_id(user_id)
-        now = _utc_now()
-        try:
-            with self._cursor() as (conn, cur):
-                cur.execute(
-                    """
-                    INSERT INTO study_session (
-                        id, user_id, kind, plan_date, status, created_at, completed_at
-                    ) VALUES (%s, %s, %s, %s, 'active', %s, NULL)
-                    """,
-                    (session_id, uid, kind, plan_date, now),
-                )
-                for position, unit_id in enumerate(unit_ids):
-                    cur.execute(
-                        """
-                        INSERT INTO study_session_item (
-                            session_id, position, learning_unit_id, state,
-                            completed_at, deferred_at
-                        ) VALUES (%s, %s, %s, 'pending', NULL, NULL)
-                        """,
-                        (session_id, position, unit_id),
-                    )
-                conn.commit()
-        except Exception:
-            existing = self.get_study_session(uid, session_id)
-            if existing is not None:
-                return existing
-            if kind == "revision":
-                existing = self.get_active_revision_session(uid)
-            else:
-                existing = self.get_active_learning_session(uid, plan_date)
-            if existing is not None:
-                return existing
-            raise
-        loaded = self.get_study_session(uid, session_id)
-        assert loaded is not None
-        return loaded
-
-    def set_study_session_status(
-        self,
-        user_id: UUID | str,
-        session_id: str,
-        status: str,
-        *,
-        completed_at: datetime | None = None,
-    ) -> None:
-        from constitution_memorizer.progress.study_models import VALID_STATUSES
-
-        if status not in VALID_STATUSES:
-            raise ValueError(f"Invalid study session status: {status}")
-        now = _utc_now()
-        stamp = completed_at
-        if status == "completed" and stamp is None:
-            stamp = now
-        with self._cursor() as (conn, cur):
-            cur.execute(
-                """
-                UPDATE study_session
-                SET status = %s, completed_at = %s
-                WHERE id = %s AND user_id = %s
-                """,
-                (status, stamp, session_id, as_user_id(user_id)),
-            )
-            conn.commit()
-
-    def abandon_stale_sessions(self, user_id: UUID | str, local_today: date) -> int:
-        with self._cursor() as (conn, cur):
-            cur.execute(
-                """
-                UPDATE study_session
-                SET status = 'abandoned'
-                WHERE user_id = %s AND status = 'active' AND plan_date < %s
-                """,
-                (as_user_id(user_id), local_today),
-            )
-            count = cur.rowcount or 0
-            conn.commit()
-        return int(count)
-
-    def abandon_unstarted_learning_sessions(self, user_id: UUID | str) -> int:
-        with self._cursor() as (conn, cur):
-            cur.execute(
-                """
-                UPDATE study_session
-                SET status = 'abandoned'
-                WHERE user_id = %s
-                  AND status = 'active'
-                  AND kind IN ('auto_learning', 'one_day_learning')
-                  AND NOT EXISTS (
-                      SELECT 1 FROM study_session_item
-                      WHERE study_session_item.session_id = study_session.id
-                        AND study_session_item.state = 'completed'
-                  )
-                """,
-                (as_user_id(user_id),),
-            )
-            count = cur.rowcount or 0
-            conn.commit()
-        return int(count)
-
-    def set_session_item_state(
-        self,
-        user_id: UUID | str,
-        session_id: str,
-        unit_id: str,
-        state: str,
-        *,
-        completed_at: datetime | None = None,
-        deferred_at: datetime | None = None,
-    ):
-        from constitution_memorizer.progress.study_models import VALID_ITEM_STATES
-
-        if state not in VALID_ITEM_STATES:
-            raise ValueError(f"Invalid session item state: {state}")
-        session = self.get_study_session(user_id, session_id)
-        if session is None:
-            return None
-        now = _utc_now()
-        with self._cursor() as (conn, cur):
-            cur.execute(
-                """
-                UPDATE study_session_item
-                SET state = %s, completed_at = %s, deferred_at = %s
-                WHERE session_id = %s AND learning_unit_id = %s
-                """,
-                (
-                    state,
-                    completed_at if state == "completed" else None,
-                    deferred_at if state == "deferred" else None,
-                    session_id,
-                    unit_id,
-                ),
-            )
-            if state in ("completed", "deferred"):
-                cur.execute(
-                    """
-                    SELECT COUNT(*) AS n FROM study_session_item
-                    WHERE session_id = %s AND state = 'pending'
-                    """,
-                    (session_id,),
-                )
-                pending = cur.fetchone()
-                if pending is not None and int(pending["n"]) == 0:
-                    cur.execute(
-                        """
-                        UPDATE study_session
-                        SET status = 'completed', completed_at = %s
-                        WHERE id = %s AND user_id = %s AND status = 'active'
-                        """,
-                        (now, session_id, as_user_id(user_id)),
-                    )
-            conn.commit()
-        return self.get_study_session(user_id, session_id)
-

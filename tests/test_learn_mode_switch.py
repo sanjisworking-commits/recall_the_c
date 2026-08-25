@@ -57,7 +57,8 @@ def test_all_six_mode_tabs_keep_fallback_hrefs(tmp_path: Path):
         assert f'href="/learn/clause-1?mode={mode}"' in html
         assert 'role="tab"' in html
     assert 'data-modes-seen="' in html
-    assert "app.js?v=main33" in html
+
+    assert "app.js?v=main44" in html
 
 
 def test_direct_get_mode_query_still_server_renders(tmp_path: Path):
@@ -227,5 +228,10 @@ def test_app_js_gates_modes_on_completed_attempts():
         "function initLetters", 1
     )[0]
     assert "tapRevealed" in cloze_src
-    reveal_all_src = cloze_src.split('"reveal-all"', 1)[1].split('"hide-again"', 1)[0]
-    assert "tapRevealed.add" not in reveal_all_src
+    # The two reveal buttons merged into one toggle. That is a LABEL merge:
+    # revealing everything must still grant no completion credit, or the mode
+    # becomes skippable with a single tap.
+    toggle_src = cloze_src.split('"toggle-all"', 1)[1].split("setDensity(density)", 1)[0]
+    assert "tapRevealed" not in toggle_src
+    assert "onComplete" not in toggle_src
+    assert "checkTapComplete" not in toggle_src

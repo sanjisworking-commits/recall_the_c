@@ -30,11 +30,12 @@ def test_learn_enables_type_tab_and_panel_markup(client: TestClient):
     assert "learn-panel-type" in html
     assert "data-type-text=" in html
     assert "data-type-input" in html
-    assert "data-type-diff" in html
+    assert "data-type-mirror" in html
     assert "Start typing…" in html
     assert "Type it from memory" in html
     assert "words · 0 correct" in html
-    assert "app.js?v=main33" in html
+
+    assert "app.js?v=main44" in html
 
 
 def test_type_mode_query_param_renders_type_active(client: TestClient):
@@ -48,19 +49,24 @@ def test_type_mode_query_param_renders_type_active(client: TestClient):
 
 
 def test_type_css_drives_panel_and_diff_styles(client: TestClient):
-    css = client.get("/static/styles.css?v=main7")
+    css = client.get("/static/styles.css?v=main37")
     assert css.status_code == 200
     text = css.text
     assert '.learn[data-mode="type"] .learn-panel-type' in text
-    assert ".learn-type-word.is-unreached" in text
-    assert ".learn-type-word.is-correct" in text
-    assert ".learn-type-word.is-wrong" in text
-    assert "text-decoration: line-through" in text
-    assert "color: var(--faint)" in text
+    # Type reports a score, not a diff of the Bare Act wording — the mirror
+    # marks the user's own words instead.
+    assert ".learn-type-mirror-word.is-correct" in text
+    assert ".learn-type-mirror-word.is-wrong" in text
+    assert ".learn-type-word" not in text
+    assert ".learn-type-diff" not in text
+    # The struck-through diff went with the corrections view; wrong words are
+    # now marked on the user's own text with a wavy underline.
+    assert "underline wavy var(--browse-mark-news)" in text
+    assert "underline solid var(--browse-due)" in text
 
 
 def test_type_js_normalizes_and_scores_words(client: TestClient):
-    js = client.get("/static/app.js?v=main3")
+    js = client.get("/static/app.js?v=main42")
     assert js.status_code == 200
     text = js.text
     assert "normWord" in text

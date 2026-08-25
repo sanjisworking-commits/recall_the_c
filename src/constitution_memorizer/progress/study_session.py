@@ -1,37 +1,46 @@
-"""Study session start, resume, Done/Again, and date rollover."""
+"""Learning-plan preference plus auto/day-plan session start on the session foundation."""
 
 from __future__ import annotations
 
-from datetime import date, datetime, timezone
+from datetime import date
 from uuid import uuid4
 
 from constitution_memorizer.progress.learning_plan import LearningPlan, default_learning_plan
 from constitution_memorizer.progress.local_date import user_today
 from constitution_memorizer.progress.mix_selector import select_learning_mix
+from constitution_memorizer.progress.repository import StudySession
 from constitution_memorizer.progress.scheduler import ReminderEngine
-from constitution_memorizer.progress.study_models import StudySession
-from constitution_memorizer.web.service import due_checklist
 
+LEARNING_KINDS = ("auto_learning", "day_plan")
 PACE_LABELS = {3: "Steady", 5: "Balanced", 7: "Intensive"}
 
 
-def _utc_now_iso() -> str:
-    return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
-
-
 def close_stale_sessions(engine: ReminderEngine, *, today: date | None = None) -> int:
-    today = today or user_today(engine)
-    try:
-        return engine.repo.abandon_stale_sessions(engine.user_id, today)
-    except Exception:  # noqa: BLE001 — old DBs without the table
-        return 0
+    """No-op: main scopes active queues by ``plan_date``, so yesterday is ignored.
+
+    Kept so calendar/dashboard call sites that expected a rollover still compile.
+    """
+    del engine, today
+    return 0
 
 
 def get_learning_plan(engine: ReminderEngine) -> LearningPlan:
     try:
         return engine.repo.get_learning_plan(engine.user_id)
-    except Exception:  # noqa: BLE001
+    except Exception:  # noqa: BLE001 — old DBs without the table
         return default_learning_plan(str(engine.user_id))
+
+
+def _complete_unstarted_learning(engine: ReminderEngine) -> None:
+    today = user_today(engine)
+    for kind in LEARNING_KINDS:
+        try:
+            session = engine.active_study_session(kind=kind, plan_date=today)
+        except Exception:  # noqa: BLE001
+            continue
+        if session is None or session.completed_count > 0:
+            continue
+        engine.complete_study_session(session.id)
 
 
 def save_learning_plan(
@@ -50,10 +59,7 @@ def save_learning_plan(
     if mode == "self_paced":
         daily_target = None
         activated_at = None
-        try:
-            engine.repo.abandon_unstarted_learning_sessions(engine.user_id)
-        except Exception:  # noqa: BLE001 — missing table in old fixtures
-            pass
+        _complete_unstarted_learning(engine)
     return engine.repo.upsert_learning_plan(
         engine.user_id,
         mode=mode,
@@ -88,7 +94,7 @@ def get_session(engine: ReminderEngine, session_id: str | None) -> StudySession 
     if not session_id:
         return None
     try:
-        session = engine.repo.get_study_session(engine.user_id, session_id)
+        session = engine.get_study_session(session_id)
     except Exception:  # noqa: BLE001
         return None
     return reconcile_session_progress(engine, session)
@@ -105,7 +111,7 @@ def reconcile_session_progress(
         return session
     changed = False
     for item in session.items:
-        if item.state != "pending":
+        if item.status != "pending":
             continue
         try:
             progress = engine.get_progress(item.learning_unit_id)
@@ -116,12 +122,16 @@ def reconcile_session_progress(
             and progress.times_completed >= 1
             and progress.last_completed == session.plan_date
         ):
-            mark_item_done(engine, session.id, item.learning_unit_id)
+            engine.set_study_item_status(
+                session_id=session.id,
+                unit_id=item.learning_unit_id,
+                status="completed",
+            )
             changed = True
     if not changed:
         return session
     try:
-        return engine.repo.get_study_session(engine.user_id, session.id)
+        return engine.get_study_session(session.id)
     except Exception:  # noqa: BLE001
         return session
 
@@ -130,35 +140,17 @@ def active_same_day_session(
     engine: ReminderEngine, *, today: date | None = None
 ) -> StudySession | None:
     today = today or user_today(engine)
-    close_stale_sessions(engine, today=today)
     try:
-        revision = engine.repo.get_active_revision_session(engine.user_id)
-        if revision is not None and revision.plan_date == today:
+        revision = engine.active_study_session(kind="revision", plan_date=today)
+        if revision is not None:
             return revision
-        learning = engine.repo.get_active_learning_session(engine.user_id, today)
-        return learning
+        for kind in LEARNING_KINDS:
+            learning = engine.active_study_session(kind=kind, plan_date=today)
+            if learning is not None:
+                return learning
     except Exception:  # noqa: BLE001
         return None
-
-
-def start_or_resume_revision(
-    engine: ReminderEngine, *, today: date | None = None
-) -> StudySession | None:
-    today = today or user_today(engine)
-    close_stale_sessions(engine, today=today)
-    existing = engine.repo.get_active_revision_session(engine.user_id)
-    if existing is not None and existing.plan_date == today:
-        return reconcile_session_progress(engine, existing)
-    due = due_checklist(engine, as_of=today)
-    if not due:
-        return None
-    return engine.repo.insert_study_session(
-        engine.user_id,
-        session_id=str(uuid4()),
-        kind="revision",
-        plan_date=today,
-        unit_ids=[unit.id for unit in due],
-    )
+    return None
 
 
 def start_or_resume_learning(
@@ -170,10 +162,11 @@ def start_or_resume_learning(
     article_allowed=None,
     rng=None,
 ) -> StudySession | None:
+    if kind not in LEARNING_KINDS:
+        raise ValueError(f"Invalid learning session kind: {kind}")
     today = today or user_today(engine)
-    close_stale_sessions(engine, today=today)
-    existing = engine.repo.get_active_learning_session(engine.user_id, today)
-    if existing is not None:
+    existing = active_same_day_session(engine, today=today)
+    if existing is not None and existing.kind in LEARNING_KINDS:
         return reconcile_session_progress(engine, existing)
     mix = select_learning_mix(
         engine,
@@ -183,41 +176,15 @@ def start_or_resume_learning(
     )
     if not mix:
         return None
-    return engine.repo.insert_study_session(
-        engine.user_id,
-        session_id=str(uuid4()),
-        kind=kind,
+    return engine.create_study_session(
+        session_id=uuid4().hex,
+        kind=kind,  # type: ignore[arg-type]
         plan_date=today,
         unit_ids=[unit.id for unit in mix],
-    )
-
-
-def mark_item_done(
-    engine: ReminderEngine, session_id: str, unit_id: str
-) -> StudySession | None:
-    return engine.repo.set_session_item_state(
-        engine.user_id,
-        session_id,
-        unit_id,
-        "completed",
-        completed_at=_utc_now_iso(),
-    )
-
-
-def mark_item_deferred(
-    engine: ReminderEngine, session_id: str, unit_id: str
-) -> StudySession | None:
-    return engine.repo.set_session_item_state(
-        engine.user_id,
-        session_id,
-        unit_id,
-        "deferred",
-        deferred_at=_utc_now_iso(),
     )
 
 
 def first_pending_id(session: StudySession | None) -> str | None:
     if session is None:
         return None
-    pending = session.next_pending()
-    return pending.learning_unit_id if pending is not None else None
+    return session.next_pending_after(None)

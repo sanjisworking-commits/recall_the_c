@@ -72,8 +72,8 @@ from constitution_memorizer.progress.repository import (
     VALID_ONBOARDING_STATUSES,
     VALID_THEMES,
     SplitMode,
+    StudySession,
 )
-from constitution_memorizer.progress.local_date import user_today
 from constitution_memorizer.progress.scheduler import (
     INTERVAL_LADDER,
     ModesIncompleteError,
@@ -109,6 +109,11 @@ from constitution_memorizer.web.browse import (
     load_reviewed_document,
 )
 from constitution_memorizer.web.explainers import explainer_asset_path, visual_explainer
+from constitution_memorizer.progress.repository import LEARN_MODES
+from constitution_memorizer.web.progress_stats import (
+    _is_completed,
+    path_units_for_article,
+)
 from constitution_memorizer.web.calendar_view import (
     build_calendar_month,
     build_revisions_view,
@@ -116,10 +121,11 @@ from constitution_memorizer.web.calendar_view import (
 from constitution_memorizer.web.completion import (
     build_completion,
     caught_up_quote,
+    LearnNavigation,
     done_json_payload,
     next_learn_url,
-    resolve_post_action_navigation,
-    with_session,
+    resolve_learn_navigation,
+    with_params,
     wants_json,
 )
 from constitution_memorizer.web.billing import (
@@ -164,6 +170,7 @@ from constitution_memorizer.web.progress_stats import progress_dashboard
 from constitution_memorizer.web.search import resolve_search
 from constitution_memorizer.web.service import (
     LEARN_MODE_LABELS,
+    active_revision_session,
     continue_unit_id,
     done_button_state,
     due_checklist,
@@ -174,8 +181,12 @@ from constitution_memorizer.web.service import (
     learn_meta_line,
     methods_tracker_line,
     needs_split_choice,
+    _is_missing_study_session_table,
     resolve_learn_target,
+    revision_position_label,
     session_progress,
+    start_or_resume_revision,
+    user_today,
     sibling_chips,
     subclause_stem_text,
     unit_crumb,
@@ -839,20 +850,18 @@ def create_app(
     @app.get("/learn", response_class=HTMLResponse)
     async def learn_index(request: Request) -> RedirectResponse:
         eng = _engine()
-        today = _user_today(request, eng)
         is_guest = bool(
             app.state.multiuser_enabled
             and getattr(request.state, "current_user", None) is None
         )
         if not is_guest:
+            today = user_today(eng)
             from constitution_memorizer.progress.study_session import (
                 active_same_day_session,
-                close_stale_sessions,
                 first_pending_id,
             )
 
-            close_stale_sessions(eng, today=today)
-            explicit = _session_id(request)
+            explicit = (request.query_params.get("session") or "").strip()
             if explicit:
                 from constitution_memorizer.progress.study_session import get_session
 
@@ -860,15 +869,30 @@ def create_app(
                 pending = first_pending_id(sess)
                 if pending:
                     return RedirectResponse(
-                        url=_learn_href(pending, session_id=explicit),
+                        url=next_learn_url(
+                            eng,
+                            pending,
+                            multiuser=app.state.multiuser_enabled,
+                            session_id=explicit,
+                        ),
                         status_code=303,
                     )
             active = active_same_day_session(eng, today=today)
             pending = first_pending_id(active)
             if pending and active is not None:
                 return RedirectResponse(
-                    url=_learn_href(pending, session_id=active.id),
+                    url=next_learn_url(
+                        eng,
+                        pending,
+                        multiuser=app.state.multiuser_enabled,
+                        session_id=active.id,
+                    ),
                     status_code=303,
+                )
+            due = due_checklist(eng, as_of=today)
+            if due:
+                return RedirectResponse(
+                    url=f"/learn/{due[0].id}", status_code=303
                 )
             cont = continue_unit_id(eng, as_of=today)
             if cont:
@@ -895,31 +919,49 @@ def create_app(
                 url=f"/learn/{unit_id}?{urlencode(params)}", status_code=303
             )
         learn_mode = mode if mode in LEARN_MODES_SET else "read"
-        session_id = _session_id(request)
         is_guest_early = bool(
             app.state.multiuser_enabled
             and getattr(request.state, "current_user", None) is None
         )
         if not is_guest_early:
-            eng.bootstrap_request()
-            if session_id:
-                from constitution_memorizer.progress.study_session import (
-                    get_session as _get_sess_early,
-                )
+            # include_modes loads every unit's seen-set in the same bundle, so
+            # the clause rail can show per-clause progress without one
+            # roundtrip per sibling.
+            eng.bootstrap_request(include_modes=True)
+            session_param = (request.query_params.get("session") or "").strip()
+            if session_param:
+                from constitution_memorizer.progress.study_session import get_session
 
-                _get_sess_early(eng, session_id)
+                get_session(eng, session_param)
+
+        # Every hop inside a session has to keep carrying it, so redirects
+        # rebuild their query instead of hand-writing one parameter.
+        carried = {
+            "session": request.query_params.get("session") or "",
+            "mode": learn_mode if learn_mode != "read" else "",
+        }
+
+        membership = _session_membership_redirect(
+            eng, request, unit_id, learn_mode, is_guest_early
+        )
+        if membership is not None:
+            return membership
 
         # Guests skip split preference (no personal data); show the clause as-is.
         if not is_guest_early and needs_split_choice(eng, unit):
             return RedirectResponse(
-                url=with_session(f"/learn/{unit_id}/choose", session_id or None),
+                # `mode` is deliberately dropped: on /choose that key means
+                # whole-vs-letters, not a recall mode.
+                url=with_params(
+                    f"/learn/{unit_id}/choose", {"session": carried["session"]}
+                ),
                 status_code=303,
             )
 
         target_id = unit_id if is_guest_early else resolve_learn_target(eng, unit_id)
         if target_id != unit_id:
             return RedirectResponse(
-                url=_learn_href(target_id, session_id=session_id, mode=learn_mode),
+                url=with_params(f"/learn/{target_id}", carried),
                 status_code=303,
             )
 
@@ -931,39 +973,11 @@ def create_app(
             app.state.multiuser_enabled
             and getattr(request.state, "current_user", None) is None
         )
-        today = _user_today(request, eng)
-        from constitution_memorizer.progress.study_session import (
-            close_stale_sessions,
-            first_pending_id,
-            get_session as _get_sess,
-            reconcile_session_progress,
+        membership = _session_membership_redirect(
+            eng, request, target.id, learn_mode, is_guest
         )
-
-        study = None
-        if not is_guest:
-            close_stale_sessions(eng, today=today)
-            study = _get_sess(eng, session_id) if session_id else None
-            if study is not None and (
-                study.status != "active" or study.plan_date != today
-            ):
-                study = None
-                session_id = ""
-            if study is not None:
-                study = reconcile_session_progress(eng, study) or study
-                item = study.item_for(target.id)
-                if item is None or item.state != "pending":
-                    pending = first_pending_id(study)
-                    if pending:
-                        return RedirectResponse(
-                            url=_learn_href(
-                                pending, session_id=study.id, mode=learn_mode
-                            ),
-                            status_code=303,
-                        )
-                    study = None
-                    session_id = ""
-        if study is not None:
-            session_id = study.id
+        if membership is not None:
+            return membership
         # Article-aware mode locks (guest / free-cap-reached lock Type & Recite).
         learn_lock = resolve_learn_access(request, eng, target.article_number)
         locked_modes = learn_lock.locked_modes
@@ -1062,8 +1076,27 @@ def create_app(
         )
         cloze_available = has_cloze_blanks(target.text)
 
+        # A session is only navigation context, so an unusable one is stripped
+        # rather than redirected away from: the page still renders, just
+        # sequentially. Redirecting would loop on a stale deep link, and
+        # accepting it unchecked would let `?session=` typed onto any Browse
+        # URL inherit somebody's revision queue.
+        session = _load_session_context(eng, request, target.id, is_guest=is_guest)
+        session_id = session.id if session is not None else ""
+        session_label = (
+            revision_position_label(session, target.id) if session is not None else None
+        )
+        if session is not None and session.kind != "revision" and session_label:
+            session_label = session_label.replace("Revision", "Learning")
+        session_unit_ids = (
+            {item.learning_unit_id for item in session.items} if session else set()
+        )
+
         done_id = request.query_params.get("done")
-        continue_href = _learn_href(target.id, session_id=session_id, mode=learn_mode)
+        mode_suffix = with_params(
+            f"/learn/{target.id}",
+            {"mode": learn_mode if learn_mode != "read" else "", "session": session_id},
+        )
         started = time.perf_counter()
         completion = build_completion(
             eng=eng,
@@ -1071,20 +1104,10 @@ def create_app(
             done_id=done_id,
             request=request,
             is_guest=is_guest,
-            continue_href=continue_href,
+            continue_href=mode_suffix,
             continue_label=target.display_title,
         )
         record_request_timing("completion", started)
-        study_label = f"{done_count} of {chain_len}"
-        show_exit_revision = False
-        if study is not None:
-            item = study.item_for(target.id)
-            word = "Revision" if study.kind == "revision" else "Learning"
-            if item is not None:
-                study_label = f"{word} {item.position + 1} of {len(study.items)}"
-            show_exit_revision = (
-                study.kind == "revision" and study.pending_count > 0
-            )
         started = time.perf_counter()
         response = templates.TemplateResponse(
             request,
@@ -1092,9 +1115,14 @@ def create_app(
             {
                 "unit": target,
                 "progress": progress,
+                "session_id": session_id,
+                "session_kind": session.kind if session is not None else "",
+                "session_unit_ids": session_unit_ids,
+                "revision_label": session_label,
+                "revision_remaining": session.remaining if session is not None else 0,
                 "kind_badge": kind_badge_label(target),
                 "unit_crumb": unit_crumb(target),
-                "session_label": study_label,
+                "session_label": f"{done_count} of {chain_len}",
                 "session_pct": pct,
                 "sibling_chips": chips,
                 "rail_kind": rail_kind,
@@ -1129,18 +1157,77 @@ def create_app(
                 "read_hint": (
                     "Bare Act wording, verbatim. Read it twice, then pick a recall mode."
                 ),
-                "study_session_id": study.id if study is not None else "",
-                "study_kind": study.kind if study is not None else "",
-                "session_unit_ids": (
-                    [item.learning_unit_id for item in study.items]
-                    if study is not None
-                    else []
-                ),
-                "show_exit_revision": show_exit_revision,
             },
         )
         record_request_timing("template", started)
         return response
+
+    def _load_session_context(
+        eng: ReminderEngine,
+        request: Request,
+        unit_id: str,
+        *,
+        is_guest: bool,
+    ) -> StudySession | None:
+        """The ``?session=`` queue, if it is this user's, active, today's, and holds this unit.
+
+        Guests get None unconditionally: a guest's engine is bound to
+        LOCAL_USER_ID, so honouring a session id would read a shared row.
+        """
+        session_id = (request.query_params.get("session") or "").strip()
+        if not session_id or is_guest:
+            return None
+        from constitution_memorizer.progress.study_session import get_session
+
+        session = get_session(eng, session_id)
+        if session is None or session.status != "active":
+            return None
+        if session.plan_date != user_today(eng):
+            return None
+        if not session.contains(unit_id):
+            return None
+        item = session.item_for(unit_id)
+        if item is None or item.status != "pending":
+            return None
+        return session
+
+    def _session_membership_redirect(
+        eng: ReminderEngine,
+        request: Request,
+        unit_id: str,
+        learn_mode: str,
+        is_guest: bool,
+    ) -> RedirectResponse | None:
+        """Send a ``?session=`` that does not include this unit to the next pending."""
+        session_id = (request.query_params.get("session") or "").strip()
+        if not session_id or is_guest:
+            return None
+        from constitution_memorizer.progress.study_session import (
+            first_pending_id,
+            get_session,
+        )
+
+        session = get_session(eng, session_id)
+        if session is None or session.status != "active":
+            return None
+        if session.plan_date != user_today(eng):
+            return None
+        item = session.item_for(unit_id)
+        if item is not None and item.status == "pending":
+            return None
+        pending = first_pending_id(session)
+        if not pending:
+            return None
+        return RedirectResponse(
+            url=with_params(
+                f"/learn/{pending}",
+                {
+                    "mode": learn_mode if learn_mode != "read" else "",
+                    "session": session.id,
+                },
+            ),
+            status_code=303,
+        )
 
     @app.post("/learn/{unit_id}/seen")
     async def learn_mode_seen(
@@ -1263,23 +1350,13 @@ def create_app(
         return JSONResponse(payload)
 
     def _user_today(request: Request, eng: ReminderEngine) -> date:
-        """The user's local calendar date for schedule anchoring."""
+        """The user's local calendar date — see ``service.user_today``.
+
+        Kept as a thin wrapper so the many call sites here keep their shape;
+        the logic moved to service.py because sessions and the dashboard need
+        the same date and must not disagree with the ladder across midnight.
+        """
         return user_today(eng)
-
-    def _session_id(request: Request, form_session: str = "") -> str:
-        return (
-            (form_session or "").strip()
-            or (request.query_params.get("session") or "").strip()
-        )
-
-    def _learn_href(unit_id: str, *, session_id: str = "", mode: str = "") -> str:
-        params: dict[str, str] = {}
-        if mode and mode != "read":
-            params["mode"] = mode
-        if session_id:
-            params["session"] = session_id
-        suffix = f"?{urlencode(params)}" if params else ""
-        return f"/learn/{unit_id}{suffix}"
 
     def _schedule_calendar_sync(request: Request, eng: ReminderEngine) -> None:
         """Fire-and-forget Google Calendar reconciliation after a state change."""
@@ -1290,56 +1367,8 @@ def create_app(
         except Exception:  # noqa: BLE001 — projection must never break core flow
             logger.exception("calendar sync scheduling failed")
 
-    def _finalize_learn_done(
-        request: Request,
-        eng: ReminderEngine,
-        unit,
-        result,
-        session_id: str,
-    ):
-        from constitution_memorizer.progress.study_session import (
-            get_session as _get_sess,
-            maybe_activate_auto_plan,
-        )
-
-        sess = _get_sess(eng, session_id)
-        if sess is not None and sess.item_for(unit.id) is not None:
-            session_id = sess.id
-        was_new = result.progress.times_completed == 1
-        maybe_activate_auto_plan(
-            eng, was_new_unit=was_new, today=_user_today(request, eng)
-        )
-        _schedule_calendar_sync(request, eng)
-        if wants_json(request):
-            return JSONResponse(
-                done_json_payload(
-                    eng=eng,
-                    quotes=app.state.quotes,
-                    unit=unit,
-                    result=result,
-                    request=request,
-                    multiuser=app.state.multiuser_enabled,
-                    session_id=session_id or None,
-                )
-            )
-        url = resolve_post_action_navigation(
-            eng,
-            unit_id=unit.id,
-            sequential_next_id=result.next_unit_id,
-            session_id=session_id or None,
-            done_unit_id=unit.id,
-            multiuser=app.state.multiuser_enabled,
-        )
-        return RedirectResponse(url=url, status_code=303)
-
     @app.post("/learn/{unit_id}/done")
-    async def learn_done(
-        request: Request,
-        unit_id: str,
-        session: str = Form(""),
-        claim_article: str = Form(""),
-        modes: str = Form(""),
-    ):
+    async def learn_done(request: Request, unit_id: str):
         eng = _engine()
         unit = eng.get_unit(unit_id)
         if unit is None:
@@ -1428,17 +1457,38 @@ def create_app(
                         as_of=_user_today(request, eng),
                         require_all_modes=False,
                         claim_article=claim_key,
-                        session_id=_session_id(request, session) or None,
+                        session_id=(request.query_params.get("session") or "").strip()
+                        or None,
                     )
                 except ModesIncompleteError:
                     return RedirectResponse(url=f"/learn/{unit_id}", status_code=303)
-                return _finalize_learn_done(
-                    request,
-                    eng,
-                    unit,
-                    result,
-                    _session_id(request, session),
+                from constitution_memorizer.progress.study_session import (
+                    maybe_activate_auto_plan,
                 )
+
+                maybe_activate_auto_plan(
+                    eng,
+                    was_new_unit=result.progress.times_completed == 1,
+                    today=_user_today(request, eng),
+                )
+                _schedule_calendar_sync(request, eng)
+                navigation = _advance_session(
+                    eng, request, unit_id, result.next_unit_id, outcome="completed",
+                    done_unit_id=unit_id,
+                )
+                if wants_json(request):
+                    return JSONResponse(
+                        done_json_payload(
+                            eng=eng,
+                            quotes=app.state.quotes,
+                            unit=unit,
+                            result=result,
+                            request=request,
+                            multiuser=app.state.multiuser_enabled,
+                            navigation=navigation,
+                        )
+                    )
+                return RedirectResponse(url=navigation.next_url, status_code=303)
         done_access = resolve_learn_access(request, eng, unit.article_number)
         if not done_access.can_persist_done:
             # Reachable only under the admin Entitlement Preview — every real
@@ -1454,7 +1504,7 @@ def create_app(
                 unit_id,
                 as_of=_user_today(request, eng),
                 required_modes=frozenset(done_required),
-                session_id=_session_id(request, session) or None,
+                session_id=(request.query_params.get("session") or "").strip() or None,
             )
         except ModesIncompleteError:
             if wants_json(request):
@@ -1463,141 +1513,174 @@ def create_app(
                     status_code=409,
                 )
             return RedirectResponse(url=f"/learn/{unit_id}", status_code=303)
-        return _finalize_learn_done(
-            request,
+        from constitution_memorizer.progress.study_session import maybe_activate_auto_plan
+
+        maybe_activate_auto_plan(
             eng,
-            unit,
-            result,
-            _session_id(request, session),
+            was_new_unit=result.progress.times_completed == 1,
+            today=_user_today(request, eng),
         )
+        _schedule_calendar_sync(request, eng)
+        navigation = _advance_session(
+            eng, request, unit_id, result.next_unit_id, outcome="completed",
+            done_unit_id=unit_id,
+        )
+        if wants_json(request):
+            return JSONResponse(
+                done_json_payload(
+                    eng=eng,
+                    quotes=app.state.quotes,
+                    unit=unit,
+                    result=result,
+                    request=request,
+                    multiuser=app.state.multiuser_enabled,
+                    navigation=navigation,
+                )
+            )
+        return RedirectResponse(url=navigation.next_url, status_code=303)
 
     @app.post("/learn/{unit_id}/again")
-    async def learn_again(
-        request: Request,
-        unit_id: str,
-        session: str = Form(""),
-    ) -> RedirectResponse:
+    async def learn_again(request: Request, unit_id: str) -> RedirectResponse:
         """Skip or defer this unit, then advance to the next unit."""
         eng = _engine()
         if eng.get_unit(unit_id) is None:
             raise HTTPException(status_code=404, detail="Learning unit not found")
-        session_id = _session_id(request, session)
-        from constitution_memorizer.progress.study_session import (
-            get_session as _get_sess,
-            mark_item_deferred,
-        )
+        session_id = (request.query_params.get("session") or "").strip()
+        from constitution_memorizer.progress.study_session import get_session
 
-        sess = _get_sess(eng, session_id)
+        sess = get_session(eng, session_id)
         if (
             sess is not None
-            and sess.kind in ("auto_learning", "one_day_learning")
-            and sess.item_for(unit_id) is not None
+            and sess.kind in ("auto_learning", "day_plan")
+            and sess.contains(unit_id)
         ):
-            mark_item_deferred(eng, sess.id, unit_id)
+            # Mix items that were never learned must not grow a review date.
+            navigation = _advance_session(
+                eng, request, unit_id, eng.resolve_next_unit_id(unit_id),
+                outcome="deferred",
+            )
             _schedule_calendar_sync(request, eng)
-            url = resolve_post_action_navigation(
-                eng,
-                unit_id=unit_id,
-                sequential_next_id=eng.resolve_next_unit_id(unit_id),
-                session_id=sess.id,
-                multiuser=app.state.multiuser_enabled,
-            )
-            return RedirectResponse(url=url, status_code=303)
+            return RedirectResponse(url=navigation.next_url, status_code=303)
         result = eng.defer_until_tomorrow(unit_id, as_of=_user_today(request, eng))
-        if sess is not None and sess.kind == "revision" and sess.item_for(unit_id):
-            mark_item_deferred(eng, sess.id, unit_id)
         _schedule_calendar_sync(request, eng)
-        url = resolve_post_action_navigation(
-            eng,
-            unit_id=unit_id,
-            sequential_next_id=result.next_unit_id,
-            session_id=session_id or None,
-            multiuser=app.state.multiuser_enabled,
+        # Deferred, not completed: the unit leaves today's queue without
+        # counting as a revision done.
+        navigation = _advance_session(
+            eng, request, unit_id, result.next_unit_id, outcome="deferred"
         )
-        return RedirectResponse(url=url, status_code=303)
+        return RedirectResponse(url=navigation.next_url, status_code=303)
 
-    def _redirect_after_learn(
+    def _advance_session(
         eng: ReminderEngine,
-        next_unit_id: str | None,
+        request: Request,
+        unit_id: str,
+        fallback_next_unit_id: str | None,
         *,
+        outcome: str,
         done_unit_id: str | None = None,
-        session_id: str | None = None,
-        unit_id: str | None = None,
-    ) -> RedirectResponse:
-        if unit_id:
-            url = resolve_post_action_navigation(
-                eng,
-                unit_id=unit_id,
-                sequential_next_id=next_unit_id,
-                session_id=session_id,
-                done_unit_id=done_unit_id,
-                multiuser=app.state.multiuser_enabled,
-            )
-        else:
-            url = next_learn_url(
-                eng,
-                next_unit_id,
-                done_unit_id=done_unit_id,
-                multiuser=app.state.multiuser_enabled,
-                session_id=session_id,
-            )
-        return RedirectResponse(url=url, status_code=303)
+    ) -> LearnNavigation:
+        """Where this completion goes next, session-aware.
 
-    def _article_allowed(request: Request, eng: ReminderEngine):
-        def allowed(article_number: str | None) -> bool:
-            access = resolve_learn_access(request, eng, article_number)
-            return bool(access.can_persist_done)
-        return allowed
+        A guest never reaches here (Done returns earlier), so the session is
+        read unconditionally; membership is still checked inside the resolver
+        so a forged id cannot redirect someone else's queue.
+        """
+        session_id = (request.query_params.get("session") or "").strip()
+        session = eng.get_study_session(session_id) if session_id else None
+        if session is not None and session.status != "active":
+            session = None
+        return resolve_learn_navigation(
+            eng=eng,
+            unit_id=unit_id,
+            fallback_next_unit_id=fallback_next_unit_id,
+            session=session,
+            outcome=outcome,  # type: ignore[arg-type]
+            multiuser=app.state.multiuser_enabled,
+            done_unit_id=done_unit_id,
+        )
 
-    @app.post("/study/revision/start")
-    async def study_revision_start(request: Request) -> RedirectResponse:
+    @app.post("/revision/start")
+    async def revision_start(request: Request) -> RedirectResponse:
+        """Open (or resume) today's revision queue and enter its first item.
+
+        A POST, not a GET: it creates durable state, and being idempotent
+        means a double-tap resumes the same session rather than snapshotting
+        the due list twice.
+        """
         eng = _engine()
-        from constitution_memorizer.progress.study_session import (
-            first_pending_id,
-            start_or_resume_revision,
+        is_guest = bool(
+            app.state.multiuser_enabled
+            and getattr(request.state, "current_user", None) is None
         )
-
-        session = start_or_resume_revision(
-            eng, today=_user_today(request, eng)
-        )
-        pending = first_pending_id(session)
-        if pending is None or session is None:
-            dest = "/dashboard" if app.state.multiuser_enabled else "/"
-            return RedirectResponse(url=dest, status_code=303)
+        if is_guest:
+            # A guest engine is bound to LOCAL_USER_ID; writing a session here
+            # would land in a shared row.
+            return RedirectResponse(url="/login?next=/dashboard", status_code=303)
+        today = user_today(eng)
+        try:
+            session = start_or_resume_revision(eng, as_of=today)
+        except Exception as error:  # noqa: BLE001 — re-raised unless it is the schema gap
+            if not _is_missing_study_session_table(error):
+                raise
+            # Code is live ahead of its migration. Fall back to the behaviour
+            # this CTA replaced — walk the due list sequentially — so the
+            # button is never a dead end.
+            logger.warning("study_session tables are missing; starting an unqueued revision")
+            session = None
+            due = due_checklist(eng, as_of=today)
+            if not due:
+                return RedirectResponse(url=_home_url(), status_code=303)
+            return RedirectResponse(
+                url=next_learn_url(
+                    eng, due[0].id, multiuser=app.state.multiuser_enabled
+                ),
+                status_code=303,
+            )
+        if session is None or not session.pending:
+            return RedirectResponse(url=_home_url(), status_code=303)
+        first = session.pending[0].learning_unit_id
         return RedirectResponse(
-            url=_learn_href(pending, session_id=session.id),
+            url=next_learn_url(
+                eng,
+                first,
+                multiuser=app.state.multiuser_enabled,
+                session_id=session.id,
+            ),
             status_code=303,
         )
 
     @app.post("/study/learning/start")
     async def study_learning_start(request: Request) -> RedirectResponse:
         eng = _engine()
+        dest = _home_url()
+        if not can_use_auto_plan(request):
+            return RedirectResponse(url=dest, status_code=303)
         from constitution_memorizer.progress.study_session import (
             first_pending_id,
             get_learning_plan,
             start_or_resume_learning,
         )
 
-        dest = "/dashboard" if app.state.multiuser_enabled else "/"
-        if not can_use_auto_plan(request):
-            return RedirectResponse(url=dest, status_code=303)
         plan = get_learning_plan(eng)
         if not plan.is_auto or not plan.daily_target:
             return RedirectResponse(url=dest, status_code=303)
-        if due_checklist(eng, as_of=_user_today(request, eng)):
+        today = _user_today(request, eng)
+        if due_checklist(eng, as_of=today):
             return RedirectResponse(url=dest, status_code=303)
         session = start_or_resume_learning(
             eng,
             kind="auto_learning",
             count=int(plan.daily_target),
-            today=_user_today(request, eng),
+            today=today,
             article_allowed=_article_allowed(request, eng),
         )
         pending = first_pending_id(session)
         if pending is None or session is None:
             return RedirectResponse(url=dest, status_code=303)
         return RedirectResponse(
-            url=_learn_href(pending, session_id=session.id),
+            url=next_learn_url(
+                eng, pending, multiuser=app.state.multiuser_enabled, session_id=session.id
+            ),
             status_code=303,
         )
 
@@ -1608,6 +1691,8 @@ def create_app(
         dismiss: int = Form(0),
     ) -> RedirectResponse:
         eng = _engine()
+        dest = _home_url()
+        today = _user_today(request, eng)
         from constitution_memorizer.progress.study_session import (
             first_pending_id,
             get_learning_plan,
@@ -1615,8 +1700,6 @@ def create_app(
             start_or_resume_learning,
         )
 
-        dest = "/dashboard" if app.state.multiuser_enabled else "/"
-        today = _user_today(request, eng)
         plan = get_learning_plan(eng)
         if dismiss:
             save_learning_plan(
@@ -1635,7 +1718,7 @@ def create_app(
             return RedirectResponse(url=dest, status_code=303)
         session = start_or_resume_learning(
             eng,
-            kind="one_day_learning",
+            kind="day_plan",
             count=count,
             today=today,
             article_allowed=_article_allowed(request, eng),
@@ -1644,14 +1727,21 @@ def create_app(
         if pending is None or session is None:
             return RedirectResponse(url=dest, status_code=303)
         return RedirectResponse(
-            url=_learn_href(pending, session_id=session.id),
+            url=next_learn_url(
+                eng, pending, multiuser=app.state.multiuser_enabled, session_id=session.id
+            ),
             status_code=303,
         )
 
-    @app.post("/study/revision/exit")
-    async def study_revision_exit(request: Request) -> RedirectResponse:
-        dest = "/dashboard" if app.state.multiuser_enabled else "/"
-        return RedirectResponse(url=dest, status_code=303)
+    def _article_allowed(request: Request, eng: ReminderEngine):
+        def allowed(article_number: str | None) -> bool:
+            access = resolve_learn_access(request, eng, article_number)
+            return bool(access.can_persist_done)
+
+        return allowed
+
+    def _home_url() -> str:
+        return "/dashboard" if app.state.multiuser_enabled else "/"
 
     @app.get("/learn/{clause_id}/choose", response_class=HTMLResponse)
     async def choose_get(request: Request, clause_id: str) -> HTMLResponse:
@@ -1661,7 +1751,10 @@ def create_app(
             raise HTTPException(status_code=404, detail="Learning unit not found")
         if not unit.allows_letter_split:
             return RedirectResponse(
-                url=with_session(f"/learn/{clause_id}", _session_id(request) or None),
+                url=with_params(
+                    f"/learn/{clause_id}",
+                    {"session": request.query_params.get("session") or ""},
+                ),
                 status_code=303,
             )
         is_guest = bool(
@@ -1670,23 +1763,23 @@ def create_app(
         )
         if not is_guest:
             eng.bootstrap_request()
+        session_param = request.query_params.get("session") or ""
         existing = eng.get_split_preference(clause_id)
         if existing is not None:
             target = eng.next_to_learn_from_clause(clause_id) or clause_id
             return RedirectResponse(
-                url=with_session(f"/learn/{target}", _session_id(request) or None),
+                url=with_params(f"/learn/{target}", {"session": session_param}),
                 status_code=303,
             )
         done_id = request.query_params.get("done")
         started = time.perf_counter()
-        session_id = _session_id(request)
         completion = build_completion(
             eng=eng,
             quotes=app.state.quotes,
             done_id=done_id,
             request=request,
             is_guest=is_guest,
-            continue_href=with_session(f"/learn/{clause_id}/choose", session_id or None),
+            continue_href=f"/learn/{clause_id}/choose",
             continue_label=unit.display_title,
         )
         record_request_timing("completion", started)
@@ -1694,11 +1787,7 @@ def create_app(
         response = templates.TemplateResponse(
             request,
             "choose.html",
-            {
-                "unit": unit,
-                "completion": completion,
-                "study_session_id": session_id,
-            },
+            {"unit": unit, "completion": completion, "session_id": session_param},
         )
         record_request_timing("template", started)
         return response
@@ -1708,19 +1797,13 @@ def create_app(
         request: Request,
         clause_id: str,
         mode: str = Form(...),
-        session: str = Form(""),
     ) -> RedirectResponse:
         eng = _engine()
         unit = eng.get_unit(clause_id)
         if unit is None:
             raise HTTPException(status_code=404, detail="Learning unit not found")
         if not unit.allows_letter_split:
-            return RedirectResponse(
-                url=with_session(
-                    f"/learn/{clause_id}", _session_id(request, session) or None
-                ),
-                status_code=303,
-            )
+            return RedirectResponse(url=f"/learn/{clause_id}", status_code=303)
         if mode not in ("whole", "letters"):
             raise HTTPException(status_code=400, detail="mode must be whole or letters")
         chosen: SplitMode = mode  # type: ignore[assignment]
@@ -1728,8 +1811,9 @@ def create_app(
         _schedule_calendar_sync(request, eng)
         target = eng.next_to_learn_from_clause(clause_id, mode=chosen) or clause_id
         return RedirectResponse(
-            url=with_session(
-                f"/learn/{target}", _session_id(request, session) or None
+            url=with_params(
+                f"/learn/{target}",
+                {"session": request.query_params.get("session") or ""},
             ),
             status_code=303,
         )
@@ -1750,14 +1834,8 @@ def create_app(
             mode = "test"
         learn_mode = mode if mode in LEARN_MODES else "read"
         # Re-seed the currently open mode on the next GET; redirect preserves mode.
-        return RedirectResponse(
-            url=_learn_href(
-                unit_id,
-                session_id=_session_id(request),
-                mode=learn_mode,
-            ),
-            status_code=303,
-        )
+        suffix = f"?mode={learn_mode}" if learn_mode != "read" else ""
+        return RedirectResponse(url=f"/learn/{unit_id}{suffix}", status_code=303)
 
     @app.post("/reset")
     async def reset_all(request: Request) -> RedirectResponse:
@@ -1951,6 +2029,60 @@ def create_app(
         eng.delete_gloss(article_number)
         return JSONResponse({"ok": True, "text": "", "words": 0})
 
+    @app.get("/api/articles/{article_number}/progress")
+    async def article_progress_summary(
+        request: Request, article_number: str
+    ) -> JSONResponse:
+        """Per-Article CTA state, fetched after first paint.
+
+        Deliberately its own endpoint: the Article page must not gain a
+        synchronous progress read just to personalise one button, so the HTML
+        ships the neutral label and this fills it in afterwards. Guests never
+        call it and get nothing if they do.
+        """
+        if app.state.multiuser_enabled and (
+            getattr(request.state, "current_user", None) is None
+        ):
+            return JSONResponse({"ok": False}, status_code=401)
+        eng = _engine()
+        today = date.today()
+        required, _pending = path_units_for_article(eng, article_number)
+        if not required:
+            return JSONResponse(
+                {"ok": True, "state": "not_started", "modes_done": 0,
+                 "modes_total": len(LEARN_MODES)}
+            )
+
+        # One unit speaks for the Article: a unit due today wins, else the
+        # first one still incomplete. Never sum modes across units — "2 of 6"
+        # has to describe a single clause to mean anything.
+        lead = None
+        state = "not_started"
+        for unit in required:
+            progress = eng.get_progress(unit.id)
+            if progress is not None and progress.next_revision is not None:
+                if progress.next_revision <= today:
+                    lead, state = unit, "due"
+                    break
+        if lead is None:
+            for unit in required:
+                if not _is_completed(eng, unit.id):
+                    lead = unit
+                    break
+            if lead is not None:
+                seen_any = any(len(eng.modes_seen(u.id)) > 0 for u in required)
+                state = "started" if seen_any else "not_started"
+            else:
+                lead, state = required[0], "started"
+        return JSONResponse(
+            {
+                "ok": True,
+                "state": state,
+                "modes_done": len(eng.modes_seen(lead.id)),
+                "modes_total": len(LEARN_MODES),
+            }
+        )
+
     @app.get("/search", response_class=HTMLResponse)
     async def search_page(
         request: Request,
@@ -1977,25 +2109,19 @@ def create_app(
         year: int | None = Query(default=None),
         month: int | None = Query(default=None),
     ) -> HTMLResponse:
-        eng = _engine()
-        today = _user_today(request, eng)
+        today = date.today()
         y = year if year is not None else today.year
         m = month if month is not None else today.month
         if m < 1 or m > 12 or y < 1 or y > 9999:
             raise HTTPException(status_code=400, detail="Invalid year or month")
+        eng = _engine()
         is_guest = bool(
             app.state.multiuser_enabled
             and getattr(request.state, "current_user", None) is None
         )
         if not is_guest:
             eng.bootstrap_request()
-        view = build_calendar_month(
-            eng,
-            year=y,
-            month=m,
-            today=today,
-            entitled=can_use_auto_plan(request),
-        )
+        view = build_calendar_month(eng, year=y, month=m, today=today)
         # The phone shows this month's data as a week strip + today + ladder
         # (design 19); only meaningful for the current month.
         revisions = (
@@ -2562,7 +2688,11 @@ def create_app(
             target = None
             if daily_target in ("3", "5", "7"):
                 target = int(daily_target)
-            mode = learning_plan_mode if learning_plan_mode in ("self_paced", "auto") else "self_paced"
+            mode = (
+                learning_plan_mode
+                if learning_plan_mode in ("self_paced", "auto")
+                else "self_paced"
+            )
             if mode == "auto" and not can_use_auto_plan(request):
                 mode = "self_paced"
                 target = None
@@ -2577,8 +2707,7 @@ def create_app(
         if app.state.multiuser_enabled and user is None:
             return RedirectResponse(url="/login?next=/onboarding/plan", status_code=303)
         if not can_use_auto_plan(request):
-            dest = "/dashboard" if app.state.multiuser_enabled else "/"
-            return RedirectResponse(url=dest, status_code=303)
+            return RedirectResponse(url=_home_url(), status_code=303)
         from constitution_memorizer.progress.study_session import get_learning_plan
 
         return templates.TemplateResponse(
@@ -2593,13 +2722,17 @@ def create_app(
         learning_plan_mode: str = Form("self_paced"),
         daily_target: str = Form(""),
     ) -> RedirectResponse:
-        dest = "/dashboard" if app.state.multiuser_enabled else "/"
+        dest = _home_url()
         if app.state.multiuser_enabled and getattr(request.state, "current_user", None) is None:
             return RedirectResponse(url="/login?next=/onboarding/plan", status_code=303)
         from constitution_memorizer.progress.study_session import save_learning_plan
 
         target = int(daily_target) if daily_target in ("3", "5", "7") else None
-        mode = learning_plan_mode if learning_plan_mode in ("self_paced", "auto") else "self_paced"
+        mode = (
+            learning_plan_mode
+            if learning_plan_mode in ("self_paced", "auto")
+            else "self_paced"
+        )
         if mode == "auto" and not can_use_auto_plan(request):
             mode = "self_paced"
             target = None

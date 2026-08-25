@@ -179,14 +179,37 @@ def test_revisions_ladder_covers_every_rung(tmp_path: Path):
     assert max(rung.percent for rung in view.ladder) == 100
 
 
-def test_calendar_page_renders_revisions_only_for_this_month(tmp_path: Path):
-    client, engine, _ = _client(tmp_path)
+def test_calendar_grid_renders_for_every_month(tmp_path: Path):
+    """Regression: the phone block used to be gated on `revisions`, which the
+    route only builds for the current month — so the nav arrows led to a blank
+    page. The grid works off calendar.days and must render for any month; only
+    the Today list is today-specific."""
+    client, _, _ = _client(tmp_path)
     today = date.today()
-    assert "revisions-mobile" in client.get("/calendar").text
-    other_year = today.year - 1
-    away = client.get(f"/calendar?year={other_year}&month={today.month}")
+    here = client.get("/calendar").text
+    assert "cal-m-grid" in here
+    assert "data-today-list" in here
+
+    away = client.get(f"/calendar?year={today.year - 1}&month={today.month}")
     assert away.status_code == 200
-    assert "revisions-mobile" not in away.text
+    assert "revisions-mobile" in away.text
+    assert "cal-m-grid" in away.text
+    assert "cal-m-legend" in away.text
+    # No "Today · N units" on a month that is not this one.
+    assert "data-today-list" not in away.text
+
+
+def test_calendar_days_are_openable(tmp_path: Path):
+    client, engine, _ = _client(tmp_path)
+    engine.mark_all_modes_seen("clause-1")
+    engine.mark_done("clause-1")
+    html = client.get("/calendar").text
+    # Cells are buttons carrying their date, with a per-day list to reveal.
+    assert 'class="cal-m-cell' in html
+    assert "data-day-list=" in html
+    assert "data-day-empty" in html
+    js = client.get("/static/mobile.js").text
+    assert "initCalendarDays" in js
 
 
 # ── Today's Upcoming strip (design 01) ───────────────────────────────────────
@@ -287,3 +310,415 @@ def test_learn_mode_inits_run_after_their_dependencies(tmp_path: Path):
     locked_decl = js.index("const lockedModes = parseModes(")
     for init in ("initCloze(clozePanel", "initLetters(lettersPanel", "initType(typePanel"):
         assert locked_decl < js.index(init), init
+
+
+# ── Type mode must not show the answer while you type ────────────────────────
+
+
+def test_type_panel_never_renders_the_bare_act_wording(tmp_path: Path):
+    """Checking reports the score; it does not print the answer. The mirror
+    shows the user's own words, colour-coded, and that is the whole feedback —
+    otherwise a junk attempt plus a tap would hand over the text to copy."""
+    client, _, _ = _client(tmp_path)
+    html = client.get("/learn/clause-1?mode=type").text
+    assert "data-type-mirror" in html
+    assert 'class="learn-type-field"' in html
+    assert "data-type-count" in html
+    assert "data-type-fix" in html
+    # No corrections surface at all.
+    assert "data-type-diff" not in html
+    js = client.get("/static/app.js").text
+    assert "renderCorrections" not in js
+
+
+def test_type_mirror_never_renders_source_words(tmp_path: Path):
+    """The whole point of the mode: while typing, only the user's own tokens
+    reach the DOM. `renderMirror` must write the token it is iterating, never
+    `words[i]` — that regression is what put the full clause on screen."""
+    client, _, _ = _client(tmp_path)
+    js = client.get("/static/app.js").text
+    body = js[js.index("function renderMirror("): js.index("function renderStats(")]
+    assert "span.textContent = part;" in body
+    assert "words[" not in body, "renderMirror must not read the source text"
+
+
+def test_type_field_css_hides_the_textarea_glyphs(tmp_path: Path):
+    client, _, _ = _client(tmp_path)
+    css = client.get("/static/styles.css").text
+    overlay = css.split("\n.learn-type-input {\n  position: relative;", 1)[1].split("}", 1)[0]
+    assert "-webkit-text-fill-color: transparent" in overlay
+    assert "caret-color: var(--ink)" in overlay
+    # A draggable or scrolling textarea slides out from under its mirror.
+    assert "resize: none" in overlay
+    assert "overflow: hidden" in overlay
+    # Anchor past the shared block, whose selector list ends the same way.
+    mirror = css.split("\n.learn-type-mirror {\n  position: relative;", 1)[1].split("}", 1)[0]
+    assert "user-select: none" in mirror
+    assert "pointer-events: none" in mirror
+
+
+def test_type_layers_share_one_metric_block(tmp_path: Path):
+    """The rule that stops this technique rotting: every metric-affecting
+    property is set on both layers at once. A font-size or line-height on one
+    layer alone drifts the underlines off their words, one line at a time."""
+    client, _, _ = _client(tmp_path)
+    css = client.get("/static/styles.css").text
+    shared = css.split(".learn-type-input,\n.learn-type-mirror {", 1)[1].split("}", 1)[0]
+    for prop in (
+        "padding: 14px",
+        "white-space: pre-wrap",
+        "overflow-wrap: break-word",
+        "-webkit-text-size-adjust: 100%",
+        "font-optical-sizing: none",
+    ):
+        assert prop in shared, prop
+    # Ratio line-heights round differently in a textarea than in a block box.
+    assert "line-height: 26px" in shared
+    assert "line-height: 1.6" not in shared
+    # `pretty` would balance the mirror's last line and rewrap it alone.
+    assert "text-wrap: wrap" in shared
+
+
+def test_no_solo_metric_rule_for_the_type_input(tmp_path: Path):
+    """Guards the same discipline across both stylesheets."""
+    import re
+
+    client, _, _ = _client(tmp_path)
+    for asset in ("/static/styles.css", "/static/mobile.css"):
+        css = client.get(asset).text
+        for match in re.finditer(r"([^{}]*\.learn-type-input[^{}]*)\{([^}]*)\}", css):
+            selector, body = match.group(1).strip(), match.group(2)
+            if "learn-type-mirror" in selector:
+                continue
+            for prop in ("font-size", "line-height", "letter-spacing", "padding", "font-family"):
+                assert prop + ":" not in body, f"{asset}: {selector} sets {prop} alone"
+
+
+def test_type_correctness_is_not_colour_alone(tmp_path: Path):
+    """Teal vs amber flattens to one colour under forced-colors and is lost to
+    colour blindness; the underline style carries the distinction too."""
+    client, _, _ = _client(tmp_path)
+    css = client.get("/static/styles.css").text
+    assert "underline solid var(--browse-due)" in css
+    assert "underline wavy var(--browse-mark-news)" in css
+
+
+def test_type_js_handles_composition_and_restore(tmp_path: Path):
+    client, _, _ = _client(tmp_path)
+    js = client.get("/static/app.js").text
+    for hook in ("compositionstart", "compositionupdate", "compositionend", "pageshow"):
+        assert hook in js, hook
+
+
+def test_type_check_button_is_the_only_reveal(tmp_path: Path):
+    """No second CTA was added — Check is still the sole control."""
+    client, _, _ = _client(tmp_path)
+    html = client.get("/learn/clause-1?mode=type").text
+    assert html.count("data-type-check") == 1
+    assert "Check my attempt" in html
+
+
+# ── Learn deck: cards, Next rotation, single CTA ─────────────────────────────
+
+
+def test_tab_marks_cannot_reach_the_deck_cards(tmp_path: Path):
+    """Regression: `tabs` used to select every [data-learn-mode] element, which
+    includes the phone's deck cards. applyTabMarks then rewrote each card's
+    textContent to "Read ✓", wiping its title, description and status footer
+    and leaving the deck looking empty."""
+    client, _, _ = _client(tmp_path)
+    js = client.get("/static/app.js").text
+    assert 'querySelectorAll(".mode-tab")' in js
+    assert 'const tabs = Array.from(learn.querySelectorAll("[data-learn-mode]"))' not in js
+
+
+def test_deck_cards_ship_their_full_content(tmp_path: Path):
+    client, _, _ = _client(tmp_path)
+    html = client.get("/learn/clause-1").text
+    assert "learn-deck-card-eyebrow" in html
+    assert "learn-deck-card-title" in html
+    assert "learn-deck-card-lede" in html
+    assert "learn-deck-card-state" in html
+    # One card per mode, each with its numbered eyebrow.
+    assert html.count("learn-deck-card-title") == 6
+    assert "01 · READ" in html
+
+
+def test_next_walks_only_outstanding_modes(tmp_path: Path):
+    client, _, _ = _client(tmp_path)
+    js = client.get("/static/mobile.js").text
+    for helper in ("pendingModes", "nextTarget", "isModeDone"):
+        assert helper in js, helper
+    # Positional "is this the last mode" is what the pending set replaced.
+    assert "isLastMode" not in js
+
+
+def test_next_is_constant_and_yields_only_to_a_live_mic(tmp_path: Path):
+    """Design 3b: "Next is constant on the right — it never moves, whatever
+    the mode brings." The single exception is an open mic (3c/3d), where the
+    record button takes the primary slot. Nothing else may hide it, or a gate
+    becomes a dead end instead of a stated reason."""
+    client, _, _ = _client(tmp_path)
+    js = client.get("/static/mobile.js").text
+    assert "GATE_ACTIONS" not in js
+    assert "is-promoted" not in js
+    assert "nextBtn.hidden" not in js
+
+    css = client.get("/static/mobile.css").text
+    assert ".learn-mode-nav.is-recording .learn-mode-next" in css
+    assert ".learn-mode-nav.is-solo-cta .learn-mode-next" in css
+    # Exactly two rules may take Next off screen: a live mic, and Type — whose
+    # own check button morphs into the advance. Nothing else may quietly hide
+    # the exit, or a gate becomes a dead end instead of a stated reason.
+    hiding = [
+        block
+        for block in css.split("}")
+        if "learn-mode-next" in block and "display: none" in block
+    ]
+    assert len(hiding) == 2, hiding
+    assert any("is-recording" in block for block in hiding)
+    assert any("is-solo-cta" in block for block in hiding)
+
+
+def test_recording_state_uses_tokens_not_raw_hex(tmp_path: Path):
+    client, _, _ = _client(tmp_path)
+    css = client.get("/static/mobile.css").text
+    rec = css.split(".rec-dot {", 1)[1].split("}", 1)[0]
+    assert "var(--recording-indicator)" in rec
+    assert "#3ba08f" not in rec
+    styles = client.get("/static/styles.css").text
+    assert "--recording-indicator:" in styles
+    assert "--calendar-done:" in styles
+
+
+def test_morphing_buttons_reserve_their_widest_label(tmp_path: Path):
+    """Relabelling must not reflow the bar."""
+    client, _, _ = _client(tmp_path)
+    css = client.get("/static/mobile.css").text
+    for selector in (
+        ".learn-mode-nav .learn-type-check",
+        ".learn-mode-nav .learn-test-submit",
+        ".learn-mode-nav .learn-recite-toggle",
+        ".learn-mode-nav .learn-letters-speak",
+        ".learn-mode-nav .learn-cloze-btn",
+        ".learn-mode-next",
+    ):
+        block = css.split(selector + " {", 1)[1].split("}", 1)[0]
+        assert "min-width" in block, selector
+
+
+def test_phone_drops_again_tomorrow_and_the_ledger_line(tmp_path: Path):
+    client, _, _ = _client(tmp_path)
+    css = client.get("/static/mobile.css").text
+    for selector in (
+        'body[data-mscreen="learn"] .learn-action-again',
+        'body[data-mscreen="learn"] [data-guest-action="again"]',
+        'body[data-mscreen="learn"] .learn-meta',
+    ):
+        assert selector in css, selector
+    # Still served for desktop — hidden by CSS, not removed from the template.
+    assert "Again tomorrow" in client.get("/learn/clause-1").text
+
+
+def test_clause_rail_carries_per_clause_progress(tmp_path: Path):
+    """Article 1 has three clauses in the fixture, so the rail renders."""
+    client, engine, _ = _client(tmp_path)
+    engine.mark_all_modes_seen("clause-1")
+    html = client.get("/learn/clause-1").text
+    if "sibling-chip" in html:
+        assert "sibling-chip-count" in html
+        assert "6/6" in html
+
+
+# ── Calendar tab + month grid (handoff §1–§3) ────────────────────────────────
+
+
+def test_fourth_tab_reads_calendar():
+    """The signed-in tab bar only renders under multiuser, which this fixture
+    is not, so assert the template contract directly."""
+    base = (
+        Path(__file__).parent.parent
+        / "src/constitution_memorizer/web/templates/base.html"
+    ).read_text()
+    tabbar = base.split('class="mobile-tabbar" aria-label="Mobile"', 1)[1].split(
+        "</nav>", 1
+    )[0]
+    assert ">Calendar</a>" in tabbar
+    assert ">Revisions</a>" not in tabbar
+    # Same route and the same active rule as before the rename.
+    assert "href=\"/calendar\"" in tabbar
+    assert "path.startswith('/progress')" in tabbar
+
+
+def test_dominant_kind_priority(tmp_path: Path):
+    from constitution_memorizer.web.calendar_view import CalendarChip, CalendarDay
+
+    def chip(kind):
+        return CalendarChip(kind=kind, unit_id="u", label="l", title="t")
+
+    # ChipKind has no "overdue" — a past day holding a due chip is one.
+    assert CalendarDay(1, "i", is_past=True, chips=[chip("due")]).dominant_kind == "overdue"
+    assert CalendarDay(1, "i", chips=[chip("due")]).dominant_kind == "due"
+    assert CalendarDay(1, "i", chips=[chip("scheduled")]).dominant_kind == "scheduled"
+    assert CalendarDay(1, "i", chips=[chip("review_done")]).dominant_kind == "done"
+    # Most urgent wins when a day carries several.
+    mixed = CalendarDay(1, "i", is_past=True, chips=[chip("review_done"), chip("due")])
+    assert mixed.dominant_kind == "overdue"
+    assert CalendarDay(1, "i").dominant_kind is None
+
+
+def test_phone_calendar_renders_a_month_grid(tmp_path: Path):
+    client, _, _ = _client(tmp_path)
+    html = client.get("/calendar").text
+    assert "cal-m-grid" in html
+    assert "cal-m-legend" in html
+    # The week strip and the ladder are superseded.
+    assert "revisions-week" not in html
+    assert "revisions-rung" not in html
+    # Desktop grid untouched.
+    assert 'class="calendar-grid"' in html
+    css = client.get("/static/mobile.css").text
+    assert ".revisions-week" not in css
+    assert ".revisions-rung" not in css
+
+
+# ── Article CTA: personalised after paint, never in the render ───────────────
+
+
+def test_article_html_ships_the_neutral_cta(tmp_path: Path):
+    client, _, _ = _client(tmp_path)
+    html = client.get("/browse/article/20").text
+    assert "Learn this Article" in html
+    assert "data-article-cta" in html
+    # The personalised labels are client-side only.
+    assert "Continue · " not in html
+    assert "Revise — due today" not in html
+
+
+def test_article_progress_endpoint_reports_one_units_state(tmp_path: Path):
+    client, engine, _ = _client(tmp_path)
+    body = client.get("/api/articles/20/progress").json()
+    assert body["ok"] is True
+    assert body["state"] == "not_started"
+    assert body["modes_total"] == 6
+
+    engine.mark_mode_seen("clause-1", "read")
+    engine.mark_mode_seen("clause-1", "cloze")
+    body = client.get("/api/articles/20/progress").json()
+    assert body["state"] == "started"
+    # One clause speaks for the Article — counts are never summed across units.
+    assert body["modes_done"] <= body["modes_total"]
+
+
+def test_article_progress_endpoint_flags_a_due_unit(tmp_path: Path):
+    client, engine, _ = _client(tmp_path)
+    engine.mark_all_modes_seen("clause-1")
+    engine.mark_done("clause-1", as_of=date.today() - timedelta(days=30))
+    assert client.get("/api/articles/20/progress").json()["state"] == "due"
+
+
+def test_article_cta_script_skips_guests(tmp_path: Path):
+    client, _, _ = _client(tmp_path)
+    js = client.get("/static/mobile.js").text
+    block = js.split("function initArticleCta", 1)[1].split("function boot", 1)[0]
+    assert 'classList.contains("is-authed")' in block
+    assert "/api/articles/" in block
+    # A failed fetch must leave the server label alone.
+    assert ".catch(" in block
+
+
+# ── Type: one CTA that morphs into Next/Done ─────────────────────────────────
+
+
+def test_type_bar_has_a_single_cta(tmp_path: Path):
+    """The design draws no bar for Type — frame 10 shows one ink CTA — so its
+    check button carries the advance instead of sitting beside a second one."""
+    client, _, _ = _client(tmp_path)
+    css = client.get("/static/mobile.css").text
+    assert ".learn-mode-nav.is-solo-cta .learn-mode-next" in css
+    solo = css.split(".learn-mode-nav.is-solo-cta .learn-type-check:not([hidden]) {", 1)[1]
+    solo = solo.split("}", 1)[0]
+    # It is the primary now, not a ghost secondary.
+    assert "background: var(--accent)" in solo
+    assert "flex: 2 1 auto" in solo
+
+
+def test_type_check_button_morphs_into_the_advance(tmp_path: Path):
+    client, _, _ = _client(tmp_path)
+    js = client.get("/static/app.js").text
+    # The old in-place button labels are gone. ("All correct ✓" still exists,
+    # but as the score pane's label — not on the button.)
+    assert "check again" not in js
+    assert "correct ✓\"" not in js.replace('"All correct ✓"', "")
+    assert "typeAdvance" in js
+    assert "learn:type-checked" in js
+    assert "learn:type-reset" in js
+    # The direct handler must stand down once the button is the advance, or a
+    # single tap would re-check and advance at the same time.
+    # Scope to initType — initLetters has its own `checkBtn`.
+    type_src = js.split("function initType", 1)[1].split("function initRecite", 1)[0]
+    guard = type_src.split('checkBtn.addEventListener("click"', 1)[1][:400]
+    assert "typeAdvance" in guard
+
+
+def test_type_solo_cta_needs_a_check_button(tmp_path: Path):
+    """A locked Type panel renders no check button, so the ordinary Next has
+    to stay or the bar would have no CTA at all."""
+    client, _, _ = _client(tmp_path)
+    js = client.get("/static/mobile.js").text
+    block = js.split("function syncNextButton", 1)[1].split("function goToMode", 1)[0]
+    assert 'querySelector("[data-type-check]")' in block
+    assert "Boolean(typeCheck)" in block
+
+
+# ── Type: clause markers, and the Score / Wording tabs ───────────────────────
+
+
+def test_type_skips_clause_markers(tmp_path: Path):
+    """Clause numbering is not recall. "(3)", "(a)", "(iv)" are dropped from
+    the target, and ignored rather than scored wrong if typed anyway — so the
+    word alignment holds either way. Same predicate Letters already uses."""
+    client, _, _ = _client(tmp_path)
+    js = client.get("/static/app.js").text
+    assert "function isStructuralToken" in js
+    type_src = js.split("function initType", 1)[1].split("function initRecite", 1)[0]
+    assert "sourceWords.filter((word) => !isStructuralToken(word))" in type_src
+    assert "is-structural" in type_src
+
+
+def test_type_check_scores_the_whole_attempt(tmp_path: Path):
+    """settledWords drops the trailing token because it is still being typed.
+    That is right for the live counter and wrong for a check, where the user
+    has finished — otherwise the last word could never be counted."""
+    client, _, _ = _client(tmp_path)
+    js = client.get("/static/app.js").text
+    type_src = js.split("function initType", 1)[1].split("function initRecite", 1)[0]
+    assert "function attemptWords" in type_src
+    result = type_src.split("function renderResult", 1)[1].split("function ", 1)[0]
+    assert "attemptWords" in result
+    assert "settledWords" not in result
+
+
+def test_type_result_tabs_gate_the_wording(tmp_path: Path):
+    client, _, _ = _client(tmp_path)
+    html = client.get("/learn/clause-1?mode=type").text
+    assert 'data-type-tab="score"' in html
+    assert 'data-type-tab="wording"' in html
+    # The wording tab ships hidden; only an imperfect attempt reveals it.
+    wording_tab = html.split('data-type-tab="wording"', 1)[1].split(">", 1)[0]
+    assert "hidden" in wording_tab
+    assert 'data-type-result' in html
+
+    js = client.get("/static/app.js").text
+    result = js.split("function renderResult", 1)[1].split("tabs.forEach", 1)[0]
+    # Perfect means every target word produced, not merely nothing wrong yet.
+    assert "right === words.length" in result
+    assert "wordingTab.hidden = perfect" in result
+
+
+def test_live_counter_yields_to_the_settled_score(tmp_path: Path):
+    """Counts must appear in exactly one place at a time. The mobile rule sets
+    display:flex, which outranks the [hidden] default, so it needs its own."""
+    client, _, _ = _client(tmp_path)
+    css = client.get("/static/mobile.css").text
+    assert '.learn[data-mobile-view="mode"] .learn-type-stats[hidden]' in css

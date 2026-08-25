@@ -37,6 +37,14 @@ VALID_ONBOARDING_STATUSES: frozenset[str] = frozenset(
     ("active", "skipped", "completed")
 )
 
+# Study sessions. `kind` is open from the start: revision is the first of
+# three queue-shaped features and they differ only in how the snapshot is built.
+StudySessionKind = Literal["revision", "auto_learning", "day_plan"]
+StudySessionStatus = Literal["active", "complete"]
+# 'deferred' is what makes Again tomorrow expressible — the item leaves the
+# queue without becoming a completed revision.
+StudyItemStatus = Literal["pending", "completed", "deferred"]
+
 LEARN_MODES: tuple[str, ...] = ("read", "cloze", "letters", "type", "recite", "test")
 LEARN_MODES_SET: frozenset[str] = frozenset(LEARN_MODES)
 
@@ -111,6 +119,78 @@ class CompletionProgress:
 
 
 @dataclass(frozen=True)
+class StudySessionItem:
+    """One unit in a session's snapshot, in the order it was queued."""
+
+    learning_unit_id: str
+    position: int
+    status: StudyItemStatus
+    completed_at: str | None = None
+
+
+@dataclass(frozen=True)
+class StudySession:
+    """A snapshotted queue of learning units, walked once and resumable.
+
+    The snapshot is the point: completing a unit pushes its ``next_revision``
+    forward, so the due list it was built from stops being recoverable the
+    moment the first item is done. Items travel with the session because every
+    caller that has one needs them, and a second roundtrip per Learn GET is
+    real latency against a remote database.
+    """
+
+    id: str
+    kind: StudySessionKind
+    plan_date: date
+    status: StudySessionStatus
+    created_at: str
+    completed_at: str | None
+    items: tuple[StudySessionItem, ...]
+
+    def item_for(self, unit_id: str) -> StudySessionItem | None:
+        for item in self.items:
+            if item.learning_unit_id == unit_id:
+                return item
+        return None
+
+    def contains(self, unit_id: str) -> bool:
+        return self.item_for(unit_id) is not None
+
+    @property
+    def pending(self) -> tuple[StudySessionItem, ...]:
+        return tuple(i for i in self.items if i.status == "pending")
+
+    @property
+    def remaining(self) -> int:
+        return len(self.pending)
+
+    @property
+    def completed_count(self) -> int:
+        return sum(1 for i in self.items if i.status == "completed")
+
+    def next_pending_after(self, unit_id: str | None) -> str | None:
+        """The next still-pending unit, resuming from ``unit_id``'s position.
+
+        Wraps to the front so a unit skipped earlier in the walk is not
+        stranded: the queue is exhausted only when nothing is pending.
+        """
+        current = self.item_for(unit_id) if unit_id else None
+        start = current.position if current is not None else -1
+        after = [i for i in self.pending if i.position > start]
+        if after:
+            return after[0].learning_unit_id
+        head = [i for i in self.pending if i.learning_unit_id != unit_id]
+        return head[0].learning_unit_id if head else None
+
+    def position_of(self, unit_id: str) -> int | None:
+        """1-based place in the queue, for "Revision 2 of 6"."""
+        for index, item in enumerate(self.items, start=1):
+            if item.learning_unit_id == unit_id:
+                return index
+        return None
+
+
+@dataclass(frozen=True)
 class BillingOrder:
     """One Razorpay order: created at checkout, paid after verified signature."""
 
@@ -181,6 +261,58 @@ def _parse_date(value: str | None) -> date | None:
     if not value:
         return None
     return date.fromisoformat(value[:10])
+
+
+# One SELECT list, shared by SQLite and Postgres: the session and its items
+# come back in a single roundtrip, aliased so neither table's `id`, `status`
+# or `completed_at` shadows the other's.
+_STUDY_SESSION_COLUMNS = """
+    s.id AS session_id,
+    s.kind AS kind,
+    s.plan_date AS plan_date,
+    s.status AS session_status,
+    s.created_at AS session_created_at,
+    s.completed_at AS session_completed_at,
+    i.learning_unit_id AS learning_unit_id,
+    i.position AS position,
+    i.status AS item_status,
+    i.completed_at AS item_completed_at
+"""
+
+
+def _as_text(value: object) -> str | None:
+    if value is None:
+        return None
+    return value.isoformat() if hasattr(value, "isoformat") else str(value)
+
+
+def _study_session_from_rows(rows: list) -> StudySession | None:
+    """Rebuild one session from its LEFT JOINed rows (empty queue = one row)."""
+    if not rows:
+        return None
+    head = rows[0]
+    items = tuple(
+        StudySessionItem(
+            learning_unit_id=str(row["learning_unit_id"]),
+            position=int(row["position"]),
+            status=row["item_status"],
+            completed_at=_as_text(row["item_completed_at"]),
+        )
+        for row in rows
+        if row["learning_unit_id"] is not None
+    )
+    plan_date = head["plan_date"]
+    return StudySession(
+        id=str(head["session_id"]),
+        kind=head["kind"],
+        plan_date=(
+            plan_date if isinstance(plan_date, date) else date.fromisoformat(str(plan_date))
+        ),
+        status=head["session_status"],
+        created_at=str(_as_text(head["session_created_at"])),
+        completed_at=_as_text(head["session_completed_at"]),
+        items=tuple(sorted(items, key=lambda i: i.position)),
+    )
 
 
 def _row_to_progress(row: sqlite3.Row) -> ProgressRecord:
@@ -484,6 +616,122 @@ class ProgressRepository:
             ON CONFLICT(user_id, article_number) DO NOTHING
             """,
             (as_user_id(user_id), str(article_number), _utc_now_iso()),
+        )
+        self._conn.commit()
+
+    # ------------------------------------------------------------------ #
+    # Study sessions (revision / auto-learning / day-plan queues)         #
+    # ------------------------------------------------------------------ #
+    def create_study_session(
+        self,
+        user_id: UUID | str,
+        *,
+        session_id: str,
+        kind: StudySessionKind,
+        plan_date: date,
+        unit_ids: list[str],
+    ) -> StudySession:
+        now = _utc_now_iso()
+        uid = as_user_id(user_id)
+        self._conn.execute(
+            """
+            INSERT INTO study_session (
+                id, user_id, kind, plan_date, status, created_at, completed_at
+            ) VALUES (?, ?, ?, ?, 'active', ?, NULL)
+            """,
+            (session_id, uid, kind, _date_iso(plan_date), now),
+        )
+        # Dedup while preserving order: a queue must not offer the same unit
+        # twice, and the composite PK would reject the second row anyway.
+        ordered: list[str] = []
+        for unit_id in unit_ids:
+            if unit_id not in ordered:
+                ordered.append(unit_id)
+        self._conn.executemany(
+            """
+            INSERT INTO study_session_item (
+                session_id, learning_unit_id, position, status, completed_at
+            ) VALUES (?, ?, ?, 'pending', NULL)
+            """,
+            [(session_id, unit_id, index) for index, unit_id in enumerate(ordered)],
+        )
+        self._conn.commit()
+        session = self.get_study_session(user_id, session_id)
+        assert session is not None
+        return session
+
+    def get_study_session(
+        self, user_id: UUID | str, session_id: str
+    ) -> StudySession | None:
+        rows = self._conn.execute(
+            f"""
+            SELECT {_STUDY_SESSION_COLUMNS}
+            FROM study_session s
+            LEFT JOIN study_session_item i ON i.session_id = s.id
+            WHERE s.user_id = ? AND s.id = ?
+            ORDER BY i.position ASC
+            """,
+            (as_user_id(user_id), session_id),
+        ).fetchall()
+        return _study_session_from_rows(rows)
+
+    def active_study_session(
+        self,
+        user_id: UUID | str,
+        *,
+        kind: StudySessionKind,
+        plan_date: date | None = None,
+    ) -> StudySession | None:
+        """The user's newest active session of this kind (optionally for a day)."""
+        clause = "" if plan_date is None else " AND s.plan_date = ?"
+        params: list[object] = [as_user_id(user_id), kind]
+        if plan_date is not None:
+            params.append(_date_iso(plan_date))
+        rows = self._conn.execute(
+            f"""
+            SELECT {_STUDY_SESSION_COLUMNS}
+            FROM study_session s
+            LEFT JOIN study_session_item i ON i.session_id = s.id
+            WHERE s.user_id = ? AND s.kind = ? AND s.status = 'active'{clause}
+            ORDER BY s.created_at DESC, s.id DESC, i.position ASC
+            """,
+            params,
+        ).fetchall()
+        if not rows:
+            return None
+        newest = rows[0]["session_id"]
+        return _study_session_from_rows(
+            [row for row in rows if row["session_id"] == newest]
+        )
+
+    def set_study_item_status(
+        self,
+        user_id: UUID | str,
+        *,
+        session_id: str,
+        unit_id: str,
+        status: StudyItemStatus,
+    ) -> None:
+        completed_at = _utc_now_iso() if status == "completed" else None
+        self._conn.execute(
+            """
+            UPDATE study_session_item
+            SET status = ?, completed_at = ?
+            WHERE session_id = ? AND learning_unit_id = ?
+              AND session_id IN (SELECT id FROM study_session WHERE user_id = ?)
+            """,
+            (status, completed_at, session_id, unit_id, as_user_id(user_id)),
+        )
+        self._conn.commit()
+
+    def complete_study_session(self, user_id: UUID | str, session_id: str) -> None:
+        self._conn.execute(
+            """
+            UPDATE study_session
+            SET status = 'complete', completed_at = ?
+            WHERE id = ? AND user_id = ?
+            """,
+            (_utc_now_iso(), session_id, as_user_id(user_id)),
         )
         self._conn.commit()
 
@@ -915,7 +1163,7 @@ class ProgressRepository:
         self._conn.execute(
             """
             UPDATE study_session_item
-            SET state = 'completed', completed_at = ?, deferred_at = NULL
+            SET status = 'completed', completed_at = ?
             WHERE session_id = ? AND learning_unit_id = ?
               AND EXISTS (
                   SELECT 1 FROM study_session
@@ -927,7 +1175,7 @@ class ProgressRepository:
         pending = self._conn.execute(
             """
             SELECT COUNT(*) AS n FROM study_session_item
-            WHERE session_id = ? AND state = 'pending'
+            WHERE session_id = ? AND status = 'pending'
             """,
             (session_id,),
         ).fetchone()
@@ -935,7 +1183,7 @@ class ProgressRepository:
             self._conn.execute(
                 """
                 UPDATE study_session
-                SET status = 'completed', completed_at = ?
+                SET status = 'complete', completed_at = ?
                 WHERE id = ? AND user_id = ? AND status = 'active'
                 """,
                 (completed_at, session_id, user_id),
@@ -1005,222 +1253,6 @@ class ProgressRepository:
         assert row is not None
         return learning_plan_from_row(row, uid)
 
-    def _session_with_items(self, row) :
-        from constitution_memorizer.progress.study_models import (
-            study_session_from_row,
-            study_session_item_from_row,
-        )
-
-        if row is None:
-            return None
-        items = self._conn.execute(
-            """
-            SELECT * FROM study_session_item
-            WHERE session_id = ?
-            ORDER BY position
-            """,
-            (str(row["id"]),),
-        ).fetchall()
-        return study_session_from_row(
-            row, tuple(study_session_item_from_row(item) for item in items)
-        )
-
-    def get_study_session(self, user_id: UUID | str, session_id: str):
-        row = self._conn.execute(
-            """
-            SELECT * FROM study_session
-            WHERE id = ? AND user_id = ?
-            """,
-            (session_id, as_user_id(user_id)),
-        ).fetchone()
-        return self._session_with_items(row)
-
-    def get_active_revision_session(self, user_id: UUID | str):
-        row = self._conn.execute(
-            """
-            SELECT * FROM study_session
-            WHERE user_id = ? AND kind = 'revision' AND status = 'active'
-            """,
-            (as_user_id(user_id),),
-        ).fetchone()
-        return self._session_with_items(row)
-
-    def get_active_learning_session(self, user_id: UUID | str, plan_date: date):
-        row = self._conn.execute(
-            """
-            SELECT * FROM study_session
-            WHERE user_id = ? AND plan_date = ? AND status = 'active'
-              AND kind IN ('auto_learning', 'one_day_learning')
-            """,
-            (as_user_id(user_id), _date_iso(plan_date)),
-        ).fetchone()
-        return self._session_with_items(row)
-
-    def insert_study_session(
-        self,
-        user_id: UUID | str,
-        *,
-        session_id: str,
-        kind: str,
-        plan_date: date,
-        unit_ids: list[str],
-    ):
-        from constitution_memorizer.progress.study_models import VALID_KINDS
-
-        if kind not in VALID_KINDS:
-            raise ValueError(f"Invalid study session kind: {kind}")
-        uid = as_user_id(user_id)
-        now = _utc_now_iso()
-        try:
-            self._conn.execute("BEGIN")
-            self._conn.execute(
-                """
-                INSERT INTO study_session (
-                    id, user_id, kind, plan_date, status, created_at, completed_at
-                ) VALUES (?, ?, ?, ?, 'active', ?, NULL)
-                """,
-                (session_id, uid, kind, _date_iso(plan_date), now),
-            )
-            for position, unit_id in enumerate(unit_ids):
-                self._conn.execute(
-                    """
-                    INSERT INTO study_session_item (
-                        session_id, position, learning_unit_id, state,
-                        completed_at, deferred_at
-                    ) VALUES (?, ?, ?, 'pending', NULL, NULL)
-                    """,
-                    (session_id, position, unit_id),
-                )
-            self._conn.commit()
-        except sqlite3.IntegrityError:
-            self._conn.rollback()
-            existing = self.get_study_session(uid, session_id)
-            if existing is not None:
-                return existing
-            if kind == "revision":
-                existing = self.get_active_revision_session(uid)
-            else:
-                existing = self.get_active_learning_session(uid, plan_date)
-            if existing is not None:
-                return existing
-            raise
-        except Exception:
-            self._conn.rollback()
-            raise
-        loaded = self.get_study_session(uid, session_id)
-        assert loaded is not None
-        return loaded
-
-    def set_study_session_status(
-        self,
-        user_id: UUID | str,
-        session_id: str,
-        status: str,
-        *,
-        completed_at: str | None = None,
-    ) -> None:
-        from constitution_memorizer.progress.study_models import VALID_STATUSES
-
-        if status not in VALID_STATUSES:
-            raise ValueError(f"Invalid study session status: {status}")
-        now = _utc_now_iso()
-        stamp = completed_at
-        if status == "completed" and stamp is None:
-            stamp = now
-        self._conn.execute(
-            """
-            UPDATE study_session
-            SET status = ?, completed_at = ?
-            WHERE id = ? AND user_id = ?
-            """,
-            (status, stamp, session_id, as_user_id(user_id)),
-        )
-        self._conn.commit()
-
-    def abandon_stale_sessions(self, user_id: UUID | str, local_today: date) -> int:
-        cur = self._conn.execute(
-            """
-            UPDATE study_session
-            SET status = 'abandoned'
-            WHERE user_id = ? AND status = 'active' AND plan_date < ?
-            """,
-            (as_user_id(user_id), _date_iso(local_today)),
-        )
-        self._conn.commit()
-        return int(cur.rowcount or 0)
-
-    def abandon_unstarted_learning_sessions(self, user_id: UUID | str) -> int:
-        cur = self._conn.execute(
-            """
-            UPDATE study_session
-            SET status = 'abandoned'
-            WHERE user_id = ?
-              AND status = 'active'
-              AND kind IN ('auto_learning', 'one_day_learning')
-              AND NOT EXISTS (
-                  SELECT 1 FROM study_session_item
-                  WHERE study_session_item.session_id = study_session.id
-                    AND study_session_item.state = 'completed'
-              )
-            """,
-            (as_user_id(user_id),),
-        )
-        self._conn.commit()
-        return int(cur.rowcount or 0)
-
-    def set_session_item_state(
-        self,
-        user_id: UUID | str,
-        session_id: str,
-        unit_id: str,
-        state: str,
-        *,
-        completed_at: str | None = None,
-        deferred_at: str | None = None,
-    ):
-        from constitution_memorizer.progress.study_models import VALID_ITEM_STATES
-
-        if state not in VALID_ITEM_STATES:
-            raise ValueError(f"Invalid session item state: {state}")
-        session = self.get_study_session(user_id, session_id)
-        if session is None:
-            return None
-        now = _utc_now_iso()
-        self._conn.execute(
-            """
-            UPDATE study_session_item
-            SET state = ?, completed_at = ?, deferred_at = ?
-            WHERE session_id = ? AND learning_unit_id = ?
-            """,
-            (
-                state,
-                completed_at if state == "completed" else None,
-                deferred_at if state == "deferred" else None,
-                session_id,
-                unit_id,
-            ),
-        )
-        if state in ("completed", "deferred"):
-            pending = self._conn.execute(
-                """
-                SELECT COUNT(*) AS n FROM study_session_item
-                WHERE session_id = ? AND state = 'pending'
-                """,
-                (session_id,),
-            ).fetchone()
-            if pending is not None and int(pending["n"]) == 0:
-                self._conn.execute(
-                    """
-                    UPDATE study_session
-                    SET status = 'completed', completed_at = ?
-                    WHERE id = ? AND user_id = ? AND status = 'active'
-                    """,
-                    (now, session_id, as_user_id(user_id)),
-                )
-        self._conn.commit()
-        return self.get_study_session(user_id, session_id)
-
 
 # Backward-compatible alias used by docs/plan wording.
 SQLiteProgressRepository = ProgressRepository
-

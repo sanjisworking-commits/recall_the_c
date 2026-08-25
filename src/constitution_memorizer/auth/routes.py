@@ -443,6 +443,7 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
                 done_id=done_id,
                 request=request,
                 is_guest=False,
+                today=user_today(eng),
                 continue_href="/dashboard",
                 continue_label=None,
             )

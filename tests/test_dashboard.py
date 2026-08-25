@@ -120,7 +120,8 @@ def test_progress_strip_and_new_user_context(engine: ReminderEngine):
     assert ctx["greeting"] == "Welcome, Priya."
     assert ctx["nothing_due"] is True
     assert ctx["strip"]["revisions_done"] == 0
-    assert ctx["recent"] == []
+    # Recent activity was removed from Today; the view-model no longer builds it.
+    assert "recent" not in ctx
 
     engine.mark_all_modes_seen("u1")
     engine.mark_done("u1", as_of=today)
@@ -135,8 +136,7 @@ def test_progress_strip_and_new_user_context(engine: ReminderEngine):
         now=datetime(2026, 8, 3, 9, 0, tzinfo=timezone.utc),
     )
     assert ctx2["greeting"] == "Good morning, Priya."
-    assert ctx2["recent"]
-    assert "Article 20" in ctx2["recent"][0]["text"]
+    assert "recent" not in ctx2
 
 
 def test_dashboard_today_mode_revision_first(engine: ReminderEngine):
@@ -149,12 +149,12 @@ def test_dashboard_today_mode_revision_first(engine: ReminderEngine):
         as_of=today,
         entitled=True,
     )
-    assert ctx["today_mode"] == "start_revision"
+    assert ctx["today_mode"] == "revision"
     assert ctx["due_count"] == 1
 
-    from constitution_memorizer.progress.study_session import start_or_resume_revision
+    from constitution_memorizer.web.service import start_or_resume_revision
 
-    session = start_or_resume_revision(engine, today=today)
+    session = start_or_resume_revision(engine, as_of=today)
     assert session is not None
     ctx2 = build_dashboard_context(
         engine,
@@ -162,8 +162,8 @@ def test_dashboard_today_mode_revision_first(engine: ReminderEngine):
         as_of=today,
         entitled=True,
     )
-    assert ctx2["today_mode"] == "continue_revision"
-    assert ctx2["revision_left"] == session.pending_count
+    assert ctx2["today_mode"] == "revision"
+    assert ctx2["revision_remaining"] == session.remaining
 
 
 def test_dashboard_today_mode_self_paced_when_caught_up(engine: ReminderEngine):
@@ -174,7 +174,7 @@ def test_dashboard_today_mode_self_paced_when_caught_up(engine: ReminderEngine):
         as_of=today,
         entitled=False,
     )
-    assert ctx["today_mode"] in ("self_paced", "caught_up")
+    assert ctx["today_mode"] == "learning"
     assert ctx["nothing_due"] is True
 
 
@@ -208,7 +208,7 @@ def test_dashboard_uses_user_local_date_not_utc(engine: ReminderEngine, monkeypa
         display_label="Priya Sharma",
         entitled=True,
     )
-    assert ctx_local["today_mode"] == "start_revision"
+    assert ctx_local["today_mode"] == "revision"
     assert ctx_local["due_count"] >= 1
 
     ctx_utc = build_dashboard_context(
@@ -218,7 +218,7 @@ def test_dashboard_uses_user_local_date_not_utc(engine: ReminderEngine, monkeypa
         entitled=True,
     )
     assert ctx_utc["due_count"] == 0
-    assert ctx_utc["today_mode"] != "start_revision"
+    assert ctx_utc["today_mode"] != "revision"
 
 
 def test_dashboard_today_mode_continue_learning(engine: ReminderEngine):
@@ -226,7 +226,7 @@ def test_dashboard_today_mode_continue_learning(engine: ReminderEngine):
     from constitution_memorizer.progress.study_session import start_or_resume_learning
 
     session = start_or_resume_learning(
-        engine, kind="one_day_learning", count=3, today=today
+        engine, kind="day_plan", count=3, today=today
     )
     assert session is not None
     ctx = build_dashboard_context(
@@ -235,9 +235,9 @@ def test_dashboard_today_mode_continue_learning(engine: ReminderEngine):
         as_of=today,
         entitled=False,
     )
-    assert ctx["today_mode"] == "continue_learning"
-    assert ctx["learning_count"] == session.pending_count
-    assert f"{session.pending_count} left" in ctx["continue_learning_label"]
+    assert ctx["today_mode"] == "learning"
+    assert ctx["learning_count"] == session.remaining
+    assert f"{session.remaining} left" in ctx["continue_learning_label"]
     assert "today's plan" in ctx["continue_learning_label"]
 
 
@@ -245,7 +245,7 @@ def test_dashboard_plan_prompt_is_behind_dialog():
     html = Path(
         "src/constitution_memorizer/web/templates/dashboard.html"
     ).read_text(encoding="utf-8")
-    assert "Nothing to review today." in html
+    assert "Nothing is due today" in html
     assert "Want Recall to plan today's learning?" in html
     assert "Plan my day" in html
     dialog_at = html.index("data-plan-my-day-dialog")
@@ -253,7 +253,6 @@ def test_dashboard_plan_prompt_is_behind_dialog():
     assert prompt_at < dialog_at
     assert 'name="count"' not in html[:dialog_at]
     assert 'name="count" value="{{ n }}"' in html[dialog_at:]
-    assert "((3, 'Steady · 3'), (5, 'Balanced · 5'), (7, 'Intensive · 7'))" in html[dialog_at:]
     dash_py = Path("src/constitution_memorizer/web/dashboard.py").read_text(
         encoding="utf-8"
     )
@@ -265,5 +264,5 @@ def test_dashboard_route_passes_user_today():
     source = Path("src/constitution_memorizer/auth/routes.py").read_text(
         encoding="utf-8"
     )
-    dash = source[source.index("def dashboard") : source.index("ctx[\"user\"]")]
+    dash = source[source.index("def dashboard") : source.index('ctx["user"]')]
     assert "as_of=user_today(eng)" in dash

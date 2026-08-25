@@ -34,7 +34,8 @@ def test_learn_enables_test_tab_and_quiz_markup(client: TestClient):
     assert "data-quiz-cycle" in html
     assert "Check answers" in html
     assert 'data-mode="read"' in html
-    assert "app.js?v=main33" in html
+
+    assert "app.js?v=main44" in html
 
 
 def test_test_mode_query_param_renders_test_active(client: TestClient):

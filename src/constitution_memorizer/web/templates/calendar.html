@@ -3,24 +3,74 @@
 {% block mobile_screen %}revisions{% endblock %}
 {% block content %}
 <section class="panel calendar">
-  {% if revisions %}
-  {# Design 19: the month grid does not survive 390 px, so the phone gets the
-     same data as a week strip, today's list, and the interval ladder. #}
+  {# Design 19: the desktop month grid does not survive 390 px, so the phone
+     gets its own grid over the same calendar.days. Rendered for EVERY month —
+     gating this on `revisions` (which is today-only) made the nav arrows lead
+     to a blank page. #}
   <div class="revisions-mobile">
     <div class="revisions-head">
-      <h1 class="revisions-title">Revisions</h1>
-      <p class="revisions-month">{{ revisions.month_label }}</p>
+      <h1 class="revisions-title">Calendar</h1>
+      {# Month nav reuses the desktop links — same route, same params. #}
+      <nav class="cal-m-nav" aria-label="Month navigation">
+        <a class="cal-m-nav-btn" href="/calendar?year={{ calendar.prev_year }}&amp;month={{ calendar.prev_month }}" aria-label="Previous month">←</a>
+        <p class="revisions-month">{{ calendar.title }}</p>
+        <a class="cal-m-nav-btn" href="/calendar?year={{ calendar.next_year }}&amp;month={{ calendar.next_month }}" aria-label="Next month">→</a>
+      </nav>
     </div>
-    <div class="revisions-week">
-      {% for day in revisions.week %}
-      <div class="revisions-day{% if day.is_today %} is-today{% endif %}">
-        <p class="revisions-dow">{{ day.dow }}</p>
-        <p class="revisions-daynum">{{ day.day }}</p>
-        <span class="revisions-day-mark{% if day.is_today %} is-today{% elif day.has_revision %} is-scheduled{% endif %}" aria-hidden="true"></span>
-      </div>
+
+    {# Same calendar.days the desktop grid renders; the phone shows one mark
+       per day instead of a chip stack. #}
+    <div class="cal-m-grid" role="grid" aria-label="{{ calendar.title }}">
+      {% for dow in calendar.weekdays %}
+      <span class="cal-m-dow" role="columnheader">{{ dow[0] }}</span>
+      {% endfor %}
+      {% for day in calendar.days %}
+        {% if day.is_blank %}
+        <span class="cal-m-cell is-blank" role="gridcell"></span>
+        {% else %}
+        <button type="button"
+              class="cal-m-cell{% if day.is_today %} is-today{% endif %}{% if day.is_past %} is-past{% endif %}"
+              role="gridcell" data-date="{{ day.iso }}"
+              aria-label="{{ day.long_label }}{% if day.chips %} — {{ day.chips|length }} unit{{ 's' if day.chips|length != 1 }}{% endif %}">
+          <span class="cal-m-num">{{ day.day }}</span>
+          <span class="cal-m-mark{% if day.dominant_kind %} is-{{ day.dominant_kind }}{% endif %}" aria-hidden="true"></span>
+        </button>
+        {% endif %}
       {% endfor %}
     </div>
 
+    <div class="cal-m-legend" aria-label="Legend">
+      <span class="cal-m-legend-item"><span class="cal-m-legend-box" aria-hidden="true"></span>Today</span>
+      <span class="cal-m-legend-item"><span class="cal-m-legend-bar is-overdue" aria-hidden="true"></span>Overdue</span>
+      <span class="cal-m-legend-item"><span class="cal-m-legend-bar is-scheduled" aria-hidden="true"></span>Scheduled</span>
+      <span class="cal-m-legend-item"><span class="cal-m-legend-bar is-done" aria-hidden="true"></span>Done</span>
+    </div>
+
+    {% set row_state = {'due': 'due', 'scheduled': 'scheduled', 'review_done': 'done', 'memorized': 'done'} %}
+    {% for day in calendar.days %}
+      {% if not day.is_blank and day.chips %}
+      <div class="cal-m-daylist" data-day-list="{{ day.iso }}" hidden>
+        <p class="revisions-eyebrow">{{ day.long_label }} · {{ day.chips|length }} unit{{ 's' if day.chips|length != 1 }}</p>
+        {% for chip in day.chips %}
+        <a class="revisions-row is-{{ row_state.get(chip.kind, 'scheduled') }}" href="/learn/{{ chip.unit_id }}">
+          <span class="revisions-row-dot" aria-hidden="true"></span>
+          <span class="revisions-row-copy">
+            <span class="revisions-row-title">{{ chip.label }}</span>
+            <span class="revisions-row-meta">{{ chip.title }}</span>
+          </span>
+          <span class="revisions-row-mark" aria-hidden="true">›</span>
+        </a>
+        {% endfor %}
+      </div>
+      {% endif %}
+    {% endfor %}
+    <div class="cal-m-daylist" data-day-empty hidden>
+      <p class="revisions-eyebrow" data-day-empty-label>Nothing scheduled</p>
+      <p class="revisions-empty">No revision falls on this day.</p>
+    </div>
+
+    {% if revisions %}
+    <div data-today-list>
     <p class="revisions-eyebrow">{{ revisions.today_label }}</p>
     {% for row in revisions.rows %}
     <a class="revisions-row is-{{ row.state }}" href="{{ row.href }}">
@@ -35,17 +85,11 @@
     <p class="revisions-empty">Nothing due today. Recall will ask again when a unit is actually due.</p>
     {% endfor %}
 
-    <p class="revisions-eyebrow">The ladder</p>
-    {% for rung in revisions.ladder %}
-    <div class="revisions-rung">
-      <span class="revisions-rung-label">{{ rung.label }}</span>
-      <span class="revisions-rung-track" aria-hidden="true"><span class="revisions-rung-fill" style="width: {{ rung.percent }}%"></span></span>
-      <span class="revisions-rung-count">{{ rung.count }}</span>
     </div>
-    {% endfor %}
-    <p class="revisions-note">Recall schedules revision for you — 1 → 3 → 7 → 15 → 30 → 60 days.</p>
+    {% endif %}
+
+    <p class="revisions-note">Recall schedules revision for you — 1 → 3 → 7 → 15 → 30 → 60 days. With Google Calendar on in Settings, these land in your calendar too.</p>
   </div>
-  {% endif %}
 
   <div class="calendar-header">
     <h1 class="display calendar-title">{{ calendar.title }}</h1>

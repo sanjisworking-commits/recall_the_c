@@ -190,6 +190,15 @@
     border-top: 1px solid var(--hairline);
   }
 
+  .cta-dot {
+    display: inline-block;
+    width: 7px;
+    height: 7px;
+    margin-right: 9px;
+    background: var(--browse-due);
+    vertical-align: 1px;
+  }
+
   .mobile-action-primary {
     flex: 1;
     display: flex;
@@ -1219,58 +1228,167 @@
     color: var(--mid);
   }
 
-  .revisions-week {
+  /* Month grid — one mark per day, from the same calendar.days the desktop
+     grid uses. Sunday-first, because that is what the existing projection
+     produces and the desktop grid must not change. */
+  .cal-m-nav {
     display: flex;
-    gap: 5px;
-    padding: 14px var(--m-gutter);
-    background: var(--page);
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
   }
 
-  .revisions-day {
-    flex: 1;
-    padding: 7px 0 6px;
-    text-align: center;
-    background: var(--paper);
+  .cal-m-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    flex: 0 0 auto;
     border: 1px solid var(--hairline);
+    background: var(--paper);
+    color: var(--muted);
+    font-size: 13px;
+    text-decoration: none;
   }
 
-  .revisions-day.is-today {
-    background: var(--ink);
-    border-color: var(--ink);
-    color: var(--on-accent);
+  .cal-m-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    margin: 12px var(--m-gutter) 0;
   }
 
-  .revisions-dow {
-    margin: 0;
+  .cal-m-dow {
+    padding: 2px 0 4px;
+    text-align: center;
     font-size: 10px;
     letter-spacing: 0.06em;
     color: var(--mid);
   }
 
-  .revisions-day.is-today .revisions-dow {
-    color: inherit;
+  .cal-m-cell {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    padding: 6px 0 5px;
+    background: var(--paper);
+    border: 1px solid var(--page);
   }
 
-  .revisions-daynum {
-    margin: 2px 0 0;
-    font-family: var(--font-display);
-    font-size: 16px;
+  .cal-m-cell.is-blank {
+    background: none;
+    border: 0;
   }
 
-  .revisions-day-mark {
-    display: block;
-    width: 14px;
-    height: 2px;
-    margin: 5px auto 0;
-    background: transparent;
+  /* Cells are buttons so a day can be opened; strip the UA chrome. */
+  .cal-m-cell {
+    font: inherit;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
   }
 
-  .revisions-day-mark.is-scheduled {
+  .cal-m-cell.is-selected {
+    border-color: var(--ink);
+    box-shadow: inset 0 0 0 1px var(--ink);
+  }
+
+  .cal-m-daylist[hidden],
+  [data-today-list][hidden] {
+    display: none;
+  }
+
+  .revisions-row.is-scheduled .revisions-row-dot {
     background: var(--browse-due);
   }
 
-  .revisions-day-mark.is-today {
+  .revisions-row.is-done .revisions-row-dot {
+    background: var(--calendar-done);
+  }
+
+  .cal-m-num {
+    font-family: var(--font-display);
+    font-size: 13.5px;
+  }
+
+  .cal-m-cell.is-past .cal-m-num {
+    color: var(--control-border);
+  }
+
+  .cal-m-cell.is-today {
+    background: var(--ink);
+    border-color: var(--ink);
+  }
+
+  .cal-m-cell.is-today .cal-m-num {
+    color: var(--on-accent);
+  }
+
+  .cal-m-cell.is-today .cal-m-mark {
     background: var(--on-accent);
+  }
+
+  .cal-m-mark {
+    width: 12px;
+    height: 2px;
+    background: transparent;
+  }
+
+  .cal-m-mark.is-scheduled,
+  .cal-m-mark.is-due {
+    background: var(--browse-due);
+  }
+
+  .cal-m-mark.is-overdue {
+    background: var(--browse-mark-news);
+  }
+
+  .cal-m-mark.is-done {
+    background: var(--calendar-done);
+  }
+
+  .cal-m-cell.is-overdue-day .cal-m-num {
+    color: var(--browse-mark-news);
+  }
+
+  .cal-m-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin: 14px var(--m-gutter) 0;
+  }
+
+  .cal-m-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 10.5px;
+    color: var(--muted);
+  }
+
+  .cal-m-legend-box {
+    width: 10px;
+    height: 10px;
+    background: var(--ink);
+  }
+
+  .cal-m-legend-bar {
+    width: 12px;
+    height: 2px;
+  }
+
+  .cal-m-legend-bar.is-overdue {
+    background: var(--browse-mark-news);
+  }
+
+  .cal-m-legend-bar.is-scheduled {
+    background: var(--browse-due);
+  }
+
+  .cal-m-legend-bar.is-done {
+    background: var(--calendar-done);
   }
 
   .revisions-eyebrow {
@@ -1351,39 +1469,6 @@
     padding: 0 var(--m-gutter) 8px;
     font-size: 13px;
     color: var(--muted);
-  }
-
-  .revisions-rung {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    min-height: 40px;
-    margin: 0 var(--m-gutter);
-    border-bottom: 1px solid var(--page);
-  }
-
-  .revisions-rung-label {
-    min-width: 50px;
-    font-size: 12.5px;
-    color: var(--mid);
-  }
-
-  .revisions-rung-track {
-    flex: 1;
-    height: 2px;
-    background: var(--track);
-  }
-
-  .revisions-rung-fill {
-    display: block;
-    height: 2px;
-    background: var(--ink);
-  }
-
-  .revisions-rung-count {
-    min-width: 30px;
-    text-align: right;
-    font-size: 12.5px;
   }
 
   .revisions-note {
@@ -1515,8 +1600,9 @@
     order: 5;
   }
 
+  /* Navigation, not a footnote: the clause switcher sits under the title. */
   body[data-mscreen="learn"] .sibling-rail {
-    order: 6;
+    order: 2;
   }
 
   body[data-mscreen="learn"] .learn-body {
@@ -1573,6 +1659,12 @@
     color: var(--mid);
   }
 
+  .learn-revision-badge {
+    margin: 10px 0 0;
+    padding: 2px 8px;
+    font-size: 11.5px;
+  }
+
   .learn-deck-track {
     height: 2px;
     margin-top: 12px;
@@ -1620,6 +1712,9 @@
     display: flex;
     flex-direction: column;
     width: min(330px, calc(100vw - var(--m-gutter) * 2 - 24px));
+    /* Design 05 proportions: the card is the screen's main object, not a
+       strip. The footer is pushed to the bottom by its auto margin. */
+    min-height: 248px;
     padding: 16px 16px 0;
     border: 1px solid var(--hairline);
     background: var(--paper);
@@ -1681,7 +1776,7 @@
     display: flex;
     justify-content: center;
     gap: 6px;
-    padding: 18px 0 0;
+    padding: 16px 0 0;
   }
 
   .learn-deck-dot {
@@ -1700,24 +1795,54 @@
     background: var(--ink);
   }
 
+  /* Full-width segmented row at full contrast — each clause carries its own
+     progress, so switching is an informed choice rather than a guess. */
   body[data-mscreen="learn"] .sibling-rail {
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin: 24px 0 0;
+    flex-wrap: nowrap;
+    gap: 6px;
+    margin: 14px 0 0;
     padding: 0;
     border: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
   }
 
-  .learn[data-mobile-view="deck"] .sibling-rail::before {
-    content: "Other clauses";
-    flex: 1 0 100%;
-    margin-bottom: -2px;
-    font-size: 10.5px;
-    font-weight: 600;
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
+  body[data-mscreen="learn"] .sibling-rail::-webkit-scrollbar {
+    display: none;
+  }
+
+  body[data-mscreen="learn"] .sibling-chip {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    min-width: 72px;
+    min-height: 48px;
+    padding: 6px 10px;
+    border: 1px solid var(--control-border);
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 13px;
+    text-decoration: none;
+  }
+
+  body[data-mscreen="learn"] .sibling-chip.is-current {
+    border-color: var(--ink);
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+
+  .sibling-chip-count {
+    font-size: 11px;
     color: var(--mid);
+  }
+
+  body[data-mscreen="learn"] .sibling-chip.is-current .sibling-chip-count {
+    color: var(--on-accent);
+    opacity: 0.75;
   }
 
   /* Done / Again close the deck, not a mode. */
@@ -1725,7 +1850,7 @@
     display: flex;
     flex-direction: column;
     gap: 10px;
-    margin-top: 26px;
+    margin-top: 22px;
     padding-top: 18px;
     border-top: 1px solid var(--hairline);
   }
@@ -1743,10 +1868,18 @@
     background: transparent;
   }
 
-  .learn[data-mobile-view="deck"] .learn-meta,
   .learn[data-mobile-view="deck"] .learn-action-reset {
     order: 2;
     min-width: 0;
+  }
+
+  /* Done already reschedules; "Again tomorrow" postpones WITHOUT completing,
+     which is a desktop affordance. The ledger line under the Done button is
+     noise at this width. Both stay on desktop. */
+  body[data-mscreen="learn"] .learn-action-again,
+  body[data-mscreen="learn"] [data-guest-action="again"],
+  body[data-mscreen="learn"] .learn-meta {
+    display: none;
   }
 
   .learn[data-mobile-view="deck"] .learn-actions form,
@@ -1817,8 +1950,7 @@
   }
 
   body[data-mscreen="learn"] .learn-cloze-text,
-  body[data-mscreen="learn"] .learn-recite-text,
-  body[data-mscreen="learn"] .learn-type-diff {
+  body[data-mscreen="learn"] .learn-recite-text {
     font-family: var(--font-display);
     font-weight: 400;
     font-size: 20px;
@@ -1828,11 +1960,6 @@
 
   body[data-mscreen="learn"] .learn-recite-text {
     line-height: 1.7;
-  }
-
-  body[data-mscreen="learn"] .learn-type-diff {
-    font-size: 18px;
-    line-height: 1.9;
   }
 
   body[data-mscreen="learn"] .learn-letters-text {
@@ -1871,6 +1998,8 @@
     align-items: center;
     justify-content: center;
     height: 48px;
+    /* Reserved so "Done — revision tomorrow" does not reflow the bar. */
+    min-width: 8.5rem;
     padding: 0 16px;
     white-space: nowrap;
     border: 1px solid var(--accent);
@@ -1895,6 +2024,8 @@
   .learn-mode-nav .learn-recite-controls {
     display: flex;
     align-items: center;
+    /* These rows wrap on desktop; in a one-line bar they must shrink instead. */
+    flex-wrap: nowrap;
     flex: 0 1 auto;
     min-width: 0;
     gap: 9px;
@@ -1904,14 +2035,14 @@
     background: none;
   }
 
-  .learn-mode-nav .learn-cloze-btn,
-  .learn-mode-nav .learn-letters-btn,
-  .learn-mode-nav .learn-letters-speak,
-  .learn-mode-nav .learn-letters-check,
-  .learn-mode-nav .learn-recite-toggle,
-  .learn-mode-nav .learn-recite-peek,
-  .learn-mode-nav .learn-type-check,
-  .learn-mode-nav .learn-test-submit {
+  .learn-mode-nav .learn-cloze-btn:not([hidden]),
+  .learn-mode-nav .learn-letters-btn:not([hidden]),
+  .learn-mode-nav .learn-letters-speak:not([hidden]),
+  .learn-mode-nav .learn-letters-check:not([hidden]),
+  .learn-mode-nav .learn-recite-toggle:not([hidden]),
+  .learn-mode-nav .learn-recite-peek:not([hidden]),
+  .learn-mode-nav .learn-type-check:not([hidden]),
+  .learn-mode-nav .learn-test-submit:not([hidden]) {
     /* Secondaries give way first: they shrink and ellipsize, Next does not.
        display:block + line-height is what makes text-overflow work on a
        button while still centring the label vertically. */
@@ -1931,6 +2062,90 @@
     overflow: hidden;
     text-overflow: ellipsis;
     cursor: pointer;
+  }
+
+  /* Whichever button currently leads wears the primary treatment — the mode's
+     own act while it is outstanding, then Next. Only ever one at a time. */
+  /* Next is constant on the right — it never moves, whatever the mode brings
+     (design 3b). The ONLY state that takes it off screen is a live mic: you
+     cannot skip past a recording, so the record button borrows the primary
+     slot and Next returns when the recording ends (3c, 3d). */
+  .learn-mode-nav.is-recording .learn-mode-next {
+    display: none;
+  }
+
+  .learn-mode-nav.is-recording .learn-recite-toggle,
+  .learn-mode-nav.is-recording .learn-letters-speak {
+    flex: 2 1 auto;
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--on-accent);
+    font-size: 15px;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  .rec-dot {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    margin-right: 9px;
+    background: var(--recording-indicator);
+    vertical-align: 0;
+  }
+
+  /* Type is the one mode the design never drew a bar for (frame 10 shows a
+     single ink CTA). Its check button morphs into the advance, so it is the
+     primary and Next steps aside — see is-solo-cta below. */
+  .learn-mode-nav.is-solo-cta .learn-type-check:not([hidden]) {
+    flex: 2 1 auto;
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--on-accent);
+    font-size: 15px;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  .learn-mode-nav.is-solo-cta .learn-type-check:disabled {
+    border-color: var(--done-locked-bg);
+    background: var(--done-locked-bg);
+    color: var(--done-locked-fg);
+  }
+
+  .learn-mode-nav.is-solo-cta .learn-mode-next {
+    display: none;
+  }
+
+  /* Reserve the widest label per slot so relabelling never reflows the bar. */
+  .learn-mode-nav .learn-type-check {
+    min-width: 10.5rem;
+  }
+
+  .learn-mode-nav .learn-test-submit {
+    min-width: 9.5rem;
+  }
+
+  .learn-mode-nav .learn-recite-toggle {
+    min-width: 9rem;
+  }
+
+  .learn-mode-nav .learn-letters-speak {
+    min-width: 8.5rem;
+  }
+
+  .learn-mode-nav .learn-cloze-btn {
+    min-width: 6.5rem;
+  }
+
+  .learn-mode-label {
+    transition: opacity 120ms linear;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .learn-mode-label {
+      transition: none;
+    }
   }
 
   .learn-mode-nav .learn-cloze-status,
@@ -1986,9 +2201,53 @@
     color: var(--mid);
   }
 
+  /* Markers the user typed anyway are neither right nor wrong. */
+  .learn-type-mirror-word.is-structural {
+    text-decoration: none;
+    color: var(--mid);
+  }
+
+  /* Bigger on the phone, where this is the whole result of the attempt. */
+  body[data-mscreen="learn"] .learn-type-score-num {
+    font-size: 40px;
+  }
+
+  body[data-mscreen="learn"] .learn-type-pane[data-type-pane="wording"] {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 17px;
+    line-height: 1.7;
+    color: var(--ink);
+  }
+
+  /* Must out-specify the display:flex below, or the live counter stays on
+     screen next to the settled score after a check. */
+  .learn[data-mobile-view="mode"] .learn-type-stats[hidden] {
+    display: none;
+  }
+
   .learn[data-mobile-view="mode"] .learn-type-stats {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
     font-size: 12.5px;
     color: var(--muted);
+  }
+
+  /* Design 10: the typing box is the screen's main surface. */
+  body[data-mscreen="learn"] .learn-type-field {
+    background: var(--wash);
+  }
+
+  /* Paired selector, always — see the load-bearing rule in styles.css. 18px
+     also keeps iOS from zooming the page on focus, and the line-height stays
+     an integer (18 x 1.9 = 34.2, which would round differently per layer). */
+  body[data-mscreen="learn"] .learn-type-input,
+  body[data-mscreen="learn"] .learn-type-mirror {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 34px;
   }
 
   .learn[data-mobile-view="mode"] .learn-panel-cloze,
@@ -2157,6 +2416,9 @@
 @media (min-width: 561px) {
   .learn-mode-bar,
   .learn-mode-nav,
+  /* The per-clause count is a phone affordance; on desktop the chip would
+     read "(1)3/6" because its styling lives in the phone block. */
+  .sibling-chip-count,
   .learn-deck-head,
   .learn-deck,
   .learn-deck-dots,

@@ -149,55 +149,6 @@ CREATE TABLE IF NOT EXISTS google_calendar_events (
 
 CREATE INDEX IF NOT EXISTS idx_gcal_events_user ON google_calendar_events(user_id);
 
-CREATE TABLE IF NOT EXISTS user_learning_plan (
-    user_id TEXT PRIMARY KEY,
-    mode TEXT NOT NULL DEFAULT 'self_paced'
-        CHECK (mode IN ('self_paced', 'auto')),
-    daily_target INTEGER CHECK (daily_target IS NULL OR daily_target IN (3, 5, 7)),
-    activated_at TEXT,
-    plan_prompt_dismissed_on TEXT,
-    updated_at TEXT NOT NULL
-);
-
-CREATE TABLE IF NOT EXISTS study_session (
-    id TEXT PRIMARY KEY,
-    user_id TEXT NOT NULL,
-    kind TEXT NOT NULL
-        CHECK (kind IN ('revision', 'auto_learning', 'one_day_learning')),
-    plan_date TEXT NOT NULL,
-    status TEXT NOT NULL DEFAULT 'active'
-        CHECK (status IN ('active', 'completed', 'abandoned')),
-    created_at TEXT NOT NULL,
-    completed_at TEXT
-);
-
-CREATE UNIQUE INDEX IF NOT EXISTS idx_study_session_one_active_revision
-    ON study_session(user_id)
-    WHERE status = 'active' AND kind = 'revision';
-
-CREATE UNIQUE INDEX IF NOT EXISTS idx_study_session_one_active_learning
-    ON study_session(user_id, plan_date)
-    WHERE status = 'active' AND kind IN ('auto_learning', 'one_day_learning');
-
-CREATE INDEX IF NOT EXISTS idx_study_session_user_date
-    ON study_session(user_id, plan_date, status);
-
-CREATE TABLE IF NOT EXISTS study_session_item (
-    session_id TEXT NOT NULL,
-    position INTEGER NOT NULL,
-    learning_unit_id TEXT NOT NULL,
-    state TEXT NOT NULL DEFAULT 'pending'
-        CHECK (state IN ('pending', 'completed', 'deferred')),
-    completed_at TEXT,
-    deferred_at TEXT,
-    PRIMARY KEY (session_id, position),
-    FOREIGN KEY (session_id) REFERENCES study_session(id) ON DELETE CASCADE,
-    UNIQUE (session_id, learning_unit_id)
-);
-
-CREATE INDEX IF NOT EXISTS idx_study_session_item_session
-    ON study_session_item(session_id, state);
-
 CREATE TABLE IF NOT EXISTS admin_audit_log (
     id TEXT PRIMARY KEY,
     admin_user_id TEXT NOT NULL,
@@ -276,8 +227,52 @@ CREATE INDEX IF NOT EXISTS idx_memory_user_next_revision
     ON memory_entry(user_id, next_revision);
 CREATE INDEX IF NOT EXISTS idx_memory_media_user
     ON memory_media(user_id);
+
+CREATE TABLE IF NOT EXISTS user_learning_plan (
+    user_id TEXT PRIMARY KEY,
+    mode TEXT NOT NULL DEFAULT 'self_paced'
+        CHECK (mode IN ('self_paced', 'auto')),
+    daily_target INTEGER CHECK (daily_target IS NULL OR daily_target IN (3, 5, 7)),
+    activated_at TEXT,
+    plan_prompt_dismissed_on TEXT,
+    updated_at TEXT NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS study_session (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    kind TEXT NOT NULL
+        CHECK (kind IN ('revision', 'auto_learning', 'day_plan')),
+    plan_date TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'active'
+        CHECK (status IN ('active', 'complete')),
+    created_at TEXT NOT NULL,
+    completed_at TEXT
+);
+
+CREATE TABLE IF NOT EXISTS study_session_item (
+    session_id TEXT NOT NULL,
+    learning_unit_id TEXT NOT NULL,
+    position INTEGER NOT NULL,
+    status TEXT NOT NULL DEFAULT 'pending'
+        CHECK (status IN ('pending', 'completed', 'deferred')),
+    completed_at TEXT,
+    PRIMARY KEY (session_id, learning_unit_id),
+    FOREIGN KEY (session_id) REFERENCES study_session(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_study_session_user_kind
+    ON study_session(user_id, kind, status);
+CREATE INDEX IF NOT EXISTS idx_study_session_item_order
+    ON study_session_item(session_id, position);
 """
 
+# Pre-multiuser tables only: _migrate_legacy renames each of these aside,
+# re-runs SCHEMA_SQL, copies the rows back under a user_id, then drops the
+# renamed copy. A table that never existed before multiuser (study_session,
+# study_session_item) must stay OUT of this list — SCHEMA_SQL's CREATE TABLE
+# IF NOT EXISTS leaves it alone, whereas listing it would rename it away and
+# drop it with no copy step to bring the rows back.
 _LEGACY_TABLES = (
     "learning_unit_progress",
     "split_preference",

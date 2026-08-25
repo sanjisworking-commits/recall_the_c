@@ -396,7 +396,8 @@ def test_auth_transition_and_profile_pages(tmp_path: Path):
     assert 'name="theme"' not in profile.text
 
 
-def test_dashboard_recent_activity_uses_display_title(tmp_path: Path):
+def test_dashboard_has_no_recent_activity_or_explore_sections(tmp_path: Path):
+    """Both secondary cards were removed from Today; the hero is the page."""
     client = _client(tmp_path)
     start = client.get("/auth/google/start", follow_redirects=False)
     state = start.cookies.get("rtc_oauth_state")
@@ -404,9 +405,6 @@ def test_dashboard_recent_activity_uses_display_title(tmp_path: Path):
         f"/auth/callback?code=fake-google-code&state={state}",
         follow_redirects=False,
     )
-    # Mark modes seen then done so a progress row exists. First Done on an
-    # unclaimed Article asks to claim it as a Free Article — confirm inline
-    # (the client sends its provisional mode list alongside the claim).
     complete_all_modes(client, MINI_UNITS, "clause-1")
     client.post(
         "/learn/clause-1/done",
@@ -418,9 +416,13 @@ def test_dashboard_recent_activity_uses_display_title(tmp_path: Path):
     )
     dash = client.get("/dashboard")
     assert dash.status_code == 200
-    assert "Article 20(1)" in dash.text
-    assert 'href="/learn/clause-1"' in dash.text
-    assert "Mastered Article 20(1)" in dash.text or "Reviewed Article 20(1)" in dash.text
+    assert "Recent activity" not in dash.text
+    assert "dash-activity-list" not in dash.text
+    assert "Explore the Constitution" not in dash.text
+    assert "dash-explore-list" not in dash.text
+    # And the caught-up copy and quote that sat under the empty hero.
+    assert "Browse when you're ready for something new." not in dash.text
+    assert "caught-up-quote" not in dash.text
 
 
 def test_dashboard_multiuser_layout(tmp_path: Path):
@@ -436,26 +438,30 @@ def test_dashboard_multiuser_layout(tmp_path: Path):
     html = dash.text
     assert 'class="eyebrow"' not in html
     assert "Welcome, User." in html or "Good morning, User." in html
-    assert "Today" in html
-    assert "Continue learning" in html
+    # Today's hero is mutually exclusive: a fresh account has nothing due, so
+    # it gets the learning hero and the "Due today" revision card is absent.
+    assert 'data-today-mode="learning"' in html
+    assert "Due today" not in html
     assert "Articles started" in html
     assert "Units completed" in html
     assert "Units mastered" in html
     assert "Day streak" in html
     assert "Revisions done" in html
-    assert "Explore the Constitution" in html
-    assert "Browse Parts &amp; Articles" in html
+    # Explore the Constitution and Recent activity were removed from Today —
+    # covered by test_dashboard_has_no_recent_activity_or_explore_sections.
     assert "→" in html
     assert "dash-progress-summary" not in html
     assert "Progress summary" in html  # aria-label on strip
     # Top-row Progress card (old 3-col) is gone — no started/review/mastered trio labels.
     assert ">Started<" not in html
-    assert "Recent activity" in html
     assert "dash-card-head" in html
     assert "dash-card-body" in html
-    assert "Nothing to review today." in html
-    assert "dash-btn-outline" in html
-    assert 'dash-btn-full" href="/browse">Browse the Constitution' not in html
+    assert "Nothing is due today" in html
+    # The learning hero is the only card in this state, so its CTA is primary
+    # rather than the secondary outline button it used to be. A fresh account
+    # has a first chain unit waiting, so the CTA is Continue, not Browse.
+    assert "Continue learning →" in html
+    assert "dash-btn-full" in html
     # Account dropdown identity header + menu order
     assert "account-menu-identity" in html
     assert "account-menu-name" in html
