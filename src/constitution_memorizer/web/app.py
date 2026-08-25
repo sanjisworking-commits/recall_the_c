@@ -180,6 +180,7 @@ from constitution_memorizer.web.service import (
     learn_meta_line,
     methods_tracker_line,
     needs_split_choice,
+    _is_missing_study_session_table,
     resolve_learn_target,
     revision_position_label,
     session_progress,
@@ -1479,7 +1480,25 @@ def create_app(
             # would land in a shared row.
             return RedirectResponse(url="/login?next=/dashboard", status_code=303)
         today = user_today(eng)
-        session = start_or_resume_revision(eng, as_of=today)
+        try:
+            session = start_or_resume_revision(eng, as_of=today)
+        except Exception as error:  # noqa: BLE001 — re-raised unless it is the schema gap
+            if not _is_missing_study_session_table(error):
+                raise
+            # Code is live ahead of its migration. Fall back to the behaviour
+            # this CTA replaced — walk the due list sequentially — so the
+            # button is never a dead end.
+            logger.warning("study_session tables are missing; starting an unqueued revision")
+            session = None
+            due = due_checklist(eng, as_of=today)
+            if not due:
+                return RedirectResponse(url=_home_url(), status_code=303)
+            return RedirectResponse(
+                url=next_learn_url(
+                    eng, due[0].id, multiuser=app.state.multiuser_enabled
+                ),
+                status_code=303,
+            )
         if session is None or not session.pending:
             return RedirectResponse(url=_home_url(), status_code=303)
         first = session.pending[0].learning_unit_id
