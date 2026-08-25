@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 import re
 import uuid
 from dataclasses import dataclass
@@ -15,6 +16,8 @@ from constitution_memorizer.progress.repository import (
     StudySession,
 )
 from constitution_memorizer.progress.scheduler import ReminderEngine
+
+logger = logging.getLogger(__name__)
 
 _CHIP_LABEL_RE = re.compile(r"\([^)]+\)")
 
@@ -47,6 +50,26 @@ def user_today(engine: ReminderEngine) -> date:
     return date.today()
 
 
+# Deploys and migrations are separate manual steps in this project (the start
+# command does not run Alembic), so there is always a window where new code is
+# live against an older schema. Today must survive that window: a revision
+# session is optional context, and the whole dashboard failing to build because
+# an optional table is absent is a far worse outcome than showing no session.
+# Narrow on purpose — anything that is not a missing relation still raises.
+_MISSING_TABLE_MARKERS = ("study_session", )
+
+
+def _is_missing_study_session_table(error: Exception) -> bool:
+    """True only for "that table does not exist" from SQLite or Postgres."""
+    message = str(error).lower()
+    if not any(marker in message for marker in _MISSING_TABLE_MARKERS):
+        return False
+    return (
+        "does not exist" in message  # psycopg UndefinedTable
+        or "no such table" in message  # sqlite3 OperationalError
+    )
+
+
 def active_revision_session(
     engine: ReminderEngine,
     *,
@@ -56,9 +79,22 @@ def active_revision_session(
 
     Scoped to ``plan_date`` so yesterday's abandoned queue — built from due
     dates that have since moved — never resurfaces as today's work.
+
+    Returns None when the study-session tables have not been migrated yet;
+    the caller then renders Today exactly as it did before sessions existed,
+    and starts working the moment the migration lands.
     """
     today = as_of or user_today(engine)
-    return engine.active_study_session(kind=REVISION_KIND, plan_date=today)
+    try:
+        return engine.active_study_session(kind=REVISION_KIND, plan_date=today)
+    except Exception as error:  # noqa: BLE001 — re-raised unless it is the schema gap
+        if not _is_missing_study_session_table(error):
+            raise
+        logger.warning(
+            "study_session tables are missing; Today is falling back to the "
+            "pre-session view. Run `alembic upgrade head` against this database."
+        )
+        return None
 
 
 def start_or_resume_revision(

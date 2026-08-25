@@ -552,3 +552,67 @@ def test_exiting_preserves_the_queue_for_later(tmp_path: Path):
     resumed_id, resumed_unit = _start(client)
     assert resumed_id == session_id
     assert resumed_unit == "article-end"
+
+
+# --------------------------------------------------------------------------- #
+# Living ahead of the migration                                                #
+# --------------------------------------------------------------------------- #
+
+
+def _drop_session_tables(client: TestClient) -> None:
+    """Reproduce production: new code, older schema.
+
+    Deploys and migrations are separate manual steps here (the start command
+    does not run Alembic), so this window is structural, not hypothetical.
+    """
+    conn = _engine(client).repo.conn
+    conn.execute("DROP TABLE IF EXISTS study_session_item")
+    conn.execute("DROP TABLE IF EXISTS study_session")
+    conn.commit()
+
+
+def test_today_still_renders_when_the_tables_are_missing(tmp_path: Path):
+    client = _client(tmp_path, multiuser=True)
+    _sign_in(client)
+    _make_due(client, ["clause-1", "article-end"])
+    _drop_session_tables(client)
+
+    resp = client.get("/dashboard")
+    assert resp.status_code == 200
+    html = resp.text
+    # The whole context build used to raise, dropping Today into its
+    # data-error state — which is what "cannot view Today" looked like.
+    assert 'data-today-mode="revision"' in html
+    assert '<span class="dash-due-count">2</span>' in html
+    assert "revisions due" in html
+    # No session is known, so the CTA is Start, never "Continue · N left".
+    assert "Start revision" in html
+    assert "Continue revision" not in html
+
+
+def test_start_revision_falls_back_to_the_due_list_without_the_tables(tmp_path: Path):
+    """The hero renders without a session, so its CTA must not dead-end."""
+    client = _client(tmp_path, multiuser=True)
+    _sign_in(client)
+    _make_due(client, ["clause-1", "article-end"])
+    _drop_session_tables(client)
+
+    resp = client.post("/revision/start", follow_redirects=False)
+    assert resp.status_code == 303
+    location = resp.headers["location"]
+    assert urlsplit(location).path == "/learn/clause-1"
+    assert _session_of(location) == ""
+
+
+def test_a_real_database_error_is_not_swallowed(tmp_path: Path):
+    """The guard is narrow: only "that table is missing" is tolerated."""
+    from constitution_memorizer.web.service import _is_missing_study_session_table
+
+    assert _is_missing_study_session_table(
+        Exception('relation "study_session" does not exist')
+    )
+    assert _is_missing_study_session_table(Exception("no such table: study_session"))
+    assert not _is_missing_study_session_table(Exception("connection refused"))
+    assert not _is_missing_study_session_table(
+        Exception('relation "learning_unit_progress" does not exist')
+    )
