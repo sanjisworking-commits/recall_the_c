@@ -579,6 +579,31 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
     return router
 
 
+def sync_profile_and_identity(repo, user) -> None:
+    """Upsert the local profile + durable identity for a verified user.
+
+    Shared by the browser session flow and the native bearer API so a user who
+    signs in from either surface lands on the SAME RecallC ``user_profile`` row
+    (keyed by the Supabase user UUID). Idempotent: safe to call on every login.
+    The identity directory (email/phone/last_sign_in_at) refreshes each call so
+    admin search outlives the 14-day cookie-session window.
+    """
+    profile = repo.get_profile(user.id)
+    if profile is None:
+        repo.upsert_profile(
+            user.id,
+            display_name=user.display_name,
+            avatar_url=user.avatar_url,
+        )
+    elif user.avatar_url and not profile.get("avatar_url"):
+        repo.upsert_profile(
+            user.id,
+            display_name=profile.get("display_name") or user.display_name,
+            avatar_url=user.avatar_url,
+        )
+    repo.record_identity(user.id, email=user.email, phone=user.phone)
+
+
 def _establish_session(
     request: Request,
     auth_session,
@@ -591,26 +616,7 @@ def _establish_session(
         access_token=auth_session.access_token,
         refresh_token=auth_session.refresh_token,
     )
-    profile = request.app.state.engine.repo.get_profile(auth_session.user.id)
-    if profile is None:
-        request.app.state.engine.repo.upsert_profile(
-            auth_session.user.id,
-            display_name=auth_session.user.display_name,
-            avatar_url=auth_session.user.avatar_url,
-        )
-    elif auth_session.user.avatar_url and not profile.get("avatar_url"):
-        request.app.state.engine.repo.upsert_profile(
-            auth_session.user.id,
-            display_name=profile.get("display_name") or auth_session.user.display_name,
-            avatar_url=auth_session.user.avatar_url,
-        )
-    # Durable identity directory: email/phone/last_sign_in_at refresh on every
-    # successful sign-in so admin search outlives the 14-day session window.
-    request.app.state.engine.repo.record_identity(
-        auth_session.user.id,
-        email=auth_session.user.email,
-        phone=auth_session.user.phone,
-    )
+    sync_profile_and_identity(request.app.state.engine.repo, auth_session.user)
 
     dest = next_url or request.cookies.get("rtc_auth_next") or "/dashboard"
     dest = _safe_next(dest)

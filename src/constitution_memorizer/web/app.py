@@ -721,9 +721,11 @@ def create_app(
 
     from constitution_memorizer.calendar_sync.routes import router as gcal_router
     from constitution_memorizer.speech.routes import router as speech_router
+    from constitution_memorizer.web.api_v1 import create_api_v1_router
 
     app.include_router(gcal_router)
     app.include_router(speech_router)
+    app.include_router(create_api_v1_router())
 
     def _engine() -> ReminderEngine:
         bound = bound_engine.get()
