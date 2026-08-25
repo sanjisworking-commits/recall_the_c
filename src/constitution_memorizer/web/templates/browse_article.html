@@ -119,7 +119,7 @@
   >
     <h2 class="explain-back-title">Explain it back</h2>
     <p class="explain-back-lede">
-      Memorizing gives you the words; this checks you own the meaning. Explain the article in plain language, as if to a friend — no legal phrasing.
+      In your own words, as if to a friend — no legal phrasing.
     </p>
     <textarea
       class="explain-back-input"
@@ -162,8 +162,13 @@
   </p>
 
   {% if article.learn_units %}
+  {# Morph 8. The label is the neutral one; mobile.js swaps it after first
+     paint for signed-in users. The Article render must not gain a synchronous
+     progress read just to personalise a button. #}
   <div class="mobile-actionbar">
-    <a class="btn mobile-action-primary" href="/learn/{{ article.learn_units[0].id }}">Learn this Article</a>
+    <a class="btn mobile-action-primary"
+       href="/learn/{{ article.learn_units[0].id }}"
+       data-article-cta="{{ article.article_number }}"><span class="learn-mode-label" data-article-cta-label>Learn this Article</span></a>
   </div>
   {% endif %}
 

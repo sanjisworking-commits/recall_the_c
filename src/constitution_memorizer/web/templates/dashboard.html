@@ -105,6 +105,12 @@
         <blockquote class="caught-up-quote">{{ caught_up_quote.text }}</blockquote>
         <p class="caught-up-quote-attr">— {{ caught_up_quote.author }}</p>
         {% endif %}
+        {% if completed_today|default(0) > 0 %}
+        {# Nothing due AND work done today — the only state that has earned
+           "Done for today". Nothing due with nothing done is just an empty
+           schedule, and says so above. #}
+        <p class="dash-done-today">Done for today ✓</p>
+        {% endif %}
         <p class="actions">
           <a class="btn btn-ghost dash-btn-outline" href="/browse">Browse the Constitution</a>
         </p>
@@ -125,7 +131,14 @@
         </ul>
         {% endif %}
         <p class="actions">
-          <a class="btn dash-btn-full" href="{% if first_due_id %}/learn/{{ first_due_id }}{% else %}/learn{% endif %}">Start revision</a>
+          {# Morph 7: the CTA says where you are in today's work. #}
+          <a class="btn dash-btn-full" href="{% if first_due_id %}/learn/{{ first_due_id }}{% else %}/learn{% endif %}">
+            {%- if completed_today|default(0) > 0 -%}
+            Continue · {{ due_count }} left
+            {%- else -%}
+            Start · {{ due_minutes }} min
+            {%- endif -%}
+          </a>
         </p>
         {% endif %}
       </div>

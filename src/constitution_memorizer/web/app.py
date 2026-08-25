@@ -108,6 +108,11 @@ from constitution_memorizer.web.browse import (
     load_reviewed_document,
 )
 from constitution_memorizer.web.explainers import explainer_asset_path, visual_explainer
+from constitution_memorizer.progress.repository import LEARN_MODES
+from constitution_memorizer.web.progress_stats import (
+    _is_completed,
+    path_units_for_article,
+)
 from constitution_memorizer.web.calendar_view import (
     build_calendar_month,
     build_revisions_view,
@@ -876,7 +881,10 @@ def create_app(
             and getattr(request.state, "current_user", None) is None
         )
         if not is_guest_early:
-            eng.bootstrap_request()
+            # include_modes loads every unit's seen-set in the same bundle, so
+            # the clause rail can show per-clause progress without one
+            # roundtrip per sibling.
+            eng.bootstrap_request(include_modes=True)
 
         # Guests skip split preference (no personal data); show the clause as-is.
         if not is_guest_early and needs_split_choice(eng, unit):
@@ -1650,6 +1658,60 @@ def create_app(
         eng = _engine()
         eng.delete_gloss(article_number)
         return JSONResponse({"ok": True, "text": "", "words": 0})
+
+    @app.get("/api/articles/{article_number}/progress")
+    async def article_progress_summary(
+        request: Request, article_number: str
+    ) -> JSONResponse:
+        """Per-Article CTA state, fetched after first paint.
+
+        Deliberately its own endpoint: the Article page must not gain a
+        synchronous progress read just to personalise one button, so the HTML
+        ships the neutral label and this fills it in afterwards. Guests never
+        call it and get nothing if they do.
+        """
+        if app.state.multiuser_enabled and (
+            getattr(request.state, "current_user", None) is None
+        ):
+            return JSONResponse({"ok": False}, status_code=401)
+        eng = _engine()
+        today = date.today()
+        required, _pending = path_units_for_article(eng, article_number)
+        if not required:
+            return JSONResponse(
+                {"ok": True, "state": "not_started", "modes_done": 0,
+                 "modes_total": len(LEARN_MODES)}
+            )
+
+        # One unit speaks for the Article: a unit due today wins, else the
+        # first one still incomplete. Never sum modes across units — "2 of 6"
+        # has to describe a single clause to mean anything.
+        lead = None
+        state = "not_started"
+        for unit in required:
+            progress = eng.get_progress(unit.id)
+            if progress is not None and progress.next_revision is not None:
+                if progress.next_revision <= today:
+                    lead, state = unit, "due"
+                    break
+        if lead is None:
+            for unit in required:
+                if not _is_completed(eng, unit.id):
+                    lead = unit
+                    break
+            if lead is not None:
+                seen_any = any(len(eng.modes_seen(u.id)) > 0 for u in required)
+                state = "started" if seen_any else "not_started"
+            else:
+                lead, state = required[0], "started"
+        return JSONResponse(
+            {
+                "ok": True,
+                "state": state,
+                "modes_done": len(eng.modes_seen(lead.id)),
+                "modes_total": len(LEARN_MODES),
+            }
+        )
 
     @app.get("/search", response_class=HTMLResponse)
     async def search_page(

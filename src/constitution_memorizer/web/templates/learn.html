@@ -73,13 +73,15 @@
     aria-label="{% if rail_kind == 'letters' %}Letter sequence{% else %}Clause siblings{% endif %}"
   >
     {% for chip in sibling_chips %}
+      {# The count is phone-only styling, but it costs nothing to always emit
+         and keeps the two surfaces on one markup path. #}
       {% if chip.state == "current" %}
-      <span class="sibling-chip is-current" aria-current="true">{{ chip.label }}</span>
+      <span class="sibling-chip is-current" aria-current="true">{{ chip.label }}<span class="sibling-chip-count">{{ chip.modes_done }}/{{ chip.modes_total }}</span></span>
       {% else %}
       <a
         class="sibling-chip{% if chip.state == 'done' %} is-done{% endif %}"
         href="/learn/{{ chip.unit_id }}"
-      >{{ chip.label }}</a>
+      >{{ chip.label }}<span class="sibling-chip-count">{{ chip.modes_done }}/{{ chip.modes_total }}</span></a>
       {% endif %}
     {% endfor %}
   </nav>
@@ -214,8 +216,7 @@
     {% endif %}
     <div class="learn-cloze-text" aria-live="polite"></div>
     <div class="learn-cloze-controls">
-      <button type="button" class="learn-cloze-btn" data-cloze-action="reveal-all">Reveal all</button>
-      <button type="button" class="learn-cloze-btn" data-cloze-action="hide-again">Hide again</button>
+      <button type="button" class="learn-cloze-btn" data-cloze-action="toggle-all">Reveal all</button>
       <span class="learn-cloze-status" data-cloze-status>0 of 0 revealed — tap a blank</span>
     </div>
     <noscript>
@@ -237,9 +238,8 @@
     <p class="learn-letters-text is-initials" data-letters-display></p>
     <p class="learn-letters-status" data-letters-status hidden></p>
     <div class="learn-letters-controls">
-      <button type="button" class="learn-letters-speak" data-letters-speak>▸ Start</button>
-      <button type="button" class="learn-letters-check" data-letters-check hidden>Check phrase</button>
-      <button type="button" class="learn-letters-btn" data-letters-toggle>Show full text</button>
+      <button type="button" class="learn-letters-speak" data-letters-speak>▸ Speak</button>
+      <button type="button" class="learn-letters-btn" data-letters-toggle>Full text</button>
       <span class="learn-letters-hint">Use the first letters. Speak the words — correct letters turn blue as you go.</span>
     </div>
     <div class="learn-letters-fallback" data-letters-fallback hidden>
@@ -275,19 +275,36 @@
   >
     <p class="learn-type-lede">Type it from memory — words are checked as you go.</p>
     <label class="visually-hidden" for="learn-type-input">Type the Bare Act text from memory</label>
-    <textarea
-      id="learn-type-input"
-      class="learn-type-input"
-      data-type-input
-      rows="4"
-      placeholder="Start typing…"
-      autocomplete="off"
-      autocorrect="off"
-      autocapitalize="off"
-      spellcheck="false"
-    ></textarea>
-    <div class="learn-type-diff" data-type-diff aria-live="polite"></div>
-    <p class="learn-type-stats" data-type-stats>0 / 0 words · 0 correct</p>
+    {# One box. The textarea is the real input but paints no glyphs of its own;
+       the mirror behind it redraws the same characters with correctness
+       underlines. Nothing is rendered ahead of the caret, so the clause is
+       never on screen to read off or copy while recalling it. #}
+    <div class="learn-type-field" data-type-field>
+      <div class="learn-type-mirror" data-type-mirror aria-hidden="true"></div>
+      <textarea
+        id="learn-type-input"
+        class="learn-type-input"
+        data-type-input
+        rows="4"
+        placeholder="Start typing…"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        spellcheck="false"
+      ></textarea>
+    </div>
+    <p class="learn-type-stats" data-type-stats><span data-type-count>0 of 0 words · 0 correct</span><span class="learn-type-fix" data-type-fix hidden></span></p>
+    {# Checking swaps the live counter for this block. The wording tab — the
+       only place the Bare Act text appears — is offered solely when something
+       was actually wrong; a clean attempt reveals nothing. #}
+    <div class="learn-type-result" data-type-result hidden>
+      <div class="learn-type-tabs" role="tablist" aria-label="Result">
+        <button type="button" class="learn-type-tab is-active" role="tab" data-type-tab="score" aria-selected="true">Score</button>
+        <button type="button" class="learn-type-tab" role="tab" data-type-tab="wording" aria-selected="false" hidden>Wording</button>
+      </div>
+      <div class="learn-type-pane" data-type-pane="score" role="tabpanel" aria-live="polite"></div>
+      <div class="learn-type-pane" data-type-pane="wording" role="tabpanel" hidden></div>
+    </div>
     <button type="button" class="learn-type-check" data-type-check>Check my attempt</button>
     <noscript>
       <article class="unit-text learn-read-text">{{ unit.text }}</article>

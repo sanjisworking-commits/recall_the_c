@@ -295,4 +295,15 @@ def build_dashboard_context(
         "strip": strip,
         "recent": recent,
         "upcoming": upcoming_revisions(eng, as_of=today),
+        # Today's CTA label. `due_count` is what remains due NOW — a completed
+        # unit's next_revision has already moved forward, so the original due
+        # queue is not recoverable, and last_completed==today also catches
+        # voluntary work. So we only claim what the data supports: "some
+        # progress today" is enough to say Continue, and "nothing due AND
+        # nothing done" is never called finished.
+        "completed_today": sum(
+            1
+            for row in eng.list_all_progress()
+            if row.last_completed == today and row.times_completed > 0
+        ),
     }

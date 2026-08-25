@@ -36,6 +36,34 @@ class CalendarDay:
     is_blank: bool = False
     chips: list[CalendarChip] = field(default_factory=list)
 
+    @property
+    def long_label(self) -> str:
+        """"Fri 28 August" — the heading when a day is selected on the phone."""
+        if not self.iso:
+            return ""
+        return date.fromisoformat(self.iso).strftime("%a %-d %B")
+
+    @property
+    def dominant_kind(self) -> str | None:
+        """One state for the phone's day cell, derived from the chips already here.
+
+        The phone grid marks a day with a single bar rather than the desktop's
+        chip stack, so several units on one day collapse to the most urgent.
+        ``ChipKind`` has no ``overdue``: ``build_calendar_month`` emits ``due``
+        only for a row's ``next_revision``, so a *past* day carrying a ``due``
+        chip is by definition a missed review.
+        """
+        if not self.chips:
+            return None
+        kinds = {chip.kind for chip in self.chips}
+        if "due" in kinds:
+            return "overdue" if self.is_past else "due"
+        if "scheduled" in kinds:
+            return "scheduled"
+        if kinds & {"review_done", "memorized"}:
+            return "done"
+        return None
+
 
 @dataclass(frozen=True)
 class CalendarMonth:
