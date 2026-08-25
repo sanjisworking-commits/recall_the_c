@@ -29,7 +29,7 @@ QUOTAS = {
 }
 
 _REL_PATH = (
-    Path(__file__).resolve().parents[2] / "data" / "reference" / "learning_relationships.json"
+    Path(__file__).resolve().parents[3] / "data" / "reference" / "learning_relationships.json"
 )
 
 ArticleAllowed = Callable[[str | None], bool]

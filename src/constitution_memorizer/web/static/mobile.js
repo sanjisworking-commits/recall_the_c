@@ -165,7 +165,16 @@
       stowControls();
       learn.setAttribute("data-mobile-view", "deck");
       syncBodyClass();
-      if (unitId) history.replaceState({}, "", "/learn/" + encodeURIComponent(unitId));
+      if (unitId) {
+        var url = new URL(window.location.href);
+        url.pathname = "/learn/" + encodeURIComponent(unitId);
+        url.searchParams.delete("mode");
+        var sessionId = learn.getAttribute("data-session-id");
+        if (sessionId && !url.searchParams.get("session")) {
+          url.searchParams.set("session", sessionId);
+        }
+        history.replaceState({}, "", url.pathname + url.search + url.hash);
+      }
       window.scrollTo(0, 0);
     }
 

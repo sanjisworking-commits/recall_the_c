@@ -893,11 +893,14 @@ class PostgresProgressRepository:
         progress: CompletionProgress,
         *,
         claim_article: str | None = None,
+        session_id: str | None = None,
     ) -> ProgressRecord:
         """Persist Done atomically; optionally claim a Free Article with it.
 
         The claim insert shares the transaction with the progress upsert and
         modes reset — one commit, all-or-nothing.
+        When ``session_id`` is set, the matching study-session item is marked
+        completed in that same commit.
         """
         now = _utc_now()
         uid = as_user_id(user_id)
@@ -929,6 +932,36 @@ class PostgresProgressRepository:
                 ),
             )
             row = cur.fetchone()
+            if session_id:
+                cur.execute(
+                    """
+                    UPDATE study_session_item
+                    SET state = 'completed', completed_at = %s, deferred_at = NULL
+                    WHERE session_id = %s AND learning_unit_id = %s
+                      AND EXISTS (
+                          SELECT 1 FROM study_session
+                          WHERE id = %s AND user_id = %s
+                      )
+                    """,
+                    (now, session_id, unit_id, session_id, uid),
+                )
+                cur.execute(
+                    """
+                    SELECT COUNT(*) AS n FROM study_session_item
+                    WHERE session_id = %s AND state = 'pending'
+                    """,
+                    (session_id,),
+                )
+                pending = cur.fetchone()
+                if pending is not None and int(pending["n"]) == 0:
+                    cur.execute(
+                        """
+                        UPDATE study_session
+                        SET status = 'completed', completed_at = %s
+                        WHERE id = %s AND user_id = %s AND status = 'active'
+                        """,
+                        (now, session_id, uid),
+                    )
             conn.commit()
         assert row is not None
         return _row_progress(row)

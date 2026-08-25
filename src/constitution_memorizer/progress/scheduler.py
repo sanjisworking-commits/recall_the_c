@@ -489,6 +489,7 @@ class ReminderEngine:
         require_all_modes: bool = True,
         required_modes: frozenset[str] | None = None,
         claim_article: str | None = None,
+        session_id: str | None = None,
     ) -> MarkDoneResult:
         """Advance the ladder; optionally claim a Free Article in the same
         transaction (``claim_article`` rides inside ``commit_completion``).
@@ -546,11 +547,16 @@ class ReminderEngine:
                 )
 
         started = perf_counter()
+        kwargs: dict[str, str] = {}
         if claim_article:
+            kwargs["claim_article"] = str(claim_article)
+        if session_id:
+            kwargs["session_id"] = session_id
+        if kwargs:
             progress = self.repo.commit_completion(
-                self.user_id, unit_id, command, claim_article=str(claim_article)
+                self.user_id, unit_id, command, **kwargs
             )
-            if self._claimed_cache is not None:
+            if claim_article and self._claimed_cache is not None:
                 self._claimed_cache.add(str(claim_article))
         else:
             # Legacy call shape — keeps simple repo wrappers compatible.

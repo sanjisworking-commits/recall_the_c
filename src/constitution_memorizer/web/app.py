@@ -930,6 +930,7 @@ def create_app(
             close_stale_sessions,
             first_pending_id,
             get_session as _get_sess,
+            reconcile_session_progress,
         )
 
         study = None
@@ -942,8 +943,9 @@ def create_app(
                 study = None
                 session_id = ""
             if study is not None:
+                study = reconcile_session_progress(eng, study) or study
                 item = study.item_for(target.id)
-                if item is not None and item.state != "pending":
+                if item is None or item.state != "pending":
                     pending = first_pending_id(study)
                     if pending:
                         return RedirectResponse(
@@ -1123,6 +1125,11 @@ def create_app(
                 ),
                 "study_session_id": study.id if study is not None else "",
                 "study_kind": study.kind if study is not None else "",
+                "session_unit_ids": (
+                    [item.learning_unit_id for item in study.items]
+                    if study is not None
+                    else []
+                ),
                 "show_exit_revision": show_exit_revision,
             },
         )
@@ -1286,13 +1293,11 @@ def create_app(
     ):
         from constitution_memorizer.progress.study_session import (
             get_session as _get_sess,
-            mark_item_done,
             maybe_activate_auto_plan,
         )
 
         sess = _get_sess(eng, session_id)
         if sess is not None and sess.item_for(unit.id) is not None:
-            mark_item_done(eng, sess.id, unit.id)
             session_id = sess.id
         was_new = result.progress.times_completed == 1
         maybe_activate_auto_plan(
@@ -1417,6 +1422,7 @@ def create_app(
                         as_of=_user_today(request, eng),
                         require_all_modes=False,
                         claim_article=claim_key,
+                        session_id=_session_id(request, session) or None,
                     )
                 except ModesIncompleteError:
                     return RedirectResponse(url=f"/learn/{unit_id}", status_code=303)
@@ -1442,6 +1448,7 @@ def create_app(
                 unit_id,
                 as_of=_user_today(request, eng),
                 required_modes=frozenset(done_required),
+                session_id=_session_id(request, session) or None,
             )
         except ModesIncompleteError:
             if wants_json(request):
@@ -1464,11 +1471,10 @@ def create_app(
         unit_id: str,
         session: str = Form(""),
     ) -> RedirectResponse:
-        """Defer this unit until tomorrow, then advance to the next unit."""
+        """Skip or defer this unit, then advance to the next unit."""
         eng = _engine()
         if eng.get_unit(unit_id) is None:
             raise HTTPException(status_code=404, detail="Learning unit not found")
-        result = eng.defer_until_tomorrow(unit_id, as_of=_user_today(request, eng))
         session_id = _session_id(request, session)
         from constitution_memorizer.progress.study_session import (
             get_session as _get_sess,
@@ -1476,6 +1482,22 @@ def create_app(
         )
 
         sess = _get_sess(eng, session_id)
+        if (
+            sess is not None
+            and sess.kind in ("auto_learning", "one_day_learning")
+            and sess.item_for(unit_id) is not None
+        ):
+            mark_item_deferred(eng, sess.id, unit_id)
+            _schedule_calendar_sync(request, eng)
+            url = resolve_post_action_navigation(
+                eng,
+                unit_id=unit_id,
+                sequential_next_id=eng.resolve_next_unit_id(unit_id),
+                session_id=sess.id,
+                multiuser=app.state.multiuser_enabled,
+            )
+            return RedirectResponse(url=url, status_code=303)
+        result = eng.defer_until_tomorrow(unit_id, as_of=_user_today(request, eng))
         if sess is not None and sess.kind == "revision" and sess.item_for(unit_id):
             mark_item_deferred(eng, sess.id, unit_id)
         _schedule_calendar_sync(request, eng)

@@ -833,11 +833,14 @@ class ProgressRepository:
         progress: CompletionProgress,
         *,
         claim_article: str | None = None,
+        session_id: str | None = None,
     ) -> ProgressRecord:
         """Persist Done atomically; optionally claim a Free Article with it.
 
         The claim rides in the same transaction so either the Article claim,
         the progress row, and the modes reset all land — or none do.
+        When ``session_id`` is set, the matching study-session item is marked
+        completed in that same commit.
         """
         now = _utc_now_iso()
         uid = as_user_id(user_id)
@@ -883,6 +886,10 @@ class ProgressRepository:
                 "DELETE FROM unit_modes_seen WHERE user_id = ? AND learning_unit_id = ?",
                 (uid, unit_id),
             )
+            if session_id:
+                self._complete_session_item_in_tx(
+                    uid, session_id, unit_id, completed_at=now
+                )
             row = self._conn.execute(
                 """
                 SELECT * FROM learning_unit_progress
@@ -896,6 +903,43 @@ class ProgressRepository:
             raise
         assert row is not None
         return _row_to_progress(row)
+
+    def _complete_session_item_in_tx(
+        self,
+        user_id: str,
+        session_id: str,
+        unit_id: str,
+        *,
+        completed_at: str,
+    ) -> None:
+        self._conn.execute(
+            """
+            UPDATE study_session_item
+            SET state = 'completed', completed_at = ?, deferred_at = NULL
+            WHERE session_id = ? AND learning_unit_id = ?
+              AND EXISTS (
+                  SELECT 1 FROM study_session
+                  WHERE id = ? AND user_id = ?
+              )
+            """,
+            (completed_at, session_id, unit_id, session_id, user_id),
+        )
+        pending = self._conn.execute(
+            """
+            SELECT COUNT(*) AS n FROM study_session_item
+            WHERE session_id = ? AND state = 'pending'
+            """,
+            (session_id,),
+        ).fetchone()
+        if pending is not None and int(pending["n"]) == 0:
+            self._conn.execute(
+                """
+                UPDATE study_session
+                SET status = 'completed', completed_at = ?
+                WHERE id = ? AND user_id = ? AND status = 'active'
+                """,
+                (completed_at, session_id, user_id),
+            )
 
     def get_learning_plan(self, user_id: UUID | str):
         from constitution_memorizer.progress.learning_plan import (

@@ -89,7 +89,7 @@
   </p>
   {% endif %}
 
-  <div class="dash-top{% if today_mode in ('continue_revision', 'start_revision', 'auto_learning') %} is-single{% endif %}">
+  <div class="dash-top{% if today_mode in ('continue_revision', 'start_revision', 'auto_learning', 'continue_learning') %} is-single{% endif %}">
     {% if today_mode == 'continue_revision' %}
     <article class="dash-card dash-hero dash-due is-due">
       <header class="dash-card-head">
@@ -141,6 +141,25 @@
       </div>
     </article>
 
+    {% elif today_mode == 'continue_learning' %}
+    <article class="dash-card dash-hero dash-due is-empty">
+      <header class="dash-card-head">
+        <h2 class="dash-eyebrow">
+          <span class="dash-dot" aria-hidden="true"></span>
+          Today
+        </h2>
+      </header>
+      <div class="dash-card-body">
+        <p class="dash-due-line">
+          <span class="dash-due-count">{{ learning_count }}</span>
+          <span class="dash-due-units">{% if learning_count != 1 %}units{% else %}unit{% endif %} left</span>
+        </p>
+        <p class="actions">
+          <a class="btn dash-btn-full" href="/learn/{{ first_due_id }}{% if active_session_id %}?session={{ active_session_id }}{% endif %}">{{ continue_learning_label }}</a>
+        </p>
+      </div>
+    </article>
+
     {% elif today_mode == 'auto_learning' %}
     <article class="dash-card dash-hero dash-due is-empty">
       <header class="dash-card-head">
@@ -172,27 +191,40 @@
         </h2>
       </header>
       <div class="dash-card-body">
+        {% if show_plan_prompt %}
+        <p class="dash-due-empty-title">Nothing to review today.</p>
+        <p class="dash-load">Want Recall to plan today's learning?</p>
+        <div class="plan-day-actions">
+          <button type="button" class="btn dash-btn-full" data-plan-my-day-open>Plan my day</button>
+          <form method="post" action="/study/plan-my-day">
+            <input type="hidden" name="dismiss" value="1">
+            <button type="submit" class="btn btn-ghost dash-btn-outline">Not today</button>
+          </form>
+        </div>
+        <dialog class="guest-modal" data-plan-my-day-dialog aria-labelledby="plan-my-day-title">
+          <div class="guest-modal-card">
+            <h2 class="guest-modal-title" id="plan-my-day-title">Plan today's mix</h2>
+            <p class="guest-modal-body">Pick a size. This does not turn Auto Plan on.</p>
+            <div class="guest-modal-actions plan-day-actions">
+              {% for n, label in ((3, 'Steady · 3'), (5, 'Balanced · 5'), (7, 'Intensive · 7')) %}
+              <form method="post" action="/study/plan-my-day">
+                <input type="hidden" name="count" value="{{ n }}">
+                <button type="submit" class="btn {% if n == 5 %}{% else %}btn-ghost{% endif %}">{{ label }}</button>
+              </form>
+              {% endfor %}
+              <form method="dialog">
+                <button type="submit" class="btn btn-ghost" value="cancel">Cancel</button>
+              </form>
+            </div>
+          </div>
+        </dialog>
+        {% else %}
         <p class="dash-due-empty-title">Nothing is due today</p>
         <p class="muted">You're caught up. Browse when you're ready for something new.</p>
         {% if caught_up_quote %}
         <blockquote class="caught-up-quote">{{ caught_up_quote.text }}</blockquote>
         <p class="caught-up-quote-attr">— {{ caught_up_quote.author }}</p>
         {% endif %}
-        {% if show_plan_prompt %}
-        <p class="dash-load">Plan a short mix for today — this does not turn Auto Plan on.</p>
-        <div class="plan-day-actions">
-          {% for n, label in ((3, 'Steady · 3'), (5, 'Balanced · 5'), (7, 'Intensive · 7')) %}
-          <form method="post" action="/study/plan-my-day">
-            <input type="hidden" name="count" value="{{ n }}">
-            <button type="submit" class="btn {% if n == 5 %}dash-btn-full{% else %}btn-ghost dash-btn-outline{% endif %}">{{ label }}</button>
-          </form>
-          {% endfor %}
-          <form method="post" action="/study/plan-my-day">
-            <input type="hidden" name="dismiss" value="1">
-            <button type="submit" class="btn btn-ghost dash-btn-outline">Not today</button>
-          </form>
-        </div>
-        {% else %}
         <p class="actions">
           <a class="btn btn-ghost dash-btn-outline" href="/browse">Browse the Constitution</a>
         </p>

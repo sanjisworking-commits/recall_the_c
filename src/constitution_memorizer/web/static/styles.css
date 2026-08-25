@@ -4194,6 +4194,15 @@ html[data-theme="dark"] .nav-signin {
   margin: 0;
 }
 
+@media (max-width: 560px) {
+  .guest-modal[data-plan-my-day-dialog] {
+    margin: auto 0 0;
+    width: 100%;
+    max-width: none;
+    border-radius: 16px 16px 0 0;
+  }
+}
+
 .exit-revision-dialog {
   border: 1px solid var(--ink);
   padding: 0;

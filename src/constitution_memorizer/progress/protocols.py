@@ -209,6 +209,7 @@ class ReminderRepositoryProtocol(Protocol):
         progress: CompletionProgress,
         *,
         claim_article: str | None = None,
+        session_id: str | None = None,
     ) -> ProgressRecord: ...
 
     def get_learning_plan(self, user_id: UUID | str): ...

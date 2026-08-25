@@ -8,6 +8,7 @@ from pathlib import Path
 from constitution_memorizer.learning.schemas import LearningUnit, LearningUnitType
 from constitution_memorizer.progress.mix_selector import (
     eligible_new_units,
+    load_relationships,
     select_learning_mix,
 )
 from constitution_memorizer.progress.scheduler import ReminderEngine
@@ -77,3 +78,26 @@ def test_mix_falls_back_when_a_band_is_thin(tmp_path: Path):
     picked = select_learning_mix(engine, 7, rng=random.Random(3))
     assert len(picked) == 7
     assert {u.id for u in picked} == {f"u-{i}" for i in range(1, 8)}
+
+
+def test_load_relationships_reads_repo_reference():
+    data = load_relationships()
+    themes = data.get("themes") or []
+    pairs = data.get("pairs") or []
+    assert themes
+    assert pairs
+    theme_articles = {
+        article
+        for theme in themes
+        for article in theme.get("article_numbers") or []
+    }
+    pair_articles = {
+        article for pair in pairs for article in pair.get("articles") or []
+    }
+    assert "32" in theme_articles and "226" in theme_articles
+    assert "32" in pair_articles and "226" in pair_articles
+    labels = " ".join(
+        str(theme.get("id") or "") + " " + str(theme.get("label") or "")
+        for theme in themes
+    )
+    assert "remedies" in labels.lower() or "14" in theme_articles

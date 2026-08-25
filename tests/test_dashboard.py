@@ -176,3 +176,94 @@ def test_dashboard_today_mode_self_paced_when_caught_up(engine: ReminderEngine):
     )
     assert ctx["today_mode"] in ("self_paced", "caught_up")
     assert ctx["nothing_due"] is True
+
+
+def test_dashboard_uses_user_local_date_not_utc(engine: ReminderEngine, monkeypatch):
+    from zoneinfo import ZoneInfo
+
+    from constitution_memorizer.progress.local_date import USER_TIMEZONE_KEY, user_today
+
+    utc_instant = datetime(2026, 8, 24, 12, 0, tzinfo=timezone.utc)
+    utc_today = utc_instant.date()
+    local_today = utc_instant.astimezone(ZoneInfo("Pacific/Kiritimati")).date()
+    assert local_today != utc_today
+
+    class FrozenDateTime(datetime):
+        @classmethod
+        def now(cls, tz=None):
+            if tz is None:
+                return utc_instant.replace(tzinfo=None)
+            return utc_instant.astimezone(tz)
+
+    monkeypatch.setattr(
+        "constitution_memorizer.progress.local_date.datetime", FrozenDateTime
+    )
+    engine.set_setting(USER_TIMEZONE_KEY, "Pacific/Kiritimati")
+    engine.mark_all_modes_seen("u1")
+    engine.mark_done("u1", as_of=utc_today)
+    assert user_today(engine) == local_today
+
+    ctx_local = build_dashboard_context(
+        engine,
+        display_label="Priya Sharma",
+        entitled=True,
+    )
+    assert ctx_local["today_mode"] == "start_revision"
+    assert ctx_local["due_count"] >= 1
+
+    ctx_utc = build_dashboard_context(
+        engine,
+        display_label="Priya Sharma",
+        as_of=utc_today,
+        entitled=True,
+    )
+    assert ctx_utc["due_count"] == 0
+    assert ctx_utc["today_mode"] != "start_revision"
+
+
+def test_dashboard_today_mode_continue_learning(engine: ReminderEngine):
+    today = date(2026, 8, 3)
+    from constitution_memorizer.progress.study_session import start_or_resume_learning
+
+    session = start_or_resume_learning(
+        engine, kind="one_day_learning", count=3, today=today
+    )
+    assert session is not None
+    ctx = build_dashboard_context(
+        engine,
+        display_label="Priya Sharma",
+        as_of=today,
+        entitled=False,
+    )
+    assert ctx["today_mode"] == "continue_learning"
+    assert ctx["learning_count"] == session.pending_count
+    assert f"{session.pending_count} left" in ctx["continue_learning_label"]
+    assert "today's plan" in ctx["continue_learning_label"]
+
+
+def test_dashboard_plan_prompt_is_behind_dialog():
+    html = Path(
+        "src/constitution_memorizer/web/templates/dashboard.html"
+    ).read_text(encoding="utf-8")
+    assert "Nothing to review today." in html
+    assert "Want Recall to plan today's learning?" in html
+    assert "Plan my day" in html
+    dialog_at = html.index("data-plan-my-day-dialog")
+    prompt_at = html.index("Want Recall to plan today's learning?")
+    assert prompt_at < dialog_at
+    assert 'name="count"' not in html[:dialog_at]
+    assert 'name="count" value="{{ n }}"' in html[dialog_at:]
+    assert "((3, 'Steady · 3'), (5, 'Balanced · 5'), (7, 'Intensive · 7'))" in html[dialog_at:]
+    dash_py = Path("src/constitution_memorizer/web/dashboard.py").read_text(
+        encoding="utf-8"
+    )
+    assert "Continue today's plan" in dash_py
+    assert "Continue learning" in dash_py
+
+
+def test_dashboard_route_passes_user_today():
+    source = Path("src/constitution_memorizer/auth/routes.py").read_text(
+        encoding="utf-8"
+    )
+    dash = source[source.index("def dashboard") : source.index("ctx[\"user\"]")]
+    assert "as_of=user_today(eng)" in dash

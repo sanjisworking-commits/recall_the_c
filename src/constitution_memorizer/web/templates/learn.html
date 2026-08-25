@@ -7,6 +7,7 @@
   {% set sess = study_session_id|default('') %}
   {% set sess_q = ('&session=' ~ sess) if sess else '' %}
   {% set sess_qs = ('?session=' ~ sess) if sess else '' %}
+  {% set session_unit_ids = session_unit_ids|default([]) %}
   {% include "_completion_banner.html" %}
   {% if is_guest|default(false) %}
   <div class="guest-learn-banner" role="status">
@@ -82,7 +83,7 @@
       {% else %}
       <a
         class="sibling-chip{% if chip.state == 'done' %} is-done{% endif %}"
-        href="/learn/{{ chip.unit_id }}{{ sess_qs }}"
+        href="/learn/{{ chip.unit_id }}{% if sess and chip.unit_id in session_unit_ids %}?session={{ sess }}{% endif %}"
       >{{ chip.label }}</a>
       {% endif %}
     {% endfor %}
@@ -407,7 +408,7 @@
       </form>
       <form class="learn-action-again" method="post" action="/learn/{{ unit.id }}/again">
         {% if sess %}<input type="hidden" name="session" value="{{ sess }}">{% endif %}
-        <button type="submit" class="btn btn-ghost">Again tomorrow</button>
+        <button type="submit" class="btn btn-ghost">{% if study_kind|default('') in ('auto_learning', 'one_day_learning') %}Skip for today{% else %}Again tomorrow{% endif %}</button>
       </form>
       {% endif %}
     </div>

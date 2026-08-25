@@ -236,6 +236,27 @@ def test_mobile_assets_are_linked_once(tmp_path: Path):
     assert html.count("/static/mobile.js") == 1
 
 
+def test_learn_mode_view_keeps_session_on_deck_back_contract(tmp_path: Path):
+    client, engine, _ = _client(tmp_path)
+    today = date.today()
+    engine.mark_all_modes_seen("clause-1")
+    engine.mark_done("clause-1", as_of=today - timedelta(days=1))
+    start = client.post("/study/revision/start", follow_redirects=False)
+    loc = start.headers["location"]
+    assert "session=" in loc
+    sid = loc.rsplit("session=", 1)[-1].split("&")[0]
+    unit_id = loc.split("/learn/")[1].split("?")[0]
+    html = client.get(f"/learn/{unit_id}?session={sid}&mode=read").text
+    assert 'data-mobile-view="mode"' in html
+    assert f'data-session-id="{sid}"' in html
+    assert "data-deck-back" in html
+    assert f"session={sid}" in html
+    js = Path("src/constitution_memorizer/web/static/mobile.js").read_text(
+        encoding="utf-8"
+    )
+    assert 'searchParams.delete("mode")' in js
+
+
 # ── Learn action bar (Next → … → Done → quote) ───────────────────────────────
 
 

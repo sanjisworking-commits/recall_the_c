@@ -9,6 +9,7 @@ from typing import Any
 from constitution_memorizer.learning.schemas import LearningUnit
 from constitution_memorizer.progress.repository import LEARN_MODES
 from constitution_memorizer.progress.planner import project_new_capacity
+from constitution_memorizer.progress.local_date import user_today
 from constitution_memorizer.progress.scheduler import ReminderEngine
 from constitution_memorizer.progress.study_session import (
     active_same_day_session,
@@ -239,7 +240,7 @@ def build_dashboard_context(
     now: datetime | None = None,
     entitled: bool = True,
 ) -> dict[str, Any]:
-    today = as_of or date.today()
+    today = as_of or user_today(eng)
     now = now or datetime.now(timezone.utc)
     close_stale_sessions(eng, today=today)
     name = first_name(display_label)
@@ -289,6 +290,7 @@ def build_dashboard_context(
     today_mode = "caught_up"
     revision_left = 0
     learning_count = 0
+    continue_learning_label = ""
     pace_label = plan.pace_label
     show_plan_prompt = False
     if (
@@ -302,6 +304,20 @@ def build_dashboard_context(
         first_due_id = active.next_pending().learning_unit_id if active.next_pending() else first_due_id
     elif due_units:
         today_mode = "start_revision"
+    elif (
+        active is not None
+        and active.kind in ("one_day_learning", "auto_learning")
+        and active.pending_count > 0
+        and active.plan_date == today
+    ):
+        today_mode = "continue_learning"
+        learning_count = active.pending_count
+        nxt = active.next_pending()
+        first_due_id = nxt.learning_unit_id if nxt is not None else first_due_id
+        if active.kind == "one_day_learning":
+            continue_learning_label = f"Continue today's plan · {learning_count} left"
+        else:
+            continue_learning_label = f"Continue learning · {learning_count} left"
     elif entitled and plan.is_auto:
         today_mode = "auto_learning"
         learning_count = int(plan.daily_target or 0)
@@ -348,6 +364,7 @@ def build_dashboard_context(
         "today_mode": today_mode,
         "revision_left": revision_left,
         "learning_count": learning_count,
+        "continue_learning_label": continue_learning_label,
         "pace_label": pace_label,
         "show_plan_prompt": show_plan_prompt,
         "learning_plan": plan,

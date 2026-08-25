@@ -3035,6 +3035,21 @@
       return;
     }
     const exitForm = document.querySelector("[data-exit-revision-form]");
+    let trapped = true;
+    let guardedHref = window.location.pathname + window.location.search;
+
+    function openExitDialog() {
+      if (typeof dialog.showModal === "function") {
+        dialog.showModal();
+      } else {
+        dialog.setAttribute("open", "");
+      }
+    }
+
+    function armGuard(href) {
+      guardedHref = href || window.location.pathname + window.location.search;
+      history.pushState({ exitRevisionGuard: true }, "", window.location.href);
+    }
 
     function isLeaveHref(href) {
       if (!href) {
@@ -3066,6 +3081,33 @@
       );
     }
 
+    armGuard();
+
+    const origReplace = history.replaceState.bind(history);
+    history.replaceState = function () {
+      origReplace.apply(null, arguments);
+      if (window.location.pathname.indexOf("/learn") === 0) {
+        guardedHref = window.location.pathname + window.location.search;
+      }
+    };
+
+    window.addEventListener("popstate", function () {
+      if (!trapped) {
+        return;
+      }
+      if (!document.querySelector(".learn[data-exit-revision]")) {
+        return;
+      }
+      const nowHref = window.location.pathname + window.location.search;
+      const onLearn = window.location.pathname.indexOf("/learn") === 0;
+      if (onLearn && nowHref !== guardedHref) {
+        armGuard(nowHref);
+        return;
+      }
+      history.pushState({ exitRevisionGuard: true }, "", guardedHref);
+      openExitDialog();
+    });
+
     document.addEventListener("click", function (event) {
       if (
         event.metaKey ||
@@ -3087,17 +3129,14 @@
         return;
       }
       event.preventDefault();
-      if (typeof dialog.showModal === "function") {
-        dialog.showModal();
-      } else {
-        dialog.setAttribute("open", "");
-      }
+      openExitDialog();
     });
 
     const confirm = dialog.querySelector("[data-exit-confirm]");
     if (confirm) {
       confirm.addEventListener("click", function (event) {
         event.preventDefault();
+        trapped = false;
         if (exitForm) {
           exitForm.submit();
         } else {
@@ -3107,12 +3146,30 @@
     }
   }
 
+  function initPlanMyDayDialog() {
+    const openers = document.querySelectorAll("[data-plan-my-day-open]");
+    const dialog = document.querySelector("[data-plan-my-day-dialog]");
+    if (!openers.length || !dialog) {
+      return;
+    }
+    openers.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        if (typeof dialog.showModal === "function") {
+          dialog.showModal();
+        } else {
+          dialog.setAttribute("open", "");
+        }
+      });
+    });
+  }
+
   function bootInteraction() {
     syncRtcAnim();
     getDoneAudio();
     initHeadingReveal();
     initDoneInterceptor();
     initExitRevisionGuard();
+    initPlanMyDayDialog();
     initServerAffirmation();
     initExperienceControls();
     initPricing();

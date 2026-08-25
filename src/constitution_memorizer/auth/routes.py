@@ -419,11 +419,13 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
         try:
             from constitution_memorizer.web.dashboard import build_dashboard_context
             from constitution_memorizer.web.entitlements import can_use_auto_plan
+            from constitution_memorizer.progress.local_date import user_today
 
             started = time.perf_counter()
             ctx = build_dashboard_context(
                 eng,
                 display_label=label,
+                as_of=user_today(eng),
                 entitled=can_use_auto_plan(request),
             )
             record_request_timing("dashboard_build", started)

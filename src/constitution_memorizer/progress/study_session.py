@@ -88,9 +88,42 @@ def get_session(engine: ReminderEngine, session_id: str | None) -> StudySession 
     if not session_id:
         return None
     try:
-        return engine.repo.get_study_session(engine.user_id, session_id)
+        session = engine.repo.get_study_session(engine.user_id, session_id)
     except Exception:  # noqa: BLE001
         return None
+    return reconcile_session_progress(engine, session)
+
+
+def reconcile_session_progress(
+    engine: ReminderEngine, session: StudySession | None
+) -> StudySession | None:
+    """Mark pending items already completed today as completed.
+
+    Safety net for a crash between progress commit and session-item update.
+    """
+    if session is None or session.status != "active":
+        return session
+    changed = False
+    for item in session.items:
+        if item.state != "pending":
+            continue
+        try:
+            progress = engine.get_progress(item.learning_unit_id)
+        except Exception:  # noqa: BLE001
+            continue
+        if (
+            progress is not None
+            and progress.times_completed >= 1
+            and progress.last_completed == session.plan_date
+        ):
+            mark_item_done(engine, session.id, item.learning_unit_id)
+            changed = True
+    if not changed:
+        return session
+    try:
+        return engine.repo.get_study_session(engine.user_id, session.id)
+    except Exception:  # noqa: BLE001
+        return session
 
 
 def active_same_day_session(
@@ -115,7 +148,7 @@ def start_or_resume_revision(
     close_stale_sessions(engine, today=today)
     existing = engine.repo.get_active_revision_session(engine.user_id)
     if existing is not None and existing.plan_date == today:
-        return existing
+        return reconcile_session_progress(engine, existing)
     due = due_checklist(engine, as_of=today)
     if not due:
         return None
@@ -141,7 +174,7 @@ def start_or_resume_learning(
     close_stale_sessions(engine, today=today)
     existing = engine.repo.get_active_learning_session(engine.user_id, today)
     if existing is not None:
-        return existing
+        return reconcile_session_progress(engine, existing)
     mix = select_learning_mix(
         engine,
         count,

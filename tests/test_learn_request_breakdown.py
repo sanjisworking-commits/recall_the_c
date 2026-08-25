@@ -68,9 +68,9 @@ class CountingProgressRepo:
         self.load_completion_state_calls += 1
         return self.inner.load_completion_state(user_id, unit_id)
 
-    def commit_completion(self, user_id, unit_id: str, progress):
+    def commit_completion(self, user_id, unit_id: str, progress, **kwargs):
         self.commit_completion_calls += 1
-        return self.inner.commit_completion(user_id, unit_id, progress)
+        return self.inner.commit_completion(user_id, unit_id, progress, **kwargs)
 
     def list_split_preferences(self, user_id):
         self.list_split_preferences_calls += 1
