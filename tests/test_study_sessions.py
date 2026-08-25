@@ -98,14 +98,49 @@ def _make_due(client: TestClient, unit_ids: list[str], *, days_overdue: int = 0)
     eng._invalidate_progress_cache()
 
 
+def _session_and_unit_from_location(location: str) -> tuple[str, str]:
+    """Parse a Learn redirect, including `/learn/{id}/choose?session=` hops."""
+    parts = urlsplit(location)
+    session_id = parse_qs(parts.query).get("session", [""])[0]
+    path = parts.path.removesuffix("/choose")
+    return session_id, path.rsplit("/", 1)[-1]
+
+
+def _start_plan_my_day(client: TestClient) -> tuple[str, str]:
+    resp = client.post(
+        "/study/plan-my-day",
+        data={"count": "3"},
+        follow_redirects=False,
+    )
+    assert resp.status_code == 303, resp.text
+    session_id, unit_id = _session_and_unit_from_location(resp.headers["location"])
+    assert session_id and unit_id and unit_id != "choose"
+    return session_id, unit_id
+
+
+def _render_learn(client: TestClient, engine: ReminderEngine, unit_id: str, session_id: str):
+    """Open the Learn page for a mix item, resolving letter-split first."""
+    unit = engine.get_unit(unit_id)
+    if unit is not None and unit.allows_letter_split:
+        engine.set_split_preference(unit_id, "whole")
+    resp = client.get(f"/learn/{unit_id}?session={session_id}", follow_redirects=False)
+    hops = 0
+    while resp.status_code in (303, 307) and hops < 4:
+        loc = resp.headers["location"]
+        session_id, unit_id = _session_and_unit_from_location(loc)
+        unit = engine.get_unit(unit_id)
+        if unit is not None and unit.allows_letter_split:
+            engine.set_split_preference(unit_id, "whole")
+        resp = client.get(loc, follow_redirects=False)
+        hops += 1
+    return resp, unit_id
+
+
 def _start(client: TestClient) -> tuple[str, str]:
     """POST /revision/start → (session_id, first unit id)."""
     resp = client.post("/revision/start", follow_redirects=False)
     assert resp.status_code == 303, resp.text
-    parts = urlsplit(resp.headers["location"])
-    session_id = parse_qs(parts.query).get("session", [""])[0]
-    path = parts.path.removesuffix("/choose")
-    return session_id, path.rsplit("/", 1)[-1]
+    return _session_and_unit_from_location(resp.headers["location"])
 
 
 def _session_of(location: str) -> str:
@@ -626,16 +661,8 @@ def test_learning_session_skip_does_not_schedule_review(tmp_path: Path):
     app = create_app(units_path=MINI_UNITS, db_path=db)
     engine = app.state.engine
     client = TestClient(app)
-    start = client.post(
-        "/study/plan-my-day",
-        data={"count": "3"},
-        follow_redirects=False,
-    )
-    assert start.status_code == 303
-    parts = urlsplit(start.headers["location"])
-    sid = parse_qs(parts.query).get("session", [""])[0]
-    unit_id = parts.path.rsplit("/", 1)[-1]
-    page = client.get(f"/learn/{unit_id}?session={sid}", follow_redirects=False)
+    sid, unit_id = _start_plan_my_day(client)
+    page, unit_id = _render_learn(client, engine, unit_id, sid)
     assert page.status_code == 200
     assert "Skip for today" in page.text
     skip = client.post(
@@ -653,7 +680,24 @@ def test_learning_session_skip_does_not_schedule_review(tmp_path: Path):
     assert item.status == "deferred"
 
 
-def test_revision_again_still_defers_until_tomorrow(tmp_path: Path):
+def test_plan_my_day_split_clause_still_opens_learn(tmp_path: Path):
+    """CI hash-seed can put clause-2 first, which 303s to /choose not 404."""
+    db = tmp_path / "progress.db"
+    app = create_app(units_path=MINI_UNITS, db_path=db)
+    engine = app.state.engine
+    client = TestClient(app)
+    session = engine.create_study_session(
+        session_id="s-choose",
+        kind="day_plan",
+        plan_date=date.today(),
+        unit_ids=["clause-2", "clause-1"],
+    )
+    loc = next_learn_url(engine, "clause-2", session_id=session.id)
+    sid, unit_id = _session_and_unit_from_location(loc)
+    assert unit_id == "clause-2"
+    page, unit_id = _render_learn(client, engine, unit_id, sid)
+    assert page.status_code == 200
+    assert "Skip for today" in page.text
     client = _client(tmp_path)
     _make_due(client, ["clause-1", "article-end"])
     session_id, unit_id = _start(client)
@@ -697,16 +741,11 @@ def test_pending_already_completed_item_is_reconciled_on_get(tmp_path: Path):
     db = tmp_path / "progress.db"
     app = create_app(units_path=MINI_UNITS, db_path=db)
     client = TestClient(app)
-    start = client.post(
-        "/study/plan-my-day",
-        data={"count": "3"},
-        follow_redirects=False,
-    )
-    assert start.status_code == 303
-    parts = urlsplit(start.headers["location"])
-    sid = parse_qs(parts.query).get("session", [""])[0]
-    unit_id = parts.path.rsplit("/", 1)[-1]
+    sid, unit_id = _start_plan_my_day(client)
     engine = app.state.engine
+    unit = engine.get_unit(unit_id)
+    if unit is not None and unit.allows_letter_split:
+        engine.set_split_preference(unit_id, "whole")
     today = date.today()
     engine.mark_all_modes_seen(unit_id)
     engine.mark_done(unit_id, as_of=today)
