@@ -119,6 +119,7 @@ from constitution_memorizer.web.calendar_view import (
     build_revisions_view,
 )
 from constitution_memorizer.web.completion import (
+    REVISION_ENTRY_MODE,
     build_completion,
     caught_up_quote,
     LearnNavigation,
@@ -1495,7 +1496,10 @@ def create_app(
                 return RedirectResponse(url=_home_url(), status_code=303)
             return RedirectResponse(
                 url=next_learn_url(
-                    eng, due[0].id, multiuser=app.state.multiuser_enabled
+                    eng,
+                    due[0].id,
+                    multiuser=app.state.multiuser_enabled,
+                    mode=REVISION_ENTRY_MODE,
                 ),
                 status_code=303,
             )
@@ -1508,6 +1512,7 @@ def create_app(
                 first,
                 multiuser=app.state.multiuser_enabled,
                 session_id=session.id,
+                mode=REVISION_ENTRY_MODE,
             ),
             status_code=303,
         )
