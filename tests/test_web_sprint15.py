@@ -34,11 +34,13 @@ def test_learn_enables_letters_tab_and_panel_markup(client: TestClient):
     assert "data-letters-check" in html
     assert "data-letters-display" in html
     assert "data-letters-manual" in html
-    assert "Show full text" in html
-    assert "Check phrase" in html
+    assert "Full text" in html
+    # Speak and check are one button now; "Check phrase" is a JS label.
+    assert "data-letters-speak" in html
+    assert "data-letters-check" not in html.split("data-letters-check-text")[0]
     assert "Use the first letters." in html
     assert "speech_client.js?v=speech2" in html
-    assert "app.js?v=main31" in html
+    assert "app.js?v=main42" in html
     assert "speech_align.js" not in html
 
 
@@ -53,7 +55,7 @@ def test_letters_mode_query_param_renders_letters_active(client: TestClient):
 
 
 def test_letters_css_drives_panel_and_initials_styles(client: TestClient):
-    css = client.get("/static/styles.css?v=main7")
+    css = client.get("/static/styles.css?v=main37")
     assert css.status_code == 200
     text = css.text
     assert '.learn[data-mode="letters"] .learn-panel-letters' in text
@@ -70,7 +72,7 @@ def test_letters_css_drives_panel_and_initials_styles(client: TestClient):
 
 
 def test_letters_js_builds_initials_like_prototype(client: TestClient):
-    js = client.get("/static/app.js?v=main3")
+    js = client.get("/static/app.js?v=main42")
     assert js.status_code == 200
     text = js.text
     assert "initialsFor" in text
@@ -78,7 +80,7 @@ def test_letters_js_builds_initials_like_prototype(client: TestClient):
     assert "fromIndex" in text
     assert "applyAlignment" in text
     assert "Back to initials" in text
-    assert "Show full text" in text
+    assert "Full text" in text
     assert "Checking…" in text
     assert "RecallSpeech" in text
     assert "webkitSpeechRecognition" not in text
@@ -89,7 +91,8 @@ def test_letters_js_builds_initials_like_prototype(client: TestClient):
     assert "is-correct" in text
     assert "is-wrong" in text
     assert "is-listening" in text
-    assert "isStructuralLettersToken" in text
+    # Renamed and hoisted: Type skips clause markers using the same rule.
+    assert "isStructuralToken" in text
     assert "is-structural" in text
     assert r"/^[A-Za-z]/" in text or "/^[A-Za-z]/" in text
 

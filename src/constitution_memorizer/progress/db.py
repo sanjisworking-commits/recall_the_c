@@ -227,8 +227,42 @@ CREATE INDEX IF NOT EXISTS idx_memory_user_next_revision
     ON memory_entry(user_id, next_revision);
 CREATE INDEX IF NOT EXISTS idx_memory_media_user
     ON memory_media(user_id);
+
+CREATE TABLE IF NOT EXISTS study_session (
+    id TEXT PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    kind TEXT NOT NULL
+        CHECK (kind IN ('revision', 'auto_learning', 'day_plan')),
+    plan_date TEXT NOT NULL,
+    status TEXT NOT NULL DEFAULT 'active'
+        CHECK (status IN ('active', 'complete')),
+    created_at TEXT NOT NULL,
+    completed_at TEXT
+);
+
+CREATE TABLE IF NOT EXISTS study_session_item (
+    session_id TEXT NOT NULL,
+    learning_unit_id TEXT NOT NULL,
+    position INTEGER NOT NULL,
+    status TEXT NOT NULL DEFAULT 'pending'
+        CHECK (status IN ('pending', 'completed', 'deferred')),
+    completed_at TEXT,
+    PRIMARY KEY (session_id, learning_unit_id),
+    FOREIGN KEY (session_id) REFERENCES study_session(id) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_study_session_user_kind
+    ON study_session(user_id, kind, status);
+CREATE INDEX IF NOT EXISTS idx_study_session_item_order
+    ON study_session_item(session_id, position);
 """
 
+# Pre-multiuser tables only: _migrate_legacy renames each of these aside,
+# re-runs SCHEMA_SQL, copies the rows back under a user_id, then drops the
+# renamed copy. A table that never existed before multiuser (study_session,
+# study_session_item) must stay OUT of this list — SCHEMA_SQL's CREATE TABLE
+# IF NOT EXISTS leaves it alone, whereas listing it would rename it away and
+# drop it with no copy step to bring the rows back.
 _LEGACY_TABLES = (
     "learning_unit_progress",
     "split_preference",

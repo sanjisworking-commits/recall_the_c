@@ -120,7 +120,8 @@ def test_progress_strip_and_new_user_context(engine: ReminderEngine):
     assert ctx["greeting"] == "Welcome, Priya."
     assert ctx["nothing_due"] is True
     assert ctx["strip"]["revisions_done"] == 0
-    assert ctx["recent"] == []
+    # Recent activity was removed from Today; the view-model no longer builds it.
+    assert "recent" not in ctx
 
     engine.mark_all_modes_seen("u1")
     engine.mark_done("u1", as_of=today)
@@ -135,5 +136,4 @@ def test_progress_strip_and_new_user_context(engine: ReminderEngine):
         now=datetime(2026, 8, 3, 9, 0, tzinfo=timezone.utc),
     )
     assert ctx2["greeting"] == "Good morning, Priya."
-    assert ctx2["recent"]
-    assert "Article 20" in ctx2["recent"][0]["text"]
+    assert "recent" not in ctx2

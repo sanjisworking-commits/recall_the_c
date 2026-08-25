@@ -15,6 +15,9 @@
   --browse-due: #0e7569;
   --browse-mark-news: #b45309;
   --browse-mark-visualise: #0e7569;
+  /* Phone calendar: a past review already done, and the live-mic square. */
+  --calendar-done: #b7d6d0;
+  --recording-indicator: #3ba08f;
   --browse-mark-hover: var(--hover);
   --browse-mark-press: var(--page);
   --browse-mark-opacity: 0.7;
@@ -61,6 +64,8 @@ html[data-theme="dark"] {
   --browse-due: #2a9d8f;
   --browse-mark-news: #d97706;
   --browse-mark-visualise: #2a9d8f;
+  --calendar-done: #3f6b64;
+  --recording-indicator: #3ba08f;
   --browse-mark-hover: var(--hover);
   --browse-mark-press: #333333;
   --browse-mark-opacity: 0.75;
@@ -1304,44 +1309,276 @@ html[data-theme="dark"] .theme-toggle {
 }
 
 .learn-type-input {
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-  min-height: 100px;
-  padding: 14px;
-  border: 1px solid var(--ink);
-  font: inherit;
-  font-size: 16px;
-  line-height: 1.6;
-  resize: vertical;
+  /* Colours only. Every metric — box, padding, font, line-height — lives in
+     the shared `.learn-type-input, .learn-type-mirror` rule below, because a
+     value set on one layer alone drifts the underlines off their words. The
+     focus ring is on .learn-type-field:focus-within, not here, or the box
+     would draw two of them. */
   background: var(--paper);
   color: var(--ink);
-  outline: none;
 }
 
-.learn-type-input:focus-visible {
+/* ── Type mode: one box, no answer on screen ────────────────────────────────
+   Type is recall from memory, so the clause must not be rendered while the
+   user is trying to produce it. The textarea sits on top as the real input
+   but paints no glyphs; the mirror underneath redraws the same characters
+   with correctness underlines, and nothing is drawn ahead of the caret.
+
+   The mirror is in normal flow and SIZES the field; the textarea is stacked
+   over it and never scrolls. That is deliberate — syncing a textarea's scroll
+   against a mirror is the usual way this technique rots, and an auto-growing
+   box has no scroll to sync. */
+.learn-type-field {
+  display: grid;
+  box-sizing: border-box;
+  width: 100%;
+  border: 1px solid var(--ink);
+  background: var(--paper);
+}
+
+.learn-type-field > * {
+  grid-area: 1 / 1;
+}
+
+.learn-type-field:focus-within {
   outline: 2px solid var(--ink);
   outline-offset: 2px;
 }
 
-.learn-type-diff {
-  margin-top: 14px;
+/* THE LOAD-BEARING RULE. Every metric-affecting property lives here, set on
+   both layers at once. Styling either one alone makes the underlines drift off
+   their words — a drift that compounds per line and is invisible until the
+   text is long. Do not split this selector. */
+.learn-type-input,
+.learn-type-mirror {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 100px;
+  margin: 0;
+  padding: 14px;
+  border: 0;
+  font: inherit;
   font-size: 16px;
-  line-height: 1.8;
-  min-height: 28px;
+  font-weight: 400;
+  font-style: normal;
+  /* Fraunces is variable: optical sizing and ligatures change advance widths,
+     and a textarea's editor need not apply them like a block box does. */
+  font-optical-sizing: none;
+  font-variant-ligatures: none;
+  font-kerning: none;
+  /* Integer, never a ratio — 1.6 x 16px = 25.6px, and the two layers round
+     fractional line boxes differently. */
+  line-height: 26px;
+  letter-spacing: normal;
+  word-spacing: normal;
+  text-align: left;
+  text-indent: 0;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  word-break: normal;
+  /* Not `pretty`: last-line balancing would rewrap the mirror only. */
+  text-wrap: wrap;
+  hyphens: none;
+  tab-size: 8;
+  direction: ltr;
+  unicode-bidi: isolate;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
-.learn-type-word.is-unreached {
-  color: var(--faint);
-}
-
-.learn-type-word.is-correct {
+.learn-type-mirror {
+  position: relative;
+  pointer-events: none;
+  user-select: none;
   color: var(--ink);
 }
 
-.learn-type-word.is-wrong {
-  color: var(--destructive);
-  text-decoration: line-through;
+.learn-type-input {
+  position: relative;
+  display: block;
+  height: 100%;
+  /* The mirror sets the height; the textarea must never scroll or be dragged
+     out from under it. */
+  resize: none;
+  overflow: hidden;
+  scrollbar-width: none;
+  background: transparent;
+  color: var(--ink);
+  -webkit-text-fill-color: transparent;
+  caret-color: var(--ink);
+  outline: none;
+}
+
+.learn-type-input::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+/* text-fill-color hits the placeholder too, and autofill would repaint the
+   glyphs we just hid, giving doubled text. */
+.learn-type-input::placeholder {
+  color: var(--faint);
+  -webkit-text-fill-color: var(--faint);
+  opacity: 1;
+}
+
+.learn-type-input:-webkit-autofill {
+  -webkit-text-fill-color: transparent;
+}
+
+/* Selecting invisible text would otherwise paint the default blue behind the
+   mirror's glyphs, and stack two highlights. */
+.learn-type-input::selection {
+  background: var(--track);
+}
+
+.learn-type-mirror::selection {
+  background: transparent;
+}
+
+/* Correct vs wrong must not rest on hue alone — solid vs wavy survives colour
+   blindness and forced-colors, where both hues flatten to CanvasText. */
+.learn-type-mirror-word.is-correct {
+  text-decoration: underline solid var(--browse-due);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+.learn-type-mirror-word.is-wrong {
+  text-decoration: underline wavy var(--browse-mark-news);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+}
+
+/* The word still being typed stays unmarked until it is finished. */
+.learn-type-mirror-word.is-typing {
+  text-decoration: none;
+}
+
+.learn-type-fix {
+  margin-left: auto;
+  color: var(--browse-mark-news);
+}
+
+.learn-type-fix[hidden] {
+  display: none;
+}
+
+@media (forced-colors: active) {
+  /* text-fill-color is not reliably forced; fall back to plain typing rather
+     than leaving an invisible textarea over a flattened mirror. */
+  .learn-type-input {
+    color: CanvasText;
+    -webkit-text-fill-color: CanvasText;
+  }
+
+  .learn-type-mirror {
+    display: none;
+  }
+}
+
+.learn-type-result {
+  margin-top: 12px;
+}
+
+.learn-type-result[hidden] {
+  display: none;
+}
+
+.learn-type-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.learn-type-tab {
+  padding: 8px 14px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  font: inherit;
+  font-size: 13px;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.learn-type-tab[hidden] {
+  display: none;
+}
+
+.learn-type-tab.is-active {
+  border-bottom-color: var(--ink);
+  color: var(--ink);
+}
+
+.learn-type-pane {
+  padding-top: 12px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.learn-type-pane[hidden] {
+  display: none;
+}
+
+/* The score is the result of the exercise, so it carries the same weight the
+   app gives numbers on the Today card and the progress strip. */
+.learn-type-score {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin: 0;
+}
+
+.learn-type-score-num {
+  font-family: var(--font-display);
+  font-size: 34px;
+  font-weight: 500;
+  line-height: 1;
+  color: var(--ink);
+}
+
+.learn-type-score-of {
+  font-size: 20px;
+  color: var(--mid);
+}
+
+.learn-type-score-label {
+  font-size: 13.5px;
+  color: var(--muted);
+}
+
+.learn-type-score.is-perfect .learn-type-score-num,
+.learn-type-score.is-perfect .learn-type-score-label {
+  color: var(--browse-due);
+}
+
+.learn-type-score-fix {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--browse-mark-news);
+}
+
+/* The wording pane prints the Bare Act text, so it only ever renders when the
+   attempt was imperfect — see renderResult. */
+.learn-type-answer {
+  color: var(--ink);
+}
+
+.learn-type-answer.is-wrong {
+  background: var(--browse-mark-news);
+  color: var(--on-accent);
+}
+
+.learn-type-answer.is-unreached {
+  color: var(--faint);
+}
+
+/* Explicit, because mobile.css gives this display:flex — which outranks the
+   UA rule for [hidden] and would leave the live counter on screen beside the
+   settled score. */
+.learn-type-stats[hidden] {
+  display: none;
 }
 
 .learn-type-stats {
@@ -4054,6 +4291,22 @@ html[data-theme="dark"] .nav-signin {
   margin: 0;
 }
 
+/* "Revision 2 of 6" — the walk position in today's queue. */
+.learn-revision-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 10px 0 0;
+  padding: 3px 9px;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--browse-due);
+}
+
 .guest-modal {
   border: 1px solid var(--sheet-border);
   padding: 0;
@@ -4166,6 +4419,17 @@ html[data-theme="dark"] .nav-signin {
   gap: 16px;
   margin-bottom: 16px;
   align-items: start;
+}
+
+/* Today shows revision OR learning, never both, so the hero row is a single
+   column — the two-column split above is for .dash-bottom. */
+.dash-top {
+  grid-template-columns: 1fr;
+}
+
+.dash-revision-form {
+  margin: 0;
+  width: 100%;
 }
 
 .dash-card {

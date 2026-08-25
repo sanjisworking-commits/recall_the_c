@@ -1,0 +1,22 @@
+{# Rendered only for an ACTIVE revision session with work left. A finished
+   queue has nothing to guard, so the modal is simply absent and the JS guard
+   never arms. Native <dialog>, styled in styles.css like guest_modal — the
+   guard is width-agnostic because browser Back counts on desktop too. #}
+<dialog
+  class="guest-modal revision-exit-modal"
+  id="revision-exit-modal"
+  data-revision-exit-modal
+  aria-labelledby="revision-exit-title"
+>
+  <form method="dialog" class="guest-modal-card">
+    <h2 class="guest-modal-title" id="revision-exit-title">Exit revision?</h2>
+    <p class="guest-modal-body">
+      Your completed revisions are saved.
+      You can return later to finish the remaining revisions.
+    </p>
+    <div class="guest-modal-actions">
+      <button type="submit" class="btn" data-revision-keep>Keep revising</button>
+      <button type="button" class="btn btn-ghost" data-revision-exit>Exit revision</button>
+    </div>
+  </form>
+</dialog>

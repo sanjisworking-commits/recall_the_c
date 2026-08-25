@@ -228,21 +228,28 @@
       });
     });
 
-    const revealAll = panel.querySelector('[data-cloze-action="reveal-all"]');
-    const hideAgain = panel.querySelector('[data-cloze-action="hide-again"]');
-    if (revealAll) {
-      revealAll.addEventListener("click", () => {
+    // One toggle replaces the old Reveal all / Hide again pair. This is a
+    // LABEL merge only: it still writes `revealed`, never `tapRevealed`, so
+    // revealing everything grants no completion credit — the mode is checked
+    // by recalling each blank individually, and that must not become
+    // skippable by pressing one button.
+    const toggleAll = panel.querySelector('[data-cloze-action="toggle-all"]');
+    if (toggleAll) {
+      toggleAll.addEventListener("click", () => {
+        const blanks = [];
         words.forEach((word, index) => {
           if (isBlank(word)) {
-            revealed.add(index);
+            blanks.push(index);
           }
         });
-        render();
-      });
-    }
-    if (hideAgain) {
-      hideAgain.addEventListener("click", () => {
-        revealed.clear();
+        const allShown = blanks.length > 0 && blanks.every((i) => revealed.has(i));
+        if (allShown) {
+          revealed.clear();
+          toggleAll.textContent = "Reveal all";
+        } else {
+          blanks.forEach((i) => revealed.add(i));
+          toggleAll.textContent = "Hide again";
+        }
         render();
       });
     }
@@ -253,6 +260,9 @@
       reset() {
         revealed.clear();
         tapRevealed.clear();
+        if (toggleAll) {
+          toggleAll.textContent = "Reveal all";
+        }
         render();
       },
     };
@@ -285,32 +295,10 @@
     let inFlight = false;
     let abortController = null;
 
-    function isStructuralLettersToken(word) {
-      const raw = String(word || "").trim();
-      if (!raw) {
-        return true;
-      }
-      if (/^[\(\[]?\d+[A-Za-z]?[\)\]]?\.?$/.test(raw)) {
-        return true;
-      }
-      if (/^\(\d+\)\([A-Za-z]\)$/.test(raw)) {
-        return true;
-      }
-      if (/^\([A-Za-z]\)$/.test(raw)) {
-        return true;
-      }
-      if (/^\([ivxlcdmIVXLCDM]+\)$/.test(raw)) {
-        return true;
-      }
-      if (/^[-–—−•·.,;:()/\[\]]+$/.test(raw)) {
-        return true;
-      }
-      return !/[A-Za-z]/.test(raw);
-    }
 
     function earliestUnresolvedIndex() {
       for (let i = 0; i < words.length; i += 1) {
-        if (isStructuralLettersToken(words[i])) {
+        if (isStructuralToken(words[i])) {
           continue;
         }
         if (!correctWordIndexes.has(i)) {
@@ -342,7 +330,7 @@
     }
 
     function cueClass(index) {
-      if (isStructuralLettersToken(words[index])) {
+      if (isStructuralToken(words[index])) {
         return "learn-letters-cue is-structural";
       }
       if (cueState[index] === "correct") {
@@ -382,7 +370,7 @@
         display.appendChild(span);
       });
       if (toggle) {
-        toggle.textContent = full ? "Back to initials" : "Show full text";
+        toggle.textContent = full ? "Back to initials" : "Full text";
         toggle.setAttribute("aria-pressed", full ? "true" : "false");
       }
     }
@@ -399,7 +387,7 @@
       const start = earliestUnresolvedIndex();
       let marked = 0;
       for (let i = start; i < words.length && marked < 8; i += 1) {
-        if (isStructuralLettersToken(words[i])) {
+        if (isStructuralToken(words[i])) {
           continue;
         }
         // Never clobber a red (wrong) cue — it stays red until the word
@@ -417,7 +405,7 @@
       }
       let speakable = 0;
       for (let i = 0; i < words.length; i += 1) {
-        if (isStructuralLettersToken(words[i])) {
+        if (isStructuralToken(words[i])) {
           continue;
         }
         speakable += 1;
@@ -443,7 +431,7 @@
         if (index < 0 || index >= words.length) {
           return;
         }
-        if (isStructuralLettersToken(words[index])) {
+        if (isStructuralToken(words[index])) {
           return;
         }
         if (correctWordIndexes.has(index)) {
@@ -504,29 +492,35 @@
       }
     }
 
+    // Speak and check are the same button (design 3c): tap to open the mic,
+    // tap again to check. `listening` is what the click handler reads to know
+    // which half of the cycle it is in.
+    let listening = false;
+    let recClock = null;
+
     function enterListeningUi(label, hint) {
       markListeningWindow();
       showStatus(hint, "listening");
+      listening = true;
       if (speakBtn) {
         speakBtn.classList.add("is-active");
-        speakBtn.textContent = "Listening…";
-      }
-      if (checkBtn) {
-        checkBtn.textContent = label;
+        recClock = stopRecClock(recClock);
+        recClock = startRecClock(speakBtn, label || "Check phrase");
       }
       setHidden(checkBtn, false);
+      setNavRecording(true);
       renderCues();
     }
 
-    function exitListeningUi() {
+    function exitListeningUi(nextLabel) {
+      listening = false;
+      recClock = stopRecClock(recClock);
       if (speakBtn) {
         speakBtn.classList.remove("is-active");
-        speakBtn.textContent = "▸ Start";
-      }
-      if (checkBtn) {
-        checkBtn.textContent = "Check phrase";
+        speakBtn.textContent = nextLabel || "▸ Speak";
       }
       setHidden(checkBtn, true);
+      setNavRecording(false);
     }
 
     async function startLegacySpeak() {
@@ -618,11 +612,7 @@
       }
       const session = recording;
       recording = null;
-      if (speakBtn) {
-        speakBtn.classList.remove("is-active");
-        speakBtn.textContent = "▸ Start";
-      }
-      setHidden(checkBtn, true);
+      exitListeningUi("▸ Next phrase");
       showStatus("Checking…", "listening");
       let blob;
       try {
@@ -763,7 +753,8 @@
     }
     if (speakBtn) {
       speakBtn.addEventListener("click", () => {
-        if (recording) {
+        if (listening || recording || live) {
+          checkPhrase();
           return;
         }
         startSpeak();
@@ -810,16 +801,85 @@
         for (let i = 0; i < cueState.length; i += 1) {
           cueState[i] = correctWordIndexes.has(i) ? "correct" : "neutral";
         }
+        exitListeningUi("▸ Speak");
         if (speakBtn) {
-          speakBtn.classList.remove("is-active");
-          speakBtn.textContent = "▸ Start";
           speakBtn.disabled = false;
         }
-        setHidden(checkBtn, true);
         showStatus("", null);
         renderCues();
       },
     };
+  }
+
+  /* ── Recording chrome shared by Letters and Recite ──────────────────────
+     While a mic is open the phone bar hides Next (design 3c/3d) and the record
+     button takes the primary slot. The class is read by mobile.css; on desktop
+     there is no bar and this is a no-op. */
+
+  function setNavRecording(on) {
+    const nav = document.querySelector("[data-mode-nav]");
+    if (nav) {
+      nav.classList.toggle("is-recording", Boolean(on));
+    }
+  }
+
+  function formatClock(ms) {
+    const total = Math.max(0, Math.round(ms / 1000));
+    return Math.floor(total / 60) + ":" + String(total % 60).padStart(2, "0");
+  }
+
+  // Paints "▪ <prefix> · m:ss" into the button once a second. Returns the
+  // interval id; pass it to stopRecClock.
+  function startRecClock(btn, prefix) {
+    if (!btn) {
+      return null;
+    }
+    const began = Date.now();
+    const paint = () => {
+      const dot = document.createElement("span");
+      dot.className = "rec-dot";
+      dot.setAttribute("aria-hidden", "true");
+      btn.replaceChildren(
+        dot,
+        document.createTextNode(prefix + " · " + formatClock(Date.now() - began))
+      );
+    };
+    paint();
+    return window.setInterval(paint, 1000);
+  }
+
+  function stopRecClock(id) {
+    if (id) {
+      window.clearInterval(id);
+    }
+    return null;
+  }
+
+  /* Clause numbering — "(3)", "(a)", "(iv)", "(2)(a)" — plus punctuation-only
+     runs. Not prose: Letters never scores them, and Type does not ask the user
+     to type them. Shared so the two modes cannot drift apart on what counts as
+     a word. */
+  function isStructuralToken(word) {
+    const raw = String(word || "").trim();
+    if (!raw) {
+      return true;
+    }
+    if (/^[\(\[]?\d+[A-Za-z]?[\)\]]?\.?$/.test(raw)) {
+      return true;
+    }
+    if (/^\(\d+\)\([A-Za-z]\)$/.test(raw)) {
+      return true;
+    }
+    if (/^\([A-Za-z]\)$/.test(raw)) {
+      return true;
+    }
+    if (/^\([ivxlcdmIVXLCDM]+\)$/.test(raw)) {
+      return true;
+    }
+    if (/^[-–—−•·.,;:()/\[\]]+$/.test(raw)) {
+      return true;
+    }
+    return !/[A-Za-z]/.test(raw);
   }
 
   function normWord(text) {
@@ -832,79 +892,298 @@
     }
 
     const input = panel.querySelector("[data-type-input]");
-    const diffEl = panel.querySelector("[data-type-diff]");
+    const mirrorEl = panel.querySelector("[data-type-mirror]");
+    const countEl =
+      panel.querySelector("[data-type-count]") ||
+      panel.querySelector("[data-type-stats]");
+    const fixEl = panel.querySelector("[data-type-fix]");
     const statsEl = panel.querySelector("[data-type-stats]");
+    const resultEl = panel.querySelector("[data-type-result]");
+    const scorePane = panel.querySelector('[data-type-pane="score"]');
+    const wordingPane = panel.querySelector('[data-type-pane="wording"]');
+    const wordingTab = panel.querySelector('[data-type-tab="wording"]');
+    const tabs = Array.prototype.slice.call(
+      panel.querySelectorAll("[data-type-tab]")
+    );
     const checkBtn = panel.querySelector("[data-type-check]");
     const source = panel.getAttribute("data-type-text") || "";
-    const words = source.trim() ? source.trim().split(/\s+/) : [];
+    const sourceWords = source.trim() ? source.trim().split(/\s+/) : [];
+    // Clause numbering is not recall. The target is prose only, so "(3)" and
+    // "(a)" never have to be typed — and if the user types them anyway they
+    // are skipped rather than scored, so the alignment holds either way.
+    const words = sourceWords.filter((word) => !isStructuralToken(word));
 
-    function render() {
-      const typed = input ? input.value : "";
-      const typedWords = typed.trim() ? typed.trim().split(/\s+/) : [];
-      let correct = 0;
-
-      if (diffEl) {
-        diffEl.replaceChildren();
-        words.forEach((word, index) => {
-          const span = document.createElement("span");
-          span.className = "learn-type-word";
-          span.textContent = word + " ";
-          if (index >= typedWords.length) {
-            span.classList.add("is-unreached");
-          } else if (normWord(typedWords[index]) === normWord(word)) {
-            span.classList.add("is-correct");
-            correct += 1;
-          } else {
-            span.classList.add("is-wrong");
-          }
-          diffEl.appendChild(span);
-        });
+    // A word only counts once the user has finished it (typed whitespace after
+    // it). The trailing token is still being written, so it is neither scored
+    // nor coloured — that is the caret position in the design.
+    function settledWords(value) {
+      const tokens = value.trim() ? value.trim().split(/\s+/) : [];
+      if (!tokens.length) {
+        return [];
       }
+      const settled = /\s$/.test(value) ? tokens : tokens.slice(0, -1);
+      return settled.filter((token) => !isStructuralToken(token));
+    }
 
-      if (statsEl) {
-        statsEl.textContent =
-          typedWords.length +
-          " / " +
+    // Checking evaluates the whole attempt: by then the last word is finished,
+    // even though no trailing space was typed. settledWords is for the live
+    // counter, where the trailing token really is still being written.
+    function attemptWords(value) {
+      const tokens = value.trim() ? value.trim().split(/\s+/) : [];
+      return tokens.filter((token) => !isStructuralToken(token));
+    }
+
+    let composing = false;
+
+    function matches(typedWord, index) {
+      return index < words.length && normWord(typedWord) === normWord(words[index]);
+    }
+
+    // Mirrors the raw value, preserving every space and newline, so the two
+    // layers wrap identically. Only ever writes the user's own tokens — the
+    // source text must never reach this element.
+    function renderMirror(value) {
+      if (!mirrorEl) {
+        return;
+      }
+      mirrorEl.replaceChildren();
+      const parts = value.split(/(\s+)/);
+      const settled = /\s$/.test(value);
+      let lastWordPart = -1;
+      parts.forEach((part, index) => {
+        if (part && !/^\s+$/.test(part)) {
+          lastWordPart = index;
+        }
+      });
+
+      let wordIndex = 0;
+      parts.forEach((part, index) => {
+        if (!part) {
+          return;
+        }
+        if (/^\s+$/.test(part)) {
+          mirrorEl.appendChild(document.createTextNode(part));
+          return;
+        }
+        const span = document.createElement("span");
+        span.textContent = part;
+        if (composing || (index === lastWordPart && !settled)) {
+          span.className = "learn-type-mirror-word is-typing";
+        } else if (isStructuralToken(part)) {
+          // Typed a marker anyway — neither right nor wrong, and it does not
+          // consume a target word.
+          span.className = "learn-type-mirror-word is-structural";
+        } else {
+          span.className =
+            "learn-type-mirror-word " +
+            (matches(part, wordIndex) ? "is-correct" : "is-wrong");
+          wordIndex += 1;
+        }
+        mirrorEl.appendChild(span);
+      });
+      // A textarea keeps a trailing blank line; pre-wrap on a div drops it.
+      mirrorEl.appendChild(document.createTextNode("\u200b"));
+    }
+
+    function renderStats(value, checked) {
+      const done = settledWords(value);
+      let correct = 0;
+      done.forEach((word, index) => {
+        if (matches(word, index)) {
+          correct += 1;
+        }
+      });
+      const wrong = done.length - correct;
+      if (countEl) {
+        countEl.textContent =
+          done.length +
+          " of " +
           words.length +
           " words · " +
           correct +
           " correct";
       }
+      if (fixEl) {
+        fixEl.hidden = wrong === 0;
+        fixEl.textContent = wrong === 1 ? "1 to fix" : wrong + " to fix";
+      }
     }
 
+    function render(checked) {
+      const value = input ? input.value : "";
+      renderMirror(value);
+      renderStats(value, Boolean(checked));
+      // Typing again re-arms the check, which is what keeps re-checking
+      // possible without a second button.
+      if (!checked && checkBtn && checkBtn.dataset.typeAdvance) {
+        hideResult();
+        delete checkBtn.dataset.typeAdvance;
+        checkBtn.textContent = "Check my attempt";
+        panel.dispatchEvent(new CustomEvent("learn:type-reset", { bubbles: true }));
+      }
+    }
+
+    function selectTab(name) {
+      tabs.forEach((tab) => {
+        const active = tab.getAttribute("data-type-tab") === name;
+        tab.classList.toggle("is-active", active);
+        tab.setAttribute("aria-selected", active ? "true" : "false");
+      });
+      if (scorePane) scorePane.hidden = name !== "score";
+      if (wordingPane) wordingPane.hidden = name !== "wording";
+    }
+
+    function hideResult() {
+      if (resultEl) resultEl.hidden = true;
+      if (statsEl) statsEl.hidden = false;
+      selectTab("score");
+    }
+
+    // The wording pane is the one place the Bare Act text appears, and only
+    // when the attempt was imperfect — a clean run reveals nothing.
+    function renderResult() {
+      const done = attemptWords(input ? input.value : "");
+      let right = 0;
+      done.forEach((word, index) => {
+        if (matches(word, index)) right += 1;
+      });
+      const wrong = done.length - right;
+      // "Perfect" means every target word was produced correctly — not merely
+      // that nothing typed so far was wrong, which would hide the wording from
+      // someone who stopped halfway.
+      const perfect = right === words.length && wrong === 0;
+
+      if (scorePane) {
+        // Built as elements, not a sentence, so the count can carry the same
+        // weight the app gives numbers elsewhere (the Today due card, the
+        // progress strip) instead of reading as a footnote.
+        const line = document.createElement("p");
+        line.className = "learn-type-score";
+        const num = document.createElement("span");
+        num.className = "learn-type-score-num";
+        num.textContent = String(right);
+        const of = document.createElement("span");
+        of.className = "learn-type-score-of";
+        of.textContent = "/" + words.length;
+        num.appendChild(of);
+        const label = document.createElement("span");
+        label.className = "learn-type-score-label";
+        label.textContent = perfect ? "All correct ✓" : "words correct";
+        line.classList.toggle("is-perfect", perfect);
+        line.append(num, label);
+
+        scorePane.replaceChildren(line);
+        if (!perfect) {
+          const fix = document.createElement("p");
+          fix.className = "learn-type-score-fix";
+          fix.textContent =
+            wrong > 0
+              ? wrong + (wrong === 1 ? " word to fix" : " words to fix")
+              : words.length - right + " still to write";
+          scorePane.appendChild(fix);
+        }
+      }
+
+      if (wordingTab) wordingTab.hidden = perfect;
+      if (wordingPane) {
+        wordingPane.replaceChildren();
+        if (!perfect) {
+          words.forEach((word, index) => {
+            const span = document.createElement("span");
+            span.className =
+              index >= done.length
+                ? "learn-type-answer is-unreached"
+                : matches(done[index], index)
+                ? "learn-type-answer"
+                : "learn-type-answer is-wrong";
+            span.textContent = word + " ";
+            wordingPane.appendChild(span);
+          });
+        }
+      }
+
+      if (statsEl) statsEl.hidden = true;
+      if (resultEl) resultEl.hidden = false;
+      selectTab("score");
+    }
+
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        selectTab(tab.getAttribute("data-type-tab"));
+      });
+    });
+
     if (input) {
-      input.addEventListener("input", render);
+      input.addEventListener("input", () => render(false));
+      // Predictive keyboards rewrite the value in place; hold off scoring
+      // until the word is committed or it flickers amber mid-composition.
+      input.addEventListener("compositionstart", () => {
+        composing = true;
+        render(false);
+      });
+      input.addEventListener("compositionupdate", () => render(false));
+      input.addEventListener("compositionend", () => {
+        composing = false;
+        render(false);
+      });
+      // Browsers restore textarea values after load; without this the box
+      // holds invisible text over an empty mirror.
+      window.addEventListener("pageshow", () => render(false));
+      if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => render(false));
+      }
     }
     if (checkBtn) {
-      checkBtn.addEventListener("click", () => {
+      checkBtn.addEventListener("click", (event) => {
+        // Once checked this button is the advance, and mobile.js owns the tap.
+        // Without this guard the direct listener would re-run the check before
+        // the delegated one moves on.
+        if (checkBtn.dataset.typeAdvance) {
+          return;
+        }
+        // The delegated advance handler sees this same event after us, by
+        // which point the flag below is set. Stamp it so the tap that ran the
+        // check cannot also advance.
+        event.rtcTypeChecked = true;
         // Any completed non-empty attempt counts — no accuracy threshold.
         const typed = input ? input.value.trim() : "";
         if (!typed) {
-          if (statsEl) {
-            statsEl.textContent = "Type your attempt first";
+          if (countEl) {
+            countEl.textContent = "Type your attempt first";
+          }
+          if (fixEl) {
+            fixEl.hidden = true;
           }
           if (input) {
             input.focus();
           }
           return;
         }
-        render();
-        if (statsEl) {
-          statsEl.textContent = statsEl.textContent + " — attempt checked";
-        }
+        render(true);
+        renderResult();
+        // Type has one CTA: this button now becomes the advance. The counts
+        // live in the stats row above (frame 10), so the label does not
+        // duplicate them — mobile.js decides whether it reads Next or Done.
+        checkBtn.dataset.typeAdvance = "1";
+        panel.dispatchEvent(new CustomEvent("learn:type-checked", { bubbles: true }));
         if (onComplete) {
           onComplete();
         }
       });
     }
-    render();
+    render(false);
 
     return {
       reset() {
         if (input) {
           input.value = "";
         }
-        render();
+        hideResult();
+        if (checkBtn) {
+          delete checkBtn.dataset.typeAdvance;
+          checkBtn.textContent = "Check my attempt";
+        }
+        render(false);
       },
     };
   }
@@ -932,6 +1211,10 @@
 
     let recOn = false;
     let peeking = false;
+    // Drives the button's post-recording label ("Recite again") and the live
+    // clock while the mic is open.
+    let scored = false;
+    let recClock = null;
     let recording = null;
     let abortController = null;
     let unsupported = !(speech && speech.isSupported());
@@ -952,6 +1235,7 @@
     }
 
     function clearResults() {
+      scored = false;
       if (transcriptEl) {
         transcriptEl.textContent = "";
         transcriptEl.classList.remove("is-live");
@@ -990,6 +1274,8 @@
       if (!align || !mapEl) {
         return;
       }
+      // The map is the end of a take: the button becomes "Recite again".
+      scored = true;
       const result = align.alignText(source, spokenText || "");
       mapEl.replaceChildren();
       result.sourceWords.forEach((word, index) => {
@@ -1164,7 +1450,17 @@
       }
       if (toggle) {
         toggle.classList.toggle("is-active", recOn);
-        toggle.textContent = recOn ? "■ Stop reciting" : "▸ Start reciting";
+        // Recording owns the bar: rec square + live clock, and Next yields
+        // until the map renders (design 3d).
+        if (recOn) {
+          if (!recClock) {
+            recClock = startRecClock(toggle, "Stop and score");
+          }
+        } else {
+          recClock = stopRecClock(recClock);
+          toggle.textContent = scored ? "Recite again" : "▸ Start reciting";
+        }
+        setNavRecording(recOn);
         toggle.setAttribute("aria-pressed", recOn ? "true" : "false");
         if (unsupported) {
           toggle.disabled = true;
@@ -1359,12 +1655,64 @@
       }
       setFormDisabled(true);
       if (submitBtn) {
-        submitBtn.textContent = "Checked ✓";
+        // Scored: the submit becomes the advance, so there is no second tap
+        // hunting for Next (design 3a #6). It does NOT fire Done — the
+        // right-hand session CTA keeps that job and stays visible (3e).
+        if (payload.score) {
+          submitBtn.textContent =
+            payload.score.correct + " of " + payload.score.total + " — Next →";
+          submitBtn.dataset.quizAdvance = "1";
+          // setFormDisabled just disabled it; the button has a new job now.
+          submitBtn.disabled = false;
+        } else {
+          submitBtn.textContent = "Checked ✓";
+        }
+      }
+    }
+
+    function resetQuiz() {
+      form.querySelectorAll("input[type=radio]").forEach((el) => {
+        el.checked = false;
+      });
+      form.querySelectorAll("[data-quiz-fill]").forEach((el) => {
+        el.value = "";
+      });
+      fieldsets.forEach((fieldset) => {
+        const resultEl = fieldset.querySelector("[data-quiz-result]");
+        if (resultEl) {
+          resultEl.hidden = true;
+          resultEl.textContent = "";
+        }
+      });
+      if (scoreEl) {
+        scoreEl.hidden = true;
+        scoreEl.textContent = "";
+      }
+      showError("");
+      setFormDisabled(false);
+      if (submitBtn) {
+        delete submitBtn.dataset.quizAdvance;
+        submitBtn.textContent = "Check answers";
       }
     }
 
     form.addEventListener("submit", (event) => {
       event.preventDefault();
+      // Three-state morph (design 3e): Check answers → "X of Y — Next →"
+      // → "Try new set". The middle tap advances the deck but must never
+      // fire Done; the right-hand session CTA keeps that job.
+      if (submitBtn && submitBtn.dataset.quizAdvance) {
+        delete submitBtn.dataset.quizAdvance;
+        submitBtn.dataset.quizRetry = "1";
+        submitBtn.textContent = "Try new set";
+        panel.dispatchEvent(new CustomEvent("learn:advance", { bubbles: true }));
+        return;
+      }
+      if (submitBtn && submitBtn.dataset.quizRetry) {
+        delete submitBtn.dataset.quizRetry;
+        resetQuiz();
+        return;
+      }
       if (submitting || !unitId) {
         return;
       }
@@ -1420,31 +1768,9 @@
         });
     });
 
+
     return {
-      reset() {
-        form.querySelectorAll("input[type=radio]").forEach((el) => {
-          el.checked = false;
-        });
-        form.querySelectorAll("[data-quiz-fill]").forEach((el) => {
-          el.value = "";
-        });
-        fieldsets.forEach((fieldset) => {
-          const resultEl = fieldset.querySelector("[data-quiz-result]");
-          if (resultEl) {
-            resultEl.hidden = true;
-            resultEl.textContent = "";
-          }
-        });
-        if (scoreEl) {
-          scoreEl.hidden = true;
-          scoreEl.textContent = "";
-        }
-        showError("");
-        setFormDisabled(false);
-        if (submitBtn) {
-          submitBtn.textContent = "Check answers";
-        }
-      },
+      reset: resetQuiz,
     };
   }
 
@@ -1659,6 +1985,71 @@
     });
   }
 
+  // Leaving an active revision queue asks first. Deliberately outside
+  // initLearn: the guard is about history, not mode state, and initLearn is
+  // pinned by tests to contain no pushState of its own.
+  //
+  // The sentinel works because nothing else in this app pushes history —
+  // switchModeLocal and the phone's showDeck both use replaceState, so they
+  // add no entry and structurally cannot fire popstate. A popstate here can
+  // only mean the user pressed Back.
+  function initRevisionGuard() {
+    const learn = document.querySelector(".learn[data-session-id]");
+    const modal = document.querySelector("[data-revision-exit-modal]");
+    if (!learn || !modal || typeof modal.showModal !== "function") {
+      return;
+    }
+    let leaving = false;
+    let pendingHref = "/dashboard";
+
+    function arm() {
+      history.pushState({ rtcRevisionGuard: true }, "", window.location.href);
+    }
+
+    function ask(href) {
+      pendingHref = href || "/dashboard";
+      if (!modal.open) modal.showModal();
+    }
+
+    arm();
+
+    window.addEventListener("popstate", function () {
+      if (leaving) {
+        return;
+      }
+      // Put the sentinel back before asking, so Keep revising leaves the URL
+      // and the current unit exactly as they were.
+      arm();
+      ask("/dashboard");
+    });
+
+    // The deck header's "← Article N" genuinely leaves the queue. The phone's
+    // deck-back control is a button that only returns to the deck WITHIN this
+    // unit, and the mode tabs stay inside it — neither is guarded.
+    document.addEventListener("click", function (event) {
+      if (leaving) {
+        return;
+      }
+      const link = event.target.closest("a.mobile-back[href]");
+      if (!link || !learn.contains(link)) {
+        return;
+      }
+      event.preventDefault();
+      ask(link.getAttribute("href"));
+    });
+
+    const exitBtn = modal.querySelector("[data-revision-exit]");
+    if (exitBtn) {
+      exitBtn.addEventListener("click", function () {
+        // Exiting never destroys the session: completed items stay completed,
+        // pending items stay pending, and Today resumes with "N left".
+        leaving = true;
+        modal.close();
+        window.location.assign(pendingHref);
+      });
+    }
+  }
+
   function initLearn() {
     const learn = document.querySelector(".learn");
     if (!learn) {
@@ -1684,7 +2075,11 @@
     };
     const isGuest = learn.hasAttribute("data-guest-learn");
     const unitId = learn.getAttribute("data-unit-id") || "";
-    const tabs = Array.from(learn.querySelectorAll("[data-learn-mode]"));
+    // Scoped to the tab strip on purpose. The phone's deck cards also carry
+    // data-learn-mode so clicks route through the handler below, but
+    // applyTabMarks rewrites textContent — over a card that wipes its title,
+    // description and status and leaves a bare "Read ✓".
+    const tabs = Array.from(learn.querySelectorAll(".mode-tab"));
     const trackerEl = document.getElementById("methods-tracker");
 
     function parseModes(raw) {
@@ -3047,6 +3442,7 @@
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", () => {
       initLearn();
+      initRevisionGuard();
       initBrowseArticle();
       initBrowseIndex();
       initExplainBack();
@@ -3055,6 +3451,7 @@
     });
   } else {
     initLearn();
+    initRevisionGuard();
     initBrowseArticle();
     initBrowseIndex();
     initExplainBack();

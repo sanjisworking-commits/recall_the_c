@@ -165,7 +165,18 @@
       stowControls();
       learn.setAttribute("data-mobile-view", "deck");
       syncBodyClass();
-      if (unitId) history.replaceState({}, "", "/learn/" + encodeURIComponent(unitId));
+      if (unitId) {
+        // Rebuild from the live query so the revision session survives the
+        // round-trip; only `mode` is dropped, because the deck IS no mode.
+        var params = new URLSearchParams(window.location.search);
+        params.delete("mode");
+        var query = params.toString();
+        history.replaceState(
+          {},
+          "",
+          "/learn/" + encodeURIComponent(unitId) + (query ? "?" + query : "")
+        );
+      }
       window.scrollTo(0, 0);
     }
 
@@ -198,14 +209,20 @@
       }).observe(tracker, { attributes: true, attributeFilter: ["data-count"] });
     }
 
-    /* ── The Next / Done action bar ──────────────────────────────────────
-       The phone's black CTA walks the deck rather than acting on the mode:
-       Next on modes 1..n-1, then Done on the last, which hands off to the
-       existing Done button so the completion quote and its POST are unchanged.
+    /* ── The action bar ──────────────────────────────────────────────────
+       One primary button at a time.
 
-       Each mode's own control row moves in beside it, so nothing is lost —
-       "Reveal all", "Check my attempt" and the rest keep their handlers
-       because the elements are moved, never rebuilt. */
+       A mode that needs a deliberate act to complete (Type, Test, Recite)
+       shows that act as the primary until it passes; then the same slot
+       becomes "Next →". Cloze completes by tapping blanks and Letters by
+       speech, so their controls stay secondary and Next leads from the start.
+
+       Next walks only the modes still outstanding — completed ones drop out
+       of the rotation — and turns into Done once nothing is left, handing off
+       to the real Done button so the POST and the quote are unchanged.
+
+       Controls are moved into the bar, never rebuilt, so every handler
+       app.js bound to them survives. */
 
     var MODE_CONTROLS = {
       cloze: ".learn-cloze-controls",
@@ -251,13 +268,85 @@
       nav.insertBefore(el, nextBtn);
     }
 
-    function isLastMode(mode) {
-      return order.length > 0 && order[order.length - 1] === mode;
+    // Entitlement-aware: locked modes are not required, so they must not keep
+    // the deck from ever finishing.
+    var requiredModes = (learn.getAttribute("data-required-modes") || "")
+      .split(",")
+      .map(function (mode) {
+        return mode.trim();
+      })
+      .filter(Boolean);
+    var universe = requiredModes.length
+      ? order.filter(function (mode) {
+          return requiredModes.indexOf(mode) !== -1;
+        })
+      : order.slice();
+
+    function isModeDone(mode) {
+      var tab = learn.querySelector('.mode-tab[data-learn-mode="' + mode + '"]');
+      return Boolean(tab) && tab.textContent.indexOf("✓") !== -1;
+    }
+
+    function pendingModes(exclude) {
+      return universe.filter(function (mode) {
+        return mode !== exclude && !isModeDone(mode);
+      });
+    }
+
+    // Next after the current mode, wrapping to the start; null when the deck
+    // has nothing outstanding left.
+    function nextTarget(current) {
+      var pending = pendingModes(current);
+      if (!pending.length) return null;
+      var here = order.indexOf(current);
+      for (var i = 0; i < pending.length; i += 1) {
+        if (order.indexOf(pending[i]) > here) return pending[i];
+      }
+      return pending[0];
     }
 
     function syncNextButton(mode) {
       if (!nextBtn) return;
-      if (isLastMode(mode)) {
+      // Next is constant on the right (design 3b), with two exceptions: a live
+      // mic (owned by the record handlers via `is-recording`), and Type, whose
+      // own check button morphs into the advance so the bar never shows two
+      // CTAs. The design draws no bar for Type — frame 10 shows a single ink
+      // CTA — so it is the one mode that carries Next on another button.
+      var typeCheck = nav && nav.querySelector("[data-type-check]");
+      var typeSolo = mode === "type" && Boolean(typeCheck);
+      if (nav) {
+        nav.classList.toggle("is-solo-cta", typeSolo);
+      }
+
+      var target = nextTarget(mode);
+
+      if (typeSolo) {
+        if (typeCheck.dataset.typeAdvance) {
+          if (target === null) {
+            var doneLocked = !doneBtn || doneBtn.disabled;
+            typeCheck.textContent = doneBtn ? doneBtn.textContent.trim() : "Done";
+            typeCheck.disabled = doneLocked;
+          } else {
+            typeCheck.textContent = "Next →";
+            typeCheck.disabled = false;
+          }
+        } else {
+          typeCheck.disabled = false;
+        }
+        return;
+      }
+
+      // Test's submit takes the advance role after scoring (3a #6). With
+      // nothing left to advance to it would just duplicate the CTA beside it,
+      // so on the last card it becomes "Try new set" and the session CTA
+      // carries Done instead — which is what frame 3e draws.
+      var submit = nav && nav.querySelector("[data-quiz-submit]");
+      if (submit && submit.dataset.quizAdvance && target === null) {
+        delete submit.dataset.quizAdvance;
+        submit.dataset.quizRetry = "1";
+        submit.textContent = "Try new set";
+      }
+      if (target === null) {
         nextBtn.classList.add("is-done");
         // Mirror the real Done button, gate and label included.
         var locked = !doneBtn || doneBtn.disabled;
@@ -272,25 +361,63 @@
       }
     }
 
-    function advanceFrom(mode) {
-      var index = order.indexOf(mode);
-      var next = index === -1 ? null : order[index + 1];
-      if (!next) return;
+    function goToMode(mode) {
       // Route through the desktop tab so app.js owns the panel swap, the
       // seen-marking and the history entry exactly as it does elsewhere.
-      var tab = learn.querySelector('.mode-tab[data-learn-mode="' + next + '"]');
+      var tab = learn.querySelector('.mode-tab[data-learn-mode="' + mode + '"]');
       if (tab) tab.click();
-      showMode(next);
+      showMode(mode);
     }
+
+    // Test's scored submit advances the deck through this same path (design
+    // 3a #6). app.js owns the button's label; the deck owns where it goes.
+    // Type's check button re-labels itself through these; the deck decides
+    // whether it should read Next or Done.
+    learn.addEventListener("learn:type-checked", function () {
+      syncNextButton(currentMode());
+    });
+    learn.addEventListener("learn:type-reset", function () {
+      syncNextButton(currentMode());
+    });
+
+    // Type's morphed CTA is the only way to Done in that mode — there is no
+    // second button beside it, unlike Test (frame 3e).
+    learn.addEventListener("click", function (event) {
+      var btn = event.target.closest("[data-type-check]");
+      if (!btn || !btn.dataset.typeAdvance) return;
+      // app.js set the flag while handling this very click; that tap ran the
+      // check and must not also advance.
+      if (event.rtcTypeChecked) return;
+      event.preventDefault();
+      event.stopPropagation();
+      var target = nextTarget(currentMode());
+      if (target === null) {
+        if (doneBtn && !doneBtn.disabled) doneBtn.click();
+        return;
+      }
+      goToMode(target);
+    });
+
+    learn.addEventListener("learn:advance", function () {
+      var mode = currentMode();
+      var target = nextTarget(mode);
+      if (target === null) {
+        // Nothing outstanding — the session CTA is already the Done state.
+        syncNextButton(mode);
+        return;
+      }
+      goToMode(target);
+    });
 
     if (nextBtn) {
       nextBtn.addEventListener("click", function () {
         var mode = currentMode();
-        if (isLastMode(mode)) {
+        var target = nextTarget(mode);
+        if (target === null) {
           if (doneBtn && !doneBtn.disabled) doneBtn.click();
           return;
         }
-        advanceFrom(mode);
+        goToMode(target);
       });
     }
 
@@ -315,6 +442,18 @@
       }
     });
 
+    // app.js owns mode switching and can be reached by paths this file does not
+    // originate (a desktop tab, history restore). Watch the attribute it sets
+    // so the bar re-syncs however the mode changed, rather than only when the
+    // deck drove it.
+    if (window.MutationObserver) {
+      new MutationObserver(function () {
+        if (learn.getAttribute("data-mobile-view") !== "mode") return;
+        placeControls(currentMode());
+        syncNextButton(currentMode());
+      }).observe(learn, { attributes: true, attributeFilter: ["data-mode"] });
+    }
+
     // Crossing the breakpoint mid-session must not leave controls in the bar.
     if (window.matchMedia) {
       var phoneQuery = window.matchMedia(PHONE);
@@ -333,6 +472,18 @@
         phoneQuery.addListener(onBreakpoint);
       }
     }
+
+    // showDeck rewrites the URL, so a bfcache restore can hand back a page
+    // whose DOM says "deck" on a ?mode= entry (or the reverse). Trust the URL.
+    window.addEventListener("pageshow", function (event) {
+      if (!event.persisted || !isPhone()) return;
+      var wanted = new URLSearchParams(window.location.search).get("mode");
+      if (wanted && learn.getAttribute("data-mobile-view") !== "mode") {
+        showMode(currentMode());
+      } else if (!wanted && learn.getAttribute("data-mobile-view") === "mode") {
+        showDeck();
+      }
+    });
 
     syncBodyClass();
     if (learn.getAttribute("data-mobile-view") === "mode") showMode(currentMode());
@@ -443,6 +594,112 @@
     });
   }
 
+  /* ── Article CTA (design 3a #8) ─────────────────────────────────────────
+     Progressive enhancement. The server ships "Learn this Article" so the
+     Article page keeps rendering without a per-Article progress read; this
+     personalises it after first paint. Signed-out visitors never ask, and a
+     failed or slow reply simply leaves the neutral label — no spinner, no
+     layout shift. */
+
+  function initArticleCta() {
+    if (!isPhone()) return;
+    if (!document.body.classList.contains("is-authed")) return;
+    var cta = document.querySelector("[data-article-cta]");
+    var label = cta && cta.querySelector("[data-article-cta-label]");
+    if (!cta || !label) return;
+    var number = cta.getAttribute("data-article-cta");
+    if (!number) return;
+
+    fetch("/api/articles/" + encodeURIComponent(number) + "/progress", {
+      credentials: "same-origin",
+      headers: { Accept: "application/json" },
+    })
+      .then(function (response) {
+        if (!response.ok) throw new Error("no-progress");
+        return response.json();
+      })
+      .then(function (data) {
+        if (!data || data.ok !== true) return;
+        if (data.state === "due") {
+          cta.classList.add("is-due");
+          label.replaceChildren(
+            Object.assign(document.createElement("span"), {
+              className: "cta-dot",
+            }),
+            document.createTextNode("Revise — due today")
+          );
+          return;
+        }
+        if (data.state === "started") {
+          label.textContent =
+            "Continue · " + data.modes_done + " of " + data.modes_total + " modes";
+        }
+        // "not_started" keeps the server-rendered label.
+      })
+      .catch(function () {
+        /* Non-blocking: the neutral label stands. */
+      });
+  }
+
+  /* ── Calendar: open a day ───────────────────────────────────────────────
+     Tapping a cell swaps the list below for that day's units. All the data is
+     already on the page (the same calendar.days the grid is built from), so
+     this costs no request. Tapping the open day again returns to Today. */
+
+  function initCalendarDays() {
+    var grid = document.querySelector(".cal-m-grid");
+    if (!grid) return;
+    var todayList = document.querySelector("[data-today-list]");
+    var emptyList = document.querySelector("[data-day-empty]");
+    var emptyLabel = document.querySelector("[data-day-empty-label]");
+    var lists = Array.prototype.slice.call(
+      document.querySelectorAll("[data-day-list]")
+    );
+    var open = null;
+
+    function show(iso) {
+      lists.forEach(function (list) {
+        list.hidden = list.getAttribute("data-day-list") !== iso;
+      });
+      var matched = lists.some(function (list) {
+        return list.getAttribute("data-day-list") === iso;
+      });
+      if (emptyList) emptyList.hidden = Boolean(iso) && matched;
+      if (todayList) todayList.hidden = Boolean(iso);
+      Array.prototype.forEach.call(grid.querySelectorAll(".cal-m-cell"), function (cell) {
+        cell.classList.toggle("is-selected", Boolean(iso) && cell.getAttribute("data-date") === iso);
+      });
+    }
+
+    function clear() {
+      open = null;
+      lists.forEach(function (list) {
+        list.hidden = true;
+      });
+      if (emptyList) emptyList.hidden = true;
+      if (todayList) todayList.hidden = false;
+      Array.prototype.forEach.call(grid.querySelectorAll(".cal-m-cell"), function (cell) {
+        cell.classList.remove("is-selected");
+      });
+    }
+
+    grid.addEventListener("click", function (event) {
+      var cell = event.target.closest(".cal-m-cell");
+      if (!cell || cell.classList.contains("is-blank")) return;
+      var iso = cell.getAttribute("data-date");
+      if (!iso) return;
+      if (open === iso) {
+        clear();
+        return;
+      }
+      open = iso;
+      if (emptyLabel) {
+        emptyLabel.textContent = cell.getAttribute("aria-label") || "Nothing scheduled";
+      }
+      show(iso);
+    });
+  }
+
   function boot() {
     initSheets();
     initMarkFilter();
@@ -452,6 +709,8 @@
     // first or they travel along and get hidden.
     initModeStatusLines();
     initLearnDeck();
+    initArticleCta();
+    initCalendarDays();
   }
 
   if (document.readyState === "loading") {

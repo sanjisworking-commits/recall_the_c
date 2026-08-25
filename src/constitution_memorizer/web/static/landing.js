@@ -366,13 +366,26 @@
       var cards = pin.querySelectorAll('[data-pcard]');
       var n = cards.length;
       var narrow = window.innerWidth <= 900;
+      // Phone spotlight: light the card whose on-screen centre is nearest the
+      // viewport middle. Its top is the (live) grid top + its own translateY;
+      // boxH mirrors the CSS `min(340px,44vw)`.
+      var pgrid = pin.querySelector('[data-pgrid]');
+      var gTop = pgrid ? pgrid.getBoundingClientRect().top : 0;
+      var boxH = Math.min(340, window.innerWidth * 0.44);
+      var bestI = -1, bestD = Infinity;
       Array.prototype.forEach.call(cards, function (el, i) {
         if (narrow && !reduced) {
           var kk = Math.max(0, Math.min(1, (p - (i / n) * 0.7) / 0.3));
+          var ty = (110 - 160 * kk) * vh / 100;
           el.style.opacity = '1';
-          el.style.transform = 'translate3d(0,' + ((110 - 160 * kk) * vh / 100).toFixed(1) + 'px,0)';
+          el.style.transform = 'translate3d(0,' + ty.toFixed(1) + 'px,0)';
+          var d = Math.abs((gTop + ty + boxH / 2) - vh * 0.5);
+          if (d < bestD) { bestD = d; bestI = i; }
           return;
         }
+        // Desktop / reduced-motion: the scroll spotlight never applies here, so
+        // make sure no lit state lingers (e.g. after a resize from mobile).
+        el.classList.remove('is-lit');
         var start = 0.16 + (i / n) * 0.62;
         var k = reduced ? 1 : Math.max(0, Math.min(1, (p - start) / 0.22));
         var e = 1 - Math.pow(1 - k, 3);
@@ -382,6 +395,14 @@
         el.style.opacity = k > 0 ? '1' : '0';
         el.style.transform = 'translate3d(0,' + ((1 - e) * travel - lift).toFixed(1) + 'px,0)';
       });
+      if (narrow && !reduced) {
+        // One travelling spotlight: only the nearest card, and only while it is
+        // genuinely near the middle (band), so nothing lit at the pin's ends.
+        var litI = bestD < vh * 0.45 ? bestI : -1;
+        Array.prototype.forEach.call(cards, function (el, i) {
+          el.classList.toggle('is-lit', i === litI);
+        });
+      }
     }
 
     // Six mode circles: overlapped when the section arrives, spaced out as it

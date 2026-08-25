@@ -15,6 +15,9 @@ from constitution_memorizer.progress.repository import (
     ProgressStatus,
     RequestBootstrap,
     SplitMode,
+    StudyItemStatus,
+    StudySession,
+    StudySessionKind,
     ThemePreference,
 )
 
@@ -99,6 +102,41 @@ class ReminderRepositoryProtocol(Protocol):
     def is_article_claimed(self, user_id: UUID | str, article_number: str) -> bool: ...
 
     def claim_article(self, user_id: UUID | str, article_number: str) -> None: ...
+
+    def create_study_session(
+        self,
+        user_id: UUID | str,
+        *,
+        session_id: str,
+        kind: StudySessionKind,
+        plan_date: date,
+        unit_ids: list[str],
+    ) -> StudySession: ...
+
+    def get_study_session(
+        self, user_id: UUID | str, session_id: str
+    ) -> StudySession | None: ...
+
+    def active_study_session(
+        self,
+        user_id: UUID | str,
+        *,
+        kind: StudySessionKind,
+        plan_date: date | None = None,
+    ) -> StudySession | None: ...
+
+    def set_study_item_status(
+        self,
+        user_id: UUID | str,
+        *,
+        session_id: str,
+        unit_id: str,
+        status: StudyItemStatus,
+    ) -> None: ...
+
+    def complete_study_session(
+        self, user_id: UUID | str, session_id: str
+    ) -> None: ...
 
     def create_billing_order(
         self,

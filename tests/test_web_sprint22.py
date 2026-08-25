@@ -46,7 +46,7 @@ def test_explain_back_section_on_every_article(client: TestClient):
     html = client.get("/browse/article/20").text
     assert "Explain it back" in html
     assert "explain-back-input" in html
-    assert "Memorizing gives you the words" in html
+    assert "In your own words, as if to a friend" in html
     assert "Saved automatically" in html
     assert "/static/styles.css?" in html
 
@@ -99,10 +99,10 @@ def test_reset_progress_keeps_gloss(client: TestClient):
 
 
 def test_explain_back_css(mini_client: TestClient):
-    css = mini_client.get("/static/styles.css?v=main7").text
+    css = mini_client.get("/static/styles.css?v=main37").text
     assert ".explain-back-input" in css
     assert "background: var(--paper)" in css
     assert ".explain-back-clear" in css
-    js = mini_client.get("/static/app.js?v=main3").text
+    js = mini_client.get("/static/app.js?v=main42").text
     assert "initExplainBack" in js
     assert "500" in js
