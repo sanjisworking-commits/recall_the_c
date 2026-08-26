@@ -144,11 +144,6 @@ class SiblingChip:
     unit_id: str
     label: str
     state: str  # current | done | idle
-    # How many recall modes this sibling has been through. Free only when the
-    # caller has bootstrapped with include_modes=True — otherwise every chip
-    # costs its own roundtrip.
-    modes_done: int = 0
-    modes_total: int = len(LEARN_MODES)
 
 
 def unit_visible_for_preference(engine: ReminderEngine, unit: LearningUnit) -> bool:
@@ -455,7 +450,6 @@ def sibling_chips(
                 current_id=unit.id,
                 mark_done=mark_done,
             ),
-            modes_done=len(engine.modes_seen(item.id)),
         )
         for item in siblings
     ]
