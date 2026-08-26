@@ -50,7 +50,7 @@ def test_recite_mode_query_param_renders_recite_active(client: TestClient):
 
 
 def test_recite_css_blur_and_panel_visibility(client: TestClient):
-    css = client.get("/static/styles.css?v=main43")
+    css = client.get("/static/styles.css?v=main44")
     assert css.status_code == 200
     text = css.text
     assert '.learn[data-mode="recite"] .learn-panel-recite' in text

@@ -1824,16 +1824,6 @@
     color: var(--on-accent);
   }
 
-  .sibling-chip-count {
-    font-size: 11px;
-    color: var(--mid);
-  }
-
-  body[data-mscreen="learn"] .sibling-chip.is-current .sibling-chip-count {
-    color: var(--on-accent);
-    opacity: 0.75;
-  }
-
   /* Done / Again close the deck, not a mode. */
   .learn[data-mobile-view="deck"] .learn-footer {
     display: flex;
@@ -2493,9 +2483,6 @@
 @media (min-width: 561px) {
   .learn-mode-bar,
   .learn-mode-nav,
-  /* The per-clause count is a phone affordance; on desktop the chip would
-     read "(1)3/6" because its styling lives in the phone block. */
-  .sibling-chip-count,
   .learn-deck-head,
   .learn-deck,
   .learn-deck-dots,

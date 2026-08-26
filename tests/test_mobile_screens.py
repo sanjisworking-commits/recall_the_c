@@ -499,14 +499,19 @@ def test_phone_drops_again_tomorrow_and_the_ledger_line(tmp_path: Path):
     assert "Again tomorrow" in client.get("/learn/clause-1").text
 
 
-def test_clause_rail_carries_per_clause_progress(tmp_path: Path):
-    """Article 1 has three clauses in the fixture, so the rail renders."""
+def test_clause_rail_shows_labels_without_per_clause_counts(tmp_path: Path):
+    """The rail names the sibling clauses and marks the current one. The
+    per-clause "2/6" is gone: it asked the reader to track six separate
+    method counts across the rail while already reading one for the clause
+    they were on."""
     client, engine, _ = _client(tmp_path)
     engine.mark_all_modes_seen("clause-1")
     html = client.get("/learn/clause-1").text
     if "sibling-chip" in html:
-        assert "sibling-chip-count" in html
-        assert "6/6" in html
+        assert "sibling-chip-count" not in html
+        assert "6/6" not in html
+        # The rail itself still works — label plus current-state marker.
+        assert 'aria-current="true"' in html
 
 
 # ── Calendar tab + month grid (handoff §1–§3) ────────────────────────────────
