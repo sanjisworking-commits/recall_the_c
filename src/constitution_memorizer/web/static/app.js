@@ -417,9 +417,16 @@
         return;
       }
       completed = true;
+      if (speakBtn) {
+        // mobile.js reads this to paint "Next →"/"Done" and to own the tap,
+        // so the bar never shows a speak button beside a Next button.
+        speakBtn.dataset.lettersAdvance = "1";
+        speakBtn.disabled = false;
+      }
       if (onComplete) {
         onComplete();
       }
+      panel.dispatchEvent(new CustomEvent("learn:letters-advance", { bubbles: true }));
     }
 
     function applyAlignment(alignment) {
@@ -505,7 +512,7 @@
       if (speakBtn) {
         speakBtn.classList.add("is-active");
         recClock = stopRecClock(recClock);
-        recClock = startRecClock(speakBtn, label || "Check phrase");
+        recClock = startRecClock(speakBtn, label || "Stop");
       }
       setHidden(checkBtn, false);
       setNavRecording(true);
@@ -517,7 +524,12 @@
       recClock = stopRecClock(recClock);
       if (speakBtn) {
         speakBtn.classList.remove("is-active");
-        speakBtn.textContent = nextLabel || "▸ Speak";
+        // In the phone bar a fully recalled clause turns this button into the
+        // advance (mobile.js paints it); relabelling would undo the morph.
+        // Off the bar (desktop) it stays a speak control.
+        if (!(speakBtn.closest("[data-mode-nav]") && speakBtn.dataset.lettersAdvance)) {
+          speakBtn.textContent = nextLabel || "▸ Speak";
+        }
       }
       setHidden(checkBtn, true);
       setNavRecording(false);
@@ -527,8 +539,8 @@
       try {
         recording = await speech.startRecording();
         enterListeningUi(
-          "Check phrase",
-          "Listening… speak a short phrase, then check.",
+          "Stop",
+          "Listening… speak a short phrase, then stop.",
         );
       } catch (_err) {
         recording = null;
@@ -1389,6 +1401,7 @@
         showStatus("Accuracy map from your recital.", null);
         showFallback(false);
         renderAccuracyMap(spoken, "Heard");
+        markReciteAdvance();
         if (onComplete) {
           onComplete();
         }
@@ -1442,6 +1455,17 @@
       }
     }
 
+    function markReciteAdvance() {
+      if (!toggle) {
+        return;
+      }
+      // Read by mobile.js, which paints "Next →"/"Done" and owns the tap so
+      // the bar never shows a record button beside a Next button.
+      toggle.dataset.reciteAdvance = "1";
+      toggle.disabled = false;
+      panel.dispatchEvent(new CustomEvent("learn:recite-advance", { bubbles: true }));
+    }
+
     function render() {
       panel.setAttribute("data-recite-on", recOn ? "true" : "false");
       panel.setAttribute("data-peeking", peeking ? "true" : "false");
@@ -1454,11 +1478,16 @@
         // until the map renders (design 3d).
         if (recOn) {
           if (!recClock) {
-            recClock = startRecClock(toggle, "Stop and score");
+            recClock = startRecClock(toggle, "Stop");
           }
         } else {
           recClock = stopRecClock(recClock);
-          toggle.textContent = scored ? "Recite again" : "▸ Start reciting";
+          // In the phone bar this button IS the advance once scored, and
+          // mobile.js paints it "Next →" — relabelling would undo the morph.
+          // Off the bar (desktop) it stays a record control.
+          if (!(toggle.closest("[data-mode-nav]") && toggle.dataset.reciteAdvance)) {
+            toggle.textContent = scored ? "Recite again" : "▸ Start reciting";
+          }
         }
         setNavRecording(recOn);
         toggle.setAttribute("aria-pressed", recOn ? "true" : "false");
@@ -1508,6 +1537,7 @@
         }
         showStatus("Accuracy map from your text.", null);
         renderAccuracyMap(spoken, "Entered");
+        markReciteAdvance();
         if (onComplete) {
           onComplete();
         }

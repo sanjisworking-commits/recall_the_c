@@ -80,7 +80,7 @@ def test_progress_page_has_stat_tiles_and_mastery_map(client: TestClient):
 
 
 def test_progress_css_mastery_cell_states(client: TestClient):
-    css = client.get("/static/styles.css?v=main37")
+    css = client.get("/static/styles.css?v=main41")
     assert css.status_code == 200
     text = css.text
     assert ".mastery-cell.is-new" in text

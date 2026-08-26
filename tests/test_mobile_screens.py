@@ -701,3 +701,211 @@ def test_live_counter_yields_to_the_settled_score(tmp_path: Path):
     client, _, _ = _client(tmp_path)
     css = client.get("/static/mobile.css").text
     assert '.learn[data-mobile-view="mode"] .learn-type-stats[hidden]' in css
+
+
+# --------------------------------------------------------------------------- #
+# The keyboard, and zoom                                                        #
+# --------------------------------------------------------------------------- #
+
+
+def test_action_bar_lifts_above_the_on_screen_keyboard(tmp_path: Path):
+    """iOS does not shrink the LAYOUT viewport for the keyboard, so a
+    `bottom: 0` fixed bar sits behind it — "Check my attempt" vanished while
+    typing. visualViewport is the only source of the real visible box."""
+    client, _, _ = _client(tmp_path)
+    js = client.get("/static/mobile.js").text
+    guard = js.split("function initKeyboardInset", 1)[1].split("\n  function ", 1)[0]
+    assert "window.visualViewport" in guard
+    # The obscured strip needs offsetTop: iOS scrolls the visual viewport
+    # inside the layout viewport once the keyboard is up.
+    assert "vv.height + vv.offsetTop" in guard
+    assert 'vv.addEventListener("resize"' in guard
+    assert 'vv.addEventListener("scroll"' in guard
+    assert "translateY(" in guard
+    # A collapsing URL bar is not a keyboard.
+    assert "covered < 80" in guard
+    assert "initKeyboardInset();" in js
+
+
+def test_action_bar_reclaims_the_safe_area_when_the_keyboard_is_up(tmp_path: Path):
+    """The home indicator is behind the keys, so its inset is dead space."""
+    client, _, _ = _client(tmp_path)
+    css = client.get("/static/mobile.css").text
+    assert "body.is-keyboard-open .learn[data-mobile-view=\"mode\"] .learn-mode-nav" in css
+    bar = css.split('.learn[data-mobile-view="mode"] .learn-mode-nav {', 1)[1].split("}", 1)[0]
+    assert "position: fixed" in bar
+    assert "transition: transform" in bar
+
+
+def test_zoom_is_disabled_on_the_app_shell_only(tmp_path: Path):
+    client, _, _ = _client(tmp_path)
+    html = client.get("/browse").text
+    assert "user-scalable=no" in html
+    assert "maximum-scale=1" in html
+    # viewport-fit=cover keeps env(safe-area-inset-*) meaningful.
+    assert "viewport-fit=cover" in html
+
+
+def test_pinch_is_cancelled_in_js_because_ios_ignores_the_meta(tmp_path: Path):
+    """Safari has ignored user-scalable/maximum-scale for pinch since iOS 10,
+    so the meta tag alone does nothing on an iPhone."""
+    client, _, _ = _client(tmp_path)
+    js = client.get("/static/mobile.js").text
+    guard = js.split("function initNoZoom", 1)[1].split("\n  function ", 1)[0]
+    assert "gesturestart" in guard
+    assert "gesturechange" in guard
+    assert "gestureend" in guard
+    assert "passive: false" in guard
+    # Phone-scoped: desktop and browser/OS zoom stay untouched.
+    assert "isPhone()" in guard
+
+
+def test_form_controls_clear_the_ios_focus_zoom_threshold(tmp_path: Path):
+    """Under 16px, iOS zooms the page in on focus and leaves it scaled."""
+    client, _, _ = _client(tmp_path)
+    css = client.get("/static/mobile.css").text
+    assert "font-size: max(16px, 1em)" in css
+    assert "touch-action: manipulation" in css
+
+
+# --------------------------------------------------------------------------- #
+# Letters: one CTA that morphs Speak → Stop → Next                             #
+# --------------------------------------------------------------------------- #
+
+
+def test_letters_bar_carries_only_the_speak_button(tmp_path: Path):
+    """Speak + Full text + Next read as three competing CTAs. The view toggle
+    is an aid, not an action, so it stays beside the letters it reveals."""
+    client, _, _ = _client(tmp_path)
+    js = client.get("/static/mobile.js").text
+    controls = js.split("var MODE_CONTROLS = {", 1)[1].split("};", 1)[0]
+    assert 'letters: ".learn-letters-speak"' in controls
+    assert '.learn-letters-controls' not in controls
+
+
+def test_letters_speak_button_is_the_solo_cta(tmp_path: Path):
+    client, _, _ = _client(tmp_path)
+    js = client.get("/static/mobile.js").text
+    sync = js.split("function syncNextButton", 1)[1].split("function goToMode", 1)[0]
+    assert "lettersSolo" in sync
+    # Only while the speak button is actually on screen: "Just read" hides it,
+    # and Next has to lead there or the bar has no CTA at all.
+    assert "!lettersSpeak.hidden" in sync
+    assert "lettersAdvance" in sync
+    # One shared tail paints every solo mode, so they cannot drift apart.
+    assert "function paintAdvance" in sync
+    assert 'btn.textContent = "Next →"' in sync
+    assert "paintAdvance(lettersSpeak, lettersSpeak.dataset.lettersAdvance)" in sync
+    assert "typeSolo || lettersSolo || reciteSolo || quizSolo" in sync
+
+
+def test_letters_says_stop_while_the_mic_is_open(tmp_path: Path):
+    """The tap that ends the recording is the same tap that checks it, so the
+    button reads Stop, not "Check phrase"."""
+    client, _, _ = _client(tmp_path)
+    js = client.get("/static/app.js").text
+    letters = js.split("function initLetters", 1)[1].split("function setNavRecording", 1)[0]
+    assert 'startRecClock(speakBtn, label || "Stop")' in letters
+    assert "Check phrase" not in letters
+    # Completing the clause hands the button over to mobile.js as the advance.
+    assert 'speakBtn.dataset.lettersAdvance = "1"' in letters
+    assert "learn:letters-advance" in letters
+    # …and exiting the mic must not relabel it back to Speak afterwards —
+    # but only in the phone bar; off the bar it stays a speak control.
+    assert 'speakBtn.closest("[data-mode-nav]") && speakBtn.dataset.lettersAdvance' in letters
+
+
+def test_just_read_view_restores_next_as_the_cta(tmp_path: Path):
+    """Regression: is-solo-cta hid Next while the speak button was hidden too,
+    leaving the bar empty and the mode with no way forward."""
+    client, _, _ = _client(tmp_path)
+    js = client.get("/static/mobile.js").text
+    assert 'attributeFilter: ["hidden"]' in js
+    observer = js.split("var lettersSpeakBtn", 1)[1][:400]
+    assert "MutationObserver" in observer
+    assert 'syncNextButton("letters")' in observer
+
+
+def test_letters_solo_cta_has_primary_styling(tmp_path: Path):
+    client, _, _ = _client(tmp_path)
+    css = client.get("/static/mobile.css").text
+    assert ".learn-mode-nav.is-solo-cta .learn-letters-speak:not([hidden])" in css
+    assert ".learn-mode-nav.is-solo-cta .learn-letters-speak:disabled" in css
+    # The slot now also carries "Next →"/"Done", so it reserves the wider size.
+    speak_slot = css.split(".learn-mode-nav .learn-letters-speak {", 1)[1].split("}", 1)[0]
+    assert "min-width: 10.5rem" in speak_slot
+
+
+def test_every_cta_mode_uses_the_same_one_slot_shape(tmp_path: Path):
+    """Letters, Recite and Test each showed their own act beside Next — two
+    or three CTAs competing. They now share Type's shape: the mode's act,
+    then Next, then Done, in one slot."""
+    client, _, _ = _client(tmp_path)
+    js = client.get("/static/mobile.js").text
+    controls = js.split("var MODE_CONTROLS = {", 1)[1].split("};", 1)[0]
+    # Only the acting button enters the bar; aids stay beside what they act on.
+    assert 'letters: ".learn-letters-speak"' in controls
+    assert 'recite: ".learn-recite-toggle"' in controls
+    assert 'type: ".learn-type-check"' in controls
+    assert 'test: ".learn-test-submit"' in controls
+    assert ".learn-recite-controls" not in controls
+    assert ".learn-letters-controls" not in controls
+
+    sync = js.split("function syncNextButton", 1)[1].split("function goToMode", 1)[0]
+    assert "reciteSolo" in sync
+    assert "quizSolo" in sync
+    assert "typeSolo || lettersSolo || reciteSolo || quizSolo" in sync
+    assert "paintAdvance(reciteToggle, reciteToggle.dataset.reciteAdvance)" in sync
+    # The old divergence is gone: Test no longer hands Done to a second button
+    # on the last card, because there is no second button.
+    assert "Try new set" not in sync
+    assert "quizRetry" not in sync
+
+
+def test_recite_hands_its_button_over_once_scored(tmp_path: Path):
+    client, _, _ = _client(tmp_path)
+    js = client.get("/static/app.js").text
+    recite = js.split("function initRecite", 1)[1]
+    assert "function markReciteAdvance" in recite
+    assert 'toggle.dataset.reciteAdvance = "1"' in recite
+    assert "learn:recite-advance" in recite
+    # Off the phone bar the button stays a record control, so desktop keeps
+    # its "Recite again" state.
+    assert 'toggle.closest("[data-mode-nav]") && toggle.dataset.reciteAdvance' in recite
+    assert 'toggle.textContent = scored ? "Recite again" : "▸ Start reciting"' in recite
+
+
+def test_test_mode_submit_carries_done_on_the_last_mode(tmp_path: Path):
+    client, _, _ = _client(tmp_path)
+    js = client.get("/static/mobile.js").text
+    # The click handler, not the syncNextButton lookup of the same selector.
+    handler = js.split('event.target.closest("[data-quiz-submit]")', 1)[1].split(
+        "}, true);", 1
+    )[0]
+    # Mid-deck the tap falls through to app.js, which advances the deck.
+    assert "nextTarget(currentMode()) !== null" in handler
+    assert "doneBtn.click()" in handler
+
+
+def test_letters_view_switch_is_centred_and_even(tmp_path: Path):
+    client, _, _ = _client(tmp_path)
+    css = client.get("/static/styles.css").text
+    box = css.split(".learn-letters-viewswitch {", 1)[1].split("}", 1)[0]
+    assert "width: fit-content" in box
+    assert "margin: 0 auto 14px" in box
+    assert "border-radius: 999px" in box
+    # Clips the active fill to the rounded edge.
+    assert "overflow: hidden" in box
+    btn = css.split(".learn-letters-view-btn {", 1)[1].split("}", 1)[0]
+    # Equal halves, so the inactive side is never dead space.
+    assert "flex: 1 1 0" in btn
+    assert "min-width: 5.5rem" in btn
+
+
+def test_letters_view_switch_labels(tmp_path: Path):
+    client, _, _ = _client(tmp_path)
+    html = client.get("/learn/clause-1?mode=letters").text
+    assert '>Speak</button>' in html
+    assert '>Read</button>' in html
+    assert "Speak it" not in html
+    assert "Just read" not in html

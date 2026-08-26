@@ -107,12 +107,11 @@
 
   <header class="learn-deck-head">
     <a class="mobile-back" href="{{ back_href }}">← {{ back_label }}</a>
+    {# Title only. The Article subheading repeats what the Browse card the
+       user just left already said, and "N of 6 done" duplicated the action
+       bar, which counts the methods still left. #}
     <div class="learn-deck-title-row">
-      <div>
-        <h2 class="learn-deck-title">{{ unit.display_title }}</h2>
-        {% if unit.title %}<p class="learn-deck-sub">{{ unit.title }}</p>{% endif %}
-      </div>
-      <p class="learn-deck-count">{{ seen|length }} of {{ learn_modes|length }} done</p>
+      <h2 class="learn-deck-title">{{ unit.display_title }}</h2>
     </div>
     {# Where you are in today's queue. session_progress() cannot say this —
        it counts lifetime mastery across the whole Constitution. #}
@@ -242,8 +241,8 @@
     data-letters-full="false"
   >
     <div class="learn-letters-viewswitch" role="group" aria-label="Letters practice style">
-      <button type="button" class="learn-letters-view-btn" data-letters-view-set="voice" aria-pressed="true">Speak it</button>
-      <button type="button" class="learn-letters-view-btn" data-letters-view-set="plain" aria-pressed="false">Just read</button>
+      <button type="button" class="learn-letters-view-btn" data-letters-view-set="voice" aria-pressed="true">Speak</button>
+      <button type="button" class="learn-letters-view-btn" data-letters-view-set="plain" aria-pressed="false">Read</button>
     </div>
     <p class="learn-letters-text is-initials" data-letters-display></p>
     <p class="learn-letters-status" data-letters-status hidden></p>

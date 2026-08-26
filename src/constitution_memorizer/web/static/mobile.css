@@ -1646,18 +1646,7 @@
     font-weight: 500;
   }
 
-  .learn-deck-sub {
-    margin: 3px 0 0;
-    font-size: 12.5px;
-    color: var(--mid);
-  }
 
-  .learn-deck-count {
-    margin: 0 0 3px auto;
-    flex: 0 0 auto;
-    font-size: 12px;
-    color: var(--mid);
-  }
 
   .learn-revision-badge {
     margin: 10px 0 0;
@@ -1969,6 +1958,24 @@
     letter-spacing: 0.22em;
   }
 
+  /* iOS zooms the page in whenever a focused control has a computed
+     font-size under 16px — a zoom nobody asked for that then leaves the
+     layout scaled. Setting the floor on the phone layer is the only reliable
+     cure; it does not change desktop, where these controls stay compact. */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  textarea,
+  select {
+    font-size: max(16px, 1em);
+  }
+
+  /* Double-tap-to-zoom, killed at the source. `manipulation` keeps scrolling
+     and pinch handling but drops the ~300ms double-tap wait, which is what
+     triggers the zoom. Phone layer only — desktop zoom is untouched. */
+  html,
+  body {
+    touch-action: manipulation;
+  }
+
   /* The mode action bar. `Next` is the black CTA and carries the deck
      forward; the mode's own controls sit beside it as secondaries — moved in
      by mobile.js, so each keeps the handler app.js bound to it. */
@@ -1984,6 +1991,23 @@
     padding: 12px 16px calc(20px + env(safe-area-inset-bottom, 0));
     background: var(--paper);
     border-top: 1px solid var(--hairline);
+    /* mobile.js lifts this above the on-screen keyboard by writing a
+       translateY; iOS does not shrink the layout viewport, so bottom:0 alone
+       puts the bar behind the keys. Transition so the lift is not a jump. */
+    transition: transform 0.18s ease-out;
+    will-change: transform;
+  }
+
+  /* Keyboard up: the home indicator is behind the keys, so its safe-area
+     padding is dead space between the bar and the keyboard. */
+  body.is-keyboard-open .learn[data-mobile-view="mode"] .learn-mode-nav {
+    padding-bottom: 12px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .learn[data-mobile-view="mode"] .learn-mode-nav {
+      transition: none;
+    }
   }
 
   .learn[data-mobile-view="deck"] .learn-mode-nav {
@@ -2113,6 +2137,46 @@
     color: var(--done-locked-fg);
   }
 
+  /* Letters is the same one-slot shape: Speak → Stop → Next. Three buttons in
+     this bar (Speak, Full text, Next) read as three competing CTAs, so the
+     view toggle stays in the panel and Next steps aside for the speak button.
+     The is-recording rule above already paints the Stop state. */
+  .learn-mode-nav.is-solo-cta .learn-letters-speak:not([hidden]) {
+    flex: 2 1 auto;
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--on-accent);
+    font-size: 15px;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  .learn-mode-nav.is-solo-cta .learn-letters-speak:disabled {
+    border-color: var(--done-locked-bg);
+    background: var(--done-locked-bg);
+    color: var(--done-locked-fg);
+  }
+
+  /* Recite and Test complete the set: every mode that owns a CTA carries it in
+     one slot — its own act, then Next, then Done. */
+  .learn-mode-nav.is-solo-cta .learn-recite-toggle:not([hidden]),
+  .learn-mode-nav.is-solo-cta .learn-test-submit:not([hidden]) {
+    flex: 2 1 auto;
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--on-accent);
+    font-size: 15px;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  .learn-mode-nav.is-solo-cta .learn-recite-toggle:disabled,
+  .learn-mode-nav.is-solo-cta .learn-test-submit:disabled {
+    border-color: var(--done-locked-bg);
+    background: var(--done-locked-bg);
+    color: var(--done-locked-fg);
+  }
+
   .learn-mode-nav.is-solo-cta .learn-mode-next {
     display: none;
   }
@@ -2123,15 +2187,15 @@
   }
 
   .learn-mode-nav .learn-test-submit {
-    min-width: 9.5rem;
+    min-width: 10.5rem;
   }
 
   .learn-mode-nav .learn-recite-toggle {
-    min-width: 9rem;
+    min-width: 10.5rem;
   }
 
   .learn-mode-nav .learn-letters-speak {
-    min-width: 8.5rem;
+    min-width: 10.5rem;
   }
 
   .learn-mode-nav .learn-cloze-btn {

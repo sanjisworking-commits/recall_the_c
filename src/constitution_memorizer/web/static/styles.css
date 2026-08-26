@@ -1255,21 +1255,31 @@ html[data-theme="dark"] .theme-toggle {
   margin-top: 20px;
 }
 
-/* Voice vs plain-view switch (Speak it / Just read) */
+/* Voice vs plain-view switch (Speak / Read) */
 .learn-letters-viewswitch {
-  display: inline-flex;
+  /* Centred, hugging its two labels. `fit-content` keeps the box off the
+     full width so the inactive half cannot trail off as dead space. */
+  display: flex;
+  width: fit-content;
   gap: 0;
-  margin: 0 0 14px;
+  margin: 0 auto 14px;
   border: 1px solid var(--hairline);
+  border-radius: 999px;
+  /* Clips the active fill to the rounded edge. */
+  overflow: hidden;
 }
 
 .learn-letters-view-btn {
-  padding: 6px 14px;
+  /* Equal halves, so switching never resizes the box. */
+  flex: 1 1 0;
+  min-width: 5.5rem;
+  padding: 6px 18px;
   border: 0;
   background: none;
   color: var(--muted);
   font: inherit;
   font-size: 13.5px;
+  text-align: center;
   cursor: pointer;
 }
 
