@@ -28,6 +28,27 @@ _PART_RUNNING_HEADER_RE = re.compile(
 # inside article body text is real Bare Act wording and is left alone.
 _HEADING_OMISSION_RE = re.compile(r"\s*\d*\s*\*{2,}\s*$")
 
+# The other half of the same convention: square brackets mark words INSERTED
+# by an amendment, again with a leading footnote digit. Part XXII prints
+# "SHORT TITLE, COMMENCEMENT, 1 [AUTHORITATIVE TEXT IN HINDI] AND REPEALS"
+# because the 58th Amendment (1987) added the bracketed words.
+#
+# Unlike an omission, the bracketed text IS part of the current heading, so
+# only the markers come off — never what they wrap.
+_HEADING_INSERT_OPEN_RE = re.compile(r"\s*\d+\s*\[\s*")
+_HEADING_INSERT_CLOSE_RE = re.compile(r"\s*\]")
+
+# Headings the extractor truncated rather than merely decorated. A regex
+# cannot recover words that are not in the source, so the canonical text is
+# supplied. Keyed by part_number; applied only when the extracted title is a
+# prefix of the canonical one, so a corrected upstream extraction wins and
+# this table quietly stops mattering.
+_PART_TITLE_CANONICAL = {
+    # Split across a line break after "AND"; the 7th Amendment substituted
+    # this heading, hence the "1 [" the extractor also kept.
+    "XXI": "TEMPORARY, TRANSITIONAL AND SPECIAL PROVISIONS",
+}
+
 _WS_RE = re.compile(r"\s+")
 _CLAUSE_ONE_IN_BODY_RE = re.compile(r"(?:^|\n)\(1\)\s")
 _CLAUSE_LABEL_RE = re.compile(r"^\((\d+)([A-Za-z]*)\)$")
@@ -66,11 +87,36 @@ def scrub_display_text(text: str) -> str:
 
 
 def strip_heading_omission_marker(title: str | None) -> str | None:
-    """Drop a trailing amendment-omission marker from a heading."""
+    """Drop amendment footnote markers from a heading, keeping its words.
+
+    Handles both halves of the convention: "***" for words omitted, and
+    "N [ ... ]" for words inserted. The inserted words stay; only the markers
+    that point at the footnote come off.
+    """
     if not title:
         return title
     cleaned = _HEADING_OMISSION_RE.sub("", title)
+    if _HEADING_INSERT_OPEN_RE.search(cleaned):
+        cleaned = _HEADING_INSERT_OPEN_RE.sub(" ", cleaned)
+        cleaned = _HEADING_INSERT_CLOSE_RE.sub("", cleaned)
     return _norm_ws(cleaned) or title
+
+
+def canonical_part_title(part_number: str, title: str | None) -> str | None:
+    """Restore a heading the extractor cut short.
+
+    Only fires when what was extracted is a prefix of the canonical text, so
+    a future clean extraction is left alone rather than overwritten.
+    """
+    canonical = _PART_TITLE_CANONICAL.get((part_number or "").strip().upper())
+    if not canonical:
+        return title
+    current = _norm_ws(title or "")
+    if current == canonical:
+        return title
+    if current and canonical.startswith(current):
+        return canonical
+    return title
 
 
 def strip_part_running_headers(text: str) -> str:
@@ -323,7 +369,9 @@ def scrub_document(doc: ConstitutionDocument) -> list[str]:
     """Scrub every article and schedule field in a reviewed document copy."""
     notes: list[str] = []
     for part in doc.parts:
-        cleaned_title = strip_heading_omission_marker(part.title)
+        cleaned_title = canonical_part_title(
+            part.part_number, strip_heading_omission_marker(part.title)
+        )
         if cleaned_title != part.title:
             notes.append(f"part {part.part_number}: title {part.title!r} -> {cleaned_title!r}")
             part.title = cleaned_title
