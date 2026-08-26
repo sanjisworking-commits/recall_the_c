@@ -141,7 +141,7 @@ Learn GET for guests does **not** call `mark_mode_seen`.
 | Variable | Effect |
 |----------|--------|
 | `AUTH_GOOGLE_ENABLED=false` | Hide Google button / reject Google start |
-| `AUTH_PHONE_ENABLED=false` | Show phone option as “not currently available”; reject OTP routes |
+| `AUTH_PHONE_ENABLED=false` | Show phone option as “not currently available”; reject OTP routes. Hosted environments stay paused until SMS registration completes, even if this flag is still true. Tests (`APP_ENV=test`) honour the flag so OTP flows stay covered. |
 | Both false in staging/production | Startup fails |
 
 ## Account identity
