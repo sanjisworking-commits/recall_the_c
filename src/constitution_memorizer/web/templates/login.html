@@ -49,6 +49,18 @@
 
   .phone-input.is-invalid { border-bottom-color: #c0492c; }
   .field-error { display: flex; align-items: baseline; gap: 8px; margin: 8px 0 0; font-size: 13px; color: #c0492c; }
+  .j-send:disabled, .j-send[aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; pointer-events: none; }
+  .auth-unavailable-tag {
+    flex: none;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #8a8478;
+    border: 1px solid #d9d3c6;
+    padding: 4px 8px;
+    white-space: nowrap;
+  }
 
   /* OTP cells */
   /* min-width:0 defeats the fieldset's intrinsic min-content width, which would
@@ -147,11 +159,9 @@
         <span aria-hidden="true" style="font-weight:700; font-size:16px">G</span>
         <span data-google-label>Continue with Google</span>
       </a>
-      {% if phone_enabled %}
       <p style="display:flex; align-items:center; gap:14px; margin:24px 0; font-size:11px; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; color:#615c50">
         <span style="flex:1; height:1px; background:#d9d3c6"></span>or<span style="flex:1; height:1px; background:#d9d3c6"></span>
       </p>
-      {% endif %}
       {% endif %}
 
       {% if phone_enabled and not otp_sent %}
@@ -174,6 +184,21 @@
           <span data-send-label>Send code</span>
         </button>
       </form>
+      {% elif not phone_enabled and not otp_sent %}
+      <div data-phone-unavailable aria-disabled="true" style="display:grid; gap:14px">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:12px">
+          <span style="font-size:11.5px; font-weight:700; letter-spacing:0.16em; text-transform:uppercase; color:#615c50">Mobile number</span>
+          <span class="auth-unavailable-tag">not currently available</span>
+        </div>
+        <div class="phone-input" style="display:flex; align-items:stretch; border-bottom:1.5px solid #d9d3c6; opacity:0.55">
+          <span aria-hidden="true" style="display:flex; align-items:center; padding-right:12px; font-size:17px; color:#615c50">+91</span>
+          <input id="national_number" type="tel" inputmode="numeric" maxlength="10" placeholder="98765 43210" disabled
+            style="flex:1; min-height:44px; border:0; background:transparent; color:#0b0b0b; font:inherit; font-size:17px; letter-spacing:0.02em; padding:8px 0" />
+        </div>
+        <button type="button" class="j-send" disabled aria-disabled="true" style="min-height:52px; margin-top:6px; border:1px solid #0b0b0b; background:#0b0b0b; color:#f4f1ea; font:inherit; font-size:15.5px; font-weight:600">
+          Send code
+        </button>
+      </div>
       {% endif %}
 
       {% if phone_enabled and otp_sent %}

@@ -79,7 +79,7 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
             {
                 "error": error or request.query_params.get("error"),
                 "google_enabled": settings.auth_google_enabled,
-                "phone_enabled": settings.auth_phone_enabled,
+                "phone_enabled": settings.phone_sign_in_available,
                 "csrf_token": csrf,
                 "otp_sent": request.query_params.get("otp") == "1",
                 "resent": request.query_params.get("resent") == "1",
@@ -201,7 +201,7 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
         resend: str = Form(""),
     ) -> RedirectResponse:
         settings = request.app.state.multiuser_settings
-        if not settings.auth_phone_enabled:
+        if not settings.phone_sign_in_available:
             return RedirectResponse(url="/login?error=phone_disabled", status_code=303)
         if request.cookies.get(CSRF_COOKIE_NAME) != csrf_token:
             return RedirectResponse(url="/login?error=csrf", status_code=303)
@@ -262,7 +262,7 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
         next: str = Form("/dashboard"),
     ) -> RedirectResponse:
         settings = request.app.state.multiuser_settings
-        if not settings.auth_phone_enabled:
+        if not settings.phone_sign_in_available:
             return RedirectResponse(url="/login?error=phone_disabled", status_code=303)
         if request.cookies.get(CSRF_COOKIE_NAME) != csrf_token:
             return RedirectResponse(url="/login?error=csrf", status_code=303)

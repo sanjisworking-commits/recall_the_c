@@ -73,7 +73,10 @@ class MultiUserSettings(BaseSettings):
     session_secret: str = Field(default="", alias="SESSION_SECRET")
 
     auth_google_enabled: bool = Field(default=True, alias="AUTH_GOOGLE_ENABLED")
-    auth_phone_enabled: bool = Field(default=True, alias="AUTH_PHONE_ENABLED")
+    # Phone OTP is paused until SMS provider registration completes. The login
+    # page still shows the option with a "not currently available" tag.
+    # AUTH_PHONE_ENABLED remains the live-form switch for APP_ENV=test only.
+    auth_phone_enabled: bool = Field(default=False, alias="AUTH_PHONE_ENABLED")
     cookie_secure: bool = Field(default=False, alias="COOKIE_SECURE")
 
     # CAPTCHA integration point (optional; validated only when enabled).
@@ -157,6 +160,17 @@ class MultiUserSettings(BaseSettings):
         return bool(
             self.gcal_client_id and self.gcal_client_secret and self.gcal_token_key
         )
+
+    @property
+    def phone_sign_in_available(self) -> bool:
+        """Whether the live phone OTP form and routes are on.
+
+        SMS registration is pending, so hosted environments stay paused even
+        if AUTH_PHONE_ENABLED is still true. Tests keep a working form.
+        """
+        if self.app_env == "test":
+            return self.auth_phone_enabled
+        return False
 
     @field_validator(
         "auth_google_enabled",

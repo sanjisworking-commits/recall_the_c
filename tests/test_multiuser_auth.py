@@ -125,6 +125,85 @@ def test_login_page_feature_flags(tmp_path: Path):
     assert "Mobile number" in html or "national_number" in html
 
 
+def test_login_phone_otp_shows_unavailable_tag(tmp_path: Path):
+    """Phone OTP stays visible while registration is pending, but is not submittable."""
+    provider = FakeAuthProvider()
+    app = create_app(
+        units_path=MINI_UNITS,
+        db_path=tmp_path / "p.db",
+        multiuser=True,
+        multiuser_settings=_settings(AUTH_PHONE_ENABLED="false"),
+        auth_provider=provider,
+        session_store=InMemorySessionStore(),
+    )
+    client = TestClient(app)
+    html = client.get("/login").text
+    assert "Continue with Google" in html
+    assert "Mobile number" in html
+    assert "not currently available" in html
+    assert 'data-phone-unavailable' in html
+    assert 'data-send-otp' not in html
+    assert 'action="/auth/phone/send"' not in html
+    assert 'data-phone-form' not in html
+
+    csrf = client.cookies.get(CSRF_COOKIE_NAME)
+    send = client.post(
+        "/auth/phone/send",
+        data={
+            "national_number": "9876543210",
+            "country_code": "+91",
+            "csrf_token": csrf,
+            "next": "/dashboard",
+        },
+        follow_redirects=False,
+    )
+    assert send.status_code == 303
+    assert "phone_disabled" in send.headers["location"]
+    verify = client.post(
+        "/auth/phone/verify",
+        data={
+            "phone": "+919876543210",
+            "otp": "123456",
+            "csrf_token": csrf,
+        },
+        follow_redirects=False,
+    )
+    assert verify.status_code == 303
+    assert "phone_disabled" in verify.headers["location"]
+
+
+def test_login_phone_otp_paused_even_when_env_flag_true(tmp_path: Path):
+    """Hosted APP_ENV ignores AUTH_PHONE_ENABLED until SMS registration completes."""
+    provider = FakeAuthProvider()
+    app = create_app(
+        units_path=MINI_UNITS,
+        db_path=tmp_path / "p.db",
+        multiuser=True,
+        multiuser_settings=_settings(
+            APP_ENV="development",
+            AUTH_PHONE_ENABLED="true",
+        ),
+        auth_provider=provider,
+        session_store=InMemorySessionStore(),
+    )
+    client = TestClient(app)
+    html = client.get("/login").text
+    assert "not currently available" in html
+    assert 'data-send-otp' not in html
+    csrf = client.cookies.get(CSRF_COOKIE_NAME)
+    send = client.post(
+        "/auth/phone/send",
+        data={
+            "national_number": "9876543210",
+            "country_code": "+91",
+            "csrf_token": csrf,
+        },
+        follow_redirects=False,
+    )
+    assert send.status_code == 303
+    assert "phone_disabled" in send.headers["location"]
+
+
 def test_google_oauth_callback_sets_session(tmp_path: Path):
     provider = FakeAuthProvider()
     client = _multi_client(tmp_path, provider)
