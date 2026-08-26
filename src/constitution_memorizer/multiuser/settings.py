@@ -73,7 +73,9 @@ class MultiUserSettings(BaseSettings):
     session_secret: str = Field(default="", alias="SESSION_SECRET")
 
     auth_google_enabled: bool = Field(default=True, alias="AUTH_GOOGLE_ENABLED")
-    auth_phone_enabled: bool = Field(default=True, alias="AUTH_PHONE_ENABLED")
+    # Phone OTP is paused until SMS provider registration completes. The login
+    # page still shows the option with a "not currently available" tag.
+    auth_phone_enabled: bool = Field(default=False, alias="AUTH_PHONE_ENABLED")
     cookie_secure: bool = Field(default=False, alias="COOKIE_SECURE")
 
     # CAPTCHA integration point (optional; validated only when enabled).
