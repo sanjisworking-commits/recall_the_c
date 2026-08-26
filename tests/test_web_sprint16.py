@@ -48,7 +48,7 @@ def test_type_mode_query_param_renders_type_active(client: TestClient):
 
 
 def test_type_css_drives_panel_and_diff_styles(client: TestClient):
-    css = client.get("/static/styles.css?v=main41")
+    css = client.get("/static/styles.css?v=main43")
     assert css.status_code == 200
     text = css.text
     assert '.learn[data-mode="type"] .learn-panel-type' in text

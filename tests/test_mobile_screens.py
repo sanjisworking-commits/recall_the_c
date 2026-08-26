@@ -909,3 +909,80 @@ def test_letters_view_switch_labels(tmp_path: Path):
     assert '>Read</button>' in html
     assert "Speak it" not in html
     assert "Just read" not in html
+
+
+# --------------------------------------------------------------------------- #
+# The "?" now means help                                                       #
+# --------------------------------------------------------------------------- #
+
+
+def test_question_mark_opens_mode_help_not_the_article(tmp_path: Path):
+    """A "?" reads as help everywhere. It used to link to the Article's Bare
+    Act text — which is what the "← Article N" control beside it suggests but
+    does not do, so the two labels were effectively swapped."""
+    client, _, _ = _client(tmp_path)
+    html = client.get("/learn/clause-1").text
+    assert "data-mode-help" in html
+    assert 'aria-label="How to use this mode"' in html
+    # No longer an anchor to /browse/article/…
+    bar = html.split('class="learn-mode-bar"', 1)[1].split("</div>", 1)[0]
+    assert "mobile-icon-btn" in bar
+    assert "href=" not in bar.split("mobile-icon-btn", 1)[1]
+
+
+def test_mode_help_covers_every_mode(tmp_path: Path):
+    client, _, _ = _client(tmp_path)
+    html = client.get("/learn/clause-1").text
+    copy = html.split('id="mode-help-copy"', 1)[1].split("</script>", 1)[0]
+    import json
+
+    entries = json.loads(copy.split(">", 1)[1])
+    assert set(entries) == {"read", "cloze", "letters", "type", "recite", "test"}
+    for mode, entry in entries.items():
+        assert entry["title"] and entry["body"], mode
+
+
+def test_mode_help_modal_has_a_close_control(tmp_path: Path):
+    client, _, _ = _client(tmp_path)
+    html = client.get("/learn/clause-1").text
+    assert "data-mode-help-modal" in html
+    assert "data-mode-help-close" in html
+    assert 'aria-label="Close"' in html
+    js = client.get("/static/mobile.js").text
+    guard = js.split("function initModeHelp", 1)[1].split("\n  function ", 1)[0]
+    assert "modal.close()" in guard
+    assert "showModal()" in guard
+    # Backdrop click closes too, matching the sheets elsewhere.
+    assert "event.target === modal" in guard
+
+
+def test_standing_hint_lines_are_hidden_on_the_phone(tmp_path: Path):
+    """The "?" carries this guidance on demand now. Hidden, not deleted:
+    desktop has no "?" and keeps its hints."""
+    client, _, _ = _client(tmp_path)
+    css = client.get("/static/mobile.css").text
+    for selector in (
+        'body[data-mscreen="learn"] .learn-panel-read .learn-hint',
+        'body[data-mscreen="learn"] .learn-type-lede',
+        'body[data-mscreen="learn"] .learn-test-lede',
+        'body[data-mscreen="learn"] .learn-letters-hint',
+        'body[data-mscreen="learn"] .learn-recite-hint',
+    ):
+        assert selector in css, selector
+    # The markup survives for desktop.
+    html = client.get("/learn/clause-1").text
+    assert "learn-type-lede" in html
+    assert "learn-test-lede" in html
+
+
+def test_status_lines_are_not_treated_as_hints(tmp_path: Path):
+    """Counts and listening state are live state, not instructions — they
+    stay on screen and are no longer lifted alongside the hint lines."""
+    client, _, _ = _client(tmp_path)
+    js = client.get("/static/mobile.js").text
+    lines = js.split("var MODE_STATUS_LINES = {", 1)[1].split("};", 1)[0]
+    assert "[data-cloze-status]" in lines
+    assert "[data-letters-status]" in lines
+    assert "[data-recite-status]" in lines
+    assert ".learn-letters-hint" not in lines
+    assert ".learn-recite-hint" not in lines

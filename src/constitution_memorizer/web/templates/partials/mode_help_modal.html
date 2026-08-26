@@ -1,0 +1,52 @@
+{# How to use the mode you are in. Replaces the per-mode hint line that used
+   to sit above every panel: the same guidance, on demand, instead of a
+   paragraph you read once and then scroll past on every visit.
+
+   Native <dialog> like guest_modal, so it works at every width and gets the
+   backdrop, focus trap and Escape handling for free. mobile.js fills the
+   title and body from the block below, keyed by the open mode. #}
+<dialog
+  class="guest-modal mode-help-modal"
+  id="mode-help-modal"
+  data-mode-help-modal
+  aria-labelledby="mode-help-title"
+>
+  <div class="guest-modal-card mode-help-card">
+    <button
+      type="button"
+      class="mode-help-close"
+      data-mode-help-close
+      aria-label="Close"
+    >&times;</button>
+    <h2 class="guest-modal-title" id="mode-help-title" data-mode-help-title></h2>
+    <p class="guest-modal-body" data-mode-help-body></p>
+  </div>
+</dialog>
+<script type="application/json" id="mode-help-copy">
+{
+  "read": {
+    "title": "Read",
+    "body": "Bare Act wording, verbatim. Read it twice — once for sense, once for the exact words — then pick a recall mode."
+  },
+  "cloze": {
+    "title": "Cloze",
+    "body": "Words are blanked out. Tap a blank when you have the word in mind to check it. Density sets how many are hidden; only blanks you tap individually count towards finishing."
+  },
+  "letters": {
+    "title": "Letters",
+    "body": "Only the first letter of each word is shown. In Speak, say the words aloud and correct ones turn blue as you go. In Read, rebuild the clause in your head and use Full text to verify."
+  },
+  "type": {
+    "title": "Type",
+    "body": "Type the clause from memory. Words are checked as you go and nothing is shown ahead of your cursor, so there is nothing to copy from. Clause numbers like (2) are skipped — you never need to type them."
+  },
+  "recite": {
+    "title": "Recite",
+    "body": "Say the whole clause aloud, then stop to see an accuracy map of what was heard against the Bare Act. Hold to peek if you get stuck; the text stays blurred until you do."
+  },
+  "test": {
+    "title": "Test",
+    "body": "A short quiz on this unit. Answer every question, then check — you get new questions each revision, so the answers cannot be memorised in place of the text."
+  }
+}
+</script>
