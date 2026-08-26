@@ -4317,6 +4317,32 @@ html[data-theme="dark"] .nav-signin {
   color: var(--browse-due);
 }
 
+.mode-help-modal .guest-modal-card {
+  position: relative;
+}
+
+.mode-help-modal .mode-help-close {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 40px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: none;
+  color: var(--mid);
+  font-size: 26px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.mode-help-modal .guest-modal-title {
+  /* Clears the close control: 40px wide, offset 6px from the edge. */
+  padding-right: 52px;
+}
+
 .guest-modal {
   border: 1px solid var(--sheet-border);
   padding: 0;

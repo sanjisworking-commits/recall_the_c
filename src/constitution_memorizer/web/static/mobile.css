@@ -1968,6 +1968,19 @@
     font-size: max(16px, 1em);
   }
 
+  /* The per-mode instruction lines. The "?" in the mode bar now carries this
+     guidance on demand, so the standing paragraph above each panel is dead
+     weight on a phone — read once, scrolled past every time after. Hidden
+     rather than deleted: desktop has no "?" and keeps its hints.
+     Status lines (counts, listening state) are NOT hints and stay. */
+  body[data-mscreen="learn"] .learn-panel-read .learn-hint,
+  body[data-mscreen="learn"] .learn-type-lede,
+  body[data-mscreen="learn"] .learn-test-lede,
+  body[data-mscreen="learn"] .learn-letters-hint,
+  body[data-mscreen="learn"] .learn-recite-hint {
+    display: none;
+  }
+
   /* Double-tap-to-zoom, killed at the source. `manipulation` keeps scrolling
      and pinch handling but drops the ~300ms double-tap wait, which is what
      triggers the zoom. Phone layer only — desktop zoom is untouched. */

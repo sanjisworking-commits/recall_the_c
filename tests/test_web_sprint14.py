@@ -49,7 +49,7 @@ def test_cloze_mode_query_param_renders_cloze_active(client: TestClient):
 
 
 def test_cloze_css_drives_panel_visibility_and_blank_styles(client: TestClient):
-    css = client.get("/static/styles.css?v=main41")
+    css = client.get("/static/styles.css?v=main43")
     assert css.status_code == 200
     text = css.text
     assert '.learn[data-mode="cloze"] .learn-panel-cloze' in text
@@ -76,7 +76,7 @@ def test_cloze_shows_stem_for_subclause_unlike_test(client: TestClient):
     assert test_page.status_code == 200
     # Stem still in markup (shared), but CSS hides it for test mode.
     assert "learn-stem" in test_page.text
-    css = client.get("/static/styles.css?v=main41").text
+    css = client.get("/static/styles.css?v=main43").text
     assert '.learn[data-mode="test"] .learn-stem' in css
     assert "display: none" in css
 

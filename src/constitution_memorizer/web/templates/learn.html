@@ -102,7 +102,10 @@
   <div class="learn-mode-bar">
     <button type="button" class="mobile-back" data-deck-back>← {{ back_label }}</button>
     <span class="learn-mode-bar-name" data-mode-name>{{ mode_labels[learn_mode] if mode_labels else learn_mode }}</span>
-    <a class="mobile-icon-btn" href="{{ back_href }}" aria-label="Read the Article">?</a>
+    {# A "?" reads as help everywhere, so it now opens help. It used to link
+       to the Article's Bare Act text, which is what the "← Article N"
+       control beside it suggests but does not do. #}
+    <button type="button" class="mobile-icon-btn" data-mode-help aria-label="How to use this mode">?</button>
   </div>
 
   <header class="learn-deck-head">
@@ -445,4 +448,5 @@
 {% if session_id|default('') and revision_remaining|default(0) > 0 %}
 {% include "partials/revision_exit_modal.html" %}
 {% endif %}
+{% include "partials/mode_help_modal.html" %}
 {% endblock %}

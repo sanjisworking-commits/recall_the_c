@@ -679,10 +679,12 @@
      out to the top of the panel. The nodes are moved, not copied, so app.js
      keeps updating the same elements. */
 
+  // Live state only — counts, listening, accuracy. The standing instruction
+  // lines moved into the "?" dialog, so they are no longer lifted here.
   var MODE_STATUS_LINES = {
     cloze: ["[data-cloze-status]"],
-    letters: ["[data-letters-status]", ".learn-letters-hint"],
-    recite: ["[data-recite-status]", ".learn-recite-hint"],
+    letters: ["[data-letters-status]"],
+    recite: ["[data-recite-status]"],
   };
 
   function initModeStatusLines() {
@@ -879,6 +881,45 @@
     });
   }
 
+  /* ── Mode help (the "?" in the mode bar) ────────────────────────────────
+     The per-mode hint line used to sit above every panel — read once, then
+     scrolled past on every later visit. Same guidance, on demand instead. */
+
+  function initModeHelp() {
+    var learn = document.querySelector(".learn[data-mobile-view]");
+    var modal = document.querySelector("[data-mode-help-modal]");
+    var copyEl = document.getElementById("mode-help-copy");
+    if (!learn || !modal || !copyEl || typeof modal.showModal !== "function") {
+      return;
+    }
+    var copy = {};
+    try {
+      copy = JSON.parse(copyEl.textContent || "{}");
+    } catch (_e) {
+      return;
+    }
+    var titleEl = modal.querySelector("[data-mode-help-title]");
+    var bodyEl = modal.querySelector("[data-mode-help-body]");
+
+    document.addEventListener("click", function (event) {
+      if (event.target.closest("[data-mode-help-close]")) {
+        modal.close();
+        return;
+      }
+      if (!event.target.closest("[data-mode-help]")) return;
+      var entry = copy[learn.dataset.mode || "read"];
+      if (!entry) return;
+      if (titleEl) titleEl.textContent = entry.title;
+      if (bodyEl) bodyEl.textContent = entry.body;
+      if (!modal.open) modal.showModal();
+    });
+
+    // Clicking the backdrop closes it, like the sheets elsewhere.
+    modal.addEventListener("click", function (event) {
+      if (event.target === modal) modal.close();
+    });
+  }
+
   function boot() {
     initSheets();
     initMarkFilter();
@@ -894,6 +935,7 @@
     // deck has moved the active mode's controls into it.
     initKeyboardInset();
     initNoZoom();
+    initModeHelp();
   }
 
   if (document.readyState === "loading") {
