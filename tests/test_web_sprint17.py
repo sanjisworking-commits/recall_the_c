@@ -35,7 +35,7 @@ def test_learn_enables_recite_tab_and_panel_markup(client: TestClient):
     assert "Hold to peek" in html
     assert "Start reciting" in html
     assert "Speak the Bare Act aloud" in html
-    assert "app.js?v=main42" in html
+    assert "app.js?v=main44" in html
     assert "Coming in later sprints" not in html
 
 
@@ -50,7 +50,7 @@ def test_recite_mode_query_param_renders_recite_active(client: TestClient):
 
 
 def test_recite_css_blur_and_panel_visibility(client: TestClient):
-    css = client.get("/static/styles.css?v=main38")
+    css = client.get("/static/styles.css?v=main40")
     assert css.status_code == 200
     text = css.text
     assert '.learn[data-mode="recite"] .learn-panel-recite' in text
@@ -61,11 +61,14 @@ def test_recite_css_blur_and_panel_visibility(client: TestClient):
 
 
 def test_recite_js_handles_start_stop_and_peek(client: TestClient):
-    js = client.get("/static/app.js?v=main42")
+    js = client.get("/static/app.js?v=main44")
     assert js.status_code == 200
     text = js.text
     assert "initRecite" in text
-    assert "Stop and score" in text
+    # The recording label is just "Stop" now — the same one-slot CTA cycle as
+    # Letters (Start reciting → Stop → Next), so the two modes read alike.
+    assert '"Stop"' in text
+    assert "Stop and score" not in text
     assert "Start reciting" in text
     assert "touchstart" in text
     assert "mousedown" in text

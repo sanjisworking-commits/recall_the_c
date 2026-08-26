@@ -226,9 +226,13 @@
 
     var MODE_CONTROLS = {
       cloze: ".learn-cloze-controls",
-      letters: ".learn-letters-controls",
+      // Only the speak button, not the whole row: "Full text" is a view aid
+      // that belongs beside the letters it reveals, and in the bar it read as
+      // a third CTA next to Speak and Next.
+      letters: ".learn-letters-speak",
       type: ".learn-type-check",
-      recite: ".learn-recite-controls",
+      // Record button only: "Hold to peek" is an aid, not a CTA.
+      recite: ".learn-recite-toggle",
       test: ".learn-test-submit",
     };
     var nav = learn.querySelector("[data-mode-nav]");
@@ -314,11 +318,62 @@
       // CTA — so it is the one mode that carries Next on another button.
       var typeCheck = nav && nav.querySelector("[data-type-check]");
       var typeSolo = mode === "type" && Boolean(typeCheck);
+      // Letters is the same shape once its mic is in the bar: the speak button
+      // is Speak, then Stop, then the advance — never a CTA beside Next.
+      // In the "Just read" view there is no speak button, so Next leads.
+      var lettersSpeak = nav && nav.querySelector("[data-letters-speak]");
+      var lettersSolo =
+        mode === "letters" && Boolean(lettersSpeak) && !lettersSpeak.hidden;
+      // Recite and Test are the same one-slot shape: the mode's own act, then
+      // the advance. Every mode that owns a CTA now behaves alike, so the bar
+      // never shows two.
+      var reciteToggle = nav && nav.querySelector("[data-recite-toggle]");
+      var reciteSolo =
+        mode === "recite" && Boolean(reciteToggle) && !reciteToggle.hidden;
+      var quizSubmit = nav && nav.querySelector("[data-quiz-submit]");
+      var quizSolo = mode === "test" && Boolean(quizSubmit) && !quizSubmit.hidden;
       if (nav) {
-        nav.classList.toggle("is-solo-cta", typeSolo);
+        nav.classList.toggle(
+          "is-solo-cta",
+          typeSolo || lettersSolo || reciteSolo || quizSolo
+        );
       }
 
       var target = nextTarget(mode);
+
+      // Shared tail for every solo mode: while the mode's act is outstanding
+      // the button keeps its own label; once done it becomes Next, or Done
+      // when nothing is left outstanding.
+      function paintAdvance(btn, armed) {
+        if (!armed) return;
+        if (target === null) {
+          var locked = !doneBtn || doneBtn.disabled;
+          btn.textContent = doneBtn ? doneBtn.textContent.trim() : "Done";
+          btn.disabled = locked;
+        } else {
+          btn.textContent = "Next →";
+          btn.disabled = false;
+        }
+      }
+
+      if (lettersSolo) {
+        paintAdvance(lettersSpeak, lettersSpeak.dataset.lettersAdvance);
+        return;
+      }
+
+      if (reciteSolo) {
+        paintAdvance(reciteToggle, reciteToggle.dataset.reciteAdvance);
+        return;
+      }
+
+      if (quizSolo) {
+        // Test keeps its score in the label until the very last mode, where
+        // the button has to read as Done rather than a score.
+        if (quizSubmit.dataset.quizAdvance && target === null) {
+          paintAdvance(quizSubmit, true);
+        }
+        return;
+      }
 
       if (typeSolo) {
         if (typeCheck.dataset.typeAdvance) {
@@ -336,16 +391,6 @@
         return;
       }
 
-      // Test's submit takes the advance role after scoring (3a #6). With
-      // nothing left to advance to it would just duplicate the CTA beside it,
-      // so on the last card it becomes "Try new set" and the session CTA
-      // carries Done instead — which is what frame 3e draws.
-      var submit = nav && nav.querySelector("[data-quiz-submit]");
-      if (submit && submit.dataset.quizAdvance && target === null) {
-        delete submit.dataset.quizAdvance;
-        submit.dataset.quizRetry = "1";
-        submit.textContent = "Try new set";
-      }
       if (target === null) {
         nextBtn.classList.add("is-done");
         // Mirror the real Done button, gate and label included.
@@ -397,6 +442,69 @@
       }
       goToMode(target);
     });
+
+    learn.addEventListener("click", function (event) {
+      var btn = event.target.closest("[data-letters-speak]");
+      if (!btn || !btn.dataset.lettersAdvance) return;
+      // Swallow the tap before app.js's own speak handler reopens the mic.
+      event.preventDefault();
+      event.stopPropagation();
+      var target = nextTarget(currentMode());
+      if (target === null) {
+        if (doneBtn && !doneBtn.disabled) doneBtn.click();
+        return;
+      }
+      goToMode(target);
+    }, true);
+
+    learn.addEventListener("click", function (event) {
+      var btn = event.target.closest("[data-recite-toggle]");
+      if (!btn || !btn.dataset.reciteAdvance) return;
+      // Swallow before app.js's toggle handler restarts the recorder.
+      event.preventDefault();
+      event.stopPropagation();
+      var target = nextTarget(currentMode());
+      if (target === null) {
+        if (doneBtn && !doneBtn.disabled) doneBtn.click();
+        return;
+      }
+      goToMode(target);
+    }, true);
+
+    // On the last outstanding mode Test's submit reads "Done", so its tap has
+    // to fire Done rather than fall through to app.js's advance-then-retry.
+    learn.addEventListener("click", function (event) {
+      var btn = event.target.closest("[data-quiz-submit]");
+      if (!btn || !btn.dataset.quizAdvance) return;
+      if (nextTarget(currentMode()) !== null) return;
+      event.preventDefault();
+      event.stopPropagation();
+      if (doneBtn && !doneBtn.disabled) doneBtn.click();
+    }, true);
+
+    learn.addEventListener("learn:recite-advance", function () {
+      syncNextButton(currentMode());
+    });
+
+    // maybeComplete fires this once the clause is fully recalled, so the
+    // button repaints as the advance without waiting for another sync.
+    learn.addEventListener("learn:letters-advance", function () {
+      syncNextButton(currentMode());
+    });
+
+    // "Just read" hides the speak button, which takes the bar's only CTA away
+    // — without re-syncing, is-solo-cta kept Next hidden too and the bar was
+    // left empty. Watching the attribute rather than the toggle catches every
+    // path that hides it, including the localStorage-restored view on load.
+    var lettersSpeakBtn = learn.querySelector("[data-letters-speak]");
+    if (lettersSpeakBtn && window.MutationObserver) {
+      new MutationObserver(function () {
+        if (currentMode() === "letters") syncNextButton("letters");
+      }).observe(lettersSpeakBtn, {
+        attributes: true,
+        attributeFilter: ["hidden"],
+      });
+    }
 
     learn.addEventListener("learn:advance", function () {
       var mode = currentMode();

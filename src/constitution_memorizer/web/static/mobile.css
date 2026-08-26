@@ -2148,6 +2148,46 @@
     color: var(--done-locked-fg);
   }
 
+  /* Letters is the same one-slot shape: Speak → Stop → Next. Three buttons in
+     this bar (Speak, Full text, Next) read as three competing CTAs, so the
+     view toggle stays in the panel and Next steps aside for the speak button.
+     The is-recording rule above already paints the Stop state. */
+  .learn-mode-nav.is-solo-cta .learn-letters-speak:not([hidden]) {
+    flex: 2 1 auto;
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--on-accent);
+    font-size: 15px;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  .learn-mode-nav.is-solo-cta .learn-letters-speak:disabled {
+    border-color: var(--done-locked-bg);
+    background: var(--done-locked-bg);
+    color: var(--done-locked-fg);
+  }
+
+  /* Recite and Test complete the set: every mode that owns a CTA carries it in
+     one slot — its own act, then Next, then Done. */
+  .learn-mode-nav.is-solo-cta .learn-recite-toggle:not([hidden]),
+  .learn-mode-nav.is-solo-cta .learn-test-submit:not([hidden]) {
+    flex: 2 1 auto;
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--on-accent);
+    font-size: 15px;
+    font-weight: 500;
+    text-align: center;
+  }
+
+  .learn-mode-nav.is-solo-cta .learn-recite-toggle:disabled,
+  .learn-mode-nav.is-solo-cta .learn-test-submit:disabled {
+    border-color: var(--done-locked-bg);
+    background: var(--done-locked-bg);
+    color: var(--done-locked-fg);
+  }
+
   .learn-mode-nav.is-solo-cta .learn-mode-next {
     display: none;
   }
@@ -2158,15 +2198,15 @@
   }
 
   .learn-mode-nav .learn-test-submit {
-    min-width: 9.5rem;
+    min-width: 10.5rem;
   }
 
   .learn-mode-nav .learn-recite-toggle {
-    min-width: 9rem;
+    min-width: 10.5rem;
   }
 
   .learn-mode-nav .learn-letters-speak {
-    min-width: 8.5rem;
+    min-width: 10.5rem;
   }
 
   .learn-mode-nav .learn-cloze-btn {
