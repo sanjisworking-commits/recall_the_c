@@ -701,3 +701,68 @@ def test_live_counter_yields_to_the_settled_score(tmp_path: Path):
     client, _, _ = _client(tmp_path)
     css = client.get("/static/mobile.css").text
     assert '.learn[data-mobile-view="mode"] .learn-type-stats[hidden]' in css
+
+
+# --------------------------------------------------------------------------- #
+# The keyboard, and zoom                                                        #
+# --------------------------------------------------------------------------- #
+
+
+def test_action_bar_lifts_above_the_on_screen_keyboard(tmp_path: Path):
+    """iOS does not shrink the LAYOUT viewport for the keyboard, so a
+    `bottom: 0` fixed bar sits behind it — "Check my attempt" vanished while
+    typing. visualViewport is the only source of the real visible box."""
+    client, _, _ = _client(tmp_path)
+    js = client.get("/static/mobile.js").text
+    guard = js.split("function initKeyboardInset", 1)[1].split("\n  function ", 1)[0]
+    assert "window.visualViewport" in guard
+    # The obscured strip needs offsetTop: iOS scrolls the visual viewport
+    # inside the layout viewport once the keyboard is up.
+    assert "vv.height + vv.offsetTop" in guard
+    assert 'vv.addEventListener("resize"' in guard
+    assert 'vv.addEventListener("scroll"' in guard
+    assert "translateY(" in guard
+    # A collapsing URL bar is not a keyboard.
+    assert "covered < 80" in guard
+    assert "initKeyboardInset();" in js
+
+
+def test_action_bar_reclaims_the_safe_area_when_the_keyboard_is_up(tmp_path: Path):
+    """The home indicator is behind the keys, so its inset is dead space."""
+    client, _, _ = _client(tmp_path)
+    css = client.get("/static/mobile.css").text
+    assert "body.is-keyboard-open .learn[data-mobile-view=\"mode\"] .learn-mode-nav" in css
+    bar = css.split('.learn[data-mobile-view="mode"] .learn-mode-nav {', 1)[1].split("}", 1)[0]
+    assert "position: fixed" in bar
+    assert "transition: transform" in bar
+
+
+def test_zoom_is_disabled_on_the_app_shell_only(tmp_path: Path):
+    client, _, _ = _client(tmp_path)
+    html = client.get("/browse").text
+    assert "user-scalable=no" in html
+    assert "maximum-scale=1" in html
+    # viewport-fit=cover keeps env(safe-area-inset-*) meaningful.
+    assert "viewport-fit=cover" in html
+
+
+def test_pinch_is_cancelled_in_js_because_ios_ignores_the_meta(tmp_path: Path):
+    """Safari has ignored user-scalable/maximum-scale for pinch since iOS 10,
+    so the meta tag alone does nothing on an iPhone."""
+    client, _, _ = _client(tmp_path)
+    js = client.get("/static/mobile.js").text
+    guard = js.split("function initNoZoom", 1)[1].split("\n  function ", 1)[0]
+    assert "gesturestart" in guard
+    assert "gesturechange" in guard
+    assert "gestureend" in guard
+    assert "passive: false" in guard
+    # Phone-scoped: desktop and browser/OS zoom stay untouched.
+    assert "isPhone()" in guard
+
+
+def test_form_controls_clear_the_ios_focus_zoom_threshold(tmp_path: Path):
+    """Under 16px, iOS zooms the page in on focus and leaves it scaled."""
+    client, _, _ = _client(tmp_path)
+    css = client.get("/static/mobile.css").text
+    assert "font-size: max(16px, 1em)" in css
+    assert "touch-action: manipulation" in css

@@ -700,6 +700,77 @@
     });
   }
 
+  // iOS Safari does NOT shrink the layout viewport when the keyboard opens —
+  // only the visual viewport shrinks. So `position: fixed; bottom: 0` pins the
+  // action bar to the bottom of the full-height page, which is now behind the
+  // keyboard: in Type mode "Check my attempt" simply vanished while typing.
+  //
+  // visualViewport gives the real visible box. The obscured strip is the gap
+  // between the bottom of the visual viewport and the bottom of the layout
+  // viewport; lifting the bar by exactly that much puts it on the keyboard.
+  function initKeyboardInset() {
+    var learn = document.querySelector(".learn[data-mobile-view]");
+    var nav = learn && learn.querySelector("[data-mode-nav]");
+    var vv = window.visualViewport;
+    if (!nav || !vv) return;
+
+    function sync() {
+      if (!isPhone() || learn.getAttribute("data-mobile-view") !== "mode") {
+        nav.style.transform = "";
+        document.body.classList.remove("is-keyboard-open");
+        return;
+      }
+      // offsetTop matters because iOS scrolls the visual viewport within the
+      // layout viewport once the keyboard is up.
+      var covered = window.innerHeight - (vv.height + vv.offsetTop);
+      // Sub-pixel noise and the URL bar collapsing both produce small values
+      // that are not a keyboard; a real keyboard is far taller.
+      if (covered < 80) {
+        nav.style.transform = "";
+        document.body.classList.remove("is-keyboard-open");
+        return;
+      }
+      nav.style.transform = "translateY(" + -Math.round(covered) + "px)";
+      // The home indicator is behind the keyboard now, so its safe-area
+      // padding is dead space between the bar and the keys.
+      document.body.classList.add("is-keyboard-open");
+    }
+
+    vv.addEventListener("resize", sync);
+    vv.addEventListener("scroll", sync);
+    // Mode switches and deck round-trips change whether the bar is shown.
+    if (window.MutationObserver) {
+      new MutationObserver(sync).observe(learn, {
+        attributes: true,
+        attributeFilter: ["data-mobile-view", "data-mode"],
+      });
+    }
+    sync();
+  }
+
+  // Zoom, on phones only.
+  //
+  // The viewport meta covers Android and older iOS, but Safari has ignored
+  // `user-scalable=no` and `maximum-scale` for pinch since iOS 10 — Apple
+  // treats page zoom as an accessibility guarantee. The only lever left on
+  // iPhone is WebKit's non-standard gesture events, so pinch is cancelled
+  // here and double-tap is handled in CSS with touch-action: manipulation.
+  //
+  // Deliberately phone-scoped: desktop browsers ignore the viewport meta
+  // entirely, and browser/OS zoom (ctrl+scroll, Display Zoom, Reader) is
+  // untouched on every platform, so text can still be enlarged.
+  function initNoZoom() {
+    ["gesturestart", "gesturechange", "gestureend"].forEach(function (name) {
+      document.addEventListener(
+        name,
+        function (event) {
+          if (isPhone()) event.preventDefault();
+        },
+        { passive: false }
+      );
+    });
+  }
+
   function boot() {
     initSheets();
     initMarkFilter();
@@ -711,6 +782,10 @@
     initLearnDeck();
     initArticleCta();
     initCalendarDays();
+    // After initLearnDeck: the bar only exists in its final form once the
+    // deck has moved the active mode's controls into it.
+    initKeyboardInset();
+    initNoZoom();
   }
 
   if (document.readyState === "loading") {

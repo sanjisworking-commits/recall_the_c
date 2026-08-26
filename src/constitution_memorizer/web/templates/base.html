@@ -2,7 +2,7 @@
 <html lang="en" data-theme-preference="{{ theme_preference|default('auto') }}">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta name="color-scheme" content="light dark">
   <title>{% block title %}{{ app_name|default('Recall the C') }}{% endblock %}</title>
   <meta name="description" content="{% block meta_description %}Recall the C is a study aid for memorising the Constitution of India.{% endblock %}">
@@ -38,9 +38,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/styles.css?v=main37">
+  <link rel="stylesheet" href="/static/styles.css?v=main38">
   <link rel="stylesheet" href="/static/visual-explainer.css?v=ve1">
-  <link rel="stylesheet" href="/static/mobile.css?v=mob34">
+  <link rel="stylesheet" href="/static/mobile.css?v=mob35">
   {% if onboarding_status|default('') == 'active' %}
   <link rel="stylesheet" href="/static/onboarding.css?v=ob5">
   {% endif %}

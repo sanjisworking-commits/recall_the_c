@@ -48,7 +48,7 @@ def test_recite_panel_has_voice_and_map_markup(client: TestClient):
 
 
 def test_recite_css_map_and_listening_styles(client: TestClient):
-    css = client.get("/static/styles.css?v=main37")
+    css = client.get("/static/styles.css?v=main38")
     assert css.status_code == 200
     text = css.text
     assert ".learn-recite-map-word.is-hit" in text

@@ -1969,6 +1969,24 @@
     letter-spacing: 0.22em;
   }
 
+  /* iOS zooms the page in whenever a focused control has a computed
+     font-size under 16px — a zoom nobody asked for that then leaves the
+     layout scaled. Setting the floor on the phone layer is the only reliable
+     cure; it does not change desktop, where these controls stay compact. */
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  textarea,
+  select {
+    font-size: max(16px, 1em);
+  }
+
+  /* Double-tap-to-zoom, killed at the source. `manipulation` keeps scrolling
+     and pinch handling but drops the ~300ms double-tap wait, which is what
+     triggers the zoom. Phone layer only — desktop zoom is untouched. */
+  html,
+  body {
+    touch-action: manipulation;
+  }
+
   /* The mode action bar. `Next` is the black CTA and carries the deck
      forward; the mode's own controls sit beside it as secondaries — moved in
      by mobile.js, so each keeps the handler app.js bound to it. */
@@ -1984,6 +2002,23 @@
     padding: 12px 16px calc(20px + env(safe-area-inset-bottom, 0));
     background: var(--paper);
     border-top: 1px solid var(--hairline);
+    /* mobile.js lifts this above the on-screen keyboard by writing a
+       translateY; iOS does not shrink the layout viewport, so bottom:0 alone
+       puts the bar behind the keys. Transition so the lift is not a jump. */
+    transition: transform 0.18s ease-out;
+    will-change: transform;
+  }
+
+  /* Keyboard up: the home indicator is behind the keys, so its safe-area
+     padding is dead space between the bar and the keyboard. */
+  body.is-keyboard-open .learn[data-mobile-view="mode"] .learn-mode-nav {
+    padding-bottom: 12px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .learn[data-mobile-view="mode"] .learn-mode-nav {
+      transition: none;
+    }
   }
 
   .learn[data-mobile-view="deck"] .learn-mode-nav {
