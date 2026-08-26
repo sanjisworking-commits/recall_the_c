@@ -516,8 +516,8 @@
       "parent_id": "part-xxi",
       "article_number": null,
       "display_title": "Part XXI overview",
-      "title": "1 [TEMPORARY, TRANSITIONAL AND",
-      "text": "1 [TEMPORARY, TRANSITIONAL AND",
+      "title": "TEMPORARY, TRANSITIONAL AND SPECIAL PROVISIONS",
+      "text": "TEMPORARY, TRANSITIONAL AND SPECIAL PROVISIONS",
       "difficulty": 2,
       "estimated_learning_time": 30,
       "revision_order": 23,
@@ -525,7 +525,7 @@
       "previous_unit": "part-xx-overview",
       "tags": [
         "Part XXI",
-        "1 [TEMPORARY, TRANSITIONAL AND"
+        "TEMPORARY, TRANSITIONAL AND SPECIAL PROVISIONS"
       ],
       "allows_letter_split": false,
       "child_unit_ids": [],
@@ -539,8 +539,8 @@
       "parent_id": "part-xxii",
       "article_number": null,
       "display_title": "Part XXII overview",
-      "title": "SHORT TITLE, COMMENCEMENT, 1 [AUTHORITATIVE TEXT IN HINDI] AND REPEALS",
-      "text": "SHORT TITLE, COMMENCEMENT, 1 [AUTHORITATIVE TEXT IN HINDI] AND REPEALS",
+      "title": "SHORT TITLE, COMMENCEMENT, AUTHORITATIVE TEXT IN HINDI AND REPEALS",
+      "text": "SHORT TITLE, COMMENCEMENT, AUTHORITATIVE TEXT IN HINDI AND REPEALS",
       "difficulty": 2,
       "estimated_learning_time": 30,
       "revision_order": 24,
@@ -548,7 +548,7 @@
       "previous_unit": "part-xxi-overview",
       "tags": [
         "Part XXII",
-        "SHORT TITLE, COMMENCEMENT, 1 [AUTHORITATIVE TEXT IN HINDI] AND REPEALS"
+        "SHORT TITLE, COMMENCEMENT, AUTHORITATIVE TEXT IN HINDI AND REPEALS"
       ],
       "allows_letter_split": false,
       "child_unit_ids": [],
