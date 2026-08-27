@@ -991,3 +991,20 @@ def test_status_lines_are_not_treated_as_hints(tmp_path: Path):
     assert "[data-recite-status]" in lines
     assert ".learn-letters-hint" not in lines
     assert ".learn-recite-hint" not in lines
+
+
+# ── Auto Plan on the phone (designs 4c, 4f) ──────────────────────────────────
+
+
+def test_planned_new_rows_carry_their_own_state_and_pace(tmp_path: Path):
+    """Design 4f: a planned NEW row is not a Scheduled row wearing its colours."""
+    client, _, _ = _client(tmp_path)
+    eng = client.app.state.engine
+    today = date.today()
+    eng.upsert_learning_plan(mode="auto", daily_target=3, as_of=today)
+
+    html = client.get("/calendar").text
+    assert "revisions-row is-new" in html
+    assert "New · Steady plan" in html
+    # …and the day mark keeps its own class, which mobile.css now draws open.
+    assert "cal-m-mark is-new" in html

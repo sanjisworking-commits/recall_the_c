@@ -110,6 +110,7 @@ from constitution_memorizer.web.browse import (
 )
 from constitution_memorizer.web.explainers import explainer_asset_path, visual_explainer
 from constitution_memorizer.planner.eligibility import is_unlearned
+from constitution_memorizer.planner.models import pace_label as plan_pace_label
 from constitution_memorizer.progress.repository import LEARN_MODES
 from constitution_memorizer.web.progress_stats import (
     _is_completed,
@@ -2376,10 +2377,21 @@ def create_app(
             if (y, m) == (today.year, today.month)
             else None
         )
+        # Design 4f names the pace on planned rows ("New · Steady plan"). Only an
+        # auto plan has one — Plan my day never sets a pace, so those days read
+        # plain "New".
+        pace = None
+        if not is_guest:
+            try:
+                plan = eng.get_learning_plan()
+                if plan is not None and plan.is_auto:
+                    pace = plan_pace_label(plan.daily_target)
+            except Exception:  # noqa: BLE001 — the calendar must still render
+                logger.exception("learning plan pace lookup failed")
         return templates.TemplateResponse(
             request,
             "calendar.html",
-            {"calendar": view, "revisions": revisions},
+            {"calendar": view, "revisions": revisions, "pace_label": pace},
         )
 
     @app.get("/progress", response_class=HTMLResponse)

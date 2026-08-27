@@ -546,3 +546,37 @@ def test_admin_auto_start_spans_beyond_free_article_cap(tmp_path: Path):
     ).fetchall()
     assert list(orders) == []
     assert list(grants) == []
+
+
+def test_plan_prompt_dashboard_carries_the_phone_sheet(tmp_path: Path):
+    """Design 4c: the phone opens Plan my day over Today; the page stays the
+    desktop and no-JS route."""
+    units_path = _articles_catalog(tmp_path)
+    client, _, _ = _entitled_client(tmp_path, units_path)
+    html = client.get("/dashboard").text
+
+    assert 'data-sheet-open="plan-day-sheet"' in html
+    assert 'id="plan-day-sheet"' in html
+    # The anchor keeps its href — desktop and no-JS phones still navigate.
+    assert 'href="/learning/plan-my-day"' in html
+    # The sheet posts the same four actions as plan_my_day.html.
+    assert html.count('action="/learning/plan-my-day"') == 3
+    assert 'action="/learning/plan-my-day/dismiss"' in html
+    for label in ("Steady · 3", "Balanced · 5", "Intensive · 7", "Not today"):
+        assert label in html, label
+
+
+def test_dashboard_sheet_is_absent_outside_the_plan_prompt(tmp_path: Path):
+    client = _client(tmp_path, multiuser=True)
+    _sign_in(client)
+    eng = _engine(client)
+    today = date.today()
+    eng.upsert_learning_plan(mode="auto", daily_target=3)
+    eng.create_study_session(
+        session_id="auto-open",
+        kind="auto_learning",
+        plan_date=today,
+        unit_ids=["clause-1"],
+    )
+    html = client.get("/dashboard").text
+    assert 'id="plan-day-sheet"' not in html

@@ -27,7 +27,10 @@
     lastSheetOpener = opener || null;
     sheet.hidden = false;
     document.body.classList.add("mobile-sheet-open");
-    var focusable = sheet.querySelector("button, a[href]");
+    // A sheet whose rows are choices (design 4c) marks its panel instead: a
+    // focus ring on the first button there reads as "already selected".
+    var focusable =
+      sheet.querySelector("[data-sheet-focus]") || sheet.querySelector("button, a[href]");
     if (focusable) focusable.focus();
   }
 
@@ -45,6 +48,10 @@
     document.addEventListener("click", function (event) {
       var opener = event.target.closest("[data-sheet-open]");
       if (opener) {
+        // Sheets only exist below 560px. An opener that is also a link (design
+        // 4c's "Plan my day →") keeps its href as the desktop and no-JS route —
+        // swallowing the click there would navigate nowhere and open nothing.
+        if (opener.getAttribute("href") && !isPhone()) return;
         event.preventDefault();
         openSheet(document.getElementById(opener.getAttribute("data-sheet-open")), opener);
         return;
