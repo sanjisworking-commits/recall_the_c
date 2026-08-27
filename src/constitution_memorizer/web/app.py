@@ -1537,14 +1537,36 @@ def create_app(
         return "/dashboard" if app.state.multiuser_enabled else "/"
 
     def _learning_entitlement_args(request: Request, eng: ReminderEngine) -> dict:
-        entitled = entitlements_active(request)
-        claimed = eng.claimed_articles() if entitled else set()
-        remaining = max(0, FREE_ARTICLE_LIMIT - len(claimed)) if entitled else None
+        # Full-access users (paid / admin / grant) skip Free-Article caps
+        # during mix generation. Preview is not consulted.
+        if not entitlements_active(request) or can_use_auto_plan(request):
+            return {
+                "claimed": set(),
+                "remaining_slots": None,
+                "entitlements_on": False,
+            }
+        claimed = eng.claimed_articles()
+        remaining = max(0, FREE_ARTICLE_LIMIT - len(claimed))
         return {
             "claimed": claimed,
             "remaining_slots": remaining,
-            "entitlements_on": entitled,
+            "entitlements_on": True,
         }
+
+    def _revision_blocks_new_learning(eng: ReminderEngine, today: date) -> bool:
+        if due_checklist(eng, as_of=today):
+            return True
+        revision = active_revision_session(eng, as_of=today)
+        return bool(revision is not None and revision.remaining > 0)
+
+    def _plan_my_day_allowed(eng: ReminderEngine, today: date) -> bool:
+        if _revision_blocks_new_learning(eng, today):
+            return False
+        if eng.get_learning_plan().mode != "self_paced":
+            return False
+        if eng.study_session_for_day(kind="auto_learning", plan_date=today) is not None:
+            return False
+        return True
 
     def _guest_login(next_url: str) -> RedirectResponse:
         return RedirectResponse(url=f"/login?next={next_url}", status_code=303)
@@ -1602,7 +1624,7 @@ def create_app(
         if is_guest:
             return _guest_login("/dashboard")
         today = user_today(eng)
-        if due_checklist(eng, as_of=today):
+        if _revision_blocks_new_learning(eng, today):
             return RedirectResponse(url=_home_url(), status_code=303)
         for kind in ("auto_learning", "day_plan"):
             existing = eng.active_study_session(kind=kind, plan_date=today)
@@ -1654,7 +1676,7 @@ def create_app(
         if is_guest:
             return _guest_login("/learning/plan-my-day")
         today = user_today(eng)
-        if due_checklist(eng, as_of=today):
+        if not _plan_my_day_allowed(eng, today):
             return RedirectResponse(url=_home_url(), status_code=303)
         return templates.TemplateResponse(request, "plan_my_day.html", {})
 
@@ -1673,7 +1695,7 @@ def create_app(
         if target not in (3, 5, 7):
             raise HTTPException(status_code=400, detail="Invalid learning target")
         today = user_today(eng)
-        if due_checklist(eng, as_of=today):
+        if not _plan_my_day_allowed(eng, today):
             return RedirectResponse(url=_home_url(), status_code=303)
         args = _learning_entitlement_args(request, eng)
         unit_ids = select_today_mix(eng, target=target, as_of=today, **args)
@@ -1849,11 +1871,27 @@ def create_app(
         chosen: SplitMode = mode  # type: ignore[assignment]
         eng.set_split_preference(clause_id, chosen)
         _schedule_calendar_sync(request, eng)
+        session_id = (request.query_params.get("session") or "").strip()
+        session = eng.get_study_session(session_id) if session_id else None
+        if (
+            chosen == "letters"
+            and session is not None
+            and session.status == "active"
+            and session.plan_date == user_today(eng)
+            and session.contains(clause_id)
+        ):
+            children = [child for child in unit.child_unit_ids if child]
+            if children:
+                eng.replace_study_session_unit(
+                    session_id=session.id,
+                    old_unit_id=clause_id,
+                    new_unit_ids=children,
+                )
         target = eng.next_to_learn_from_clause(clause_id, mode=chosen) or clause_id
         return RedirectResponse(
             url=with_params(
                 f"/learn/{target}",
-                {"session": request.query_params.get("session") or ""},
+                {"session": session_id},
             ),
             status_code=303,
         )

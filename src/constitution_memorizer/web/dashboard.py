@@ -366,14 +366,12 @@ def build_dashboard_context(
     if today_mode == "learning":
         if learning_remaining:
             learning_cta = "continue_session"
-        elif auto_selected and unseen > 0:
-            learning_cta = "start_auto"
-        elif (
-            learning_today is not None
-            and learning_today.remaining == 0
-            and learning_today.completed_count > 0
+        elif learning_today is not None and (
+            learning_today.status == "complete" or learning_today.remaining == 0
         ):
             learning_cta = "learning_complete"
+        elif auto_selected and unseen > 0:
+            learning_cta = "start_auto"
         elif (
             learning_today is None
             and (plan is None or plan.prompt_dismissed_on != today)

@@ -459,6 +459,20 @@ class ReminderEngine:
             self.user_id, session_id=session_id, unit_id=unit_id, status=status
         )
 
+    def replace_study_session_unit(
+        self,
+        *,
+        session_id: str,
+        old_unit_id: str,
+        new_unit_ids: list[str],
+    ) -> StudySession | None:
+        return self.repo.replace_study_session_unit(
+            self.user_id,
+            session_id=session_id,
+            old_unit_id=old_unit_id,
+            new_unit_ids=new_unit_ids,
+        )
+
     def complete_study_session(self, session_id: str) -> None:
         self.repo.complete_study_session(self.user_id, session_id)
 

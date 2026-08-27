@@ -33,6 +33,21 @@ def _reviews_from_learn_date(learn_date: date, count: int) -> dict[date, int]:
     return occupancy
 
 
+def _learning_session_on(engine: ReminderEngine, day: date) -> bool:
+    """True when today's Auto or Plan-my-day session already exists (any status)."""
+    from constitution_memorizer.web.service import _is_missing_study_session_table
+
+    for kind in ("auto_learning", "day_plan"):
+        try:
+            if engine.study_session_for_day(kind=kind, plan_date=day) is not None:
+                return True
+        except Exception as error:  # noqa: BLE001
+            if _is_missing_study_session_table(error):
+                return False
+            raise
+    return False
+
+
 def _actual_review_occupancy(engine: ReminderEngine, *, as_of: date) -> dict[date, int]:
     occupied: dict[date, int] = defaultdict(int)
     due_today = 0
@@ -64,6 +79,7 @@ class LearningPlanner:
         remaining = max(0, remaining_unseen)
         can_plan = auto_entitled and auto_is_projectable(plan)
         target = plan.daily_target if can_plan else None
+        today_session_used = _learning_session_on(engine, as_of)
         sim_end = until + timedelta(days=_TAIL_DAYS)
         cursor = as_of
         days: list[PlannedDay] = []
@@ -72,6 +88,9 @@ class LearningPlanner:
             new_capacity = 0
             if reviews > 0:
                 kind: str = "review"
+            elif cursor == as_of and today_session_used:
+                # Today's Auto / Plan-my-day session already consumed the slot.
+                kind = "empty"
             elif can_plan and target and remaining > 0:
                 kind = "new"
                 new_capacity = min(int(target), remaining)

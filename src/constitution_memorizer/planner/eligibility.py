@@ -27,6 +27,15 @@ def _unit_visible_for_preference(engine: ReminderEngine, unit: LearningUnit) -> 
             return False
     return True
 
+
+def _unit_eligible_for_mix(engine: ReminderEngine, unit: LearningUnit) -> bool:
+    """Mixes wait for a whole/letters choice before queuing a split-capable unit."""
+    if not _unit_visible_for_preference(engine, unit):
+        return False
+    if unit.allows_letter_split and engine.get_split_preference(unit.id) is None:
+        return False
+    return True
+
 AllowFn = Callable[[MixCandidate, Sequence[MixCandidate]], bool]
 
 
@@ -110,7 +119,7 @@ def eligible_units(
             continue
         if not is_unlearned(engine, unit.id):
             continue
-        if not _unit_visible_for_preference(engine, unit):
+        if not _unit_eligible_for_mix(engine, unit):
             continue
         if entitlements_on:
             article = unit.article_number
