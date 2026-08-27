@@ -5,6 +5,7 @@ from __future__ import annotations
 import sqlite3
 from dataclasses import dataclass
 from datetime import date, datetime, timezone
+from collections.abc import Callable, Sequence
 from typing import Literal
 from uuid import UUID
 
@@ -204,6 +205,7 @@ class UserLearningPlan:
     activated_at: date | None = None
     prompt_dismissed_on: date | None = None
     last_anchor_theme: str | None = None
+    target_effective_on: date | None = None
     updated_at: str | None = None
 
     @property
@@ -213,6 +215,39 @@ class UserLearningPlan:
     @property
     def is_active_auto(self) -> bool:
         return self.is_auto and self.activated_at is not None
+
+
+@dataclass(frozen=True)
+class AutoPlanItem:
+    """One assigned NEW unit on an Auto roadmap date."""
+
+    plan_date: date
+    learning_unit_id: str
+    position: int
+
+
+@dataclass(frozen=True)
+class AutoPlanDay:
+    """One calendar date in the persisted Auto roadmap."""
+
+    plan_date: date
+    daily_target: int
+    items: tuple[AutoPlanItem, ...] = ()
+    created_at: str | None = None
+    updated_at: str | None = None
+
+
+@dataclass(frozen=True)
+class AutoPlanSnapshot:
+    """Locked read of everything the Auto reconciler needs."""
+
+    user_id: str
+    plan: UserLearningPlan
+    progress: tuple[ProgressRecord, ...]
+    split_preferences: dict[str, SplitMode]
+    sessions: tuple[StudySession, ...]
+    days: tuple[AutoPlanDay, ...]
+    claimed_articles: frozenset[str]
 
 
 @dataclass(frozen=True)
@@ -363,14 +398,88 @@ def _row_to_learning_plan(row: object | None) -> UserLearningPlan:
         return UserLearningPlan()
     mapping = row
     target = mapping["daily_target"]  # type: ignore[index]
+    try:
+        target_effective = mapping["target_effective_on"]  # type: ignore[index]
+    except (KeyError, IndexError):
+        target_effective = None
     return UserLearningPlan(
         mode=mapping["mode"] or DEFAULT_LEARNING_PLAN_MODE,  # type: ignore[index]
         daily_target=int(target) if target is not None else None,
         activated_at=_parse_date(mapping["activated_at"]),  # type: ignore[index]
         prompt_dismissed_on=_parse_date(mapping["prompt_dismissed_on"]),  # type: ignore[index]
         last_anchor_theme=mapping["last_anchor_theme"],  # type: ignore[index]
+        target_effective_on=_parse_date(target_effective),
         updated_at=_as_text(mapping["updated_at"]),  # type: ignore[index]
     )
+
+
+def _effective_on_for_upsert(
+    current: UserLearningPlan,
+    *,
+    mode: LearningPlanMode,
+    daily_target: int | None,
+    as_of: date | None,
+) -> date | None:
+    if mode != "auto":
+        return None
+    target_changed = current.mode != "auto" or current.daily_target != daily_target
+    if target_changed:
+        return as_of or date.today()
+    return current.target_effective_on
+
+
+def _auto_plan_days_from_rows(
+    day_rows: list,
+    item_rows: list,
+) -> list[AutoPlanDay]:
+    items_by_date: dict[date, list[AutoPlanItem]] = {}
+    for row in item_rows:
+        plan_date = _parse_date(row["plan_date"])  # type: ignore[index]
+        if plan_date is None:
+            continue
+        items_by_date.setdefault(plan_date, []).append(
+            AutoPlanItem(
+                plan_date=plan_date,
+                learning_unit_id=str(row["learning_unit_id"]),  # type: ignore[index]
+                position=int(row["position"]),  # type: ignore[index]
+            )
+        )
+    days: list[AutoPlanDay] = []
+    for row in day_rows:
+        plan_date = _parse_date(row["plan_date"])  # type: ignore[index]
+        if plan_date is None:
+            continue
+        items = tuple(
+            sorted(items_by_date.get(plan_date, ()), key=lambda item: item.position)
+        )
+        days.append(
+            AutoPlanDay(
+                plan_date=plan_date,
+                daily_target=int(row["daily_target"]),  # type: ignore[index]
+                items=items,
+                created_at=_as_text(row["created_at"]),  # type: ignore[index]
+                updated_at=_as_text(row["updated_at"]),  # type: ignore[index]
+            )
+        )
+    days.sort(key=lambda day: day.plan_date)
+    return days
+
+
+def _sessions_from_joined_rows(rows: list) -> list[StudySession]:
+    grouped: dict[str, list] = {}
+    order: list[str] = []
+    for row in rows:
+        session_id = str(row["session_id"])  # type: ignore[index]
+        if session_id not in grouped:
+            grouped[session_id] = []
+            order.append(session_id)
+        grouped[session_id].append(row)
+    sessions: list[StudySession] = []
+    for session_id in order:
+        session = _study_session_from_rows(grouped[session_id])
+        if session is not None:
+            sessions.append(session)
+    return sessions
 
 
 class ProgressRepository:
@@ -814,6 +923,76 @@ class ProgressRepository:
         )
         self._conn.commit()
 
+    def replace_study_session_unit(
+        self,
+        user_id: UUID | str,
+        *,
+        session_id: str,
+        old_unit_id: str,
+        new_unit_ids: list[str],
+    ) -> StudySession | None:
+        """Swap one pending queue item for one or more units, keeping order.
+
+        Used when a split-capable parent in a session is resolved to Letters:
+        the parent row is replaced by its letter children at the same position.
+        """
+        session = self.get_study_session(user_id, session_id)
+        if session is None:
+            return None
+        current = session.item_for(old_unit_id)
+        if current is None or current.status != "pending":
+            return session
+        existing = {item.learning_unit_id for item in session.items}
+        ordered: list[str] = []
+        for unit_id in new_unit_ids:
+            if not unit_id or unit_id == old_unit_id:
+                continue
+            if unit_id in existing and unit_id != old_unit_id:
+                continue
+            if unit_id not in ordered:
+                ordered.append(unit_id)
+        if not ordered:
+            return session
+        shift = len(ordered) - 1
+        uid = as_user_id(user_id)
+        try:
+            if shift > 0:
+                self._conn.execute(
+                    """
+                    UPDATE study_session_item
+                    SET position = position + ?
+                    WHERE session_id = ?
+                      AND position > ?
+                      AND session_id IN (SELECT id FROM study_session WHERE user_id = ?)
+                    """,
+                    (shift, session_id, current.position, uid),
+                )
+            self._conn.execute(
+                """
+                DELETE FROM
+                    study_session_item
+                WHERE session_id = ? AND learning_unit_id = ?
+                  AND session_id IN (SELECT id FROM study_session WHERE user_id = ?)
+                """,
+                (session_id, old_unit_id, uid),
+            )
+            self._conn.executemany(
+                """
+                INSERT INTO study_session_item (
+                    session_id, learning_unit_id, position, status, completed_at
+                ) VALUES (?, ?, ?, 'pending', NULL)
+                """,
+                [
+                    (session_id, unit_id, current.position + index)
+                    for index, unit_id in enumerate(ordered)
+                ],
+            )
+            self._conn.commit()
+        except Exception:
+            self._conn.rollback()
+            raise
+        return self.get_study_session(user_id, session_id)
+
     def complete_study_session(self, user_id: UUID | str, session_id: str) -> None:
         self._conn.execute(
             """
@@ -832,7 +1011,7 @@ class ProgressRepository:
         row = self._conn.execute(
             """
             SELECT mode, daily_target, activated_at, prompt_dismissed_on,
-                   last_anchor_theme, updated_at
+                   last_anchor_theme, target_effective_on, updated_at
             FROM user_learning_plan
             WHERE user_id = ?
             """,
@@ -848,6 +1027,7 @@ class ProgressRepository:
         daily_target: int | None,
         prompt_dismissed_on: date | None = None,
         last_anchor_theme: str | None = None,
+        as_of: date | None = None,
     ) -> UserLearningPlan:
         if mode == "auto":
             if daily_target not in VALID_DAILY_TARGETS:
@@ -867,17 +1047,22 @@ class ProgressRepository:
             if last_anchor_theme is not None
             else current.last_anchor_theme
         )
+        effective_on = _effective_on_for_upsert(
+            current, mode=mode, daily_target=daily_target, as_of=as_of
+        )
         self._conn.execute(
             """
             INSERT INTO user_learning_plan (
                 user_id, mode, daily_target, activated_at,
-                prompt_dismissed_on, last_anchor_theme, updated_at
-            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+                prompt_dismissed_on, last_anchor_theme, target_effective_on,
+                updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             ON CONFLICT(user_id) DO UPDATE SET
                 mode = excluded.mode,
                 daily_target = excluded.daily_target,
                 prompt_dismissed_on = excluded.prompt_dismissed_on,
                 last_anchor_theme = excluded.last_anchor_theme,
+                target_effective_on = excluded.target_effective_on,
                 updated_at = excluded.updated_at
             """,
             (
@@ -887,6 +1072,7 @@ class ProgressRepository:
                 _date_iso(current.activated_at),
                 _date_iso(dismissed),
                 theme,
+                _date_iso(effective_on),
                 now,
             ),
         )
@@ -968,6 +1154,269 @@ class ProgressRepository:
             ),
         )
         self._conn.commit()
+
+    # ------------------------------------------------------------------ #
+    # Auto roadmap (15-day rolling NEW assignments)                       #
+    # ------------------------------------------------------------------ #
+    def list_auto_plan_window(
+        self, user_id: UUID | str, start: date, until: date
+    ) -> list[AutoPlanDay]:
+        uid = as_user_id(user_id)
+        day_rows = self._conn.execute(
+            """
+            SELECT user_id, plan_date, daily_target, created_at, updated_at
+            FROM auto_plan_day
+            WHERE user_id = ? AND plan_date >= ? AND plan_date <= ?
+            ORDER BY plan_date
+            """,
+            (uid, _date_iso(start), _date_iso(until)),
+        ).fetchall()
+        item_rows = self._conn.execute(
+            """
+            SELECT user_id, plan_date, learning_unit_id, position, created_at
+            FROM auto_plan_item
+            WHERE user_id = ? AND plan_date >= ? AND plan_date <= ?
+            ORDER BY plan_date, position
+            """,
+            (uid, _date_iso(start), _date_iso(until)),
+        ).fetchall()
+        return _auto_plan_days_from_rows(day_rows, item_rows)
+
+    def list_auto_plan_day(
+        self, user_id: UUID | str, plan_date: date
+    ) -> AutoPlanDay | None:
+        days = self.list_auto_plan_window(user_id, plan_date, plan_date)
+        return days[0] if days else None
+
+    def replace_auto_plan_day(
+        self,
+        user_id: UUID | str,
+        plan_date: date,
+        daily_target: int,
+        unit_ids: Sequence[str],
+    ) -> AutoPlanDay:
+        uid = as_user_id(user_id)
+        now = _utc_now_iso()
+        day = AutoPlanDay(
+            plan_date=plan_date,
+            daily_target=int(daily_target),
+            items=tuple(
+                AutoPlanItem(
+                    plan_date=plan_date,
+                    learning_unit_id=unit_id,
+                    position=index,
+                )
+                for index, unit_id in enumerate(unit_ids)
+            ),
+        )
+        self._write_auto_plan_days(uid, [day], now=now)
+        self._conn.commit()
+        stored = self.list_auto_plan_day(user_id, plan_date)
+        assert stored is not None
+        return stored
+
+    def clear_future_auto_plan(self, user_id: UUID | str, as_of: date) -> None:
+        uid = as_user_id(user_id)
+        self._clear_auto_plan_from(uid, as_of)
+        self._conn.commit()
+
+    def delete_auto_plan_after(self, user_id: UUID | str, horizon: date) -> None:
+        uid = as_user_id(user_id)
+        self._delete_auto_plan_after(uid, horizon)
+        self._conn.commit()
+
+    def replace_auto_plan_window_atomic(
+        self,
+        user_id: UUID | str,
+        as_of: date,
+        horizon: date,
+        days: Sequence[AutoPlanDay],
+    ) -> None:
+        uid = as_user_id(user_id)
+        self._conn.commit()
+        self._conn.execute("BEGIN IMMEDIATE")
+        try:
+            self._conn.execute(
+                "SELECT user_id FROM user_learning_plan WHERE user_id = ?",
+                (uid,),
+            ).fetchone()
+            self._replace_auto_plan_window(uid, as_of, horizon, days)
+            self._conn.commit()
+        except Exception:
+            self._conn.rollback()
+            raise
+
+    def apply_auto_plan_reconcile(
+        self,
+        user_id: UUID | str,
+        as_of: date,
+        horizon: date,
+        builder: Callable[[AutoPlanSnapshot], Sequence[AutoPlanDay] | None],
+    ) -> None:
+        uid = as_user_id(user_id)
+        self._conn.execute("PRAGMA busy_timeout = 30000")
+        self._conn.commit()
+        self._conn.execute("BEGIN IMMEDIATE")
+        try:
+            snapshot = self._load_auto_plan_snapshot(uid)
+            days = builder(snapshot)
+            if days is None:
+                self._clear_auto_plan_from(uid, as_of)
+            else:
+                self._replace_auto_plan_window(uid, as_of, horizon, days)
+            self._conn.commit()
+        except Exception:
+            self._conn.rollback()
+            raise
+
+    def _load_auto_plan_snapshot(self, uid: str) -> AutoPlanSnapshot:
+        plan_row = self._conn.execute(
+            """
+            SELECT mode, daily_target, activated_at, prompt_dismissed_on,
+                   last_anchor_theme, target_effective_on, updated_at
+            FROM user_learning_plan
+            WHERE user_id = ?
+            """,
+            (uid,),
+        ).fetchone()
+        progress_rows = self._conn.execute(
+            "SELECT * FROM learning_unit_progress WHERE user_id = ?",
+            (uid,),
+        ).fetchall()
+        split_rows = self._conn.execute(
+            "SELECT parent_clause_id, mode FROM split_preference WHERE user_id = ?",
+            (uid,),
+        ).fetchall()
+        session_rows = self._conn.execute(
+            f"""
+            SELECT {_STUDY_SESSION_COLUMNS}
+            FROM study_session s
+            LEFT JOIN study_session_item i ON i.session_id = s.id
+            WHERE s.user_id = ?
+            ORDER BY s.plan_date ASC, s.kind ASC, s.created_at ASC, i.position ASC
+            """,
+            (uid,),
+        ).fetchall()
+        day_rows = self._conn.execute(
+            """
+            SELECT user_id, plan_date, daily_target, created_at, updated_at
+            FROM auto_plan_day
+            WHERE user_id = ?
+            ORDER BY plan_date
+            """,
+            (uid,),
+        ).fetchall()
+        item_rows = self._conn.execute(
+            """
+            SELECT user_id, plan_date, learning_unit_id, position, created_at
+            FROM auto_plan_item
+            WHERE user_id = ?
+            ORDER BY plan_date, position
+            """,
+            (uid,),
+        ).fetchall()
+        claimed_rows = self._conn.execute(
+            "SELECT article_number FROM user_free_articles WHERE user_id = ?",
+            (uid,),
+        ).fetchall()
+        return AutoPlanSnapshot(
+            user_id=uid,
+            plan=_row_to_learning_plan(plan_row),
+            progress=tuple(_row_to_progress(row) for row in progress_rows),
+            split_preferences={
+                str(row["parent_clause_id"]): row["mode"] for row in split_rows
+            },
+            sessions=tuple(_sessions_from_joined_rows(session_rows)),
+            days=tuple(_auto_plan_days_from_rows(day_rows, item_rows)),
+            claimed_articles=frozenset(
+                str(row["article_number"]) for row in claimed_rows
+            ),
+        )
+
+    def _replace_auto_plan_window(
+        self,
+        uid: str,
+        as_of: date,
+        horizon: date,
+        days: Sequence[AutoPlanDay],
+    ) -> None:
+        for day in days:
+            if day.plan_date < as_of:
+                raise ValueError("cannot write auto_plan_date before as_of")
+        self._conn.execute(
+            """
+            DELETE FROM auto_plan_item
+            WHERE user_id = ? AND plan_date >= ? AND plan_date <= ?
+            """,
+            (uid, _date_iso(as_of), _date_iso(horizon)),
+        )
+        self._conn.execute(
+            """
+            DELETE FROM auto_plan_day
+            WHERE user_id = ? AND plan_date >= ? AND plan_date <= ?
+            """,
+            (uid, _date_iso(as_of), _date_iso(horizon)),
+        )
+        self._delete_auto_plan_after(uid, horizon)
+        self._write_auto_plan_days(uid, days, now=_utc_now_iso())
+
+    def _clear_auto_plan_from(self, uid: str, as_of: date) -> None:
+        self._conn.execute(
+            "DELETE FROM auto_plan_item WHERE user_id = ? AND plan_date >= ?",
+            (uid, _date_iso(as_of)),
+        )
+        self._conn.execute(
+            "DELETE FROM auto_plan_day WHERE user_id = ? AND plan_date >= ?",
+            (uid, _date_iso(as_of)),
+        )
+
+    def _delete_auto_plan_after(self, uid: str, horizon: date) -> None:
+        self._conn.execute(
+            "DELETE FROM auto_plan_item WHERE user_id = ? AND plan_date > ?",
+            (uid, _date_iso(horizon)),
+        )
+        self._conn.execute(
+            "DELETE FROM auto_plan_day WHERE user_id = ? AND plan_date > ?",
+            (uid, _date_iso(horizon)),
+        )
+
+    def _write_auto_plan_days(
+        self, uid: str, days: Sequence[AutoPlanDay], *, now: str
+    ) -> None:
+        for day in days:
+            self._conn.execute(
+                """
+                INSERT INTO auto_plan_day (
+                    user_id, plan_date, daily_target, created_at, updated_at
+                ) VALUES (?, ?, ?, ?, ?)
+                ON CONFLICT(user_id, plan_date) DO UPDATE SET
+                    daily_target = excluded.daily_target,
+                    updated_at = excluded.updated_at
+                """,
+                (uid, _date_iso(day.plan_date), int(day.daily_target), now, now),
+            )
+            self._conn.execute(
+                """
+                DELETE FROM auto_plan_item
+                WHERE user_id = ? AND plan_date = ?
+                """,
+                (uid, _date_iso(day.plan_date)),
+            )
+            for item in day.items:
+                self._conn.execute(
+                    """
+                    INSERT INTO auto_plan_item (
+                        user_id, plan_date, learning_unit_id, position, created_at
+                    ) VALUES (?, ?, ?, ?, ?)
+                    """,
+                    (
+                        uid,
+                        _date_iso(day.plan_date),
+                        item.learning_unit_id,
+                        int(item.position),
+                        now,
+                    ),
+                )
 
     # ------------------------------------------------------------------ #
     # Billing orders (Razorpay Standard Checkout)                         #

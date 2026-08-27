@@ -2,15 +2,19 @@
 
 from __future__ import annotations
 
-from datetime import date, timedelta
+import json
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from urllib.parse import parse_qs, urlsplit
+from uuid import UUID
 
 from fastapi.testclient import TestClient
 
 from constitution_memorizer.auth.fake_provider import FakeAuthProvider
 from constitution_memorizer.auth.sessions import InMemorySessionStore
 from constitution_memorizer.multiuser.settings import MultiUserSettings, clear_settings_cache
+from constitution_memorizer.progress.db import open_progress_db
+from constitution_memorizer.progress.repository import ProgressRepository
 from constitution_memorizer.progress.scheduler import ReminderEngine
 from constitution_memorizer.web.app import create_app
 from constitution_memorizer.web.completion import session_entry_mode, with_params
@@ -221,6 +225,12 @@ def test_plan_my_day_creates_a_same_day_session(tmp_path: Path):
     assert first in {item.learning_unit_id for item in session.items}
 
 
+def _sign_in(client: TestClient) -> None:
+    start = client.get("/auth/google/start", follow_redirects=False)
+    state = start.cookies.get("rtc_oauth_state")
+    client.get(f"/auth/callback?code=fake-google-code&state={state}", follow_redirects=False)
+
+
 def test_learn_start_does_not_create_on_get(tmp_path: Path):
     client = _client(tmp_path)
     client.get("/learn/clause-1")
@@ -228,3 +238,311 @@ def test_learn_start_does_not_create_on_get(tmp_path: Path):
     eng = _engine(client)
     assert eng.active_study_session(kind="auto_learning", plan_date=date.today()) is None
     assert eng.active_study_session(kind="day_plan", plan_date=date.today()) is None
+
+
+def test_plan_my_day_requires_self_paced_and_blocks_auto_session(tmp_path: Path):
+    client = _client(tmp_path)
+    eng = _engine(client)
+    eng.upsert_learning_plan(mode="auto", daily_target=5)
+    blocked = client.get("/learning/plan-my-day", follow_redirects=False)
+    assert blocked.status_code == 303
+    posted = client.post(
+        "/learning/plan-my-day", data={"target": "3"}, follow_redirects=False
+    )
+    assert posted.status_code == 303
+    assert eng.study_session_for_day(kind="day_plan", plan_date=date.today()) is None
+
+    eng.upsert_learning_plan(mode="self_paced", daily_target=None)
+    eng.create_study_session(
+        session_id="already-auto",
+        kind="auto_learning",
+        plan_date=date.today(),
+        unit_ids=["clause-1"],
+    )
+    coexist = client.post(
+        "/learning/plan-my-day", data={"target": "3"}, follow_redirects=False
+    )
+    assert coexist.status_code == 303
+    assert eng.study_session_for_day(kind="day_plan", plan_date=date.today()) is None
+
+
+def test_new_learning_yields_to_a_pending_revision_session(tmp_path: Path):
+    client = _client(tmp_path)
+    eng = _engine(client)
+    eng.upsert_learning_plan(mode="auto", daily_target=3)
+    eng.create_study_session(
+        session_id="rev-pending",
+        kind="revision",
+        plan_date=date.today(),
+        unit_ids=["clause-1"],
+    )
+    start = client.post("/learning/start", follow_redirects=False)
+    assert start.status_code == 303
+    assert start.headers["location"] in ("/", "/dashboard")
+    assert eng.study_session_for_day(kind="auto_learning", plan_date=date.today()) is None
+
+    eng.upsert_learning_plan(mode="self_paced", daily_target=None)
+    plan = client.post(
+        "/learning/plan-my-day", data={"target": "3"}, follow_redirects=False
+    )
+    assert plan.status_code == 303
+    assert eng.study_session_for_day(kind="day_plan", plan_date=date.today()) is None
+
+
+def test_completed_auto_session_renders_todays_learning_complete(tmp_path: Path):
+    client = _client(tmp_path, multiuser=True)
+    _sign_in(client)
+    eng = _engine(client)
+    today = date.today()
+    eng.upsert_learning_plan(mode="auto", daily_target=3)
+    session = eng.create_study_session(
+        session_id="auto-done",
+        kind="auto_learning",
+        plan_date=today,
+        unit_ids=["clause-1"],
+    )
+    eng.set_study_item_status(
+        session_id=session.id, unit_id="clause-1", status="completed"
+    )
+    eng.complete_study_session(session.id)
+    ctx = build_dashboard_context(
+        eng, display_label="Priya", as_of=today, auto_entitled=True
+    )
+    assert ctx["learning_cta"] == "learning_complete"
+    page = client.get("/dashboard")
+    assert page.status_code == 200
+    assert "Today's learning complete" in page.text
+    assert "Start learning →" not in page.text
+
+
+def test_choose_letters_from_a_session_stays_on_the_queue(tmp_path: Path):
+    client = _client(tmp_path)
+    eng = _engine(client)
+    session = eng.create_study_session(
+        session_id="letters-mix",
+        kind="day_plan",
+        plan_date=date.today(),
+        unit_ids=["clause-2", "clause-1"],
+    )
+    picked = client.post(
+        f"/learn/clause-2/choose?session={session.id}",
+        data={"mode": "letters"},
+        follow_redirects=False,
+    )
+    assert picked.status_code == 303
+    location = picked.headers["location"]
+    assert "/learn/clause-2-a" in location
+    assert _session_of(location) == session.id
+
+    page = client.get(f"/learn/clause-2-a?session={session.id}")
+    assert page.status_code == 200
+    assert f'data-session-id="{session.id}"' in page.text
+    assert "Skip for today" in page.text
+
+    complete_all_modes(client, MINI_UNITS, "clause-2-a")
+    done = client.post(
+        with_params("/learn/clause-2-a/done", {"session": session.id}),
+        follow_redirects=False,
+    )
+    assert done.status_code == 303
+    assert "/learn/clause-2-b" in done.headers["location"]
+    assert _session_of(done.headers["location"]) == session.id
+
+    skip = client.post(
+        with_params("/learn/clause-2-b/skip", {"session": session.id}),
+        follow_redirects=False,
+    )
+    assert skip.status_code == 303
+    assert "/learn/clause-1" in skip.headers["location"]
+    assert _session_of(skip.headers["location"]) == session.id
+    refreshed = eng.get_study_session(session.id)
+    assert refreshed is not None
+    assert [item.learning_unit_id for item in refreshed.items] == [
+        "clause-2-a",
+        "clause-2-b",
+        "clause-1",
+    ]
+    assert refreshed.item_for("clause-2") is None
+    assert refreshed.item_for("clause-2-a").status == "completed"
+    assert refreshed.item_for("clause-2-b").status == "deferred"
+
+
+def _articles_catalog(tmp_path: Path) -> Path:
+    units = []
+    for index, article in enumerate(
+        ["14", "15", "16", "19", "21", "32", "33", "38"], start=1
+    ):
+        units.append(
+            {
+                "id": f"u-{article}",
+                "type": "CLAUSE",
+                "article_number": article,
+                "display_title": f"Article {article}",
+                "text": f"Text for article {article}.",
+                "difficulty": 2,
+                "estimated_learning_time": 60,
+                "revision_order": index,
+                "tags": ["Part III"],
+                "allows_letter_split": False,
+                "child_unit_ids": [],
+                "parent_clause_id": None,
+            }
+        )
+    path = tmp_path / "articles.json"
+    path.write_text(
+        json.dumps(
+            {
+                "schema_version": "1.0.0",
+                "source_document": "fixture",
+                "unit_count": len(units),
+                "units": units,
+            }
+        )
+    )
+    return path
+
+
+def _entitled_client(
+    tmp_path: Path, units_path: Path, *, make_admin: bool = False
+) -> tuple[TestClient, ProgressRepository, UUID]:
+    clear_settings_cache()
+    user_id = UUID("aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa")
+    conn = open_progress_db(tmp_path / "progress.db")
+    repo = ProgressRepository(conn)
+    provider = FakeAuthProvider()
+    provider.seed_google_user(user_id=user_id, email="mix@example.com")
+    settings = MultiUserSettings(
+        _env_file=None,
+        APP_ENV="test",
+        MULTIUSER_ENABLED="true",
+        AUTH_GOOGLE_ENABLED="true",
+        SESSION_SECRET="test-secret",
+        SUPABASE_URL="http://example.invalid",
+        SUPABASE_ANON_KEY="anon",
+        DATABASE_URL="",
+        COOKIE_SECURE="false",
+        ARTICLE_ENTITLEMENTS_ENABLED="true",
+        ADMIN_ENABLED="true" if make_admin else "false",
+    )
+    client = TestClient(
+        create_app(
+            units_path=units_path,
+            db_path=tmp_path / "unused.db",
+            multiuser=True,
+            multiuser_settings=settings,
+            auth_provider=provider,
+            session_store=InMemorySessionStore(),
+            progress_repo=repo,
+        )
+    )
+    _sign_in(client)
+    if make_admin:
+        repo.conn.execute(
+            "INSERT INTO user_roles (user_id, role, created_at) VALUES (?, 'admin', ?)",
+            (str(user_id), datetime.now(timezone.utc).isoformat()),
+        )
+        repo.conn.commit()
+    return client, repo, user_id
+
+
+def test_free_mix_respects_zero_remaining_slots_over_html(tmp_path: Path):
+    units_path = _articles_catalog(tmp_path)
+    client, repo, user_id = _entitled_client(tmp_path, units_path)
+    for article in ("14", "15", "16"):
+        repo.claim_article(user_id, article)
+    saved = client.post(
+        "/learning/plan-my-day", data={"target": "5"}, follow_redirects=False
+    )
+    assert saved.status_code == 303
+    eng = _engine(client)
+    session = eng.study_session_for_day(kind="day_plan", plan_date=date.today())
+    assert session is not None
+    articles = {
+        eng.get_unit(item.learning_unit_id).article_number
+        for item in session.items
+        if eng.get_unit(item.learning_unit_id) is not None
+    }
+    assert articles <= {"14", "15", "16"}
+
+
+def test_admin_mix_bypasses_free_article_slot_cap(tmp_path: Path):
+    units_path = _articles_catalog(tmp_path)
+    client, repo, user_id = _entitled_client(tmp_path, units_path, make_admin=True)
+    for article in ("14", "15", "16"):
+        repo.claim_article(user_id, article)
+    saved = client.post(
+        "/learning/plan-my-day", data={"target": "5"}, follow_redirects=False
+    )
+    assert saved.status_code == 303
+    eng = _engine(client)
+    session = eng.study_session_for_day(kind="day_plan", plan_date=date.today())
+    assert session is not None
+    articles = {
+        eng.get_unit(item.learning_unit_id).article_number
+        for item in session.items
+        if eng.get_unit(item.learning_unit_id) is not None
+    }
+    assert articles - {"14", "15", "16"}
+
+
+def test_free_cap_without_claimed_unseen_hides_plan_my_day(tmp_path: Path):
+    units_path = _articles_catalog(tmp_path)
+    client, repo, user_id = _entitled_client(tmp_path, units_path)
+    for article in ("14", "15", "16"):
+        repo.claim_article(user_id, article)
+    eng = _engine(client)
+    today = date.today()
+    for unit_id in ("u-14", "u-15", "u-16"):
+        eng.repo.upsert_progress(
+            eng.user_id,
+            unit_id=unit_id,
+            status="review",
+            times_completed=1,
+            last_completed=today - timedelta(days=10),
+            next_revision=today + timedelta(days=10),
+            interval_days=15,
+        )
+    eng._invalidate_progress_cache()
+    page = client.get("/dashboard")
+    assert page.status_code == 200
+    assert "Plan my day" not in page.text
+    posted = client.post(
+        "/learning/plan-my-day", data={"target": "3"}, follow_redirects=False
+    )
+    assert posted.status_code == 303
+    assert eng.study_session_for_day(kind="day_plan", plan_date=today) is None
+
+
+def test_admin_auto_start_spans_beyond_free_article_cap(tmp_path: Path):
+    units_path = _articles_catalog(tmp_path)
+    client, repo, user_id = _entitled_client(tmp_path, units_path, make_admin=True)
+    for article in ("14", "15", "16"):
+        repo.claim_article(user_id, article)
+    saved = client.post(
+        "/settings/learning-plan",
+        data={"mode": "auto", "daily_target": "7"},
+        follow_redirects=False,
+    )
+    assert saved.status_code == 303
+    plan = _engine(client).get_learning_plan()
+    assert plan.mode == "auto"
+    assert plan.daily_target == 7
+    start = client.post("/learning/start", follow_redirects=False)
+    assert start.status_code == 303
+    eng = _engine(client)
+    session = eng.study_session_for_day(kind="auto_learning", plan_date=date.today())
+    assert session is not None
+    articles = {
+        eng.get_unit(item.learning_unit_id).article_number
+        for item in session.items
+        if eng.get_unit(item.learning_unit_id) is not None
+    }
+    assert len(articles) > 3
+    orders = repo.conn.execute(
+        "SELECT * FROM billing_orders WHERE user_id = ?", (str(user_id),)
+    ).fetchall()
+    grants = repo.conn.execute(
+        "SELECT * FROM access_grants WHERE user_id = ?", (str(user_id),)
+    ).fetchall()
+    assert list(orders) == []
+    assert list(grants) == []

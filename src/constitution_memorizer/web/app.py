@@ -109,6 +109,7 @@ from constitution_memorizer.web.browse import (
     load_reviewed_document,
 )
 from constitution_memorizer.web.explainers import explainer_asset_path, visual_explainer
+from constitution_memorizer.planner.eligibility import is_unlearned
 from constitution_memorizer.progress.repository import LEARN_MODES
 from constitution_memorizer.web.progress_stats import (
     _is_completed,
@@ -136,12 +137,12 @@ from constitution_memorizer.web.billing import (
     verify_signature as billing_verify,
 )
 from constitution_memorizer.web.entitlements import (
-    FREE_ARTICLE_LIMIT,
     PREVIEW_STATES,
     access_summary,
     article_key,
     can_use_auto_plan,
     entitlements_active,
+    learning_entitlement_args,
     preview_state,
     resolve_learn_access,
 )
@@ -184,7 +185,14 @@ from constitution_memorizer.web.service import (
     methods_tracker_line,
     maybe_activate_auto_plan,
     needs_split_choice,
-    _is_missing_study_session_table,
+    _is_missing_optional_schema,
+    REVISION_INTENT_CONSUME,
+    REVISION_INTENT_PRACTICE,
+    early_revision_due,
+    ensure_auto_roadmap,
+    may_persist_revision_modes,
+    parse_revision_intent,
+    persist_session_anchor_theme,
     resolve_learn_target,
     revision_position_label,
     select_today_mix,
@@ -222,6 +230,7 @@ def _effective_required_modes(unit, units, required_modes) -> set[str]:
 class QuizSubmission(BaseModel):
     cycle: int
     answers: list[object]
+    revision_intent: str | None = None
 
 
 WEB_DIR = Path(__file__).resolve().parent
@@ -762,6 +771,21 @@ def create_app(
             "tracker": methods_tracker_line(len(current), required_count),
         }
 
+    def _revision_intent_from_query(request: Request) -> str | None:
+        return parse_revision_intent(request.query_params.get("revision_intent"))
+
+    def _sync_auto_roadmap(
+        request: Request, eng: ReminderEngine, *, force: bool = True
+    ) -> None:
+        args = learning_entitlement_args(request, eng)
+        ensure_auto_roadmap(
+            eng,
+            as_of=user_today(eng),
+            auto_entitled=can_use_auto_plan(request),
+            force=force,
+            **args,
+        )
+
     @app.get("/sitemap.xml")
     async def sitemap_xml() -> FileResponse:
         """Public crawler sitemap. No auth, no login redirect."""
@@ -926,6 +950,7 @@ def create_app(
         carried = {
             "session": request.query_params.get("session") or "",
             "mode": learn_mode if learn_mode != "read" else "",
+            "revision_intent": _revision_intent_from_query(request) or "",
         }
 
         # Guests skip split preference (no personal data); show the clause as-is.
@@ -979,14 +1004,21 @@ def create_app(
             done_unlocked = done_state["unlocked"]
             done_label = done_state["label"]
         else:
+            today = user_today(eng)
+            revision_intent = _revision_intent_from_query(request)
+            persist_ok = may_persist_revision_modes(
+                eng, target.id, as_of=today, intent=revision_intent
+            )
             # Locked modes are never recorded as seen; unclaimed Articles keep
             # mode visits provisional (client-tracked) until claimed on Done.
             # Gated modes are never marked by a GET — they report via /seen
-            # (or /quiz for Test).
+            # (or /quiz for Test). Early-review practice / missing intent
+            # must not persist revision-cycle modes_seen.
             if (
                 mode_locked
                 or not learn_lock.can_persist_modes_seen
                 or learn_mode not in AUTO_SEEN_MODES_SET
+                or not persist_ok
             ):
                 seen = eng.modes_seen(target.id)
             else:
@@ -1064,9 +1096,19 @@ def create_app(
         )
 
         done_id = request.query_params.get("done")
+        revision_intent = _revision_intent_from_query(request)
+        early_due = (
+            None
+            if is_guest
+            else early_revision_due(eng, target.id, as_of=user_today(eng))
+        )
         mode_suffix = with_params(
             f"/learn/{target.id}",
-            {"mode": learn_mode if learn_mode != "read" else "", "session": session_id},
+            {
+                "mode": learn_mode if learn_mode != "read" else "",
+                "session": session_id,
+                "revision_intent": revision_intent or "",
+            },
         )
         started = time.perf_counter()
         completion = build_completion(
@@ -1127,6 +1169,9 @@ def create_app(
                 "read_hint": (
                     "Bare Act wording, verbatim. Read it twice, then pick a recall mode."
                 ),
+                "revision_intent": revision_intent or "",
+                "early_revision_due": early_due,
+                "early_revision_prompt": bool(early_due) and revision_intent is None,
             },
         )
         record_request_timing("template", started)
@@ -1161,6 +1206,7 @@ def create_app(
         request: Request,
         unit_id: str,
         mode: str = Form(...),
+        revision_intent: str = Form(""),
     ) -> JSONResponse:
         eng = _engine()
         unit = eng.get_unit(unit_id)
@@ -1183,6 +1229,12 @@ def create_app(
                 {"ok": False, "error": "mode_locked", "mode": mode},
                 status_code=403,
             )
+        intent = parse_revision_intent(revision_intent) or _revision_intent_from_query(
+            request
+        )
+        today = user_today(eng)
+        if not may_persist_revision_modes(eng, unit_id, as_of=today, intent=intent):
+            return JSONResponse({"ok": True, "persisted": False, "mode": mode})
         if not access.can_persist_modes_seen:
             # Claimable/cap-reached Articles: mode visits stay provisional
             # (client-tracked) until the Article is claimed on Done — they
@@ -1268,6 +1320,14 @@ def create_app(
         if not access.can_persist_modes_seen:
             payload["persisted"] = False
             return JSONResponse(payload)
+        intent = parse_revision_intent(
+            submission.revision_intent
+        ) or _revision_intent_from_query(request)
+        if not may_persist_revision_modes(
+            eng, unit_id, as_of=user_today(eng), intent=intent
+        ):
+            payload["persisted"] = False
+            return JSONResponse(payload)
         required = _effective_required_modes(unit, eng.units, access.required_modes)
         # Idempotent upsert — resubmitting the same cycle is harmless.
         seen = eng.mark_mode_seen(unit_id, "test")
@@ -1284,6 +1344,38 @@ def create_app(
         the same date and must not disagree with the ladder across midnight.
         """
         return user_today(eng)
+
+    def _apply_learn_done(
+        eng: ReminderEngine,
+        unit_id: str,
+        *,
+        today: date,
+        required_modes: frozenset[str] | None,
+        intent: str | None,
+        claim_article: str | None = None,
+        require_all_modes: bool = True,
+    ):
+        """Branch Done onto mark_done vs complete_revision_early vs no-op."""
+        due = early_revision_due(eng, unit_id, as_of=today)
+        if due is not None:
+            if intent == REVISION_INTENT_PRACTICE:
+                return "practice"
+            if intent != REVISION_INTENT_CONSUME:
+                return "need_intent"
+            return eng.complete_revision_early(
+                unit_id,
+                as_of=today,
+                require_all_modes=require_all_modes,
+                required_modes=required_modes,
+                claim_article=claim_article,
+            )
+        return eng.mark_done(
+            unit_id,
+            as_of=today,
+            require_all_modes=require_all_modes,
+            required_modes=required_modes,
+            claim_article=claim_article,
+        )
 
     def _schedule_calendar_sync(request: Request, eng: ReminderEngine) -> None:
         """Fire-and-forget Google Calendar reconciliation after a state change."""
@@ -1380,16 +1472,34 @@ def create_app(
                 # everything persists or nothing does.
                 try:
                     today = _user_today(request, eng)
-                    result = eng.mark_done(
+                    intent = parse_revision_intent(
+                        form.get("revision_intent")
+                    ) or _revision_intent_from_query(request)
+                    result = _apply_learn_done(
+                        eng,
                         unit_id,
-                        as_of=today,
-                        require_all_modes=False,
+                        today=today,
+                        required_modes=None,
+                        intent=intent,
                         claim_article=claim_key,
+                        require_all_modes=False,
                     )
                 except ModesIncompleteError:
                     return RedirectResponse(url=f"/learn/{unit_id}", status_code=303)
+                if result == "practice":
+                    if wants_json(request):
+                        return JSONResponse({"ok": True, "persisted": False})
+                    return RedirectResponse(url=f"/learn/{unit_id}", status_code=303)
+                if result == "need_intent":
+                    if wants_json(request):
+                        return JSONResponse(
+                            {"ok": False, "error": "early_revision_intent_required"},
+                            status_code=409,
+                        )
+                    return RedirectResponse(url=f"/learn/{unit_id}", status_code=303)
                 if result.progress.times_completed == 1:
                     maybe_activate_auto_plan(eng, as_of=today)
+                _sync_auto_roadmap(request, eng)
                 _schedule_calendar_sync(request, eng)
                 navigation = _advance_session(
                     eng, request, unit_id, result.next_unit_id, outcome="completed",
@@ -1419,11 +1529,17 @@ def create_app(
             unit, eng.units, done_access.required_modes
         )
         today = _user_today(request, eng)
+        form = await request.form()
+        intent = parse_revision_intent(
+            form.get("revision_intent")
+        ) or _revision_intent_from_query(request)
         try:
-            result = eng.mark_done(
+            result = _apply_learn_done(
+                eng,
                 unit_id,
-                as_of=today,
+                today=today,
                 required_modes=frozenset(done_required),
+                intent=intent,
             )
         except ModesIncompleteError:
             if wants_json(request):
@@ -1432,8 +1548,26 @@ def create_app(
                     status_code=409,
                 )
             return RedirectResponse(url=f"/learn/{unit_id}", status_code=303)
+        if result == "practice":
+            if wants_json(request):
+                return JSONResponse({"ok": True, "persisted": False})
+            return RedirectResponse(
+                url=with_params(
+                    f"/learn/{unit_id}",
+                    {"revision_intent": REVISION_INTENT_PRACTICE},
+                ),
+                status_code=303,
+            )
+        if result == "need_intent":
+            if wants_json(request):
+                return JSONResponse(
+                    {"ok": False, "error": "early_revision_intent_required"},
+                    status_code=409,
+                )
+            return RedirectResponse(url=f"/learn/{unit_id}", status_code=303)
         if result.progress.times_completed == 1:
             maybe_activate_auto_plan(eng, as_of=today)
+        _sync_auto_roadmap(request, eng)
         _schedule_calendar_sync(request, eng)
         navigation = _advance_session(
             eng, request, unit_id, result.next_unit_id, outcome="completed",
@@ -1460,6 +1594,7 @@ def create_app(
         if eng.get_unit(unit_id) is None:
             raise HTTPException(status_code=404, detail="Learning unit not found")
         result = eng.defer_until_tomorrow(unit_id, as_of=_user_today(request, eng))
+        _sync_auto_roadmap(request, eng)
         _schedule_calendar_sync(request, eng)
         # Deferred, not completed: the unit leaves today's queue without
         # counting as a revision done.
@@ -1520,7 +1655,7 @@ def create_app(
         try:
             session = start_or_resume_revision(eng, as_of=today)
         except Exception as error:  # noqa: BLE001 — re-raised unless it is the schema gap
-            if not _is_missing_study_session_table(error):
+            if not _is_missing_optional_schema(error):
                 raise
             # Code is live ahead of its migration. Fall back to the behaviour
             # this CTA replaced — walk the due list sequentially — so the
@@ -1556,15 +1691,20 @@ def create_app(
     def _home_url() -> str:
         return "/dashboard" if app.state.multiuser_enabled else "/"
 
-    def _learning_entitlement_args(request: Request, eng: ReminderEngine) -> dict:
-        entitled = entitlements_active(request)
-        claimed = eng.claimed_articles() if entitled else set()
-        remaining = max(0, FREE_ARTICLE_LIMIT - len(claimed)) if entitled else None
-        return {
-            "claimed": claimed,
-            "remaining_slots": remaining,
-            "entitlements_on": entitled,
-        }
+    def _revision_blocks_new_learning(eng: ReminderEngine, today: date) -> bool:
+        if due_checklist(eng, as_of=today):
+            return True
+        revision = active_revision_session(eng, as_of=today)
+        return bool(revision is not None and revision.remaining > 0)
+
+    def _plan_my_day_allowed(eng: ReminderEngine, today: date) -> bool:
+        if _revision_blocks_new_learning(eng, today):
+            return False
+        if eng.get_learning_plan().mode != "self_paced":
+            return False
+        if eng.study_session_for_day(kind="auto_learning", plan_date=today) is not None:
+            return False
+        return True
 
     def _guest_login(next_url: str) -> RedirectResponse:
         return RedirectResponse(url=f"/login?next={next_url}", status_code=303)
@@ -1601,6 +1741,7 @@ def create_app(
             outcome="deferred",
             multiuser=app.state.multiuser_enabled,
         )
+        _sync_auto_roadmap(request, eng)
         if wants_json(request):
             return JSONResponse(
                 {
@@ -1622,7 +1763,7 @@ def create_app(
         if is_guest:
             return _guest_login("/dashboard")
         today = user_today(eng)
-        if due_checklist(eng, as_of=today):
+        if _revision_blocks_new_learning(eng, today):
             return RedirectResponse(url=_home_url(), status_code=303)
         for kind in ("auto_learning", "day_plan"):
             existing = eng.active_study_session(kind=kind, plan_date=today)
@@ -1643,13 +1784,26 @@ def create_app(
         plan = eng.get_learning_plan()
         if not plan.is_auto or plan.daily_target is None:
             return RedirectResponse(url=_home_url(), status_code=303)
-        args = _learning_entitlement_args(request, eng)
-        unit_ids = select_today_mix(
-            eng, target=int(plan.daily_target), as_of=today, **args
+        args = learning_entitlement_args(request, eng)
+        ensure_auto_roadmap(
+            eng,
+            as_of=today,
+            auto_entitled=True,
+            **args,
         )
-        session = start_or_resume_learning(
-            eng, kind="auto_learning", unit_ids=unit_ids, as_of=today
+        planned = eng.list_auto_plan_day(today)
+        unit_ids = (
+            [item.learning_unit_id for item in planned.items] if planned is not None else []
         )
+        already = eng.study_session_for_day(kind="auto_learning", plan_date=today)
+        if already is not None:
+            session = already
+        else:
+            session = start_or_resume_learning(
+                eng, kind="auto_learning", unit_ids=unit_ids, as_of=today
+            )
+            if session is not None:
+                persist_session_anchor_theme(eng, unit_ids)
         if session is None or not session.pending:
             return RedirectResponse(url=_home_url(), status_code=303)
         first = session.pending[0].learning_unit_id
@@ -1674,7 +1828,7 @@ def create_app(
         if is_guest:
             return _guest_login("/learning/plan-my-day")
         today = user_today(eng)
-        if due_checklist(eng, as_of=today):
+        if not _plan_my_day_allowed(eng, today):
             return RedirectResponse(url=_home_url(), status_code=303)
         return templates.TemplateResponse(request, "plan_my_day.html", {})
 
@@ -1693,9 +1847,9 @@ def create_app(
         if target not in (3, 5, 7):
             raise HTTPException(status_code=400, detail="Invalid learning target")
         today = user_today(eng)
-        if due_checklist(eng, as_of=today):
+        if not _plan_my_day_allowed(eng, today):
             return RedirectResponse(url=_home_url(), status_code=303)
-        args = _learning_entitlement_args(request, eng)
+        args = learning_entitlement_args(request, eng)
         unit_ids = select_today_mix(eng, target=target, as_of=today, **args)
         session = start_or_resume_learning(
             eng, kind="day_plan", unit_ids=unit_ids, as_of=today
@@ -1776,7 +1930,10 @@ def create_app(
             if parsed in (3, 5, 7):
                 chosen_mode = "auto"
                 target = parsed
-        eng.upsert_learning_plan(mode=chosen_mode, daily_target=target)  # type: ignore[arg-type]
+        eng.upsert_learning_plan(
+            mode=chosen_mode, daily_target=target, as_of=user_today(eng)
+        )  # type: ignore[arg-type]
+        _sync_auto_roadmap(request, eng)
         return RedirectResponse(url=_home_url(), status_code=303)
 
     @app.post("/settings/learning-plan")
@@ -1806,7 +1963,10 @@ def create_app(
             if parsed in (3, 5, 7):
                 chosen_mode = "auto"
                 target = parsed
-        eng.upsert_learning_plan(mode=chosen_mode, daily_target=target)  # type: ignore[arg-type]
+        eng.upsert_learning_plan(
+            mode=chosen_mode, daily_target=target, as_of=user_today(eng)
+        )  # type: ignore[arg-type]
+        _sync_auto_roadmap(request, eng)
         return RedirectResponse(url="/settings?saved=1", status_code=303)
 
     @app.get("/learn/{clause_id}/choose", response_class=HTMLResponse)
@@ -1869,11 +2029,30 @@ def create_app(
         chosen: SplitMode = mode  # type: ignore[assignment]
         eng.set_split_preference(clause_id, chosen)
         _schedule_calendar_sync(request, eng)
+        _sync_auto_roadmap(request, eng)
+        session_id = (request.query_params.get("session") or "").strip()
+        session = eng.get_study_session(session_id) if session_id else None
+        if (
+            chosen == "letters"
+            and session is not None
+            and session.kind in ("auto_learning", "day_plan")
+            and session.status == "active"
+            and session.plan_date == user_today(eng)
+            and session.contains(clause_id)
+            and is_unlearned(eng, clause_id)
+        ):
+            children = [child for child in unit.child_unit_ids if child]
+            if children:
+                eng.replace_study_session_unit(
+                    session_id=session.id,
+                    old_unit_id=clause_id,
+                    new_unit_ids=children,
+                )
         target = eng.next_to_learn_from_clause(clause_id, mode=chosen) or clause_id
         return RedirectResponse(
             url=with_params(
                 f"/learn/{target}",
-                {"session": request.query_params.get("session") or ""},
+                {"session": session_id},
             ),
             status_code=303,
         )
@@ -2177,6 +2356,8 @@ def create_app(
         if not is_guest:
             eng.bootstrap_request()
         today = user_today(eng)
+        if not is_guest:
+            _sync_auto_roadmap(request, eng, force=False)
         y = year if year is not None else today.year
         m = month if month is not None else today.month
         if m < 1 or m > 12 or y < 1 or y > 9999:
@@ -2612,16 +2793,19 @@ def create_app(
                 {"ok": False, "error": "signature_mismatch"}, status_code=400
             )
         ends = datetime.now(timezone.utc) + timedelta(days=order.plan_days)
-        eng.repo.mark_billing_order_paid(
+        newly_paid = eng.repo.mark_billing_order_paid(
             eng.user_id,
             order_id=order_id,
             payment_id=payment_id,
             grant_id=str(uuid4()),
             access_ends_at=ends.replace(microsecond=0).isoformat(),
         )
-        return JSONResponse(
-            {"ok": True, "next": f"/subscribe/result?order={order_id}"}
+        next_url = (
+            "/onboarding/plan?from=subscribe"
+            if newly_paid
+            else f"/subscribe/result?order={order_id}"
         )
+        return JSONResponse({"ok": True, "next": next_url})
 
     @app.get("/subscribe/result", response_class=HTMLResponse)
     async def subscribe_result(

@@ -303,6 +303,14 @@
     </fieldset>
     {% if learning_plan and learning_plan.is_auto %}
     <p class="settings-note">
+      {% if learning_plan.daily_target == 3 %}Steady · 3
+      {% elif learning_plan.daily_target == 7 %}Intensive · 7
+      {% else %}Balanced · 5{% endif %}
+      {% if learning_plan.target_effective_on %}
+      — effective since {{ learning_plan.target_effective_on.strftime('%d %b') }}
+      {% endif %}
+    </p>
+    <p class="settings-note">
       Plan started
       {% if learning_plan.activated_at %}{{ learning_plan.activated_at.strftime('%d %b %Y') }}
       {% else %}Not started{% endif %}

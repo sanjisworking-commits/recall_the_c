@@ -184,6 +184,29 @@ def can_use_auto_plan(request: object) -> bool:
     return user is not None and is_subscribed(user)
 
 
+def learning_entitlement_args(request: object, engine: object) -> dict:
+    """Claimed-Article mix args. Full-access users skip the Free slot cap.
+
+    Preview is not consulted. Feature code (mix generation, Dashboard
+    new-learning availability) should ask this once rather than re-deriving
+    Free vs full-access from ``is_subscribed``.
+    """
+    if not entitlements_active(request) or can_use_auto_plan(request):
+        return {
+            "claimed": set(),
+            "remaining_slots": None,
+            "entitlements_on": False,
+        }
+    getter = getattr(engine, "claimed_articles", None)
+    claimed = set(getter()) if getter is not None else set()
+    remaining = max(0, FREE_ARTICLE_LIMIT - len(claimed))
+    return {
+        "claimed": claimed,
+        "remaining_slots": remaining,
+        "entitlements_on": True,
+    }
+
+
 # --------------------------------------------------------------------------- #
 # Per-Article Learn access                                                      #
 # --------------------------------------------------------------------------- #

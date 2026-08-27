@@ -27,6 +27,15 @@ def _unit_visible_for_preference(engine: ReminderEngine, unit: LearningUnit) -> 
             return False
     return True
 
+
+def _unit_eligible_for_mix(engine: ReminderEngine, unit: LearningUnit) -> bool:
+    """Mixes wait for a whole/letters choice before queuing a split-capable unit."""
+    if not _unit_visible_for_preference(engine, unit):
+        return False
+    if unit.allows_letter_split and engine.get_split_preference(unit.id) is None:
+        return False
+    return True
+
 AllowFn = Callable[[MixCandidate, Sequence[MixCandidate]], bool]
 
 
@@ -97,9 +106,12 @@ def eligible_units(
     claimed: set[str] | None = None,
     remaining_slots: int | None = None,
     entitlements_on: bool = False,
+    exclude_ids: set[str] | None = None,
 ) -> list[LearningUnit]:
     """Unseen, visible, entitlement-aware units that can join a new-learning mix."""
     queued = active_queued_unit_ids(engine, as_of=as_of)
+    if exclude_ids:
+        queued = queued | set(exclude_ids)
     claimed_keys = {str(item) for item in (claimed or set())}
     slots = 0 if remaining_slots is None else max(0, remaining_slots)
     units: list[LearningUnit] = []
@@ -110,7 +122,7 @@ def eligible_units(
             continue
         if not is_unlearned(engine, unit.id):
             continue
-        if not _unit_visible_for_preference(engine, unit):
+        if not _unit_eligible_for_mix(engine, unit):
             continue
         if entitlements_on:
             article = unit.article_number
@@ -128,6 +140,7 @@ def eligible_candidates(
     claimed: set[str] | None = None,
     remaining_slots: int | None = None,
     entitlements_on: bool = False,
+    exclude_ids: set[str] | None = None,
 ) -> list[MixCandidate]:
     return candidates_from_units(
         eligible_units(
@@ -136,6 +149,7 @@ def eligible_candidates(
             claimed=claimed,
             remaining_slots=remaining_slots,
             entitlements_on=entitlements_on,
+            exclude_ids=exclude_ids,
         )
     )
 

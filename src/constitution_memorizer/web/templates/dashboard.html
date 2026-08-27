@@ -153,6 +153,9 @@
           <span class="dash-due-units">new clause{% if today_new_count != 1 %}s{% endif %}</span>
         </p>
         {% if today_pace_label %}<p class="dash-load">{{ today_pace_label }} plan.</p>{% endif %}
+        {% if today_new_titles|default([]) %}
+        <p class="dash-load">{{ today_new_titles|join(' · ') }}</p>
+        {% endif %}
         <p class="dash-load">Keep what you've learned strong.</p>
         <div class="actions">
           <form class="dash-revision-form" method="post" action="/learning/start">

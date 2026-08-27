@@ -8,12 +8,27 @@
    continues one. #}
 {% set sq = '?session=' ~ session_id if session_id|default('') else '' %}
 {% set sa = '&session=' ~ session_id if session_id|default('') else '' %}
-<section class="panel learn" data-mobile-view="{{ 'mode' if mode_requested else 'deck' }}" data-unit-id="{{ unit.id }}"{% if session_id|default('') %} data-session-id="{{ session_id }}" data-revision-remaining="{{ revision_remaining|default(0) }}"{% endif %} data-mode="{{ learn_mode }}" data-done-unlocked="{{ 'true' if done_unlocked else 'false' }}" data-modes-seen="{% if modes_seen is defined %}{{ modes_seen | join(',') }}{% endif %}" data-locked-modes="{{ locked_modes | default(()) | join(',') }}" data-required-modes="{{ required_modes | default(()) | join(',') }}"{% if seen_provisional|default(false) %} data-seen-provisional="true"{% endif %}{% if is_guest|default(false) %} data-guest-learn="true"{% endif %}>
+{% if revision_intent|default('') %}
+  {% set sq = (sq ~ ('&' if sq else '?') ~ 'revision_intent=' ~ revision_intent) %}
+  {% set sa = sa ~ '&revision_intent=' ~ revision_intent %}
+{% endif %}
+<section class="panel learn" data-mobile-view="{{ 'mode' if mode_requested else 'deck' }}" data-unit-id="{{ unit.id }}"{% if session_id|default('') %} data-session-id="{{ session_id }}" data-revision-remaining="{{ revision_remaining|default(0) }}"{% endif %} data-mode="{{ learn_mode }}" data-revision-intent="{{ revision_intent|default('') }}" data-done-unlocked="{{ 'true' if done_unlocked else 'false' }}" data-modes-seen="{% if modes_seen is defined %}{{ modes_seen | join(',') }}{% endif %}" data-locked-modes="{{ locked_modes | default(()) | join(',') }}" data-required-modes="{{ required_modes | default(()) | join(',') }}"{% if seen_provisional|default(false) %} data-seen-provisional="true"{% endif %}{% if is_guest|default(false) %} data-guest-learn="true"{% endif %}>
   {% include "_completion_banner.html" %}
   {% if is_guest|default(false) %}
   <div class="guest-learn-banner" role="status">
     <p>You’re learning as a guest. Sign in to save your progress.</p>
     <a class="link-btn" href="/login?next=/learn/{{ unit.id }}&reason=default">Sign in</a>
+  </div>
+  {% endif %}
+
+  {% if early_revision_prompt|default(false) and early_revision_due %}
+  <div class="claim-panel" role="alertdialog" aria-labelledby="early-revision-title">
+    <p class="claim-panel-title" id="early-revision-title">Your next revision is scheduled for {{ early_revision_due.strftime('%d %b %Y') }}.</p>
+    <p class="claim-panel-body">Practice keeps the schedule. Counting this as your next revision advances one occurrence from that date.</p>
+    <div class="claim-panel-actions">
+      <a class="btn btn-ghost" href="/learn/{{ unit.id }}?revision_intent=practice{{ sa }}">Practice now</a>
+      <a class="btn" href="/learn/{{ unit.id }}?revision_intent=consume{{ sa }}">Count this as my next revision</a>
+    </div>
   </div>
   {% endif %}
 
@@ -423,6 +438,9 @@
       <span class="learn-guest-note muted" data-guest-done-note hidden role="status">Not saved — sign in to keep progress.</span>
       {% else %}
       <form class="learn-action-done" method="post" action="/learn/{{ unit.id }}/done{{ sq }}">
+        {% if revision_intent|default('') %}
+        <input type="hidden" name="revision_intent" value="{{ revision_intent }}">
+        {% endif %}
         <button
           type="submit"
           class="btn {% if done_unlocked %}btn-accent{% else %}btn-done-locked{% endif %}"

@@ -20,7 +20,7 @@ from constitution_memorizer.web.service import (
     AUTO_LEARNING_KIND,
     DAY_PLAN_KIND,
     REVISION_KIND,
-    _is_missing_study_session_table,
+    _is_missing_optional_schema,
     active_revision_session,
     continue_unit_id,
     due_checklist,
@@ -221,7 +221,7 @@ def _learning_plan_or_default(engine: ReminderEngine) -> UserLearningPlan:
     try:
         return engine.get_learning_plan()
     except Exception as error:  # noqa: BLE001 — schema-gap window
-        if not _is_missing_study_session_table(error):
+        if not _is_missing_optional_schema(error):
             raise
         return UserLearningPlan()
 
@@ -230,7 +230,7 @@ def _session_for_day(engine: ReminderEngine, kind: str, today: date):
     try:
         return engine.study_session_for_day(kind=kind, plan_date=today)  # type: ignore[arg-type]
     except Exception as error:  # noqa: BLE001
-        if not _is_missing_study_session_table(error):
+        if not _is_missing_optional_schema(error):
             raise
         return None
 
@@ -243,6 +243,7 @@ def build_dashboard_context(
     as_of: date | None = None,
     now: datetime | None = None,
     auto_entitled: bool = True,
+    mix_eligibility: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     today = as_of or date.today()
     now = now or datetime.now(timezone.utc)
@@ -300,13 +301,27 @@ def build_dashboard_context(
     auto_selected = bool(plan.is_auto and auto_entitled)
     auto_active = bool(plan.is_active_auto and auto_entitled)
 
+    if auto_selected:
+        from constitution_memorizer.web.service import ensure_auto_roadmap
+
+        try:
+            ensure_auto_roadmap(
+                eng,
+                as_of=today,
+                auto_entitled=auto_entitled,
+                **(mix_eligibility or {}),
+            )
+        except Exception as error:  # noqa: BLE001
+            if not _is_missing_optional_schema(error):
+                raise
+
     learning_session = None
     if today_mode == "learning":
         for kind in (AUTO_LEARNING_KIND, DAY_PLAN_KIND):
             try:
                 learning_session = eng.active_study_session(kind=kind, plan_date=today)
             except Exception as error:  # noqa: BLE001
-                if not _is_missing_study_session_table(error):
+                if not _is_missing_optional_schema(error):
                     raise
                 learning_session = None
                 break
@@ -323,13 +338,38 @@ def build_dashboard_context(
 
     unseen = 0
     try:
-        unseen = remaining_unseen_count(eng, as_of=today)
+        unseen = remaining_unseen_count(eng, as_of=today, **(mix_eligibility or {}))
     except Exception as error:  # noqa: BLE001
-        if not _is_missing_study_session_table(error):
+        if not _is_missing_optional_schema(error):
             raise
 
+    today_new_ids: list[str] = []
+    today_new_titles: list[str] = []
+    try:
+        planned_today = eng.list_auto_plan_day(today)
+        if planned_today is not None:
+            today_new_ids = [item.learning_unit_id for item in planned_today.items]
+            for unit_id in today_new_ids:
+                unit = eng.get_unit(unit_id)
+                if unit is not None:
+                    today_new_titles.append(unit.display_title)
+    except Exception as error:  # noqa: BLE001
+        if not _is_missing_optional_schema(error):
+            raise
+    if today_session_ids_from_session := (
+        [item.learning_unit_id for item in learning_today.items]
+        if learning_today is not None and learning_today.kind == AUTO_LEARNING_KIND
+        else None
+    ):
+        today_new_ids = today_session_ids_from_session
+        today_new_titles = [
+            unit.display_title
+            for unit_id in today_new_ids
+            if (unit := eng.get_unit(unit_id)) is not None
+        ]
+
     next_learning_day = None
-    today_new_count = int(plan.daily_target or 0) if auto_selected else 0
+    today_new_count = len(today_new_ids) if auto_selected else 0
     today_pace = pace_label(plan.daily_target if auto_selected else None)
     try:
         planner = LearningPlanner()
@@ -355,25 +395,27 @@ def build_dashboard_context(
             ),
             None,
         )
-        if today_plan is not None and today_plan.new_capacity:
+        if today_plan is not None and today_plan.kind == "review":
+            today_new_count = 0
+            today_new_ids = []
+            today_new_titles = []
+        elif today_plan is not None and today_plan.new_capacity:
             today_new_count = today_plan.new_capacity
             today_pace = pace_label(plan.daily_target)
     except Exception as error:  # noqa: BLE001
-        if not _is_missing_study_session_table(error):
+        if not _is_missing_optional_schema(error):
             raise
 
     learning_cta = "browse"
     if today_mode == "learning":
         if learning_remaining:
             learning_cta = "continue_session"
-        elif auto_selected and unseen > 0:
-            learning_cta = "start_auto"
-        elif (
-            learning_today is not None
-            and learning_today.remaining == 0
-            and learning_today.completed_count > 0
+        elif learning_today is not None and (
+            learning_today.status == "complete" or learning_today.remaining == 0
         ):
             learning_cta = "learning_complete"
+        elif auto_selected and today_new_count > 0:
+            learning_cta = "start_auto"
         elif (
             learning_today is None
             and (plan is None or plan.prompt_dismissed_on != today)
@@ -407,6 +449,7 @@ def build_dashboard_context(
         "auto_active": auto_active,
         "show_plan_prompt": show_plan_prompt,
         "today_new_count": today_new_count,
+        "today_new_titles": today_new_titles,
         "today_pace_label": today_pace,
         "next_learning_day": next_learning_day,
         "display_label": display_label,

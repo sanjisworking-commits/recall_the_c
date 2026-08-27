@@ -80,5 +80,5 @@ def normalize_target(value: int | None) -> int | None:
 
 
 def auto_is_projectable(plan: UserLearningPlan) -> bool:
-    """Future NEW capacity exists only after Auto has been activated by a NEW Done."""
-    return plan.is_active_auto
+    """Future NEW capacity exists once Auto is selected with a valid 3/5/7 target."""
+    return plan.is_auto

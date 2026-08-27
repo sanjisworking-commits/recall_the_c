@@ -347,6 +347,38 @@ def test_split_redirect_keeps_the_session(tmp_path: Path):
     assert _session_of(picked.headers["location"]) == session_id
 
 
+def test_revision_letters_choice_does_not_orphan_a_due_parent(tmp_path: Path):
+    """Letters on a due parent must not hide revision debt or rewrite the queue."""
+    client = _client(tmp_path, multiuser=True)
+    _sign_in(client)
+    _make_due(client, ["clause-2", "clause-1"])
+    session_id, first = _start(client)
+    assert first == "clause-2"
+    picked = client.post(
+        f"/learn/clause-2/choose?session={session_id}",
+        data={"mode": "letters"},
+        follow_redirects=False,
+    )
+    assert picked.status_code == 303
+    eng = _engine(client)
+    session = eng.get_study_session(session_id)
+    assert session is not None
+    assert session.kind == "revision"
+    assert session.contains("clause-2")
+    assert session.item_for("clause-2-a") is None
+    assert session.item_for("clause-2-b") is None
+    progress = eng.get_progress("clause-2")
+    assert progress is not None
+    assert progress.status == "review"
+    assert progress.next_revision is not None
+    assert progress.next_revision <= date.today()
+    page = client.get("/dashboard")
+    assert page.status_code == 200
+    assert 'data-today-mode="revision"' in page.text
+    assert "Continue revision" in page.text or "Start revision" in page.text
+    assert session.item_for("clause-2").status == "pending"
+
+
 def test_mobile_deck_roundtrip_preserves_the_query(tmp_path: Path):
     """showDeck used to rewrite to a bare /learn/{id}, destroying the session."""
     source = MOBILE_JS.read_text(encoding="utf-8")
@@ -605,17 +637,36 @@ def test_start_revision_falls_back_to_the_due_list_without_the_tables(tmp_path: 
 
 
 def test_a_real_database_error_is_not_swallowed(tmp_path: Path):
-    """The guard is narrow: only "that table is missing" is tolerated."""
-    from constitution_memorizer.web.service import _is_missing_study_session_table
+    """The guard is narrow: only known optional schema gaps are tolerated."""
+    from constitution_memorizer.web.service import _is_missing_optional_schema
 
-    assert _is_missing_study_session_table(
+    assert _is_missing_optional_schema(
         Exception('relation "study_session" does not exist')
     )
-    assert _is_missing_study_session_table(Exception("no such table: study_session"))
-    assert not _is_missing_study_session_table(Exception("connection refused"))
-    assert not _is_missing_study_session_table(
+    assert _is_missing_optional_schema(Exception("no such table: study_session"))
+    assert _is_missing_optional_schema(Exception("no such table: auto_plan_day"))
+    assert _is_missing_optional_schema(Exception("no such table: auto_plan_item"))
+    assert _is_missing_optional_schema(Exception("no such column: target_effective_on"))
+    assert _is_missing_optional_schema(
+        Exception('relation "auto_plan_day" does not exist')
+    )
+    assert _is_missing_optional_schema(
+        Exception('relation "auto_plan_item" does not exist')
+    )
+    assert _is_missing_optional_schema(
+        Exception('column "target_effective_on" does not exist')
+    )
+    assert not _is_missing_optional_schema(Exception("connection refused"))
+    assert not _is_missing_optional_schema(
         Exception('relation "learning_unit_progress" does not exist')
     )
+    assert not _is_missing_optional_schema(
+        Exception("no such column: daily_target")
+    )
+    assert not _is_missing_optional_schema(
+        Exception('column "daily_target" of relation "user_learning_plan" does not exist')
+    )
+    assert not _is_missing_optional_schema(Exception("UNIQUE constraint failed"))
 
 
 # --------------------------------------------------------------------------- #

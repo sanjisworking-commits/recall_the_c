@@ -58,19 +58,44 @@ def user_today(engine: ReminderEngine) -> date:
 # live against an older schema. Today must survive that window: a revision
 # session is optional context, and the whole dashboard failing to build because
 # an optional table is absent is a far worse outcome than showing no session.
-# Narrow on purpose — anything that is not a missing relation still raises.
-_MISSING_TABLE_MARKERS = ("study_session", "user_learning_plan")
+# Narrow on purpose — anything that is not a missing relation/column still raises.
+#
+# Migration 0015 is one bundle: auto_plan_* tables AND
+# user_learning_plan.target_effective_on. Code at #155 against a 0014
+# database fails first on
+# the column (named SELECT in get_learning_plan) before auto_plan_day is
+# queried. The guard must recognize both.
+_OPTIONAL_TABLES = frozenset(
+    {
+        "study_session",
+        "user_learning_plan",
+        "auto_plan_day",
+        "auto_plan_item",
+    }
+)
+_OPTIONAL_COLUMNS = frozenset({"target_effective_on"})
 
 
-def _is_missing_study_session_table(error: Exception) -> bool:
-    """True only for "that table does not exist" from SQLite or Postgres."""
+def _is_missing_optional_schema(error: Exception) -> bool:
+    """True only for a known optional table or the 0015 audit column missing.
+
+    Table errors: a known table identifier plus ``does not exist`` /
+    ``no such table``. Column errors: ``target_effective_on`` plus a
+    missing-column phrasing. Unrelated UndefinedColumn / UndefinedTable,
+    connection, constraint, and syntax errors still raise.
+    """
     message = str(error).lower()
-    if not any(marker in message for marker in _MISSING_TABLE_MARKERS):
-        return False
-    return (
-        "does not exist" in message  # psycopg UndefinedTable
-        or "no such table" in message  # sqlite3 OperationalError
+    missing_column = "no such column" in message or (
+        "column" in message and "does not exist" in message
     )
+    if missing_column:
+        return any(name in message for name in _OPTIONAL_COLUMNS)
+    missing_table = "no such table" in message or (
+        "does not exist" in message and "column" not in message
+    )
+    if not missing_table:
+        return False
+    return any(name in message for name in _OPTIONAL_TABLES)
 
 
 def active_revision_session(
@@ -91,7 +116,7 @@ def active_revision_session(
     try:
         return engine.active_study_session(kind=REVISION_KIND, plan_date=today)
     except Exception as error:  # noqa: BLE001 — re-raised unless it is the schema gap
-        if not _is_missing_study_session_table(error):
+        if not _is_missing_optional_schema(error):
             raise
         logger.warning(
             "study_session tables are missing; Today is falling back to the "
@@ -142,12 +167,134 @@ def maybe_activate_auto_plan(engine: ReminderEngine, *, as_of: date) -> None:
     try:
         plan = engine.get_learning_plan()
     except Exception as error:  # noqa: BLE001
-        if not _is_missing_study_session_table(error):
+        if not _is_missing_optional_schema(error):
             raise
         return
     if plan.mode != "auto" or plan.activated_at is not None:
         return
     engine.activate_learning_plan(as_of)
+
+
+def ensure_auto_roadmap(
+    engine: ReminderEngine,
+    *,
+    as_of: date,
+    auto_entitled: bool,
+    claimed: set[str] | None = None,
+    remaining_slots: int | None = None,
+    entitlements_on: bool = False,
+    force: bool = False,
+) -> None:
+    """Reconcile the rolling 15-day Auto window if Auto is selected.
+
+    Read paths (Calendar / Dashboard GET) pass ``force=False`` and skip the
+    durable rewrite when the persisted day coverage is already current.
+    Write paths that change occupancy (Done, Skip, Again, target, split)
+    pass ``force=True``.
+
+    GET may still reconcile once when the window is genuinely stale: local
+    day rollover needing a tail day, missing roadmap, target mismatch on
+    mutable days, leftover rows beyond the horizon, or 0015 just landed.
+    An ``auto_plan_day`` with zero items is valid and is not treated as stale.
+    """
+    from time import perf_counter
+
+    from constitution_memorizer.planner.roadmap import (
+        auto_roadmap_needs_reconcile,
+        reconcile_auto_roadmap,
+    )
+    from constitution_memorizer.web.request_context import record_request_timing
+
+    try:
+        plan = engine.get_learning_plan()
+    except Exception as error:  # noqa: BLE001
+        if not _is_missing_optional_schema(error):
+            raise
+        return
+    try:
+        if not force and not auto_roadmap_needs_reconcile(
+            engine,
+            plan,
+            as_of=as_of,
+            auto_entitled=auto_entitled,
+        ):
+            return
+        started = perf_counter()
+        reconcile_auto_roadmap(
+            engine,
+            plan,
+            as_of=as_of,
+            auto_entitled=auto_entitled,
+            claimed=claimed,
+            remaining_slots=remaining_slots,
+            entitlements_on=entitlements_on,
+        )
+        record_request_timing("roadmap_sync", started)
+    except Exception as error:  # noqa: BLE001
+        if not _is_missing_optional_schema(error):
+            raise
+
+
+REVISION_INTENT_PRACTICE = "practice"
+REVISION_INTENT_CONSUME = "consume"
+VALID_REVISION_INTENTS = frozenset((REVISION_INTENT_PRACTICE, REVISION_INTENT_CONSUME))
+
+
+def _progress_row(engine: ReminderEngine, unit_id: str):
+    """Single-unit progress without forcing a list_all_progress preload."""
+    cache = getattr(engine, "_progress_cache", None)
+    if cache is not None:
+        return cache.get(unit_id)
+    return engine.repo.get_progress(engine.user_id, unit_id)
+
+
+def early_revision_due(
+    engine: ReminderEngine, unit_id: str, *, as_of: date
+) -> date | None:
+    """Scheduled due date when this unit is a not-yet-due review, else None."""
+    progress = _progress_row(engine, unit_id)
+    if progress is None or progress.status != "review":
+        return None
+    if progress.next_revision is None or progress.next_revision <= as_of:
+        return None
+    return progress.next_revision
+
+
+def parse_revision_intent(raw: object) -> str | None:
+    value = str(raw or "").strip().lower()
+    if value in VALID_REVISION_INTENTS:
+        return value
+    return None
+
+
+def may_persist_revision_modes(
+    engine: ReminderEngine,
+    unit_id: str,
+    *,
+    as_of: date,
+    intent: str | None,
+) -> bool:
+    """False when an early review visit must not write persisted modes_seen."""
+    if early_revision_due(engine, unit_id, as_of=as_of) is None:
+        return True
+    return intent == REVISION_INTENT_CONSUME
+
+
+def persist_session_anchor_theme(engine: ReminderEngine, unit_ids: list[str]) -> None:
+    """Record last_anchor_theme only when today's Auto session is created."""
+    if not unit_ids:
+        return
+    from constitution_memorizer.planner.relationships import candidates_from_units
+
+    unit = engine.get_unit(unit_ids[0])
+    if unit is None:
+        return
+    mix = candidates_from_units([unit])
+    if mix:
+        try:
+            engine.set_last_anchor_theme(mix[0].primary_theme)
+        except Exception:  # noqa: BLE001
+            pass
 
 
 def start_or_resume_learning(

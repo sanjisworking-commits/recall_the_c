@@ -58,6 +58,7 @@ TIMING_STAGES: tuple[str, ...] = (
     "google_token_exchange",
     "google_calendar_check",
     "google_token_revoke",
+    "roadmap_sync",
 )
 
 _TIMING_STAGE_SET = frozenset(TIMING_STAGES)
