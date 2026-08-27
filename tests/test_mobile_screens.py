@@ -499,6 +499,22 @@ def test_phone_drops_again_tomorrow_and_the_ledger_line(tmp_path: Path):
     assert "Again tomorrow" in client.get("/learn/clause-1").text
 
 
+def test_desktop_hides_phone_article_chrome_and_learn_ledger(tmp_path: Path):
+    client, _, _ = _client(tmp_path)
+    css = client.get("/static/mobile.css").text
+    block = css.split("@media (min-width: 561px)", 1)[1].split("@media", 1)[0]
+    for selector in (
+        ".eyebrow-phone",
+        ".article-phone-meta",
+        ".methods-tracker",
+        ".learn-meta",
+    ):
+        assert selector in block, selector
+    html = client.get("/browse/article/20").text
+    assert "eyebrow-phone" in html
+    assert "article-phone-meta" in html or "browse-article-meta" in html
+
+
 def test_clause_rail_shows_labels_without_per_clause_counts(tmp_path: Path):
     """The rail names the sibling clauses and marks the current one. The
     per-clause "2/6" is gone: it asked the reader to track six separate

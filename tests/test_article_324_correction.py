@@ -144,7 +144,7 @@ def test_article_324_title_body_split_and_clauses_1_through_6():
         assert unit.text.startswith(f"({n})")
         crumb = unit_crumb(unit)
         assert ".(1)" not in crumb
-        assert crumb.startswith("Part XV · Article 324 — ")
+        assert crumb == "Part XV · Article 324"
         assert "electoral rolls" not in crumb
 
     assert "Vice-President" in units["article-324-clause-1"].text
