@@ -406,8 +406,8 @@ def test_auth_transition_and_profile_pages(tmp_path: Path):
     assert 'name="theme"' not in profile.text
 
 
-def test_dashboard_restores_recent_activity_and_explore_sections(tmp_path: Path):
-    """The Today hero is exclusive; Recent activity and Explore sit below it."""
+def test_dashboard_has_no_recent_activity_or_explore_sections(tmp_path: Path):
+    """Both secondary cards were removed from Today; the hero is the page."""
     client = _client(tmp_path)
     start = client.get("/auth/google/start", follow_redirects=False)
     state = start.cookies.get("rtc_oauth_state")
@@ -426,11 +426,13 @@ def test_dashboard_restores_recent_activity_and_explore_sections(tmp_path: Path)
     )
     dash = client.get("/dashboard")
     assert dash.status_code == 200
-    assert "Recent activity" in dash.text
-    assert "dash-activity-list" in dash.text
-    assert "Explore the Constitution" in dash.text
-    assert "dash-explore-list" in dash.text
-    assert "caught-up-quote" in dash.text or "Want Recall to plan today's learning?" in dash.text
+    assert "Recent activity" not in dash.text
+    assert "dash-activity-list" not in dash.text
+    assert "Explore the Constitution" not in dash.text
+    assert "dash-explore-list" not in dash.text
+    # And the caught-up copy and quote that sat under the empty hero.
+    assert "Browse when you're ready for something new." not in dash.text
+    assert "caught-up-quote" not in dash.text
 
 
 def test_dashboard_multiuser_layout(tmp_path: Path):
@@ -455,8 +457,8 @@ def test_dashboard_multiuser_layout(tmp_path: Path):
     assert "Units mastered" in html
     assert "Day streak" in html
     assert "Revisions done" in html
-    assert "Recent activity" in html
-    assert "Explore the Constitution" in html
+    # Explore the Constitution and Recent activity were removed from Today —
+    # covered by test_dashboard_has_no_recent_activity_or_explore_sections.
     assert "→" in html
     assert "dash-progress-summary" not in html
     assert "Progress summary" in html  # aria-label on strip

@@ -144,22 +144,6 @@ def progress_strip(engine: ReminderEngine, *, as_of: date | None = None) -> dict
     }
 
 
-def activity_sentence(status: str, title: str) -> str:
-    if status == "mastered":
-        return f"Mastered {title}"
-    if status == "review":
-        return f"Reviewed {title}"
-    return f"Started {title}"
-
-
-def activity_tone(status: str) -> str:
-    if status == "mastered":
-        return "mastered"
-    if status == "review":
-        return "review"
-    return "new"
-
-
 def continue_meta(unit: LearningUnit) -> str:
     bits: list[str] = []
     if unit.title:
@@ -251,29 +235,6 @@ def _session_for_day(engine: ReminderEngine, kind: str, today: date):
         return None
 
 
-def _recent_activity(
-    engine: ReminderEngine, *, now: datetime, limit: int = 5
-) -> list[dict[str, str]]:
-    recent_rows = sorted(
-        engine.list_all_progress(),
-        key=lambda r: r.updated_at,
-        reverse=True,
-    )[:limit]
-    recent: list[dict[str, str]] = []
-    for row in recent_rows:
-        unit = engine.get_unit(row.learning_unit_id)
-        title = unit.display_title if unit is not None else row.learning_unit_id
-        recent.append(
-            {
-                "unit_id": row.learning_unit_id,
-                "text": activity_sentence(row.status, title),
-                "relative": relative_time(row.updated_at, now=now),
-                "tone": activity_tone(row.status),
-                "href": f"/learn/{row.learning_unit_id}",
-            }
-        )
-    return recent
-
 
 def build_dashboard_context(
     eng: ReminderEngine,
@@ -300,7 +261,6 @@ def build_dashboard_context(
         cont_mode_line, cont_pct = continue_mode_line(eng, cont_unit)
         cont_meta = continue_meta(cont_unit)
 
-    recent = _recent_activity(eng, now=now)
 
     greeting = f"Welcome, {name}." if is_new else f"Good morning, {name}."
     subtext = (
@@ -464,7 +424,6 @@ def build_dashboard_context(
         "continue_meta": cont_meta,
         "continue_mode_line": cont_mode_line,
         "continue_pct": cont_pct,
-        "recent": recent,
         "strip": strip,
         "upcoming": upcoming_revisions(eng, as_of=today),
         # All completions today (revision + voluntary new learning). Do not

@@ -21,10 +21,6 @@
     <article class="dash-card dash-hero dash-skel-card"></article>
   </div>
   <div class="dash-strip dash-skel-card" aria-hidden="true"></div>
-  <div class="dash-bottom" aria-hidden="true">
-    <article class="dash-card dash-secondary dash-skel-card"></article>
-    <article class="dash-card dash-secondary dash-skel-card"></article>
-  </div>
 
   {% elif state == 'data-error' %}
   <header class="dash-greeting">
@@ -178,10 +174,6 @@
         {% if revision_completed_today|default(0) > 0 %}
         <p class="dash-done-today">{{ revision_completed_today }} revision{% if revision_completed_today != 1 %}s{% endif %} completed today ✓</p>
         {% endif %}
-        {% if caught_up_quote %}
-        <blockquote class="caught-up-quote">{{ caught_up_quote.text }}</blockquote>
-        <p class="caught-up-quote-attr">— {{ caught_up_quote.author }}</p>
-        {% endif %}
         {% elif continue_unit %}
         <p class="dash-due-empty-title">Nothing is due today</p>
         {% if revision_completed_today|default(0) > 0 %}
@@ -200,10 +192,6 @@
         <p class="dash-due-empty-title">Nothing is due today</p>
         {% if revision_completed_today|default(0) > 0 %}
         <p class="dash-done-today">{{ revision_completed_today }} revision{% if revision_completed_today != 1 %}s{% endif %} completed today ✓</p>
-        {% endif %}
-        {% if caught_up_quote %}
-        <blockquote class="caught-up-quote">{{ caught_up_quote.text }}</blockquote>
-        <p class="caught-up-quote-attr">— {{ caught_up_quote.author }}</p>
         {% endif %}
         <p class="actions">
           <a class="btn dash-btn-full" href="/browse">Browse the Constitution →</a>
@@ -236,43 +224,6 @@
       <p class="dash-strip-label">Revisions done</p>
     </div>
   </section>
-
-  <div class="dash-bottom">
-    <section class="dash-card dash-secondary dash-activity">
-      <header class="dash-card-head">
-        <h2 class="dash-eyebrow">Recent activity</h2>
-      </header>
-      <div class="dash-card-body">
-        {% if recent %}
-        <ul class="dash-activity-list">
-          {% for row in recent %}
-          <li class="dash-activity-row">
-            <span class="dash-activity-dot is-{{ row.tone }}" aria-hidden="true"></span>
-            <a class="dash-activity-text" href="{{ row.href }}">{{ row.text }}</a>
-            <span class="dash-activity-time">{{ row.relative }}</span>
-          </li>
-          {% endfor %}
-        </ul>
-        {% else %}
-        <p class="muted">No activity yet. Your reviews and notes will appear here as you learn.</p>
-        {% endif %}
-      </div>
-    </section>
-
-    <section class="dash-card dash-secondary dash-explore">
-      <header class="dash-card-head">
-        <h2 class="dash-eyebrow">Explore the Constitution</h2>
-      </header>
-      <div class="dash-card-body">
-        <ul class="dash-explore-list">
-          <li><a href="/browse"><span>Browse Parts &amp; Articles</span><span aria-hidden="true">→</span></a></li>
-          <li><a href="/search"><span>Search the Bare Act</span><span aria-hidden="true">→</span></a></li>
-          <li><a href="/tables"><span>Schedules &amp; tables</span><span aria-hidden="true">→</span></a></li>
-          <li><a href="/learn"><span>Open Learn</span><span aria-hidden="true">→</span></a></li>
-        </ul>
-      </div>
-    </section>
-  </div>
 
   {% if upcoming %}
   <section class="dash-upcoming" aria-label="Upcoming revisions">
