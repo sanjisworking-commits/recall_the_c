@@ -670,6 +670,57 @@
     line-height: 1.25;
   }
 
+  /* 4c · Plan my day — a sheet over Today, not the shipped full page. The
+     panel, scrim and title come from the shared sheet furniture above; only
+     the eyebrow, lede and button stack are particular to this one. */
+  .plan-day-sheet-eyebrow {
+    margin: 0 0 6px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+
+  .plan-day-sheet .mobile-sheet-title {
+    margin: 0 0 8px;
+    font-size: 22px;
+  }
+
+  .plan-day-sheet-lede {
+    margin: 0 0 18px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--muted);
+    text-wrap: pretty;
+  }
+
+  .plan-day-sheet-actions {
+    display: grid;
+    gap: 10px;
+  }
+
+  /* Inside the sheet the outline is the quiet control border, not the ink
+     rule the dashboard hero uses — the solid Balanced button carries the
+     emphasis on its own. */
+  .plan-day-sheet .dash-btn-outline {
+    border: 1px solid var(--control-border, var(--hairline));
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  .plan-day-sheet-dismiss {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 44px;
+    border: 0;
+    background: none;
+    font-size: 14px;
+    color: var(--muted);
+  }
+
   /* ══ 02 · Browse — Parts ═══════════════════════════════════════════════ */
   body[data-mscreen="browse"] .browse > .display,
   body[data-mscreen="browse"] .browse > .lede,
@@ -1308,6 +1359,12 @@
     background: var(--calendar-done);
   }
 
+  .revisions-row.is-new .revisions-row-dot {
+    background: var(--paper);
+    border: 1px solid var(--browse-due);
+    box-sizing: content-box;
+  }
+
   .cal-m-num {
     font-family: var(--font-display);
     font-size: 13.5px;
@@ -1350,7 +1407,9 @@
   }
 
   .cal-m-mark.is-new {
-    background: var(--teal, #2a6f62);
+    background: var(--paper);
+    border: 1px solid var(--browse-due);
+    box-sizing: content-box;
   }
 
   .cal-m-cell.is-overdue-day .cal-m-num {
@@ -1396,7 +1455,9 @@
   }
 
   .cal-m-legend-bar.is-new {
-    background: var(--teal, #2a6f62);
+    background: var(--paper);
+    border: 1px solid var(--browse-due);
+    box-sizing: content-box;
   }
 
   .revisions-eyebrow {

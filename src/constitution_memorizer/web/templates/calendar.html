@@ -47,7 +47,7 @@
       <span class="cal-m-legend-item"><span class="cal-m-legend-bar is-new" aria-hidden="true"></span>New</span>
     </div>
 
-    {% set row_state = {'due': 'due', 'scheduled': 'scheduled', 'review_done': 'done', 'memorized': 'done', 'new_planned': 'scheduled', 'review_capacity': 'due'} %}
+    {% set row_state = {'due': 'due', 'scheduled': 'scheduled', 'review_done': 'done', 'memorized': 'done', 'new_planned': 'new', 'review_capacity': 'due'} %}
     {% for day in calendar.days %}
       {% if not day.is_blank and day.chips %}
       <div class="cal-m-daylist" data-day-list="{{ day.iso }}" hidden>
@@ -61,7 +61,14 @@
           <span class="revisions-row-dot" aria-hidden="true"></span>
           <span class="revisions-row-copy">
             <span class="revisions-row-title">{{ chip.label }}</span>
+            {# Design 4f: a planned unit reads "New · Steady plan", not its own title
+               again — the title is already the row heading. The aggregate NEW · N
+               chip keeps its count copy. #}
+            {% if chip.kind == 'new_planned' and chip.unit_id %}
+            <span class="revisions-row-meta">New{% if pace_label %} · {{ pace_label }} plan{% endif %}</span>
+            {% else %}
             <span class="revisions-row-meta">{{ chip.title }}</span>
+            {% endif %}
           </span>
           <span class="revisions-row-mark" aria-hidden="true">{% if chip.unit_id %}›{% endif %}</span>
         {% if chip.unit_id %}</a>{% else %}</div>{% endif %}

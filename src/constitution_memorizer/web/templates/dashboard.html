@@ -152,11 +152,10 @@
           <span class="dash-due-count">{{ today_new_count }}</span>
           <span class="dash-due-units">new clause{% if today_new_count != 1 %}s{% endif %}</span>
         </p>
-        {% if today_pace_label %}<p class="dash-load">{{ today_pace_label }} plan.</p>{% endif %}
+        {% if today_pace_label %}<p class="dash-load">{{ today_pace_label }} plan · no revisions due today</p>{% endif %}
         {% if today_new_titles|default([]) %}
         <p class="dash-load">{{ today_new_titles|join(' · ') }}</p>
         {% endif %}
-        <p class="dash-load">Keep what you've learned strong.</p>
         <div class="actions">
           <form class="dash-revision-form" method="post" action="/learning/start">
             <button type="submit" class="btn dash-btn-full">Start learning →</button>
@@ -166,7 +165,7 @@
         <p class="dash-due-empty-title">Nothing to review today</p>
         <p class="dash-load">Want Recall to plan today's learning?</p>
         <div class="actions plan-day-actions">
-          <a class="btn dash-btn-full" href="/learning/plan-my-day">Plan my day →</a>
+          <a class="btn dash-btn-full" href="/learning/plan-my-day" data-sheet-open="plan-day-sheet">Plan my day →</a>
           <form class="dash-revision-form" method="post" action="/learning/plan-my-day/dismiss">
             <button type="submit" class="btn btn-ghost dash-btn-outline">Not today</button>
           </form>
@@ -245,6 +244,34 @@
     </div>
   </section>
   {% endif %}
+  {% endif %}
+
+  {# Design 4c · the phone opens Plan my day as a sheet over Today. Desktop and
+     no-JS phones follow the anchor's href to /learning/plan-my-day instead —
+     same copy, same four posts. #}
+  {% if learning_cta|default('browse') == 'plan_prompt' %}
+  <div class="mobile-sheet" id="plan-day-sheet" hidden data-sheet>
+    <div class="mobile-sheet-scrim" data-sheet-close></div>
+    <div class="mobile-sheet-panel plan-day-sheet" role="dialog" aria-modal="true" aria-label="Plan my day" tabindex="-1" data-sheet-focus>
+      <p class="plan-day-sheet-eyebrow">Today</p>
+      <p class="mobile-sheet-title">Plan my day</p>
+      <p class="plan-day-sheet-lede">
+        Pick a short mix for today. This does not turn Auto Plan on. Revisions always
+        come first — there is nothing due right now.
+      </p>
+      <div class="plan-day-sheet-actions">
+        {% for n, label in ((3, 'Steady · 3'), (5, 'Balanced · 5'), (7, 'Intensive · 7')) %}
+        <form method="post" action="/learning/plan-my-day">
+          <input type="hidden" name="target" value="{{ n }}">
+          <button type="submit" class="btn {% if n == 5 %}dash-btn-full{% else %}btn-ghost dash-btn-outline{% endif %}">{{ label }}</button>
+        </form>
+        {% endfor %}
+        <form method="post" action="/learning/plan-my-day/dismiss">
+          <button type="submit" class="btn plan-day-sheet-dismiss">Not today</button>
+        </form>
+      </div>
+    </div>
+  </div>
   {% endif %}
 </section>
 {% endblock %}
