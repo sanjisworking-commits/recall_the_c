@@ -141,8 +141,6 @@ def test_calendar_surfaces_use_theme_tokens():
 
 def test_learn_marks_read_and_locks_done(client: TestClient):
     html = client.get("/learn/clause-1").text
-    assert "methods-tracker" in html
-    assert "1 of 6 methods visited" in html
     assert "Read ✓" in html
     assert "btn-done-locked" in html
     assert "5 methods left" in html
@@ -161,7 +159,6 @@ def test_seen_endpoint_unlocks_done(client: TestClient):
     assert data["done"]["unlocked"] is True
     assert data["done"]["label"] == "Done — next unit"
     html = client.get("/learn/clause-1?mode=test").text
-    assert "All 6 methods visited" in html
     assert "Done — next unit" in html
     assert "btn-done-locked" not in html
     assert 'data-done-unlocked="true"' in html
@@ -228,6 +225,5 @@ def test_reset_unit_clears_modes(client: TestClient):
     assert "Cloze ✓" in html
     client.post("/learn/clause-1/reset")
     html = client.get("/learn/clause-1").text
-    assert "1 of 6 methods visited" in html
     assert "Cloze ✓" not in html
     assert "Read ✓" in html

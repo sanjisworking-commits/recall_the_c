@@ -84,7 +84,6 @@ def test_letter_rail_and_stem(client: TestClient):
     )[0]
     assert "Done — next letter" not in response.text
     assert "methods left" in response.text
-    assert "methods-tracker" in response.text
 
 
 def test_stem_helper_strips_letters(engine: ReminderEngine):

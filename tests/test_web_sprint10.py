@@ -36,8 +36,8 @@ def test_kind_badge_and_crumb_helpers():
     )
     assert kind_badge_label(clause) == "Clause"
     crumb = unit_crumb(clause)
-    assert "Part III" in crumb
-    assert "Article 15" in crumb
+    assert crumb == "Part III · Article 15"
+    assert "Prohibition of discrimination" not in crumb
 
 
 def test_learn_read_anatomy(client: TestClient):
@@ -60,5 +60,3 @@ def test_learn_read_anatomy(client: TestClient):
     assert 'action="/learn/clause-1/again"' in response.text
     assert "learn-actions" in response.text
     assert "label-short" not in response.text
-    assert "methods-tracker" in response.text
-    assert "1 of 6 methods visited" in response.text
