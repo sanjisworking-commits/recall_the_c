@@ -2,11 +2,14 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable, Sequence
 from datetime import date, datetime
 from typing import Protocol
 from uuid import UUID
 
 from constitution_memorizer.progress.repository import (
+    AutoPlanDay,
+    AutoPlanSnapshot,
     BillingOrder,
     CompletionProgress,
     CompletionState,
@@ -167,6 +170,7 @@ class ReminderRepositoryProtocol(Protocol):
         daily_target: int | None,
         prompt_dismissed_on: date | None = None,
         last_anchor_theme: str | None = None,
+        as_of: date | None = None,
     ) -> UserLearningPlan: ...
 
     def activate_learning_plan(
@@ -179,6 +183,42 @@ class ReminderRepositoryProtocol(Protocol):
 
     def set_last_anchor_theme(
         self, user_id: UUID | str, theme: str | None
+    ) -> None: ...
+
+    def list_auto_plan_window(
+        self, user_id: UUID | str, start: date, until: date
+    ) -> list[AutoPlanDay]: ...
+
+    def list_auto_plan_day(
+        self, user_id: UUID | str, plan_date: date
+    ) -> AutoPlanDay | None: ...
+
+    def replace_auto_plan_day(
+        self,
+        user_id: UUID | str,
+        plan_date: date,
+        daily_target: int,
+        unit_ids: Sequence[str],
+    ) -> AutoPlanDay: ...
+
+    def clear_future_auto_plan(self, user_id: UUID | str, as_of: date) -> None: ...
+
+    def delete_auto_plan_after(self, user_id: UUID | str, horizon: date) -> None: ...
+
+    def replace_auto_plan_window_atomic(
+        self,
+        user_id: UUID | str,
+        as_of: date,
+        horizon: date,
+        days: Sequence[AutoPlanDay],
+    ) -> None: ...
+
+    def apply_auto_plan_reconcile(
+        self,
+        user_id: UUID | str,
+        as_of: date,
+        horizon: date,
+        builder: Callable[[AutoPlanSnapshot], Sequence[AutoPlanDay] | None],
     ) -> None: ...
 
     def create_billing_order(

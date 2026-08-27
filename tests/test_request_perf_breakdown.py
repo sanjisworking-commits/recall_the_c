@@ -117,6 +117,17 @@ def test_record_timing_noops_outside_request():
     assert snapshot_request_timings() == {}
 
 
+def test_roadmap_sync_stage_is_whitelisted():
+    token = begin_request_timings()
+    try:
+        record_request_timing("roadmap_sync", perf_counter() - 0.01)
+        total_ms, count = snapshot_request_timings()["roadmap_sync"]
+        assert count == 1
+        assert total_ms > 0
+    finally:
+        reset_request_timings(token)
+
+
 def test_unknown_stage_is_rejected():
     with pytest.raises(ValueError, match="Unknown request timing stage"):
         record_request_timing("not_a_stage", perf_counter())

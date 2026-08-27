@@ -637,17 +637,36 @@ def test_start_revision_falls_back_to_the_due_list_without_the_tables(tmp_path: 
 
 
 def test_a_real_database_error_is_not_swallowed(tmp_path: Path):
-    """The guard is narrow: only "that table is missing" is tolerated."""
-    from constitution_memorizer.web.service import _is_missing_study_session_table
+    """The guard is narrow: only known optional schema gaps are tolerated."""
+    from constitution_memorizer.web.service import _is_missing_optional_schema
 
-    assert _is_missing_study_session_table(
+    assert _is_missing_optional_schema(
         Exception('relation "study_session" does not exist')
     )
-    assert _is_missing_study_session_table(Exception("no such table: study_session"))
-    assert not _is_missing_study_session_table(Exception("connection refused"))
-    assert not _is_missing_study_session_table(
+    assert _is_missing_optional_schema(Exception("no such table: study_session"))
+    assert _is_missing_optional_schema(Exception("no such table: auto_plan_day"))
+    assert _is_missing_optional_schema(Exception("no such table: auto_plan_item"))
+    assert _is_missing_optional_schema(Exception("no such column: target_effective_on"))
+    assert _is_missing_optional_schema(
+        Exception('relation "auto_plan_day" does not exist')
+    )
+    assert _is_missing_optional_schema(
+        Exception('relation "auto_plan_item" does not exist')
+    )
+    assert _is_missing_optional_schema(
+        Exception('column "target_effective_on" does not exist')
+    )
+    assert not _is_missing_optional_schema(Exception("connection refused"))
+    assert not _is_missing_optional_schema(
         Exception('relation "learning_unit_progress" does not exist')
     )
+    assert not _is_missing_optional_schema(
+        Exception("no such column: daily_target")
+    )
+    assert not _is_missing_optional_schema(
+        Exception('column "daily_target" of relation "user_learning_plan" does not exist')
+    )
+    assert not _is_missing_optional_schema(Exception("UNIQUE constraint failed"))
 
 
 # --------------------------------------------------------------------------- #
