@@ -696,7 +696,10 @@ def create_app(
     async def request_timing(request: Request, call_next):
         """Log method/path/status/duration_ms; skip health and static assets."""
         path = request.url.path
-        skip = path == "/health" or path.startswith("/static/")
+        skip = (
+            path in {"/health", "/sitemap.xml", "/robots.txt"}
+            or path.startswith("/static/")
+        )
         breakdown = wants_request_breakdown(path)
         token = begin_request_timings() if breakdown else None
         started = time.perf_counter()
@@ -781,6 +784,22 @@ def create_app(
             auto_entitled=can_use_auto_plan(request),
             force=force,
             **args,
+        )
+
+    @app.get("/sitemap.xml")
+    async def sitemap_xml() -> FileResponse:
+        """Public crawler sitemap. No auth, no login redirect."""
+        return FileResponse(
+            WEB_DIR / "sitemap.xml",
+            media_type="application/xml",
+        )
+
+    @app.get("/robots.txt")
+    async def robots_txt() -> FileResponse:
+        """Public robots.txt with the production sitemap declaration."""
+        return FileResponse(
+            WEB_DIR / "robots.txt",
+            media_type="text/plain; charset=utf-8",
         )
 
     @app.get("/", response_class=HTMLResponse)

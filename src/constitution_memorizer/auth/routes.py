@@ -658,7 +658,7 @@ def install_auth_middleware(app) -> None:
     @app.middleware("http")
     async def multiuser_auth_gate(request: Request, call_next):
         path = request.url.path
-        if path == "/health" or path.startswith("/static/"):
+        if path in {"/health", "/sitemap.xml", "/robots.txt"} or path.startswith("/static/"):
             return await call_next(request)
 
         from constitution_memorizer.web.request_context import bound_engine, bound_memory
@@ -694,6 +694,8 @@ def install_auth_middleware(app) -> None:
                 "/login",
                 "/signed-out",
                 "/health",
+                "/sitemap.xml",
+                "/robots.txt",
                 "/terms",
                 "/privacy",
                 "/grievance",

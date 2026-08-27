@@ -41,6 +41,8 @@ constitution_memorizer = [
     "web/templates/**/*",
     "web/static/**/*",
     "web/explainer_assets/**/*",
+    "web/sitemap.xml",
+    "web/robots.txt",
 ]
 
 [project.scripts]
