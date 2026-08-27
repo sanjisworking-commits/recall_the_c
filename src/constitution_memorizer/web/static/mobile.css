@@ -1349,6 +1349,10 @@
     background: var(--calendar-done);
   }
 
+  .cal-m-mark.is-new {
+    background: var(--teal, #2a6f62);
+  }
+
   .cal-m-cell.is-overdue-day .cal-m-num {
     color: var(--browse-mark-news);
   }
@@ -1389,6 +1393,10 @@
 
   .cal-m-legend-bar.is-done {
     background: var(--calendar-done);
+  }
+
+  .cal-m-legend-bar.is-new {
+    background: var(--teal, #2a6f62);
   }
 
   .revisions-eyebrow {

@@ -14,7 +14,9 @@ from constitution_memorizer.progress.scheduler import (
     advance_interval,
 )
 
-ChipKind = Literal["memorized", "review_done", "due", "scheduled"]
+ChipKind = Literal[
+    "memorized", "review_done", "due", "scheduled", "new_planned", "review_capacity"
+]
 
 WEEKDAYS = ("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
 
@@ -58,8 +60,10 @@ class CalendarDay:
         kinds = {chip.kind for chip in self.chips}
         if "due" in kinds:
             return "overdue" if self.is_past else "due"
-        if "scheduled" in kinds:
+        if "scheduled" in kinds or "review_capacity" in kinds:
             return "scheduled"
+        if "new_planned" in kinds:
+            return "new"
         if kinds & {"review_done", "memorized"}:
             return "done"
         return None
@@ -154,12 +158,80 @@ def completed_review_history(
     return events
 
 
+def _overlay_capacity_markers(
+    engine: ReminderEngine,
+    by_day: dict[int, list[CalendarChip]],
+    *,
+    month_start: date,
+    month_end: date,
+    today: date,
+    auto_entitled: bool,
+) -> None:
+    """Add NEW · N / REVIEW · N capacity chips. Future NEW is never a unit id."""
+    # Imported lazily: LearningPlanner reads remaining_review_schedule from here.
+    from constitution_memorizer.planner.eligibility import remaining_unseen_count
+    from constitution_memorizer.planner.planner import LearningPlanner
+    from constitution_memorizer.progress.repository import UserLearningPlan
+    from constitution_memorizer.web.service import _is_missing_study_session_table
+
+    try:
+        plan = engine.get_learning_plan()
+    except Exception as error:  # noqa: BLE001
+        if not _is_missing_study_session_table(error):
+            raise
+        plan = UserLearningPlan()
+    try:
+        unseen = remaining_unseen_count(engine, as_of=today)
+        days = LearningPlanner().project(
+            engine,
+            plan,
+            as_of=today,
+            until=month_end,
+            remaining_unseen=unseen,
+            auto_entitled=auto_entitled,
+        )
+    except Exception as error:  # noqa: BLE001
+        if not _is_missing_study_session_table(error):
+            raise
+        return
+    for planned in days:
+        if not (month_start <= planned.day <= month_end):
+            continue
+        if planned.kind == "review" and planned.review_count:
+            by_day[planned.day.day].insert(
+                0,
+                CalendarChip(
+                    kind="review_capacity",
+                    unit_id="",
+                    label=f"REVIEW · {planned.review_count}",
+                    title=(
+                        f"{planned.review_count} revision"
+                        f"{'s' if planned.review_count != 1 else ''} on this day"
+                    ),
+                ),
+            )
+        elif planned.kind == "new" and planned.new_capacity:
+            by_day[planned.day.day].insert(
+                0,
+                CalendarChip(
+                    kind="new_planned",
+                    unit_id="",
+                    label=f"NEW · {planned.new_capacity}",
+                    title=(
+                        f"{planned.new_capacity} new clause"
+                        f"{'s' if planned.new_capacity != 1 else ''} of capacity"
+                    ),
+                ),
+            )
+
+
 def build_calendar_month(
     engine: ReminderEngine,
     *,
     year: int,
     month: int,
     today: date | None = None,
+    auto_entitled: bool = True,
 ) -> CalendarMonth:
     """Build a Sunday-first month grid with progress + projected ladder chips."""
     if month < 1 or month > 12:
@@ -230,6 +302,15 @@ def build_calendar_month(
                     title=tip,
                 )
             )
+
+    _overlay_capacity_markers(
+        engine,
+        by_day,
+        month_start=month_start,
+        month_end=month_end,
+        today=today,
+        auto_entitled=auto_entitled,
+    )
 
     days: list[CalendarDay] = []
     for week in weeks:

@@ -430,9 +430,15 @@
           {% if not done_unlocked %}disabled aria-disabled="true"{% else %}aria-disabled="false"{% endif %}
         >{{ done_label }}</button>
       </form>
+      {% if session_kind|default('') in ('auto_learning', 'day_plan') %}
+      <form class="learn-action-again" method="post" action="/learn/{{ unit.id }}/skip{{ sq }}">
+        <button type="submit" class="btn btn-ghost">Skip for today</button>
+      </form>
+      {% else %}
       <form class="learn-action-again" method="post" action="/learn/{{ unit.id }}/again{{ sq }}">
         <button type="submit" class="btn btn-ghost">Again tomorrow</button>
       </form>
+      {% endif %}
       {% endif %}
     </div>
     <span class="learn-meta">{{ learn_meta }}</span>

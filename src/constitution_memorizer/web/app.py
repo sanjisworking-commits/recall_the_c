@@ -119,13 +119,13 @@ from constitution_memorizer.web.calendar_view import (
     build_revisions_view,
 )
 from constitution_memorizer.web.completion import (
-    REVISION_ENTRY_MODE,
     build_completion,
     caught_up_quote,
     LearnNavigation,
     done_json_payload,
     next_learn_url,
     resolve_learn_navigation,
+    session_entry_mode,
     with_params,
     wants_json,
 )
@@ -136,9 +136,11 @@ from constitution_memorizer.web.billing import (
     verify_signature as billing_verify,
 )
 from constitution_memorizer.web.entitlements import (
+    FREE_ARTICLE_LIMIT,
     PREVIEW_STATES,
     access_summary,
     article_key,
+    can_use_auto_plan,
     entitlements_active,
     preview_state,
     resolve_learn_access,
@@ -180,11 +182,14 @@ from constitution_memorizer.web.service import (
     kind_badge_label,
     learn_meta_line,
     methods_tracker_line,
+    maybe_activate_auto_plan,
     needs_split_choice,
     _is_missing_study_session_table,
     resolve_learn_target,
     revision_position_label,
+    select_today_mix,
     session_progress,
+    start_or_resume_learning,
     start_or_resume_revision,
     user_today,
     sibling_chips,
@@ -1062,6 +1067,7 @@ def create_app(
                 "unit": target,
                 "progress": progress,
                 "session_id": session_id,
+                "session_kind": session.kind if session is not None else "",
                 "revision_label": session_label,
                 "revision_remaining": session.remaining if session is not None else 0,
                 "kind_badge": kind_badge_label(target),
@@ -1123,6 +1129,8 @@ def create_app(
             return None
         session = eng.get_study_session(session_id)
         if session is None or session.status != "active":
+            return None
+        if session.plan_date != user_today(eng):
             return None
         if not session.contains(unit_id):
             return None
@@ -1351,14 +1359,17 @@ def create_app(
                 # the claim insert rides inside commit_completion, so either
                 # everything persists or nothing does.
                 try:
+                    today = _user_today(request, eng)
                     result = eng.mark_done(
                         unit_id,
-                        as_of=_user_today(request, eng),
+                        as_of=today,
                         require_all_modes=False,
                         claim_article=claim_key,
                     )
                 except ModesIncompleteError:
                     return RedirectResponse(url=f"/learn/{unit_id}", status_code=303)
+                if result.progress.times_completed == 1:
+                    maybe_activate_auto_plan(eng, as_of=today)
                 _schedule_calendar_sync(request, eng)
                 navigation = _advance_session(
                     eng, request, unit_id, result.next_unit_id, outcome="completed",
@@ -1387,10 +1398,11 @@ def create_app(
         done_required = _effective_required_modes(
             unit, eng.units, done_access.required_modes
         )
+        today = _user_today(request, eng)
         try:
             result = eng.mark_done(
                 unit_id,
-                as_of=_user_today(request, eng),
+                as_of=today,
                 required_modes=frozenset(done_required),
             )
         except ModesIncompleteError:
@@ -1400,6 +1412,8 @@ def create_app(
                     status_code=409,
                 )
             return RedirectResponse(url=f"/learn/{unit_id}", status_code=303)
+        if result.progress.times_completed == 1:
+            maybe_activate_auto_plan(eng, as_of=today)
         _schedule_calendar_sync(request, eng)
         navigation = _advance_session(
             eng, request, unit_id, result.next_unit_id, outcome="completed",
@@ -1451,7 +1465,9 @@ def create_app(
         """
         session_id = (request.query_params.get("session") or "").strip()
         session = eng.get_study_session(session_id) if session_id else None
-        if session is not None and session.status != "active":
+        if session is not None and (
+            session.status != "active" or session.plan_date != user_today(eng)
+        ):
             session = None
         return resolve_learn_navigation(
             eng=eng,
@@ -1499,7 +1515,7 @@ def create_app(
                     eng,
                     due[0].id,
                     multiuser=app.state.multiuser_enabled,
-                    mode=REVISION_ENTRY_MODE,
+                    mode=session_entry_mode("revision"),
                 ),
                 status_code=303,
             )
@@ -1512,13 +1528,266 @@ def create_app(
                 first,
                 multiuser=app.state.multiuser_enabled,
                 session_id=session.id,
-                mode=REVISION_ENTRY_MODE,
+                mode=session_entry_mode("revision"),
             ),
             status_code=303,
         )
 
     def _home_url() -> str:
         return "/dashboard" if app.state.multiuser_enabled else "/"
+
+    def _learning_entitlement_args(request: Request, eng: ReminderEngine) -> dict:
+        entitled = entitlements_active(request)
+        claimed = eng.claimed_articles() if entitled else set()
+        remaining = max(0, FREE_ARTICLE_LIMIT - len(claimed)) if entitled else None
+        return {
+            "claimed": claimed,
+            "remaining_slots": remaining,
+            "entitlements_on": entitled,
+        }
+
+    def _guest_login(next_url: str) -> RedirectResponse:
+        return RedirectResponse(url=f"/login?next={next_url}", status_code=303)
+
+    @app.post("/learn/{unit_id}/skip")
+    async def learn_skip(request: Request, unit_id: str):
+        """Skip a new-learning queue item without writing progress."""
+        eng = _engine()
+        if eng.get_unit(unit_id) is None:
+            raise HTTPException(status_code=404, detail="Learning unit not found")
+        is_guest = bool(
+            app.state.multiuser_enabled
+            and getattr(request.state, "current_user", None) is None
+        )
+        if is_guest:
+            if wants_json(request):
+                return JSONResponse({"ok": False, "error": "sign_in_required"}, status_code=401)
+            return RedirectResponse(url=f"/learn/{unit_id}", status_code=303)
+        session_id = (request.query_params.get("session") or "").strip()
+        session = eng.get_study_session(session_id) if session_id else None
+        if (
+            session is None
+            or session.status != "active"
+            or session.plan_date != user_today(eng)
+            or session.kind not in ("auto_learning", "day_plan")
+            or not session.contains(unit_id)
+        ):
+            return RedirectResponse(url=_home_url(), status_code=303)
+        navigation = resolve_learn_navigation(
+            eng=eng,
+            unit_id=unit_id,
+            fallback_next_unit_id=None,
+            session=session,
+            outcome="deferred",
+            multiuser=app.state.multiuser_enabled,
+        )
+        if wants_json(request):
+            return JSONResponse(
+                {
+                    "ok": True,
+                    "next_url": navigation.next_url,
+                    "session_id": navigation.session_id,
+                    "session_remaining": navigation.remaining,
+                }
+            )
+        return RedirectResponse(url=navigation.next_url, status_code=303)
+
+    @app.post("/learning/start")
+    async def learning_start(request: Request) -> RedirectResponse:
+        eng = _engine()
+        is_guest = bool(
+            app.state.multiuser_enabled
+            and getattr(request.state, "current_user", None) is None
+        )
+        if is_guest:
+            return _guest_login("/dashboard")
+        today = user_today(eng)
+        if due_checklist(eng, as_of=today):
+            return RedirectResponse(url=_home_url(), status_code=303)
+        for kind in ("auto_learning", "day_plan"):
+            existing = eng.active_study_session(kind=kind, plan_date=today)
+            if existing is not None and existing.pending:
+                first = existing.pending[0].learning_unit_id
+                return RedirectResponse(
+                    url=next_learn_url(
+                        eng,
+                        first,
+                        multiuser=app.state.multiuser_enabled,
+                        session_id=existing.id,
+                        mode=session_entry_mode(existing.kind),
+                    ),
+                    status_code=303,
+                )
+        if not can_use_auto_plan(request):
+            return RedirectResponse(url=_home_url(), status_code=303)
+        plan = eng.get_learning_plan()
+        if not plan.is_auto or plan.daily_target is None:
+            return RedirectResponse(url=_home_url(), status_code=303)
+        args = _learning_entitlement_args(request, eng)
+        unit_ids = select_today_mix(
+            eng, target=int(plan.daily_target), as_of=today, **args
+        )
+        session = start_or_resume_learning(
+            eng, kind="auto_learning", unit_ids=unit_ids, as_of=today
+        )
+        if session is None or not session.pending:
+            return RedirectResponse(url=_home_url(), status_code=303)
+        first = session.pending[0].learning_unit_id
+        return RedirectResponse(
+            url=next_learn_url(
+                eng,
+                first,
+                multiuser=app.state.multiuser_enabled,
+                session_id=session.id,
+                mode=session_entry_mode(session.kind),
+            ),
+            status_code=303,
+        )
+
+    @app.get("/learning/plan-my-day", response_class=HTMLResponse)
+    async def plan_my_day_get(request: Request) -> HTMLResponse:
+        eng = _engine()
+        is_guest = bool(
+            app.state.multiuser_enabled
+            and getattr(request.state, "current_user", None) is None
+        )
+        if is_guest:
+            return _guest_login("/learning/plan-my-day")
+        today = user_today(eng)
+        if due_checklist(eng, as_of=today):
+            return RedirectResponse(url=_home_url(), status_code=303)
+        return templates.TemplateResponse(request, "plan_my_day.html", {})
+
+    @app.post("/learning/plan-my-day")
+    async def plan_my_day_post(
+        request: Request,
+        target: int = Form(...),
+    ) -> RedirectResponse:
+        eng = _engine()
+        is_guest = bool(
+            app.state.multiuser_enabled
+            and getattr(request.state, "current_user", None) is None
+        )
+        if is_guest:
+            return _guest_login("/learning/plan-my-day")
+        if target not in (3, 5, 7):
+            raise HTTPException(status_code=400, detail="Invalid learning target")
+        today = user_today(eng)
+        if due_checklist(eng, as_of=today):
+            return RedirectResponse(url=_home_url(), status_code=303)
+        args = _learning_entitlement_args(request, eng)
+        unit_ids = select_today_mix(eng, target=target, as_of=today, **args)
+        session = start_or_resume_learning(
+            eng, kind="day_plan", unit_ids=unit_ids, as_of=today
+        )
+        if session is None or not session.pending:
+            return RedirectResponse(url=_home_url(), status_code=303)
+        first = session.pending[0].learning_unit_id
+        return RedirectResponse(
+            url=next_learn_url(
+                eng,
+                first,
+                multiuser=app.state.multiuser_enabled,
+                session_id=session.id,
+                mode=session_entry_mode(session.kind),
+            ),
+            status_code=303,
+        )
+
+    @app.post("/learning/plan-my-day/dismiss")
+    async def plan_my_day_dismiss(request: Request) -> RedirectResponse:
+        eng = _engine()
+        is_guest = bool(
+            app.state.multiuser_enabled
+            and getattr(request.state, "current_user", None) is None
+        )
+        if is_guest:
+            return _guest_login("/dashboard")
+        eng.dismiss_plan_prompt(user_today(eng))
+        return RedirectResponse(url=_home_url(), status_code=303)
+
+    @app.get("/onboarding/plan", response_class=HTMLResponse)
+    async def onboarding_plan_get(request: Request) -> HTMLResponse:
+        eng = _engine()
+        is_guest = bool(
+            app.state.multiuser_enabled
+            and getattr(request.state, "current_user", None) is None
+        )
+        if is_guest:
+            return _guest_login("/onboarding/plan")
+        return templates.TemplateResponse(
+            request,
+            "onboarding_plan.html",
+            {
+                "auto_available": can_use_auto_plan(request),
+                "plan": eng.get_learning_plan(),
+                "csrf_token": request.cookies.get("rtc_csrf") or "",
+            },
+        )
+
+    @app.post("/onboarding/plan")
+    async def onboarding_plan_post(
+        request: Request,
+        mode: str = Form("self_paced"),
+        daily_target: str = Form(""),
+        csrf_token: str = Form(""),
+    ) -> RedirectResponse:
+        eng = _engine()
+        is_guest = bool(
+            app.state.multiuser_enabled
+            and getattr(request.state, "current_user", None) is None
+        )
+        if is_guest:
+            return _guest_login("/onboarding/plan")
+        expected = request.cookies.get("rtc_csrf") or ""
+        if expected and csrf_token != expected:
+            return RedirectResponse(url="/onboarding/plan?error=csrf", status_code=303)
+        # Preview simulates another tier in the UI; it must not persist this
+        # admin's durable learning-plan row.
+        if preview_state(request) is not None:
+            return RedirectResponse(url=_home_url(), status_code=303)
+        chosen_mode = "self_paced"
+        target: int | None = None
+        if mode == "auto" and can_use_auto_plan(request):
+            try:
+                parsed = int(daily_target)
+            except ValueError:
+                parsed = 0
+            if parsed in (3, 5, 7):
+                chosen_mode = "auto"
+                target = parsed
+        eng.upsert_learning_plan(mode=chosen_mode, daily_target=target)  # type: ignore[arg-type]
+        return RedirectResponse(url=_home_url(), status_code=303)
+
+    @app.post("/settings/learning-plan")
+    async def settings_learning_plan(
+        request: Request,
+        mode: str = Form("self_paced"),
+        daily_target: str = Form(""),
+    ) -> RedirectResponse:
+        eng = _engine()
+        is_guest = bool(
+            app.state.multiuser_enabled
+            and getattr(request.state, "current_user", None) is None
+        )
+        if is_guest:
+            return _guest_login("/settings")
+        # Preview is a UI/testing simulation. It is not Auto Plan entitlement
+        # and must not rewrite this user's durable learning-plan preference.
+        if preview_state(request) is not None:
+            return RedirectResponse(url="/settings", status_code=303)
+        chosen_mode = "self_paced"
+        target: int | None = None
+        if mode == "auto" and can_use_auto_plan(request):
+            try:
+                parsed = int(daily_target)
+            except ValueError:
+                parsed = 0
+            if parsed in (3, 5, 7):
+                chosen_mode = "auto"
+                target = parsed
+        eng.upsert_learning_plan(mode=chosen_mode, daily_target=target)  # type: ignore[arg-type]
+        return RedirectResponse(url="/settings?saved=1", status_code=303)
 
     @app.get("/learn/{clause_id}/choose", response_class=HTMLResponse)
     async def choose_get(request: Request, clause_id: str) -> HTMLResponse:
@@ -1880,11 +2149,6 @@ def create_app(
         year: int | None = Query(default=None),
         month: int | None = Query(default=None),
     ) -> HTMLResponse:
-        today = date.today()
-        y = year if year is not None else today.year
-        m = month if month is not None else today.month
-        if m < 1 or m > 12 or y < 1 or y > 9999:
-            raise HTTPException(status_code=400, detail="Invalid year or month")
         eng = _engine()
         is_guest = bool(
             app.state.multiuser_enabled
@@ -1892,7 +2156,18 @@ def create_app(
         )
         if not is_guest:
             eng.bootstrap_request()
-        view = build_calendar_month(eng, year=y, month=m, today=today)
+        today = user_today(eng)
+        y = year if year is not None else today.year
+        m = month if month is not None else today.month
+        if m < 1 or m > 12 or y < 1 or y > 9999:
+            raise HTTPException(status_code=400, detail="Invalid year or month")
+        view = build_calendar_month(
+            eng,
+            year=y,
+            month=m,
+            today=today,
+            auto_entitled=can_use_auto_plan(request),
+        )
         # The phone shows this month's data as a week strip + today + ladder
         # (design 19); only meaningful for the current month.
         revisions = (
@@ -2407,6 +2682,25 @@ def create_app(
                 "status_param": gcal or "",
                 "csrf_token": request.cookies.get("rtc_csrf") or "",
             }
+        plan = None
+        next_learning_day = None
+        auto_entitled = can_use_auto_plan(request)
+        if user is not None:
+            try:
+                plan = eng.get_learning_plan()
+                from constitution_memorizer.planner.eligibility import remaining_unseen_count
+                from constitution_memorizer.planner.planner import LearningPlanner
+
+                today = user_today(eng)
+                next_learning_day = LearningPlanner().next_learning_day(
+                    eng,
+                    plan,
+                    as_of=today,
+                    remaining_unseen=remaining_unseen_count(eng, as_of=today),
+                    auto_entitled=auto_entitled,
+                )
+            except Exception:  # noqa: BLE001 — settings must still render
+                logger.exception("learning plan context failed")
         return templates.TemplateResponse(
             request,
             "settings.html",
@@ -2416,6 +2710,9 @@ def create_app(
                 "saved": bool(saved),
                 "access": access_summary(request, eng),
                 "gcal": gcal_ctx,
+                "learning_plan": plan,
+                "can_auto_plan": auto_entitled,
+                "next_learning_day": next_learning_day,
             },
         )
 

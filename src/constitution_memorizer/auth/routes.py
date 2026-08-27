@@ -34,10 +34,12 @@ from constitution_memorizer.progress.repository import ONBOARDING_KEY
 from constitution_memorizer.web.completion import build_completion, caught_up_quote
 from constitution_memorizer.web.entitlements import (
     access_summary,
+    can_use_auto_plan,
     entitlements_active,
     subscription_status,
 )
 from constitution_memorizer.web.request_context import record_request_timing
+from constitution_memorizer.web.service import user_today
 
 logger = logging.getLogger(__name__)
 
@@ -381,7 +383,8 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
         # Later /welcome visits (name edits) never restart or downgrade it.
         if first_welcome and repo.get_setting(user.id, ONBOARDING_KEY) is None:
             repo.set_setting(user.id, ONBOARDING_KEY, "active")
-        return RedirectResponse(url="/dashboard", status_code=303)
+        dest = "/onboarding/plan" if first_welcome else "/dashboard"
+        return RedirectResponse(url=dest, status_code=303)
 
     @router.get("/dashboard", response_class=HTMLResponse)
     async def dashboard(request: Request) -> HTMLResponse:
@@ -412,7 +415,13 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
             from constitution_memorizer.web.dashboard import build_dashboard_context
 
             started = time.perf_counter()
-            ctx = build_dashboard_context(eng, display_label=label)
+            today = user_today(eng)
+            ctx = build_dashboard_context(
+                eng,
+                display_label=label,
+                as_of=today,
+                auto_entitled=can_use_auto_plan(request),
+            )
             record_request_timing("dashboard_build", started)
             ctx["user"] = user
             ctx["dashboard_state"] = "ok"
@@ -432,7 +441,7 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
                 continue_label=None,
             )
             ctx["caught_up_quote"] = (
-                caught_up_quote(getattr(request.app.state, "quotes", []) or [])
+                caught_up_quote(getattr(request.app.state, "quotes", []) or [], today)
                 if ctx.get("due_count") == 0
                 else None
             )

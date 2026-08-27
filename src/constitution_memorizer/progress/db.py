@@ -255,6 +255,22 @@ CREATE INDEX IF NOT EXISTS idx_study_session_user_kind
     ON study_session(user_id, kind, status);
 CREATE INDEX IF NOT EXISTS idx_study_session_item_order
     ON study_session_item(session_id, position);
+
+CREATE TABLE IF NOT EXISTS user_learning_plan (
+    user_id TEXT PRIMARY KEY,
+    mode TEXT NOT NULL DEFAULT 'self_paced'
+        CHECK (mode IN ('self_paced', 'auto')),
+    daily_target INTEGER
+        CHECK (daily_target IS NULL OR daily_target IN (3, 5, 7)),
+    activated_at TEXT,
+    prompt_dismissed_on TEXT,
+    last_anchor_theme TEXT,
+    updated_at TEXT NOT NULL,
+    CHECK (
+        (mode = 'self_paced')
+        OR (mode = 'auto' AND daily_target IS NOT NULL)
+    )
+);
 """
 
 # Pre-multiuser tables only: _migrate_legacy renames each of these aside,
@@ -678,16 +694,78 @@ def _widen_access_grants_sources(conn: sqlite3.Connection) -> None:
     logger.info("Widened access_grants sources to include 'payment'")
 
 
+def _dedupe_study_sessions(conn: sqlite3.Connection) -> None:
+    """Keep the oldest session per (user_id, kind, plan_date) so the unique index can land."""
+    if not _table_exists(conn, "study_session"):
+        return
+    conn.execute(
+        """
+        DELETE FROM study_session_item
+        WHERE session_id IN (
+            SELECT s.id
+            FROM study_session s
+            WHERE EXISTS (
+                SELECT 1
+                FROM study_session k
+                WHERE k.user_id = s.user_id
+                  AND k.kind = s.kind
+                  AND k.plan_date = s.plan_date
+                  AND (
+                      k.created_at < s.created_at
+                      OR (k.created_at = s.created_at AND k.id < s.id)
+                  )
+            )
+        )
+        """
+    )
+    conn.execute(
+        """
+        DELETE FROM study_session
+        WHERE id IN (
+            SELECT s.id
+            FROM study_session s
+            WHERE EXISTS (
+                SELECT 1
+                FROM study_session k
+                WHERE k.user_id = s.user_id
+                  AND k.kind = s.kind
+                  AND k.plan_date = s.plan_date
+                  AND (
+                      k.created_at < s.created_at
+                      OR (k.created_at = s.created_at AND k.id < s.id)
+                  )
+            )
+        )
+        """
+    )
+
+
+def _ensure_study_session_day_unique(conn: sqlite3.Connection) -> None:
+    """CREATE TABLE IF NOT EXISTS never adds a unique index to an existing table."""
+    if not _table_exists(conn, "study_session"):
+        return
+    _dedupe_study_sessions(conn)
+    conn.execute(
+        """
+        CREATE UNIQUE INDEX IF NOT EXISTS idx_study_session_user_kind_date
+            ON study_session(user_id, kind, plan_date)
+        """
+    )
+
+
 def init_db(conn: sqlite3.Connection) -> None:
     """Create progress tables if missing; migrate legacy single-user schema."""
     if _legacy_schema(conn):
         _migrate_legacy(conn)
+        _ensure_study_session_day_unique(conn)
+        conn.commit()
         return
     conn.execute("PRAGMA foreign_keys = OFF")
     try:
         _repair_partial_legacy(conn)
         _ensure_profile_identity_columns(conn)
         conn.executescript(SCHEMA_SQL)
+        _ensure_study_session_day_unique(conn)
         _invalidate_legacy_gated_modes(conn)
         _invalidate_legacy_letters_test_auto_seen(conn)
         _migrate_ladder_day15(conn)

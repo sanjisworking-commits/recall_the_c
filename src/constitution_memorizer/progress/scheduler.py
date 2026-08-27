@@ -29,6 +29,8 @@ from constitution_memorizer.progress.repository import (
     StudySession,
     StudySessionKind,
     ThemePreference,
+    UserLearningPlan,
+    LearningPlanMode,
     _frequency_from_raw,
     _news_from_raw,
     _theme_from_raw,
@@ -459,6 +461,44 @@ class ReminderEngine:
 
     def complete_study_session(self, session_id: str) -> None:
         self.repo.complete_study_session(self.user_id, session_id)
+
+    def study_session_for_day(
+        self,
+        *,
+        kind: StudySessionKind,
+        plan_date: date,
+    ) -> StudySession | None:
+        return self.repo.study_session_for_day(
+            self.user_id, kind=kind, plan_date=plan_date
+        )
+
+    def get_learning_plan(self) -> UserLearningPlan:
+        return self.repo.get_learning_plan(self.user_id)
+
+    def upsert_learning_plan(
+        self,
+        *,
+        mode: LearningPlanMode,
+        daily_target: int | None,
+        prompt_dismissed_on: date | None = None,
+        last_anchor_theme: str | None = None,
+    ) -> UserLearningPlan:
+        return self.repo.upsert_learning_plan(
+            self.user_id,
+            mode=mode,
+            daily_target=daily_target,
+            prompt_dismissed_on=prompt_dismissed_on,
+            last_anchor_theme=last_anchor_theme,
+        )
+
+    def activate_learning_plan(self, as_of: date) -> UserLearningPlan:
+        return self.repo.activate_learning_plan(self.user_id, as_of)
+
+    def dismiss_plan_prompt(self, as_of: date) -> UserLearningPlan:
+        return self.repo.dismiss_plan_prompt(self.user_id, as_of)
+
+    def set_last_anchor_theme(self, theme: str | None) -> None:
+        self.repo.set_last_anchor_theme(self.user_id, theme)
 
     def latest_paid_billing_order(self) -> BillingOrder | None:
         if self._billing_loaded:

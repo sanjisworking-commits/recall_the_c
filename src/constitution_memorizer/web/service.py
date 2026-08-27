@@ -22,6 +22,9 @@ logger = logging.getLogger(__name__)
 _CHIP_LABEL_RE = re.compile(r"\([^)]+\)")
 
 REVISION_KIND = "revision"
+AUTO_LEARNING_KIND = "auto_learning"
+DAY_PLAN_KIND = "day_plan"
+LEARNING_SESSION_KINDS = frozenset((AUTO_LEARNING_KIND, DAY_PLAN_KIND))
 USER_TIMEZONE_KEY = "user_timezone"
 
 
@@ -39,7 +42,7 @@ def user_today(engine: ReminderEngine) -> date:
     """
     tz_name = ""
     try:
-        tz_name = engine.repo.get_setting(engine.user_id, USER_TIMEZONE_KEY) or ""
+        tz_name = engine.get_setting(USER_TIMEZONE_KEY) or ""
     except Exception:  # noqa: BLE001 — anchoring must never break Done
         pass
     if tz_name:
@@ -56,7 +59,7 @@ def user_today(engine: ReminderEngine) -> date:
 # session is optional context, and the whole dashboard failing to build because
 # an optional table is absent is a far worse outcome than showing no session.
 # Narrow on purpose — anything that is not a missing relation still raises.
-_MISSING_TABLE_MARKERS = ("study_session", )
+_MISSING_TABLE_MARKERS = ("study_session", "user_learning_plan")
 
 
 def _is_missing_study_session_table(error: Exception) -> bool:
@@ -125,16 +128,100 @@ def start_or_resume_revision(
 
 
 def revision_position_label(session: StudySession, unit_id: str) -> str | None:
-    """"Revision 2 of 6" — the walk position, not lifetime mastery.
-
-    ``session_progress`` cannot supply this: it counts mastered units across
-    the whole Constitution, which has nothing to do with where you are in
-    today's queue.
-    """
+    """"Revision 2 of 6" / "Learning 2 of 5" — walk position, not lifetime mastery."""
     position = session.position_of(unit_id)
     if position is None or not session.items:
         return None
-    return f"Revision {position} of {len(session.items)}"
+    if session.kind == REVISION_KIND:
+        return f"Revision {position} of {len(session.items)}"
+    return f"Learning {position} of {len(session.items)}"
+
+
+def maybe_activate_auto_plan(engine: ReminderEngine, *, as_of: date) -> None:
+    """Write activated_at on first persisted NEW Done while Auto is selected."""
+    try:
+        plan = engine.get_learning_plan()
+    except Exception as error:  # noqa: BLE001
+        if not _is_missing_study_session_table(error):
+            raise
+        return
+    if plan.mode != "auto" or plan.activated_at is not None:
+        return
+    engine.activate_learning_plan(as_of)
+
+
+def start_or_resume_learning(
+    engine: ReminderEngine,
+    *,
+    kind: str,
+    unit_ids: list[str],
+    as_of: date | None = None,
+) -> StudySession | None:
+    """Resume today's learning session, or snapshot ``unit_ids`` once.
+
+    Opening Start does not activate Auto Plan. The snapshot is durable: a
+    refresh walks the same list.
+    """
+    today = as_of or user_today(engine)
+    existing = engine.active_study_session(kind=kind, plan_date=today)  # type: ignore[arg-type]
+    if existing is not None:
+        return existing
+    if not unit_ids:
+        return None
+    return engine.create_study_session(
+        session_id=uuid.uuid4().hex,
+        kind=kind,  # type: ignore[arg-type]
+        plan_date=today,
+        unit_ids=unit_ids,
+    )
+
+
+def select_today_mix(
+    engine: ReminderEngine,
+    *,
+    target: int,
+    as_of: date,
+    claimed: set[str] | None = None,
+    remaining_slots: int | None = None,
+    entitlements_on: bool = False,
+    rng=None,
+) -> list[str]:
+    from constitution_memorizer.planner.eligibility import (
+        article_slot_policy,
+        eligible_candidates,
+    )
+    from constitution_memorizer.planner.selector import LearningMixSelector
+
+    candidates = eligible_candidates(
+        engine,
+        as_of=as_of,
+        claimed=claimed,
+        remaining_slots=remaining_slots,
+        entitlements_on=entitlements_on,
+    )
+    allow = article_slot_policy(
+        claimed=claimed or set(),
+        remaining_slots=0 if remaining_slots is None else remaining_slots,
+        entitlements_on=entitlements_on,
+    )
+    recent_theme = None
+    try:
+        recent_theme = engine.get_learning_plan().last_anchor_theme
+    except Exception:  # noqa: BLE001
+        recent_theme = None
+    mix = LearningMixSelector().select(
+        candidates,
+        target,
+        rng=rng,
+        allow=allow,
+        recent_theme=recent_theme,
+    )
+    if mix:
+        try:
+            engine.set_last_anchor_theme(mix[0].primary_theme)
+        except Exception:  # noqa: BLE001
+            pass
+    return [item.id for item in mix]
 
 
 @dataclass(frozen=True)

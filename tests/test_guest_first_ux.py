@@ -349,7 +349,17 @@ def test_phone_otp_welcome_then_dashboard(tmp_path: Path):
         data={"display_name": "Priya", "csrf_token": csrf2},
         follow_redirects=False,
     )
-    assert saved.headers["location"] == "/dashboard"
+    assert saved.headers["location"] == "/onboarding/plan"
+    plan = client.get("/onboarding/plan")
+    assert plan.status_code == 200
+    assert "Set a learning plan" in plan.text
+    csrf3 = client.cookies.get(CSRF_COOKIE_NAME) or csrf2
+    chosen = client.post(
+        "/onboarding/plan",
+        data={"mode": "self_paced", "csrf_token": csrf3},
+        follow_redirects=False,
+    )
+    assert chosen.headers["location"] == "/dashboard"
     dash = client.get("/dashboard")
     assert dash.status_code == 200
     assert "Priya" in dash.text
@@ -456,11 +466,9 @@ def test_dashboard_multiuser_layout(tmp_path: Path):
     assert ">Started<" not in html
     assert "dash-card-head" in html
     assert "dash-card-body" in html
-    assert "Nothing is due today" in html
-    # The learning hero is the only card in this state, so its CTA is primary
-    # rather than the secondary outline button it used to be. A fresh account
-    # has a first chain unit waiting, so the CTA is Continue, not Browse.
-    assert "Continue learning →" in html
+    assert "Nothing to review today" in html or "Nothing is due today" in html
+    # Fresh self-paced accounts are offered Plan my day; Browse remains below.
+    assert "Plan my day" in html or "Continue learning →" in html
     assert "dash-btn-full" in html
     # Account dropdown identity header + menu order
     assert "account-menu-identity" in html
