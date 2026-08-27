@@ -20,7 +20,7 @@ from constitution_memorizer.web.service import (
     AUTO_LEARNING_KIND,
     DAY_PLAN_KIND,
     REVISION_KIND,
-    _is_missing_study_session_table,
+    _is_missing_optional_schema,
     active_revision_session,
     continue_unit_id,
     due_checklist,
@@ -221,7 +221,7 @@ def _learning_plan_or_default(engine: ReminderEngine) -> UserLearningPlan:
     try:
         return engine.get_learning_plan()
     except Exception as error:  # noqa: BLE001 — schema-gap window
-        if not _is_missing_study_session_table(error):
+        if not _is_missing_optional_schema(error):
             raise
         return UserLearningPlan()
 
@@ -230,7 +230,7 @@ def _session_for_day(engine: ReminderEngine, kind: str, today: date):
     try:
         return engine.study_session_for_day(kind=kind, plan_date=today)  # type: ignore[arg-type]
     except Exception as error:  # noqa: BLE001
-        if not _is_missing_study_session_table(error):
+        if not _is_missing_optional_schema(error):
             raise
         return None
 
@@ -312,7 +312,7 @@ def build_dashboard_context(
                 **(mix_eligibility or {}),
             )
         except Exception as error:  # noqa: BLE001
-            if not _is_missing_study_session_table(error):
+            if not _is_missing_optional_schema(error):
                 raise
 
     learning_session = None
@@ -321,7 +321,7 @@ def build_dashboard_context(
             try:
                 learning_session = eng.active_study_session(kind=kind, plan_date=today)
             except Exception as error:  # noqa: BLE001
-                if not _is_missing_study_session_table(error):
+                if not _is_missing_optional_schema(error):
                     raise
                 learning_session = None
                 break
@@ -340,7 +340,7 @@ def build_dashboard_context(
     try:
         unseen = remaining_unseen_count(eng, as_of=today, **(mix_eligibility or {}))
     except Exception as error:  # noqa: BLE001
-        if not _is_missing_study_session_table(error):
+        if not _is_missing_optional_schema(error):
             raise
 
     today_new_ids: list[str] = []
@@ -354,7 +354,7 @@ def build_dashboard_context(
                 if unit is not None:
                     today_new_titles.append(unit.display_title)
     except Exception as error:  # noqa: BLE001
-        if not _is_missing_study_session_table(error):
+        if not _is_missing_optional_schema(error):
             raise
     if today_session_ids_from_session := (
         [item.learning_unit_id for item in learning_today.items]
@@ -403,7 +403,7 @@ def build_dashboard_context(
             today_new_count = today_plan.new_capacity
             today_pace = pace_label(plan.daily_target)
     except Exception as error:  # noqa: BLE001
-        if not _is_missing_study_session_table(error):
+        if not _is_missing_optional_schema(error):
             raise
 
     learning_cta = "browse"

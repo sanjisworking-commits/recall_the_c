@@ -35,14 +35,14 @@ def _reviews_from_learn_date(learn_date: date, count: int) -> dict[date, int]:
 
 def _learning_session_on(engine: ReminderEngine, day: date) -> bool:
     """True when today's Auto or Plan-my-day session already exists (any status)."""
-    from constitution_memorizer.web.service import _is_missing_study_session_table
+    from constitution_memorizer.web.service import _is_missing_optional_schema
 
     for kind in ("auto_learning", "day_plan"):
         try:
             if engine.study_session_for_day(kind=kind, plan_date=day) is not None:
                 return True
         except Exception as error:  # noqa: BLE001
-            if _is_missing_study_session_table(error):
+            if _is_missing_optional_schema(error):
                 return False
             raise
     return False
@@ -76,9 +76,10 @@ class LearningPlanner:
         auto_entitled: bool = True,
     ) -> list[PlannedDay]:
         from constitution_memorizer.planner.roadmap import WINDOW_DAYS, roadmap_horizon
-        from constitution_memorizer.web.service import _is_missing_study_session_table
+        from constitution_memorizer.web.service import _is_missing_optional_schema
 
         occupied = _actual_review_occupancy(engine, as_of=as_of)
+        hypothetical: dict[date, int] = defaultdict(int)
         can_plan = auto_entitled and auto_is_projectable(plan)
         window_end = roadmap_horizon(as_of)
         persisted: dict[date, list[str]] = {}
@@ -89,7 +90,7 @@ class LearningPlanner:
                         item.learning_unit_id for item in day.items
                     ]
             except Exception as error:  # noqa: BLE001
-                if not _is_missing_study_session_table(error):
+                if not _is_missing_optional_schema(error):
                     raise
         today_session_ids: list[str] | None = None
         try:
@@ -97,7 +98,7 @@ class LearningPlanner:
             if session is not None:
                 today_session_ids = [item.learning_unit_id for item in session.items]
         except Exception as error:  # noqa: BLE001
-            if not _is_missing_study_session_table(error):
+            if not _is_missing_optional_schema(error):
                 raise
 
         skipped: set[str] = set()
@@ -116,7 +117,7 @@ class LearningPlanner:
                     if item.status == "pending"
                 }
         except Exception as error:  # noqa: BLE001
-            if not _is_missing_study_session_table(error):
+            if not _is_missing_optional_schema(error):
                 raise
 
         from constitution_memorizer.planner.eligibility import is_unlearned
@@ -133,12 +134,14 @@ class LearningPlanner:
                     if not is_unlearned(engine, unit_id):
                         continue
                     for when, count in _reviews_from_learn_date(day, 1).items():
-                        occupied[when] += count
+                        hypothetical[when] += count
 
         days: list[PlannedDay] = []
         cursor = as_of
         while cursor <= until:
-            reviews = occupied.get(cursor, 0)
+            actual = occupied.get(cursor, 0)
+            projected = hypothetical.get(cursor, 0) if cursor <= window_end else 0
+            reviews = actual + projected
             new_capacity = 0
             if reviews > 0:
                 kind: str = "review"

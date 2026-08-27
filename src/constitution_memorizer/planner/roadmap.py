@@ -15,6 +15,7 @@ from datetime import date, timedelta
 
 from constitution_memorizer.learning.schemas import LearningUnit, LearningUnitType
 from constitution_memorizer.planner.eligibility import article_slot_policy
+from constitution_memorizer.planner.models import MixCandidate
 from constitution_memorizer.planner.planner import (
     _actual_review_occupancy,
     _reviews_from_learn_date,
@@ -74,6 +75,29 @@ def _eligible_for_mix(unit: LearningUnit, splits: Mapping[str, SplitMode]) -> bo
         return False
     if unit.allows_letter_split and splits.get(unit.id) is None:
         return False
+    return True
+
+
+def _window_unit_eligible(
+    unit: LearningUnit | None,
+    progress: Mapping[str, ProgressRecord],
+    splits: Mapping[str, SplitMode],
+    *,
+    claimed: set[str],
+    remaining_slots: int,
+    entitlements_on: bool,
+) -> bool:
+    """Same mix-selection filter used for selector tail fill and queue pop."""
+    if unit is None or unit.type == LearningUnitType.PART_OVERVIEW:
+        return False
+    if not _unlearned(progress, unit.id):
+        return False
+    if not _eligible_for_mix(unit, splits):
+        return False
+    if entitlements_on:
+        article = unit.article_number
+        if article and article not in claimed and remaining_slots <= 0:
+            return False
     return True
 
 
@@ -180,18 +204,17 @@ def _mix_candidates(
     eligible: list[LearningUnit] = []
     slots = max(0, remaining_slots)
     for unit in units.values():
-        if unit.type == LearningUnitType.PART_OVERVIEW:
-            continue
         if unit.id in exclude:
             continue
-        if not _unlearned(progress, unit.id):
+        if not _window_unit_eligible(
+            unit,
+            progress,
+            splits,
+            claimed=claimed,
+            remaining_slots=slots,
+            entitlements_on=entitlements_on,
+        ):
             continue
-        if not _eligible_for_mix(unit, splits):
-            continue
-        if entitlements_on:
-            article = unit.article_number
-            if article and article not in claimed and slots <= 0:
-                continue
         eligible.append(unit)
     eligible.sort(key=lambda item: (item.revision_order, item.id))
     return candidates_from_units(eligible)
@@ -236,7 +259,11 @@ def compute_auto_window(
     occupied = _occupancy_from_progress(snapshot.progress, as_of=as_of)
     assigned: set[str] = set()
     if today_session is not None:
-        assigned.update(item.learning_unit_id for item in today_session.items)
+        assigned.update(
+            item.learning_unit_id
+            for item in today_session.items
+            if item.status in {"pending", "completed"}
+        )
         pending = _pending_on(today_session)
         skipped_today = _skipped_on(today_session)
         for item in today_session.items:
@@ -273,7 +300,16 @@ def compute_auto_window(
         chosen: list[str] = []
         while len(chosen) < target and queue:
             unit_id = queue.popleft()
-            if unit_id in assigned or not _unlearned(progress, unit_id):
+            if unit_id in assigned or unit_id in chosen:
+                continue
+            if not _window_unit_eligible(
+                units.get(unit_id),
+                progress,
+                snapshot.split_preferences,
+                claimed=claimed_keys,
+                remaining_slots=remaining_slots,
+                entitlements_on=entitlements_on,
+            ):
                 continue
             chosen.append(unit_id)
         if len(chosen) < target:
@@ -314,6 +350,63 @@ def compute_auto_window(
                     occupied[when] += count
         cursor += timedelta(days=1)
     return written
+
+
+def auto_roadmap_needs_reconcile(
+    engine: ReminderEngine,
+    plan: UserLearningPlan,
+    *,
+    as_of: date,
+    auto_entitled: bool,
+) -> bool:
+    """True when a GET should run one durable reconcile.
+
+    Freshness is structural: day coverage and plan metadata. An
+    ``auto_plan_day`` with zero items is valid (REVIEW-only or exhausted
+    unseen curriculum) and is not treated as stale.
+
+    A current Auto roadmap is fresh when:
+
+    * an ``auto_plan_day`` exists for every local date ``as_of`` … ``as_of+14``
+    * no Auto day rows remain beyond that horizon
+    * mutable future days carry the current plan ``daily_target``
+    * today's started/completed session is left frozen (its day target may
+      differ from the current plan)
+
+    GET may reconcile once when the window is missing, the local date rolled
+    over, target metadata is unapplied on mutable days, leftover tail rows
+    exist, or migration 0015 just landed. Split-preference and occupancy
+    changes are write-path triggers, not GET freshness signals.
+    """
+    horizon = roadmap_horizon(as_of)
+    far = horizon + timedelta(days=366)
+    if not (auto_entitled and plan.is_auto):
+        return bool(engine.list_auto_plan_window(as_of, far))
+
+    days = engine.list_auto_plan_window(as_of, horizon)
+    covered = {day.plan_date for day in days}
+    expected = {as_of + timedelta(days=offset) for offset in range(WINDOW_DAYS)}
+    if covered != expected:
+        return True
+    if engine.list_auto_plan_window(horizon + timedelta(days=1), far):
+        return True
+
+    today_frozen = False
+    try:
+        today_frozen = (
+            engine.study_session_for_day(kind="auto_learning", plan_date=as_of)
+            is not None
+        )
+    except Exception:  # noqa: BLE001 — missing session tables: treat as unfrozen
+        today_frozen = False
+
+    target = plan.daily_target
+    for day in days:
+        if day.plan_date == as_of and today_frozen:
+            continue
+        if day.daily_target != target:
+            return True
+    return False
 
 
 def reconcile_auto_roadmap(

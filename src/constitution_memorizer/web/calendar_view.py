@@ -172,12 +172,12 @@ def _overlay_capacity_markers(
     from constitution_memorizer.planner.planner import LearningPlanner, _reviews_from_learn_date
     from constitution_memorizer.planner.roadmap import roadmap_horizon
     from constitution_memorizer.progress.repository import UserLearningPlan
-    from constitution_memorizer.web.service import _is_missing_study_session_table
+    from constitution_memorizer.web.service import _is_missing_optional_schema
 
     try:
         plan = engine.get_learning_plan()
     except Exception as error:  # noqa: BLE001
-        if not _is_missing_study_session_table(error):
+        if not _is_missing_optional_schema(error):
             raise
         plan = UserLearningPlan()
     window_end = roadmap_horizon(today)
@@ -193,7 +193,7 @@ def _overlay_capacity_markers(
             elif day.plan_date <= window_end:
                 persisted[day.plan_date] = ids
     except Exception as error:  # noqa: BLE001
-        if not _is_missing_study_session_table(error):
+        if not _is_missing_optional_schema(error):
             raise
     today_session_ids: list[str] | None = None
     try:
@@ -202,7 +202,7 @@ def _overlay_capacity_markers(
             today_session_ids = [item.learning_unit_id for item in session.items]
             persisted[today] = today_session_ids
     except Exception as error:  # noqa: BLE001
-        if not _is_missing_study_session_table(error):
+        if not _is_missing_optional_schema(error):
             raise
 
     try:
@@ -215,7 +215,7 @@ def _overlay_capacity_markers(
             auto_entitled=auto_entitled,
         )
     except Exception as error:  # noqa: BLE001
-        if not _is_missing_study_session_table(error):
+        if not _is_missing_optional_schema(error):
             raise
         return
 
@@ -232,7 +232,7 @@ def _overlay_capacity_markers(
                     continue
                 label = _chip_label(unit.display_title)
                 for when, _count in _reviews_from_learn_date(plan_date, 1).items():
-                    if month_start <= when <= month_end:
+                    if month_start <= when <= month_end and when <= window_end:
                         hypothetical_labels.setdefault(when, []).append(
                             (unit_id, label, unit.display_title)
                         )

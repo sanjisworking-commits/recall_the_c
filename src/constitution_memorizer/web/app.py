@@ -185,7 +185,7 @@ from constitution_memorizer.web.service import (
     methods_tracker_line,
     maybe_activate_auto_plan,
     needs_split_choice,
-    _is_missing_study_session_table,
+    _is_missing_optional_schema,
     REVISION_INTENT_CONSUME,
     REVISION_INTENT_PRACTICE,
     early_revision_due,
@@ -777,6 +777,7 @@ def create_app(
             eng,
             as_of=user_today(eng),
             auto_entitled=can_use_auto_plan(request),
+            force=True,
             **args,
         )
 
@@ -1633,7 +1634,7 @@ def create_app(
         try:
             session = start_or_resume_revision(eng, as_of=today)
         except Exception as error:  # noqa: BLE001 — re-raised unless it is the schema gap
-            if not _is_missing_study_session_table(error):
+            if not _is_missing_optional_schema(error):
                 raise
             # Code is live ahead of its migration. Fall back to the behaviour
             # this CTA replaced — walk the due list sequentially — so the
