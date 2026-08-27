@@ -269,7 +269,6 @@ def test_admin_auto_plan_generates_new_capacity(tmp_path: Path):
         follow_redirects=False,
     )
     eng = _engine(client)
-    eng.activate_learning_plan(user_today(eng))
     calendar = client.get("/calendar")
     assert calendar.status_code == 200
     assert "NEW ·" in calendar.text

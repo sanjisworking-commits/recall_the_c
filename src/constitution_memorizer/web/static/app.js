@@ -1613,6 +1613,9 @@
     }
     const learnRoot = panel.closest(".learn");
     const unitId = learnRoot ? learnRoot.getAttribute("data-unit-id") || "" : "";
+    const revisionIntent = learnRoot
+      ? learnRoot.getAttribute("data-revision-intent") || ""
+      : "";
     const cycle = parseInt(panel.getAttribute("data-quiz-cycle") || "0", 10) || 0;
     const fieldsets = Array.from(panel.querySelectorAll("[data-quiz-q]"));
     let errorEl = null;
@@ -1764,7 +1767,11 @@
           "Content-Type": "application/json",
           "X-Requested-With": "XMLHttpRequest",
         },
-        body: JSON.stringify({ cycle: cycle, answers: collected.answers }),
+        body: JSON.stringify({
+          cycle: cycle,
+          answers: collected.answers,
+          revision_intent: revisionIntent || null,
+        }),
       })
         .then((response) => {
           const type = response.headers.get("content-type") || "";
@@ -2105,6 +2112,7 @@
     };
     const isGuest = learn.hasAttribute("data-guest-learn");
     const unitId = learn.getAttribute("data-unit-id") || "";
+    const revisionIntent = learn.getAttribute("data-revision-intent") || "";
     // Scoped to the tab strip on purpose. The phone's deck cards also carry
     // data-learn-mode so clicks route through the handler below, but
     // applyTabMarks rewrites textContent — over a card that wipes its title,
@@ -2417,7 +2425,12 @@
       inFlight.add(mode);
       const body = new FormData();
       body.append("mode", mode);
-      fetch("/learn/" + encodeURIComponent(unitId) + "/seen", {
+      if (revisionIntent) {
+        body.append("revision_intent", revisionIntent);
+      }
+      const seenUrl = "/learn/" + encodeURIComponent(unitId) + "/seen"
+        + (revisionIntent ? "?revision_intent=" + encodeURIComponent(revisionIntent) : "");
+      fetch(seenUrl, {
         method: "POST",
         credentials: "same-origin",
         headers: {

@@ -18,6 +18,7 @@ from constitution_memorizer.progress.repository import (
     NEWS_ARTICLES_KEY,
     NOTIFICATION_FREQUENCY_KEY,
     THEME_KEY,
+    AutoPlanDay,
     BillingOrder,
     CompletionProgress,
     NotificationFrequency,
@@ -496,6 +497,7 @@ class ReminderEngine:
         daily_target: int | None,
         prompt_dismissed_on: date | None = None,
         last_anchor_theme: str | None = None,
+        as_of: date | None = None,
     ) -> UserLearningPlan:
         return self.repo.upsert_learning_plan(
             self.user_id,
@@ -503,6 +505,7 @@ class ReminderEngine:
             daily_target=daily_target,
             prompt_dismissed_on=prompt_dismissed_on,
             last_anchor_theme=last_anchor_theme,
+            as_of=as_of,
         )
 
     def activate_learning_plan(self, as_of: date) -> UserLearningPlan:
@@ -513,6 +516,35 @@ class ReminderEngine:
 
     def set_last_anchor_theme(self, theme: str | None) -> None:
         self.repo.set_last_anchor_theme(self.user_id, theme)
+
+    def list_auto_plan_window(self, start: date, until: date) -> list[AutoPlanDay]:
+        return self.repo.list_auto_plan_window(self.user_id, start, until)
+
+    def list_auto_plan_day(self, plan_date: date) -> AutoPlanDay | None:
+        return self.repo.list_auto_plan_day(self.user_id, plan_date)
+
+    def replace_auto_plan_day(
+        self, plan_date: date, daily_target: int, unit_ids: list[str]
+    ) -> AutoPlanDay:
+        return self.repo.replace_auto_plan_day(
+            self.user_id, plan_date, daily_target, unit_ids
+        )
+
+    def clear_future_auto_plan(self, as_of: date) -> None:
+        self.repo.clear_future_auto_plan(self.user_id, as_of)
+
+    def delete_auto_plan_after(self, horizon: date) -> None:
+        self.repo.delete_auto_plan_after(self.user_id, horizon)
+
+    def replace_auto_plan_window_atomic(
+        self, as_of: date, horizon: date, days
+    ) -> None:
+        self.repo.replace_auto_plan_window_atomic(
+            self.user_id, as_of, horizon, days
+        )
+
+    def apply_auto_plan_reconcile(self, as_of: date, horizon: date, builder) -> None:
+        self.repo.apply_auto_plan_reconcile(self.user_id, as_of, horizon, builder)
 
     def latest_paid_billing_order(self) -> BillingOrder | None:
         if self._billing_loaded:
@@ -661,6 +693,92 @@ class ReminderEngine:
                 self._claimed_cache.add(str(claim_article))
         else:
             # Legacy call shape — keeps simple repo wrappers compatible.
+            progress = self.repo.commit_completion(self.user_id, unit_id, command)
+        _record_timing("completion_commit", started)
+        self._store_progress(progress)
+        if self._modes_seen_cache is not None:
+            self._modes_seen_cache[unit_id] = set()
+
+        started = perf_counter()
+        next_unit_id = self.resolve_next_unit_id(unit_id)
+        _record_timing("done_schedule", started)
+        return MarkDoneResult(
+            unit_id=unit_id,
+            progress=progress,
+            next_unit_id=next_unit_id,
+            modes_complete=True,
+        )
+
+    def complete_revision_early(
+        self,
+        unit_id: str,
+        *,
+        as_of: date | None = None,
+        require_all_modes: bool = True,
+        required_modes: frozenset[str] | None = None,
+        claim_article: str | None = None,
+    ) -> MarkDoneResult:
+        """Consume a future scheduled revision without re-anchoring off today.
+
+        Reuses ``mark_done``'s completion pipeline. The only scheduling
+        difference is ``next_revision = scheduled_due + next_interval``.
+        """
+        if unit_id not in self.units:
+            raise KeyError(f"Unknown learning unit id: {unit_id}")
+
+        started = perf_counter()
+        state = self.repo.load_completion_state(self.user_id, unit_id)
+        _record_timing("completion_state", started)
+
+        if self._split_cache is None:
+            self._split_cache = dict(state.split_preferences)
+
+        required = LEARN_MODES_SET if required_modes is None else required_modes
+        if require_all_modes and not required.issubset(state.modes_seen):
+            raise ModesIncompleteError(unit_id, state.modes_seen)
+
+        today = as_of or date.today()
+        current = state.progress
+        if (
+            current is None
+            or current.status != "review"
+            or current.next_revision is None
+            or current.next_revision <= today
+        ):
+            raise ValueError(
+                f"Unit {unit_id} is not an early scheduled revision"
+            )
+
+        scheduled_due = current.next_revision
+        times = current.times_completed + 1
+        nxt = advance_interval(current.interval_days)
+        if nxt is None:
+            command = CompletionProgress(
+                status="mastered",
+                times_completed=times,
+                last_completed=today,
+                next_revision=None,
+                interval_days=INTERVAL_LADDER[-1],
+                ease_factor=DEFAULT_EASE_FACTOR,
+            )
+        else:
+            command = CompletionProgress(
+                status="review",
+                times_completed=times,
+                last_completed=today,
+                next_revision=scheduled_due + timedelta(days=nxt),
+                interval_days=nxt,
+                ease_factor=DEFAULT_EASE_FACTOR,
+            )
+
+        started = perf_counter()
+        if claim_article:
+            progress = self.repo.commit_completion(
+                self.user_id, unit_id, command, claim_article=str(claim_article)
+            )
+            if self._claimed_cache is not None:
+                self._claimed_cache.add(str(claim_article))
+        else:
             progress = self.repo.commit_completion(self.user_id, unit_id, command)
         _record_timing("completion_commit", started)
         self._store_progress(progress)

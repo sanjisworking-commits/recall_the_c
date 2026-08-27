@@ -167,10 +167,10 @@ def _overlay_capacity_markers(
     today: date,
     auto_entitled: bool,
 ) -> None:
-    """Add NEW · N / REVIEW · N capacity chips. Future NEW is never a unit id."""
-    # Imported lazily: LearningPlanner reads remaining_review_schedule from here.
-    from constitution_memorizer.planner.eligibility import remaining_unseen_count
-    from constitution_memorizer.planner.planner import LearningPlanner
+    """Add NEW · N / REVIEW · N chips plus exact planned-unit titles."""
+    from constitution_memorizer.planner.eligibility import is_unlearned
+    from constitution_memorizer.planner.planner import LearningPlanner, _reviews_from_learn_date
+    from constitution_memorizer.planner.roadmap import roadmap_horizon
     from constitution_memorizer.progress.repository import UserLearningPlan
     from constitution_memorizer.web.service import _is_missing_study_session_table
 
@@ -180,26 +180,68 @@ def _overlay_capacity_markers(
         if not _is_missing_study_session_table(error):
             raise
         plan = UserLearningPlan()
+    window_end = roadmap_horizon(today)
+    persisted: dict[date, list[str]] = {}
+    historical: dict[date, list[str]] = {}
     try:
-        unseen = remaining_unseen_count(engine, as_of=today)
+        hist_start = month_start
+        hist_days = engine.list_auto_plan_window(hist_start, month_end)
+        for day in hist_days:
+            ids = [item.learning_unit_id for item in day.items]
+            if day.plan_date < today:
+                historical[day.plan_date] = ids
+            elif day.plan_date <= window_end:
+                persisted[day.plan_date] = ids
+    except Exception as error:  # noqa: BLE001
+        if not _is_missing_study_session_table(error):
+            raise
+    today_session_ids: list[str] | None = None
+    try:
+        session = engine.study_session_for_day(kind="auto_learning", plan_date=today)
+        if session is not None:
+            today_session_ids = [item.learning_unit_id for item in session.items]
+            persisted[today] = today_session_ids
+    except Exception as error:  # noqa: BLE001
+        if not _is_missing_study_session_table(error):
+            raise
+
+    try:
         days = LearningPlanner().project(
             engine,
             plan,
             as_of=today,
             until=month_end,
-            remaining_unseen=unseen,
+            remaining_unseen=0,
             auto_entitled=auto_entitled,
         )
     except Exception as error:  # noqa: BLE001
         if not _is_missing_study_session_table(error):
             raise
         return
+
+    hypothetical_labels: dict[date, list[tuple[str, str, str]]] = {}
+    if auto_entitled and plan.is_auto:
+        for plan_date, unit_ids in persisted.items():
+            if not (today <= plan_date <= window_end):
+                continue
+            for unit_id in unit_ids:
+                if not is_unlearned(engine, unit_id):
+                    continue
+                unit = engine.get_unit(unit_id)
+                if unit is None:
+                    continue
+                label = _chip_label(unit.display_title)
+                for when, _count in _reviews_from_learn_date(plan_date, 1).items():
+                    if month_start <= when <= month_end:
+                        hypothetical_labels.setdefault(when, []).append(
+                            (unit_id, label, unit.display_title)
+                        )
+
     for planned in days:
         if not (month_start <= planned.day <= month_end):
             continue
         if planned.kind == "review" and planned.review_count:
-            by_day[planned.day.day].insert(
-                0,
+            chips = [
                 CalendarChip(
                     kind="review_capacity",
                     unit_id="",
@@ -208,21 +250,69 @@ def _overlay_capacity_markers(
                         f"{planned.review_count} revision"
                         f"{'s' if planned.review_count != 1 else ''} on this day"
                     ),
-                ),
-            )
+                )
+            ]
+            for unit_id, label, title in hypothetical_labels.get(planned.day, []):
+                chips.append(
+                    CalendarChip(
+                        kind="review_capacity",
+                        unit_id=unit_id,
+                        label=label,
+                        title=f"{title} — projected review",
+                    )
+                )
+            by_day[planned.day.day][0:0] = chips
         elif planned.kind == "new" and planned.new_capacity:
-            by_day[planned.day.day].insert(
-                0,
+            ids = persisted.get(planned.day, [])
+            chips = [
                 CalendarChip(
                     kind="new_planned",
                     unit_id="",
                     label=f"NEW · {planned.new_capacity}",
                     title=(
                         f"{planned.new_capacity} new clause"
-                        f"{'s' if planned.new_capacity != 1 else ''} of capacity"
+                        f"{'s' if planned.new_capacity != 1 else ''} planned"
                     ),
-                ),
+                )
+            ]
+            for unit_id in ids:
+                unit = engine.get_unit(unit_id)
+                title = unit.display_title if unit is not None else unit_id
+                chips.append(
+                    CalendarChip(
+                        kind="new_planned",
+                        unit_id=unit_id,
+                        label=_chip_label(title),
+                        title=title,
+                    )
+                )
+            by_day[planned.day.day][0:0] = chips
+
+    for plan_date, unit_ids in historical.items():
+        if not (month_start <= plan_date <= month_end) or not unit_ids:
+            continue
+        chips = [
+            CalendarChip(
+                kind="new_planned",
+                unit_id="",
+                label=f"NEW · {len(unit_ids)}",
+                title=f"{len(unit_ids)} new clauses planned that day",
             )
+        ]
+        for unit_id in unit_ids:
+            unit = engine.get_unit(unit_id)
+            title = unit.display_title if unit is not None else unit_id
+            chips.append(
+                CalendarChip(
+                    kind="new_planned",
+                    unit_id=unit_id,
+                    label=_chip_label(title),
+                    title=title,
+                )
+            )
+        existing = by_day[plan_date.day]
+        if not any(chip.kind == "new_planned" for chip in existing):
+            by_day[plan_date.day][0:0] = chips
 
 
 def build_calendar_month(

@@ -150,6 +150,101 @@ def maybe_activate_auto_plan(engine: ReminderEngine, *, as_of: date) -> None:
     engine.activate_learning_plan(as_of)
 
 
+def ensure_auto_roadmap(
+    engine: ReminderEngine,
+    *,
+    as_of: date,
+    auto_entitled: bool,
+    claimed: set[str] | None = None,
+    remaining_slots: int | None = None,
+    entitlements_on: bool = False,
+) -> None:
+    """Reconcile the rolling 15-day Auto window if Auto is selected."""
+    from constitution_memorizer.planner.roadmap import reconcile_auto_roadmap
+
+    try:
+        plan = engine.get_learning_plan()
+    except Exception as error:  # noqa: BLE001
+        if not _is_missing_study_session_table(error):
+            raise
+        return
+    try:
+        reconcile_auto_roadmap(
+            engine,
+            plan,
+            as_of=as_of,
+            auto_entitled=auto_entitled,
+            claimed=claimed,
+            remaining_slots=remaining_slots,
+            entitlements_on=entitlements_on,
+        )
+    except Exception as error:  # noqa: BLE001
+        if not _is_missing_study_session_table(error):
+            raise
+
+
+REVISION_INTENT_PRACTICE = "practice"
+REVISION_INTENT_CONSUME = "consume"
+VALID_REVISION_INTENTS = frozenset((REVISION_INTENT_PRACTICE, REVISION_INTENT_CONSUME))
+
+
+def _progress_row(engine: ReminderEngine, unit_id: str):
+    """Single-unit progress without forcing a list_all_progress preload."""
+    cache = getattr(engine, "_progress_cache", None)
+    if cache is not None:
+        return cache.get(unit_id)
+    return engine.repo.get_progress(engine.user_id, unit_id)
+
+
+def early_revision_due(
+    engine: ReminderEngine, unit_id: str, *, as_of: date
+) -> date | None:
+    """Scheduled due date when this unit is a not-yet-due review, else None."""
+    progress = _progress_row(engine, unit_id)
+    if progress is None or progress.status != "review":
+        return None
+    if progress.next_revision is None or progress.next_revision <= as_of:
+        return None
+    return progress.next_revision
+
+
+def parse_revision_intent(raw: object) -> str | None:
+    value = str(raw or "").strip().lower()
+    if value in VALID_REVISION_INTENTS:
+        return value
+    return None
+
+
+def may_persist_revision_modes(
+    engine: ReminderEngine,
+    unit_id: str,
+    *,
+    as_of: date,
+    intent: str | None,
+) -> bool:
+    """False when an early review visit must not write persisted modes_seen."""
+    if early_revision_due(engine, unit_id, as_of=as_of) is None:
+        return True
+    return intent == REVISION_INTENT_CONSUME
+
+
+def persist_session_anchor_theme(engine: ReminderEngine, unit_ids: list[str]) -> None:
+    """Record last_anchor_theme only when today's Auto session is created."""
+    if not unit_ids:
+        return
+    from constitution_memorizer.planner.relationships import candidates_from_units
+
+    unit = engine.get_unit(unit_ids[0])
+    if unit is None:
+        return
+    mix = candidates_from_units([unit])
+    if mix:
+        try:
+            engine.set_last_anchor_theme(mix[0].primary_theme)
+        except Exception:  # noqa: BLE001
+            pass
+
+
 def start_or_resume_learning(
     engine: ReminderEngine,
     *,

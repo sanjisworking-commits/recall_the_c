@@ -63,7 +63,7 @@ def _actual_review_occupancy(engine: ReminderEngine, *, as_of: date) -> dict[dat
 
 
 class LearningPlanner:
-    """Future NEW capacity only. Never assigns clause IDs months in advance."""
+    """Read-model of the persisted Auto window plus actual review occupancy."""
 
     def project(
         self,
@@ -75,39 +75,89 @@ class LearningPlanner:
         remaining_unseen: int,
         auto_entitled: bool = True,
     ) -> list[PlannedDay]:
+        from constitution_memorizer.planner.roadmap import WINDOW_DAYS, roadmap_horizon
+        from constitution_memorizer.web.service import _is_missing_study_session_table
+
         occupied = _actual_review_occupancy(engine, as_of=as_of)
-        remaining = max(0, remaining_unseen)
         can_plan = auto_entitled and auto_is_projectable(plan)
-        target = plan.daily_target if can_plan else None
-        today_session_used = _learning_session_on(engine, as_of)
-        sim_end = until + timedelta(days=_TAIL_DAYS)
-        cursor = as_of
+        window_end = roadmap_horizon(as_of)
+        persisted: dict[date, list[str]] = {}
+        if can_plan:
+            try:
+                for day in engine.list_auto_plan_window(as_of, min(until, window_end)):
+                    persisted[day.plan_date] = [
+                        item.learning_unit_id for item in day.items
+                    ]
+            except Exception as error:  # noqa: BLE001
+                if not _is_missing_study_session_table(error):
+                    raise
+        today_session_ids: list[str] | None = None
+        try:
+            session = engine.study_session_for_day(kind="auto_learning", plan_date=as_of)
+            if session is not None:
+                today_session_ids = [item.learning_unit_id for item in session.items]
+        except Exception as error:  # noqa: BLE001
+            if not _is_missing_study_session_table(error):
+                raise
+
+        skipped: set[str] = set()
+        pending: set[str] = set()
+        try:
+            session = engine.study_session_for_day(kind="auto_learning", plan_date=as_of)
+            if session is not None:
+                skipped = {
+                    item.learning_unit_id
+                    for item in session.items
+                    if item.status == "deferred"
+                }
+                pending = {
+                    item.learning_unit_id
+                    for item in session.items
+                    if item.status == "pending"
+                }
+        except Exception as error:  # noqa: BLE001
+            if not _is_missing_study_session_table(error):
+                raise
+
+        from constitution_memorizer.planner.eligibility import is_unlearned
+
+        if can_plan:
+            for day, unit_ids in persisted.items():
+                if day < as_of:
+                    continue
+                ids = today_session_ids if day == as_of and today_session_ids is not None else unit_ids
+                for unit_id in ids:
+                    if day == as_of and today_session_ids is not None:
+                        if unit_id in skipped or unit_id not in pending:
+                            continue
+                    if not is_unlearned(engine, unit_id):
+                        continue
+                    for when, count in _reviews_from_learn_date(day, 1).items():
+                        occupied[when] += count
+
         days: list[PlannedDay] = []
-        while cursor <= sim_end:
+        cursor = as_of
+        while cursor <= until:
             reviews = occupied.get(cursor, 0)
             new_capacity = 0
             if reviews > 0:
                 kind: str = "review"
-            elif cursor == as_of and today_session_used:
-                # Today's Auto / Plan-my-day session already consumed the slot.
+            elif cursor > window_end or not can_plan:
                 kind = "empty"
-            elif can_plan and target and remaining > 0:
-                kind = "new"
-                new_capacity = min(int(target), remaining)
-                remaining -= new_capacity
-                for when, count in _reviews_from_learn_date(cursor, new_capacity).items():
-                    occupied[when] += count
             else:
-                kind = "empty"
-            if cursor <= until:
-                days.append(
-                    PlannedDay(
-                        day=cursor,
-                        kind=kind,  # type: ignore[arg-type]
-                        review_count=reviews,
-                        new_capacity=new_capacity,
-                    )
+                ids = persisted.get(cursor, [])
+                if cursor == as_of and today_session_ids is not None:
+                    ids = today_session_ids
+                new_capacity = len(ids)
+                kind = "new" if new_capacity else "empty"
+            days.append(
+                PlannedDay(
+                    day=cursor,
+                    kind=kind,  # type: ignore[arg-type]
+                    review_count=reviews,
+                    new_capacity=new_capacity,
                 )
+            )
             cursor += timedelta(days=1)
         return days
 

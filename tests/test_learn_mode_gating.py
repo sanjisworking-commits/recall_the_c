@@ -232,7 +232,14 @@ def test_stale_cycle_submission_rejected(
     assert correct_quiz_answers(MINI_UNITS, "clause-1", 0) != correct_quiz_answers(
         MINI_UNITS, "clause-1", 1
     )
-    resp = submit_quiz(client, MINI_UNITS, "clause-1", cycle=1)
+    resp = client.post(
+        "/learn/clause-1/quiz?revision_intent=consume",
+        json={
+            "cycle": 1,
+            "answers": correct_quiz_answers(MINI_UNITS, "clause-1", 1),
+            "revision_intent": "consume",
+        },
+    )
     assert resp.status_code == 200
     assert "test" in repo.modes_seen(UID, "clause-1")
 

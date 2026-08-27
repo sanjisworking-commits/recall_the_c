@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable, Sequence
 from contextlib import ExitStack, contextmanager
 from datetime import date, datetime, timezone
 from typing import Any, Iterator
@@ -20,6 +21,9 @@ from constitution_memorizer.progress.repository import (
     VALID_NOTIFICATION_FREQUENCIES,
     VALID_THEMES,
     AccountBootstrap,
+    AutoPlanDay,
+    AutoPlanItem,
+    AutoPlanSnapshot,
     BillingOrder,
     CompletionProgress,
     CompletionState,
@@ -29,7 +33,10 @@ from constitution_memorizer.progress.repository import (
     _date_iso,
     _modes_by_unit_from_rows,
     _news_from_raw,
+    _auto_plan_days_from_rows,
+    _effective_on_for_upsert,
     _row_to_learning_plan,
+    _sessions_from_joined_rows,
     _theme_from_raw,
     NotificationFrequency,
     ProgressRecord,
@@ -65,6 +72,144 @@ def _row_progress(row: Any) -> ProgressRecord:
         updated_at=row["updated_at"].isoformat()
         if hasattr(row["updated_at"], "isoformat")
         else str(row["updated_at"]),
+    )
+
+
+def _pg_write_auto_plan_days(cur: Any, uid: Any, days: Sequence[AutoPlanDay], *, now: datetime) -> None:
+    for day in days:
+        cur.execute(
+            """
+            INSERT INTO auto_plan_day (
+                user_id, plan_date, daily_target, created_at, updated_at
+            ) VALUES (%s, %s, %s, %s, %s)
+            ON CONFLICT (user_id, plan_date) DO UPDATE SET
+                daily_target = EXCLUDED.daily_target,
+                updated_at = EXCLUDED.updated_at
+            """,
+            (uid, day.plan_date, int(day.daily_target), now, now),
+        )
+        cur.execute(
+            "DELETE FROM auto_plan_item WHERE user_id = %s AND plan_date = %s",
+            (uid, day.plan_date),
+        )
+        for item in day.items:
+            cur.execute(
+                """
+                INSERT INTO auto_plan_item (
+                    user_id, plan_date, learning_unit_id, position, created_at
+                ) VALUES (%s, %s, %s, %s, %s)
+                """,
+                (uid, day.plan_date, item.learning_unit_id, int(item.position), now),
+            )
+
+
+def _pg_clear_auto_plan_from(cur: Any, uid: Any, as_of: date) -> None:
+    cur.execute(
+        "DELETE FROM auto_plan_item WHERE user_id = %s AND plan_date >= %s",
+        (uid, as_of),
+    )
+    cur.execute(
+        "DELETE FROM auto_plan_day WHERE user_id = %s AND plan_date >= %s",
+        (uid, as_of),
+    )
+
+
+def _pg_delete_auto_plan_after(cur: Any, uid: Any, horizon: date) -> None:
+    cur.execute(
+        "DELETE FROM auto_plan_item WHERE user_id = %s AND plan_date > %s",
+        (uid, horizon),
+    )
+    cur.execute(
+        "DELETE FROM auto_plan_day WHERE user_id = %s AND plan_date > %s",
+        (uid, horizon),
+    )
+
+
+def _pg_replace_auto_plan_window(
+    cur: Any,
+    uid: Any,
+    as_of: date,
+    horizon: date,
+    days: Sequence[AutoPlanDay],
+) -> None:
+    for day in days:
+        if day.plan_date < as_of:
+            raise ValueError("cannot write auto_plan_date before as_of")
+    cur.execute(
+        """
+        DELETE FROM auto_plan_item
+        WHERE user_id = %s AND plan_date >= %s AND plan_date <= %s
+        """,
+        (uid, as_of, horizon),
+    )
+    cur.execute(
+        """
+        DELETE FROM auto_plan_day
+        WHERE user_id = %s AND plan_date >= %s AND plan_date <= %s
+        """,
+        (uid, as_of, horizon),
+    )
+    _pg_delete_auto_plan_after(cur, uid, horizon)
+    _pg_write_auto_plan_days(cur, uid, days, now=_utc_now())
+
+
+def _pg_load_auto_plan_snapshot(cur: Any, uid: Any, plan_row: Any) -> AutoPlanSnapshot:
+    cur.execute(
+        "SELECT * FROM learning_unit_progress WHERE user_id = %s",
+        (uid,),
+    )
+    progress_rows = cur.fetchall()
+    cur.execute(
+        "SELECT parent_clause_id, mode FROM split_preference WHERE user_id = %s",
+        (uid,),
+    )
+    split_rows = cur.fetchall()
+    cur.execute(
+        f"""
+        SELECT {_STUDY_SESSION_COLUMNS}
+        FROM study_session s
+        LEFT JOIN study_session_item i ON i.session_id = s.id
+        WHERE s.user_id = %s
+        ORDER BY s.plan_date ASC, s.kind ASC, s.created_at ASC, i.position ASC
+        """,
+        (uid,),
+    )
+    session_rows = cur.fetchall()
+    cur.execute(
+        """
+        SELECT user_id, plan_date, daily_target, created_at, updated_at
+        FROM auto_plan_day
+        WHERE user_id = %s
+        ORDER BY plan_date
+        """,
+        (uid,),
+    )
+    day_rows = cur.fetchall()
+    cur.execute(
+        """
+        SELECT user_id, plan_date, learning_unit_id, position, created_at
+        FROM auto_plan_item
+        WHERE user_id = %s
+        ORDER BY plan_date, position
+        """,
+        (uid,),
+    )
+    item_rows = cur.fetchall()
+    cur.execute(
+        "SELECT article_number FROM user_free_articles WHERE user_id = %s",
+        (uid,),
+    )
+    claimed_rows = cur.fetchall()
+    return AutoPlanSnapshot(
+        user_id=str(uid),
+        plan=_row_to_learning_plan(plan_row),
+        progress=tuple(_row_progress(row) for row in progress_rows),
+        split_preferences={
+            str(row["parent_clause_id"]): row["mode"] for row in split_rows
+        },
+        sessions=tuple(_sessions_from_joined_rows(session_rows)),
+        days=tuple(_auto_plan_days_from_rows(day_rows, item_rows)),
+        claimed_articles=frozenset(str(row["article_number"]) for row in claimed_rows),
     )
 
 
@@ -726,7 +871,7 @@ class PostgresProgressRepository:
             cur.execute(
                 """
                 SELECT mode, daily_target, activated_at, prompt_dismissed_on,
-                       last_anchor_theme, updated_at
+                       last_anchor_theme, target_effective_on, updated_at
                 FROM user_learning_plan
                 WHERE user_id = %s
                 """,
@@ -743,6 +888,7 @@ class PostgresProgressRepository:
         daily_target: int | None,
         prompt_dismissed_on: date | None = None,
         last_anchor_theme: str | None = None,
+        as_of: date | None = None,
     ) -> UserLearningPlan:
         if mode == "auto":
             if daily_target not in VALID_DAILY_TARGETS:
@@ -762,18 +908,23 @@ class PostgresProgressRepository:
             if last_anchor_theme is not None
             else current.last_anchor_theme
         )
+        effective_on = _effective_on_for_upsert(
+            current, mode=mode, daily_target=daily_target, as_of=as_of
+        )
         with self._cursor() as (conn, cur):
             cur.execute(
                 """
                 INSERT INTO user_learning_plan (
                     user_id, mode, daily_target, activated_at,
-                    prompt_dismissed_on, last_anchor_theme, updated_at
-                ) VALUES (%s, %s, %s, %s, %s, %s, %s)
+                    prompt_dismissed_on, last_anchor_theme, target_effective_on,
+                    updated_at
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                 ON CONFLICT (user_id) DO UPDATE SET
                     mode = EXCLUDED.mode,
                     daily_target = EXCLUDED.daily_target,
                     prompt_dismissed_on = EXCLUDED.prompt_dismissed_on,
                     last_anchor_theme = EXCLUDED.last_anchor_theme,
+                    target_effective_on = EXCLUDED.target_effective_on,
                     updated_at = EXCLUDED.updated_at
                 """,
                 (
@@ -783,6 +934,7 @@ class PostgresProgressRepository:
                     current.activated_at,
                     dismissed,
                     theme,
+                    effective_on,
                     now,
                 ),
             )
@@ -865,6 +1017,135 @@ class PostgresProgressRepository:
                 ),
             )
             conn.commit()
+
+    def list_auto_plan_window(
+        self, user_id: UUID | str, start: date, until: date
+    ) -> list[AutoPlanDay]:
+        uid = as_user_id(user_id)
+        with self._cursor() as (_conn, cur):
+            cur.execute(
+                """
+                SELECT user_id, plan_date, daily_target, created_at, updated_at
+                FROM auto_plan_day
+                WHERE user_id = %s AND plan_date >= %s AND plan_date <= %s
+                ORDER BY plan_date
+                """,
+                (uid, start, until),
+            )
+            day_rows = cur.fetchall()
+            cur.execute(
+                """
+                SELECT user_id, plan_date, learning_unit_id, position, created_at
+                FROM auto_plan_item
+                WHERE user_id = %s AND plan_date >= %s AND plan_date <= %s
+                ORDER BY plan_date, position
+                """,
+                (uid, start, until),
+            )
+            item_rows = cur.fetchall()
+        return _auto_plan_days_from_rows(day_rows, item_rows)
+
+    def list_auto_plan_day(
+        self, user_id: UUID | str, plan_date: date
+    ) -> AutoPlanDay | None:
+        days = self.list_auto_plan_window(user_id, plan_date, plan_date)
+        return days[0] if days else None
+
+    def replace_auto_plan_day(
+        self,
+        user_id: UUID | str,
+        plan_date: date,
+        daily_target: int,
+        unit_ids: Sequence[str],
+    ) -> AutoPlanDay:
+        day = AutoPlanDay(
+            plan_date=plan_date,
+            daily_target=int(daily_target),
+            items=tuple(
+                AutoPlanItem(
+                    plan_date=plan_date,
+                    learning_unit_id=unit_id,
+                    position=index,
+                )
+                for index, unit_id in enumerate(unit_ids)
+            ),
+        )
+        uid = as_user_id(user_id)
+        with self._cursor() as (conn, cur):
+            _pg_write_auto_plan_days(cur, uid, [day], now=_utc_now())
+            conn.commit()
+        stored = self.list_auto_plan_day(user_id, plan_date)
+        assert stored is not None
+        return stored
+
+    def clear_future_auto_plan(self, user_id: UUID | str, as_of: date) -> None:
+        uid = as_user_id(user_id)
+        with self._cursor() as (conn, cur):
+            _pg_clear_auto_plan_from(cur, uid, as_of)
+            conn.commit()
+
+    def delete_auto_plan_after(self, user_id: UUID | str, horizon: date) -> None:
+        uid = as_user_id(user_id)
+        with self._cursor() as (conn, cur):
+            _pg_delete_auto_plan_after(cur, uid, horizon)
+            conn.commit()
+
+    def replace_auto_plan_window_atomic(
+        self,
+        user_id: UUID | str,
+        as_of: date,
+        horizon: date,
+        days: Sequence[AutoPlanDay],
+    ) -> None:
+        uid = as_user_id(user_id)
+        with self._pool.connection() as conn:
+            with conn.transaction():
+                with conn.cursor(row_factory=self._dict_row) as cur:
+                    cur.execute(
+                        """
+                        SELECT user_id FROM user_learning_plan
+                        WHERE user_id = %s FOR UPDATE
+                        """,
+                        (uid,),
+                    )
+                    _pg_replace_auto_plan_window(cur, uid, as_of, horizon, days)
+
+    def apply_auto_plan_reconcile(
+        self,
+        user_id: UUID | str,
+        as_of: date,
+        horizon: date,
+        builder: Callable[[AutoPlanSnapshot], Sequence[AutoPlanDay] | None],
+    ) -> None:
+        uid = as_user_id(user_id)
+        with self._pool.connection() as conn:
+            with conn.transaction():
+                with conn.cursor(row_factory=self._dict_row) as cur:
+                    cur.execute(
+                        """
+                        INSERT INTO user_learning_plan (user_id, mode, updated_at)
+                        VALUES (%s, 'self_paced', %s)
+                        ON CONFLICT (user_id) DO NOTHING
+                        """,
+                        (uid, _utc_now()),
+                    )
+                    cur.execute(
+                        """
+                        SELECT mode, daily_target, activated_at, prompt_dismissed_on,
+                               last_anchor_theme, target_effective_on, updated_at
+                        FROM user_learning_plan
+                        WHERE user_id = %s
+                        FOR UPDATE
+                        """,
+                        (uid,),
+                    )
+                    plan_row = cur.fetchone()
+                    snapshot = _pg_load_auto_plan_snapshot(cur, uid, plan_row)
+                    days = builder(snapshot)
+                    if days is None:
+                        _pg_clear_auto_plan_from(cur, uid, as_of)
+                    else:
+                        _pg_replace_auto_plan_window(cur, uid, as_of, horizon, days)
 
     # ------------------------------------------------------------------ #
     # Billing orders (Razorpay Standard Checkout)                         #

@@ -1,0 +1,350 @@
+"""Persisted rolling 15-day Auto NEW roadmap.
+
+Occupancy math stays in ``planner.planner`` (actual SRS + hypothetical reviews
+from current/future unskipped NEW). This module only assigns exact unit IDs
+inside ``[as_of, as_of+14]`` and never writes ``plan_date < as_of``.
+"""
+
+from __future__ import annotations
+
+import hashlib
+import random
+from collections import deque
+from collections.abc import Mapping, Sequence
+from datetime import date, timedelta
+
+from constitution_memorizer.learning.schemas import LearningUnit, LearningUnitType
+from constitution_memorizer.planner.eligibility import article_slot_policy
+from constitution_memorizer.planner.planner import (
+    _actual_review_occupancy,
+    _reviews_from_learn_date,
+)
+from constitution_memorizer.planner.relationships import candidates_from_units
+from constitution_memorizer.planner.selector import LearningMixSelector
+from constitution_memorizer.progress.repository import (
+    AutoPlanDay,
+    AutoPlanItem,
+    AutoPlanSnapshot,
+    ProgressRecord,
+    SplitMode,
+    StudySession,
+    UserLearningPlan,
+    VALID_DAILY_TARGETS,
+)
+from constitution_memorizer.progress.scheduler import ReminderEngine
+
+WINDOW_DAYS = 15
+
+
+def roadmap_horizon(as_of: date) -> date:
+    return as_of + timedelta(days=WINDOW_DAYS - 1)
+
+
+def day_rng(user_id: str, day: date, daily_target: int) -> random.Random:
+    digest = hashlib.sha256(
+        f"{user_id}:{day.isoformat()}:{daily_target}".encode()
+    ).digest()
+    return random.Random(int.from_bytes(digest[:8], "big"))
+
+
+def _unlearned(progress: Mapping[str, ProgressRecord], unit_id: str) -> bool:
+    row = progress.get(unit_id)
+    if row is None:
+        return True
+    if row.times_completed > 0:
+        return False
+    return row.status == "new"
+
+
+def _visible_for_preference(
+    unit: LearningUnit, splits: Mapping[str, SplitMode]
+) -> bool:
+    if unit.type == LearningUnitType.SUBCLAUSE and unit.parent_clause_id:
+        mode = splits.get(unit.parent_clause_id) or "whole"
+        return mode == "letters"
+    if unit.allows_letter_split:
+        mode = splits.get(unit.id) or "whole"
+        if mode == "letters":
+            return False
+    return True
+
+
+def _eligible_for_mix(unit: LearningUnit, splits: Mapping[str, SplitMode]) -> bool:
+    if not _visible_for_preference(unit, splits):
+        return False
+    if unit.allows_letter_split and splits.get(unit.id) is None:
+        return False
+    return True
+
+
+def _session_for_day(
+    sessions: Sequence[StudySession], *, kind: str, plan_date: date
+) -> StudySession | None:
+    matches = [session for session in sessions if session.kind == kind and session.plan_date == plan_date]
+    if not matches:
+        return None
+    matches.sort(key=lambda session: (session.created_at, session.id))
+    return matches[0]
+
+
+def _deferred_unlearned_ids(
+    sessions: Sequence[StudySession],
+    progress: Mapping[str, ProgressRecord],
+    *,
+    until: date,
+) -> list[str]:
+    ids: list[str] = []
+    ordered = sorted(
+        (session for session in sessions if session.plan_date <= until),
+        key=lambda session: (session.plan_date, session.created_at, session.id),
+    )
+    for session in ordered:
+        for item in session.items:
+            if item.status == "deferred" and _unlearned(progress, item.learning_unit_id):
+                ids.append(item.learning_unit_id)
+    return ids
+
+
+def _skipped_on(session: StudySession | None) -> set[str]:
+    if session is None:
+        return set()
+    return {
+        item.learning_unit_id
+        for item in session.items
+        if item.status == "deferred"
+    }
+
+
+def _pending_on(session: StudySession | None) -> set[str]:
+    if session is None:
+        return set()
+    return {
+        item.learning_unit_id
+        for item in session.items
+        if item.status == "pending"
+    }
+
+
+def _dedupe_keep_first(unit_ids: Sequence[str]) -> list[str]:
+    seen: set[str] = set()
+    out: list[str] = []
+    for unit_id in unit_ids:
+        if unit_id in seen:
+            continue
+        seen.add(unit_id)
+        out.append(unit_id)
+    return out
+
+
+def _day(
+    plan_date: date,
+    daily_target: int,
+    unit_ids: Sequence[str],
+) -> AutoPlanDay:
+    return AutoPlanDay(
+        plan_date=plan_date,
+        daily_target=int(daily_target),
+        items=tuple(
+            AutoPlanItem(
+                plan_date=plan_date,
+                learning_unit_id=unit_id,
+                position=index,
+            )
+            for index, unit_id in enumerate(unit_ids)
+        ),
+    )
+
+
+def _occupancy_from_progress(
+    progress: Sequence[ProgressRecord], *, as_of: date
+) -> dict[date, int]:
+    """Same occupancy as ReminderEngine.list_all_progress without a live engine."""
+
+    class _ProgressView:
+        def list_all_progress(self) -> list[ProgressRecord]:
+            return list(progress)
+
+    return _actual_review_occupancy(_ProgressView(), as_of=as_of)  # type: ignore[arg-type]
+
+
+def _mix_candidates(
+    units: Mapping[str, LearningUnit],
+    progress: Mapping[str, ProgressRecord],
+    splits: Mapping[str, SplitMode],
+    *,
+    exclude: set[str],
+    claimed: set[str],
+    remaining_slots: int,
+    entitlements_on: bool,
+) -> list[MixCandidate]:
+    eligible: list[LearningUnit] = []
+    slots = max(0, remaining_slots)
+    for unit in units.values():
+        if unit.type == LearningUnitType.PART_OVERVIEW:
+            continue
+        if unit.id in exclude:
+            continue
+        if not _unlearned(progress, unit.id):
+            continue
+        if not _eligible_for_mix(unit, splits):
+            continue
+        if entitlements_on:
+            article = unit.article_number
+            if article and article not in claimed and slots <= 0:
+                continue
+        eligible.append(unit)
+    eligible.sort(key=lambda item: (item.revision_order, item.id))
+    return candidates_from_units(eligible)
+
+
+def compute_auto_window(
+    snapshot: AutoPlanSnapshot,
+    *,
+    as_of: date,
+    horizon: date,
+    units: Mapping[str, LearningUnit],
+    claimed: set[str],
+    remaining_slots: int,
+    entitlements_on: bool,
+) -> list[AutoPlanDay]:
+    plan = snapshot.plan
+    target = int(plan.daily_target or 0)
+    if target not in VALID_DAILY_TARGETS:
+        return []
+    progress = {row.learning_unit_id: row for row in snapshot.progress}
+    items = [item for day in snapshot.days for item in day.items]
+    items.sort(key=lambda item: (item.plan_date, item.position))
+    today_session = _session_for_day(
+        snapshot.sessions, kind="auto_learning", plan_date=as_of
+    )
+    compaction_start = as_of if today_session is None else as_of + timedelta(days=1)
+
+    historical = [
+        item.learning_unit_id
+        for item in items
+        if item.plan_date < as_of and _unlearned(progress, item.learning_unit_id)
+    ]
+    skipped = _deferred_unlearned_ids(snapshot.sessions, progress, until=as_of)
+    future = [
+        item.learning_unit_id
+        for item in items
+        if item.plan_date >= compaction_start
+        and _unlearned(progress, item.learning_unit_id)
+    ]
+    queue: deque[str] = deque(_dedupe_keep_first([*historical, *skipped, *future]))
+
+    occupied = _occupancy_from_progress(snapshot.progress, as_of=as_of)
+    assigned: set[str] = set()
+    if today_session is not None:
+        assigned.update(item.learning_unit_id for item in today_session.items)
+        pending = _pending_on(today_session)
+        skipped_today = _skipped_on(today_session)
+        for item in today_session.items:
+            unit_id = item.learning_unit_id
+            if unit_id in skipped_today:
+                continue
+            if unit_id not in pending:
+                continue
+            if not _unlearned(progress, unit_id):
+                continue
+            for when, count in _reviews_from_learn_date(as_of, 1).items():
+                occupied[when] += count
+
+    recent_theme = plan.last_anchor_theme
+    claimed_keys = set(claimed) | set(snapshot.claimed_articles)
+    written: list[AutoPlanDay] = []
+    cursor = as_of
+    while cursor <= horizon:
+        if cursor == as_of and today_session is not None:
+            written.append(
+                _day(
+                    cursor,
+                    target,
+                    [item.learning_unit_id for item in today_session.items],
+                )
+            )
+            cursor += timedelta(days=1)
+            continue
+        reviews = occupied.get(cursor, 0)
+        if reviews > 0:
+            written.append(_day(cursor, target, ()))
+            cursor += timedelta(days=1)
+            continue
+        chosen: list[str] = []
+        while len(chosen) < target and queue:
+            unit_id = queue.popleft()
+            if unit_id in assigned or not _unlearned(progress, unit_id):
+                continue
+            chosen.append(unit_id)
+        if len(chosen) < target:
+            exclude = set(assigned) | set(chosen) | set(queue)
+            candidates = _mix_candidates(
+                units,
+                progress,
+                snapshot.split_preferences,
+                exclude=exclude,
+                claimed=claimed_keys,
+                remaining_slots=remaining_slots,
+                entitlements_on=entitlements_on,
+            )
+            allow = article_slot_policy(
+                claimed=claimed_keys,
+                remaining_slots=remaining_slots,
+                entitlements_on=entitlements_on,
+            )
+            mix = LearningMixSelector().select(
+                candidates,
+                target,
+                rng=day_rng(snapshot.user_id, cursor, target),
+                allow=allow,
+                recent_theme=recent_theme,
+            )
+            for candidate in mix:
+                if candidate.id in assigned or candidate.id in chosen:
+                    continue
+                chosen.append(candidate.id)
+                recent_theme = candidate.primary_theme
+                if len(chosen) >= target:
+                    break
+        assigned.update(chosen)
+        written.append(_day(cursor, target, chosen))
+        if chosen:
+            for _unit_id in chosen:
+                for when, count in _reviews_from_learn_date(cursor, 1).items():
+                    occupied[when] += count
+        cursor += timedelta(days=1)
+    return written
+
+
+def reconcile_auto_roadmap(
+    engine: ReminderEngine,
+    plan: UserLearningPlan,
+    *,
+    as_of: date,
+    auto_entitled: bool,
+    claimed: set[str] | None = None,
+    remaining_slots: int | None = None,
+    entitlements_on: bool = False,
+) -> None:
+    """Rebuild the mutable Auto window. Never mutates dates before ``as_of``."""
+    if not (auto_entitled and plan.is_auto):
+        engine.clear_future_auto_plan(as_of)
+        return
+    horizon = roadmap_horizon(as_of)
+    claimed_keys = {str(item) for item in (claimed or set())}
+    slots = 0 if remaining_slots is None else max(0, remaining_slots)
+    catalog = engine.units
+
+    def builder(snapshot: AutoPlanSnapshot) -> list[AutoPlanDay]:
+        live_plan = snapshot.plan if snapshot.plan.is_auto else plan
+        return compute_auto_window(
+            snapshot,
+            as_of=as_of,
+            horizon=horizon,
+            units=catalog,
+            claimed=claimed_keys,
+            remaining_slots=slots,
+            entitlements_on=entitlements_on,
+        ) if live_plan.is_auto else []
+
+    engine.apply_auto_plan_reconcile(as_of, horizon, builder)

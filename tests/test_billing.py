@@ -227,7 +227,7 @@ def test_verified_payment_grants_subscribed_access(
     )
     assert resp.status_code == 200
     body = resp.json()
-    assert body["ok"] is True and body["next"].startswith("/subscribe/result")
+    assert body["ok"] is True and body["next"].startswith("/onboarding/plan")
 
     row = repo.get_billing_order(USER, order["order_id"])
     assert row.status == "paid" and row.razorpay_payment_id == "pay_ok_1"
@@ -237,7 +237,7 @@ def test_verified_payment_grants_subscribed_access(
     assert "🔒" not in learn.text
     profile = client.get("/profile")
     assert "Recall active · 180 days" in profile.text
-    receipt = client.get(body["next"])
+    receipt = client.get("/subscribe/result?order=" + order["order_id"])
     assert receipt.status_code == 200
     assert "Recall is active." in receipt.text
     assert "₹699" in receipt.text  # what was actually charged

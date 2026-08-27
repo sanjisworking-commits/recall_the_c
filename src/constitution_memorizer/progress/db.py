@@ -265,12 +265,37 @@ CREATE TABLE IF NOT EXISTS user_learning_plan (
     activated_at TEXT,
     prompt_dismissed_on TEXT,
     last_anchor_theme TEXT,
+    target_effective_on TEXT,
     updated_at TEXT NOT NULL,
     CHECK (
         (mode = 'self_paced')
         OR (mode = 'auto' AND daily_target IS NOT NULL)
     )
 );
+
+CREATE TABLE IF NOT EXISTS auto_plan_day (
+    user_id TEXT NOT NULL,
+    plan_date TEXT NOT NULL,
+    daily_target INTEGER NOT NULL CHECK (daily_target IN (3, 5, 7)),
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    PRIMARY KEY (user_id, plan_date)
+);
+
+CREATE TABLE IF NOT EXISTS auto_plan_item (
+    user_id TEXT NOT NULL,
+    plan_date TEXT NOT NULL,
+    learning_unit_id TEXT NOT NULL,
+    position INTEGER NOT NULL,
+    created_at TEXT NOT NULL,
+    PRIMARY KEY (user_id, plan_date, learning_unit_id),
+    UNIQUE (user_id, plan_date, position),
+    FOREIGN KEY (user_id, plan_date)
+        REFERENCES auto_plan_day(user_id, plan_date) ON DELETE CASCADE
+);
+
+CREATE INDEX IF NOT EXISTS idx_auto_plan_item_user_date
+    ON auto_plan_item(user_id, plan_date, position);
 """
 
 # Pre-multiuser tables only: _migrate_legacy renames each of these aside,
@@ -753,11 +778,50 @@ def _ensure_study_session_day_unique(conn: sqlite3.Connection) -> None:
     )
 
 
+def _ensure_auto_plan_tables(conn: sqlite3.Connection) -> None:
+    """Add target_effective_on and auto_plan_* tables to existing local DBs.
+
+    ``CREATE TABLE IF NOT EXISTS`` never alters ``user_learning_plan``, so the
+    audit column has to be added in place the same way as profile identity.
+    """
+    cols = _column_names(conn, "user_learning_plan")
+    if cols and "target_effective_on" not in cols:
+        conn.execute(
+            "ALTER TABLE user_learning_plan ADD COLUMN target_effective_on TEXT"
+        )
+    conn.executescript(
+        """
+        CREATE TABLE IF NOT EXISTS auto_plan_day (
+            user_id TEXT NOT NULL,
+            plan_date TEXT NOT NULL,
+            daily_target INTEGER NOT NULL CHECK (daily_target IN (3, 5, 7)),
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            PRIMARY KEY (user_id, plan_date)
+        );
+        CREATE TABLE IF NOT EXISTS auto_plan_item (
+            user_id TEXT NOT NULL,
+            plan_date TEXT NOT NULL,
+            learning_unit_id TEXT NOT NULL,
+            position INTEGER NOT NULL,
+            created_at TEXT NOT NULL,
+            PRIMARY KEY (user_id, plan_date, learning_unit_id),
+            UNIQUE (user_id, plan_date, position),
+            FOREIGN KEY (user_id, plan_date)
+                REFERENCES auto_plan_day(user_id, plan_date) ON DELETE CASCADE
+        );
+        CREATE INDEX IF NOT EXISTS idx_auto_plan_item_user_date
+            ON auto_plan_item(user_id, plan_date, position);
+        """
+    )
+
+
 def init_db(conn: sqlite3.Connection) -> None:
     """Create progress tables if missing; migrate legacy single-user schema."""
     if _legacy_schema(conn):
         _migrate_legacy(conn)
         _ensure_study_session_day_unique(conn)
+        _ensure_auto_plan_tables(conn)
         conn.commit()
         return
     conn.execute("PRAGMA foreign_keys = OFF")
@@ -766,6 +830,7 @@ def init_db(conn: sqlite3.Connection) -> None:
         _ensure_profile_identity_columns(conn)
         conn.executescript(SCHEMA_SQL)
         _ensure_study_session_day_unique(conn)
+        _ensure_auto_plan_tables(conn)
         _invalidate_legacy_gated_modes(conn)
         _invalidate_legacy_letters_test_auto_seen(conn)
         _migrate_ladder_day15(conn)

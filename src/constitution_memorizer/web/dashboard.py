@@ -301,6 +301,20 @@ def build_dashboard_context(
     auto_selected = bool(plan.is_auto and auto_entitled)
     auto_active = bool(plan.is_active_auto and auto_entitled)
 
+    if auto_selected:
+        from constitution_memorizer.web.service import ensure_auto_roadmap
+
+        try:
+            ensure_auto_roadmap(
+                eng,
+                as_of=today,
+                auto_entitled=auto_entitled,
+                **(mix_eligibility or {}),
+            )
+        except Exception as error:  # noqa: BLE001
+            if not _is_missing_study_session_table(error):
+                raise
+
     learning_session = None
     if today_mode == "learning":
         for kind in (AUTO_LEARNING_KIND, DAY_PLAN_KIND):
@@ -329,8 +343,33 @@ def build_dashboard_context(
         if not _is_missing_study_session_table(error):
             raise
 
+    today_new_ids: list[str] = []
+    today_new_titles: list[str] = []
+    try:
+        planned_today = eng.list_auto_plan_day(today)
+        if planned_today is not None:
+            today_new_ids = [item.learning_unit_id for item in planned_today.items]
+            for unit_id in today_new_ids:
+                unit = eng.get_unit(unit_id)
+                if unit is not None:
+                    today_new_titles.append(unit.display_title)
+    except Exception as error:  # noqa: BLE001
+        if not _is_missing_study_session_table(error):
+            raise
+    if today_session_ids_from_session := (
+        [item.learning_unit_id for item in learning_today.items]
+        if learning_today is not None and learning_today.kind == AUTO_LEARNING_KIND
+        else None
+    ):
+        today_new_ids = today_session_ids_from_session
+        today_new_titles = [
+            unit.display_title
+            for unit_id in today_new_ids
+            if (unit := eng.get_unit(unit_id)) is not None
+        ]
+
     next_learning_day = None
-    today_new_count = int(plan.daily_target or 0) if auto_selected else 0
+    today_new_count = len(today_new_ids) if auto_selected else 0
     today_pace = pace_label(plan.daily_target if auto_selected else None)
     try:
         planner = LearningPlanner()
@@ -356,7 +395,11 @@ def build_dashboard_context(
             ),
             None,
         )
-        if today_plan is not None and today_plan.new_capacity:
+        if today_plan is not None and today_plan.kind == "review":
+            today_new_count = 0
+            today_new_ids = []
+            today_new_titles = []
+        elif today_plan is not None and today_plan.new_capacity:
             today_new_count = today_plan.new_capacity
             today_pace = pace_label(plan.daily_target)
     except Exception as error:  # noqa: BLE001
@@ -371,7 +414,7 @@ def build_dashboard_context(
             learning_today.status == "complete" or learning_today.remaining == 0
         ):
             learning_cta = "learning_complete"
-        elif auto_selected and unseen > 0:
+        elif auto_selected and today_new_count > 0:
             learning_cta = "start_auto"
         elif (
             learning_today is None
@@ -406,6 +449,7 @@ def build_dashboard_context(
         "auto_active": auto_active,
         "show_plan_prompt": show_plan_prompt,
         "today_new_count": today_new_count,
+        "today_new_titles": today_new_titles,
         "today_pace_label": today_pace,
         "next_learning_day": next_learning_day,
         "display_label": display_label,
