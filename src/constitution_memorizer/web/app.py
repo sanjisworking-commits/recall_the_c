@@ -771,13 +771,15 @@ def create_app(
     def _revision_intent_from_query(request: Request) -> str | None:
         return parse_revision_intent(request.query_params.get("revision_intent"))
 
-    def _sync_auto_roadmap(request: Request, eng: ReminderEngine) -> None:
+    def _sync_auto_roadmap(
+        request: Request, eng: ReminderEngine, *, force: bool = True
+    ) -> None:
         args = learning_entitlement_args(request, eng)
         ensure_auto_roadmap(
             eng,
             as_of=user_today(eng),
             auto_entitled=can_use_auto_plan(request),
-            force=True,
+            force=force,
             **args,
         )
 
@@ -2336,7 +2338,7 @@ def create_app(
             eng.bootstrap_request()
         today = user_today(eng)
         if not is_guest:
-            _sync_auto_roadmap(request, eng)
+            _sync_auto_roadmap(request, eng, force=False)
         y = year if year is not None else today.year
         m = month if month is not None else today.month
         if m < 1 or m > 12 or y < 1 or y > 9999:
