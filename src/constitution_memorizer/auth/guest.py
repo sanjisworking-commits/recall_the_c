@@ -12,6 +12,8 @@ GUEST_PUBLIC_PREFIXES = (
     "/auth/",
     "/static/",
     "/health",
+    "/sitemap.xml",
+    "/robots.txt",
     "/browse",
     "/search",
     "/tables",
@@ -67,6 +69,8 @@ def requires_auth(path: str, method: str) -> bool:
     if path.startswith("/auth/") or path in {
         "/login",
         "/health",
+        "/sitemap.xml",
+        "/robots.txt",
         "/signed-out",
         "/session-expired",
         "/terms",
