@@ -84,6 +84,14 @@ def test_static_and_health_skip_session_store(tmp_path: Path):
     assert health.status_code == 200
     assert store.get_calls == after_login
 
+    sitemap = client.get("/sitemap.xml")
+    assert sitemap.status_code == 200
+    assert store.get_calls == after_login
+
+    robots = client.get("/robots.txt")
+    assert robots.status_code == 200
+    assert store.get_calls == after_login
+
     browse = client.get("/browse")
     assert browse.status_code == 200
     assert store.get_calls > after_login
@@ -95,7 +103,9 @@ def test_auth_middleware_fastpath_is_before_session_lookup():
 
     text = Path(routes.__file__).read_text(encoding="utf-8")
     gate = text.split("async def multiuser_auth_gate", 1)[1]
-    fast = gate.index('path == "/health" or path.startswith("/static/")')
+    fast = gate.index(
+        'path in {"/health", "/sitemap.xml", "/robots.txt"} or path.startswith("/static/")'
+    )
     lookup = gate.index("get_optional_current_user(request)")
     assert fast < lookup
     assert "return await call_next(request)" in gate[:lookup]
