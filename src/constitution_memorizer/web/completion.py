@@ -47,7 +47,17 @@ def with_params(path: str, params: dict[str, str]) -> str:
 # the queue opens its units straight into a mode instead. Read first: it is the
 # design's own opening step ("Read it twice, then pick a recall mode"), and it
 # needs no extra query to work out, unlike "first mode not yet seen".
-REVISION_ENTRY_MODE = "read"
+def session_entry_mode(kind: str | None = None) -> str:
+    """Recall mode to open when hopping to the next queued unit.
+
+    Named for study sessions generally: revision, auto_learning, and day_plan
+    all enter Read first so the phone deck is not an extra tap per item.
+    """
+    return "read"
+
+
+# Back-compat alias used by older tests/imports.
+REVISION_ENTRY_MODE = session_entry_mode("revision")
 
 
 def next_learn_url(
@@ -121,19 +131,22 @@ def resolve_learn_navigation(
             remaining=0,
         )
 
-    eng.set_study_item_status(
-        session_id=session.id, unit_id=unit_id, status=outcome
-    )
-    # Re-derive the queue from the write we just made rather than re-reading:
-    # one roundtrip saved on a path that already does several.
-    items = tuple(
-        item if item.learning_unit_id != unit_id else replace(item, status=outcome)
-        for item in session.items
-    )
-    updated = replace(session, items=items)
+    current = session.item_for(unit_id)
+    if current is None or current.status == "pending":
+        eng.set_study_item_status(
+            session_id=session.id, unit_id=unit_id, status=outcome
+        )
+        items = tuple(
+            item if item.learning_unit_id != unit_id else replace(item, status=outcome)
+            for item in session.items
+        )
+        updated = replace(session, items=items)
+    else:
+        updated = session
     next_unit_id = updated.next_pending_after(unit_id)
     if next_unit_id is None:
-        eng.complete_study_session(session.id)
+        if updated.status != "complete":
+            eng.complete_study_session(session.id)
         return LearnNavigation(
             next_unit_id=None,
             next_url=with_params(
@@ -151,7 +164,7 @@ def resolve_learn_navigation(
             done_unit_id=done_unit_id,
             multiuser=multiuser,
             session_id=session.id,
-            mode=REVISION_ENTRY_MODE,
+            mode=session_entry_mode(session.kind),
         ),
         session_id=session.id,
         remaining=updated.remaining,

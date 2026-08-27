@@ -44,22 +44,27 @@
       <span class="cal-m-legend-item"><span class="cal-m-legend-bar is-overdue" aria-hidden="true"></span>Overdue</span>
       <span class="cal-m-legend-item"><span class="cal-m-legend-bar is-scheduled" aria-hidden="true"></span>Scheduled</span>
       <span class="cal-m-legend-item"><span class="cal-m-legend-bar is-done" aria-hidden="true"></span>Done</span>
+      <span class="cal-m-legend-item"><span class="cal-m-legend-bar is-new" aria-hidden="true"></span>New</span>
     </div>
 
-    {% set row_state = {'due': 'due', 'scheduled': 'scheduled', 'review_done': 'done', 'memorized': 'done'} %}
+    {% set row_state = {'due': 'due', 'scheduled': 'scheduled', 'review_done': 'done', 'memorized': 'done', 'new_planned': 'scheduled', 'review_capacity': 'due'} %}
     {% for day in calendar.days %}
       {% if not day.is_blank and day.chips %}
       <div class="cal-m-daylist" data-day-list="{{ day.iso }}" hidden>
         <p class="revisions-eyebrow">{{ day.long_label }} · {{ day.chips|length }} unit{{ 's' if day.chips|length != 1 }}</p>
         {% for chip in day.chips %}
+        {% if chip.unit_id %}
         <a class="revisions-row is-{{ row_state.get(chip.kind, 'scheduled') }}" href="/learn/{{ chip.unit_id }}">
+        {% else %}
+        <div class="revisions-row is-{{ row_state.get(chip.kind, 'scheduled') }}">
+        {% endif %}
           <span class="revisions-row-dot" aria-hidden="true"></span>
           <span class="revisions-row-copy">
             <span class="revisions-row-title">{{ chip.label }}</span>
             <span class="revisions-row-meta">{{ chip.title }}</span>
           </span>
-          <span class="revisions-row-mark" aria-hidden="true">›</span>
-        </a>
+          <span class="revisions-row-mark" aria-hidden="true">{% if chip.unit_id %}›{% endif %}</span>
+        {% if chip.unit_id %}</a>{% else %}</div>{% endif %}
         {% endfor %}
       </div>
       {% endif %}
@@ -115,6 +120,8 @@
     <span class="calendar-legend-item"><span class="calendar-swatch is-review-done" aria-hidden="true"></span>Review done</span>
     <span class="calendar-legend-item"><span class="calendar-swatch is-due" aria-hidden="true"></span>Review due</span>
     <span class="calendar-legend-item"><span class="calendar-swatch is-scheduled" aria-hidden="true"></span>Scheduled</span>
+    <span class="calendar-legend-item"><span class="calendar-swatch is-new-planned" aria-hidden="true"></span>New</span>
+    <span class="calendar-legend-item"><span class="calendar-swatch is-review-capacity" aria-hidden="true"></span>Review</span>
   </div>
 
   <div class="calendar-grid" role="grid" aria-label="{{ calendar.title }}">
@@ -132,11 +139,18 @@
       >
         <div class="calendar-daynum">{{ day.day }}</div>
         {% for chip in day.chips %}
+        {% if chip.unit_id %}
         <a
           class="calendar-chip is-{{ chip.kind | replace('_', '-') }}"
           href="/learn/{{ chip.unit_id }}"
           title="{{ chip.title }}"
         >{{ chip.label }}</a>
+        {% else %}
+        <span
+          class="calendar-chip is-{{ chip.kind | replace('_', '-') }}"
+          title="{{ chip.title }}"
+        >{{ chip.label }}</span>
+        {% endif %}
         {% endfor %}
       </div>
       {% endif %}

@@ -15,12 +15,16 @@
     </div>
   </header>
   <p class="dash-loading-label" aria-live="polite">Loading your dashboard…</p>
-  {# One hero card and the strip: the skeleton has to match what actually
-     arrives, or the page visibly reflows on load. #}
+  {# One hero card, the strip, and the two secondary cards: the skeleton has
+     to match what actually arrives, or the page visibly reflows on load. #}
   <div class="dash-top" aria-busy="true" aria-label="Loading dashboard">
     <article class="dash-card dash-hero dash-skel-card"></article>
   </div>
   <div class="dash-strip dash-skel-card" aria-hidden="true"></div>
+  <div class="dash-bottom" aria-hidden="true">
+    <article class="dash-card dash-secondary dash-skel-card"></article>
+    <article class="dash-card dash-secondary dash-skel-card"></article>
+  </div>
 
   {% elif state == 'data-error' %}
   <header class="dash-greeting">
@@ -102,6 +106,7 @@
           <span class="dash-due-count">{{ revision_count }}</span>
           <span class="dash-due-units">revision{% if revision_count != 1 %}s{% endif %} due</span>
         </p>
+        <p class="dash-load">Keep what you've learned strong.</p>
         <p class="dash-load">About {{ revision_minutes }} minute{% if revision_minutes != 1 %}s{% endif %} of review.</p>
         {% if revision_chips %}
         <ul class="dash-chips" aria-label="Due articles">
@@ -138,15 +143,50 @@
         </h2>
       </header>
       <div class="dash-card-body">
-        <p class="dash-due-empty-title">Nothing is due today</p>
-        {% if completed_today|default(0) > 0 %}
-        {# Nothing due AND work done today — the only state that has earned
-           "Done for today". Nothing due with nothing done is just an empty
-           schedule, and says so above. `completed_today` counts persisted
-           completions, so units pushed on with Again tomorrow are excluded. #}
-        <p class="dash-done-today">{{ completed_today }} revision{% if completed_today != 1 %}s{% endif %} completed today ✓</p>
+        {% if learning_cta|default('browse') == 'continue_session' %}
+        <p class="dash-due-empty-title">Today's learning</p>
+        <p class="dash-load">Keep what you've learned strong.</p>
+        <div class="actions">
+          <form class="dash-revision-form" method="post" action="/learning/start">
+            <button type="submit" class="btn dash-btn-full">Continue learning · {{ learning_remaining }} left</button>
+          </form>
+        </div>
+        {% elif learning_cta|default('browse') == 'start_auto' %}
+        <p class="dash-due-line">
+          <span class="dash-due-count">{{ today_new_count }}</span>
+          <span class="dash-due-units">new clause{% if today_new_count != 1 %}s{% endif %}</span>
+        </p>
+        {% if today_pace_label %}<p class="dash-load">{{ today_pace_label }} plan.</p>{% endif %}
+        <p class="dash-load">Keep what you've learned strong.</p>
+        <div class="actions">
+          <form class="dash-revision-form" method="post" action="/learning/start">
+            <button type="submit" class="btn dash-btn-full">Start learning →</button>
+          </form>
+        </div>
+        {% elif learning_cta|default('browse') == 'plan_prompt' %}
+        <p class="dash-due-empty-title">Nothing to review today</p>
+        <p class="dash-load">Want Recall to plan today's learning?</p>
+        <div class="actions plan-day-actions">
+          <a class="btn dash-btn-full" href="/learning/plan-my-day">Plan my day →</a>
+          <form class="dash-revision-form" method="post" action="/learning/plan-my-day/dismiss">
+            <button type="submit" class="btn btn-ghost dash-btn-outline">Not today</button>
+          </form>
+        </div>
+        {% elif learning_cta|default('browse') == 'learning_complete' %}
+        <p class="dash-due-empty-title">Today's learning complete</p>
+        <p class="dash-load">Your revisions have been scheduled.</p>
+        {% if revision_completed_today|default(0) > 0 %}
+        <p class="dash-done-today">{{ revision_completed_today }} revision{% if revision_completed_today != 1 %}s{% endif %} completed today ✓</p>
         {% endif %}
-        {% if continue_unit %}
+        {% if caught_up_quote %}
+        <blockquote class="caught-up-quote">{{ caught_up_quote.text }}</blockquote>
+        <p class="caught-up-quote-attr">— {{ caught_up_quote.author }}</p>
+        {% endif %}
+        {% elif continue_unit %}
+        <p class="dash-due-empty-title">Nothing is due today</p>
+        {% if revision_completed_today|default(0) > 0 %}
+        <p class="dash-done-today">{{ revision_completed_today }} revision{% if revision_completed_today != 1 %}s{% endif %} completed today ✓</p>
+        {% endif %}
         <p class="dash-continue-title">{{ continue_unit.display_title }}</p>
         {% if continue_meta %}<p class="dash-continue-meta">{{ continue_meta }}</p>{% endif %}
         <p class="dash-continue-mode">{{ continue_mode_line }}</p>
@@ -157,6 +197,14 @@
           <a class="btn dash-btn-full" href="/learn/{{ continue_unit.id }}">Continue learning →</a>
         </p>
         {% else %}
+        <p class="dash-due-empty-title">Nothing is due today</p>
+        {% if revision_completed_today|default(0) > 0 %}
+        <p class="dash-done-today">{{ revision_completed_today }} revision{% if revision_completed_today != 1 %}s{% endif %} completed today ✓</p>
+        {% endif %}
+        {% if caught_up_quote %}
+        <blockquote class="caught-up-quote">{{ caught_up_quote.text }}</blockquote>
+        <p class="caught-up-quote-attr">— {{ caught_up_quote.author }}</p>
+        {% endif %}
         <p class="actions">
           <a class="btn dash-btn-full" href="/browse">Browse the Constitution →</a>
         </p>
@@ -188,6 +236,43 @@
       <p class="dash-strip-label">Revisions done</p>
     </div>
   </section>
+
+  <div class="dash-bottom">
+    <section class="dash-card dash-secondary dash-activity">
+      <header class="dash-card-head">
+        <h2 class="dash-eyebrow">Recent activity</h2>
+      </header>
+      <div class="dash-card-body">
+        {% if recent %}
+        <ul class="dash-activity-list">
+          {% for row in recent %}
+          <li class="dash-activity-row">
+            <span class="dash-activity-dot is-{{ row.tone }}" aria-hidden="true"></span>
+            <a class="dash-activity-text" href="{{ row.href }}">{{ row.text }}</a>
+            <span class="dash-activity-time">{{ row.relative }}</span>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p class="muted">No activity yet. Your reviews and notes will appear here as you learn.</p>
+        {% endif %}
+      </div>
+    </section>
+
+    <section class="dash-card dash-secondary dash-explore">
+      <header class="dash-card-head">
+        <h2 class="dash-eyebrow">Explore the Constitution</h2>
+      </header>
+      <div class="dash-card-body">
+        <ul class="dash-explore-list">
+          <li><a href="/browse"><span>Browse Parts &amp; Articles</span><span aria-hidden="true">→</span></a></li>
+          <li><a href="/search"><span>Search the Bare Act</span><span aria-hidden="true">→</span></a></li>
+          <li><a href="/tables"><span>Schedules &amp; tables</span><span aria-hidden="true">→</span></a></li>
+          <li><a href="/learn"><span>Open Learn</span><span aria-hidden="true">→</span></a></li>
+        </ul>
+      </div>
+    </section>
+  </div>
 
   {% if upcoming %}
   <section class="dash-upcoming" aria-label="Upcoming revisions">

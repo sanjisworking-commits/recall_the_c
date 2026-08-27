@@ -349,7 +349,17 @@ def test_phone_otp_welcome_then_dashboard(tmp_path: Path):
         data={"display_name": "Priya", "csrf_token": csrf2},
         follow_redirects=False,
     )
-    assert saved.headers["location"] == "/dashboard"
+    assert saved.headers["location"] == "/onboarding/plan"
+    plan = client.get("/onboarding/plan")
+    assert plan.status_code == 200
+    assert "Set a learning plan" in plan.text
+    csrf3 = client.cookies.get(CSRF_COOKIE_NAME) or csrf2
+    chosen = client.post(
+        "/onboarding/plan",
+        data={"mode": "self_paced", "csrf_token": csrf3},
+        follow_redirects=False,
+    )
+    assert chosen.headers["location"] == "/dashboard"
     dash = client.get("/dashboard")
     assert dash.status_code == 200
     assert "Priya" in dash.text
@@ -396,8 +406,8 @@ def test_auth_transition_and_profile_pages(tmp_path: Path):
     assert 'name="theme"' not in profile.text
 
 
-def test_dashboard_has_no_recent_activity_or_explore_sections(tmp_path: Path):
-    """Both secondary cards were removed from Today; the hero is the page."""
+def test_dashboard_restores_recent_activity_and_explore_sections(tmp_path: Path):
+    """The Today hero is exclusive; Recent activity and Explore sit below it."""
     client = _client(tmp_path)
     start = client.get("/auth/google/start", follow_redirects=False)
     state = start.cookies.get("rtc_oauth_state")
@@ -416,13 +426,11 @@ def test_dashboard_has_no_recent_activity_or_explore_sections(tmp_path: Path):
     )
     dash = client.get("/dashboard")
     assert dash.status_code == 200
-    assert "Recent activity" not in dash.text
-    assert "dash-activity-list" not in dash.text
-    assert "Explore the Constitution" not in dash.text
-    assert "dash-explore-list" not in dash.text
-    # And the caught-up copy and quote that sat under the empty hero.
-    assert "Browse when you're ready for something new." not in dash.text
-    assert "caught-up-quote" not in dash.text
+    assert "Recent activity" in dash.text
+    assert "dash-activity-list" in dash.text
+    assert "Explore the Constitution" in dash.text
+    assert "dash-explore-list" in dash.text
+    assert "caught-up-quote" in dash.text or "Want Recall to plan today's learning?" in dash.text
 
 
 def test_dashboard_multiuser_layout(tmp_path: Path):
@@ -447,8 +455,8 @@ def test_dashboard_multiuser_layout(tmp_path: Path):
     assert "Units mastered" in html
     assert "Day streak" in html
     assert "Revisions done" in html
-    # Explore the Constitution and Recent activity were removed from Today —
-    # covered by test_dashboard_has_no_recent_activity_or_explore_sections.
+    assert "Recent activity" in html
+    assert "Explore the Constitution" in html
     assert "→" in html
     assert "dash-progress-summary" not in html
     assert "Progress summary" in html  # aria-label on strip
@@ -456,11 +464,9 @@ def test_dashboard_multiuser_layout(tmp_path: Path):
     assert ">Started<" not in html
     assert "dash-card-head" in html
     assert "dash-card-body" in html
-    assert "Nothing is due today" in html
-    # The learning hero is the only card in this state, so its CTA is primary
-    # rather than the secondary outline button it used to be. A fresh account
-    # has a first chain unit waiting, so the CTA is Continue, not Browse.
-    assert "Continue learning →" in html
+    assert "Nothing to review today" in html or "Nothing is due today" in html
+    # Fresh self-paced accounts are offered Plan my day; Browse remains below.
+    assert "Plan my day" in html or "Continue learning →" in html
     assert "dash-btn-full" in html
     # Account dropdown identity header + menu order
     assert "account-menu-identity" in html

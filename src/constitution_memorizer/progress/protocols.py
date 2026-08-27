@@ -19,6 +19,8 @@ from constitution_memorizer.progress.repository import (
     StudySession,
     StudySessionKind,
     ThemePreference,
+    UserLearningPlan,
+    LearningPlanMode,
 )
 
 
@@ -136,6 +138,38 @@ class ReminderRepositoryProtocol(Protocol):
 
     def complete_study_session(
         self, user_id: UUID | str, session_id: str
+    ) -> None: ...
+
+    def study_session_for_day(
+        self,
+        user_id: UUID | str,
+        *,
+        kind: StudySessionKind,
+        plan_date: date,
+    ) -> StudySession | None: ...
+
+    def get_learning_plan(self, user_id: UUID | str) -> UserLearningPlan: ...
+
+    def upsert_learning_plan(
+        self,
+        user_id: UUID | str,
+        *,
+        mode: LearningPlanMode,
+        daily_target: int | None,
+        prompt_dismissed_on: date | None = None,
+        last_anchor_theme: str | None = None,
+    ) -> UserLearningPlan: ...
+
+    def activate_learning_plan(
+        self, user_id: UUID | str, as_of: date
+    ) -> UserLearningPlan: ...
+
+    def dismiss_plan_prompt(
+        self, user_id: UUID | str, as_of: date
+    ) -> UserLearningPlan: ...
+
+    def set_last_anchor_theme(
+        self, user_id: UUID | str, theme: str | None
     ) -> None: ...
 
     def create_billing_order(

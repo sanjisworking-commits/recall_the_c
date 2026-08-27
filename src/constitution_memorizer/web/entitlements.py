@@ -157,6 +157,17 @@ def access_level(request: object) -> str:
     )
 
 
+def can_use_auto_plan(request: object) -> bool:
+    """Auto Plan is a subscriber capability, available while entitlements are dormant.
+
+    Admin / grant holders resolve to subscribed capabilities without being
+    labelled as a paid subscription.
+    """
+    if not entitlements_active(request):
+        return True
+    return access_level(request) == SUBSCRIBED
+
+
 # --------------------------------------------------------------------------- #
 # Per-Article Learn access                                                      #
 # --------------------------------------------------------------------------- #

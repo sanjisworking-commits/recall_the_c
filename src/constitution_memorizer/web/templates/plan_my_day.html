@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Plan my day · {{ app_name|default('Recall the C') }}{% endblock %}
+{% block content %}
+<section class="panel welcome-panel">
+  <p class="eyebrow">Today</p>
+  <h1 class="display">Plan my day</h1>
+  <p class="lede">
+    Pick a short mix for today. This does not turn Auto Plan on. Revisions always
+    come first — there is nothing due right now.
+  </p>
+
+  <div class="plan-day-actions">
+    {% for n, label in ((3, 'Steady · 3'), (5, 'Balanced · 5'), (7, 'Intensive · 7')) %}
+    <form method="post" action="/learning/plan-my-day">
+      <input type="hidden" name="target" value="{{ n }}">
+      <button type="submit" class="btn {% if n == 5 %}dash-btn-full{% else %}btn-ghost dash-btn-outline{% endif %}">{{ label }}</button>
+    </form>
+    {% endfor %}
+    <form method="post" action="/learning/plan-my-day/dismiss">
+      <button type="submit" class="btn btn-ghost dash-btn-outline">Not today</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

@@ -7,13 +7,20 @@ from datetime import date, datetime, timedelta, timezone
 from typing import Any
 
 from constitution_memorizer.learning.schemas import LearningUnit
-from constitution_memorizer.progress.repository import LEARN_MODES
+from constitution_memorizer.planner.eligibility import remaining_unseen_count
+from constitution_memorizer.planner.models import pace_label
+from constitution_memorizer.planner.planner import LearningPlanner
+from constitution_memorizer.progress.repository import LEARN_MODES, UserLearningPlan
 from constitution_memorizer.progress.scheduler import ReminderEngine
 from constitution_memorizer.web.progress_stats import (
     _is_completed,
     all_article_progress,
 )
 from constitution_memorizer.web.service import (
+    AUTO_LEARNING_KIND,
+    DAY_PLAN_KIND,
+    REVISION_KIND,
+    _is_missing_study_session_table,
     active_revision_session,
     continue_unit_id,
     due_checklist,
@@ -36,11 +43,7 @@ def first_name(display_label: str) -> str:
 
 
 def relative_time(iso: str, *, now: datetime | None = None) -> str:
-    """Format an ISO timestamp as a short relative label.
-
-    No longer used by the dashboard (Recent activity was removed); kept as the
-    shared formatter for any surface that needs "3 days ago".
-    """
+    """Format an ISO timestamp as a short relative label."""
     now = now or datetime.now(timezone.utc)
     try:
         raw = iso.replace("Z", "+00:00")
@@ -141,6 +144,22 @@ def progress_strip(engine: ReminderEngine, *, as_of: date | None = None) -> dict
     }
 
 
+def activity_sentence(status: str, title: str) -> str:
+    if status == "mastered":
+        return f"Mastered {title}"
+    if status == "review":
+        return f"Reviewed {title}"
+    return f"Started {title}"
+
+
+def activity_tone(status: str) -> str:
+    if status == "mastered":
+        return "mastered"
+    if status == "review":
+        return "review"
+    return "new"
+
+
 def continue_meta(unit: LearningUnit) -> str:
     bits: list[str] = []
     if unit.title:
@@ -214,12 +233,55 @@ def upcoming_revisions(
     return out
 
 
+def _learning_plan_or_default(engine: ReminderEngine) -> UserLearningPlan:
+    try:
+        return engine.get_learning_plan()
+    except Exception as error:  # noqa: BLE001 — schema-gap window
+        if not _is_missing_study_session_table(error):
+            raise
+        return UserLearningPlan()
+
+
+def _session_for_day(engine: ReminderEngine, kind: str, today: date):
+    try:
+        return engine.study_session_for_day(kind=kind, plan_date=today)  # type: ignore[arg-type]
+    except Exception as error:  # noqa: BLE001
+        if not _is_missing_study_session_table(error):
+            raise
+        return None
+
+
+def _recent_activity(
+    engine: ReminderEngine, *, now: datetime, limit: int = 5
+) -> list[dict[str, str]]:
+    recent_rows = sorted(
+        engine.list_all_progress(),
+        key=lambda r: r.updated_at,
+        reverse=True,
+    )[:limit]
+    recent: list[dict[str, str]] = []
+    for row in recent_rows:
+        unit = engine.get_unit(row.learning_unit_id)
+        title = unit.display_title if unit is not None else row.learning_unit_id
+        recent.append(
+            {
+                "unit_id": row.learning_unit_id,
+                "text": activity_sentence(row.status, title),
+                "relative": relative_time(row.updated_at, now=now),
+                "tone": activity_tone(row.status),
+                "href": f"/learn/{row.learning_unit_id}",
+            }
+        )
+    return recent
+
+
 def build_dashboard_context(
     eng: ReminderEngine,
     *,
     display_label: str,
     as_of: date | None = None,
     now: datetime | None = None,
+    auto_entitled: bool = True,
 ) -> dict[str, Any]:
     today = as_of or date.today()
     now = now or datetime.now(timezone.utc)
@@ -237,6 +299,8 @@ def build_dashboard_context(
     if cont_unit is not None:
         cont_mode_line, cont_pct = continue_mode_line(eng, cont_unit)
         cont_meta = continue_meta(cont_unit)
+
+    recent = _recent_activity(eng, now=now)
 
     greeting = f"Welcome, {name}." if is_new else f"Good morning, {name}."
     subtext = (
@@ -269,6 +333,100 @@ def build_dashboard_context(
     today_mode = "revision" if (due_units or session_remaining) else "learning"
     revision_chips, revision_chips_more = due_article_chips(queue_units)
 
+    revision_today = _session_for_day(eng, REVISION_KIND, today)
+    revision_completed_today = revision_today.completed_count if revision_today else 0
+
+    plan = _learning_plan_or_default(eng)
+    auto_selected = bool(plan.is_auto and auto_entitled)
+    auto_active = bool(plan.is_active_auto and auto_entitled)
+
+    learning_session = None
+    if today_mode == "learning":
+        for kind in (AUTO_LEARNING_KIND, DAY_PLAN_KIND):
+            try:
+                learning_session = eng.active_study_session(kind=kind, plan_date=today)
+            except Exception as error:  # noqa: BLE001
+                if not _is_missing_study_session_table(error):
+                    raise
+                learning_session = None
+                break
+            if learning_session:
+                break
+    learning_remaining = learning_session.remaining if learning_session else 0
+
+    learning_today = learning_session
+    if learning_today is None and today_mode == "learning":
+        for kind in (AUTO_LEARNING_KIND, DAY_PLAN_KIND):
+            learning_today = _session_for_day(eng, kind, today)
+            if learning_today is not None:
+                break
+
+    unseen = 0
+    try:
+        unseen = remaining_unseen_count(eng, as_of=today)
+    except Exception as error:  # noqa: BLE001
+        if not _is_missing_study_session_table(error):
+            raise
+
+    next_learning_day = None
+    today_new_count = int(plan.daily_target or 0) if auto_selected else 0
+    today_pace = pace_label(plan.daily_target if auto_selected else None)
+    try:
+        planner = LearningPlanner()
+        next_learning_day = planner.next_learning_day(
+            eng,
+            plan,
+            as_of=today,
+            remaining_unseen=unseen,
+            auto_entitled=auto_entitled,
+        )
+        today_plan = next(
+            (
+                day
+                for day in planner.project(
+                    eng,
+                    plan,
+                    as_of=today,
+                    until=today,
+                    remaining_unseen=unseen,
+                    auto_entitled=auto_entitled,
+                )
+                if day.day == today
+            ),
+            None,
+        )
+        if today_plan is not None and today_plan.new_capacity:
+            today_new_count = today_plan.new_capacity
+            today_pace = pace_label(plan.daily_target)
+    except Exception as error:  # noqa: BLE001
+        if not _is_missing_study_session_table(error):
+            raise
+
+    learning_cta = "browse"
+    if today_mode == "learning":
+        if learning_remaining:
+            learning_cta = "continue_session"
+        elif auto_selected and unseen > 0:
+            learning_cta = "start_auto"
+        elif (
+            learning_today is not None
+            and learning_today.remaining == 0
+            and learning_today.completed_count > 0
+        ):
+            learning_cta = "learning_complete"
+        elif (
+            learning_today is None
+            and (plan is None or plan.prompt_dismissed_on != today)
+            and unseen > 0
+        ):
+            learning_cta = "plan_prompt"
+        elif cont_unit is not None:
+            learning_cta = "continue_unit"
+        else:
+            learning_cta = "caught_up"
+
+    show_plan_prompt = learning_cta == "plan_prompt"
+
     return {
         "today_mode": today_mode,
         "revision_session_id": revision_session.id if revision_session else None,
@@ -277,6 +435,20 @@ def build_dashboard_context(
         "revision_minutes": due_minutes(queue_units),
         "revision_chips": revision_chips,
         "revision_chips_more": revision_chips_more,
+        "revision_completed_today": revision_completed_today,
+        "learning_session_id": learning_session.id if learning_session else None,
+        "learning_remaining": learning_remaining,
+        "learning_kind": learning_session.kind if learning_session else None,
+        "learning_cta": learning_cta,
+        "plan_mode": plan.mode if plan else "self_paced",
+        "plan_daily_target": plan.daily_target if plan else None,
+        "plan_activated": bool(plan and plan.activated_at),
+        "auto_entitled": auto_entitled,
+        "auto_active": auto_active,
+        "show_plan_prompt": show_plan_prompt,
+        "today_new_count": today_new_count,
+        "today_pace_label": today_pace,
+        "next_learning_day": next_learning_day,
         "display_label": display_label,
         "first_name": name,
         "greeting": greeting,
@@ -292,14 +464,12 @@ def build_dashboard_context(
         "continue_meta": cont_meta,
         "continue_mode_line": cont_mode_line,
         "continue_pct": cont_pct,
+        "recent": recent,
         "strip": strip,
         "upcoming": upcoming_revisions(eng, as_of=today),
-        # Today's CTA label. `due_count` is what remains due NOW — a completed
-        # unit's next_revision has already moved forward, so the original due
-        # queue is not recoverable, and last_completed==today also catches
-        # voluntary work. So we only claim what the data supports: "some
-        # progress today" is enough to say Continue, and "nothing due AND
-        # nothing done" is never called finished.
+        # All completions today (revision + voluntary new learning). Do not
+        # use this for "N revisions completed today" — that is
+        # revision_completed_today from the revision session's completed_count.
         "completed_today": sum(
             1
             for row in eng.list_all_progress()

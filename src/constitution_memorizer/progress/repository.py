@@ -45,6 +45,11 @@ StudySessionStatus = Literal["active", "complete"]
 # queue without becoming a completed revision.
 StudyItemStatus = Literal["pending", "completed", "deferred"]
 
+LearningPlanMode = Literal["self_paced", "auto"]
+DailyNewTarget = Literal[3, 5, 7]
+VALID_DAILY_TARGETS: frozenset[int] = frozenset((3, 5, 7))
+DEFAULT_LEARNING_PLAN_MODE: LearningPlanMode = "self_paced"
+
 LEARN_MODES: tuple[str, ...] = ("read", "cloze", "letters", "type", "recite", "test")
 LEARN_MODES_SET: frozenset[str] = frozenset(LEARN_MODES)
 
@@ -191,6 +196,26 @@ class StudySession:
 
 
 @dataclass(frozen=True)
+class UserLearningPlan:
+    """Persistent Self-paced vs Auto preference. Not a study queue."""
+
+    mode: LearningPlanMode = DEFAULT_LEARNING_PLAN_MODE
+    daily_target: int | None = None
+    activated_at: date | None = None
+    prompt_dismissed_on: date | None = None
+    last_anchor_theme: str | None = None
+    updated_at: str | None = None
+
+    @property
+    def is_auto(self) -> bool:
+        return self.mode == "auto" and self.daily_target in VALID_DAILY_TARGETS
+
+    @property
+    def is_active_auto(self) -> bool:
+        return self.is_auto and self.activated_at is not None
+
+
+@dataclass(frozen=True)
 class BillingOrder:
     """One Razorpay order: created at checkout, paid after verified signature."""
 
@@ -257,10 +282,14 @@ def _modes_by_unit_from_rows(rows) -> dict[str, frozenset[str]]:
     return {unit_id: frozenset(modes) for unit_id, modes in grouped.items()}
 
 
-def _parse_date(value: str | None) -> date | None:
-    if not value:
+def _parse_date(value: date | datetime | str | None) -> date | None:
+    if value is None or value == "":
         return None
-    return date.fromisoformat(value[:10])
+    if isinstance(value, datetime):
+        return value.date()
+    if isinstance(value, date):
+        return value
+    return date.fromisoformat(str(value)[:10])
 
 
 # One SELECT list, shared by SQLite and Postgres: the session and its items
@@ -326,6 +355,21 @@ def _row_to_progress(row: sqlite3.Row) -> ProgressRecord:
         ease_factor=float(row["ease_factor"]),
         created_at=row["created_at"],
         updated_at=row["updated_at"],
+    )
+
+
+def _row_to_learning_plan(row: object | None) -> UserLearningPlan:
+    if row is None:
+        return UserLearningPlan()
+    mapping = row
+    target = mapping["daily_target"]  # type: ignore[index]
+    return UserLearningPlan(
+        mode=mapping["mode"] or DEFAULT_LEARNING_PLAN_MODE,  # type: ignore[index]
+        daily_target=int(target) if target is not None else None,
+        activated_at=_parse_date(mapping["activated_at"]),  # type: ignore[index]
+        prompt_dismissed_on=_parse_date(mapping["prompt_dismissed_on"]),  # type: ignore[index]
+        last_anchor_theme=mapping["last_anchor_theme"],  # type: ignore[index]
+        updated_at=_as_text(mapping["updated_at"]),  # type: ignore[index]
     )
 
 
@@ -631,30 +675,51 @@ class ProgressRepository:
         plan_date: date,
         unit_ids: list[str],
     ) -> StudySession:
+        """Atomic create-or-get for one (user, kind, plan_date) snapshot.
+
+        On a unique-day conflict the winner's existing session is returned and
+        no items are written against the losing ``session_id``.
+        """
+        existing = self.get_study_session(user_id, session_id)
+        if existing is not None:
+            return existing
+        existing_day = self.study_session_for_day(
+            user_id, kind=kind, plan_date=plan_date
+        )
+        if existing_day is not None:
+            return existing_day
         now = _utc_now_iso()
         uid = as_user_id(user_id)
-        self._conn.execute(
-            """
-            INSERT INTO study_session (
-                id, user_id, kind, plan_date, status, created_at, completed_at
-            ) VALUES (?, ?, ?, ?, 'active', ?, NULL)
-            """,
-            (session_id, uid, kind, _date_iso(plan_date), now),
-        )
-        # Dedup while preserving order: a queue must not offer the same unit
-        # twice, and the composite PK would reject the second row anyway.
         ordered: list[str] = []
         for unit_id in unit_ids:
             if unit_id not in ordered:
                 ordered.append(unit_id)
-        self._conn.executemany(
-            """
-            INSERT INTO study_session_item (
-                session_id, learning_unit_id, position, status, completed_at
-            ) VALUES (?, ?, ?, 'pending', NULL)
-            """,
-            [(session_id, unit_id, index) for index, unit_id in enumerate(ordered)],
-        )
+        try:
+            self._conn.execute(
+                """
+                INSERT INTO study_session (
+                    id, user_id, kind, plan_date, status, created_at, completed_at
+                ) VALUES (?, ?, ?, ?, 'active', ?, NULL)
+                """,
+                (session_id, uid, kind, _date_iso(plan_date), now),
+            )
+        except sqlite3.IntegrityError:
+            self._conn.rollback()
+            winner = self.study_session_for_day(
+                user_id, kind=kind, plan_date=plan_date
+            ) or self.get_study_session(user_id, session_id)
+            if winner is not None:
+                return winner
+            raise
+        if ordered:
+            self._conn.executemany(
+                """
+                INSERT INTO study_session_item (
+                    session_id, learning_unit_id, position, status, completed_at
+                ) VALUES (?, ?, ?, 'pending', NULL)
+                """,
+                [(session_id, unit_id, index) for index, unit_id in enumerate(ordered)],
+            )
         self._conn.commit()
         session = self.get_study_session(user_id, session_id)
         assert session is not None
@@ -704,6 +769,31 @@ class ProgressRepository:
             [row for row in rows if row["session_id"] == newest]
         )
 
+    def study_session_for_day(
+        self,
+        user_id: UUID | str,
+        *,
+        kind: StudySessionKind,
+        plan_date: date,
+    ) -> StudySession | None:
+        """The unique session for this user/kind/local date, active or complete."""
+        rows = self._conn.execute(
+            f"""
+            SELECT {_STUDY_SESSION_COLUMNS}
+            FROM study_session s
+            LEFT JOIN study_session_item i ON i.session_id = s.id
+            WHERE s.user_id = ? AND s.kind = ? AND s.plan_date = ?
+            ORDER BY s.created_at ASC, s.id ASC, i.position ASC
+            """,
+            (as_user_id(user_id), kind, _date_iso(plan_date)),
+        ).fetchall()
+        if not rows:
+            return None
+        keeper = rows[0]["session_id"]
+        return _study_session_from_rows(
+            [row for row in rows if row["session_id"] == keeper]
+        )
+
     def set_study_item_status(
         self,
         user_id: UUID | str,
@@ -732,6 +822,150 @@ class ProgressRepository:
             WHERE id = ? AND user_id = ?
             """,
             (_utc_now_iso(), session_id, as_user_id(user_id)),
+        )
+        self._conn.commit()
+
+    # ------------------------------------------------------------------ #
+    # Learning plan preference (Self-paced / Auto 3/5/7)                  #
+    # ------------------------------------------------------------------ #
+    def get_learning_plan(self, user_id: UUID | str) -> UserLearningPlan:
+        row = self._conn.execute(
+            """
+            SELECT mode, daily_target, activated_at, prompt_dismissed_on,
+                   last_anchor_theme, updated_at
+            FROM user_learning_plan
+            WHERE user_id = ?
+            """,
+            (as_user_id(user_id),),
+        ).fetchone()
+        return _row_to_learning_plan(row)
+
+    def upsert_learning_plan(
+        self,
+        user_id: UUID | str,
+        *,
+        mode: LearningPlanMode,
+        daily_target: int | None,
+        prompt_dismissed_on: date | None = None,
+        last_anchor_theme: str | None = None,
+    ) -> UserLearningPlan:
+        if mode == "auto":
+            if daily_target not in VALID_DAILY_TARGETS:
+                raise ValueError("auto mode requires daily_target of 3, 5, or 7")
+        else:
+            daily_target = None
+        now = _utc_now_iso()
+        uid = as_user_id(user_id)
+        current = self.get_learning_plan(user_id)
+        dismissed = (
+            prompt_dismissed_on
+            if prompt_dismissed_on is not None
+            else current.prompt_dismissed_on
+        )
+        theme = (
+            last_anchor_theme
+            if last_anchor_theme is not None
+            else current.last_anchor_theme
+        )
+        self._conn.execute(
+            """
+            INSERT INTO user_learning_plan (
+                user_id, mode, daily_target, activated_at,
+                prompt_dismissed_on, last_anchor_theme, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(user_id) DO UPDATE SET
+                mode = excluded.mode,
+                daily_target = excluded.daily_target,
+                prompt_dismissed_on = excluded.prompt_dismissed_on,
+                last_anchor_theme = excluded.last_anchor_theme,
+                updated_at = excluded.updated_at
+            """,
+            (
+                uid,
+                mode,
+                daily_target,
+                _date_iso(current.activated_at),
+                _date_iso(dismissed),
+                theme,
+                now,
+            ),
+        )
+        self._conn.commit()
+        return self.get_learning_plan(user_id)
+
+    def activate_learning_plan(
+        self, user_id: UUID | str, as_of: date
+    ) -> UserLearningPlan:
+        """Set activated_at once, on first persisted NEW Done while Auto is on."""
+        uid = as_user_id(user_id)
+        now = _utc_now_iso()
+        self._conn.execute(
+            """
+            UPDATE user_learning_plan
+            SET activated_at = ?, updated_at = ?
+            WHERE user_id = ?
+              AND mode = 'auto'
+              AND activated_at IS NULL
+            """,
+            (_date_iso(as_of), now, uid),
+        )
+        self._conn.commit()
+        return self.get_learning_plan(user_id)
+
+    def dismiss_plan_prompt(
+        self, user_id: UUID | str, as_of: date
+    ) -> UserLearningPlan:
+        uid = as_user_id(user_id)
+        now = _utc_now_iso()
+        current = self.get_learning_plan(user_id)
+        self._conn.execute(
+            """
+            INSERT INTO user_learning_plan (
+                user_id, mode, daily_target, activated_at,
+                prompt_dismissed_on, last_anchor_theme, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(user_id) DO UPDATE SET
+                prompt_dismissed_on = excluded.prompt_dismissed_on,
+                updated_at = excluded.updated_at
+            """,
+            (
+                uid,
+                current.mode,
+                current.daily_target,
+                _date_iso(current.activated_at),
+                _date_iso(as_of),
+                current.last_anchor_theme,
+                now,
+            ),
+        )
+        self._conn.commit()
+        return self.get_learning_plan(user_id)
+
+    def set_last_anchor_theme(
+        self, user_id: UUID | str, theme: str | None
+    ) -> None:
+        uid = as_user_id(user_id)
+        now = _utc_now_iso()
+        current = self.get_learning_plan(user_id)
+        self._conn.execute(
+            """
+            INSERT INTO user_learning_plan (
+                user_id, mode, daily_target, activated_at,
+                prompt_dismissed_on, last_anchor_theme, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT(user_id) DO UPDATE SET
+                last_anchor_theme = excluded.last_anchor_theme,
+                updated_at = excluded.updated_at
+            """,
+            (
+                uid,
+                current.mode,
+                current.daily_target,
+                _date_iso(current.activated_at),
+                _date_iso(current.prompt_dismissed_on),
+                theme,
+                now,
+            ),
         )
         self._conn.commit()
 
