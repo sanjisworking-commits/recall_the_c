@@ -415,10 +415,11 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
             from constitution_memorizer.web.dashboard import build_dashboard_context
 
             started = time.perf_counter()
+            today = user_today(eng)
             ctx = build_dashboard_context(
                 eng,
                 display_label=label,
-                as_of=user_today(eng),
+                as_of=today,
                 auto_entitled=can_use_auto_plan(request),
             )
             record_request_timing("dashboard_build", started)
@@ -440,7 +441,7 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
                 continue_label=None,
             )
             ctx["caught_up_quote"] = (
-                caught_up_quote(getattr(request.app.state, "quotes", []) or [], user_today(eng))
+                caught_up_quote(getattr(request.app.state, "quotes", []) or [], today)
                 if ctx.get("due_count") == 0
                 else None
             )

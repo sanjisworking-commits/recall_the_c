@@ -42,7 +42,7 @@ def user_today(engine: ReminderEngine) -> date:
     """
     tz_name = ""
     try:
-        tz_name = engine.repo.get_setting(engine.user_id, USER_TIMEZONE_KEY) or ""
+        tz_name = engine.get_setting(USER_TIMEZONE_KEY) or ""
     except Exception:  # noqa: BLE001 — anchoring must never break Done
         pass
     if tz_name:

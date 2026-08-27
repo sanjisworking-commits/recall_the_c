@@ -1360,12 +1360,6 @@ def create_app(
                 # everything persists or nothing does.
                 try:
                     today = _user_today(request, eng)
-                    prior = eng.get_progress(unit_id)
-                    was_new = (
-                        prior is None
-                        or prior.status == "new"
-                        or prior.times_completed == 0
-                    )
                     result = eng.mark_done(
                         unit_id,
                         as_of=today,
@@ -1374,7 +1368,7 @@ def create_app(
                     )
                 except ModesIncompleteError:
                     return RedirectResponse(url=f"/learn/{unit_id}", status_code=303)
-                if was_new:
+                if result.progress.times_completed == 1:
                     maybe_activate_auto_plan(eng, as_of=today)
                 _schedule_calendar_sync(request, eng)
                 navigation = _advance_session(
@@ -1405,8 +1399,6 @@ def create_app(
             unit, eng.units, done_access.required_modes
         )
         today = _user_today(request, eng)
-        prior = eng.get_progress(unit_id)
-        was_new = prior is None or prior.status == "new" or prior.times_completed == 0
         try:
             result = eng.mark_done(
                 unit_id,
@@ -1420,7 +1412,7 @@ def create_app(
                     status_code=409,
                 )
             return RedirectResponse(url=f"/learn/{unit_id}", status_code=303)
-        if was_new:
+        if result.progress.times_completed == 1:
             maybe_activate_auto_plan(eng, as_of=today)
         _schedule_calendar_sync(request, eng)
         navigation = _advance_session(

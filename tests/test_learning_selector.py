@@ -81,10 +81,13 @@ def test_free_plan_my_day_respects_remaining_article_claim_slots(tmp_path: Path)
     }
     assert len(introduced) <= 1
     assert mix
-    at_cap = article_slot_policy(claimed={"14", "15", "16"}, remaining_slots=0, entitlements_on=True)
+    at_cap = article_slot_policy(
+        claimed={"14"}, remaining_slots=0, entitlements_on=True
+    )
     capped = LearningMixSelector().select(
         candidates, 5, rng=random.Random(3), allow=at_cap
     )
+    assert capped
     assert all(item.article_number == "14" for item in capped)
 
 
