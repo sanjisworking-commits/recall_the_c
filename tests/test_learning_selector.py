@@ -97,3 +97,69 @@ def test_selector_has_no_request_parameter():
     params = inspect.signature(LearningMixSelector.select).parameters
     assert "request" not in params
     assert "candidates" in params
+
+
+def test_full_access_mix_ignores_free_article_slot_cap(tmp_path: Path):
+    units = [
+        _unit("claimed-a", "14", 1),
+        _unit("open-15", "15", 2),
+        _unit("open-16", "16", 3),
+        _unit("open-19", "19", 4),
+        _unit("open-21", "21", 5),
+        _unit("open-32", "32", 6),
+    ]
+    engine = ReminderEngine.from_units(tmp_path / "progress.db", units)
+    today = date(2026, 8, 1)
+    capped = eligible_candidates(
+        engine,
+        as_of=today,
+        claimed={"14", "15", "16"},
+        remaining_slots=0,
+        entitlements_on=True,
+    )
+    assert {item.article_number for item in capped} <= {"14", "15", "16"}
+    open_pool = eligible_candidates(
+        engine,
+        as_of=today,
+        claimed=set(),
+        remaining_slots=None,
+        entitlements_on=False,
+    )
+    assert {item.article_number for item in open_pool} >= {"14", "15", "16", "19", "21", "32"}
+
+
+def test_unresolved_split_capable_units_are_excluded_from_mixes(tmp_path: Path):
+    from constitution_memorizer.web.service import select_today_mix
+
+    units = [
+        _unit("plain", "14", 1),
+        LearningUnit(
+            id="split-parent",
+            type=LearningUnitType.CLAUSE,
+            article_number="15",
+            display_title="Article 15",
+            text="Split parent",
+            estimated_learning_time=60,
+            revision_order=2,
+            tags=["Part III"],
+            allows_letter_split=True,
+            child_unit_ids=["split-a", "split-b"],
+        ),
+        LearningUnit(
+            id="split-a",
+            type=LearningUnitType.SUBCLAUSE,
+            article_number="15",
+            display_title="Article 15(a)",
+            text="(a)",
+            estimated_learning_time=30,
+            revision_order=0,
+            tags=["Part III"],
+            parent_clause_id="split-parent",
+        ),
+        _unit("plain-2", "16", 3),
+    ]
+    engine = ReminderEngine.from_units(tmp_path / "progress.db", units)
+    today = date(2026, 8, 1)
+    assert "split-parent" not in select_today_mix(engine, target=5, as_of=today)
+    engine.set_split_preference("split-parent", "whole")
+    assert "split-parent" in select_today_mix(engine, target=5, as_of=today)

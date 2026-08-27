@@ -140,6 +140,15 @@ class ReminderRepositoryProtocol(Protocol):
         self, user_id: UUID | str, session_id: str
     ) -> None: ...
 
+    def replace_study_session_unit(
+        self,
+        user_id: UUID | str,
+        *,
+        session_id: str,
+        old_unit_id: str,
+        new_unit_ids: list[str],
+    ) -> StudySession | None: ...
+
     def study_session_for_day(
         self,
         user_id: UUID | str,

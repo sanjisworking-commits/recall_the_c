@@ -814,6 +814,76 @@ class ProgressRepository:
         )
         self._conn.commit()
 
+    def replace_study_session_unit(
+        self,
+        user_id: UUID | str,
+        *,
+        session_id: str,
+        old_unit_id: str,
+        new_unit_ids: list[str],
+    ) -> StudySession | None:
+        """Swap one pending queue item for one or more units, keeping order.
+
+        Used when a split-capable parent in a session is resolved to Letters:
+        the parent row is replaced by its letter children at the same position.
+        """
+        session = self.get_study_session(user_id, session_id)
+        if session is None:
+            return None
+        current = session.item_for(old_unit_id)
+        if current is None or current.status != "pending":
+            return session
+        existing = {item.learning_unit_id for item in session.items}
+        ordered: list[str] = []
+        for unit_id in new_unit_ids:
+            if not unit_id or unit_id == old_unit_id:
+                continue
+            if unit_id in existing and unit_id != old_unit_id:
+                continue
+            if unit_id not in ordered:
+                ordered.append(unit_id)
+        if not ordered:
+            return session
+        shift = len(ordered) - 1
+        uid = as_user_id(user_id)
+        try:
+            if shift > 0:
+                self._conn.execute(
+                    """
+                    UPDATE study_session_item
+                    SET position = position + ?
+                    WHERE session_id = ?
+                      AND position > ?
+                      AND session_id IN (SELECT id FROM study_session WHERE user_id = ?)
+                    """,
+                    (shift, session_id, current.position, uid),
+                )
+            self._conn.execute(
+                """
+                DELETE FROM
+                    study_session_item
+                WHERE session_id = ? AND learning_unit_id = ?
+                  AND session_id IN (SELECT id FROM study_session WHERE user_id = ?)
+                """,
+                (session_id, old_unit_id, uid),
+            )
+            self._conn.executemany(
+                """
+                INSERT INTO study_session_item (
+                    session_id, learning_unit_id, position, status, completed_at
+                ) VALUES (?, ?, ?, 'pending', NULL)
+                """,
+                [
+                    (session_id, unit_id, current.position + index)
+                    for index, unit_id in enumerate(ordered)
+                ],
+            )
+            self._conn.commit()
+        except Exception:
+            self._conn.rollback()
+            raise
+        return self.get_study_session(user_id, session_id)
+
     def complete_study_session(self, user_id: UUID | str, session_id: str) -> None:
         self._conn.execute(
             """

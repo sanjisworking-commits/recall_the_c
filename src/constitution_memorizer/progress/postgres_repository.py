@@ -643,6 +643,72 @@ class PostgresProgressRepository:
             )
             conn.commit()
 
+    def replace_study_session_unit(
+        self,
+        user_id: UUID | str,
+        *,
+        session_id: str,
+        old_unit_id: str,
+        new_unit_ids: list[str],
+    ) -> StudySession | None:
+        session = self.get_study_session(user_id, session_id)
+        if session is None:
+            return None
+        current = session.item_for(old_unit_id)
+        if current is None or current.status != "pending":
+            return session
+        existing = {item.learning_unit_id for item in session.items}
+        ordered: list[str] = []
+        for unit_id in new_unit_ids:
+            if not unit_id or unit_id == old_unit_id:
+                continue
+            if unit_id in existing and unit_id != old_unit_id:
+                continue
+            if unit_id not in ordered:
+                ordered.append(unit_id)
+        if not ordered:
+            return session
+        shift = len(ordered) - 1
+        uid = as_user_id(user_id)
+        with self._cursor() as (conn, cur):
+            try:
+                if shift > 0:
+                    cur.execute(
+                        """
+                        UPDATE study_session_item
+                        SET position = position + %s
+                        WHERE session_id = %s
+                          AND position > %s
+                          AND session_id IN (SELECT id FROM study_session WHERE user_id = %s)
+                        """,
+                        (shift, session_id, current.position, uid),
+                    )
+                cur.execute(
+                    """
+                    DELETE FROM
+                        study_session_item
+                    WHERE session_id = %s AND learning_unit_id = %s
+                      AND session_id IN (SELECT id FROM study_session WHERE user_id = %s)
+                    """,
+                    (session_id, old_unit_id, uid),
+                )
+                cur.executemany(
+                    """
+                    INSERT INTO study_session_item (
+                        session_id, learning_unit_id, position, status, completed_at
+                    ) VALUES (%s, %s, %s, 'pending', NULL)
+                    """,
+                    [
+                        (session_id, unit_id, current.position + index)
+                        for index, unit_id in enumerate(ordered)
+                    ],
+                )
+                conn.commit()
+            except Exception:
+                conn.rollback()
+                raise
+        return self.get_study_session(user_id, session_id)
+
     def complete_study_session(self, user_id: UUID | str, session_id: str) -> None:
         with self._cursor() as (conn, cur):
             cur.execute(
