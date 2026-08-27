@@ -369,7 +369,9 @@ def test_choose_letters_from_a_session_stays_on_the_queue(tmp_path: Path):
 
 def _articles_catalog(tmp_path: Path) -> Path:
     units = []
-    for index, article in enumerate(["14", "15", "16", "19", "21", "32"], start=1):
+    for index, article in enumerate(
+        ["14", "15", "16", "19", "21", "32", "33", "38"], start=1
+    ):
         units.append(
             {
                 "id": f"u-{article}",
@@ -481,3 +483,66 @@ def test_admin_mix_bypasses_free_article_slot_cap(tmp_path: Path):
         if eng.get_unit(item.learning_unit_id) is not None
     }
     assert articles - {"14", "15", "16"}
+
+
+def test_free_cap_without_claimed_unseen_hides_plan_my_day(tmp_path: Path):
+    units_path = _articles_catalog(tmp_path)
+    client, repo, user_id = _entitled_client(tmp_path, units_path)
+    for article in ("14", "15", "16"):
+        repo.claim_article(user_id, article)
+    eng = _engine(client)
+    today = date.today()
+    for unit_id in ("u-14", "u-15", "u-16"):
+        eng.repo.upsert_progress(
+            eng.user_id,
+            unit_id=unit_id,
+            status="review",
+            times_completed=1,
+            last_completed=today - timedelta(days=10),
+            next_revision=today + timedelta(days=10),
+            interval_days=15,
+        )
+    eng._invalidate_progress_cache()
+    page = client.get("/dashboard")
+    assert page.status_code == 200
+    assert "Plan my day" not in page.text
+    posted = client.post(
+        "/learning/plan-my-day", data={"target": "3"}, follow_redirects=False
+    )
+    assert posted.status_code == 303
+    assert eng.study_session_for_day(kind="day_plan", plan_date=today) is None
+
+
+def test_admin_auto_start_spans_beyond_free_article_cap(tmp_path: Path):
+    units_path = _articles_catalog(tmp_path)
+    client, repo, user_id = _entitled_client(tmp_path, units_path, make_admin=True)
+    for article in ("14", "15", "16"):
+        repo.claim_article(user_id, article)
+    saved = client.post(
+        "/settings/learning-plan",
+        data={"mode": "auto", "daily_target": "7"},
+        follow_redirects=False,
+    )
+    assert saved.status_code == 303
+    plan = _engine(client).get_learning_plan()
+    assert plan.mode == "auto"
+    assert plan.daily_target == 7
+    start = client.post("/learning/start", follow_redirects=False)
+    assert start.status_code == 303
+    eng = _engine(client)
+    session = eng.study_session_for_day(kind="auto_learning", plan_date=date.today())
+    assert session is not None
+    articles = {
+        eng.get_unit(item.learning_unit_id).article_number
+        for item in session.items
+        if eng.get_unit(item.learning_unit_id) is not None
+    }
+    assert len(articles) > 3
+    orders = repo.conn.execute(
+        "SELECT * FROM billing_orders WHERE user_id = ?", (str(user_id),)
+    ).fetchall()
+    grants = repo.conn.execute(
+        "SELECT * FROM access_grants WHERE user_id = ?", (str(user_id),)
+    ).fetchall()
+    assert list(orders) == []
+    assert list(grants) == []

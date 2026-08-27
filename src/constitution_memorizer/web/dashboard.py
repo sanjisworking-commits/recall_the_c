@@ -243,6 +243,7 @@ def build_dashboard_context(
     as_of: date | None = None,
     now: datetime | None = None,
     auto_entitled: bool = True,
+    mix_eligibility: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     today = as_of or date.today()
     now = now or datetime.now(timezone.utc)
@@ -323,7 +324,7 @@ def build_dashboard_context(
 
     unseen = 0
     try:
-        unseen = remaining_unseen_count(eng, as_of=today)
+        unseen = remaining_unseen_count(eng, as_of=today, **(mix_eligibility or {}))
     except Exception as error:  # noqa: BLE001
         if not _is_missing_study_session_table(error):
             raise

@@ -36,6 +36,7 @@ from constitution_memorizer.web.entitlements import (
     access_summary,
     can_use_auto_plan,
     entitlements_active,
+    learning_entitlement_args,
     subscription_status,
 )
 from constitution_memorizer.web.request_context import record_request_timing
@@ -421,6 +422,7 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
                 display_label=label,
                 as_of=today,
                 auto_entitled=can_use_auto_plan(request),
+                mix_eligibility=learning_entitlement_args(request, eng),
             )
             record_request_timing("dashboard_build", started)
             ctx["user"] = user

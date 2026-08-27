@@ -109,6 +109,7 @@ from constitution_memorizer.web.browse import (
     load_reviewed_document,
 )
 from constitution_memorizer.web.explainers import explainer_asset_path, visual_explainer
+from constitution_memorizer.planner.eligibility import is_unlearned
 from constitution_memorizer.progress.repository import LEARN_MODES
 from constitution_memorizer.web.progress_stats import (
     _is_completed,
@@ -136,12 +137,12 @@ from constitution_memorizer.web.billing import (
     verify_signature as billing_verify,
 )
 from constitution_memorizer.web.entitlements import (
-    FREE_ARTICLE_LIMIT,
     PREVIEW_STATES,
     access_summary,
     article_key,
     can_use_auto_plan,
     entitlements_active,
+    learning_entitlement_args,
     preview_state,
     resolve_learn_access,
 )
@@ -1536,23 +1537,6 @@ def create_app(
     def _home_url() -> str:
         return "/dashboard" if app.state.multiuser_enabled else "/"
 
-    def _learning_entitlement_args(request: Request, eng: ReminderEngine) -> dict:
-        # Full-access users (paid / admin / grant) skip Free-Article caps
-        # during mix generation. Preview is not consulted.
-        if not entitlements_active(request) or can_use_auto_plan(request):
-            return {
-                "claimed": set(),
-                "remaining_slots": None,
-                "entitlements_on": False,
-            }
-        claimed = eng.claimed_articles()
-        remaining = max(0, FREE_ARTICLE_LIMIT - len(claimed))
-        return {
-            "claimed": claimed,
-            "remaining_slots": remaining,
-            "entitlements_on": True,
-        }
-
     def _revision_blocks_new_learning(eng: ReminderEngine, today: date) -> bool:
         if due_checklist(eng, as_of=today):
             return True
@@ -1645,7 +1629,7 @@ def create_app(
         plan = eng.get_learning_plan()
         if not plan.is_auto or plan.daily_target is None:
             return RedirectResponse(url=_home_url(), status_code=303)
-        args = _learning_entitlement_args(request, eng)
+        args = learning_entitlement_args(request, eng)
         unit_ids = select_today_mix(
             eng, target=int(plan.daily_target), as_of=today, **args
         )
@@ -1697,7 +1681,7 @@ def create_app(
         today = user_today(eng)
         if not _plan_my_day_allowed(eng, today):
             return RedirectResponse(url=_home_url(), status_code=303)
-        args = _learning_entitlement_args(request, eng)
+        args = learning_entitlement_args(request, eng)
         unit_ids = select_today_mix(eng, target=target, as_of=today, **args)
         session = start_or_resume_learning(
             eng, kind="day_plan", unit_ids=unit_ids, as_of=today
@@ -1876,9 +1860,11 @@ def create_app(
         if (
             chosen == "letters"
             and session is not None
+            and session.kind in ("auto_learning", "day_plan")
             and session.status == "active"
             and session.plan_date == user_today(eng)
             and session.contains(clause_id)
+            and is_unlearned(eng, clause_id)
         ):
             children = [child for child in unit.child_unit_ids if child]
             if children:

@@ -347,6 +347,38 @@ def test_split_redirect_keeps_the_session(tmp_path: Path):
     assert _session_of(picked.headers["location"]) == session_id
 
 
+def test_revision_letters_choice_does_not_orphan_a_due_parent(tmp_path: Path):
+    """Letters on a due parent must not hide revision debt or rewrite the queue."""
+    client = _client(tmp_path, multiuser=True)
+    _sign_in(client)
+    _make_due(client, ["clause-2", "clause-1"])
+    session_id, first = _start(client)
+    assert first == "clause-2"
+    picked = client.post(
+        f"/learn/clause-2/choose?session={session_id}",
+        data={"mode": "letters"},
+        follow_redirects=False,
+    )
+    assert picked.status_code == 303
+    eng = _engine(client)
+    session = eng.get_study_session(session_id)
+    assert session is not None
+    assert session.kind == "revision"
+    assert session.contains("clause-2")
+    assert session.item_for("clause-2-a") is None
+    assert session.item_for("clause-2-b") is None
+    progress = eng.get_progress("clause-2")
+    assert progress is not None
+    assert progress.status == "review"
+    assert progress.next_revision is not None
+    assert progress.next_revision <= date.today()
+    page = client.get("/dashboard")
+    assert page.status_code == 200
+    assert 'data-today-mode="revision"' in page.text
+    assert "Continue revision" in page.text or "Start revision" in page.text
+    assert session.item_for("clause-2").status == "pending"
+
+
 def test_mobile_deck_roundtrip_preserves_the_query(tmp_path: Path):
     """showDeck used to rewrite to a bare /learn/{id}, destroying the session."""
     source = MOBILE_JS.read_text(encoding="utf-8")
