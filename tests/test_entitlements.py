@@ -950,3 +950,89 @@ def test_grant_summary_carries_expiry_and_no_subscription(tmp_path: Path) -> Non
     assert summary.status_line == "Recall access granted"
     # Claims survive and stay listed for grant holders.
     assert summary.claimed_articles == ("14",)
+
+
+# --------------------------------------------------------------------------- #
+# Auto Plan capability (not is_subscribed alone; preview is not a source)     #
+# --------------------------------------------------------------------------- #
+from constitution_memorizer.admin.store import AccessOverride, EffectiveGrant  # noqa: E402
+
+
+def _capability_request(
+    *,
+    entitlements: bool,
+    user: object | None = object(),
+    override: AccessOverride | None = None,
+    cookies: dict[str, str] | None = None,
+    multiuser: bool = True,
+):
+    resolved = override if override is not None else AccessOverride()
+    cookie_map = cookies or {}
+
+    class _State:
+        current_user = user
+        access_override = resolved
+        is_admin = resolved.is_admin
+
+    class _AppState:
+        multiuser_enabled = multiuser
+        article_entitlements_enabled = entitlements
+
+    class _Req:
+        app = type("A", (), {"state": _AppState()})()
+        state = _State()
+        cookies = cookie_map
+
+    return _Req()
+
+
+def test_can_use_auto_plan_dormant_entitlements_are_open() -> None:
+    req = _capability_request(entitlements=False, user=object())
+    assert ent.can_use_auto_plan(req) is True
+
+
+def test_can_use_auto_plan_free_user_is_locked() -> None:
+    req = _capability_request(entitlements=True, user=object())
+    assert ent.can_use_auto_plan(req) is False
+    assert ent.is_subscribed(req.state.current_user) is False
+
+
+def test_can_use_auto_plan_admin_ignores_preview_and_is_not_a_purchase() -> None:
+    req = _capability_request(
+        entitlements=True,
+        user=object(),
+        override=AccessOverride(is_admin=True),
+        cookies={ent.PREVIEW_COOKIE: "free_cap"},
+    )
+    assert ent.preview_state(req) == "free_cap"
+    assert ent.can_use_auto_plan(req) is True
+    assert ent.is_subscribed(req.state.current_user) is False
+    assert ent.access_level(req) == ent.SUBSCRIBED
+
+
+def test_can_use_auto_plan_grant_follows_full_access_policy() -> None:
+    now = datetime.now(timezone.utc)
+    grant = EffectiveGrant(
+        grant_id=str(uuid4()),
+        source="admin_grant",
+        starts_at=now,
+        ends_at=None,
+    )
+    req = _capability_request(
+        entitlements=True,
+        user=object(),
+        override=AccessOverride(effective_grant=grant),
+        cookies={ent.PREVIEW_COOKIE: "subscribed"},
+    )
+    # Non-admin preview cookie is ignored by preview_state.
+    assert ent.preview_state(req) is None
+    assert ent.can_use_auto_plan(req) is True
+    assert ent.is_subscribed(req.state.current_user) is False
+
+
+def test_can_use_auto_plan_paid_user_without_admin_role(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(ent, "is_subscribed", lambda _user: True)
+    req = _capability_request(entitlements=True, user=object())
+    assert ent.can_use_auto_plan(req) is True
+    assert ent.has_active_recall_access(req) is False
+

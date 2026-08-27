@@ -158,14 +158,30 @@ def access_level(request: object) -> str:
 
 
 def can_use_auto_plan(request: object) -> bool:
-    """Auto Plan is a subscriber capability, available while entitlements are dormant.
+    """Durable Auto Plan eligibility. Ignores admin entitlement preview.
 
-    Admin / grant holders resolve to subscribed capabilities without being
-    labelled as a paid subscription.
+    Auto Plan is a paid-tier capability. Feature code asks this question
+    rather than ``is_subscribed`` alone so:
+
+    * a genuine paid user may enable Auto Plan
+    * an administrator with a real admin role may enable it for their own
+      account without a billing record (``access_source`` stays ``admin``)
+    * an active full-access grant follows the same full-Recall policy as
+      other subscriber capabilities
+    * a normal Free account cannot
+
+    Entitlement preview is a UI/testing simulation. It is not consulted
+    here and must not grant, revoke, or persist this entitlement.
     """
     if not entitlements_active(request):
         return True
-    return access_level(request) == SUBSCRIBED
+    # Local single-user owner already has full Recall; keep Auto Plan open.
+    if not _multiuser_enabled(request):
+        return True
+    if has_active_recall_access(request):
+        return True
+    user = getattr(getattr(request, "state", None), "current_user", None)
+    return user is not None and is_subscribed(user)
 
 
 # --------------------------------------------------------------------------- #

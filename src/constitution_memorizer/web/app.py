@@ -1742,6 +1742,10 @@ def create_app(
         expected = request.cookies.get("rtc_csrf") or ""
         if expected and csrf_token != expected:
             return RedirectResponse(url="/onboarding/plan?error=csrf", status_code=303)
+        # Preview simulates another tier in the UI; it must not persist this
+        # admin's durable learning-plan row.
+        if preview_state(request) is not None:
+            return RedirectResponse(url=_home_url(), status_code=303)
         chosen_mode = "self_paced"
         target: int | None = None
         if mode == "auto" and can_use_auto_plan(request):
@@ -1768,6 +1772,10 @@ def create_app(
         )
         if is_guest:
             return _guest_login("/settings")
+        # Preview is a UI/testing simulation. It is not Auto Plan entitlement
+        # and must not rewrite this user's durable learning-plan preference.
+        if preview_state(request) is not None:
+            return RedirectResponse(url="/settings", status_code=303)
         chosen_mode = "self_paced"
         target: int | None = None
         if mode == "auto" and can_use_auto_plan(request):

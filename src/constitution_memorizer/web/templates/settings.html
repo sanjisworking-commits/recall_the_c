@@ -257,6 +257,9 @@
     Self-paced is the default — pick a mix when you want one. Auto Plan places
     3, 5, or 7 new clauses on revision-free days. Revisions always come first.
   </p>
+  {% if can_auto_plan|default(false) and access and access.is_admin and not access.is_subscribed %}
+  <p class="settings-note settings-plan-access">Full Recall access · Admin</p>
+  {% endif %}
   <form class="settings-form settings-plan-form" method="post" action="/settings/learning-plan">
     <fieldset class="settings-fieldset">
       <legend class="visually-hidden">Learning plan</legend>
