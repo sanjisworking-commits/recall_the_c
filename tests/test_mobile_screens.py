@@ -1098,6 +1098,10 @@ def test_article_phone_shows_clauses_and_bare_preview(tmp_path: Path):
     assert "article-status" in html
     css = client.get("/static/mobile.css").text
     assert 'body[data-mscreen="article"] .article-clause-list' in css
+    clause_item = css.split(
+        'body[data-mscreen="article"] .article-clause-list .checklist-item {', 1
+    )[1].split("}", 1)[0]
+    assert "flex-direction: row" in clause_item
     assert 'body[data-mscreen="article"] .browse-article > .checklist {' not in css
     assert ".article-bare:not(.is-expanded) .browse-article-text" in css
     assert 'body[data-mscreen="article"] .amendment-history' in css
