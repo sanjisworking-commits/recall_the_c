@@ -854,6 +854,7 @@ class PartProgressSummary:
     percent: int
     due_count: int
     label: str
+    learned_numbers: tuple[str, ...] = ()
 
 
 def _section_cards(section: BrowsePartSection) -> list[BrowseArticleCard]:
@@ -877,13 +878,14 @@ def part_progress_summary(
 
     today = today or date.today()
     cards = _section_cards(section)
-    learned = 0
+    learned_numbers: list[str] = []
     for card in cards:
         state = article_mastery_state(
             engine, card.article_number, today=today, continue_id=continue_id
         )
         if state in ("mastered", "learning"):
-            learned += 1
+            learned_numbers.append(card.article_number)
+    learned = len(learned_numbers)
     total = len(cards)
     percent = int(round(100 * learned / total)) if total else 0
     due_count = sum(card.due_count for card in cards)
@@ -899,6 +901,7 @@ def part_progress_summary(
         percent=percent,
         due_count=due_count,
         label=label,
+        learned_numbers=tuple(learned_numbers),
     )
 
 
