@@ -20,5 +20,10 @@
   {% if hit and not hit.redirect_url %}
   <p class="empty">{{ hit.message or "No match." }}</p>
   {% endif %}
+
+  <div class="search-recent" data-search-recent hidden>
+    <p class="search-recent-label">Recent</p>
+    <div class="search-recent-chips" data-search-recent-chips></div>
+  </div>
 </section>
 {% endblock %}

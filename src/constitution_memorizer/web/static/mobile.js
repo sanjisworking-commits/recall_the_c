@@ -763,6 +763,63 @@
       });
   }
 
+  function initBarePreview() {
+    if (!isPhone()) return;
+    var wrap = document.querySelector("[data-bare-preview]");
+    var btn = wrap && wrap.querySelector("[data-bare-expand]");
+    if (!wrap || !btn) return;
+    btn.addEventListener("click", function () {
+      wrap.classList.add("is-expanded");
+    });
+  }
+
+  var SEARCH_RECENT_KEY = "rtc-search-recent";
+
+  function readSearchRecent() {
+    try {
+      var raw = localStorage.getItem(SEARCH_RECENT_KEY);
+      var list = raw ? JSON.parse(raw) : [];
+      return Array.isArray(list) ? list.filter(Boolean).slice(0, 5) : [];
+    } catch (_e) {
+      return [];
+    }
+  }
+
+  function writeSearchRecent(query) {
+    var q = (query || "").trim();
+    if (!q) return;
+    var next = [q].concat(readSearchRecent().filter(function (item) {
+      return item.toLowerCase() !== q.toLowerCase();
+    })).slice(0, 5);
+    try {
+      localStorage.setItem(SEARCH_RECENT_KEY, JSON.stringify(next));
+    } catch (_e) {}
+  }
+
+  function initSearchRecent() {
+    if (!isPhone()) return;
+    var form = document.querySelector(".search-form");
+    var input = document.getElementById("q");
+    var host = document.querySelector("[data-search-recent]");
+    var chips = document.querySelector("[data-search-recent-chips]");
+    if (form && input) {
+      form.addEventListener("submit", function () {
+        writeSearchRecent(input.value);
+      });
+    }
+    if (!host || !chips) return;
+    var recent = readSearchRecent();
+    if (!recent.length) return;
+    host.hidden = false;
+    recent.forEach(function (item) {
+      var a = document.createElement("a");
+      a.className = "search-recent-chip";
+      a.href = "/search?q=" + encodeURIComponent(item);
+      a.textContent = item;
+      chips.appendChild(a);
+    });
+  }
+
   /* ── Calendar: open a day ───────────────────────────────────────────────
      Tapping a cell swaps the list below for that day's units. All the data is
      already on the page (the same calendar.days the grid is built from), so
@@ -942,6 +999,8 @@
     initModeStatusLines();
     initLearnDeck();
     initArticleCta();
+    initBarePreview();
+    initSearchRecent();
     initCalendarDays();
     // After initLearnDeck: the bar only exists in its final form once the
     // deck has moved the active mode's controls into it.

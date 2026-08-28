@@ -40,7 +40,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/styles.css?v=main45">
   <link rel="stylesheet" href="/static/visual-explainer.css?v=ve1">
-  <link rel="stylesheet" href="/static/mobile.css?v=mob46">
+  <link rel="stylesheet" href="/static/mobile.css?v=mob47">
   {% if onboarding_status|default('') == 'active' %}
   <link rel="stylesheet" href="/static/onboarding.css?v=ob6">
   {% endif %}
@@ -202,10 +202,10 @@
 
   {% if multiuser_enabled|default(false) and current_user %}
   <nav class="mobile-tabbar" aria-label="Mobile">
-    <a href="/dashboard" class="mobile-tab{% if path.startswith('/dashboard') %} is-active{% endif %}">Today</a>
-    <a href="/browse" class="mobile-tab{% if path.startswith('/browse') %} is-active{% endif %}">Browse</a>
-    <a href="/calendar" class="mobile-tab{% if path.startswith('/calendar') %} is-active{% endif %}">Calendar</a>
-    <a href="/progress" class="mobile-tab{% if path.startswith('/progress') %} is-active{% endif %}">Profile</a>
+    <a href="/dashboard" class="mobile-tab{% if path.startswith('/dashboard') %} is-active{% endif %}"><svg class="mobile-tab-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M3 9.4 10 3l7 6.4V17h-4.6v-4.6H7.6V17H3V9.4Z"></path></svg>Today</a>
+    <a href="/browse" class="mobile-tab{% if path.startswith('/browse') %} is-active{% endif %}"><svg class="mobile-tab-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M10 4.2C8.6 3 6.8 2.6 4.6 2.6c-.9 0-1.6.1-1.6.1v13s.7-.1 1.6-.1c2.2 0 4 .4 5.4 1.6 1.4-1.2 3.2-1.6 5.4-1.6.9 0 1.6.1 1.6.1v-13s-.7-.1-1.6-.1c-2.2 0-4 .4-5.4 1.6Zm0 0v13"></path></svg>Browse</a>
+    <a href="/calendar" class="mobile-tab{% if path.startswith('/calendar') %} is-active{% endif %}"><svg class="mobile-tab-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><rect x="2.6" y="4" width="14.8" height="13" rx="2"></rect><path d="M2.6 8.2h14.8M6.6 2.2v3M13.4 2.2v3"></path></svg>Calendar</a>
+    <a href="/progress" class="mobile-tab{% if path.startswith('/progress') %} is-active{% endif %}"><svg class="mobile-tab-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="6.6" r="3.4"></circle><path d="M3.4 17.4c.8-3.1 3.4-4.8 6.6-4.8s5.8 1.7 6.6 4.8"></path></svg>Profile</a>
   </nav>
   {% elif multiuser_enabled|default(false) and not auth_surface %}
   {# Guests browse and read; the fourth tab is the way in, not Revisions. #}
@@ -227,8 +227,8 @@
 
   <script src="/static/recall_align.js?v=sprint22" defer></script>
   <script src="/static/speech_client.js?v=speech2" defer></script>
-  <script src="/static/app.js?v=main46" defer></script>
-  <script src="/static/mobile.js?v=mob23" defer></script>
+  <script src="/static/app.js?v=main47" defer></script>
+  <script src="/static/mobile.js?v=mob24" defer></script>
   <script src="/static/visual-explainer.js?v=ve2" defer></script>
   <script src="/static/auth.js?v=main5" defer></script>
   {% if onboarding_status|default('') == 'active' %}

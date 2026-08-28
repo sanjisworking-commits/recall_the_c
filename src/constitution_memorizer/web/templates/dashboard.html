@@ -14,7 +14,7 @@
       <p class="dash-skel-line is-medium"></p>
     </div>
   </header>
-  <p class="dash-loading-label" aria-live="polite">Loading your dashboard…</p>
+  <p class="dash-loading-label" aria-live="polite">Loading today’s Recall…</p>
   {# One hero card, the strip, and the two secondary cards: the skeleton has
      to match what actually arrives, or the page visibly reflows on load. #}
   <div class="dash-top" aria-busy="true" aria-label="Loading dashboard">
@@ -35,9 +35,18 @@
   </header>
   <article class="dash-card dash-error" role="alert">
     <p class="dash-error-mark" aria-hidden="true">!</p>
-    <h2 class="dash-error-title">We couldn't load your dashboard</h2>
+    <h2 class="dash-error-title">
+      <span class="dash-eyebrow-phone">We couldn’t load today’s Recall</span>
+      <span class="dash-eyebrow-desktop">We couldn't load your dashboard</span>
+    </h2>
     <p class="muted">Your saved progress is safe.</p>
-    <p class="actions"><a class="btn" href="/dashboard">Try again</a></p>
+    <p class="actions"><a class="btn dash-btn-full" href="/dashboard">Try again</a></p>
+    <p class="dash-error-still">Still available</p>
+    <div class="dash-error-links">
+      <a href="/browse">Browse the Constitution<span aria-hidden="true">›</span></a>
+      <a href="/search">Search the Bare Act<span aria-hidden="true">›</span></a>
+    </div>
+    <p class="dash-error-note">Reading never depends on the dashboard loading.</p>
   </article>
 
   {% else %}
@@ -54,11 +63,11 @@
       <p class="dash-subtext">{{ subtext }}</p>
     </div>
     <span class="rc-streak" data-daily-goal-streak="{{ daily_goal_streak|default(0) }}" title="Days the daily goal was completed">
-      <span class="rc-streak-glyph" aria-hidden="true">✦</span>
+      <svg class="rc-streak-glyph" width="13" height="15" viewBox="0 0 14 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M7 1.2c.6 2.6-2.9 3.9-2.9 7a3.4 3.4 0 0 0 6.8 0c0-1.4-.7-2.4-1.3-3.3-.5 1-1.1 1.4-1.1 1.4C8.9 4.4 8.6 2.4 7 1.2Z"></path></svg>
       <span class="rc-streak-count">{{ daily_goal_streak|default(0) }}</span>
     </span>
-    <a class="mobile-icon-btn dash-greeting-search" href="/search" aria-label="Search">
-      <svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"></circle><path d="M12.6 12.6 17 17"></path></svg>
+    <a class="mobile-icon-btn dash-greeting-settings" href="/settings" aria-label="Settings">
+      <svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="10" cy="10" r="2.6"></circle><path d="M10 1.8v2.4M10 15.8v2.4M18.2 10h-2.4M4.2 10H1.8M15.8 4.2l-1.7 1.7M5.9 14.1l-1.7 1.7M15.8 15.8l-1.7-1.7M5.9 5.9 4.2 4.2"></path></svg>
     </a>
     {% if access and access.enabled and access.is_free %}
     <span class="dash-access-chip" title="Your first three Articles stay yours permanently">
@@ -98,7 +107,8 @@
       <header class="dash-card-head">
         <h2 class="dash-eyebrow">
           <span class="dash-dot" aria-hidden="true"></span>
-          Due today
+          <span class="dash-eyebrow-phone">Today’s Recall</span>
+          <span class="dash-eyebrow-desktop">Due today</span>
         </h2>
       </header>
       <div class="dash-card-body">
@@ -107,11 +117,14 @@
           {% set ring_done = goal_done|default(0) %}
           {% set ring_c = 163.36 %}
           {% set ring_dash = (ring_c * ring_done / ring_total) if ring_total else 0 %}
-          <svg class="rc-goal-ring" width="64" height="64" viewBox="0 0 64 64" aria-hidden="true">
-            <circle cx="32" cy="32" r="26" fill="none" stroke="currentColor" stroke-width="5" class="rc-goal-track"></circle>
-            <circle cx="32" cy="32" r="26" fill="none" stroke="currentColor" stroke-width="5" class="rc-goal-fill"
-              stroke-dasharray="{{ ring_dash }} {{ ring_c }}" stroke-linecap="round" transform="rotate(-90 32 32)"></circle>
-          </svg>
+          <span class="rc-goal-dial">
+            <svg class="rc-goal-ring" width="64" height="64" viewBox="0 0 64 64" aria-hidden="true">
+              <circle cx="32" cy="32" r="26" fill="none" stroke="currentColor" stroke-width="5" class="rc-goal-track"></circle>
+              <circle cx="32" cy="32" r="26" fill="none" stroke="currentColor" stroke-width="5" class="rc-goal-fill"
+                stroke-dasharray="{{ ring_dash }} {{ ring_c }}" stroke-linecap="round" transform="rotate(-90 32 32)"></circle>
+            </svg>
+            <span class="rc-goal-frac">{{ ring_done }}/{{ ring_total }}</span>
+          </span>
           <p class="dash-due-line">
             <span class="dash-due-count">{{ revision_count }}</span>
             <span class="dash-due-units">revision{% if revision_count != 1 %}s{% endif %} due</span>
@@ -146,11 +159,12 @@
       </div>
     </article>
     {% else %}
-    <article class="dash-card dash-hero dash-due is-empty{% if learning_cta|default('browse') in ('learning_complete', 'caught_up') %} is-caughtup{% endif %}" data-today-mode="learning">
+    <article class="dash-card dash-hero dash-due is-empty{% if learning_cta|default('browse') in ('learning_complete', 'caught_up', 'browse') and not continue_unit %} is-caughtup{% endif %}" data-today-mode="learning">
       <header class="dash-card-head">
         <h2 class="dash-eyebrow">
           <span class="dash-dot" aria-hidden="true"></span>
-          Today
+          <span class="dash-eyebrow-phone">Today’s Recall</span>
+          <span class="dash-eyebrow-desktop">Today</span>
         </h2>
       </header>
       <div class="dash-card-body">
@@ -186,6 +200,9 @@
           </form>
         </div>
         {% elif learning_cta|default('browse') == 'learning_complete' %}
+        <span class="dash-caughtup-mark" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6.5 4.8 9.2 10 3.2"></path></svg>
+        </span>
         <p class="dash-due-empty-title">Today's learning complete</p>
         <p class="dash-load">Your revisions have been scheduled.</p>
         {% if revision_completed_today|default(0) > 0 %}
@@ -206,10 +223,14 @@
           <a class="btn dash-btn-full" href="/learn/{{ continue_unit.id }}?mode=read">Continue learning →</a>
         </p>
         {% else %}
+        <span class="dash-caughtup-mark" aria-hidden="true">
+          <svg width="22" height="22" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6.5 4.8 9.2 10 3.2"></path></svg>
+        </span>
         <p class="dash-due-empty-title">Nothing is due today</p>
         {% if revision_completed_today|default(0) > 0 %}
         <p class="dash-done-today">{{ revision_completed_today }} revision{% if revision_completed_today != 1 %}s{% endif %} completed today ✓</p>
         {% endif %}
+        <p class="dash-load dash-caughtup-copy">You’re caught up. Come back when your next Recall is due — or browse something new.</p>
         <p class="actions">
           <a class="btn dash-btn-full" href="/browse">Browse the Constitution →</a>
         </p>
@@ -227,11 +248,12 @@
           <span class="rc-path-meta">{{ item.article_label }} · {{ 'Review' if item.kind == 'review' else 'New' }}{% if item.status == 'deferred' %} · skipped{% endif %}</span>
         </span>
         {% if item.status == 'current' %}
-        <a class="rc-path-cta" href="{{ item.href }}">Open →</a>
+        <a class="rc-path-cta" href="{{ item.href }}">Start →</a>
         {% endif %}
       </li>
       {% endfor %}
     </ol>
+    <p class="rc-path-note">Recall schedules these for you — Day 1 · 3 · 7 · 15 · 30 · 60.</p>
     {% endif %}
   </div>
 
@@ -261,7 +283,7 @@
   {% if upcoming %}
   <section class="dash-upcoming" aria-label="Upcoming revisions">
     <header class="dash-upcoming-head">
-      <h2 class="dash-eyebrow">Upcoming</h2>
+      <h2 class="dash-eyebrow">Next up</h2>
       <a class="dash-upcoming-all" href="/calendar">All</a>
     </header>
     <div class="dash-upcoming-rail">

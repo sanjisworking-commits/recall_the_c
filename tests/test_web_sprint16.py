@@ -34,7 +34,7 @@ def test_learn_enables_type_tab_and_panel_markup(client: TestClient):
     assert "Start typing…" in html
     assert "Type it from memory" in html
     assert "words · 0 correct" in html
-    assert "app.js?v=main46" in html
+    assert "app.js?v=main47" in html
 
 
 def test_type_mode_query_param_renders_type_active(client: TestClient):
@@ -65,7 +65,7 @@ def test_type_css_drives_panel_and_diff_styles(client: TestClient):
 
 
 def test_type_js_normalizes_and_scores_words(client: TestClient):
-    js = client.get("/static/app.js?v=main46")
+    js = client.get("/static/app.js?v=main47")
     assert js.status_code == 200
     text = js.text
     assert "normWord" in text

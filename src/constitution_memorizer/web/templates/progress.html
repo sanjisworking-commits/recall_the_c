@@ -3,6 +3,12 @@
 {% block mobile_screen %}profile{% endblock %}
 {% block content %}
 <section class="panel progress">
+  <div class="mobile-screen-head">
+    <h1 class="mobile-screen-title">Your Recall</h1>
+    <a class="mobile-icon-btn" href="/settings" aria-label="Settings">
+      <svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="10" cy="10" r="2.6"></circle><path d="M10 1.8v2.4M10 15.8v2.4M18.2 10h-2.4M4.2 10H1.8M15.8 4.2l-1.7 1.7M5.9 14.1l-1.7 1.7M15.8 15.8l-1.7-1.7M5.9 5.9 4.2 4.2"></path></svg>
+    </a>
+  </div>
   <h1 class="display">Progress</h1>
   <p class="lede">{{ dashboard.lede }}</p>
 
@@ -16,6 +22,7 @@
   </div>
 
   <h2 class="section-title">Mastery map</h2>
+  <div class="progress-map-card">
   <div class="mastery-legend" aria-label="Legend">
     <span class="mastery-legend-item"><span class="mastery-swatch is-new" aria-hidden="true"></span>New</span>
     <span class="mastery-legend-item"><span class="mastery-swatch is-learning" aria-hidden="true"></span>Learning</span>
@@ -53,11 +60,23 @@
     <p class="empty">No articles available for the mastery map.</p>
     {% endfor %}
   </div>
+  </div>
 
   {% if dashboard.recently_mastered %}
-  <p class="rc-mastered-link">
-    <a href="/progress/mastered">Recently mastered →</a>
-  </p>
+  <p class="section-title rc-mastered-heading">Recently mastered</p>
+  <div class="rc-mastered-card">
+    {% for row in dashboard.recently_mastered[:3] %}
+    <a class="rc-mastered-row" href="{{ row.href }}">
+      <span class="rc-mastered-node" aria-hidden="true">
+        <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6.5 4.8 9.2 10 3.2"></path></svg>
+      </span>
+      <span class="rc-mastered-title">{{ row.title }}</span>
+    </a>
+    {% endfor %}
+    <p class="rc-mastered-link">
+      <a href="/progress/mastered">See all {{ dashboard.recently_mastered|length }} mastered →</a>
+    </p>
+  </div>
   {% endif %}
 
   <h2 class="section-title mastery-tracked-heading">Tracked articles</h2>
@@ -74,6 +93,17 @@
     {% else %}
     <p class="empty">No tracked articles yet — start from Home or Browse.</p>
     {% endfor %}
+  </div>
+  <p class="section-title rc-ladder-heading">The revision journey</p>
+  <div class="rc-ladder-explainer">
+    <p class="rc-ladder-explainer-chips" aria-hidden="true">
+      <span class="rc-ladder-explainer-chip is-learn">Learn</span>
+      <span class="rc-ladder-explainer-chip">Day 1 · 3</span>
+      <span class="rc-ladder-explainer-chip">Day 7 · 15</span>
+      <span class="rc-ladder-explainer-chip">Day 30 · 60</span>
+      <span class="rc-ladder-explainer-chip is-mastered">Mastered</span>
+    </p>
+    <p class="rc-ladder-explainer-copy">Every Article moves through the same six revisions — Day 1, 3, 7, 15, 30, 60. Finish Day 60 and it’s mastered.</p>
   </div>
 </section>
 {% endblock %}

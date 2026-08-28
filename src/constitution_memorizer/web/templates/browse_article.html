@@ -31,16 +31,19 @@
   <p class="browse-article-meta">{{ article.amendment_meta }}</p>
   {% endif %}
   {% if phone_meta %}
-  {# Design 04's meta row, minus the "N of 6 modes · revision in N days" half:
-     that needs per-unit progress, and this page is deliberately built without
-     a bulk progress read. The two states worth acting on carry colour. #}
-  <p class="article-phone-meta">
-    {% if phone_meta.saved %}<span class="article-phone-saved">Saved</span>{% endif %}
-    <span class="article-phone-progress">{{ phone_meta.progress_line }}</span>
+  {# Status card from the cheap phone_meta only — no bulk progress read. #}
+  <div class="article-status article-phone-meta"{% if phone_meta.saved %} data-article-saved="true"{% endif %}>
+    <span class="article-status-node" aria-hidden="true"></span>
+    <span class="article-status-copy">
+      {% if phone_meta.saved %}
+      <span class="article-phone-saved">Saved</span>
+      {% endif %}
+      <span class="article-phone-progress">{{ phone_meta.progress_line }}</span>
+    </span>
     {% if phone_meta.amendment_count %}
     <a class="article-phone-amend" href="#amendment-history">Amendments</a>
     {% endif %}
-  </p>
+  </div>
   {% endif %}
 
   <nav class="article-adjacent" aria-label="Adjacent articles">
@@ -57,16 +60,14 @@
     {% endif %}
   </nav>
 
-  {# Keep body flush against the tag: .unit-text uses white-space:pre-wrap, so
-     indented Jinja would show as a leading blank line / indent before "(1)". #}
-  <article class="unit-text browse-article-text"{% if has_text_annotations %} data-bare-fn-root{% endif %}>{% if has_text_annotations %}{{ annotated_text }}{% else %}{{ article.full_text }}{% endif %}</article>
-
   <h2 class="section-title">Learn</h2>
+  <p class="article-clause-label">Clauses</p>
   {% if article.learn_units %}
-  <ul class="checklist">
+  <ul class="checklist article-clause-list">
     {% for unit in article.learn_units %}
     <li>
       <a class="checklist-item" href="/learn/{{ unit.id }}">
+        <span class="article-clause-node" aria-hidden="true"></span>
         <span class="checklist-title">{{ unit.display_title }}</span>
       </a>
     </li>
@@ -75,6 +76,14 @@
   {% else %}
   <p class="empty">No learning units mapped to this Article yet.</p>
   {% endif %}
+
+  <p class="article-clause-label">Bare Act</p>
+  {# Keep body flush against the tag: .unit-text uses white-space:pre-wrap, so
+     indented Jinja would show as a leading blank line / indent before "(1)". #}
+  <div class="article-bare" data-bare-preview>
+    <article class="unit-text browse-article-text"{% if has_text_annotations %} data-bare-fn-root{% endif %}>{% if has_text_annotations %}{{ annotated_text }}{% else %}{{ article.full_text }}{% endif %}</article>
+    <button type="button" class="article-bare-more" data-bare-expand>Read the full Article</button>
+  </div>
 
   {% if article.amendments is not none and article.amendments|length > 0 %}
   <section class="amendment-history" id="amendment-history" aria-label="Amendment history">
