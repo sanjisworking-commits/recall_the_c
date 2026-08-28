@@ -82,7 +82,7 @@
     </div>
 
     {% if revisions %}
-    <div data-today-list>
+    <div class="cal-m-today-card" data-today-list>
     <p class="revisions-eyebrow">{{ revisions.today_label }}</p>
     {% for row in revisions.rows %}
     <a class="revisions-row is-{{ row.state }}" href="{{ row.href }}">
@@ -96,7 +96,9 @@
     {% else %}
     <p class="revisions-empty">Nothing due today. Recall will ask again when a unit is actually due.</p>
     {% endfor %}
-
+    {% if revisions.rows %}
+    <a class="cal-m-today-continue" href="/dashboard">Continue today’s Recall →</a>
+    {% endif %}
     </div>
     {% endif %}
 

@@ -4,12 +4,17 @@
   data-rtc-completion
   role="dialog"
   aria-modal="true"
-  aria-labelledby="rtc-affirmation-quote"
+  aria-labelledby="rtc-affirmation-title"
   aria-live="polite"
 >
   <div class="rtc-affirmation-scrim" data-rtc-advance tabindex="-1"></div>
   <div class="rtc-affirmation-card">
-    <p class="rtc-affirmation-eyebrow rtc-stagger-item">{{ completion.eyebrow }}</p>
+    <span class="rtc-affirmation-check rtc-stagger-item" aria-hidden="true">
+      <svg width="26" height="26" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6.5 4.8 9.2 10 3.2"></path></svg>
+    </span>
+    <p class="rtc-affirmation-eyebrow rtc-stagger-item">{{ completion.article_ref }}</p>
+    <h2 class="rtc-affirmation-title rtc-stagger-item" id="rtc-affirmation-title">{{ completion.eyebrow }}</h2>
+    <p class="rtc-affirmation-sub rtc-stagger-item">{{ completion.ledger }}</p>
     {% if completion.milestone %}
     <article class="rc-milestone rtc-stagger-item">
       <p class="rc-milestone-rung">Day {{ completion.milestone.rung }}</p>

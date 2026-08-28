@@ -21,7 +21,7 @@
 {%- endmacro %}
 {# One Article per row (design 03). The row carries every signal the phone
    needs: due state, entitlement marker and the mark icons, in that order. #}
-{% macro article_rows(cards) -%}
+{% macro article_rows(cards, learned_numbers=()) -%}
   {% for card in cards %}
   {% set marker_state = '' %}
   {% if access and access.enabled and access.is_free %}
@@ -31,24 +31,36 @@
       {% set marker_state = 'preview' %}
     {% endif %}
   {% endif %}
-  <a class="part-row{% if card.due_count %} has-due{% endif %}{% if marker_state == 'preview' %} is-preview{% endif %}"
+  {% set node_state = 'new' %}
+  {% if marker_state == 'preview' %}
+    {% set node_state = 'preview' %}
+  {% elif card.due_kind == 'overdue' %}
+    {% set node_state = 'overdue' %}
+  {% elif card.due_count %}
+    {% set node_state = 'due' %}
+  {% elif card.article_number in learned_numbers %}
+    {% set node_state = 'learned' %}
+  {% endif %}
+  <a class="part-row is-{{ node_state }}{% if card.due_count %} has-due{% endif %}{% if marker_state == 'preview' %} is-preview{% endif %}"
      href="{{ card.href }}"
      data-browse-marks="{{ card.marks | join(' ') }}">
-    <span class="part-row-num">Art. {{ card.article_number }}</span>
+    <span class="part-row-node" aria-hidden="true">
+      {% if node_state == 'learned' %}
+      <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6.5 4.8 9.2 10 3.2"></path></svg>
+      {% elif node_state == 'preview' %}
+      <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2.2" y="5" width="7.6" height="5.5" rx="1"></rect><path d="M3.8 5V3.6a2.2 2.2 0 0 1 4.4 0V5"></path></svg>
+      {% elif node_state in ('due', 'overdue') %}
+      <span class="part-row-node-dot"></span>
+      {% endif %}
+    </span>
     <span class="part-row-main">
-      <span class="part-row-title">{{ card.title }}</span>
-      {% if card.due_count or marker_state or card.marks %}
+      <span class="part-row-title">Article {{ card.article_number }}</span>
+      <span class="part-row-sub">{{ card.title }}</span>
+      <span class="part-row-num">Art. {{ card.article_number }}</span>
+      {% if marker_state or card.marks %}
       <span class="part-row-meta">
-        {% if card.due_count %}
-        <span class="part-row-due is-{{ card.due_kind or 'due' }}">
-          <span class="part-row-dot" aria-hidden="true"></span>
-          {% if card.due_kind == 'overdue' %}Overdue{% else %}Due today{% endif %}
-        </span>
-        {% endif %}
         {% if marker_state == 'saved' %}
         <span class="part-row-access is-saved">Saved</span>
-        {% elif marker_state == 'preview' %}
-        <span class="part-row-access is-preview">Preview only</span>
         {% endif %}
         {% for key in card.marks %}
         <span class="part-row-mark browse-mark-{{ key }}">{{ mark_icon(key, 13) }}</span>
@@ -56,7 +68,14 @@
       </span>
       {% endif %}
     </span>
-    <span class="part-row-chevron" aria-hidden="true">›</span>
+    <span class="part-row-status">
+      {% if node_state == 'learned' %}Learned
+      {% elif node_state == 'overdue' %}Overdue
+      {% elif node_state == 'due' %}Due today
+      {% elif node_state == 'preview' %}Preview only
+      {% else %}Not started
+      {% endif %}
+    </span>
   </a>
   {% endfor %}
 {%- endmacro %}
@@ -65,7 +84,7 @@
     <a class="mobile-back" href="/browse">← All Parts</a>
     {% if present_marks %}
     <button type="button" class="mobile-chip-btn" data-sheet-open="marks-sheet">
-      {{ mark_icon('news', 13) }}
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M2 4.5h12M4.5 8h7M6.5 11.5h3"></path></svg>
       Marks
     </button>
     {% endif %}
@@ -85,6 +104,12 @@
       Articles {{ section.article_range }}
       {% endif %}
     </p>
+    {% if summary and summary.total %}
+    <div class="part-head-progress">
+      <span class="part-head-track" aria-hidden="true"><span class="part-head-fill" style="width: {{ summary.percent }}%"></span></span>
+      <span class="part-head-count">{{ summary.learned }} of {{ summary.total }}</span>
+    </div>
+    {% endif %}
   </header>
 
   {% if section.note %}
@@ -102,7 +127,7 @@
   {% endif %}
 
   <div class="part-rows">
-    {{ article_rows(section.cards) }}
+    {{ article_rows(section.cards, summary.learned_numbers) }}
     {% for chapter in section.chapters %}
     <div class="part-chapter">
       <div class="part-chapter-head">
@@ -110,7 +135,7 @@
         <span class="part-chapter-name">{{ chapter.chapter_title }}</span>
         <span class="part-chapter-range">{{ chapter.article_range }}</span>
       </div>
-      {{ article_rows(chapter.cards) }}
+      {{ article_rows(chapter.cards, summary.learned_numbers) }}
     </div>
     {% endfor %}
     {% if not section.cards and not section.chapters %}

@@ -94,15 +94,17 @@
     {% endif %}
 {%- endmacro %}
 <section class="panel browse" data-parts-source="{{ parts_source|default('unknown') }}">
-  {# Phone header (design 02): title, search, and the Marks sheet trigger. #}
+  {# Phone header: title, search, Marks (signed-in) or Sign in (guest). #}
   <div class="mobile-screen-head">
     <h2 class="mobile-screen-title">Browse</h2>
     <a class="mobile-icon-btn" href="/search" aria-label="Search">
       <svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"></circle><path d="M12.6 12.6 17 17"></path></svg>
     </a>
-    {% if present_marks %}
+    {% if is_guest|default(false) %}
+    <a class="mobile-chip-btn browse-signin-chip" href="/login?next=/browse">Sign in</a>
+    {% elif present_marks %}
     <button type="button" class="mobile-chip-btn" data-sheet-open="marks-sheet">
-      {{ mark_icon('news', 14) }}
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M2 4.5h12M4.5 8h7M6.5 11.5h3"></path></svg>
       Marks
     </button>
     {% endif %}
@@ -115,7 +117,7 @@
 
   {% if access and access.enabled and is_guest|default(false) %}
   <div class="guest-strip" data-guest-strip>
-    <p>Reading as a guest. Sign in to save 3 Articles to Recall for free.</p>
+    <p>Reading as a guest. Sign in to save 3 Articles to Recall for free — progress, streaks and revision scheduling come with it.</p>
     <a class="guest-strip-signin" href="/login?next=/browse">Sign in</a>
     <button type="button" class="guest-strip-dismiss" data-guest-strip-dismiss aria-label="Dismiss">✕</button>
   </div>
@@ -160,26 +162,46 @@
     {% set marks = [] %}
     {% for card in section.cards %}{% for key in card.marks %}{% if key not in marks %}{% set _ = marks.append(key) %}{% endif %}{% endfor %}{% endfor %}
     {% for chapter in section.chapters %}{% for card in chapter.cards %}{% for key in card.marks %}{% if key not in marks %}{% set _ = marks.append(key) %}{% endif %}{% endfor %}{% endfor %}{% endfor %}
-    <a class="part-card{% if entry.summary.due_count %} has-due{% endif %}"
+    <a class="part-card{% if entry.summary.due_count %} has-due{% endif %}{% if entry.summary.learned %} is-started{% endif %}"
        href="{{ entry.href }}"
        data-browse-marks="{{ marks | join(' ') }}">
       <span class="part-card-top">
         <span class="part-card-roman">Part {{ section.part_number }}</span>
         {% if entry.summary.due_count %}
-        <span class="part-card-due"><span class="part-card-dot" aria-hidden="true"></span>{{ entry.summary.due_count }} due</span>
+        <span class="part-card-due">{{ entry.summary.due_count }} due</span>
         {% endif %}
         <span class="part-card-chevron" aria-hidden="true">›</span>
       </span>
       <span class="part-card-name">{{ section.part_title }}</span>
       <span class="part-card-foot">
-        <span class="part-card-range">{% if section.article_range == '—' %}{{ section.note or 'Repealed' }}{% else %}Articles {{ section.article_range }}{% endif %}</span>
-        <span class="part-card-learned">{{ entry.summary.label }}</span>
+        <span class="part-card-range">{% if section.article_range == '—' %}{{ section.note or 'Repealed' }}{% elif section.chapters %}Articles {{ section.article_range }} · {{ section.chapters|length }} Chapter{{ 's' if section.chapters|length != 1 }}{% else %}Articles {{ section.article_range }}{% endif %}</span>
+        <span class="part-card-learned{% if entry.summary.learned %} is-started{% endif %}">{{ entry.summary.label }}</span>
       </span>
       <span class="part-card-track" aria-hidden="true">
         <span class="part-card-fill" style="width: {{ entry.summary.percent }}%"></span>
       </span>
     </a>
     {% endfor %}
+    <p class="browse-rail-note">{{ part_cards|length }} Parts, Chapters where the Constitution has them.</p>
+  </div>
+  <div class="browse-reference">
+    <p class="browse-reference-label">Reference</p>
+    <div class="browse-reference-card">
+      <a class="browse-reference-row" href="/laws">
+        <span class="browse-reference-copy">
+          <span class="browse-reference-name">Relevant laws</span>
+          <span class="browse-reference-desc">Statutes mapped to Articles you revise</span>
+        </span>
+        <span class="browse-reference-chevron" aria-hidden="true">›</span>
+      </a>
+      <a class="browse-reference-row" href="/tables">
+        <span class="browse-reference-copy">
+          <span class="browse-reference-name">Tables</span>
+          <span class="browse-reference-desc">Schedules, Parts and writs at a glance</span>
+        </span>
+        <span class="browse-reference-chevron" aria-hidden="true">›</span>
+      </a>
+    </div>
   </div>
   {% endif %}
 

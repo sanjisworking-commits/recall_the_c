@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Session expired · {{ app_name|default('Recall the C') }}{% endblock %}
 {% block body_class %}auth-page{% endblock %}
+{% block mobile_screen %}expired{% endblock %}
 {% block content %}
 <section class="panel system-state">
   <p class="eyebrow">Session</p>

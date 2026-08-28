@@ -50,7 +50,7 @@ def test_calendar_page_renders_month_grid(client: TestClient):
     assert 'href="/calendar?year=2026&amp;month=6"' in html
     assert 'href="/calendar?year=2026&amp;month=8"' in html
     assert "/static/styles.css?" in html
-    assert "app.js?v=main46" in html
+    assert "app.js?v=main47" in html
 
 
 def test_calendar_invalid_month_returns_400(client: TestClient):

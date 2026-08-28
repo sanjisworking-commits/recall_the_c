@@ -2739,7 +2739,10 @@
     wrap.innerHTML =
       '<div class="rtc-affirmation-scrim" data-rtc-advance tabindex="-1"></div>' +
       '<div class="rtc-affirmation-card">' +
+      '<span class="rtc-affirmation-check" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6.5 4.8 9.2 10 3.2"></path></svg></span>' +
       '<p class="rtc-affirmation-eyebrow"></p>' +
+      '<h2 class="rtc-affirmation-title" id="rtc-affirmation-title"></h2>' +
+      '<p class="rtc-affirmation-sub"></p>' +
       '<blockquote class="rtc-affirmation-quote" id="rtc-affirmation-quote"></blockquote>' +
       '<p class="rtc-affirmation-attr"></p>' +
       '<p class="rtc-affirmation-ledger"><span></span><span></span></p>' +
@@ -2747,7 +2750,10 @@
       '<a class="rtc-affirmation-continue" data-rtc-advance href="#"></a>' +
       '<span class="rtc-affirmation-esc">Esc</span></div>' +
       '<div class="rtc-affirmation-hold" aria-hidden="true"></div></div>';
-    wrap.querySelector(".rtc-affirmation-eyebrow").textContent = payload.eyebrow || "Review complete";
+    wrap.querySelector(".rtc-affirmation-eyebrow").textContent = payload.article_ref || "";
+    var titleEl = wrap.querySelector(".rtc-affirmation-title");
+    titleEl.textContent = payload.eyebrow || "Review complete";
+    wrap.querySelector(".rtc-affirmation-sub").textContent = payload.ledger || "";
     wrap.querySelector(".rtc-affirmation-quote").textContent = quote.text || "";
     wrap.querySelector(".rtc-affirmation-attr").textContent = quote.author ? "— " + quote.author : "";
     const ledger = wrap.querySelectorAll(".rtc-affirmation-ledger span");

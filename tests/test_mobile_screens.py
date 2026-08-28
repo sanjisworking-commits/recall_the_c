@@ -114,6 +114,38 @@ def test_browse_index_links_every_part_to_its_page(tmp_path: Path):
         assert part_href(section.part_number) in html
 
 
+def test_browse_index_phone_cards_match_redesign(tmp_path: Path):
+    """Phone Browse is Part cards + Reference, not the desktop article grid."""
+    client, _, _ = _client(tmp_path)
+    html = client.get("/browse").text
+    assert 'class="browse-part-rail"' in html
+    assert "part-card-track" in html
+    assert 'class="browse-reference"' in html
+    assert 'href="/laws"' in html
+    assert 'href="/tables"' in html
+    assert "Relevant laws" in html
+    css = client.get("/static/mobile.css").text
+    card = css.split(".part-card {", 1)[1].split("}", 1)[0]
+    assert "border-radius: var(--rc-radius-card)" in card
+    track = css.split(".part-card-track {", 1)[1].split("}", 1)[0]
+    assert "height: 4px" in track
+    fill = css.split(".part-card-fill {", 1)[1].split("}", 1)[0]
+    assert "var(--rc-teal)" in fill
+    due = css.split(".part-card-due {", 1)[1].split("}", 1)[0]
+    assert "var(--rc-teal-tint)" in due
+
+
+def test_browse_part_rows_use_node_status(tmp_path: Path):
+    client, engine, _ = _client(tmp_path)
+    sections = browse_parts_sections(engine, None)
+    section = next(s for s in sections if s.cards)
+    html = client.get(part_href(section.part_number)).text
+    assert "part-row-node" in html
+    assert "part-row-status" in html
+    assert "part-head-progress" in html
+    assert "Not started" in html
+
+
 def test_article_page_links_back_to_its_part(tmp_path: Path):
     """The phone's back link needs a Part even with no reviewed Bare Act."""
     client, _, _ = _client(tmp_path)
@@ -1029,3 +1061,100 @@ def test_planned_new_rows_carry_their_own_state_and_pace(tmp_path: Path):
     assert "New · Steady plan" in html
     # …and the day mark keeps its own class, which mobile.css now draws open.
     assert "cal-m-mark is-new" in html
+
+
+# ── Remaining prototype restyle (tab bar, Article, Search, Profile) ──────────
+
+
+def test_signed_in_tabbar_ships_icons_and_keeps_label_contract():
+    base = (
+        Path(__file__).parent.parent
+        / "src/constitution_memorizer/web/templates/base.html"
+    ).read_text()
+    tabbar = base.split('class="mobile-tabbar" aria-label="Mobile"', 1)[1].split(
+        "</nav>", 1
+    )[0]
+    assert ">Calendar</a>" in tabbar
+    assert ">Profile</a>" in tabbar
+    assert "mobile-tab-icon" in tabbar
+    css = (
+        Path(__file__).parent.parent
+        / "src/constitution_memorizer/web/static/mobile.css"
+    ).read_text()
+    tab = css.split("body[data-mscreen] .mobile-tab {", 1)[1].split("}", 1)[0]
+    assert "flex-direction: column" in tab
+    assert "font-size: 10.5px" in tab
+    assert "border-top: 2px" not in tab
+    assert 'body[data-mscreen="search"] .mobile-tabbar' in css
+    assert ".mobile-sheet-panel::before" in css
+
+
+def test_article_phone_shows_clauses_and_bare_preview(tmp_path: Path):
+    client, _, _ = _client(tmp_path)
+    html = client.get("/browse/article/20").text
+    assert "Learn this Article" in html
+    assert "article-clause-list" in html
+    assert "Read the full Article" in html
+    assert "article-status" in html
+    css = client.get("/static/mobile.css").text
+    assert 'body[data-mscreen="article"] .article-clause-list' in css
+    clause_item = css.split(
+        'body[data-mscreen="article"] .article-clause-list .checklist-item {', 1
+    )[1].split("}", 1)[0]
+    assert "flex-direction: row" in clause_item
+    assert 'body[data-mscreen="article"] .browse-article > .checklist {' not in css
+    assert ".article-bare:not(.is-expanded) .browse-article-text" in css
+    assert 'body[data-mscreen="article"] .amendment-history' in css
+    js = client.get("/static/mobile.js").text
+    assert "function initBarePreview" in js
+    assert "function initSearchRecent" in js
+
+
+def test_search_phone_cancel_is_teal_and_hides_the_tabbar(tmp_path: Path):
+    client, _, _ = _client(tmp_path)
+    html = client.get("/search").text
+    assert "search-cancel" in html
+    assert 'data-search-recent' in html
+    css = client.get("/static/mobile.css").text
+    cancel = css.split(".search-cancel {", 1)[1].split("}", 1)[0]
+    assert "var(--rc-teal)" in cancel
+    assert 'body[data-mscreen="search"] .mobile-tabbar' in css
+
+
+def test_calendar_today_list_is_a_card_with_continue(tmp_path: Path):
+    client, _, _ = _client(tmp_path)
+    html = client.get("/calendar").text
+    assert "cal-m-today-card" in html or "cal-m-grid" in html
+    css = client.get("/static/mobile.css").text
+    assert ".cal-m-today-card" in css
+    assert ".cal-m-today-continue" in css
+    assert ".cal-m-daylist:not([hidden])::before" in css
+
+
+def test_profile_phone_title_is_your_recall(tmp_path: Path):
+    client, _, _ = _client(tmp_path)
+    html = client.get("/progress").text
+    assert "progress-stat-grid" in html
+    assert "Your Recall" in html
+    assert "The revision journey" in html
+    css = client.get("/static/mobile.css").text
+    assert 'body[data-mscreen="profile"] .progress > .display' in css
+    assert 'body[data-mscreen="profile"] .progress-stat-card:nth-child(4)' in css
+
+
+def test_today_goal_ring_centers_the_fraction(tmp_path: Path):
+    css = (
+        Path(__file__).parent.parent
+        / "src/constitution_memorizer/web/static/mobile.css"
+    ).read_text()
+    assert ".rc-goal-frac" in css
+    assert ".rc-goal-dial" in css
+    dash = (
+        Path(__file__).parent.parent
+        / "src/constitution_memorizer/web/templates/dashboard.html"
+    ).read_text()
+    assert "dash-greeting-settings" in dash
+    assert "Today’s Recall" in dash or "Today's Recall" in dash
+    assert "rc-streak-glyph" in dash
+    assert "Start revision" in dash
+    assert "dash-due-count" in dash

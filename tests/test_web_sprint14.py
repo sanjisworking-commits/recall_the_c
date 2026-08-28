@@ -35,7 +35,7 @@ def test_learn_enables_cloze_tab_and_panel_markup(client: TestClient):
     assert 'data-cloze-density="light"' in html
     assert 'data-cloze-density="medium"' in html
     assert 'data-cloze-density="heavy"' in html
-    assert "app.js?v=main46" in html
+    assert "app.js?v=main47" in html
 
 
 def test_cloze_mode_query_param_renders_cloze_active(client: TestClient):
@@ -82,7 +82,7 @@ def test_cloze_shows_stem_for_subclause_unlike_test(client: TestClient):
 
 
 def test_app_js_includes_cloze_density_thresholds(client: TestClient):
-    js = client.get("/static/app.js?v=main46")
+    js = client.get("/static/app.js?v=main47")
     assert js.status_code == 200
     text = js.text
     assert "light: 8" in text
