@@ -43,6 +43,9 @@ def test_protocol_surface_is_nontrivial():
         "set_notification_last_slot",
         "load_completion_state",
         "commit_completion",
+        "record_daily_goal_met",
+        "is_daily_goal_met",
+        "list_daily_goal_dates",
     }
     assert required <= names
 

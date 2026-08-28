@@ -903,6 +903,46 @@ class ProgressRepository:
             [row for row in rows if row["session_id"] == keeper]
         )
 
+    def record_daily_goal_met(self, user_id: UUID | str, goal_date: date) -> None:
+        """Idempotent: one fact per user per local date."""
+        self._conn.execute(
+            """
+            INSERT INTO daily_goal_met (user_id, goal_date, met_at)
+            VALUES (?, ?, ?)
+            ON CONFLICT(user_id, goal_date) DO NOTHING
+            """,
+            (as_user_id(user_id), _date_iso(goal_date), _utc_now_iso()),
+        )
+        self._conn.commit()
+
+    def is_daily_goal_met(self, user_id: UUID | str, goal_date: date) -> bool:
+        row = self._conn.execute(
+            """
+            SELECT 1 FROM daily_goal_met
+            WHERE user_id = ? AND goal_date = ?
+            """,
+            (as_user_id(user_id), _date_iso(goal_date)),
+        ).fetchone()
+        return row is not None
+
+    def list_daily_goal_dates(
+        self, user_id: UUID | str, *, until: date, limit: int = 400
+    ) -> list[date]:
+        rows = self._conn.execute(
+            """
+            SELECT goal_date FROM daily_goal_met
+            WHERE user_id = ? AND goal_date <= ?
+            ORDER BY goal_date DESC
+            LIMIT ?
+            """,
+            (as_user_id(user_id), _date_iso(until), limit),
+        ).fetchall()
+        out: list[date] = []
+        for row in rows:
+            raw = row["goal_date"]
+            out.append(raw if isinstance(raw, date) else date.fromisoformat(str(raw)))
+        return out
+
     def set_study_item_status(
         self,
         user_id: UUID | str,

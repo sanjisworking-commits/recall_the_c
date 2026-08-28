@@ -3,15 +3,17 @@
 from __future__ import annotations
 
 import math
+from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
-from typing import Any
+from typing import Any, Literal
 
 from constitution_memorizer.learning.schemas import LearningUnit
 from constitution_memorizer.planner.eligibility import remaining_unseen_count
 from constitution_memorizer.planner.models import pace_label
 from constitution_memorizer.planner.planner import LearningPlanner
-from constitution_memorizer.progress.repository import LEARN_MODES, UserLearningPlan
+from constitution_memorizer.progress.repository import LEARN_MODES, StudySession, UserLearningPlan
 from constitution_memorizer.progress.scheduler import ReminderEngine
+from constitution_memorizer.web.completion import next_learn_url, session_entry_mode
 from constitution_memorizer.web.progress_stats import (
     _is_completed,
     all_article_progress,
@@ -23,9 +25,26 @@ from constitution_memorizer.web.service import (
     _is_missing_optional_schema,
     active_revision_session,
     continue_unit_id,
+    daily_goal_streak,
     due_checklist,
     session_progress,
 )
+
+TodayKind = Literal["new", "review"]
+TodayStatus = Literal["done", "current", "upcoming", "deferred"]
+
+
+@dataclass(frozen=True)
+class TodayUnit:
+    """One node on Today's required path."""
+
+    unit_id: str
+    title: str
+    article_label: str
+    kind: TodayKind
+    status: TodayStatus
+    href: str
+    position: int
 
 MODE_LABELS = {
     "read": "Read",
@@ -142,6 +161,119 @@ def progress_strip(engine: ReminderEngine, *, as_of: date | None = None) -> dict
         "day_streak": day_streak(engine, as_of=today),
         "revisions_done": revisions,
     }
+
+
+def _article_label(unit: LearningUnit) -> str:
+    if unit.article_number:
+        return f"Article {unit.article_number}"
+    return unit.display_title
+
+
+def _today_units_from_session(
+    engine: ReminderEngine,
+    session: StudySession,
+    *,
+    multiuser: bool = True,
+) -> list[TodayUnit]:
+    kind: TodayKind = "review" if session.kind == REVISION_KIND else "new"
+    pending_seen = False
+    out: list[TodayUnit] = []
+    for item in session.items:
+        unit = engine.get_unit(item.learning_unit_id)
+        if unit is None:
+            continue
+        if item.status == "completed":
+            status: TodayStatus = "done"
+        elif item.status == "deferred":
+            status = "deferred"
+        elif not pending_seen:
+            status = "current"
+            pending_seen = True
+        else:
+            status = "upcoming"
+        href = next_learn_url(
+            engine,
+            unit.id,
+            multiuser=multiuser,
+            session_id=session.id,
+            mode=session_entry_mode(session.kind),
+        )
+        out.append(
+            TodayUnit(
+                unit_id=unit.id,
+                title=unit.display_title,
+                article_label=_article_label(unit),
+                kind=kind,
+                status=status,
+                href=href,
+                position=item.position + 1,
+            )
+        )
+    return out
+
+
+def _today_units_from_preview(
+    engine: ReminderEngine,
+    units: list[LearningUnit],
+    *,
+    kind: TodayKind,
+    multiuser: bool = True,
+) -> list[TodayUnit]:
+    out: list[TodayUnit] = []
+    for index, unit in enumerate(units, start=1):
+        href = next_learn_url(
+            engine,
+            unit.id,
+            multiuser=multiuser,
+            mode=session_entry_mode("revision" if kind == "review" else "auto_learning"),
+        )
+        out.append(
+            TodayUnit(
+                unit_id=unit.id,
+                title=unit.display_title,
+                article_label=_article_label(unit),
+                kind=kind,
+                status="current" if index == 1 else "upcoming",
+                href=href,
+                position=index,
+            )
+        )
+    return out
+
+
+def build_today_units(
+    engine: ReminderEngine,
+    *,
+    today: date,
+    due_units: list[LearningUnit],
+    auto_selected: bool,
+    today_new_ids: list[str],
+    multiuser: bool = True,
+) -> list[TodayUnit]:
+    """Read-only Today path. Never creates a study_session row."""
+    revision_today = _session_for_day(engine, REVISION_KIND, today)
+    if revision_today is not None and revision_today.items:
+        return _today_units_from_session(engine, revision_today, multiuser=multiuser)
+    if due_units:
+        return _today_units_from_preview(
+            engine, due_units, kind="review", multiuser=multiuser
+        )
+    auto_today = _session_for_day(engine, AUTO_LEARNING_KIND, today)
+    if auto_today is not None and auto_today.items:
+        return _today_units_from_session(engine, auto_today, multiuser=multiuser)
+    if auto_selected and today_new_ids:
+        preview = [
+            unit
+            for unit_id in today_new_ids
+            if (unit := engine.get_unit(unit_id)) is not None
+        ]
+        return _today_units_from_preview(
+            engine, preview, kind="new", multiuser=multiuser
+        )
+    day_today = _session_for_day(engine, DAY_PLAN_KIND, today)
+    if day_today is not None and day_today.items:
+        return _today_units_from_session(engine, day_today, multiuser=multiuser)
+    return []
 
 
 def continue_meta(unit: LearningUnit) -> str:
@@ -429,6 +561,19 @@ def build_dashboard_context(
 
     show_plan_prompt = learning_cta == "plan_prompt"
 
+    today_units = build_today_units(
+        eng,
+        today=today,
+        due_units=due_units,
+        auto_selected=auto_selected,
+        today_new_ids=today_new_ids,
+        multiuser=True,
+    )
+    goal_done = sum(1 for item in today_units if item.status == "done")
+    goal_total = sum(1 for item in today_units if item.status != "deferred")
+    goal_pct = int(round(100 * goal_done / goal_total)) if goal_total else 0
+    streak = daily_goal_streak(eng, as_of=today)
+
     return {
         "today_mode": today_mode,
         "revision_session_id": revision_session.id if revision_session else None,
@@ -469,6 +614,11 @@ def build_dashboard_context(
         "continue_pct": cont_pct,
         "strip": strip,
         "upcoming": upcoming_revisions(eng, as_of=today),
+        "today_units": today_units,
+        "goal_done": goal_done,
+        "goal_total": goal_total,
+        "goal_pct": goal_pct,
+        "daily_goal_streak": streak,
         # All completions today (revision + voluntary new learning). Do not
         # use this for "N revisions completed today" — that is
         # revision_completed_today from the revision session's completed_count.

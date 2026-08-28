@@ -2031,40 +2031,61 @@
   // add no entry and structurally cannot fire popstate. A popstate here can
   // only mean the user pressed Back.
   function initRevisionGuard() {
-    const learn = document.querySelector(".learn[data-session-id]");
+    const learn = document.querySelector(".learn");
     const modal = document.querySelector("[data-revision-exit-modal]");
-    if (!learn || !modal || typeof modal.showModal !== "function") {
+    const exitTrigger = document.querySelector("[data-session-exit]");
+    if (!learn) {
       return;
     }
     let leaving = false;
     let pendingHref = "/dashboard";
+
+    function homeHref() {
+      if (learn.getAttribute("data-session-id")) {
+        return "/dashboard";
+      }
+      return (exitTrigger && exitTrigger.getAttribute("data-exit-to")) || "/dashboard";
+    }
 
     function arm() {
       history.pushState({ rtcRevisionGuard: true }, "", window.location.href);
     }
 
     function ask(href) {
-      pendingHref = href || "/dashboard";
-      if (!modal.open) modal.showModal();
-    }
-
-    arm();
-
-    window.addEventListener("popstate", function () {
-      if (leaving) {
+      pendingHref = href || homeHref();
+      if (modal && typeof modal.showModal === "function") {
+        if (!modal.open) modal.showModal();
         return;
       }
-      // Put the sentinel back before asking, so Keep revising leaves the URL
-      // and the current unit exactly as they were.
+      leaving = true;
+      window.location.assign(pendingHref);
+    }
+
+    if (modal && typeof modal.showModal === "function") {
       arm();
-      ask("/dashboard");
-    });
+
+      window.addEventListener("popstate", function () {
+        if (leaving) {
+          return;
+        }
+        // Put the sentinel back before asking, so Keep revising leaves the URL
+        // and the current unit exactly as they were.
+        arm();
+        ask("/dashboard");
+      });
+    }
 
     // The deck header's "← Article N" genuinely leaves the queue. The phone's
     // deck-back control is a button that only returns to the deck WITHIN this
     // unit, and the mode tabs stay inside it — neither is guarded.
     document.addEventListener("click", function (event) {
       if (leaving) {
+        return;
+      }
+      const sessionExit = event.target.closest("[data-session-exit]");
+      if (sessionExit) {
+        event.preventDefault();
+        ask(homeHref());
         return;
       }
       const link = event.target.closest("a.mobile-back[href]");
@@ -2075,7 +2096,7 @@
       ask(link.getAttribute("href"));
     });
 
-    const exitBtn = modal.querySelector("[data-revision-exit]");
+    const exitBtn = modal && modal.querySelector("[data-revision-exit]");
     if (exitBtn) {
       exitBtn.addEventListener("click", function () {
         // Exiting never destroys the session: completed items stay completed,

@@ -440,3 +440,15 @@ html.rtc-anim .ob-success .ob-progress-fill { animation: obLine 620ms cubic-bezi
   .ob-progress-fill,
   .ob-goal-marker { transition-duration: 1ms !important; }
 }
+
+@media (max-width: 560px) {
+  .ob-card {
+    left: 12px !important;
+    right: 12px !important;
+    width: auto !important;
+    max-width: none !important;
+    bottom: calc(56px + env(safe-area-inset-bottom, 0px) + 12px) !important;
+    top: auto !important;
+    border-radius: 16px;
+  }
+}

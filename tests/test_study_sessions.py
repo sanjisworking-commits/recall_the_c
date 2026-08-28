@@ -401,6 +401,7 @@ def test_today_renders_exactly_one_hero(tmp_path: Path):
     assert caught_up.count("data-today-mode=") == 1
     assert 'data-today-mode="learning"' in caught_up
     assert "/revision/start" not in caught_up
+    assert 'data-daily-goal-streak="0"' in caught_up
 
     _make_due(client, ["clause-1", "article-end"])
     due = client.get("/dashboard").text
@@ -409,6 +410,9 @@ def test_today_renders_exactly_one_hero(tmp_path: Path):
     assert 'action="/revision/start"' in due
     assert "Start revision" in due
     assert "Continue where you stopped" not in due
+    assert 'data-today-path' in due
+    assert 'data-today-unit="clause-1"' in due
+    assert 'data-today-unit="article-end"' in due
 
 
 def test_today_shows_continue_revision_with_the_pending_count(tmp_path: Path):
@@ -646,12 +650,16 @@ def test_a_real_database_error_is_not_swallowed(tmp_path: Path):
     assert _is_missing_optional_schema(Exception("no such table: study_session"))
     assert _is_missing_optional_schema(Exception("no such table: auto_plan_day"))
     assert _is_missing_optional_schema(Exception("no such table: auto_plan_item"))
+    assert _is_missing_optional_schema(Exception("no such table: daily_goal_met"))
     assert _is_missing_optional_schema(Exception("no such column: target_effective_on"))
     assert _is_missing_optional_schema(
         Exception('relation "auto_plan_day" does not exist')
     )
     assert _is_missing_optional_schema(
         Exception('relation "auto_plan_item" does not exist')
+    )
+    assert _is_missing_optional_schema(
+        Exception('relation "daily_goal_met" does not exist')
     )
     assert _is_missing_optional_schema(
         Exception('column "target_effective_on" does not exist')

@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Progress · {{ app_name|default('Recall the C') }}{% endblock %}
+{% block mobile_screen %}profile{% endblock %}
 {% block content %}
 <section class="panel progress">
   <h1 class="display">Progress</h1>
@@ -52,6 +53,12 @@
     <p class="empty">No articles available for the mastery map.</p>
     {% endfor %}
   </div>
+
+  {% if dashboard.recently_mastered %}
+  <p class="rc-mastered-link">
+    <a href="/progress/mastered">Recently mastered →</a>
+  </p>
+  {% endif %}
 
   <h2 class="section-title mastery-tracked-heading">Tracked articles</h2>
   <div class="tracked-articles" role="list">

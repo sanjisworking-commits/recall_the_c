@@ -493,4 +493,14 @@ def progress_dashboard(
         "parts_map": parts_map,
         "tracked_rows": tracked_rows,
         "continue_id": continue_id,
+        "recently_mastered": [
+            {
+                "article_number": cell.article_number,
+                "title": cell.title,
+                "href": cell.href,
+            }
+            for row in parts_map
+            for cell in row.cells
+            if cell.tracked and cell.state == "mastered"
+        ],
     }

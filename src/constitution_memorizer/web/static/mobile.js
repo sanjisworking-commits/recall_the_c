@@ -169,6 +169,11 @@
     }
 
     function showDeck() {
+      // Phone sessions stay in mode view. The six-card deck is markup-only
+      // (tests and desktop ignore it); going back to it would blank the screen.
+      if (isPhone()) {
+        return;
+      }
       stowControls();
       learn.setAttribute("data-mobile-view", "deck");
       syncBodyClass();

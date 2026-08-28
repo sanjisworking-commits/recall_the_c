@@ -40,9 +40,9 @@
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/styles.css?v=main45">
   <link rel="stylesheet" href="/static/visual-explainer.css?v=ve1">
-  <link rel="stylesheet" href="/static/mobile.css?v=mob43">
+  <link rel="stylesheet" href="/static/mobile.css?v=mob45">
   {% if onboarding_status|default('') == 'active' %}
-  <link rel="stylesheet" href="/static/onboarding.css?v=ob5">
+  <link rel="stylesheet" href="/static/onboarding.css?v=ob6">
   {% endif %}
   <link rel="icon" href="/static/main_logo.png" type="image/png">
 </head>
@@ -204,8 +204,8 @@
   <nav class="mobile-tabbar" aria-label="Mobile">
     <a href="/dashboard" class="mobile-tab{% if path.startswith('/dashboard') %} is-active{% endif %}">Today</a>
     <a href="/browse" class="mobile-tab{% if path.startswith('/browse') %} is-active{% endif %}">Browse</a>
-    <a href="/learn" class="mobile-tab{% if path.startswith('/learn') %} is-active{% endif %}">Learn</a>
-    <a href="/calendar" class="mobile-tab{% if path.startswith('/calendar') or path.startswith('/progress') %} is-active{% endif %}">Calendar</a>
+    <a href="/calendar" class="mobile-tab{% if path.startswith('/calendar') %} is-active{% endif %}">Calendar</a>
+    <a href="/progress" class="mobile-tab{% if path.startswith('/progress') %} is-active{% endif %}">Profile</a>
   </nav>
   {% elif multiuser_enabled|default(false) and not auth_surface %}
   {# Guests browse and read; the fourth tab is the way in, not Revisions. #}
@@ -227,12 +227,12 @@
 
   <script src="/static/recall_align.js?v=sprint22" defer></script>
   <script src="/static/speech_client.js?v=speech2" defer></script>
-  <script src="/static/app.js?v=main45" defer></script>
-  <script src="/static/mobile.js?v=mob22" defer></script>
+  <script src="/static/app.js?v=main46" defer></script>
+  <script src="/static/mobile.js?v=mob23" defer></script>
   <script src="/static/visual-explainer.js?v=ve2" defer></script>
   <script src="/static/auth.js?v=main5" defer></script>
   {% if onboarding_status|default('') == 'active' %}
-  <script src="/static/onboarding.js?v=ob13" defer></script>
+  <script src="/static/onboarding.js?v=ob14" defer></script>
   {% endif %}
   {% if multiuser_enabled|default(false) or (current_user and path.startswith('/browse/article/')) %}
   {% if current_user and report_turnstile_enabled|default(false) %}

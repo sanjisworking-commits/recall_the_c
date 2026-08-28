@@ -10,6 +10,20 @@
   <div class="rtc-affirmation-scrim" data-rtc-advance tabindex="-1"></div>
   <div class="rtc-affirmation-card">
     <p class="rtc-affirmation-eyebrow rtc-stagger-item">{{ completion.eyebrow }}</p>
+    {% if completion.milestone %}
+    <article class="rc-milestone rtc-stagger-item">
+      <p class="rc-milestone-rung">Day {{ completion.milestone.rung }}</p>
+      <h2 class="rc-milestone-title">{{ completion.milestone.title }}</h2>
+      <p class="rc-milestone-body">{{ completion.milestone.body }}</p>
+    </article>
+    {% endif %}
+    {% if completion.ladder %}
+    <p class="rc-ladder rtc-stagger-item" aria-label="Revision ladder">
+      {% for rung in completion.ladder %}
+      <span class="rc-ladder-chip{% if rung == completion.interval_days %} is-current{% endif %}">{{ rung }}</span>
+      {% endfor %}
+    </p>
+    {% endif %}
     {% if completion.quote %}
     <blockquote class="rtc-affirmation-quote rtc-stagger-item" id="rtc-affirmation-quote">{{ completion.quote.text }}</blockquote>
     <p class="rtc-affirmation-attr rtc-stagger-item">— {{ completion.quote.author }}</p>
@@ -20,7 +34,7 @@
     </p>
     <div class="rtc-affirmation-actions rtc-stagger-item">
       <a class="rtc-affirmation-continue" href="{{ completion.continue_href }}" data-rtc-advance>
-        {% if completion.continue_label %}Continue to {{ completion.continue_label }}{% else %}Continue{% endif %}
+        {% if completion.continue_href in ('/dashboard', '/') %}Back to Today{% elif completion.continue_label %}Continue to {{ completion.continue_label }}{% else %}Continue{% endif %}
       </a>
       <span class="rtc-affirmation-esc">Esc</span>
     </div>

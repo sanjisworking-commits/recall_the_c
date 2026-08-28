@@ -296,6 +296,13 @@ CREATE TABLE IF NOT EXISTS auto_plan_item (
 
 CREATE INDEX IF NOT EXISTS idx_auto_plan_item_user_date
     ON auto_plan_item(user_id, plan_date, position);
+
+CREATE TABLE IF NOT EXISTS daily_goal_met (
+    user_id TEXT NOT NULL,
+    goal_date TEXT NOT NULL,
+    met_at TEXT NOT NULL,
+    PRIMARY KEY (user_id, goal_date)
+);
 """
 
 # Pre-multiuser tables only: _migrate_legacy renames each of these aside,
@@ -816,12 +823,27 @@ def _ensure_auto_plan_tables(conn: sqlite3.Connection) -> None:
     )
 
 
+def _ensure_daily_goal_met_table(conn: sqlite3.Connection) -> None:
+    """Add daily_goal_met to existing local DBs (CREATE TABLE IF NOT EXISTS)."""
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS daily_goal_met (
+            user_id TEXT NOT NULL,
+            goal_date TEXT NOT NULL,
+            met_at TEXT NOT NULL,
+            PRIMARY KEY (user_id, goal_date)
+        )
+        """
+    )
+
+
 def init_db(conn: sqlite3.Connection) -> None:
     """Create progress tables if missing; migrate legacy single-user schema."""
     if _legacy_schema(conn):
         _migrate_legacy(conn)
         _ensure_study_session_day_unique(conn)
         _ensure_auto_plan_tables(conn)
+        _ensure_daily_goal_met_table(conn)
         conn.commit()
         return
     conn.execute("PRAGMA foreign_keys = OFF")
@@ -831,6 +853,7 @@ def init_db(conn: sqlite3.Connection) -> None:
         conn.executescript(SCHEMA_SQL)
         _ensure_study_session_day_unique(conn)
         _ensure_auto_plan_tables(conn)
+        _ensure_daily_goal_met_table(conn)
         _invalidate_legacy_gated_modes(conn)
         _invalidate_legacy_letters_test_auto_seen(conn)
         _migrate_ladder_day15(conn)
