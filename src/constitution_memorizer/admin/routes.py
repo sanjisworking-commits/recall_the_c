@@ -49,6 +49,7 @@ _NAV = (
     ("reports", "Reports", "/admin/reports"),
     ("contact", "Contact", "/admin/contact"),
     ("preview", "Preview", "/admin/preview"),
+    ("content", "Content", "/admin/content"),
 )
 
 
@@ -734,6 +735,28 @@ def create_admin_router(templates: Jinja2Templates) -> APIRouter:
         "free_cap": "Unclaimed Article at the cap",
         "subscribed": "Everything open",
     }
+
+    # ------------------------------------------------------------------ #
+    # Content — site-wide display settings                                #
+    # ------------------------------------------------------------------ #
+    # "Browse — In news" is a site-wide flag, not a personal preference, so it
+    # lives here rather than on a user's /settings page. The router already
+    # carries Depends(require_admin), so these inherit the guard.
+    @router.get("/content", response_class=HTMLResponse)
+    async def admin_content(request: Request) -> HTMLResponse:
+        engine = request.app.state.engine
+        return templates.TemplateResponse(
+            request,
+            "admin/content.html",
+            _ctx(request, "content", news_articles=engine.get_news_articles_raw()),
+        )
+
+    @router.post("/content", dependencies=[Depends(require_csrf)])
+    async def admin_content_save(
+        request: Request, news_articles: str = Form("")
+    ) -> RedirectResponse:
+        request.app.state.engine.set_news_articles_raw(news_articles)
+        return RedirectResponse(url="/admin/content?notice=Saved", status_code=303)
 
     @router.get("/preview", response_class=HTMLResponse)
     async def admin_preview(request: Request) -> HTMLResponse:

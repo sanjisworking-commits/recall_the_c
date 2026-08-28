@@ -3041,7 +3041,29 @@
       });
     });
 
-    const motionRow = document.querySelector('[data-experience-row="motion"]');
+    /* Daily target only means something under Auto Plan. CSS dims it; this
+     takes it out of the tab order too. Without JS the group stays enabled,
+     which is harmless — the route ignores daily_target unless mode is auto. */
+  const targetRow = document.querySelector("[data-daily-target-row]");
+  if (targetRow) {
+    const paceInputs = document.querySelectorAll('input[name="mode"]');
+    const targetInputs = targetRow.querySelectorAll('input[name="daily_target"]');
+    const group = targetRow.querySelector(".segmented");
+    const syncTarget = function () {
+      const auto = document.querySelector('input[name="mode"][value="auto"]');
+      const on = Boolean(auto && auto.checked);
+      if (group) group.classList.toggle("is-disabled", !on);
+      targetInputs.forEach(function (input) {
+        input.disabled = !on;
+      });
+    };
+    paceInputs.forEach(function (input) {
+      input.addEventListener("change", syncTarget);
+    });
+    syncTarget();
+  }
+
+  const motionRow = document.querySelector('[data-experience-row="motion"]');
     const note = document.querySelector("[data-motion-note]");
     if (prefersReducedMotion() && motionRow) {
       motionRow.classList.add("is-os-reduced");

@@ -580,3 +580,33 @@ def test_dashboard_sheet_is_absent_outside_the_plan_prompt(tmp_path: Path):
     )
     html = client.get("/dashboard").text
     assert 'id="plan-day-sheet"' not in html
+
+
+def test_settings_plan_status_reads_as_a_sentence_before_activation(tmp_path: Path):
+    """An auto plan that has not been worked yet must not render
+    "Plan started Not started"."""
+    units_path = _articles_catalog(tmp_path)
+    # Admin unlocks Auto Plan; without the entitlement the planner projects no
+    # learning days at all and the trailing date clause never renders.
+    client, _, _ = _entitled_client(tmp_path, units_path, make_admin=True)
+    today = date.today()
+    # Save through the real route so the roadmap is built, as it is in the app.
+    saved = client.post(
+        "/settings/learning-plan",
+        data={"mode": "auto", "daily_target": "3"},
+        follow_redirects=False,
+    )
+    assert saved.status_code == 303
+
+    html = client.get("/settings").text
+    assert "Plan started Not started" not in html
+    assert "Not started yet" in html
+    assert "First learning day" in html
+
+    # Once the plan activates, the line returns to the designed copy (frame 1d).
+    _engine(client).activate_learning_plan(today)
+    html = client.get("/settings").text
+    assert "Not started yet" not in html
+    assert "First learning day" not in html
+    assert f"Plan started {today.strftime('%d %b %Y')}" in " ".join(html.split())
+    assert "Next learning day" in html

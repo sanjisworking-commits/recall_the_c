@@ -25,9 +25,9 @@
   </a>
   {% endif %}
   {% if multiuser_enabled|default(false) %}
-  <p class="lede">Appearance, Browse “In news” flags, and your revision calendar.</p>
+  <p class="lede">Appearance, your learning plan, and your revision calendar.</p>
   {% else %}
-  <p class="lede">Appearance, Browse “In news” flags, and how often study reminders fire while today’s due list still has work.</p>
+  <p class="lede">Appearance, your learning plan, and how often study reminders fire while today’s due list still has work.</p>
   {% endif %}
 
   {% if saved %}
@@ -261,46 +261,57 @@
   <p class="settings-note settings-plan-access">Full Recall access · Admin</p>
   {% endif %}
   <form class="settings-form settings-plan-form" method="post" action="/settings/learning-plan">
-    <fieldset class="settings-fieldset">
-      <legend class="visually-hidden">Learning plan</legend>
-      <label class="settings-option">
-        <input type="radio" name="mode" value="self_paced"
-          {% if not learning_plan or learning_plan.mode != 'auto' %}checked{% endif %}>
-        <span>
-          <strong>Self-paced</strong>
-          <span class="settings-option-note">No future NEW on the calendar. Use Plan my day from Today when you want a mix.</span>
-        </span>
-      </label>
+    {# Real radios, not buttons: they carry radiogroup semantics and arrow keys
+       natively, submit the same POST body, and keep saving with JS off. The
+       route silently downgrades to self_paced if `mode` or `daily_target` goes
+       missing, so the control must never be the thing that supplies them. #}
+    <div class="settings-row">
+      <div class="settings-row-copy">
+        <p class="settings-row-label">Pace</p>
+        <p class="settings-row-desc">Auto Plan adds new clauses on days with no revisions due. Self-paced leaves the calendar to you.</p>
+      </div>
       {% if can_auto_plan|default(false) %}
-      <label class="settings-option">
-        <input type="radio" name="mode" value="auto"
+      <div class="segmented" role="group" aria-label="Pace">
+        <input class="segmented-input" type="radio" id="pace-self-paced" name="mode" value="self_paced"
+          {% if not learning_plan or learning_plan.mode != 'auto' %}checked{% endif %}>
+        <label class="segmented-btn" for="pace-self-paced">Self-paced</label>
+        <input class="segmented-input" type="radio" id="pace-auto" name="mode" value="auto"
           {% if learning_plan and learning_plan.mode == 'auto' %}checked{% endif %}>
-        <span>
-          <strong>Auto Plan</strong>
-          <span class="settings-option-note">New clauses on days with no revisions due, at the pace you pick below.</span>
-        </span>
-      </label>
-      <label class="memory-field">
-        <span class="memory-field-label">Daily target</span>
-        <select name="daily_target">
-          <option value="3"{% if learning_plan and learning_plan.daily_target == 3 %} selected{% endif %}>Steady · 3</option>
-          <option value="5"{% if not learning_plan or learning_plan.daily_target not in (3, 7) %} selected{% endif %}>Balanced · 5</option>
-          <option value="7"{% if learning_plan and learning_plan.daily_target == 7 %} selected{% endif %}>Intensive · 7</option>
-        </select>
-      </label>
+        <label class="segmented-btn" for="pace-auto">Auto Plan</label>
+      </div>
       {% else %}
-      <label class="settings-option is-locked">
-        <input type="radio" name="mode" value="auto" disabled>
-        <span>
-          <strong>Auto Plan</strong>
-          <span class="settings-option-note">Part of unlocking every Article — your saved history is never deleted.</span>
-          {% if pricing_enabled|default(false) %}
-          <a href="/pricing">Unlock every Article →</a>
-          {% endif %}
-        </span>
-      </label>
+      <div class="segmented is-disabled" role="group" aria-label="Pace">
+        <input class="segmented-input" type="radio" id="pace-self-paced" name="mode" value="self_paced" checked>
+        <label class="segmented-btn" for="pace-self-paced">Self-paced</label>
+        <input class="segmented-input" type="radio" id="pace-auto" name="mode" value="auto" disabled>
+        <label class="segmented-btn" for="pace-auto">Auto Plan</label>
+      </div>
       {% endif %}
-    </fieldset>
+    </div>
+
+    {% if can_auto_plan|default(false) %}
+    <div class="settings-row is-stacked" data-daily-target-row>
+      <div class="settings-row-copy">
+        <p class="settings-row-label">Daily target</p>
+        <p class="settings-row-desc">New clauses placed on each learning day.</p>
+      </div>
+      <div class="segmented" role="group" aria-label="Daily target">
+        {% for n, label in ((3, 'Steady · 3'), (5, 'Balanced · 5'), (7, 'Intensive · 7')) %}
+        <input class="segmented-input" type="radio" id="target-{{ n }}" name="daily_target" value="{{ n }}"
+          {% if (learning_plan and learning_plan.daily_target == n) or (n == 5 and (not learning_plan or learning_plan.daily_target not in (3, 7))) %}checked{% endif %}>
+        <label class="segmented-btn" for="target-{{ n }}">{{ label }}</label>
+        {% endfor %}
+      </div>
+    </div>
+    {% else %}
+    <p class="settings-note settings-plan-locked">
+      Part of unlocking every Article — your saved history is never deleted.
+      {% if pricing_enabled|default(false) %}
+      <a href="/pricing">Unlock every Article →</a>
+      {% endif %}
+    </p>
+    {% endif %}
+
     {% if learning_plan and learning_plan.is_auto %}
     <p class="settings-note">
       {% if learning_plan.daily_target == 3 %}Steady · 3
@@ -310,12 +321,17 @@
       — effective since {{ learning_plan.target_effective_on.strftime('%d %b') }}
       {% endif %}
     </p>
+    {# The plan only activates once a learning day is actually worked, so this
+       line has to read as a whole sentence in both states — "Plan started" with
+       no date after it is not a sentence. #}
     <p class="settings-note">
-      Plan started
-      {% if learning_plan.activated_at %}{{ learning_plan.activated_at.strftime('%d %b %Y') }}
-      {% else %}Not started{% endif %}
+      {% if learning_plan.activated_at %}
+      Plan started {{ learning_plan.activated_at.strftime('%d %b %Y') }}
+      {% else %}
+      Not started yet
+      {% endif %}
       {% if next_learning_day %}
-      · Next learning day {{ next_learning_day.strftime('%d %b %Y') }}
+      · {% if learning_plan.activated_at %}Next{% else %}First{% endif %} learning day {{ next_learning_day.strftime('%d %b %Y') }}
       {% endif %}
     </p>
     <p class="settings-note">Changing the pace rebuilds future days from tomorrow — today's plan holds.</p>
@@ -326,28 +342,12 @@
   </form>
   {% endif %}
 
+  {% if not multiuser_enabled|default(false) %}
+  {# Single-user/local install only: these radios drive the macOS LaunchAgent /
+     ntfy CLI reminders. Multiuser accounts get reminders through the
+     revision-calendar cadence above instead. Browse — In news used to share
+     this form; it is a site-wide setting, so it now lives at /admin/content. #}
   <form class="settings-form" method="post" action="/settings">
-    <h2 class="section-title">Browse — In news</h2>
-    <p class="settings-note">
-      Article numbers shown with an amber “In news” pill on Browse cards.
-      Separate with commas or spaces (default <code>19</code>).
-    </p>
-    <label class="memory-field settings-news-field">
-      <span class="memory-field-label">In news articles</span>
-      <input
-        type="text"
-        name="news_articles"
-        value="{{ news_articles }}"
-        maxlength="200"
-        placeholder="19, 21"
-        autocomplete="off"
-      >
-    </label>
-
-    {% if not multiuser_enabled|default(false) %}
-    {# Single-user/local install only: these radios drive the macOS
-       LaunchAgent / ntfy CLI reminders. Multiuser accounts get reminders
-       through the revision-calendar cadence above instead. #}
     <h2 class="section-title">Study reminders</h2>
     <p class="settings-note">
       Reminders use the same Constitution due list as Home, plus Memory log reviews that are due or overdue.
@@ -356,52 +356,27 @@
       Phone delivery still works with <code>REMINDER_CHANNEL=ntfy</code> and <code>NTFY_TOPIC</code>.
     </p>
 
-    <fieldset class="settings-fieldset">
-      <legend class="visually-hidden">Reminder frequency</legend>
+    <div class="settings-row is-stacked">
+      <div class="settings-row-copy">
+        <p class="settings-row-label">Frequency</p>
+        <p class="settings-row-desc" data-reminder-desc>
+          {% if frequency == 'twice' %}08:00 and 18:00 local, while units are still due.
+          {% elif frequency == 'hourly' %}Nag each hour until today’s due checklist is empty.
+          {% else %}08:00, 13:00, and 18:00 local (default).{% endif %}
+        </p>
+      </div>
+      <div class="segmented" role="group" aria-label="Reminder frequency">
+        {% for value, label in (('twice', 'Twice'), ('thrice', 'Thrice'), ('hourly', 'Every hour')) %}
+        <input class="segmented-input" type="radio" id="freq-{{ value }}" name="notification_frequency" value="{{ value }}"
+          {% if frequency == value %}checked{% endif %}>
+        <label class="segmented-btn" for="freq-{{ value }}">{{ label }}</label>
+        {% endfor %}
+      </div>
+    </div>
 
-      <label class="settings-option">
-        <input
-          type="radio"
-          name="notification_frequency"
-          value="twice"
-          {% if frequency == 'twice' %}checked{% endif %}
-        >
-        <span class="settings-option-body">
-          <span class="settings-option-title">Twice</span>
-          <span class="settings-option-desc">08:00 and 18:00 local, while units are still due.</span>
-        </span>
-      </label>
-
-      <label class="settings-option">
-        <input
-          type="radio"
-          name="notification_frequency"
-          value="thrice"
-          {% if frequency == 'thrice' %}checked{% endif %}
-        >
-        <span class="settings-option-body">
-          <span class="settings-option-title">Thrice</span>
-          <span class="settings-option-desc">08:00, 13:00, and 18:00 local (default).</span>
-        </span>
-      </label>
-
-      <label class="settings-option">
-        <input
-          type="radio"
-          name="notification_frequency"
-          value="hourly"
-          {% if frequency == 'hourly' %}checked{% endif %}
-        >
-        <span class="settings-option-body">
-          <span class="settings-option-title">Every hour</span>
-          <span class="settings-option-desc">Nag each hour until today’s due checklist is empty.</span>
-        </span>
-      </label>
-    </fieldset>
-    {% endif %}
-
-    <button type="submit" class="btn btn-accent">Save</button>
+    <p class="actions"><button type="submit" class="btn btn-accent">Save</button></p>
   </form>
+  {% endif %}
 
   <h2 class="section-title">Legal</h2>
   <p class="settings-note">
