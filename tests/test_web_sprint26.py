@@ -48,7 +48,7 @@ def test_settings_post_persists_hourly(client: TestClient, tmp_path: Path):
     # Recreate with known db path via a fresh app bound in fixture — use engine from state
     resp = client.post(
         "/settings",
-        data={"notification_frequency": "hourly", "news_articles": "19"},
+        data={"notification_frequency": "hourly"},
         follow_redirects=False,
     )
     assert resp.status_code == 303
@@ -57,7 +57,8 @@ def test_settings_post_persists_hourly(client: TestClient, tmp_path: Path):
     html = client.get("/settings?saved=1").text
     assert "Settings saved" in html
     assert 'value="hourly"' in html
-    assert 'name="news_articles"' in html
+    # Browse — In news is site-wide and now lives at /admin/content.
+    assert 'name="news_articles"' not in html
 
     # Confirm via engine on same DB: TestClient shares app.state.engine
     eng: ReminderEngine = client.app.state.engine  # type: ignore[attr-defined]

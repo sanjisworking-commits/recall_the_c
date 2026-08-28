@@ -175,8 +175,10 @@ def test_settings_shows_learning_plan_and_saves_auto(tmp_path: Path):
     assert plan.daily_target == 5
     assert plan.activated_at is None
     again = client.get("/settings")
-    assert "Plan started" in again.text
-    assert "Not started" in again.text
+    # The plan is saved but not yet worked, so the status line says so as one
+    # sentence — it used to collide into "Plan started Not started".
+    assert "Plan started Not started" not in again.text
+    assert "Not started yet" in again.text
 
 
 def test_onboarding_plan_saves_self_paced(tmp_path: Path):
@@ -413,3 +415,55 @@ def test_grant_holder_can_enable_auto_plan_without_a_purchase(tmp_path: Path):
     assert "Recall access granted" in settings.text
     assert "Paid plan" not in settings.text
     assert "Recall active" not in settings.text
+
+
+def test_plan_controls_render_as_segmented_radios(tmp_path: Path):
+    """The segments are real radios, so the POST body and the no-JS save path
+    are unchanged."""
+    client = _client(tmp_path)
+    _sign_in(client)
+    html = client.get("/settings").text
+
+    # Pace and Daily target are segment groups, not a fieldset of stacked
+    # radios and a native <select>.
+    assert 'class="segmented"' in html
+    assert '<select name="daily_target"' not in html
+    assert 'aria-label="Pace"' in html
+    assert 'aria-label="Daily target"' in html
+
+    # Same names and values the route reads.
+    assert 'name="mode" value="self_paced"' in html
+    assert 'name="mode" value="auto"' in html
+    for n in (3, 5, 7):
+        assert f'name="daily_target" value="{n}"' in html
+    for label in ("Steady · 3", "Balanced · 5", "Intensive · 7"):
+        assert label in html
+
+
+def test_segmented_pace_still_saves_both_directions(tmp_path: Path):
+    client = _client(tmp_path)
+    _sign_in(client)
+    eng = _engine(client)
+
+    assert (
+        client.post(
+            "/settings/learning-plan",
+            data={"mode": "auto", "daily_target": "7"},
+            follow_redirects=False,
+        ).status_code
+        == 303
+    )
+    plan = eng.get_learning_plan()
+    assert plan.mode == "auto" and plan.daily_target == 7
+
+    # Self-paced posts without a target; the route ignores it rather than erroring.
+    assert (
+        client.post(
+            "/settings/learning-plan",
+            data={"mode": "self_paced"},
+            follow_redirects=False,
+        ).status_code
+        == 303
+    )
+    plan = eng.get_learning_plan()
+    assert plan.mode == "self_paced" and plan.daily_target is None

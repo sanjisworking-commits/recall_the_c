@@ -1,0 +1,28 @@
+{% extends "admin/base.html" %}
+{% block admin_title %}Content{% endblock %}
+{% block admin_content %}
+<div class="admin-panel">
+  <h1 class="admin-title">Browse — In news</h1>
+  <p class="admin-subtitle">
+    Article numbers shown with an amber “In news” pill on Browse cards. This is
+    site-wide — it applies to every reader, not just your account. Separate with
+    commas or spaces (default <span class="admin-mono">19</span>).
+  </p>
+
+  <form method="post" action="/admin/content">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <label class="memory-field">
+      <span class="memory-field-label">In news articles</span>
+      <input
+        type="text"
+        name="news_articles"
+        value="{{ news_articles }}"
+        maxlength="200"
+        placeholder="19, 21"
+        autocomplete="off"
+      >
+    </label>
+    <p class="actions"><button type="submit" class="admin-btn">Save</button></p>
+  </form>
+</div>
+{% endblock %}

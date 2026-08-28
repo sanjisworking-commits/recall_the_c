@@ -130,20 +130,23 @@ def test_default_news_articles_is_19(tmp_path: Path):
     assert all(c.in_news is False for c in cards)  # mini fixture has Art 20 only
 
 
-def test_settings_saves_news_articles(tmp_path: Path):
+def test_news_articles_moved_off_user_settings(tmp_path: Path):
+    """Browse — In news is site-wide, so /settings neither shows nor writes it."""
     db = tmp_path / "progress.db"
     ReminderEngine.from_paths(db, MINI_UNITS)
     client = TestClient(create_app(units_path=MINI_UNITS, db_path=db))
     page = client.get("/settings")
     assert page.status_code == 200
-    assert 'name="news_articles"' in page.text
-    assert 'value="19"' in page.text
+    assert 'name="news_articles"' not in page.text
+
+    # Saving reminders must not clear the stored value — it used to, because the
+    # parameter defaulted to Form("") and was written unconditionally.
     saved = client.post(
         "/settings",
-        data={"notification_frequency": "twice", "news_articles": "19, 21"},
+        data={"notification_frequency": "twice"},
         follow_redirects=False,
     )
     assert saved.status_code == 303
     engine = ReminderEngine.from_paths(db, MINI_UNITS)
-    assert engine.get_news_articles_raw() == "19, 21"
-    assert parse_news_articles(engine.get_news_articles_raw()) == {"19", "21"}
+    assert engine.get_news_articles_raw() == "19"
+    assert parse_news_articles(engine.get_news_articles_raw()) == {"19"}

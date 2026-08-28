@@ -35,6 +35,14 @@
   --mid: #8f8f8d;
   --learning: #d8d8d6;
   --control-border: #c9c9c7;
+  /* Segmented control. Its own tokens because the raised-segment metaphor
+     inverts if you reuse --paper/--track: in dark, --paper (#1e1e1d) is darker
+     than --track (#333), so the "raised" segment would sink. */
+  --seg-track: #ececea;
+  --seg-track-on-page: #e2e2e0;
+  --seg-surface: #ffffff;
+  --seg-surface-border: #dcdcdc;
+  --seg-shadow: 0 1px 2px rgba(0, 0, 0, 0.07);
   --font-display: "Fraunces", Georgia, serif;
   --font-body: "Source Sans 3", "Segoe UI", sans-serif;
   --font-mono: ui-monospace, Menlo, Consolas, monospace;
@@ -83,6 +91,11 @@ html[data-theme="dark"] {
   --mid: #8f8f8d;
   --learning: #4a4a48;
   --control-border: #4a4a48;
+  --seg-track: #232322;
+  --seg-track-on-page: #2a2a28;
+  --seg-surface: #3a3a38;
+  --seg-surface-border: #4a4a48;
+  --seg-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
   --green: var(--accent);
   --green-deep: var(--accent-hover);
   --red: var(--destructive);
@@ -2564,6 +2577,129 @@ html[data-theme="dark"] .bare-fn-nested-trigger {
   text-decoration: underline;
 }
 
+/* ── Segmented control ────────────────────────────────────────────────────
+   One gray track carrying a single raised segment. Generalised from the
+   Speak/Read view switch so both share a shape.
+
+   Two flavours, because the page has two kinds of control:
+     • buttons  — instant-apply (theme, motion, sound). app.js already toggles
+                  .is-active on these, so they need no new JS.
+     • radios   — form-backed (mode, daily_target, notification_frequency).
+                  A real radio group gives radiogroup semantics, arrow keys and
+                  focus management for free, keeps the POST body identical, and
+                  still saves with JS off.
+   ------------------------------------------------------------------------ */
+.segmented {
+  display: inline-flex;
+  align-items: stretch;
+  gap: 0;
+  padding: 3px;
+  background: var(--seg-track);
+  border-radius: 10px;
+}
+
+/* The track sits on the gray page rather than inside a white card. */
+.segmented.is-on-page {
+  background: var(--seg-track-on-page);
+}
+
+/* Each segment fills its share; switching never resizes the track. */
+.segmented-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 34px;
+  padding: 0 18px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: none;
+  box-sizing: border-box;
+  font: inherit;
+  font-size: 14px;
+  color: var(--muted);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.segmented-btn.is-active,
+.segmented-input:checked + .segmented-btn {
+  background: var(--seg-surface);
+  border-color: var(--seg-surface-border);
+  box-shadow: var(--seg-shadow);
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* Visually gone, still focusable and still submitted. */
+.segmented-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.segmented-input:focus-visible + .segmented-btn {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+/* Whole group off — the OS reduced-motion override, and Daily target while
+   the plan is Self-paced. Selection stays readable. */
+.segmented.is-disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+/* Equal-width segments that fill the row (phone, and desktop Daily target). */
+.segmented.is-fill {
+  display: flex;
+  width: 100%;
+}
+
+.segmented.is-fill .segmented-btn {
+  flex: 1 1 0;
+  padding: 0 12px;
+}
+
+/* ── Settings rows carrying a segmented control ───────────────────────────
+   Label + description left, control right, hairline between rows. */
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.settings-row:last-of-type {
+  border-bottom: 0;
+}
+
+.settings-row-copy {
+  min-width: 0;
+}
+
+.settings-row-label {
+  margin: 0;
+  font-size: 16px;
+  color: var(--ink);
+}
+
+.settings-row-desc {
+  margin: 2px 0 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
 /* Sprint 26 — Settings */
 .panel.settings .settings-note {
   margin: 0 0 1.25rem;
@@ -3829,28 +3965,41 @@ code {
   color: var(--muted);
 }
 
+/* Theme, Motion and Completion sounds all use this pair, so restyling it
+   converts all three groups at once — app.js already toggles .is-active. */
 .settings-theme {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
+  display: inline-flex;
+  align-items: stretch;
+  gap: 0;
   margin: 12px 0 28px;
+  padding: 3px;
+  background: var(--seg-track);
+  border-radius: 10px;
 }
 
 .settings-theme-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  padding: 0 18px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: none;
+  box-sizing: border-box;
   font: inherit;
   font-size: 13px;
-  font-weight: 600;
-  padding: 8px 14px;
-  border: 1px solid var(--ink);
-  background: var(--paper);
-  color: var(--ink);
+  color: var(--muted);
+  white-space: nowrap;
   cursor: pointer;
-  border-radius: 0;
 }
 
 .settings-theme-btn.is-active {
-  background: var(--ink);
-  color: var(--paper);
+  background: var(--seg-surface);
+  border-color: var(--seg-surface-border);
+  box-shadow: var(--seg-shadow);
+  color: var(--ink);
+  font-weight: 600;
 }
 
 .settings-experience-row {
@@ -3882,7 +4031,7 @@ code {
   opacity: 0.45;
 }
 
-.settings-experience-row.is-os-reduced .settings-theme-btn {
+.settings-experience-row.is-os-reduced .settings-theme {
   pointer-events: none;
 }
 

@@ -1609,6 +1609,78 @@
     color: var(--control-border);
   }
 
+  /* Screen 4e · segmented controls go compact on the phone, and the groups
+     that carry three labelled segments go full width — three labels will not
+     sit beside a row label at 390pt. */
+  body[data-mscreen="settings"] .settings-row {
+    gap: 14px;
+    padding: 12px 0;
+  }
+
+  body[data-mscreen="settings"] .settings-row-label {
+    font-size: 14.5px;
+  }
+
+  body[data-mscreen="settings"] .settings-row-desc {
+    font-size: 11.5px;
+    line-height: 1.5;
+  }
+
+  body[data-mscreen="settings"] .segmented,
+  body[data-mscreen="settings"] .settings-theme {
+    padding: 2px;
+    border-radius: 9px;
+  }
+
+  body[data-mscreen="settings"] .segmented-btn,
+  body[data-mscreen="settings"] .settings-theme-btn {
+    height: 28px;
+    padding: 0 12px;
+    border-radius: 7px;
+    font-size: 12.5px;
+  }
+
+  /* Daily target and Study reminders stack under their label. */
+  body[data-mscreen="settings"] .settings-row.is-stacked {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  body[data-mscreen="settings"] .settings-row.is-stacked .segmented {
+    display: flex;
+    width: 100%;
+  }
+
+  body[data-mscreen="settings"] .settings-row.is-stacked .segmented-btn {
+    flex: 1 1 0;
+    height: 30px;
+    padding: 0 8px;
+  }
+
+  /* Appearance sits on the gray page, not inside a white card, so its track
+     needs to be a shade darker to stay legible. */
+  body[data-mscreen="settings"] .settings-theme[aria-label="Theme"] {
+    display: flex;
+    width: 100%;
+    margin: 0 0 8px;
+    padding: 3px;
+    background: var(--seg-track-on-page);
+    border-radius: 10px;
+  }
+
+  body[data-mscreen="settings"] .settings-theme[aria-label="Theme"] .settings-theme-btn {
+    flex: 1 1 0;
+    height: 38px;
+    border-radius: 8px;
+    font-size: 13.5px;
+  }
+
+  body[data-mscreen="settings"] .settings-experience-row {
+    gap: 14px;
+    margin: 0 0 12px;
+  }
+
   body[data-mscreen="settings"] .section-title {
     margin: 18px 0 8px;
     font-family: var(--font-body);

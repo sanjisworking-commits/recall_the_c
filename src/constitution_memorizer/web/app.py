@@ -2922,7 +2922,6 @@ def create_app(
             "settings.html",
             {
                 "frequency": eng.get_notification_frequency(),
-                "news_articles": eng.get_news_articles_raw(),
                 "saved": bool(saved),
                 "access": access_summary(request, eng),
                 "gcal": gcal_ctx,
@@ -2935,7 +2934,6 @@ def create_app(
     @app.post("/settings")
     async def settings_save(
         notification_frequency: str | None = Form(None),
-        news_articles: str = Form(""),
     ) -> RedirectResponse:
         # Optional: the multiuser Settings form no longer includes the study
         # reminder radios (calendar reminders replaced them); the single-user
@@ -2947,7 +2945,9 @@ def create_app(
                     status_code=400, detail="Invalid notification frequency"
                 )
             eng.set_notification_frequency(notification_frequency)  # type: ignore[arg-type]
-        eng.set_news_articles_raw(news_articles)
+        # news_articles is site-wide, not a personal preference — it moved to
+        # /admin/content. It used to be written here unconditionally from a
+        # Form("") default, so any save that omitted it wiped the value.
         return RedirectResponse(url="/settings?saved=1", status_code=303)
 
     @app.get("/onboarding/state")
