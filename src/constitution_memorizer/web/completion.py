@@ -14,7 +14,7 @@ from constitution_memorizer.progress.repository import StudySession
 from constitution_memorizer.progress.scheduler import ReminderEngine
 from constitution_memorizer.progress.user_ids import LOCAL_USER_ID
 from constitution_memorizer.web.quotes import get_quote_for
-from constitution_memorizer.web.service import needs_split_choice
+from constitution_memorizer.web.service import maybe_record_daily_goal_met, needs_split_choice
 
 
 def wants_json(request: Request) -> bool:
@@ -143,6 +143,8 @@ def resolve_learn_navigation(
         updated = replace(session, items=items)
     else:
         updated = session
+    if outcome == "completed":
+        maybe_record_daily_goal_met(eng, session=updated)
     next_unit_id = updated.next_pending_after(unit_id)
     if next_unit_id is None:
         if updated.status != "complete":

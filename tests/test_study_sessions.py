@@ -646,12 +646,16 @@ def test_a_real_database_error_is_not_swallowed(tmp_path: Path):
     assert _is_missing_optional_schema(Exception("no such table: study_session"))
     assert _is_missing_optional_schema(Exception("no such table: auto_plan_day"))
     assert _is_missing_optional_schema(Exception("no such table: auto_plan_item"))
+    assert _is_missing_optional_schema(Exception("no such table: daily_goal_met"))
     assert _is_missing_optional_schema(Exception("no such column: target_effective_on"))
     assert _is_missing_optional_schema(
         Exception('relation "auto_plan_day" does not exist')
     )
     assert _is_missing_optional_schema(
         Exception('relation "auto_plan_item" does not exist')
+    )
+    assert _is_missing_optional_schema(
+        Exception('relation "daily_goal_met" does not exist')
     )
     assert _is_missing_optional_schema(
         Exception('column "target_effective_on" does not exist')

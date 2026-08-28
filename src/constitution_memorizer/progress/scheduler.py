@@ -487,6 +487,15 @@ class ReminderEngine:
             self.user_id, kind=kind, plan_date=plan_date
         )
 
+    def record_daily_goal_met(self, goal_date: date) -> None:
+        self.repo.record_daily_goal_met(self.user_id, goal_date)
+
+    def is_daily_goal_met(self, goal_date: date) -> bool:
+        return self.repo.is_daily_goal_met(self.user_id, goal_date)
+
+    def list_daily_goal_dates(self, *, until: date, limit: int = 400) -> list[date]:
+        return self.repo.list_daily_goal_dates(self.user_id, until=until, limit=limit)
+
     def get_learning_plan(self) -> UserLearningPlan:
         return self.repo.get_learning_plan(self.user_id)
 

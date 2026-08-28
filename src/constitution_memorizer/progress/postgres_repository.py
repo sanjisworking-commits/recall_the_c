@@ -767,6 +767,49 @@ class PostgresProgressRepository:
             [row for row in rows if row["session_id"] == keeper]
         )
 
+    def record_daily_goal_met(self, user_id: UUID | str, goal_date: date) -> None:
+        with self._cursor() as (conn, cur):
+            cur.execute(
+                """
+                INSERT INTO daily_goal_met (user_id, goal_date, met_at)
+                VALUES (%s, %s, %s)
+                ON CONFLICT (user_id, goal_date) DO NOTHING
+                """,
+                (as_user_id(user_id), goal_date, _utc_now()),
+            )
+            conn.commit()
+
+    def is_daily_goal_met(self, user_id: UUID | str, goal_date: date) -> bool:
+        with self._cursor() as (_conn, cur):
+            cur.execute(
+                """
+                SELECT 1 FROM daily_goal_met
+                WHERE user_id = %s AND goal_date = %s
+                """,
+                (as_user_id(user_id), goal_date),
+            )
+            return cur.fetchone() is not None
+
+    def list_daily_goal_dates(
+        self, user_id: UUID | str, *, until: date, limit: int = 400
+    ) -> list[date]:
+        with self._cursor() as (_conn, cur):
+            cur.execute(
+                """
+                SELECT goal_date FROM daily_goal_met
+                WHERE user_id = %s AND goal_date <= %s
+                ORDER BY goal_date DESC
+                LIMIT %s
+                """,
+                (as_user_id(user_id), until, limit),
+            )
+            rows = cur.fetchall()
+        out: list[date] = []
+        for row in rows:
+            raw = row["goal_date"]
+            out.append(raw if isinstance(raw, date) else date.fromisoformat(str(raw)))
+        return out
+
     def set_study_item_status(
         self,
         user_id: UUID | str,

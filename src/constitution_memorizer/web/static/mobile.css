@@ -20,6 +20,50 @@
     --m-gutter: 18px;
     --m-tabbar: 56px;
     --m-actionbar: 76px;
+    /* Redesign semantic tokens. Light values follow the prototype; dark maps
+       onto the existing theme so tints stay readable. Do not hardcode #fff
+       onto shared chrome — inherit --ink/--page/--paper. */
+    --rc-ink: var(--ink);
+    --rc-page: var(--page);
+    --rc-paper: var(--paper);
+    --rc-hairline: var(--hairline);
+    --rc-teal: var(--browse-due);
+    --rc-teal-tint: #e7f1ef;
+    --rc-teal-deep: #0e5b52;
+    --rc-pale-done: var(--calendar-done);
+    --rc-amber: var(--browse-mark-news);
+    --rc-amber-tint: #f6efe4;
+    --rc-amber-deep: #7c4a12;
+    --rc-red: var(--destructive);
+    --rc-radius-card: 14px;
+    --rc-radius-button: 12px;
+    --rc-radius-sheet: 22px;
+    --rc-radius-seg: 9px;
+    --rc-press-depth: 0 2px 0 rgba(0, 0, 0, 0.28);
+  }
+
+  html[data-theme="dark"] {
+    --rc-teal-tint: #143833;
+    --rc-teal-deep: #8fd4c8;
+    --rc-amber-tint: #3a2a18;
+    --rc-amber-deep: #f0c48a;
+  }
+
+  @keyframes rcRise {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes rcPop {
+    0% { transform: scale(0.86); opacity: 0; }
+    100% { transform: none; opacity: 1; }
+  }
+  @keyframes rcSheet {
+    from { transform: translateY(16px); opacity: 0; }
+    to { transform: none; opacity: 1; }
+  }
+  @keyframes rcPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(20, 20, 20, 0.18); }
+    50% { box-shadow: 0 0 0 6px rgba(20, 20, 20, 0); }
   }
 
   /* ── Shell ──────────────────────────────────────────────────────────────
@@ -2617,6 +2661,26 @@
   body[data-mscreen="learn"] .rtc-affirmation-esc,
   body[data-mscreen="learn"] .rtc-affirmation-hold {
     display: none;
+  }
+}
+
+@media (max-width: 560px) and (prefers-reduced-motion: reduce) {
+  .rc-rise,
+  .rc-pop,
+  .rc-sheet,
+  .rc-pulse {
+    animation: none !important;
+  }
+}
+
+/* App Motion Off also collapses redesign motion. OS reduced-motion wins
+   because base.html never adds .rtc-anim when the media query matches. */
+@media (max-width: 560px) {
+  html:not(.rtc-anim) .rc-rise,
+  html:not(.rtc-anim) .rc-pop,
+  html:not(.rtc-anim) .rc-sheet,
+  html:not(.rtc-anim) .rc-pulse {
+    animation: none !important;
   }
 }
 

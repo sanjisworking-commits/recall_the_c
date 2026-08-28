@@ -6,7 +6,7 @@ import logging
 import re
 import uuid
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
 
 from constitution_memorizer.learning.schemas import LearningUnit, LearningUnitType
@@ -71,6 +71,7 @@ _OPTIONAL_TABLES = frozenset(
         "user_learning_plan",
         "auto_plan_day",
         "auto_plan_item",
+        "daily_goal_met",
     }
 )
 _OPTIONAL_COLUMNS = frozenset({"target_effective_on"})
@@ -96,6 +97,82 @@ def _is_missing_optional_schema(error: Exception) -> bool:
     if not missing_table:
         return False
     return any(name in message for name in _OPTIONAL_TABLES)
+
+
+def maybe_record_daily_goal_met(
+    engine: ReminderEngine,
+    *,
+    as_of: date | None = None,
+    session: StudySession | None = None,
+) -> None:
+    """Write a daily_goal_met fact when every snapshot item is completed.
+
+    Deferred or skipped items are not completions. Closing a session because
+    leftovers were deferred does not manufacture a goal-met row. Idempotent.
+    Schema-gap (pre-0016) degrades to a no-op.
+    """
+    today = as_of or user_today(engine)
+    try:
+        snap = session
+        if snap is None:
+            snap = engine.study_session_for_day(
+                kind=REVISION_KIND, plan_date=today
+            )
+            if snap is None:
+                snap = engine.study_session_for_day(
+                    kind=AUTO_LEARNING_KIND, plan_date=today
+                )
+            if snap is None:
+                snap = engine.study_session_for_day(
+                    kind=DAY_PLAN_KIND, plan_date=today
+                )
+        if snap is None or not snap.items:
+            return
+        if any(item.status != "completed" for item in snap.items):
+            return
+        engine.record_daily_goal_met(today)
+    except Exception as error:  # noqa: BLE001 — schema-gap window
+        if not _is_missing_optional_schema(error):
+            raise
+        logger.warning(
+            "daily_goal_met is missing; skipping goal recording. "
+            "Run `alembic upgrade head` against this database."
+        )
+
+
+def daily_goal_streak(
+    engine: ReminderEngine,
+    *,
+    as_of: date | None = None,
+) -> int:
+    """Consecutive daily-goal-met dates ending today (or yesterday).
+
+    Derived from facts — there is no streak column. Distinct from
+    ``day_streak()``, which counts any completion date on progress rows.
+    Schema-gap (pre-0016) degrades to 0.
+    """
+    today = as_of or user_today(engine)
+    try:
+        dates = engine.list_daily_goal_dates(until=today, limit=400)
+    except Exception as error:  # noqa: BLE001 — schema-gap window
+        if not _is_missing_optional_schema(error):
+            raise
+        logger.info(
+            "daily_goal_met is missing; streak is 0 until "
+            "`alembic upgrade head` lands."
+        )
+        return 0
+    met = set(dates)
+    if not met:
+        return 0
+    cursor = today if today in met else today - timedelta(days=1)
+    if cursor not in met:
+        return 0
+    streak = 0
+    while cursor in met:
+        streak += 1
+        cursor -= timedelta(days=1)
+    return streak
 
 
 def active_revision_session(
