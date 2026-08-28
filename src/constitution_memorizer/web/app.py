@@ -87,6 +87,7 @@ from constitution_memorizer.web.request_context import (
     bound_memory,
     record_request_timing,
     reset_request_timings,
+    snapshot_request_counters,
     snapshot_request_timings,
     wants_request_breakdown,
 )
@@ -720,7 +721,8 @@ def create_app(
                     duration_ms,
                 )
                 snapshot = snapshot_request_timings()
-                if snapshot:
+                counters = snapshot_request_counters()
+                if snapshot or counters:
                     parts = [
                         f"request_breakdown method={request.method} path={path}"
                     ]
@@ -730,6 +732,8 @@ def create_app(
                         total_ms, count = snapshot[stage]
                         parts.append(f"{stage}_ms={total_ms:.1f}")
                         parts.append(f"{stage}_n={count}")
+                    for name, count in counters.items():
+                        parts.append(f"{name}={count}")
                     timing_logger.info(" ".join(parts))
             if token is not None:
                 reset_request_timings(token)
@@ -2357,12 +2361,35 @@ def create_app(
         if not is_guest:
             eng.bootstrap_request()
         today = user_today(eng)
-        if not is_guest:
-            _sync_auto_roadmap(request, eng, force=False)
         y = year if year is not None else today.year
         m = month if month is not None else today.month
         if m < 1 or m > 12 or y < 1 or y > 9999:
             raise HTTPException(status_code=400, detail="Invalid year or month")
+        if not is_guest:
+            from constitution_memorizer.planner.roadmap import roadmap_horizon
+
+            month_start = date(y, m, 1)
+            month_end = (
+                date(y + 1, 1, 1) - timedelta(days=1)
+                if m == 12
+                else date(y, m + 1, 1) - timedelta(days=1)
+            )
+            horizon = roadmap_horizon(today)
+            try:
+                eng.ensure_planner_bundle(
+                    as_of=today,
+                    auto_start=min(today, month_start),
+                    auto_until=max(horizon, month_end),
+                )
+            except Exception as error:  # noqa: BLE001 — schema-gap only
+                if not _is_missing_optional_schema(error):
+                    raise
+                logger.warning(
+                    "planner tables are missing; Calendar is falling back. "
+                    "Run `alembic upgrade head` against this database."
+                )
+            _sync_auto_roadmap(request, eng, force=False)
+        started = time.perf_counter()
         view = build_calendar_month(
             eng,
             year=y,
@@ -2388,6 +2415,7 @@ def create_app(
                     pace = plan_pace_label(plan.daily_target)
             except Exception:  # noqa: BLE001 — the calendar must still render
                 logger.exception("learning plan pace lookup failed")
+        record_request_timing("calendar_build", started)
         return templates.TemplateResponse(
             request,
             "calendar.html",

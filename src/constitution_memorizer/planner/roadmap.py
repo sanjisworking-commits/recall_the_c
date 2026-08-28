@@ -352,6 +352,39 @@ def compute_auto_window(
     return written
 
 
+def auto_roadmap_needs_reconcile_from_snapshot(
+    plan: UserLearningPlan,
+    *,
+    as_of: date,
+    auto_entitled: bool,
+    window_days: Sequence[AutoPlanDay],
+    has_tail: bool,
+    today_auto_session: StudySession | None,
+) -> bool:
+    """In-memory freshness check over an already-loaded Auto snapshot."""
+    horizon = roadmap_horizon(as_of)
+    in_window = [day for day in window_days if as_of <= day.plan_date <= horizon]
+    if not (auto_entitled and plan.is_auto):
+        beyond = [day for day in window_days if day.plan_date >= as_of]
+        return bool(beyond) or has_tail
+
+    covered = {day.plan_date for day in in_window}
+    expected = {as_of + timedelta(days=offset) for offset in range(WINDOW_DAYS)}
+    if covered != expected:
+        return True
+    if has_tail:
+        return True
+
+    today_frozen = today_auto_session is not None
+    target = plan.daily_target
+    for day in in_window:
+        if day.plan_date == as_of and today_frozen:
+            continue
+        if day.daily_target != target:
+            return True
+    return False
+
+
 def auto_roadmap_needs_reconcile(
     engine: ReminderEngine,
     plan: UserLearningPlan,
@@ -379,34 +412,46 @@ def auto_roadmap_needs_reconcile(
     changes are write-path triggers, not GET freshness signals.
     """
     horizon = roadmap_horizon(as_of)
+    bundle = getattr(engine, "_planner_bundle", None)
+    if (
+        bundle is not None
+        and bundle.as_of == as_of
+        and bundle.auto_start <= as_of
+        and bundle.auto_until >= horizon
+        and bundle.horizon == horizon
+    ):
+        return auto_roadmap_needs_reconcile_from_snapshot(
+            plan,
+            as_of=as_of,
+            auto_entitled=auto_entitled,
+            window_days=bundle.auto_plan_days,
+            has_tail=bundle.has_auto_plan_tail,
+            today_auto_session=bundle.session("auto_learning"),
+        )
+
     far = horizon + timedelta(days=366)
     if not (auto_entitled and plan.is_auto):
         return bool(engine.list_auto_plan_window(as_of, far))
 
     days = engine.list_auto_plan_window(as_of, horizon)
-    covered = {day.plan_date for day in days}
-    expected = {as_of + timedelta(days=offset) for offset in range(WINDOW_DAYS)}
-    if covered != expected:
-        return True
-    if engine.list_auto_plan_window(horizon + timedelta(days=1), far):
-        return True
-
-    today_frozen = False
+    today_session = None
     try:
-        today_frozen = (
-            engine.study_session_for_day(kind="auto_learning", plan_date=as_of)
-            is not None
-        )
-    except Exception:  # noqa: BLE001 — missing session tables: treat as unfrozen
-        today_frozen = False
+        today_session = engine.study_session_for_day(kind="auto_learning", plan_date=as_of)
+    except Exception as error:  # noqa: BLE001 — missing session tables: treat as unfrozen
+        from constitution_memorizer.web.service import _is_missing_optional_schema
 
-    target = plan.daily_target
-    for day in days:
-        if day.plan_date == as_of and today_frozen:
-            continue
-        if day.daily_target != target:
-            return True
-    return False
+        if not _is_missing_optional_schema(error):
+            raise
+        today_session = None
+    has_tail = bool(engine.list_auto_plan_window(horizon + timedelta(days=1), far))
+    return auto_roadmap_needs_reconcile_from_snapshot(
+        plan,
+        as_of=as_of,
+        auto_entitled=auto_entitled,
+        window_days=days,
+        has_tail=has_tail,
+        today_auto_session=today_session,
+    )
 
 
 def reconcile_auto_roadmap(

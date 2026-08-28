@@ -6,7 +6,7 @@ from collections import defaultdict
 from datetime import date, timedelta
 
 from constitution_memorizer.planner.models import PlannedDay, auto_is_projectable
-from constitution_memorizer.progress.repository import UserLearningPlan
+from constitution_memorizer.progress.repository import StudySession, UserLearningPlan
 from constitution_memorizer.progress.scheduler import INTERVAL_LADDER, ReminderEngine, advance_interval
 from constitution_memorizer.web.calendar_view import remaining_review_schedule
 
@@ -31,6 +31,9 @@ def _reviews_from_learn_date(learn_date: date, count: int) -> dict[date, int]:
         occupancy[cursor] += count
         current = nxt
     return occupancy
+
+
+_UNSET = object()
 
 
 def _learning_session_on(engine: ReminderEngine, day: date) -> bool:
@@ -74,16 +77,22 @@ class LearningPlanner:
         until: date,
         remaining_unseen: int,
         auto_entitled: bool = True,
+        persisted_days: dict[date, list[str]] | None = None,
+        today_auto_session: StudySession | None | object = _UNSET,
     ) -> list[PlannedDay]:
-        from constitution_memorizer.planner.roadmap import WINDOW_DAYS, roadmap_horizon
+        from time import perf_counter
+
+        from constitution_memorizer.planner.roadmap import roadmap_horizon
+        from constitution_memorizer.web.request_context import record_request_timing
         from constitution_memorizer.web.service import _is_missing_optional_schema
 
+        started = perf_counter()
         occupied = _actual_review_occupancy(engine, as_of=as_of)
         hypothetical: dict[date, int] = defaultdict(int)
         can_plan = auto_entitled and auto_is_projectable(plan)
         window_end = roadmap_horizon(as_of)
-        persisted: dict[date, list[str]] = {}
-        if can_plan:
+        persisted: dict[date, list[str]] = dict(persisted_days or {})
+        if can_plan and persisted_days is None:
             try:
                 for day in engine.list_auto_plan_window(as_of, min(until, window_end)):
                     persisted[day.plan_date] = [
@@ -93,32 +102,30 @@ class LearningPlanner:
                 if not _is_missing_optional_schema(error):
                     raise
         today_session_ids: list[str] | None = None
-        try:
-            session = engine.study_session_for_day(kind="auto_learning", plan_date=as_of)
-            if session is not None:
-                today_session_ids = [item.learning_unit_id for item in session.items]
-        except Exception as error:  # noqa: BLE001
-            if not _is_missing_optional_schema(error):
-                raise
-
         skipped: set[str] = set()
         pending: set[str] = set()
-        try:
-            session = engine.study_session_for_day(kind="auto_learning", plan_date=as_of)
-            if session is not None:
-                skipped = {
-                    item.learning_unit_id
-                    for item in session.items
-                    if item.status == "deferred"
-                }
-                pending = {
-                    item.learning_unit_id
-                    for item in session.items
-                    if item.status == "pending"
-                }
-        except Exception as error:  # noqa: BLE001
-            if not _is_missing_optional_schema(error):
-                raise
+        session: StudySession | None
+        if today_auto_session is _UNSET:
+            session = None
+            try:
+                session = engine.study_session_for_day(kind="auto_learning", plan_date=as_of)
+            except Exception as error:  # noqa: BLE001
+                if not _is_missing_optional_schema(error):
+                    raise
+        else:
+            session = today_auto_session  # type: ignore[assignment]
+        if session is not None:
+            today_session_ids = [item.learning_unit_id for item in session.items]
+            skipped = {
+                item.learning_unit_id
+                for item in session.items
+                if item.status == "deferred"
+            }
+            pending = {
+                item.learning_unit_id
+                for item in session.items
+                if item.status == "pending"
+            }
 
         from constitution_memorizer.planner.eligibility import is_unlearned
 
@@ -162,6 +169,7 @@ class LearningPlanner:
                 )
             )
             cursor += timedelta(days=1)
+        record_request_timing("planner_project", started)
         return days
 
     def next_learning_day(

@@ -17,6 +17,10 @@ bound_memory: ContextVar[MemoryEngine | None] = ContextVar("bound_memory", defau
 _request_timings: ContextVar[dict[str, tuple[float, int]] | None] = ContextVar(
     "request_timings", default=None
 )
+# name -> count. Independent of timings so we can log round-trips without ms.
+_request_counters: ContextVar[dict[str, int] | None] = ContextVar(
+    "request_counters", default=None
+)
 
 TIMING_STAGES: tuple[str, ...] = (
     "auth_session",
@@ -29,6 +33,13 @@ TIMING_STAGES: tuple[str, ...] = (
     "browse_build",
     "article_build",
     "dashboard_build",
+    "learning_plan_read",
+    "study_sessions_read",
+    "auto_plan_read",
+    "roadmap_freshness",
+    "planner_project",
+    "daily_goal_read",
+    "calendar_build",
     "learn_build",
     "completion",
     "modes_seen",
@@ -62,6 +73,14 @@ TIMING_STAGES: tuple[str, ...] = (
 )
 
 _TIMING_STAGE_SET = frozenset(TIMING_STAGES)
+REQUEST_COUNTERS: tuple[str, ...] = (
+    "db_reads",
+    "learning_plan_reads",
+    "study_session_reads",
+    "auto_plan_reads",
+    "daily_goal_reads",
+)
+_REQUEST_COUNTER_SET = frozenset(REQUEST_COUNTERS)
 _LEARN_BREAKDOWN_SUFFIXES = frozenset({"choose", "seen", "done"})
 _BREAKDOWN_PATHS = frozenset(
     {
@@ -93,13 +112,15 @@ def wants_request_breakdown(path: str) -> bool:
 
 
 def begin_request_timings() -> Token:
-    """Bind an empty collector for this request. Returns a reset token."""
+    """Bind empty timing + counter collectors for this request."""
+    _request_counters.set({})
     return _request_timings.set({})
 
 
 def reset_request_timings(token: Token) -> None:
     """Restore the previous collector binding."""
     _request_timings.reset(token)
+    _request_counters.set(None)
 
 
 def snapshot_request_timings() -> dict[str, tuple[float, int]]:
@@ -120,3 +141,21 @@ def record_request_timing(stage: str, started: float) -> None:
     elapsed_ms = (perf_counter() - started) * 1000.0
     total_ms, count = current.get(stage, (0.0, 0))
     current[stage] = (total_ms + elapsed_ms, count + 1)
+
+
+def record_request_counter(name: str, n: int = 1) -> None:
+    """Increment a whitelisted per-request counter. No-op outside a request."""
+    if name not in _REQUEST_COUNTER_SET:
+        raise ValueError(f"Unknown request counter: {name}")
+    current = _request_counters.get()
+    if current is None:
+        return
+    current[name] = current.get(name, 0) + n
+
+
+def snapshot_request_counters() -> dict[str, int]:
+    """Independent copy of recorded counters, or {} if no collector is bound."""
+    current = _request_counters.get()
+    if current is None:
+        return {}
+    return dict(current)

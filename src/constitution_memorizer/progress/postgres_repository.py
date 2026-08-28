@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Callable, Sequence
 from contextlib import ExitStack, contextmanager
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from typing import Any, Iterator
 from uuid import UUID
 
@@ -28,14 +28,16 @@ from constitution_memorizer.progress.repository import (
     CompletionProgress,
     CompletionState,
     LearningPlanMode,
+    PlannerReadBundle,
     UserLearningPlan,
+    _auto_plan_days_from_rows,
     _billing_order_from_row,
     _date_iso,
+    _effective_on_for_upsert,
     _modes_by_unit_from_rows,
     _news_from_raw,
-    _auto_plan_days_from_rows,
-    _effective_on_for_upsert,
     _row_to_learning_plan,
+    _sessions_by_kind_for_day,
     _sessions_from_joined_rows,
     _theme_from_raw,
     NotificationFrequency,
@@ -263,6 +265,43 @@ _BOOTSTRAP_BILLING_SQL = """
 SELECT * FROM billing_orders
 WHERE user_id = %s AND status = 'paid'
 ORDER BY paid_at DESC LIMIT 1
+"""
+_PLANNER_PLAN_SQL = """
+SELECT mode, daily_target, activated_at, prompt_dismissed_on,
+       last_anchor_theme, target_effective_on, updated_at
+FROM user_learning_plan
+WHERE user_id = %s
+"""
+_PLANNER_SESSIONS_SQL = f"""
+SELECT {_STUDY_SESSION_COLUMNS}
+FROM study_session s
+LEFT JOIN study_session_item i ON i.session_id = s.id
+WHERE s.user_id = %s AND s.plan_date = %s
+  AND s.kind IN ('revision', 'auto_learning', 'day_plan')
+ORDER BY s.kind, s.created_at ASC, s.id ASC, i.position ASC
+"""
+_PLANNER_AUTO_DAY_SQL = """
+SELECT user_id, plan_date, daily_target, created_at, updated_at
+FROM auto_plan_day
+WHERE user_id = %s AND plan_date >= %s AND plan_date <= %s
+ORDER BY plan_date
+"""
+_PLANNER_AUTO_ITEM_SQL = """
+SELECT user_id, plan_date, learning_unit_id, position, created_at
+FROM auto_plan_item
+WHERE user_id = %s AND plan_date >= %s AND plan_date <= %s
+ORDER BY plan_date, position
+"""
+_PLANNER_AUTO_TAIL_SQL = """
+SELECT 1 FROM auto_plan_day
+WHERE user_id = %s AND plan_date > %s
+LIMIT 1
+"""
+_PLANNER_GOAL_SQL = """
+SELECT goal_date FROM daily_goal_met
+WHERE user_id = %s AND goal_date <= %s
+ORDER BY goal_date DESC
+LIMIT %s
 """
 _COMPLETION_PROGRESS_SQL = """
 SELECT * FROM learning_unit_progress
@@ -767,6 +806,24 @@ class PostgresProgressRepository:
             [row for row in rows if row["session_id"] == keeper]
         )
 
+    def study_sessions_for_day(
+        self, user_id: UUID | str, plan_date: date
+    ) -> dict[str, StudySession | None]:
+        with self._cursor() as (_conn, cur):
+            cur.execute(
+                f"""
+                SELECT {_STUDY_SESSION_COLUMNS}
+                FROM study_session s
+                LEFT JOIN study_session_item i ON i.session_id = s.id
+                WHERE s.user_id = %s AND s.plan_date = %s
+                  AND s.kind IN ('revision', 'auto_learning', 'day_plan')
+                ORDER BY s.kind, s.created_at ASC, s.id ASC, i.position ASC
+                """,
+                (as_user_id(user_id), plan_date),
+            )
+            rows = cur.fetchall()
+        return _sessions_by_kind_for_day(rows)
+
     def record_daily_goal_met(self, user_id: UUID | str, goal_date: date) -> None:
         with self._cursor() as (conn, cur):
             cur.execute(
@@ -1065,27 +1122,22 @@ class PostgresProgressRepository:
         self, user_id: UUID | str, start: date, until: date
     ) -> list[AutoPlanDay]:
         uid = as_user_id(user_id)
-        with self._cursor() as (_conn, cur):
-            cur.execute(
-                """
-                SELECT user_id, plan_date, daily_target, created_at, updated_at
-                FROM auto_plan_day
-                WHERE user_id = %s AND plan_date >= %s AND plan_date <= %s
-                ORDER BY plan_date
-                """,
-                (uid, start, until),
-            )
-            day_rows = cur.fetchall()
-            cur.execute(
-                """
-                SELECT user_id, plan_date, learning_unit_id, position, created_at
-                FROM auto_plan_item
-                WHERE user_id = %s AND plan_date >= %s AND plan_date <= %s
-                ORDER BY plan_date, position
-                """,
-                (uid, start, until),
-            )
-            item_rows = cur.fetchall()
+        with self._pool.connection() as conn:
+            with ExitStack() as stack:
+                day_cur = stack.enter_context(conn.cursor(row_factory=self._dict_row))
+                item_cur = stack.enter_context(conn.cursor(row_factory=self._dict_row))
+
+                def _queue() -> None:
+                    day_cur.execute(_PLANNER_AUTO_DAY_SQL, (uid, start, until))
+                    item_cur.execute(_PLANNER_AUTO_ITEM_SQL, (uid, start, until))
+
+                if _pipeline_supported():
+                    with conn.pipeline():
+                        _queue()
+                else:
+                    _queue()
+                day_rows = day_cur.fetchall()
+                item_rows = item_cur.fetchall()
         return _auto_plan_days_from_rows(day_rows, item_rows)
 
     def list_auto_plan_day(
@@ -1569,6 +1621,73 @@ class PostgresProgressRepository:
                 _modes_by_unit_from_rows(mode_rows) if mode_rows is not None else None
             ),
             account=account,
+        )
+
+    def load_planner_read_bundle(
+        self,
+        user_id: UUID | str,
+        *,
+        as_of: date,
+        auto_start: date,
+        auto_until: date,
+        horizon: date,
+        daily_goal_until: date,
+        daily_goal_limit: int = 400,
+    ) -> PlannerReadBundle:
+        """Pipeline independent planner reads on one borrowed connection."""
+        uid = as_user_id(user_id)
+        pipelined = _pipeline_supported()
+        with self._pool.connection() as conn:
+            with ExitStack() as stack:
+                plan_cur = stack.enter_context(conn.cursor(row_factory=self._dict_row))
+                session_cur = stack.enter_context(
+                    conn.cursor(row_factory=self._dict_row)
+                )
+                day_cur = stack.enter_context(conn.cursor(row_factory=self._dict_row))
+                item_cur = stack.enter_context(conn.cursor(row_factory=self._dict_row))
+                tail_cur = stack.enter_context(conn.cursor(row_factory=self._dict_row))
+                goal_cur = stack.enter_context(conn.cursor(row_factory=self._dict_row))
+
+                def _queue() -> None:
+                    plan_cur.execute(_PLANNER_PLAN_SQL, (uid,))
+                    session_cur.execute(_PLANNER_SESSIONS_SQL, (uid, as_of))
+                    day_cur.execute(_PLANNER_AUTO_DAY_SQL, (uid, auto_start, auto_until))
+                    item_cur.execute(
+                        _PLANNER_AUTO_ITEM_SQL, (uid, auto_start, auto_until)
+                    )
+                    tail_cur.execute(_PLANNER_AUTO_TAIL_SQL, (uid, horizon))
+                    goal_cur.execute(
+                        _PLANNER_GOAL_SQL, (uid, daily_goal_until, daily_goal_limit)
+                    )
+
+                if pipelined:
+                    with conn.pipeline():
+                        _queue()
+                else:
+                    _queue()
+
+                plan_row = plan_cur.fetchone()
+                session_rows = session_cur.fetchall()
+                day_rows = day_cur.fetchall()
+                item_rows = item_cur.fetchall()
+                tail_row = tail_cur.fetchone()
+                goal_rows = goal_cur.fetchall()
+
+        goals: list[date] = []
+        for row in goal_rows:
+            raw = row["goal_date"]
+            goals.append(raw if isinstance(raw, date) else date.fromisoformat(str(raw)))
+        return PlannerReadBundle(
+            as_of=as_of,
+            learning_plan=_row_to_learning_plan(plan_row),
+            sessions_by_kind=_sessions_by_kind_for_day(session_rows),
+            auto_plan_days=tuple(_auto_plan_days_from_rows(day_rows, item_rows)),
+            auto_start=auto_start,
+            auto_until=auto_until,
+            horizon=horizon,
+            has_auto_plan_tail=tail_row is not None,
+            daily_goal_dates=tuple(goals),
+            pipelined=pipelined,
         )
 
     def load_completion_state(
