@@ -114,6 +114,38 @@ def test_browse_index_links_every_part_to_its_page(tmp_path: Path):
         assert part_href(section.part_number) in html
 
 
+def test_browse_index_phone_cards_match_redesign(tmp_path: Path):
+    """Phone Browse is Part cards + Reference, not the desktop article grid."""
+    client, _, _ = _client(tmp_path)
+    html = client.get("/browse").text
+    assert 'class="browse-part-rail"' in html
+    assert "part-card-track" in html
+    assert 'class="browse-reference"' in html
+    assert 'href="/laws"' in html
+    assert 'href="/tables"' in html
+    assert "Relevant laws" in html
+    css = client.get("/static/mobile.css").text
+    card = css.split(".part-card {", 1)[1].split("}", 1)[0]
+    assert "border-radius: var(--rc-radius-card)" in card
+    track = css.split(".part-card-track {", 1)[1].split("}", 1)[0]
+    assert "height: 4px" in track
+    fill = css.split(".part-card-fill {", 1)[1].split("}", 1)[0]
+    assert "var(--rc-teal)" in fill
+    due = css.split(".part-card-due {", 1)[1].split("}", 1)[0]
+    assert "var(--rc-teal-tint)" in due
+
+
+def test_browse_part_rows_use_node_status(tmp_path: Path):
+    client, engine, _ = _client(tmp_path)
+    sections = browse_parts_sections(engine, None)
+    section = next(s for s in sections if s.cards)
+    html = client.get(part_href(section.part_number)).text
+    assert "part-row-node" in html
+    assert "part-row-status" in html
+    assert "part-head-progress" in html
+    assert "Not started" in html
+
+
 def test_article_page_links_back_to_its_part(tmp_path: Path):
     """The phone's back link needs a Part even with no reviewed Bare Act."""
     client, _, _ = _client(tmp_path)

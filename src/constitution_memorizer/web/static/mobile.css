@@ -199,12 +199,14 @@
     height: 36px;
     flex: 0 0 auto;
     padding: 0 11px;
-    border: 1px solid var(--hairline);
-    background: var(--paper);
-    color: var(--ink);
+    border: 1px solid var(--rc-hairline);
+    border-radius: 10px;
+    background: var(--rc-paper);
+    color: var(--rc-ink);
     font: inherit;
     font-size: 12.5px;
     cursor: pointer;
+    text-decoration: none;
   }
 
   .mobile-chip-btn[aria-pressed="true"] {
@@ -916,27 +918,41 @@
     display: none;
   }
 
-  /* 17 · the guest note is one left-ruled line, not a panel. */
   body[data-mscreen="browse"] .guest-strip {
-    flex-wrap: nowrap;
-    gap: 10px;
-    padding: 11px 12px;
+    display: block;
+    padding: 13px 15px;
     margin: 0 0 12px;
-    border-left: 2px solid var(--ink);
+    border: 1px solid var(--rc-hairline);
+    border-radius: var(--rc-radius-card);
+    background: var(--rc-paper);
   }
 
   body[data-mscreen="browse"] .guest-strip p {
-    flex: 1 1 auto;
     font-size: 12.5px;
-    line-height: 1.45;
+    line-height: 1.5;
+    color: var(--muted);
     text-wrap: pretty;
   }
 
-  body[data-mscreen="browse"] .guest-strip-signin {
-    flex: 0 0 auto;
-    padding: 6px 11px;
+  body[data-mscreen="browse"] .guest-strip-signin,
+  body[data-mscreen="browse"] .guest-strip-dismiss {
+    display: none;
+  }
+
+  body[data-mscreen="browse"] .browse-access-summary {
+    padding: 13px 15px;
+    margin: 0 0 12px;
+    border: 1px solid var(--rc-hairline);
+    border-radius: var(--rc-radius-card);
+    background: var(--rc-paper);
+  }
+
+  body[data-mscreen="browse"] .browse-access-status {
     font-size: 12.5px;
-    font-weight: 400;
+  }
+
+  body[data-mscreen="browse"] .browse-access-action {
+    font-size: 12.5px;
   }
 
   .browse-part-rail {
@@ -948,15 +964,17 @@
   .part-card {
     display: flex;
     flex-direction: column;
-    padding: 14px 15px 13px;
-    border: 1px solid var(--hairline);
-    background: var(--paper);
-    color: var(--ink);
+    padding: 15px 16px 14px;
+    border: 1px solid var(--rc-hairline);
+    border-radius: var(--rc-radius-card);
+    background: var(--rc-paper);
+    color: var(--rc-ink);
     text-decoration: none;
   }
 
   .part-card.has-due {
-    border-color: var(--ink);
+    border: 1.5px solid var(--rc-ink);
+    box-shadow: 0 5px 16px color-mix(in srgb, var(--rc-ink) 8%, transparent);
   }
 
   .part-card.is-mark-hidden {
@@ -967,7 +985,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 6px;
+    margin-bottom: 5px;
   }
 
   .part-card-roman {
@@ -981,16 +999,17 @@
   .part-card-due {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
+    height: 20px;
+    padding: 0 8px;
+    border-radius: 10px;
+    background: var(--rc-teal-tint);
     font-size: 11px;
-    color: var(--browse-due);
+    font-weight: 600;
+    color: var(--rc-teal);
   }
 
   .part-card-dot {
-    display: block;
-    width: 5px;
-    height: 5px;
-    background: var(--browse-due);
+    display: none;
   }
 
   .part-card-chevron {
@@ -1000,7 +1019,7 @@
   }
 
   .part-card-name {
-    margin-bottom: 5px;
+    margin-bottom: 4px;
     font-family: var(--font-display);
     font-size: 19px;
     font-weight: 500;
@@ -1024,17 +1043,90 @@
     color: var(--faint);
   }
 
+  .part-card-learned.is-started {
+    font-weight: 600;
+    color: var(--rc-teal);
+  }
+
   .part-card-track {
     display: block;
-    height: 2px;
+    height: 4px;
     margin-top: 10px;
+    overflow: hidden;
+    border-radius: 2px;
     background: var(--track);
   }
 
   .part-card-fill {
     display: block;
-    height: 2px;
-    background: var(--ink);
+    height: 4px;
+    border-radius: 2px;
+    background: var(--rc-teal);
+  }
+
+  .browse-rail-note {
+    margin: 6px 2px 0;
+    font-size: 11.5px;
+    line-height: 1.6;
+    color: var(--faint);
+    text-wrap: pretty;
+  }
+
+  .browse-reference {
+    margin: 16px 0 8px;
+  }
+
+  .browse-reference-label {
+    margin: 0 2px 8px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mid);
+  }
+
+  .browse-reference-card {
+    overflow: hidden;
+    border: 1px solid var(--rc-hairline);
+    border-radius: var(--rc-radius-card);
+    background: var(--rc-paper);
+  }
+
+  .browse-reference-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 54px;
+    padding: 8px 16px;
+    color: var(--rc-ink);
+    text-decoration: none;
+  }
+
+  .browse-reference-row + .browse-reference-row {
+    border-top: 1px solid var(--page);
+  }
+
+  .browse-reference-copy {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .browse-reference-name {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .browse-reference-desc {
+    display: block;
+    margin-top: 1px;
+    font-size: 11.5px;
+    color: var(--mid);
+  }
+
+  .browse-reference-chevron {
+    font-size: 13px;
+    color: var(--faint);
   }
 
   /* ══ 03 / 16 / 18 · Part — Articles ════════════════════════════════════ */
@@ -1057,6 +1149,7 @@
 
   .part-head {
     display: flex;
+    flex-wrap: wrap;
     align-items: flex-end;
     gap: 10px;
     padding-bottom: 12px;
@@ -1087,6 +1180,37 @@
     font-size: 12px;
     color: var(--mid);
     white-space: nowrap;
+  }
+
+  .part-head-progress {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1 1 100%;
+    margin-top: 4px;
+  }
+
+  .part-head-track {
+    display: block;
+    flex: 1;
+    height: 4px;
+    overflow: hidden;
+    border-radius: 2px;
+    background: var(--track);
+  }
+
+  .part-head-fill {
+    display: block;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--rc-teal);
+  }
+
+  .part-head-count {
+    flex: 0 0 auto;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--rc-teal);
   }
 
   .part-note {
@@ -1121,10 +1245,10 @@
 
   .part-row {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 12px;
-    min-height: 56px;
-    padding: 13px var(--m-gutter);
+    min-height: 60px;
+    padding: 10px var(--m-gutter);
     border-bottom: 1px solid var(--page);
     color: var(--ink);
     text-decoration: none;
@@ -1134,7 +1258,8 @@
     display: none;
   }
 
-  .part-row.has-due {
+  .part-row.has-due,
+  .part-row.is-due {
     background: var(--wash);
   }
 
@@ -1142,16 +1267,56 @@
     background: var(--wash);
   }
 
-  .part-row.is-preview .part-row-title {
-    color: var(--muted);
+  .part-row-node {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    border: 2px solid var(--rc-hairline);
+    border-radius: 50%;
+    background: var(--rc-paper);
+    color: var(--rc-paper);
+  }
+
+  .part-row.is-learned .part-row-node {
+    border-color: var(--rc-teal);
+    background: var(--rc-teal);
+    color: var(--rc-paper);
+  }
+
+  .part-row.is-due .part-row-node {
+    border-color: var(--rc-teal);
+  }
+
+  .part-row.is-overdue .part-row-node {
+    border-color: var(--rc-amber);
+  }
+
+  .part-row.is-preview .part-row-node {
+    color: var(--faint);
+  }
+
+  .part-row-node-dot {
+    display: block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--rc-teal);
+  }
+
+  .part-row.is-overdue .part-row-node-dot {
+    background: var(--rc-amber);
   }
 
   .part-row-num {
-    min-width: 52px;
-    padding-top: 1px;
-    flex: 0 0 auto;
-    font-size: 13px;
-    color: var(--mid);
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
   }
 
   .part-row-main {
@@ -1162,7 +1327,21 @@
   .part-row-title {
     display: block;
     font-size: 14.5px;
+    font-weight: 500;
     line-height: 1.35;
+  }
+
+  .part-row.is-new .part-row-title,
+  .part-row.is-preview .part-row-title {
+    font-weight: 400;
+    color: var(--muted);
+  }
+
+  .part-row-sub {
+    display: block;
+    margin-top: 1px;
+    font-size: 11.5px;
+    color: var(--mid);
   }
 
   .part-row-meta {
@@ -1173,27 +1352,16 @@
   }
 
   .part-row-due {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-size: 11.5px;
-    color: var(--browse-due);
-  }
-
-  .part-row-due.is-overdue {
-    color: var(--browse-mark-news);
+    display: none;
   }
 
   .part-row-dot {
-    display: block;
-    width: 5px;
-    height: 5px;
-    background: currentColor;
+    display: none;
   }
 
   .part-row-access {
     font-size: 11.5px;
-    color: var(--browse-due);
+    color: var(--rc-teal);
   }
 
   .part-row-access.is-preview {
@@ -1209,15 +1377,28 @@
     color: var(--browse-mark-visualise);
   }
 
-  .part-row-chevron {
-    padding-top: 2px;
+  .part-row-status {
     flex: 0 0 auto;
-    font-size: 14px;
-    color: var(--control-border);
+    font-size: 11.5px;
+    color: var(--faint);
   }
 
-  .part-row.is-preview .part-row-chevron {
-    color: var(--hairline);
+  .part-row.is-learned .part-row-status {
+    color: var(--rc-teal);
+  }
+
+  .part-row.is-due .part-row-status {
+    font-weight: 600;
+    color: var(--rc-teal);
+  }
+
+  .part-row.is-overdue .part-row-status {
+    font-weight: 600;
+    color: var(--rc-amber);
+  }
+
+  .part-row-chevron {
+    display: none;
   }
 
   /* 16 · Chapters are group headers, not cards. */
@@ -2911,7 +3092,10 @@
     display: none;
   }
 
-  body[data-mscreen="browse"] .browse-part-card,
+  body[data-mscreen="browse"] .part-card,
+  body[data-mscreen="browse"] .browse-reference-card,
+  body[data-mscreen="browse"] .guest-strip,
+  body[data-mscreen="browse"] .browse-access-summary,
   body[data-mscreen="part"] .browse-article-row,
   body[data-mscreen="profile"] .progress-stat-card,
   body[data-mscreen="account"] .profile-card,
@@ -2965,6 +3149,8 @@
   .mobile-sheet,
   .dash-upcoming,
   .browse-part-rail,
+  .browse-reference,
+  .browse-rail-note,
   .revisions-mobile,
   .settings-account-row,
   .search-form-icon,
