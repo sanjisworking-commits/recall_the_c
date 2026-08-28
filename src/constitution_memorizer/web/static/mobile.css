@@ -2639,7 +2639,11 @@
   .settings-account-row,
   .search-form-icon,
   .search-cancel,
-  .dash-greeting-search {
+  .dash-greeting-search,
+  .eyebrow-phone,
+  .article-phone-meta,
+  .methods-tracker,
+  .learn-meta {
     display: none;
   }
 

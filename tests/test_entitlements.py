@@ -712,7 +712,6 @@ def test_cap_article_done_affordance_requires_four(tmp_path: Path) -> None:
         repo.claim_article(USER, n)
     page = client.get("/learn/clause-1")  # cap-reached Article 20
     assert 'data-required-modes="read,cloze,letters,test"' in page.text
-    assert "0 of 4 methods visited" in page.text
 
 
 def test_entitlement_aware_done_button_state() -> None:

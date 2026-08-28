@@ -106,6 +106,7 @@ def test_pricing_page_defaults_to_180(tmp_path: Path) -> None:
     assert "Complete Recall journey" in html
     assert "Learn → Recall → Review → Strengthen → Master" in html
     assert 'id="pricing-data"' in html
+    assert "data-pricing-annotation hidden" not in html
 
 
 def test_pricing_selection_and_billing_wording(tmp_path: Path) -> None:
@@ -117,6 +118,16 @@ def test_pricing_selection_and_billing_wording(tmp_path: Path) -> None:
     assert "7-day access · No automatic renewal" in seven
     # No blanket auto-renew statement for a one-time pass.
     assert "Renews every 7 days" not in seven
+    assert 'data-pricing-annotation' in seven
+    assert 'data-pricing-annotation hidden' in seven or 'data-pricing-annotationhidden' in seven.replace(
+        " ", ""
+    )
+    # The standalone page must hide empty annotation pills (3/7/15 have none).
+    assert ".pricing-panel-annotation[hidden]" in seven
+    for days in (3, 15):
+        page = client.get(f"/pricing?d={days}").text
+        assert "data-pricing-annotation" in page
+        assert " hidden" in page.split("data-pricing-annotation")[1].split(">")[0]
 
     thirty = client.get("/pricing?d=30").text
     assert "Renews every 30 days · Cancel anytime" in thirty

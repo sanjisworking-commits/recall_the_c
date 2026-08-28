@@ -546,11 +546,8 @@ def unit_crumb(unit: LearningUnit) -> str:
         if title:
             parts.append(title)
     elif unit.type == LearningUnitType.CLAUSE and unit.article_number:
-        art = f"Article {unit.article_number}"
-        if title:
-            parts.append(f"{art} — {title}")
-        else:
-            parts.append(art)
+        # Title is already the learn-sub lede; crumb stays Part · Article N.
+        parts.append(f"Article {unit.article_number}")
     elif title and unit.type == LearningUnitType.ARTICLE:
         # Title already shown as lede; crumb stays Part-only when possible.
         pass
