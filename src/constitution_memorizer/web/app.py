@@ -2413,6 +2413,25 @@ def create_app(
             {"dashboard": dashboard},
         )
 
+    @app.get("/progress/mastered", response_class=HTMLResponse)
+    async def progress_mastered_page(request: Request) -> HTMLResponse:
+        if app.state.multiuser_enabled and getattr(request.state, "current_user", None) is None:
+            return templates.TemplateResponse(
+                request,
+                "guest_gate.html",
+                {"gate_kind": "progress", "reason": "default"},
+            )
+        dashboard = progress_dashboard(
+            _engine(),
+            reviewed=app.state.reviewed,
+            today=date.today(),
+        )
+        return templates.TemplateResponse(
+            request,
+            "progress_mastered.html",
+            {"dashboard": dashboard},
+        )
+
     @app.get("/tables", response_class=HTMLResponse)
     async def tables_page(
         request: Request,

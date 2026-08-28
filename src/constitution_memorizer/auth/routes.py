@@ -484,6 +484,11 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
                     "recent": [],
                     "is_new": False,
                     "nothing_due": True,
+                    "today_units": [],
+                    "goal_done": 0,
+                    "goal_total": 0,
+                    "goal_pct": 0,
+                    "daily_goal_streak": 0,
                 },
             )
             record_request_timing("template", started)

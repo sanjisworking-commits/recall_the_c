@@ -23,11 +23,9 @@
   var path = window.location.pathname;
   if (path.indexOf("/admin") === 0) return;
 
-  // Desktop-only for now — the phone UI changes and gets its own tour design
-  // later. Not skipped server-side: the tour waits for a desktop visit.
-  if (window.matchMedia && window.matchMedia("(max-width: 820px)").matches) {
-    return;
-  }
+  // The redesign runs the coach on real phone surfaces too (Browse → Part →
+  // Article → session → Calendar → Settings → Today). Persistence is still
+  // onboarding_status; the tour never marks modes Done.
 
   // Captured before app.js listeners can strip ?done= from the URL.
   var params = new URLSearchParams(window.location.search);

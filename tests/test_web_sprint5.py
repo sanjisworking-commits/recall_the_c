@@ -136,3 +136,12 @@ def test_progress_page_and_article_completion(client: TestClient, engine: Remind
     assert "Progress" in page.text
     assert "Mastery map" in page.text
     assert "Tracked articles" in page.text
+
+
+def test_progress_mastered_archive_is_additive(client: TestClient):
+    home = client.get("/progress")
+    assert home.status_code == 200
+    archive = client.get("/progress/mastered")
+    assert archive.status_code == 200
+    assert "Mastered" in archive.text
+    assert 'href="/progress"' in archive.text

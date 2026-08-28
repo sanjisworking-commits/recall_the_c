@@ -544,10 +544,15 @@ def test_fourth_tab_reads_calendar():
         "</nav>", 1
     )[0]
     assert ">Calendar</a>" in tabbar
+    assert ">Profile</a>" in tabbar
+    assert ">Learn</a>" not in tabbar
     assert ">Revisions</a>" not in tabbar
-    # Same route and the same active rule as before the rename.
-    assert "href=\"/calendar\"" in tabbar
+    assert 'href="/calendar"' in tabbar
+    assert 'href="/progress"' in tabbar
     assert "path.startswith('/progress')" in tabbar
+    # Calendar must not also light up on Profile.
+    calendar_line = [line for line in tabbar.splitlines() if 'href="/calendar"' in line][0]
+    assert "/progress" not in calendar_line
 
 
 def test_dominant_kind_priority(tmp_path: Path):

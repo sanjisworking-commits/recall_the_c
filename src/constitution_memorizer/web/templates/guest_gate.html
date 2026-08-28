@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Sign in · {{ app_name|default('Recall the C') }}{% endblock %}
+{% block mobile_screen %}gate{% endblock %}
 {% block content %}
 {% set kind = gate_kind|default('dashboard') %}
 <section class="panel guest-gate">

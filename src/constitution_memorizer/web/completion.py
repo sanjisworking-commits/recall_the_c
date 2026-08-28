@@ -11,7 +11,7 @@ from fastapi import Request
 
 from constitution_memorizer.learning.schemas import LearningUnit
 from constitution_memorizer.progress.repository import StudySession
-from constitution_memorizer.progress.scheduler import ReminderEngine
+from constitution_memorizer.progress.scheduler import INTERVAL_LADDER, ReminderEngine
 from constitution_memorizer.progress.user_ids import LOCAL_USER_ID
 from constitution_memorizer.web.quotes import get_quote_for
 from constitution_memorizer.web.service import maybe_record_daily_goal_met, needs_split_choice
@@ -217,6 +217,31 @@ def build_completion(
     seed = f"{uid}:{done_id}:{progress.last_completed}:{progress.times_completed}"
     quote = get_quote_for(quotes, seed)
     mastered = progress.status == "mastered" or progress.next_revision is None
+    interval = progress.interval_days if progress.interval_days > 0 else INTERVAL_LADDER[0]
+    milestone = None
+    if mastered or interval >= 60:
+        milestone = {
+            "rung": 60,
+            "title": "Mastered through Recall",
+            "body": "This unit has walked the full 1 → 3 → 7 → 15 → 30 → 60 ladder.",
+        }
+    elif interval >= 30:
+        milestone = {
+            "rung": 30,
+            "title": "Almost mastered",
+            "body": "Day 30 — two rungs remain.",
+        }
+    elif interval >= 7:
+        milestone = {
+            "rung": 7,
+            "title": "Halfway there",
+            "body": "Day 7 — the ladder is working.",
+        }
+    is_new_unit = (
+        progress.times_completed == 1
+        and interval <= INTERVAL_LADDER[0]
+        and not mastered
+    )
     return {
         "unit_id": done_id,
         "article_ref": unit.display_title,
@@ -228,6 +253,10 @@ def build_completion(
         "quote": quote,
         "continue_href": continue_href or strip_done_param(""),
         "continue_label": continue_label,
+        "interval_days": interval,
+        "ladder": list(INTERVAL_LADDER),
+        "milestone": milestone,
+        "is_new_unit": is_new_unit,
     }
 
 

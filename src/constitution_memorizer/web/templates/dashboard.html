@@ -53,6 +53,10 @@
       <h1 class="display dash-hello">{{ greeting }}</h1>
       <p class="dash-subtext">{{ subtext }}</p>
     </div>
+    <span class="rc-streak" data-daily-goal-streak="{{ daily_goal_streak|default(0) }}" title="Days the daily goal was completed">
+      <span class="rc-streak-glyph" aria-hidden="true">✦</span>
+      <span class="rc-streak-count">{{ daily_goal_streak|default(0) }}</span>
+    </span>
     <a class="mobile-icon-btn dash-greeting-search" href="/search" aria-label="Search">
       <svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"></circle><path d="M12.6 12.6 17 17"></path></svg>
     </a>
@@ -98,10 +102,21 @@
         </h2>
       </header>
       <div class="dash-card-body">
-        <p class="dash-due-line">
-          <span class="dash-due-count">{{ revision_count }}</span>
-          <span class="dash-due-units">revision{% if revision_count != 1 %}s{% endif %} due</span>
-        </p>
+        <div class="rc-goal" aria-label="Today's goal {{ goal_done|default(0) }} of {{ goal_total|default(revision_count) }}">
+          {% set ring_total = goal_total|default(revision_count) %}
+          {% set ring_done = goal_done|default(0) %}
+          {% set ring_c = 163.36 %}
+          {% set ring_dash = (ring_c * ring_done / ring_total) if ring_total else 0 %}
+          <svg class="rc-goal-ring" width="64" height="64" viewBox="0 0 64 64" aria-hidden="true">
+            <circle cx="32" cy="32" r="26" fill="none" stroke="currentColor" stroke-width="5" class="rc-goal-track"></circle>
+            <circle cx="32" cy="32" r="26" fill="none" stroke="currentColor" stroke-width="5" class="rc-goal-fill"
+              stroke-dasharray="{{ ring_dash }} {{ ring_c }}" stroke-linecap="round" transform="rotate(-90 32 32)"></circle>
+          </svg>
+          <p class="dash-due-line">
+            <span class="dash-due-count">{{ revision_count }}</span>
+            <span class="dash-due-units">revision{% if revision_count != 1 %}s{% endif %} due</span>
+          </p>
+        </div>
         <p class="dash-load">Keep what you've learned strong.</p>
         <p class="dash-load">About {{ revision_minutes }} minute{% if revision_minutes != 1 %}s{% endif %} of review.</p>
         {% if revision_chips %}
@@ -131,7 +146,7 @@
       </div>
     </article>
     {% else %}
-    <article class="dash-card dash-hero dash-due is-empty" data-today-mode="learning">
+    <article class="dash-card dash-hero dash-due is-empty{% if learning_cta|default('browse') in ('learning_complete', 'caught_up') %} is-caughtup{% endif %}" data-today-mode="learning">
       <header class="dash-card-head">
         <h2 class="dash-eyebrow">
           <span class="dash-dot" aria-hidden="true"></span>
@@ -188,7 +203,7 @@
           <div class="dash-progress-fill" style="width: {{ continue_pct }}%"></div>
         </div>
         <p class="actions">
-          <a class="btn dash-btn-full" href="/learn/{{ continue_unit.id }}">Continue learning →</a>
+          <a class="btn dash-btn-full" href="/learn/{{ continue_unit.id }}?mode=read">Continue learning →</a>
         </p>
         {% else %}
         <p class="dash-due-empty-title">Nothing is due today</p>
@@ -201,6 +216,22 @@
         {% endif %}
       </div>
     </article>
+    {% endif %}
+    {% if today_units|default([]) %}
+    <ol class="rc-path" data-today-path>
+      {% for item in today_units %}
+      <li class="rc-path-node is-{{ item.status }}" data-today-unit="{{ item.unit_id }}" data-today-kind="{{ item.kind }}">
+        <span class="rc-path-mark" aria-hidden="true">{% if item.status == 'done' %}✓{% elif item.status == 'current' %}•{% endif %}</span>
+        <span class="rc-path-copy">
+          <span class="rc-path-title">{{ item.title }}</span>
+          <span class="rc-path-meta">{{ item.article_label }} · {{ 'Review' if item.kind == 'review' else 'New' }}{% if item.status == 'deferred' %} · skipped{% endif %}</span>
+        </span>
+        {% if item.status == 'current' %}
+        <a class="rc-path-cta" href="{{ item.href }}">Open →</a>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ol>
     {% endif %}
   </div>
 

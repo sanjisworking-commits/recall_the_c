@@ -42,7 +42,7 @@ def test_recite_panel_has_voice_and_map_markup(client: TestClient):
     assert "Check accuracy" in html
     assert "recall_align.js?v=sprint22" in html
     assert "speech_client.js?v=speech2" in html
-    assert "app.js?v=main45" in html
+    assert "app.js?v=main46" in html
     # Guards against a stale cache-bust shipping with new markup.
     assert "app.js?v=main26" not in html
 
@@ -59,7 +59,7 @@ def test_recite_css_map_and_listening_styles(client: TestClient):
 
 
 def test_recite_js_wires_speech_client_and_align(client: TestClient):
-    js = client.get("/static/app.js?v=main45")
+    js = client.get("/static/app.js?v=main46")
     assert js.status_code == 200
     text = js.text
     assert "SpeechRecognition" not in text
