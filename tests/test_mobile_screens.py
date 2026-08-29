@@ -960,6 +960,26 @@ def test_letters_view_switch_is_centred_and_even(tmp_path: Path):
     assert "min-width: 5.5rem" in btn
 
 
+def test_phone_letters_surface_matches_landing_scaffold(tmp_path: Path):
+    """Landing §03 Letters is Fraunces + 0.24em initials, not mono.
+    Full text must drop the tracking so it reads like Read mode."""
+    client, _, _ = _client(tmp_path)
+    css = client.get("/static/mobile.css").text
+    initials = css.split(
+        'body[data-mscreen="learn"] .learn-letters-text.is-initials {', 1
+    )[1].split("}", 1)[0]
+    assert "var(--font-display)" in initials
+    assert "letter-spacing: 0.24em" in initials
+    assert "font-weight: 600" in initials
+    assert "var(--font-mono)" not in initials
+    full = css.split(
+        'body[data-mscreen="learn"] .learn-letters-text.is-full {', 1
+    )[1].split("}", 1)[0]
+    assert "var(--font-display)" in full
+    assert "letter-spacing: normal" in full
+    assert "font-weight: 400" in full
+
+
 def test_letters_view_switch_labels(tmp_path: Path):
     client, _, _ = _client(tmp_path)
     html = client.get("/learn/clause-1?mode=letters").text

@@ -366,7 +366,7 @@
         const span = document.createElement("span");
         span.className = cueClass(index);
         span.setAttribute("data-index", String(index));
-        span.textContent = (full ? word : initialsFor(word)) + (index < words.length - 1 ? "\u2002" : "");
+        span.textContent = (full ? word : initialsFor(word)) + (index < words.length - 1 ? " " : "");
         display.appendChild(span);
       });
       if (toggle) {

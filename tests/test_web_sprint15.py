@@ -60,9 +60,14 @@ def test_letters_css_drives_panel_and_initials_styles(client: TestClient):
     text = css.text
     assert '.learn[data-mode="letters"] .learn-panel-letters' in text
     assert ".learn-letters-text.is-initials" in text
-    assert "ui-monospace" in text
-    assert "letter-spacing: 0.08em" in text
+    initials = text.split(".learn-letters-text.is-initials {", 1)[1].split("}", 1)[0]
+    assert "var(--font-display)" in initials
+    assert "letter-spacing: 0.24em" in initials
+    assert "font-weight: 600" in initials
     assert ".learn-letters-text.is-full" in text
+    full = text.split(".learn-letters-text.is-full {", 1)[1].split("}", 1)[0]
+    assert "var(--font-display)" in full
+    assert "letter-spacing: normal" in full
     assert ".learn-letters-cue.is-correct" in text
     assert ".learn-letters-cue.is-wrong" in text
     assert ".learn-letters-cue.is-listening" in text
