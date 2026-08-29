@@ -249,7 +249,15 @@ def maybe_activate_auto_plan(engine: ReminderEngine, *, as_of: date) -> None:
         return
     if plan.mode != "auto" or plan.activated_at is not None:
         return
-    engine.activate_learning_plan(as_of)
+    try:
+        engine.activate_learning_plan(as_of)
+    except Exception as error:  # noqa: BLE001 — 0014 has no target_effective_on
+        if not _is_missing_optional_schema(error):
+            raise
+        logger.warning(
+            "user_learning_plan schema is incomplete; skipping Auto activation. "
+            "Run `alembic upgrade head` against this database."
+        )
 
 
 def ensure_auto_roadmap(
@@ -289,12 +297,15 @@ def ensure_auto_roadmap(
             raise
         return
     try:
-        if not force and not auto_roadmap_needs_reconcile(
+        started = perf_counter()
+        stale = force or auto_roadmap_needs_reconcile(
             engine,
             plan,
             as_of=as_of,
             auto_entitled=auto_entitled,
-        ):
+        )
+        record_request_timing("roadmap_freshness", started)
+        if not stale:
             return
         started = perf_counter()
         reconcile_auto_roadmap(

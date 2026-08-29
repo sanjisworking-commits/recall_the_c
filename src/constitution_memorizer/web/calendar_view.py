@@ -174,13 +174,22 @@ def _overlay_capacity_markers(
     from constitution_memorizer.progress.repository import UserLearningPlan
     from constitution_memorizer.web.service import _is_missing_optional_schema
 
+    window_end = roadmap_horizon(today)
+    try:
+        engine.ensure_planner_bundle(
+            as_of=today,
+            auto_start=min(today, month_start),
+            auto_until=max(window_end, month_end),
+        )
+    except Exception as error:  # noqa: BLE001
+        if not _is_missing_optional_schema(error):
+            raise
     try:
         plan = engine.get_learning_plan()
     except Exception as error:  # noqa: BLE001
         if not _is_missing_optional_schema(error):
             raise
         plan = UserLearningPlan()
-    window_end = roadmap_horizon(today)
     persisted: dict[date, list[str]] = {}
     historical: dict[date, list[str]] = {}
     try:
@@ -196,10 +205,11 @@ def _overlay_capacity_markers(
         if not _is_missing_optional_schema(error):
             raise
     today_session_ids: list[str] | None = None
+    today_session = None
     try:
-        session = engine.study_session_for_day(kind="auto_learning", plan_date=today)
-        if session is not None:
-            today_session_ids = [item.learning_unit_id for item in session.items]
+        today_session = engine.study_session_for_day(kind="auto_learning", plan_date=today)
+        if today_session is not None:
+            today_session_ids = [item.learning_unit_id for item in today_session.items]
             persisted[today] = today_session_ids
     except Exception as error:  # noqa: BLE001
         if not _is_missing_optional_schema(error):
@@ -213,6 +223,8 @@ def _overlay_capacity_markers(
             until=month_end,
             remaining_unseen=0,
             auto_entitled=auto_entitled,
+            persisted_days=persisted,
+            today_auto_session=today_session,
         )
     except Exception as error:  # noqa: BLE001
         if not _is_missing_optional_schema(error):

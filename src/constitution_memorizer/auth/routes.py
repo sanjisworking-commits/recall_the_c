@@ -673,6 +673,7 @@ def install_auth_middleware(app) -> None:
             request.state.is_guest = False
             request.state.bound_engine = request.app.state.engine
             request.state.bound_memory = request.app.state.memory
+            request.app.state.engine.clear_planner_request_caches()
             token_e = bound_engine.set(request.app.state.engine)
             token_m = bound_memory.set(request.app.state.memory)
             try:
@@ -721,6 +722,10 @@ def install_auth_middleware(app) -> None:
         else:
             request.state.bound_engine = request.app.state.engine
             request.state.bound_memory = getattr(request.app.state, "memory", None)
+
+        bound = getattr(request.state, "bound_engine", None)
+        if bound is not None:
+            bound.clear_planner_request_caches()
 
         if user is None and requires_auth(path, method):
             # Inline gates for dashboard/progress GET; otherwise sign-in.

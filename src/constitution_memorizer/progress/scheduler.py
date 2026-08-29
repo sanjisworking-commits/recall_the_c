@@ -22,6 +22,8 @@ from constitution_memorizer.progress.repository import (
     BillingOrder,
     CompletionProgress,
     NotificationFrequency,
+    PLANNER_SESSION_KINDS,
+    PlannerReadBundle,
     ProgressRecord,
     ProgressRepository,
     RequestBootstrap,
@@ -48,6 +50,12 @@ def _record_timing(stage: str, started: float) -> None:
     from constitution_memorizer.web.request_context import record_request_timing
 
     record_request_timing(stage, started)
+
+
+def _record_counter(name: str, n: int = 1) -> None:
+    from constitution_memorizer.web.request_context import record_request_counter
+
+    record_request_counter(name, n)
 
 
 def advance_interval(current_interval_days: int) -> int | None:
@@ -116,6 +124,34 @@ class ReminderEngine:
         self._backfill_checked: bool = False
         self._billing_loaded: bool = False
         self._latest_paid_order: BillingOrder | None = None
+        self._learning_plan_cache: UserLearningPlan | None = None
+        self._session_day_cache: dict[tuple[str, date], StudySession | None] = {}
+        self._auto_plan_days: list[AutoPlanDay] | None = None
+        self._auto_plan_start: date | None = None
+        self._auto_plan_until: date | None = None
+        self._auto_plan_horizon: date | None = None
+        self._auto_plan_tail: bool | None = None
+        self._daily_goal_dates: list[date] | None = None
+        self._daily_goal_until: date | None = None
+        self._planner_bundle: PlannerReadBundle | None = None
+
+    def clear_planner_request_caches(self) -> None:
+        """Drop planner snapshot caches. Call at the start of each HTTP request.
+
+        Single-user mode reuses one engine across requests. Without this, a
+        prior upsert/GET would leak ``_learning_plan_cache`` into the next
+        request and skip the schema-gap path on ``get_learning_plan``.
+        """
+        self._learning_plan_cache = None
+        self._session_day_cache.clear()
+        self._auto_plan_days = None
+        self._auto_plan_start = None
+        self._auto_plan_until = None
+        self._auto_plan_horizon = None
+        self._auto_plan_tail = None
+        self._daily_goal_dates = None
+        self._daily_goal_until = None
+        self._planner_bundle = None
 
     def for_user(self, user_id: UUID) -> ReminderEngine:
         """Return a lightweight engine bound to ``user_id`` (shared units + repo)."""
@@ -168,6 +204,169 @@ class ReminderEngine:
             self._billing_loaded = True
             self._latest_paid_order = bundle.account.latest_paid_billing_order
         return bundle
+
+    def ensure_planner_bundle(
+        self,
+        *,
+        as_of: date,
+        auto_start: date | None = None,
+        auto_until: date | None = None,
+    ) -> PlannerReadBundle:
+        """Load planner state once and seed request-local caches.
+
+        Default window is the rolling 15-day Auto horizon. Calendar passes a
+        wider ``auto_start``/``auto_until`` so month overlay and freshness share
+        the same snapshot.
+        """
+        from constitution_memorizer.planner.roadmap import roadmap_horizon
+        from constitution_memorizer.web.service import _is_missing_optional_schema
+
+        horizon = roadmap_horizon(as_of)
+        start = auto_start or as_of
+        until = auto_until or horizon
+        if until < horizon:
+            until = horizon
+        if self._planner_bundle is not None and self._planner_bundle.covering(
+            as_of=as_of, auto_start=start, auto_until=until
+        ):
+            return self._planner_bundle
+
+        started = perf_counter()
+        try:
+            bundle = self.repo.load_planner_read_bundle(
+                self.user_id,
+                as_of=as_of,
+                auto_start=start,
+                auto_until=until,
+                horizon=horizon,
+                daily_goal_until=as_of,
+            )
+        except Exception as error:  # noqa: BLE001 — schema-gap window
+            if not _is_missing_optional_schema(error):
+                raise
+            bundle = self._planner_bundle_piecewise(
+                as_of=as_of,
+                auto_start=start,
+                auto_until=until,
+                horizon=horizon,
+            )
+        round_trips = 1 if bundle.pipelined else 6
+        _record_counter("db_reads", round_trips)
+        _record_counter("learning_plan_reads")
+        _record_counter("study_session_reads")
+        _record_counter("auto_plan_reads")
+        _record_counter("daily_goal_reads")
+        _record_timing("learning_plan_read", started)
+        _record_timing("study_sessions_read", started)
+        _record_timing("auto_plan_read", started)
+        _record_timing("daily_goal_read", started)
+        self._seed_planner_bundle(bundle)
+        return bundle
+
+    def _planner_bundle_piecewise(
+        self,
+        *,
+        as_of: date,
+        auto_start: date,
+        auto_until: date,
+        horizon: date,
+    ) -> PlannerReadBundle:
+        from constitution_memorizer.web.service import _is_missing_optional_schema
+
+        plan = UserLearningPlan()
+        sessions: dict[str, StudySession | None] = {
+            kind: None for kind in PLANNER_SESSION_KINDS
+        }
+        days: list[AutoPlanDay] = []
+        has_tail = False
+        goals: list[date] = []
+        try:
+            plan = self.repo.get_learning_plan(self.user_id)
+        except Exception as error:  # noqa: BLE001
+            if not _is_missing_optional_schema(error):
+                raise
+        try:
+            sessions = self.repo.study_sessions_for_day(self.user_id, as_of)
+        except Exception as error:  # noqa: BLE001
+            if not _is_missing_optional_schema(error):
+                raise
+            for kind in PLANNER_SESSION_KINDS:
+                try:
+                    sessions[kind] = self.repo.study_session_for_day(
+                        self.user_id, kind=kind, plan_date=as_of
+                    )
+                except Exception as inner:  # noqa: BLE001
+                    if not _is_missing_optional_schema(inner):
+                        raise
+        try:
+            days = self.repo.list_auto_plan_window(self.user_id, auto_start, auto_until)
+        except Exception as error:  # noqa: BLE001
+            if not _is_missing_optional_schema(error):
+                raise
+        try:
+            tail = self.repo.list_auto_plan_window(
+                self.user_id,
+                horizon + timedelta(days=1),
+                horizon + timedelta(days=366),
+            )
+            has_tail = bool(tail)
+        except Exception as error:  # noqa: BLE001
+            if not _is_missing_optional_schema(error):
+                raise
+        try:
+            goals = self.repo.list_daily_goal_dates(
+                self.user_id, until=as_of, limit=400
+            )
+        except Exception as error:  # noqa: BLE001
+            if not _is_missing_optional_schema(error):
+                raise
+        return PlannerReadBundle(
+            as_of=as_of,
+            learning_plan=plan,
+            sessions_by_kind=sessions,
+            auto_plan_days=tuple(days),
+            auto_start=auto_start,
+            auto_until=auto_until,
+            horizon=horizon,
+            has_auto_plan_tail=has_tail,
+            daily_goal_dates=tuple(goals),
+            pipelined=False,
+        )
+
+    def _seed_planner_bundle(self, bundle: PlannerReadBundle) -> None:
+        self._planner_bundle = bundle
+        self._learning_plan_cache = bundle.learning_plan
+        for kind in PLANNER_SESSION_KINDS:
+            self._session_day_cache[(kind, bundle.as_of)] = bundle.session(kind)
+        self._auto_plan_days = list(bundle.auto_plan_days)
+        self._auto_plan_start = bundle.auto_start
+        self._auto_plan_until = bundle.auto_until
+        self._auto_plan_horizon = bundle.horizon
+        self._auto_plan_tail = bundle.has_auto_plan_tail
+        self._daily_goal_dates = list(bundle.daily_goal_dates)
+        self._daily_goal_until = bundle.as_of
+
+    def _invalidate_learning_plan_cache(self) -> None:
+        self._learning_plan_cache = None
+        self._planner_bundle = None
+
+    def _invalidate_session_cache(self) -> None:
+        self._session_day_cache.clear()
+        self._planner_bundle = None
+
+    def _invalidate_auto_plan_cache(self) -> None:
+        self._auto_plan_days = None
+        self._auto_plan_start = None
+        self._auto_plan_until = None
+        self._auto_plan_horizon = None
+        self._auto_plan_tail = None
+        if self._planner_bundle is not None:
+            self._planner_bundle = None
+
+    def _invalidate_daily_goal_cache(self) -> None:
+        self._daily_goal_dates = None
+        self._daily_goal_until = None
+        self._planner_bundle = None
 
     def _ensure_split_cache(self) -> dict[str, SplitMode]:
         if self._split_cache is None:
@@ -424,9 +623,19 @@ class ReminderEngine:
         kind: StudySessionKind,
         plan_date: date | None = None,
     ) -> StudySession | None:
-        return self.repo.active_study_session(
+        if plan_date is not None and (kind, plan_date) in self._session_day_cache:
+            session = self._session_day_cache[(kind, plan_date)]
+            if session is None or session.status != "active":
+                return None
+            return session
+        started = perf_counter()
+        _record_counter("study_session_reads")
+        _record_counter("db_reads")
+        session = self.repo.active_study_session(
             self.user_id, kind=kind, plan_date=plan_date
         )
+        _record_timing("study_sessions_read", started)
+        return session
 
     def get_study_session(self, session_id: str) -> StudySession | None:
         if not session_id:
@@ -441,13 +650,15 @@ class ReminderEngine:
         plan_date: date,
         unit_ids: list[str],
     ) -> StudySession:
-        return self.repo.create_study_session(
+        session = self.repo.create_study_session(
             self.user_id,
             session_id=session_id,
             kind=kind,
             plan_date=plan_date,
             unit_ids=unit_ids,
         )
+        self._invalidate_session_cache()
+        return session
 
     def set_study_item_status(
         self,
@@ -459,6 +670,7 @@ class ReminderEngine:
         self.repo.set_study_item_status(
             self.user_id, session_id=session_id, unit_id=unit_id, status=status
         )
+        self._invalidate_session_cache()
 
     def replace_study_session_unit(
         self,
@@ -467,15 +679,18 @@ class ReminderEngine:
         old_unit_id: str,
         new_unit_ids: list[str],
     ) -> StudySession | None:
-        return self.repo.replace_study_session_unit(
+        session = self.repo.replace_study_session_unit(
             self.user_id,
             session_id=session_id,
             old_unit_id=old_unit_id,
             new_unit_ids=new_unit_ids,
         )
+        self._invalidate_session_cache()
+        return session
 
     def complete_study_session(self, session_id: str) -> None:
         self.repo.complete_study_session(self.user_id, session_id)
+        self._invalidate_session_cache()
 
     def study_session_for_day(
         self,
@@ -483,21 +698,59 @@ class ReminderEngine:
         kind: StudySessionKind,
         plan_date: date,
     ) -> StudySession | None:
-        return self.repo.study_session_for_day(
+        key = (kind, plan_date)
+        if key in self._session_day_cache:
+            return self._session_day_cache[key]
+        started = perf_counter()
+        _record_counter("study_session_reads")
+        _record_counter("db_reads")
+        session = self.repo.study_session_for_day(
             self.user_id, kind=kind, plan_date=plan_date
         )
+        _record_timing("study_sessions_read", started)
+        self._session_day_cache[key] = session
+        return session
 
     def record_daily_goal_met(self, goal_date: date) -> None:
         self.repo.record_daily_goal_met(self.user_id, goal_date)
+        self._invalidate_daily_goal_cache()
 
     def is_daily_goal_met(self, goal_date: date) -> bool:
+        if self._daily_goal_dates is not None and self._daily_goal_until is not None:
+            if goal_date <= self._daily_goal_until:
+                return goal_date in self._daily_goal_dates
         return self.repo.is_daily_goal_met(self.user_id, goal_date)
 
     def list_daily_goal_dates(self, *, until: date, limit: int = 400) -> list[date]:
-        return self.repo.list_daily_goal_dates(self.user_id, until=until, limit=limit)
+        if (
+            self._daily_goal_dates is not None
+            and self._daily_goal_until is not None
+            and until <= self._daily_goal_until
+        ):
+            return [day for day in self._daily_goal_dates if day <= until][:limit]
+        started = perf_counter()
+        _record_counter("daily_goal_reads")
+        _record_counter("db_reads")
+        dates = self.repo.list_daily_goal_dates(
+            self.user_id, until=until, limit=limit
+        )
+        _record_timing("daily_goal_read", started)
+        self._daily_goal_dates = list(dates)
+        self._daily_goal_until = until
+        return dates
 
     def get_learning_plan(self) -> UserLearningPlan:
-        return self.repo.get_learning_plan(self.user_id)
+        if self._learning_plan_cache is not None:
+            return self._learning_plan_cache
+        started = perf_counter()
+        _record_counter("learning_plan_reads")
+        _record_counter("db_reads")
+        plan = self.repo.get_learning_plan(self.user_id)
+        _record_timing("learning_plan_read", started)
+        # Seeded by ensure_planner_bundle / writes on this engine only.
+        # Do not cache a raw fetch: tests (and any long-lived engine) may
+        # read after another request wrote through a different for_user().
+        return plan
 
     def upsert_learning_plan(
         self,
@@ -508,7 +761,7 @@ class ReminderEngine:
         last_anchor_theme: str | None = None,
         as_of: date | None = None,
     ) -> UserLearningPlan:
-        return self.repo.upsert_learning_plan(
+        plan = self.repo.upsert_learning_plan(
             self.user_id,
             mode=mode,
             daily_target=daily_target,
@@ -516,34 +769,66 @@ class ReminderEngine:
             last_anchor_theme=last_anchor_theme,
             as_of=as_of,
         )
+        self._learning_plan_cache = plan
+        self._planner_bundle = None
+        return plan
 
     def activate_learning_plan(self, as_of: date) -> UserLearningPlan:
-        return self.repo.activate_learning_plan(self.user_id, as_of)
+        plan = self.repo.activate_learning_plan(self.user_id, as_of)
+        self._learning_plan_cache = plan
+        self._planner_bundle = None
+        return plan
 
     def dismiss_plan_prompt(self, as_of: date) -> UserLearningPlan:
-        return self.repo.dismiss_plan_prompt(self.user_id, as_of)
+        plan = self.repo.dismiss_plan_prompt(self.user_id, as_of)
+        self._learning_plan_cache = plan
+        self._planner_bundle = None
+        return plan
 
     def set_last_anchor_theme(self, theme: str | None) -> None:
         self.repo.set_last_anchor_theme(self.user_id, theme)
+        self._invalidate_learning_plan_cache()
 
     def list_auto_plan_window(self, start: date, until: date) -> list[AutoPlanDay]:
-        return self.repo.list_auto_plan_window(self.user_id, start, until)
+        if (
+            self._auto_plan_days is not None
+            and self._auto_plan_start is not None
+            and self._auto_plan_until is not None
+            and start >= self._auto_plan_start
+            and until <= self._auto_plan_until
+        ):
+            return [
+                day
+                for day in self._auto_plan_days
+                if start <= day.plan_date <= until
+            ]
+        started = perf_counter()
+        _record_counter("auto_plan_reads")
+        _record_counter("db_reads")
+        days = self.repo.list_auto_plan_window(self.user_id, start, until)
+        _record_timing("auto_plan_read", started)
+        return days
 
     def list_auto_plan_day(self, plan_date: date) -> AutoPlanDay | None:
-        return self.repo.list_auto_plan_day(self.user_id, plan_date)
+        days = self.list_auto_plan_window(plan_date, plan_date)
+        return days[0] if days else None
 
     def replace_auto_plan_day(
         self, plan_date: date, daily_target: int, unit_ids: list[str]
     ) -> AutoPlanDay:
-        return self.repo.replace_auto_plan_day(
+        day = self.repo.replace_auto_plan_day(
             self.user_id, plan_date, daily_target, unit_ids
         )
+        self._invalidate_auto_plan_cache()
+        return day
 
     def clear_future_auto_plan(self, as_of: date) -> None:
         self.repo.clear_future_auto_plan(self.user_id, as_of)
+        self._invalidate_auto_plan_cache()
 
     def delete_auto_plan_after(self, horizon: date) -> None:
         self.repo.delete_auto_plan_after(self.user_id, horizon)
+        self._invalidate_auto_plan_cache()
 
     def replace_auto_plan_window_atomic(
         self, as_of: date, horizon: date, days
@@ -551,9 +836,11 @@ class ReminderEngine:
         self.repo.replace_auto_plan_window_atomic(
             self.user_id, as_of, horizon, days
         )
+        self._invalidate_auto_plan_cache()
 
     def apply_auto_plan_reconcile(self, as_of: date, horizon: date, builder) -> None:
         self.repo.apply_auto_plan_reconcile(self.user_id, as_of, horizon, builder)
+        self._invalidate_auto_plan_cache()
 
     def latest_paid_billing_order(self) -> BillingOrder | None:
         if self._billing_loaded:

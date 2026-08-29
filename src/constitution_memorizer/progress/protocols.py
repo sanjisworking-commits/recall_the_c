@@ -17,6 +17,7 @@ from constitution_memorizer.progress.repository import (
     ProgressRecord,
     ProgressStatus,
     RequestBootstrap,
+    PlannerReadBundle,
     SplitMode,
     StudyItemStatus,
     StudySession,
@@ -159,6 +160,10 @@ class ReminderRepositoryProtocol(Protocol):
         kind: StudySessionKind,
         plan_date: date,
     ) -> StudySession | None: ...
+
+    def study_sessions_for_day(
+        self, user_id: UUID | str, plan_date: date
+    ) -> dict[str, StudySession | None]: ...
 
     def record_daily_goal_met(self, user_id: UUID | str, goal_date: date) -> None: ...
 
@@ -326,6 +331,18 @@ class ReminderRepositoryProtocol(Protocol):
         include_modes: bool = False,
         include_account: bool = False,
     ) -> RequestBootstrap: ...
+
+    def load_planner_read_bundle(
+        self,
+        user_id: UUID | str,
+        *,
+        as_of: date,
+        auto_start: date,
+        auto_until: date,
+        horizon: date,
+        daily_goal_until: date,
+        daily_goal_limit: int = 400,
+    ) -> PlannerReadBundle: ...
 
     def load_completion_state(
         self, user_id: UUID | str, unit_id: str

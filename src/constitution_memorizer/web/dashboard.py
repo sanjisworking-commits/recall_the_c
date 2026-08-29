@@ -23,7 +23,6 @@ from constitution_memorizer.web.service import (
     DAY_PLAN_KIND,
     REVISION_KIND,
     _is_missing_optional_schema,
-    active_revision_session,
     continue_unit_id,
     daily_goal_streak,
     due_checklist,
@@ -249,16 +248,23 @@ def build_today_units(
     auto_selected: bool,
     today_new_ids: list[str],
     multiuser: bool = True,
+    sessions: dict[str, StudySession | None] | None = None,
 ) -> list[TodayUnit]:
     """Read-only Today path. Never creates a study_session row."""
-    revision_today = _session_for_day(engine, REVISION_KIND, today)
+    revision_today = (
+        sessions.get(REVISION_KIND) if sessions is not None else _session_for_day(engine, REVISION_KIND, today)
+    )
     if revision_today is not None and revision_today.items:
         return _today_units_from_session(engine, revision_today, multiuser=multiuser)
     if due_units:
         return _today_units_from_preview(
             engine, due_units, kind="review", multiuser=multiuser
         )
-    auto_today = _session_for_day(engine, AUTO_LEARNING_KIND, today)
+    auto_today = (
+        sessions.get(AUTO_LEARNING_KIND)
+        if sessions is not None
+        else _session_for_day(engine, AUTO_LEARNING_KIND, today)
+    )
     if auto_today is not None and auto_today.items:
         return _today_units_from_session(engine, auto_today, multiuser=multiuser)
     if auto_selected and today_new_ids:
@@ -270,7 +276,11 @@ def build_today_units(
         return _today_units_from_preview(
             engine, preview, kind="new", multiuser=multiuser
         )
-    day_today = _session_for_day(engine, DAY_PLAN_KIND, today)
+    day_today = (
+        sessions.get(DAY_PLAN_KIND)
+        if sessions is not None
+        else _session_for_day(engine, DAY_PLAN_KIND, today)
+    )
     if day_today is not None and day_today.items:
         return _today_units_from_session(engine, day_today, multiuser=multiuser)
     return []
@@ -379,6 +389,16 @@ def build_dashboard_context(
 ) -> dict[str, Any]:
     today = as_of or date.today()
     now = now or datetime.now(timezone.utc)
+    try:
+        eng.ensure_planner_bundle(as_of=today)
+    except Exception as error:  # noqa: BLE001 — schema-gap window
+        if not _is_missing_optional_schema(error):
+            raise
+    today_sessions = {
+        REVISION_KIND: _session_for_day(eng, REVISION_KIND, today),
+        AUTO_LEARNING_KIND: _session_for_day(eng, AUTO_LEARNING_KIND, today),
+        DAY_PLAN_KIND: _session_for_day(eng, DAY_PLAN_KIND, today),
+    }
     name = first_name(display_label)
     due_units = due_checklist(eng, as_of=today)
     chips, chips_more = due_article_chips(due_units)
@@ -406,7 +426,12 @@ def build_dashboard_context(
 
     # Today is one thing or the other. Revision outranks learning: new
     # material on top of an unrevised backlog is how the backlog grows.
-    revision_session = active_revision_session(eng, as_of=today)
+    revision_today = today_sessions[REVISION_KIND]
+    revision_session = (
+        revision_today
+        if revision_today is not None and revision_today.status == "active"
+        else None
+    )
     session_remaining = revision_session.remaining if revision_session else 0
     if session_remaining:
         # Mid-session the queue is the snapshot, not the live due list —
@@ -426,7 +451,6 @@ def build_dashboard_context(
     today_mode = "revision" if (due_units or session_remaining) else "learning"
     revision_chips, revision_chips_more = due_article_chips(queue_units)
 
-    revision_today = _session_for_day(eng, REVISION_KIND, today)
     revision_completed_today = revision_today.completed_count if revision_today else 0
 
     plan = _learning_plan_or_default(eng)
@@ -450,21 +474,16 @@ def build_dashboard_context(
     learning_session = None
     if today_mode == "learning":
         for kind in (AUTO_LEARNING_KIND, DAY_PLAN_KIND):
-            try:
-                learning_session = eng.active_study_session(kind=kind, plan_date=today)
-            except Exception as error:  # noqa: BLE001
-                if not _is_missing_optional_schema(error):
-                    raise
-                learning_session = None
-                break
-            if learning_session:
+            candidate = today_sessions.get(kind)
+            if candidate is not None and candidate.status == "active":
+                learning_session = candidate
                 break
     learning_remaining = learning_session.remaining if learning_session else 0
 
     learning_today = learning_session
     if learning_today is None and today_mode == "learning":
         for kind in (AUTO_LEARNING_KIND, DAY_PLAN_KIND):
-            learning_today = _session_for_day(eng, kind, today)
+            learning_today = today_sessions.get(kind)
             if learning_today is not None:
                 break
 
@@ -504,26 +523,29 @@ def build_dashboard_context(
     today_new_count = len(today_new_ids) if auto_selected else 0
     today_pace = pace_label(plan.daily_target if auto_selected else None)
     try:
+        from constitution_memorizer.planner.roadmap import roadmap_horizon
+
         planner = LearningPlanner()
-        next_learning_day = planner.next_learning_day(
+        persisted_days = {
+            day.plan_date: [item.learning_unit_id for item in day.items]
+            for day in eng.list_auto_plan_window(today, roadmap_horizon(today))
+        }
+        projected = planner.project(
             eng,
             plan,
             as_of=today,
+            until=roadmap_horizon(today),
             remaining_unseen=unseen,
             auto_entitled=auto_entitled,
+            persisted_days=persisted_days,
+            today_auto_session=today_sessions.get(AUTO_LEARNING_KIND),
         )
-        today_plan = next(
+        today_plan = next((day for day in projected if day.day == today), None)
+        next_learning_day = next(
             (
-                day
-                for day in planner.project(
-                    eng,
-                    plan,
-                    as_of=today,
-                    until=today,
-                    remaining_unseen=unseen,
-                    auto_entitled=auto_entitled,
-                )
-                if day.day == today
+                day.day
+                for day in projected
+                if day.kind == "new" and day.new_capacity > 0
             ),
             None,
         )
@@ -568,6 +590,7 @@ def build_dashboard_context(
         auto_selected=auto_selected,
         today_new_ids=today_new_ids,
         multiuser=True,
+        sessions=today_sessions,
     )
     goal_done = sum(1 for item in today_units if item.status == "done")
     goal_total = sum(1 for item in today_units if item.status != "deferred")

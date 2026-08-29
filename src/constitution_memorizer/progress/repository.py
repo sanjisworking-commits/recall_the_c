@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import sqlite3
 from dataclasses import dataclass
-from datetime import date, datetime, timezone
+from datetime import date, datetime, timedelta, timezone
 from collections.abc import Callable, Sequence
 from typing import Literal
 from uuid import UUID
@@ -251,6 +251,32 @@ class AutoPlanSnapshot:
 
 
 @dataclass(frozen=True)
+class PlannerReadBundle:
+    """One Dashboard/Calendar planner snapshot: plan, today's sessions, Auto window, streak dates."""
+
+    as_of: date
+    learning_plan: UserLearningPlan
+    sessions_by_kind: dict[str, StudySession | None]
+    auto_plan_days: tuple[AutoPlanDay, ...]
+    auto_start: date
+    auto_until: date
+    horizon: date
+    has_auto_plan_tail: bool
+    daily_goal_dates: tuple[date, ...]
+    pipelined: bool = False
+
+    def session(self, kind: str) -> StudySession | None:
+        return self.sessions_by_kind.get(kind)
+
+    def covering(self, *, as_of: date, auto_start: date, auto_until: date) -> bool:
+        return (
+            self.as_of == as_of
+            and self.auto_start <= auto_start
+            and self.auto_until >= auto_until
+        )
+
+
+@dataclass(frozen=True)
 class BillingOrder:
     """One Razorpay order: created at checkout, paid after verified signature."""
 
@@ -480,6 +506,47 @@ def _sessions_from_joined_rows(rows: list) -> list[StudySession]:
         if session is not None:
             sessions.append(session)
     return sessions
+
+
+PLANNER_SESSION_KINDS: tuple[StudySessionKind, ...] = (
+    "revision",
+    "auto_learning",
+    "day_plan",
+)
+
+
+def _sessions_by_kind_for_day(rows: list) -> dict[str, StudySession | None]:
+    """Map today's revision / auto_learning / day_plan sessions from one JOIN."""
+    out: dict[str, StudySession | None] = {kind: None for kind in PLANNER_SESSION_KINDS}
+    for session in _sessions_from_joined_rows(rows):
+        current = out.get(session.kind)
+        if current is None or (session.created_at, session.id) < (
+            current.created_at,
+            current.id,
+        ):
+            out[session.kind] = session
+    return out
+
+
+def empty_planner_read_bundle(
+    *,
+    as_of: date,
+    auto_start: date,
+    auto_until: date,
+    horizon: date,
+) -> PlannerReadBundle:
+    return PlannerReadBundle(
+        as_of=as_of,
+        learning_plan=UserLearningPlan(),
+        sessions_by_kind={kind: None for kind in PLANNER_SESSION_KINDS},
+        auto_plan_days=(),
+        auto_start=auto_start,
+        auto_until=auto_until,
+        horizon=horizon,
+        has_auto_plan_tail=False,
+        daily_goal_dates=(),
+        pipelined=False,
+    )
 
 
 class ProgressRepository:
@@ -902,6 +969,23 @@ class ProgressRepository:
         return _study_session_from_rows(
             [row for row in rows if row["session_id"] == keeper]
         )
+
+    def study_sessions_for_day(
+        self, user_id: UUID | str, plan_date: date
+    ) -> dict[str, StudySession | None]:
+        """All planner session kinds for one local date, in one JOIN."""
+        rows = self._conn.execute(
+            f"""
+            SELECT {_STUDY_SESSION_COLUMNS}
+            FROM study_session s
+            LEFT JOIN study_session_item i ON i.session_id = s.id
+            WHERE s.user_id = ? AND s.plan_date = ?
+              AND s.kind IN ('revision', 'auto_learning', 'day_plan')
+            ORDER BY s.kind, s.created_at ASC, s.id ASC, i.position ASC
+            """,
+            (as_user_id(user_id), _date_iso(plan_date)),
+        ).fetchall()
+        return _sessions_by_kind_for_day(rows)
 
     def record_daily_goal_met(self, user_id: UUID | str, goal_date: date) -> None:
         """Idempotent: one fact per user per local date."""
@@ -1786,6 +1870,46 @@ class ProgressRepository:
             settings=settings,
             modes_seen_by_unit=modes,
             account=account,
+        )
+
+    def load_planner_read_bundle(
+        self,
+        user_id: UUID | str,
+        *,
+        as_of: date,
+        auto_start: date,
+        auto_until: date,
+        horizon: date,
+        daily_goal_until: date,
+        daily_goal_limit: int = 400,
+    ) -> PlannerReadBundle:
+        """Load planner state for one Dashboard/Calendar request (SQLite, one connection)."""
+        uid = as_user_id(user_id)
+        plan = self.get_learning_plan(user_id)
+        sessions = self.study_sessions_for_day(user_id, as_of)
+        days = self.list_auto_plan_window(user_id, auto_start, auto_until)
+        tail_row = self._conn.execute(
+            """
+            SELECT 1 FROM auto_plan_day
+            WHERE user_id = ? AND plan_date > ?
+            LIMIT 1
+            """,
+            (uid, _date_iso(horizon)),
+        ).fetchone()
+        goals = self.list_daily_goal_dates(
+            user_id, until=daily_goal_until, limit=daily_goal_limit
+        )
+        return PlannerReadBundle(
+            as_of=as_of,
+            learning_plan=plan,
+            sessions_by_kind=sessions,
+            auto_plan_days=tuple(days),
+            auto_start=auto_start,
+            auto_until=auto_until,
+            horizon=horizon,
+            has_auto_plan_tail=tail_row is not None,
+            daily_goal_dates=tuple(goals),
+            pipelined=False,
         )
 
     def load_completion_state(
