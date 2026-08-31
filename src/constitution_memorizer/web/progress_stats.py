@@ -14,6 +14,14 @@ from constitution_memorizer.web.service import continue_unit_id
 
 MasteryState = Literal["new", "learning", "review", "mastered", "due"]
 
+# Parser dump / unclassified buckets. Browse already skips these; the map
+# must too or Profile renders one "Part —" grid of Articles 1–395.
+_JUNK_PART_NUMBERS = {"", "—", "-", "UNKNOWN", "UNCLASSIFIED"}
+
+
+def _is_named_part(part_number: str | None) -> bool:
+    return str(part_number or "").strip().upper() not in _JUNK_PART_NUMBERS
+
 
 @dataclass(frozen=True)
 class ArticleProgress:
@@ -281,6 +289,8 @@ def build_parts_mastery_map(
     rows: list[PartMasteryRow] = []
     if reviewed is not None:
         for part in reviewed.parts:
+            if not _is_named_part(part.part_number):
+                continue
             cells: list[MasteryCell] = []
             numbers: list[str] = []
             for article in _part_articles(part):
@@ -294,6 +304,8 @@ def build_parts_mastery_map(
                         article_title=article.title,
                     )
                 )
+            if not cells:
+                continue
             rows.append(
                 PartMasteryRow(
                     part_number=part.part_number,
@@ -302,7 +314,8 @@ def build_parts_mastery_map(
                     cells=cells,
                 )
             )
-        return rows
+        if rows:
+            return rows
 
     # Fallback: Part rows from browse_parts.seed.json (reviewed JSON may be absent).
     from constitution_memorizer.utils.identifiers import parse_article_number

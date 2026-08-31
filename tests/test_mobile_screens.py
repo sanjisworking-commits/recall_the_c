@@ -1188,6 +1188,9 @@ def test_profile_phone_title_is_your_recall(tmp_path: Path):
     css = client.get("/static/mobile.css").text
     assert 'body[data-mscreen="profile"] .progress > .display' in css
     assert 'body[data-mscreen="profile"] .progress-stat-card:nth-child(4)' in css
+    assert 'body[data-mscreen="profile"] .mastery-row' in css
+    row = css.split('body[data-mscreen="profile"] .mastery-row {', 1)[1].split("}", 1)[0]
+    assert "flex-direction: column" in row
 
 
 def test_today_goal_ring_centers_the_fraction(tmp_path: Path):
