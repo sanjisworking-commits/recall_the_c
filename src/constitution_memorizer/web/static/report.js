@@ -55,6 +55,7 @@
   var state = {
     mode: "report",
     articleNumber: "",
+    section: SECTION,
     selectedText: "",
     turnstileToken: "",
     turnstileWidgetId: null,
@@ -377,6 +378,7 @@
     var context = opts.context || {};
     state.mode = mode;
     state.articleNumber = String(context.articleNumber || "");
+    state.section = String(context.section || SECTION);
     state.selectedText = String(context.selectedText || "");
     state.lastTrigger = opts.trigger || document.activeElement;
 
@@ -405,11 +407,13 @@
       if (chipArticle) {
         chipArticle.textContent = state.articleNumber
           ? "Article " + state.articleNumber
-          : "Article";
+          : state.section && state.section !== SECTION
+            ? state.section
+            : "Article";
       }
       if (chipSection) {
         chipSection.hidden = !state.selectedText;
-        chipSection.textContent = SECTION;
+        chipSection.textContent = state.section || SECTION;
       }
       if (selectedWrap && selected) {
         if (state.selectedText) {
@@ -471,7 +475,7 @@
       issue_type: issueType,
       description: description,
       page_url: window.location.pathname + window.location.search,
-      section: SECTION,
+      section: state.section || SECTION,
     };
     if (state.articleNumber) payload.article_number = state.articleNumber;
     if (selected) payload.selected_text = selected.slice(0, MAX_SELECTED);
@@ -650,6 +654,7 @@
           trigger: btn,
           context: {
             articleNumber: btn.getAttribute("data-article-number") || "",
+            section: btn.getAttribute("data-report-section") || SECTION,
             selectedText: selectionInsideArticle(),
           },
         });

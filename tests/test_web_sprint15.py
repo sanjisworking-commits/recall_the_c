@@ -40,7 +40,7 @@ def test_learn_enables_letters_tab_and_panel_markup(client: TestClient):
     assert "data-letters-check" not in html.split("data-letters-check-text")[0]
     assert "Use the first letters." in html
     assert "speech_client.js?v=speech2" in html
-    assert "app.js?v=main47" in html
+    assert "app.js?v=main48" in html
     assert "speech_align.js" not in html
 
 
@@ -55,7 +55,7 @@ def test_letters_mode_query_param_renders_letters_active(client: TestClient):
 
 
 def test_letters_css_drives_panel_and_initials_styles(client: TestClient):
-    css = client.get("/static/styles.css?v=main45")
+    css = client.get("/static/styles.css?v=main46")
     assert css.status_code == 200
     text = css.text
     assert '.learn[data-mode="letters"] .learn-panel-letters' in text
@@ -77,7 +77,7 @@ def test_letters_css_drives_panel_and_initials_styles(client: TestClient):
 
 
 def test_letters_js_builds_initials_like_prototype(client: TestClient):
-    js = client.get("/static/app.js?v=main47")
+    js = client.get("/static/app.js?v=main48")
     assert js.status_code == 200
     text = js.text
     assert "initialsFor" in text

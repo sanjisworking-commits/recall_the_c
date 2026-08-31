@@ -251,7 +251,7 @@ def test_guest_post_done_redirects_to_login(tmp_path: Path):
     assert "reason=mastered" in loc
 
 
-def test_guest_dashboard_and_progress_gates(tmp_path: Path):
+def test_guest_dashboard_progress_and_settings(tmp_path: Path):
     client = _client(tmp_path)
     dash = client.get("/dashboard")
     assert dash.status_code == 200
@@ -262,6 +262,10 @@ def test_guest_dashboard_and_progress_gates(tmp_path: Path):
     assert "Sign in to save your learning" in prog.text
     assert "Create a personal learning record" in prog.text
     assert "Progress and mastery are private" not in prog.text
+    settings = client.get("/settings", follow_redirects=False)
+    assert settings.status_code == 200
+    assert "Guest · progress on this device" in settings.text
+    assert 'data-mscreen="settings"' in settings.text
 
 
 def test_login_ui_india_phone_and_otp_states(tmp_path: Path):

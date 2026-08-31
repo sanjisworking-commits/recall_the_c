@@ -741,9 +741,11 @@ def install_auth_middleware(app) -> None:
         if user is None and requires_auth(path, method):
             # Inline gates for dashboard/progress GET; otherwise sign-in.
             if method == "GET" and (
-                path.startswith("/dashboard") or path.startswith("/progress")
+                path.startswith("/dashboard")
+                or path.startswith("/progress")
+                or path == "/settings"
             ):
-                pass  # route handlers render guest_gate.html
+                pass  # dashboard/progress: guest_gate.html; settings: the page itself
             elif method == "GET" and (
                 path.startswith("/calendar")
                 or path.startswith("/memory")

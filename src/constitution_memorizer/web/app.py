@@ -3065,6 +3065,20 @@ def create_app(
         _engine().set_theme(theme)  # type: ignore[arg-type]
         return JSONResponse({"theme": theme})
 
+    @app.post("/api/text-size")
+    async def text_size_save(request: Request, size: str = Form(...)) -> JSONResponse:
+        try:
+            parsed = int(size)
+        except ValueError:
+            raise HTTPException(status_code=400, detail="Invalid text size") from None
+        if parsed < 16 or parsed > 24:
+            raise HTTPException(status_code=400, detail="Invalid text size")
+        user = getattr(request.state, "current_user", None)
+        if app.state.multiuser_enabled and user is None:
+            return JSONResponse({"size": parsed})
+        _engine().set_setting("text_size", str(parsed))
+        return JSONResponse({"size": parsed})
+
     @app.post(
         "/api/report-issue",
         response_model=ReportIssueResponse,

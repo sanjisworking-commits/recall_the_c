@@ -6,6 +6,10 @@
   const AUTO_SEEN_MODES = new Set(["read"]);
   const MOTION_KEY = "cm-motion";
   const SOUND_KEY = "cm-completion-sound";
+  const TEXT_SIZE_KEY = "cm-text-size";
+  const TEXT_SIZE_MIN = 16;
+  const TEXT_SIZE_MAX = 24;
+  const TEXT_SIZE_DEFAULT = 19;
   const DONE_SOUND_SRC = "/static/completion-done.mp3";
   const AFFIRMATION_HOLD_MS = 10000;
   let doneAudio = null;
@@ -3054,6 +3058,56 @@
     });
   }
 
+  function clampTextSize(value) {
+    const n = parseInt(value, 10);
+    if (Number.isNaN(n)) {
+      return TEXT_SIZE_DEFAULT;
+    }
+    return Math.min(TEXT_SIZE_MAX, Math.max(TEXT_SIZE_MIN, n));
+  }
+
+  function currentTextSize() {
+    try {
+      return clampTextSize(localStorage.getItem(TEXT_SIZE_KEY) || TEXT_SIZE_DEFAULT);
+    } catch (_e) {
+      return TEXT_SIZE_DEFAULT;
+    }
+  }
+
+  function applyTextSize(px) {
+    const n = clampTextSize(px);
+    document.documentElement.style.setProperty("--bare-size", n + "px");
+    try {
+      localStorage.setItem(TEXT_SIZE_KEY, String(n));
+    } catch (_e) {
+      /* ignore */
+    }
+    document.querySelectorAll("[data-text-size-value]").forEach(function (el) {
+      el.textContent = n + " px";
+    });
+    document.querySelectorAll("[data-text-size-step]").forEach(function (btn) {
+      const step = parseInt(btn.getAttribute("data-text-size-step") || "0", 10);
+      if (step < 0) {
+        btn.disabled = n <= TEXT_SIZE_MIN;
+      } else if (step > 0) {
+        btn.disabled = n >= TEXT_SIZE_MAX;
+      }
+    });
+    return n;
+  }
+
+  function persistTextSize(px) {
+    const body = new URLSearchParams();
+    body.set("size", String(px));
+    fetch("/api/text-size", {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: body.toString(),
+    }).catch(function () {
+      /* guests keep localStorage only */
+    });
+  }
+
   function initExperienceControls() {
     function stored(key, fallback) {
       try {
@@ -3071,26 +3125,49 @@
       }
     }
 
+    function isPhoneSettings() {
+      return Boolean(
+        window.matchMedia && window.matchMedia("(max-width: 560px)").matches
+      );
+    }
+
     const motionPref = stored(MOTION_KEY, "on");
     const soundPref = stored(SOUND_KEY, "on");
+    const reduced = prefersReducedMotion();
+
+    function syncMotionButtons(next) {
+      document.querySelectorAll("[data-motion-set]").forEach(function (btn) {
+        const active = btn.getAttribute("data-motion-set") === next;
+        btn.classList.toggle("is-active", active);
+        btn.setAttribute("aria-pressed", active ? "true" : "false");
+      });
+      document.querySelectorAll("[data-motion-toggle]").forEach(function (toggle) {
+        toggle.setAttribute("aria-checked", next === "on" ? "true" : "false");
+      });
+    }
+
+    function setMotion(next) {
+      if (reduced) {
+        return;
+      }
+      persist(MOTION_KEY, next);
+      syncMotionButtons(next);
+      syncRtcAnim();
+    }
+
     document.querySelectorAll("[data-motion-set]").forEach(function (el) {
-      const on = el.getAttribute("data-motion-set") === motionPref;
-      el.classList.toggle("is-active", on);
-      el.setAttribute("aria-pressed", on ? "true" : "false");
       el.addEventListener("click", function () {
-        if (prefersReducedMotion()) {
-          return;
-        }
-        const next = el.getAttribute("data-motion-set");
-        persist(MOTION_KEY, next);
-        document.querySelectorAll("[data-motion-set]").forEach(function (btn) {
-          const active = btn.getAttribute("data-motion-set") === next;
-          btn.classList.toggle("is-active", active);
-          btn.setAttribute("aria-pressed", active ? "true" : "false");
-        });
-        syncRtcAnim();
+        setMotion(el.getAttribute("data-motion-set"));
       });
     });
+    document.querySelectorAll("[data-motion-toggle]").forEach(function (toggle) {
+      toggle.addEventListener("click", function () {
+        const on = toggle.getAttribute("aria-checked") === "true";
+        setMotion(on ? "off" : "on");
+      });
+    });
+    syncMotionButtons(reduced ? "off" : motionPref);
+
     document.querySelectorAll("[data-sound-set]").forEach(function (el) {
       const on = el.getAttribute("data-sound-set") === soundPref;
       el.classList.toggle("is-active", on);
@@ -3109,32 +3186,88 @@
     /* Daily target only means something under Auto Plan. CSS dims it; this
      takes it out of the tab order too. Without JS the group stays enabled,
      which is harmless — the route ignores daily_target unless mode is auto. */
-  const targetRow = document.querySelector("[data-daily-target-row]");
-  if (targetRow) {
-    const paceInputs = document.querySelectorAll('input[name="mode"]');
-    const targetInputs = targetRow.querySelectorAll('input[name="daily_target"]');
-    const group = targetRow.querySelector(".segmented");
-    const syncTarget = function () {
-      const auto = document.querySelector('input[name="mode"][value="auto"]');
-      const on = Boolean(auto && auto.checked);
-      if (group) group.classList.toggle("is-disabled", !on);
-      targetInputs.forEach(function (input) {
-        input.disabled = !on;
+    const targetRow = document.querySelector("[data-daily-target-row]");
+    if (targetRow) {
+      const paceInputs = document.querySelectorAll('input[name="mode"]');
+      const targetInputs = targetRow.querySelectorAll('input[name="daily_target"]');
+      const group = targetRow.querySelector(".segmented");
+      const syncTarget = function () {
+        const auto = document.querySelector('input[name="mode"][value="auto"]');
+        const on = Boolean(auto && auto.checked);
+        if (group) group.classList.toggle("is-disabled", !on);
+        targetRow.classList.toggle("is-dimmed", !on);
+        targetInputs.forEach(function (input) {
+          input.disabled = !on;
+        });
+      };
+      paceInputs.forEach(function (input) {
+        input.addEventListener("change", syncTarget);
       });
-    };
-    paceInputs.forEach(function (input) {
-      input.addEventListener("change", syncTarget);
-    });
-    syncTarget();
-  }
+      syncTarget();
+    }
 
-  const motionRow = document.querySelector('[data-experience-row="motion"]');
+    const planForm = document.querySelector("[data-plan-autosubmit]");
+    if (planForm) {
+      planForm
+        .querySelectorAll('input[name="mode"], input[name="daily_target"]')
+        .forEach(function (input) {
+          input.addEventListener("change", function () {
+            if (!isPhoneSettings()) {
+              return;
+            }
+            if (typeof planForm.requestSubmit === "function") {
+              planForm.requestSubmit();
+            } else {
+              planForm.submit();
+            }
+          });
+        });
+    }
+
+    document.querySelectorAll("[data-gcal-toggle]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        if (btn.disabled) {
+          return;
+        }
+        const on = btn.getAttribute("aria-checked") === "true";
+        if (on) {
+          const formId = btn.getAttribute("data-gcal-off-form");
+          const form = formId ? document.getElementById(formId) : null;
+          if (form) {
+            if (typeof form.requestSubmit === "function") {
+              form.requestSubmit();
+            } else {
+              form.submit();
+            }
+          }
+        } else {
+          const href = btn.getAttribute("data-gcal-on");
+          if (href) {
+            window.location.href = href;
+          }
+        }
+      });
+    });
+
+    applyTextSize(currentTextSize());
+    document.querySelectorAll("[data-text-size-step]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        const next = applyTextSize(currentTextSize() + parseInt(btn.getAttribute("data-text-size-step") || "0", 10));
+        persistTextSize(next);
+      });
+    });
+
+    const motionRow = document.querySelector('[data-experience-row="motion"]');
     const note = document.querySelector("[data-motion-note]");
-    if (prefersReducedMotion() && motionRow) {
+    if (reduced && motionRow) {
       motionRow.classList.add("is-os-reduced");
       if (note) {
         note.textContent = "Following your system — reduced motion is on.";
       }
+      document.querySelectorAll("[data-motion-toggle]").forEach(function (toggle) {
+        toggle.disabled = true;
+        toggle.setAttribute("aria-checked", "false");
+      });
     }
     syncRtcAnim();
   }

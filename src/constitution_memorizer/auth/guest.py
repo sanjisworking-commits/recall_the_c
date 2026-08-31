@@ -28,6 +28,8 @@ GUEST_PUBLIC_PREFIXES = (
 )
 
 # Personal surfaces — unauthenticated users see a gate or redirect to sign-in.
+# GET /settings is allowed through in auth middleware (the page itself);
+# POST /settings and /settings/* stay gated here.
 AUTH_REQUIRED_PREFIXES = (
     "/dashboard",
     "/progress",
