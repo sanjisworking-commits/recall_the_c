@@ -341,6 +341,158 @@ def _build_mastery_cell(
     )
 
 
+def _roman_by_article(engine: ReminderEngine, seed: list[dict]) -> dict[str, str]:
+    """Article number → Part roman, using unit tags then seed ranges (same as Browse)."""
+    from constitution_memorizer.web.browse import _part_tag_roman, _roman_from_seed
+
+    tagged: dict[str, str] = {}
+    numbers: set[str] = set()
+    for unit in engine.units.values():
+        number = unit.article_number
+        if not number:
+            continue
+        numbers.add(number)
+        if number in tagged:
+            continue
+        for tag in unit.tags:
+            roman = _part_tag_roman(tag)
+            if roman:
+                tagged[number] = roman
+                break
+    assigned: dict[str, str] = {}
+    for number in numbers:
+        roman = tagged.get(number) or _roman_from_seed(number, seed)
+        if roman and _is_named_part(roman):
+            assigned[number] = roman
+    return assigned
+
+
+def _is_unsplit_dump(rows: list[PartMasteryRow], engine: ReminderEngine) -> bool:
+    """True when the map is one parser bucket (live 'PART — / Arts 1–395')."""
+    named = [row for row in rows if _is_named_part(row.part_number)]
+    if not named:
+        return True
+    if len(named) >= 2:
+        return False
+    from constitution_memorizer.web.browse import load_browse_parts_seed
+
+    assigned = _roman_by_article(engine, load_browse_parts_seed())
+    romans = {
+        assigned[cell.article_number]
+        for cell in named[0].cells
+        if cell.article_number in assigned
+    }
+    return len(romans) >= 2
+
+
+def _rows_from_reviewed(
+    engine: ReminderEngine,
+    reviewed: ConstitutionDocument,
+    *,
+    today: date,
+    continue_id: str | None,
+) -> list[PartMasteryRow]:
+    rows: list[PartMasteryRow] = []
+    for part in reviewed.parts:
+        if not _is_named_part(part.part_number):
+            continue
+        cells: list[MasteryCell] = []
+        numbers: list[str] = []
+        for article in _part_articles(part):
+            numbers.append(article.article_number)
+            cells.append(
+                _build_mastery_cell(
+                    engine,
+                    article.article_number,
+                    today=today,
+                    continue_id=continue_id,
+                    article_title=article.title,
+                )
+            )
+        if not cells:
+            continue
+        rows.append(
+            _make_part_row(
+                part_number=part.part_number,
+                part_title=_display_part_title(part.title),
+                article_range=_article_range_label(numbers),
+                cells=cells,
+            )
+        )
+    return rows
+
+
+def _rows_from_units_and_seed(
+    engine: ReminderEngine,
+    *,
+    today: date,
+    continue_id: str | None,
+) -> list[PartMasteryRow]:
+    """One row per Part from learning-unit tags + browse_parts.seed.json ranges."""
+    from constitution_memorizer.utils.identifiers import roman_to_int
+    from constitution_memorizer.web.browse import load_browse_parts_seed
+
+    seed = load_browse_parts_seed()
+    titles = {
+        str(row["roman"]).upper(): _display_part_title(str(row.get("title") or ""))
+        for row in seed
+    }
+    assigned = _roman_by_article(engine, seed)
+    by_part: dict[str, list[str]] = {}
+    for number, roman in assigned.items():
+        by_part.setdefault(roman, []).append(number)
+    for roman in by_part:
+        by_part[roman].sort(key=article_sort_key)
+
+    rows: list[PartMasteryRow] = []
+    seen: set[str] = set()
+    for row in seed:
+        if row.get("repealed"):
+            continue
+        roman = str(row["roman"]).upper()
+        seen.add(roman)
+        numbers = by_part.get(roman, [])
+        if not numbers:
+            continue
+        cells = [
+            _build_mastery_cell(engine, n, today=today, continue_id=continue_id)
+            for n in numbers
+        ]
+        rows.append(
+            _make_part_row(
+                part_number=roman,
+                part_title=titles.get(roman, ""),
+                article_range=_article_range_label(numbers),
+                cells=cells,
+            )
+        )
+    extras = [roman for roman in by_part if roman not in seen]
+    extras.sort(
+        key=lambda roman: (
+            roman_to_int(roman) is None,
+            roman_to_int(roman) or 99,
+            roman,
+        )
+    )
+    for roman in extras:
+        numbers = by_part[roman]
+        if not numbers:
+            continue
+        cells = [
+            _build_mastery_cell(engine, n, today=today, continue_id=continue_id)
+            for n in numbers
+        ]
+        rows.append(
+            _make_part_row(
+                part_number=roman,
+                part_title=titles.get(roman, ""),
+                article_range=_article_range_label(numbers),
+                cells=cells,
+            )
+        )
+    return rows
+
+
 def build_parts_mastery_map(
     engine: ReminderEngine,
     reviewed: ConstitutionDocument | None,
@@ -348,108 +500,19 @@ def build_parts_mastery_map(
     today: date,
     continue_id: str | None,
 ) -> list[PartMasteryRow]:
-    """One mastery-map row per Part (from reviewed JSON when available)."""
-    rows: list[PartMasteryRow] = []
+    """One mastery-map row per Part (desktop and phone share this grouping).
+
+    Reviewed JSON is used only when it is actually split into Parts. A parser
+    dump (one 'Part —' / Arts 1–395 grid) falls through to the same Part tags
+    and seed ranges Browse uses. Never emit a single catch-all row.
+    """
     if reviewed is not None:
-        for part in reviewed.parts:
-            if not _is_named_part(part.part_number):
-                continue
-            cells: list[MasteryCell] = []
-            numbers: list[str] = []
-            for article in _part_articles(part):
-                numbers.append(article.article_number)
-                cells.append(
-                    _build_mastery_cell(
-                        engine,
-                        article.article_number,
-                        today=today,
-                        continue_id=continue_id,
-                        article_title=article.title,
-                    )
-                )
-            if not cells:
-                continue
-            rows.append(
-                _make_part_row(
-                    part_number=part.part_number,
-                    part_title=_display_part_title(part.title),
-                    article_range=_article_range_label(numbers),
-                    cells=cells,
-                )
-            )
-        if rows:
-            return rows
-
-    # Fallback: Part rows from browse_parts.seed.json (reviewed JSON may be absent).
-    from constitution_memorizer.utils.identifiers import parse_article_number
-    from constitution_memorizer.web.browse import (
-        _suffix_in_band,
-        load_browse_parts_seed,
-    )
-
-    seed = load_browse_parts_seed()
-    all_numbers = sorted(
-        {u.article_number for u in engine.units.values() if u.article_number},
-        key=article_sort_key,
-    )
-    if seed:
-        for row in seed:
-            if row.get("repealed"):
-                continue
-            start = row.get("from")
-            end = row.get("to")
-            if start is None or end is None:
-                continue
-            start_i, end_i = int(start), int(end)
-            numbers: list[str] = []
-            for number in all_numbers:
-                parsed = parse_article_number(number)
-                if parsed is None:
-                    continue
-                if not (start_i <= parsed.numeric_component <= end_i):
-                    continue
-                if start_i == end_i == 243 or row.get("suffix_min") is not None or row.get(
-                    "suffix_max"
-                ) is not None:
-                    if not _suffix_in_band(
-                        parsed.suffix, row.get("suffix_min"), row.get("suffix_max")
-                    ):
-                        continue
-                numbers.append(number)
-            if not numbers:
-                continue
-            cells = [
-                _build_mastery_cell(
-                    engine, n, today=today, continue_id=continue_id
-                )
-                for n in numbers
-            ]
-            rows.append(
-                _make_part_row(
-                    part_number=str(row["roman"]).upper(),
-                    part_title=_display_part_title(str(row.get("title") or "")),
-                    article_range=_article_range_label(numbers),
-                    cells=cells,
-                )
-            )
-        if rows:
-            return rows
-
-    # Last resort: single synthetic row from learning-unit article numbers.
-    cells = [
-        _build_mastery_cell(engine, n, today=today, continue_id=continue_id)
-        for n in all_numbers
-    ]
-    if cells:
-        rows.append(
-            _make_part_row(
-                part_number="—",
-                part_title="Learning units",
-                article_range=_article_range_label(all_numbers),
-                cells=cells,
-            )
+        reviewed_rows = _rows_from_reviewed(
+            engine, reviewed, today=today, continue_id=continue_id
         )
-    return rows
+        if reviewed_rows and not _is_unsplit_dump(reviewed_rows, engine):
+            return reviewed_rows
+    return _rows_from_units_and_seed(engine, today=today, continue_id=continue_id)
 
 
 def _part_articles(part: Part) -> list:
