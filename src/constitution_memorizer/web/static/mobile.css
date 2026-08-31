@@ -2606,6 +2606,12 @@
     padding: 0 8px;
   }
 
+  /* After .settings-row { display:flex } so desk-only rows (e.g. Completion
+     sounds) stay hidden on phone. */
+  body[data-mscreen="settings"] .settings-desk-copy {
+    display: none;
+  }
+
   body[data-mscreen="settings"] .settings-row.is-dimmed,
   body[data-mscreen="settings"] [data-daily-target-row].is-dimmed {
     opacity: 0.45;

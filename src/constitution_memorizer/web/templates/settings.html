@@ -10,6 +10,7 @@
   </div>
   <h1 class="display">Settings</h1>
 
+  {% if multiuser_enabled|default(false) %}
   <a class="settings-account-row" href="{% if current_user %}/profile{% else %}/login{% endif %}">
     {% if current_user and current_user.avatar_url %}
     <img class="settings-account-avatar" src="{{ current_user.avatar_url }}" alt="" width="38" height="38">
@@ -26,6 +27,7 @@
     </span>
     <span class="settings-account-chevron" aria-hidden="true">›</span>
   </a>
+  {% endif %}
 
   {% if multiuser_enabled|default(false) %}
   <p class="lede">Appearance, your learning plan, and your revision calendar.</p>
@@ -400,6 +402,7 @@
   </div>
 
   {# ── ACCOUNT ───────────────────────────────────────────────────────── #}
+  {% if multiuser_enabled|default(false) %}
   <div class="settings-group" data-settings-group="account">
     <p class="settings-group-eyebrow">Account</p>
     <div class="settings-card">
@@ -445,6 +448,7 @@
     </form>
     {% endif %}
   </div>
+  {% endif %}
 
   {% if not multiuser_enabled|default(false) %}
   {# Single-user/local install only: these radios drive the macOS LaunchAgent /
