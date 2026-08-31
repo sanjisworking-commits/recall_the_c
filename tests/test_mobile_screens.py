@@ -873,6 +873,48 @@ def test_letters_says_stop_while_the_mic_is_open(tmp_path: Path):
     assert 'speakBtn.closest("[data-mode-nav]") && speakBtn.dataset.lettersAdvance' in letters
 
 
+def test_letters_arms_next_once_eighty_percent_of_speakable_words_match(tmp_path: Path):
+    """Next/Done must appear at 80% match, not only when every word is blue.
+    Arming also has to kill the live rec-clock first, or Stop · 0:12 stays
+    painted over the morph."""
+    client, _, _ = _client(tmp_path)
+    js = client.get("/static/app.js").text
+    letters = js.split("function initLetters", 1)[1].split("function setNavRecording", 1)[0]
+    maybe = letters.split("function maybeComplete()", 1)[1].split("function applyAlignment", 1)[0]
+    assert "LETTERS_ADVANCE_RATIO = 0.8" in letters
+    assert "matched / speakable < LETTERS_ADVANCE_RATIO" in maybe
+    assert "isStructuralToken(words[i])" in maybe
+    assert "correctWordIndexes.has(i)" in maybe
+    # The old path returned on the first unmatched speakable index.
+    assert "if (!idx || !correctWordIndexes.has(idx))" not in maybe
+    assert "stopOpenCapture()" in maybe
+    assert "exitListeningUi()" in maybe
+    arm = maybe.find('speakBtn.dataset.lettersAdvance = "1"')
+    stop = maybe.find("stopOpenCapture()", arm)
+    exit_ui = maybe.find("exitListeningUi()", stop)
+    dispatch = maybe.find('new CustomEvent("learn:letters-advance"', exit_ui)
+    assert arm != -1
+    assert stop > arm
+    assert exit_ui > stop
+    assert dispatch > exit_ui
+    stop_fn = letters.split("function stopOpenCapture()", 1)[1].split("function maybeComplete", 1)[0]
+    assert "session.stop()" in stop_fn
+    assert "session.cancel()" in stop_fn
+    assert "live = null" in stop_fn
+    assert "recording = null" in stop_fn
+    on_end = letters.split("onEnd(code)", 1)[1].split("},", 1)[0]
+    assert "if (completed)" in on_end
+    assert "showFallback(false)" in on_end
+    on_update = letters.split("onUpdate(payload)", 1)[1].split("},", 1)[0]
+    assert "if (!completed)" in on_update
+    assert "markListeningWindow()" in on_update
+    capture = client.get("/static/mobile.js").text
+    handler = capture.split('target.closest("[data-letters-speak]")', 1)[1]
+    handler = handler.split('target.closest("[data-recite-toggle]")', 1)[0]
+    assert "btn.dataset.lettersAdvance" in handler
+    assert "goToMode(target)" in handler
+
+
 def test_just_read_view_restores_next_as_the_cta(tmp_path: Path):
     """Regression: is-solo-cta hid Next while the speak button was hidden too,
     leaving the bar empty and the mode with no way forward."""

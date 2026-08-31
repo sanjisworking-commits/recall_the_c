@@ -98,6 +98,7 @@ def test_letters_js_builds_initials_like_prototype(client: TestClient):
     assert "is-listening" in text
     # Renamed and hoisted: Type skips clause markers using the same rule.
     assert "isStructuralToken" in text
+    assert "LETTERS_ADVANCE_RATIO = 0.8" in text
     assert "is-structural" in text
     assert r"/^[A-Za-z]/" in text or "/^[A-Za-z]/" in text
 
