@@ -14,7 +14,10 @@ from collections.abc import Mapping, Sequence
 from datetime import date, timedelta
 
 from constitution_memorizer.learning.schemas import LearningUnit, LearningUnitType
-from constitution_memorizer.planner.eligibility import article_slot_policy
+from constitution_memorizer.planner.eligibility import (
+    article_slot_policy,
+    sequential_prerequisites_satisfied,
+)
 from constitution_memorizer.planner.models import MixCandidate
 from constitution_memorizer.planner.planner import (
     _actual_review_occupancy,
@@ -83,6 +86,7 @@ def _window_unit_eligible(
     progress: Mapping[str, ProgressRecord],
     splits: Mapping[str, SplitMode],
     *,
+    units: Mapping[str, LearningUnit],
     claimed: set[str],
     remaining_slots: int,
     entitlements_on: bool,
@@ -98,6 +102,10 @@ def _window_unit_eligible(
         article = unit.article_number
         if article and article not in claimed and remaining_slots <= 0:
             return False
+    if not sequential_prerequisites_satisfied(
+        unit, units=units, progress=progress, splits=splits
+    ):
+        return False
     return True
 
 
@@ -210,6 +218,7 @@ def _mix_candidates(
             unit,
             progress,
             splits,
+            units=units,
             claimed=claimed,
             remaining_slots=slots,
             entitlements_on=entitlements_on,
@@ -306,6 +315,7 @@ def compute_auto_window(
                 units.get(unit_id),
                 progress,
                 snapshot.split_preferences,
+                units=units,
                 claimed=claimed_keys,
                 remaining_slots=remaining_slots,
                 entitlements_on=entitlements_on,

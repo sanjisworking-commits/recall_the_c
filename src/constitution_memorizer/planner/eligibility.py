@@ -7,13 +7,92 @@ do not need a FastAPI Request.
 
 from __future__ import annotations
 
-from collections.abc import Callable, Iterable, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from datetime import date
 
 from constitution_memorizer.learning.schemas import LearningUnit, LearningUnitType
 from constitution_memorizer.planner.models import MixCandidate
 from constitution_memorizer.planner.relationships import candidates_from_units
+from constitution_memorizer.progress.repository import ProgressRecord, SplitMode
 from constitution_memorizer.progress.scheduler import ReminderEngine
+
+_PATH_TYPES = {
+    LearningUnitType.ARTICLE,
+    LearningUnitType.CLAUSE,
+    LearningUnitType.SCHEDULE_ENTRY,
+}
+
+
+def genuinely_completed(
+    progress: Mapping[str, ProgressRecord], unit_id: str
+) -> bool:
+    """True when persisted progress proves a real Done, not a planned slot."""
+    row = progress.get(unit_id)
+    if row is None:
+        return False
+    return row.times_completed > 0 or row.status in {"review", "mastered"}
+
+
+def visible_learning_path(
+    article_number: str,
+    units: Mapping[str, LearningUnit],
+    splits: Mapping[str, SplitMode],
+) -> list[str]:
+    """Ordered learnable siblings for one Article under the current split path.
+
+    Clause order is ``revision_order`` (Bare Act walk), not label-string sort.
+    Letter children follow ``child_unit_ids``. A multi-clause Article root is
+    omitted so it cannot become a prerequisite for clause (1).
+    """
+    article_key = (article_number or "").strip().lower()
+    if not article_key:
+        return []
+    members = [
+        unit
+        for unit in units.values()
+        if unit.type in _PATH_TYPES
+        and (unit.article_number or "").strip().lower() == article_key
+    ]
+    if any(unit.type == LearningUnitType.CLAUSE for unit in members):
+        members = [
+            unit for unit in members if unit.type != LearningUnitType.ARTICLE
+        ]
+    members.sort(key=lambda unit: (unit.revision_order, unit.id))
+    path: list[str] = []
+    for unit in members:
+        if unit.allows_letter_split and splits.get(unit.id) == "letters":
+            for child_id in unit.child_unit_ids:
+                if child_id in units:
+                    path.append(child_id)
+        else:
+            path.append(unit.id)
+    return path
+
+
+def sequential_prerequisites_satisfied(
+    unit: LearningUnit,
+    *,
+    units: Mapping[str, LearningUnit],
+    progress: Mapping[str, ProgressRecord],
+    splits: Mapping[str, SplitMode],
+) -> bool:
+    """Automatic NEW scheduling preserves sibling order: a later sibling is
+    unlocked only after every earlier sibling in the active learning path has
+    genuine persisted completion. Planned/pending/deferred siblings do not
+    count.
+    """
+    article = unit.article_number
+    if not article:
+        return True
+    path = visible_learning_path(article, units, splits)
+    if unit.id not in path:
+        return True
+    for pred_id in path:
+        if pred_id == unit.id:
+            return True
+        if not genuinely_completed(progress, pred_id):
+            return False
+    return True
 
 
 def _unit_visible_for_preference(engine: ReminderEngine, unit: LearningUnit) -> bool:
@@ -114,8 +193,11 @@ def eligible_units(
         queued = queued | set(exclude_ids)
     claimed_keys = {str(item) for item in (claimed or set())}
     slots = 0 if remaining_slots is None else max(0, remaining_slots)
+    progress = engine._ensure_progress_cache()
+    splits = engine._ensure_split_cache()
+    catalog = engine.units
     units: list[LearningUnit] = []
-    for unit in engine.units.values():
+    for unit in catalog.values():
         if unit.type == LearningUnitType.PART_OVERVIEW:
             continue
         if unit.id in queued:
@@ -128,6 +210,10 @@ def eligible_units(
             article = unit.article_number
             if article and article not in claimed_keys and slots <= 0:
                 continue
+        if not sequential_prerequisites_satisfied(
+            unit, units=catalog, progress=progress, splits=splits
+        ):
+            continue
         units.append(unit)
     units.sort(key=lambda item: (item.revision_order, item.id))
     return units
