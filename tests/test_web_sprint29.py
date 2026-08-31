@@ -92,6 +92,16 @@ def test_tables_tab_switch(mini_client: TestClient):
     assert "Writs" in html
 
 
+def test_tables_frame_keeps_horizontal_scroll():
+    css = (
+        Path(__file__).resolve().parents[1]
+        / "src/constitution_memorizer/web/static/styles.css"
+    ).read_text()
+    frame = css.split(".tables-frame {", 1)[1].split("}", 1)[0]
+    assert "overflow-x: auto" in frame
+    assert "min-width: 560px" in css.split(".tables-grid {", 1)[1].split("}", 1)[0]
+
+
 def test_home_continue_not_overview(mini_client: TestClient):
     html = mini_client.get("/").text
     assert "part-overview" not in html

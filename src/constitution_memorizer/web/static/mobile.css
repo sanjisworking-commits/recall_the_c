@@ -946,7 +946,9 @@
 
   body[data-mscreen="today"] .rc-path {
     list-style: none;
-    margin: 14px 0 0;
+    /* Hero already has a 22px bottom margin; extra top margin here
+       read as a hole between Today's Recall and the first node. */
+    margin: 0;
     padding: 0;
   }
 
@@ -1003,7 +1005,9 @@
     grid-template-columns: 26px 1fr;
     grid-template-rows: auto auto;
     align-items: start;
-    gap: 12px 14px;
+    /* Row gap would split copy + Start into two cards with page wash
+       showing through (the title block sitting above an empty shell). */
+    gap: 0 14px;
     padding: 4px 0 10px;
     margin: 0;
     background: none;
@@ -3843,7 +3847,10 @@
 
   body[data-mscreen="tables"] .tables-frame {
     border-radius: var(--rc-radius-card);
-    overflow: hidden;
+    /* Portrait is narrower than .tables-grid min-width; pan, don't clip. */
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
   }
 
   body[data-mscreen="welcome"] .welcome-form .btn,

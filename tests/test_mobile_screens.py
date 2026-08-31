@@ -1178,3 +1178,35 @@ def test_today_goal_ring_centers_the_fraction(tmp_path: Path):
     assert "rc-streak-glyph" in dash
     assert "Start revision" in dash
     assert "dash-due-count" in dash
+
+
+def test_today_current_path_node_is_one_card(tmp_path: Path):
+    """Copy + Start must share a card. A 12px row-gap showed page wash
+    between the title block and the button, which read as an empty slot."""
+    client, _, _ = _client(tmp_path)
+    css = client.get("/static/mobile.css").text
+    path = css.split('body[data-mscreen="today"] .rc-path {', 1)[1].split("}", 1)[0]
+    assert "margin: 0" in path
+    assert "margin: 14px 0 0" not in path
+    current = css.split(
+        'body[data-mscreen="today"] .rc-path-node.is-current {', 1
+    )[1].split("}", 1)[0]
+    assert "gap: 0 14px" in current
+    assert "gap: 12px 14px" not in current
+
+
+def test_phone_tables_frame_scrolls_horizontally(tmp_path: Path):
+    """Portrait is narrower than the grid min-width. overflow:hidden clipped
+    the last columns (WHAT IT DOES / LIES AGAINST) with no way to pan."""
+    client, _, _ = _client(tmp_path)
+    css = client.get("/static/mobile.css").text
+    frame = css.split(
+        'body[data-mscreen="tables"] .tables-frame {', 1
+    )[1].split("}", 1)[0]
+    assert "overflow-x: auto" in frame
+    assert "overflow: hidden" not in frame
+    assert "-webkit-overflow-scrolling: touch" in frame
+    html = client.get("/tables?tab=writs").text
+    assert "Habeas corpus" in html
+    assert 'class="tables-frame"' in html
+    assert "What it does" in html
