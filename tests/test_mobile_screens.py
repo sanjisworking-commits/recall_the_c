@@ -146,6 +146,34 @@ def test_browse_part_rows_use_node_status(tmp_path: Path):
     assert "Not started" in html
 
 
+def test_part_page_title_sits_under_all_parts(tmp_path: Path):
+    """The shared topbar is 44px + 4px margin, which read as a hole between
+    All Parts and PART III / the title. The part screen sizes that row to
+    the Marks chip and drops the extra margin."""
+    client, engine, _ = _client(tmp_path)
+    css = client.get("/static/mobile.css").text
+    topbar = css.split(
+        'body[data-mscreen="part"] .mobile-topbar {', 1
+    )
+    # The last (tightening) rule, not the shared padding/background block.
+    tight = topbar[-1].split("}", 1)[0]
+    assert "min-height: 36px" in tight
+    assert "margin: 0" in tight
+    back = css.split(
+        'body[data-mscreen="part"] .mobile-back {', 1
+    )[1].split("}", 1)[0]
+    assert "min-height: 36px" in back
+    head_block = css.split(
+        "body[data-mscreen=\"part\"] .part-head {\n    padding-top: 4px;", 1
+    )
+    assert len(head_block) == 2
+    sections = browse_parts_sections(engine, None)
+    section = next(s for s in sections if s.cards)
+    html = client.get(part_href(section.part_number)).text
+    assert "← All Parts" in html
+    assert "part-head-title" in html
+
+
 def test_article_page_links_back_to_its_part(tmp_path: Path):
     """The phone's back link needs a Part even with no reviewed Bare Act."""
     client, _, _ = _client(tmp_path)
@@ -1197,11 +1225,37 @@ def test_profile_phone_title_is_your_recall(tmp_path: Path):
     client, _, _ = _client(tmp_path)
     html = client.get("/progress").text
     assert "progress-stat-grid" in html
+    assert "rc-profile-stats" in html
     assert "Your Recall" in html
+    assert "in progress" in html
+    assert "day streak" in html
     assert "The revision journey" in html
     css = client.get("/static/mobile.css").text
     assert 'body[data-mscreen="profile"] .progress > .display' in css
-    assert 'body[data-mscreen="profile"] .progress-stat-card:nth-child(4)' in css
+    assert 'body[data-mscreen="profile"] .progress-stat-grid' in css
+    assert 'body[data-mscreen="profile"] .rc-profile-stats' in css
+    assert 'body[data-mscreen="profile"] .mastery-row' in css
+    row = css.split('body[data-mscreen="profile"] .mastery-row {', 1)[1].split("}", 1)[0]
+    assert "flex-direction: row" in row
+    assert "flex-direction: column" not in row
+    assert "column-reverse" in css
+
+
+def test_profile_phone_uses_prototype_stats_and_compact_map(tmp_path: Path):
+    """Phone Profile is mastered / in progress / streak, not the four desktop
+    tiles, and each Part is a compact label + cell row — not a stacked card."""
+    client, _, _ = _client(tmp_path)
+    html = client.get("/progress").text
+    assert "rc-profile-stats" in html
+    assert "mastery-range-arts" in html
+    assert "Constitution progress" in html or "rc-part-progress" in html
+    css = client.get("/static/mobile.css").text
+    assert 'body[data-mscreen="profile"] .tracked-articles' in css
+    hide = css.split(
+        'body[data-mscreen="profile"] .progress-stat-grid,', 1
+    )[1].split("}", 1)[0]
+    assert ".tracked-articles" in hide
+    assert ".mastery-part-name" in hide
 
 
 def test_today_goal_ring_centers_the_fraction(tmp_path: Path):
@@ -1220,3 +1274,35 @@ def test_today_goal_ring_centers_the_fraction(tmp_path: Path):
     assert "rc-streak-glyph" in dash
     assert "Start revision" in dash
     assert "dash-due-count" in dash
+
+
+def test_today_current_path_node_is_one_card(tmp_path: Path):
+    """Copy + Start must share a card. A 12px row-gap showed page wash
+    between the title block and the button, which read as an empty slot."""
+    client, _, _ = _client(tmp_path)
+    css = client.get("/static/mobile.css").text
+    path = css.split('body[data-mscreen="today"] .rc-path {', 1)[1].split("}", 1)[0]
+    assert "margin: 0" in path
+    assert "margin: 14px 0 0" not in path
+    current = css.split(
+        'body[data-mscreen="today"] .rc-path-node.is-current {', 1
+    )[1].split("}", 1)[0]
+    assert "gap: 0 14px" in current
+    assert "gap: 12px 14px" not in current
+
+
+def test_phone_tables_frame_scrolls_horizontally(tmp_path: Path):
+    """Portrait is narrower than the grid min-width. overflow:hidden clipped
+    the last columns (WHAT IT DOES / LIES AGAINST) with no way to pan."""
+    client, _, _ = _client(tmp_path)
+    css = client.get("/static/mobile.css").text
+    frame = css.split(
+        'body[data-mscreen="tables"] .tables-frame {', 1
+    )[1].split("}", 1)[0]
+    assert "overflow-x: auto" in frame
+    assert "overflow: hidden" not in frame
+    assert "-webkit-overflow-scrolling: touch" in frame
+    html = client.get("/tables?tab=writs").text
+    assert "Habeas corpus" in html
+    assert 'class="tables-frame"' in html
+    assert "What it does" in html

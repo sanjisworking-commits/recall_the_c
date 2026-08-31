@@ -946,7 +946,9 @@
 
   body[data-mscreen="today"] .rc-path {
     list-style: none;
-    margin: 14px 0 0;
+    /* Hero already has a 22px bottom margin; extra top margin here
+       read as a hole between Today's Recall and the first node. */
+    margin: 0;
     padding: 0;
   }
 
@@ -1003,7 +1005,9 @@
     grid-template-columns: 26px 1fr;
     grid-template-rows: auto auto;
     align-items: start;
-    gap: 12px 14px;
+    /* Row gap would split copy + Start into two cards with page wash
+       showing through (the title block sitting above an empty shell). */
+    gap: 0 14px;
     padding: 4px 0 10px;
     margin: 0;
     background: none;
@@ -1348,6 +1352,7 @@
 
   /* ══ 03 / 16 / 18 · Part — Articles ════════════════════════════════════ */
   body[data-mscreen="part"] .panel {
+    padding-top: 2px;
     padding-left: 0;
     padding-right: 0;
   }
@@ -1362,6 +1367,22 @@
   body[data-mscreen="part"] .mobile-topbar,
   body[data-mscreen="part"] .part-head {
     background: var(--page);
+  }
+
+  /* Default topbar is 44px + 4px margin, which left a hole under All Parts
+     before PART III / the title. Size the row to the Marks chip. */
+  body[data-mscreen="part"] .mobile-topbar {
+    min-height: 36px;
+    margin: 0;
+  }
+
+  body[data-mscreen="part"] .mobile-back {
+    min-height: 36px;
+  }
+
+  body[data-mscreen="part"] .part-head {
+    padding-top: 4px;
+    margin-top: 0;
   }
 
   .part-head {
@@ -3642,18 +3663,24 @@
     display: none;
   }
 
-  body[data-mscreen="profile"] .progress-stat-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+  body[data-mscreen="profile"] .progress-stat-grid,
+  body[data-mscreen="profile"] .mastery-part-word,
+  body[data-mscreen="profile"] .mastery-part-name,
+  body[data-mscreen="profile"] .mastery-range-articles,
+  body[data-mscreen="profile"] .mastery-tracked-heading,
+  body[data-mscreen="profile"] .tracked-articles,
+  body[data-mscreen="profile"] .eyebrow-desktop {
+    display: none;
+  }
+
+  body[data-mscreen="profile"] .rc-profile-stats {
+    display: flex;
     gap: 9px;
     margin: 4px 0 0;
   }
 
-  body[data-mscreen="profile"] .progress-stat-card:nth-child(4) {
-    display: none;
-  }
-
-  body[data-mscreen="profile"] .progress-stat-card {
+  body[data-mscreen="profile"] .rc-profile-stat {
+    flex: 1;
     padding: 14px 12px;
     background: var(--rc-paper);
     border: 1px solid var(--rc-hairline);
@@ -3661,14 +3688,24 @@
     text-align: center;
   }
 
-  body[data-mscreen="profile"] .progress-stat-value {
+  body[data-mscreen="profile"] .rc-profile-stat-value {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
     font-family: var(--font-display);
     font-size: 26px;
     font-weight: 500;
+    line-height: 1.1;
   }
 
-  body[data-mscreen="profile"] .progress-stat-label {
-    margin-top: 2px;
+  body[data-mscreen="profile"] .rc-profile-stat-value .rc-streak-glyph {
+    color: var(--rc-teal);
+  }
+
+  body[data-mscreen="profile"] .rc-profile-stat-label {
+    margin: 2px 0 0;
     font-size: 11px;
     color: var(--muted);
   }
@@ -3685,6 +3722,7 @@
 
   body[data-mscreen="profile"] .progress-map-card,
   body[data-mscreen="profile"] .rc-mastered-card,
+  body[data-mscreen="profile"] .rc-part-progress,
   body[data-mscreen="profile"] .tracked-articles,
   body[data-mscreen="profile"] .rc-ladder-explainer {
     margin: 0;
@@ -3692,6 +3730,11 @@
     background: var(--rc-paper);
     border: 1px solid var(--rc-hairline);
     border-radius: var(--rc-radius-card);
+  }
+
+  body[data-mscreen="profile"] .progress-map-card {
+    display: flex;
+    flex-direction: column-reverse;
   }
 
   body[data-mscreen="profile"] .tracked-articles {
@@ -3702,6 +3745,89 @@
     margin: 8px 0 0;
     padding-top: 10px;
     border-top: 1px solid var(--page);
+    gap: 12px;
+  }
+
+  body[data-mscreen="profile"] .mastery-row {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 7px 0;
+    border-bottom: 0;
+  }
+
+  body[data-mscreen="profile"] .mastery-row:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  body[data-mscreen="profile"] .mastery-part {
+    flex: 0 0 74px;
+    width: 74px;
+  }
+
+  body[data-mscreen="profile"] .mastery-part-num {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--mid);
+  }
+
+  body[data-mscreen="profile"] .mastery-part-range {
+    font-size: 10.5px;
+    color: var(--faint);
+    margin-top: 0;
+  }
+
+  body[data-mscreen="profile"] .mastery-cells {
+    flex: 1;
+    gap: 4px;
+  }
+
+  body[data-mscreen="profile"] .rc-part-progress {
+    padding: 4px 16px;
+  }
+
+  body[data-mscreen="profile"] .rc-part-progress-row {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--page);
+  }
+
+  body[data-mscreen="profile"] .rc-part-progress-row:last-child {
+    border-bottom: 0;
+  }
+
+  body[data-mscreen="profile"] .rc-part-progress-meta {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  body[data-mscreen="profile"] .rc-part-progress-title {
+    font-size: 13.5px;
+    font-weight: 500;
+  }
+
+  body[data-mscreen="profile"] .rc-part-progress-frac {
+    margin-left: auto;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--rc-teal);
+  }
+
+  body[data-mscreen="profile"] .rc-part-progress-row .tracked-progress-track {
+    display: block;
+    margin-top: 8px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--page);
+  }
+
+  body[data-mscreen="profile"] .rc-part-progress-row .tracked-progress-bar {
+    height: 4px;
+    border-radius: 2px;
+    background: var(--rc-teal);
   }
 
   .rc-mastered-row {
@@ -3843,7 +3969,10 @@
 
   body[data-mscreen="tables"] .tables-frame {
     border-radius: var(--rc-radius-card);
-    overflow: hidden;
+    /* Portrait is narrower than .tables-grid min-width; pan, don't clip. */
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
   }
 
   body[data-mscreen="welcome"] .welcome-form .btn,
@@ -3866,7 +3995,7 @@
   body[data-mscreen="browse"] .guest-strip,
   body[data-mscreen="browse"] .browse-access-summary,
   body[data-mscreen="part"] .part-row,
-  body[data-mscreen="profile"] .progress-stat-card,
+  body[data-mscreen="profile"] .rc-profile-stat,
   body[data-mscreen="account"] .profile-card,
   body[data-mscreen="settings"] .settings-card {
     border-radius: var(--rc-radius-card);
@@ -3943,6 +4072,10 @@
   .cal-m-today-continue,
   .rc-mastered-heading,
   .rc-mastered-card,
+  .rc-profile-stats,
+  .rc-part-progress-heading,
+  .rc-part-progress,
+  .mastery-range-arts,
   .rc-ladder-heading,
   .rc-ladder-explainer,
   .rtc-affirmation-check,
