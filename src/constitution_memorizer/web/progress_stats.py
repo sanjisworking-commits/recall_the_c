@@ -10,9 +10,17 @@ from constitution_memorizer.learning.schemas import LearningUnit, LearningUnitTy
 from constitution_memorizer.progress.scheduler import ReminderEngine
 from constitution_memorizer.schemas import ConstitutionDocument, Part
 from constitution_memorizer.utils.identifiers import article_sort_key
-from constitution_memorizer.web.service import continue_unit_id
+from constitution_memorizer.web.service import continue_unit_id, daily_goal_streak
 
 MasteryState = Literal["new", "learning", "review", "mastered", "due"]
+
+# Parser dump / unclassified buckets. Browse already skips these; the map
+# must too or Profile renders one "Part —" grid of Articles 1–395.
+_JUNK_PART_NUMBERS = {"", "—", "-", "UNKNOWN", "UNCLASSIFIED"}
+
+
+def _is_named_part(part_number: str | None) -> bool:
+    return str(part_number or "").strip().upper() not in _JUNK_PART_NUMBERS
 
 
 @dataclass(frozen=True)
@@ -45,6 +53,15 @@ class PartMasteryRow:
     part_title: str
     article_range: str
     cells: list[MasteryCell] = field(default_factory=list)
+
+
+@dataclass(frozen=True)
+class PartProgressRow:
+    part_number: str
+    part_title: str
+    done: int
+    total: int
+    percent: int
 
 
 @dataclass(frozen=True)
@@ -281,6 +298,8 @@ def build_parts_mastery_map(
     rows: list[PartMasteryRow] = []
     if reviewed is not None:
         for part in reviewed.parts:
+            if not _is_named_part(part.part_number):
+                continue
             cells: list[MasteryCell] = []
             numbers: list[str] = []
             for article in _part_articles(part):
@@ -294,6 +313,8 @@ def build_parts_mastery_map(
                         article_title=article.title,
                     )
                 )
+            if not cells:
+                continue
             rows.append(
                 PartMasteryRow(
                     part_number=part.part_number,
@@ -302,7 +323,8 @@ def build_parts_mastery_map(
                     cells=cells,
                 )
             )
-        return rows
+        if rows:
+            return rows
 
     # Fallback: Part rows from browse_parts.seed.json (reviewed JSON may be absent).
     from constitution_memorizer.utils.identifiers import parse_article_number
@@ -468,6 +490,29 @@ def progress_dashboard(
         for cell in row.cells
         if cell.tracked and cell.state == "mastered"
     )
+    in_progress_articles = sum(
+        1
+        for row in parts_map
+        for cell in row.cells
+        if cell.tracked and cell.state in {"learning", "review", "due"}
+    )
+    part_progress: list[PartProgressRow] = []
+    for row in parts_map:
+        total = len(row.cells)
+        if not total:
+            continue
+        done = sum(1 for cell in row.cells if cell.state != "new")
+        if done <= 0:
+            continue
+        part_progress.append(
+            PartProgressRow(
+                part_number=row.part_number,
+                part_title=row.part_title,
+                done=done,
+                total=total,
+                percent=round(100 * done / total),
+            )
+        )
 
     stat_cards = [
         ProgressStatCard(value=str(tracked_units), label="Tracked units"),
@@ -490,13 +535,17 @@ def progress_dashboard(
         "avg_article_percent": avg,
         "lede": lede,
         "stat_cards": stat_cards,
+        "mastered_count": mastered_articles,
+        "in_progress_count": in_progress_articles,
+        "daily_goal_streak": daily_goal_streak(engine, as_of=today),
         "parts_map": parts_map,
+        "part_progress": part_progress,
         "tracked_rows": tracked_rows,
         "continue_id": continue_id,
         "recently_mastered": [
             {
                 "article_number": cell.article_number,
-                "title": cell.title,
+                "title": f"Article {cell.article_number}",
                 "href": cell.href,
             }
             for row in parts_map

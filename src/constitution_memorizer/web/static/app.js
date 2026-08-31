@@ -403,30 +403,62 @@
       }
     }
 
+    const LETTERS_ADVANCE_RATIO = 0.8;
+
+    function stopOpenCapture() {
+      if (live) {
+        const session = live;
+        live = null;
+        try {
+          session.stop();
+        } catch (_err) {
+          try {
+            session.cancel();
+          } catch (_inner) {
+            /* ignore */
+          }
+        }
+      }
+      if (recording) {
+        const session = recording;
+        recording = null;
+        try {
+          session.cancel();
+        } catch (_err) {
+          /* ignore */
+        }
+      }
+    }
+
     function maybeComplete() {
       if (completed || !words.length) {
         return;
       }
       let speakable = 0;
+      let matched = 0;
       for (let i = 0; i < words.length; i += 1) {
         if (isStructuralToken(words[i])) {
           continue;
         }
         speakable += 1;
-        if (!correctWordIndexes.has(i)) {
-          return;
+        if (correctWordIndexes.has(i)) {
+          matched += 1;
         }
       }
-      if (!speakable) {
+      if (!speakable || matched / speakable < LETTERS_ADVANCE_RATIO) {
         return;
       }
       completed = true;
       if (speakBtn) {
-        // mobile.js reads this to paint "Next →"/"Done" and to own the tap,
-        // so the bar never shows a speak button beside a Next button.
+        // Set this before tearing down the mic so exitListeningUi / onEnd
+        // do not paint "▸ Speak" over the advance slot.
         speakBtn.dataset.lettersAdvance = "1";
         speakBtn.disabled = false;
       }
+      // Stop live/legacy capture so startRecClock cannot keep writing
+      // "Stop · 0:12" over Next/Done.
+      stopOpenCapture();
+      exitListeningUi();
       if (onComplete) {
         onComplete();
       }
@@ -569,7 +601,9 @@
             onUpdate(payload) {
               clearListening();
               applyAlignment(payload.alignment || []);
-              markListeningWindow();
+              if (!completed) {
+                markListeningWindow();
+              }
               renderCues();
             },
             onEnd(code) {
@@ -577,6 +611,10 @@
               clearListening();
               exitListeningUi();
               renderCues();
+              if (completed) {
+                showFallback(false);
+                return;
+              }
               if (code && code !== "cancelled") {
                 showStatus(
                   "Live listening ended — press Start to continue, or use the fallback.",

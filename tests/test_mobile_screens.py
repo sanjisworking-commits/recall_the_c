@@ -146,6 +146,34 @@ def test_browse_part_rows_use_node_status(tmp_path: Path):
     assert "Not started" in html
 
 
+def test_part_page_title_sits_under_all_parts(tmp_path: Path):
+    """The shared topbar is 44px + 4px margin, which read as a hole between
+    All Parts and PART III / the title. The part screen sizes that row to
+    the Marks chip and drops the extra margin."""
+    client, engine, _ = _client(tmp_path)
+    css = client.get("/static/mobile.css").text
+    topbar = css.split(
+        'body[data-mscreen="part"] .mobile-topbar {', 1
+    )
+    # The last (tightening) rule, not the shared padding/background block.
+    tight = topbar[-1].split("}", 1)[0]
+    assert "min-height: 36px" in tight
+    assert "margin: 0" in tight
+    back = css.split(
+        'body[data-mscreen="part"] .mobile-back {', 1
+    )[1].split("}", 1)[0]
+    assert "min-height: 36px" in back
+    head_block = css.split(
+        "body[data-mscreen=\"part\"] .part-head {\n    padding-top: 4px;", 1
+    )
+    assert len(head_block) == 2
+    sections = browse_parts_sections(engine, None)
+    section = next(s for s in sections if s.cards)
+    html = client.get(part_href(section.part_number)).text
+    assert "← All Parts" in html
+    assert "part-head-title" in html
+
+
 def test_article_page_links_back_to_its_part(tmp_path: Path):
     """The phone's back link needs a Part even with no reviewed Bare Act."""
     client, _, _ = _client(tmp_path)
@@ -873,6 +901,48 @@ def test_letters_says_stop_while_the_mic_is_open(tmp_path: Path):
     assert 'speakBtn.closest("[data-mode-nav]") && speakBtn.dataset.lettersAdvance' in letters
 
 
+def test_letters_arms_next_once_eighty_percent_of_speakable_words_match(tmp_path: Path):
+    """Next/Done must appear at 80% match, not only when every word is blue.
+    Arming also has to kill the live rec-clock first, or Stop · 0:12 stays
+    painted over the morph."""
+    client, _, _ = _client(tmp_path)
+    js = client.get("/static/app.js").text
+    letters = js.split("function initLetters", 1)[1].split("function setNavRecording", 1)[0]
+    maybe = letters.split("function maybeComplete()", 1)[1].split("function applyAlignment", 1)[0]
+    assert "LETTERS_ADVANCE_RATIO = 0.8" in letters
+    assert "matched / speakable < LETTERS_ADVANCE_RATIO" in maybe
+    assert "isStructuralToken(words[i])" in maybe
+    assert "correctWordIndexes.has(i)" in maybe
+    # The old path returned on the first unmatched speakable index.
+    assert "if (!idx || !correctWordIndexes.has(idx))" not in maybe
+    assert "stopOpenCapture()" in maybe
+    assert "exitListeningUi()" in maybe
+    arm = maybe.find('speakBtn.dataset.lettersAdvance = "1"')
+    stop = maybe.find("stopOpenCapture()", arm)
+    exit_ui = maybe.find("exitListeningUi()", stop)
+    dispatch = maybe.find('new CustomEvent("learn:letters-advance"', exit_ui)
+    assert arm != -1
+    assert stop > arm
+    assert exit_ui > stop
+    assert dispatch > exit_ui
+    stop_fn = letters.split("function stopOpenCapture()", 1)[1].split("function maybeComplete", 1)[0]
+    assert "session.stop()" in stop_fn
+    assert "session.cancel()" in stop_fn
+    assert "live = null" in stop_fn
+    assert "recording = null" in stop_fn
+    on_end = letters.split("onEnd(code)", 1)[1].split("},", 1)[0]
+    assert "if (completed)" in on_end
+    assert "showFallback(false)" in on_end
+    on_update = letters.split("onUpdate(payload)", 1)[1].split("},", 1)[0]
+    assert "if (!completed)" in on_update
+    assert "markListeningWindow()" in on_update
+    capture = client.get("/static/mobile.js").text
+    handler = capture.split('target.closest("[data-letters-speak]")', 1)[1]
+    handler = handler.split('target.closest("[data-recite-toggle]")', 1)[0]
+    assert "btn.dataset.lettersAdvance" in handler
+    assert "goToMode(target)" in handler
+
+
 def test_just_read_view_restores_next_as_the_cta(tmp_path: Path):
     """Regression: is-solo-cta hid Next while the speak button was hidden too,
     leaving the bar empty and the mode with no way forward."""
@@ -1155,11 +1225,37 @@ def test_profile_phone_title_is_your_recall(tmp_path: Path):
     client, _, _ = _client(tmp_path)
     html = client.get("/progress").text
     assert "progress-stat-grid" in html
+    assert "rc-profile-stats" in html
     assert "Your Recall" in html
+    assert "in progress" in html
+    assert "day streak" in html
     assert "The revision journey" in html
     css = client.get("/static/mobile.css").text
     assert 'body[data-mscreen="profile"] .progress > .display' in css
-    assert 'body[data-mscreen="profile"] .progress-stat-card:nth-child(4)' in css
+    assert 'body[data-mscreen="profile"] .progress-stat-grid' in css
+    assert 'body[data-mscreen="profile"] .rc-profile-stats' in css
+    assert 'body[data-mscreen="profile"] .mastery-row' in css
+    row = css.split('body[data-mscreen="profile"] .mastery-row {', 1)[1].split("}", 1)[0]
+    assert "flex-direction: row" in row
+    assert "flex-direction: column" not in row
+    assert "column-reverse" in css
+
+
+def test_profile_phone_uses_prototype_stats_and_compact_map(tmp_path: Path):
+    """Phone Profile is mastered / in progress / streak, not the four desktop
+    tiles, and each Part is a compact label + cell row — not a stacked card."""
+    client, _, _ = _client(tmp_path)
+    html = client.get("/progress").text
+    assert "rc-profile-stats" in html
+    assert "mastery-range-arts" in html
+    assert "Constitution progress" in html or "rc-part-progress" in html
+    css = client.get("/static/mobile.css").text
+    assert 'body[data-mscreen="profile"] .tracked-articles' in css
+    hide = css.split(
+        'body[data-mscreen="profile"] .progress-stat-grid,', 1
+    )[1].split("}", 1)[0]
+    assert ".tracked-articles" in hide
+    assert ".mastery-part-name" in hide
 
 
 def test_today_goal_ring_centers_the_fraction(tmp_path: Path):
@@ -1178,3 +1274,35 @@ def test_today_goal_ring_centers_the_fraction(tmp_path: Path):
     assert "rc-streak-glyph" in dash
     assert "Start revision" in dash
     assert "dash-due-count" in dash
+
+
+def test_today_current_path_node_is_one_card(tmp_path: Path):
+    """Copy + Start must share a card. A 12px row-gap showed page wash
+    between the title block and the button, which read as an empty slot."""
+    client, _, _ = _client(tmp_path)
+    css = client.get("/static/mobile.css").text
+    path = css.split('body[data-mscreen="today"] .rc-path {', 1)[1].split("}", 1)[0]
+    assert "margin: 0" in path
+    assert "margin: 14px 0 0" not in path
+    current = css.split(
+        'body[data-mscreen="today"] .rc-path-node.is-current {', 1
+    )[1].split("}", 1)[0]
+    assert "gap: 0 14px" in current
+    assert "gap: 12px 14px" not in current
+
+
+def test_phone_tables_frame_scrolls_horizontally(tmp_path: Path):
+    """Portrait is narrower than the grid min-width. overflow:hidden clipped
+    the last columns (WHAT IT DOES / LIES AGAINST) with no way to pan."""
+    client, _, _ = _client(tmp_path)
+    css = client.get("/static/mobile.css").text
+    frame = css.split(
+        'body[data-mscreen="tables"] .tables-frame {', 1
+    )[1].split("}", 1)[0]
+    assert "overflow-x: auto" in frame
+    assert "overflow: hidden" not in frame
+    assert "-webkit-overflow-scrolling: touch" in frame
+    html = client.get("/tables?tab=writs").text
+    assert "Habeas corpus" in html
+    assert 'class="tables-frame"' in html
+    assert "What it does" in html

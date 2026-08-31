@@ -498,7 +498,7 @@
       syncNextButton(currentMode());
     });
 
-    // maybeComplete fires this once the clause is fully recalled, so the
+    // maybeComplete fires this once 80% of speakable words match, so the
     // button repaints as the advance without waiting for another sync.
     learn.addEventListener("learn:letters-advance", function () {
       syncNextButton(currentMode());

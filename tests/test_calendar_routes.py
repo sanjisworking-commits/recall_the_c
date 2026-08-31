@@ -315,7 +315,8 @@ def test_reconnect_after_disconnect_records_two_writes(
     assert "calendar_connection_write_n=2" in line
 
 
-def test_active_reconsent_preserves_event_mappings(tmp_path: Path) -> None:
+def test_active_reconsent_preserves_event_mappings(tmp_path: Path, monkeypatch) -> None:
+    _stub_schedule_sync(monkeypatch)
     client, store, fake, _repo = _client(tmp_path)
     fake.calendar_exists = False
     _connect(client, fake)

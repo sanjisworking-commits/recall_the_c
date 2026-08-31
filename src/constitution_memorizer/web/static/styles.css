@@ -3593,6 +3593,7 @@ code {
   border: 1px solid var(--ink);
   margin-bottom: 22px;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .tables-grid {

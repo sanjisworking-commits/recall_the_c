@@ -622,11 +622,22 @@ def _establish_session(
         )
     # Durable identity directory: email/phone/last_sign_in_at refresh on every
     # successful sign-in so admin search outlives the 14-day session window.
-    request.app.state.engine.repo.record_identity(
-        auth_session.user.id,
-        email=auth_session.user.email,
-        phone=auth_session.user.phone,
-    )
+    # Best-effort by design: identity capture is an enhancement, and a failure
+    # here (e.g. the 0006 migration not yet applied to the hosted database)
+    # must degrade admin search freshness, never authentication.
+    try:
+        request.app.state.engine.repo.record_identity(
+            auth_session.user.id,
+            email=auth_session.user.email,
+            phone=auth_session.user.phone,
+        )
+    except Exception:
+        logger.warning(
+            "identity capture failed for user %s; sign-in continues "
+            "(is alembic migration 20260818_0006 applied?)",
+            auth_session.user.id,
+            exc_info=True,
+        )
 
     dest = next_url or request.cookies.get("rtc_auth_next") or "/dashboard"
     dest = _safe_next(dest)

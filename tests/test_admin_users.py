@@ -375,3 +375,39 @@ def test_access_page_scheduled_filter(tmp_path: Path) -> None:
 
     active = client.get("/admin/access", params={"state": "active"})
     assert "ACTIVE" in active.text and "SCHEDULED" not in active.text
+
+
+def test_sign_in_survives_identity_capture_failure(tmp_path: Path) -> None:
+    # Deploy-ordering hazard: new code against a database that has not run
+    # migration 0006 yet. Identity capture must degrade, never break auth.
+    conn = open_progress_db(tmp_path / "progress.db")
+
+    class _Missing0006Repo(ProgressRepository):
+        def record_identity(self, user_id, *, email, phone):
+            raise RuntimeError(
+                'column "email" of relation "user_profile" does not exist'
+            )
+
+    repo = _Missing0006Repo(conn)
+    provider = FakeAuthProvider()
+    provider.seed_google_user(
+        user_id=ADMIN, email="admin@recall.app", display_name="Admin"
+    )
+    app = create_app(
+        units_path=MINI_UNITS,
+        db_path=tmp_path / "unused.db",
+        multiuser=True,
+        multiuser_settings=_settings(),
+        auth_provider=provider,
+        session_store=InMemorySessionStore(),
+        progress_repo=repo,
+    )
+    client = TestClient(app)
+    start = client.get("/auth/google/start", follow_redirects=False)
+    state = start.cookies.get("rtc_oauth_state")
+    cb = client.get(
+        f"/auth/callback?code=fake-google-code&state={state}",
+        follow_redirects=False,
+    )
+    assert cb.status_code == 303  # sign-in completed despite the failure
+    assert client.get("/dashboard").status_code == 200
