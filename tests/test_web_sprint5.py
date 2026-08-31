@@ -145,3 +145,6 @@ def test_progress_mastered_archive_is_additive(client: TestClient):
     assert archive.status_code == 200
     assert "Mastered" in archive.text
     assert 'href="/progress"' in archive.text
+    assert "rc-mastered-list" in archive.text
+    assert "Mastered Articles stay in light rotation" in archive.text
+    assert "rc-mastered-count" in archive.text

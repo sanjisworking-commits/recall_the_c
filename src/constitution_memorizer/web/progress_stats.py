@@ -7,7 +7,7 @@ from datetime import date
 from typing import Literal
 
 from constitution_memorizer.learning.schemas import LearningUnit, LearningUnitType
-from constitution_memorizer.progress.scheduler import ReminderEngine
+from constitution_memorizer.progress.scheduler import INTERVAL_LADDER, ReminderEngine
 from constitution_memorizer.schemas import ConstitutionDocument, Part
 from constitution_memorizer.utils.identifiers import article_sort_key
 from constitution_memorizer.web.service import continue_unit_id, daily_goal_streak
@@ -17,10 +17,62 @@ MasteryState = Literal["new", "learning", "review", "mastered", "due"]
 # Parser dump / unclassified buckets. Browse already skips these; the map
 # must too or Profile renders one "Part —" grid of Articles 1–395.
 _JUNK_PART_NUMBERS = {"", "—", "-", "UNKNOWN", "UNCLASSIFIED"}
+# Phone new-user map: Parts I–IV plus any Part that already has activity.
+_STARTER_PART_NUMBERS = frozenset({"I", "II", "III", "IV"})
 
 
 def _is_named_part(part_number: str | None) -> bool:
     return str(part_number or "").strip().upper() not in _JUNK_PART_NUMBERS
+
+
+def _is_starter_part(part_number: str | None) -> bool:
+    return str(part_number or "").strip().upper() in _STARTER_PART_NUMBERS
+
+
+def _part_has_activity(cells: list[MasteryCell]) -> bool:
+    return any(cell.state != "new" for cell in cells)
+
+
+def _make_part_row(
+    *,
+    part_number: str,
+    part_title: str,
+    article_range: str,
+    cells: list[MasteryCell],
+) -> PartMasteryRow:
+    has_activity = _part_has_activity(cells)
+    return PartMasteryRow(
+        part_number=part_number,
+        part_title=part_title,
+        article_range=article_range,
+        cells=cells,
+        has_activity=has_activity,
+        compact=has_activity or _is_starter_part(part_number),
+    )
+
+
+def _article_mastery_stamp(
+    engine: ReminderEngine, article_number: str
+) -> tuple[date | None, int]:
+    """Latest completion date and ladder interval for a mastered Article."""
+    required, _pending = path_units_for_article(engine, article_number)
+    last: date | None = None
+    interval = INTERVAL_LADDER[-1]
+    for unit in required:
+        progress = engine.get_progress(unit.id)
+        if progress is None or progress.last_completed is None:
+            continue
+        if last is None or progress.last_completed > last:
+            last = progress.last_completed
+            if progress.interval_days > 0:
+                interval = progress.interval_days
+    return last, interval
+
+
+def _format_mastered_meta(interval: int, last: date | None) -> str:
+    if last is None:
+        return f"Day {interval}"
+    return f"Day {interval} · {last.day} {last.strftime('%b')}"
 
 
 @dataclass(frozen=True)
@@ -53,6 +105,8 @@ class PartMasteryRow:
     part_title: str
     article_range: str
     cells: list[MasteryCell] = field(default_factory=list)
+    has_activity: bool = False
+    compact: bool = False
 
 
 @dataclass(frozen=True)
@@ -316,7 +370,7 @@ def build_parts_mastery_map(
             if not cells:
                 continue
             rows.append(
-                PartMasteryRow(
+                _make_part_row(
                     part_number=part.part_number,
                     part_title=_display_part_title(part.title),
                     article_range=_article_range_label(numbers),
@@ -371,7 +425,7 @@ def build_parts_mastery_map(
                 for n in numbers
             ]
             rows.append(
-                PartMasteryRow(
+                _make_part_row(
                     part_number=str(row["roman"]).upper(),
                     part_title=_display_part_title(str(row.get("title") or "")),
                     article_range=_article_range_label(numbers),
@@ -388,7 +442,7 @@ def build_parts_mastery_map(
     ]
     if cells:
         rows.append(
-            PartMasteryRow(
+            _make_part_row(
                 part_number="—",
                 part_title="Learning units",
                 article_range=_article_range_label(all_numbers),
@@ -525,6 +579,30 @@ def progress_dashboard(
         f"{mastered_articles} article{'s' if mastered_articles != 1 else ''} mastered"
     )
 
+    recently_mastered: list[dict] = []
+    for row in parts_map:
+        for cell in row.cells:
+            if not (cell.tracked and cell.state == "mastered"):
+                continue
+            last, interval = _article_mastery_stamp(engine, cell.article_number)
+            recently_mastered.append(
+                {
+                    "article_number": cell.article_number,
+                    "title": f"Article {cell.article_number}",
+                    "href": cell.href,
+                    "last_completed": last,
+                    "interval": interval,
+                    "meta": _format_mastered_meta(interval, last),
+                    "subtitle": f"Day {interval} complete",
+                }
+            )
+    recently_mastered.sort(
+        key=lambda item: (
+            -(item["last_completed"].toordinal() if item["last_completed"] else 0),
+            article_sort_key(item["article_number"]),
+        )
+    )
+
     return {
         "engine": engine_stats,
         "by_type": unit_type_totals(engine),
@@ -542,14 +620,5 @@ def progress_dashboard(
         "part_progress": part_progress,
         "tracked_rows": tracked_rows,
         "continue_id": continue_id,
-        "recently_mastered": [
-            {
-                "article_number": cell.article_number,
-                "title": f"Article {cell.article_number}",
-                "href": cell.href,
-            }
-            for row in parts_map
-            for cell in row.cells
-            if cell.tracked and cell.state == "mastered"
-        ],
+        "recently_mastered": recently_mastered,
     }

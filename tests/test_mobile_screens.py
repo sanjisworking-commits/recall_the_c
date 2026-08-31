@@ -1238,7 +1238,10 @@ def test_profile_phone_title_is_your_recall(tmp_path: Path):
     row = css.split('body[data-mscreen="profile"] .mastery-row {', 1)[1].split("}", 1)[0]
     assert "flex-direction: row" in row
     assert "flex-direction: column" not in row
-    assert "column-reverse" in css
+    assert "column-reverse" not in css
+    assert "width: 13px" in css
+    assert "mastery-legend-phone" in css
+    assert ".mastery-row.is-extra" in css
 
 
 def test_profile_phone_uses_prototype_stats_and_compact_map(tmp_path: Path):
@@ -1248,7 +1251,11 @@ def test_profile_phone_uses_prototype_stats_and_compact_map(tmp_path: Path):
     html = client.get("/progress").text
     assert "rc-profile-stats" in html
     assert "mastery-range-arts" in html
-    assert "Constitution progress" in html or "rc-part-progress" in html
+    assert "Constitution progress" in html
+    assert "Your map fills in as you learn" in html
+    assert "mastery-legend-phone" in html
+    assert ">Due</span>" in html
+    assert "Due / continue" in html
     css = client.get("/static/mobile.css").text
     assert 'body[data-mscreen="profile"] .tracked-articles' in css
     hide = css.split(
@@ -1256,6 +1263,11 @@ def test_profile_phone_uses_prototype_stats_and_compact_map(tmp_path: Path):
     )[1].split("}", 1)[0]
     assert ".tracked-articles" in hide
     assert ".mastery-part-name" in hide
+    assert ".mastery-part-word" not in hide
+    assert 'body[data-mscreen="profile"] .mastery-cell.is-new' in css
+    assert "border-radius: 3.5px" in css
+    assert "M19.4 15" in html
+    assert 'fill="currentColor"' in html
 
 
 def test_today_goal_ring_centers_the_fraction(tmp_path: Path):

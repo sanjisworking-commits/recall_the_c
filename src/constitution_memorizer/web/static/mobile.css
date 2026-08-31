@@ -3833,25 +3833,43 @@
   }
 
   /* ══ Profile / Account / reference / auth chrome ═══════════════════════ */
+  body[data-mscreen="profile"] .panel.progress {
+    padding: 8px 0 calc(96px + env(safe-area-inset-bottom, 0));
+  }
+
   body[data-mscreen="profile"] .progress > .display,
   body[data-mscreen="profile"] .progress > .lede {
     display: none;
   }
 
   body[data-mscreen="profile"] .progress-stat-grid,
-  body[data-mscreen="profile"] .mastery-part-word,
   body[data-mscreen="profile"] .mastery-part-name,
   body[data-mscreen="profile"] .mastery-range-articles,
   body[data-mscreen="profile"] .mastery-tracked-heading,
   body[data-mscreen="profile"] .tracked-articles,
+  body[data-mscreen="profile"] .mastery-legend-desktop,
   body[data-mscreen="profile"] .eyebrow-desktop {
     display: none;
+  }
+
+  body[data-mscreen="profile"] .mobile-screen-head {
+    padding: 0 10px 6px 18px;
+  }
+
+  body[data-mscreen="profile"] .mobile-screen-title {
+    font-size: 23px;
+    font-weight: 500;
+  }
+
+  body[data-mscreen="profile"] .mobile-icon-btn {
+    color: var(--muted);
   }
 
   body[data-mscreen="profile"] .rc-profile-stats {
     display: flex;
     gap: 9px;
-    margin: 4px 0 0;
+    margin: 0;
+    padding: 4px 18px 0;
   }
 
   body[data-mscreen="profile"] .rc-profile-stat {
@@ -3886,7 +3904,7 @@
   }
 
   body[data-mscreen="profile"] .section-title {
-    margin: 22px 2px 8px;
+    margin: 22px 20px 8px;
     font-family: var(--font-body);
     font-size: 10.5px;
     font-weight: 600;
@@ -3898,29 +3916,69 @@
   body[data-mscreen="profile"] .progress-map-card,
   body[data-mscreen="profile"] .rc-mastered-card,
   body[data-mscreen="profile"] .rc-part-progress,
-  body[data-mscreen="profile"] .tracked-articles,
-  body[data-mscreen="profile"] .rc-ladder-explainer {
-    margin: 0;
-    padding: 14px 16px 12px;
+  body[data-mscreen="profile"] .rc-ladder-explainer,
+  body[data-mscreen="profile"] .is-mastered-list .rc-mastered-list {
+    margin: 0 18px;
     background: var(--rc-paper);
     border: 1px solid var(--rc-hairline);
     border-radius: var(--rc-radius-card);
   }
 
   body[data-mscreen="profile"] .progress-map-card {
-    display: flex;
-    flex-direction: column-reverse;
+    padding: 14px 16px 12px;
   }
 
-  body[data-mscreen="profile"] .tracked-articles {
+  body[data-mscreen="profile"] .rc-mastered-card {
+    padding: 0 16px;
+  }
+
+  body[data-mscreen="profile"] .rc-part-progress {
     padding: 4px 16px;
   }
 
-  body[data-mscreen="profile"] .mastery-legend {
+  body[data-mscreen="profile"] .rc-ladder-explainer {
+    padding: 15px 16px;
+  }
+
+  body[data-mscreen="profile"] .mastery-legend-phone {
+    display: flex;
     margin: 8px 0 0;
     padding-top: 10px;
     border-top: 1px solid var(--page);
     gap: 12px;
+    font-size: 10.5px;
+    color: var(--muted);
+  }
+
+  body[data-mscreen="profile"] .mastery-swatch {
+    width: 10px;
+    height: 10px;
+    border-radius: 3px;
+    border: 0;
+  }
+
+  body[data-mscreen="profile"] .mastery-swatch.is-new {
+    background: var(--done-locked-bg);
+  }
+
+  body[data-mscreen="profile"] .mastery-swatch.is-learning,
+  body[data-mscreen="profile"] .mastery-swatch.is-review {
+    background: var(--calendar-done);
+  }
+
+  body[data-mscreen="profile"] .mastery-swatch.is-mastered {
+    background: var(--browse-due);
+  }
+
+  body[data-mscreen="profile"] .mastery-swatch.is-due {
+    background: var(--browse-mark-news);
+  }
+
+  body[data-mscreen="profile"] .rc-map-hint {
+    margin: 8px 0 0;
+    font-size: 12px;
+    line-height: 1.45;
+    color: var(--mid);
   }
 
   body[data-mscreen="profile"] .mastery-row {
@@ -3930,6 +3988,10 @@
     gap: 12px;
     padding: 7px 0;
     border-bottom: 0;
+  }
+
+  body[data-mscreen="profile"] .mastery-row.is-extra {
+    display: none;
   }
 
   body[data-mscreen="profile"] .mastery-row:last-child {
@@ -3946,6 +4008,7 @@
     font-size: 10px;
     font-weight: 600;
     letter-spacing: 0.08em;
+    text-transform: uppercase;
     color: var(--mid);
   }
 
@@ -3960,8 +4023,37 @@
     gap: 4px;
   }
 
-  body[data-mscreen="profile"] .rc-part-progress {
-    padding: 4px 16px;
+  body[data-mscreen="profile"] .mastery-cell,
+  body[data-mscreen="profile"] .mastery-cell.is-new,
+  body[data-mscreen="profile"] .mastery-cell.is-learning,
+  body[data-mscreen="profile"] .mastery-cell.is-review,
+  body[data-mscreen="profile"] .mastery-cell.is-mastered,
+  body[data-mscreen="profile"] .mastery-cell.is-due {
+    width: 13px;
+    height: 13px;
+    border: 0;
+    border-radius: 3.5px;
+  }
+
+  body[data-mscreen="profile"] .mastery-cell.is-new {
+    background: var(--done-locked-bg);
+  }
+
+  body[data-mscreen="profile"] .mastery-cell.is-learning,
+  body[data-mscreen="profile"] .mastery-cell.is-review {
+    background: var(--calendar-done);
+  }
+
+  body[data-mscreen="profile"] .mastery-cell.is-mastered {
+    background: var(--browse-due);
+  }
+
+  body[data-mscreen="profile"] .mastery-cell.is-due {
+    background: var(--browse-mark-news);
+  }
+
+  body[data-mscreen="profile"] .mastery-cell.is-tracked:hover {
+    outline: none;
   }
 
   body[data-mscreen="profile"] .rc-part-progress-row {
@@ -3989,6 +4081,12 @@
     font-size: 11.5px;
     font-weight: 600;
     color: var(--rc-teal);
+  }
+
+  body[data-mscreen="profile"] .rc-part-progress-empty {
+    margin: 12px 0;
+    font-size: 13px;
+    color: var(--mid);
   }
 
   body[data-mscreen="profile"] .rc-part-progress-row .tracked-progress-track {
@@ -4033,6 +4131,15 @@
     font-weight: 500;
   }
 
+  .rc-mastered-meta,
+  .rc-mastered-sub {
+    margin-left: auto;
+    font-size: 11.5px;
+    font-weight: 600;
+    color: var(--rc-teal);
+    white-space: nowrap;
+  }
+
   body[data-mscreen="profile"] .rc-mastered-link {
     margin: 0;
   }
@@ -4046,6 +4153,57 @@
     font-size: 13.5px;
     font-weight: 600;
     text-decoration: none;
+  }
+
+  body[data-mscreen="profile"] .is-mastered-list .mobile-topbar {
+    padding: 4px 10px 4px 18px;
+  }
+
+  body[data-mscreen="profile"] .is-mastered-list .rc-mastered-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 18px 12px;
+  }
+
+  body[data-mscreen="profile"] .is-mastered-list .rc-mastered-head .display {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 23px;
+    font-weight: 500;
+  }
+
+  body[data-mscreen="profile"] .is-mastered-list .rc-mastered-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 8px;
+    border-radius: 999px;
+    background: var(--rc-teal);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  body[data-mscreen="profile"] .is-mastered-list .rc-mastered-list {
+    padding: 0 16px;
+  }
+
+  body[data-mscreen="profile"] .is-mastered-list .rc-mastered-row {
+    min-height: 62px;
+  }
+
+  body[data-mscreen="profile"] .is-mastered-list .rc-mastered-row:last-child {
+    border-bottom: 0;
+  }
+
+  body[data-mscreen="profile"] .rc-mastered-note {
+    margin: 16px 20px 0;
+    font-size: 12px;
+    line-height: 1.55;
+    color: var(--mid);
   }
 
   .rc-ladder-explainer-chips {
@@ -4252,9 +4410,13 @@
   .rc-profile-stats,
   .rc-part-progress-heading,
   .rc-part-progress,
+  .rc-map-hint,
+  .mastery-legend-phone,
   .mastery-range-arts,
   .rc-ladder-heading,
   .rc-ladder-explainer,
+  .rc-mastered-meta,
+  .rc-mastered-note,
   .rtc-affirmation-check,
   .rtc-affirmation-title,
   .rtc-affirmation-sub,
