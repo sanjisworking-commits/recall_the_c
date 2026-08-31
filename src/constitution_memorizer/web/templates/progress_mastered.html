@@ -2,21 +2,30 @@
 {% block title %}Mastered · {{ app_name|default('Recall the C') }}{% endblock %}
 {% block mobile_screen %}profile{% endblock %}
 {% block content %}
-<section class="panel progress">
+<section class="panel progress is-mastered-list">
   <div class="mobile-topbar">
     <a class="mobile-back" href="/progress">← <span class="eyebrow-phone">Your Recall</span><span class="eyebrow-desktop">Profile</span></a>
   </div>
-  <h1 class="display">Mastered</h1>
+  <div class="rc-mastered-head">
+    <h1 class="display">Mastered</h1>
+    <span class="rc-mastered-count">{{ dashboard.mastered_count }}</span>
+  </div>
   <p class="lede">Articles that have walked the full Recall ladder.</p>
-  <div class="tracked-articles" role="list">
+  <div class="rc-mastered-list" role="list">
     {% for row in dashboard.recently_mastered|default([]) %}
-    <a class="tracked-article-row" href="{{ row.href }}" role="listitem">
-      <span class="tracked-article-title">{{ row.title }}</span>
-      <span class="tracked-article-tag is-mastered">Mastered</span>
+    <a class="rc-mastered-row" href="{{ row.href }}" role="listitem">
+      <span class="rc-mastered-node" aria-hidden="true">
+        <svg width="10" height="10" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6.5 4.8 9.2 10 3.2"></path></svg>
+      </span>
+      <span class="rc-mastered-copy">
+        <span class="rc-mastered-title">{{ row.title }}</span>
+      </span>
+      <span class="rc-mastered-sub">{{ row.subtitle|default('Day 60 complete') }}</span>
     </a>
     {% else %}
     <p class="empty">Nothing mastered yet — keep walking the ladder.</p>
     {% endfor %}
   </div>
+  <p class="rc-mastered-note">Mastered Articles stay in light rotation — an occasional Test keeps them fresh.</p>
 </section>
 {% endblock %}

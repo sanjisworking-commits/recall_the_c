@@ -76,6 +76,10 @@ def test_progress_full_corpus_map_is_split_by_part(tmp_path: Path):
     assert "Learning units" not in html
     assert html.count("mastery-row") >= 10
     assert "Part —" not in html
+    assert "mastery-row is-extra" in html
+    assert "Your map fills in as you learn" in html
+    assert "mastery-legend-phone" in html
+    assert ">Due</span>" in html
 
 
 def test_progress_page_has_stat_tiles_and_mastery_map(client: TestClient):
@@ -251,6 +255,43 @@ def test_choice_pending_tag(engine: ReminderEngine):
     row20 = next(r for r in dash["tracked_rows"] if r.article_number == "20")
     assert row20.pending_choice is True
     assert row20.tag == "choice pending"
+
+
+def test_phone_compact_map_keeps_starter_parts(engine: ReminderEngine):
+    today = date(2026, 7, 20)
+    dash = progress_dashboard(engine, reviewed=None, today=today)
+    for row in dash["parts_map"]:
+        if row.part_number in {"I", "II", "III", "IV"}:
+            assert row.compact is True
+        elif not row.has_activity:
+            assert row.compact is False
+
+
+def test_recently_mastered_includes_day_and_date_meta(engine: ReminderEngine):
+    today = date(2026, 8, 21)
+    engine.mark_all_modes_seen("article-end")
+    engine.mark_done("article-end", as_of=today)
+    engine.mark_all_modes_seen("article-end")
+    engine.mark_done("article-end", as_of=today)
+    reviewed = ConstitutionDocument.model_validate(read_json(MINI_REVIEWED))
+    dash = progress_dashboard(engine, reviewed=reviewed, today=today)
+    assert dash["mastered_count"] >= 1
+    row = next(r for r in dash["recently_mastered"] if r["article_number"] == "21")
+    assert "Day " in row["meta"]
+    assert "Aug" in row["meta"]
+    assert row["subtitle"].endswith("complete")
+    assert row["last_completed"] == today
+
+
+def test_progress_page_phone_legend_and_gear(client: TestClient):
+    html = client.get("/progress").text
+    assert "mastery-legend-phone" in html
+    assert "M19.4 15" in html
+    assert "M10 1.8v2.4" not in html
+    assert 'fill="currentColor"' in html
+    assert "See all" not in html
+    assert "Constitution progress" in html
+    assert "rc-part-progress" in html
 
 
 def test_split_preference_still_affects_required_counts(engine: ReminderEngine):
