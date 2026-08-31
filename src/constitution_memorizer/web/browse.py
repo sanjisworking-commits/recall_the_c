@@ -21,10 +21,12 @@ from constitution_memorizer.utils.json_io import read_json
 
 _PACKAGE_PARTS_SEED = Path(__file__).resolve().parent / "browse_parts.seed.json"
 _REPO_PARTS_SEED = Path(__file__).resolve().parents[3] / "data" / "reference" / "browse_parts.seed.json"
+_CWD_PARTS_SEED = Path.cwd() / "data" / "reference" / "browse_parts.seed.json"
 _PACKAGE_CHAPTERS_SEED = Path(__file__).resolve().parent / "browse_chapters.seed.json"
 _REPO_CHAPTERS_SEED = (
     Path(__file__).resolve().parents[3] / "data" / "reference" / "browse_chapters.seed.json"
 )
+_CWD_CHAPTERS_SEED = Path.cwd() / "data" / "reference" / "browse_chapters.seed.json"
 from constitution_memorizer.web.amendments import (
     Amendment,
     ArticleAmendments,
@@ -298,13 +300,21 @@ def _load_seed_rows(candidates: list[Path | None]) -> list[dict]:
 
 def load_browse_parts_seed(path: Path | None = None) -> list[dict]:
     """Load Part roman/title/article-range rows for Browse without reviewed JSON."""
-    candidates = [path] if path is not None else [_PACKAGE_PARTS_SEED, _REPO_PARTS_SEED]
+    candidates = (
+        [path]
+        if path is not None
+        else [_PACKAGE_PARTS_SEED, _REPO_PARTS_SEED, _CWD_PARTS_SEED]
+    )
     return [row for row in _load_seed_rows(candidates) if row.get("roman")]
 
 
 def load_browse_chapters_seed(path: Path | None = None) -> list[dict]:
     """Load Chapter roman/title/article-range rows nested under a Part."""
-    candidates = [path] if path is not None else [_PACKAGE_CHAPTERS_SEED, _REPO_CHAPTERS_SEED]
+    candidates = (
+        [path]
+        if path is not None
+        else [_PACKAGE_CHAPTERS_SEED, _REPO_CHAPTERS_SEED, _CWD_CHAPTERS_SEED]
+    )
     return [
         row
         for row in _load_seed_rows(candidates)

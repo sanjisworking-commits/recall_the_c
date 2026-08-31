@@ -9,7 +9,8 @@ import pytest
 from fastapi.testclient import TestClient
 
 from constitution_memorizer.progress.scheduler import ReminderEngine
-from constitution_memorizer.schemas import ConstitutionDocument
+from constitution_memorizer.schemas import Article, ConstitutionDocument, Part
+from constitution_memorizer.utils.identifiers import article_sort_key, parse_article_number
 from constitution_memorizer.utils.json_io import read_json
 from constitution_memorizer.web.app import create_app
 from constitution_memorizer.web.progress_stats import (
@@ -80,6 +81,75 @@ def test_progress_full_corpus_map_is_split_by_part(tmp_path: Path):
     assert "Your map fills in as you learn" in html
     assert "mastery-legend-phone" in html
     assert ">Due</span>" in html
+    # Desktop HTML still lists every Part; phone CSS hides .is-extra.
+    assert html.count("mastery-row") >= 20
+
+
+def _dump_reviewed_from_engine(engine: ReminderEngine, part_number: str) -> ConstitutionDocument:
+    numbers = sorted(
+        {u.article_number for u in engine.units.values() if u.article_number},
+        key=article_sort_key,
+    )
+    articles = []
+    for number in numbers:
+        parsed = parse_article_number(number)
+        articles.append(
+            Article(
+                id=f"art-{number}",
+                article_number=number,
+                numeric_component=parsed.numeric_component if parsed else 0,
+                suffix=parsed.suffix if parsed else "",
+            )
+        )
+    return ConstitutionDocument(
+        parts=[
+            Part(
+                id="dump",
+                part_number=part_number,
+                title="Learning units",
+                articles=articles,
+            )
+        ]
+    )
+
+
+def test_progress_parser_dump_reviewed_splits_into_parts(tmp_path: Path):
+    """Live Profile showed PART — / Arts 1–395. Both desktop and phone maps
+    must still be one row per Part when reviewed JSON is that dump."""
+    full_units = Path(__file__).resolve().parents[1] / "data" / "output" / "learning_units.json"
+    if not full_units.exists():
+        pytest.skip("full learning_units.json missing")
+    engine = ReminderEngine.from_paths(tmp_path / "p.db", full_units)
+    dump = _dump_reviewed_from_engine(engine, "—")
+    dash = progress_dashboard(engine, reviewed=dump, today=date(2026, 8, 31))
+    romans = [row.part_number for row in dash["parts_map"]]
+    assert "—" not in romans
+    assert "I" in romans
+    assert "III" in romans
+    assert "XXII" in romans
+    assert len(romans) >= 10
+    assert not any(len(row.cells) > 200 for row in dash["parts_map"])
+    part_i = next(row for row in dash["parts_map"] if row.part_number == "I")
+    for cell in part_i.cells:
+        parsed = parse_article_number(cell.article_number)
+        assert parsed is not None
+        assert parsed.numeric_component <= 4
+
+
+def test_progress_named_dump_part_also_splits(tmp_path: Path):
+    """A single Part I that actually holds Arts 1–395 is still a dump."""
+    full_units = Path(__file__).resolve().parents[1] / "data" / "output" / "learning_units.json"
+    if not full_units.exists():
+        pytest.skip("full learning_units.json missing")
+    engine = ReminderEngine.from_paths(tmp_path / "p.db", full_units)
+    dump = _dump_reviewed_from_engine(engine, "I")
+    dash = progress_dashboard(engine, reviewed=dump, today=date(2026, 8, 31))
+    romans = [row.part_number for row in dash["parts_map"]]
+    assert romans.count("I") == 1
+    assert "III" in romans
+    assert "XXII" in romans
+    part_i = next(row for row in dash["parts_map"] if row.part_number == "I")
+    assert len(part_i.cells) < 20
 
 
 def test_progress_page_has_stat_tiles_and_mastery_map(client: TestClient):

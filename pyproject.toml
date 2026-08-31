@@ -41,6 +41,8 @@ constitution_memorizer = [
     "web/templates/**/*",
     "web/static/**/*",
     "web/explainer_assets/**/*",
+    "web/browse_parts.seed.json",
+    "web/browse_chapters.seed.json",
     "web/sitemap.xml",
     "web/robots.txt",
 ]
