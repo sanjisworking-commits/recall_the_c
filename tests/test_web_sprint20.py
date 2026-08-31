@@ -91,6 +91,9 @@ def test_progress_page_has_stat_tiles_and_mastery_map(client: TestClient):
     assert "Mastered" in html
     assert "Remaining" in html
     assert "mastery-map" in html
+    assert "rc-profile-stats" in html
+    assert "in progress" in html
+    assert "day streak" in html
     assert "Part III" in html
     assert "Fundamental Rights" in html
     assert "mastery-cell" in html
@@ -187,6 +190,10 @@ def test_fresh_account_has_no_tracked_article_rows(engine: ReminderEngine):
     today = date(2026, 7, 20)
     dash = progress_dashboard(engine, reviewed=None, today=today)
     assert dash["tracked_rows"] == []
+    assert dash["mastered_count"] == 0
+    assert dash["daily_goal_streak"] == 0
+    assert isinstance(dash["in_progress_count"], int)
+    assert isinstance(dash["part_progress"], list)
 
 
 def test_mastery_map_uses_seed_parts_when_reviewed_missing(engine: ReminderEngine):
@@ -199,6 +206,11 @@ def test_mastery_map_uses_seed_parts_when_reviewed_missing(engine: ReminderEngin
     part_iii = next(r for r in dash["parts_map"] if r.part_number == "III")
     assert part_iii.part_title
     assert {c.article_number for c in part_iii.cells} >= {"20", "21"}
+    # Continue pointer is due (not new), so Part III belongs on the phone bars.
+    bars = {row.part_number: row for row in dash["part_progress"]}
+    assert "III" in bars
+    assert bars["III"].total >= 2
+    assert 0 < bars["III"].percent <= 100
 
 
 def test_mastery_map_skips_anonymous_reviewed_part(engine: ReminderEngine):
