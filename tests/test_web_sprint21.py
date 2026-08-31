@@ -76,7 +76,7 @@ def test_learn_footnote_for_15_and_not_14(client: TestClient):
 
 
 def test_amendment_css(client: TestClient):
-    css = client.get("/static/styles.css?v=main45").text
+    css = client.get("/static/styles.css?v=main46").text
     assert ".amendment-badge" in css
     assert ".amendment-timeline" in css
     assert ".learn-amend-note" in css

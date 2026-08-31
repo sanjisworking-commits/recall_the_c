@@ -166,7 +166,8 @@
   body[data-mscreen="planintro"] .mobile-tabbar,
   body[data-mscreen="purchase"] .mobile-tabbar,
   body[data-mscreen="signedout"] .mobile-tabbar,
-  body[data-mscreen="expired"] .mobile-tabbar {
+  body[data-mscreen="expired"] .mobile-tabbar,
+  body[data-mscreen="settings"] .mobile-tabbar {
     display: none;
   }
 
@@ -1859,7 +1860,7 @@
   }
 
   body[data-mscreen="article"] .browse-article-text {
-    font-size: 17px;
+    font-size: var(--bare-size, 19px);
     line-height: 1.7;
   }
 
@@ -2389,12 +2390,26 @@
   }
 
   /* ══ 20 · Settings ═════════════════════════════════════════════════════ */
-  body[data-mscreen="settings"] .settings > .display {
-    margin: 0 0 14px;
-    font-size: 22px;
+  body[data-mscreen="settings"] .panel.settings {
+    padding: 0 var(--m-gutter) 40px;
   }
 
-  body[data-mscreen="settings"] .settings > .lede {
+  body[data-mscreen="settings"] .settings > .display {
+    margin: 0 0 14px;
+    font-size: 23px;
+    font-weight: 500;
+  }
+
+  body[data-mscreen="settings"] .mobile-back {
+    min-height: 44px;
+    font-size: 13px;
+    color: var(--mid);
+  }
+
+  body[data-mscreen="settings"] .settings > .lede,
+  body[data-mscreen="settings"] .settings-access-line,
+  body[data-mscreen="settings"] .settings-desk-title,
+  body[data-mscreen="settings"] .settings-desk-copy {
     display: none;
   }
 
@@ -2403,7 +2418,7 @@
     align-items: center;
     gap: 12px;
     padding: 14px 16px;
-    margin-bottom: 18px;
+    margin-bottom: 4px;
     background: var(--paper);
     border: 1px solid var(--hairline);
     border-radius: var(--rc-radius-card);
@@ -2411,11 +2426,16 @@
     text-decoration: none;
   }
 
+  .settings-account-row:active {
+    transform: translateY(1px);
+  }
+
   .settings-account-avatar {
     width: 38px;
     height: 38px;
     flex: 0 0 auto;
     object-fit: cover;
+    border-radius: 12px;
   }
 
   .settings-account-avatar.is-fallback {
@@ -2438,11 +2458,12 @@
 
   .settings-account-name {
     font-size: 15px;
+    font-weight: 500;
   }
 
   .settings-account-status {
     font-size: 12px;
-    color: var(--mid);
+    color: var(--faint, var(--mid));
   }
 
   .settings-account-chevron {
@@ -2451,27 +2472,47 @@
     color: var(--control-border);
   }
 
-  /* Screen 4e · segmented controls go compact on the phone, and the groups
-     that carry three labelled segments go full width — three labels will not
-     sit beside a row label at 390pt. */
-  body[data-mscreen="settings"] .settings-form,
+  body[data-mscreen="settings"] .settings-group-eyebrow {
+    display: block;
+    margin: 20px 2px 8px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--faint);
+  }
+
+  body[data-mscreen="settings"] .settings-card,
+  body[data-mscreen="settings"] .settings-form.settings-card {
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: var(--rc-radius-card);
+    overflow: hidden;
+    padding: 0;
+    margin-bottom: 0;
+  }
+
   body[data-mscreen="settings"] .gcal-prefs-form,
-  body[data-mscreen="settings"] .gcal-connected-head,
-  body[data-mscreen="settings"] .gcal-connect-row {
-    background: var(--rc-paper);
-    border: 1px solid var(--rc-hairline);
+  body[data-mscreen="settings"] .gcal-connected-head {
+    background: var(--paper);
+    border: 1px solid var(--hairline);
     border-radius: var(--rc-radius-card);
     padding: 4px 16px;
-    margin-bottom: 8px;
+    margin-top: 8px;
   }
 
   body[data-mscreen="settings"] .settings-row {
+    display: flex;
+    align-items: center;
     gap: 14px;
-    padding: 12px 0;
+    min-height: 52px;
+    padding: 10px 16px;
     border-bottom: 1px solid var(--page);
+    margin: 0;
   }
 
-  body[data-mscreen="settings"] .settings-row:last-child {
+  body[data-mscreen="settings"] .settings-card > .settings-row:last-child,
+  body[data-mscreen="settings"] .settings-form.settings-card > .settings-row:last-of-type {
     border-bottom: 0;
   }
 
@@ -2482,23 +2523,71 @@
   body[data-mscreen="settings"] .settings-row-desc {
     font-size: 11.5px;
     line-height: 1.5;
+    color: var(--mid);
+  }
+
+  body[data-mscreen="settings"] .settings-row-link {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    text-align: left;
+    text-decoration: none;
+    font: inherit;
+    cursor: pointer;
+  }
+
+  body[data-mscreen="settings"] .settings-row-link.is-danger {
+    color: var(--destructive);
+    font-weight: 500;
+  }
+
+  body[data-mscreen="settings"] .settings-row-meta {
+    font-size: 12px;
+    color: var(--faint);
+    white-space: nowrap;
+  }
+
+  body[data-mscreen="settings"] .settings-signout-form {
+    margin: 0;
+  }
+
+  body[data-mscreen="settings"] .settings-footnote {
+    margin: 8px 2px 0;
+    font-size: 11.5px;
+    color: var(--faint);
+  }
+
+  body[data-mscreen="settings"] .settings-verbatim {
+    margin: 16px 2px 0;
+    font-size: 11.5px;
+    color: var(--faint);
   }
 
   body[data-mscreen="settings"] .segmented,
   body[data-mscreen="settings"] .settings-theme {
     padding: 2px;
     border-radius: 9px;
+    background: var(--page);
   }
 
   body[data-mscreen="settings"] .segmented-btn,
   body[data-mscreen="settings"] .settings-theme-btn {
-    height: 28px;
+    min-height: 44px;
+    height: 30px;
     padding: 0 12px;
     border-radius: 7px;
     font-size: 12.5px;
   }
 
-  /* Daily target and Study reminders stack under their label. */
+  body[data-mscreen="settings"] .segmented-input:checked + .segmented-btn,
+  body[data-mscreen="settings"] .settings-theme-btn.is-active {
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.07);
+    font-weight: 600;
+  }
+
   body[data-mscreen="settings"] .settings-row.is-stacked {
     flex-direction: column;
     align-items: stretch;
@@ -2513,30 +2602,106 @@
   body[data-mscreen="settings"] .settings-row.is-stacked .segmented-btn {
     flex: 1 1 0;
     height: 30px;
+    min-height: 44px;
     padding: 0 8px;
   }
 
-  /* Appearance sits on the gray page, not inside a white card, so its track
-     needs to be a shade darker to stay legible. */
+  body[data-mscreen="settings"] .settings-row.is-dimmed,
+  body[data-mscreen="settings"] [data-daily-target-row].is-dimmed {
+    opacity: 0.45;
+  }
+
+  body[data-mscreen="settings"] .segmented.is-disabled .segmented-btn {
+    color: var(--control-border);
+    pointer-events: none;
+  }
+
   body[data-mscreen="settings"] .settings-theme[aria-label="Theme"] {
     display: flex;
     width: 100%;
-    margin: 0 0 8px;
+    margin: 0;
     padding: 3px;
-    background: var(--seg-track-on-page);
+    background: var(--page);
     border-radius: 10px;
   }
 
   body[data-mscreen="settings"] .settings-theme[aria-label="Theme"] .settings-theme-btn {
     flex: 1 1 0;
     height: 38px;
+    min-height: 44px;
     border-radius: 8px;
     font-size: 13.5px;
   }
 
-  body[data-mscreen="settings"] .settings-experience-row {
-    gap: 14px;
-    margin: 0 0 12px;
+  .settings-toggle {
+    position: relative;
+    flex: 0 0 auto;
+    width: 46px;
+    height: 28px;
+    padding: 0;
+    border: 0;
+    border-radius: 14px;
+    background: var(--hairline);
+    cursor: pointer;
+  }
+
+  .settings-toggle[aria-checked="true"] {
+    background: var(--accent);
+  }
+
+  .settings-toggle:disabled {
+    opacity: 0.45;
+    pointer-events: none;
+  }
+
+  .settings-toggle-knob {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    transition: transform 0.15s ease;
+  }
+
+  .settings-toggle[aria-checked="true"] .settings-toggle-knob {
+    transform: translateX(18px);
+  }
+
+  body[data-mscreen="settings"] .settings-phone-only {
+    display: revert;
+  }
+
+  .settings-stepper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 0 0 auto;
+  }
+
+  .settings-stepper-btn {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 1px solid var(--hairline);
+    border-radius: 10px;
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  .settings-stepper-value {
+    min-width: 3.2rem;
+    font-size: 13.5px;
+    color: var(--mid);
+    text-align: right;
+  }
+
+  body[data-mscreen="settings"] .settings-tour-replay {
+    margin-top: 12px;
   }
 
   body[data-mscreen="settings"] .section-title {
@@ -2547,6 +2712,10 @@
     letter-spacing: 0.09em;
     text-transform: uppercase;
     color: var(--mid);
+  }
+
+  html:not(.rtc-anim) .settings-toggle-knob {
+    transition: none;
   }
 
   /* ══ 05–13 · Learn ═════════════════════════════════════════════════════
@@ -2953,7 +3122,7 @@
   /* Every reading surface in a session is Fraunces 400 at the design's size;
      only labels and card titles take 500. */
   body[data-mscreen="learn"] .learn-read-text {
-    font-size: 20px;
+    font-size: var(--bare-size, 19px);
     line-height: 1.7;
   }
 
@@ -3922,6 +4091,8 @@
   .browse-rail-note,
   .revisions-mobile,
   .settings-account-row,
+  .settings-group-eyebrow,
+  .settings-phone-only,
   .search-form-icon,
   .search-cancel,
   .dash-greeting-search,

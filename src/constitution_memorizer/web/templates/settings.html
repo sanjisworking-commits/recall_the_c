@@ -2,28 +2,31 @@
 {% block title %}Settings · {{ app_name|default('Recall the C') }}{% endblock %}
 {% block mobile_screen %}settings{% endblock %}
 {% block content %}
+{% set is_guest = multiuser_enabled|default(false) and not current_user %}
+{% set account_label = (current_user.display_name or current_user.email or current_user.phone or 'Account') if current_user else 'Guest' %}
 <section class="panel settings">
   <div class="mobile-topbar">
     <a class="mobile-back" href="{% if multiuser_enabled|default(false) and current_user %}/dashboard{% else %}/{% endif %}">← {% if multiuser_enabled|default(false) and current_user %}Today{% else %}Home{% endif %}</a>
   </div>
   <h1 class="display">Settings</h1>
-  {% if current_user %}
-  {# Design 20: the account sits at the top of Settings on the phone, where
-     the desktop header's avatar menu would be. #}
-  {% set account_label = current_user.display_name or current_user.email or current_user.phone or 'Account' %}
-  <a class="settings-account-row" href="/profile">
-    {% if current_user.avatar_url %}
+
+  <a class="settings-account-row" href="{% if current_user %}/profile{% else %}/login{% endif %}">
+    {% if current_user and current_user.avatar_url %}
     <img class="settings-account-avatar" src="{{ current_user.avatar_url }}" alt="" width="38" height="38">
     {% else %}
     <span class="settings-account-avatar is-fallback" aria-hidden="true">{{ (account_label[:1])|upper }}</span>
     {% endif %}
     <span class="settings-account-copy">
       <span class="settings-account-name">{{ account_label }}</span>
-      {% if access and access.enabled %}<span class="settings-account-status">{{ access.status_line }}</span>{% endif %}
+      {% if current_user and access and access.enabled %}
+      <span class="settings-account-status">{{ access.status_line }}</span>
+      {% elif is_guest %}
+      <span class="settings-account-status">Guest · progress on this device</span>
+      {% endif %}
     </span>
     <span class="settings-account-chevron" aria-hidden="true">›</span>
   </a>
-  {% endif %}
+
   {% if multiuser_enabled|default(false) %}
   <p class="lede">Appearance, your learning plan, and your revision calendar.</p>
   {% else %}
@@ -41,306 +44,407 @@
   </p>
   {% endif %}
 
-  {% if multiuser_enabled|default(false) and current_user and onboarding_status|default('') in ('skipped', 'completed') %}
-  <form method="post" action="/onboarding/state" class="settings-tour-replay">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-    <input type="hidden" name="status" value="active">
-    <span class="settings-tour-replay-label">
-      {% if onboarding_status == 'skipped' %}You skipped the getting-started tour.{% else %}Want a refresher on the Recall loop?{% endif %}
-    </span>
-    <button type="submit" class="btn btn-ghost">Replay the tour</button>
-  </form>
-  {% endif %}
-
-  {% if gcal %}
-  <h2 class="section-title">Revision calendar</h2>
-  <p class="settings-note">
-    Keep your Recall the C revision schedule automatically synced with Google Calendar.
-  </p>
-
-  {# Post-redirect notices (design 02): one left-ruled block per outcome. #}
-  {% if gcal.status_param in ('connected', 'syncing') %}
-  <div class="gcal-notice is-ok" role="status">
-    <p>Google Calendar connected — syncing your revision schedule…</p>
-  </div>
-  {% elif gcal.status_param == 'saved' %}
-  <div class="gcal-notice is-ok" role="status"><p>Calendar preferences saved.</p></div>
-  {% elif gcal.status_param == 'disconnected' %}
-  <div class="gcal-notice is-quiet" role="status">
-    <p>Google Calendar disconnected. The calendar itself stays in your Google
-    account — remove it there if you no longer want it.</p>
-  </div>
-  {% elif gcal.status_param == 'error' %}
-  <div class="gcal-notice is-error" role="alert">
-    <p>Something went wrong talking to Google. Your Recall the C progress is safe — try again.</p>
-  </div>
-  {% endif %}
-
-  {% if gcal.connected %}
-  <div class="gcal-connected-head">
-    <div class="gcal-status-line">
-      <p class="gcal-status">Google Calendar</p>
-      {% if gcal.connection.sync_status == 'error' %}
-      <span class="gcal-badge is-error">⚠ Sync issue</span>
-      {% elif gcal.connection.sync_pending %}
-      <span class="gcal-badge is-syncing">Syncing</span>
-      {% else %}
-      <span class="gcal-badge is-ok">✓ Connected</span>
-      {% endif %}
-    </div>
-    <p class="gcal-calendar-name">Recall the C — Revision Schedule</p>
-    {% if gcal.connection.sync_status == 'error' %}
-    <p class="gcal-sync-note is-error">
-      Google refused the last update. Your Recall the C progress is safe.
+  {# ── STUDY ─────────────────────────────────────────────────────────── #}
+  <div class="settings-group" data-settings-group="study">
+    <p class="settings-group-eyebrow">Study</p>
+    <h2 class="section-title settings-desk-title">Learning plan</h2>
+    <p class="settings-note settings-desk-copy">
+      Self-paced is the default — pick a mix when you want one. Auto Plan places
+      3, 5, or 7 new clauses on revision-free days. Revisions always come first.
     </p>
-    <div class="gcal-retry-row">
-      <form method="post" action="/calendar/google/retry" class="gcal-inline-form">
-        <input type="hidden" name="csrf_token" value="{{ gcal.csrf_token }}">
-        <button type="submit" class="btn btn-ghost">Try again</button>
-      </form>
-      <span class="gcal-retry-aside">Nothing was lost — the next completion retries on its own.</span>
-    </div>
-    {% elif gcal.connection.sync_pending %}
-    <p class="gcal-sync-note">Syncing your revision schedule…</p>
-    {% elif gcal.connection.last_synced_at %}
-    <p class="gcal-sync-note">
-      Updates automatically as you learn and complete revisions.
-      Last synced {{ gcal.connection.last_synced_at.strftime('%d %b, %H:%M') }} UTC.
-    </p>
+    {% if can_auto_plan|default(false) and access and access.is_admin and not access.is_subscribed %}
+    <p class="settings-note settings-plan-access">Full Recall access · Admin</p>
     {% endif %}
-  </div>
-
-  <form method="post" action="/calendar/google/preferences" class="gcal-prefs-form" data-gcal-prefs>
-    <input type="hidden" name="csrf_token" value="{{ gcal.csrf_token }}">
-    <p class="gcal-prefs-eyebrow">Event preferences</p>
-    <div class="gcal-pref-grid">
-      <label class="gcal-pref">
-        <span class="gcal-pref-label">Revision time</span>
-        <input type="time" name="revision_time" value="{{ gcal.prefs.revision_time }}">
-      </label>
-      <label class="gcal-pref">
-        <span class="gcal-pref-label">Session length</span>
-        <select name="session_minutes">
-          {% for m in (15, 30, 45, 60) %}
-          <option value="{{ m }}"{% if gcal.prefs.session_minutes == m %} selected{% endif %}>{{ m }} minutes</option>
-          {% endfor %}
-        </select>
-      </label>
-      <label class="gcal-pref">
-        <span class="gcal-pref-label">Timezone</span>
-        <input type="text" name="user_timezone" class="gcal-tz-input" value="{{ gcal.prefs.timezone }}"
-               placeholder="Asia/Kolkata" spellcheck="false" data-gcal-timezone>
-      </label>
-      <label class="gcal-pref">
-        <span class="gcal-pref-label">Reminders</span>
-        <select name="reminder_cadence">
-          <option value="once"{% if gcal.prefs.reminder_cadence == 'once' %} selected{% endif %}>Once — 10 min before</option>
-          <option value="twice"{% if gcal.prefs.reminder_cadence == 'twice' %} selected{% endif %}>Twice — morning + 10 min before</option>
-          <option value="thrice"{% if gcal.prefs.reminder_cadence == 'thrice' %} selected{% endif %}>Thrice — 8 h, 4 h, 10 min before</option>
-        </select>
-      </label>
-    </div>
-    <p class="gcal-prefs-hint">Prefilled from this browser. Changing any of these updates every future event.</p>
-    <div class="gcal-actions">
-      <button type="submit" class="btn btn-accent">Save calendar preferences</button>
-      <a class="btn btn-ghost" href="https://calendar.google.com/" target="_blank" rel="noopener">Open Google Calendar</a>
-      <button type="submit" class="gcal-disconnect" form="gcal-disconnect-form">Disconnect</button>
-    </div>
-  </form>
-  <form method="post" action="/calendar/google/disconnect" id="gcal-disconnect-form"
-        class="gcal-hidden-form"
-        onsubmit="return confirm('Disconnect Google Calendar? Your Recall progress is untouched; the calendar stays in Google.');">
-    <input type="hidden" name="csrf_token" value="{{ gcal.csrf_token }}">
-  </form>
-
-  {% else %}
-  <div class="gcal-connect-row">
-    <p class="gcal-connect-body">
-      Recall the C creates its own “Recall the C — Revision Schedule” calendar and
-      keeps one event per day in sync with your upcoming revisions. It never
-      touches your personal calendars.
-    </p>
-    <p class="gcal-permission-line">
-      Google asks for one permission: <span>calendars created by this app</span>
-    </p>
-    <p class="gcal-connect-disclosure">
-      Recall the C will create and manage a separate revision calendar for your Recall the C study schedule. It will not access your unrelated personal calendars.
-    </p>
-    <p class="gcal-connect-learn">
-      <a href="/privacy#google-calendar">Learn how we use Google data</a>
-    </p>
-    <a class="btn btn-accent" href="/calendar/google/connect" data-gcal-connect>Connect Google Calendar</a>
-  </div>
-  {% endif %}
-
-  {% if gcal.status_param in ('connected', 'syncing') and not gcal.prefs.cadence_chosen %}
-  {# First successful connect: ask the reminder cadence once. The open
-     attribute keeps it working without JS; app.js upgrades to showModal.
-     Dismissing keeps the "once" default — nobody ends up notification-free. #}
-  <dialog class="guest-modal gcal-reminder-modal" open aria-labelledby="gcal-reminder-title" data-gcal-reminder-modal>
-    <div class="guest-modal-card">
-      <h2 class="guest-modal-title" id="gcal-reminder-title">Never miss a revision</h2>
-      <p class="guest-modal-body">
-        Your calendar is connected. How many reminders should each revision
-        day&rsquo;s event pop up? You can change this any time in Settings.
-      </p>
-      <div class="gcal-cadence-options">
-        <form method="post" action="/calendar/google/preferences">
-          <input type="hidden" name="csrf_token" value="{{ gcal.csrf_token }}">
-          <input type="hidden" name="reminder_cadence" value="once">
-          <button type="submit" class="gcal-cadence-btn">
-            <span class="gcal-cadence-name">Once</span>
-            <span class="gcal-cadence-desc">10 minutes before your revision time</span>
-          </button>
-        </form>
-        <form method="post" action="/calendar/google/preferences">
-          <input type="hidden" name="csrf_token" value="{{ gcal.csrf_token }}">
-          <input type="hidden" name="reminder_cadence" value="twice">
-          <button type="submit" class="gcal-cadence-btn">
-            <span class="gcal-cadence-name">Twice</span>
-            <span class="gcal-cadence-desc">One in the morning, one 10 minutes before</span>
-          </button>
-        </form>
-        <form method="post" action="/calendar/google/preferences">
-          <input type="hidden" name="csrf_token" value="{{ gcal.csrf_token }}">
-          <input type="hidden" name="reminder_cadence" value="thrice">
-          <button type="submit" class="gcal-cadence-btn">
-            <span class="gcal-cadence-name">Thrice</span>
-            <span class="gcal-cadence-desc">Spread across the day — 8 h, 4 h and 10 min before</span>
-          </button>
-        </form>
-      </div>
-      <div class="guest-modal-actions">
-        <button type="button" class="link-btn" data-gcal-reminder-dismiss>Maybe later — I&rsquo;ll get one, 10 minutes before</button>
-      </div>
-    </div>
-  </dialog>
-  {% endif %}
-  {% endif %}
-
-  <h2 class="section-title">Appearance</h2>
-  <p class="settings-note">Same control as the footer theme chip — Auto follows your system.</p>
-  <div class="settings-theme" role="group" aria-label="Theme">
-    <button type="button" class="settings-theme-btn" data-theme-set="auto">Auto</button>
-    <button type="button" class="settings-theme-btn" data-theme-set="dark">Dark</button>
-    <button type="button" class="settings-theme-btn" data-theme-set="light">Light</button>
-  </div>
-
-  <h2 class="section-title">Experience</h2>
-  <p class="settings-note">Motion follows your system's reduced-motion setting first. Sound plays once, only when a review is saved.</p>
-
-  <div class="settings-experience-row" data-experience-row="motion">
-    <div class="settings-experience-copy">
-      <p class="settings-experience-label">Motion</p>
-      <p class="settings-experience-note" data-motion-note>Reveals and smooth scrolling.</p>
-    </div>
-    <div class="settings-theme" role="group" aria-label="Motion">
-      <button type="button" class="settings-theme-btn" data-motion-set="on">On</button>
-      <button type="button" class="settings-theme-btn" data-motion-set="off">Off</button>
-    </div>
-  </div>
-
-  <div class="settings-experience-row" data-experience-row="sound">
-    <div class="settings-experience-copy">
-      <p class="settings-experience-label">Completion sounds</p>
-      <p class="settings-experience-note">One quiet chime when a review is saved.</p>
-    </div>
-    <div class="settings-theme" role="group" aria-label="Completion sounds">
-      <button type="button" class="settings-theme-btn" data-sound-set="on">On</button>
-      <button type="button" class="settings-theme-btn" data-sound-set="off">Off</button>
-    </div>
-  </div>
-
-  {% if not multiuser_enabled|default(false) or current_user %}
-  <h2 class="section-title">Learning plan</h2>
-  <p class="settings-note">
-    Self-paced is the default — pick a mix when you want one. Auto Plan places
-    3, 5, or 7 new clauses on revision-free days. Revisions always come first.
-  </p>
-  {% if can_auto_plan|default(false) and access and access.is_admin and not access.is_subscribed %}
-  <p class="settings-note settings-plan-access">Full Recall access · Admin</p>
-  {% endif %}
-  <form class="settings-form settings-plan-form" method="post" action="/settings/learning-plan">
-    {# Real radios, not buttons: they carry radiogroup semantics and arrow keys
-       natively, submit the same POST body, and keep saving with JS off. The
-       route silently downgrades to self_paced if `mode` or `daily_target` goes
-       missing, so the control must never be the thing that supplies them. #}
-    <div class="settings-row">
-      <div class="settings-row-copy">
-        <p class="settings-row-label">Pace</p>
-        <p class="settings-row-desc">Auto Plan adds new clauses on days with no revisions due. Self-paced leaves the calendar to you.</p>
-      </div>
-      {% if can_auto_plan|default(false) %}
-      <div class="segmented" role="group" aria-label="Pace">
-        <input class="segmented-input" type="radio" id="pace-self-paced" name="mode" value="self_paced"
-          {% if not learning_plan or learning_plan.mode != 'auto' %}checked{% endif %}>
-        <label class="segmented-btn" for="pace-self-paced">Self-paced</label>
-        <input class="segmented-input" type="radio" id="pace-auto" name="mode" value="auto"
-          {% if learning_plan and learning_plan.mode == 'auto' %}checked{% endif %}>
-        <label class="segmented-btn" for="pace-auto">Auto Plan</label>
-      </div>
-      {% else %}
-      <div class="segmented is-disabled" role="group" aria-label="Pace">
-        <input class="segmented-input" type="radio" id="pace-self-paced" name="mode" value="self_paced" checked>
-        <label class="segmented-btn" for="pace-self-paced">Self-paced</label>
-        <input class="segmented-input" type="radio" id="pace-auto" name="mode" value="auto" disabled>
-        <label class="segmented-btn" for="pace-auto">Auto Plan</label>
-      </div>
-      {% endif %}
-    </div>
-
-    {% if can_auto_plan|default(false) %}
-    <div class="settings-row is-stacked" data-daily-target-row>
-      <div class="settings-row-copy">
-        <p class="settings-row-label">Daily target</p>
-        <p class="settings-row-desc">New clauses placed on each learning day.</p>
-      </div>
-      <div class="segmented" role="group" aria-label="Daily target">
-        {% for n, label in ((3, 'Steady · 3'), (5, 'Balanced · 5'), (7, 'Intensive · 7')) %}
-        <input class="segmented-input" type="radio" id="target-{{ n }}" name="daily_target" value="{{ n }}"
-          {% if (learning_plan and learning_plan.daily_target == n) or (n == 5 and (not learning_plan or learning_plan.daily_target not in (3, 7))) %}checked{% endif %}>
-        <label class="segmented-btn" for="target-{{ n }}">{{ label }}</label>
-        {% endfor %}
-      </div>
-    </div>
+    {% if current_user or not multiuser_enabled|default(false) %}
+    <form class="settings-form settings-plan-form settings-card" method="post" action="/settings/learning-plan" data-plan-autosubmit>
     {% else %}
-    <p class="settings-note settings-plan-locked">
-      Part of unlocking every Article — your saved history is never deleted.
-      {% if pricing_enabled|default(false) %}
-      <a href="/pricing">Unlock every Article →</a>
+    <div class="settings-form settings-plan-form settings-card">
+    {% endif %}
+      <div class="settings-row">
+        <div class="settings-row-copy">
+          <p class="settings-row-label">Pace</p>
+          <p class="settings-row-desc">Auto fills revision-free days.</p>
+        </div>
+        {% if can_auto_plan|default(false) and not is_guest %}
+        <div class="segmented" role="group" aria-label="Pace">
+          <input class="segmented-input" type="radio" id="pace-self-paced" name="mode" value="self_paced"
+            {% if not learning_plan or learning_plan.mode != 'auto' %}checked{% endif %}>
+          <label class="segmented-btn" for="pace-self-paced">Self-paced</label>
+          <input class="segmented-input" type="radio" id="pace-auto" name="mode" value="auto"
+            {% if learning_plan and learning_plan.mode == 'auto' %}checked{% endif %}>
+          <label class="segmented-btn" for="pace-auto">Auto Plan</label>
+        </div>
+        {% else %}
+        <div class="segmented is-disabled" role="group" aria-label="Pace">
+          <input class="segmented-input" type="radio" id="pace-self-paced" name="mode" value="self_paced" checked{% if is_guest %} disabled{% endif %}>
+          <label class="segmented-btn" for="pace-self-paced">Self-paced</label>
+          <input class="segmented-input" type="radio" id="pace-auto" name="mode" value="auto" disabled>
+          <label class="segmented-btn" for="pace-auto">Auto Plan</label>
+        </div>
+        {% endif %}
+      </div>
+
+      {% if can_auto_plan|default(false) and not is_guest %}
+      <div class="settings-row is-stacked" data-daily-target-row>
+        <div class="settings-row-copy">
+          <p class="settings-row-label">Daily target</p>
+          <p class="settings-row-desc">New clauses placed on each learning day.</p>
+        </div>
+        <div class="segmented" role="group" aria-label="Daily target">
+          {% for n, label in ((3, 'Steady · 3'), (5, 'Balanced · 5'), (7, 'Intensive · 7')) %}
+          <input class="segmented-input" type="radio" id="target-{{ n }}" name="daily_target" value="{{ n }}"
+            {% if (learning_plan and learning_plan.daily_target == n) or (n == 5 and (not learning_plan or learning_plan.daily_target not in (3, 7))) %}checked{% endif %}>
+          <label class="segmented-btn" for="target-{{ n }}">{{ label }}</label>
+          {% endfor %}
+        </div>
+      </div>
+      {% elif is_guest %}
+      <div class="settings-row is-stacked is-dimmed" data-daily-target-row>
+        <div class="settings-row-copy">
+          <p class="settings-row-label">Daily target</p>
+          <p class="settings-row-desc">New clauses placed on each learning day.</p>
+        </div>
+        <div class="segmented is-disabled" role="group" aria-label="Daily target">
+          {% for n, label in ((3, 'Steady · 3'), (5, 'Balanced · 5'), (7, 'Intensive · 7')) %}
+          <input class="segmented-input" type="radio" id="target-{{ n }}" name="daily_target" value="{{ n }}" disabled{% if n == 5 %} checked{% endif %}>
+          <label class="segmented-btn" for="target-{{ n }}">{{ label }}</label>
+          {% endfor %}
+        </div>
+      </div>
+      {% else %}
+      <p class="settings-note settings-plan-locked">
+        Part of unlocking every Article — your saved history is never deleted.
+        {% if pricing_enabled|default(false) %}
+        <a href="/pricing">Unlock every Article →</a>
+        {% endif %}
+      </p>
       {% endif %}
+
+      {% if learning_plan and learning_plan.is_auto %}
+      <p class="settings-note settings-desk-copy">
+        {% if learning_plan.daily_target == 3 %}Steady · 3
+        {% elif learning_plan.daily_target == 7 %}Intensive · 7
+        {% else %}Balanced · 5{% endif %}
+        {% if learning_plan.target_effective_on %}
+        — effective since {{ learning_plan.target_effective_on.strftime('%d %b') }}
+        {% endif %}
+      </p>
+      <p class="settings-note settings-desk-copy">
+        {% if learning_plan.activated_at %}
+        Plan started {{ learning_plan.activated_at.strftime('%d %b %Y') }}
+        {% else %}
+        Not started yet
+        {% endif %}
+        {% if next_learning_day %}
+        · {% if learning_plan.activated_at %}Next{% else %}First{% endif %} learning day {{ next_learning_day.strftime('%d %b %Y') }}
+        {% endif %}
+      </p>
+      {% endif %}
+      <p class="actions settings-desk-copy">
+        <button type="submit" class="btn">Save learning plan</button>
+      </p>
+    {% if current_user or not multiuser_enabled|default(false) %}
+    </form>
+    {% else %}
+    </div>
+    {% endif %}
+    <p class="settings-footnote">Changing the pace rebuilds future days from tomorrow — today's plan holds.</p>
+  </div>
+
+  {# ── CALENDAR ──────────────────────────────────────────────────────── #}
+  {% if gcal or is_guest %}
+  <div class="settings-group" data-settings-group="calendar">
+    <p class="settings-group-eyebrow">Calendar</p>
+    <h2 class="section-title settings-desk-title">Revision calendar</h2>
+    <p class="settings-note settings-desk-copy">
+      Keep your Recall the C revision schedule automatically synced with Google Calendar.
     </p>
+
+    {% if gcal and gcal.status_param in ('connected', 'syncing') %}
+    <div class="gcal-notice is-ok" role="status">
+      <p>Google Calendar connected — syncing your revision schedule…</p>
+    </div>
+    {% elif gcal and gcal.status_param == 'saved' %}
+    <div class="gcal-notice is-ok" role="status"><p>Calendar preferences saved.</p></div>
+    {% elif gcal and gcal.status_param == 'disconnected' %}
+    <div class="gcal-notice is-quiet" role="status">
+      <p>Google Calendar disconnected. The calendar itself stays in your Google
+      account — remove it there if you no longer want it.</p>
+    </div>
+    {% elif gcal and gcal.status_param == 'error' %}
+    <div class="gcal-notice is-error" role="alert">
+      <p>Something went wrong talking to Google. Your Recall the C progress is safe — try again.</p>
+    </div>
     {% endif %}
 
-    {% if learning_plan and learning_plan.is_auto %}
-    <p class="settings-note">
-      {% if learning_plan.daily_target == 3 %}Steady · 3
-      {% elif learning_plan.daily_target == 7 %}Intensive · 7
-      {% else %}Balanced · 5{% endif %}
-      {% if learning_plan.target_effective_on %}
-      — effective since {{ learning_plan.target_effective_on.strftime('%d %b') }}
+    <div class="settings-card settings-phone-only">
+      <div class="settings-row">
+        <div class="settings-row-copy">
+          <p class="settings-row-label">Google Calendar</p>
+          <p class="settings-row-desc">{% if is_guest %}Sign in to sync{% else %}Scheduled revisions appear in your calendar{% endif %}</p>
+        </div>
+        {% if is_guest or not gcal %}
+        <button type="button" class="settings-toggle" role="switch" aria-checked="false" aria-label="Google Calendar" disabled>
+          <span class="settings-toggle-knob" aria-hidden="true"></span>
+        </button>
+        {% else %}
+        <button type="button" class="settings-toggle" role="switch"
+                aria-checked="{{ 'true' if gcal.connected else 'false' }}"
+                aria-label="Google Calendar"
+                data-gcal-toggle
+                data-gcal-on="/calendar/google/connect"
+                data-gcal-off-form="gcal-disconnect-form">
+          <span class="settings-toggle-knob" aria-hidden="true"></span>
+        </button>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if gcal and gcal.connected %}
+    <div class="gcal-connected-head">
+      <div class="gcal-status-line">
+        <p class="gcal-status">Google Calendar</p>
+        {% if gcal.connection.sync_status == 'error' %}
+        <span class="gcal-badge is-error">⚠ Sync issue</span>
+        {% elif gcal.connection.sync_pending %}
+        <span class="gcal-badge is-syncing">Syncing</span>
+        {% else %}
+        <span class="gcal-badge is-ok">✓ Connected</span>
+        {% endif %}
+      </div>
+      <p class="gcal-calendar-name">Recall the C — Revision Schedule</p>
+      {% if gcal.connection.sync_status == 'error' %}
+      <p class="gcal-sync-note is-error">
+        Google refused the last update. Your Recall the C progress is safe.
+      </p>
+      <div class="gcal-retry-row">
+        <form method="post" action="/calendar/google/retry" class="gcal-inline-form">
+          <input type="hidden" name="csrf_token" value="{{ gcal.csrf_token }}">
+          <button type="submit" class="btn btn-ghost">Try again</button>
+        </form>
+        <span class="gcal-retry-aside">Nothing was lost — the next completion retries on its own.</span>
+      </div>
+      {% elif gcal.connection.sync_pending %}
+      <p class="gcal-sync-note">Syncing your revision schedule…</p>
+      {% elif gcal.connection.last_synced_at %}
+      <p class="gcal-sync-note">
+        Updates automatically as you learn and complete revisions.
+        Last synced {{ gcal.connection.last_synced_at.strftime('%d %b, %H:%M') }} UTC.
+      </p>
       {% endif %}
-    </p>
-    {# The plan only activates once a learning day is actually worked, so this
-       line has to read as a whole sentence in both states — "Plan started" with
-       no date after it is not a sentence. #}
-    <p class="settings-note">
-      {% if learning_plan.activated_at %}
-      Plan started {{ learning_plan.activated_at.strftime('%d %b %Y') }}
-      {% else %}
-      Not started yet
-      {% endif %}
-      {% if next_learning_day %}
-      · {% if learning_plan.activated_at %}Next{% else %}First{% endif %} learning day {{ next_learning_day.strftime('%d %b %Y') }}
-      {% endif %}
-    </p>
-    <p class="settings-note">Changing the pace rebuilds future days from tomorrow — today's plan holds.</p>
+    </div>
+
+    <form method="post" action="/calendar/google/preferences" class="gcal-prefs-form" data-gcal-prefs>
+      <input type="hidden" name="csrf_token" value="{{ gcal.csrf_token }}">
+      <p class="gcal-prefs-eyebrow">Event preferences</p>
+      <div class="gcal-pref-grid">
+        <label class="gcal-pref">
+          <span class="gcal-pref-label">Revision time</span>
+          <input type="time" name="revision_time" value="{{ gcal.prefs.revision_time }}">
+        </label>
+        <label class="gcal-pref">
+          <span class="gcal-pref-label">Session length</span>
+          <select name="session_minutes">
+            {% for m in (15, 30, 45, 60) %}
+            <option value="{{ m }}"{% if gcal.prefs.session_minutes == m %} selected{% endif %}>{{ m }} minutes</option>
+            {% endfor %}
+          </select>
+        </label>
+        <label class="gcal-pref">
+          <span class="gcal-pref-label">Timezone</span>
+          <input type="text" name="user_timezone" class="gcal-tz-input" value="{{ gcal.prefs.timezone }}"
+                 placeholder="Asia/Kolkata" spellcheck="false" data-gcal-timezone>
+        </label>
+        <label class="gcal-pref">
+          <span class="gcal-pref-label">Reminders</span>
+          <select name="reminder_cadence">
+            <option value="once"{% if gcal.prefs.reminder_cadence == 'once' %} selected{% endif %}>Once — 10 min before</option>
+            <option value="twice"{% if gcal.prefs.reminder_cadence == 'twice' %} selected{% endif %}>Twice — morning + 10 min before</option>
+            <option value="thrice"{% if gcal.prefs.reminder_cadence == 'thrice' %} selected{% endif %}>Thrice — 8 h, 4 h, 10 min before</option>
+          </select>
+        </label>
+      </div>
+      <p class="gcal-prefs-hint">Prefilled from this browser. Changing any of these updates every future event.</p>
+      <div class="gcal-actions">
+        <button type="submit" class="btn btn-accent">Save calendar preferences</button>
+        <a class="btn btn-ghost" href="https://calendar.google.com/" target="_blank" rel="noopener">Open Google Calendar</a>
+        <button type="submit" class="gcal-disconnect settings-desk-copy" form="gcal-disconnect-form">Disconnect</button>
+      </div>
+    </form>
+    <form method="post" action="/calendar/google/disconnect" id="gcal-disconnect-form"
+          class="gcal-hidden-form"
+          data-gcal-disconnect
+          onsubmit="return window.matchMedia && window.matchMedia('(max-width: 560px)').matches ? true : confirm('Disconnect Google Calendar? Your Recall progress is untouched; the calendar stays in Google.');">
+      <input type="hidden" name="csrf_token" value="{{ gcal.csrf_token }}">
+    </form>
+
+    {% elif gcal %}
+    <div class="gcal-connect-row settings-desk-copy">
+      <p class="gcal-connect-body">
+        Recall the C creates its own “Recall the C — Revision Schedule” calendar and
+        keeps one event per day in sync with your upcoming revisions. It never
+        touches your personal calendars.
+      </p>
+      <p class="gcal-permission-line">
+        Google asks for one permission: <span>calendars created by this app</span>
+      </p>
+      <p class="gcal-connect-disclosure">
+        Recall the C will create and manage a separate revision calendar for your Recall the C study schedule. It will not access your unrelated personal calendars.
+      </p>
+      <p class="gcal-connect-learn">
+        <a href="/privacy#google-calendar">Learn how we use Google data</a>
+      </p>
+      <a class="btn btn-accent" href="/calendar/google/connect" data-gcal-connect>Connect Google Calendar</a>
+    </div>
     {% endif %}
-    <p class="actions">
-      <button type="submit" class="btn">Save learning plan</button>
-    </p>
-  </form>
+
+    {% if gcal and gcal.status_param in ('connected', 'syncing') and not gcal.prefs.cadence_chosen %}
+    <dialog class="guest-modal gcal-reminder-modal" open aria-labelledby="gcal-reminder-title" data-gcal-reminder-modal>
+      <div class="guest-modal-card">
+        <h2 class="guest-modal-title" id="gcal-reminder-title">Never miss a revision</h2>
+        <p class="guest-modal-body">
+          Your calendar is connected. How many reminders should each revision
+          day&rsquo;s event pop up? You can change this any time in Settings.
+        </p>
+        <div class="gcal-cadence-options">
+          <form method="post" action="/calendar/google/preferences">
+            <input type="hidden" name="csrf_token" value="{{ gcal.csrf_token }}">
+            <input type="hidden" name="reminder_cadence" value="once">
+            <button type="submit" class="gcal-cadence-btn">
+              <span class="gcal-cadence-name">Once</span>
+              <span class="gcal-cadence-desc">10 minutes before your revision time</span>
+            </button>
+          </form>
+          <form method="post" action="/calendar/google/preferences">
+            <input type="hidden" name="csrf_token" value="{{ gcal.csrf_token }}">
+            <input type="hidden" name="reminder_cadence" value="twice">
+            <button type="submit" class="gcal-cadence-btn">
+              <span class="gcal-cadence-name">Twice</span>
+              <span class="gcal-cadence-desc">One in the morning, one 10 minutes before</span>
+            </button>
+          </form>
+          <form method="post" action="/calendar/google/preferences">
+            <input type="hidden" name="csrf_token" value="{{ gcal.csrf_token }}">
+            <input type="hidden" name="reminder_cadence" value="thrice">
+            <button type="submit" class="gcal-cadence-btn">
+              <span class="gcal-cadence-name">Thrice</span>
+              <span class="gcal-cadence-desc">Spread across the day — 8 h, 4 h and 10 min before</span>
+            </button>
+          </form>
+        </div>
+        <div class="guest-modal-actions">
+          <button type="button" class="link-btn" data-gcal-reminder-dismiss>Maybe later — I&rsquo;ll get one, 10 minutes before</button>
+        </div>
+      </div>
+    </dialog>
+    {% endif %}
+  </div>
   {% endif %}
+
+  {# ── APP ───────────────────────────────────────────────────────────── #}
+  <div class="settings-group" data-settings-group="app">
+    <p class="settings-group-eyebrow">App</p>
+    <h2 class="section-title settings-desk-title">Appearance</h2>
+    <p class="settings-note settings-desk-copy">Same control as the footer theme chip — Auto follows your system.</p>
+    <div class="settings-card">
+      <div class="settings-row is-stacked">
+        <div class="settings-row-copy">
+          <p class="settings-row-label">Appearance</p>
+        </div>
+        <div class="settings-theme" role="group" aria-label="Theme">
+          <button type="button" class="settings-theme-btn" data-theme-set="auto">Auto</button>
+          <button type="button" class="settings-theme-btn" data-theme-set="light">Light</button>
+          <button type="button" class="settings-theme-btn" data-theme-set="dark">Dark</button>
+        </div>
+      </div>
+      <div class="settings-row settings-phone-only" data-text-size-row>
+        <div class="settings-row-copy">
+          <p class="settings-row-label">Bare Act text size</p>
+          <p class="settings-row-desc">Applies to Articles and sessions</p>
+        </div>
+        <div class="settings-stepper">
+          <button type="button" class="settings-stepper-btn" data-text-size-step="-1" aria-label="Smaller text">−</button>
+          <span class="settings-stepper-value" data-text-size-value>19 px</span>
+          <button type="button" class="settings-stepper-btn" data-text-size-step="1" aria-label="Larger text">+</button>
+        </div>
+      </div>
+    </div>
+
+    <h2 class="section-title settings-desk-title">Experience</h2>
+    <p class="settings-note settings-desk-copy">Motion follows your system's reduced-motion setting first. Sound plays once, only when a review is saved.</p>
+    <div class="settings-card">
+      <div class="settings-row" data-experience-row="motion">
+        <div class="settings-row-copy">
+          <p class="settings-row-label">Motion</p>
+          <p class="settings-row-desc settings-experience-note" data-motion-note>Transitions between cards and sessions</p>
+        </div>
+        <div class="settings-theme settings-desk-copy" role="group" aria-label="Motion">
+          <button type="button" class="settings-theme-btn" data-motion-set="on">On</button>
+          <button type="button" class="settings-theme-btn" data-motion-set="off">Off</button>
+        </div>
+        <button type="button" class="settings-toggle settings-phone-only" role="switch" aria-checked="true" aria-label="Motion" data-motion-toggle>
+          <span class="settings-toggle-knob" aria-hidden="true"></span>
+        </button>
+      </div>
+      <div class="settings-row settings-desk-copy" data-experience-row="sound">
+        <div class="settings-row-copy">
+          <p class="settings-row-label">Completion sounds</p>
+          <p class="settings-row-desc settings-experience-note">One quiet chime when a review is saved.</p>
+        </div>
+        <div class="settings-theme" role="group" aria-label="Completion sounds">
+          <button type="button" class="settings-theme-btn" data-sound-set="on">On</button>
+          <button type="button" class="settings-theme-btn" data-sound-set="off">Off</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# ── ACCOUNT ───────────────────────────────────────────────────────── #}
+  <div class="settings-group" data-settings-group="account">
+    <p class="settings-group-eyebrow">Account</p>
+    <div class="settings-card">
+      {% if current_user %}
+      <a class="settings-row settings-row-link" href="/profile">
+        <span class="settings-row-copy">
+          <span class="settings-row-label">Profile</span>
+        </span>
+        <span class="settings-row-meta">{{ account_label }}</span>
+        <span class="settings-account-chevron" aria-hidden="true">›</span>
+      </a>
+      {% else %}
+      <a class="settings-row settings-row-link" href="/login">
+        <span class="settings-row-copy">
+          <span class="settings-row-label">Sign in</span>
+        </span>
+        <span class="settings-account-chevron" aria-hidden="true">›</span>
+      </a>
+      {% endif %}
+      {% if multiuser_enabled|default(false) %}
+      <button type="button" class="settings-row settings-row-link" data-report-open data-report-section="Settings">
+        <span class="settings-row-copy">
+          <span class="settings-row-label">Report an issue</span>
+        </span>
+        <span class="settings-account-chevron" aria-hidden="true">›</span>
+      </button>
+      {% endif %}
+      {% if current_user %}
+      <form method="post" action="/logout" class="settings-signout-form">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button type="submit" class="settings-row settings-row-link is-danger">Sign out</button>
+      </form>
+      {% endif %}
+    </div>
+    {% if multiuser_enabled|default(false) and current_user and onboarding_status|default('') in ('skipped', 'completed') %}
+    <form method="post" action="/onboarding/state" class="settings-tour-replay">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <input type="hidden" name="status" value="active">
+      <span class="settings-tour-replay-label">
+        {% if onboarding_status == 'skipped' %}You skipped the getting-started tour.{% else %}Want a refresher on the Recall loop?{% endif %}
+      </span>
+      <button type="submit" class="btn btn-ghost">Replay the tour</button>
+    </form>
+    {% endif %}
+  </div>
 
   {% if not multiuser_enabled|default(false) %}
   {# Single-user/local install only: these radios drive the macOS LaunchAgent /
@@ -378,6 +482,7 @@
   </form>
   {% endif %}
 
+  <p class="settings-verbatim settings-phone-only">Bare Act text verbatim · Day 1 · 3 · 7 · 15 · 30 · 60</p>
   <h2 class="section-title">Legal</h2>
   <p class="settings-note">
     <a href="/terms">Terms &amp; Conditions</a>

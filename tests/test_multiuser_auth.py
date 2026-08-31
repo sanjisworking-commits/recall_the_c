@@ -365,10 +365,13 @@ def test_otp_too_many_attempts_banner(tmp_path: Path):
 
 def test_protected_route_redirects(tmp_path: Path):
     client = _multi_client(tmp_path)
-    # Progress/dashboard show inline guest gates (200). Calendar still redirects.
+    # Progress/dashboard show inline guest gates (200). Settings GET is public.
+    # Calendar still redirects.
     prog = client.get("/progress")
     assert prog.status_code == 200
     assert "Sign in to save your learning" in prog.text
+    settings = client.get("/settings", follow_redirects=False)
+    assert settings.status_code == 200
     cal = client.get("/calendar", follow_redirects=False)
     assert cal.status_code == 303
     assert cal.headers["location"].startswith("/login")

@@ -33,6 +33,7 @@
   --rail: #f7f7f5;
   --wash: #fafaf9;
   --mid: #8f8f8d;
+  --bare-size: 19px;
   --learning: #d8d8d6;
   --control-border: #c9c9c7;
   /* Segmented control. Its own tokens because the raised-segment metaphor
@@ -1815,7 +1816,7 @@ html[data-theme="dark"] .theme-toggle {
   margin: 0;
   padding: 0;
   border: none;
-  font-size: 18px;
+  font-size: var(--bare-size, 18px);
   line-height: 1.7;
 }
 
@@ -2404,7 +2405,7 @@ html[data-theme="dark"] .bare-fn-nested-trigger {
 
 .unit-text {
   white-space: pre-wrap;
-  font-size: 1.08rem;
+  font-size: var(--bare-size, 1.08rem);
   line-height: 1.65;
   margin: 1.25rem 0;
   padding: 1rem 0;
