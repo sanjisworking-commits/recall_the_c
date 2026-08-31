@@ -1185,10 +1185,13 @@ html[data-theme="dark"] .theme-toggle {
 }
 
 .learn-letters-text.is-initials {
-  font-family: ui-monospace, Menlo, Consolas, monospace;
-  font-size: 19px;
-  line-height: 1.9;
-  letter-spacing: 0.08em;
+  /* Landing §03 Letters: Fraunces scaffold, not a mono code dump.
+     "T r t m t S C…" — wide tracking, weight 600. */
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 1.7;
+  letter-spacing: 0.24em;
 }
 
 .learn-letters-cue {
@@ -1278,7 +1281,8 @@ html[data-theme="dark"] .theme-toggle {
 }
 
 .learn-letters-text.is-full {
-  font-family: inherit;
+  font-family: var(--font-display);
+  font-weight: 400;
   font-size: 18px;
   line-height: 1.7;
   letter-spacing: normal;
