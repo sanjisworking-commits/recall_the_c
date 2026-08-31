@@ -1352,6 +1352,7 @@
 
   /* ══ 03 / 16 / 18 · Part — Articles ════════════════════════════════════ */
   body[data-mscreen="part"] .panel {
+    padding-top: 2px;
     padding-left: 0;
     padding-right: 0;
   }
@@ -1366,6 +1367,22 @@
   body[data-mscreen="part"] .mobile-topbar,
   body[data-mscreen="part"] .part-head {
     background: var(--page);
+  }
+
+  /* Default topbar is 44px + 4px margin, which left a hole under All Parts
+     before PART III / the title. Size the row to the Marks chip. */
+  body[data-mscreen="part"] .mobile-topbar {
+    min-height: 36px;
+    margin: 0;
+  }
+
+  body[data-mscreen="part"] .mobile-back {
+    min-height: 36px;
+  }
+
+  body[data-mscreen="part"] .part-head {
+    padding-top: 4px;
+    margin-top: 0;
   }
 
   .part-head {

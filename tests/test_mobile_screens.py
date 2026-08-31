@@ -146,6 +146,34 @@ def test_browse_part_rows_use_node_status(tmp_path: Path):
     assert "Not started" in html
 
 
+def test_part_page_title_sits_under_all_parts(tmp_path: Path):
+    """The shared topbar is 44px + 4px margin, which read as a hole between
+    All Parts and PART III / the title. The part screen sizes that row to
+    the Marks chip and drops the extra margin."""
+    client, engine, _ = _client(tmp_path)
+    css = client.get("/static/mobile.css").text
+    topbar = css.split(
+        'body[data-mscreen="part"] .mobile-topbar {', 1
+    )
+    # The last (tightening) rule, not the shared padding/background block.
+    tight = topbar[-1].split("}", 1)[0]
+    assert "min-height: 36px" in tight
+    assert "margin: 0" in tight
+    back = css.split(
+        'body[data-mscreen="part"] .mobile-back {', 1
+    )[1].split("}", 1)[0]
+    assert "min-height: 36px" in back
+    head_block = css.split(
+        "body[data-mscreen=\"part\"] .part-head {\n    padding-top: 4px;", 1
+    )
+    assert len(head_block) == 2
+    sections = browse_parts_sections(engine, None)
+    section = next(s for s in sections if s.cards)
+    html = client.get(part_href(section.part_number)).text
+    assert "← All Parts" in html
+    assert "part-head-title" in html
+
+
 def test_article_page_links_back_to_its_part(tmp_path: Path):
     """The phone's back link needs a Part even with no reviewed Bare Act."""
     client, _, _ = _client(tmp_path)
