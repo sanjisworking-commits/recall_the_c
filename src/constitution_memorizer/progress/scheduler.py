@@ -58,6 +58,12 @@ def _record_counter(name: str, n: int = 1) -> None:
     record_request_counter(name, n)
 
 
+def _record_note(name: str, value: str) -> None:
+    from constitution_memorizer.web.request_context import record_request_note
+
+    record_request_note(name, value)
+
+
 def advance_interval(current_interval_days: int) -> int | None:
     if current_interval_days <= 0:
         return INTERVAL_LADDER[0]
@@ -205,6 +211,28 @@ class ReminderEngine:
             self._latest_paid_order = bundle.account.latest_paid_billing_order
         return bundle
 
+    def preload_account_claims(self) -> None:
+        """Seed backfill + claimed caches without a full request bootstrap.
+
+        Loads the grandfather-backfill setting and the claimed-Article set so
+        ``claimed_articles()`` does not pay those SELECTs again. Does not
+        preload progress, splits, or modes, and does not install a partial
+        settings cache.
+        """
+        if not self._backfill_checked:
+            if self._settings_cache is not None:
+                flag = self._settings_cache.get(self._FREE_ARTICLES_BACKFILLED_KEY)
+            else:
+                flag = self.repo.get_setting(
+                    self.user_id, self._FREE_ARTICLES_BACKFILLED_KEY
+                )
+            if flag == "1":
+                self._backfill_checked = True
+        if self._claimed_cache is None:
+            started = perf_counter()
+            self._claimed_cache = set(self.repo.claimed_articles(self.user_id))
+            _record_timing("claimed_articles", started)
+
     def ensure_planner_bundle(
         self,
         *,
@@ -250,16 +278,13 @@ class ReminderEngine:
                 auto_until=until,
                 horizon=horizon,
             )
-        round_trips = 1 if bundle.pipelined else 6
-        _record_counter("db_reads", round_trips)
-        _record_counter("learning_plan_reads")
-        _record_counter("study_session_reads")
-        _record_counter("auto_plan_reads")
-        _record_counter("daily_goal_reads")
-        _record_timing("learning_plan_read", started)
-        _record_timing("study_sessions_read", started)
-        _record_timing("auto_plan_read", started)
-        _record_timing("daily_goal_read", started)
+        _record_counter("planner_selects", 6)
+        _record_counter("planner_round_trips", 1 if bundle.pipelined else 6)
+        _record_timing("planner_bundle", started)
+        if bundle.pipeline_fallback_reason:
+            _record_note(
+                "planner_pipeline_fallback_reason", bundle.pipeline_fallback_reason
+            )
         self._seed_planner_bundle(bundle)
         return bundle
 

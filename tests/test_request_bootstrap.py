@@ -760,3 +760,57 @@ def test_authenticated_dashboard_entitlements_use_account_pack(tmp_path: Path):
     assert repo.claimed_articles_calls == 0
     assert repo.latest_paid_billing_order_calls == 0
     assert repo.get_setting_calls == 0
+
+
+def test_browse_and_calendar_include_account_when_entitlements_on(tmp_path: Path):
+    conn = open_progress_db(tmp_path / "progress.db")
+    repo = CountingProgressRepo(ProgressRepository(conn))
+    provider = FakeAuthProvider()
+    provider.seed_google_user(
+        user_id=USER, email=USER_EMAIL, display_name="Test User"
+    )
+    app = create_app(
+        units_path=MINI_UNITS,
+        db_path=tmp_path / "unused.db",
+        multiuser=True,
+        multiuser_settings=_settings(ARTICLE_ENTITLEMENTS_ENABLED="true"),
+        auth_provider=provider,
+        session_store=InMemorySessionStore(),
+        progress_repo=repo,
+    )
+    client = TestClient(app)
+    start = client.get("/auth/google/start", follow_redirects=False)
+    state = start.cookies.get("rtc_oauth_state")
+    client.get(
+        f"/auth/callback?code=fake-google-code&state={state}",
+        follow_redirects=False,
+    )
+    repo.reset_counts()
+    assert client.get("/browse").status_code == 200
+    assert repo.load_request_bootstrap_calls == 1
+    assert repo.last_bootstrap_kwargs is not None
+    assert repo.last_bootstrap_kwargs.get("include_news") is True
+    assert repo.last_bootstrap_kwargs.get("include_account") is True
+    assert repo.claimed_articles_calls == 0
+    repo.reset_counts()
+    assert client.get("/calendar").status_code == 200
+    assert repo.load_request_bootstrap_calls == 1
+    assert repo.last_bootstrap_kwargs is not None
+    assert repo.last_bootstrap_kwargs.get("include_account") is True
+    assert repo.claimed_articles_calls == 0
+
+
+def test_preload_account_claims_skips_followup_selects(tmp_path: Path):
+    repo, engine = _seeded_engine(tmp_path)
+    engine.set_setting("free_articles_backfilled", "1")
+    engine._invalidate_settings_cache()
+    engine._invalidate_account_cache()
+    repo.reset_counts()
+    engine.preload_account_claims()
+    assert repo.get_setting_calls == 1
+    assert repo.claimed_articles_calls == 1
+    assert repo.load_request_bootstrap_calls == 0
+    repo.reset_counts()
+    assert engine.claimed_articles() == set()
+    assert repo.get_setting_calls == 0
+    assert repo.claimed_articles_calls == 0

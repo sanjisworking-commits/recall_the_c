@@ -5,6 +5,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
+from time import perf_counter
 from typing import Any, Literal
 
 from constitution_memorizer.learning.schemas import LearningUnit
@@ -18,6 +19,7 @@ from constitution_memorizer.web.progress_stats import (
     _is_completed,
     all_article_progress,
 )
+from constitution_memorizer.web.request_context import record_request_timing
 from constitution_memorizer.web.service import (
     AUTO_LEARNING_KIND,
     DAY_PLAN_KIND,
@@ -522,6 +524,7 @@ def build_dashboard_context(
     next_learning_day = None
     today_new_count = len(today_new_ids) if auto_selected else 0
     today_pace = pace_label(plan.daily_target if auto_selected else None)
+    started = perf_counter()
     try:
         from constitution_memorizer.planner.roadmap import roadmap_horizon
 
@@ -559,7 +562,9 @@ def build_dashboard_context(
     except Exception as error:  # noqa: BLE001
         if not _is_missing_optional_schema(error):
             raise
+    record_request_timing("planner_project", started)
 
+    sections_started = perf_counter()
     learning_cta = "browse"
     if today_mode == "learning":
         if learning_remaining:
@@ -596,6 +601,7 @@ def build_dashboard_context(
     goal_total = sum(1 for item in today_units if item.status != "deferred")
     goal_pct = int(round(100 * goal_done / goal_total)) if goal_total else 0
     streak = daily_goal_streak(eng, as_of=today)
+    record_request_timing("dashboard_sections", sections_started)
 
     return {
         "today_mode": today_mode,

@@ -264,6 +264,7 @@ class PlannerReadBundle:
     has_auto_plan_tail: bool
     daily_goal_dates: tuple[date, ...]
     pipelined: bool = False
+    pipeline_fallback_reason: str | None = None
 
     def session(self, kind: str) -> StudySession | None:
         return self.sessions_by_kind.get(kind)

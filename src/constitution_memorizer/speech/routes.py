@@ -31,7 +31,7 @@ from constitution_memorizer.speech.provider import (
     Transcript,
 )
 from constitution_memorizer.web.entitlements import resolve_learn_access
-from constitution_memorizer.web.request_context import bound_engine
+from constitution_memorizer.web.request_context import bound_engine, record_request_timing
 
 router = APIRouter()
 
@@ -122,11 +122,13 @@ async def transcribe_utterance(
         provider = request.app.state.speech_provider
         keyterms = keyterm_shortlist(unit.text)
         try:
+            started = time.perf_counter()
             result: Transcript = await provider.transcribe(
                 audio_bytes,
                 mime_type=content_type.split(";")[0].strip() or "audio/webm",
                 keyterms=keyterms,
             )
+            record_request_timing("speech_transcribe", started)
         except SpeechUnavailable:
             return _error("unavailable", 503)
         except SpeechError as exc:

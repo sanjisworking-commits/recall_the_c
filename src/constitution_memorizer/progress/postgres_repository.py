@@ -231,13 +231,32 @@ def _row_profile(row: Any) -> dict[str, str | None]:
     }
 
 
-def _pipeline_supported() -> bool:
+def _pipeline_capability() -> tuple[bool, str | None]:
+    """Probe psycopg pipeline support without catching SQL or connection errors.
+
+    Returns ``(True, None)`` when ``conn.pipeline()`` should be used.
+    Returns ``(False, reason)`` only for a narrow capability miss (the
+    installed Pipeline API reports unsupported, or the probe callable is
+    present and returns false). A missing probe on a build that still
+    exposes ``Connection.pipeline`` is treated as supported so we attempt
+    the real API rather than silently taking six sequential round trips.
+    """
     from psycopg import Pipeline
 
-    checker = getattr(Pipeline, "has_pipeline", None) or getattr(
-        Pipeline, "is_supported", None
+    checker = getattr(Pipeline, "is_supported", None) or getattr(
+        Pipeline, "has_pipeline", None
     )
-    return bool(checker()) if checker is not None else False
+    if checker is None:
+        return True, None
+    if checker():
+        return True, None
+    name = getattr(checker, "__name__", "pipeline_capability")
+    return False, f"{name}_false"
+
+
+def _pipeline_supported() -> bool:
+    supported, _reason = _pipeline_capability()
+    return supported
 
 
 _BOOTSTRAP_PROGRESS_SQL = """
@@ -1636,7 +1655,7 @@ class PostgresProgressRepository:
     ) -> PlannerReadBundle:
         """Pipeline independent planner reads on one borrowed connection."""
         uid = as_user_id(user_id)
-        pipelined = _pipeline_supported()
+        pipelined, fallback_reason = _pipeline_capability()
         with self._pool.connection() as conn:
             with ExitStack() as stack:
                 plan_cur = stack.enter_context(conn.cursor(row_factory=self._dict_row))
@@ -1688,6 +1707,7 @@ class PostgresProgressRepository:
             has_auto_plan_tail=tail_row is not None,
             daily_goal_dates=tuple(goals),
             pipelined=pipelined,
+            pipeline_fallback_reason=fallback_reason,
         )
 
     def load_completion_state(
