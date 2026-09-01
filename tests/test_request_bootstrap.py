@@ -56,6 +56,10 @@ class CountingProgressRepo:
         self.get_notification_frequency_calls = 0
         self.claimed_articles_calls = 0
         self.latest_paid_billing_order_calls = 0
+        self.claim_article_calls = 0
+        self.set_setting_calls = 0
+        self.get_gloss_calls = 0
+        self.list_daily_goal_dates_calls = 0
         self.last_bootstrap_kwargs = None
 
     def get_progress(self, user_id, unit_id: str):
@@ -113,6 +117,22 @@ class CountingProgressRepo:
     def latest_paid_billing_order(self, user_id):
         self.latest_paid_billing_order_calls += 1
         return self.inner.latest_paid_billing_order(user_id)
+
+    def claim_article(self, user_id, article_number):
+        self.claim_article_calls += 1
+        return self.inner.claim_article(user_id, article_number)
+
+    def set_setting(self, user_id, key: str, value: str):
+        self.set_setting_calls += 1
+        return self.inner.set_setting(user_id, key, value)
+
+    def get_gloss(self, user_id, article_number: str):
+        self.get_gloss_calls += 1
+        return self.inner.get_gloss(user_id, article_number)
+
+    def list_daily_goal_dates(self, user_id, *, until, limit: int = 400):
+        self.list_daily_goal_dates_calls += 1
+        return self.inner.list_daily_goal_dates(user_id, until=until, limit=limit)
 
     def load_request_bootstrap(self, user_id, **kwargs):
         self.load_request_bootstrap_calls += 1
@@ -229,7 +249,9 @@ def test_loaded_empty_news_cache_does_not_query(tmp_path: Path):
     assert repo.get_news_articles_raw_calls == 1
 
 
-def _counting_client(tmp_path: Path) -> tuple[TestClient, CountingProgressRepo]:
+def _counting_client(
+    tmp_path: Path, **settings_overrides
+) -> tuple[TestClient, CountingProgressRepo]:
     conn = open_progress_db(tmp_path / "progress.db")
     repo = CountingProgressRepo(ProgressRepository(conn))
     provider = FakeAuthProvider()
@@ -242,7 +264,7 @@ def _counting_client(tmp_path: Path) -> tuple[TestClient, CountingProgressRepo]:
         units_path=MINI_UNITS,
         db_path=tmp_path / "unused.db",
         multiuser=True,
-        multiuser_settings=_settings(),
+        multiuser_settings=_settings(**settings_overrides),
         auth_provider=provider,
         session_store=InMemorySessionStore(),
         progress_repo=repo,
@@ -310,6 +332,117 @@ def test_guest_browse_does_not_bootstrap(tmp_path: Path):
     assert resp.status_code == 200
     assert repo.load_request_bootstrap_calls == 0
     assert 'aria-label="' not in resp.text or "due or overdue" not in resp.text
+
+
+def _guest_client(tmp_path: Path) -> tuple[TestClient, CountingProgressRepo]:
+    conn = open_progress_db(tmp_path / "progress.db")
+    repo = CountingProgressRepo(ProgressRepository(conn))
+    app = create_app(
+        units_path=MINI_UNITS,
+        db_path=tmp_path / "unused.db",
+        multiuser=True,
+        multiuser_settings=_settings(),
+        auth_provider=FakeAuthProvider(),
+        session_store=InMemorySessionStore(),
+        progress_repo=repo,
+    )
+    return TestClient(app), repo
+
+
+def test_guest_browse_article_does_not_bootstrap(tmp_path: Path):
+    client, repo = _guest_client(tmp_path)
+    resp = client.get("/browse/article/20")
+    assert resp.status_code == 200
+    assert repo.load_request_bootstrap_calls == 0
+    assert "Learn this Article" in resp.text
+
+
+def test_authenticated_browse_article_one_bootstrap(
+    tmp_path: Path, caplog: logging.LogCaptureFixture
+):
+    client, repo = _counting_client(tmp_path, ARTICLE_ENTITLEMENTS_ENABLED="true")
+    with caplog.at_level(logging.INFO, logger="uvicorn.error"):
+        caplog.clear()
+        resp = client.get("/browse/article/20")
+    assert resp.status_code == 200
+    assert "Learn this Article" in resp.text
+    assert repo.load_request_bootstrap_calls == 1
+    assert repo.last_bootstrap_kwargs is not None
+    assert repo.last_bootstrap_kwargs.get("include_news") is True
+    assert repo.last_bootstrap_kwargs.get("include_account") is True
+    assert repo.list_all_progress_calls == 0
+    assert repo.list_split_preferences_calls == 0
+    assert repo.get_theme_calls == 0
+    assert repo.get_news_articles_raw_calls == 0
+    assert repo.claimed_articles_calls == 0
+    assert repo.get_setting_calls == 0
+    assert repo.get_gloss_calls == 1
+    line = _breakdown_messages(caplog)[0]
+    assert "path=/browse/article/20" in line
+    assert "request_bootstrap_n=1" in line
+    assert "gloss_read_n=1" in line
+    assert "access_override_n=1" in line
+    assert "progress_preload_" not in line
+    assert "split_prefs_" not in line
+    assert "news_setting_" not in line
+    assert "theme_" not in line
+    assert "free_articles_backfill_check_" not in line
+    assert "claimed_articles_" not in line
+
+
+def _assert_progress_query_shape(repo: CountingProgressRepo) -> None:
+    assert repo.load_request_bootstrap_calls == 1
+    assert repo.last_bootstrap_kwargs is not None
+    assert repo.last_bootstrap_kwargs.get("include_account") is not True
+    assert repo.list_all_progress_calls == 0
+    assert repo.list_split_preferences_calls == 0
+    assert repo.get_theme_calls == 0
+    assert repo.count_by_status_calls == 0
+    assert repo.list_daily_goal_dates_calls == 1
+
+
+def test_authenticated_progress_one_bootstrap(
+    tmp_path: Path, caplog: logging.LogCaptureFixture
+):
+    client, repo = _counting_client(tmp_path)
+    with caplog.at_level(logging.INFO, logger="uvicorn.error"):
+        caplog.clear()
+        resp = client.get("/progress")
+    assert resp.status_code == 200
+    _assert_progress_query_shape(repo)
+    line = _breakdown_messages(caplog)[0]
+    assert "path=/progress" in line
+    assert "request_bootstrap_n=1" in line
+    assert "progress_dashboard_n=1" in line
+    assert "progress_continue_n=1" in line
+    assert "progress_stats_n=1" in line
+    assert "progress_articles_n=1" in line
+    assert "progress_map_n=1" in line
+    assert "progress_recent_n=1" in line
+    assert "daily_goal_read_n=1" in line
+    assert "progress_preload_" not in line
+    assert "split_prefs_" not in line
+    assert "theme_" not in line
+
+
+def test_authenticated_progress_mastered_matches_progress_shape(
+    tmp_path: Path, caplog: logging.LogCaptureFixture
+):
+    client, repo = _counting_client(tmp_path)
+    with caplog.at_level(logging.INFO, logger="uvicorn.error"):
+        caplog.clear()
+        resp = client.get("/progress/mastered")
+    assert resp.status_code == 200
+    _assert_progress_query_shape(repo)
+    line = _breakdown_messages(caplog)[0]
+    assert "path=/progress/mastered" in line
+    assert "request_bootstrap_n=1" in line
+    assert "progress_dashboard_n=1" in line
+    assert "progress_continue_n=1" in line
+    assert "daily_goal_read_n=1" in line
+    assert "progress_preload_" not in line
+    assert "split_prefs_" not in line
+    assert "theme_" not in line
 
 
 def test_blank_profile_still_redirects_to_welcome(tmp_path: Path):
@@ -396,6 +529,7 @@ def test_dashboard_browse_breakdown_has_single_bootstrap(
     assert len(dash) == 1
     assert "auth_session_n=1" in dash[0]
     assert "request_bootstrap_n=1" in dash[0]
+    assert "dashboard_prep_n=1" in dash[0]
     assert "progress_preload_" not in dash[0]
     assert "split_prefs_" not in dash[0]
     assert "theme_" not in dash[0]
@@ -683,6 +817,7 @@ def test_engine_settings_and_account_caches_skip_repo(tmp_path: Path):
     assert "cloze" in engine.modes_seen("clause-1")
     assert engine.latest_paid_billing_order() is None
     engine.claimed_articles()
+    assert engine._backfill_checked is True
     assert repo.get_theme_calls == 0
     assert repo.get_news_articles_raw_calls == 0
     assert repo.get_notification_frequency_calls == 0
@@ -722,6 +857,47 @@ def test_seeded_claimed_cache_still_runs_grandfather(tmp_path: Path):
     assert repo.claimed_articles_calls == 0
     assert repo.get_setting_calls == 0
     assert repo.inner.get_setting(USER, "free_articles_backfilled") == "1"
+
+
+def test_grandfather_backfill_uses_bootstrap_caches_without_reread(tmp_path: Path):
+    conn = open_progress_db(tmp_path / "progress.db")
+    repo = CountingProgressRepo(ProgressRepository(conn))
+    engine = ReminderEngine.from_repository(repo, _catalog(), user_id=USER)
+    for mode in LEARN_MODES:
+        engine.mark_mode_seen("clause-1", mode)
+    engine.mark_done("clause-1", as_of=date(2026, 8, 15), require_all_modes=False)
+    engine.set_setting("free_articles_backfilled", "0")
+    engine = engine.for_user(USER)
+    bundle = engine.bootstrap_request(include_account=True)
+    assert bundle.account is not None
+    assert engine._settings_cache.get("free_articles_backfilled") != "1"
+    assert engine._progress_cache is not None
+    assert engine._claimed_cache is not None
+    assert engine._backfill_checked is False
+    repo.reset_counts()
+
+    claimed = engine.claimed_articles()
+
+    assert "20" in claimed
+    assert "20" in engine._claimed_cache
+    assert engine.get_setting("free_articles_backfilled") == "1"
+    assert engine._settings_cache.get("free_articles_backfilled") == "1"
+    assert engine._backfill_checked is True
+    assert repo.list_all_progress_calls == 0
+    assert repo.claimed_articles_calls == 0
+    assert repo.get_setting_calls == 0
+    assert repo.claim_article_calls >= 1
+    assert repo.set_setting_calls >= 1
+    assert repo.inner.get_setting(USER, "free_articles_backfilled") == "1"
+
+    repo.reset_counts()
+    claimed_again = engine.claimed_articles()
+    assert claimed_again == claimed
+    assert repo.list_all_progress_calls == 0
+    assert repo.claimed_articles_calls == 0
+    assert repo.get_setting_calls == 0
+    assert repo.claim_article_calls == 0
+    assert repo.set_setting_calls == 0
 
 
 def test_authenticated_dashboard_entitlements_use_account_pack(tmp_path: Path):
@@ -792,6 +968,14 @@ def test_browse_and_calendar_include_account_when_entitlements_on(tmp_path: Path
     assert repo.last_bootstrap_kwargs.get("include_news") is True
     assert repo.last_bootstrap_kwargs.get("include_account") is True
     assert repo.claimed_articles_calls == 0
+    repo.reset_counts()
+    assert client.get("/browse/article/20").status_code == 200
+    assert repo.load_request_bootstrap_calls == 1
+    assert repo.last_bootstrap_kwargs is not None
+    assert repo.last_bootstrap_kwargs.get("include_news") is True
+    assert repo.last_bootstrap_kwargs.get("include_account") is True
+    assert repo.claimed_articles_calls == 0
+    assert repo.get_gloss_calls == 1
     repo.reset_counts()
     assert client.get("/calendar").status_code == 200
     assert repo.load_request_bootstrap_calls == 1

@@ -338,6 +338,5 @@ def test_authenticated_browse_article_does_not_require_bulk_progress(tmp_path: P
     client, repo = _counting_client(tmp_path)
     resp = client.get("/browse/article/20")
     assert resp.status_code == 200
-    # Article 20 is not in the amendment seed, so the page must not force a
-    # bulk list_all_progress solely for the navbar badge.
+    assert repo.load_request_bootstrap_calls == 1
     assert repo.list_all_progress_calls == 0

@@ -248,6 +248,7 @@ def test_authenticated_dashboard_breakdown_includes_auth_session(
     assert "news_setting_" not in line
     assert "theme_" not in line
     assert "dashboard_build_n=" in line
+    assert "dashboard_prep_n=1" in line
     assert "template_n=" in line
 
 

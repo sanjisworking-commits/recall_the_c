@@ -205,10 +205,19 @@ class ReminderEngine:
             self._modes_seen_cache = {
                 unit_id: set(modes) for unit_id, modes in bundle.modes_seen_by_unit.items()
             }
+            _record_counter(
+                "modes_seen_rows",
+                sum(len(modes) for modes in bundle.modes_seen_by_unit.values()),
+            )
         if bundle.account is not None:
             self._claimed_cache = set(bundle.account.claimed_articles)
             self._billing_loaded = True
             self._latest_paid_order = bundle.account.latest_paid_billing_order
+        if (
+            self._settings_cache is not None
+            and self._settings_cache.get(self._FREE_ARTICLES_BACKFILLED_KEY) == "1"
+        ):
+            self._backfill_checked = True
         return bundle
 
     def preload_account_claims(self) -> None:
@@ -675,6 +684,7 @@ class ReminderEngine:
         plan_date: date,
         unit_ids: list[str],
     ) -> StudySession:
+        started = perf_counter()
         session = self.repo.create_study_session(
             self.user_id,
             session_id=session_id,
@@ -682,6 +692,7 @@ class ReminderEngine:
             plan_date=plan_date,
             unit_ids=unit_ids,
         )
+        _record_timing("session_write", started)
         self._invalidate_session_cache()
         return session
 
