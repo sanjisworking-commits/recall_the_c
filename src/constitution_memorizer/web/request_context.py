@@ -21,6 +21,10 @@ _request_timings: ContextVar[dict[str, tuple[float, int]] | None] = ContextVar(
 _request_counters: ContextVar[dict[str, int] | None] = ContextVar(
     "request_counters", default=None
 )
+# name -> diagnostic string (logged only when set).
+_request_notes: ContextVar[dict[str, str] | None] = ContextVar(
+    "request_notes", default=None
+)
 
 TIMING_STAGES: tuple[str, ...] = (
     "auth_session",
@@ -33,6 +37,8 @@ TIMING_STAGES: tuple[str, ...] = (
     "browse_build",
     "article_build",
     "dashboard_build",
+    "dashboard_sections",
+    "planner_bundle",
     "learning_plan_read",
     "study_sessions_read",
     "auto_plan_read",
@@ -40,6 +46,9 @@ TIMING_STAGES: tuple[str, ...] = (
     "planner_project",
     "daily_goal_read",
     "calendar_build",
+    "progress_dashboard",
+    "revision_start",
+    "speech_transcribe",
     "learn_build",
     "completion",
     "modes_seen",
@@ -79,9 +88,13 @@ REQUEST_COUNTERS: tuple[str, ...] = (
     "study_session_reads",
     "auto_plan_reads",
     "daily_goal_reads",
+    "planner_selects",
+    "planner_round_trips",
 )
 _REQUEST_COUNTER_SET = frozenset(REQUEST_COUNTERS)
-_LEARN_BREAKDOWN_SUFFIXES = frozenset({"choose", "seen", "done"})
+REQUEST_NOTES: tuple[str, ...] = ("planner_pipeline_fallback_reason",)
+_REQUEST_NOTE_SET = frozenset(REQUEST_NOTES)
+_LEARN_BREAKDOWN_SUFFIXES = frozenset({"choose", "seen", "done", "quiz"})
 _BREAKDOWN_PATHS = frozenset(
     {
         "/dashboard",
@@ -93,6 +106,9 @@ _BREAKDOWN_PATHS = frozenset(
         "/calendar/google/callback",
         "/calendar/google/preferences",
         "/calendar/google/disconnect",
+        "/progress",
+        "/progress/mastered",
+        "/revision/start",
     }
 )
 
@@ -104,6 +120,13 @@ def wants_request_breakdown(path: str) -> bool:
     parts = [segment for segment in path.split("/") if segment]
     if len(parts) == 3 and parts[0] == "browse" and parts[1] == "article":
         return True
+    if (
+        len(parts) == 4
+        and parts[0] == "learn"
+        and parts[2] == "speech"
+        and parts[3] == "transcribe"
+    ):
+        return True
     if not parts or parts[0] != "learn":
         return False
     if len(parts) == 2:
@@ -114,6 +137,7 @@ def wants_request_breakdown(path: str) -> bool:
 def begin_request_timings() -> Token:
     """Bind empty timing + counter collectors for this request."""
     _request_counters.set({})
+    _request_notes.set({})
     return _request_timings.set({})
 
 
@@ -121,6 +145,7 @@ def reset_request_timings(token: Token) -> None:
     """Restore the previous collector binding."""
     _request_timings.reset(token)
     _request_counters.set(None)
+    _request_notes.set(None)
 
 
 def snapshot_request_timings() -> dict[str, tuple[float, int]]:
@@ -156,6 +181,24 @@ def record_request_counter(name: str, n: int = 1) -> None:
 def snapshot_request_counters() -> dict[str, int]:
     """Independent copy of recorded counters, or {} if no collector is bound."""
     current = _request_counters.get()
+    if current is None:
+        return {}
+    return dict(current)
+
+
+def record_request_note(name: str, value: str) -> None:
+    """Record a whitelisted diagnostic string. No-op outside a request."""
+    if name not in _REQUEST_NOTE_SET:
+        raise ValueError(f"Unknown request note: {name}")
+    current = _request_notes.get()
+    if current is None:
+        return
+    current[name] = value
+
+
+def snapshot_request_notes() -> dict[str, str]:
+    """Independent copy of recorded notes, or {} if no collector is bound."""
+    current = _request_notes.get()
     if current is None:
         return {}
     return dict(current)

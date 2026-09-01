@@ -44,6 +44,9 @@ class CountingProgressRepo:
         self.clear_modes_seen_calls = 0
         self.get_gloss_calls = 0
         self.get_theme_calls = 0
+        self.get_setting_calls = 0
+        self.claimed_articles_calls = 0
+        self.last_bootstrap_kwargs = None
 
     def __getattr__(self, name: str):
         return getattr(self.inner, name)
@@ -62,7 +65,16 @@ class CountingProgressRepo:
 
     def load_request_bootstrap(self, user_id, **kwargs):
         self.load_request_bootstrap_calls += 1
+        self.last_bootstrap_kwargs = dict(kwargs)
         return self.inner.load_request_bootstrap(user_id, **kwargs)
+
+    def get_setting(self, user_id, key: str):
+        self.get_setting_calls += 1
+        return self.inner.get_setting(user_id, key)
+
+    def claimed_articles(self, user_id):
+        self.claimed_articles_calls += 1
+        return self.inner.claimed_articles(user_id)
 
     def load_completion_state(self, user_id, unit_id: str):
         self.load_completion_state_calls += 1
@@ -130,6 +142,8 @@ class CountingProgressRepo:
             "clear_modes_seen": self.clear_modes_seen_calls,
             "get_gloss": self.get_gloss_calls,
             "get_theme": self.get_theme_calls,
+            "get_setting": self.get_setting_calls,
+            "claimed_articles": self.claimed_articles_calls,
         }
 
     def reset_counts(self) -> None:
@@ -137,8 +151,8 @@ class CountingProgressRepo:
             setattr(self, f"{key}_calls", 0)
 
 
-def _settings() -> MultiUserSettings:
-    return MultiUserSettings(
+def _settings(**overrides) -> MultiUserSettings:
+    base = dict(
         _env_file=None,
         APP_ENV="test",
         MULTIUSER_ENABLED="true",
@@ -150,9 +164,13 @@ def _settings() -> MultiUserSettings:
         DATABASE_URL="",
         COOKIE_SECURE="false",
     )
+    base.update(overrides)
+    return MultiUserSettings(**base)
 
 
-def _counting_client(tmp_path: Path) -> tuple[TestClient, CountingProgressRepo]:
+def _counting_client(
+    tmp_path: Path, **settings_overrides
+) -> tuple[TestClient, CountingProgressRepo]:
     clear_settings_cache()
     conn = open_progress_db(tmp_path / "progress.db")
     repo = CountingProgressRepo(ProgressRepository(conn))
@@ -166,7 +184,7 @@ def _counting_client(tmp_path: Path) -> tuple[TestClient, CountingProgressRepo]:
         units_path=MINI_UNITS,
         db_path=tmp_path / "unused.db",
         multiuser=True,
-        multiuser_settings=_settings(),
+        multiuser_settings=_settings(**settings_overrides),
         auth_provider=provider,
         session_store=InMemorySessionStore(),
         progress_repo=repo,
@@ -202,6 +220,11 @@ def test_wants_request_breakdown_paths():
     assert wants_request_breakdown("/learn/clause-2/choose") is True
     assert wants_request_breakdown("/learn/clause-1/seen") is True
     assert wants_request_breakdown("/learn/clause-1/done") is True
+    assert wants_request_breakdown("/learn/clause-1/quiz") is True
+    assert wants_request_breakdown("/learn/clause-1/speech/transcribe") is True
+    assert wants_request_breakdown("/progress") is True
+    assert wants_request_breakdown("/progress/mastered") is True
+    assert wants_request_breakdown("/revision/start") is True
 
     assert wants_request_breakdown("/learn/clause-1/again") is False
     assert wants_request_breakdown("/learn/clause-1/reset") is False
@@ -455,3 +478,50 @@ def test_learn_logs_omit_sensitive_data(tmp_path: Path, caplog):
     assert "cookie" not in joined.lower()
     assert "token" not in joined.lower()
     assert "phone" not in joined.lower()
+
+
+def test_seen_preloads_claims_without_full_bootstrap(tmp_path: Path):
+    client, repo = _counting_client(
+        tmp_path, ARTICLE_ENTITLEMENTS_ENABLED="true"
+    )
+    engine = client.app.state.engine.for_user(USER)
+    engine.set_setting("free_articles_backfilled", "1")
+    engine.claim_article("20")
+    repo.reset_counts()
+    resp = client.post("/learn/clause-1/seen", data={"mode": "cloze"})
+    assert resp.status_code == 200
+    assert resp.json().get("persisted") is True
+    assert repo.load_request_bootstrap_calls == 0
+    assert repo.mark_mode_seen_calls == 1
+    assert repo.get_setting_calls >= 1
+    assert repo.claimed_articles_calls == 1
+
+
+def test_learn_get_includes_account_when_entitlements_on(tmp_path: Path):
+    client, repo = _counting_client(
+        tmp_path, ARTICLE_ENTITLEMENTS_ENABLED="true"
+    )
+    repo.reset_counts()
+    resp = client.get("/learn/clause-1")
+    assert resp.status_code == 200
+    assert repo.load_request_bootstrap_calls == 1
+    assert repo.last_bootstrap_kwargs is not None
+    assert repo.last_bootstrap_kwargs.get("include_modes") is True
+    assert repo.last_bootstrap_kwargs.get("include_account") is True
+    assert repo.claimed_articles_calls == 0
+
+
+def test_progress_and_revision_start_emit_breakdown(tmp_path: Path, caplog):
+    client, _repo = _counting_client(tmp_path)
+    with caplog.at_level(logging.INFO, logger="uvicorn.error"):
+        caplog.clear()
+        assert client.get("/progress").status_code == 200
+        progress_lines = _breakdown_messages(caplog)
+        caplog.clear()
+        start = client.post("/revision/start", follow_redirects=False)
+        revision_lines = _breakdown_messages(caplog)
+    assert progress_lines
+    assert "progress_dashboard_n=1" in progress_lines[0]
+    assert start.status_code in {303, 200}
+    assert revision_lines
+    assert "revision_start_n=1" in revision_lines[0]

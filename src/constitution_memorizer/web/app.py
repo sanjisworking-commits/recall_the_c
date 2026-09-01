@@ -88,6 +88,7 @@ from constitution_memorizer.web.request_context import (
     record_request_timing,
     reset_request_timings,
     snapshot_request_counters,
+    snapshot_request_notes,
     snapshot_request_timings,
     wants_request_breakdown,
 )
@@ -722,7 +723,8 @@ def create_app(
                 )
                 snapshot = snapshot_request_timings()
                 counters = snapshot_request_counters()
-                if snapshot or counters:
+                notes = snapshot_request_notes()
+                if snapshot or counters or notes:
                     parts = [
                         f"request_breakdown method={request.method} path={path}"
                     ]
@@ -734,6 +736,8 @@ def create_app(
                         parts.append(f"{stage}_n={count}")
                     for name, count in counters.items():
                         parts.append(f"{name}={count}")
+                    for name, value in notes.items():
+                        parts.append(f"{name}={value}")
                     timing_logger.info(" ".join(parts))
             if token is not None:
                 reset_request_timings(token)
@@ -948,7 +952,10 @@ def create_app(
             # include_modes loads every unit's seen-set in the same bundle, so
             # the clause rail can show per-clause progress without one
             # roundtrip per sibling.
-            eng.bootstrap_request(include_modes=True)
+            eng.bootstrap_request(
+                include_modes=True,
+                include_account=entitlements_active(request),
+            )
 
         # Every hop inside a session has to keep carrying it, so redirects
         # rebuild their query instead of hand-writing one parameter.
@@ -1228,6 +1235,8 @@ def create_app(
         # completed attempt and the server takes its word (no leaderboard).
         # Test is /quiz-only — never recorded here.
         # Locked modes must never be recorded as seen (UI lock is not trusted).
+        if entitlements_active(request):
+            eng.preload_account_claims()
         access = resolve_learn_access(request, eng, unit.article_number)
         if access.is_locked(mode):
             return JSONResponse(
@@ -1658,7 +1667,9 @@ def create_app(
             return RedirectResponse(url="/login?next=/dashboard", status_code=303)
         today = user_today(eng)
         try:
+            started = time.perf_counter()
             session = start_or_resume_revision(eng, as_of=today)
+            record_request_timing("revision_start", started)
         except Exception as error:  # noqa: BLE001 — re-raised unless it is the schema gap
             if not _is_missing_optional_schema(error):
                 raise
@@ -2093,7 +2104,10 @@ def create_app(
     async def browse_index(request: Request) -> HTMLResponse:
         eng = _engine()
         if not getattr(request.state, "is_guest", False):
-            eng.bootstrap_request(include_news=True)
+            eng.bootstrap_request(
+                include_news=True,
+                include_account=entitlements_active(request),
+            )
         started = time.perf_counter()
         sections = browse_parts_sections(eng, app.state.reviewed)
         record_request_timing("browse_build", started)
@@ -2136,7 +2150,10 @@ def create_app(
         """One Part, Articles as rows (mobile designs 03 / 16 / 18)."""
         eng = _engine()
         if not getattr(request.state, "is_guest", False):
-            eng.bootstrap_request(include_news=True)
+            eng.bootstrap_request(
+                include_news=True,
+                include_account=entitlements_active(request),
+            )
         started = time.perf_counter()
         sections = browse_parts_sections(eng, app.state.reviewed)
         record_request_timing("browse_build", started)
@@ -2359,7 +2376,7 @@ def create_app(
             and getattr(request.state, "current_user", None) is None
         )
         if not is_guest:
-            eng.bootstrap_request()
+            eng.bootstrap_request(include_account=entitlements_active(request))
         today = user_today(eng)
         y = year if year is not None else today.year
         m = month if month is not None else today.month
@@ -2416,11 +2433,14 @@ def create_app(
             except Exception:  # noqa: BLE001 — the calendar must still render
                 logger.exception("learning plan pace lookup failed")
         record_request_timing("calendar_build", started)
-        return templates.TemplateResponse(
+        started = time.perf_counter()
+        response = templates.TemplateResponse(
             request,
             "calendar.html",
             {"calendar": view, "revisions": revisions, "pace_label": pace},
         )
+        record_request_timing("template", started)
+        return response
 
     @app.get("/progress", response_class=HTMLResponse)
     async def progress_page(request: Request) -> HTMLResponse:
@@ -2430,11 +2450,13 @@ def create_app(
                 "guest_gate.html",
                 {"gate_kind": "progress", "reason": "default"},
             )
+        started = time.perf_counter()
         dashboard = progress_dashboard(
             _engine(),
             reviewed=app.state.reviewed,
             today=date.today(),
         )
+        record_request_timing("progress_dashboard", started)
         return templates.TemplateResponse(
             request,
             "progress.html",
@@ -2449,11 +2471,13 @@ def create_app(
                 "guest_gate.html",
                 {"gate_kind": "progress", "reason": "default"},
             )
+        started = time.perf_counter()
         dashboard = progress_dashboard(
             _engine(),
             reviewed=app.state.reviewed,
             today=date.today(),
         )
+        record_request_timing("progress_dashboard", started)
         return templates.TemplateResponse(
             request,
             "progress_mastered.html",
