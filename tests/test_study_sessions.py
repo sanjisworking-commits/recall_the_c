@@ -516,6 +516,39 @@ def test_exit_modal_copy(tmp_path: Path):
     assert "Exit revision<" in html
 
 
+def test_exit_modal_recall_copy(tmp_path: Path):
+    client = _client(tmp_path)
+    eng = _engine(client)
+    session = eng.create_study_session(
+        session_id="learn-today",
+        kind="auto_learning",
+        plan_date=date.today(),
+        unit_ids=["clause-1", "article-end"],
+    )
+    html = client.get(f"/learn/clause-1?session={session.id}").text
+    assert "data-revision-exit-modal" in html
+    assert "Exit this Recall?" in html
+    assert "Your completed modes are saved." in html
+    assert "You can return later to finish the rest." in html
+    assert "Keep going" in html
+    assert "Exit Recall<" in html
+    assert "Exit session?" not in html
+    assert 'aria-label="Exit Recall"' in html
+
+
+def test_exit_modal_phone_css_is_a_stacked_card():
+    css = (
+        ROOT / "src" / "constitution_memorizer" / "web" / "static" / "styles.css"
+    ).read_text(encoding="utf-8")
+    mobile = MOBILE_JS.parent.joinpath("mobile.css").read_text(encoding="utf-8")
+    block = css.split(".revision-exit-modal {", 1)[1].split(".link-btn", 1)[0]
+    assert "flex-direction: column" in block
+    assert "height: 52px" in block
+    assert "border-radius: 12px" in block
+    assert "border-radius: var(--rc-radius-sheet)" in mobile
+    assert ".revision-exit-modal .guest-modal-actions .btn" in mobile
+
+
 def test_exit_guard_is_armed_by_history_not_by_confirm():
     source = APP_JS.read_text(encoding="utf-8")
     assert "function initRevisionGuard()" in source

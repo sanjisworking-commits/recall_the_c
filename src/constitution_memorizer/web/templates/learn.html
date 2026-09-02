@@ -116,7 +116,7 @@
      One header for the deck, one bar for an open mode. Both are mobile-only;
      the desktop tabs below stay the single source of mode state. #}
   <div class="learn-mode-bar">
-    <button type="button" class="mobile-icon-btn" data-session-exit data-exit-to="{{ back_href }}" aria-label="Exit session">✕</button>
+    <button type="button" class="mobile-icon-btn" data-session-exit data-exit-to="{{ back_href }}" aria-label="{% if session_kind|default('') == 'revision' %}Exit revision{% else %}Exit Recall{% endif %}">✕</button>
     <div class="rc-mode-stepper" aria-hidden="true">
       {% for mode in learn_modes %}
       <span class="rc-mode-step{% if mode in seen %} is-done{% elif mode == learn_mode %} is-current{% endif %}"></span>

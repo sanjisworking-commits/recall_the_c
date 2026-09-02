@@ -4340,8 +4340,24 @@
     border-radius: var(--rc-radius-sheet) var(--rc-radius-sheet) 0 0;
   }
 
+  .revision-exit-modal {
+    margin: auto 18px 18vh;
+    width: calc(100% - 36px);
+    max-width: none;
+    border-radius: var(--rc-radius-sheet);
+  }
+
   .revision-exit-modal .guest-modal-card {
-    border-radius: 18px;
+    border-radius: var(--rc-radius-sheet);
+    padding: 28px 22px 20px;
+  }
+
+  .revision-exit-modal .guest-modal-actions .btn {
+    box-shadow: var(--rc-press-depth);
+  }
+
+  .revision-exit-modal .guest-modal-actions .btn-ghost {
+    box-shadow: none;
   }
 }
 
