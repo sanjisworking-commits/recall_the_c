@@ -255,8 +255,11 @@ def test_guest_dashboard_progress_and_settings(tmp_path: Path):
     client = _client(tmp_path)
     dash = client.get("/dashboard")
     assert dash.status_code == 200
-    assert "Sign in to save your learning" in dash.text
-    assert "Create a personal learning record" in dash.text
+    # diff.md item 2: the guest branch of the first-run screen, not a gate
+    # page. Still an inline invitation to sign in, still no redirect wall.
+    assert 'data-today-mode="firstrun"' in dash.text
+    assert "Sign in to save 3 Articles to Recall for free" in dash.text
+    assert 'href="/login?next=/dashboard"' in dash.text
     prog = client.get("/progress")
     assert prog.status_code == 200
     assert "Sign in to save your learning" in prog.text
@@ -382,7 +385,7 @@ def test_logout_signed_out_page(tmp_path: Path):
     assert "signed out" in page.text.lower()
     gate = client.get("/dashboard")
     assert gate.status_code == 200
-    assert "Sign in to save your learning" in gate.text
+    assert "Sign in to save 3 Articles to Recall for free" in gate.text
 
 
 def test_auth_transition_and_profile_pages(tmp_path: Path):
@@ -565,6 +568,78 @@ def test_first_run_state_yields_once_learning_starts(tmp_path: Path):
     after = client.get("/dashboard")
     assert after.status_code == 200
     assert 'data-today-mode="firstrun"' not in after.text
+
+
+def test_first_run_guest_branch(tmp_path: Path):
+    """diff.md item 2, guest: the same first-run screen, without a name, a
+    streak or the plan rows — and with the sign-in gate as the CTA's
+    destination rather than as the page itself."""
+    client = _client(tmp_path)
+    html = client.get("/dashboard").text
+
+    assert 'data-today-mode="firstrun"' in html
+    assert ">?</span>" in html  # the "?" avatar stands in for initials
+    assert "Reading as a guest" in html
+    assert "rc-streak" not in html
+    # The CTA goes through sign-in; Browse is what a signed-in user gets.
+    assert '<a class="dash-firstrun-cta" href="/login?next=/dashboard">' in html
+    assert "you\u2019ll be asked to sign in so your progress is saved" in html
+    assert "Sign in to save 3 Articles to Recall for free" in html
+    # Plan and tour are account surfaces; a guest has no account to plan for.
+    assert "Set a learning plan" not in html
+    assert "Take the two-minute tour" not in html
+
+
+def test_first_run_free_and_plus_branches(tmp_path: Path):
+    """diff.md item 2, free vs plus: the plans row is the only difference, and
+    it appears solely for a free account with pricing on. Entitlement rules
+    themselves are untouched — this reads access, it does not set it."""
+    provider = FakeAuthProvider()
+    provider.seed_google_user(
+        user_id=UUID("11111111-1111-4111-8111-111111111111"),
+        email="a@example.com",
+        display_name="User A",
+    )
+    app = create_app(
+        units_path=MINI_UNITS,
+        db_path=tmp_path / "progress.db",
+        multiuser=True,
+        multiuser_settings=_settings(
+            PRICING_ENABLED="true", ARTICLE_ENTITLEMENTS_ENABLED="true"
+        ),
+        auth_provider=provider,
+        session_store=InMemorySessionStore(),
+    )
+    client = TestClient(app)
+    start = client.get("/auth/google/start", follow_redirects=False)
+    state = start.cookies.get("rtc_oauth_state")
+    client.get(
+        f"/auth/callback?code=fake-google-code&state={state}",
+        follow_redirects=False,
+    )
+    free = client.get("/dashboard").text
+    assert 'data-today-mode="firstrun"' in free
+    assert "You\u2019re on the Free plan" in free
+    assert "3 Articles free \u00b7 unlock every Article and Schedule" in free
+    assert "See plans" in free
+    # Free is a signed-in tier: the guest branch must not leak into it.
+    assert "Reading as a guest" not in free
+    assert "Set a learning plan" in free
+
+    # Entitlements dormant is the "everything open" reading — no plans row.
+    plus_dir = tmp_path / "plus"
+    plus_dir.mkdir()
+    plus = _client(plus_dir, pricing=True)
+    start = plus.get("/auth/google/start", follow_redirects=False)
+    state = start.cookies.get("rtc_oauth_state")
+    plus.get(
+        f"/auth/callback?code=fake-google-code&state={state}",
+        follow_redirects=False,
+    )
+    open_html = plus.get("/dashboard").text
+    assert 'data-today-mode="firstrun"' in open_html
+    assert "You\u2019re on the Free plan" not in open_html
+    assert '<a class="dash-firstrun-cta" href="/browse">' in open_html
 
 
 def test_starter_rows_resolve_against_the_real_corpus():

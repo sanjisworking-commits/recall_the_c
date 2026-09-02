@@ -450,6 +450,38 @@ def starter_rows(engine: ReminderEngine) -> list[dict[str, str]]:
     return rows
 
 
+def build_guest_dashboard_context(engine: ReminderEngine) -> dict[str, Any]:
+    """Today for a signed-out reader — diff.md item 2's guest branch.
+
+    The design branches the first-run screen by tier instead of sending guests
+    to a gate page of their own: same hero and starter list, no name and no
+    streak, and a sign-in card where a signed-in user gets plan and tour. The
+    gate is not removed, only moved one step later — the CTA goes through
+    /login, so nothing a guest could not already do becomes possible here.
+
+    A guest has no stored progress, so has_started is false by construction
+    and the screen is corpus plus copy; no per-user read happens at all.
+    """
+    return {
+        # No account, so no avatar and no profile — the header falls back to
+        # the guest "?" mark. The key must be present: the template's Jinja
+        # environment is strict about undefined names.
+        "user": None,
+        "dashboard_state": "ok",
+        "has_started": False,
+        "starter_rows": starter_rows(engine),
+        "display_label": "",
+        "first_name": "",
+        "greeting": "Welcome.",
+        "subtext": "Reading as a guest",
+        "daily_goal_streak": 0,
+        "access": None,
+        "subscription": None,
+        "completion": None,
+        "learning_cta": "browse",
+    }
+
+
 def build_dashboard_context(
     eng: ReminderEngine,
     *,

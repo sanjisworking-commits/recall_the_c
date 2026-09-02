@@ -613,6 +613,72 @@
     color: var(--faint);
   }
 
+  /* ── First run · tier branches · diff.md item 2 ────────────────────────
+     One screen, three readings of it. Guests lose the name, the streak and
+     the plan rows and gain the gate note plus a sign-in card; Free gains the
+     plans row; Plus is the screen above, unadorned. */
+  body[data-mscreen="today"] .dash-firstrun-note {
+    margin: 10px 2px 0;
+    font-size: 11.5px;
+    line-height: 1.5;
+    color: var(--mid);
+    text-align: center;
+    text-wrap: pretty;
+  }
+
+  body[data-mscreen="today"] .dash-firstrun-plan {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 14px 18px 0;
+    padding: 13px 16px;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  body[data-mscreen="today"] .dash-firstrun-plan-link {
+    flex: 0 0 auto;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--browse-due);
+    white-space: nowrap;
+  }
+
+  body[data-mscreen="today"] .dash-firstrun-signin {
+    margin: 14px 18px 0;
+    padding: 13px 16px;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+  }
+
+  body[data-mscreen="today"] .dash-firstrun-signin-body {
+    margin: 0;
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--mid);
+    text-wrap: pretty;
+  }
+
+  body[data-mscreen="today"] .dash-firstrun-signin-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 44px;
+    margin-top: 10px;
+    border: 1px solid var(--hairline);
+    border-radius: 11px;
+    background: var(--paper);
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
   body[data-mscreen="today"] .dash-greeting {
     display: flex;
     flex-wrap: wrap;

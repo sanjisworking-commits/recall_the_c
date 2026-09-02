@@ -3,7 +3,7 @@
 {% block mobile_screen %}today{% endblock %}
 {% block content %}
 {% set state = dashboard_state|default('ok') %}
-{% set initials = (display_label[:1] if display_label else 'L')|upper %}
+{% set initials = '?' if is_guest|default(false) else (display_label[:1] if display_label else 'L')|upper %}
 <section class="panel dashboard-panel">
   {% include "_completion_banner.html" %}
   {% if state == 'loading' %}
@@ -24,7 +24,7 @@
 
   {% elif state == 'data-error' %}
   <header class="dash-greeting">
-    {% if user.avatar_url %}
+    {% if user and user.avatar_url %}
     <img class="dash-avatar" src="{{ user.avatar_url }}" alt="" width="52" height="52">
     {% else %}
     <span class="dash-avatar dash-avatar-fallback" aria-hidden="true">{{ initials }}</span>
@@ -52,7 +52,7 @@
   {% else %}
   <header class="dash-greeting">
     <a class="dash-avatar-link" href="/settings" aria-label="Settings">
-    {% if user.avatar_url %}
+    {% if user and user.avatar_url %}
     <img class="dash-avatar" src="{{ user.avatar_url }}" alt="" width="52" height="52">
     {% else %}
     <span class="dash-avatar dash-avatar-fallback" aria-hidden="true">{{ initials }}</span>
@@ -62,10 +62,12 @@
       <h1 class="display dash-hello">{{ greeting }}</h1>
       <p class="dash-subtext">{{ subtext }}</p>
     </div>
+    {% if not is_guest|default(false) %}
     <span class="rc-streak" data-daily-goal-streak="{{ daily_goal_streak|default(0) }}" title="Days the daily goal was completed">
       <svg class="rc-streak-glyph" width="13" height="15" viewBox="0 0 14 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M7 1.2c.6 2.6-2.9 3.9-2.9 7a3.4 3.4 0 0 0 6.8 0c0-1.4-.7-2.4-1.3-3.3-.5 1-1.1 1.4-1.1 1.4C8.9 4.4 8.6 2.4 7 1.2Z"></path></svg>
       <span class="rc-streak-count">{{ daily_goal_streak|default(0) }}</span>
     </span>
+    {% endif %}
     <a class="mobile-icon-btn dash-greeting-settings" href="/settings" aria-label="Settings">
       <svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="10" cy="10" r="2.6"></circle><path d="M10 1.8v2.4M10 15.8v2.4M18.2 10h-2.4M4.2 10H1.8M15.8 4.2l-1.7 1.7M5.9 14.1l-1.7 1.7M15.8 15.8l-1.7-1.7M5.9 5.9 4.2 4.2"></path></svg>
     </a>
@@ -113,7 +115,10 @@
           <p class="dash-firstrun-sub">You haven’t started yet. Your first Article sets the revision schedule.</p>
         </div>
       </div>
-      <a class="dash-firstrun-cta" href="/browse">Learn your first Article →</a>
+      <a class="dash-firstrun-cta" href="{% if is_guest|default(false) %}/login?next=/dashboard{% else %}/browse{% endif %}">Learn your first Article →</a>
+      {% if is_guest|default(false) %}
+      <p class="dash-firstrun-note">You’re reading as a guest — you’ll be asked to sign in so your progress is saved.</p>
+      {% endif %}
     </article>
 
     {% if starter_rows|default([]) %}
@@ -146,6 +151,23 @@
         </span>
         <span class="dash-firstrun-chev" aria-hidden="true">›</span>
       </a>
+    </div>
+    {% endif %}
+
+    {% if not is_guest|default(false) and access and access.enabled and access.is_free and pricing_enabled|default(false) %}
+    <a class="dash-firstrun-plan" href="/pricing">
+      <span class="dash-firstrun-item-copy">
+        <span class="dash-firstrun-item-title">You’re on the Free plan</span>
+        <span class="dash-firstrun-item-sub">3 Articles free · unlock every Article and Schedule</span>
+      </span>
+      <span class="dash-firstrun-plan-link">See plans ›</span>
+    </a>
+    {% endif %}
+
+    {% if is_guest|default(false) %}
+    <div class="dash-firstrun-signin">
+      <p class="dash-firstrun-signin-body">Sign in to save 3 Articles to Recall for free — progress, streaks and revision schedules need an account.</p>
+      <a class="dash-firstrun-signin-btn" href="/login?next=/dashboard">Sign in</a>
     </div>
     {% endif %}
   </section>

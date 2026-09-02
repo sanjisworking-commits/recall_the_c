@@ -391,10 +391,22 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
     async def dashboard(request: Request) -> HTMLResponse:
         user = getattr(request.state, "current_user", None)
         if user is None:
+            # diff.md item 2: guests get the first-run Today screen branched
+            # for their tier, not a gate page instead of it. The sign-in gate
+            # still stands between a guest and anything that would be saved —
+            # it is the CTA's destination now rather than the whole route.
+            from constitution_memorizer.web.dashboard import (
+                build_guest_dashboard_context,
+            )
+
+            guest_engine = (
+                getattr(request.state, "bound_engine", None)
+                or request.app.state.engine
+            )
             return templates.TemplateResponse(
                 request,
-                "guest_gate.html",
-                {"gate_kind": "dashboard", "reason": "default"},
+                "dashboard.html",
+                build_guest_dashboard_context(guest_engine),
             )
         eng = getattr(request.state, "bound_engine", None) or request.app.state.engine.for_user(
             user.id
