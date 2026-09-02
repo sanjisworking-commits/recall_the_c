@@ -384,8 +384,15 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
         # Later /welcome visits (name edits) never restart or downgrade it.
         if first_welcome and repo.get_setting(user.id, ONBOARDING_KEY) is None:
             repo.set_setting(user.id, ONBOARDING_KEY, "active")
-        dest = "/onboarding/plan" if first_welcome else "/dashboard"
-        return RedirectResponse(url=dest, status_code=303)
+        # diff.md item 3: back to whatever prompted the sign-in, or Today.
+        # The plan intro is reached from the first-run screen's optional row
+        # and from Settings — it is no longer forced between the two.
+        dest = _safe_next(request.cookies.get("rtc_auth_next") or "/dashboard")
+        if dest.startswith("/welcome"):
+            dest = "/dashboard"
+        response = RedirectResponse(url=dest, status_code=303)
+        response.delete_cookie("rtc_auth_next", path="/")
+        return response
 
     @router.get("/dashboard", response_class=HTMLResponse)
     async def dashboard(request: Request) -> HTMLResponse:
@@ -653,7 +660,12 @@ def _establish_session(
 
     dest = next_url or request.cookies.get("rtc_auth_next") or "/dashboard"
     dest = _safe_next(dest)
-    if request.app.state.engine.repo.needs_welcome(auth_session.user.id):
+    # diff.md item 3: where they were going survives the name step. A guest
+    # who signs in from Today's first-run screen comes back to that screen,
+    # signed in, rather than being dropped on a generic dashboard.
+    after_welcome = dest
+    needs_welcome = request.app.state.engine.repo.needs_welcome(auth_session.user.id)
+    if needs_welcome:
         dest = "/welcome"
     else:
         dest = f"/auth/transition?next={dest}"
@@ -676,7 +688,18 @@ def _establish_session(
         secure=bool(settings.cookie_secure),
         path="/",
     )
-    response.delete_cookie("rtc_auth_next", path="/")
+    if needs_welcome:
+        response.set_cookie(
+            "rtc_auth_next",
+            after_welcome,
+            httponly=True,
+            samesite="lax",
+            secure=bool(settings.cookie_secure),
+            max_age=600,
+            path="/",
+        )
+    else:
+        response.delete_cookie("rtc_auth_next", path="/")
     return response
 
 

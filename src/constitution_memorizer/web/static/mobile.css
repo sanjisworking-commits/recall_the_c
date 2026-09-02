@@ -1387,8 +1387,12 @@
     display: none;
   }
 
+  /* diff.md item 4 · Free plan banner: one line, one bordered action. */
   body[data-mscreen="browse"] .browse-access-summary {
-    padding: 13px 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 14px;
     margin: 0 0 12px;
     border: 1px solid var(--rc-hairline);
     border-radius: var(--rc-radius-card);
@@ -1396,11 +1400,33 @@
   }
 
   body[data-mscreen="browse"] .browse-access-status {
-    font-size: 12.5px;
+    flex: 1;
+    margin: 0;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--mid);
+    text-wrap: pretty;
   }
 
   body[data-mscreen="browse"] .browse-access-action {
     font-size: 12.5px;
+  }
+
+  body[data-mscreen="browse"] .browse-access-unlock {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    height: 34px;
+    padding: 0 12px;
+    border: 1px solid var(--rc-hairline);
+    border-radius: 10px;
+    background: var(--rc-paper);
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--browse-due);
+    text-decoration: none;
+    white-space: nowrap;
   }
 
   .browse-part-rail {

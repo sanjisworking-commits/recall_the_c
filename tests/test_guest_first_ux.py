@@ -356,7 +356,9 @@ def test_phone_otp_welcome_then_dashboard(tmp_path: Path):
         data={"display_name": "Priya", "csrf_token": csrf2},
         follow_redirects=False,
     )
-    assert saved.headers["location"] == "/onboarding/plan"
+    # diff.md item 3: the name step returns to Today, not to a forced plan
+    # intro — the plan is an optional row on the first-run screen.
+    assert saved.headers["location"] == "/dashboard"
     plan = client.get("/onboarding/plan")
     assert plan.status_code == 200
     assert "Set a learning plan" in plan.text
@@ -590,6 +592,49 @@ def test_first_run_guest_branch(tmp_path: Path):
     assert "Take the two-minute tour" not in html
 
 
+def test_sign_in_from_first_run_returns_to_it(tmp_path: Path):
+    """diff.md item 3: a guest who signs in from Today's first-run screen
+    lands back on that screen as a signed-in account — the name step carries
+    the destination, and the plan intro no longer sits in the way."""
+    # A provider account with no name of its own, so sign-in has to go
+    # through /welcome — the leg where the destination used to be lost.
+    # Seeded first and under its own address: _client re-seeds a@example.com
+    # with a name, and the provider signs in whichever it saw first.
+    provider = FakeAuthProvider()
+    provider.seed_google_user(
+        user_id=UUID("22222222-2222-4222-8222-222222222222"),
+        email="nameless@example.com",
+        display_name="",
+    )
+    client = _client(tmp_path, provider)
+    # The screen's own sign-in link is what the guest follows.
+    assert 'href="/login?next=/dashboard"' in client.get("/dashboard").text
+
+    start = client.get("/auth/google/start?next=/dashboard", follow_redirects=False)
+    state = start.cookies.get("rtc_oauth_state")
+    callback = client.get(
+        f"/auth/callback?code=fake-google-code&state={state}",
+        follow_redirects=False,
+    )
+    assert callback.headers["location"] == "/welcome"
+
+    csrf = client.cookies.get(CSRF_COOKIE_NAME) or ""
+    saved = client.post(
+        "/welcome",
+        data={"display_name": "Priya", "csrf_token": csrf},
+        follow_redirects=False,
+    )
+    assert saved.headers["location"] == "/dashboard"
+
+    dash = client.get("/dashboard").text
+    assert 'data-today-mode="firstrun"' in dash
+    assert "Reading as a guest" not in dash
+    assert "Priya" in dash
+    # Optional, not forced: the row is on the screen and the page still works.
+    assert "Set a learning plan" in dash
+    assert client.get("/onboarding/plan").status_code == 200
+
+
 def test_first_run_free_and_plus_branches(tmp_path: Path):
     """diff.md item 2, free vs plus: the plans row is the only difference, and
     it appears solely for a free account with pricing on. Entitlement rules
@@ -640,6 +685,43 @@ def test_first_run_free_and_plus_branches(tmp_path: Path):
     assert 'data-today-mode="firstrun"' in open_html
     assert "You\u2019re on the Free plan" not in open_html
     assert '<a class="dash-firstrun-cta" href="/browse">' in open_html
+
+
+def test_browse_free_plan_banner(tmp_path: Path):
+    """diff.md item 4: Browse's free-plan block reads as the design's banner —
+    one line of state, one bordered Unlock all — with main's states intact."""
+    provider = FakeAuthProvider()
+    provider.seed_google_user(
+        user_id=UUID("11111111-1111-4111-8111-111111111111"),
+        email="a@example.com",
+        display_name="User A",
+    )
+    app = create_app(
+        units_path=MINI_UNITS,
+        db_path=tmp_path / "progress.db",
+        multiuser=True,
+        multiuser_settings=_settings(
+            PRICING_ENABLED="true", ARTICLE_ENTITLEMENTS_ENABLED="true"
+        ),
+        auth_provider=provider,
+        session_store=InMemorySessionStore(),
+    )
+    client = TestClient(app)
+    start = client.get("/auth/google/start", follow_redirects=False)
+    state = start.cookies.get("rtc_oauth_state")
+    client.get(
+        f"/auth/callback?code=fake-google-code&state={state}",
+        follow_redirects=False,
+    )
+    html = client.get("/browse").text
+    assert "Free plan \u2014 pick any 3 Articles to learn." in html
+    assert "All 3 slots free." in html
+    assert '<a class="browse-access-unlock" href="/pricing">Unlock all</a>' in html
+    # The old status-block phrasing is gone, not merely restyled.
+    assert "Unlock every Article \u2192" not in html
+
+    css = client.get("/static/mobile.css").text
+    assert ".browse-access-unlock" in css
 
 
 def test_starter_rows_resolve_against_the_real_corpus():

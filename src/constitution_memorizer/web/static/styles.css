@@ -6982,6 +6982,17 @@ html.rtc-anim .rtc-not-confirmed {
   color: var(--muted);
 }
 
+.browse-access-unlock {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--browse-due);
+  text-decoration: none;
+}
+
+.browse-access-unlock:hover {
+  text-decoration: underline;
+}
+
 .guest-strip {
   display: flex;
   flex-wrap: wrap;

@@ -59,7 +59,7 @@ def test_calendar_invalid_month_returns_400(client: TestClient):
 
 
 def test_calendar_css_chip_styles(client: TestClient):
-    css = client.get("/static/styles.css?v=main46")
+    css = client.get("/static/styles.css?v=main47")
     assert css.status_code == 200
     text = css.text
     assert ".calendar-grid" in text
