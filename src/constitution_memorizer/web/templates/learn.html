@@ -12,7 +12,7 @@
   {% set sq = (sq ~ ('&' if sq else '?') ~ 'revision_intent=' ~ revision_intent) %}
   {% set sa = sa ~ '&revision_intent=' ~ revision_intent %}
 {% endif %}
-<section class="panel learn" data-mobile-view="mode" data-unit-id="{{ unit.id }}"{% if session_id|default('') %} data-session-id="{{ session_id }}" data-session-kind="{{ session_kind|default('') }}" data-revision-remaining="{{ revision_remaining|default(0) }}"{% endif %} data-mode="{{ learn_mode }}" data-revision-intent="{{ revision_intent|default('') }}" data-done-unlocked="{{ 'true' if done_unlocked else 'false' }}" data-modes-seen="{% if modes_seen is defined %}{{ modes_seen | join(',') }}{% endif %}" data-locked-modes="{{ locked_modes | default(()) | join(',') }}" data-required-modes="{{ required_modes | default(()) | join(',') }}"{% if seen_provisional|default(false) %} data-seen-provisional="true"{% endif %}{% if is_guest|default(false) %} data-guest-learn="true"{% endif %}>
+<section class="panel learn" data-mobile-view="mode" data-unit-id="{{ unit.id }}" data-article-number="{{ unit.article_number or '' }}"{% if session_id|default('') %} data-session-id="{{ session_id }}" data-session-kind="{{ session_kind|default('') }}" data-revision-remaining="{{ revision_remaining|default(0) }}"{% endif %} data-mode="{{ learn_mode }}" data-revision-intent="{{ revision_intent|default('') }}" data-done-unlocked="{{ 'true' if done_unlocked else 'false' }}" data-modes-seen="{% if modes_seen is defined %}{{ modes_seen | join(',') }}{% endif %}" data-locked-modes="{{ locked_modes | default(()) | join(',') }}" data-required-modes="{{ required_modes | default(()) | join(',') }}"{% if seen_provisional|default(false) %} data-seen-provisional="true"{% endif %}{% if is_guest|default(false) %} data-guest-learn="true"{% endif %}>
   {% include "_completion_banner.html" %}
   {% if is_guest|default(false) %}
   <div class="guest-learn-banner" role="status">
@@ -122,9 +122,25 @@
       <span class="rc-mode-step{% if mode in seen %} is-done{% elif mode == learn_mode %} is-current{% endif %}"></span>
       {% endfor %}
     </div>
-    <span class="learn-mode-bar-name" data-mode-name>{{ mode_labels[learn_mode] if mode_labels else learn_mode }}</span>
+    {% set mode_step = (learn_modes.index(learn_mode) + 1) if learn_mode in learn_modes else 1 %}
+    <span class="learn-mode-bar-name" data-mode-name>Step {{ mode_step }} of {{ learn_modes|length }}</span>
     <button type="button" class="mobile-icon-btn" data-mode-help aria-label="How to use this mode">?</button>
   </div>
+
+  {# Phone mode chrome (Read reference): eyebrow + instructional headline.
+     Desktop hides this; mobile.js rewrites it when the open mode changes. #}
+  {% set mode_headlines = {
+    'read': 'First, read it once.',
+    'cloze': 'Fill the gaps.',
+    'letters': 'Rebuild it from the first letters.',
+    'type': 'Type it from memory.',
+    'recite': 'Say it from memory.',
+    'test': 'Prove you know it.',
+  } %}
+  <header class="learn-mode-heading" data-mode-heading>
+    <p class="learn-mode-eyebrow" data-mode-eyebrow>{{ (mode_labels[learn_mode] if mode_labels else learn_mode)|upper }}{% if unit.article_number %} · ARTICLE {{ unit.article_number }}{% endif %}</p>
+    <h2 class="learn-mode-headline" data-mode-headline>{{ mode_headlines[learn_mode] }}</h2>
+  </header>
 
   <header class="learn-deck-head">
     <a class="mobile-back" href="{{ back_href }}">← {{ back_label }}</a>

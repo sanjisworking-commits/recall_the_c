@@ -319,7 +319,7 @@ def test_mobile_assets_are_linked_once(tmp_path: Path):
     assert html.count("/static/mobile.js") == 1
 
 
-# ── Learn action bar (Next → … → Done → quote) ───────────────────────────────
+# ── Learn action bar (mode completing CTA → … → Done → quote) ────────────────
 
 
 def test_learn_page_renders_the_next_action_bar(tmp_path: Path):
@@ -328,6 +328,46 @@ def test_learn_page_renders_the_next_action_bar(tmp_path: Path):
     assert "learn-mode-nav" in html
     assert "data-mode-next" in html
     assert 'class="learn-mode-next"' in html
+
+
+def test_learn_mode_chrome_matches_the_read_reference(tmp_path: Path):
+    """Phone Read shows Step N of 6, READ · ARTICLE N, and First, read it once."""
+    client, _, _ = _client(tmp_path)
+    html = client.get("/learn/clause-1").text
+    assert "Step 1 of 6" in html
+    assert "data-mode-heading" in html
+    assert "data-mode-eyebrow" in html
+    assert "data-mode-headline" in html
+    assert "First, read it once." in html
+    assert "READ · ARTICLE" in html
+    assert 'data-article-number="' in html
+
+    js = client.get("/static/mobile.js").text
+    assert "function syncModeChrome" in js
+    assert 'nameEl.textContent = "Step " + step + " of " + total' in js
+    assert 'read: "First, read it once."' in js
+    assert 'cloze: "Fill the gaps."' in js
+
+
+def test_learn_mode_advance_ctas_use_first_person_copy(tmp_path: Path):
+    """The Read reference is 'I've read this →'; other completing CTAs
+    follow the same first-person + arrow voice instead of a generic Next."""
+    client, _, _ = _client(tmp_path)
+    js = client.get("/static/mobile.js").text
+    labels = js.split("var ADVANCE_LABELS = {", 1)[1].split("};", 1)[0]
+    assert '''read: "I've read this →"''' in labels
+    assert '''cloze: "I've filled the gaps →"''' in labels
+    assert '''letters: "I've heard this →"''' in labels
+    assert '''type: "I've typed this →"''' in labels
+    assert '''recite: "I've recited this →"''' in labels
+    assert '''test: "I've checked this →"''' in labels
+    sync = js.split("function syncNextButton", 1)[1].split("function goToMode", 1)[0]
+    assert "function advanceCopy" in sync
+    assert "btn.textContent = advanceCopy(mode)" in sync
+    assert "nextBtn.textContent = advanceCopy(mode)" in sync
+    # Generic Next is only the fallback, not the painted default.
+    assert 'btn.textContent = "Next →"' not in sync
+    assert 'nextBtn.textContent = "Next →"' not in sync
 
 
 def test_quiz_submit_is_bound_to_its_form_by_id(tmp_path: Path):
@@ -703,9 +743,11 @@ def test_type_bar_has_a_single_cta(tmp_path: Path):
     assert ".learn-mode-nav.is-solo-cta .learn-mode-next" in css
     solo = css.split(".learn-mode-nav.is-solo-cta .learn-type-check:not([hidden]) {", 1)[1]
     solo = solo.split("}", 1)[0]
-    # It is the primary now, not a ghost secondary.
+    # It is the primary now, not a ghost secondary — same 52px ink pill as Next.
     assert "background: var(--accent)" in solo
     assert "flex: 2 1 auto" in solo
+    assert "height: 52px" in solo
+    assert "border-radius: var(--rc-radius-button)" in solo
 
 
 def test_type_check_button_morphs_into_the_advance(tmp_path: Path):
@@ -880,7 +922,8 @@ def test_letters_speak_button_is_the_solo_cta(tmp_path: Path):
     assert "lettersAdvance" in sync
     # One shared tail paints every solo mode, so they cannot drift apart.
     assert "function paintAdvance" in sync
-    assert 'btn.textContent = "Next →"' in sync
+    assert "function advanceCopy" in sync
+    assert "btn.textContent = advanceCopy(mode)" in sync
     assert "paintAdvance(lettersSpeak, lettersSpeak.dataset.lettersAdvance)" in sync
     assert "typeSolo || lettersSolo || reciteSolo || quizSolo" in sync
 
@@ -959,7 +1002,14 @@ def test_letters_solo_cta_has_primary_styling(tmp_path: Path):
     css = client.get("/static/mobile.css").text
     assert ".learn-mode-nav.is-solo-cta .learn-letters-speak:not([hidden])" in css
     assert ".learn-mode-nav.is-solo-cta .learn-letters-speak:disabled" in css
-    # The slot now also carries "Next →"/"Done", so it reserves the wider size.
+    speak_primary = css.split(
+        ".learn-mode-nav.is-solo-cta .learn-letters-speak:not([hidden]) {", 1
+    )[1].split("}", 1)[0]
+    assert "height: 52px" in speak_primary
+    assert "border-radius: var(--rc-radius-button)" in speak_primary
+    assert "font-weight: 600" in speak_primary
+    # The slot now also carries the completing CTA / "Done", so it reserves
+    # the wider size.
     speak_slot = css.split(".learn-mode-nav .learn-letters-speak {", 1)[1].split("}", 1)[0]
     assert "min-width: 10.5rem" in speak_slot
 

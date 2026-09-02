@@ -2783,7 +2783,8 @@
     order: 2;
   }
 
-  body[data-mscreen="learn"] .learn-deck-toast {
+  body[data-mscreen="learn"] .learn-deck-toast,
+  body[data-mscreen="learn"] .learn-mode-heading {
     order: 3;
   }
 
@@ -2819,6 +2820,7 @@
   }
 
   .learn[data-mobile-view="deck"] .learn-mode-bar,
+  .learn[data-mobile-view="deck"] .learn-mode-heading,
   .learn[data-mobile-view="deck"] .learn-body,
   .learn[data-mobile-view="deck"] .session-track {
     display: none;
@@ -3094,8 +3096,37 @@
     margin: 0;
     font-size: 12.5px;
     font-weight: 500;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    color: var(--ink);
+  }
+
+  .learn-mode-heading {
+    order: 3;
+    margin: 16px 0 4px;
+  }
+
+  .learn[data-mobile-view="deck"] .learn-mode-heading {
+    display: none;
+  }
+
+  .learn-mode-eyebrow {
+    margin: 0 0 8px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
+    color: var(--faint);
+  }
+
+  .learn-mode-headline {
+    margin: 0 0 18px;
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: var(--ink);
   }
 
   .rc-mode-stepper {
@@ -3332,21 +3363,22 @@
   .learn-mode-nav .learn-recite-peek:not([hidden]),
   .learn-mode-nav .learn-type-check:not([hidden]),
   .learn-mode-nav .learn-test-submit:not([hidden]) {
-    /* Secondaries give way first: they shrink and ellipsize, Next does not.
+    /* Same 52px / 12px pill as Next, so mode-owned CTAs match the reference.
        display:block + line-height is what makes text-overflow work on a
        button while still centring the label vertically. */
     display: block;
     flex: 0 1 auto;
     min-width: 0;
-    height: 48px;
+    height: 52px;
     margin: 0;
     padding: 0 14px;
     border: 1px solid var(--control-border);
+    border-radius: var(--rc-radius-button);
     background: var(--paper);
     color: var(--ink);
     font: inherit;
     font-size: 14px;
-    line-height: 46px;
+    line-height: 50px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -3366,12 +3398,19 @@
   .learn-mode-nav.is-recording .learn-recite-toggle,
   .learn-mode-nav.is-recording .learn-letters-speak {
     flex: 2 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 52px;
     border-color: var(--accent);
+    border-radius: var(--rc-radius-button);
     background: var(--accent);
     color: var(--on-accent);
-    font-size: 15px;
-    font-weight: 500;
+    font-size: 15.5px;
+    font-weight: 600;
+    line-height: normal;
     text-align: center;
+    box-shadow: var(--rc-press-depth);
   }
 
   .rec-dot {
@@ -3388,12 +3427,19 @@
      primary and Next steps aside — see is-solo-cta below. */
   .learn-mode-nav.is-solo-cta .learn-type-check:not([hidden]) {
     flex: 2 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 52px;
     border-color: var(--accent);
+    border-radius: var(--rc-radius-button);
     background: var(--accent);
     color: var(--on-accent);
-    font-size: 15px;
-    font-weight: 500;
+    font-size: 15.5px;
+    font-weight: 600;
+    line-height: normal;
     text-align: center;
+    box-shadow: var(--rc-press-depth);
   }
 
   .learn-mode-nav.is-solo-cta .learn-type-check:disabled {
@@ -3408,12 +3454,19 @@
      The is-recording rule above already paints the Stop state. */
   .learn-mode-nav.is-solo-cta .learn-letters-speak:not([hidden]) {
     flex: 2 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 52px;
     border-color: var(--accent);
+    border-radius: var(--rc-radius-button);
     background: var(--accent);
     color: var(--on-accent);
-    font-size: 15px;
-    font-weight: 500;
+    font-size: 15.5px;
+    font-weight: 600;
+    line-height: normal;
     text-align: center;
+    box-shadow: var(--rc-press-depth);
   }
 
   .learn-mode-nav.is-solo-cta .learn-letters-speak:disabled {
@@ -3427,12 +3480,19 @@
   .learn-mode-nav.is-solo-cta .learn-recite-toggle:not([hidden]),
   .learn-mode-nav.is-solo-cta .learn-test-submit:not([hidden]) {
     flex: 2 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 52px;
     border-color: var(--accent);
+    border-radius: var(--rc-radius-button);
     background: var(--accent);
     color: var(--on-accent);
-    font-size: 15px;
-    font-weight: 500;
+    font-size: 15.5px;
+    font-weight: 600;
+    line-height: normal;
     text-align: center;
+    box-shadow: var(--rc-press-depth);
   }
 
   .learn-mode-nav.is-solo-cta .learn-recite-toggle:disabled,
@@ -4385,6 +4445,7 @@
 @media (min-width: 561px) {
   .learn-mode-bar,
   .learn-mode-nav,
+  .learn-mode-heading,
   .learn-deck-head,
   .learn-deck,
   .learn-deck-dots,

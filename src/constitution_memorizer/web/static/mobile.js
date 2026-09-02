@@ -129,7 +129,10 @@
     if (!learn) return;
 
     var unitId = learn.getAttribute("data-unit-id") || "";
+    var articleNumber = (learn.getAttribute("data-article-number") || "").trim();
     var nameEl = learn.querySelector("[data-mode-name]");
+    var eyebrowEl = learn.querySelector("[data-mode-eyebrow]");
+    var headlineEl = learn.querySelector("[data-mode-headline]");
     var toast = learn.querySelector("[data-deck-toast]");
     var tracker = document.getElementById("methods-tracker");
     var cards = Array.prototype.slice.call(learn.querySelectorAll(".learn-deck-card"));
@@ -141,6 +144,23 @@
       type: "Type",
       recite: "Recite",
       test: "Test",
+    };
+    var MODE_HEADLINES = {
+      read: "First, read it once.",
+      cloze: "Fill the gaps.",
+      letters: "Rebuild it from the first letters.",
+      type: "Type it from memory.",
+      recite: "Say it from memory.",
+      test: "Prove you know it.",
+    };
+    // Completing CTAs follow the Read reference: first person + arrow.
+    var ADVANCE_LABELS = {
+      read: "I've read this →",
+      cloze: "I've filled the gaps →",
+      letters: "I've heard this →",
+      type: "I've typed this →",
+      recite: "I've recited this →",
+      test: "I've checked this →",
     };
 
     function syncBodyClass() {
@@ -154,10 +174,29 @@
       return learn.dataset.mode || "read";
     }
 
+    function syncModeChrome(mode) {
+      var modes = cards.map(function (card) {
+        return card.getAttribute("data-learn-mode");
+      });
+      var total = modes.length || 6;
+      var step = modes.indexOf(mode) + 1;
+      if (step < 1) step = 1;
+      if (nameEl) nameEl.textContent = "Step " + step + " of " + total;
+      if (eyebrowEl) {
+        var label = (MODE_LABELS[mode] || mode).toUpperCase();
+        eyebrowEl.textContent = articleNumber
+          ? label + " · ARTICLE " + articleNumber
+          : label;
+      }
+      if (headlineEl) {
+        headlineEl.textContent = MODE_HEADLINES[mode] || "";
+      }
+    }
+
     function showMode(mode) {
       learn.setAttribute("data-mobile-view", "mode");
       syncBodyClass();
-      if (nameEl) nameEl.textContent = MODE_LABELS[mode] || mode;
+      syncModeChrome(mode);
       dots.forEach(function (dot, index) {
         dot.classList.toggle("is-current", cards[index] === undefined
           ? false
@@ -226,7 +265,7 @@
 
        A mode that needs a deliberate act to complete (Type, Test, Recite)
        shows that act as the primary until it passes; then the same slot
-       becomes "Next →". Cloze completes by tapping blanks and Letters by
+       becomes the first-person completing CTA. Cloze completes by tapping blanks and Letters by
        speech, so their controls stay secondary and Next leads from the start.
 
        Next walks only the modes still outstanding — completed ones drop out
@@ -354,8 +393,16 @@
       var target = nextTarget(mode);
 
       // Shared tail for every solo mode: while the mode's act is outstanding
-      // the button keeps its own label; once done it becomes Next, or Done
-      // when nothing is left outstanding.
+      // the button keeps its own label; once done it becomes the first-person
+      // completing CTA, or Done when nothing is left outstanding.
+      function advanceCopy(forMode) {
+        // Letters' "Just read" view has no speak pass — don't claim they heard it.
+        var lettersHidden = lettersSpeak && lettersSpeak.hidden;
+        if (forMode === "letters" && lettersHidden) {
+          return ADVANCE_LABELS.read;
+        }
+        return ADVANCE_LABELS[forMode] || "Next →";
+      }
       function paintAdvance(btn, armed) {
         if (!armed) return;
         if (target === null) {
@@ -363,7 +410,7 @@
           btn.textContent = doneBtn ? doneBtn.textContent.trim() : "Done";
           btn.disabled = locked;
         } else {
-          btn.textContent = "Next →";
+          btn.textContent = advanceCopy(mode);
           btn.disabled = false;
         }
       }
@@ -388,16 +435,8 @@
       }
 
       if (typeSolo) {
-        if (typeCheck.dataset.typeAdvance) {
-          if (target === null) {
-            var doneLocked = !doneBtn || doneBtn.disabled;
-            typeCheck.textContent = doneBtn ? doneBtn.textContent.trim() : "Done";
-            typeCheck.disabled = doneLocked;
-          } else {
-            typeCheck.textContent = "Next →";
-            typeCheck.disabled = false;
-          }
-        } else {
+        paintAdvance(typeCheck, typeCheck.dataset.typeAdvance);
+        if (!typeCheck.dataset.typeAdvance) {
           typeCheck.disabled = false;
         }
         return;
@@ -412,7 +451,7 @@
         nextBtn.setAttribute("aria-disabled", locked ? "true" : "false");
       } else {
         nextBtn.classList.remove("is-done");
-        nextBtn.textContent = "Next →";
+        nextBtn.textContent = advanceCopy(mode);
         nextBtn.disabled = false;
         nextBtn.setAttribute("aria-disabled", "false");
       }
@@ -569,8 +608,10 @@
     if (window.MutationObserver) {
       new MutationObserver(function () {
         if (learn.getAttribute("data-mobile-view") !== "mode") return;
-        placeControls(currentMode());
-        syncNextButton(currentMode());
+        var mode = currentMode();
+        placeControls(mode);
+        syncNextButton(mode);
+        syncModeChrome(mode);
       }).observe(learn, { attributes: true, attributeFilter: ["data-mode"] });
     }
 
