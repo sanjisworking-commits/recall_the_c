@@ -1059,13 +1059,59 @@
   /* 4c · Plan my day — a sheet over Today, not the shipped full page. The
      panel, scrim and title come from the shared sheet furniture above; only
      the eyebrow, lede and button stack are particular to this one. */
-  .plan-day-sheet-eyebrow {
-    margin: 0 0 6px;
-    font-size: 10.5px;
+  /* diff.md item 6 · drag handle, then a pick-then-confirm mix. */
+  .plan-day-sheet-handle {
+    display: block;
+    width: 36px;
+    height: 4px;
+    margin: 0 auto 14px;
+    border-radius: 2px;
+    background: var(--hairline);
+  }
+
+  .plan-day-sheet-label {
+    margin: 0 0 8px;
+    font-size: 12px;
     font-weight: 600;
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .plan-day-sheet .segmented {
+    display: flex;
+    width: 100%;
+  }
+
+  .plan-day-sheet .segmented-btn {
+    flex: 1;
+    height: 32px;
+    padding: 0 8px;
+    font-size: 12.5px;
+  }
+
+  .plan-day-sheet-note {
+    margin: 12px 0 16px;
+    font-size: 11.5px;
+    line-height: 1.55;
     color: var(--faint);
+    text-wrap: pretty;
+  }
+
+  /* The affordance the design puts on the hero card itself. */
+  body[data-mscreen="today"] .dash-plan-day-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    margin-left: auto;
+    border: 1px solid var(--hairline);
+    border-radius: 9px;
+    background: var(--paper);
+    color: var(--mid);
+  }
+
+  body[data-mscreen="today"] .dash-plan-day-btn:active {
+    transform: translateY(1px);
   }
 
   .plan-day-sheet .mobile-sheet-title {
@@ -4573,6 +4619,31 @@
     height: 52px;
     border-radius: var(--rc-radius-button);
     box-shadow: var(--rc-press-depth);
+  }
+
+  /* Plan intro · diff.md item 6: full-width tracks, stacked actions. */
+  body[data-mscreen="planintro"] .segmented {
+    display: flex;
+    width: 100%;
+    border-radius: 11px;
+  }
+
+  body[data-mscreen="planintro"] .segmented-btn {
+    flex: 1;
+    gap: 5px;
+    padding: 0 8px;
+    font-size: 14px;
+  }
+
+  body[data-mscreen="planintro"] .plan-intro-target .segmented-btn {
+    height: 32px;
+    font-size: 12.5px;
+  }
+
+  body[data-mscreen="planintro"] .welcome-panel .btn.plan-intro-later {
+    height: 48px;
+    font-size: 14px;
+    box-shadow: none;
   }
 
   body[data-mscreen="browse"] .part-card,

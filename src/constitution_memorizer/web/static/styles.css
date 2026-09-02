@@ -2649,6 +2649,63 @@ html[data-theme="dark"] .bare-fn-nested-trigger {
   white-space: nowrap;
 }
 
+/* ── Plan intro · diff.md item 6 ─────────────────────────────────────────
+   The pace choice drives what is said under it and whether the daily target
+   reads as live. Pure CSS, so it holds with scripting off; where :has() is
+   missing the fallback below shows everything at full strength rather than
+   leaving the page half-dimmed. */
+.plan-intro-note {
+  display: none;
+  margin: 10px 2px 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.plan-intro-note.is-shown,
+.plan-intro-form:has(#plan-self-paced:checked) [data-plan-note="self_paced"],
+.plan-intro-form:has(#plan-auto:checked) [data-plan-note="auto"] {
+  display: block;
+}
+
+.plan-intro-target {
+  margin-top: 20px;
+  opacity: 0.45;
+  transition: opacity 0.2s ease;
+}
+
+.plan-intro-form:has(#plan-auto:checked) .plan-intro-target {
+  opacity: 1;
+}
+
+.plan-intro-target-label {
+  margin: 0 2px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.plan-intro-lock {
+  margin-right: 5px;
+}
+
+.plan-intro-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-top: 24px;
+}
+
+@supports not selector(:has(*)) {
+  .plan-intro-note {
+    display: block;
+  }
+
+  .plan-intro-target {
+    opacity: 1;
+  }
+}
+
 .segmented-input:focus-visible + .segmented-btn {
   outline: 2px solid var(--ink);
   outline-offset: 2px;

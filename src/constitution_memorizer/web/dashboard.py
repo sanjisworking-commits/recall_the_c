@@ -692,6 +692,18 @@ def build_dashboard_context(
             learning_cta = "caught_up"
 
     show_plan_prompt = learning_cta == "plan_prompt"
+    # diff.md item 6: Plan my day is an affordance on the hero card, not only
+    # a state the dashboard happens to be in. It is offered whenever the mix
+    # could actually be planned — self-paced, nothing due, material left —
+    # which includes days where "Not today" has already been tapped. Offering
+    # it when the post would be refused would be worse than not offering it.
+    plan_my_day_available = (
+        today_mode == "learning"
+        and learning_today is None
+        and not auto_selected
+        and unseen > 0
+        and (plan is None or plan.mode == "self_paced")
+    )
 
     today_units = build_today_units(
         eng,
@@ -727,6 +739,7 @@ def build_dashboard_context(
         "auto_entitled": auto_entitled,
         "auto_active": auto_active,
         "show_plan_prompt": show_plan_prompt,
+        "plan_my_day_available": plan_my_day_available,
         "today_new_count": today_new_count,
         "today_new_titles": today_new_titles,
         "today_pace_label": today_pace,

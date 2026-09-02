@@ -572,11 +572,41 @@ def test_plan_prompt_dashboard_carries_the_phone_sheet(tmp_path: Path):
     assert 'id="plan-day-sheet"' in html
     # The anchor keeps its href — desktop and no-JS phones still navigate.
     assert 'href="/learning/plan-my-day"' in html
-    # The sheet posts the same four actions as plan_my_day.html.
-    assert html.count('action="/learning/plan-my-day"') == 3
+    # diff.md item 6: one segmented pick, one post — not a form per target.
+    assert html.count('action="/learning/plan-my-day"') == 1
+    assert "Today\u2019s mix" in html
+    assert "This does not turn Auto Plan on." in html
     assert 'action="/learning/plan-my-day/dismiss"' in html
     for label in ("Steady · 3", "Balanced · 5", "Intensive · 7", "Not today"):
         assert label in html, label
+
+
+def test_plan_my_day_stays_available_after_not_today(tmp_path: Path):
+    """diff.md item 6: the design puts Plan my day on the hero card so it can
+    be opened on any day it would actually work — including one where "Not
+    today" was already tapped, which used to retire the sheet until tomorrow.
+    """
+    units_path = _articles_catalog(tmp_path)
+    client, repo, user_id = _entitled_client(tmp_path, units_path)
+    repo.upsert_progress(
+        user_id,
+        unit_id="u-14",
+        status="mastered",
+        times_completed=1,
+        last_completed=date.today() - timedelta(days=1),
+        next_revision=None,
+        interval_days=60,
+    )
+    assert 'class="dash-plan-day-btn"' in client.get("/dashboard").text
+
+    dismissed = client.post(
+        "/learning/plan-my-day/dismiss", follow_redirects=False
+    )
+    assert dismissed.status_code == 303
+    html = client.get("/dashboard").text
+    # The prompt card is gone for today; the affordance is not.
+    assert 'class="dash-plan-day-btn"' in html
+    assert 'id="plan-day-sheet"' in html
 
 
 def test_dashboard_sheet_is_absent_outside_the_plan_prompt(tmp_path: Path):

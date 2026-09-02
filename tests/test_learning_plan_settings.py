@@ -181,6 +181,43 @@ def test_settings_shows_learning_plan_and_saves_auto(tmp_path: Path):
     assert "Not started yet" in again.text
 
 
+def test_plan_intro_is_a_segmented_choice(tmp_path: Path):
+    """diff.md item 6: the plan intro offers one segmented pace control, and
+    the daily target hangs off it rather than standing alone."""
+    client = _client(tmp_path)
+    _sign_in(client)
+    html = client.get("/onboarding/plan").text
+
+    assert 'class="segmented is-on-page plan-intro-pace' in html
+    assert 'id="plan-self-paced"' in html and 'id="plan-auto"' in html
+    # The daily target is a segmented track now, not a dropdown.
+    assert '<select name="daily_target"' not in html
+    assert 'id="plan-target-5"' in html
+    assert "If Auto Plan, daily target" in html
+    for label in ("Steady \u00b7 3", "Balanced \u00b7 5", "Intensive \u00b7 7"):
+        assert label in html, label
+    # Both notes ship; the checked pace decides which one shows.
+    assert 'data-plan-note="self_paced"' in html
+    assert 'data-plan-note="auto"' in html
+
+    css = client.get("/static/styles.css").text
+    assert ".plan-intro-form:has(#plan-auto:checked) .plan-intro-target" in css
+
+
+def test_plan_intro_locks_auto_for_a_free_account(tmp_path: Path):
+    """Entitlement rules are unchanged — Auto Plan is simply shown as locked
+    rather than offered and then refused."""
+    client = _client(tmp_path, entitlements=True)
+    _sign_in(client)
+    html = client.get("/onboarding/plan").text
+
+    assert 'id="plan-auto"' in html
+    assert "disabled" in html
+    assert "plan-intro-lock" in html
+    assert "Auto Plan is part of unlocking every Article." in html
+    assert "If Auto Plan, daily target" not in html
+
+
 def test_onboarding_plan_saves_self_paced(tmp_path: Path):
     client = _client(tmp_path)
     _sign_in(client)

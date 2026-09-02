@@ -127,17 +127,17 @@ def test_guest_text_size_api_does_not_write(tmp_path: Path):
 def test_settings_assets_and_hooks(tmp_path: Path):
     client = _client(tmp_path)
     html = client.get("/browse").text
-    assert "styles.css?v=main48" in html
-    assert "mobile.css?v=mob56" in html
-    assert "app.js?v=main48" in html
-    css = client.get("/static/mobile.css?v=mob56").text
+    assert "styles.css?v=main49" in html
+    assert "mobile.css?v=mob57" in html
+    assert "app.js?v=main49" in html
+    css = client.get("/static/mobile.css?v=mob57").text
     assert 'body[data-mscreen="settings"] .mobile-tabbar' in css
     assert 'body[data-mscreen="settings"] .settings-desk-copy' in css
     assert ".settings-toggle" in css
-    styles = client.get("/static/styles.css?v=main48").text
+    styles = client.get("/static/styles.css?v=main49").text
     assert "--bare-size" in styles
     assert "var(--bare-size" in styles
-    js = client.get("/static/app.js?v=main48").text
+    js = client.get("/static/app.js?v=main49").text
     assert "cm-text-size" in js
     assert "data-gcal-toggle" in js
     assert "data-plan-autosubmit" in js

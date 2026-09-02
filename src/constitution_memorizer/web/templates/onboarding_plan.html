@@ -2,7 +2,11 @@
 {% block title %}Learning plan · {{ app_name|default('Recall the C') }}{% endblock %}
 {% block mobile_screen %}planintro{% endblock %}
 {% block content %}
-<section class="panel welcome-panel">
+{# diff.md item 6 · the plan intro is a choice between two paces, not a list of
+   radio rows. The pace segmented control drives everything below it: the note
+   under it and, through :has(), whether the daily target reads as live or as
+   the setting it will become once Auto Plan is on. #}
+<section class="panel welcome-panel plan-intro">
   <p class="eyebrow">How you want to learn</p>
   <h1 class="display">Set a learning plan</h1>
   <p class="lede">
@@ -10,47 +14,50 @@
     fill days that have none due.
   </p>
 
-  <form method="post" action="/onboarding/plan" class="welcome-form">
+  <form method="post" action="/onboarding/plan" class="welcome-form plan-intro-form">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-    <fieldset class="settings-fieldset">
-      <legend class="visually-hidden">Learning plan</legend>
-      <label class="settings-option">
-        <input type="radio" name="mode" value="self_paced" checked>
-        <span>
-          <strong>Self-paced</strong>
-          <span class="settings-option-note">Browse and learn when you like. Plan my day is there if you want a mix.</span>
-        </span>
+
+    <div class="segmented is-on-page plan-intro-pace{% if not auto_available|default(false) %} has-locked{% endif %}" role="group" aria-label="Pace">
+      <input class="segmented-input" type="radio" id="plan-self-paced" name="mode" value="self_paced" checked>
+      <label class="segmented-btn" for="plan-self-paced">Self-paced</label>
+      <input class="segmented-input" type="radio" id="plan-auto" name="mode" value="auto"
+        {% if not auto_available|default(false) %}disabled{% endif %}>
+      <label class="segmented-btn" for="plan-auto">
+        {% if not auto_available|default(false) %}
+        <svg class="plan-intro-lock" width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2.2" y="5" width="7.6" height="5.5" rx="1"></rect><path d="M3.8 5V3.6a2.2 2.2 0 0 1 4.4 0V5"></path></svg>
+        {% endif %}
+        Auto Plan
       </label>
-      {% if auto_available|default(false) %}
-      <label class="settings-option">
-        <input type="radio" name="mode" value="auto">
-        <span>
-          <strong>Auto Plan</strong>
-          <span class="settings-option-note">We'll place 3, 5, or 7 new clauses on revision-free days.</span>
-        </span>
-      </label>
-      <label class="memory-field">
-        <span class="memory-field-label">If Auto Plan, daily target</span>
-        <select name="daily_target">
-          <option value="3">Steady · 3</option>
-          <option value="5" selected>Balanced · 5</option>
-          <option value="7">Intensive · 7</option>
-        </select>
-      </label>
-      {% else %}
-      <label class="settings-option is-locked">
-        <input type="radio" name="mode" value="auto" disabled>
-        <span>
-          <strong>Auto Plan</strong>
-          <span class="settings-option-note">Part of unlocking every Article. Your saved history is never deleted.</span>
-        </span>
-      </label>
-      {% endif %}
-    </fieldset>
-    <p class="actions">
-      <button class="btn" type="submit">Continue</button>
-      <button class="btn btn-ghost" type="submit" name="mode" value="self_paced">I'll decide later</button>
+    </div>
+
+    {% if auto_available|default(false) %}
+    {# Both notes ship; the checked pace decides which one is shown. #}
+    <p class="plan-intro-note" data-plan-note="self_paced">
+      Browse and learn when you like. Plan my day is there if you want a mix.
     </p>
+    <p class="plan-intro-note" data-plan-note="auto">
+      We'll place 3, 5, or 7 new clauses on revision-free days.
+    </p>
+
+    <div class="plan-intro-target">
+      <p class="plan-intro-target-label" id="plan-target-label">If Auto Plan, daily target</p>
+      <div class="segmented is-on-page" role="group" aria-labelledby="plan-target-label">
+        {% for n, label in ((3, 'Steady · 3'), (5, 'Balanced · 5'), (7, 'Intensive · 7')) %}
+        <input class="segmented-input" type="radio" id="plan-target-{{ n }}" name="daily_target" value="{{ n }}"{% if n == 5 %} checked{% endif %}>
+        <label class="segmented-btn" for="plan-target-{{ n }}">{{ label }}</label>
+        {% endfor %}
+      </div>
+    </div>
+    {% else %}
+    <p class="plan-intro-note is-shown">
+      Auto Plan is part of unlocking every Article. Your saved history is never deleted.
+    </p>
+    {% endif %}
+
+    <div class="plan-intro-actions">
+      <button class="btn plan-intro-continue" type="submit">Continue</button>
+      <button class="btn btn-ghost plan-intro-later" type="submit" name="mode" value="self_paced">I'll decide later</button>
+    </div>
   </form>
 </section>
 {% endblock %}

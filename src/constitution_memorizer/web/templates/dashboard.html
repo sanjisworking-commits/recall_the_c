@@ -240,6 +240,12 @@
           <span class="dash-eyebrow-phone">Today’s Recall</span>
           <span class="dash-eyebrow-desktop">Today</span>
         </h2>
+        {% if plan_my_day_available|default(false) %}
+        {# Anchor, not a button: desktop and no-JS phones follow the href. #}
+        <a class="dash-plan-day-btn" href="/learning/plan-my-day" data-sheet-open="plan-day-sheet" aria-label="Plan my day">
+          <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="2.5" y="3.5" width="13" height="12" rx="2"></rect><path d="M2.5 7h13M6 2v3M12 2v3"></path></svg>
+        </a>
+        {% endif %}
       </header>
       <div class="dash-card-body">
         {% if learning_cta|default('browse') == 'continue_session' %}
@@ -377,27 +383,34 @@
   {# Design 4c · the phone opens Plan my day as a sheet over Today. Desktop and
      no-JS phones follow the anchor's href to /learning/plan-my-day instead —
      same copy, same four posts. #}
-  {% if learning_cta|default('browse') == 'plan_prompt' %}
+  {# diff.md item 6 · pick then confirm, rather than a button per target.
+     One segmented track, one primary action, and the reassurance the design
+     asks for: choosing a mix for today does not switch Auto Plan on. #}
+  {% if show_plan_prompt|default(false) or plan_my_day_available|default(false) %}
   <div class="mobile-sheet" id="plan-day-sheet" hidden data-sheet>
     <div class="mobile-sheet-scrim" data-sheet-close></div>
     <div class="mobile-sheet-panel plan-day-sheet" role="dialog" aria-modal="true" aria-label="Plan my day" tabindex="-1" data-sheet-focus>
-      <p class="plan-day-sheet-eyebrow">Today</p>
+      <span class="plan-day-sheet-handle" aria-hidden="true"></span>
       <p class="mobile-sheet-title">Plan my day</p>
       <p class="plan-day-sheet-lede">
-        Pick a short mix for today. This does not turn Auto Plan on. Revisions always
-        come first — there is nothing due right now.
+        Pick a short mix for today. This does not turn Auto Plan on.
       </p>
-      <div class="plan-day-sheet-actions">
-        {% for n, label in ((3, 'Steady · 3'), (5, 'Balanced · 5'), (7, 'Intensive · 7')) %}
-        <form method="post" action="/learning/plan-my-day">
-          <input type="hidden" name="target" value="{{ n }}">
-          <button type="submit" class="btn {% if n == 5 %}dash-btn-full{% else %}btn-ghost dash-btn-outline{% endif %}">{{ label }}</button>
-        </form>
-        {% endfor %}
-        <form method="post" action="/learning/plan-my-day/dismiss">
-          <button type="submit" class="btn plan-day-sheet-dismiss">Not today</button>
-        </form>
-      </div>
+      <form method="post" action="/learning/plan-my-day" class="plan-day-sheet-form">
+        <p class="plan-day-sheet-label" id="plan-day-mix-label">Today’s mix</p>
+        <div class="segmented is-on-page" role="group" aria-labelledby="plan-day-mix-label">
+          {% for n, label in ((3, 'Steady · 3'), (5, 'Balanced · 5'), (7, 'Intensive · 7')) %}
+          <input class="segmented-input" type="radio" id="plan-day-{{ n }}" name="target" value="{{ n }}"{% if n == 5 %} checked{% endif %}>
+          <label class="segmented-btn" for="plan-day-{{ n }}">{{ label }}</label>
+          {% endfor %}
+        </div>
+        <p class="plan-day-sheet-note">
+          Revisions always come first — the mix fills in around whatever is due.
+        </p>
+        <button type="submit" class="btn dash-btn-full">Plan today’s mix</button>
+      </form>
+      <form method="post" action="/learning/plan-my-day/dismiss">
+        <button type="submit" class="btn plan-day-sheet-dismiss">Not today</button>
+      </form>
     </div>
   </div>
   {% endif %}
