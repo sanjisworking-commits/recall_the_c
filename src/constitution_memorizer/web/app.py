@@ -1778,8 +1778,17 @@ def create_app(
         )
         if is_guest:
             return _guest_login("/dashboard")
+        eng.bootstrap_request(include_account=entitlements_active(request))
         today = user_today(eng)
-        if _revision_blocks_new_learning(eng, today):
+        try:
+            eng.ensure_planner_bundle(as_of=today)
+        except Exception as error:  # noqa: BLE001 — schema-gap only
+            if not _is_missing_optional_schema(error):
+                raise
+        started = time.perf_counter()
+        blocked = _revision_blocks_new_learning(eng, today)
+        record_request_timing("due_build", started)
+        if blocked:
             return RedirectResponse(url=_home_url(), status_code=303)
         for kind in ("auto_learning", "day_plan"):
             existing = eng.active_study_session(kind=kind, plan_date=today)
@@ -2184,6 +2193,11 @@ def create_app(
     @app.get("/browse/article/{article_number}", response_class=HTMLResponse)
     async def browse_article(request: Request, article_number: str) -> HTMLResponse:
         eng = _engine()
+        if not getattr(request.state, "is_guest", False):
+            eng.bootstrap_request(
+                include_news=True,
+                include_account=entitlements_active(request),
+            )
         started = time.perf_counter()
         view = build_article_view(
             eng,
@@ -2306,9 +2320,12 @@ def create_app(
         ):
             return JSONResponse({"ok": False}, status_code=401)
         eng = _engine()
+        eng.bootstrap_request(include_modes=True)
+        started = time.perf_counter()
         today = date.today()
         required, _pending = path_units_for_article(eng, article_number)
         if not required:
+            record_request_timing("article_progress", started)
             return JSONResponse(
                 {"ok": True, "state": "not_started", "modes_done": 0,
                  "modes_total": len(LEARN_MODES)}
@@ -2335,14 +2352,14 @@ def create_app(
                 state = "started" if seen_any else "not_started"
             else:
                 lead, state = required[0], "started"
-        return JSONResponse(
-            {
-                "ok": True,
-                "state": state,
-                "modes_done": len(eng.modes_seen(lead.id)),
-                "modes_total": len(LEARN_MODES),
-            }
-        )
+        payload = {
+            "ok": True,
+            "state": state,
+            "modes_done": len(eng.modes_seen(lead.id)),
+            "modes_total": len(LEARN_MODES),
+        }
+        record_request_timing("article_progress", started)
+        return JSONResponse(payload)
 
     @app.get("/search", response_class=HTMLResponse)
     async def search_page(
@@ -2450,9 +2467,11 @@ def create_app(
                 "guest_gate.html",
                 {"gate_kind": "progress", "reason": "default"},
             )
+        eng = _engine()
+        eng.bootstrap_request()
         started = time.perf_counter()
         dashboard = progress_dashboard(
-            _engine(),
+            eng,
             reviewed=app.state.reviewed,
             today=date.today(),
         )
@@ -2471,9 +2490,11 @@ def create_app(
                 "guest_gate.html",
                 {"gate_kind": "progress", "reason": "default"},
             )
+        eng = _engine()
+        eng.bootstrap_request()
         started = time.perf_counter()
         dashboard = progress_dashboard(
-            _engine(),
+            eng,
             reviewed=app.state.reviewed,
             today=date.today(),
         )

@@ -4,12 +4,14 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import date
+from time import perf_counter
 from typing import Literal
 
 from constitution_memorizer.learning.schemas import LearningUnit, LearningUnitType
 from constitution_memorizer.progress.scheduler import INTERVAL_LADDER, ReminderEngine
 from constitution_memorizer.schemas import ConstitutionDocument, Part
 from constitution_memorizer.utils.identifiers import article_sort_key
+from constitution_memorizer.web.request_context import record_request_timing
 from constitution_memorizer.web.service import continue_unit_id, daily_goal_streak
 
 MasteryState = Literal["new", "learning", "review", "mastered", "due"]
@@ -574,8 +576,13 @@ def progress_dashboard(
 ) -> dict:
     """Bundle stats for the Progress page (Sprint 5 aggregates + Sprint 20 map)."""
     today = today or date.today()
+    stage_started = perf_counter()
     continue_id = continue_unit_id(engine, as_of=today)
+    record_request_timing("progress_continue", stage_started)
+    stage_started = perf_counter()
     engine_stats = engine.stats()
+    record_request_timing("progress_stats", stage_started)
+    stage_started = perf_counter()
     articles = all_article_progress(engine)
     started = [a for a in articles if a.completed > 0]
     complete = [a for a in articles if a.required and a.completed >= a.required]
@@ -594,12 +601,11 @@ def progress_dashboard(
     tracked_units = len(path_units)
     completed_units = sum(1 for u in path_units if _is_completed(engine, u.id))
     remaining_units = max(0, tracked_units - completed_units)
+    record_request_timing("progress_articles", stage_started)
 
+    stage_started = perf_counter()
     parts_map = build_parts_mastery_map(
         engine, reviewed, today=today, continue_id=continue_id
-    )
-    tracked_rows = build_tracked_article_rows(
-        engine, today=today, continue_id=continue_id
     )
     mastered_articles = sum(
         1
@@ -641,7 +647,12 @@ def progress_dashboard(
         f"{completed_units} of {tracked_units} units memorized · "
         f"{mastered_articles} article{'s' if mastered_articles != 1 else ''} mastered"
     )
+    record_request_timing("progress_map", stage_started)
 
+    stage_started = perf_counter()
+    tracked_rows = build_tracked_article_rows(
+        engine, today=today, continue_id=continue_id
+    )
     recently_mastered: list[dict] = []
     for row in parts_map:
         for cell in row.cells:
@@ -665,6 +676,7 @@ def progress_dashboard(
             article_sort_key(item["article_number"]),
         )
     )
+    record_request_timing("progress_recent", stage_started)
 
     return {
         "engine": engine_stats,

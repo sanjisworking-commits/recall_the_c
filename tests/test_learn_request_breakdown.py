@@ -46,6 +46,7 @@ class CountingProgressRepo:
         self.get_theme_calls = 0
         self.get_setting_calls = 0
         self.claimed_articles_calls = 0
+        self.get_news_articles_raw_calls = 0
         self.last_bootstrap_kwargs = None
 
     def __getattr__(self, name: str):
@@ -124,6 +125,10 @@ class CountingProgressRepo:
         self.get_theme_calls += 1
         return self.inner.get_theme(user_id)
 
+    def get_news_articles_raw(self, user_id):
+        self.get_news_articles_raw_calls += 1
+        return self.inner.get_news_articles_raw(user_id)
+
     def snapshot(self) -> dict[str, int]:
         return {
             "get_progress": self.get_progress_calls,
@@ -142,6 +147,7 @@ class CountingProgressRepo:
             "clear_modes_seen": self.clear_modes_seen_calls,
             "get_gloss": self.get_gloss_calls,
             "get_theme": self.get_theme_calls,
+            "get_news_articles_raw": self.get_news_articles_raw_calls,
             "get_setting": self.get_setting_calls,
             "claimed_articles": self.claimed_articles_calls,
         }
@@ -225,6 +231,9 @@ def test_wants_request_breakdown_paths():
     assert wants_request_breakdown("/progress") is True
     assert wants_request_breakdown("/progress/mastered") is True
     assert wants_request_breakdown("/revision/start") is True
+    assert wants_request_breakdown("/learning/start") is True
+    assert wants_request_breakdown("/api/articles/1/progress") is True
+    assert wants_request_breakdown("/api/articles/20/progress") is True
 
     assert wants_request_breakdown("/learn/clause-1/again") is False
     assert wants_request_breakdown("/learn/clause-1/reset") is False
@@ -425,15 +434,15 @@ def test_browse_article_records_parent_and_gloss(tmp_path: Path, caplog):
     assert "gloss_read_n=1" in line
     assert "template_n=" in line
     assert "mode_seen_write_" not in line
-    assert "request_bootstrap" not in line
-    assert repo.load_request_bootstrap_calls == 0
+    assert "request_bootstrap_n=1" in line
+    assert "gloss_read_n=1" in line
+    assert repo.load_request_bootstrap_calls == 1
     assert repo.get_gloss_calls == 1
-    if repo.get_progress_calls == 0:
-        assert repo.list_all_progress_calls == 0
-        assert "progress_preload_" not in line
-    else:
-        assert repo.list_all_progress_calls == 1
-        assert "progress_preload_n=1" in line
+    assert repo.list_all_progress_calls == 0
+    assert "progress_preload_" not in line
+    assert "split_prefs_" not in line
+    assert "news_setting_" not in line
+    assert "theme_" not in line
 
 
 def test_health_and_static_remain_silent(tmp_path: Path, caplog):
@@ -522,6 +531,49 @@ def test_progress_and_revision_start_emit_breakdown(tmp_path: Path, caplog):
         revision_lines = _breakdown_messages(caplog)
     assert progress_lines
     assert "progress_dashboard_n=1" in progress_lines[0]
+    assert "request_bootstrap_n=1" in progress_lines[0]
     assert start.status_code in {303, 200}
     assert revision_lines
     assert "revision_start_n=1" in revision_lines[0]
+
+
+def test_article_progress_api_bootstraps_modes_once(
+    tmp_path: Path, caplog: logging.LogCaptureFixture
+):
+    client, repo = _counting_client(tmp_path)
+    engine = client.app.state.engine.for_user(USER)
+    engine.mark_mode_seen("clause-1", "read")
+    engine.mark_mode_seen("clause-1", "cloze")
+    repo.reset_counts()
+    with caplog.at_level(logging.INFO, logger="uvicorn.error"):
+        caplog.clear()
+        body = client.get("/api/articles/20/progress").json()
+    assert body["ok"] is True
+    assert set(body) == {"ok", "state", "modes_done", "modes_total"}
+    assert body["modes_total"] == len(LEARN_MODES)
+    assert repo.load_request_bootstrap_calls == 1
+    assert repo.last_bootstrap_kwargs is not None
+    assert repo.last_bootstrap_kwargs.get("include_modes") is True
+    assert repo.last_bootstrap_kwargs.get("include_account") is not True
+    assert repo.modes_seen_calls == 0
+    assert repo.list_all_progress_calls == 0
+    line = _breakdown_messages(caplog)[0]
+    assert "path=/api/articles/20/progress" in line
+    assert "request_bootstrap_n=1" in line
+    assert "article_progress_n=1" in line
+    assert "modes_seen_rows=2" in line
+
+
+def test_learning_start_emits_named_stages(
+    tmp_path: Path, caplog: logging.LogCaptureFixture
+):
+    client, repo = _counting_client(tmp_path)
+    with caplog.at_level(logging.INFO, logger="uvicorn.error"):
+        caplog.clear()
+        resp = client.post("/learning/start", follow_redirects=False)
+    assert resp.status_code == 303
+    assert repo.load_request_bootstrap_calls == 1
+    line = _breakdown_messages(caplog)[0]
+    assert "path=/learning/start" in line
+    assert "request_bootstrap_n=1" in line
+    assert "due_build_n=1" in line
