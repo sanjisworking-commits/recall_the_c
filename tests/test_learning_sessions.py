@@ -552,7 +552,20 @@ def test_plan_prompt_dashboard_carries_the_phone_sheet(tmp_path: Path):
     """Design 4c: the phone opens Plan my day over Today; the page stays the
     desktop and no-JS route."""
     units_path = _articles_catalog(tmp_path)
-    client, _, _ = _entitled_client(tmp_path, units_path)
+    client, repo, user_id = _entitled_client(tmp_path, units_path)
+    # plan_prompt means "nothing to review", which presupposes the account has
+    # learned something. Without progress it is a brand-new account and gets
+    # the first-run zero state instead (diff.md item 1), whose plan affordance
+    # is the "Set a learning plan" row rather than this sheet.
+    repo.upsert_progress(
+        user_id,
+        unit_id="u-14",
+        status="mastered",
+        times_completed=1,
+        last_completed=date.today() - timedelta(days=1),
+        next_revision=None,
+        interval_days=60,
+    )
     html = client.get("/dashboard").text
 
     assert 'data-sheet-open="plan-day-sheet"' in html

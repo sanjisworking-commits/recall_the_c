@@ -447,15 +447,21 @@ def test_dashboard_multiuser_layout(tmp_path: Path):
         f"/auth/callback?code=fake-google-code&state={state}",
         follow_redirects=False,
     )
+    # This guards the full Today furniture (strip, rails, account menu), which
+    # only renders once the account has started. A brand-new account gets the
+    # first-run zero state instead (diff.md item 1), pinned separately by
+    # test_dashboard_first_run_zero_state.
+    complete_all_modes(client, MINI_UNITS, "clause-1")
+    client.post(
+        "/learn/clause-1/done",
+        data={"claim_article": "1", "modes": "read,cloze,letters,type,recite,test"},
+        follow_redirects=False,
+    )
     dash = client.get("/dashboard")
     assert dash.status_code == 200
     html = dash.text
     assert 'class="eyebrow"' not in html
-    assert "Welcome, User." in html or "Good morning, User." in html
-    # Today's hero is mutually exclusive: a fresh account has nothing due, so
-    # it gets the learning hero and the "Due today" revision card is absent.
-    assert 'data-today-mode="learning"' in html
-    assert "Due today" not in html
+    assert 'data-today-mode="firstrun"' not in html
     assert "Articles started" in html
     assert "Units completed" in html
     assert "Units mastered" in html
@@ -508,3 +514,83 @@ def test_dashboard_data_error_state(tmp_path: Path, monkeypatch: pytest.MonkeyPa
     assert dash.status_code == 200
     assert "We couldn't load your dashboard" in dash.text
     assert "Try again" in dash.text
+
+
+def test_dashboard_first_run_zero_state(tmp_path: Path):
+    """diff.md item 1: a brand-new account gets the zero state at /dashboard —
+    same route, no redirect — instead of the caught-up card."""
+    client = _client(tmp_path)
+    start = client.get("/auth/google/start", follow_redirects=False)
+    state = start.cookies.get("rtc_oauth_state")
+    client.get(
+        f"/auth/callback?code=fake-google-code&state={state}",
+        follow_redirects=False,
+    )
+    html = client.get("/dashboard").text
+
+    assert 'data-today-mode="firstrun"' in html
+    assert html.count("data-today-mode=") == 1
+    assert "Nothing due today" in html
+    assert "You haven\u2019t started yet." in html
+    assert "Learn your first Article" in html
+    # The starter list is corpus-dependent: these tests run on MINI_UNITS,
+    # which has neither Article 14 nor 19, so every row is correctly dropped
+    # and the section is absent rather than showing dead links. Resolution
+    # against the real corpus is pinned by test_starter_rows_* below.
+    assert "Good places to begin" not in html
+    assert "Set a learning plan" in html
+    assert "Take the two-minute tour" in html
+    # The caught-up card it replaces must not also be on the page.
+    assert "Browse the Constitution" not in html
+
+
+def test_first_run_state_yields_once_learning_starts(tmp_path: Path):
+    """The zero state is temporary and lives at the same route: completing a
+    unit flips it to the regular Today home with no redirect."""
+    client = _client(tmp_path)
+    start = client.get("/auth/google/start", follow_redirects=False)
+    state = start.cookies.get("rtc_oauth_state")
+    client.get(
+        f"/auth/callback?code=fake-google-code&state={state}",
+        follow_redirects=False,
+    )
+    assert 'data-today-mode="firstrun"' in client.get("/dashboard").text
+
+    complete_all_modes(client, MINI_UNITS, "clause-1")
+    client.post(
+        "/learn/clause-1/done",
+        data={"claim_article": "1", "modes": "read,cloze,letters,type,recite,test"},
+        follow_redirects=False,
+    )
+    after = client.get("/dashboard")
+    assert after.status_code == 200
+    assert 'data-today-mode="firstrun"' not in after.text
+
+
+def test_starter_rows_resolve_against_the_real_corpus():
+    """The design's starter list, against the shipped units."""
+    from pathlib import Path as _Path
+    from tempfile import mkdtemp
+
+    from constitution_memorizer.progress.scheduler import ReminderEngine
+    from constitution_memorizer.web.dashboard import starter_rows
+
+    engine = ReminderEngine.from_paths(
+        _Path(mkdtemp()) / "p.db", _Path("data/output/learning_units.json")
+    )
+    rows = starter_rows(engine)
+    assert [r["title"] for r in rows] == ["Article 14", "Article 19"]
+    assert rows[0]["href"] == "/learn/article-14"      # starts a session
+    assert rows[1]["href"] == "/browse/article/19"     # opens detail
+    # The design also lists The Preamble; no such unit exists in the corpus,
+    # so it is dropped rather than rendered as a dead link.
+    assert all("Preamble" not in r["title"] for r in rows)
+
+
+def test_starter_rows_drop_targets_that_do_not_resolve(tmp_path: Path):
+    """A corpus without the starter Articles yields no rows, never a bad link."""
+    from constitution_memorizer.progress.scheduler import ReminderEngine
+    from constitution_memorizer.web.dashboard import starter_rows
+
+    engine = ReminderEngine.from_paths(tmp_path / "p.db", MINI_UNITS)
+    assert starter_rows(engine) == []

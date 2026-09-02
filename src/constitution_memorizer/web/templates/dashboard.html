@@ -99,6 +99,58 @@
   </p>
   {% endif %}
 
+  {# First run. The design's zero state lives at this route rather than a
+     separate page: the moment the first unit completes, is_new flips and the
+     same screen becomes the regular Today home, with no redirect. #}
+  {% if not has_started|default(true) %}
+  <section class="dash-firstrun" data-today-mode="firstrun">
+    <article class="dash-card dash-firstrun-hero">
+      <p class="dash-eyebrow dash-firstrun-eyebrow">Today’s Recall</p>
+      <div class="dash-firstrun-row">
+        <span class="dash-firstrun-ring" aria-hidden="true">0/0</span>
+        <div class="dash-firstrun-copy">
+          <p class="dash-firstrun-title">Nothing due today</p>
+          <p class="dash-firstrun-sub">You haven’t started yet. Your first Article sets the revision schedule.</p>
+        </div>
+      </div>
+      <a class="dash-firstrun-cta" href="/browse">Learn your first Article →</a>
+    </article>
+
+    {% if starter_rows|default([]) %}
+    <p class="dash-firstrun-eyebrow dash-firstrun-section">Good places to begin</p>
+    <div class="dash-firstrun-list">
+      {% for row in starter_rows %}
+      <a class="dash-firstrun-item" href="{{ row.href }}">
+        <span class="dash-firstrun-item-copy">
+          <span class="dash-firstrun-item-title">{{ row.title }}</span>
+          <span class="dash-firstrun-item-sub">{{ row.subtitle }}</span>
+        </span>
+        <span class="dash-firstrun-chev" aria-hidden="true">›</span>
+      </a>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if not is_guest|default(false) %}
+    <div class="dash-firstrun-list dash-firstrun-actions">
+      <a class="dash-firstrun-item is-compact" href="/onboarding/plan">
+        <span class="dash-firstrun-item-copy">
+          <span class="dash-firstrun-item-title">Set a learning plan</span>
+        </span>
+        <span class="dash-firstrun-item-note">Optional</span>
+        <span class="dash-firstrun-chev" aria-hidden="true">›</span>
+      </a>
+      <a class="dash-firstrun-item is-compact" href="/welcome">
+        <span class="dash-firstrun-item-copy">
+          <span class="dash-firstrun-item-title">Take the two-minute tour</span>
+        </span>
+        <span class="dash-firstrun-chev" aria-hidden="true">›</span>
+      </a>
+    </div>
+    {% endif %}
+  </section>
+  {% else %}
+
   {# Today is one thing or the other. Revision outranks learning: stacking new
      material on an unrevised backlog is how the backlog grows. #}
   <div class="dash-top{% if today_mode|default('revision') == 'learning' %} is-learning{% else %} is-revision{% endif %}">
@@ -298,6 +350,7 @@
   </section>
   {% endif %}
   {% endif %}
+  {% endif %}{# /has_started #}
 
   {# Design 4c · the phone opens Plan my day as a sheet over Today. Desktop and
      no-JS phones follow the anchor's href to /learning/plan-my-day instead —

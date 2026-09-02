@@ -397,11 +397,13 @@ def test_today_renders_exactly_one_hero(tmp_path: Path):
     client = _client(tmp_path, multiuser=True)
     _sign_in(client)
 
-    caught_up = client.get("/dashboard").text
-    assert caught_up.count("data-today-mode=") == 1
-    assert 'data-today-mode="learning"' in caught_up
-    assert "/revision/start" not in caught_up
-    assert 'data-daily-goal-streak="0"' in caught_up
+    # A brand-new account gets the first-run zero state (diff.md item 1), not
+    # the learning hero. Still exactly one hero, which is what this pins.
+    first_run = client.get("/dashboard").text
+    assert first_run.count("data-today-mode=") == 1
+    assert 'data-today-mode="firstrun"' in first_run
+    assert "/revision/start" not in first_run
+    assert "You haven\u2019t started yet." in first_run
 
     _make_due(client, ["clause-1", "article-end"])
     due = client.get("/dashboard").text

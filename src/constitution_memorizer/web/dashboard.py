@@ -380,6 +380,76 @@ def _session_for_day(engine: ReminderEngine, kind: str, today: date):
 
 
 
+def _has_started(
+    engine: ReminderEngine, *, today: date, strip: dict[str, int]
+) -> bool:
+    """Has this account begun learning at all?
+
+    Deliberately NOT ``is_new``. That flag means "nothing completed", which is
+    a different question: a user part-way through their first unit, or one who
+    finished today's Auto session (session items complete without writing a
+    learning_unit_progress completion), has plainly started and must not be
+    told "You haven't started yet."
+
+    Any progress row, any of today's sessions, or a stored plan all count.
+    """
+    if strip["articles_started"] or strip["units_completed"]:
+        return True
+    if engine.list_all_progress():
+        return True
+    return any(
+        _session_for_day(engine, kind, today) is not None
+        for kind in ("revision", "auto_learning", "day_plan")
+    )
+
+
+# The design's "Good places to begin" list. Each row is only rendered when its
+# target actually resolves, so a corpus gap shows one fewer row rather than a
+# dead link. The Preamble is in the design but has no learning unit in
+# data/output/learning_units.json — the parser supports one, the corpus has
+# none — so it is absent until that content exists.
+STARTER_UNITS: tuple[dict[str, str], ...] = (
+    {
+        "unit_id": "article-14",
+        "title": "Article 14",
+        "subtitle": "Equality before law — one clause, a classic first pick",
+        "kind": "session",
+    },
+    {
+        "article_number": "19",
+        "title": "Article 19",
+        "subtitle": "The six freedoms — the heart of Part III",
+        "kind": "detail",
+    },
+)
+
+
+def starter_rows(engine: ReminderEngine) -> list[dict[str, str]]:
+    """Resolve STARTER_UNITS against the corpus, dropping anything missing.
+
+    "session" rows open a learn session directly; "detail" rows open the
+    Article page. A row whose unit or article is absent is skipped entirely.
+    """
+    rows: list[dict[str, str]] = []
+    for spec in STARTER_UNITS:
+        unit_id = spec.get("unit_id")
+        if unit_id:
+            if engine.get_unit(unit_id) is None:
+                continue
+            href = f"/learn/{unit_id}"
+        else:
+            number = spec.get("article_number") or ""
+            if not any(
+                u.article_number == number for u in engine.units.values()
+            ):
+                continue
+            href = f"/browse/article/{number}"
+        rows.append(
+            {"title": spec["title"], "subtitle": spec["subtitle"], "href": href}
+        )
+    return rows
+
+
 def build_dashboard_context(
     eng: ReminderEngine,
     *,
@@ -406,6 +476,7 @@ def build_dashboard_context(
     chips, chips_more = due_article_chips(due_units)
     strip = progress_strip(eng, as_of=today)
     is_new = strip["articles_started"] == 0 and strip["units_completed"] == 0
+    has_started = _has_started(eng, today=today, strip=strip)
 
     cont_id = continue_unit_id(eng, as_of=today)
     cont_unit = eng.get_unit(cont_id) if cont_id else None
@@ -631,6 +702,11 @@ def build_dashboard_context(
         "greeting": greeting,
         "subtext": subtext,
         "is_new": is_new,
+        # The design's first-run zero state lives at this route, branching on
+        # has_started (not is_new — see _has_started). Rows are only built when
+        # they will actually be shown.
+        "has_started": has_started,
+        "starter_rows": [] if has_started else starter_rows(eng),
         "nothing_due": len(due_units) == 0,
         "due_count": len(due_units),
         "due_minutes": due_minutes(due_units),
