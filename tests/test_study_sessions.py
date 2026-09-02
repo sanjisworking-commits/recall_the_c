@@ -561,16 +561,45 @@ def test_mode_switching_still_cannot_fire_popstate():
     assert "pushState" not in MOBILE_JS.read_text(encoding="utf-8")
 
 
-def test_no_route_deletes_a_study_session():
-    """Exiting preserves the queue so Today can resume it."""
+def test_only_an_explicit_reset_deletes_a_study_session():
+    """Exiting preserves the queue so Today can resume it.
+
+    Reset progress (diff.md item 5) is the one exception, because the user
+    asked for everything to go. It stays an exception by construction: the
+    deletes live in a single repository method, reached from a single engine
+    method, called from a single route action — so no learn or exit path can
+    quietly acquire the ability to drop a queue.
+    """
     app_py = (
         ROOT / "src" / "constitution_memorizer" / "web" / "app.py"
     ).read_text(encoding="utf-8")
     assert "delete_study_session" not in app_py
+    assert "delete_all_study_sessions" not in app_py
+
     repo = (
         ROOT / "src" / "constitution_memorizer" / "progress" / "repository.py"
     ).read_text(encoding="utf-8")
-    assert "DELETE FROM study_session" not in repo
+    owners = [
+        chunk.split("(", 1)[0]
+        for chunk in repo.split("\n    def ")
+        if "DELETE FROM study_session" in chunk
+    ]
+    assert owners == ["delete_all_study_sessions"]
+
+    scheduler = (
+        ROOT / "src" / "constitution_memorizer" / "progress" / "scheduler.py"
+    ).read_text(encoding="utf-8")
+    callers = [
+        chunk.split("(", 1)[0]
+        for chunk in scheduler.split("\n    def ")
+        if "delete_all_study_sessions" in chunk
+    ]
+    assert callers == ["reset_learning_progress"]
+
+    routes = (
+        ROOT / "src" / "constitution_memorizer" / "auth" / "routes.py"
+    ).read_text(encoding="utf-8")
+    assert routes.count("reset_learning_progress") == 1
 
 
 def test_exiting_preserves_the_queue_for_later(tmp_path: Path):

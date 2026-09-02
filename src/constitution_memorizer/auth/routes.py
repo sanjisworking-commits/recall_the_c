@@ -557,6 +557,12 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
         if request.cookies.get(CSRF_COOKIE_NAME) != csrf_token:
             return RedirectResponse(url="/profile?error=csrf", status_code=303)
         eng = request.app.state.engine.for_user(user.id)
+        if action == "reset_progress":
+            # diff.md item 5. Keeps the account: profile, settings and claimed
+            # Articles survive, so free-tier rules are exactly as they were.
+            # With nothing learned, Today falls back to the first-run screen.
+            eng.reset_learning_progress()
+            return RedirectResponse(url="/dashboard", status_code=303)
         if action == "delete_account":
             # Soft delete for this phase: clear personal data + session.
             # Orchestration lives HERE, not in the progress domain — the

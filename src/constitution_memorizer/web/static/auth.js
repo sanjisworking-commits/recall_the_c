@@ -206,6 +206,12 @@
         if (d && d.showModal) d.showModal();
       });
     });
+    qsa("[data-open-reset]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var d = qs("#reset-modal");
+        if (d && d.showModal) d.showModal();
+      });
+    });
     qsa("[data-open-delete]").forEach(function (btn) {
       btn.addEventListener("click", function () {
         var d = qs("#delete-modal");

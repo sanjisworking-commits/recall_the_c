@@ -391,7 +391,9 @@ def _has_started(
     learning_unit_progress completion), has plainly started and must not be
     told "You haven't started yet."
 
-    Any progress row, any of today's sessions, or a stored plan all count.
+    Any progress row and any of today's sessions count. A stored plan does
+    not: setting one is a preference, not a first Article, and the design
+    reaches the plan intro from this very screen.
     """
     if strip["articles_started"] or strip["units_completed"]:
         return True

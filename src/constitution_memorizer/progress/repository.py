@@ -1129,6 +1129,31 @@ class ProgressRepository:
         )
         self._conn.commit()
 
+    def delete_all_study_sessions(self, user_id: UUID | str) -> None:
+        """Drop every study session for this user, items included.
+
+        Items cascade from study_session, but only where foreign keys are
+        actually enforced — deleting them first keeps the reset total either
+        way, and leaves no orphan rows behind.
+        """
+        uid = as_user_id(user_id)
+        self._conn.execute(
+            """
+            DELETE FROM study_session_item
+            WHERE session_id IN (SELECT id FROM study_session WHERE user_id = ?)
+            """,
+            (uid,),
+        )
+        self._conn.execute("DELETE FROM study_session WHERE user_id = ?", (uid,))
+        self._conn.commit()
+
+    def delete_learning_plan(self, user_id: UUID | str) -> None:
+        """Forget the stored plan; get_learning_plan falls back to Self-paced."""
+        self._conn.execute(
+            "DELETE FROM user_learning_plan WHERE user_id = ?", (as_user_id(user_id),)
+        )
+        self._conn.commit()
+
     # ------------------------------------------------------------------ #
     # Learning plan preference (Self-paced / Auto 3/5/7)                  #
     # ------------------------------------------------------------------ #

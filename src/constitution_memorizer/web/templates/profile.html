@@ -205,6 +205,10 @@
       <button type="button" class="btn btn-ghost" data-open-signout>Sign out</button>
     </li>
     <li>
+      <button type="button" class="btn btn-ghost" data-open-reset>Reset progress…</button>
+      <span class="account-action-note">Keeps your account</span>
+    </li>
+    <li>
       <button type="button" class="btn btn-ghost btn-danger-text" data-open-delete>Delete account…</button>
     </li>
   </ul>
@@ -217,6 +221,23 @@
     <p class="guest-modal-body">Your progress remains saved to this account.</p>
     <div class="guest-modal-actions">
       <button class="btn" type="submit">Sign out</button>
+      <button class="btn btn-ghost" type="button" data-close-dialog>Cancel</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog class="guest-modal" id="reset-modal" aria-labelledby="reset-title">
+  <form method="post" action="/profile" class="guest-modal-card">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <input type="hidden" name="action" value="reset_progress">
+    <h2 class="guest-modal-title" id="reset-title">Reset progress?</h2>
+    <p class="guest-modal-body">
+      This clears everything you have learned — progress, modes seen, scheduled
+      revisions and your learning plan — and starts you at the beginning.
+      Your account, your settings and the Articles you have claimed stay as they are.
+    </p>
+    <div class="guest-modal-actions">
+      <button class="btn" type="submit">Reset progress</button>
       <button class="btn btn-ghost" type="button" data-close-dialog>Cancel</button>
     </div>
   </form>

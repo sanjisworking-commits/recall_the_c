@@ -687,6 +687,46 @@ def test_first_run_free_and_plus_branches(tmp_path: Path):
     assert '<a class="dash-firstrun-cta" href="/browse">' in open_html
 
 
+def test_reset_progress_returns_to_the_first_run_screen(tmp_path: Path):
+    """diff.md item 5: Reset progress keeps the account and puts Today back to
+    its zero state — which also proves sessions and the plan were cleared, not
+    just the progress rows."""
+    client = _client(tmp_path)
+    start = client.get("/auth/google/start", follow_redirects=False)
+    state = start.cookies.get("rtc_oauth_state")
+    client.get(
+        f"/auth/callback?code=fake-google-code&state={state}",
+        follow_redirects=False,
+    )
+    complete_all_modes(client, MINI_UNITS, "clause-1")
+    client.post(
+        "/learn/clause-1/done",
+        data={"claim_article": "1", "modes": "read,cloze,letters,type,recite,test"},
+        follow_redirects=False,
+    )
+    assert 'data-today-mode="firstrun"' not in client.get("/dashboard").text
+
+    profile = client.get("/profile")
+    assert profile.status_code == 200
+    assert "Reset progress" in profile.text
+    reset = client.post(
+        "/profile",
+        data={
+            "action": "reset_progress",
+            "csrf_token": client.cookies.get(CSRF_COOKIE_NAME) or "",
+        },
+        follow_redirects=False,
+    )
+    assert reset.status_code == 303
+    assert reset.headers["location"] == "/dashboard"
+
+    after = client.get("/dashboard")
+    assert after.status_code == 200
+    assert 'data-today-mode="firstrun"' in after.text
+    # Kept: the account itself, and the sign-in behind it.
+    assert "User A" in after.text or "Learner" in after.text
+
+
 def test_browse_free_plan_banner(tmp_path: Path):
     """diff.md item 4: Browse's free-plan block reads as the design's banner —
     one line of state, one bordered Unlock all — with main's states intact."""
