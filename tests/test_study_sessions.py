@@ -765,3 +765,48 @@ def test_unmigrated_fallback_also_opens_a_mode(tmp_path: Path):
     location = client.post("/revision/start", follow_redirects=False).headers["location"]
     assert urlsplit(location).path == "/learn/clause-1"
     assert parse_qs(urlsplit(location).query)["mode"] == ["read"]
+
+
+def test_exit_modal_names_the_thing_being_left(tmp_path: Path):
+    """A learning session is a Recall, not a generic "session".
+
+    The confirm and the ✕ label agree with each other, and revision keeps its
+    own wording — leaving a revision queue is a different promise from leaving
+    a Recall, because the queue is what gets returned to.
+    """
+    client = _client(tmp_path)
+    eng = _engine(client)
+    session = eng.create_study_session(
+        session_id="learn-today",
+        kind="auto_learning",
+        plan_date=date.today(),
+        unit_ids=["clause-1", "article-end"],
+    )
+    html = client.get(f"/learn/clause-1?session={session.id}").text
+    assert "data-revision-exit-modal" in html
+    assert "Exit this Recall?" in html
+    assert "Your completed modes are saved." in html
+    assert "Keep going" in html
+    assert "Exit Recall<" in html
+    assert 'aria-label="Exit Recall"' in html
+    assert "Exit session?" not in html
+
+
+def test_exit_confirm_is_a_stacked_floating_card():
+    """Two decisions stacked, not a row of equal-weight buttons."""
+    static = ROOT / "src" / "constitution_memorizer" / "web" / "static"
+    css = (static / "styles.css").read_text(encoding="utf-8")
+    mobile = (static / "mobile.css").read_text(encoding="utf-8")
+    actions = css.split(".revision-exit-modal .guest-modal-actions {", 1)[1].split(
+        "}", 1
+    )[0]
+    assert "flex-direction: column" in actions
+    buttons = css.split(".revision-exit-modal .guest-modal-actions .btn {", 1)[
+        1
+    ].split("}", 1)[0]
+    assert "height: 52px" in buttons
+    assert "width: 100%" in buttons
+    # The phone lifts it off the bottom edge, so it does not read as one of
+    # the progress sheets.
+    phone = mobile.split("  .revision-exit-modal {", 1)[1].split("}", 1)[0]
+    assert "margin: auto 18px 18vh" in phone

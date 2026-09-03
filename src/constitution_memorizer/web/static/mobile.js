@@ -149,6 +149,18 @@
       recite: "Recite",
       test: "Test",
     };
+    // What the advance button says once the mode's own act is done. Only
+    // Read's label comes from the design file; the other five follow its
+    // shape so the session reads as a sequence of things done rather than a
+    // row of identical Nexts.
+    var ADVANCE_LABELS = {
+      read: "I\u2019ve read this \u2192",
+      cloze: "I\u2019ve filled the gaps \u2192",
+      letters: "I\u2019ve heard this \u2192",
+      type: "I\u2019ve typed this \u2192",
+      recite: "I\u2019ve recited this \u2192",
+      test: "I\u2019ve checked this \u2192",
+    };
     // The one-line task under the eyebrow. Same source as the server render,
     // so the header does not change voice when a mode advances client-side.
     var MODE_TASKS = {
@@ -265,7 +277,7 @@
 
        A mode that needs a deliberate act to complete (Type, Test, Recite)
        shows that act as the primary until it passes; then the same slot
-       becomes "Next →". Cloze completes by tapping blanks and Letters by
+       becomes the first-person advance. Cloze completes by tapping blanks and Letters by
        speech, so their controls stay secondary and Next leads from the start.
 
        Next walks only the modes still outstanding — completed ones drop out
@@ -392,9 +404,21 @@
 
       var target = nextTarget(mode);
 
+      // The advance says what you just did, not merely where you are going.
+      // "I’ve read this →" is the design's own label for Read; the rest
+      // follow its shape so the session reads as a sequence of things done.
+      function advanceCopy(forMode) {
+        // Letters' "Just read" view has no speak pass, so claiming they heard
+        // it would be a lie about what happened.
+        if (forMode === "letters" && lettersSpeak && lettersSpeak.hidden) {
+          return ADVANCE_LABELS.read;
+        }
+        return ADVANCE_LABELS[forMode] || "Next \u2192";
+      }
+
       // Shared tail for every solo mode: while the mode's act is outstanding
-      // the button keeps its own label; once done it becomes Next, or Done
-      // when nothing is left outstanding.
+      // the button keeps its own label; once done it becomes the advance, or
+      // Done when nothing is left outstanding.
       function paintAdvance(btn, armed) {
         if (!armed) return;
         if (target === null) {
@@ -402,7 +426,7 @@
           btn.textContent = doneBtn ? doneBtn.textContent.trim() : "Done";
           btn.disabled = locked;
         } else {
-          btn.textContent = "Next →";
+          btn.textContent = advanceCopy(mode);
           btn.disabled = false;
         }
       }
@@ -433,7 +457,7 @@
             typeCheck.textContent = doneBtn ? doneBtn.textContent.trim() : "Done";
             typeCheck.disabled = doneLocked;
           } else {
-            typeCheck.textContent = "Next →";
+            typeCheck.textContent = advanceCopy(mode);
             typeCheck.disabled = false;
           }
         } else {
@@ -451,7 +475,7 @@
         nextBtn.setAttribute("aria-disabled", locked ? "true" : "false");
       } else {
         nextBtn.classList.remove("is-done");
-        nextBtn.textContent = "Next →";
+        nextBtn.textContent = advanceCopy(mode);
         nextBtn.disabled = false;
         nextBtn.setAttribute("aria-disabled", "false");
       }
