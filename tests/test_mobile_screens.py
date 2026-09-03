@@ -1030,24 +1030,33 @@ def test_letters_view_switch_is_centred_and_even(tmp_path: Path):
     assert "min-width: 5.5rem" in btn
 
 
-def test_phone_letters_surface_matches_landing_scaffold(tmp_path: Path):
-    """Landing §03 Letters is Fraunces + 0.24em initials, not mono.
-    Full text must drop the tracking so it reads like Read mode."""
+def test_phone_letters_scaffold_is_monospace_desktop_keeps_fraunces(tmp_path: Path):
+    """The phone scaffold follows the design: monospace, so the initials line
+    into columns and read as a shape. This supersedes the earlier landing-§03
+    match — the 2 Sep design specifies mono here, and only here. Desktop keeps
+    Fraunces, which the design does not cover. Full text drops the tracking in
+    both, so it reads like Read mode."""
     client, _, _ = _client(tmp_path)
     css = client.get("/static/mobile.css").text
     initials = css.split(
         'body[data-mscreen="learn"] .learn-letters-text.is-initials {', 1
     )[1].split("}", 1)[0]
-    assert "var(--font-display)" in initials
+    assert "monospace" in initials
+    assert "var(--font-display)" not in initials
     assert "letter-spacing: 0.24em" in initials
-    assert "font-weight: 600" in initials
-    assert "var(--font-mono)" not in initials
     full = css.split(
         'body[data-mscreen="learn"] .learn-letters-text.is-full {', 1
     )[1].split("}", 1)[0]
     assert "var(--font-display)" in full
     assert "letter-spacing: normal" in full
     assert "font-weight: 400" in full
+
+    desktop = client.get("/static/styles.css").text
+    desk_initials = desktop.split(".learn-letters-text.is-initials {", 1)[1].split(
+        "}", 1
+    )[0]
+    assert "var(--font-display)" in desk_initials
+    assert "font-weight: 600" in desk_initials
 
 
 def test_letters_view_switch_labels(tmp_path: Path):

@@ -119,22 +119,35 @@
      alone left the clause behind the moment a mode opened. The step count
      and the segments below are kept in sync by mobile.js as modes advance —
      server-rendered state cannot, since modes advance without a reload. #}
+  {# The design's session header: one bar — exit, the segments, "Step N of 6",
+     help — and under it the eyebrow that says what you are recalling, then
+     the mode's one-line task. All three text parts are kept in sync by
+     mobile.js as modes advance, since modes advance without a reload. #}
+  {% set mode_tasks = {
+    'read': 'First, read it once.',
+    'cloze': 'Fill the gaps from memory.',
+    'letters': 'Rebuild it from first letters.',
+    'type': 'Write it out, word for word.',
+    'recite': 'Now recall it without looking.',
+    'test': 'A short checkpoint.'
+  } %}
   <div class="learn-mode-bar">
     <button type="button" class="mobile-icon-btn" data-session-exit data-exit-to="{{ back_href }}" aria-label="Exit session">✕</button>
-    <span class="learn-mode-bar-copy">
-      <span class="learn-mode-bar-ref">{{ unit.display_title }}</span>
-      <span class="learn-mode-bar-step">
-        <span data-mode-step>Step {{ (learn_modes.index(learn_mode) + 1) if learn_mode in learn_modes else 1 }} of {{ learn_modes|length }}</span>
-        <span aria-hidden="true">·</span>
-        <span class="learn-mode-bar-name" data-mode-name>{{ mode_labels[learn_mode] if mode_labels else learn_mode }}</span>
-      </span>
-    </span>
+    <div class="rc-mode-stepper" data-mode-stepper aria-hidden="true">
+      {% for mode in learn_modes %}
+      <span class="rc-mode-step{% if mode in seen %} is-done{% elif mode == learn_mode %} is-current{% endif %}" data-step-mode="{{ mode }}"></span>
+      {% endfor %}
+    </div>
+    <span class="learn-mode-bar-step" data-mode-step>Step {{ (learn_modes.index(learn_mode) + 1) if learn_mode in learn_modes else 1 }} of {{ learn_modes|length }}</span>
     <button type="button" class="mobile-icon-btn" data-mode-help aria-label="How to use this mode">?</button>
   </div>
-  <div class="rc-mode-stepper" data-mode-stepper aria-hidden="true">
-    {% for mode in learn_modes %}
-    <span class="rc-mode-step{% if mode in seen %} is-done{% elif mode == learn_mode %} is-current{% endif %}" data-step-mode="{{ mode }}"></span>
-    {% endfor %}
+  <div class="learn-mode-head">
+    <p class="learn-mode-eyebrow">
+      <span class="learn-mode-bar-name" data-mode-name>{{ mode_labels[learn_mode] if mode_labels else learn_mode }}</span>
+      <span aria-hidden="true">·</span>
+      <span class="learn-mode-bar-ref">{{ unit.display_title }}</span>
+    </p>
+    <h2 class="learn-mode-task" data-mode-task>{{ mode_tasks.get(learn_mode, '') }}</h2>
   </div>
 
   <header class="learn-deck-head">
@@ -246,11 +259,18 @@
     data-cloze-text="{{ unit.text | e }}"
     data-cloze-density="medium"
   >
+    {# Density is main's own control — the design has no equivalent — so it
+       takes the component the design uses for every other three-way choice
+       (Pace, Daily target, Today's mix) rather than a shape of its own.
+       Still buttons, not radios: the JS toggles is-active, and .segmented
+       styles that exactly as it styles a checked input. #}
     <div class="learn-cloze-density" role="group" aria-label="Cloze density">
       <span class="learn-cloze-density-label">Density</span>
-      <button type="button" class="learn-cloze-density-btn" data-cloze-density="light" aria-pressed="false">Light</button>
-      <button type="button" class="learn-cloze-density-btn is-active" data-cloze-density="medium" aria-pressed="true">Medium</button>
-      <button type="button" class="learn-cloze-density-btn" data-cloze-density="heavy" aria-pressed="false">Heavy</button>
+      <div class="segmented is-on-page learn-cloze-density-track">
+        <button type="button" class="segmented-btn learn-cloze-density-btn" data-cloze-density="light" aria-pressed="false">Light</button>
+        <button type="button" class="segmented-btn learn-cloze-density-btn is-active" data-cloze-density="medium" aria-pressed="true">Medium</button>
+        <button type="button" class="segmented-btn learn-cloze-density-btn" data-cloze-density="heavy" aria-pressed="false">Heavy</button>
+      </div>
     </div>
     {% if not cloze_available|default(true) %}
     <p class="learn-hint" data-cloze-unavailable>No cloze exercise available for this text.</p>
@@ -272,9 +292,12 @@
     data-letters-text="{{ unit.text | e }}"
     data-letters-full="false"
   >
-    <div class="learn-letters-viewswitch" role="group" aria-label="Letters practice style">
-      <button type="button" class="learn-letters-view-btn" data-letters-view-set="voice" aria-pressed="true">Speak</button>
-      <button type="button" class="learn-letters-view-btn" data-letters-view-set="plain" aria-pressed="false">Read</button>
+    {# Speak or Read: the same segmented control the rest of the app uses for
+       a two-way choice. The JS already toggles is-active on these buttons,
+       which is exactly what .segmented styles. #}
+    <div class="learn-letters-viewswitch segmented is-on-page" role="group" aria-label="Letters practice style">
+      <button type="button" class="segmented-btn learn-letters-view-btn is-active" data-letters-view-set="voice" aria-pressed="true">Speak</button>
+      <button type="button" class="segmented-btn learn-letters-view-btn" data-letters-view-set="plain" aria-pressed="false">Read</button>
     </div>
     <p class="learn-letters-text is-initials" data-letters-display></p>
     <p class="learn-letters-status" data-letters-status hidden></p>

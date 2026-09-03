@@ -140,6 +140,7 @@
     // the deck cards use.
     var steps = Array.prototype.slice.call(learn.querySelectorAll(".rc-mode-step"));
     var stepLabel = learn.querySelector("[data-mode-step]");
+    var taskEl = learn.querySelector("[data-mode-task]");
     var MODE_LABELS = {
       read: "Read",
       cloze: "Cloze",
@@ -147,6 +148,16 @@
       type: "Type",
       recite: "Recite",
       test: "Test",
+    };
+    // The one-line task under the eyebrow. Same source as the server render,
+    // so the header does not change voice when a mode advances client-side.
+    var MODE_TASKS = {
+      read: "First, read it once.",
+      cloze: "Fill the gaps from memory.",
+      letters: "Rebuild it from first letters.",
+      type: "Write it out, word for word.",
+      recite: "Now recall it without looking.",
+      test: "A short checkpoint.",
     };
 
     function syncBodyClass() {
@@ -174,6 +185,9 @@
       });
       if (stepLabel && index >= 0) {
         stepLabel.textContent = "Step " + (index + 1) + " of " + steps.length;
+      }
+      if (taskEl) {
+        taskEl.textContent = MODE_TASKS[mode] || "";
       }
     }
 

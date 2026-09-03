@@ -1107,8 +1107,12 @@ html[data-theme="dark"] .theme-toggle {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   margin: 0 0 16px;
+}
+
+.learn-cloze-density-track {
+  flex: 1 1 auto;
 }
 
 .learn-cloze-density-label {
@@ -1120,7 +1124,6 @@ html[data-theme="dark"] .theme-toggle {
   margin-right: 4px;
 }
 
-.learn-cloze-density-btn,
 .learn-cloze-btn {
   background: none;
   border: 1px solid var(--hairline);
@@ -1132,15 +1135,8 @@ html[data-theme="dark"] .theme-toggle {
   cursor: pointer;
 }
 
-.learn-cloze-density-btn:hover,
 .learn-cloze-btn:hover {
   border-color: var(--ink);
-}
-
-.learn-cloze-density-btn.is-active {
-  border-color: var(--ink);
-  background: var(--ink);
-  color: var(--on-accent);
 }
 
 .learn-cloze-text {

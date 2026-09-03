@@ -1070,6 +1070,22 @@
      panel, scrim and title come from the shared sheet furniture above; only
      the eyebrow, lede and button stack are particular to this one. */
   /* diff.md item 6 · drag handle, then a pick-then-confirm mix. */
+  /* Density reads as one track, not three loose boxes. */
+  /* Density is a setting for the exercise, so it sits above the count of how
+     the exercise is going — the order the design shows. mobile.js lifts the
+     status out of the action bar into the panel, so this is settled here. */
+  body[data-mscreen="learn"] .learn-cloze-density-track {
+    display: flex;
+    width: 100%;
+  }
+
+  body[data-mscreen="learn"] .learn-cloze-density-track .segmented-btn {
+    flex: 1;
+    height: 32px;
+    padding: 0 8px;
+    font-size: 12.5px;
+  }
+
   .plan-day-sheet-handle {
     display: block;
     width: 36px;
@@ -3088,10 +3104,16 @@
     order: 0;
   }
 
+  /* The stepper is inside the bar now, so it must NOT be listed here: this
+     order applies to the page's flex children, and inheriting it inside the
+     bar pushed the segments past the exit, step count and help. */
   body[data-mscreen="learn"] .learn-mode-bar,
-  body[data-mscreen="learn"] .rc-mode-stepper,
   body[data-mscreen="learn"] .learn-deck-head {
     order: 1;
+  }
+
+  body[data-mscreen="learn"] .learn-mode-head {
+    order: 3;
   }
 
   body[data-mscreen="learn"] .session-track {
@@ -3402,48 +3424,70 @@
     align-items: center;
     gap: 8px;
     padding: 2px 0 8px;
-    border-bottom: 1px solid var(--page);
   }
 
-  .learn-mode-bar-copy {
-    display: flex;
-    flex: 1;
-    min-width: 0;
-    flex-direction: column;
-    gap: 1px;
-  }
-
-  /* What is being recalled, kept on screen for the whole session. */
-  .learn-mode-bar-ref {
-    font-size: 14.5px;
-    font-weight: 500;
-    line-height: 1.2;
-    color: var(--ink);
-  }
-
+  /* The step count sits at the right of the bar, after the segments. */
   .learn-mode-bar-step {
-    display: flex;
-    align-items: baseline;
-    gap: 5px;
-    font-size: 11.5px;
+    flex: 0 0 auto;
+    font-size: 12px;
+    font-weight: 600;
     color: var(--mid);
   }
 
-  .learn-mode-bar-name {
-    margin: 0;
-    font-size: 12.5px;
-    font-weight: 500;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+  /* Eyebrow then task: what is being recalled, then what to do with it. */
+  .learn-mode-head {
+    padding: 0;
   }
 
-  /* Under the bar now, full width, so the segments can carry the weight the
-     design gives them: current grows, done goes teal, all of it animated. */
+  /* The task line's own 16px is the whole of the space to the exercise — the
+     panel adds nothing on top of it. */
+  .learn[data-mobile-view="mode"] .learn-body > *:first-child {
+    margin-top: 0;
+  }
+
+  .learn-mode-eyebrow {
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    margin: 0 0 4px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--mid);
+  }
+
+  .learn-mode-bar-name,
+  .learn-mode-bar-ref {
+    font: inherit;
+  }
+
+  /* The task line carries the space to the content on its own; the panel's
+     own top padding on top of it opened the gap the design does not have. */
+  .learn[data-mobile-view="mode"] .learn-body {
+    padding-top: 0;
+  }
+
+  .learn-mode-task {
+    margin: 0 0 16px;
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 1.25;
+    text-wrap: pretty;
+  }
+
+  .learn[data-mobile-view="deck"] .learn-mode-head {
+    display: none;
+  }
+
+  /* In the bar, between the exit and the step count, taking the free space. */
   .rc-mode-stepper {
     display: flex;
+    flex: 1;
     align-items: center;
-    gap: 4px;
-    margin: 8px 0 0;
+    gap: 6px;
+    margin: 0;
   }
 
   .learn[data-mobile-view="deck"] .rc-mode-stepper {
@@ -3468,15 +3512,39 @@
     background: var(--rc-ink);
   }
 
-  body[data-mscreen="learn"] .learn-letters-viewswitch,
+  /* The Speak CTA lives in the action bar on the phone — it is the mode's
+     act, and it morphs Speak → Stop → Next there. The Speak/Read switch is
+     a different thing: it chooses how the mode is practised, and the design
+     keeps it under the task line. */
   body[data-mscreen="learn"] .learn-letters-speak {
     display: none;
   }
 
+  body[data-mscreen="learn"] .learn-letters-viewswitch {
+    display: inline-flex;
+    align-self: flex-start;
+    margin: 0 0 16px;
+  }
+
+  body[data-mscreen="learn"] .learn-letters-viewswitch .segmented-btn {
+    height: 32px;
+    padding: 0 16px;
+    font-size: 12.5px;
+  }
+
+  body[data-mscreen="learn"] .learn-letters-hint {
+    margin: 14px 0 0;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--mid);
+  }
+
+  /* The design's session header runs straight from the bar to the eyebrow.
+     This 2px full-bleed rule sat in between and read as a stray divider with
+     space either side; the segments in the bar are the phone's progress. It
+     stays for the desktop layout, which has room for it. */
   body[data-mscreen="learn"] .session-track {
-    height: 2px;
-    margin: 0 calc(var(--m-gutter) * -1);
-    background: var(--track);
+    display: none;
   }
 
   body[data-mscreen="learn"] .learn-body {
@@ -3749,11 +3817,16 @@
   }
 
 
+  /* Monospace on the phone, per the design: fixed advance widths line the
+     initials into columns, which is what makes the scaffold scannable. The
+     desktop rule keeps Fraunces — that is a deliberate call for the wider
+     layout, and the design does not cover it. */
   body[data-mscreen="learn"] .learn-letters-text.is-initials {
-    font-family: var(--font-display);
-    font-weight: 600;
+    margin: 0 0 10px;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-weight: 400;
     font-size: 22px;
-    line-height: 1.7;
+    line-height: 1.9;
     letter-spacing: 0.24em;
   }
 
@@ -4110,6 +4183,14 @@
 
   .learn[data-mobile-view="mode"] .learn-body > * {
     order: 3;
+  }
+
+  /* Density is a setting for the exercise, so it sits above the count of how
+     the exercise is going — the design's order. It has to be stated here:
+     the blanket rule above puts every panel child on order 3, and a rule
+     elsewhere in the file loses to it however specific it is. */
+  .learn[data-mobile-view="mode"] .learn-body > .learn-cloze-density {
+    order: 0;
   }
 
   .learn[data-mobile-view="mode"] .learn-panel-read .learn-hint {
