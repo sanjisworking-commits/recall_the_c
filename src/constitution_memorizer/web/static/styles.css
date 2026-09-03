@@ -1112,7 +1112,43 @@ html[data-theme="dark"] .theme-toggle {
 }
 
 .learn-cloze-density-track {
-  flex: 1 1 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Pills, per the design: three standalone choices, the active one filled.
+   Not a segmented track — that reads as switching between views of the same
+   thing, and density changes the exercise itself. */
+.learn-cloze-density-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  background: var(--paper);
+  font: inherit;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.learn-cloze-density-btn:hover {
+  border-color: var(--ink);
+}
+
+.learn-cloze-density-btn.is-active {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--on-accent);
+  font-weight: 600;
+}
+
+.learn-cloze-density-btn:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
 }
 
 .learn-cloze-density-label {

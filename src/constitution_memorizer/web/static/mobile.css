@@ -1095,14 +1095,17 @@
      status out of the action bar into the panel, so this is settled here. */
   body[data-mscreen="learn"] .learn-cloze-density-track {
     display: flex;
-    width: 100%;
+    gap: 8px;
   }
 
-  body[data-mscreen="learn"] .learn-cloze-density-track .segmented-btn {
-    flex: 1;
-    height: 32px;
-    padding: 0 8px;
-    font-size: 12.5px;
+  body[data-mscreen="learn"] .learn-cloze-density-btn {
+    height: 36px;
+    padding: 0 18px;
+    font-size: 13.5px;
+  }
+
+  body[data-mscreen="learn"] .learn-cloze-density-btn:active {
+    transform: translateY(1px);
   }
 
   /* No handle of its own: .mobile-sheet-panel::before already draws one for
