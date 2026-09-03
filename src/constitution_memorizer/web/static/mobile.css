@@ -31,6 +31,7 @@
     --rc-teal-tint: #e7f1ef;
     --rc-teal-deep: #0e5b52;
     --rc-pale-done: var(--calendar-done);
+    --rc-blank: #e6e8e7;
     --rc-amber: var(--browse-mark-news);
     --rc-amber-tint: #f6efe4;
     --rc-amber-deep: #7c4a12;
@@ -43,6 +44,7 @@
   }
 
   html[data-theme="dark"] {
+    --rc-blank: #2a2a28;
     --rc-teal-tint: #143833;
     --rc-teal-deep: #8fd4c8;
     --rc-amber-tint: #3a2a18;
@@ -3564,6 +3566,38 @@
   body[data-mscreen="learn"] .learn-read-text {
     font-size: var(--bare-size, 19px);
     line-height: 1.7;
+  }
+
+  /* A blank is a filled slot, not an empty underline: a grey box on a black
+     baseline, sized by the word hiding inside it (the text is transparent,
+     so the box is exactly as wide as what it conceals, plus the design's
+     padding). Revealing pops the word in and turns it teal. */
+  body[data-mscreen="learn"] .learn-cloze-word.is-blank:not(.is-revealed) {
+    display: inline-block;
+    min-width: 2.5em;
+    height: 24px;
+    margin: 0 1px;
+    padding: 0 8px;
+    border-bottom: 2px solid var(--ink);
+    border-radius: 6px 6px 0 0;
+    background: var(--rc-blank, #e6e8e7);
+    vertical-align: -4px;
+    line-height: 24px;
+  }
+
+  body[data-mscreen="learn"] .learn-cloze-word.is-revealed {
+    padding: 0 3px;
+    border-bottom: 2px solid var(--rc-teal);
+    color: var(--rc-teal);
+    font-weight: 400;
+    animation: rcPop 0.3s ease both;
+  }
+
+  /* styles.css gives the revealed word a 160ms fade under html.rtc-anim, and
+     that selector outranks the one above — the word appeared without the
+     design's pop whenever animation was on, which is the case that matters. */
+  html.rtc-anim body[data-mscreen="learn"] .learn-cloze-word.is-blank.is-revealed {
+    animation: rcPop 0.3s ease both;
   }
 
   body[data-mscreen="learn"] .learn-cloze-text,
