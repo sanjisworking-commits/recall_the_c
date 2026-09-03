@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import date
 from pathlib import Path
 from uuid import UUID
 
@@ -706,9 +707,22 @@ def test_reset_progress_returns_to_the_first_run_screen(tmp_path: Path):
     )
     assert 'data-today-mode="firstrun"' not in client.get("/dashboard").text
 
+    # A streak the reset has to take with it. Seeded directly: the assertion
+    # is worthless if the account never had one of these rows to begin with.
+    engine = client.app.state.engine.for_user(
+        UUID("11111111-1111-4111-8111-111111111111")
+    )
+    engine.record_daily_goal_met(date.today())
+    assert engine.list_daily_goal_dates(until=date.today(), limit=400) != []
+
     profile = client.get("/profile")
     assert profile.status_code == 200
     assert "Reset progress" in profile.text
+    # The confirm names what goes and what stays, and each line has to be true
+    # of reset_learning_progress() — the memory log is outside its reach.
+    assert "Learning history and your streak" in profile.text
+    assert "Your settings and your memory log" in profile.text
+    assert 'class="account-action is-reset"' in profile.text
     reset = client.post(
         "/profile",
         data={
@@ -723,6 +737,14 @@ def test_reset_progress_returns_to_the_first_run_screen(tmp_path: Path):
     after = client.get("/dashboard")
     assert after.status_code == 200
     assert 'data-today-mode="firstrun"' in after.text
+    # The streak is derived from daily_goal_met, not from progress, so a reset
+    # that skipped those rows would leave a streak over an empty account. Read
+    # through a fresh engine: the one above cached the dates it was shown, and
+    # the request that did the reset held its own instance.
+    after_reset = client.app.state.engine.for_user(
+        UUID("11111111-1111-4111-8111-111111111111")
+    )
+    assert after_reset.list_daily_goal_dates(until=date.today(), limit=400) == []
     # Kept: the account itself, and the sign-in behind it.
     assert "User A" in after.text or "Learner" in after.text
 

@@ -855,6 +855,15 @@ class PostgresProgressRepository:
             )
             conn.commit()
 
+    def clear_daily_goal_met(self, user_id: UUID | str) -> None:
+        """Drop every daily-goal fact for this user — the streak's source."""
+        with self._cursor() as (conn, cur):
+            cur.execute(
+                "DELETE FROM daily_goal_met WHERE user_id = %s",
+                (as_user_id(user_id),),
+            )
+            conn.commit()
+
     def is_daily_goal_met(self, user_id: UUID | str, goal_date: date) -> bool:
         with self._cursor() as (_conn, cur):
             cur.execute(

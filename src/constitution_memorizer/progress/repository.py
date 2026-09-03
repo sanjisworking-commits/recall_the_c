@@ -1000,6 +1000,18 @@ class ProgressRepository:
         )
         self._conn.commit()
 
+    def clear_daily_goal_met(self, user_id: UUID | str) -> None:
+        """Drop every daily-goal fact for this user.
+
+        The streak is derived from these rows, not from progress, so a reset
+        that skipped them would leave a streak standing over an account with
+        nothing learned.
+        """
+        self._conn.execute(
+            "DELETE FROM daily_goal_met WHERE user_id = ?", (as_user_id(user_id),)
+        )
+        self._conn.commit()
+
     def is_daily_goal_met(self, user_id: UUID | str, goal_date: date) -> bool:
         row = self._conn.execute(
             """
