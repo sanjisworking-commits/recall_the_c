@@ -593,6 +593,47 @@ def test_first_run_guest_branch(tmp_path: Path):
     assert "Take the two-minute tour" not in html
 
 
+def test_auto_plan_replaces_the_first_run_screen(tmp_path: Path):
+    """An Auto Plan places clauses for today before any progress exists. The
+    zero state says "Nothing due today", so it must give way to them — gating
+    it on progress alone hid the whole of Today behind it."""
+    client = _client(tmp_path)
+    start = client.get("/auth/google/start", follow_redirects=False)
+    state = start.cookies.get("rtc_oauth_state")
+    client.get(
+        f"/auth/callback?code=fake-google-code&state={state}",
+        follow_redirects=False,
+    )
+    assert 'data-today-mode="firstrun"' in client.get("/dashboard").text
+
+    saved = client.post(
+        "/onboarding/plan",
+        data={
+            "mode": "auto",
+            "daily_target": "5",
+            "csrf_token": client.cookies.get(CSRF_COOKIE_NAME) or "",
+        },
+        follow_redirects=False,
+    )
+    assert saved.headers["location"] == "/dashboard"
+
+    html = client.get("/dashboard").text
+    assert 'data-today-mode="firstrun"' not in html
+    assert 'data-today-mode="learning"' in html
+    assert "You haven\u2019t started yet." not in html
+    # Nothing has been completed, so the account is still "not started" — the
+    # screen changed because there is something to do, not because it has.
+    from constitution_memorizer.web.dashboard import build_dashboard_context
+
+    engine = client.app.state.engine.for_user(
+        UUID("11111111-1111-4111-8111-111111111111")
+    )
+    ctx = build_dashboard_context(engine, display_label="User A")
+    assert ctx["has_started"] is False
+    assert ctx["show_first_run"] is False
+    assert ctx["goal_total"] > 0
+
+
 def test_sign_in_from_first_run_returns_to_it(tmp_path: Path):
     """diff.md item 3: a guest who signs in from Today's first-run screen
     lands back on that screen as a signed-in account — the name step carries

@@ -471,6 +471,7 @@ def build_guest_dashboard_context(engine: ReminderEngine) -> dict[str, Any]:
         "user": None,
         "dashboard_state": "ok",
         "has_started": False,
+        "show_first_run": True,
         "starter_rows": starter_rows(engine),
         "display_label": "",
         "first_name": "",
@@ -720,6 +721,12 @@ def build_dashboard_context(
     streak = daily_goal_streak(eng, as_of=today)
     record_request_timing("dashboard_sections", sections_started)
 
+    # The zero state says "Nothing due today · You haven't started yet". The
+    # first half has to be true as well: an Auto Plan places clauses for today
+    # on an account with no progress yet, and gating on has_started alone hid
+    # the whole of Today behind the first-run screen.
+    show_first_run = not has_started and goal_total == 0
+
     return {
         "today_mode": today_mode,
         "revision_session_id": revision_session.id if revision_session else None,
@@ -753,7 +760,8 @@ def build_dashboard_context(
         # has_started (not is_new — see _has_started). Rows are only built when
         # they will actually be shown.
         "has_started": has_started,
-        "starter_rows": [] if has_started else starter_rows(eng),
+        "show_first_run": show_first_run,
+        "starter_rows": [] if not show_first_run else starter_rows(eng),
         "nothing_due": len(due_units) == 0,
         "due_count": len(due_units),
         "due_minutes": due_minutes(due_units),

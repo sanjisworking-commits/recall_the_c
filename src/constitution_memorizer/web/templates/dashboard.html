@@ -102,9 +102,11 @@
   {% endif %}
 
   {# First run. The design's zero state lives at this route rather than a
-     separate page: the moment the first unit completes, is_new flips and the
-     same screen becomes the regular Today home, with no redirect. #}
-  {% if not has_started|default(true) %}
+     separate page: the moment the first unit completes, the same screen
+     becomes the regular Today home, with no redirect. It also gives way the
+     moment there is anything scheduled — an Auto Plan places clauses before
+     any progress exists, and those must not be hidden behind it. #}
+  {% if show_first_run|default(false) %}
   <section class="dash-firstrun" data-today-mode="firstrun">
     <article class="dash-card dash-firstrun-hero rc-rise">
       <p class="dash-eyebrow dash-firstrun-eyebrow">Today’s Recall</p>
@@ -383,7 +385,7 @@
   </section>
   {% endif %}
   {% endif %}
-  {% endif %}{# /has_started #}
+  {% endif %}{# /show_first_run #}
 
   {# Design 4c · the phone opens Plan my day as a sheet over Today. Desktop and
      no-JS phones follow the anchor's href to /learning/plan-my-day instead —
