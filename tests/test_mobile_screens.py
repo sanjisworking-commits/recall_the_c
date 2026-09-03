@@ -880,7 +880,9 @@ def test_letters_speak_button_is_the_solo_cta(tmp_path: Path):
     assert "lettersAdvance" in sync
     # One shared tail paints every solo mode, so they cannot drift apart.
     assert "function paintAdvance" in sync
-    assert 'btn.textContent = "Next →"' in sync
+    # The advance label is one decision too: paintAdvance asks advanceCopy
+    # rather than hardcoding a string, so every solo mode says the same thing.
+    assert "btn.textContent = advanceCopy(mode)" in sync
     assert "paintAdvance(lettersSpeak, lettersSpeak.dataset.lettersAdvance)" in sync
     assert "typeSolo || lettersSolo || reciteSolo || quizSolo" in sync
 
@@ -1419,3 +1421,29 @@ def test_cloze_completion_shows_the_feedback_sheet(tmp_path: Path):
     assert "recalled" in js
     # Leaving the mode closes it, however the mode was left.
     assert 'attributeFilter: ["data-mode"]' in js
+
+
+def test_advance_says_what_you_just_did(tmp_path: Path):
+    """The advance names the act, not the direction.
+
+    Only Read's label is the design file's own ("I’ve read this →"); the other
+    five follow its shape so a session reads as a sequence of things done
+    rather than a row of identical Nexts. That makes the other five a copy
+    decision rather than a design-sync one.
+    """
+    client, _, _ = _client(tmp_path)
+    js = client.get("/static/mobile.js").text
+    labels = js.split("var ADVANCE_LABELS = {", 1)[1].split("};", 1)[0]
+    for mode in ("read", "cloze", "letters", "type", "recite", "test"):
+        assert f"{mode}:" in labels, mode
+    # Typographic apostrophe, as the design file writes it.
+    assert "I\\u2019ve read this \\u2192" in labels
+    assert "I've" not in labels
+
+    # Letters' "Just read" view never had a speak pass, so it must not claim
+    # the learner heard anything.
+    copy = js.split("function advanceCopy", 1)[1].split("function paintAdvance", 1)[0]
+    assert "lettersSpeak.hidden" in copy
+    assert "ADVANCE_LABELS.read" in copy
+    # Anything unmapped still falls back to the neutral label.
+    assert "Next" in copy
