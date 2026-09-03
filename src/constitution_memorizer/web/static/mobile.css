@@ -1095,14 +1095,17 @@
      status out of the action bar into the panel, so this is settled here. */
   body[data-mscreen="learn"] .learn-cloze-density-track {
     display: flex;
-    width: 100%;
+    gap: 8px;
   }
 
-  body[data-mscreen="learn"] .learn-cloze-density-track .segmented-btn {
-    flex: 1;
-    height: 32px;
-    padding: 0 8px;
-    font-size: 12.5px;
+  body[data-mscreen="learn"] .learn-cloze-density-btn {
+    height: 36px;
+    padding: 0 18px;
+    font-size: 13.5px;
+  }
+
+  body[data-mscreen="learn"] .learn-cloze-density-btn:active {
+    transform: translateY(1px);
   }
 
   /* No handle of its own: .mobile-sheet-panel::before already draws one for
@@ -3777,6 +3780,81 @@
     .learn-type-check,
   body[data-mscreen="learn"] .learn-test-submit.is-idle {
     opacity: 0.45;
+  }
+
+  /* diff.md item 9 · the feedback sheet. Pinned to the bottom edge in the
+     tone of the result, carrying the only CTA — the action bar goes while it
+     is up, so "Continue" is unambiguous. */
+  body[data-mscreen="learn"] .learn-feedback {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 30;
+    padding: 18px 18px calc(30px + env(safe-area-inset-bottom, 0));
+    border-radius: var(--rc-radius-sheet) var(--rc-radius-sheet) 0 0;
+    background: var(--rc-teal-tint);
+    color: var(--rc-teal-deep);
+    box-shadow: 0 -8px 30px rgba(20, 20, 20, 0.12);
+  }
+
+  body[data-mscreen="learn"] .learn-feedback[hidden] {
+    display: none;
+  }
+
+  body[data-mscreen="learn"] .learn-feedback.is-retry {
+    background: var(--rc-amber-tint);
+    color: var(--rc-amber-deep);
+  }
+
+  body[data-mscreen="learn"] .learn-feedback-msg {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.35;
+    text-wrap: pretty;
+  }
+
+  body[data-mscreen="learn"] .learn-feedback-sub {
+    margin: 4px 0 0;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  body[data-mscreen="learn"] .learn-feedback-sub[hidden] {
+    display: none;
+  }
+
+  body[data-mscreen="learn"] .learn-feedback-go {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 50px;
+    margin-top: 14px;
+    border: 0;
+    border-radius: var(--rc-radius-button);
+    background: var(--rc-teal);
+    color: var(--on-accent);
+    font: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.22);
+    cursor: pointer;
+  }
+
+  body[data-mscreen="learn"] .learn-feedback.is-retry .learn-feedback-go {
+    background: var(--rc-ink);
+  }
+
+  body[data-mscreen="learn"] .learn-feedback-go:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.22);
+  }
+
+  /* One CTA at a time: the bar underneath would offer a second answer. */
+  body[data-mscreen="learn"] .learn.is-feedback-open .learn-mode-nav {
+    display: none;
   }
 
   /* Results carry the tone of the result, and arrive as a sheet does. */

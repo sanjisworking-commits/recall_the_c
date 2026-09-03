@@ -35,7 +35,7 @@ def test_learn_enables_recite_tab_and_panel_markup(client: TestClient):
     assert "Hold to peek" in html
     assert "Start reciting" in html
     assert "Speak the Bare Act aloud" in html
-    assert "app.js?v=main56" in html
+    assert "app.js?v=main58" in html
     assert "Coming in later sprints" not in html
 
 
@@ -50,7 +50,7 @@ def test_recite_mode_query_param_renders_recite_active(client: TestClient):
 
 
 def test_recite_css_blur_and_panel_visibility(client: TestClient):
-    css = client.get("/static/styles.css?v=main56")
+    css = client.get("/static/styles.css?v=main58")
     assert css.status_code == 200
     text = css.text
     assert '.learn[data-mode="recite"] .learn-panel-recite' in text
@@ -62,7 +62,7 @@ def test_recite_css_blur_and_panel_visibility(client: TestClient):
 
 
 def test_recite_js_handles_start_stop_and_peek(client: TestClient):
-    js = client.get("/static/app.js?v=main56")
+    js = client.get("/static/app.js?v=main58")
     assert js.status_code == 200
     text = js.text
     assert "initRecite" in text

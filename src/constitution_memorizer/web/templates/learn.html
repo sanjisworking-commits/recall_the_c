@@ -176,6 +176,16 @@
     <button type="button" class="learn-mode-next" data-mode-next>Next</button>
   </div>
 
+  {# diff.md item 9 · the feedback sheet. Finishing a mode slides this up over
+     the action bar in the tone of the result — teal when it went well, amber
+     when there is something to fix — and carries the only CTA, so there is
+     never a choice between "continue" and the bar underneath it. #}
+  <div class="learn-feedback" data-mode-feedback hidden aria-live="polite">
+    <p class="learn-feedback-msg" data-feedback-msg></p>
+    <p class="learn-feedback-sub" data-feedback-sub></p>
+    <button type="button" class="learn-feedback-go" data-feedback-go>Continue</button>
+  </div>
+
   <div class="learn-deck" data-learn-deck>
     {% set deck_copy = {
       'read':    ('Read it closely', 'Bare Act wording, verbatim.'),
@@ -266,10 +276,13 @@
        styles that exactly as it styles a checked input. #}
     <div class="learn-cloze-density" role="group" aria-label="Cloze density">
       <span class="learn-cloze-density-label">Density</span>
-      <div class="segmented is-on-page learn-cloze-density-track">
-        <button type="button" class="segmented-btn learn-cloze-density-btn" data-cloze-density="light" aria-pressed="false">Light</button>
-        <button type="button" class="segmented-btn learn-cloze-density-btn is-active" data-cloze-density="medium" aria-pressed="true">Medium</button>
-        <button type="button" class="segmented-btn learn-cloze-density-btn" data-cloze-density="heavy" aria-pressed="false">Heavy</button>
+      {# Pills, per the design: three separate choices with the active one
+         filled, rather than a segmented track. Density is a setting for the
+         exercise, not a view switch like Letters' Speak/Read. #}
+      <div class="learn-cloze-density-track">
+        <button type="button" class="learn-cloze-density-btn" data-cloze-density="light" aria-pressed="false">Light</button>
+        <button type="button" class="learn-cloze-density-btn is-active" data-cloze-density="medium" aria-pressed="true">Medium</button>
+        <button type="button" class="learn-cloze-density-btn" data-cloze-density="heavy" aria-pressed="false">Heavy</button>
       </div>
     </div>
     {% if not cloze_available|default(true) %}

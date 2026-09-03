@@ -134,7 +134,7 @@
       if (blanks.every((index) => tapRevealed.has(index))) {
         completed = true;
         if (onComplete) {
-          onComplete();
+          onComplete({ recalled: tapRevealed.size, total: blanks.length });
         }
       }
     }
@@ -2409,8 +2409,67 @@
     // when the saved view is "Just read", and markModeAttempted reads the
     // consts above. Constructed any earlier, that first callback throws a
     // temporal-dead-zone error and takes the whole Learn page down.
-    const cloze = initCloze(clozePanel, function () {
+    // diff.md item 9 · the feedback sheet. Finishing a mode says how it went
+    // and offers the one next step, in the tone of the result. It sits over
+    // the action bar rather than beside it, so there is never a choice
+    // between "continue" and the bar underneath.
+    const feedback = learn.querySelector("[data-mode-feedback]");
+    const feedbackMsg = learn.querySelector("[data-feedback-msg]");
+    const feedbackSub = learn.querySelector("[data-feedback-sub]");
+    const feedbackGo = learn.querySelector("[data-feedback-go]");
+
+    function hideFeedback() {
+      if (!feedback) return;
+      feedback.hidden = true;
+      learn.classList.remove("is-feedback-open");
+    }
+
+    function showFeedback(result) {
+      if (!feedback) return;
+      const good = result.tone !== "retry";
+      feedback.classList.toggle("is-retry", !good);
+      if (feedbackMsg) feedbackMsg.textContent = result.message || "";
+      if (feedbackSub) {
+        feedbackSub.textContent = result.sub || "";
+        feedbackSub.hidden = !result.sub;
+      }
+      if (feedbackGo) feedbackGo.textContent = result.cta || "Continue";
+      feedback.hidden = false;
+      learn.classList.add("is-feedback-open");
+      // Restart the entrance if a previous sheet was still on screen.
+      feedback.classList.remove("rc-sheet");
+      void feedback.offsetWidth;
+      feedback.classList.add("rc-sheet");
+    }
+
+    if (feedbackGo) {
+      feedbackGo.addEventListener("click", function () {
+        hideFeedback();
+        learn.dispatchEvent(new CustomEvent("learn:advance", { bubbles: true }));
+      });
+    }
+
+    // Leaving the mode takes the sheet with it, however the mode was left —
+    // Continue, a tab, or the deck. Watching the attribute rather than every
+    // caller means a new route out cannot forget to close it.
+    if (feedback) {
+      new MutationObserver(function (records) {
+        for (const record of records) {
+          if (record.attributeName === "data-mode") hideFeedback();
+        }
+      }).observe(learn, { attributes: true, attributeFilter: ["data-mode"] });
+    }
+
+    const cloze = initCloze(clozePanel, function (result) {
       markModeAttempted("cloze");
+      const total = (result && result.total) || 0;
+      const recalled = (result && result.recalled) || 0;
+      showFeedback({
+        tone: "good",
+        message: "You remembered it.",
+        sub: total ? recalled + " of " + total + " recalled" : "",
+        cta: "Continue",
+      });
     });
     const letters = initLetters(lettersPanel, function () {
       markModeAttempted("letters");
