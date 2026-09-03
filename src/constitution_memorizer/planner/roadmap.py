@@ -23,8 +23,11 @@ from constitution_memorizer.planner.planner import (
     _actual_review_occupancy,
     _reviews_from_learn_date,
 )
-from constitution_memorizer.planner.relationships import candidates_from_units
-from constitution_memorizer.planner.selector import LearningMixSelector
+from constitution_memorizer.planner.relationships import (
+    build_candidate,
+    candidates_from_units,
+)
+from constitution_memorizer.planner.selector import LearningMixSelector, recency_key
 from constitution_memorizer.progress.repository import (
     AutoPlanDay,
     AutoPlanItem,
@@ -229,6 +232,50 @@ def _mix_candidates(
     return candidates_from_units(eligible)
 
 
+def _carryover_for_day(
+    queue: deque[str],
+    *,
+    target: int,
+    assigned: set[str],
+    units: Mapping[str, LearningUnit],
+    progress: Mapping[str, ProgressRecord],
+    splits: Mapping[str, SplitMode],
+    claimed: set[str],
+    remaining_slots: int,
+    entitlements_on: bool,
+    allow,
+) -> list[MixCandidate]:
+    """Pop up to ``target`` still-valid owed units, oldest commitment first.
+
+    Validation happens once, here, so the selector can treat the result as
+    settled: dropping owed work later would lose it silently. Both gates run —
+    hard eligibility, and the article-slot policy applied progressively against
+    what this day has already taken, which is the only place the count of
+    distinct new Articles per day can actually be bounded.
+    """
+    chosen: list[MixCandidate] = []
+    while len(chosen) < target and queue:
+        unit_id = queue.popleft()
+        if unit_id in assigned or any(item.id == unit_id for item in chosen):
+            continue
+        unit = units.get(unit_id)
+        if not _window_unit_eligible(
+            unit,
+            progress,
+            splits,
+            units=units,
+            claimed=claimed,
+            remaining_slots=remaining_slots,
+            entitlements_on=entitlements_on,
+        ):
+            continue
+        candidate = build_candidate(unit)
+        if allow is not None and not allow(candidate, [c for c in chosen]):
+            continue
+        chosen.append(candidate)
+    return chosen
+
+
 def compute_auto_window(
     snapshot: AutoPlanSnapshot,
     *,
@@ -306,22 +353,31 @@ def compute_auto_window(
             written.append(_day(cursor, target, ()))
             cursor += timedelta(days=1)
             continue
-        chosen: list[str] = []
-        while len(chosen) < target and queue:
-            unit_id = queue.popleft()
-            if unit_id in assigned or unit_id in chosen:
-                continue
-            if not _window_unit_eligible(
-                units.get(unit_id),
-                progress,
-                snapshot.split_preferences,
-                units=units,
-                claimed=claimed_keys,
-                remaining_slots=remaining_slots,
-                entitlements_on=entitlements_on,
-            ):
-                continue
-            chosen.append(unit_id)
+        allow = article_slot_policy(
+            claimed=claimed_keys,
+            remaining_slots=remaining_slots,
+            entitlements_on=entitlements_on,
+        )
+        # Work already owed to the learner, oldest commitment first. It is
+        # revalidated here — against hard eligibility AND, progressively,
+        # against the article-slot policy. _window_unit_eligible only knows
+        # whether *a* Free slot remains; it cannot see how many distinct new
+        # Articles this day has already introduced, so trusting the queue
+        # blindly let one day spend the Free cap twice over.
+        committed = _carryover_for_day(
+            queue,
+            target=target,
+            assigned=assigned,
+            units=units,
+            progress=progress,
+            splits=snapshot.split_preferences,
+            claimed=claimed_keys,
+            remaining_slots=remaining_slots,
+            entitlements_on=entitlements_on,
+            allow=allow,
+        )
+        chosen: list[str] = [candidate.id for candidate in committed]
+        anchor_candidate = committed[0] if committed else None
         if len(chosen) < target:
             exclude = set(assigned) | set(chosen) | set(queue)
             candidates = _mix_candidates(
@@ -333,25 +389,25 @@ def compute_auto_window(
                 remaining_slots=remaining_slots,
                 entitlements_on=entitlements_on,
             )
-            allow = article_slot_policy(
-                claimed=claimed_keys,
-                remaining_slots=remaining_slots,
-                entitlements_on=entitlements_on,
-            )
+            # One canonical Recall Mix: the same selector Plan My Day uses.
+            # Carryover goes in as `committed`, so it anchors the day and its
+            # own buckets are subtracted from the composition rather than a
+            # fresh full-target mix being appended and truncated.
             mix = LearningMixSelector().select(
                 candidates,
                 target,
                 rng=day_rng(snapshot.user_id, cursor, target),
                 allow=allow,
                 recent_theme=recent_theme,
+                committed=committed,
             )
-            for candidate in mix:
-                if candidate.id in assigned or candidate.id in chosen:
-                    continue
-                chosen.append(candidate.id)
-                recent_theme = candidate.primary_theme
-                if len(chosen) >= target:
-                    break
+            if mix:
+                chosen = [candidate.id for candidate in mix]
+                anchor_candidate = mix[0]
+        if anchor_candidate is not None:
+            # The day's anchor, not its last unit — recency follows what the
+            # day was built around.
+            recent_theme = recency_key(anchor_candidate)
         assigned.update(chosen)
         written.append(_day(cursor, target, chosen))
         if chosen:
