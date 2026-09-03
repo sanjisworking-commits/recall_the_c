@@ -769,6 +769,23 @@
     border: 0;
   }
 
+  /* Eyebrow left, "…" hard against the card's top right corner — they share
+     the head's line rather than stacking. */
+  body[data-mscreen="today"] .dash-due .dash-card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  body[data-mscreen="today"] .dash-due .dash-card-head .dash-eyebrow {
+    margin-bottom: 0;
+  }
+
+  body[data-mscreen="today"] .dash-plan-day-btn {
+    margin: -6px -8px 0 auto;
+  }
+
   body[data-mscreen="today"] .dash-eyebrow {
     margin: 0 0 12px;
     font-size: 10.5px;
@@ -1088,14 +1105,8 @@
     font-size: 12.5px;
   }
 
-  .plan-day-sheet-handle {
-    display: block;
-    width: 36px;
-    height: 4px;
-    margin: 0 auto 14px;
-    border-radius: 2px;
-    background: var(--hairline);
-  }
+  /* No handle of its own: .mobile-sheet-panel::before already draws one for
+     every sheet, and a second element drew a second bar under it. */
 
   .plan-day-sheet-label {
     margin: 0 0 8px;
@@ -1125,6 +1136,8 @@
   }
 
   /* The affordance the design puts on the hero card itself. */
+  /* The design's "…" — a quiet mark in the card's corner, not a bordered
+     control competing with the CTA below it. */
   body[data-mscreen="today"] .dash-plan-day-btn {
     display: inline-flex;
     align-items: center;
@@ -1132,10 +1145,14 @@
     width: 32px;
     height: 32px;
     margin-left: auto;
-    border: 1px solid var(--hairline);
+    border: 0;
     border-radius: 9px;
-    background: var(--paper);
-    color: var(--mid);
+    background: none;
+    color: var(--faint);
+    font-size: 15px;
+    letter-spacing: 0.06em;
+    line-height: 1;
+    text-decoration: none;
   }
 
   body[data-mscreen="today"] .dash-plan-day-btn:active {
@@ -1253,6 +1270,10 @@
     padding: 0;
   }
 
+  body[data-mscreen="today"] .rc-path-head {
+    margin: 24px 2px 10px;
+  }
+
   body[data-mscreen="today"] .rc-path-node {
     display: grid;
     grid-template-columns: 26px 1fr auto;
@@ -1301,32 +1322,60 @@
     animation: rcPulse 2.4s ease-out infinite;
   }
 
+  /* One card, not two stacked cells. The CTA lives inside the copy now, so
+     the border and radius can close around the whole node — the old split
+     left a band of page wash across the middle of it. */
   body[data-mscreen="today"] .rc-path-node.is-current {
-    display: grid;
-    grid-template-columns: 26px 1fr;
-    grid-template-rows: auto auto;
     align-items: start;
-    /* Row gap would split copy + Start into two cards with page wash
-       showing through (the title block sitting above an empty shell). */
-    gap: 0 14px;
     padding: 4px 0 10px;
     margin: 0;
     background: none;
     box-shadow: none;
   }
 
-  body[data-mscreen="today"] .rc-path-node.is-current .rc-path-mark {
-    grid-row: 1 / span 2;
-  }
-
   body[data-mscreen="today"] .rc-path-node.is-current .rc-path-copy {
-    grid-column: 2;
-    padding: 14px 15px 12px;
+    padding: 14px 15px;
     background: var(--rc-paper);
     border: 1.5px solid var(--rc-ink);
-    border-bottom: 0;
-    border-radius: var(--rc-radius-card) var(--rc-radius-card) 0 0;
+    border-radius: var(--rc-radius-card);
     box-shadow: 0 6px 18px rgba(20, 20, 20, 0.09);
+  }
+
+  body[data-mscreen="today"] .rc-path-eyebrow {
+    display: block;
+    margin: 0 0 3px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--rc-teal);
+  }
+
+  body[data-mscreen="today"] .rc-path-node.is-current .rc-path-title {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 500;
+  }
+
+  /* Title left, ladder day set against it on the same line. */
+  body[data-mscreen="today"] .rc-path-line {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  body[data-mscreen="today"] .rc-path-sub {
+    display: block;
+    margin: 2px 0 0;
+    font-size: 12.5px;
+    line-height: 1.4;
+    color: var(--mid);
+  }
+
+  body[data-mscreen="today"] .rc-path-node:not(.is-current) .rc-path-sub {
+    margin: 1px 0 0;
+    font-size: 12px;
+    color: var(--faint);
   }
 
   body[data-mscreen="today"] .rc-path-cta {
@@ -1337,27 +1386,21 @@
   }
 
   body[data-mscreen="today"] .rc-path-node.is-current .rc-path-cta {
-    grid-column: 2;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100%;
     height: 42px;
-    margin: 0;
-    padding: 0 15px 14px;
-    background: var(--rc-paper);
-    border: 1.5px solid var(--rc-ink);
-    border-top: 0;
-    border-radius: 0 0 var(--rc-radius-card) var(--rc-radius-card);
-    box-shadow: 0 6px 18px rgba(20, 20, 20, 0.09);
+    margin-top: 12px;
+    border-radius: 10px;
+    background: var(--rc-ink);
     color: var(--on-accent);
-    box-sizing: content-box;
-    background-image: linear-gradient(var(--rc-ink), var(--rc-ink));
-    background-origin: content-box;
-    background-clip: content-box;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.28);
   }
 
   body[data-mscreen="today"] .rc-path-node.is-current .rc-path-cta:active {
     transform: translateY(1px);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.28);
   }
 
   body[data-mscreen="today"] .dash-caughtup-mark {
@@ -1398,14 +1441,15 @@
   body[data-mscreen="today"] .rc-path-title {
     display: block;
     font-size: 14.5px;
-    font-weight: 600;
+    font-weight: 500;
   }
 
   body[data-mscreen="today"] .rc-path-meta {
-    display: block;
-    margin-top: 2px;
+    margin-left: auto;
+    flex: 0 0 auto;
     font-size: 12px;
     color: var(--muted);
+    white-space: nowrap;
   }
 
   body[data-mscreen="today"] .rc-path-cta {

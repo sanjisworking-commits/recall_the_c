@@ -243,9 +243,10 @@
           <span class="dash-eyebrow-desktop">Today</span>
         </h2>
         {% if plan_my_day_available|default(false) %}
-        {# Anchor, not a button: desktop and no-JS phones follow the href. #}
+        {# The design's "…" at the card's top right. An anchor, not a button:
+           desktop and no-JS phones follow the href to the full page. #}
         <a class="dash-plan-day-btn" href="/learning/plan-my-day" data-sheet-open="plan-day-sheet" aria-label="Plan my day">
-          <svg width="16" height="16" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="2.5" y="3.5" width="13" height="12" rx="2"></rect><path d="M2.5 7h13M6 2v3M12 2v3"></path></svg>
+          <span aria-hidden="true">···</span>
         </a>
         {% endif %}
       </header>
@@ -321,21 +322,37 @@
     </article>
     {% endif %}
     {% if today_units|default([]) %}
+    {# The design labels the path, the way it labels the starter list. #}
+    <p class="dash-eyebrow rc-path-head">Today’s path</p>
     <ol class="rc-path" data-today-path>
       {% for item in today_units %}
       <li class="rc-path-node is-{{ item.status }}" data-today-unit="{{ item.unit_id }}" data-today-kind="{{ item.kind }}">
         <span class="rc-path-mark" aria-hidden="true">{% if item.status == 'done' %}✓{% elif item.status == 'current' %}•{% endif %}</span>
         <span class="rc-path-copy">
-          <span class="rc-path-title">{{ item.title }}</span>
-          <span class="rc-path-meta">{{ item.article_label }} · {{ 'Review' if item.kind == 'review' else 'New' }}{% if item.status == 'deferred' %} · skipped{% endif %}</span>
+          {# The current node leads with where it sits on the ladder; the rows
+             below set the same label against their title instead. #}
+          {% if item.status == 'current' and item.day_label %}
+          <span class="rc-path-eyebrow">{{ item.day_label }}</span>
+          {% endif %}
+          <span class="rc-path-line">
+            <span class="rc-path-title">{{ item.title }}</span>
+            {% if item.status != 'current' and item.day_label %}
+            <span class="rc-path-meta">{{ item.day_label }}{% if item.status == 'deferred' %} · skipped{% endif %}</span>
+            {% elif item.status == 'deferred' %}
+            <span class="rc-path-meta">skipped</span>
+            {% endif %}
+          </span>
+          {% if item.subtitle %}
+          <span class="rc-path-sub">{{ item.subtitle }}</span>
+          {% endif %}
+          {% if item.status == 'current' %}
+          {# diff.md item 7 · the node's action names what it will open, rather
+             than reading "Start →" beside a title it does not repeat. #}
+          <a class="rc-path-cta" href="{{ item.href }}">
+            {%- if item.kind == 'review' -%}Start revision →{%- else -%}Learn {{ item.title }} →{%- endif -%}
+          </a>
+          {% endif %}
         </span>
-        {% if item.status == 'current' %}
-        {# diff.md item 7 · the node's action names what it will open, rather
-           than reading "Start →" beside a title it does not repeat. #}
-        <a class="rc-path-cta" href="{{ item.href }}">
-          {%- if item.kind == 'review' -%}Start revision →{%- else -%}Learn {{ item.title }} →{%- endif -%}
-        </a>
-        {% endif %}
       </li>
       {% endfor %}
     </ol>
@@ -397,7 +414,6 @@
   <div class="mobile-sheet" id="plan-day-sheet" hidden data-sheet>
     <div class="mobile-sheet-scrim" data-sheet-close></div>
     <div class="mobile-sheet-panel plan-day-sheet" role="dialog" aria-modal="true" aria-label="Plan my day" tabindex="-1" data-sheet-focus>
-      <span class="plan-day-sheet-handle" aria-hidden="true"></span>
       <p class="mobile-sheet-title">Plan my day</p>
       <p class="plan-day-sheet-lede">
         Pick a short mix for today. This does not turn Auto Plan on.

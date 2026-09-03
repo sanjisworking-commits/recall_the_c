@@ -1872,17 +1872,11 @@ def create_app(
         )
         if session is None or not session.pending:
             return RedirectResponse(url=_home_url(), status_code=303)
-        first = session.pending[0].learning_unit_id
-        return RedirectResponse(
-            url=next_learn_url(
-                eng,
-                first,
-                multiuser=app.state.multiuser_enabled,
-                session_id=session.id,
-                mode=session_entry_mode(session.kind),
-            ),
-            status_code=303,
-        )
+        # Back to Today, where the mix is now listed as the path. Planning the
+        # day and starting it are two decisions: dropping straight into the
+        # first unit took the second one on the user's behalf, and hid what
+        # had just been planned.
+        return RedirectResponse(url=_home_url(), status_code=303)
 
     @app.post("/learning/plan-my-day/dismiss")
     async def plan_my_day_dismiss(request: Request) -> RedirectResponse:

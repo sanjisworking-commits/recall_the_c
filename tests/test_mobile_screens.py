@@ -1338,18 +1338,33 @@ def test_today_goal_ring_centers_the_fraction(tmp_path: Path):
 
 
 def test_today_current_path_node_is_one_card(tmp_path: Path):
-    """Copy + Start must share a card. A 12px row-gap showed page wash
-    between the title block and the button, which read as an empty slot."""
+    """Copy + Start must share a card.
+
+    This used to be held together by a two-cell grid whose halves each drew
+    part of the border — a card with the top rounded and no bottom, over a
+    button with the bottom rounded and no top. Page wash still showed across
+    the join. The CTA lives inside the copy now, so one box draws the whole
+    card and there is no seam to keep closed.
+    """
     client, _, _ = _client(tmp_path)
     css = client.get("/static/mobile.css").text
     path = css.split('body[data-mscreen="today"] .rc-path {', 1)[1].split("}", 1)[0]
     assert "margin: 0" in path
-    assert "margin: 14px 0 0" not in path
-    current = css.split(
-        'body[data-mscreen="today"] .rc-path-node.is-current {', 1
+
+    copy = css.split(
+        'body[data-mscreen="today"] .rc-path-node.is-current .rc-path-copy {', 1
     )[1].split("}", 1)[0]
-    assert "gap: 0 14px" in current
-    assert "gap: 12px 14px" not in current
+    assert "border: 1.5px solid var(--rc-ink)" in copy
+    assert "border-radius: var(--rc-radius-card)" in copy
+    # The halves that used to split the border are gone.
+    assert "border-bottom: 0" not in copy
+
+    cta = css.split(
+        'body[data-mscreen="today"] .rc-path-node.is-current .rc-path-cta {', 1
+    )[1].split("}", 1)[0]
+    assert "border-top: 0" not in cta
+    assert "background-clip: content-box" not in cta
+
 
 
 def test_phone_tables_frame_scrolls_horizontally(tmp_path: Path):

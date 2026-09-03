@@ -64,12 +64,20 @@ def _session_of(location: str) -> str:
 
 
 def _start_day_plan(client: TestClient, target: int = 3) -> tuple[str, str]:
+    """Plan the mix, then read the session it created.
+
+    The post lands on Today now — planning the day and starting it are two
+    decisions — so the session is read from the engine rather than picked out
+    of a redirect into the first unit.
+    """
     resp = client.post("/learning/plan-my-day", data={"target": target}, follow_redirects=False)
     assert resp.status_code == 303, resp.text
-    parts = urlsplit(resp.headers["location"])
-    session_id = parse_qs(parts.query).get("session", [""])[0]
-    path = parts.path.removesuffix("/choose")
-    return session_id, path.rsplit("/", 1)[-1]
+    assert resp.headers["location"] in ("/dashboard", "/")
+    session = _engine(client).study_session_for_day(
+        kind="day_plan", plan_date=date.today()
+    )
+    assert session is not None and session.pending
+    return session.id, session.pending[0].learning_unit_id
 
 
 def test_skip_on_unlearned_item_does_not_write_review_progress(tmp_path: Path):
@@ -212,6 +220,32 @@ def test_session_entry_mode_is_kind_generic():
     assert session_entry_mode("revision") == "read"
     assert session_entry_mode("auto_learning") == "read"
     assert session_entry_mode("day_plan") == "read"
+
+
+def test_plan_my_day_lands_on_today_with_the_mix_listed(tmp_path: Path):
+    """Planning the day and starting it are two decisions. The post returns to
+    Today, where the mix it just planned is the path."""
+    # Multiuser, because the path list is Today's — single-user lands on the
+    # simpler home page, which has never had one.
+    client = _client(tmp_path, multiuser=True)
+    _sign_in(client)
+    resp = client.post(
+        "/learning/plan-my-day", data={"target": 3}, follow_redirects=False
+    )
+    assert resp.status_code == 303
+    assert resp.headers["location"] == "/dashboard"
+
+    session = _engine(client).study_session_for_day(
+        kind="day_plan", plan_date=date.today()
+    )
+    assert session is not None and session.pending
+
+    html = client.get(resp.headers["location"]).text
+    assert "rc-path" in html
+    for item in session.items:
+        unit = _engine(client).get_unit(item.learning_unit_id)
+        assert unit is not None
+        assert unit.display_title in html
 
 
 def test_plan_my_day_creates_a_same_day_session(tmp_path: Path):

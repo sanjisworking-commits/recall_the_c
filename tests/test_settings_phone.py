@@ -133,9 +133,9 @@ def test_settings_assets_and_hooks(tmp_path: Path):
     client = _client(tmp_path)
     html = client.get("/browse").text
     assert "styles.css?v=main56" in html
-    assert "mobile.css?v=mob76" in html
+    assert "mobile.css?v=mob81" in html
     assert "app.js?v=main56" in html
-    css = client.get("/static/mobile.css?v=mob76").text
+    css = client.get("/static/mobile.css?v=mob81").text
     assert 'body[data-mscreen="settings"] .mobile-tabbar' in css
     assert 'body[data-mscreen="settings"] .settings-desk-copy' in css
     assert ".settings-toggle" in css

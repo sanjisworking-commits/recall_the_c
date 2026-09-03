@@ -46,6 +46,11 @@ class TodayUnit:
     status: TodayStatus
     href: str
     position: int
+    # The design names each row twice: what it is ("Article 32") and what it
+    # is about ("Remedies for enforcement of rights"), with where it sits on
+    # the ladder ("Day 3 revision" / "New Article") set against them.
+    subtitle: str = ""
+    day_label: str = ""
 
 MODE_LABELS = {
     "read": "Read",
@@ -164,6 +169,29 @@ def progress_strip(engine: ReminderEngine, *, as_of: date | None = None) -> dict
     }
 
 
+def _unit_subtitle(unit: LearningUnit) -> str:
+    """What the unit is about, as the Bare Act titles it."""
+    return (unit.title or "").strip()
+
+
+def _day_label(engine: ReminderEngine, unit_id: str, kind: TodayKind) -> str:
+    """Where this sits on the ladder — "Day 3 revision", or a new Article.
+
+    The day is the interval the unit is currently resting on, which is the
+    rung it was scheduled from. A review with no progress row cannot say a
+    day, so it says nothing rather than guessing one.
+    """
+    if kind != "review":
+        return "New Article"
+    try:
+        progress = engine.get_progress(unit_id)
+    except Exception:  # noqa: BLE001 — a label must never break the dashboard
+        return "Revision"
+    if progress is None or not progress.interval_days:
+        return "Revision"
+    return f"Day {progress.interval_days} revision"
+
+
 def _article_label(unit: LearningUnit) -> str:
     if unit.article_number:
         return f"Article {unit.article_number}"
@@ -208,6 +236,8 @@ def _today_units_from_session(
                 status=status,
                 href=href,
                 position=item.position + 1,
+                subtitle=_unit_subtitle(unit),
+                day_label=_day_label(engine, unit.id, kind),
             )
         )
     return out
@@ -237,6 +267,8 @@ def _today_units_from_preview(
                 status="current" if index == 1 else "upcoming",
                 href=href,
                 position=index,
+                subtitle=_unit_subtitle(unit),
+                day_label=_day_label(engine, unit.id, kind),
             )
         )
     return out
