@@ -875,6 +875,9 @@
     if (nav) {
       nav.classList.toggle("is-recording", Boolean(on));
     }
+    // diff.md item 7: the level meter is in the panel, not the bar, so it
+    // needs the state marked where CSS can reach it from there.
+    document.body.classList.toggle("is-recording", Boolean(on));
   }
 
   function formatClock(ms) {

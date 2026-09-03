@@ -115,15 +115,26 @@
   {# ── Phone chrome (designs 05–13) ────────────────────────────────────────
      One header for the deck, one bar for an open mode. Both are mobile-only;
      the desktop tabs below stay the single source of mode state. #}
+  {# diff.md item 7 · what you are recalling stays on screen. The mode name
+     alone left the clause behind the moment a mode opened. The step count
+     and the segments below are kept in sync by mobile.js as modes advance —
+     server-rendered state cannot, since modes advance without a reload. #}
   <div class="learn-mode-bar">
     <button type="button" class="mobile-icon-btn" data-session-exit data-exit-to="{{ back_href }}" aria-label="Exit session">✕</button>
-    <div class="rc-mode-stepper" aria-hidden="true">
-      {% for mode in learn_modes %}
-      <span class="rc-mode-step{% if mode in seen %} is-done{% elif mode == learn_mode %} is-current{% endif %}"></span>
-      {% endfor %}
-    </div>
-    <span class="learn-mode-bar-name" data-mode-name>{{ mode_labels[learn_mode] if mode_labels else learn_mode }}</span>
+    <span class="learn-mode-bar-copy">
+      <span class="learn-mode-bar-ref">{{ unit.display_title }}</span>
+      <span class="learn-mode-bar-step">
+        <span data-mode-step>Step {{ (learn_modes.index(learn_mode) + 1) if learn_mode in learn_modes else 1 }} of {{ learn_modes|length }}</span>
+        <span aria-hidden="true">·</span>
+        <span class="learn-mode-bar-name" data-mode-name>{{ mode_labels[learn_mode] if mode_labels else learn_mode }}</span>
+      </span>
+    </span>
     <button type="button" class="mobile-icon-btn" data-mode-help aria-label="How to use this mode">?</button>
+  </div>
+  <div class="rc-mode-stepper" data-mode-stepper aria-hidden="true">
+    {% for mode in learn_modes %}
+    <span class="rc-mode-step{% if mode in seen %} is-done{% elif mode == learn_mode %} is-current{% endif %}" data-step-mode="{{ mode }}"></span>
+    {% endfor %}
   </div>
 
   <header class="learn-deck-head">
@@ -222,7 +233,7 @@
   {% endif %}
 
   <div class="learn-body learn-panel-read" data-learn-panel="read">
-    <article class="unit-text learn-read-text">{% if has_text_annotations %}{{ annotated_text }}{% else %}{{ unit.text }}{% endif %}</article>
+    <article class="unit-text learn-read-text rc-rise">{% if has_text_annotations %}{{ annotated_text }}{% else %}{{ unit.text }}{% endif %}</article>
     <p class="learn-hint">{{ read_hint }}</p>
     <div class="learn-read-controls">
       <button type="button" class="learn-read-done" data-deck-back data-done-mode="read">Mark as read</button>
@@ -327,7 +338,7 @@
     {# Checking swaps the live counter for this block. The wording tab — the
        only place the Bare Act text appears — is offered solely when something
        was actually wrong; a clean attempt reveals nothing. #}
-    <div class="learn-type-result" data-type-result hidden>
+    <div class="learn-type-result rc-sheet" data-type-result hidden>
       <div class="learn-type-tabs" role="tablist" aria-label="Result">
         <button type="button" class="learn-type-tab is-active" role="tab" data-type-tab="score" aria-selected="true">Score</button>
         <button type="button" class="learn-type-tab" role="tab" data-type-tab="wording" aria-selected="false" hidden>Wording</button>
@@ -356,6 +367,12 @@
     data-peeking="false"
   >
     <p class="learn-recite-text is-blurred" data-recite-blur>{{ unit.text }}</p>
+    {# diff.md item 7 · a level meter while the mic is open: twelve staggered
+       bars, so "listening" is visible without another line of text. Idle it
+       is flat and quiet; CSS alone decides, from the recording state. #}
+    <div class="learn-recite-meter" aria-hidden="true">
+      {% for _ in range(12) %}<span class="learn-recite-bar"></span>{% endfor %}
+    </div>
     <div class="learn-recite-controls">
       <button type="button" class="learn-recite-toggle" data-recite-toggle>▸ Start reciting</button>
       <button type="button" class="learn-recite-peek" data-recite-peek>Hold to peek</button>
@@ -417,7 +434,7 @@
       {% endfor %}
       <button type="submit" form="learn-quiz-form" class="btn learn-test-submit" data-quiz-submit>Check answers</button>
     </form>
-    <p class="learn-test-score" data-quiz-score hidden aria-live="polite"></p>
+    <p class="learn-test-score rc-sheet" data-quiz-score hidden aria-live="polite"></p>
     <noscript>
       <p class="learn-hint">Enable JavaScript to take the quiz.</p>
     </noscript>

@@ -106,7 +106,7 @@
      same screen becomes the regular Today home, with no redirect. #}
   {% if not has_started|default(true) %}
   <section class="dash-firstrun" data-today-mode="firstrun">
-    <article class="dash-card dash-firstrun-hero">
+    <article class="dash-card dash-firstrun-hero rc-rise">
       <p class="dash-eyebrow dash-firstrun-eyebrow">Today’s Recall</p>
       <div class="dash-firstrun-row">
         <span class="dash-firstrun-ring" aria-hidden="true">0/0</span>
@@ -328,12 +328,17 @@
           <span class="rc-path-meta">{{ item.article_label }} · {{ 'Review' if item.kind == 'review' else 'New' }}{% if item.status == 'deferred' %} · skipped{% endif %}</span>
         </span>
         {% if item.status == 'current' %}
-        <a class="rc-path-cta" href="{{ item.href }}">Start →</a>
+        {# diff.md item 7 · the node's action names what it will open, rather
+           than reading "Start →" beside a title it does not repeat. #}
+        <a class="rc-path-cta" href="{{ item.href }}">
+          {%- if item.kind == 'review' -%}Start revision →{%- else -%}Learn {{ item.title }} →{%- endif -%}
+        </a>
         {% endif %}
       </li>
       {% endfor %}
     </ol>
-    <p class="rc-path-note">Recall schedules these for you — Day 1 · 3 · 7 · 15 · 30 · 60.</p>
+    {# The ladder line under Today's path is gone from the design: the path
+       already shows what today holds, and the schedule is Recall's business. #}
     {% endif %}
   </div>
 

@@ -55,7 +55,8 @@ def test_recite_css_blur_and_panel_visibility(client: TestClient):
     text = css.text
     assert '.learn[data-mode="recite"] .learn-panel-recite' in text
     assert ".learn-recite-text.is-blurred" in text
-    assert "filter: blur(7px)" in text
+    # diff.md item 7 moved the reveal to the design's 5px / 0.25s.
+    assert "filter: blur(5px)" in text
     assert ".learn-recite-toggle.is-active" in text
     assert "var(--destructive)" in text
 

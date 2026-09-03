@@ -1197,6 +1197,9 @@ html[data-theme="dark"] .theme-toggle {
 
 .learn-letters-cue {
   display: inline;
+  /* diff.md item 7 · words ease into their result colour as speech lands,
+     rather than snapping between states word by word. */
+  transition: color 0.3s ease;
 }
 
 .learn-letters-cue.is-listening {
@@ -1657,11 +1660,12 @@ html[data-theme="dark"] .theme-toggle {
   line-height: 1.7;
   white-space: pre-wrap;
   color: var(--ink);
-  transition: filter 0.2s ease;
+  /* diff.md item 7 · the design's reveal: 5px, eased over 0.25s. */
+  transition: filter 0.25s ease;
 }
 
 .learn-recite-text.is-blurred {
-  filter: blur(7px);
+  filter: blur(5px);
   user-select: none;
 }
 
