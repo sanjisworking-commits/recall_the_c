@@ -43,6 +43,7 @@ constitution_memorizer = [
     "web/explainer_assets/**/*",
     "web/browse_parts.seed.json",
     "web/browse_chapters.seed.json",
+    "web/learning_relationships.json",
     "web/sitemap.xml",
     "web/robots.txt",
 ]

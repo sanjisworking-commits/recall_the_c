@@ -539,6 +539,10 @@ def build_dashboard_context(
         DAY_PLAN_KIND: _session_for_day(eng, DAY_PLAN_KIND, today),
     }
     name = first_name(display_label)
+    # dashboard_prep is the previously opaque prefix after planner_bundle.
+    # Nested inside dashboard_build with planner_project / dashboard_sections;
+    # do not sum those stages. Classify remaining time from logs, not assumption.
+    prep_started = perf_counter()
     due_units = due_checklist(eng, as_of=today)
     chips, chips_more = due_article_chips(due_units)
     strip = progress_strip(eng, as_of=today)
@@ -553,7 +557,6 @@ def build_dashboard_context(
     if cont_unit is not None:
         cont_mode_line, cont_pct = continue_mode_line(eng, cont_unit)
         cont_meta = continue_meta(cont_unit)
-
 
     greeting = f"Welcome, {name}." if is_new else f"Good morning, {name}."
     subtext = (
@@ -658,6 +661,7 @@ def build_dashboard_context(
             for unit_id in today_new_ids
             if (unit := eng.get_unit(unit_id)) is not None
         ]
+    record_request_timing("dashboard_prep", prep_started)
 
     next_learning_day = None
     today_new_count = len(today_new_ids) if auto_selected else 0

@@ -37,6 +37,7 @@ TIMING_STAGES: tuple[str, ...] = (
     "browse_build",
     "article_build",
     "dashboard_build",
+    "dashboard_prep",
     "dashboard_sections",
     "planner_bundle",
     "learning_plan_read",
@@ -45,8 +46,16 @@ TIMING_STAGES: tuple[str, ...] = (
     "roadmap_freshness",
     "planner_project",
     "daily_goal_read",
+    "due_build",
+    "session_write",
     "calendar_build",
     "progress_dashboard",
+    "progress_continue",
+    "progress_stats",
+    "progress_articles",
+    "progress_map",
+    "progress_recent",
+    "article_progress",
     "revision_start",
     "speech_transcribe",
     "learn_build",
@@ -90,6 +99,7 @@ REQUEST_COUNTERS: tuple[str, ...] = (
     "daily_goal_reads",
     "planner_selects",
     "planner_round_trips",
+    "modes_seen_rows",
 )
 _REQUEST_COUNTER_SET = frozenset(REQUEST_COUNTERS)
 REQUEST_NOTES: tuple[str, ...] = ("planner_pipeline_fallback_reason",)
@@ -109,6 +119,7 @@ _BREAKDOWN_PATHS = frozenset(
         "/progress",
         "/progress/mastered",
         "/revision/start",
+        "/learning/start",
     }
 )
 
@@ -119,6 +130,13 @@ def wants_request_breakdown(path: str) -> bool:
         return True
     parts = [segment for segment in path.split("/") if segment]
     if len(parts) == 3 and parts[0] == "browse" and parts[1] == "article":
+        return True
+    if (
+        len(parts) == 4
+        and parts[0] == "api"
+        and parts[1] == "articles"
+        and parts[3] == "progress"
+    ):
         return True
     if (
         len(parts) == 4

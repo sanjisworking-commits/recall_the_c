@@ -435,6 +435,8 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
             from constitution_memorizer.web.dashboard import build_dashboard_context
 
             started = time.perf_counter()
+            # Nested inside dashboard_build: planner_bundle, dashboard_prep,
+            # planner_project, dashboard_sections. Do not sum those stages.
             today = user_today(eng)
             ctx = build_dashboard_context(
                 eng,

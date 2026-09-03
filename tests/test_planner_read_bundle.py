@@ -324,6 +324,7 @@ def test_new_planner_timing_stages_are_whitelisted():
             "planner_bundle",
             "planner_project",
             "dashboard_sections",
+            "dashboard_prep",
             "roadmap_freshness",
             "calendar_build",
             "progress_dashboard",
@@ -335,6 +336,7 @@ def test_new_planner_timing_stages_are_whitelisted():
         assert snapshot["planner_bundle"][1] == 1
         assert snapshot["planner_project"][1] == 1
         assert snapshot["dashboard_sections"][1] == 1
+        assert snapshot["dashboard_prep"][1] == 1
         assert snapshot["calendar_build"][1] == 1
     finally:
         reset_request_timings(token)
