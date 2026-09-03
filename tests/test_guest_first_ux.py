@@ -267,7 +267,7 @@ def test_guest_dashboard_progress_and_settings(tmp_path: Path):
     assert "Progress and mastery are private" not in prog.text
     settings = client.get("/settings", follow_redirects=False)
     assert settings.status_code == 200
-    assert "Guest · progress on this device" in settings.text
+    assert "Guest · Reading only" in settings.text
     assert 'data-mscreen="settings"' in settings.text
 
 

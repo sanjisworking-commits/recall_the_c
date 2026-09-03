@@ -63,14 +63,19 @@ def test_guest_get_settings_renders_page(tmp_path: Path):
     assert resp.status_code == 200
     html = resp.text
     assert 'data-mscreen="settings"' in html
-    assert "Guest · progress on this device" in html
+    # diff.md item 8: a guest keeps the rows that work — Appearance, Motion,
+    # Report an issue — and the way to an account. The rows that need one are
+    # hidden rather than shown switched off.
+    assert "Guest · Reading only" in html
     assert 'href="/login"' in html
-    assert "Sign in to sync" in html
     assert 'data-report-section="Settings"' in html
     assert "Bare Act text verbatim · Day 1 · 3 · 7 · 15 · 30 · 60" in html
-    assert "data-text-size-step" in html
     assert "data-motion-toggle" in html
     assert "Sign out" not in html
+    assert "Sign in to sync" not in html
+    assert 'data-settings-group="study"' not in html
+    assert 'data-settings-group="calendar"' not in html
+    assert "data-text-size-step" not in html
 
 
 def test_guest_settings_posts_stay_auth_gated(tmp_path: Path):
@@ -127,17 +132,17 @@ def test_guest_text_size_api_does_not_write(tmp_path: Path):
 def test_settings_assets_and_hooks(tmp_path: Path):
     client = _client(tmp_path)
     html = client.get("/browse").text
-    assert "styles.css?v=main49" in html
-    assert "mobile.css?v=mob57" in html
-    assert "app.js?v=main49" in html
-    css = client.get("/static/mobile.css?v=mob57").text
+    assert "styles.css?v=main50" in html
+    assert "mobile.css?v=mob58" in html
+    assert "app.js?v=main50" in html
+    css = client.get("/static/mobile.css?v=mob58").text
     assert 'body[data-mscreen="settings"] .mobile-tabbar' in css
     assert 'body[data-mscreen="settings"] .settings-desk-copy' in css
     assert ".settings-toggle" in css
-    styles = client.get("/static/styles.css?v=main49").text
+    styles = client.get("/static/styles.css?v=main50").text
     assert "--bare-size" in styles
     assert "var(--bare-size" in styles
-    js = client.get("/static/app.js?v=main49").text
+    js = client.get("/static/app.js?v=main50").text
     assert "cm-text-size" in js
     assert "data-gcal-toggle" in js
     assert "data-plan-autosubmit" in js

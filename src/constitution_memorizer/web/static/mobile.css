@@ -2734,9 +2734,18 @@
 
   body[data-mscreen="settings"] .settings > .lede,
   body[data-mscreen="settings"] .settings-access-line,
+  body[data-mscreen="settings"] .settings-saved,
+  body[data-mscreen="settings"] .gcal-notice,
   body[data-mscreen="settings"] .settings-desk-title,
   body[data-mscreen="settings"] .settings-desk-copy {
     display: none;
+  }
+
+  body[data-mscreen="settings"] .settings-account-signin {
+    flex: 0 0 auto;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--browse-due);
   }
 
   .settings-account-row {
@@ -2831,7 +2840,7 @@
     display: flex;
     align-items: center;
     gap: 14px;
-    min-height: 52px;
+    min-height: 54px;
     padding: 10px 16px;
     border-bottom: 1px solid var(--page);
     margin: 0;
@@ -2978,7 +2987,7 @@
   }
 
   .settings-toggle[aria-checked="true"] {
-    background: var(--accent);
+    background: var(--browse-due);
   }
 
   .settings-toggle:disabled {
