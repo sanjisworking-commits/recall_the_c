@@ -1064,6 +1064,46 @@ def test_letters_view_switch_labels(tmp_path: Path):
 # --------------------------------------------------------------------------- #
 
 
+def test_test_mode_renders_option_cards_and_a_position_line(tmp_path: Path):
+    """diff.md item 7: options are cards that can carry a verdict, and the
+    lede says which question you are on. The radio stays in the markup — it is
+    still the control — but the card is what is drawn."""
+    client, _, _ = _client(tmp_path)
+    html = client.get("/learn/clause-1?mode=test").text
+
+    assert "data-quiz-position" in html
+    assert 'class="learn-test-opt-input"' in html
+    assert 'class="learn-test-opt-text"' in html
+    assert 'class="learn-test-opt-mark"' in html
+    # The question number lives in the position line now, not in the legend.
+    assert 'class="learn-test-legend">1.' not in html
+
+    css = client.get("/static/mobile.css").text
+    for rule in (".learn-test-opt.is-picked", ".learn-test-opt.is-correct",
+                 ".learn-test-opt.is-wrong"):
+        assert rule in css, rule
+
+    js = client.get("/static/app.js").text
+    # One at a time in the UI, still one POST to grade the set.
+    assert "function showQuestion(" in js
+    assert 'phase = "review"' in js
+
+
+def test_type_check_marks_the_mirror_as_a_diff(tmp_path: Path):
+    """diff.md item 7: checking re-reads the attempt as a per-word diff."""
+    client, _, _ = _client(tmp_path)
+    client.get("/learn/clause-1?mode=type")
+    css = client.get("/static/mobile.css").text
+    assert ".learn-type-mirror.is-checked .learn-type-mirror-word" in css
+    assert "@keyframes rcWordIn" in css
+
+    desktop = client.get("/static/styles.css").text
+    assert ".learn-type-mirror.is-checked .learn-type-mirror-word.is-correct" in desktop
+
+    js = client.get("/static/app.js").text
+    assert 'mirrorEl.classList.add("is-checked")' in js
+
+
 def test_question_mark_opens_mode_help_not_the_article(tmp_path: Path):
     """A "?" reads as help everywhere. It used to link to the Article's Bare
     Act text — which is what the "← Article N" control beside it suggests but

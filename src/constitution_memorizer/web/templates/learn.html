@@ -402,17 +402,25 @@
 
   <div class="learn-body learn-panel-test" data-learn-panel="test" data-quiz-cycle="{{ quiz_cycle|default(0) }}">
     {% if quiz_available|default(false) and quiz_questions %}
-    <p class="learn-test-lede">Quick check — {{ quiz_questions|length }} question{{ 's' if quiz_questions|length != 1 }} on {{ unit.display_title }}. New questions each revision.</p>
+    {# diff.md item 7 · one question at a time. Every question is rendered —
+       the whole set is still graded in one POST, and no-JS keeps the plain
+       scrolling form — but mobile.js shows them one at a time and says which
+       one you are on. #}
+    <p class="learn-test-lede">
+      <span data-quiz-position>Quick check — {{ quiz_questions|length }} question{{ 's' if quiz_questions|length != 1 }} on {{ unit.display_title }}</span>
+      · new questions every revision
+    </p>
     <form id="learn-quiz-form" data-quiz-form>
       {% for q in quiz_questions %}
       {% set qi = loop.index0 %}
       <fieldset class="learn-test-q" data-quiz-q data-kind="{{ q.kind }}">
-        <legend class="learn-test-legend">{{ loop.index }}. {{ q.prompt }}</legend>
+        <legend class="learn-test-legend">{{ q.prompt }}</legend>
         {% if q.kind == "mcq" %}
           {% for opt in q.options %}
           <label class="learn-test-opt">
-            <input type="radio" name="quiz-q{{ qi }}" value="{{ loop.index0 }}">
-            <span>{{ opt }}</span>
+            <input class="learn-test-opt-input" type="radio" name="quiz-q{{ qi }}" value="{{ loop.index0 }}">
+            <span class="learn-test-opt-text">{{ opt }}</span>
+            <span class="learn-test-opt-mark" aria-hidden="true"></span>
           </label>
           {% endfor %}
         {% else %}

@@ -3511,6 +3511,109 @@
     line-height: 1.7;
   }
 
+  /* diff.md item 7 · Test is answered one question at a time, and each option
+     is a card that carries its own state. The radio stays in the markup and
+     stays focusable — it is the thing being operated — but the card is what
+     is seen, so the native control is clipped rather than drawn. */
+  body[data-mscreen="learn"] .learn-test-q {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+
+  body[data-mscreen="learn"] .learn-test-legend {
+    display: block;
+    margin: 0 0 16px;
+    padding: 0;
+    font-family: var(--font-display);
+    font-size: 19px;
+    font-weight: 400;
+    line-height: 1.5;
+    text-wrap: pretty;
+  }
+
+  body[data-mscreen="learn"] .learn-test-lede {
+    margin: 0 0 14px;
+    font-size: 12.5px;
+    color: var(--mid);
+  }
+
+  body[data-mscreen="learn"] .learn-test-opt {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    margin: 0 0 9px;
+    padding: 14px;
+    border: 1px solid var(--hairline);
+    border-radius: 12px;
+    background: var(--paper);
+    font-size: 15px;
+    line-height: 1.45;
+  }
+
+  body[data-mscreen="learn"] .learn-test-opt-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  body[data-mscreen="learn"] .learn-test-opt:has(.learn-test-opt-input:focus-visible) {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+  }
+
+  body[data-mscreen="learn"] .learn-test-opt-text {
+    flex: 1;
+  }
+
+  body[data-mscreen="learn"] .learn-test-opt-mark {
+    flex: 0 0 auto;
+    font-weight: 700;
+  }
+
+  body[data-mscreen="learn"] .learn-test-opt.is-picked {
+    border: 1.5px solid var(--ink);
+    background: var(--rc-paper-tint, var(--paper));
+    box-shadow: 0 2px 6px rgba(20, 20, 20, 0.06);
+  }
+
+  body[data-mscreen="learn"] .learn-test-opt.is-correct {
+    border: 1.5px solid var(--browse-due);
+    background: var(--rc-teal-tint);
+  }
+
+  body[data-mscreen="learn"] .learn-test-opt.is-wrong {
+    border: 1.5px solid var(--rc-amber);
+    background: var(--rc-amber-tint);
+  }
+
+  /* With the verdict on the cards, the sentence under them repeats it. Fill
+     questions have no cards, so they keep theirs. */
+  body[data-mscreen="learn"] [data-kind="mcq"] .learn-test-q-result {
+    display: none;
+  }
+
+  /* The checked attempt re-reads as a diff: matched words in ink, misses in
+     amber, arriving in reading order. Opacity only — the mirror sits under
+     the caret and must not move. */
+  .learn-type-mirror.is-checked .learn-type-mirror-word {
+    animation: rcWordIn 0.22s ease both;
+    animation-delay: calc(var(--w, 0) * 24ms);
+  }
+
+  @keyframes rcWordIn {
+    from { opacity: 0.25; }
+    to { opacity: 1; }
+  }
+
   /* diff.md item 7 · a Check that cannot do anything yet says so by weight.
      Never display:none — a button that vanishes reads as a bug. */
   body[data-mscreen="learn"] .learn-type-check,
@@ -3521,11 +3624,7 @@
   body[data-mscreen="learn"]
     [data-learn-panel="type"]:has([data-type-input]:placeholder-shown)
     .learn-type-check,
-  body[data-mscreen="learn"]
-    [data-learn-panel="test"]:not(:has(.learn-test-opt input:checked)):not(
-      :has(.learn-test-fill:not(:placeholder-shown))
-    )
-    .learn-test-submit {
+  body[data-mscreen="learn"] .learn-test-submit.is-idle {
     opacity: 0.45;
   }
 
@@ -3694,10 +3793,15 @@
      Status lines (counts, listening state) are NOT hints and stay. */
   body[data-mscreen="learn"] .learn-panel-read .learn-hint,
   body[data-mscreen="learn"] .learn-type-lede,
-  body[data-mscreen="learn"] .learn-test-lede,
   body[data-mscreen="learn"] .learn-letters-hint,
   body[data-mscreen="learn"] .learn-recite-hint {
     display: none;
+  }
+
+  /* The test lede used to be a hint and was hidden with the others. It now
+     carries "Question N of M", which is a status line by the rule above. */
+  body[data-mscreen="learn"] .learn-test-lede {
+    display: block;
   }
 
   /* Double-tap-to-zoom, killed at the source. `manipulation` keeps scrolling
@@ -4072,39 +4176,10 @@
     padding-bottom: 24px;
   }
 
-  /* 12 · Test — the desktop fieldset frame collides with its own legend at
-     this width; the phone reads the question, then the options, as rows. */
-  body[data-mscreen="learn"] .learn-test-q {
-    margin: 0 0 22px;
-    padding: 0;
-    border: 0;
-  }
-
-  body[data-mscreen="learn"] .learn-test-legend {
-    padding: 0;
-    margin-bottom: 16px;
-    font-family: var(--font-display);
-    font-size: 19px;
-    font-weight: 400;
-    line-height: 1.5;
-    text-wrap: pretty;
-  }
-
-  body[data-mscreen="learn"] .learn-test-opt {
-    display: flex;
-    align-items: flex-start;
-    gap: 11px;
-    margin-bottom: 9px;
-    padding: 13px 12px;
-    border: 1px solid var(--hairline);
-    font-size: 15px;
-    line-height: 1.45;
-  }
-
-  body[data-mscreen="learn"] .learn-test-opt:has(input:checked) {
-    border-color: var(--ink);
-    background: var(--wash);
-  }
+  /* 12 · Test — the question, then the options as cards. The card states
+     live with the rest of the Test block above; this used to repeat them
+     here, and being later in the file it quietly won, so a wrong answer
+     kept reading as merely "picked". */
 
   .learn-read-controls {
     margin-top: 20px;

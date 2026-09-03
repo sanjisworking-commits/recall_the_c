@@ -57,7 +57,7 @@ def test_all_six_mode_tabs_keep_fallback_hrefs(tmp_path: Path):
         assert f'href="/learn/clause-1?mode={mode}"' in html
         assert 'role="tab"' in html
     assert 'data-modes-seen="' in html
-    assert "app.js?v=main50" in html
+    assert "app.js?v=main51" in html
 
 
 def test_direct_get_mode_query_still_server_renders(tmp_path: Path):

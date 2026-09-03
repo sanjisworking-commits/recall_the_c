@@ -1510,6 +1510,18 @@ html[data-theme="dark"] .theme-toggle {
   text-decoration: none;
 }
 
+/* Checked, the diff drops the underlines and says it in colour instead:
+   matched words in ink, misses in amber. */
+.learn-type-mirror.is-checked .learn-type-mirror-word.is-correct {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.learn-type-mirror.is-checked .learn-type-mirror-word.is-wrong {
+  color: var(--browse-mark-news);
+  text-decoration: none;
+}
+
 .learn-type-fix {
   margin-left: auto;
   color: var(--browse-mark-news);
