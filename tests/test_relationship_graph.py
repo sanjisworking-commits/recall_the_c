@@ -464,16 +464,49 @@ def test_a_curated_close_unit_still_needs_its_prerequisite(tmp_path: Path):
 
 
 
+PACKAGED_FILE = ROOT / "src" / "constitution_memorizer" / "web" / "learning_relationships.json"
+
+
 def test_packaged_copy_matches_the_canonical_graph():
-    """Both paths must load the same curriculum.
+    """Both paths must load the same curriculum, byte for byte.
 
     browse_parts/browse_chapters ship as committed copies under web/, and the
-    graph follows that pattern. The generator writes both in one run, so this
-    catches a hand-edit to one of them.
+    graph follows that pattern. Two copies of curriculum data is a drift risk,
+    so the two are compared exactly rather than structurally.
     """
-    packaged = ROOT / "src" / "constitution_memorizer" / "web" / "learning_relationships.json"
-    assert packaged.exists(), "the graph must ship as package data"
-    assert packaged.read_text(encoding="utf-8") == GRAPH_FILE.read_text(encoding="utf-8")
+    assert PACKAGED_FILE.exists(), "the graph must ship as package data"
+    assert PACKAGED_FILE.read_text(encoding="utf-8") == GRAPH_FILE.read_text(
+        encoding="utf-8"
+    )
+
+
+def test_regenerating_the_graph_is_a_no_op(tmp_path: Path, monkeypatch):
+    """Both committed copies are exactly what the generator produces.
+
+    Byte-equality alone would still pass if someone edited *both* copies by
+    hand in the same way. This re-runs the migration and compares, so the
+    committed data can only come from the seed via the script.
+    """
+    import importlib.util
+
+    spec = importlib.util.spec_from_file_location(
+        "_build_graph", ROOT / "scripts" / "build_relationship_graph.py"
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    regenerated = tmp_path / "canonical.json"
+    packaged = tmp_path / "packaged.json"
+    monkeypatch.setattr(module, "OUT", regenerated)
+    monkeypatch.setattr(module, "PACKAGED", packaged)
+    assert module.main() == 0
+
+    expected = GRAPH_FILE.read_text(encoding="utf-8")
+    assert regenerated.read_text(encoding="utf-8") == expected, (
+        "data/reference/learning_relationships.json is not what the generator "
+        "produces — re-run scripts/build_relationship_graph.py"
+    )
+    assert packaged.read_text(encoding="utf-8") == expected
 
 
 def test_packaged_copy_is_declared_as_package_data():

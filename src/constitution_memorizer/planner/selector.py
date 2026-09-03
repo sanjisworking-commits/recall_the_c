@@ -43,6 +43,8 @@ BUCKET_ORDER = ("close", "related", "explore")
 
 # Which buckets may stand in for a slot, most familiar substitute first. An
 # unfilled Close slot reaches for Related before it ever reaches for Explore.
+# Each rung is tried curated-then-legacy, so the bucket the slot asked for
+# always outranks where the classification came from.
 FALLBACK_LADDER: dict[str, tuple[str, ...]] = {
     "close": ("close", "related", "explore"),
     "related": ("related", "close", "explore"),
@@ -392,24 +394,21 @@ class LearningMixSelector:
                 unclassified.append(item)
 
         def draw(slot: str, count: int) -> None:
+            # Bucket first, source second. The requested bucket is the product
+            # invariant — a Related slot filled by a legacy Related is closer
+            # to what was asked for than one filled by a curated Close. Source
+            # only breaks ties *within* a bucket. Ordering these the other way
+            # round collapsed a curated anchor's whole day into Close, because
+            # curated Close outranked every legacy Related and Explore.
             for rung in FALLBACK_LADDER[slot]:
-                if count <= 0 or len(selected) >= quota:
-                    return
-                taken = _take_from_band(
-                    curated[rung], count, selected, rng, allow
-                )
-                for item in taken:
-                    picks.append(_record(detail[item.id], slot))
-                    selected.append(item)
-                count -= len(taken)
-            for rung in FALLBACK_LADDER[slot]:
-                if count <= 0 or len(selected) >= quota:
-                    return
-                taken = _take_from_band(legacy[rung], count, selected, rng, allow)
-                for item in taken:
-                    picks.append(_record(detail[item.id], slot))
-                    selected.append(item)
-                count -= len(taken)
+                for pool in (curated[rung], legacy[rung]):
+                    if count <= 0 or len(selected) >= quota:
+                        return
+                    taken = _take_from_band(pool, count, selected, rng, allow)
+                    for item in taken:
+                        picks.append(_record(detail[item.id], slot))
+                        selected.append(item)
+                    count -= len(taken)
             if count > 0 and len(selected) < quota:
                 taken = _take_from_band(unclassified, count, selected, rng, allow)
                 for item in taken:

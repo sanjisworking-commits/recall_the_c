@@ -162,9 +162,15 @@ def main() -> int:
     OUT.write_text(payload, encoding="utf-8")
     PACKAGED.write_text(payload, encoding="utf-8")
 
+    def _shown(path: Path) -> str:
+        try:
+            return str(path.relative_to(ROOT))
+        except ValueError:  # regenerated elsewhere, e.g. by the drift test
+            return str(path)
+
     families_null = sum(1 for c in clusters.values() if c["family"] is None)
-    print(f"wrote {OUT.relative_to(ROOT)}")
-    print(f"wrote {PACKAGED.relative_to(ROOT)}")
+    print(f"wrote {_shown(OUT)}")
+    print(f"wrote {_shown(PACKAGED)}")
     print(f"  families        : {len(FAMILIES)}")
     print(f"  clusters        : {len(clusters)} ({families_null} with family: null)")
     print(f"  articles        : {len(article_meta)}")

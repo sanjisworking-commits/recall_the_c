@@ -268,17 +268,39 @@ def test_close_slot_reaches_for_related_before_explore():
         assert counts.get("explore", 0) == 1, (seed, counts)
 
 
-def test_curated_related_outranks_legacy_close():
-    """Graph-first means preferring curated candidates, not just curated labels.
+def test_curated_beats_legacy_within_the_same_bucket():
+    """Source breaks ties inside a bucket; it never outranks the bucket itself.
 
-    The legacy scorer answers for every pair — it calls an unrelated one
-    Explore — so if it were consulted at the same level as the graph, a
-    heuristic Close would beat a curated Related and the curation would be
-    decorative.
+    A Close slot offered a curated Close and a legacy Close takes the curated
+    one. What it must NOT do is take a curated *Related* over a legacy Close —
+    that is the ordering fixed in test_requested_bucket_outranks_curation.
     """
-    # Article 900 is absent from the curated graph, so the graph has no opinion
-    # on it — but it shares a legacy theme with the anchor, which the old
-    # scorer reads as 65, i.e. Close.
+    curated_close = _c(_CLOSE[0])
+    anchor = _candidate(_unit(f"article-{_ANCHOR}", _ANCHOR, 100), "equality")
+    legacy_close = _candidate(_unit("article-900", "900", 900), "equality")
+    pool = [anchor, legacy_close, curated_close]
+    for seed in range(40):
+        selection = _select(pool, 3, seed=seed, committed=[anchor])
+        # By slot, not by position: the tail is shuffled on purpose so a day
+        # does not always read close, close, related, explore.
+        close_pick = next(
+            p for p in selection.picks[1:] if p.requested_bucket == "close"
+        )
+        assert close_pick.candidate.id == curated_close.id, seed
+        assert close_pick.relation_source == "same_cluster", seed
+
+
+def test_requested_bucket_outranks_curation():
+    """The 3/5/7 gradient is the product invariant, not the data's provenance.
+
+    Ordering source before bucket collapsed a curated anchor's whole day into
+    Close: with no curated Related or Explore pool, both of those slots
+    preferred a curated Close to any legacy candidate, and Balanced lost its
+    association and novelty entirely. A legacy Related is closer to what a
+    Related slot asked for than a curated Close is.
+    """
+    # Article 900 is absent from the curated graph but shares a legacy theme
+    # with the anchor, which the old scorer reads as 65 — i.e. Close.
     anchor = _candidate(_unit(f"article-{_ANCHOR}", _ANCHOR, 100), "equality")
     legacy_close = _candidate(_unit("article-900", "900", 900), "equality")
     pool = [anchor, legacy_close, *[_c(a) for a in _RELATED]]
@@ -293,10 +315,15 @@ def test_curated_related_outranks_legacy_close():
     assert band_for_score(relationship_score(anchor, legacy_close)) == "close"
 
     for seed in range(40):
+        # Steady wants 1 Close + 1 Related. The Close slot takes the legacy
+        # Close; the Related slot takes a curated Related. Neither slot is
+        # filled by the other bucket.
         selection = _select(pool, 3, seed=seed, committed=[anchor])
-        chosen = selection.picks[1]
-        assert chosen.relation_source != "legacy_fallback", seed
-        assert chosen.effective_bucket == "related", seed
+        by_slot = {p.requested_bucket: p for p in selection.picks[1:]}
+        assert by_slot["close"].candidate.id == legacy_close.id, seed
+        assert by_slot["close"].effective_bucket == "close", seed
+        assert by_slot["related"].effective_bucket == "related", seed
+        assert by_slot["related"].relation_source == "cluster_relation", seed
 
 
 def test_legacy_picks_are_tagged_and_counted():
@@ -404,3 +431,43 @@ def test_anchor_ineligible_units_are_never_the_anchor():
             pool, 3, rng=random.Random(seed), graph=graph
         )
         assert selection.anchor.id == f"article-{_CLOSE[0]}", seed
+
+
+def test_article_14_balanced_keeps_its_related_and_explore(tmp_path: Path):
+    """The real corpus case: a curated anchor must not collapse into all-Close.
+
+    Article 14 has curated Close companions (15, 16 by edge; 17, 18 by
+    cluster) but no curated Related or Explore, because no cluster-level
+    relations have been curated yet. Preferring curated source over the
+    requested bucket turned Balanced into anchor + four Close — the whole
+    familiarity gradient gone. The Related and Explore slots must fall to
+    legacy candidates of the right bucket instead.
+    """
+    import json
+
+    from constitution_memorizer.learning.schemas import LearningUnitsDocument
+    from constitution_memorizer.planner.eligibility import eligible_candidates
+
+    corpus = Path(__file__).resolve().parents[1] / "data" / "output" / "learning_units.json"
+    doc = LearningUnitsDocument.model_validate(
+        json.loads(corpus.read_text(encoding="utf-8"))
+    )
+    engine = ReminderEngine.from_units(tmp_path / "p.db", list(doc.units))
+    pool = eligible_candidates(engine, as_of=date(2026, 9, 3))
+    anchor = next(c for c in pool if c.article_number == "14")
+
+    for seed in range(25):
+        selection = LearningMixSelector().select_detailed(
+            pool, 5, rng=random.Random(seed), committed=[anchor]
+        )
+        counts = selection.bucket_counts()
+        assert counts == {"close": 2, "related": 1, "explore": 1}, (seed, counts)
+
+        by_slot = {p.requested_bucket: p for p in selection.picks[1:] if p.requested_bucket}
+        # Close is curated — 15/16 by edge, 17/18 by cluster.
+        assert by_slot["close"].relation_source != "legacy_fallback", seed
+        # Related and Explore have no curated pool yet, so they are honestly
+        # tagged as legacy while still being the bucket that was asked for.
+        for slot in ("related", "explore"):
+            assert by_slot[slot].effective_bucket == slot, (seed, slot)
+            assert by_slot[slot].relation_source == "legacy_fallback", (seed, slot)
