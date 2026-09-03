@@ -64,12 +64,20 @@ def _session_of(location: str) -> str:
 
 
 def _start_day_plan(client: TestClient, target: int = 3) -> tuple[str, str]:
+    """Plan the mix, then read the session it created.
+
+    The post lands on Today now — planning the day and starting it are two
+    decisions — so the session is read from the engine rather than picked out
+    of a redirect into the first unit.
+    """
     resp = client.post("/learning/plan-my-day", data={"target": target}, follow_redirects=False)
     assert resp.status_code == 303, resp.text
-    parts = urlsplit(resp.headers["location"])
-    session_id = parse_qs(parts.query).get("session", [""])[0]
-    path = parts.path.removesuffix("/choose")
-    return session_id, path.rsplit("/", 1)[-1]
+    assert resp.headers["location"] in ("/dashboard", "/")
+    session = _engine(client).study_session_for_day(
+        kind="day_plan", plan_date=date.today()
+    )
+    assert session is not None and session.pending
+    return session.id, session.pending[0].learning_unit_id
 
 
 def test_skip_on_unlearned_item_does_not_write_review_progress(tmp_path: Path):
@@ -212,6 +220,32 @@ def test_session_entry_mode_is_kind_generic():
     assert session_entry_mode("revision") == "read"
     assert session_entry_mode("auto_learning") == "read"
     assert session_entry_mode("day_plan") == "read"
+
+
+def test_plan_my_day_lands_on_today_with_the_mix_listed(tmp_path: Path):
+    """Planning the day and starting it are two decisions. The post returns to
+    Today, where the mix it just planned is the path."""
+    # Multiuser, because the path list is Today's — single-user lands on the
+    # simpler home page, which has never had one.
+    client = _client(tmp_path, multiuser=True)
+    _sign_in(client)
+    resp = client.post(
+        "/learning/plan-my-day", data={"target": 3}, follow_redirects=False
+    )
+    assert resp.status_code == 303
+    assert resp.headers["location"] == "/dashboard"
+
+    session = _engine(client).study_session_for_day(
+        kind="day_plan", plan_date=date.today()
+    )
+    assert session is not None and session.pending
+
+    html = client.get(resp.headers["location"]).text
+    assert "rc-path" in html
+    for item in session.items:
+        unit = _engine(client).get_unit(item.learning_unit_id)
+        assert unit is not None
+        assert unit.display_title in html
 
 
 def test_plan_my_day_creates_a_same_day_session(tmp_path: Path):
@@ -552,18 +586,61 @@ def test_plan_prompt_dashboard_carries_the_phone_sheet(tmp_path: Path):
     """Design 4c: the phone opens Plan my day over Today; the page stays the
     desktop and no-JS route."""
     units_path = _articles_catalog(tmp_path)
-    client, _, _ = _entitled_client(tmp_path, units_path)
+    client, repo, user_id = _entitled_client(tmp_path, units_path)
+    # plan_prompt means "nothing to review", which presupposes the account has
+    # learned something. Without progress it is a brand-new account and gets
+    # the first-run zero state instead (diff.md item 1), whose plan affordance
+    # is the "Set a learning plan" row rather than this sheet.
+    repo.upsert_progress(
+        user_id,
+        unit_id="u-14",
+        status="mastered",
+        times_completed=1,
+        last_completed=date.today() - timedelta(days=1),
+        next_revision=None,
+        interval_days=60,
+    )
     html = client.get("/dashboard").text
 
     assert 'data-sheet-open="plan-day-sheet"' in html
     assert 'id="plan-day-sheet"' in html
     # The anchor keeps its href — desktop and no-JS phones still navigate.
     assert 'href="/learning/plan-my-day"' in html
-    # The sheet posts the same four actions as plan_my_day.html.
-    assert html.count('action="/learning/plan-my-day"') == 3
+    # diff.md item 6: one segmented pick, one post — not a form per target.
+    assert html.count('action="/learning/plan-my-day"') == 1
+    assert "Today\u2019s mix" in html
+    assert "This does not turn Auto Plan on." in html
     assert 'action="/learning/plan-my-day/dismiss"' in html
     for label in ("Steady · 3", "Balanced · 5", "Intensive · 7", "Not today"):
         assert label in html, label
+
+
+def test_plan_my_day_stays_available_after_not_today(tmp_path: Path):
+    """diff.md item 6: the design puts Plan my day on the hero card so it can
+    be opened on any day it would actually work — including one where "Not
+    today" was already tapped, which used to retire the sheet until tomorrow.
+    """
+    units_path = _articles_catalog(tmp_path)
+    client, repo, user_id = _entitled_client(tmp_path, units_path)
+    repo.upsert_progress(
+        user_id,
+        unit_id="u-14",
+        status="mastered",
+        times_completed=1,
+        last_completed=date.today() - timedelta(days=1),
+        next_revision=None,
+        interval_days=60,
+    )
+    assert 'class="dash-plan-day-btn"' in client.get("/dashboard").text
+
+    dismissed = client.post(
+        "/learning/plan-my-day/dismiss", follow_redirects=False
+    )
+    assert dismissed.status_code == 303
+    html = client.get("/dashboard").text
+    # The prompt card is gone for today; the affordance is not.
+    assert 'class="dash-plan-day-btn"' in html
+    assert 'id="plan-day-sheet"' in html
 
 
 def test_dashboard_sheet_is_absent_outside_the_plan_prompt(tmp_path: Path):

@@ -46,6 +46,11 @@ class TodayUnit:
     status: TodayStatus
     href: str
     position: int
+    # The design names each row twice: what it is ("Article 32") and what it
+    # is about ("Remedies for enforcement of rights"), with where it sits on
+    # the ladder ("Day 3 revision" / "New Article") set against them.
+    subtitle: str = ""
+    day_label: str = ""
 
 MODE_LABELS = {
     "read": "Read",
@@ -164,6 +169,29 @@ def progress_strip(engine: ReminderEngine, *, as_of: date | None = None) -> dict
     }
 
 
+def _unit_subtitle(unit: LearningUnit) -> str:
+    """What the unit is about, as the Bare Act titles it."""
+    return (unit.title or "").strip()
+
+
+def _day_label(engine: ReminderEngine, unit_id: str, kind: TodayKind) -> str:
+    """Where this sits on the ladder — "Day 3 revision", or a new Article.
+
+    The day is the interval the unit is currently resting on, which is the
+    rung it was scheduled from. A review with no progress row cannot say a
+    day, so it says nothing rather than guessing one.
+    """
+    if kind != "review":
+        return "New Article"
+    try:
+        progress = engine.get_progress(unit_id)
+    except Exception:  # noqa: BLE001 — a label must never break the dashboard
+        return "Revision"
+    if progress is None or not progress.interval_days:
+        return "Revision"
+    return f"Day {progress.interval_days} revision"
+
+
 def _article_label(unit: LearningUnit) -> str:
     if unit.article_number:
         return f"Article {unit.article_number}"
@@ -208,6 +236,8 @@ def _today_units_from_session(
                 status=status,
                 href=href,
                 position=item.position + 1,
+                subtitle=_unit_subtitle(unit),
+                day_label=_day_label(engine, unit.id, kind),
             )
         )
     return out
@@ -237,6 +267,8 @@ def _today_units_from_preview(
                 status="current" if index == 1 else "upcoming",
                 href=href,
                 position=index,
+                subtitle=_unit_subtitle(unit),
+                day_label=_day_label(engine, unit.id, kind),
             )
         )
     return out
@@ -380,6 +412,111 @@ def _session_for_day(engine: ReminderEngine, kind: str, today: date):
 
 
 
+def _has_started(
+    engine: ReminderEngine, *, today: date, strip: dict[str, int]
+) -> bool:
+    """Has this account begun learning at all?
+
+    Deliberately NOT ``is_new``. That flag means "nothing completed", which is
+    a different question: a user part-way through their first unit, or one who
+    finished today's Auto session (session items complete without writing a
+    learning_unit_progress completion), has plainly started and must not be
+    told "You haven't started yet."
+
+    Any progress row and any of today's sessions count. A stored plan does
+    not: setting one is a preference, not a first Article, and the design
+    reaches the plan intro from this very screen.
+    """
+    if strip["articles_started"] or strip["units_completed"]:
+        return True
+    if engine.list_all_progress():
+        return True
+    return any(
+        _session_for_day(engine, kind, today) is not None
+        for kind in ("revision", "auto_learning", "day_plan")
+    )
+
+
+# The design's "Good places to begin" list. Each row is only rendered when its
+# target actually resolves, so a corpus gap shows one fewer row rather than a
+# dead link. The Preamble is in the design but has no learning unit in
+# data/output/learning_units.json — the parser supports one, the corpus has
+# none — so it is absent until that content exists.
+STARTER_UNITS: tuple[dict[str, str], ...] = (
+    {
+        "unit_id": "article-14",
+        "title": "Article 14",
+        "subtitle": "Equality before law — one clause, a classic first pick",
+        "kind": "session",
+    },
+    {
+        "article_number": "19",
+        "title": "Article 19",
+        "subtitle": "The six freedoms — the heart of Part III",
+        "kind": "detail",
+    },
+)
+
+
+def starter_rows(engine: ReminderEngine) -> list[dict[str, str]]:
+    """Resolve STARTER_UNITS against the corpus, dropping anything missing.
+
+    "session" rows open a learn session directly; "detail" rows open the
+    Article page. A row whose unit or article is absent is skipped entirely.
+    """
+    rows: list[dict[str, str]] = []
+    for spec in STARTER_UNITS:
+        unit_id = spec.get("unit_id")
+        if unit_id:
+            if engine.get_unit(unit_id) is None:
+                continue
+            href = f"/learn/{unit_id}"
+        else:
+            number = spec.get("article_number") or ""
+            if not any(
+                u.article_number == number for u in engine.units.values()
+            ):
+                continue
+            href = f"/browse/article/{number}"
+        rows.append(
+            {"title": spec["title"], "subtitle": spec["subtitle"], "href": href}
+        )
+    return rows
+
+
+def build_guest_dashboard_context(engine: ReminderEngine) -> dict[str, Any]:
+    """Today for a signed-out reader — diff.md item 2's guest branch.
+
+    The design branches the first-run screen by tier instead of sending guests
+    to a gate page of their own: same hero and starter list, no name and no
+    streak, and a sign-in card where a signed-in user gets plan and tour. The
+    gate is not removed, only moved one step later — the CTA goes through
+    /login, so nothing a guest could not already do becomes possible here.
+
+    A guest has no stored progress, so has_started is false by construction
+    and the screen is corpus plus copy; no per-user read happens at all.
+    """
+    return {
+        # No account, so no avatar and no profile — the header falls back to
+        # the guest "?" mark. The key must be present: the template's Jinja
+        # environment is strict about undefined names.
+        "user": None,
+        "dashboard_state": "ok",
+        "has_started": False,
+        "show_first_run": True,
+        "starter_rows": starter_rows(engine),
+        "display_label": "",
+        "first_name": "",
+        "greeting": "Welcome.",
+        "subtext": "Reading as a guest",
+        "daily_goal_streak": 0,
+        "access": None,
+        "subscription": None,
+        "completion": None,
+        "learning_cta": "browse",
+    }
+
+
 def build_dashboard_context(
     eng: ReminderEngine,
     *,
@@ -410,6 +547,7 @@ def build_dashboard_context(
     chips, chips_more = due_article_chips(due_units)
     strip = progress_strip(eng, as_of=today)
     is_new = strip["articles_started"] == 0 and strip["units_completed"] == 0
+    has_started = _has_started(eng, today=today, strip=strip)
 
     cont_id = continue_unit_id(eng, as_of=today)
     cont_unit = eng.get_unit(cont_id) if cont_id else None
@@ -591,6 +729,18 @@ def build_dashboard_context(
             learning_cta = "caught_up"
 
     show_plan_prompt = learning_cta == "plan_prompt"
+    # diff.md item 6: Plan my day is an affordance on the hero card, not only
+    # a state the dashboard happens to be in. It is offered whenever the mix
+    # could actually be planned — self-paced, nothing due, material left —
+    # which includes days where "Not today" has already been tapped. Offering
+    # it when the post would be refused would be worse than not offering it.
+    plan_my_day_available = (
+        today_mode == "learning"
+        and learning_today is None
+        and not auto_selected
+        and unseen > 0
+        and (plan is None or plan.mode == "self_paced")
+    )
 
     today_units = build_today_units(
         eng,
@@ -606,6 +756,12 @@ def build_dashboard_context(
     goal_pct = int(round(100 * goal_done / goal_total)) if goal_total else 0
     streak = daily_goal_streak(eng, as_of=today)
     record_request_timing("dashboard_sections", sections_started)
+
+    # The zero state says "Nothing due today · You haven't started yet". The
+    # first half has to be true as well: an Auto Plan places clauses for today
+    # on an account with no progress yet, and gating on has_started alone hid
+    # the whole of Today behind the first-run screen.
+    show_first_run = not has_started and goal_total == 0
 
     return {
         "today_mode": today_mode,
@@ -626,6 +782,7 @@ def build_dashboard_context(
         "auto_entitled": auto_entitled,
         "auto_active": auto_active,
         "show_plan_prompt": show_plan_prompt,
+        "plan_my_day_available": plan_my_day_available,
         "today_new_count": today_new_count,
         "today_new_titles": today_new_titles,
         "today_pace_label": today_pace,
@@ -635,6 +792,12 @@ def build_dashboard_context(
         "greeting": greeting,
         "subtext": subtext,
         "is_new": is_new,
+        # The design's first-run zero state lives at this route, branching on
+        # has_started (not is_new — see _has_started). Rows are only built when
+        # they will actually be shown.
+        "has_started": has_started,
+        "show_first_run": show_first_run,
+        "starter_rows": [] if not show_first_run else starter_rows(eng),
         "nothing_due": len(due_units) == 0,
         "due_count": len(due_units),
         "due_minutes": due_minutes(due_units),

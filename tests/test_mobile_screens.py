@@ -1030,24 +1030,33 @@ def test_letters_view_switch_is_centred_and_even(tmp_path: Path):
     assert "min-width: 5.5rem" in btn
 
 
-def test_phone_letters_surface_matches_landing_scaffold(tmp_path: Path):
-    """Landing §03 Letters is Fraunces + 0.24em initials, not mono.
-    Full text must drop the tracking so it reads like Read mode."""
+def test_phone_letters_scaffold_is_monospace_desktop_keeps_fraunces(tmp_path: Path):
+    """The phone scaffold follows the design: monospace, so the initials line
+    into columns and read as a shape. This supersedes the earlier landing-§03
+    match — the 2 Sep design specifies mono here, and only here. Desktop keeps
+    Fraunces, which the design does not cover. Full text drops the tracking in
+    both, so it reads like Read mode."""
     client, _, _ = _client(tmp_path)
     css = client.get("/static/mobile.css").text
     initials = css.split(
         'body[data-mscreen="learn"] .learn-letters-text.is-initials {', 1
     )[1].split("}", 1)[0]
-    assert "var(--font-display)" in initials
+    assert "monospace" in initials
+    assert "var(--font-display)" not in initials
     assert "letter-spacing: 0.24em" in initials
-    assert "font-weight: 600" in initials
-    assert "var(--font-mono)" not in initials
     full = css.split(
         'body[data-mscreen="learn"] .learn-letters-text.is-full {', 1
     )[1].split("}", 1)[0]
     assert "var(--font-display)" in full
     assert "letter-spacing: normal" in full
     assert "font-weight: 400" in full
+
+    desktop = client.get("/static/styles.css").text
+    desk_initials = desktop.split(".learn-letters-text.is-initials {", 1)[1].split(
+        "}", 1
+    )[0]
+    assert "var(--font-display)" in desk_initials
+    assert "font-weight: 600" in desk_initials
 
 
 def test_letters_view_switch_labels(tmp_path: Path):
@@ -1062,6 +1071,46 @@ def test_letters_view_switch_labels(tmp_path: Path):
 # --------------------------------------------------------------------------- #
 # The "?" now means help                                                       #
 # --------------------------------------------------------------------------- #
+
+
+def test_test_mode_renders_option_cards_and_a_position_line(tmp_path: Path):
+    """diff.md item 7: options are cards that can carry a verdict, and the
+    lede says which question you are on. The radio stays in the markup — it is
+    still the control — but the card is what is drawn."""
+    client, _, _ = _client(tmp_path)
+    html = client.get("/learn/clause-1?mode=test").text
+
+    assert "data-quiz-position" in html
+    assert 'class="learn-test-opt-input"' in html
+    assert 'class="learn-test-opt-text"' in html
+    assert 'class="learn-test-opt-mark"' in html
+    # The question number lives in the position line now, not in the legend.
+    assert 'class="learn-test-legend">1.' not in html
+
+    css = client.get("/static/mobile.css").text
+    for rule in (".learn-test-opt.is-picked", ".learn-test-opt.is-correct",
+                 ".learn-test-opt.is-wrong"):
+        assert rule in css, rule
+
+    js = client.get("/static/app.js").text
+    # One at a time in the UI, still one POST to grade the set.
+    assert "function showQuestion(" in js
+    assert 'phase = "review"' in js
+
+
+def test_type_check_marks_the_mirror_as_a_diff(tmp_path: Path):
+    """diff.md item 7: checking re-reads the attempt as a per-word diff."""
+    client, _, _ = _client(tmp_path)
+    client.get("/learn/clause-1?mode=type")
+    css = client.get("/static/mobile.css").text
+    assert ".learn-type-mirror.is-checked .learn-type-mirror-word" in css
+    assert "@keyframes rcWordIn" in css
+
+    desktop = client.get("/static/styles.css").text
+    assert ".learn-type-mirror.is-checked .learn-type-mirror-word.is-correct" in desktop
+
+    js = client.get("/static/app.js").text
+    assert 'mirrorEl.classList.add("is-checked")' in js
 
 
 def test_question_mark_opens_mode_help_not_the_article(tmp_path: Path):
@@ -1289,18 +1338,33 @@ def test_today_goal_ring_centers_the_fraction(tmp_path: Path):
 
 
 def test_today_current_path_node_is_one_card(tmp_path: Path):
-    """Copy + Start must share a card. A 12px row-gap showed page wash
-    between the title block and the button, which read as an empty slot."""
+    """Copy + Start must share a card.
+
+    This used to be held together by a two-cell grid whose halves each drew
+    part of the border — a card with the top rounded and no bottom, over a
+    button with the bottom rounded and no top. Page wash still showed across
+    the join. The CTA lives inside the copy now, so one box draws the whole
+    card and there is no seam to keep closed.
+    """
     client, _, _ = _client(tmp_path)
     css = client.get("/static/mobile.css").text
     path = css.split('body[data-mscreen="today"] .rc-path {', 1)[1].split("}", 1)[0]
     assert "margin: 0" in path
-    assert "margin: 14px 0 0" not in path
-    current = css.split(
-        'body[data-mscreen="today"] .rc-path-node.is-current {', 1
+
+    copy = css.split(
+        'body[data-mscreen="today"] .rc-path-node.is-current .rc-path-copy {', 1
     )[1].split("}", 1)[0]
-    assert "gap: 0 14px" in current
-    assert "gap: 12px 14px" not in current
+    assert "border: 1.5px solid var(--rc-ink)" in copy
+    assert "border-radius: var(--rc-radius-card)" in copy
+    # The halves that used to split the border are gone.
+    assert "border-bottom: 0" not in copy
+
+    cta = css.split(
+        'body[data-mscreen="today"] .rc-path-node.is-current .rc-path-cta {', 1
+    )[1].split("}", 1)[0]
+    assert "border-top: 0" not in cta
+    assert "background-clip: content-box" not in cta
+
 
 
 def test_phone_tables_frame_scrolls_horizontally(tmp_path: Path):

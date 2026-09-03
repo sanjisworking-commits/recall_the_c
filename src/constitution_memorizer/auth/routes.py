@@ -384,17 +384,36 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
         # Later /welcome visits (name edits) never restart or downgrade it.
         if first_welcome and repo.get_setting(user.id, ONBOARDING_KEY) is None:
             repo.set_setting(user.id, ONBOARDING_KEY, "active")
-        dest = "/onboarding/plan" if first_welcome else "/dashboard"
-        return RedirectResponse(url=dest, status_code=303)
+        # diff.md item 3: back to whatever prompted the sign-in, or Today.
+        # The plan intro is reached from the first-run screen's optional row
+        # and from Settings — it is no longer forced between the two.
+        dest = _safe_next(request.cookies.get("rtc_auth_next") or "/dashboard")
+        if dest.startswith("/welcome"):
+            dest = "/dashboard"
+        response = RedirectResponse(url=dest, status_code=303)
+        response.delete_cookie("rtc_auth_next", path="/")
+        return response
 
     @router.get("/dashboard", response_class=HTMLResponse)
     async def dashboard(request: Request) -> HTMLResponse:
         user = getattr(request.state, "current_user", None)
         if user is None:
+            # diff.md item 2: guests get the first-run Today screen branched
+            # for their tier, not a gate page instead of it. The sign-in gate
+            # still stands between a guest and anything that would be saved —
+            # it is the CTA's destination now rather than the whole route.
+            from constitution_memorizer.web.dashboard import (
+                build_guest_dashboard_context,
+            )
+
+            guest_engine = (
+                getattr(request.state, "bound_engine", None)
+                or request.app.state.engine
+            )
             return templates.TemplateResponse(
                 request,
-                "guest_gate.html",
-                {"gate_kind": "dashboard", "reason": "default"},
+                "dashboard.html",
+                build_guest_dashboard_context(guest_engine),
             )
         eng = getattr(request.state, "bound_engine", None) or request.app.state.engine.for_user(
             user.id
@@ -540,6 +559,12 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
         if request.cookies.get(CSRF_COOKIE_NAME) != csrf_token:
             return RedirectResponse(url="/profile?error=csrf", status_code=303)
         eng = request.app.state.engine.for_user(user.id)
+        if action == "reset_progress":
+            # diff.md item 5. Keeps the account: profile, settings and claimed
+            # Articles survive, so free-tier rules are exactly as they were.
+            # With nothing learned, Today falls back to the first-run screen.
+            eng.reset_learning_progress()
+            return RedirectResponse(url="/dashboard", status_code=303)
         if action == "delete_account":
             # Soft delete for this phase: clear personal data + session.
             # Orchestration lives HERE, not in the progress domain — the
@@ -643,7 +668,12 @@ def _establish_session(
 
     dest = next_url or request.cookies.get("rtc_auth_next") or "/dashboard"
     dest = _safe_next(dest)
-    if request.app.state.engine.repo.needs_welcome(auth_session.user.id):
+    # diff.md item 3: where they were going survives the name step. A guest
+    # who signs in from Today's first-run screen comes back to that screen,
+    # signed in, rather than being dropped on a generic dashboard.
+    after_welcome = dest
+    needs_welcome = request.app.state.engine.repo.needs_welcome(auth_session.user.id)
+    if needs_welcome:
         dest = "/welcome"
     else:
         dest = f"/auth/transition?next={dest}"
@@ -666,7 +696,18 @@ def _establish_session(
         secure=bool(settings.cookie_secure),
         path="/",
     )
-    response.delete_cookie("rtc_auth_next", path="/")
+    if needs_welcome:
+        response.set_cookie(
+            "rtc_auth_next",
+            after_welcome,
+            httponly=True,
+            samesite="lax",
+            secure=bool(settings.cookie_secure),
+            max_age=600,
+            path="/",
+        )
+    else:
+        response.delete_cookie("rtc_auth_next", path="/")
     return response
 
 

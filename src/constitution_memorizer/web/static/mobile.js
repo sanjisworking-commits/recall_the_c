@@ -134,6 +134,13 @@
     var tracker = document.getElementById("methods-tracker");
     var cards = Array.prototype.slice.call(learn.querySelectorAll(".learn-deck-card"));
     var dots = Array.prototype.slice.call(learn.querySelectorAll(".learn-deck-dot"));
+    // diff.md item 7: the stepper is rendered from `seen` at request time, but
+    // modes advance client-side without a reload — so it never moved off the
+    // first segment. It is kept in step here, from the same source of truth
+    // the deck cards use.
+    var steps = Array.prototype.slice.call(learn.querySelectorAll(".rc-mode-step"));
+    var stepLabel = learn.querySelector("[data-mode-step]");
+    var taskEl = learn.querySelector("[data-mode-task]");
     var MODE_LABELS = {
       read: "Read",
       cloze: "Cloze",
@@ -141,6 +148,16 @@
       type: "Type",
       recite: "Recite",
       test: "Test",
+    };
+    // The one-line task under the eyebrow. Same source as the server render,
+    // so the header does not change voice when a mode advances client-side.
+    var MODE_TASKS = {
+      read: "First, read it once.",
+      cloze: "Fill the gaps from memory.",
+      letters: "Rebuild it from first letters.",
+      type: "Write it out, word for word.",
+      recite: "Now recall it without looking.",
+      test: "A short checkpoint.",
     };
 
     function syncBodyClass() {
@@ -154,10 +171,31 @@
       return learn.dataset.mode || "read";
     }
 
+    function syncStepper(mode) {
+      var index = -1;
+      steps.forEach(function (step, i) {
+        if (step.getAttribute("data-step-mode") === mode) index = i;
+      });
+      steps.forEach(function (step, i) {
+        var stepMode = step.getAttribute("data-step-mode");
+        var tab = learn.querySelector('.mode-tab[data-learn-mode="' + stepMode + '"]');
+        var done = Boolean(tab) && tab.textContent.indexOf("\u2713") !== -1;
+        step.classList.toggle("is-done", done && stepMode !== mode);
+        step.classList.toggle("is-current", stepMode === mode);
+      });
+      if (stepLabel && index >= 0) {
+        stepLabel.textContent = "Step " + (index + 1) + " of " + steps.length;
+      }
+      if (taskEl) {
+        taskEl.textContent = MODE_TASKS[mode] || "";
+      }
+    }
+
     function showMode(mode) {
       learn.setAttribute("data-mobile-view", "mode");
       syncBodyClass();
       if (nameEl) nameEl.textContent = MODE_LABELS[mode] || mode;
+      syncStepper(mode);
       dots.forEach(function (dot, index) {
         dot.classList.toggle("is-current", cards[index] === undefined
           ? false
@@ -207,6 +245,7 @@
         if (state && done) state.textContent = "Done";
         if (dots[index]) dots[index].classList.toggle("is-done", done);
       });
+      syncStepper(currentMode());
     }
 
     if (tracker && window.MutationObserver) {

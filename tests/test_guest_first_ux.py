@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import date
 from pathlib import Path
 from uuid import UUID
 
@@ -255,8 +256,11 @@ def test_guest_dashboard_progress_and_settings(tmp_path: Path):
     client = _client(tmp_path)
     dash = client.get("/dashboard")
     assert dash.status_code == 200
-    assert "Sign in to save your learning" in dash.text
-    assert "Create a personal learning record" in dash.text
+    # diff.md item 2: the guest branch of the first-run screen, not a gate
+    # page. Still an inline invitation to sign in, still no redirect wall.
+    assert 'data-today-mode="firstrun"' in dash.text
+    assert "Sign in to save 3 Articles to Recall for free" in dash.text
+    assert 'href="/login?next=/dashboard"' in dash.text
     prog = client.get("/progress")
     assert prog.status_code == 200
     assert "Sign in to save your learning" in prog.text
@@ -264,7 +268,7 @@ def test_guest_dashboard_progress_and_settings(tmp_path: Path):
     assert "Progress and mastery are private" not in prog.text
     settings = client.get("/settings", follow_redirects=False)
     assert settings.status_code == 200
-    assert "Guest · progress on this device" in settings.text
+    assert "Guest · Reading only" in settings.text
     assert 'data-mscreen="settings"' in settings.text
 
 
@@ -353,7 +357,9 @@ def test_phone_otp_welcome_then_dashboard(tmp_path: Path):
         data={"display_name": "Priya", "csrf_token": csrf2},
         follow_redirects=False,
     )
-    assert saved.headers["location"] == "/onboarding/plan"
+    # diff.md item 3: the name step returns to Today, not to a forced plan
+    # intro — the plan is an optional row on the first-run screen.
+    assert saved.headers["location"] == "/dashboard"
     plan = client.get("/onboarding/plan")
     assert plan.status_code == 200
     assert "Set a learning plan" in plan.text
@@ -382,7 +388,7 @@ def test_logout_signed_out_page(tmp_path: Path):
     assert "signed out" in page.text.lower()
     gate = client.get("/dashboard")
     assert gate.status_code == 200
-    assert "Sign in to save your learning" in gate.text
+    assert "Sign in to save 3 Articles to Recall for free" in gate.text
 
 
 def test_auth_transition_and_profile_pages(tmp_path: Path):
@@ -447,15 +453,21 @@ def test_dashboard_multiuser_layout(tmp_path: Path):
         f"/auth/callback?code=fake-google-code&state={state}",
         follow_redirects=False,
     )
+    # This guards the full Today furniture (strip, rails, account menu), which
+    # only renders once the account has started. A brand-new account gets the
+    # first-run zero state instead (diff.md item 1), pinned separately by
+    # test_dashboard_first_run_zero_state.
+    complete_all_modes(client, MINI_UNITS, "clause-1")
+    client.post(
+        "/learn/clause-1/done",
+        data={"claim_article": "1", "modes": "read,cloze,letters,type,recite,test"},
+        follow_redirects=False,
+    )
     dash = client.get("/dashboard")
     assert dash.status_code == 200
     html = dash.text
     assert 'class="eyebrow"' not in html
-    assert "Welcome, User." in html or "Good morning, User." in html
-    # Today's hero is mutually exclusive: a fresh account has nothing due, so
-    # it gets the learning hero and the "Due today" revision card is absent.
-    assert 'data-today-mode="learning"' in html
-    assert "Due today" not in html
+    assert 'data-today-mode="firstrun"' not in html
     assert "Articles started" in html
     assert "Units completed" in html
     assert "Units mastered" in html
@@ -508,3 +520,337 @@ def test_dashboard_data_error_state(tmp_path: Path, monkeypatch: pytest.MonkeyPa
     assert dash.status_code == 200
     assert "We couldn't load your dashboard" in dash.text
     assert "Try again" in dash.text
+
+
+def test_dashboard_first_run_zero_state(tmp_path: Path):
+    """diff.md item 1: a brand-new account gets the zero state at /dashboard —
+    same route, no redirect — instead of the caught-up card."""
+    client = _client(tmp_path)
+    start = client.get("/auth/google/start", follow_redirects=False)
+    state = start.cookies.get("rtc_oauth_state")
+    client.get(
+        f"/auth/callback?code=fake-google-code&state={state}",
+        follow_redirects=False,
+    )
+    html = client.get("/dashboard").text
+
+    assert 'data-today-mode="firstrun"' in html
+    assert html.count("data-today-mode=") == 1
+    assert "Nothing due today" in html
+    assert "You haven\u2019t started yet." in html
+    assert "Learn your first Article" in html
+    # The starter list is corpus-dependent: these tests run on MINI_UNITS,
+    # which has neither Article 14 nor 19, so every row is correctly dropped
+    # and the section is absent rather than showing dead links. Resolution
+    # against the real corpus is pinned by test_starter_rows_* below.
+    assert "Good places to begin" not in html
+    assert "Set a learning plan" in html
+    assert "Take the two-minute tour" in html
+    # The caught-up card it replaces must not also be on the page.
+    assert "Browse the Constitution" not in html
+
+
+def test_first_run_state_yields_once_learning_starts(tmp_path: Path):
+    """The zero state is temporary and lives at the same route: completing a
+    unit flips it to the regular Today home with no redirect."""
+    client = _client(tmp_path)
+    start = client.get("/auth/google/start", follow_redirects=False)
+    state = start.cookies.get("rtc_oauth_state")
+    client.get(
+        f"/auth/callback?code=fake-google-code&state={state}",
+        follow_redirects=False,
+    )
+    assert 'data-today-mode="firstrun"' in client.get("/dashboard").text
+
+    complete_all_modes(client, MINI_UNITS, "clause-1")
+    client.post(
+        "/learn/clause-1/done",
+        data={"claim_article": "1", "modes": "read,cloze,letters,type,recite,test"},
+        follow_redirects=False,
+    )
+    after = client.get("/dashboard")
+    assert after.status_code == 200
+    assert 'data-today-mode="firstrun"' not in after.text
+
+
+def test_first_run_guest_branch(tmp_path: Path):
+    """diff.md item 2, guest: the same first-run screen, without a name, a
+    streak or the plan rows — and with the sign-in gate as the CTA's
+    destination rather than as the page itself."""
+    client = _client(tmp_path)
+    html = client.get("/dashboard").text
+
+    assert 'data-today-mode="firstrun"' in html
+    assert ">?</span>" in html  # the "?" avatar stands in for initials
+    assert "Reading as a guest" in html
+    assert "rc-streak" not in html
+    # The CTA goes through sign-in; Browse is what a signed-in user gets.
+    assert '<a class="dash-firstrun-cta" href="/login?next=/dashboard">' in html
+    assert "you\u2019ll be asked to sign in so your progress is saved" in html
+    assert "Sign in to save 3 Articles to Recall for free" in html
+    # Plan and tour are account surfaces; a guest has no account to plan for.
+    assert "Set a learning plan" not in html
+    assert "Take the two-minute tour" not in html
+
+
+def test_auto_plan_replaces_the_first_run_screen(tmp_path: Path):
+    """An Auto Plan places clauses for today before any progress exists. The
+    zero state says "Nothing due today", so it must give way to them — gating
+    it on progress alone hid the whole of Today behind it."""
+    client = _client(tmp_path)
+    start = client.get("/auth/google/start", follow_redirects=False)
+    state = start.cookies.get("rtc_oauth_state")
+    client.get(
+        f"/auth/callback?code=fake-google-code&state={state}",
+        follow_redirects=False,
+    )
+    assert 'data-today-mode="firstrun"' in client.get("/dashboard").text
+
+    saved = client.post(
+        "/onboarding/plan",
+        data={
+            "mode": "auto",
+            "daily_target": "5",
+            "csrf_token": client.cookies.get(CSRF_COOKIE_NAME) or "",
+        },
+        follow_redirects=False,
+    )
+    assert saved.headers["location"] == "/dashboard"
+
+    html = client.get("/dashboard").text
+    assert 'data-today-mode="firstrun"' not in html
+    assert 'data-today-mode="learning"' in html
+    assert "You haven\u2019t started yet." not in html
+    # Nothing has been completed, so the account is still "not started" — the
+    # screen changed because there is something to do, not because it has.
+    from constitution_memorizer.web.dashboard import build_dashboard_context
+
+    engine = client.app.state.engine.for_user(
+        UUID("11111111-1111-4111-8111-111111111111")
+    )
+    ctx = build_dashboard_context(engine, display_label="User A")
+    assert ctx["has_started"] is False
+    assert ctx["show_first_run"] is False
+    assert ctx["goal_total"] > 0
+
+
+def test_sign_in_from_first_run_returns_to_it(tmp_path: Path):
+    """diff.md item 3: a guest who signs in from Today's first-run screen
+    lands back on that screen as a signed-in account — the name step carries
+    the destination, and the plan intro no longer sits in the way."""
+    # A provider account with no name of its own, so sign-in has to go
+    # through /welcome — the leg where the destination used to be lost.
+    # Seeded first and under its own address: _client re-seeds a@example.com
+    # with a name, and the provider signs in whichever it saw first.
+    provider = FakeAuthProvider()
+    provider.seed_google_user(
+        user_id=UUID("22222222-2222-4222-8222-222222222222"),
+        email="nameless@example.com",
+        display_name="",
+    )
+    client = _client(tmp_path, provider)
+    # The screen's own sign-in link is what the guest follows.
+    assert 'href="/login?next=/dashboard"' in client.get("/dashboard").text
+
+    start = client.get("/auth/google/start?next=/dashboard", follow_redirects=False)
+    state = start.cookies.get("rtc_oauth_state")
+    callback = client.get(
+        f"/auth/callback?code=fake-google-code&state={state}",
+        follow_redirects=False,
+    )
+    assert callback.headers["location"] == "/welcome"
+
+    csrf = client.cookies.get(CSRF_COOKIE_NAME) or ""
+    saved = client.post(
+        "/welcome",
+        data={"display_name": "Priya", "csrf_token": csrf},
+        follow_redirects=False,
+    )
+    assert saved.headers["location"] == "/dashboard"
+
+    dash = client.get("/dashboard").text
+    assert 'data-today-mode="firstrun"' in dash
+    assert "Reading as a guest" not in dash
+    assert "Priya" in dash
+    # Optional, not forced: the row is on the screen and the page still works.
+    assert "Set a learning plan" in dash
+    assert client.get("/onboarding/plan").status_code == 200
+
+
+def test_first_run_free_and_plus_branches(tmp_path: Path):
+    """diff.md item 2, free vs plus: the plans row is the only difference, and
+    it appears solely for a free account with pricing on. Entitlement rules
+    themselves are untouched — this reads access, it does not set it."""
+    provider = FakeAuthProvider()
+    provider.seed_google_user(
+        user_id=UUID("11111111-1111-4111-8111-111111111111"),
+        email="a@example.com",
+        display_name="User A",
+    )
+    app = create_app(
+        units_path=MINI_UNITS,
+        db_path=tmp_path / "progress.db",
+        multiuser=True,
+        multiuser_settings=_settings(
+            PRICING_ENABLED="true", ARTICLE_ENTITLEMENTS_ENABLED="true"
+        ),
+        auth_provider=provider,
+        session_store=InMemorySessionStore(),
+    )
+    client = TestClient(app)
+    start = client.get("/auth/google/start", follow_redirects=False)
+    state = start.cookies.get("rtc_oauth_state")
+    client.get(
+        f"/auth/callback?code=fake-google-code&state={state}",
+        follow_redirects=False,
+    )
+    free = client.get("/dashboard").text
+    assert 'data-today-mode="firstrun"' in free
+    assert "You\u2019re on the Free plan" in free
+    assert "3 Articles free \u00b7 unlock every Article and Schedule" in free
+    assert "See plans" in free
+    # Free is a signed-in tier: the guest branch must not leak into it.
+    assert "Reading as a guest" not in free
+    assert "Set a learning plan" in free
+
+    # Entitlements dormant is the "everything open" reading — no plans row.
+    plus_dir = tmp_path / "plus"
+    plus_dir.mkdir()
+    plus = _client(plus_dir, pricing=True)
+    start = plus.get("/auth/google/start", follow_redirects=False)
+    state = start.cookies.get("rtc_oauth_state")
+    plus.get(
+        f"/auth/callback?code=fake-google-code&state={state}",
+        follow_redirects=False,
+    )
+    open_html = plus.get("/dashboard").text
+    assert 'data-today-mode="firstrun"' in open_html
+    assert "You\u2019re on the Free plan" not in open_html
+    assert '<a class="dash-firstrun-cta" href="/browse">' in open_html
+
+
+def test_reset_progress_returns_to_the_first_run_screen(tmp_path: Path):
+    """diff.md item 5: Reset progress keeps the account and puts Today back to
+    its zero state — which also proves sessions and the plan were cleared, not
+    just the progress rows."""
+    client = _client(tmp_path)
+    start = client.get("/auth/google/start", follow_redirects=False)
+    state = start.cookies.get("rtc_oauth_state")
+    client.get(
+        f"/auth/callback?code=fake-google-code&state={state}",
+        follow_redirects=False,
+    )
+    complete_all_modes(client, MINI_UNITS, "clause-1")
+    client.post(
+        "/learn/clause-1/done",
+        data={"claim_article": "1", "modes": "read,cloze,letters,type,recite,test"},
+        follow_redirects=False,
+    )
+    assert 'data-today-mode="firstrun"' not in client.get("/dashboard").text
+
+    # A streak the reset has to take with it. Seeded directly: the assertion
+    # is worthless if the account never had one of these rows to begin with.
+    engine = client.app.state.engine.for_user(
+        UUID("11111111-1111-4111-8111-111111111111")
+    )
+    engine.record_daily_goal_met(date.today())
+    assert engine.list_daily_goal_dates(until=date.today(), limit=400) != []
+
+    profile = client.get("/profile")
+    assert profile.status_code == 200
+    assert "Reset progress" in profile.text
+    # The confirm names what goes and what stays, and each line has to be true
+    # of reset_learning_progress() — the memory log is outside its reach.
+    assert "Learning history and your streak" in profile.text
+    assert "Your settings and your memory log" in profile.text
+    assert 'class="account-action is-reset"' in profile.text
+    reset = client.post(
+        "/profile",
+        data={
+            "action": "reset_progress",
+            "csrf_token": client.cookies.get(CSRF_COOKIE_NAME) or "",
+        },
+        follow_redirects=False,
+    )
+    assert reset.status_code == 303
+    assert reset.headers["location"] == "/dashboard"
+
+    after = client.get("/dashboard")
+    assert after.status_code == 200
+    assert 'data-today-mode="firstrun"' in after.text
+    # The streak is derived from daily_goal_met, not from progress, so a reset
+    # that skipped those rows would leave a streak over an empty account. Read
+    # through a fresh engine: the one above cached the dates it was shown, and
+    # the request that did the reset held its own instance.
+    after_reset = client.app.state.engine.for_user(
+        UUID("11111111-1111-4111-8111-111111111111")
+    )
+    assert after_reset.list_daily_goal_dates(until=date.today(), limit=400) == []
+    # Kept: the account itself, and the sign-in behind it.
+    assert "User A" in after.text or "Learner" in after.text
+
+
+def test_browse_free_plan_banner(tmp_path: Path):
+    """diff.md item 4: Browse's free-plan block reads as the design's banner —
+    one line of state, one bordered Unlock all — with main's states intact."""
+    provider = FakeAuthProvider()
+    provider.seed_google_user(
+        user_id=UUID("11111111-1111-4111-8111-111111111111"),
+        email="a@example.com",
+        display_name="User A",
+    )
+    app = create_app(
+        units_path=MINI_UNITS,
+        db_path=tmp_path / "progress.db",
+        multiuser=True,
+        multiuser_settings=_settings(
+            PRICING_ENABLED="true", ARTICLE_ENTITLEMENTS_ENABLED="true"
+        ),
+        auth_provider=provider,
+        session_store=InMemorySessionStore(),
+    )
+    client = TestClient(app)
+    start = client.get("/auth/google/start", follow_redirects=False)
+    state = start.cookies.get("rtc_oauth_state")
+    client.get(
+        f"/auth/callback?code=fake-google-code&state={state}",
+        follow_redirects=False,
+    )
+    html = client.get("/browse").text
+    assert "Free plan \u2014 pick any 3 Articles to learn." in html
+    assert "All 3 slots free." in html
+    assert '<a class="browse-access-unlock" href="/pricing">Unlock all</a>' in html
+    # The old status-block phrasing is gone, not merely restyled.
+    assert "Unlock every Article \u2192" not in html
+
+    css = client.get("/static/mobile.css").text
+    assert ".browse-access-unlock" in css
+
+
+def test_starter_rows_resolve_against_the_real_corpus():
+    """The design's starter list, against the shipped units."""
+    from pathlib import Path as _Path
+    from tempfile import mkdtemp
+
+    from constitution_memorizer.progress.scheduler import ReminderEngine
+    from constitution_memorizer.web.dashboard import starter_rows
+
+    engine = ReminderEngine.from_paths(
+        _Path(mkdtemp()) / "p.db", _Path("data/output/learning_units.json")
+    )
+    rows = starter_rows(engine)
+    assert [r["title"] for r in rows] == ["Article 14", "Article 19"]
+    assert rows[0]["href"] == "/learn/article-14"      # starts a session
+    assert rows[1]["href"] == "/browse/article/19"     # opens detail
+    # The design also lists The Preamble; no such unit exists in the corpus,
+    # so it is dropped rather than rendered as a dead link.
+    assert all("Preamble" not in r["title"] for r in rows)
+
+
+def test_starter_rows_drop_targets_that_do_not_resolve(tmp_path: Path):
+    """A corpus without the starter Articles yields no rows, never a bad link."""
+    from constitution_memorizer.progress.scheduler import ReminderEngine
+    from constitution_memorizer.web.dashboard import starter_rows
+
+    engine = ReminderEngine.from_paths(tmp_path / "p.db", MINI_UNITS)
+    assert starter_rows(engine) == []

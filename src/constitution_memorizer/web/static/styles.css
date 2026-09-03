@@ -1107,8 +1107,12 @@ html[data-theme="dark"] .theme-toggle {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   margin: 0 0 16px;
+}
+
+.learn-cloze-density-track {
+  flex: 1 1 auto;
 }
 
 .learn-cloze-density-label {
@@ -1120,7 +1124,6 @@ html[data-theme="dark"] .theme-toggle {
   margin-right: 4px;
 }
 
-.learn-cloze-density-btn,
 .learn-cloze-btn {
   background: none;
   border: 1px solid var(--hairline);
@@ -1132,15 +1135,8 @@ html[data-theme="dark"] .theme-toggle {
   cursor: pointer;
 }
 
-.learn-cloze-density-btn:hover,
 .learn-cloze-btn:hover {
   border-color: var(--ink);
-}
-
-.learn-cloze-density-btn.is-active {
-  border-color: var(--ink);
-  background: var(--ink);
-  color: var(--on-accent);
 }
 
 .learn-cloze-text {
@@ -1197,6 +1193,9 @@ html[data-theme="dark"] .theme-toggle {
 
 .learn-letters-cue {
   display: inline;
+  /* diff.md item 7 · words ease into their result colour as speech lands,
+     rather than snapping between states word by word. */
+  transition: color 0.3s ease;
 }
 
 .learn-letters-cue.is-listening {
@@ -1507,6 +1506,18 @@ html[data-theme="dark"] .theme-toggle {
   text-decoration: none;
 }
 
+/* Checked, the diff drops the underlines and says it in colour instead:
+   matched words in ink, misses in amber. */
+.learn-type-mirror.is-checked .learn-type-mirror-word.is-correct {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.learn-type-mirror.is-checked .learn-type-mirror-word.is-wrong {
+  color: var(--browse-mark-news);
+  text-decoration: none;
+}
+
 .learn-type-fix {
   margin-left: auto;
   color: var(--browse-mark-news);
@@ -1657,11 +1668,12 @@ html[data-theme="dark"] .theme-toggle {
   line-height: 1.7;
   white-space: pre-wrap;
   color: var(--ink);
-  transition: filter 0.2s ease;
+  /* diff.md item 7 · the design's reveal: 5px, eased over 0.25s. */
+  transition: filter 0.25s ease;
 }
 
 .learn-recite-text.is-blurred {
-  filter: blur(7px);
+  filter: blur(5px);
   user-select: none;
 }
 
@@ -2647,6 +2659,63 @@ html[data-theme="dark"] .bare-fn-nested-trigger {
   clip-path: inset(50%);
   overflow: hidden;
   white-space: nowrap;
+}
+
+/* ── Plan intro · diff.md item 6 ─────────────────────────────────────────
+   The pace choice drives what is said under it and whether the daily target
+   reads as live. Pure CSS, so it holds with scripting off; where :has() is
+   missing the fallback below shows everything at full strength rather than
+   leaving the page half-dimmed. */
+.plan-intro-note {
+  display: none;
+  margin: 10px 2px 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.plan-intro-note.is-shown,
+.plan-intro-form:has(#plan-self-paced:checked) [data-plan-note="self_paced"],
+.plan-intro-form:has(#plan-auto:checked) [data-plan-note="auto"] {
+  display: block;
+}
+
+.plan-intro-target {
+  margin-top: 20px;
+  opacity: 0.45;
+  transition: opacity 0.2s ease;
+}
+
+.plan-intro-form:has(#plan-auto:checked) .plan-intro-target {
+  opacity: 1;
+}
+
+.plan-intro-target-label {
+  margin: 0 2px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.plan-intro-lock {
+  margin-right: 5px;
+}
+
+.plan-intro-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  margin-top: 24px;
+}
+
+@supports not selector(:has(*)) {
+  .plan-intro-note {
+    display: block;
+  }
+
+  .plan-intro-target {
+    opacity: 1;
+  }
 }
 
 .segmented-input:focus-visible + .segmented-btn {
@@ -5285,8 +5354,129 @@ html[data-theme="dark"] .nav-signin {
   margin: 0;
 }
 
+/* One card, three rows, dividers between them and never after the last. The
+   rows are real buttons: focus, Enter and Space come with the element. */
+.account-actions {
+  border: 1px solid var(--hairline);
+  border-radius: 14px;
+  background: var(--paper);
+  overflow: hidden;
+}
+
 .account-actions li {
-  margin: 8px 0;
+  margin: 0;
+}
+
+.account-action {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 52px;
+  padding: 8px 16px;
+  border: 0;
+  border-bottom: 1px solid var(--page);
+  background: none;
+  font: inherit;
+  font-size: 14.5px;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.account-actions li:last-child .account-action {
+  border-bottom: 0;
+}
+
+.account-action:hover {
+  background: var(--wash);
+}
+
+.account-action-label {
+  flex: 1;
+}
+
+/* The two destructive rows carry their weight in colour, not in a border. */
+.account-action.is-reset .account-action-label {
+  color: var(--browse-mark-news);
+}
+
+.account-action.is-delete .account-action-label {
+  color: var(--destructive);
+}
+
+/* "Keeps your account" — the distinction from Delete, said once, quietly. */
+.account-action-note {
+  flex: 0 0 auto;
+  font-size: 11.5px;
+  color: var(--muted);
+}
+
+/* ── Confirm sheets · Reset and Delete ──────────────────────────────────────
+   A <dialog> throughout: the focus trap, Escape and inertness are the
+   element's, not something to re-implement on a div. The phone drops it to
+   the bottom edge; wider screens keep it centred. */
+.rc-confirm-handle {
+  display: none;
+}
+
+.rc-confirm-title.is-warn {
+  color: var(--browse-mark-news);
+}
+
+.rc-confirm-title.is-danger {
+  color: var(--destructive);
+}
+
+.rc-confirm-lede {
+  margin: 0 0 14px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.rc-confirm-panel {
+  margin: 0 0 10px;
+  padding: 12px 14px;
+  border: 1px solid;
+  border-radius: 12px;
+}
+
+/* Tinted from the shared tokens where they exist (the phone defines them, and
+   redefines them for dark), with the design's values as the fallback. The
+   borders are the same hues at low alpha so they hold on either ground. */
+.rc-confirm-panel.is-cleared {
+  border-color: rgba(180, 83, 9, 0.25);
+  background: var(--rc-amber-tint, #fdf7ef);
+  color: var(--rc-amber-deep, #7c4a12);
+}
+
+.rc-confirm-panel.is-kept {
+  border-color: rgba(14, 117, 105, 0.25);
+  background: var(--rc-teal-tint, #e7f1ef);
+  color: var(--rc-teal-deep, #0b5d53);
+}
+
+.rc-confirm-panel-head {
+  margin: 0 0 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.rc-confirm-list {
+  margin: 0;
+  padding-left: 1.1em;
+  font-size: 12.5px;
+  line-height: 1.7;
+}
+
+.rc-confirm-actions {
+  margin-top: 14px;
+}
+
+.rc-confirm-go.is-warn {
+  border-color: var(--browse-mark-news);
+  background: var(--browse-mark-news);
+  color: #fff;
 }
 
 .btn-danger {
@@ -6980,6 +7170,17 @@ html.rtc-anim .rtc-not-confirmed {
   margin: 0;
   font-size: 13.5px;
   color: var(--muted);
+}
+
+.browse-access-unlock {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--browse-due);
+  text-decoration: none;
+}
+
+.browse-access-unlock:hover {
+  text-decoration: underline;
 }
 
 .guest-strip {

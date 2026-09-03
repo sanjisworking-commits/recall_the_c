@@ -1000,6 +1000,18 @@ class ProgressRepository:
         )
         self._conn.commit()
 
+    def clear_daily_goal_met(self, user_id: UUID | str) -> None:
+        """Drop every daily-goal fact for this user.
+
+        The streak is derived from these rows, not from progress, so a reset
+        that skipped them would leave a streak standing over an account with
+        nothing learned.
+        """
+        self._conn.execute(
+            "DELETE FROM daily_goal_met WHERE user_id = ?", (as_user_id(user_id),)
+        )
+        self._conn.commit()
+
     def is_daily_goal_met(self, user_id: UUID | str, goal_date: date) -> bool:
         row = self._conn.execute(
             """
@@ -1126,6 +1138,31 @@ class ProgressRepository:
             WHERE id = ? AND user_id = ?
             """,
             (_utc_now_iso(), session_id, as_user_id(user_id)),
+        )
+        self._conn.commit()
+
+    def delete_all_study_sessions(self, user_id: UUID | str) -> None:
+        """Drop every study session for this user, items included.
+
+        Items cascade from study_session, but only where foreign keys are
+        actually enforced — deleting them first keeps the reset total either
+        way, and leaves no orphan rows behind.
+        """
+        uid = as_user_id(user_id)
+        self._conn.execute(
+            """
+            DELETE FROM study_session_item
+            WHERE session_id IN (SELECT id FROM study_session WHERE user_id = ?)
+            """,
+            (uid,),
+        )
+        self._conn.execute("DELETE FROM study_session WHERE user_id = ?", (uid,))
+        self._conn.commit()
+
+    def delete_learning_plan(self, user_id: UUID | str) -> None:
+        """Forget the stored plan; get_learning_plan falls back to Self-paced."""
+        self._conn.execute(
+            "DELETE FROM user_learning_plan WHERE user_id = ?", (as_user_id(user_id),)
         )
         self._conn.commit()
 

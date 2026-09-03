@@ -34,7 +34,7 @@ def test_learn_enables_test_tab_and_quiz_markup(client: TestClient):
     assert "data-quiz-cycle" in html
     assert "Check answers" in html
     assert 'data-mode="read"' in html
-    assert "app.js?v=main48" in html
+    assert "app.js?v=main56" in html
 
 
 def test_test_mode_query_param_renders_test_active(client: TestClient):
@@ -45,7 +45,8 @@ def test_test_mode_query_param_renders_test_active(client: TestClient):
     assert 'data-mode="test"' in html
     assert 'data-learn-mode="test"' in html
     assert 'aria-selected="true"' in html
-    assert "New questions each revision." in html
+    # diff.md item 7 moved this to the design's per-question line.
+    assert "new questions every revision" in html
 
 
 def test_legacy_card_mode_redirects_to_test(client: TestClient):

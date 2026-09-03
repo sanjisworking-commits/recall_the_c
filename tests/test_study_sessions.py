@@ -397,11 +397,13 @@ def test_today_renders_exactly_one_hero(tmp_path: Path):
     client = _client(tmp_path, multiuser=True)
     _sign_in(client)
 
-    caught_up = client.get("/dashboard").text
-    assert caught_up.count("data-today-mode=") == 1
-    assert 'data-today-mode="learning"' in caught_up
-    assert "/revision/start" not in caught_up
-    assert 'data-daily-goal-streak="0"' in caught_up
+    # A brand-new account gets the first-run zero state (diff.md item 1), not
+    # the learning hero. Still exactly one hero, which is what this pins.
+    first_run = client.get("/dashboard").text
+    assert first_run.count("data-today-mode=") == 1
+    assert 'data-today-mode="firstrun"' in first_run
+    assert "/revision/start" not in first_run
+    assert "You haven\u2019t started yet." in first_run
 
     _make_due(client, ["clause-1", "article-end"])
     due = client.get("/dashboard").text
@@ -559,16 +561,45 @@ def test_mode_switching_still_cannot_fire_popstate():
     assert "pushState" not in MOBILE_JS.read_text(encoding="utf-8")
 
 
-def test_no_route_deletes_a_study_session():
-    """Exiting preserves the queue so Today can resume it."""
+def test_only_an_explicit_reset_deletes_a_study_session():
+    """Exiting preserves the queue so Today can resume it.
+
+    Reset progress (diff.md item 5) is the one exception, because the user
+    asked for everything to go. It stays an exception by construction: the
+    deletes live in a single repository method, reached from a single engine
+    method, called from a single route action — so no learn or exit path can
+    quietly acquire the ability to drop a queue.
+    """
     app_py = (
         ROOT / "src" / "constitution_memorizer" / "web" / "app.py"
     ).read_text(encoding="utf-8")
     assert "delete_study_session" not in app_py
+    assert "delete_all_study_sessions" not in app_py
+
     repo = (
         ROOT / "src" / "constitution_memorizer" / "progress" / "repository.py"
     ).read_text(encoding="utf-8")
-    assert "DELETE FROM study_session" not in repo
+    owners = [
+        chunk.split("(", 1)[0]
+        for chunk in repo.split("\n    def ")
+        if "DELETE FROM study_session" in chunk
+    ]
+    assert owners == ["delete_all_study_sessions"]
+
+    scheduler = (
+        ROOT / "src" / "constitution_memorizer" / "progress" / "scheduler.py"
+    ).read_text(encoding="utf-8")
+    callers = [
+        chunk.split("(", 1)[0]
+        for chunk in scheduler.split("\n    def ")
+        if "delete_all_study_sessions" in chunk
+    ]
+    assert callers == ["reset_learning_progress"]
+
+    routes = (
+        ROOT / "src" / "constitution_memorizer" / "auth" / "routes.py"
+    ).read_text(encoding="utf-8")
+    assert routes.count("reset_learning_progress") == 1
 
 
 def test_exiting_preserves_the_queue_for_later(tmp_path: Path):

@@ -22,10 +22,14 @@
       {% if current_user and access and access.enabled %}
       <span class="settings-account-status">{{ access.status_line }}</span>
       {% elif is_guest %}
-      <span class="settings-account-status">Guest · progress on this device</span>
+      <span class="settings-account-status">Guest · Reading only</span>
       {% endif %}
     </span>
+    {% if is_guest %}
+    <span class="settings-account-signin">Sign in</span>
+    {% else %}
     <span class="settings-account-chevron" aria-hidden="true">›</span>
+    {% endif %}
   </a>
   {% endif %}
 
@@ -47,6 +51,10 @@
   {% endif %}
 
   {# ── STUDY ─────────────────────────────────────────────────────────── #}
+  {# diff.md item 8: hidden for guests rather than shown disabled — there is
+     no plan to set without an account, and a page of dead controls reads as
+     a broken page rather than a locked one. #}
+  {% if not is_guest %}
   <div class="settings-group" data-settings-group="study">
     <p class="settings-group-eyebrow">Study</p>
     <h2 class="section-title settings-desk-title">Learning plan</h2>
@@ -152,9 +160,10 @@
     {% endif %}
     <p class="settings-footnote">Changing the pace rebuilds future days from tomorrow — today's plan holds.</p>
   </div>
+  {% endif %}
 
   {# ── CALENDAR ──────────────────────────────────────────────────────── #}
-  {% if gcal or is_guest %}
+  {% if gcal and not is_guest %}
   <div class="settings-group" data-settings-group="calendar">
     <p class="settings-group-eyebrow">Calendar</p>
     <h2 class="section-title settings-desk-title">Revision calendar</h2>
@@ -359,6 +368,7 @@
           <button type="button" class="settings-theme-btn" data-theme-set="dark">Dark</button>
         </div>
       </div>
+      {% if not is_guest %}
       <div class="settings-row settings-phone-only" data-text-size-row>
         <div class="settings-row-copy">
           <p class="settings-row-label">Bare Act text size</p>
@@ -370,6 +380,7 @@
           <button type="button" class="settings-stepper-btn" data-text-size-step="1" aria-label="Larger text">+</button>
         </div>
       </div>
+      {% endif %}
     </div>
 
     <h2 class="section-title settings-desk-title">Experience</h2>

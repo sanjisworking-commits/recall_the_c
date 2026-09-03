@@ -527,6 +527,27 @@ class ReminderEngine:
         self._invalidate_modes_cache()
         self._invalidate_account_cache()
 
+    def reset_learning_progress(self) -> None:
+        """Clear what has been learned; keep who the learner is.
+
+        Progress, modes seen, study sessions, the stored plan and the
+        daily-goal facts the streak is derived from all go. The profile, the
+        settings, the memory log and the claimed Articles stay — claims are
+        permanent by design, and handing free slots back on every reset would
+        turn three free Articles into an unlimited supply.
+        """
+        self.repo.delete_all_progress(self.user_id)
+        self.repo.clear_all_modes_seen(self.user_id)
+        self.repo.delete_all_study_sessions(self.user_id)
+        self.repo.delete_learning_plan(self.user_id)
+        self.repo.clear_daily_goal_met(self.user_id)
+        self._invalidate_progress_cache()
+        self._invalidate_split_cache()
+        self._invalidate_modes_cache()
+        self._invalidate_learning_plan_cache()
+        self._invalidate_daily_goal_cache()
+        self.clear_planner_request_caches()
+
     def set_split_preference(self, parent_clause_id: str, mode: SplitMode) -> None:
         started = perf_counter()
         self.repo.set_split_preference(self.user_id, parent_clause_id, mode)
