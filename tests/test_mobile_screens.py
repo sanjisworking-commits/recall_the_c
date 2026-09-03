@@ -1382,3 +1382,40 @@ def test_phone_tables_frame_scrolls_horizontally(tmp_path: Path):
     assert "Habeas corpus" in html
     assert 'class="tables-frame"' in html
     assert "What it does" in html
+
+
+def test_cloze_completion_shows_the_feedback_sheet(tmp_path: Path):
+    """diff.md item 9: finishing a mode reports how it went, as a sheet.
+
+    Cloze had no completion moment at all — the last blank simply filled in
+    and the action bar sat there unchanged. The sheet carries the only CTA
+    while it is up, so "Continue" is never competing with the bar beneath it.
+    """
+    client, _, _ = _client(tmp_path)
+    html = client.get("/learn/clause-1?mode=cloze").text
+    assert "data-mode-feedback" in html
+    assert "data-feedback-msg" in html
+    assert "data-feedback-sub" in html
+    assert 'data-feedback-go>Continue' in html
+
+    css = client.get("/static/mobile.css").text
+    sheet = css.split(
+        'body[data-mscreen="learn"] .learn-feedback {', 1
+    )[1].split("}", 1)[0]
+    assert "position: fixed" in sheet
+    assert "bottom: 0" in sheet
+    assert "var(--rc-teal-tint)" in sheet
+    assert "var(--rc-radius-sheet)" in sheet
+    # Retry tone, so a poor result is not congratulated in teal.
+    assert 'body[data-mscreen="learn"] .learn-feedback.is-retry' in css
+    # One CTA at a time.
+    assert (
+        'body[data-mscreen="learn"] .learn.is-feedback-open .learn-mode-nav'
+        in css
+    )
+
+    js = client.get("/static/app.js").text
+    assert "You remembered it." in js
+    assert "recalled" in js
+    # Leaving the mode closes it, however the mode was left.
+    assert 'attributeFilter: ["data-mode"]' in js

@@ -176,6 +176,16 @@
     <button type="button" class="learn-mode-next" data-mode-next>Next</button>
   </div>
 
+  {# diff.md item 9 · the feedback sheet. Finishing a mode slides this up over
+     the action bar in the tone of the result — teal when it went well, amber
+     when there is something to fix — and carries the only CTA, so there is
+     never a choice between "continue" and the bar underneath it. #}
+  <div class="learn-feedback" data-mode-feedback hidden aria-live="polite">
+    <p class="learn-feedback-msg" data-feedback-msg></p>
+    <p class="learn-feedback-sub" data-feedback-sub></p>
+    <button type="button" class="learn-feedback-go" data-feedback-go>Continue</button>
+  </div>
+
   <div class="learn-deck" data-learn-deck>
     {% set deck_copy = {
       'read':    ('Read it closely', 'Bare Act wording, verbatim.'),
