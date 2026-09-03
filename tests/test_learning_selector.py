@@ -437,11 +437,14 @@ def test_article_14_balanced_keeps_its_related_and_explore(tmp_path: Path):
     """The real corpus case: a curated anchor must not collapse into all-Close.
 
     Article 14 has curated Close companions (15, 16 by edge; 17, 18 by
-    cluster) but no curated Related or Explore, because no cluster-level
-    relations have been curated yet. Preferring curated source over the
-    requested bucket turned Balanced into anchor + four Close — the whole
-    familiarity gradient gone. The Related and Explore slots must fall to
-    legacy candidates of the right bucket instead.
+    cluster). Preferring curated source over the requested bucket turned
+    Balanced into anchor + four Close — the whole familiarity gradient gone.
+
+    With equality's cluster relations curated, every slot is now filled from
+    the graph; before they were curated the Related and Explore slots fell to
+    legacy candidates of the right bucket, which was equally acceptable. What
+    is asserted here is the part that must hold either way: the composition,
+    and each slot getting the bucket it asked for.
     """
     import json
 
@@ -464,10 +467,10 @@ def test_article_14_balanced_keeps_its_related_and_explore(tmp_path: Path):
         assert counts == {"close": 2, "related": 1, "explore": 1}, (seed, counts)
 
         by_slot = {p.requested_bucket: p for p in selection.picks[1:] if p.requested_bucket}
-        # Close is curated — 15/16 by edge, 17/18 by cluster.
-        assert by_slot["close"].relation_source != "legacy_fallback", seed
-        # Related and Explore have no curated pool yet, so they are honestly
-        # tagged as legacy while still being the bucket that was asked for.
-        for slot in ("related", "explore"):
+        for slot in ("close", "related", "explore"):
             assert by_slot[slot].effective_bucket == slot, (seed, slot)
-            assert by_slot[slot].relation_source == "legacy_fallback", (seed, slot)
+        # equality is fully curated — Close by edge or cluster, Related and
+        # Explore through its cluster relations — so no slot needs the legacy
+        # scorer. Whether a given slot is curated is data, not behaviour, so
+        # only the anchor's own neighbourhood is asserted here.
+        assert selection.legacy_count == 0, (seed, selection.picks)

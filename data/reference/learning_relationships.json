@@ -5,7 +5,7 @@
     "The four legacy 'medium' pairs (13-32, 21-21A, 245-246, 324-326) are 'related' here. They score 65 in the legacy scorer and 65 >= CLOSE_THRESHOLD (60), so production treats them as Close today. This is an intentional normalisation, not parity.",
     "Legacy groups of more than two Articles are expanded pairwise, matching _pair_strengths(): 14/15/16, 19/21/22 and 352/356/360 each contribute three edges.",
     "cluster.family is null where the seven starter families do not clearly cover the cluster. pardoning, council_of_ministers and ordinance span union and state families, so a single family would be wrong rather than merely unknown.",
-    "related_clusters / explore_clusters are intentionally empty: no cluster-level relations existed in the legacy data, and this migration invents none."
+    "related_clusters / explore_clusters are curriculum judgement, not migration: no cluster-level relations existed in the legacy data. Related means a direct structural or doctrinal link (Union/State counterpart, right and remedy, institution and function); Explore means deliberate distance that still widens the lens. Declared one way and closed symmetrically, because the selector consults only the anchor's lists."
   ],
   "families": {
     "fundamental_rights": {
@@ -35,225 +35,523 @@
       "label": "The Union and its territory",
       "family": null,
       "same_cluster_bucket": "close",
-      "related_clusters": [],
-      "explore_clusters": []
+      "related_clusters": [
+        "centre_state",
+        "citizenship",
+        "state_executive"
+      ],
+      "explore_clusters": [
+        "cultural_rights",
+        "finance",
+        "parliament"
+      ]
     },
     "citizenship": {
       "label": "Citizenship",
       "family": null,
       "same_cluster_bucket": "close",
-      "related_clusters": [],
-      "explore_clusters": []
+      "related_clusters": [
+        "equality",
+        "fundamental_duties",
+        "union_territory"
+      ],
+      "explore_clusters": [
+        "elections",
+        "liberty",
+        "official_language",
+        "religion"
+      ]
     },
     "equality": {
       "label": "Equality",
       "family": "fundamental_rights",
       "same_cluster_bucket": "close",
-      "related_clusters": [],
-      "explore_clusters": []
+      "related_clusters": [
+        "citizenship",
+        "cultural_rights",
+        "directive_principles",
+        "liberty",
+        "religion",
+        "rights_against_exploitation",
+        "services"
+      ],
+      "explore_clusters": [
+        "amendment",
+        "panchayats"
+      ]
     },
     "liberty": {
       "label": "Liberty",
       "family": "fundamental_rights",
       "same_cluster_bucket": "close",
-      "related_clusters": [],
-      "explore_clusters": []
+      "related_clusters": [
+        "constitutional_remedies",
+        "cultural_rights",
+        "equality",
+        "religion",
+        "rights_against_exploitation"
+      ],
+      "explore_clusters": [
+        "citizenship",
+        "emergency",
+        "pardoning",
+        "property",
+        "union_judiciary"
+      ]
     },
     "rights_against_exploitation": {
       "label": "Rights against exploitation",
       "family": "fundamental_rights",
       "same_cluster_bucket": "close",
-      "related_clusters": [],
-      "explore_clusters": []
+      "related_clusters": [
+        "directive_principles",
+        "equality",
+        "liberty"
+      ],
+      "explore_clusters": [
+        "municipalities",
+        "services"
+      ]
     },
     "religion": {
       "label": "Freedom of religion",
       "family": "fundamental_rights",
       "same_cluster_bucket": "close",
-      "related_clusters": [],
-      "explore_clusters": []
+      "related_clusters": [
+        "cultural_rights",
+        "equality",
+        "liberty"
+      ],
+      "explore_clusters": [
+        "citizenship",
+        "official_language"
+      ]
     },
     "cultural_rights": {
       "label": "Cultural and educational rights",
       "family": "fundamental_rights",
       "same_cluster_bucket": "close",
-      "related_clusters": [],
-      "explore_clusters": []
+      "related_clusters": [
+        "equality",
+        "fundamental_duties",
+        "liberty",
+        "official_language",
+        "religion"
+      ],
+      "explore_clusters": [
+        "union_territory"
+      ]
     },
     "constitutional_remedies": {
       "label": "Constitutional remedies",
       "family": "fundamental_rights",
       "same_cluster_bucket": "close",
-      "related_clusters": [],
-      "explore_clusters": []
+      "related_clusters": [
+        "high_courts",
+        "liberty",
+        "union_judiciary"
+      ],
+      "explore_clusters": [
+        "emergency",
+        "parliament",
+        "tribunals"
+      ]
     },
     "directive_principles": {
       "label": "Directive Principles",
       "family": null,
       "same_cluster_bucket": "close",
-      "related_clusters": [],
-      "explore_clusters": []
+      "related_clusters": [
+        "equality",
+        "fundamental_duties",
+        "rights_against_exploitation"
+      ],
+      "explore_clusters": [
+        "finance",
+        "panchayats",
+        "trade"
+      ]
     },
     "fundamental_duties": {
       "label": "Fundamental duties",
       "family": null,
       "same_cluster_bucket": "close",
-      "related_clusters": [],
-      "explore_clusters": []
+      "related_clusters": [
+        "citizenship",
+        "cultural_rights",
+        "directive_principles"
+      ],
+      "explore_clusters": [
+        "elections",
+        "official_language"
+      ]
     },
     "executive_union": {
       "label": "Union Executive",
       "family": "union_executive",
       "same_cluster_bucket": "close",
-      "related_clusters": [],
-      "explore_clusters": []
+      "related_clusters": [
+        "council_of_ministers",
+        "emergency",
+        "ordinance",
+        "pardoning",
+        "parliament",
+        "state_executive"
+      ],
+      "explore_clusters": [
+        "cag",
+        "union_judiciary"
+      ]
     },
     "pardoning": {
       "label": "Pardoning powers",
       "family": null,
       "same_cluster_bucket": "close",
-      "related_clusters": [],
-      "explore_clusters": []
+      "related_clusters": [
+        "executive_union",
+        "state_executive",
+        "union_judiciary"
+      ],
+      "explore_clusters": [
+        "high_courts",
+        "liberty"
+      ]
     },
     "council_of_ministers": {
       "label": "Council of Ministers",
       "family": null,
       "same_cluster_bucket": "close",
-      "related_clusters": [],
-      "explore_clusters": []
+      "related_clusters": [
+        "executive_union",
+        "parliament",
+        "state_executive"
+      ],
+      "explore_clusters": [
+        "elections",
+        "ordinance"
+      ]
     },
     "parliament": {
       "label": "Parliament",
       "family": "legislature",
       "same_cluster_bucket": "close",
-      "related_clusters": [],
-      "explore_clusters": []
+      "related_clusters": [
+        "amendment",
+        "cag",
+        "centre_state",
+        "council_of_ministers",
+        "elections",
+        "executive_union",
+        "ordinance",
+        "state_legislature"
+      ],
+      "explore_clusters": [
+        "constitutional_remedies",
+        "finance",
+        "union_territory"
+      ]
     },
     "ordinance": {
       "label": "Ordinance powers",
       "family": null,
       "same_cluster_bucket": "close",
-      "related_clusters": [],
-      "explore_clusters": []
+      "related_clusters": [
+        "executive_union",
+        "parliament",
+        "state_legislature"
+      ],
+      "explore_clusters": [
+        "centre_state",
+        "council_of_ministers",
+        "emergency"
+      ]
     },
     "union_judiciary": {
       "label": "Union Judiciary",
       "family": "judiciary",
       "same_cluster_bucket": "close",
-      "related_clusters": [],
-      "explore_clusters": []
+      "related_clusters": [
+        "amendment",
+        "constitutional_remedies",
+        "high_courts",
+        "official_language",
+        "pardoning",
+        "tribunals"
+      ],
+      "explore_clusters": [
+        "centre_state",
+        "executive_union",
+        "liberty",
+        "services"
+      ]
     },
     "cag": {
       "label": "Comptroller and Auditor-General",
       "family": null,
       "same_cluster_bucket": "close",
-      "related_clusters": [],
-      "explore_clusters": []
+      "related_clusters": [
+        "finance",
+        "parliament",
+        "services"
+      ],
+      "explore_clusters": [
+        "executive_union",
+        "municipalities",
+        "property",
+        "state_legislature"
+      ]
     },
     "state_executive": {
       "label": "State Executive",
       "family": "state_executive",
       "same_cluster_bucket": "close",
-      "related_clusters": [],
-      "explore_clusters": []
+      "related_clusters": [
+        "council_of_ministers",
+        "emergency",
+        "executive_union",
+        "pardoning",
+        "state_legislature",
+        "union_territory"
+      ],
+      "explore_clusters": [
+        "high_courts",
+        "panchayats"
+      ]
     },
     "state_legislature": {
       "label": "State Legislature",
       "family": "legislature",
       "same_cluster_bucket": "close",
-      "related_clusters": [],
-      "explore_clusters": []
+      "related_clusters": [
+        "centre_state",
+        "elections",
+        "municipalities",
+        "ordinance",
+        "panchayats",
+        "parliament",
+        "state_executive"
+      ],
+      "explore_clusters": [
+        "cag",
+        "trade"
+      ]
     },
     "high_courts": {
       "label": "High Courts",
       "family": "judiciary",
       "same_cluster_bucket": "close",
-      "related_clusters": [],
-      "explore_clusters": []
+      "related_clusters": [
+        "constitutional_remedies",
+        "tribunals",
+        "union_judiciary"
+      ],
+      "explore_clusters": [
+        "elections",
+        "municipalities",
+        "official_language",
+        "pardoning",
+        "services",
+        "state_executive"
+      ]
     },
     "panchayats": {
       "label": "Panchayats",
       "family": null,
       "same_cluster_bucket": "close",
-      "related_clusters": [],
-      "explore_clusters": []
+      "related_clusters": [
+        "elections",
+        "municipalities",
+        "state_legislature"
+      ],
+      "explore_clusters": [
+        "directive_principles",
+        "equality",
+        "finance",
+        "property",
+        "state_executive"
+      ]
     },
     "municipalities": {
       "label": "Municipalities",
       "family": null,
       "same_cluster_bucket": "close",
-      "related_clusters": [],
-      "explore_clusters": []
+      "related_clusters": [
+        "elections",
+        "panchayats",
+        "state_legislature"
+      ],
+      "explore_clusters": [
+        "cag",
+        "finance",
+        "high_courts",
+        "property",
+        "rights_against_exploitation",
+        "trade"
+      ]
     },
     "centre_state": {
       "label": "Union–State relations",
       "family": "federalism",
       "same_cluster_bucket": "close",
-      "related_clusters": [],
-      "explore_clusters": []
+      "related_clusters": [
+        "amendment",
+        "emergency",
+        "finance",
+        "parliament",
+        "state_legislature",
+        "trade",
+        "union_territory"
+      ],
+      "explore_clusters": [
+        "ordinance",
+        "tribunals",
+        "union_judiciary"
+      ]
     },
     "finance": {
       "label": "Finance",
       "family": null,
       "same_cluster_bucket": "close",
-      "related_clusters": [],
-      "explore_clusters": []
+      "related_clusters": [
+        "cag",
+        "centre_state",
+        "property",
+        "trade"
+      ],
+      "explore_clusters": [
+        "directive_principles",
+        "emergency",
+        "municipalities",
+        "panchayats",
+        "parliament",
+        "union_territory"
+      ]
     },
     "property": {
       "label": "Property, contracts and suits",
       "family": null,
       "same_cluster_bucket": "close",
-      "related_clusters": [],
-      "explore_clusters": []
+      "related_clusters": [
+        "finance",
+        "trade"
+      ],
+      "explore_clusters": [
+        "cag",
+        "liberty",
+        "municipalities",
+        "panchayats"
+      ]
     },
     "trade": {
       "label": "Trade and commerce",
       "family": null,
       "same_cluster_bucket": "close",
-      "related_clusters": [],
-      "explore_clusters": []
+      "related_clusters": [
+        "centre_state",
+        "finance",
+        "property"
+      ],
+      "explore_clusters": [
+        "directive_principles",
+        "municipalities",
+        "state_legislature",
+        "tribunals"
+      ]
     },
     "services": {
       "label": "Services",
       "family": null,
       "same_cluster_bucket": "close",
-      "related_clusters": [],
-      "explore_clusters": []
+      "related_clusters": [
+        "cag",
+        "equality",
+        "tribunals"
+      ],
+      "explore_clusters": [
+        "elections",
+        "high_courts",
+        "rights_against_exploitation",
+        "union_judiciary"
+      ]
     },
     "tribunals": {
       "label": "Tribunals",
       "family": null,
       "same_cluster_bucket": "close",
-      "related_clusters": [],
-      "explore_clusters": []
+      "related_clusters": [
+        "high_courts",
+        "services",
+        "union_judiciary"
+      ],
+      "explore_clusters": [
+        "centre_state",
+        "constitutional_remedies",
+        "trade"
+      ]
     },
     "elections": {
       "label": "Elections",
       "family": null,
       "same_cluster_bucket": "close",
-      "related_clusters": [],
-      "explore_clusters": []
+      "related_clusters": [
+        "municipalities",
+        "panchayats",
+        "parliament",
+        "state_legislature"
+      ],
+      "explore_clusters": [
+        "citizenship",
+        "council_of_ministers",
+        "fundamental_duties",
+        "high_courts",
+        "services"
+      ]
     },
     "official_language": {
       "label": "Official language",
       "family": null,
       "same_cluster_bucket": "close",
-      "related_clusters": [],
-      "explore_clusters": []
+      "related_clusters": [
+        "cultural_rights",
+        "union_judiciary"
+      ],
+      "explore_clusters": [
+        "citizenship",
+        "fundamental_duties",
+        "high_courts",
+        "religion"
+      ]
     },
     "emergency": {
       "label": "Emergency",
       "family": "emergency",
       "same_cluster_bucket": "close",
-      "related_clusters": [],
-      "explore_clusters": []
+      "related_clusters": [
+        "centre_state",
+        "executive_union",
+        "state_executive"
+      ],
+      "explore_clusters": [
+        "amendment",
+        "constitutional_remedies",
+        "finance",
+        "liberty",
+        "ordinance"
+      ]
     },
     "amendment": {
       "label": "Amendment",
       "family": null,
       "same_cluster_bucket": "close",
-      "related_clusters": [],
-      "explore_clusters": []
+      "related_clusters": [
+        "centre_state",
+        "parliament",
+        "union_judiciary"
+      ],
+      "explore_clusters": [
+        "emergency",
+        "equality"
+      ]
     }
   },
   "article_metadata": {

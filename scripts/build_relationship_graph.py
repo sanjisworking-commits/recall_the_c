@@ -82,9 +82,131 @@ EDGE_TYPES: dict[str, str] = {
 
 STRENGTH_BUCKET = {"strong": "close", "medium": "related"}
 
+# ── Cluster-level relations ────────────────────────────────────────────────
+#
+# CURRICULUM JUDGEMENT, NOT MIGRATION. Nothing below comes from the legacy
+# seed; these are decisions about which parts of the Constitution sit next to
+# each other pedagogically, and they should be reviewed as such.
+#
+# Two principles, applied consistently:
+#
+#   RELATED  a direct structural or doctrinal link — the same organ at Union
+#            and State level, a right and its remedy, an institution and the
+#            function it performs, or two provisions of one Part that are
+#            habitually read together.
+#
+#   EXPLORE  deliberately further away but still coherent: a different organ,
+#            or the same subject seen from another Part. Explore is curated
+#            novelty, not "anything unrelated" — the point is to widen the
+#            lens, not to randomise it.
+#
+# Declared one way and closed symmetrically below, because the selector only
+# consults the *anchor's* lists: an asymmetric declaration would make Article
+# 14 -> 21 Related while 21 -> 14 fell through to the legacy scorer.
+RELATED_CLUSTERS: dict[str, list[str]] = {
+    # Part III reads as one fabric: rights, their remedy, and the groups they
+    # protect.
+    "equality": ["liberty", "rights_against_exploitation", "cultural_rights"],
+    "liberty": ["constitutional_remedies", "rights_against_exploitation"],
+    "rights_against_exploitation": ["directive_principles"],
+    "religion": ["cultural_rights", "equality", "liberty"],
+    "cultural_rights": ["liberty"],
+    "constitutional_remedies": ["high_courts", "union_judiciary"],
+    # Part IV and IVA are the companion aspirations to Part III.
+    "directive_principles": ["fundamental_duties", "equality"],
+    "fundamental_duties": ["citizenship", "cultural_rights"],
+    # Who belongs, and to what territory.
+    "citizenship": ["equality", "union_territory"],
+    "union_territory": ["centre_state", "state_executive"],
+    # The executive, its advisers, and the powers it exercises alone.
+    "executive_union": ["council_of_ministers", "pardoning", "parliament"],
+    "council_of_ministers": ["state_executive", "parliament"],
+    "pardoning": ["state_executive", "union_judiciary"],
+    "state_executive": ["state_legislature", "executive_union"],
+    # Legislatures, and the power to legislate when they are not sitting.
+    "parliament": ["state_legislature", "ordinance"],
+    "ordinance": ["state_legislature", "executive_union"],
+    "state_legislature": ["centre_state"],
+    # Courts, and the bodies that displace them.
+    "union_judiciary": ["high_courts", "tribunals"],
+    "high_courts": ["tribunals"],
+    "tribunals": ["services"],
+    # Money, audit, and the machinery that spends it.
+    "cag": ["finance", "parliament", "services"],
+    "finance": ["centre_state", "trade", "property"],
+    "property": ["trade"],
+    "trade": ["centre_state"],
+    "services": ["equality"],
+    # Local government is the third tier of the same federal idea.
+    "panchayats": ["municipalities", "state_legislature", "elections"],
+    "municipalities": ["state_legislature", "elections"],
+    "elections": ["parliament", "state_legislature"],
+    # Federal stress, and the power to change the text itself.
+    "centre_state": ["parliament", "emergency"],
+    "emergency": ["executive_union", "state_executive"],
+    "amendment": ["parliament", "union_judiciary", "centre_state"],
+    "official_language": ["cultural_rights", "union_judiciary"],
+}
+
+EXPLORE_CLUSTERS: dict[str, list[str]] = {
+    # From a right, out to the machinery that delivers or suspends it.
+    "equality": ["services", "panchayats"],
+    "liberty": ["emergency", "union_judiciary"],
+    "rights_against_exploitation": ["services", "municipalities"],
+    "religion": ["official_language", "citizenship"],
+    "cultural_rights": ["official_language", "union_territory"],
+    "constitutional_remedies": ["emergency", "tribunals"],
+    "directive_principles": ["panchayats", "finance"],
+    "fundamental_duties": ["elections", "official_language"],
+    "citizenship": ["elections", "liberty"],
+    "union_territory": ["parliament", "finance"],
+    # From an organ, out to a different organ or the money behind it.
+    "executive_union": ["union_judiciary", "cag"],
+    "council_of_ministers": ["elections", "ordinance"],
+    "pardoning": ["liberty", "high_courts"],
+    "parliament": ["finance", "constitutional_remedies"],
+    "ordinance": ["emergency", "centre_state"],
+    "state_executive": ["panchayats", "high_courts"],
+    "state_legislature": ["cag", "trade"],
+    "union_judiciary": ["services", "amendment"],
+    "high_courts": ["services", "municipalities"],
+    "tribunals": ["centre_state", "trade"],
+    "cag": ["property", "municipalities"],
+    "finance": ["municipalities", "directive_principles"],
+    "property": ["liberty", "panchayats"],
+    "trade": ["directive_principles", "municipalities"],
+    "services": ["union_judiciary", "elections"],
+    "panchayats": ["directive_principles", "finance"],
+    "municipalities": ["property", "trade"],
+    "elections": ["citizenship", "high_courts"],
+    "centre_state": ["union_judiciary", "trade"],
+    "emergency": ["liberty", "finance"],
+    "amendment": ["equality", "emergency"],
+    "official_language": ["citizenship", "high_courts"],
+}
+
+
+def _symmetric(declared: dict[str, list[str]]) -> dict[str, list[str]]:
+    """Close a declaration both ways, preserving declaration order."""
+    out: dict[str, list[str]] = {key: list(values) for key, values in declared.items()}
+    for source, targets in declared.items():
+        for target in targets:
+            peers = out.setdefault(target, [])
+            if source not in peers:
+                peers.append(source)
+    return {key: sorted(set(values)) for key, values in out.items()}
+
 
 def main() -> int:
     seed = json.loads(SEED.read_text(encoding="utf-8"))
+
+    related = _symmetric(RELATED_CLUSTERS)
+    explore = _symmetric(EXPLORE_CLUSTERS)
+
+    # A pair cannot be both. Related is the more familiar reading, so it wins,
+    # and the Explore side is dropped rather than left to resolve by accident.
+    for cid, peers in explore.items():
+        explore[cid] = [p for p in peers if p not in set(related.get(cid, []))]
 
     clusters: dict[str, dict] = {}
     for theme in seed["themes"]:
@@ -96,9 +218,8 @@ def main() -> int:
             # Explicit, never defaulted: co-membership scores 65 today, which
             # is >= CLOSE_THRESHOLD, so Close preserves current behaviour.
             "same_cluster_bucket": "close",
-            # Nothing curated yet — inventing cluster relations is out of scope.
-            "related_clusters": [],
-            "explore_clusters": [],
+            "related_clusters": related.get(cid, []),
+            "explore_clusters": explore.get(cid, []),
         }
 
     # Article metadata: every membership preserved, primary = FIRST seen.
@@ -146,9 +267,13 @@ def main() -> int:
             "clearly cover the cluster. pardoning, council_of_ministers and "
             "ordinance span union and state families, so a single family "
             "would be wrong rather than merely unknown.",
-            "related_clusters / explore_clusters are intentionally empty: no "
-            "cluster-level relations existed in the legacy data, and this "
-            "migration invents none.",
+            "related_clusters / explore_clusters are curriculum judgement, "
+            "not migration: no cluster-level relations existed in the legacy "
+            "data. Related means a direct structural or doctrinal link "
+            "(Union/State counterpart, right and remedy, institution and "
+            "function); Explore means deliberate distance that still widens "
+            "the lens. Declared one way and closed symmetrically, because the "
+            "selector consults only the anchor's lists.",
         ],
         "families": {fid: {"label": label} for fid, label in FAMILIES.items()},
         "clusters": clusters,
@@ -177,6 +302,10 @@ def main() -> int:
     print(f"  article_edges   : {len(article_edges)}")
     multi = {a: m['clusters'] for a, m in article_meta.items() if len(m['clusters']) > 1}
     print(f"  multi-cluster   : {len(multi)} -> {sorted(multi)}")
+    print(f"  related links   : {sum(len(v) for v in related.values()) // 2} pairs")
+    print(f"  explore links   : {sum(len(v) for v in explore.values()) // 2} pairs")
+    bare = [c for c in clusters if not related.get(c) and not explore.get(c)]
+    print(f"  clusters with no relations: {len(bare)} {bare}")
     return 0
 
 

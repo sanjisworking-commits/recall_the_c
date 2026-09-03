@@ -641,3 +641,83 @@ def test_valid_directions_pass_validation(direction):
 def test_shipped_graph_uses_only_valid_directions():
     _units, articles = _corpus()
     assert validate_graph(curated_graph(), known_articles=articles).errors == []
+
+
+# ── curated cluster relations ───────────────────────────────────────────────
+#
+# These are curriculum judgement, not migration, so they are pinned: a later
+# edit that drops or flips one should have to say so.
+
+
+def test_every_cluster_has_somewhere_to_go():
+    """A cluster with no relations can only ever reach the legacy scorer."""
+    graph = curated_graph()
+    for cid, spec in graph.clusters.items():
+        assert spec.get("related_clusters") or spec.get("explore_clusters"), cid
+
+
+def test_cluster_relations_are_symmetric():
+    """The selector reads only the anchor's lists.
+
+    An asymmetric declaration would make equality -> liberty Related while
+    liberty -> equality fell through to the legacy scorer — a difference no
+    curator would expect from the same pair.
+    """
+    clusters = curated_graph().clusters
+    for cid, spec in clusters.items():
+        for key in ("related_clusters", "explore_clusters"):
+            for peer in spec.get(key) or []:
+                assert cid in (clusters[peer].get(key) or []), f"{cid} {key} {peer}"
+
+
+def test_no_pair_is_both_related_and_explore():
+    clusters = curated_graph().clusters
+    for cid, spec in clusters.items():
+        overlap = set(spec.get("related_clusters") or []) & set(
+            spec.get("explore_clusters") or []
+        )
+        assert not overlap, (cid, overlap)
+
+
+def test_a_cluster_never_relates_to_itself():
+    for cid, spec in curated_graph().clusters.items():
+        assert cid not in (spec.get("related_clusters") or []), cid
+        assert cid not in (spec.get("explore_clusters") or []), cid
+
+
+@pytest.mark.parametrize(
+    "a, b, expected",
+    [
+        # Union/State counterparts of the same organ.
+        ("74", "163", "close"),      # curated edge, Council of Ministers
+        ("53", "154", "related"),    # executive_union <-> state_executive
+        ("85", "174", "related"),    # parliament <-> state_legislature (both absent
+                                     # from the corpus, but the relation resolves)
+        # A right and the forum that enforces it.
+        ("32", "226", "close"),      # curated edge
+        # Relations are not transitive: liberty's related neighbour is the
+        # *remedy* (32/226), while the court as an institution is a widening.
+        ("32", "129", "related"),    # constitutional_remedies <-> union_judiciary
+        ("21", "129", "explore"),    # liberty -> union_judiciary
+        # Equality and public employment: Article 16 is why these sit together.
+        ("14", "309", "related"),    # equality <-> services
+        # Deliberate distance that still widens the lens.
+        ("21", "352", "explore"),    # liberty -> emergency
+        ("14", "243A", "explore"),   # equality -> panchayats
+    ],
+)
+def test_curated_relations_resolve_as_intended(a, b, expected):
+    graph = curated_graph()
+    got = graph.bucket_for(f"article-{a}", f"article-{b}", a, b)
+    assert got.bucket == expected, (a, b, got)
+
+
+def test_related_reaches_further_than_close_but_not_everywhere():
+    """Curation should not quietly become "everything is related"."""
+    graph = curated_graph()
+    clusters = graph.clusters
+    for cid, spec in clusters.items():
+        reachable = set(spec.get("related_clusters") or []) | set(
+            spec.get("explore_clusters") or []
+        )
+        assert len(reachable) < len(clusters) - 1, cid

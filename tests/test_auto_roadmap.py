@@ -894,9 +894,12 @@ def test_letters_preference_removes_future_parent(tmp_path: Path):
     future = today + timedelta(days=2)
     while future <= roadmap_horizon(today) and not _ids_on(engine, future):
         future += timedelta(days=1)
-    planted = ["parent-x", *_ids_on(engine, future)[:2]]
-    if "parent-x" not in planted:
-        planted = ["parent-x", "u1", "u2"]
+    # parent-x plus two companions that are not parent-x. Prepending it to a
+    # raw slice duplicated it whenever the planner had already put it on this
+    # day, which auto_plan_item's UNIQUE constraint then rejected.
+    companions = [uid for uid in _ids_on(engine, future) if uid != "parent-x"][:2]
+    planted = ["parent-x", *(companions or ["u1", "u2"])]
+    assert len(planted) == len(set(planted))
     engine.replace_auto_plan_day(future, 3, planted)
     assert "parent-x" in _ids_on(engine, future)
     past = today - timedelta(days=1)
