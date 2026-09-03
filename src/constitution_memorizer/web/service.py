@@ -369,10 +369,18 @@ def may_persist_revision_modes(
 
 
 def persist_session_anchor_theme(engine: ReminderEngine, unit_ids: list[str]) -> None:
-    """Record last_anchor_theme only when today's Auto session is created."""
+    """Record the anchor's recency key when today's Auto session is created.
+
+    Position 0 of a persisted Auto day *is* that day's anchor — the oldest
+    unfinished commitment where one exists, otherwise the selector's own pick —
+    so reading unit_ids[0] reads the anchor. The stored value is the graph's
+    canonical recency key rather than the legacy primary_theme; the column
+    keeps its old name for compatibility.
+    """
     if not unit_ids:
         return
     from constitution_memorizer.planner.relationships import candidates_from_units
+    from constitution_memorizer.planner.selector import recency_key
 
     unit = engine.get_unit(unit_ids[0])
     if unit is None:
@@ -380,7 +388,7 @@ def persist_session_anchor_theme(engine: ReminderEngine, unit_ids: list[str]) ->
     mix = candidates_from_units([unit])
     if mix:
         try:
-            engine.set_last_anchor_theme(mix[0].primary_theme)
+            engine.set_last_anchor_theme(recency_key(mix[0]))
         except Exception:  # noqa: BLE001
             pass
 
@@ -453,7 +461,9 @@ def select_today_mix(
     )
     if mix:
         try:
-            engine.set_last_anchor_theme(mix[0].primary_theme)
+            from constitution_memorizer.planner.selector import recency_key
+
+            engine.set_last_anchor_theme(recency_key(mix[0]))
         except Exception:  # noqa: BLE001
             pass
     return [item.id for item in mix]
