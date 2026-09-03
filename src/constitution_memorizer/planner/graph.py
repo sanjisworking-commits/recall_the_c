@@ -44,6 +44,7 @@ from pathlib import Path
 from constitution_memorizer.utils.json_io import read_json
 
 BUCKETS = ("close", "related", "explore")
+DIRECTIONS = ("both", "a_to_b", "b_to_a")
 _BUCKET_RANK = {"close": 0, "related": 1, "explore": 2}
 
 _REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -95,6 +96,44 @@ class NodeMetadata:
     anchor_weight: float = 1.0
 
 
+@dataclass(frozen=True)
+class _RawMetadata:
+    """One JSON entry, with field *presence* preserved.
+
+    Resolution needs to tell "the unit said nothing" from "the unit said
+    something falsy". Collapsing omitted fields into defaults at parse time
+    loses that: a clause overriding only its cluster would silently reset an
+    Article's anchor_eligible=false back to true, because the default is
+    indistinguishable from a real value by the time it is read.
+    """
+
+    clusters: tuple[str, ...] | None = None
+    primary_cluster: str | None = None
+    anchor_eligible: bool | None = None
+    anchor_weight: float | None = None
+
+    def resolve(self, inherited: NodeMetadata | None = None) -> NodeMetadata:
+        base = inherited or NodeMetadata()
+        return NodeMetadata(
+            clusters=base.clusters if self.clusters is None else self.clusters,
+            primary_cluster=(
+                base.primary_cluster
+                if self.primary_cluster is None
+                else self.primary_cluster
+            ),
+            anchor_eligible=(
+                base.anchor_eligible
+                if self.anchor_eligible is None
+                else self.anchor_eligible
+            ),
+            anchor_weight=(
+                base.anchor_weight
+                if self.anchor_weight is None
+                else self.anchor_weight
+            ),
+        )
+
+
 EMPTY_METADATA = NodeMetadata()
 
 
@@ -137,21 +176,31 @@ class CuratedRelationshipGraph:
     # ---------------------------------------------------------------- load --
 
     @staticmethod
-    def _read_metadata(raw: dict) -> dict[str, NodeMetadata]:
-        out: dict[str, NodeMetadata] = {}
+    def _read_metadata(raw: dict) -> dict[str, _RawMetadata]:
+        """Parse without deciding: absent stays absent until resolution."""
+        out: dict[str, _RawMetadata] = {}
         for key, value in raw.items():
             if not isinstance(value, dict):
                 continue
-            clusters = tuple(
-                str(c) for c in (value.get("clusters") or []) if str(c).strip()
-            )
+            clusters = None
+            if "clusters" in value:
+                # An explicit [] is a real answer: this node belongs nowhere.
+                clusters = tuple(
+                    str(c) for c in (value.get("clusters") or []) if str(c).strip()
+                )
             primary = value.get("primary_cluster")
-            weight = value.get("anchor_weight", 1.0)
-            out[str(key)] = NodeMetadata(
+            weight = value.get("anchor_weight")
+            out[str(key)] = _RawMetadata(
                 clusters=clusters,
                 primary_cluster=str(primary) if primary else None,
-                anchor_eligible=bool(value.get("anchor_eligible", True)),
-                anchor_weight=float(weight) if isinstance(weight, (int, float)) else 1.0,
+                anchor_eligible=(
+                    bool(value["anchor_eligible"])
+                    if "anchor_eligible" in value
+                    else None
+                ),
+                anchor_weight=(
+                    float(weight) if isinstance(weight, (int, float)) else None
+                ),
             )
         return out
 
@@ -168,6 +217,15 @@ class CuratedRelationshipGraph:
             )
             return
         direction = str(row.get("direction") or "both")
+        if direction not in DIRECTIONS:
+            # A typo here would index no keys at all, so the relationship
+            # would simply cease to exist — the silent-loss failure the
+            # validator is for. Record it rather than dropping the edge.
+            self._edge_conflicts.append(
+                f"{label} {a!r}->{b!r} has invalid direction {direction!r}; "
+                f"expected one of {list(DIRECTIONS)}"
+            )
+            return
         edge = _Edge(bucket, row.get("type"), direction)
         for key in self._edge_keys(a, b, direction):
             prior = index.get(key)
@@ -190,34 +248,33 @@ class CuratedRelationshipGraph:
             yield (b, a)
 
     @staticmethod
-    def _invert(meta: dict[str, NodeMetadata]) -> dict[str, tuple[str, ...]]:
+    def _invert(meta: dict[str, _RawMetadata]) -> dict[str, tuple[str, ...]]:
         groups: dict[str, list[str]] = defaultdict(list)
         for key, node in meta.items():
-            for cluster in node.clusters:
+            for cluster in node.clusters or ():
                 groups[cluster].append(key)
         return {cluster: tuple(sorted(keys)) for cluster, keys in groups.items()}
 
     # ------------------------------------------------------------ metadata --
 
     def metadata_for(self, unit_id: str, article_number: str | None = None):
-        """Unit metadata if curated, else the Article's, else empty.
+        """Unit metadata over Article metadata, field by field.
 
-        A unit entry replaces its Article's wholesale — a supplied ``clusters``
-        list is the unit's full membership, never a union with the inherited
-        one. Anything the unit omits falls through to the Article.
+        A field the unit supplies replaces the Article's; a field it omits
+        inherits. That holds for every field, not just clusters — a clause
+        that overrides only its cluster keeps the Article's anchor_eligible
+        and anchor_weight rather than resetting them to the defaults.
+
+        A supplied ``clusters`` list is the unit's full membership, never a
+        union with the inherited one, and an explicit ``[]`` means exactly
+        that rather than "omitted".
         """
-        unit = self._unit_meta.get(unit_id)
-        article = self._article_meta.get(article_number or "")
-        if unit is None:
+        article_raw = self._article_meta.get(article_number or "")
+        article = article_raw.resolve() if article_raw is not None else None
+        unit_raw = self._unit_meta.get(unit_id)
+        if unit_raw is None:
             return article or EMPTY_METADATA
-        if article is None:
-            return unit
-        return NodeMetadata(
-            clusters=unit.clusters or article.clusters,
-            primary_cluster=unit.primary_cluster or article.primary_cluster,
-            anchor_eligible=unit.anchor_eligible,
-            anchor_weight=unit.anchor_weight,
-        )
+        return unit_raw.resolve(article)
 
     def clusters_for(self, unit_id: str, article_number: str | None = None):
         return self.metadata_for(unit_id, article_number).clusters
@@ -334,10 +391,17 @@ class CuratedRelationshipGraph:
 
     @property
     def article_metadata(self) -> dict[str, NodeMetadata]:
-        return dict(self._article_meta)
+        """Articles as written — no inheritance applies above an Article."""
+        return {key: raw.resolve() for key, raw in self._article_meta.items()}
 
     @property
     def unit_metadata(self) -> dict[str, NodeMetadata]:
+        """Units as written, unresolved: the validator checks what was said."""
+        return {key: raw.resolve() for key, raw in self._unit_meta.items()}
+
+    @property
+    def raw_unit_metadata(self) -> dict[str, _RawMetadata]:
+        """Unit entries with field presence intact, for validation."""
         return dict(self._unit_meta)
 
     @property

@@ -10,9 +10,15 @@ Which bucket a unit falls in is *curated data*, read from the relationship
 graph. This module does not decide whether two provisions are conceptually
 close; it only composes a day out of buckets the curriculum already assigned.
 Where the graph has nothing to say, a clearly-tagged legacy heuristic fills in
-until curation catches up — but a curated candidate is always preferred to a
-legacy one, so "graph-first" means the curated pools are drained first, not
-merely that curated classifications win for the same pair.
+until curation catches up.
+
+Filling a slot goes bucket first, source second. The bucket a slot asked for
+is the product invariant — a Related slot filled by a legacy Related is closer
+to the intent than one filled by a curated Close — so source only breaks ties
+*within* a bucket. Ordering it the other way collapses a curated anchor's day
+into Close: Article 14 has curated Close companions but no curated Related or
+Explore, so both of those slots would take a curated Close and Balanced would
+lose its association and novelty entirely.
 """
 
 from __future__ import annotations
@@ -244,8 +250,9 @@ def classify(
             relation_source="unclassified",
         )
     # No curated relationship. The legacy scorer always answers — even for a
-    # pair with nothing in common, which it calls Explore — so this is kept in
-    # its own pools and drained only after every curated pool is empty.
+    # pair with nothing in common, which it calls Explore — so its verdicts are
+    # kept in separate pools and used only after the curated pool of the same
+    # bucket is empty.
     return MixPick(
         candidate=other,
         requested_bucket=None,
@@ -369,9 +376,9 @@ class LearningMixSelector:
             if bucket in need:
                 need[bucket] = max(0, need[bucket] - 1)
 
-        # Two pools, kept apart on purpose: a curated Related beats a legacy
-        # Close, because the whole point is to prefer curated candidates rather
-        # than merely to prefer curated labels for the same pair.
+        # Two pools, kept apart so each rung of a slot's ladder can prefer a
+        # curated candidate to a legacy one *of the same bucket* without
+        # letting provenance override the bucket the slot asked for.
         curated: dict[str, list[MixCandidate]] = {b: [] for b in BUCKET_ORDER}
         legacy: dict[str, list[MixCandidate]] = {b: [] for b in BUCKET_ORDER}
         unclassified: list[MixCandidate] = []

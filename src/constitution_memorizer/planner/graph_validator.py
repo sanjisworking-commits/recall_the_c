@@ -86,12 +86,17 @@ def validate_graph(
     _check_metadata(result, graph.unit_metadata, clusters, "unit", known_units)
 
     # A unit that overrides primary_cluster must own a clusters list containing
-    # it — the resolved membership is never quietly widened to fit.
-    for unit_id, node in graph.unit_metadata.items():
-        if node.primary_cluster and node.primary_cluster not in node.clusters:
+    # it. Checked against what was *written*, not what resolved: the validator
+    # cannot see which Article a unit belongs to, so it requires the membership
+    # to be stated rather than inferring it. Explicit beats convenient here —
+    # a silently widened membership is a relationship nobody wrote down.
+    for unit_id, raw in graph.raw_unit_metadata.items():
+        if not raw.primary_cluster:
+            continue
+        if raw.clusters is None or raw.primary_cluster not in raw.clusters:
             result.errors.append(
                 f"unit {unit_id!r} sets primary_cluster "
-                f"{node.primary_cluster!r} without a clusters list containing "
+                f"{raw.primary_cluster!r} without a clusters list containing "
                 "it; supply the replacement clusters explicitly"
             )
 

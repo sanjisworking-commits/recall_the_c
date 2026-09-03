@@ -530,3 +530,114 @@ def test_no_graph_anywhere_raises(monkeypatch, tmp_path: Path):
     monkeypatch.setattr(graph_module, "_PACKAGE_GRAPH", tmp_path / "b.json")
     with pytest.raises(CuratedGraphMissing):
         graph_module.load_graph_data()
+
+
+# ── inheritance: omitted inherits, supplied replaces ────────────────────────
+
+
+def _inheritance_graph(unit_entry: dict) -> CuratedRelationshipGraph:
+    return _graph(
+        article_metadata={
+            "19": {
+                "primary_cluster": "liberty",
+                "clusters": ["liberty", "equality"],
+                "anchor_eligible": False,
+                "anchor_weight": 0.4,
+            }
+        },
+        unit_metadata={"article-19-clause-1": unit_entry},
+    )
+
+
+def test_unit_overriding_only_clusters_keeps_the_articles_anchor_fields():
+    """The bug this pins: a clause that overrides one field reset the others.
+
+    Parsing used to fill omitted fields with defaults, so by resolution time
+    "the unit said nothing" and "the unit said true/1.0" were the same value.
+    A clause overriding only its cluster silently re-enabled anchoring on an
+    Article deliberately marked anchor_eligible=false.
+    """
+    graph = _inheritance_graph(
+        {"primary_cluster": "equality", "clusters": ["equality"]}
+    )
+    meta = graph.metadata_for("article-19-clause-1", "19")
+    assert meta.clusters == ("equality",)
+    assert meta.primary_cluster == "equality"
+    # Inherited, not reset to the defaults.
+    assert meta.anchor_eligible is False
+    assert meta.anchor_weight == 0.4
+
+
+def test_unit_may_override_anchor_fields_on_their_own():
+    graph = _inheritance_graph({"anchor_eligible": True, "anchor_weight": 2.5})
+    meta = graph.metadata_for("article-19-clause-1", "19")
+    assert meta.anchor_eligible is True
+    assert meta.anchor_weight == 2.5
+    # Clusters were not supplied, so they inherit.
+    assert meta.clusters == ("liberty", "equality")
+    assert meta.primary_cluster == "liberty"
+
+
+def test_explicitly_empty_clusters_is_not_the_same_as_omitted():
+    """`"clusters": []` says "belongs nowhere"; omitting it says "as parent"."""
+    omitted = _inheritance_graph({"anchor_weight": 0.9})
+    assert omitted.metadata_for("article-19-clause-1", "19").clusters == (
+        "liberty",
+        "equality",
+    )
+    emptied = _graph(
+        article_metadata={
+            "19": {"primary_cluster": "liberty", "clusters": ["liberty"]}
+        },
+        unit_metadata={"article-19-clause-1": {"clusters": []}},
+    )
+    meta = emptied.metadata_for("article-19-clause-1", "19")
+    assert meta.clusters == ()
+    # With no membership the unit relates to nothing, rather than inheriting.
+    assert meta.primary_cluster == "liberty"
+    assert (
+        emptied.bucket_for("article-19-clause-1", "article-19", "19", "19").bucket
+        is None
+    )
+
+
+def test_a_unit_with_no_entry_is_purely_its_article():
+    graph = _inheritance_graph({"clusters": ["equality"], "primary_cluster": "equality"})
+    sibling = graph.metadata_for("article-19-clause-2", "19")
+    assert sibling.clusters == ("liberty", "equality")
+    assert sibling.anchor_eligible is False
+    assert sibling.anchor_weight == 0.4
+
+
+# ── direction typos must not delete relationships silently ──────────────────
+
+
+def test_invalid_direction_is_rejected_rather_than_dropped():
+    """A misspelt direction indexes no keys, so the edge would just vanish.
+
+    That is the exact failure this validator exists to catch: data that looks
+    present but does nothing.
+    """
+    graph = _graph(
+        article_edges=[
+            {"a": "14", "b": "15", "bucket": "close", "direction": "bothh"}
+        ]
+    )
+    assert graph.bucket_for("article-14", "article-15", "14", "15").bucket is None
+    errors = validate_graph(graph).errors
+    assert any("invalid direction 'bothh'" in e for e in errors), errors
+
+
+@pytest.mark.parametrize("direction", ["both", "a_to_b", "b_to_a"])
+def test_valid_directions_pass_validation(direction):
+    graph = _graph(
+        article_edges=[
+            {"a": "14", "b": "15", "bucket": "close", "direction": direction}
+        ]
+    )
+    assert validate_graph(graph).errors == []
+
+
+def test_shipped_graph_uses_only_valid_directions():
+    _units, articles = _corpus()
+    assert validate_graph(curated_graph(), known_articles=articles).errors == []
