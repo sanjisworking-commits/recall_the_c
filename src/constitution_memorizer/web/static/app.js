@@ -165,6 +165,10 @@
       }
     }
 
+    // Which blank was just tapped. render() rebuilds every span, so without
+    // this the whole revealed set replays its entrance on every tap.
+    let justRevealed = null;
+
     function render() {
       if (!textEl) {
         return;
@@ -181,6 +185,9 @@
           span.setAttribute("aria-label", "Reveal hidden word");
           if (revealed.has(index)) {
             span.classList.add("is-revealed");
+            if (index === justRevealed) {
+              span.classList.add("is-new");
+            }
             span.removeAttribute("tabindex");
             span.removeAttribute("role");
             span.removeAttribute("aria-label");
@@ -188,6 +195,7 @@
             const reveal = () => {
               revealed.add(index);
               tapRevealed.add(index);
+              justRevealed = index;
               render();
               checkTapComplete();
             };
@@ -202,6 +210,9 @@
         }
         textEl.appendChild(span);
       });
+      // Consumed: a later render for any other reason — density, reveal all,
+      // a re-entry into the mode — leaves every word where it is.
+      justRevealed = null;
       updateStatus();
     }
 

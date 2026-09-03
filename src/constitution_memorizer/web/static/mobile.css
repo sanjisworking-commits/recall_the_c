@@ -3590,13 +3590,18 @@
     border-bottom: 2px solid var(--rc-teal);
     color: var(--rc-teal);
     font-weight: 400;
-    animation: rcPop 0.3s ease both;
   }
 
-  /* styles.css gives the revealed word a 160ms fade under html.rtc-anim, and
-     that selector outranks the one above — the word appeared without the
-     design's pop whenever animation was on, which is the case that matters. */
+  /* Only the word just tapped animates. The panel re-renders every span on
+     each reveal, so an animation on .is-revealed replayed the entire revealed
+     set every time. styles.css also fades .is-revealed under html.rtc-anim
+     and outranks these, so that rule is overridden to nothing here. */
   html.rtc-anim body[data-mscreen="learn"] .learn-cloze-word.is-blank.is-revealed {
+    animation: none;
+  }
+
+  body[data-mscreen="learn"] .learn-cloze-word.is-revealed.is-new,
+  html.rtc-anim body[data-mscreen="learn"] .learn-cloze-word.is-blank.is-revealed.is-new {
     animation: rcPop 0.3s ease both;
   }
 

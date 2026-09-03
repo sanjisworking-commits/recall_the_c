@@ -99,10 +99,10 @@ def test_reset_progress_keeps_gloss(client: TestClient):
 
 
 def test_explain_back_css(mini_client: TestClient):
-    css = mini_client.get("/static/styles.css?v=main55").text
+    css = mini_client.get("/static/styles.css?v=main56").text
     assert ".explain-back-input" in css
     assert "background: var(--paper)" in css
     assert ".explain-back-clear" in css
-    js = mini_client.get("/static/app.js?v=main55").text
+    js = mini_client.get("/static/app.js?v=main56").text
     assert "initExplainBack" in js
     assert "500" in js
