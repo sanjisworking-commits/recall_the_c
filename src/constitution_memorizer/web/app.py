@@ -11,7 +11,17 @@ from zoneinfo import ZoneInfo
 from uuid import uuid4
 from pathlib import Path
 
-from fastapi import FastAPI, File, Form, HTTPException, Query, Request, Response, UploadFile
+from fastapi import (
+    Depends,
+    FastAPI,
+    File,
+    Form,
+    HTTPException,
+    Query,
+    Request,
+    Response,
+    UploadFile,
+)
 from pydantic import BaseModel, ValidationError
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -2573,7 +2583,37 @@ def create_app(
             },
         )
 
-    @app.get("/laws", response_class=HTMLResponse)
+    def _bootstrap_laws_request(request: Request) -> None:
+        """One batched read for the shared template context on Laws pages.
+
+        A Laws page renders no user data, but the chrome around it does:
+        base.html needs the theme, the onboarding status and the due badge.
+        Unbootstrapped those are three independent reads, and production
+        measured each at ~217 ms cross-region — about 650 ms of a 656 ms
+        request. Seeding the engine's request-local caches once turns all
+        three into cache hits, which is the shape /browse already has.
+
+        Defaults only. Laws needs no account, modes or news pack; asking for
+        one would trade three reads for a larger single one.
+
+        Guests never get here: every one of those context values
+        short-circuits for them, so bootstrapping would add a read to a path
+        that today performs none.
+        """
+        if not app.state.multiuser_enabled:
+            # Single-user keeps one long-lived engine whose caches already
+            # survive between requests; there is nothing per-request to seed.
+            return
+        if getattr(request.state, "current_user", None) is None:
+            return
+        bound = getattr(request.state, "bound_engine", None)
+        if bound is None:
+            return
+        bound.bootstrap_request()
+
+    @app.get(
+        "/laws", response_class=HTMLResponse, dependencies=[Depends(_bootstrap_laws_request)]
+    )
     async def laws_page(request: Request) -> HTMLResponse:
         context = {"acts": load_laws(), "bare_acts": list_bare_acts()}
         started = time.perf_counter()
@@ -2581,7 +2621,9 @@ def create_app(
         record_request_timing("template", started)
         return response
 
-    @app.get("/laws/{law_id}", response_class=HTMLResponse)
+    @app.get(
+        "/laws/{law_id}", response_class=HTMLResponse, dependencies=[Depends(_bootstrap_laws_request)]
+    )
     async def law_detail_page(request: Request, law_id: str) -> HTMLResponse:
         # One Laws namespace, two kinds of Act. A Bare Act is read in full, so
         # it gets the chapter list; a seeded law is a clause extract mapped to
@@ -2604,7 +2646,11 @@ def create_app(
             {"act": act, "tracked_articles": tracked},
         )
 
-    @app.get("/laws/{law_id}/section/{number}", response_class=HTMLResponse)
+    @app.get(
+        "/laws/{law_id}/section/{number}",
+        response_class=HTMLResponse,
+        dependencies=[Depends(_bootstrap_laws_request)],
+    )
     async def bare_act_section_page(
         request: Request, law_id: str, number: str
     ) -> HTMLResponse:
@@ -2633,7 +2679,9 @@ def create_app(
         return response
 
     @app.get(
-        "/laws/{law_id}/schedule/{schedule_slug}", response_class=HTMLResponse
+        "/laws/{law_id}/schedule/{schedule_slug}",
+        response_class=HTMLResponse,
+        dependencies=[Depends(_bootstrap_laws_request)],
     )
     async def bare_act_schedule_page(
         request: Request, law_id: str, schedule_slug: str
