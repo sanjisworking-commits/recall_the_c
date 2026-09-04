@@ -138,13 +138,19 @@ def test_guest_laws_request_reads_nothing(
     assert "nav_due_ms" not in line
 
 
-def test_signed_in_laws_request_names_all_three_nav_reads(
+def test_signed_in_laws_request_reads_once(
     tmp_path: Path, caplog: logging.LogCaptureFixture
 ):
-    """theme + onboarding + due-count must be separately visible.
+    """The shape these stages were added to expose, now that it is fixed.
 
-    Onboarding had no stage at all before this change, so the middle of the
-    three suspected waits could not be measured even after deploying.
+    This test originally asserted theme_ms, onboarding_setting_ms and
+    nav_due_ms appeared as three separate stages — which is what production
+    showed (217.7 / 217.1 / 217.5 ms of a 656 ms request). Laws now bootstraps
+    once, so those reads are cache hits and their stages correctly vanish.
+
+    The stages themselves are still wired; that is pinned directly at
+    test_setting_stage_records_only_a_real_read, so this change cannot quietly
+    disable the instrumentation instead of the reads.
     """
     client = _client(tmp_path, signed_in=True)
     client.get("/laws/ndps")
@@ -154,10 +160,37 @@ def test_signed_in_laws_request_names_all_three_nav_reads(
     line = _breakdowns(caplog)[0]
     assert "path=/laws/ndps" in line
     assert "auth_state=authed" in line
-    assert "theme_ms=" in line
-    assert "onboarding_setting_ms=" in line
-    assert "nav_due_ms=" in line
+    assert "request_bootstrap_n=1" in line
     assert "template_ms=" in line
+    assert "theme_ms" not in line
+    assert "onboarding_setting_ms" not in line
+    assert "split_prefs_ms" not in line
+
+
+def test_setting_stage_records_only_a_real_read(tmp_path: Path):
+    """get_setting follows get_theme's rule: a stage means a read happened."""
+    from constitution_memorizer.progress.db import open_progress_db
+    from constitution_memorizer.progress.repository import ProgressRepository
+    from constitution_memorizer.progress.scheduler import ReminderEngine
+    from constitution_memorizer.web.request_context import (
+        begin_request_timings,
+        reset_request_timings,
+        snapshot_request_timings,
+    )
+
+    repo = ProgressRepository(open_progress_db(tmp_path / "p.db"))
+    engine = ReminderEngine(repo, {}, user_id=USER)
+    token = begin_request_timings()
+    try:
+        engine.get_setting("onboarding", stage="onboarding_setting")
+        assert "onboarding_setting" in snapshot_request_timings()
+        # Seed the cache the way bootstrap_request does; no further read.
+        engine._settings_cache = {}
+        before = snapshot_request_timings()["onboarding_setting"][1]
+        engine.get_setting("onboarding", stage="onboarding_setting")
+        assert snapshot_request_timings()["onboarding_setting"][1] == before
+    finally:
+        reset_request_timings(token)
 
 
 def test_a_stage_means_a_real_read_not_merely_a_call(
