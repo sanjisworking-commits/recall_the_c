@@ -2578,6 +2578,29 @@ def create_app(
                 "section": section,
                 "prev_section": previous,
                 "next_section": following,
+                "footnotes": bare.notes(section.note_ids),
+            },
+        )
+
+    @app.get(
+        "/laws/{law_id}/schedule/{schedule_slug}", response_class=HTMLResponse
+    )
+    async def bare_act_schedule_page(
+        request: Request, law_id: str, schedule_slug: str
+    ) -> HTMLResponse:
+        bare = get_bare_act(law_id)
+        if bare is None:
+            raise HTTPException(status_code=404, detail="Law not found")
+        schedule = bare.schedule(schedule_slug)
+        if schedule is None:
+            raise HTTPException(status_code=404, detail="Schedule not found")
+        return templates.TemplateResponse(
+            request,
+            "bare_act_schedule.html",
+            {
+                "act": bare,
+                "schedule": schedule,
+                "footnotes": bare.notes(schedule.note_ids),
             },
         )
 

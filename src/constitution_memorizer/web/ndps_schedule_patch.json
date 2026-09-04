@@ -1,0 +1,1980 @@
+{
+  "schedules": [
+    {
+      "id": "schedule_psychotropic_substances",
+      "title": "THE SCHEDULE",
+      "reference": "[See clause (xxiii) of Section 2]",
+      "heading": "LIST OF PSYCHOTROPIC SUBSTANCES",
+      "columns": [
+        "Sl. No.",
+        "International non-proprietary names",
+        "Other nonproprietary names",
+        "Chemical name"
+      ],
+      "entries": [
+        {
+          "serial_number": "1",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "DET",
+          "chemical_name": "N, N-Diethyltryptamine",
+          "serial_annotations": [],
+          "source_pages": [
+            46
+          ]
+        },
+        {
+          "serial_number": "2",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "DMHP",
+          "chemical_name": "3-(1,2-Dimethylheptyl)-1-hydroxy-7, 8, 9, 10-tetrahydro 6, 6, 9-trimethyl-6H-dibenzo [b, d] pyran",
+          "serial_annotations": [],
+          "source_pages": [
+            46
+          ]
+        },
+        {
+          "serial_number": "3",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "DMT",
+          "chemical_name": "N, N-Dimethyltryptamine",
+          "serial_annotations": [],
+          "source_pages": [
+            46
+          ]
+        },
+        {
+          "serial_number": "4",
+          "international_non_proprietary_name": "(+)-LYSERGIDE",
+          "other_nonproprietary_names": "LSD, LSD-25",
+          "chemical_name": "(+)-N, N-Diethyllysergamide (d-lysergic acid diethylamide)",
+          "serial_annotations": [],
+          "source_pages": [
+            46
+          ]
+        },
+        {
+          "serial_number": "5",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "mescaline",
+          "chemical_name": "3, 4, 5-Trimethoxyphenethylamine",
+          "serial_annotations": [],
+          "source_pages": [
+            46
+          ]
+        },
+        {
+          "serial_number": "6",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "parahexyl",
+          "chemical_name": "3-Hexyl-1-hydroxy-7, 8, 9, 10-tetrahydro-6, 6, 9-trimethyl-6H-dibenzo [b, d] pyran",
+          "serial_annotations": [],
+          "source_pages": [
+            46
+          ]
+        },
+        {
+          "serial_number": "7",
+          "international_non_proprietary_name": "ETICYCLIDINE",
+          "other_nonproprietary_names": "PCE",
+          "chemical_name": "N-Ethyl-1-phenylcyclohexylamine",
+          "serial_annotations": [],
+          "source_pages": [
+            46
+          ]
+        },
+        {
+          "serial_number": "8",
+          "international_non_proprietary_name": "ROLICYCLIDINE",
+          "other_nonproprietary_names": "PHP, PCPY",
+          "chemical_name": "1-(1-phenylcyclohexyl) pyrrolidine",
+          "serial_annotations": [],
+          "source_pages": [
+            46
+          ]
+        },
+        {
+          "serial_number": "9",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "psilocine, psilotsin",
+          "chemical_name": "3-(2-Dimethylaminoethyl)-4-hydroxyindole",
+          "serial_annotations": [],
+          "source_pages": [
+            46
+          ]
+        },
+        {
+          "serial_number": "10",
+          "international_non_proprietary_name": "PSILOCYBINE",
+          "other_nonproprietary_names": null,
+          "chemical_name": "3-(2-Dimethylaminoethyl)-indol-4-yl dihydrogen phosphate",
+          "serial_annotations": [],
+          "source_pages": [
+            46
+          ]
+        },
+        {
+          "serial_number": "11",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "STP, DOM",
+          "chemical_name": "2-Amino-1-(2, 5-dimethoxy-methyl) phenylpropane",
+          "serial_annotations": [],
+          "source_pages": [
+            46
+          ]
+        },
+        {
+          "serial_number": "12",
+          "international_non_proprietary_name": "TENOCYCLIDINE",
+          "other_nonproprietary_names": "TCP",
+          "chemical_name": "1-[1-(2-Thienyl) cydohexyl] piperidine",
+          "serial_annotations": [],
+          "source_pages": [
+            46
+          ]
+        },
+        {
+          "serial_number": "13",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "THC",
+          "chemical_name": "Tetrahydrocannabinols, the following isomers: Δ6a(10a), Δ6a(7), Δ7, Δ8, Δ9, Δ10, Δ9(11) and their stcreochemical variants",
+          "serial_annotations": [],
+          "source_pages": [
+            46
+          ]
+        },
+        {
+          "serial_number": "14",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "DOB",
+          "chemical_name": "2, 5-dimethoxyl-4-bromoamphetamine",
+          "serial_annotations": [],
+          "source_pages": [
+            46
+          ]
+        },
+        {
+          "serial_number": "15",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "MDA",
+          "chemical_name": "3, 4-methylenedioxyamphetamine",
+          "serial_annotations": [],
+          "source_pages": [
+            46
+          ]
+        },
+        {
+          "serial_number": "16",
+          "international_non_proprietary_name": "AMPHETAMINE",
+          "other_nonproprietary_names": null,
+          "chemical_name": "(±)-2-Amino-1-phenylpropane",
+          "serial_annotations": [],
+          "source_pages": [
+            46
+          ]
+        },
+        {
+          "serial_number": "17",
+          "international_non_proprietary_name": "DEXAMPHETAMINE",
+          "other_nonproprietary_names": null,
+          "chemical_name": "(+)-2-Amino-1-phenylpropane",
+          "serial_annotations": [],
+          "source_pages": [
+            46
+          ]
+        },
+        {
+          "serial_number": "18",
+          "international_non_proprietary_name": "MECLOQUALONE",
+          "other_nonproprietary_names": null,
+          "chemical_name": "3-(o-Chlorophenyl)-2-methyl-4(3H)-quinazolinone",
+          "serial_annotations": [],
+          "source_pages": [
+            46
+          ]
+        },
+        {
+          "serial_number": "19",
+          "international_non_proprietary_name": "METHAMPHETAMINE",
+          "other_nonproprietary_names": null,
+          "chemical_name": "(+)-2-Methylamino-1-phenylpropane",
+          "serial_annotations": [],
+          "source_pages": [
+            46
+          ]
+        },
+        {
+          "serial_number": "20",
+          "international_non_proprietary_name": "METHAQUALONE",
+          "other_nonproprietary_names": null,
+          "chemical_name": "2-Methyl-3-0-tolyl-4-(3H)-quinazoinone",
+          "serial_annotations": [],
+          "source_pages": [
+            46
+          ]
+        },
+        {
+          "serial_number": "21",
+          "international_non_proprietary_name": "METHYLPHENIDATE",
+          "other_nonproprietary_names": null,
+          "chemical_name": "2-Phenyl-2(2-piperidyl) acetic acid, methyl ester",
+          "serial_annotations": [],
+          "source_pages": [
+            46
+          ]
+        },
+        {
+          "serial_number": "22",
+          "international_non_proprietary_name": "PHENCYCLIDINE",
+          "other_nonproprietary_names": "PCP",
+          "chemical_name": "1-(1-Phenylcyclohexyl) piperidine",
+          "serial_annotations": [],
+          "source_pages": [
+            46
+          ]
+        },
+        {
+          "serial_number": "23",
+          "international_non_proprietary_name": "PHENMETRAZINE",
+          "other_nonproprietary_names": null,
+          "chemical_name": "3-Methyl-2-phenylmorpholine",
+          "serial_annotations": [],
+          "source_pages": [
+            46
+          ]
+        },
+        {
+          "serial_number": "24",
+          "international_non_proprietary_name": "AMOBARBITAL",
+          "other_nonproprietary_names": null,
+          "chemical_name": "5-Ethyl-5-(3-methylbutyl) barbituric acid",
+          "serial_annotations": [],
+          "source_pages": [
+            47
+          ]
+        },
+        {
+          "serial_number": "25",
+          "international_non_proprietary_name": "CYCLOBARBITAL",
+          "other_nonproprietary_names": null,
+          "chemical_name": "5-(1-Cyclohexen-1-yl)-5-ethyl-barbituric acid",
+          "serial_annotations": [],
+          "source_pages": [
+            47
+          ]
+        },
+        {
+          "serial_number": "26",
+          "international_non_proprietary_name": "GLUTETHIMIDE",
+          "other_nonproprietary_names": null,
+          "chemical_name": "2-Ethyl-2-phenylglutarimide",
+          "serial_annotations": [],
+          "source_pages": [
+            47
+          ]
+        },
+        {
+          "serial_number": "27",
+          "international_non_proprietary_name": "PENTAZOCINE",
+          "other_nonproprietary_names": null,
+          "chemical_name": "1, 2, 3, 4, 5, 6-Hexahydro-6, 11-dimethyl-3-(3-methyl-2-butenyl)-2, 6-methano-3 benzazocin-8-ol",
+          "serial_annotations": [],
+          "source_pages": [
+            47
+          ]
+        },
+        {
+          "serial_number": "28",
+          "international_non_proprietary_name": "PENTOBARBITAL",
+          "other_nonproprietary_names": null,
+          "chemical_name": "5-Ethyl-5-(1-methylbutyl) barbituric acid",
+          "serial_annotations": [],
+          "source_pages": [
+            47
+          ]
+        },
+        {
+          "serial_number": "29",
+          "international_non_proprietary_name": "SECOBARBITAL",
+          "other_nonproprietary_names": null,
+          "chemical_name": "5-Allyl-5-(1-methylbutyl) barbituric acid",
+          "serial_annotations": [],
+          "source_pages": [
+            47
+          ]
+        },
+        {
+          "serial_number": "30",
+          "international_non_proprietary_name": "ALPRAZOLAM",
+          "other_nonproprietary_names": null,
+          "chemical_name": "8-Chloro-1-methyl-6-phenyl-4H-s-triazolo [4, 3-a] [1, 4] benzodiazepine",
+          "serial_annotations": [],
+          "source_pages": [
+            47
+          ]
+        },
+        {
+          "serial_number": "31",
+          "international_non_proprietary_name": "AMFEPRAMONE",
+          "other_nonproprietary_names": null,
+          "chemical_name": "2-(Diethylamino) propiophenone",
+          "serial_annotations": [],
+          "source_pages": [
+            47
+          ]
+        },
+        {
+          "serial_number": "32",
+          "international_non_proprietary_name": "BARBITAL",
+          "other_nonproprietary_names": null,
+          "chemical_name": "5, 5-Diethylbarbituric acid",
+          "serial_annotations": [],
+          "source_pages": [
+            47
+          ]
+        },
+        {
+          "serial_number": "33",
+          "international_non_proprietary_name": "BENZPHETAMINE",
+          "other_nonproprietary_names": null,
+          "chemical_name": "N-Benzyl-N, α-dimethylphenethyl-amine",
+          "serial_annotations": [],
+          "source_pages": [
+            47
+          ]
+        },
+        {
+          "serial_number": "34",
+          "international_non_proprietary_name": "BROMAZEPAM",
+          "other_nonproprietary_names": null,
+          "chemical_name": "7-Bromo-1, 3-dihydro-5-(2-pyridyl)-2H-1, 4-benzodiazepin-2-one.",
+          "serial_annotations": [],
+          "source_pages": [
+            47
+          ]
+        },
+        {
+          "serial_number": "35",
+          "international_non_proprietary_name": "CAMAZEPAM",
+          "other_nonproprietary_names": null,
+          "chemical_name": "7-Chloro-1, 3-dihydro-3-hydroxy-1-methyl-5-phenyl-2-H-1, 4 benezo-diazepin-2-one dimethylcarbamate (ester)",
+          "serial_annotations": [],
+          "source_pages": [
+            47
+          ]
+        },
+        {
+          "serial_number": "36",
+          "international_non_proprietary_name": "CHLORDIAZEPOXIDE",
+          "other_nonproprietary_names": null,
+          "chemical_name": "7-Chloro-2-(methylamino)-5-phenyl-3H-1, 4-benzodiazepine-4-oxide",
+          "serial_annotations": [],
+          "source_pages": [
+            47
+          ]
+        },
+        {
+          "serial_number": "37",
+          "international_non_proprietary_name": "CLOBAZAM",
+          "other_nonproprietary_names": null,
+          "chemical_name": "7-Chloro-1-methyl-5-phenyl-1H-1, 5-benzodiazepine, 2, 4 (3H, 5H)-dione",
+          "serial_annotations": [],
+          "source_pages": [
+            47
+          ]
+        },
+        {
+          "serial_number": "38",
+          "international_non_proprietary_name": "CLONAZEPAM",
+          "other_nonproprietary_names": null,
+          "chemical_name": "5-(o-Chlorophenyl)-1, 3-dihydro-7-nitro-2H-1, 4-benzodiazepin-2-one",
+          "serial_annotations": [],
+          "source_pages": [
+            47
+          ]
+        },
+        {
+          "serial_number": "39",
+          "international_non_proprietary_name": "CLORAZEPATE",
+          "other_nonproprietary_names": null,
+          "chemical_name": "7-Chloro-2, 3-dihydro-2-oxo-5-phenyl-1H, 4-benzodiazepine-3-carboxylic acid",
+          "serial_annotations": [],
+          "source_pages": [
+            47
+          ]
+        },
+        {
+          "serial_number": "40",
+          "international_non_proprietary_name": "CLOTIAZEPAM",
+          "other_nonproprietary_names": null,
+          "chemical_name": "5-(0-Chlorophenyl)-7-ethyl-1, 3-dihydro-1-methyl-2H-thieno [2, 3-e]-1, 4-diazepine-2-one",
+          "serial_annotations": [],
+          "source_pages": [
+            47
+          ]
+        },
+        {
+          "serial_number": "41",
+          "international_non_proprietary_name": "CLOXAZOLAM",
+          "other_nonproprietary_names": null,
+          "chemical_name": "10-Chloro-11b-(o-chlorophenyl)-2, 3, 7, 11b-tetrahydro-oxazolo-[3, 2-d] [1, 4] benzodiazepine-6 (5H)-one",
+          "serial_annotations": [],
+          "source_pages": [
+            47
+          ]
+        },
+        {
+          "serial_number": "42",
+          "international_non_proprietary_name": "DELORAZEPAM",
+          "other_nonproprietary_names": null,
+          "chemical_name": "7-Chloro-5-(o-chlorophenyl)-1, 3-dihydro-2H-1, 4-benzodiazepin-2-one",
+          "serial_annotations": [],
+          "source_pages": [
+            47
+          ]
+        },
+        {
+          "serial_number": "43",
+          "international_non_proprietary_name": "DIAZEPAM",
+          "other_nonproprietary_names": null,
+          "chemical_name": "7-Chloro-1, 3-dihydro-1-methyl-5-phenyl-2H-1, 4-benzodiazepin-2-one",
+          "serial_annotations": [],
+          "source_pages": [
+            48
+          ]
+        },
+        {
+          "serial_number": "44",
+          "international_non_proprietary_name": "ESTAZOLAM",
+          "other_nonproprietary_names": null,
+          "chemical_name": "8-Chloro-6-phenyl-4H-s-triazolo [4, 3-a], [1, 4] benzodiazepine",
+          "serial_annotations": [],
+          "source_pages": [
+            48
+          ]
+        },
+        {
+          "serial_number": "45",
+          "international_non_proprietary_name": "ETHCHLORVYNOL",
+          "other_nonproprietary_names": null,
+          "chemical_name": "Ethyl-2-chlorovinylethynylcarbinol",
+          "serial_annotations": [],
+          "source_pages": [
+            48
+          ]
+        },
+        {
+          "serial_number": "46",
+          "international_non_proprietary_name": "ETHINAMATE",
+          "other_nonproprietary_names": null,
+          "chemical_name": "1-Ethylnylcyclohexanolcarbamate",
+          "serial_annotations": [],
+          "source_pages": [
+            48
+          ]
+        },
+        {
+          "serial_number": "47",
+          "international_non_proprietary_name": "ETHYLLOFLAZEPATE",
+          "other_nonproprietary_names": null,
+          "chemical_name": "Ethyl 7-chloro-5-(o-fluorophenyl)-2, 3-dihydro-2-oxo-1H-1, 4-benzo-diazepine-3-carboxylate",
+          "serial_annotations": [],
+          "source_pages": [
+            48
+          ]
+        },
+        {
+          "serial_number": "48",
+          "international_non_proprietary_name": "FLUDIAZEPAM",
+          "other_nonproprietary_names": null,
+          "chemical_name": "7-Chloro-5-(o-fluorophenyl)-1, 3-dihydro-1-methyl-2H-1, 4-benzo-diazepine-2-one",
+          "serial_annotations": [],
+          "source_pages": [
+            48
+          ]
+        },
+        {
+          "serial_number": "49",
+          "international_non_proprietary_name": "FLUNITRAZEPAM",
+          "other_nonproprietary_names": null,
+          "chemical_name": "5-(o-Fluorophenyl)-1, 3-dihydro-1-methyl-7-nitro-2H-1, 4-benzo-diazepin-2-one",
+          "serial_annotations": [],
+          "source_pages": [
+            48
+          ]
+        },
+        {
+          "serial_number": "50",
+          "international_non_proprietary_name": "FLURAZEPAM",
+          "other_nonproprietary_names": null,
+          "chemical_name": "7-Chloro-1-[2-(diethylamino) ethyl]-5-(o-fluorophenyl)-1, 3-dihydro-2H-1, 4-benzo-diazepin-2-one",
+          "serial_annotations": [],
+          "source_pages": [
+            48
+          ]
+        },
+        {
+          "serial_number": "51",
+          "international_non_proprietary_name": "HALAZEPAM",
+          "other_nonproprietary_names": null,
+          "chemical_name": "7-Chloro-1, 3-dihydro-5-phenyl-1-(2, 2, 2-trifluoroethyl)-2H-1, 4-benzo-diazepin-2-one",
+          "serial_annotations": [],
+          "source_pages": [
+            48
+          ]
+        },
+        {
+          "serial_number": "52",
+          "international_non_proprietary_name": "HALOXAZOLAM",
+          "other_nonproprietary_names": null,
+          "chemical_name": "10-Bromo-11b-(o-fluorophenyl)-2, 3, 7, 11b-tetrahydrooxazolo [3, 2-d] [1, 4] benzodiazepine-6, (5H)-one",
+          "serial_annotations": [],
+          "source_pages": [
+            48
+          ]
+        },
+        {
+          "serial_number": "53",
+          "international_non_proprietary_name": "KETAZOLAM",
+          "other_nonproprietary_names": null,
+          "chemical_name": "11-Chloro-8, 12b-dihydro-2, 8-dimethyl-12b-phenyl-4H-[1, 3]-oxazino-[3, 2-d] [1, 4] benzodiazepine-4, 7(6H)-dione",
+          "serial_annotations": [],
+          "source_pages": [
+            48
+          ]
+        },
+        {
+          "serial_number": "54",
+          "international_non_proprietary_name": "LEFETAMINE",
+          "other_nonproprietary_names": "SPA",
+          "chemical_name": "(—)-1-dimethylamino-1, 2diphenyl-ethane",
+          "serial_annotations": [],
+          "source_pages": [
+            48
+          ]
+        },
+        {
+          "serial_number": "55",
+          "international_non_proprietary_name": "LOPRAZOLAM",
+          "other_nonproprietary_names": null,
+          "chemical_name": "6-(o-Chlorophenyl)-2, 4-dihydro-2-[(4 methyl-1-piperazinyl) metnylene]-8-nitro-1H-imidazo [1, 2-0] [1, 4] benzodiazepin-1-one",
+          "serial_annotations": [],
+          "source_pages": [
+            48
+          ]
+        },
+        {
+          "serial_number": "56",
+          "international_non_proprietary_name": "LORAZEPAM",
+          "other_nonproprietary_names": null,
+          "chemical_name": "7-Chloro-5-(o-chlorophenyl)-1, 3-dihydro-3-hydroxy-2H-1, 4-benzo-diazepine-2-one",
+          "serial_annotations": [],
+          "source_pages": [
+            48
+          ]
+        },
+        {
+          "serial_number": "57",
+          "international_non_proprietary_name": "LORMETAZEPAM",
+          "other_nonproprietary_names": null,
+          "chemical_name": "7-Chloro-5-(o-chlorophenyl)-1, 3-dihydro-3-hydroxy-1-methyl-2H-1, 4-benzcxiiazepine-2-one",
+          "serial_annotations": [],
+          "source_pages": [
+            48
+          ]
+        },
+        {
+          "serial_number": "58",
+          "international_non_proprietary_name": "MAZINDOL",
+          "other_nonproprietary_names": null,
+          "chemical_name": "5-(P-Chlorophenyl)-2, 5-dihydro-3-H-imidazo [2, 1-x] isoindol-5-01",
+          "serial_annotations": [],
+          "source_pages": [
+            48
+          ]
+        },
+        {
+          "serial_number": "59",
+          "international_non_proprietary_name": "MEDAZEPAM",
+          "other_nonproprietary_names": null,
+          "chemical_name": "7-Chloro-2, 3-dihydro-1-methyl-5-phenyl-1H-1, 4-benzodiazepine",
+          "serial_annotations": [],
+          "source_pages": [
+            49
+          ]
+        },
+        {
+          "serial_number": "60",
+          "international_non_proprietary_name": "MEPROBAMATE",
+          "other_nonproprietary_names": null,
+          "chemical_name": "2-Methyl-2-propyl-1, 3-propanediol dicarbamate",
+          "serial_annotations": [],
+          "source_pages": [
+            49
+          ]
+        },
+        {
+          "serial_number": "61",
+          "international_non_proprietary_name": "METHYLPHENOBARBITAL",
+          "other_nonproprietary_names": null,
+          "chemical_name": "5-Ethyl-1-methyl-5-phenylbarbituric acid",
+          "serial_annotations": [],
+          "source_pages": [
+            49
+          ]
+        },
+        {
+          "serial_number": "62",
+          "international_non_proprietary_name": "METHYPRYLON",
+          "other_nonproprietary_names": null,
+          "chemical_name": "3, 3-Diethyl-5-methyl-2, 4 piperidine-dione",
+          "serial_annotations": [],
+          "source_pages": [
+            49
+          ]
+        },
+        {
+          "serial_number": "63",
+          "international_non_proprietary_name": "NIMETAZEPAM",
+          "other_nonproprietary_names": null,
+          "chemical_name": "1, 3-Dihydro-1-methyl-7-nitro-5-phenyl- 2-H-1, 4-benzodiazepin-2-one",
+          "serial_annotations": [],
+          "source_pages": [
+            49
+          ]
+        },
+        {
+          "serial_number": "64",
+          "international_non_proprietary_name": "NITRAZEPAM",
+          "other_nonproprietary_names": null,
+          "chemical_name": "1, 3-Dihydro-7-nitro-5-phenyl-2H-1, 4-benzodiazepin-2-one",
+          "serial_annotations": [],
+          "source_pages": [
+            49
+          ]
+        },
+        {
+          "serial_number": "65",
+          "international_non_proprietary_name": "NORDAZEPAM",
+          "other_nonproprietary_names": null,
+          "chemical_name": "7-Chloro-1, 3-dihydro-5-phenyl-1 (2H)-1, 4-benzodiazepin-2-one",
+          "serial_annotations": [],
+          "source_pages": [
+            49
+          ]
+        },
+        {
+          "serial_number": "66",
+          "international_non_proprietary_name": "OXAZEPAM",
+          "other_nonproprietary_names": null,
+          "chemical_name": "7-Chloro-1, 3-dihydro-3-hydroxy-5-phenyl -2H-1, 4-benzodiazepin-2-one",
+          "serial_annotations": [],
+          "source_pages": [
+            49
+          ]
+        },
+        {
+          "serial_number": "67",
+          "international_non_proprietary_name": "OXAZOLAM",
+          "other_nonproprietary_names": null,
+          "chemical_name": "10-Chloro-2, 3, 7, 11b-tetrahydro-2-methyl-11b-phenyl-oxazolo [3, 2-d] [1, 4] benzodiazepin-6 (5H)-one",
+          "serial_annotations": [],
+          "source_pages": [
+            49
+          ]
+        },
+        {
+          "serial_number": "68",
+          "international_non_proprietary_name": "PHENDIMETRAZINE",
+          "other_nonproprietary_names": null,
+          "chemical_name": "(+)-3, 4-Dimethyl-2-phenyl-morpholine",
+          "serial_annotations": [],
+          "source_pages": [
+            49
+          ]
+        },
+        {
+          "serial_number": "69",
+          "international_non_proprietary_name": "PHENOBARBITAL",
+          "other_nonproprietary_names": null,
+          "chemical_name": "5-Ethyl-5-phenylbarbituric acid",
+          "serial_annotations": [],
+          "source_pages": [
+            49
+          ]
+        },
+        {
+          "serial_number": "70",
+          "international_non_proprietary_name": "PHENTERMINE",
+          "other_nonproprietary_names": null,
+          "chemical_name": "£, £-Dimethylphenethylamine",
+          "serial_annotations": [],
+          "source_pages": [
+            49
+          ]
+        },
+        {
+          "serial_number": "71",
+          "international_non_proprietary_name": "PINAZEPAM",
+          "other_nonproprietary_names": null,
+          "chemical_name": "7-Chloro-1, 3-dihydro-5-phenyl-1-(2-propynyl)-2H-1, 4-benzodiazepin-2-one",
+          "serial_annotations": [],
+          "source_pages": [
+            49
+          ]
+        },
+        {
+          "serial_number": "72",
+          "international_non_proprietary_name": "PIPRADROL",
+          "other_nonproprietary_names": null,
+          "chemical_name": "1-1-Diphenyl-1-(2-piperidyl)-methanol",
+          "serial_annotations": [],
+          "source_pages": [
+            49
+          ]
+        },
+        {
+          "serial_number": "73",
+          "international_non_proprietary_name": "PRAZEPAM",
+          "other_nonproprietary_names": null,
+          "chemical_name": "7-Chlorol-(cyclopropylmethyl)-1,-3-dihydro-5-phenyl)-2H-1, 4-benzo-diazepin-2-one",
+          "serial_annotations": [],
+          "source_pages": [
+            49
+          ]
+        },
+        {
+          "serial_number": "74",
+          "international_non_proprietary_name": "TEMAZEPAM",
+          "other_nonproprietary_names": null,
+          "chemical_name": "7-Chloro-1, 3-dihydro-3-hydroxy-1-methyl-5-phenyl -2H-1-4-benzo-diazepin-2-one",
+          "serial_annotations": [],
+          "source_pages": [
+            49
+          ]
+        },
+        {
+          "serial_number": "75",
+          "international_non_proprietary_name": "TETRAZEPAM",
+          "other_nonproprietary_names": null,
+          "chemical_name": "7-Chloro-5-(cycloexen-1-yl)-1, 3-dihydro-1-methyl-2H-1, 4-benzo-diazepin-2-one",
+          "serial_annotations": [],
+          "source_pages": [
+            49
+          ]
+        },
+        {
+          "serial_number": "76",
+          "international_non_proprietary_name": "TRIAZOLAM",
+          "other_nonproprietary_names": null,
+          "chemical_name": "8-Chloro-6-(o-chlorophenyl)-1-methyl-4H-s-triazodo[4,3-a] [1,4] benzodiazepine.",
+          "serial_annotations": [],
+          "source_pages": [
+            49
+          ]
+        },
+        {
+          "serial_number": "77",
+          "international_non_proprietary_name": "CATHIONE",
+          "other_nonproprietary_names": null,
+          "chemical_name": "(--)-(S)-2-aminopropophenone",
+          "serial_annotations": [
+            {
+              "type": "footnote",
+              "marker": "1",
+              "note_id": "footnote_p50_1",
+              "start": 0,
+              "end": 2,
+              "anchor_text": "77",
+              "source_page": 50
+            }
+          ],
+          "source_pages": [
+            50
+          ]
+        },
+        {
+          "serial_number": "78",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "DMA",
+          "chemical_name": "(±)-2,5-dimethoxy-a-methlyphenethylamine",
+          "serial_annotations": [],
+          "source_pages": [
+            50
+          ]
+        },
+        {
+          "serial_number": "79",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "DOET",
+          "chemical_name": "(±)-4 ethyl -2, 5-dimethoxy-a-phenethylamine",
+          "serial_annotations": [],
+          "source_pages": [
+            50
+          ]
+        },
+        {
+          "serial_number": "80",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "MDMA",
+          "chemical_name": "(±)-N, a-dimethyl-3. 4- (methylene-dioxy) phenethylamine",
+          "serial_annotations": [],
+          "source_pages": [
+            50
+          ]
+        },
+        {
+          "serial_number": "81",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "4-methylaminorex",
+          "chemical_name": "(±)-cis-2-amino-4-methyl-5-phcnyl-2-oxazoline",
+          "serial_annotations": [],
+          "source_pages": [
+            50
+          ]
+        },
+        {
+          "serial_number": "82",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "MMDA",
+          "chemical_name": "2-methoxy-a-methyl-4-5, (methylene-dioxy) phenethylamine",
+          "serial_annotations": [],
+          "source_pages": [
+            50
+          ]
+        },
+        {
+          "serial_number": "83",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "N-ethyl MDA",
+          "chemical_name": "(±) N-ethyl-u-methyl-4, 4 (methylene-dioxy) phenethylamine",
+          "serial_annotations": [],
+          "source_pages": [
+            50
+          ]
+        },
+        {
+          "serial_number": "84",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "N-hydroxy MDA",
+          "chemical_name": "(±) -N (u-methyl 3, 4-(methylenedioxy) phenethy hydroxylamine",
+          "serial_annotations": [],
+          "source_pages": [
+            50
+          ]
+        },
+        {
+          "serial_number": "85",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "PMA",
+          "chemical_name": "p-methoxy-a-methylphenethyamine",
+          "serial_annotations": [],
+          "source_pages": [
+            50
+          ]
+        },
+        {
+          "serial_number": "86",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "TMA",
+          "chemical_name": "(±) -3,4, 5-trimethoxy-a-methylphenethy-lamine",
+          "serial_annotations": [],
+          "source_pages": [
+            50
+          ]
+        },
+        {
+          "serial_number": "87",
+          "international_non_proprietary_name": "FENETYLINE",
+          "other_nonproprietary_names": null,
+          "chemical_name": "7-(2-(ø-methylphenethyl) amino) ethyl-) theophyline",
+          "serial_annotations": [],
+          "source_pages": [
+            50
+          ]
+        },
+        {
+          "serial_number": "88",
+          "international_non_proprietary_name": "LEVAMFETAMINE",
+          "other_nonproprietary_names": "levamphetamine",
+          "chemical_name": "(--)-(R)- ø-methylphenethylamine",
+          "serial_annotations": [],
+          "source_pages": [
+            50
+          ]
+        },
+        {
+          "serial_number": "89",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "lovomethamphetamine",
+          "chemical_name": "(--)-N-[ ø-methylphenethylamine",
+          "serial_annotations": [],
+          "source_pages": [
+            50
+          ]
+        },
+        {
+          "serial_number": "90",
+          "international_non_proprietary_name": "METAMFETAMINE RACEMATE",
+          "other_nonproprietary_names": "Methamphetamine mecnate",
+          "chemical_name": "(±)-N-ø-dimethylphenethylamine",
+          "serial_annotations": [],
+          "source_pages": [
+            50
+          ]
+        },
+        {
+          "serial_number": "91",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "Delta-9-***tetrahy-drocannabinol and stereochemical variants",
+          "chemical_name": "(6a-R, 10aR)-6a, 7, 8, 10a-tctrahydro-6, 6, 9-trimethyl-3-penty 611-dibenzo [b-d] pyran-OI",
+          "serial_annotations": [],
+          "source_pages": [
+            50
+          ]
+        },
+        {
+          "serial_number": "92",
+          "international_non_proprietary_name": "BUPRENORPHINE",
+          "other_nonproprietary_names": null,
+          "chemical_name": "21, cyclopropyl-7-cc-[(S)-I-hydroxy-1-2,2-trimethyl-propyl] 6/14-endo-ethano-6-7,8,14-tetra-hydrooripavine",
+          "serial_annotations": [],
+          "source_pages": [
+            50
+          ]
+        },
+        {
+          "serial_number": "93",
+          "international_non_proprietary_name": "BUTALBITAL",
+          "other_nonproprietary_names": null,
+          "chemical_name": "5-allyl-5-isobutylbarbituric acid",
+          "serial_annotations": [],
+          "source_pages": [
+            50
+          ]
+        },
+        {
+          "serial_number": "94",
+          "international_non_proprietary_name": "CATHINE",
+          "other_nonproprietary_names": "(+)-norpseudo-ephedrine",
+          "chemical_name": "(+)-(R)-ø-[(R)-I-aminoethyl] Benzyl alcohol",
+          "serial_annotations": [],
+          "source_pages": [
+            50
+          ]
+        },
+        {
+          "serial_number": "95",
+          "international_non_proprietary_name": "ALLOBARBITAL",
+          "other_nonproprietary_names": "MEFENOREX",
+          "chemical_name": "5,5-diallybarbituric acid",
+          "serial_annotations": [],
+          "source_pages": [
+            50
+          ]
+        },
+        {
+          "serial_number": "96",
+          "international_non_proprietary_name": "ETILAMFETAMINE",
+          "other_nonproprietary_names": "N-ethylamphetamine",
+          "chemical_name": "N-ethyl-ø-methylphenethylamine",
+          "serial_annotations": [],
+          "source_pages": [
+            50
+          ]
+        },
+        {
+          "serial_number": "97",
+          "international_non_proprietary_name": "FENCAMEFAMIN",
+          "other_nonproprietary_names": null,
+          "chemical_name": "N-ethyl-3-phenly-2-norbornanmine",
+          "serial_annotations": [],
+          "source_pages": [
+            50
+          ]
+        },
+        {
+          "serial_number": "98",
+          "international_non_proprietary_name": "FENPROPOREX",
+          "other_nonproprietary_names": null,
+          "chemical_name": "(±) -3-[(??-methyphenethy) amino] propioxitrile",
+          "serial_annotations": [],
+          "source_pages": [
+            50
+          ]
+        },
+        {
+          "serial_number": "99",
+          "international_non_proprietary_name": "MEFENOREX",
+          "other_nonproprietary_names": null,
+          "chemical_name": "N(3 chloropropyl)-a-methylphenethy-lamine",
+          "serial_annotations": [],
+          "source_pages": [
+            51
+          ]
+        },
+        {
+          "serial_number": "100",
+          "international_non_proprietary_name": "MIDAZOLAM",
+          "other_nonproprietary_names": null,
+          "chemical_name": "8-chloro-6-a-(o-fluorophenyl)-1-methyl-4H-imidazol (1, 5-a] [1, 4] benzodiazepine",
+          "serial_annotations": [],
+          "source_pages": [
+            51
+          ]
+        },
+        {
+          "serial_number": "101",
+          "international_non_proprietary_name": "PEMOLINE",
+          "other_nonproprietary_names": null,
+          "chemical_name": "2-amino-5-phenyl-2-oxazolin-4-one(-2-imino-5-phenyl-4-oxazolidinone)",
+          "serial_annotations": [],
+          "source_pages": [
+            51
+          ]
+        },
+        {
+          "serial_number": "102",
+          "international_non_proprietary_name": "PYROVAERONE",
+          "other_nonproprietary_names": null,
+          "chemical_name": "4-methyl-2-(1-pyrrolidinyl) valerophenone",
+          "serial_annotations": [],
+          "source_pages": [
+            51
+          ]
+        },
+        {
+          "serial_number": "103",
+          "international_non_proprietary_name": "SECBUTABARB1TAL",
+          "other_nonproprietary_names": null,
+          "chemical_name": "5-sec-butyl-5-ethylbarbituric acid",
+          "serial_annotations": [],
+          "source_pages": [
+            51
+          ]
+        },
+        {
+          "serial_number": "104",
+          "international_non_proprietary_name": "VINYLBITAL",
+          "other_nonproprietary_names": null,
+          "chemical_name": "5-(1- methylbutyl)-5vinylbarbituric acid",
+          "serial_annotations": [],
+          "source_pages": [
+            51
+          ]
+        },
+        {
+          "serial_number": "105",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "rutobarbital",
+          "chemical_name": "5-butyl-5-ethylbarbituric acid",
+          "serial_annotations": [],
+          "source_pages": [
+            51
+          ]
+        },
+        {
+          "serial_number": "105A",
+          "international_non_proprietary_name": "ETRYPTAMINE",
+          "other_nonproprietary_names": null,
+          "chemical_name": "(3-(2-aminobutyl) indole)",
+          "serial_annotations": [
+            {
+              "type": "footnote",
+              "marker": "1",
+              "note_id": "footnote_p51_1",
+              "start": 0,
+              "end": 4,
+              "anchor_text": "105A",
+              "source_page": 51
+            }
+          ],
+          "source_pages": [
+            51
+          ]
+        },
+        {
+          "serial_number": "105B",
+          "international_non_proprietary_name": "METHCATHINONE",
+          "other_nonproprietary_names": null,
+          "chemical_name": "(2-(methylamino)-1 phenylpropan-1-one)",
+          "serial_annotations": [],
+          "source_pages": [
+            51
+          ]
+        },
+        {
+          "serial_number": "105C",
+          "international_non_proprietary_name": "ZIPEPROL",
+          "other_nonproprietary_names": null,
+          "chemical_name": "(ø-(ø-methoxybenzyl)-4 (methoxyphenethyl)-1-(piperazineetha-nol)",
+          "serial_annotations": [],
+          "source_pages": [
+            51
+          ]
+        },
+        {
+          "serial_number": "105D",
+          "international_non_proprietary_name": "AMINOREX",
+          "other_nonproprietary_names": null,
+          "chemical_name": "(2-amino-5-phenyl-2-oxazoline)",
+          "serial_annotations": [],
+          "source_pages": [
+            51
+          ]
+        },
+        {
+          "serial_number": "105E",
+          "international_non_proprietary_name": "BROTIZOLAM",
+          "other_nonproprietary_names": null,
+          "chemical_name": "(2-bromo-4-) 0-chlorophenyl)-9-methyl-6H-thieno (3,2-f)-s-triazolo [4,3,-a) (1,4} diazepine)",
+          "serial_annotations": [],
+          "source_pages": [
+            51
+          ]
+        },
+        {
+          "serial_number": "105F",
+          "international_non_proprietary_name": "MESOCARB",
+          "other_nonproprietary_names": null,
+          "chemical_name": "(3-(ø-methylphenethyl-N-(phenylerbamoyl) Sydnone imine.",
+          "serial_annotations": [],
+          "source_pages": [
+            51
+          ]
+        },
+        {
+          "serial_number": "106",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": null,
+          "chemical_name": "2C.-B(4-bromo-2, 5dimethoxyphenethylamine)",
+          "serial_annotations": [
+            {
+              "type": "footnote",
+              "marker": "2",
+              "note_id": "footnote_p51_2",
+              "start": 0,
+              "end": 3,
+              "anchor_text": "106",
+              "source_page": 51
+            }
+          ],
+          "source_pages": [
+            51
+          ]
+        },
+        {
+          "serial_number": "107",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": null,
+          "chemical_name": "4-MTA (ø* Methyl-4-Mthylthiophenethylamine)",
+          "serial_annotations": [],
+          "source_pages": [
+            51
+          ]
+        },
+        {
+          "serial_number": "108",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": null,
+          "chemical_name": "GHB (r-Hydroxybutyric Acid)",
+          "serial_annotations": [],
+          "source_pages": [
+            51
+          ]
+        },
+        {
+          "serial_number": "109",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": null,
+          "chemical_name": "Zolpidem (INN)",
+          "serial_annotations": [],
+          "source_pages": [
+            51
+          ]
+        },
+        {
+          "serial_number": "110",
+          "international_non_proprietary_name": "Salts and preparations of above.",
+          "other_nonproprietary_names": null,
+          "chemical_name": null,
+          "serial_annotations": [
+            {
+              "type": "footnote",
+              "marker": "3",
+              "note_id": "footnote_p51_3",
+              "start": 0,
+              "end": 3,
+              "anchor_text": "110",
+              "source_page": 51
+            }
+          ],
+          "source_pages": [
+            51
+          ]
+        },
+        {
+          "serial_number": "110A",
+          "international_non_proprietary_name": "Ketamine",
+          "other_nonproprietary_names": null,
+          "chemical_name": "2-(2-cholorphenyl)-2-(methylamino) cyclohexanone",
+          "serial_annotations": [
+            {
+              "type": "footnote",
+              "marker": "4",
+              "note_id": "footnote_p51_4",
+              "start": 0,
+              "end": 4,
+              "anchor_text": "110A",
+              "source_page": 51
+            }
+          ],
+          "source_pages": [
+            51
+          ]
+        },
+        {
+          "serial_number": "110B",
+          "international_non_proprietary_name": "MEPHEDRONE",
+          "other_nonproprietary_names": "4-methylmethcathinone(4-MMC) 4-methylephedrone",
+          "chemical_name": "(RS)-2-methylamino-1-(4-methylphenyl) propan-1-one.",
+          "serial_annotations": [
+            {
+              "type": "footnote",
+              "marker": "5",
+              "note_id": "footnote_p51_5",
+              "start": 0,
+              "end": 4,
+              "anchor_text": "110B",
+              "source_page": 51
+            }
+          ],
+          "source_pages": [
+            51
+          ]
+        },
+        {
+          "serial_number": "110C",
+          "international_non_proprietary_name": "25B-NBOMe",
+          "other_nonproprietary_names": "2C-B-NBOMe",
+          "chemical_name": "2-(4-brome-2,5-dimethoxyphenyl)-N-(2-methoxybenzyl) ethanamine",
+          "serial_annotations": [
+            {
+              "type": "footnote",
+              "marker": "6",
+              "note_id": "footnote_p51_6",
+              "start": 0,
+              "end": 4,
+              "anchor_text": "110C",
+              "source_page": 51
+            }
+          ],
+          "source_pages": [
+            51,
+            52
+          ]
+        },
+        {
+          "serial_number": "110D",
+          "international_non_proprietary_name": "25C-NBOMe",
+          "other_nonproprietary_names": "2C-C-NBOMe",
+          "chemical_name": "2-(4-chloro-2,5- dimethoxyphenyl)-N-(2-methoxybenzyl) ethanamine",
+          "serial_annotations": [],
+          "source_pages": [
+            52
+          ]
+        },
+        {
+          "serial_number": "110E",
+          "international_non_proprietary_name": "25I-NBOMe",
+          "other_nonproprietary_names": "2C-I-NBOMe",
+          "chemical_name": "2-(4-iodo-2,5-dimethoxyphenyl)-N-(2-methoxybenzyl) ethanamine",
+          "serial_annotations": [],
+          "source_pages": [
+            52
+          ]
+        },
+        {
+          "serial_number": "110F",
+          "international_non_proprietary_name": "N-BENZYLPIPERAZINE",
+          "other_nonproprietary_names": "Benzylpiperazine, BZP",
+          "chemical_name": "1-benzylpiperazine",
+          "serial_annotations": [],
+          "source_pages": [
+            52
+          ]
+        },
+        {
+          "serial_number": "110G",
+          "international_non_proprietary_name": "JWH-018",
+          "other_nonproprietary_names": "AM-678",
+          "chemical_name": "Naphthalene-1-yl(1-pentyl-1H-indol-3-yl) methanone",
+          "serial_annotations": [],
+          "source_pages": [
+            52
+          ]
+        },
+        {
+          "serial_number": "110H",
+          "international_non_proprietary_name": "AM-2201",
+          "other_nonproprietary_names": "JWH-2201",
+          "chemical_name": "[1-(5-Fluoropentyl)-1H-indol-3-yl] (naphthalen-1-yl) methanone",
+          "serial_annotations": [],
+          "source_pages": [
+            52
+          ]
+        },
+        {
+          "serial_number": "110I",
+          "international_non_proprietary_name": "MDPV",
+          "other_nonproprietary_names": "3,4-Methylenedioxypyrovalerone",
+          "chemical_name": "(R/S)-1—(Benzo[d][1,3] dioxol-5-yl)-2-(pyrrolidine-1-yl) Pentan-1-one",
+          "serial_annotations": [],
+          "source_pages": [
+            52
+          ]
+        },
+        {
+          "serial_number": "110J",
+          "international_non_proprietary_name": "METHYLONE",
+          "other_nonproprietary_names": "Beta-keto-MDMA",
+          "chemical_name": "(RS)-2-methylamino-1-(3,4-methylenedioxyphenyl) propan-1-one",
+          "serial_annotations": [],
+          "source_pages": [
+            52
+          ]
+        },
+        {
+          "serial_number": "110K",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "para-Methoxymethylamphetamine,PMMA",
+          "chemical_name": "1-(4—methoxyphenyl)-N-methylpropan-2-amine",
+          "serial_annotations": [
+            {
+              "type": "footnote",
+              "marker": "1",
+              "note_id": "footnote_p52_1",
+              "start": 0,
+              "end": 4,
+              "anchor_text": "110K",
+              "source_page": 52
+            }
+          ],
+          "source_pages": [
+            52
+          ]
+        },
+        {
+          "serial_number": "110L",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "a-Pyrrolidinovalerophenone, a-PVP",
+          "chemical_name": "1-phenyl-2-(pyrrolidine-1-yl) pentan-1-one",
+          "serial_annotations": [],
+          "source_pages": [
+            52
+          ]
+        },
+        {
+          "serial_number": "110M",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "para-Methyl-4-ethylaminorex, 4,4’-DMAR",
+          "chemical_name": "4-methyl-5-(4-methylphenyl)-4,5-dihydro-1,3-oxazol-2-amine",
+          "serial_annotations": [],
+          "source_pages": [
+            52
+          ]
+        },
+        {
+          "serial_number": "110N",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "Methoxetamine,MXE",
+          "chemical_name": "2-(ethylamino)-2-(3-methoxyphenyl) cyclohexanone",
+          "serial_annotations": [],
+          "source_pages": [
+            52
+          ]
+        },
+        {
+          "serial_number": "110O",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "Phenazepam",
+          "chemical_name": "7-bromo-5-(2- chlorophenyl)-1,3-dihydro-2H-1,4-benzodiazepin-2-one.",
+          "serial_annotations": [],
+          "source_pages": [
+            52
+          ]
+        },
+        {
+          "serial_number": "110P",
+          "international_non_proprietary_name": "4-Methylethcathinone",
+          "other_nonproprietary_names": "4-MEC",
+          "chemical_name": null,
+          "serial_annotations": [
+            {
+              "type": "footnote",
+              "marker": "2",
+              "note_id": "footnote_p52_2",
+              "start": 0,
+              "end": 4,
+              "anchor_text": "110P",
+              "source_page": 52
+            }
+          ],
+          "source_pages": [
+            52
+          ]
+        },
+        {
+          "serial_number": "110Q",
+          "international_non_proprietary_name": "Ethylone",
+          "other_nonproprietary_names": null,
+          "chemical_name": null,
+          "serial_annotations": [],
+          "source_pages": [
+            52
+          ]
+        },
+        {
+          "serial_number": "110R",
+          "international_non_proprietary_name": "Pentedrone",
+          "other_nonproprietary_names": null,
+          "chemical_name": null,
+          "serial_annotations": [],
+          "source_pages": [
+            52
+          ]
+        },
+        {
+          "serial_number": "110S",
+          "international_non_proprietary_name": "Ethylphenidate",
+          "other_nonproprietary_names": null,
+          "chemical_name": null,
+          "serial_annotations": [],
+          "source_pages": [
+            52
+          ]
+        },
+        {
+          "serial_number": "110T",
+          "international_non_proprietary_name": "Methiopropamine",
+          "other_nonproprietary_names": "MPA",
+          "chemical_name": null,
+          "serial_annotations": [],
+          "source_pages": [
+            52
+          ]
+        },
+        {
+          "serial_number": "110U",
+          "international_non_proprietary_name": "MDMB-CHMICA",
+          "other_nonproprietary_names": null,
+          "chemical_name": null,
+          "serial_annotations": [],
+          "source_pages": [
+            52
+          ]
+        },
+        {
+          "serial_number": "110V",
+          "international_non_proprietary_name": "5F-APINACA",
+          "other_nonproprietary_names": "5F-AKB-48",
+          "chemical_name": null,
+          "serial_annotations": [],
+          "source_pages": [
+            52
+          ]
+        },
+        {
+          "serial_number": "110W",
+          "international_non_proprietary_name": "XLR-11",
+          "other_nonproprietary_names": null,
+          "chemical_name": null,
+          "serial_annotations": [],
+          "source_pages": [
+            52
+          ]
+        },
+        {
+          "serial_number": "110X",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "Catha Edulis (Dry Chatt or Mira Leaves Dry Chat Edulish)",
+          "chemical_name": null,
+          "serial_annotations": [],
+          "source_pages": [
+            52
+          ]
+        },
+        {
+          "serial_number": "110Y",
+          "international_non_proprietary_name": "Tramadol",
+          "other_nonproprietary_names": null,
+          "chemical_name": null,
+          "serial_annotations": [
+            {
+              "type": "footnote",
+              "marker": "3",
+              "note_id": "footnote_p52_3",
+              "start": 0,
+              "end": 4,
+              "anchor_text": "110Y",
+              "source_page": 52
+            }
+          ],
+          "source_pages": [
+            52
+          ]
+        },
+        {
+          "serial_number": "110Z",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "AB-CHMINACA",
+          "chemical_name": "N-[(2S)-1-Amino-3-methyl-1-oxobutan-2-yl]-1-(cyclohexylmethyl)-1H-indazole-3-carboxamide",
+          "serial_annotations": [
+            {
+              "type": "footnote",
+              "marker": "4",
+              "note_id": "footnote_p52_4",
+              "start": 0,
+              "end": 4,
+              "anchor_text": "110Z",
+              "source_page": 52
+            }
+          ],
+          "source_pages": [
+            52
+          ]
+        },
+        {
+          "serial_number": "110ZA",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "5F-ADB(5F-MDMB-PINACA)",
+          "chemical_name": "Methyl(2S)-2-{1-5-fluorophentyl)-1H-indazole-3-carbonylamino}-3,3-dimethylbutanoate",
+          "serial_annotations": [],
+          "source_pages": [
+            53
+          ]
+        },
+        {
+          "serial_number": "110ZB",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "AB-PINACA",
+          "chemical_name": "N-[(2S)-1-Amino-3-methyl-1oxobutan-2yl]-1-penty1H-indazole 3-carboxamide",
+          "serial_annotations": [],
+          "source_pages": [
+            53
+          ]
+        },
+        {
+          "serial_number": "110ZC",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "UR-144",
+          "chemical_name": "(1-Penty-1 H-indol-3-yl) (2,2,3,3-tetramrthylcyclopropyl) methanone",
+          "serial_annotations": [],
+          "source_pages": [
+            53
+          ]
+        },
+        {
+          "serial_number": "110ZD",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "5F-PB-22",
+          "chemical_name": "Quinolin-8-yl 1-(5-fluropenthl)-1h-inodole-3-carboxylate",
+          "serial_annotations": [],
+          "source_pages": [
+            53
+          ]
+        },
+        {
+          "serial_number": "110ZE",
+          "international_non_proprietary_name": "4-Fluoroamphetamine",
+          "other_nonproprietary_names": "4-FA",
+          "chemical_name": "1-(4-Fluorophenyl) propan-2-amine.",
+          "serial_annotations": [],
+          "source_pages": [
+            53
+          ]
+        },
+        {
+          "serial_number": "110ZF",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "AB-FUBINACA",
+          "chemical_name": "N-[(2S)-1-amino-3-methyl-1-oxobutan-2-yl]-1-[4-fluorophenyl) methyl] indazole-3-carboxamide",
+          "serial_annotations": [
+            {
+              "type": "footnote",
+              "marker": "1",
+              "note_id": "footnote_p53_1",
+              "start": 0,
+              "end": 5,
+              "anchor_text": "110ZF",
+              "source_page": 53
+            }
+          ],
+          "source_pages": [
+            53
+          ]
+        },
+        {
+          "serial_number": "110ZG",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "5F-AMB-PINACA (5F-AMB,5F-MMB-PINACA)",
+          "chemical_name": "Methyl 2-({[1-5-fluoropenty)-1H-indazol3yl] carbonyl} amino)-3-methylbutanoate",
+          "serial_annotations": [],
+          "source_pages": [
+            53
+          ]
+        },
+        {
+          "serial_number": "110ZH",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "5F-MDMB-PICA (5F-MDMB-2201)",
+          "chemical_name": "Methyl(S)-2-(1-5-fluoropentyl)-1H-indole-3- carboxamido)-3,3-dimethylbutanoate",
+          "serial_annotations": [],
+          "source_pages": [
+            53
+          ]
+        },
+        {
+          "serial_number": "110ZI",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "4F-MDMB-BINACA",
+          "chemical_name": "Methyl(S)-2-(1-(4-fluorobutyl)-1H-indazole-3-carboxamido)-3,3-dimethylbutanoate",
+          "serial_annotations": [],
+          "source_pages": [
+            53
+          ]
+        },
+        {
+          "serial_number": "110ZJ",
+          "international_non_proprietary_name": "4-CMC (4-chloromethcathinone)",
+          "other_nonproprietary_names": "clephedrone",
+          "chemical_name": "1-(4-chlorophenyl)-2-(methylamino)-1-propanone",
+          "serial_annotations": [],
+          "source_pages": [
+            53
+          ]
+        },
+        {
+          "serial_number": "110ZK",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "N-ethylhexedrone",
+          "chemical_name": "2-(Ethylamino)-1-phenyl-1-hexanone",
+          "serial_annotations": [],
+          "source_pages": [
+            53
+          ]
+        },
+        {
+          "serial_number": "110ZL",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "Alpha-PHP",
+          "chemical_name": "(RS)-1-Phenyl-2-(pyrrolidine-1-yl)hexan-1-one",
+          "serial_annotations": [],
+          "source_pages": [
+            53
+          ]
+        },
+        {
+          "serial_number": "110ZM",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "flualprazolam",
+          "chemical_name": "8-Chloro-6-(2-fluoro-phenyl)-1-methyl-4hbenzo[f][1,2,4]triazolo[4,3-a][1,4]diazepime",
+          "serial_annotations": [],
+          "source_pages": [
+            53
+          ]
+        },
+        {
+          "serial_number": "110ZN",
+          "international_non_proprietary_name": "Etizolam",
+          "other_nonproprietary_names": null,
+          "chemical_name": "4-(2-Chlorophenyl)-2-ethyl-9-methyl-6H-thieno[3,2-f][1,2,4]triazolo[4,3a][1,4]diazepine",
+          "serial_annotations": [],
+          "source_pages": [
+            53
+          ]
+        },
+        {
+          "serial_number": "110ZO",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "DOC",
+          "chemical_name": "4-Chloro-2,5-dimethoxyamfetamine",
+          "serial_annotations": [],
+          "source_pages": [
+            53
+          ]
+        },
+        {
+          "serial_number": "110ZP",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "ADB-FUBINACA",
+          "chemical_name": "N-[(2S)-1-amino-3,3-dimethyl-1-oxobutan-2-yl]-1-[4-fluorophenyl)methyl]-1Hindazole-3-carboxamide",
+          "serial_annotations": [],
+          "source_pages": [
+            53
+          ]
+        },
+        {
+          "serial_number": "110ZQ",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "FUB-AMB,MMBFUBINAC A,AMBFUBINACA",
+          "chemical_name": "Methyl(2S)-2-({1-[4-fluorophenyl]methyl-1Hindazole-3-carbonyl} amino)-3-methylbutanoate",
+          "serial_annotations": [],
+          "source_pages": [
+            53
+          ]
+        },
+        {
+          "serial_number": "110ZR",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "CUMYL-4CNBINACA",
+          "chemical_name": "1-(4-cyanobutyl)-N-(2-phenylpropan-2-yl)-1Hindazole-3-carboxamide",
+          "serial_annotations": [],
+          "source_pages": [
+            53
+          ]
+        },
+        {
+          "serial_number": "110ZS",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "ADB-CHMINACA,MAB-CHMINACA",
+          "chemical_name": "N-[(2S)-1-amino-3,3-dimethyl-1-oxobutan-2-yl]-1-(cyclohexylmethyl)-1H-indazole-3-carboxamide",
+          "serial_annotations": [],
+          "source_pages": [
+            53,
+            54
+          ]
+        },
+        {
+          "serial_number": "110ZT",
+          "international_non_proprietary_name": null,
+          "other_nonproprietary_names": "N-ethylnorpentylone",
+          "chemical_name": "1-(2H-1,3-benzodioxol-5-yl)-2-(ethylamino)pentan-1-one”.",
+          "serial_annotations": [],
+          "source_pages": [
+            54
+          ]
+        }
+      ],
+      "amendment_scopes": [
+        {
+          "marker": "1",
+          "note_id": "footnote_p50_1",
+          "start_entry": "77",
+          "end_entry": "105",
+          "source_page": 50
+        },
+        {
+          "marker": "1",
+          "note_id": "footnote_p51_1",
+          "start_entry": "105A",
+          "end_entry": "105F",
+          "source_page": 51
+        },
+        {
+          "marker": "2",
+          "note_id": "footnote_p51_2",
+          "start_entry": "106",
+          "end_entry": "109",
+          "source_page": 51
+        },
+        {
+          "marker": "3",
+          "note_id": "footnote_p51_3",
+          "start_entry": "110",
+          "end_entry": "110",
+          "source_page": 51
+        },
+        {
+          "marker": "4",
+          "note_id": "footnote_p51_4",
+          "start_entry": "110A",
+          "end_entry": "110A",
+          "source_page": 51
+        },
+        {
+          "marker": "5",
+          "note_id": "footnote_p51_5",
+          "start_entry": "110B",
+          "end_entry": "110B",
+          "source_page": 51
+        },
+        {
+          "marker": "6",
+          "note_id": "footnote_p51_6",
+          "start_entry": "110C",
+          "end_entry": "110J",
+          "source_page": 51
+        },
+        {
+          "marker": "1",
+          "note_id": "footnote_p52_1",
+          "start_entry": "110K",
+          "end_entry": "110O",
+          "source_page": 52
+        },
+        {
+          "marker": "2",
+          "note_id": "footnote_p52_2",
+          "start_entry": "110P",
+          "end_entry": "110X",
+          "source_page": 52
+        },
+        {
+          "marker": "3",
+          "note_id": "footnote_p52_3",
+          "start_entry": "110Y",
+          "end_entry": "110Y",
+          "source_page": 52
+        },
+        {
+          "marker": "4",
+          "note_id": "footnote_p52_4",
+          "start_entry": "110Z",
+          "end_entry": "110ZE",
+          "source_page": 52
+        },
+        {
+          "marker": "1",
+          "note_id": "footnote_p53_1",
+          "start_entry": "110ZF",
+          "end_entry": "110ZT",
+          "source_page": 53
+        }
+      ],
+      "footnote_ids": [
+        "footnote_p50_1",
+        "footnote_p51_1",
+        "footnote_p51_2",
+        "footnote_p51_3",
+        "footnote_p51_4",
+        "footnote_p51_5",
+        "footnote_p51_6",
+        "footnote_p52_1",
+        "footnote_p52_2",
+        "footnote_p52_3",
+        "footnote_p52_4",
+        "footnote_p53_1"
+      ],
+      "source_pages": [
+        46,
+        47,
+        48,
+        49,
+        50,
+        51,
+        52,
+        53,
+        54
+      ]
+    }
+  ],
+  "footnotes": [
+    {
+      "id": "footnote_p50_1",
+      "marker": "1",
+      "text": "1. Ins. by S.O. 785(E), dated 26th October, 1992.",
+      "source_page": 50,
+      "kind": "amendment"
+    },
+    {
+      "id": "footnote_p51_1",
+      "marker": "1",
+      "text": "1. Ins. by S.O. 39(E), dated 12th January, 1996.",
+      "source_page": 51,
+      "kind": "amendment"
+    },
+    {
+      "id": "footnote_p51_2",
+      "marker": "2",
+      "text": "2. Ins. by G.S.R. No. 475(E), dated 11th June, 2003.",
+      "source_page": 51,
+      "kind": "amendment"
+    },
+    {
+      "id": "footnote_p51_3",
+      "marker": "3",
+      "text": "3. Entry 106 re-numbered as Entry 110 by G.S.R. 475(E), dated 11th June, 2003.",
+      "source_page": 51,
+      "kind": "amendment"
+    },
+    {
+      "id": "footnote_p51_4",
+      "marker": "4",
+      "text": "4. Ins. by vide Notification No. S.O. 311(E) dated 10.02.2011.",
+      "source_page": 51,
+      "kind": "amendment"
+    },
+    {
+      "id": "footnote_p51_5",
+      "marker": "5",
+      "text": "5. Ins. by vide Notification No. S.O. 376(E) dated 05.02.2015.",
+      "source_page": 51,
+      "kind": "amendment"
+    },
+    {
+      "id": "footnote_p51_6",
+      "marker": "6",
+      "text": "6. Ins. by vide Notification No. S.O. 2374(E) dated 12.07-2016.",
+      "source_page": 51,
+      "kind": "amendment"
+    },
+    {
+      "id": "footnote_p52_1",
+      "marker": "1",
+      "text": "1. Ins. by vide Notification No. S.O. 1383(E) dated 02.05.2017.",
+      "source_page": 52,
+      "kind": "amendment"
+    },
+    {
+      "id": "footnote_p52_2",
+      "marker": "2",
+      "text": "2. Ins. by vide Notification No. S.O. 0821(E) dated 27.02.2018.",
+      "source_page": 52,
+      "kind": "amendment"
+    },
+    {
+      "id": "footnote_p52_3",
+      "marker": "3",
+      "text": "3. Ins. by vide Notification No. S.O. 1761(E), dated 26.04.2018.",
+      "source_page": 52,
+      "kind": "amendment"
+    },
+    {
+      "id": "footnote_p52_4",
+      "marker": "4",
+      "text": "4. Ins. by vide Notification No. S.O. 1352(E), dated 13.03.2019.",
+      "source_page": 52,
+      "kind": "amendment"
+    },
+    {
+      "id": "footnote_p53_1",
+      "marker": "1",
+      "text": "1. Ins. by vide Notification No. S.O. 1275(E), dated 23.03.2021",
+      "source_page": 53,
+      "kind": "amendment"
+    }
+  ],
+  "schedule_source": {
+    "pages": [
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      52,
+      53,
+      54
+    ],
+    "entry_count": 162
+  },
+  "_validation": {
+    "errors": [],
+    "counts": {
+      "schedules": 1,
+      "schedule_entries": 162,
+      "schedule_footnotes": 12,
+      "unresolved_footnote_refs": 0
+    }
+  }
+}

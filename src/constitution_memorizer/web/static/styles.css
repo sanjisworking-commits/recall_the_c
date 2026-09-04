@@ -32,6 +32,9 @@
   --track: #e5e5e4;
   --rail: #f7f7f5;
   --wash: #fafaf9;
+  --rc-fn-card: #10201d;
+  --rc-fn-card-label: #8fbcb4;
+  --rc-fn-card-ink: #f0f4f3;
   --mid: #8f8f8d;
   --bare-size: 19px;
   --learning: #d8d8d6;
@@ -89,6 +92,10 @@ html[data-theme="dark"] {
   --track: #333333;
   --rail: #161615;
   --wash: #1a1a19;
+  /* The card is already near-black; in dark it lifts off the page instead. */
+  --rc-fn-card: #17322c;
+  --rc-fn-card-label: #8fd4c8;
+  --rc-fn-card-ink: #f0f4f3;
   --mid: #8f8f8d;
   --learning: #4a4a48;
   --control-border: #4a4a48;
@@ -4321,6 +4328,179 @@ code {
 .bareact-nav-num {
   font-size: 13.5px;
   font-weight: 600;
+}
+
+/* Footnotes — the amendment apparatus around a provision.
+
+   Colours run through tokens rather than the handoff's literals: --browse-due
+   already flips to #2a9d8f in dark, and a hardcoded #e9f3f1 active tint would
+   be a white smear on a dark page. Light rendering is unchanged. */
+
+.bareact-fn {
+  border-bottom: 1.5px dotted
+    color-mix(in srgb, var(--browse-due) 55%, var(--paper));
+  padding-bottom: 1px;
+  cursor: help;
+}
+
+.bareact-fn:hover,
+.bareact-fn:focus,
+.bareact-fn.is-active {
+  border-bottom-color: var(--browse-due);
+  background: var(--rc-teal-tint, #e7f1ef);
+}
+
+.bareact-fn:focus-visible {
+  outline: 2px solid var(--browse-due);
+  outline-offset: 2px;
+}
+
+/* Sticky rather than fixed: it stays inside the reading column, and a short
+   section never gets a card floating over empty page. It stops at the
+   prev/next nav instead of covering it. */
+.bareact-fn-card {
+  position: sticky;
+  bottom: 8px;
+  z-index: 25;
+  margin: 14px 0 4px;
+  padding: 11px 14px;
+  border-radius: 12px;
+  background: var(--rc-fn-card, #10201d);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.22);
+}
+
+.bareact-fn-card[hidden] {
+  display: none;
+}
+
+.bareact-fn-label {
+  margin: 0 0 3px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--rc-fn-card-label, #8fbcb4);
+}
+
+.bareact-fn-text {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--rc-fn-card-ink, #f0f4f3);
+  text-wrap: pretty;
+}
+
+/* The Schedule */
+
+.bareact-schedule-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--hairline);
+  background: var(--wash);
+  text-decoration: none;
+  color: inherit;
+}
+
+.bareact-schedule-row:hover {
+  background: var(--hover);
+}
+
+.bareact-schedule-copy {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.bareact-schedule-name {
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.bareact-schedule-ref {
+  font-size: 11.5px;
+  color: var(--faint);
+}
+
+.bareact-schedule-wrap {
+  margin: 0 0 8px;
+  border: 1px solid var(--hairline);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+/* Fixed layout so the four columns hold the design's 34px / 1fr / 1fr / 1.4fr
+   proportions and fit a phone without panning. */
+.bareact-schedule-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.bareact-schedule-table col.is-serial {
+  width: 34px;
+}
+
+.bareact-schedule-table col.is-inn,
+.bareact-schedule-table col.is-other {
+  width: 26.5%;
+}
+
+.bareact-schedule-table col.is-chem {
+  width: 37%;
+}
+
+.bareact-schedule-table th {
+  padding: 9px 12px;
+  text-align: left;
+  vertical-align: top;
+  background: var(--wash);
+  border-bottom: 1px solid var(--page);
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--mid);
+  line-height: 1.35;
+}
+
+.bareact-schedule-table td {
+  padding: 8px 12px;
+  vertical-align: top;
+  border-bottom: 1px solid var(--page);
+  line-height: 1.5;
+}
+
+.bareact-schedule-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.bareact-schedule-serial {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--mid);
+}
+
+.bareact-schedule-inn {
+  font-size: 10.5px;
+  font-weight: 500;
+  overflow-wrap: break-word;
+}
+
+.bareact-schedule-other {
+  font-size: 10.5px;
+  color: var(--muted);
+  overflow-wrap: break-word;
+}
+
+.bareact-schedule-chem {
+  font-size: 10px;
+  color: var(--mid);
+  overflow-wrap: anywhere;
 }
 
 .memory-log-form {

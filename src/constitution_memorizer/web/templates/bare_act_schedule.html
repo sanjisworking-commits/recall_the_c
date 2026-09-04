@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}{{ schedule.title|title }} · {{ act.short_name }}{% endblock %}
+{% block mobile_screen %}bareactschedule{% endblock %}
+{% import "partials/bare_act_macros.html" as fn %}
+{% block content %}
+<section class="panel bareact-reader">
+  <div class="mobile-topbar">
+    <a class="mobile-back" href="/laws/{{ act.slug }}">{{ act.back_label }}</a>
+  </div>
+  <p class="bareact-reader-eyebrow">{{ schedule.title }}{% if schedule.reference %} · {{ schedule.reference }}{% endif %}</p>
+  <h1 class="bareact-reader-title">{{ schedule.display_heading }}</h1>
+
+  <div class="bareact-schedule-wrap">
+    <table class="bareact-schedule-table">
+      {# Fixed layout with explicit widths: the design's 34px / 1fr / 1fr / 1.4fr,
+         expressed so a real table can hold it. A table, not a grid of divs, so
+         each cell keeps its column header for a screen reader. #}
+      <colgroup>
+        <col class="is-serial"><col class="is-inn"><col class="is-other"><col class="is-chem">
+      </colgroup>
+      <thead>
+        <tr>{% for column in schedule.columns %}<th scope="col">{{ column }}</th>{% endfor %}</tr>
+      </thead>
+      <tbody>
+        {% for entry in schedule.entries %}
+        <tr>
+          <td class="bareact-schedule-serial">{% if entry.serial_note_id %}{{ fn.fn_anchor(entry.serial_note_id, entry.serial_number) }}{% else %}{{ entry.serial_number }}{% endif %}</td>
+          <td class="bareact-schedule-inn">{{ entry.inn }}</td>
+          <td class="bareact-schedule-other">{{ entry.other_names }}</td>
+          <td class="bareact-schedule-chem">{{ entry.chemical_name }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% include "partials/bare_act_footnotes.html" %}
+</section>
+{% endblock %}

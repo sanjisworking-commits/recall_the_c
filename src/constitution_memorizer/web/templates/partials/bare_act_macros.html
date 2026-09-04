@@ -1,0 +1,9 @@
+{# One footnote anchor, used for a run of text, a clause label and a serial
+   number alike, so the interaction is identical wherever a footnote hangs.
+
+   `tabindex` with no role follows the Constitution reader's `.bare-fn`: this is
+   a run of statute text with a note attached, not a control, and the accessible
+   name should stay the text itself. #}
+{% macro fn_anchor(note_id, text) -%}
+<span class="bareact-fn" tabindex="0" data-bareact-fn="{{ note_id }}" aria-describedby="fn-{{ note_id }}">{{ text }}</span>
+{%- endmacro %}

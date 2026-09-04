@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Section {{ section.number }} · {{ act.short_name }}{% endblock %}
 {% block mobile_screen %}bareactsection{% endblock %}
+{% import "partials/bare_act_macros.html" as fn %}
 {% block content %}
 <section class="panel bareact-reader">
   <div class="mobile-topbar">
@@ -38,12 +39,14 @@
       {% else %}
       <div class="bareact-row{% if row.depth == 0 %} is-root{% endif %}{% if row.is_aside %} is-aside is-{{ row.kind }}{% endif %}" style="--depth: {{ row.depth }}">
         <span class="bareact-row-node" aria-hidden="true"></span>
-        <p class="bareact-row-text">{% if row.kind == 'explanation' %}<span class="bareact-row-kind">Explanation</span>{% elif row.label %}<span class="bareact-row-label">{{ row.label }}</span>{% endif %}{{ row.text }}</p>
+        <p class="bareact-row-text">{% if row.kind == 'explanation' %}<span class="bareact-row-kind">Explanation</span>{% elif row.label %}<span class="bareact-row-label">{% if row.label_note_id %}{{ fn.fn_anchor(row.label_note_id, row.label) }}{% else %}{{ row.label }}{% endif %}</span>{% endif %}{% for seg in row.segments %}{% if seg.is_anchor %}{{ fn.fn_anchor(seg.note_id, seg.text) }}{% else %}{{ seg.text }}{% endif %}{% endfor %}</p>
       </div>
       {% endif %}
     {% endfor %}
   </div>
   {% endif %}
+
+  {% include "partials/bare_act_footnotes.html" %}
 
   {% if prev_section or next_section %}
   <nav class="bareact-nav" aria-label="Section">

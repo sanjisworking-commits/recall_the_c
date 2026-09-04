@@ -1,0 +1,17 @@
+{# Footnote apparatus shared by the section reader and the Schedule.
+
+   The notes are in the page whether or not the card is showing: `aria-describedby`
+   points here, so a screen reader reads the amendment on focus, and the text
+   survives with JS off. `.visually-hidden` rather than `hidden` — hidden content
+   is removed from the accessibility tree, which would defeat the point. #}
+{% if footnotes %}
+<div class="bareact-fn-notes visually-hidden">
+  {% for note in footnotes %}
+  <p id="fn-{{ note.id }}">{{ note.text }}</p>
+  {% endfor %}
+</div>
+<div class="bareact-fn-card" data-bareact-fn-card hidden>
+  <p class="bareact-fn-label">Footnote</p>
+  <p class="bareact-fn-text" data-bareact-fn-text aria-live="polite"></p>
+</div>
+{% endif %}
