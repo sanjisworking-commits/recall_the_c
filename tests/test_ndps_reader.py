@@ -7,6 +7,7 @@ happen — no progress, no revision, no calendar row — as about what renders.
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from uuid import UUID
 
@@ -25,6 +26,7 @@ from constitution_memorizer.web.app import create_app
 from constitution_memorizer.web.bare_acts import (
     BareActMissing,
     get_bare_act,
+    split_on_footnotes,
     title_case_chapter,
 )
 
@@ -222,6 +224,149 @@ def test_packaged_copy_is_declared_as_package_data():
     assert '"web/ndps_act_final.json"' in pyproject
 
 
+# ── Footnotes ─────────────────────────────────────────────────────────────
+
+
+def test_the_act_and_its_patch_share_one_footnote_map():
+    act = get_bare_act("ndps")
+    # 108 from the Act, 12 from the Schedule patch, none overwriting another.
+    assert len(act.footnotes) == 120
+    assert act.footnotes["footnote_p5_1"].text.startswith("1. Ins. by Act 2 of 1989")
+    assert act.footnotes["footnote_p50_1"].text.startswith("1. Ins. by S.O. 785(E)")
+
+
+def test_a_colliding_patch_raises_rather_than_overwriting():
+    """A silently replaced note prints the wrong amendment against a section."""
+    from constitution_memorizer.web import bare_acts
+
+    with pytest.raises(BareActMissing, match="appears twice"):
+        bare_acts._collect_footnotes(
+            [
+                ("act.json", [{"id": "footnote_p5_1", "marker": "1", "text": "A"}]),
+                ("patch.json", [{"id": "footnote_p5_1", "marker": "1", "text": "B"}]),
+            ]
+        )
+
+
+def test_every_reference_resolves():
+    act = get_bare_act("ndps")
+    for section in act.section_order:
+        for note_id in section.note_ids:
+            assert note_id in act.footnotes, f"{section.number}: {note_id}"
+    for schedule in act.schedules:
+        for note_id in schedule.note_ids:
+            assert note_id in act.footnotes, note_id
+
+
+def test_segments_rejoin_to_the_stored_text():
+    """The one guard that catches an offset drifting: nothing may be lost."""
+    act = get_bare_act("ndps")
+    checked = 0
+    for section in act.section_order:
+        for row in section.rows:
+            if row.is_omission or row.is_table:
+                continue
+            assert "".join(s.text for s in row.segments) == row.text
+            checked += 1
+    assert checked > 400
+
+
+def test_a_run_of_text_splits_into_plain_and_anchored():
+    act = get_bare_act("ndps")
+    rows = {r.label: r for r in act.section("1").rows}
+    # "It shall come into force on such date as the Central Government may..."
+    segments = rows["(3)"].segments
+    assert [s.is_anchor for s in segments] == [False, True, False]
+    assert segments[1].text == "date"
+    assert segments[1].note_id == "footnote_p5_3"
+    # A clause with no footnote is one plain span, never zero.
+    assert [s.is_anchor for s in rows["(a)"].segments] == [False]
+
+
+def test_a_node_can_carry_several_footnotes():
+    act = get_bare_act("ndps")
+    most = max(
+        (r for s in act.section_order for r in s.rows),
+        key=lambda r: sum(1 for x in r.segments if x.is_anchor),
+    )
+    anchors = [s for s in most.segments if s.is_anchor]
+    assert len(anchors) == 4
+    starts = [most.text.index(a.text) for a in anchors]
+    assert starts == sorted(starts)
+
+
+def test_malformed_spans_are_dropped_not_fatal():
+    text = "alpha beta gamma"
+    # end <= start, and an end past the string.
+    spans = split_on_footnotes(
+        text,
+        [
+            {"type": "footnote", "start": 5, "end": 5, "note_id": "x"},
+            {"type": "footnote", "start": 6, "end": 999, "note_id": "y"},
+        ],
+    )
+    assert "".join(s.text for s in spans) == text
+    assert [s.note_id for s in spans if s.is_anchor] == ["y"]
+    assert spans[-1].text == "beta gamma"
+
+
+def test_labels_are_anchored_whole():
+    act = get_bare_act("ndps")
+    labelled = [r for r in act.section("2").rows if r.label_note_id]
+    assert len(labelled) == 8
+    assert labelled[0].label == "(i)"
+    # Section 1 carries footnotes on its text, none on its labels.
+    assert all(r.label_note_id is None for r in act.section("1").rows)
+
+
+def test_omitted_provisions_carry_no_anchor():
+    """We print "Omitted." where the source prints "* * * * *", so the stored
+    offsets describe text that never reaches the page."""
+    act = get_bare_act("ndps")
+    omission = [r for r in act.section("63").rows if r.is_omission][0]
+    assert omission.annotations  # the data does have one
+    assert [s.is_anchor for s in omission.segments] == [False]
+    assert omission.note_ids == ()
+
+
+# ── The Schedule ──────────────────────────────────────────────────────────
+
+
+def test_the_schedule_is_the_whole_list():
+    act = get_bare_act("ndps")
+    assert len(act.schedules) == 1
+    schedule = act.schedules[0]
+    assert schedule.slug == "psychotropic-substances"
+    assert schedule.title == "THE SCHEDULE"
+    assert schedule.reference == "[See clause (xxiii) of Section 2]"
+    assert schedule.display_heading == "List of Psychotropic Substances"
+    assert len(schedule.entries) == 162
+    assert schedule.range_label == "1–110ZT"
+    assert schedule.columns[0] == "Sl. No."
+    assert len(schedule.columns) == 4
+
+
+def test_schedule_serials_stay_strings():
+    act = get_bare_act("ndps")
+    serials = [e.serial_number for e in act.schedules[0].entries]
+    assert serials[0] == "1"
+    assert serials[-1] == "110ZT"
+    for probe in ("105A", "110A", "110ZF"):
+        assert probe in serials
+    assert all(isinstance(s, str) for s in serials)
+
+
+def test_amended_serials_are_the_schedule_anchors():
+    act = get_bare_act("ndps")
+    annotated = [
+        e.serial_number for e in act.schedules[0].entries if e.serial_note_id
+    ]
+    assert annotated == [
+        "77", "105A", "106", "110", "110A", "110B",
+        "110C", "110K", "110P", "110Y", "110Z", "110ZF",
+    ]
+
+
 # ── The screens ───────────────────────────────────────────────────────────
 
 
@@ -372,13 +517,119 @@ def test_unknown_slugs_and_sections_are_404(tmp_path: Path):
     assert client.get("/laws/rti-2005").status_code == 200
 
 
+def test_a_footnoted_section_carries_anchors_and_its_notes(tmp_path: Path):
+    client, _ = _client(tmp_path)
+    html = client.get("/laws/ndps/section/1").text
+    assert 'data-bareact-fn="footnote_p5_3"' in html
+    assert 'aria-describedby="fn-footnote_p5_3"' in html
+    # The note is in the page, in the accessibility tree, not just in JS.
+    assert '<p id="fn-footnote_p5_3">' in html
+    assert 'class="bareact-fn-notes visually-hidden"' in html
+    assert "data-bareact-fn-card" in html
+    # Every anchor points at a note that is actually on the page.
+    for note_id in re.findall(r'data-bareact-fn="([^"]+)"', html):
+        assert f'<p id="fn-{note_id}">' in html
+
+
+def test_a_section_without_footnotes_has_no_apparatus(tmp_path: Path):
+    client, _ = _client(tmp_path)
+    html = client.get("/laws/ndps/section/3").text
+    assert "data-bareact-fn" not in html
+    assert "bareact-fn-card" not in html
+
+
+def test_a_clause_label_can_be_the_anchor(tmp_path: Path):
+    client, _ = _client(tmp_path)
+    html = client.get("/laws/ndps/section/2").text
+    label = html.split('<span class="bareact-row-label">', 1)[1].split("</span>", 1)[0]
+    assert "bareact-fn" in label
+
+
+def test_the_chapter_list_ends_with_the_schedule(tmp_path: Path):
+    client, _ = _client(tmp_path)
+    html = client.get("/laws/ndps").text
+    assert 'href="/laws/ndps/schedule/psychotropic-substances"' in html
+    assert "List of Psychotropic Substances" in html
+    assert "[See clause (xxiii) of Section 2]" in html
+    assert "1–110ZT" in html
+    # A schedule is a link, not a ninth chapter.
+    assert html.count("<details") == 8
+    assert html.index("Miscellaneous") < html.index("bareact-schedule-row")
+
+
+def test_the_schedule_screen_renders_every_entry(tmp_path: Path):
+    client, _ = _client(tmp_path)
+    html = client.get("/laws/ndps/schedule/psychotropic-substances").text
+    assert 'data-mscreen="bareactschedule"' in html
+    assert html.count("<th ") == 4
+    body = html.split("<tbody>", 1)[1].split("</tbody>", 1)[0]
+    assert body.count("<tr>") == 162
+    assert ">110ZT</td>" in html or "110ZT" in body
+    assert "N, N-Diethyltryptamine" in body
+    # Amended serials anchor; untouched ones stay plain text.
+    assert 'data-bareact-fn="footnote_p50_1"' in body
+    first_row = body.split("<tr>", 2)[1]
+    assert "bareact-fn" not in first_row
+
+
+def test_the_schedule_table_holds_its_columns_without_panning(tmp_path: Path):
+    """Four columns sized to fit a phone — the design shrinks type for this."""
+    client, _ = _client(tmp_path)
+    css = client.get("/static/styles.css").text
+    table = css.split(".bareact-schedule-table {", 1)[1].split("}", 1)[0]
+    assert "table-layout: fixed" in table
+    serial = css.split(".bareact-schedule-table col.is-serial {", 1)[1].split("}", 1)[0]
+    assert "width: 34px" in serial
+    wrap = css.split(".bareact-schedule-wrap {", 1)[1].split("}", 1)[0]
+    assert "overflow-x" not in wrap
+
+
+def test_footnote_colours_go_through_tokens(tmp_path: Path):
+    """Hardcoding the handoff's hexes would leave a white smear in dark mode."""
+    client, _ = _client(tmp_path)
+    css = client.get("/static/styles.css").text
+    active = css.split(".bareact-fn.is-active {", 1)[1].split("}", 1)[0]
+    assert "var(--" in active
+    assert "#e9f3f1" not in active
+    card = css.split(".bareact-fn-card {", 1)[1].split("}", 1)[0]
+    assert "var(--rc-fn-card" in card
+    assert "position: sticky" in card
+    # And the dark theme actually redefines them.
+    assert "--rc-fn-card: #17322c" in css
+
+
+def test_the_footnote_card_clears_the_tab_bar(tmp_path: Path):
+    client, _ = _client(tmp_path)
+    css = client.get("/static/mobile.css").text
+    phone = [
+        body
+        for chunk in css.split("\n@media ")[1:]
+        for condition, body in [chunk.split(" {", 1)]
+        if condition.strip() == "(max-width: 560px)"
+    ]
+    scoped = "\n".join(phone)
+    card = scoped.split(".bareact-fn-card {", 1)[1].split("}", 1)[0]
+    assert "calc(var(--m-tabbar) + 8px)" in card
+
+
+def test_an_unknown_schedule_is_404(tmp_path: Path):
+    client, _ = _client(tmp_path)
+    assert client.get("/laws/ndps/schedule/nope").status_code == 404
+    assert client.get("/laws/rti-2005/schedule/anything").status_code == 404
+
+
 # ── Access ────────────────────────────────────────────────────────────────
 
 
 @pytest.mark.parametrize("signed_in", [False, True])
 def test_the_act_is_free_to_read(tmp_path: Path, signed_in: bool):
     client = _mu_client(tmp_path, signed_in=signed_in)
-    for path in ("/laws", "/laws/ndps", "/laws/ndps/section/83"):
+    for path in (
+        "/laws",
+        "/laws/ndps",
+        "/laws/ndps/section/83",
+        "/laws/ndps/schedule/psychotropic-substances",
+    ):
         response = client.get(path, follow_redirects=False)
         assert response.status_code == 200, path
 
@@ -407,6 +658,7 @@ def test_reading_the_act_records_nothing(tmp_path: Path):
         "/laws/ndps/section/1",
         "/laws/ndps/section/31A",
         "/laws/ndps/section/65",
+        "/laws/ndps/schedule/psychotropic-substances",
     ):
         assert client.get(path).status_code == 200
     assert engine.stats() == before

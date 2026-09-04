@@ -50,6 +50,10 @@ class BareActSpec:
     filename: str
     short_name: str
     back_label: str
+    # Companion files the upstream parse ships separately. Folded in at load
+    # rather than merged on disk: both are frozen artifacts, and rewriting one
+    # into the other would replace the canonical dataset with our own.
+    patch_filenames: tuple[str, ...] = ()
 
 
 BARE_ACTS: dict[str, BareActSpec] = {
@@ -58,8 +62,31 @@ BARE_ACTS: dict[str, BareActSpec] = {
         filename="ndps_act_final.json",
         short_name="The NDPS Act, 1985",
         back_label="← The NDPS Act, 1985",
+        patch_filenames=("ndps_schedule_patch.json",),
     ),
 }
+
+
+@dataclass(frozen=True)
+class Footnote:
+    """An amendment note: which Act changed this provision, and from when."""
+
+    id: str
+    marker: str
+    text: str
+
+
+@dataclass(frozen=True)
+class FootnoteSpan:
+    """A run of text, carrying a footnote reference when it has one."""
+
+    text: str
+    note_id: str | None = None
+    marker: str = ""
+
+    @property
+    def is_anchor(self) -> bool:
+        return self.note_id is not None
 
 
 @dataclass(frozen=True)
@@ -71,6 +98,8 @@ class ProvisionRow:
     label: str
     text: str
     table: dict[str, Any] | None = None
+    annotations: tuple[dict[str, Any], ...] = ()
+    label_annotations: tuple[dict[str, Any], ...] = ()
 
     @property
     def is_table(self) -> bool:
@@ -84,6 +113,32 @@ class ProvisionRow:
     def is_aside(self) -> bool:
         """Proviso and Explanation: unlabelled, set apart, still in the flow."""
         return self.kind in {"proviso", "explanation"}
+
+    @property
+    def segments(self) -> tuple[FootnoteSpan, ...]:
+        """`text` split into plain runs and footnote anchors, in order.
+
+        Offsets index the text as stored, which is already free of the source's
+        inline markers — so this slices `text` directly. Re-cleaning it first
+        would shift every offset after the first edit.
+        """
+        if self.is_omission or self.is_table:
+            # Omissions display "Omitted." in place of the source's "* * * * *",
+            # so the stored offsets describe text that is never rendered.
+            return (FootnoteSpan(self.text),)
+        return split_on_footnotes(self.text, self.annotations)
+
+    @property
+    def label_note_id(self) -> str | None:
+        """Labels carry their marker whole — `(iii)` is the anchor, not part of it."""
+        return _first_footnote_id(self.label_annotations)
+
+    @property
+    def note_ids(self) -> tuple[str, ...]:
+        ids = [s.note_id for s in self.segments if s.note_id]
+        if self.label_note_id:
+            ids.append(self.label_note_id)
+        return tuple(ids)
 
     @property
     def table_columns(self) -> tuple[str, ...]:
@@ -101,6 +156,45 @@ class ProvisionRow:
             tuple(_strip_leader_dots(row.get(column)) for column in columns)
             for row in self.table.get("rows") or ()
         )
+
+
+@dataclass(frozen=True)
+class ScheduleEntry:
+    serial_number: str
+    inn: str
+    other_names: str
+    chemical_name: str
+    serial_note_id: str | None = None
+
+    @property
+    def cells(self) -> tuple[str, ...]:
+        return (self.serial_number, self.inn, self.other_names, self.chemical_name)
+
+
+@dataclass(frozen=True)
+class Schedule:
+    slug: str
+    title: str
+    reference: str
+    heading: str
+    columns: tuple[str, ...]
+    entries: tuple[ScheduleEntry, ...]
+
+    @property
+    def display_heading(self) -> str:
+        return title_case_chapter(self.heading)
+
+    @property
+    def range_label(self) -> str:
+        if not self.entries:
+            return ""
+        first = self.entries[0].serial_number
+        last = self.entries[-1].serial_number
+        return first if first == last else f"{first}{EN_DASH}{last}"
+
+    @property
+    def note_ids(self) -> tuple[str, ...]:
+        return tuple(e.serial_note_id for e in self.entries if e.serial_note_id)
 
 
 @dataclass(frozen=True)
@@ -133,6 +227,16 @@ class ActSection:
     def rows(self) -> tuple[ProvisionRow, ...]:
         return flatten_body(self.body)
 
+    @property
+    def note_ids(self) -> tuple[str, ...]:
+        """Every footnote this section cites, once each, in reading order."""
+        seen: list[str] = []
+        for row in self.rows:
+            for note_id in row.note_ids:
+                if note_id not in seen:
+                    seen.append(note_id)
+        return tuple(seen)
+
 
 @dataclass(frozen=True)
 class ActChapter:
@@ -160,7 +264,21 @@ class BareAct:
     act_number: str
     chapters: tuple[ActChapter, ...]
     section_order: tuple[ActSection, ...]
+    footnotes: dict[str, Footnote] = field(default_factory=dict)
+    schedules: tuple[Schedule, ...] = ()
     raw: dict[str, Any] = field(repr=False, default_factory=dict)
+
+    def schedule(self, slug: str) -> Schedule | None:
+        for sched in self.schedules:
+            if sched.slug == slug:
+                return sched
+        return None
+
+    def notes(self, note_ids) -> tuple[Footnote, ...]:
+        """Resolve ids to notes, skipping any the data does not carry."""
+        return tuple(
+            self.footnotes[n] for n in note_ids if n in self.footnotes
+        )
 
     @property
     def chapter_count(self) -> int:
@@ -200,6 +318,110 @@ class BareAct:
             following = order[index + 1] if index + 1 < len(order) else None
             return previous, following
         return None, None
+
+
+def _first_footnote_id(annotations) -> str | None:
+    for ann in annotations or []:
+        if ann.get("type") == "footnote" and ann.get("note_id"):
+            return str(ann["note_id"])
+    return None
+
+
+def split_on_footnotes(text: str, annotations) -> tuple[FootnoteSpan, ...]:
+    """Split `text` into plain runs and footnote anchors.
+
+    Malformed spans are dropped rather than raising: a bad offset should cost
+    one anchor, not a whole section. Spans are clamped to the text and
+    overlaps resolved by taking the earlier one, so the pieces always rejoin
+    to exactly the input.
+    """
+    body = str(text or "")
+    spans = sorted(
+        (
+            a
+            for a in annotations or []
+            if a.get("type") == "footnote"
+            and isinstance(a.get("start"), int)
+            and isinstance(a.get("end"), int)
+            and a["end"] > a["start"]
+        ),
+        key=lambda a: a["start"],
+    )
+    out: list[FootnoteSpan] = []
+    pos = 0
+    for ann in spans:
+        start = max(int(ann["start"]), pos)
+        end = min(int(ann["end"]), len(body))
+        if end <= start:
+            continue
+        if start > pos:
+            out.append(FootnoteSpan(body[pos:start]))
+        out.append(
+            FootnoteSpan(
+                body[start:end],
+                note_id=str(ann.get("note_id") or "") or None,
+                marker=str(ann.get("marker") or ""),
+            )
+        )
+        pos = end
+    if pos < len(body):
+        out.append(FootnoteSpan(body[pos:]))
+    return tuple(out) or (FootnoteSpan(body),)
+
+
+def _schedule_slug(raw_id: str) -> str:
+    """`schedule_psychotropic_substances` -> `psychotropic-substances`."""
+    stem = str(raw_id or "schedule")
+    if stem.startswith("schedule_"):
+        stem = stem[len("schedule_") :]
+    return stem.replace("_", "-").strip("-") or "schedule"
+
+
+def _parse_schedule(raw: dict[str, Any]) -> Schedule:
+    entries = tuple(
+        ScheduleEntry(
+            # Strings throughout: 105A and 110ZT are serial numbers too.
+            serial_number=str(e.get("serial_number") or ""),
+            inn=str(e.get("international_non_proprietary_name") or ""),
+            other_names=str(e.get("other_nonproprietary_names") or ""),
+            chemical_name=str(e.get("chemical_name") or ""),
+            serial_note_id=_first_footnote_id(e.get("serial_annotations")),
+        )
+        for e in raw.get("entries") or []
+    )
+    return Schedule(
+        slug=_schedule_slug(str(raw.get("id") or "")),
+        title=str(raw.get("title") or "The Schedule"),
+        reference=str(raw.get("reference") or ""),
+        heading=str(raw.get("heading") or ""),
+        columns=tuple(str(c) for c in raw.get("columns") or ()),
+        entries=entries,
+    )
+
+
+def _collect_footnotes(sources) -> dict[str, Footnote]:
+    """One lookup across the Act and its patches. Collisions are fatal.
+
+    A patch that silently overwrote a note would print the wrong amendment
+    against a provision — a quieter failure than a crash, and a worse one.
+    """
+    notes: dict[str, Footnote] = {}
+    for label, raw_notes in sources:
+        for raw in raw_notes or []:
+            note_id = str(raw.get("id") or "")
+            if not note_id:
+                continue
+            if note_id in notes:
+                raise BareActMissing(
+                    f"footnote id {note_id!r} appears twice ({label} redefines it). "
+                    "Footnote ids must be unique across an Act and its patches."
+                )
+            notes[note_id] = Footnote(
+                id=note_id,
+                marker=str(raw.get("marker") or ""),
+                text=str(raw.get("text") or ""),
+            )
+    return notes
 
 
 def _strip_leader_dots(value: Any) -> str:
@@ -257,26 +479,30 @@ def flatten_body(nodes, depth: int = 0) -> tuple[ProvisionRow, ...]:
                 label=str(node.get("label") or ""),
                 text=str(node.get("text") or ""),
                 table=node.get("table"),
+                annotations=tuple(node.get("annotations") or ()),
+                label_annotations=tuple(node.get("label_annotations") or ()),
             )
         )
         rows.extend(flatten_body(node.get("children") or [], depth + 1))
     return tuple(rows)
 
 
-def _act_path(spec: BareActSpec) -> Path:
-    repo = _REPO_ROOT / "data" / "reference" / spec.filename
-    packaged = _WEB_DIR / spec.filename
+def _data_path(filename: str) -> Path:
+    repo = _REPO_ROOT / "data" / "reference" / filename
+    packaged = _WEB_DIR / filename
     for candidate in (repo, packaged):
         if candidate.exists():
             return candidate
     raise BareActMissing(
-        f"bare Act {spec.slug!r} not found at {repo} or {packaged}. "
+        f"bare Act data {filename!r} not found at {repo} or {packaged}. "
         "The Act is reference material shipped with the app: a missing file "
         "means it was not packaged, not that the Act has no sections."
     )
 
 
-def _parse(spec: BareActSpec, data: dict[str, Any]) -> BareAct:
+def _parse(
+    spec: BareActSpec, data: dict[str, Any], patches: list[dict[str, Any]]
+) -> BareAct:
     document = data.get("document") or {}
     chapters: list[ActChapter] = []
     order: list[ActSection] = []
@@ -305,6 +531,16 @@ def _parse(spec: BareActSpec, data: dict[str, Any]) -> BareAct:
                 sections=tuple(sections),
             )
         )
+    schedules = [_parse_schedule(s) for s in data.get("schedules") or []]
+    for patch in patches:
+        schedules.extend(_parse_schedule(s) for s in patch.get("schedules") or [])
+    footnotes = _collect_footnotes(
+        [(spec.filename, data.get("footnotes"))]
+        + [
+            (name, patch.get("footnotes"))
+            for name, patch in zip(spec.patch_filenames, patches)
+        ]
+    )
     return BareAct(
         slug=spec.slug,
         title=str(document.get("title") or spec.short_name),
@@ -314,6 +550,8 @@ def _parse(spec: BareActSpec, data: dict[str, Any]) -> BareAct:
         chapters=tuple(chapters),
         # One ordered list of every section in the Act, in the Act's own order.
         section_order=tuple(order),
+        footnotes=footnotes,
+        schedules=tuple(schedules),
         raw=data,
     )
 
@@ -321,7 +559,8 @@ def _parse(spec: BareActSpec, data: dict[str, Any]) -> BareAct:
 @lru_cache(maxsize=4)
 def _load_cached(slug: str) -> BareAct:
     spec = BARE_ACTS[slug]
-    return _parse(spec, read_json(_act_path(spec)))
+    patches = [read_json(_data_path(name)) for name in spec.patch_filenames]
+    return _parse(spec, read_json(_data_path(spec.filename)), patches)
 
 
 def get_bare_act(slug: str) -> BareAct | None:

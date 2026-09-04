@@ -2231,6 +2231,137 @@
   // switchModeLocal and the phone's showDeck both use replaceState, so they
   // add no entry and structurally cannot fire popstate. A popstate here can
   // only mean the user pressed Back.
+  /* Bare Act footnotes.
+
+     Same interaction contract as initBareFns — hover or focus opens, tap pins,
+     Escape and an outside press close, one open at a time — but a different
+     presentation: the Constitution shows an inline tip beside the word, while a
+     Bare Act pins one card to the bottom of the reading column. Statute
+     amendment notes are long and you read several in a row, so a fixed place to
+     look beats a bubble that moves with the cursor.
+
+     The two want reconciling once this has been used; until then this
+     deliberately does not call initBareFns, which would show the wrong chrome. */
+  function initBareActFootnotes() {
+    const card = document.querySelector("[data-bareact-fn-card]");
+    if (!card) {
+      return;
+    }
+    const slot = card.querySelector("[data-bareact-fn-text]");
+    const anchors = document.querySelectorAll("[data-bareact-fn]");
+    if (!anchors.length || !slot) {
+      return;
+    }
+
+    const LEAVE_MS = 120;
+    let leaveTimer = null;
+    let pinned = null;
+    let open = null;
+
+    function clearLeave() {
+      if (leaveTimer) {
+        window.clearTimeout(leaveTimer);
+        leaveTimer = null;
+      }
+    }
+
+    function hide() {
+      clearLeave();
+      if (open) {
+        open.classList.remove("is-active");
+      }
+      open = null;
+      pinned = null;
+      card.hidden = true;
+      slot.textContent = "";
+    }
+
+    function show(el, pin) {
+      clearLeave();
+      // The note already exists in the page for aria-describedby; read it back
+      // rather than keeping a second copy of the string in a data attribute.
+      const note = document.getElementById("fn-" + el.dataset.bareactFn);
+      if (!note) {
+        return;
+      }
+      if (open && open !== el) {
+        open.classList.remove("is-active");
+      }
+      open = el;
+      el.classList.add("is-active");
+      slot.textContent = note.textContent.trim();
+      card.hidden = false;
+      if (pin) {
+        pinned = el;
+      }
+    }
+
+    anchors.forEach((el) => {
+      el.addEventListener("mouseenter", () => {
+        if (pinned) {
+          return;
+        }
+        show(el, false);
+      });
+      el.addEventListener("mouseleave", () => {
+        clearLeave();
+        leaveTimer = window.setTimeout(() => {
+          if (pinned || el.contains(document.activeElement)) {
+            return;
+          }
+          hide();
+        }, LEAVE_MS);
+      });
+      el.addEventListener("focusin", () => show(el, false));
+      el.addEventListener("focusout", () => {
+        if (pinned) {
+          return;
+        }
+        hide();
+      });
+      el.addEventListener("click", (event) => {
+        event.preventDefault();
+        if (pinned === el) {
+          hide();
+          return;
+        }
+        show(el, true);
+      });
+      el.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter" && event.key !== " ") {
+          return;
+        }
+        event.preventDefault();
+        if (pinned === el) {
+          hide();
+        } else {
+          show(el, true);
+        }
+      });
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape" || card.hidden) {
+        return;
+      }
+      const focusTarget = open;
+      hide();
+      if (focusTarget) {
+        focusTarget.focus();
+      }
+    });
+
+    document.addEventListener("pointerdown", (event) => {
+      if (card.hidden) {
+        return;
+      }
+      if (event.target.closest("[data-bareact-fn]") || card.contains(event.target)) {
+        return;
+      }
+      hide();
+    });
+  }
+
   function initRevisionGuard() {
     const learn = document.querySelector(".learn");
     const modal = document.querySelector("[data-revision-exit-modal]");
@@ -3906,6 +4037,7 @@
 
   function bootInteraction() {
     syncRtcAnim();
+    initBareActFootnotes();
     getDoneAudio();
     initHeadingReveal();
     initDoneInterceptor();

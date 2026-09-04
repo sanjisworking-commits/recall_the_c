@@ -5437,6 +5437,36 @@
   body[data-mscreen="bareactsection"] .bareact-nav-num {
     font-size: 13px;
   }
+
+  /* The card is sticky inside the reading column, but the tab bar is fixed over
+     the bottom 56px of the viewport — so the sticky stop has to clear it. */
+  .bareact-fn-card {
+    bottom: calc(var(--m-tabbar) + 8px);
+  }
+
+  /* The Schedule: 162 rows of four columns, sized to fit 375px rather than pan. */
+  body[data-mscreen="bareactschedule"] .page-wrap,
+  body[data-mscreen="bareactschedule"] .sheet {
+    background: var(--rc-paper);
+  }
+
+  body[data-mscreen="bareactschedule"] .bareact-reader-title {
+    font-size: 23px;
+    margin-bottom: 14px;
+  }
+
+  body[data-mscreen="bareact"] .bareact-schedule-row {
+    padding: 10px var(--m-gutter);
+    background: var(--rc-wash);
+  }
+
+  body[data-mscreen="bareact"] .bareact-schedule-row:active {
+    background: var(--rc-page);
+  }
+
+  body[data-mscreen="bareact"] .bareact-schedule-name {
+    font-size: 14.5px;
+  }
 }
 
 @media (max-width: 560px) and (prefers-reduced-motion: reduce) {

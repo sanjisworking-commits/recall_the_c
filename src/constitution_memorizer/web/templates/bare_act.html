@@ -34,6 +34,20 @@
       </div>
     </details>
     {% endfor %}
+
+    {# Schedules sit below the chapters, in the chapter row's own clothes:
+       they are part of the Act, not an appendix to it. #}
+    {% for schedule in act.schedules %}
+    <a class="bareact-schedule-row" href="/laws/{{ act.slug }}/schedule/{{ schedule.slug }}">
+      <span class="bareact-chapter-tag">Schedule</span>
+      <span class="bareact-schedule-copy">
+        <span class="bareact-schedule-name">{{ schedule.display_heading }}</span>
+        <span class="bareact-schedule-ref">{{ schedule.reference }}</span>
+      </span>
+      <span class="bareact-chapter-range">{{ schedule.range_label }}</span>
+      <span class="bareact-section-chevron" aria-hidden="true">›</span>
+    </a>
+    {% endfor %}
   </div>
 </section>
 {% endblock %}

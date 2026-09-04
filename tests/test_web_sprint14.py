@@ -35,7 +35,7 @@ def test_learn_enables_cloze_tab_and_panel_markup(client: TestClient):
     assert 'data-cloze-density="light"' in html
     assert 'data-cloze-density="medium"' in html
     assert 'data-cloze-density="heavy"' in html
-    assert "app.js?v=main60" in html
+    assert "app.js?v=main61" in html
 
 
 def test_cloze_mode_query_param_renders_cloze_active(client: TestClient):
@@ -49,7 +49,7 @@ def test_cloze_mode_query_param_renders_cloze_active(client: TestClient):
 
 
 def test_cloze_css_drives_panel_visibility_and_blank_styles(client: TestClient):
-    css = client.get("/static/styles.css?v=main60")
+    css = client.get("/static/styles.css?v=main61")
     assert css.status_code == 200
     text = css.text
     assert '.learn[data-mode="cloze"] .learn-panel-cloze' in text
@@ -76,13 +76,13 @@ def test_cloze_shows_stem_for_subclause_unlike_test(client: TestClient):
     assert test_page.status_code == 200
     # Stem still in markup (shared), but CSS hides it for test mode.
     assert "learn-stem" in test_page.text
-    css = client.get("/static/styles.css?v=main60").text
+    css = client.get("/static/styles.css?v=main61").text
     assert '.learn[data-mode="test"] .learn-stem' in css
     assert "display: none" in css
 
 
 def test_app_js_includes_cloze_density_thresholds(client: TestClient):
-    js = client.get("/static/app.js?v=main60")
+    js = client.get("/static/app.js?v=main61")
     assert js.status_code == 200
     text = js.text
     assert "light: 8" in text
