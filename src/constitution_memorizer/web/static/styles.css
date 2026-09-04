@@ -3938,6 +3938,391 @@ code {
   cursor: default;
 }
 
+/* Bare Acts — whole statutes read end to end. The phone design is the source
+   of truth (mobile.css); these rules keep the same screens legible on a wide
+   viewport without redesigning them for it. */
+
+.laws-group-label {
+  margin: 24px 0 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mid);
+}
+
+.laws-bare-list {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.laws-bare-card {
+  display: block;
+  padding: 16px 18px;
+  border: 1px solid var(--hairline);
+  border-radius: 14px;
+  background: var(--paper);
+  text-decoration: none;
+  color: inherit;
+}
+
+.laws-bare-card:hover {
+  background: var(--hover);
+}
+
+.laws-bare-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+
+.laws-bare-tag {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mid);
+}
+
+.laws-bare-chevron {
+  margin-left: auto;
+  font-size: 15px;
+  color: var(--faint);
+}
+
+.laws-bare-name {
+  display: block;
+  margin-bottom: 4px;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.laws-bare-meta {
+  display: block;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+/* Chapter list */
+
+.bareact-head {
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.bareact-tag {
+  margin: 2px 0;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mid);
+}
+
+.bareact-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.bareact-chapter-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 48px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--hairline);
+  cursor: pointer;
+  list-style: none;
+}
+
+/* Safari still paints the default disclosure triangle without this. */
+.bareact-chapter-row::-webkit-details-marker {
+  display: none;
+}
+
+.bareact-chapter-tag {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--mid);
+  white-space: nowrap;
+}
+
+.bareact-chapter-name {
+  flex: 1;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.bareact-chapter-range {
+  font-size: 12px;
+  color: var(--faint);
+  white-space: nowrap;
+}
+
+.bareact-chapter-caret {
+  width: 12px;
+  font-size: 13px;
+  color: var(--faint);
+}
+
+.bareact-chapter-caret::before {
+  content: "\2304";
+}
+
+.bareact-chapter[open] .bareact-chapter-caret::before {
+  content: "\2303";
+}
+
+.bareact-section-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 52px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--page);
+  text-decoration: none;
+  color: inherit;
+}
+
+.bareact-section-row:hover {
+  background: var(--hover);
+}
+
+.bareact-section-node {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+  border: 2px solid var(--hairline);
+  border-radius: 50%;
+  box-sizing: border-box;
+}
+
+.bareact-section-copy {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.bareact-section-tag {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--mid);
+}
+
+.bareact-section-name {
+  font-size: 14.5px;
+  line-height: 1.4;
+}
+
+.bareact-section-name.is-omitted {
+  color: var(--faint);
+}
+
+.bareact-section-chevron {
+  font-size: 14px;
+  color: var(--faint);
+}
+
+/* Section reader */
+
+.bareact-reader-eyebrow {
+  margin: 2px 0 4px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--mid);
+}
+
+.bareact-reader-title {
+  margin: 0 0 4px;
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.bareact-reader-sub {
+  margin: 0 0 16px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.bareact-row {
+  display: flex;
+  gap: 11px;
+  padding: 12px 0;
+  padding-left: calc(var(--depth, 0) * 16px);
+  border-bottom: 1px solid var(--page);
+}
+
+.bareact-row-node {
+  width: 6px;
+  height: 6px;
+  margin-top: 8px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: var(--browse-due);
+}
+
+/* Depth is the only thing the marker encodes: solid at the top level, hollow
+   once nested, so indentation is legible without counting pixels. */
+.bareact-row:not(.is-root) .bareact-row-node {
+  background: transparent;
+  border: 1px solid var(--faint);
+  box-sizing: border-box;
+}
+
+.bareact-row-text {
+  margin: 0;
+  flex: 1;
+  font-size: 14.5px;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.bareact-row-label {
+  font-weight: 600;
+  margin-right: 4px;
+}
+
+.bareact-row-kind {
+  font-weight: 600;
+  margin-right: 4px;
+  color: var(--muted);
+}
+
+/* Proviso and Explanation qualify the provision above them. They stay in the
+   reading flow — a card would read as a sidebar, which is the wrong claim. */
+.bareact-row.is-aside .bareact-row-text {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.bareact-row.is-aside .bareact-row-node {
+  background: transparent;
+  border: 1px solid var(--hairline);
+  box-sizing: border-box;
+}
+
+/* Omissions are content: the provision was deliberately removed. Amber says
+   "a decision was made here", which a blank would not. */
+.bareact-row.is-omission,
+.bareact-omission {
+  display: block;
+  margin: 12px 0;
+  padding: 11px 14px;
+  border: 1px solid var(--rc-amber-tint, #ecdcc3);
+  border-radius: 12px;
+  background: var(--rc-amber-tint, #fdf7ef);
+  color: var(--rc-amber-deep, #7c4a12);
+}
+
+.bareact-row.is-omission {
+  margin-left: calc(var(--depth, 0) * 16px);
+}
+
+.bareact-row.is-omission .bareact-row-text,
+.bareact-omission p {
+  margin: 0;
+  color: inherit;
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.bareact-omission-former {
+  margin-bottom: 5px !important;
+  font-weight: 600;
+}
+
+.bareact-table-wrap {
+  margin: 12px 0;
+  margin-left: calc(var(--depth, 0) * 16px);
+  overflow-x: auto;
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+}
+
+.bareact-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+.bareact-table th,
+.bareact-table td {
+  padding: 9px 12px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--page);
+}
+
+.bareact-table th {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mid);
+  white-space: nowrap;
+}
+
+.bareact-table tr:last-child td {
+  border-bottom: 0;
+}
+
+.bareact-nav {
+  display: flex;
+  gap: 10px;
+  margin: 18px 0 6px;
+}
+
+.bareact-nav-link {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  background: var(--paper);
+  text-decoration: none;
+  color: inherit;
+}
+
+.bareact-nav-link.is-next {
+  align-items: flex-end;
+  text-align: right;
+  margin-left: auto;
+}
+
+.bareact-nav-link:hover {
+  background: var(--hover);
+}
+
+.bareact-nav-dir {
+  font-size: 10.5px;
+  color: var(--faint);
+}
+
+.bareact-nav-num {
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
 .memory-log-form {
   display: grid;
   gap: 12px;

@@ -747,6 +747,28 @@
     );
   }
 
+  /* ── Bare Act chapter accordion ────────────────────────────────────────
+     <details> already opens and closes, and reads correctly to a screen
+     reader, without any of this. All JS adds is the design's one-at-a-time
+     rule: opening a chapter closes its siblings. Without JS the list still
+     works — several chapters just stay open at once. */
+
+  function initActAccordion() {
+    var root = document.querySelector("[data-bareact-accordion]");
+    if (!root) return;
+    var chapters = Array.prototype.slice.call(
+      root.querySelectorAll(".bareact-chapter")
+    );
+    chapters.forEach(function (chapter) {
+      chapter.addEventListener("toggle", function () {
+        if (!chapter.open) return;
+        chapters.forEach(function (other) {
+          if (other !== chapter) other.open = false;
+        });
+      });
+    });
+  }
+
   /* ── Mode status lines (designs 06, 08–12) ─────────────────────────────
      Every mode screen opens with one grey line saying where you are. In the
      desktop markup those lines sit in each mode's control row — which the
@@ -1056,6 +1078,7 @@
     initSheets();
     initMarkFilter();
     initBareAct();
+    initActAccordion();
     // Must precede initLearnDeck: the deck moves each mode's control row into
     // the action bar, and the status lines have to be lifted out of those rows
     // first or they travel along and get hidden.

@@ -170,6 +170,7 @@ from constitution_memorizer.web.judicial_evolution import (
     get_judicial_evolution,
     load_judicial_evolution,
 )
+from constitution_memorizer.web.bare_acts import get_bare_act, list_bare_acts
 from constitution_memorizer.web.laws_data import get_law, load_laws
 from constitution_memorizer.web.memory_calendar import build_memory_month, schedule_chip_states
 from constitution_memorizer.web.progress_stats import progress_dashboard
@@ -2531,11 +2532,21 @@ def create_app(
         return templates.TemplateResponse(
             request,
             "laws.html",
-            {"acts": load_laws()},
+            {"acts": load_laws(), "bare_acts": list_bare_acts()},
         )
 
     @app.get("/laws/{law_id}", response_class=HTMLResponse)
     async def law_detail_page(request: Request, law_id: str) -> HTMLResponse:
+        # One Laws namespace, two kinds of Act. A Bare Act is read in full, so
+        # it gets the chapter list; a seeded law is a clause extract mapped to
+        # Articles, so it keeps the page it has always had.
+        bare = get_bare_act(law_id)
+        if bare is not None:
+            return templates.TemplateResponse(
+                request,
+                "bare_act.html",
+                {"act": bare},
+            )
         act = get_law(law_id)
         if act is None:
             raise HTTPException(status_code=404, detail="Law not found")
@@ -2544,6 +2555,30 @@ def create_app(
             request,
             "law_detail.html",
             {"act": act, "tracked_articles": tracked},
+        )
+
+    @app.get("/laws/{law_id}/section/{number}", response_class=HTMLResponse)
+    async def bare_act_section_page(
+        request: Request, law_id: str, number: str
+    ) -> HTMLResponse:
+        # Reference reading: no auth, no entitlement, no engine. Nothing here
+        # records progress, schedules a revision or writes a calendar event.
+        bare = get_bare_act(law_id)
+        if bare is None:
+            raise HTTPException(status_code=404, detail="Law not found")
+        section = bare.section(number)
+        if section is None:
+            raise HTTPException(status_code=404, detail="Section not found")
+        previous, following = bare.neighbours(number)
+        return templates.TemplateResponse(
+            request,
+            "bare_act_section.html",
+            {
+                "act": bare,
+                "section": section,
+                "prev_section": previous,
+                "next_section": following,
+            },
         )
 
     @app.get("/memory", response_class=HTMLResponse)

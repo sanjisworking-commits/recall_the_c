@@ -761,9 +761,44 @@
     setupCloze();
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', boot);
-  } else {
+  /* Below 560px the desktop landing is display:none and the phone launch
+     screen stands in its place, so booting here would animate a canvas and
+     pin a 600vh corridor nobody can see. Defer rather than exit: a phone that
+     rotates into landscape crosses back above 560px, CSS puts the landing
+     back, and it has to come up initialised. */
+  var PHONE = '(max-width: 560px)';
+  var booted = false;
+
+  function bootOnce() {
+    if (booted) return;
+    booted = true;
     boot();
+  }
+
+  function bootWhenWide() {
+    var phone = window.matchMedia && window.matchMedia(PHONE);
+    if (!phone) {
+      bootOnce();
+      return;
+    }
+    if (!phone.matches) {
+      bootOnce();
+      return;
+    }
+    var onChange = function (event) {
+      if (event.matches) return;
+      bootOnce();
+    };
+    if (phone.addEventListener) {
+      phone.addEventListener('change', onChange);
+    } else if (phone.addListener) {
+      phone.addListener(onChange);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootWhenWide);
+  } else {
+    bootWhenWide();
   }
 })();

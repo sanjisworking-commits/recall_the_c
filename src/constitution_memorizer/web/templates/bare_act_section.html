@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Section {{ section.number }} · {{ act.short_name }}{% endblock %}
+{% block mobile_screen %}bareactsection{% endblock %}
+{% block content %}
+<section class="panel bareact-reader">
+  <div class="mobile-topbar">
+    <a class="mobile-back" href="/laws/{{ act.slug }}">{{ act.back_label }}</a>
+  </div>
+  <p class="bareact-reader-eyebrow">Chapter {{ section.chapter_number }} · {{ section.chapter_title }}</p>
+  <h1 class="bareact-reader-title">Section {{ section.number }}</h1>
+  <p class="bareact-reader-sub">{{ section.list_title }}</p>
+
+  {% if section.is_omitted %}
+  <div class="bareact-omission" role="note">
+    {% if section.former_title %}<p class="bareact-omission-former">Formerly: {{ section.former_title }}</p>{% endif %}
+    <p class="bareact-omission-note">{{ section.omission_note or 'Omitted.' }}</p>
+  </div>
+  {% else %}
+  <div class="bareact-body">
+    {% for row in section.rows %}
+      {% if row.is_table %}
+      <div class="bareact-table-wrap" style="--depth: {{ row.depth }}">
+        <table class="bareact-table">
+          <thead>
+            <tr>{% for column in row.table_columns %}<th scope="col">{{ column|capitalize }}</th>{% endfor %}</tr>
+          </thead>
+          <tbody>
+            {% for cells in row.table_body %}
+            <tr>{% for cell in cells %}<td>{{ cell }}</td>{% endfor %}</tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% elif row.is_omission %}
+      <div class="bareact-row is-omission" style="--depth: {{ row.depth }}" role="note">
+        <p class="bareact-row-text">{% if row.label %}<span class="bareact-row-label">{{ row.label }}</span>{% endif %}Omitted.</p>
+      </div>
+      {% else %}
+      <div class="bareact-row{% if row.depth == 0 %} is-root{% endif %}{% if row.is_aside %} is-aside is-{{ row.kind }}{% endif %}" style="--depth: {{ row.depth }}">
+        <span class="bareact-row-node" aria-hidden="true"></span>
+        <p class="bareact-row-text">{% if row.kind == 'explanation' %}<span class="bareact-row-kind">Explanation</span>{% elif row.label %}<span class="bareact-row-label">{{ row.label }}</span>{% endif %}{{ row.text }}</p>
+      </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  {% if prev_section or next_section %}
+  <nav class="bareact-nav" aria-label="Section">
+    {% if prev_section %}
+    <a class="bareact-nav-link is-prev" href="/laws/{{ act.slug }}/section/{{ prev_section.number }}">
+      <span class="bareact-nav-dir">Previous</span>
+      <span class="bareact-nav-num">Section {{ prev_section.number }}</span>
+    </a>
+    {% endif %}
+    {% if next_section %}
+    <a class="bareact-nav-link is-next" href="/laws/{{ act.slug }}/section/{{ next_section.number }}">
+      <span class="bareact-nav-dir">Next</span>
+      <span class="bareact-nav-num">Section {{ next_section.number }}</span>
+    </a>
+    {% endif %}
+  </nav>
+  {% endif %}
+</section>
+{% endblock %}
