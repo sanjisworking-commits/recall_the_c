@@ -50,7 +50,7 @@ def test_calendar_page_renders_month_grid(client: TestClient):
     assert 'href="/calendar?year=2026&amp;month=6"' in html
     assert 'href="/calendar?year=2026&amp;month=8"' in html
     assert "/static/styles.css?" in html
-    assert "app.js?v=main59" in html
+    assert "app.js?v=main60" in html
 
 
 def test_calendar_invalid_month_returns_400(client: TestClient):
@@ -59,7 +59,7 @@ def test_calendar_invalid_month_returns_400(client: TestClient):
 
 
 def test_calendar_css_chip_styles(client: TestClient):
-    css = client.get("/static/styles.css?v=main59")
+    css = client.get("/static/styles.css?v=main60")
     assert css.status_code == 200
     text = css.text
     assert ".calendar-grid" in text

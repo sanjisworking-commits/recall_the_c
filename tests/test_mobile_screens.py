@@ -123,7 +123,11 @@ def test_browse_index_phone_cards_match_redesign(tmp_path: Path):
     assert 'class="browse-reference"' in html
     assert 'href="/laws"' in html
     assert 'href="/tables"' in html
-    assert "Relevant laws" in html
+    # Assert the row's own copy, not just the string: the footer also links
+    # /laws, so a bare substring check passes even with the group missing.
+    row = html.split('class="browse-reference-card"', 1)[1].split("</div>", 1)[0]
+    assert '<span class="browse-reference-name">Laws</span>' in row
+    assert "Bare Acts and statutes mapped to Articles" in row
     css = client.get("/static/mobile.css").text
     card = css.split(".part-card {", 1)[1].split("}", 1)[0]
     assert "border-radius: var(--rc-radius-card)" in card

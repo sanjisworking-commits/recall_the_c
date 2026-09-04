@@ -44,6 +44,7 @@ constitution_memorizer = [
     "web/browse_parts.seed.json",
     "web/browse_chapters.seed.json",
     "web/learning_relationships.json",
+    "web/ndps_act_final.json",
     "web/sitemap.xml",
     "web/robots.txt",
 ]

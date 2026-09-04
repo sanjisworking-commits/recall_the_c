@@ -32,6 +32,7 @@
     --rc-teal-deep: #0e5b52;
     --rc-pale-done: var(--calendar-done);
     --rc-blank: #e6e8e7;
+    --rc-wash: #fafaf9;
     --rc-amber: var(--browse-mark-news);
     --rc-amber-tint: #f6efe4;
     --rc-amber-deep: #7c4a12;
@@ -45,6 +46,7 @@
 
   html[data-theme="dark"] {
     --rc-blank: #2a2a28;
+    --rc-wash: #191918;
     --rc-teal-tint: #143833;
     --rc-teal-deep: #8fd4c8;
     --rc-amber-tint: #3a2a18;
@@ -5279,6 +5281,162 @@
   .revision-exit-modal .guest-modal-actions .btn-ghost {
     box-shadow: none;
   }
+
+  /* ── Laws → Bare Acts → section reader ──────────────────────────────────
+     A whole statute, read the way the Constitution is: chapter list, then one
+     section at a time. Reference only — nothing here records progress, so the
+     22px circle on a section row is a marker, not a state. */
+
+  body[data-mscreen="laws"] .laws-group-label {
+    margin: 16px 2px 8px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mid);
+  }
+
+  body[data-mscreen="laws"] .laws-bare-list {
+    display: block;
+  }
+
+  body[data-mscreen="laws"] .laws-bare-card {
+    display: block;
+    padding: 15px 16px 14px;
+    margin-bottom: 10px;
+    background: var(--rc-paper);
+    border: 1px solid var(--rc-hairline);
+    border-radius: var(--rc-radius-card);
+  }
+
+  body[data-mscreen="laws"] .laws-bare-head {
+    margin-bottom: 5px;
+  }
+
+  body[data-mscreen="laws"] .laws-bare-name {
+    font-size: 17px;
+    line-height: 1.3;
+    text-wrap: pretty;
+  }
+
+  body[data-mscreen="laws"] .laws-bare-meta {
+    font-size: 12.5px;
+  }
+
+  /* One card per row, matching the Bare Act above them. The desktop grid puts
+     two per row, which on a phone breaks Act names across four lines. */
+  body[data-mscreen="laws"] .laws-grid {
+    display: block;
+  }
+
+  body[data-mscreen="laws"] .laws-card {
+    display: block;
+    padding: 15px 16px;
+    margin-bottom: 10px;
+  }
+
+  body[data-mscreen="laws"] .laws-card-name {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  body[data-mscreen="laws"] .laws-card-meta {
+    margin-top: 3px;
+    font-size: 12px;
+    color: var(--mid);
+  }
+
+  body[data-mscreen="laws"] .law-practice-note {
+    margin: 14px 2px 0;
+    font-size: 11.5px;
+    line-height: 1.6;
+    color: var(--faint);
+    text-wrap: pretty;
+  }
+
+  /* Chapter list. The Act header keeps the page wash; the chapters below it
+     are on paper, so the header reads as a lid rather than as a first row. */
+  body[data-mscreen="bareact"] .page-wrap,
+  body[data-mscreen="bareact"] .sheet,
+  body[data-mscreen="bareactsection"] .page-wrap,
+  body[data-mscreen="bareactsection"] .sheet {
+    background: var(--rc-paper);
+  }
+
+  body[data-mscreen="bareact"] .panel {
+    padding: 0 0 calc(var(--m-tabbar) + 28px);
+  }
+
+  body[data-mscreen="bareact"] .bareact-head {
+    padding: 2px var(--m-gutter) 14px;
+    background: var(--rc-page);
+    border-bottom: 1px solid var(--rc-hairline);
+  }
+
+  body[data-mscreen="bareact"] .bareact-title {
+    font-size: 19px;
+    text-wrap: pretty;
+  }
+
+  body[data-mscreen="bareact"] .bareact-chapter-row {
+    padding: 10px var(--m-gutter);
+    background: var(--rc-wash);
+  }
+
+  body[data-mscreen="bareact"] .bareact-chapter-name {
+    font-size: 14.5px;
+  }
+
+  body[data-mscreen="bareact"] .bareact-chapter-range {
+    font-size: 11.5px;
+  }
+
+  body[data-mscreen="bareact"] .bareact-section-row {
+    padding: 11px var(--m-gutter);
+    background: var(--rc-paper);
+  }
+
+  body[data-mscreen="bareact"] .bareact-section-row:active {
+    background: var(--rc-wash);
+  }
+
+  body[data-mscreen="bareact"] .bareact-section-name {
+    font-size: 14px;
+  }
+
+  /* Section reader */
+  body[data-mscreen="bareactsection"] .bareact-reader-title {
+    font-size: 23px;
+  }
+
+  body[data-mscreen="bareactsection"] .bareact-reader-sub {
+    margin-bottom: 14px;
+    font-size: 13.5px;
+    text-wrap: pretty;
+  }
+
+  body[data-mscreen="bareactsection"] .bareact-row-text {
+    font-size: 13.5px;
+  }
+
+  body[data-mscreen="bareactsection"] .bareact-row.is-aside .bareact-row-text {
+    font-size: 13px;
+  }
+
+  body[data-mscreen="bareactsection"] .bareact-table {
+    font-size: 12.5px;
+  }
+
+  body[data-mscreen="bareactsection"] .bareact-table th,
+  body[data-mscreen="bareactsection"] .bareact-table td {
+    padding: 8px 11px;
+  }
+
+  body[data-mscreen="bareactsection"] .bareact-nav-num {
+    font-size: 13px;
+  }
 }
 
 @media (max-width: 560px) and (prefers-reduced-motion: reduce) {
@@ -5368,4 +5526,5 @@
   .dash-avatar-link {
     display: contents;
   }
+
 }
