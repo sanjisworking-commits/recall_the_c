@@ -577,10 +577,16 @@ class ReminderEngine:
         self.repo.set_notification_frequency(self.user_id, frequency)
         self._patch_settings_cache(NOTIFICATION_FREQUENCY_KEY, frequency)
 
-    def get_setting(self, key: str) -> str | None:
+    def get_setting(self, key: str, *, stage: str | None = None) -> str | None:
+        """Read one setting. ``stage`` times only the repo path, like get_theme."""
         if self._settings_cache is not None:
             return self._settings_cache.get(key)
-        return self.repo.get_setting(self.user_id, key)
+        if stage is None:
+            return self.repo.get_setting(self.user_id, key)
+        started = perf_counter()
+        value = self.repo.get_setting(self.user_id, key)
+        _record_timing(stage, started)
+        return value
 
     def set_setting(self, key: str, value: str) -> None:
         self.repo.set_setting(self.user_id, key, value)

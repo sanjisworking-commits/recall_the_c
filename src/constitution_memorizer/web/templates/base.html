@@ -54,6 +54,7 @@
   <link rel="stylesheet" href="/static/onboarding.css?v=ob6">
   {% endif %}
   <link rel="icon" href="/static/main_logo.png" type="image/png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 </head>
 <body class="{% block body_class %}{% endblock %}{% if multiuser_enabled|default(false) %}{% if current_user %} is-authed{% else %} is-guest{% endif %}{% endif %}{% if admin_preview_label|default('') %} is-admin-previewing{% endif %}"{% if onboarding_status|default('') %} data-onboarding="{{ onboarding_status }}"{% endif %} data-mscreen="{% block mobile_screen %}{% endblock %}">
   {% if admin_preview_label|default('') %}
