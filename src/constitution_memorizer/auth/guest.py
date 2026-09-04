@@ -6,14 +6,27 @@ from urllib.parse import urlencode
 
 from fastapi.responses import RedirectResponse
 
+# Root paths served to anyone, without a session lookup: health, crawler files,
+# and the assets browsers request on their own initiative. Kept in one place
+# because three separate exempt lists have to agree about them.
+ROOT_ASSET_PATHS = frozenset(
+    {
+        "/health",
+        "/sitemap.xml",
+        "/robots.txt",
+        "/sw.js",
+        "/favicon.ico",
+        "/apple-touch-icon.png",
+        "/apple-touch-icon-precomposed.png",
+    }
+)
+
 # Paths guests may freely read/try (GET). Mutating POSTs are still gated.
 GUEST_PUBLIC_PREFIXES = (
     "/login",
     "/auth/",
     "/static/",
-    "/health",
-    "/sitemap.xml",
-    "/robots.txt",
+    *sorted(ROOT_ASSET_PATHS),
     "/browse",
     "/search",
     "/tables",
@@ -68,11 +81,8 @@ def is_guest_public_get(path: str, method: str) -> bool:
 def requires_auth(path: str, method: str) -> bool:
     """Return True when an unauthenticated request must be blocked."""
     m = method.upper()
-    if path.startswith("/auth/") or path in {
+    if path.startswith("/auth/") or path in ROOT_ASSET_PATHS or path in {
         "/login",
-        "/health",
-        "/sitemap.xml",
-        "/robots.txt",
         "/signed-out",
         "/session-expired",
         "/terms",

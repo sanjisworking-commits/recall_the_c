@@ -103,9 +103,9 @@ def test_auth_middleware_fastpath_is_before_session_lookup():
 
     text = Path(routes.__file__).read_text(encoding="utf-8")
     gate = text.split("async def multiuser_auth_gate", 1)[1]
-    fast = gate.index(
-        'path in {"/health", "/sitemap.xml", "/robots.txt"} or path.startswith("/static/")'
-    )
+    # The exempt set moved into auth.guest.ROOT_ASSET_PATHS so the three lists
+    # that must agree about it share one definition.
+    fast = gate.index('path in ROOT_ASSET_PATHS or path.startswith("/static/")')
     lookup = gate.index("get_optional_current_user(request)")
     assert fast < lookup
     assert "return await call_next(request)" in gate[:lookup]

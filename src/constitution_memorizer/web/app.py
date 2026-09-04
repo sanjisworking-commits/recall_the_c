@@ -29,6 +29,7 @@ from constitution_memorizer.admin.store import (
     SqliteAccessStore,
 )
 from constitution_memorizer.auth.fake_provider import FakeAuthProvider
+from constitution_memorizer.auth.guest import ROOT_ASSET_PATHS as _ROOT_ASSET_PATHS
 from constitution_memorizer.auth.rate_limit import OtpRateLimiter
 from constitution_memorizer.auth.routes import create_auth_router, install_auth_middleware
 from constitution_memorizer.auth.sessions import InMemorySessionStore, PostgresSessionStore
@@ -85,6 +86,7 @@ from constitution_memorizer.web.request_context import (
     begin_request_timings,
     bound_engine,
     bound_memory,
+    record_request_note,
     record_request_timing,
     reset_request_timings,
     snapshot_request_counters,
@@ -454,6 +456,9 @@ def create_app(
         if getattr(request.state, "is_guest", False) and app.state.multiuser_enabled:
             return "auto"
         bound = getattr(request.state, "bound_engine", None) or app.state.engine
+        # No timing here on purpose: get_theme() records `theme` only when it
+        # actually reaches the repo, so a theme_ms in the log is proof of a
+        # read rather than proof of a call.
         return bound.get_theme()
 
     def _onboarding_for_request(request: Request) -> str:
@@ -465,7 +470,10 @@ def create_app(
         bound = getattr(request.state, "bound_engine", None)
         if bound is None:
             return ""
-        value = bound.get_setting(ONBOARDING_KEY) or ""
+        # `stage` makes this read visible the way get_theme() already is:
+        # recorded only when it reaches the repo. Onboarding was the one of the
+        # three nav reads with no stage at all, so it was invisible in the logs.
+        value = bound.get_setting(ONBOARDING_KEY, stage="onboarding_setting") or ""
         return value if value in VALID_ONBOARDING_STATUSES else ""
 
     def _due_for_request(request: Request) -> int:
@@ -701,7 +709,7 @@ def create_app(
         """Log method/path/status/duration_ms; skip health and static assets."""
         path = request.url.path
         skip = (
-            path in {"/health", "/sitemap.xml", "/robots.txt"}
+            path in _ROOT_ASSET_PATHS
             or path.startswith("/static/")
         )
         breakdown = wants_request_breakdown(path)
@@ -713,6 +721,18 @@ def create_app(
             status = response.status_code
             return response
         finally:
+            if breakdown:
+                # Recorded here, after call_next, because the auth middleware
+                # runs inside this one and is what sets current_user. Without
+                # it a duration_ms line cannot be read: guest and signed-in are
+                # different code paths, and only one of them touches the DB.
+                if not app.state.multiuser_enabled:
+                    auth_state = "single_user"
+                elif getattr(request.state, "current_user", None) is not None:
+                    auth_state = "authed"
+                else:
+                    auth_state = "guest"
+                record_request_note("auth_state", auth_state)
             if not skip:
                 duration_ms = (time.perf_counter() - started) * 1000.0
                 timing_logger.info(
@@ -795,6 +815,32 @@ def create_app(
             force=force,
             **args,
         )
+
+    # Root paths browsers ask for without being told to. Serving them stops a
+    # steady drip of 404s that each paid for a session lookup — and, on a stale
+    # cookie, could spend the user's one-shot /session-expired redirect on an
+    # icon request.
+    @app.get("/sw.js")
+    async def service_worker() -> FileResponse:
+        """A worker that unregisters itself. See static/sw.js for why."""
+        return FileResponse(
+            STATIC_DIR / "sw.js",
+            media_type="text/javascript",
+            # Must not be cached: a stale copy is an orphaned worker that never
+            # sees the kill switch.
+            headers={"Cache-Control": "no-cache"},
+        )
+
+    @app.get("/favicon.ico")
+    async def favicon_ico() -> FileResponse:
+        """PNG bytes at the .ico path — every current browser accepts it."""
+        return FileResponse(STATIC_DIR / "brand-c.png", media_type="image/png")
+
+    @app.get("/apple-touch-icon.png")
+    @app.get("/apple-touch-icon-precomposed.png")
+    async def apple_touch_icon() -> FileResponse:
+        """iOS probes both spellings at the root when adding to home screen."""
+        return FileResponse(STATIC_DIR / "brand-c.png", media_type="image/png")
 
     @app.get("/sitemap.xml")
     async def sitemap_xml() -> FileResponse:
@@ -2529,11 +2575,11 @@ def create_app(
 
     @app.get("/laws", response_class=HTMLResponse)
     async def laws_page(request: Request) -> HTMLResponse:
-        return templates.TemplateResponse(
-            request,
-            "laws.html",
-            {"acts": load_laws(), "bare_acts": list_bare_acts()},
-        )
+        context = {"acts": load_laws(), "bare_acts": list_bare_acts()}
+        started = time.perf_counter()
+        response = templates.TemplateResponse(request, "laws.html", context)
+        record_request_timing("template", started)
+        return response
 
     @app.get("/laws/{law_id}", response_class=HTMLResponse)
     async def law_detail_page(request: Request, law_id: str) -> HTMLResponse:
@@ -2542,11 +2588,12 @@ def create_app(
         # Articles, so it keeps the page it has always had.
         bare = get_bare_act(law_id)
         if bare is not None:
-            return templates.TemplateResponse(
-                request,
-                "bare_act.html",
-                {"act": bare},
+            started = time.perf_counter()
+            response = templates.TemplateResponse(
+                request, "bare_act.html", {"act": bare}
             )
+            record_request_timing("template", started)
+            return response
         act = get_law(law_id)
         if act is None:
             raise HTTPException(status_code=404, detail="Law not found")
@@ -2570,7 +2617,8 @@ def create_app(
         if section is None:
             raise HTTPException(status_code=404, detail="Section not found")
         previous, following = bare.neighbours(number)
-        return templates.TemplateResponse(
+        started = time.perf_counter()
+        response = templates.TemplateResponse(
             request,
             "bare_act_section.html",
             {
@@ -2581,6 +2629,8 @@ def create_app(
                 "footnotes": bare.notes(section.note_ids),
             },
         )
+        record_request_timing("template", started)
+        return response
 
     @app.get(
         "/laws/{law_id}/schedule/{schedule_slug}", response_class=HTMLResponse
@@ -2594,7 +2644,8 @@ def create_app(
         schedule = bare.schedule(schedule_slug)
         if schedule is None:
             raise HTTPException(status_code=404, detail="Schedule not found")
-        return templates.TemplateResponse(
+        started = time.perf_counter()
+        response = templates.TemplateResponse(
             request,
             "bare_act_schedule.html",
             {
@@ -2603,6 +2654,8 @@ def create_app(
                 "footnotes": bare.notes(schedule.note_ids),
             },
         )
+        record_request_timing("template", started)
+        return response
 
     @app.get("/memory", response_class=HTMLResponse)
     async def memory_page(

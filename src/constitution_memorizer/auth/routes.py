@@ -17,7 +17,11 @@ from constitution_memorizer.auth.exceptions import (
     OtpExpiredError,
     RateLimitError,
 )
-from constitution_memorizer.auth.guest import requires_auth, signin_redirect
+from constitution_memorizer.auth.guest import (
+    ROOT_ASSET_PATHS,
+    requires_auth,
+    signin_redirect,
+)
 from constitution_memorizer.auth.phone import (
     display_national,
     mask_phone,
@@ -717,7 +721,7 @@ def install_auth_middleware(app) -> None:
     @app.middleware("http")
     async def multiuser_auth_gate(request: Request, call_next):
         path = request.url.path
-        if path in {"/health", "/sitemap.xml", "/robots.txt"} or path.startswith("/static/"):
+        if path in ROOT_ASSET_PATHS or path.startswith("/static/"):
             return await call_next(request)
 
         from constitution_memorizer.web.request_context import bound_engine, bound_memory
@@ -749,13 +753,11 @@ def install_auth_middleware(app) -> None:
             raw_cookie
             and user is None
             and method == "GET"
+            and path not in ROOT_ASSET_PATHS
             and path not in {
                 "/session-expired",
                 "/login",
                 "/signed-out",
-                "/health",
-                "/sitemap.xml",
-                "/robots.txt",
                 "/terms",
                 "/privacy",
                 "/grievance",

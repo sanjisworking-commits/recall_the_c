@@ -70,7 +70,9 @@ TIMING_STAGES: tuple[str, ...] = (
     "done_schedule",
     "gloss_read",
     "theme",
+    "onboarding_setting",
     "nav_due",
+    "bare_act_load",
     "template",
     "access_override",
     "free_articles_backfill_check",
@@ -100,9 +102,14 @@ REQUEST_COUNTERS: tuple[str, ...] = (
     "planner_selects",
     "planner_round_trips",
     "modes_seen_rows",
+    "bare_act_cache_misses",
 )
 _REQUEST_COUNTER_SET = frozenset(REQUEST_COUNTERS)
-REQUEST_NOTES: tuple[str, ...] = ("planner_pipeline_fallback_reason",)
+REQUEST_NOTES: tuple[str, ...] = (
+    "planner_pipeline_fallback_reason",
+    "auth_state",
+    "bare_act_cache",
+)
 _REQUEST_NOTE_SET = frozenset(REQUEST_NOTES)
 _LEARN_BREAKDOWN_SUFFIXES = frozenset({"choose", "seen", "done", "quiz"})
 _BREAKDOWN_PATHS = frozenset(
@@ -125,10 +132,15 @@ _BREAKDOWN_PATHS = frozenset(
 
 
 def wants_request_breakdown(path: str) -> bool:
-    """True for Dashboard, Browse, Learn-flow, Settings, Pricing, and Calendar."""
+    """True for Dashboard, Browse, Laws, Learn-flow, Settings, Pricing, Calendar."""
     if path in _BREAKDOWN_PATHS:
         return True
     parts = [segment for segment in path.split("/") if segment]
+    # Every /laws page: the index, an Act, a section, a schedule. These render
+    # no user data, so the question they have to answer is why they ever cost
+    # more than a template render.
+    if parts and parts[0] == "laws":
+        return True
     if len(parts) == 3 and parts[0] == "browse" and parts[1] == "article":
         return True
     if (

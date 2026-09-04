@@ -18,9 +18,16 @@ import re
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
+from time import perf_counter
 from typing import Any
 
 from constitution_memorizer.utils.json_io import read_json
+from constitution_memorizer.web.request_context import (
+    record_request_counter,
+    record_request_note,
+    record_request_timing,
+    snapshot_request_counters,
+)
 
 _REPO_ROOT = Path(__file__).resolve().parents[3]
 _WEB_DIR = Path(__file__).resolve().parent
@@ -558,17 +565,42 @@ def _parse(
 
 @lru_cache(maxsize=4)
 def _load_cached(slug: str) -> BareAct:
+    # Diagnostics live *inside* the cached body, which by construction runs only
+    # when this request actually parsed the Act. Comparing cache_info() around a
+    # call would be wrong: it is process-global, so concurrent requests would
+    # read each other's deltas.
+    started = perf_counter()
     spec = BARE_ACTS[slug]
     patches = [read_json(_data_path(name)) for name in spec.patch_filenames]
-    return _parse(spec, read_json(_data_path(spec.filename)), patches)
+    act = _parse(spec, read_json(_data_path(spec.filename)), patches)
+    record_request_timing("bare_act_load", started)
+    record_request_counter("bare_act_cache_misses", 1)
+    return act
+
+
+def _note_cache_outcome(before: int) -> None:
+    """Hit or miss for *this* request, from its own counter.
+
+    Not a claim about the process: `functools.lru_cache` holds no lock across
+    the call, so two concurrent first-touch requests may each run the loader
+    body and each honestly record a miss.
+    """
+    after = snapshot_request_counters().get("bare_act_cache_misses", 0)
+    record_request_note("bare_act_cache", "miss" if after > before else "hit")
 
 
 def get_bare_act(slug: str) -> BareAct | None:
     """The Act for this slug, or None — 404 is the caller's decision."""
     if slug not in BARE_ACTS:
         return None
-    return _load_cached(slug)
+    before = snapshot_request_counters().get("bare_act_cache_misses", 0)
+    act = _load_cached(slug)
+    _note_cache_outcome(before)
+    return act
 
 
 def list_bare_acts() -> list[BareAct]:
-    return [_load_cached(slug) for slug in BARE_ACTS]
+    before = snapshot_request_counters().get("bare_act_cache_misses", 0)
+    acts = [_load_cached(slug) for slug in BARE_ACTS]
+    _note_cache_outcome(before)
+    return acts
