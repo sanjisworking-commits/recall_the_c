@@ -36,6 +36,7 @@
   --rc-fn-card-label: #8fbcb4;
   --rc-fn-card-ink: #f0f4f3;
   --mid: #8f8f8d;
+  --rc-illustration: #3a3a38;
   --bare-size: 19px;
   --learning: #d8d8d6;
   --control-border: #c9c9c7;
@@ -97,6 +98,7 @@ html[data-theme="dark"] {
   --rc-fn-card-label: #8fd4c8;
   --rc-fn-card-ink: #f0f4f3;
   --mid: #8f8f8d;
+  --rc-illustration: #c9c9c7;
   --learning: #4a4a48;
   --control-border: #4a4a48;
   --seg-track: #232322;
@@ -4141,6 +4143,56 @@ code {
 .bareact-section-chevron {
   font-size: 14px;
   color: var(--faint);
+}
+
+/* ── BNS profile ────────────────────────────────────────────────────────
+   Scoped to `.bareact-page.is-bns` so none of it can reach NDPS, which keeps
+   the appearance it shipped with. Scoped at the page root rather than at
+   `.bareact-body` because the division headings live on the chapter list,
+   which has no body container. */
+
+.bareact-page.is-bns .bareact-division {
+  margin: 0;
+  padding: 12px 0 6px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--mid);
+  background: var(--paper);
+  border-bottom: 1px solid var(--page);
+}
+
+/* An Explanation or Exception opens a new block, so it gets air above it
+   rather than a marker beside it. */
+.bareact-page.is-bns .bareact-row.is-block-break {
+  padding-top: 16px;
+}
+
+.bareact-page.is-bns .bareact-row.is-explanation .bareact-row-label,
+.bareact-page.is-bns .bareact-row.is-exception .bareact-row-label {
+  font-style: italic;
+}
+
+/* Illustrations are worked examples, not operative text: italic, and set a
+   shade back so the eye can skip them when reading the provision itself. */
+.bareact-page.is-bns .bareact-row.is-illustration {
+  font-style: italic;
+  color: var(--rc-illustration, #3a3a38);
+}
+
+/* The container names the block; it is a heading, so no rule under it. */
+.bareact-page.is-bns .bareact-row.is-illustrations {
+  padding: 16px 0 5px;
+  border-bottom: 0;
+}
+
+.bareact-page.is-bns .bareact-row.is-illustrations .bareact-row-kind {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mid);
 }
 
 /* Section reader */
