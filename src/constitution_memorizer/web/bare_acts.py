@@ -61,6 +61,11 @@ class BareActSpec:
     # rather than merged on disk: both are frozen artifacts, and rewriting one
     # into the other would replace the canonical dataset with our own.
     patch_filenames: tuple[str, ...] = ()
+    # Which node-rendering vocabulary this Act uses. NDPS predates the second
+    # Act and keeps exactly the appearance it shipped with; BNS follows the
+    # semantic table in its own handoff. The profile travels as data so the
+    # templates never ask which Act they are drawing.
+    render_profile: str = "ndps"
 
 
 BARE_ACTS: dict[str, BareActSpec] = {
@@ -70,6 +75,13 @@ BARE_ACTS: dict[str, BareActSpec] = {
         short_name="The NDPS Act, 1985",
         back_label="← The NDPS Act, 1985",
         patch_filenames=("ndps_schedule_patch.json",),
+    ),
+    "bns": BareActSpec(
+        slug="bns",
+        filename="bns_runtime_v1.json",
+        short_name="The BNS, 2023",
+        back_label="← The BNS, 2023",
+        render_profile="bns",
     ),
 }
 
@@ -107,6 +119,10 @@ class ProvisionRow:
     table: dict[str, Any] | None = None
     annotations: tuple[dict[str, Any], ...] = ()
     label_annotations: tuple[dict[str, Any], ...] = ()
+    profile: str = "ndps"
+    # Illustration containers hold no text of their own; the child count is
+    # what decides "Illustration" against "Illustrations".
+    child_count: int = 0
 
     @property
     def is_table(self) -> bool:
@@ -118,8 +134,86 @@ class ProvisionRow:
 
     @property
     def is_aside(self) -> bool:
-        """Proviso and Explanation: unlabelled, set apart, still in the flow."""
-        return self.kind in {"proviso", "explanation"}
+        """Proviso and Explanation: unlabelled, set apart, still in the flow.
+
+        NDPS only. Under the bns profile those kinds take the treatment in the
+        BNS handoff's table instead, so this must not claim them — that is what
+        keeps the older Act's appearance from moving.
+        """
+        return self.profile == "ndps" and self.kind in {"proviso", "explanation"}
+
+    # ── The BNS node vocabulary ──────────────────────────────────────────
+    # Every one of these is False under the ndps profile, so none can reach a
+    # screen that shipped before the second Act existed.
+
+    @property
+    def is_illustration_heading(self) -> bool:
+        """The container row: "Illustration"/"Illustrations" over its children."""
+        return self.profile == "bns" and self.kind == "illustrations"
+
+    @property
+    def is_illustration(self) -> bool:
+        return self.profile == "bns" and self.kind == "illustration"
+
+    @property
+    def is_block_break(self) -> bool:
+        """Exceptions, and top-level Explanations, open a new block."""
+        if self.profile != "bns":
+            return False
+        return self.kind == "exception" or (
+            self.kind == "explanation" and self.depth == 0
+        )
+
+    @property
+    def shows_marker(self) -> bool:
+        """The depth dot. Asides, illustrations and headings carry none."""
+        if self.profile != "bns":
+            return True
+        return self.kind not in {
+            "explanation",
+            "exception",
+            "proviso",
+            "illustration",
+            "illustrations",
+        }
+
+    @property
+    def row_classes(self) -> str:
+        """The row's modifier classes, leading space included, or "".
+
+        Built here rather than in the template so the template never has to ask
+        which Act it is drawing, and so the ndps output stays exactly what it
+        was: `is-root`, and `is-aside is-<kind>` for a proviso or explanation.
+        """
+        classes: list[str] = []
+        if self.depth == 0:
+            classes.append("is-root")
+        if self.is_aside:
+            classes.extend(["is-aside", f"is-{self.kind}"])
+        elif self.profile == "bns":
+            classes.append(f"is-{self.kind}")
+            if self.is_block_break:
+                classes.append("is-block-break")
+        return "".join(f" {name}" for name in classes)
+
+    @property
+    def display_label(self) -> str:
+        """The label as printed.
+
+        BNS stores "Explanation 2" and "Exception 1" without the em-dash the
+        statute prints after them. Appended only when the label does not
+        already carry closing punctuation, so a future canonical label that
+        brings its own cannot become "Explanation 2.—.—".
+        """
+        if self.is_illustration_heading:
+            return "Illustrations" if self.child_count > 1 else "Illustration"
+        label = self.label
+        if not label:
+            return ""
+        if self.profile == "bns" and self.kind in {"explanation", "exception"}:
+            if not label.rstrip().endswith((".", "—", ":", ";", ")")):
+                return f"{label}.—"
+        return label
 
     @property
     def segments(self) -> tuple[FootnoteSpan, ...]:
@@ -214,6 +308,14 @@ class ActSection:
     chapter_number: str
     chapter_title: str
     body: tuple[dict[str, Any], ...]
+    profile: str = "ndps"
+    # Divisions sit between chapter and section. `starts_division` marks the
+    # section a heading is drawn above; it is keyed on the id rather than the
+    # title, because the id is the canonical structure and two divisions could
+    # share a display string.
+    division_id: str | None = None
+    division_title: str | None = None
+    starts_division: bool = False
 
     @property
     def is_omitted(self) -> bool:
@@ -232,7 +334,7 @@ class ActSection:
 
     @property
     def rows(self) -> tuple[ProvisionRow, ...]:
-        return flatten_body(self.body)
+        return flatten_body(self.body, profile=self.profile)
 
     @property
     def note_ids(self) -> tuple[str, ...]:
@@ -269,6 +371,7 @@ class BareAct:
     short_name: str
     back_label: str
     act_number: str
+    render_profile: str
     chapters: tuple[ActChapter, ...]
     section_order: tuple[ActSection, ...]
     footnotes: dict[str, Footnote] = field(default_factory=dict)
@@ -470,27 +573,41 @@ def _capitalise(word: str) -> str:
     return "".join(result)
 
 
-def flatten_body(nodes, depth: int = 0) -> tuple[ProvisionRow, ...]:
+def flatten_body(nodes, depth: int = 0, *, profile: str = "ndps") -> tuple[ProvisionRow, ...]:
     """Depth-first walk into reading order, carrying nesting depth.
 
     Flattening happens here rather than in a recursive Jinja macro so the
     nesting rules are unit-testable. This is a *presentation* sequence — the
     stored tree is untouched.
+
+    A node earns a row when it has text, a statutory label, or a container role
+    of its own. BNS has 98 nodes with no text: 96 ``illustrations`` containers,
+    Section 2's labelled ``Explanation`` and Section 8's subsection ``(6)``.
+    The last two hold their content entirely in children, and dropping their
+    row would take "(6)" off the page — a subsection number is part of how the
+    provision is cited, not decoration. Children are walked either way, so a
+    node that earns no row still contributes everything beneath it.
     """
     rows: list[ProvisionRow] = []
     for node in nodes or []:
-        rows.append(
-            ProvisionRow(
-                depth=depth,
-                kind=str(node.get("type") or "paragraph"),
-                label=str(node.get("label") or ""),
-                text=str(node.get("text") or ""),
-                table=node.get("table"),
-                annotations=tuple(node.get("annotations") or ()),
-                label_annotations=tuple(node.get("label_annotations") or ()),
-            )
+        children = node.get("children") or []
+        kind = str(node.get("type") or "paragraph")
+        label = str(node.get("label") or "")
+        text = str(node.get("text") or "")
+        row = ProvisionRow(
+            depth=depth,
+            kind=kind,
+            label=label,
+            text=text,
+            table=node.get("table"),
+            annotations=tuple(node.get("annotations") or ()),
+            label_annotations=tuple(node.get("label_annotations") or ()),
+            profile=profile,
+            child_count=len(children),
         )
-        rows.extend(flatten_body(node.get("children") or [], depth + 1))
+        if text or label or row.is_illustration_heading or row.is_table:
+            rows.append(row)
+        rows.extend(flatten_body(children, depth + 1, profile=profile))
     return tuple(rows)
 
 
@@ -517,7 +634,13 @@ def _parse(
         chapter_number = str(raw_chapter.get("number") or "")
         chapter_title = title_case_chapter(raw_chapter.get("title") or "")
         sections: list[ActSection] = []
+        # Reset per chapter: a division belongs to one chapter, and the first
+        # section of each division is where its heading is drawn. Sections
+        # before a chapter's first division carry no id and stay ungrouped —
+        # Chapters III, XVIII and XIX all open that way.
+        previous_division: str | None = None
         for raw_section in raw_chapter.get("sections") or []:
+            division_id = raw_section.get("division_id") or None
             section = ActSection(
                 # Never an int: 7A, 25A, 68-I, 68-O and 68Z are all real.
                 number=str(raw_section.get("number") or ""),
@@ -528,7 +651,14 @@ def _parse(
                 chapter_number=chapter_number,
                 chapter_title=chapter_title,
                 body=tuple(raw_section.get("body") or []),
+                profile=spec.render_profile,
+                division_id=division_id,
+                division_title=raw_section.get("division_title") or None,
+                starts_division=(
+                    division_id is not None and division_id != previous_division
+                ),
             )
+            previous_division = division_id
             sections.append(section)
             order.append(section)
         chapters.append(
@@ -554,6 +684,7 @@ def _parse(
         short_name=spec.short_name,
         back_label=spec.back_label,
         act_number=str(document.get("act_number") or ""),
+        render_profile=spec.render_profile,
         chapters=tuple(chapters),
         # One ordered list of every section in the Act, in the Act's own order.
         section_order=tuple(order),

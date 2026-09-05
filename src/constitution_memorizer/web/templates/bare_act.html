@@ -2,7 +2,7 @@
 {% block title %}{{ act.title }} · {{ app_name|default('Recall the C') }}{% endblock %}
 {% block mobile_screen %}bareact{% endblock %}
 {% block content %}
-<section class="panel bareact">
+<section class="panel bareact bareact-page is-{{ act.render_profile }}">
   <div class="bareact-head">
     <div class="mobile-topbar">
       <a class="mobile-back" href="/laws">← Laws</a>
@@ -22,6 +22,13 @@
       </summary>
       <div class="bareact-section-list">
         {% for section in chapter.sections %}
+        {# Divisions sit between chapter and section in some Acts. The heading
+           is drawn above the first section carrying a new division id, so the
+           sections a chapter opens with before its first division stay
+           ungrouped. #}
+        {% if section.starts_division %}
+        <p class="bareact-division">{{ section.division_title }}</p>
+        {% endif %}
         <a class="bareact-section-row" href="/laws/{{ act.slug }}/section/{{ section.number }}">
           <span class="bareact-section-node" aria-hidden="true"></span>
           <span class="bareact-section-copy">

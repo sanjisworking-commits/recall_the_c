@@ -3,7 +3,7 @@
 {% block mobile_screen %}bareactsection{% endblock %}
 {% import "partials/bare_act_macros.html" as fn %}
 {% block content %}
-<section class="panel bareact-reader">
+<section class="panel bareact-reader bareact-page is-{{ act.render_profile }}">
   <div class="mobile-topbar">
     <a class="mobile-back" href="/laws/{{ act.slug }}">{{ act.back_label }}</a>
   </div>
@@ -36,10 +36,15 @@
       <div class="bareact-row is-omission" style="--depth: {{ row.depth }}" role="note">
         <p class="bareact-row-text">{% if row.label %}<span class="bareact-row-label">{{ row.label }}</span>{% endif %}Omitted.</p>
       </div>
+      {% elif row.is_illustration_heading %}
+      {# A container with no text of its own: it names the block beneath it. #}
+      <div class="bareact-row{{ row.row_classes }}" style="--depth: {{ row.depth }}">
+        <p class="bareact-row-text"><span class="bareact-row-kind">{{ row.display_label }}</span></p>
+      </div>
       {% else %}
-      <div class="bareact-row{% if row.depth == 0 %} is-root{% endif %}{% if row.is_aside %} is-aside is-{{ row.kind }}{% endif %}" style="--depth: {{ row.depth }}">
-        <span class="bareact-row-node" aria-hidden="true"></span>
-        <p class="bareact-row-text">{% if row.kind == 'explanation' %}<span class="bareact-row-kind">Explanation</span>{% elif row.label %}<span class="bareact-row-label">{% if row.label_note_id %}{{ fn.fn_anchor(row.label_note_id, row.label) }}{% else %}{{ row.label }}{% endif %}</span>{% endif %}{% for seg in row.segments %}{% if seg.is_anchor %}{{ fn.fn_anchor(seg.note_id, seg.text) }}{% else %}{{ seg.text }}{% endif %}{% endfor %}</p>
+      <div class="bareact-row{{ row.row_classes }}" style="--depth: {{ row.depth }}">
+        {% if row.shows_marker %}<span class="bareact-row-node" aria-hidden="true"></span>{% endif %}
+        <p class="bareact-row-text">{% if row.is_aside and row.kind == 'explanation' %}<span class="bareact-row-kind">Explanation</span>{% elif row.display_label %}<span class="bareact-row-label">{% if row.label_note_id %}{{ fn.fn_anchor(row.label_note_id, row.display_label) }}{% else %}{{ row.display_label }}{% endif %}</span>{% endif %}{% for seg in row.segments %}{% if seg.is_anchor %}{{ fn.fn_anchor(seg.note_id, seg.text) }}{% else %}{{ seg.text }}{% endif %}{% endfor %}</p>
       </div>
       {% endif %}
     {% endfor %}

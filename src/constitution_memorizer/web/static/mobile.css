@@ -5438,6 +5438,18 @@
     font-size: 13px;
   }
 
+  /* BNS profile, phone. Scoped to the page root so NDPS cannot pick any of it
+     up; the division heading lives on the chapter list, which is why the
+     scope is the page and not the body. */
+  body[data-mscreen="bareact"] .bareact-page.is-bns .bareact-division {
+    padding: 12px var(--m-gutter) 6px;
+    background: var(--rc-paper);
+  }
+
+  body[data-mscreen="bareactsection"] .bareact-page.is-bns .bareact-row.is-illustration {
+    font-size: 13px;
+  }
+
   /* The card is sticky inside the reading column, but the tab bar is fixed over
      the bottom 56px of the viewport — so the sticky stop has to clear it. */
   .bareact-fn-card {

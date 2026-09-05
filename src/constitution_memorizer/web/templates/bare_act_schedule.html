@@ -3,7 +3,7 @@
 {% block mobile_screen %}bareactschedule{% endblock %}
 {% import "partials/bare_act_macros.html" as fn %}
 {% block content %}
-<section class="panel bareact-reader">
+<section class="panel bareact-reader bareact-page is-{{ act.render_profile }}">
   <div class="mobile-topbar">
     <a class="mobile-back" href="/laws/{{ act.slug }}">{{ act.back_label }}</a>
   </div>
