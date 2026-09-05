@@ -101,10 +101,13 @@ class MultiUserSettings(BaseSettings):
 
     multiuser_enabled: bool = Field(default=False, alias="MULTIUSER_ENABLED")
 
-    # V1 production: Memory Log and Relevant Laws stay off until Postgres-ready.
+    # V1 production: Memory Log stays off until Postgres-ready.
     memory_log_enabled: bool = Field(default=False, alias="MEMORY_LOG_ENABLED")
+    # Laws is on: it reads seed and Bare Act JSON only — no per-user rows, so
+    # nothing about it waits on Postgres. Off, the middleware 404s /laws before
+    # auth runs, which would strand the Browse and Launch entry points.
     relevant_laws_enabled: bool = Field(
-        default=False, alias="RELEVANT_LAWS_ENABLED"
+        default=True, alias="RELEVANT_LAWS_ENABLED"
     )
 
     # 3-Free-Article entitlement boundary (claim prompts, Type/Recite locks,

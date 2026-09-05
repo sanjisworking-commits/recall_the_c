@@ -69,3 +69,8 @@ config.local.json
 # Logs
 *.log
 logs/
+
+# Local design reference (not part of the repo)
+.design-ref/
+src/constitution_memorizer/web/static/_prototype.html
+src/constitution_memorizer/web/static/support.js

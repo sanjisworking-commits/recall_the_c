@@ -129,14 +129,18 @@
     if (!learn) return;
 
     var unitId = learn.getAttribute("data-unit-id") || "";
-    var articleNumber = (learn.getAttribute("data-article-number") || "").trim();
     var nameEl = learn.querySelector("[data-mode-name]");
-    var eyebrowEl = learn.querySelector("[data-mode-eyebrow]");
-    var headlineEl = learn.querySelector("[data-mode-headline]");
     var toast = learn.querySelector("[data-deck-toast]");
     var tracker = document.getElementById("methods-tracker");
     var cards = Array.prototype.slice.call(learn.querySelectorAll(".learn-deck-card"));
     var dots = Array.prototype.slice.call(learn.querySelectorAll(".learn-deck-dot"));
+    // diff.md item 7: the stepper is rendered from `seen` at request time, but
+    // modes advance client-side without a reload — so it never moved off the
+    // first segment. It is kept in step here, from the same source of truth
+    // the deck cards use.
+    var steps = Array.prototype.slice.call(learn.querySelectorAll(".rc-mode-step"));
+    var stepLabel = learn.querySelector("[data-mode-step]");
+    var taskEl = learn.querySelector("[data-mode-task]");
     var MODE_LABELS = {
       read: "Read",
       cloze: "Cloze",
@@ -145,22 +149,27 @@
       recite: "Recite",
       test: "Test",
     };
-    var MODE_HEADLINES = {
-      read: "First, read it once.",
-      cloze: "Fill the gaps.",
-      letters: "Rebuild it from the first letters.",
-      type: "Type it from memory.",
-      recite: "Say it from memory.",
-      test: "Prove you know it.",
-    };
-    // Completing CTAs follow the Read reference: first person + arrow.
+    // What the advance button says once the mode's own act is done. Only
+    // Read's label comes from the design file; the other five follow its
+    // shape so the session reads as a sequence of things done rather than a
+    // row of identical Nexts.
     var ADVANCE_LABELS = {
-      read: "I've read this →",
-      cloze: "I've filled the gaps →",
-      letters: "I've heard this →",
-      type: "I've typed this →",
-      recite: "I've recited this →",
-      test: "I've checked this →",
+      read: "I\u2019ve read this \u2192",
+      cloze: "I\u2019ve filled the gaps \u2192",
+      letters: "I\u2019ve heard this \u2192",
+      type: "I\u2019ve typed this \u2192",
+      recite: "I\u2019ve recited this \u2192",
+      test: "I\u2019ve checked this \u2192",
+    };
+    // The one-line task under the eyebrow. Same source as the server render,
+    // so the header does not change voice when a mode advances client-side.
+    var MODE_TASKS = {
+      read: "First, read it once.",
+      cloze: "Fill the gaps from memory.",
+      letters: "Rebuild it from first letters.",
+      type: "Write it out, word for word.",
+      recite: "Now recall it without looking.",
+      test: "A short checkpoint.",
     };
 
     function syncBodyClass() {
@@ -174,29 +183,31 @@
       return learn.dataset.mode || "read";
     }
 
-    function syncModeChrome(mode) {
-      var modes = cards.map(function (card) {
-        return card.getAttribute("data-learn-mode");
+    function syncStepper(mode) {
+      var index = -1;
+      steps.forEach(function (step, i) {
+        if (step.getAttribute("data-step-mode") === mode) index = i;
       });
-      var total = modes.length || 6;
-      var step = modes.indexOf(mode) + 1;
-      if (step < 1) step = 1;
-      if (nameEl) nameEl.textContent = "Step " + step + " of " + total;
-      if (eyebrowEl) {
-        var label = (MODE_LABELS[mode] || mode).toUpperCase();
-        eyebrowEl.textContent = articleNumber
-          ? label + " · ARTICLE " + articleNumber
-          : label;
+      steps.forEach(function (step, i) {
+        var stepMode = step.getAttribute("data-step-mode");
+        var tab = learn.querySelector('.mode-tab[data-learn-mode="' + stepMode + '"]');
+        var done = Boolean(tab) && tab.textContent.indexOf("\u2713") !== -1;
+        step.classList.toggle("is-done", done && stepMode !== mode);
+        step.classList.toggle("is-current", stepMode === mode);
+      });
+      if (stepLabel && index >= 0) {
+        stepLabel.textContent = "Step " + (index + 1) + " of " + steps.length;
       }
-      if (headlineEl) {
-        headlineEl.textContent = MODE_HEADLINES[mode] || "";
+      if (taskEl) {
+        taskEl.textContent = MODE_TASKS[mode] || "";
       }
     }
 
     function showMode(mode) {
       learn.setAttribute("data-mobile-view", "mode");
       syncBodyClass();
-      syncModeChrome(mode);
+      if (nameEl) nameEl.textContent = MODE_LABELS[mode] || mode;
+      syncStepper(mode);
       dots.forEach(function (dot, index) {
         dot.classList.toggle("is-current", cards[index] === undefined
           ? false
@@ -246,6 +257,7 @@
         if (state && done) state.textContent = "Done";
         if (dots[index]) dots[index].classList.toggle("is-done", done);
       });
+      syncStepper(currentMode());
     }
 
     if (tracker && window.MutationObserver) {
@@ -265,7 +277,7 @@
 
        A mode that needs a deliberate act to complete (Type, Test, Recite)
        shows that act as the primary until it passes; then the same slot
-       becomes the first-person completing CTA. Cloze completes by tapping blanks and Letters by
+       becomes the first-person advance. Cloze completes by tapping blanks and Letters by
        speech, so their controls stay secondary and Next leads from the start.
 
        Next walks only the modes still outstanding — completed ones drop out
@@ -392,17 +404,21 @@
 
       var target = nextTarget(mode);
 
-      // Shared tail for every solo mode: while the mode's act is outstanding
-      // the button keeps its own label; once done it becomes the first-person
-      // completing CTA, or Done when nothing is left outstanding.
+      // The advance says what you just did, not merely where you are going.
+      // "I’ve read this →" is the design's own label for Read; the rest
+      // follow its shape so the session reads as a sequence of things done.
       function advanceCopy(forMode) {
-        // Letters' "Just read" view has no speak pass — don't claim they heard it.
-        var lettersHidden = lettersSpeak && lettersSpeak.hidden;
-        if (forMode === "letters" && lettersHidden) {
+        // Letters' "Just read" view has no speak pass, so claiming they heard
+        // it would be a lie about what happened.
+        if (forMode === "letters" && lettersSpeak && lettersSpeak.hidden) {
           return ADVANCE_LABELS.read;
         }
-        return ADVANCE_LABELS[forMode] || "Next →";
+        return ADVANCE_LABELS[forMode] || "Next \u2192";
       }
+
+      // Shared tail for every solo mode: while the mode's act is outstanding
+      // the button keeps its own label; once done it becomes the advance, or
+      // Done when nothing is left outstanding.
       function paintAdvance(btn, armed) {
         if (!armed) return;
         if (target === null) {
@@ -435,8 +451,16 @@
       }
 
       if (typeSolo) {
-        paintAdvance(typeCheck, typeCheck.dataset.typeAdvance);
-        if (!typeCheck.dataset.typeAdvance) {
+        if (typeCheck.dataset.typeAdvance) {
+          if (target === null) {
+            var doneLocked = !doneBtn || doneBtn.disabled;
+            typeCheck.textContent = doneBtn ? doneBtn.textContent.trim() : "Done";
+            typeCheck.disabled = doneLocked;
+          } else {
+            typeCheck.textContent = advanceCopy(mode);
+            typeCheck.disabled = false;
+          }
+        } else {
           typeCheck.disabled = false;
         }
         return;
@@ -608,10 +632,8 @@
     if (window.MutationObserver) {
       new MutationObserver(function () {
         if (learn.getAttribute("data-mobile-view") !== "mode") return;
-        var mode = currentMode();
-        placeControls(mode);
-        syncNextButton(mode);
-        syncModeChrome(mode);
+        placeControls(currentMode());
+        syncNextButton(currentMode());
       }).observe(learn, { attributes: true, attributeFilter: ["data-mode"] });
     }
 
@@ -723,6 +745,28 @@
       document.querySelectorAll(".browse-article-text, .learn-read-text"),
       layoutBareAct
     );
+  }
+
+  /* ── Bare Act chapter accordion ────────────────────────────────────────
+     <details> already opens and closes, and reads correctly to a screen
+     reader, without any of this. All JS adds is the design's one-at-a-time
+     rule: opening a chapter closes its siblings. Without JS the list still
+     works — several chapters just stay open at once. */
+
+  function initActAccordion() {
+    var root = document.querySelector("[data-bareact-accordion]");
+    if (!root) return;
+    var chapters = Array.prototype.slice.call(
+      root.querySelectorAll(".bareact-chapter")
+    );
+    chapters.forEach(function (chapter) {
+      chapter.addEventListener("toggle", function () {
+        if (!chapter.open) return;
+        chapters.forEach(function (other) {
+          if (other !== chapter) other.open = false;
+        });
+      });
+    });
   }
 
   /* ── Mode status lines (designs 06, 08–12) ─────────────────────────────
@@ -1034,6 +1078,7 @@
     initSheets();
     initMarkFilter();
     initBareAct();
+    initActAccordion();
     // Must precede initLearnDeck: the deck moves each mode's control row into
     // the action bar, and the status lines have to be lifted out of those rows
     // first or they travel along and get hidden.

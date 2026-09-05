@@ -855,6 +855,15 @@ class PostgresProgressRepository:
             )
             conn.commit()
 
+    def clear_daily_goal_met(self, user_id: UUID | str) -> None:
+        """Drop every daily-goal fact for this user — the streak's source."""
+        with self._cursor() as (conn, cur):
+            cur.execute(
+                "DELETE FROM daily_goal_met WHERE user_id = %s",
+                (as_user_id(user_id),),
+            )
+            conn.commit()
+
     def is_daily_goal_met(self, user_id: UUID | str, goal_date: date) -> bool:
         with self._cursor() as (_conn, cur):
             cur.execute(
@@ -982,6 +991,29 @@ class PostgresProgressRepository:
                 WHERE id = %s AND user_id = %s
                 """,
                 (_utc_now(), session_id, as_user_id(user_id)),
+            )
+            conn.commit()
+
+    def delete_all_study_sessions(self, user_id: UUID | str) -> None:
+        """Drop every study session for this user, items included."""
+        uid = as_user_id(user_id)
+        with self._cursor() as (conn, cur):
+            cur.execute(
+                """
+                DELETE FROM study_session_item
+                WHERE session_id IN (SELECT id FROM study_session WHERE user_id = %s)
+                """,
+                (uid,),
+            )
+            cur.execute("DELETE FROM study_session WHERE user_id = %s", (uid,))
+            conn.commit()
+
+    def delete_learning_plan(self, user_id: UUID | str) -> None:
+        """Forget the stored plan; get_learning_plan falls back to Self-paced."""
+        with self._cursor() as (conn, cur):
+            cur.execute(
+                "DELETE FROM user_learning_plan WHERE user_id = %s",
+                (as_user_id(user_id),),
             )
             conn.commit()
 

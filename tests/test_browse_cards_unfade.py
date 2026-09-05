@@ -20,7 +20,7 @@ def test_browse_cards_share_ink_chrome(tmp_path: Path):
     assert "/static/styles.css?" in html
     assert "is-untracked" in html or "is-tracked" in html
 
-    css = client.get("/static/styles.css?v=main46").text
+    css = client.get("/static/styles.css?v=main61").text
     assert "--browse-untracked-fg" not in css
     assert "--browse-untracked-bg" not in css
     assert "--browse-untracked-border" not in css

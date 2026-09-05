@@ -122,19 +122,23 @@
     <button type="button" class="guest-strip-dismiss" data-guest-strip-dismiss aria-label="Dismiss">✕</button>
   </div>
   {% elif access and access.enabled and access.is_free %}
+  {# diff.md item 4: one line of state and a bordered Unlock all, rather than
+     a status block. The states are main's — they encode the actual free-tier
+     rules — and only the presentation follows the design. #}
   <div class="browse-access-summary">
-    {% if access.legacy_over_cap %}
-    <p class="browse-access-status">Free · {{ access.claimed_count }} saved Articles · Legacy access</p>
-    <p class="browse-access-action">All your saved Articles stay fully open.</p>
-    {% elif access.cap_reached %}
-    <p class="browse-access-status">Free · 3 of 3 Articles saved</p>
-    <p class="browse-access-action">{% if pricing_enabled|default(false) %}<a href="/pricing">Unlock every Article →</a>{% else %}Your three saved Articles stay fully open.{% endif %}</p>
-    {% else %}
-    <p class="browse-access-status">Free · {{ access.claimed_count }} of 3 Articles saved</p>
-    <p class="browse-access-action">
-      {% set words = {1: 'One slot', 2: 'Two slots', 3: 'Three slots'} %}
-      {{ words.get(access.free_slots_remaining, access.free_slots_remaining|string ~ ' slots') }} left — any Article you finish can take one.
+    <p class="browse-access-status">
+      {% if access.legacy_over_cap %}
+      Free plan — your {{ access.claimed_count }} saved Articles stay fully open.
+      {% elif access.cap_reached %}
+      Free plan — 3 of 3 Articles saved. The three you picked stay fully open.
+      {% else %}
+      {% set words = {1: 'One slot', 2: 'Two slots', 3: 'All 3 slots'} %}
+      Free plan — pick any 3 Articles to learn.
+      {{ words.get(access.free_slots_remaining, access.free_slots_remaining|string ~ ' slots') }} free.
+      {% endif %}
     </p>
+    {% if pricing_enabled|default(false) %}
+    <a class="browse-access-unlock" href="/pricing">Unlock all</a>
     {% endif %}
   </div>
   {% endif %}
@@ -189,8 +193,8 @@
     <div class="browse-reference-card">
       <a class="browse-reference-row" href="/laws">
         <span class="browse-reference-copy">
-          <span class="browse-reference-name">Relevant laws</span>
-          <span class="browse-reference-desc">Statutes mapped to Articles you revise</span>
+          <span class="browse-reference-name">Laws</span>
+          <span class="browse-reference-desc">Bare Acts and statutes mapped to Articles</span>
         </span>
         <span class="browse-reference-chevron" aria-hidden="true">›</span>
       </a>

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}{{ act.title }} · {{ app_name|default('Recall the C') }}{% endblock %}
+{% block mobile_screen %}bareact{% endblock %}
+{% block content %}
+<section class="panel bareact">
+  <div class="bareact-head">
+    <div class="mobile-topbar">
+      <a class="mobile-back" href="/laws">← Laws</a>
+    </div>
+    <p class="bareact-tag">Bare Act</p>
+    <h1 class="bareact-title">{{ act.title }}</h1>
+  </div>
+
+  <div class="bareact-chapters" data-bareact-accordion>
+    {% for chapter in act.chapters %}
+    <details class="bareact-chapter"{% if loop.first %} open{% endif %}>
+      <summary class="bareact-chapter-row">
+        <span class="bareact-chapter-tag">Chapter {{ chapter.number }}</span>
+        <span class="bareact-chapter-name">{{ chapter.title }}</span>
+        <span class="bareact-chapter-range">{{ chapter.range_label }}</span>
+        <span class="bareact-chapter-caret" aria-hidden="true"></span>
+      </summary>
+      <div class="bareact-section-list">
+        {% for section in chapter.sections %}
+        <a class="bareact-section-row" href="/laws/{{ act.slug }}/section/{{ section.number }}">
+          <span class="bareact-section-node" aria-hidden="true"></span>
+          <span class="bareact-section-copy">
+            <span class="bareact-section-tag">Section {{ section.number }}</span>
+            <span class="bareact-section-name{% if section.is_omitted %} is-omitted{% endif %}">{{ section.list_title }}</span>
+          </span>
+          <span class="bareact-section-chevron" aria-hidden="true">›</span>
+        </a>
+        {% endfor %}
+      </div>
+    </details>
+    {% endfor %}
+
+    {# Schedules sit below the chapters, in the chapter row's own clothes:
+       they are part of the Act, not an appendix to it. #}
+    {% for schedule in act.schedules %}
+    <a class="bareact-schedule-row" href="/laws/{{ act.slug }}/schedule/{{ schedule.slug }}">
+      <span class="bareact-chapter-tag">Schedule</span>
+      <span class="bareact-schedule-copy">
+        <span class="bareact-schedule-name">{{ schedule.display_heading }}</span>
+        <span class="bareact-schedule-ref">{{ schedule.reference }}</span>
+      </span>
+      <span class="bareact-chapter-range">{{ schedule.range_label }}</span>
+      <span class="bareact-section-chevron" aria-hidden="true">›</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

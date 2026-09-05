@@ -47,13 +47,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/styles.css?v=main46">
+  <link rel="stylesheet" href="/static/styles.css?v=main61">
   <link rel="stylesheet" href="/static/visual-explainer.css?v=ve1">
-  <link rel="stylesheet" href="/static/mobile.css?v=mob53">
+  <link rel="stylesheet" href="/static/mobile.css?v=mob89">
   {% if onboarding_status|default('') == 'active' %}
   <link rel="stylesheet" href="/static/onboarding.css?v=ob6">
   {% endif %}
   <link rel="icon" href="/static/main_logo.png" type="image/png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 </head>
 <body class="{% block body_class %}{% endblock %}{% if multiuser_enabled|default(false) %}{% if current_user %} is-authed{% else %} is-guest{% endif %}{% endif %}{% if admin_preview_label|default('') %} is-admin-previewing{% endif %}"{% if onboarding_status|default('') %} data-onboarding="{{ onboarding_status }}"{% endif %} data-mscreen="{% block mobile_screen %}{% endblock %}">
   {% if admin_preview_label|default('') %}
@@ -236,10 +237,10 @@
 
   <script src="/static/recall_align.js?v=sprint22" defer></script>
   <script src="/static/speech_client.js?v=speech2" defer></script>
-  <script src="/static/app.js?v=main48" defer></script>
-  <script src="/static/mobile.js?v=mob24" defer></script>
+  <script src="/static/app.js?v=main61" defer></script>
+  <script src="/static/mobile.js?v=mob26" defer></script>
   <script src="/static/visual-explainer.js?v=ve2" defer></script>
-  <script src="/static/auth.js?v=main5" defer></script>
+  <script src="/static/auth.js?v=main6" defer></script>
   {% if onboarding_status|default('') == 'active' %}
   <script src="/static/onboarding.js?v=ob14" defer></script>
   {% endif %}

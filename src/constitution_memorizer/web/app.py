@@ -11,7 +11,17 @@ from zoneinfo import ZoneInfo
 from uuid import uuid4
 from pathlib import Path
 
-from fastapi import FastAPI, File, Form, HTTPException, Query, Request, Response, UploadFile
+from fastapi import (
+    Depends,
+    FastAPI,
+    File,
+    Form,
+    HTTPException,
+    Query,
+    Request,
+    Response,
+    UploadFile,
+)
 from pydantic import BaseModel, ValidationError
 from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
@@ -29,6 +39,7 @@ from constitution_memorizer.admin.store import (
     SqliteAccessStore,
 )
 from constitution_memorizer.auth.fake_provider import FakeAuthProvider
+from constitution_memorizer.auth.guest import ROOT_ASSET_PATHS as _ROOT_ASSET_PATHS
 from constitution_memorizer.auth.rate_limit import OtpRateLimiter
 from constitution_memorizer.auth.routes import create_auth_router, install_auth_middleware
 from constitution_memorizer.auth.sessions import InMemorySessionStore, PostgresSessionStore
@@ -85,6 +96,7 @@ from constitution_memorizer.web.request_context import (
     begin_request_timings,
     bound_engine,
     bound_memory,
+    record_request_note,
     record_request_timing,
     reset_request_timings,
     snapshot_request_counters,
@@ -170,6 +182,7 @@ from constitution_memorizer.web.judicial_evolution import (
     get_judicial_evolution,
     load_judicial_evolution,
 )
+from constitution_memorizer.web.bare_acts import get_bare_act, list_bare_acts
 from constitution_memorizer.web.laws_data import get_law, load_laws
 from constitution_memorizer.web.memory_calendar import build_memory_month, schedule_chip_states
 from constitution_memorizer.web.progress_stats import progress_dashboard
@@ -453,6 +466,9 @@ def create_app(
         if getattr(request.state, "is_guest", False) and app.state.multiuser_enabled:
             return "auto"
         bound = getattr(request.state, "bound_engine", None) or app.state.engine
+        # No timing here on purpose: get_theme() records `theme` only when it
+        # actually reaches the repo, so a theme_ms in the log is proof of a
+        # read rather than proof of a call.
         return bound.get_theme()
 
     def _onboarding_for_request(request: Request) -> str:
@@ -464,7 +480,10 @@ def create_app(
         bound = getattr(request.state, "bound_engine", None)
         if bound is None:
             return ""
-        value = bound.get_setting(ONBOARDING_KEY) or ""
+        # `stage` makes this read visible the way get_theme() already is:
+        # recorded only when it reaches the repo. Onboarding was the one of the
+        # three nav reads with no stage at all, so it was invisible in the logs.
+        value = bound.get_setting(ONBOARDING_KEY, stage="onboarding_setting") or ""
         return value if value in VALID_ONBOARDING_STATUSES else ""
 
     def _due_for_request(request: Request) -> int:
@@ -700,7 +719,7 @@ def create_app(
         """Log method/path/status/duration_ms; skip health and static assets."""
         path = request.url.path
         skip = (
-            path in {"/health", "/sitemap.xml", "/robots.txt"}
+            path in _ROOT_ASSET_PATHS
             or path.startswith("/static/")
         )
         breakdown = wants_request_breakdown(path)
@@ -712,6 +731,18 @@ def create_app(
             status = response.status_code
             return response
         finally:
+            if breakdown:
+                # Recorded here, after call_next, because the auth middleware
+                # runs inside this one and is what sets current_user. Without
+                # it a duration_ms line cannot be read: guest and signed-in are
+                # different code paths, and only one of them touches the DB.
+                if not app.state.multiuser_enabled:
+                    auth_state = "single_user"
+                elif getattr(request.state, "current_user", None) is not None:
+                    auth_state = "authed"
+                else:
+                    auth_state = "guest"
+                record_request_note("auth_state", auth_state)
             if not skip:
                 duration_ms = (time.perf_counter() - started) * 1000.0
                 timing_logger.info(
@@ -794,6 +825,32 @@ def create_app(
             force=force,
             **args,
         )
+
+    # Root paths browsers ask for without being told to. Serving them stops a
+    # steady drip of 404s that each paid for a session lookup — and, on a stale
+    # cookie, could spend the user's one-shot /session-expired redirect on an
+    # icon request.
+    @app.get("/sw.js")
+    async def service_worker() -> FileResponse:
+        """A worker that unregisters itself. See static/sw.js for why."""
+        return FileResponse(
+            STATIC_DIR / "sw.js",
+            media_type="text/javascript",
+            # Must not be cached: a stale copy is an orphaned worker that never
+            # sees the kill switch.
+            headers={"Cache-Control": "no-cache"},
+        )
+
+    @app.get("/favicon.ico")
+    async def favicon_ico() -> FileResponse:
+        """PNG bytes at the .ico path — every current browser accepts it."""
+        return FileResponse(STATIC_DIR / "brand-c.png", media_type="image/png")
+
+    @app.get("/apple-touch-icon.png")
+    @app.get("/apple-touch-icon-precomposed.png")
+    async def apple_touch_icon() -> FileResponse:
+        """iOS probes both spellings at the root when adding to home screen."""
+        return FileResponse(STATIC_DIR / "brand-c.png", media_type="image/png")
 
     @app.get("/sitemap.xml")
     async def sitemap_xml() -> FileResponse:
@@ -1881,17 +1938,11 @@ def create_app(
         )
         if session is None or not session.pending:
             return RedirectResponse(url=_home_url(), status_code=303)
-        first = session.pending[0].learning_unit_id
-        return RedirectResponse(
-            url=next_learn_url(
-                eng,
-                first,
-                multiuser=app.state.multiuser_enabled,
-                session_id=session.id,
-                mode=session_entry_mode(session.kind),
-            ),
-            status_code=303,
-        )
+        # Back to Today, where the mix is now listed as the path. Planning the
+        # day and starting it are two decisions: dropping straight into the
+        # first unit took the second one on the user's behalf, and hid what
+        # had just been planned.
+        return RedirectResponse(url=_home_url(), status_code=303)
 
     @app.post("/learning/plan-my-day/dismiss")
     async def plan_my_day_dismiss(request: Request) -> RedirectResponse:
@@ -2532,16 +2583,59 @@ def create_app(
             },
         )
 
-    @app.get("/laws", response_class=HTMLResponse)
-    async def laws_page(request: Request) -> HTMLResponse:
-        return templates.TemplateResponse(
-            request,
-            "laws.html",
-            {"acts": load_laws()},
-        )
+    def _bootstrap_laws_request(request: Request) -> None:
+        """One batched read for the shared template context on Laws pages.
 
-    @app.get("/laws/{law_id}", response_class=HTMLResponse)
+        A Laws page renders no user data, but the chrome around it does:
+        base.html needs the theme, the onboarding status and the due badge.
+        Unbootstrapped those are three independent reads, and production
+        measured each at ~217 ms cross-region — about 650 ms of a 656 ms
+        request. Seeding the engine's request-local caches once turns all
+        three into cache hits, which is the shape /browse already has.
+
+        Defaults only. Laws needs no account, modes or news pack; asking for
+        one would trade three reads for a larger single one.
+
+        Guests never get here: every one of those context values
+        short-circuits for them, so bootstrapping would add a read to a path
+        that today performs none.
+        """
+        if not app.state.multiuser_enabled:
+            # Single-user keeps one long-lived engine whose caches already
+            # survive between requests; there is nothing per-request to seed.
+            return
+        if getattr(request.state, "current_user", None) is None:
+            return
+        bound = getattr(request.state, "bound_engine", None)
+        if bound is None:
+            return
+        bound.bootstrap_request()
+
+    @app.get(
+        "/laws", response_class=HTMLResponse, dependencies=[Depends(_bootstrap_laws_request)]
+    )
+    async def laws_page(request: Request) -> HTMLResponse:
+        context = {"acts": load_laws(), "bare_acts": list_bare_acts()}
+        started = time.perf_counter()
+        response = templates.TemplateResponse(request, "laws.html", context)
+        record_request_timing("template", started)
+        return response
+
+    @app.get(
+        "/laws/{law_id}", response_class=HTMLResponse, dependencies=[Depends(_bootstrap_laws_request)]
+    )
     async def law_detail_page(request: Request, law_id: str) -> HTMLResponse:
+        # One Laws namespace, two kinds of Act. A Bare Act is read in full, so
+        # it gets the chapter list; a seeded law is a clause extract mapped to
+        # Articles, so it keeps the page it has always had.
+        bare = get_bare_act(law_id)
+        if bare is not None:
+            started = time.perf_counter()
+            response = templates.TemplateResponse(
+                request, "bare_act.html", {"act": bare}
+            )
+            record_request_timing("template", started)
+            return response
         act = get_law(law_id)
         if act is None:
             raise HTTPException(status_code=404, detail="Law not found")
@@ -2551,6 +2645,65 @@ def create_app(
             "law_detail.html",
             {"act": act, "tracked_articles": tracked},
         )
+
+    @app.get(
+        "/laws/{law_id}/section/{number}",
+        response_class=HTMLResponse,
+        dependencies=[Depends(_bootstrap_laws_request)],
+    )
+    async def bare_act_section_page(
+        request: Request, law_id: str, number: str
+    ) -> HTMLResponse:
+        # Reference reading: no auth, no entitlement, no engine. Nothing here
+        # records progress, schedules a revision or writes a calendar event.
+        bare = get_bare_act(law_id)
+        if bare is None:
+            raise HTTPException(status_code=404, detail="Law not found")
+        section = bare.section(number)
+        if section is None:
+            raise HTTPException(status_code=404, detail="Section not found")
+        previous, following = bare.neighbours(number)
+        started = time.perf_counter()
+        response = templates.TemplateResponse(
+            request,
+            "bare_act_section.html",
+            {
+                "act": bare,
+                "section": section,
+                "prev_section": previous,
+                "next_section": following,
+                "footnotes": bare.notes(section.note_ids),
+            },
+        )
+        record_request_timing("template", started)
+        return response
+
+    @app.get(
+        "/laws/{law_id}/schedule/{schedule_slug}",
+        response_class=HTMLResponse,
+        dependencies=[Depends(_bootstrap_laws_request)],
+    )
+    async def bare_act_schedule_page(
+        request: Request, law_id: str, schedule_slug: str
+    ) -> HTMLResponse:
+        bare = get_bare_act(law_id)
+        if bare is None:
+            raise HTTPException(status_code=404, detail="Law not found")
+        schedule = bare.schedule(schedule_slug)
+        if schedule is None:
+            raise HTTPException(status_code=404, detail="Schedule not found")
+        started = time.perf_counter()
+        response = templates.TemplateResponse(
+            request,
+            "bare_act_schedule.html",
+            {
+                "act": bare,
+                "schedule": schedule,
+                "footnotes": bare.notes(schedule.note_ids),
+            },
+        )
+        record_request_timing("template", started)
+        return response
 
     @app.get("/memory", response_class=HTMLResponse)
     async def memory_page(

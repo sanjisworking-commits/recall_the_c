@@ -200,12 +200,26 @@
   </p>
 
   <h2 class="section-title">Account</h2>
+  {# The design's account card: three rows, dividers between them, the two
+     destructive ones carrying their own weight in colour. Real buttons, not
+     role="button" divs — the rows are operated, and a button is the thing
+     that gets focus, Enter and Space for free. #}
   <ul class="account-actions">
     <li>
-      <button type="button" class="btn btn-ghost" data-open-signout>Sign out</button>
+      <button type="button" class="account-action" data-open-signout>
+        <span class="account-action-label">Sign out</span>
+      </button>
     </li>
     <li>
-      <button type="button" class="btn btn-ghost btn-danger-text" data-open-delete>Delete account…</button>
+      <button type="button" class="account-action is-reset" data-open-reset>
+        <span class="account-action-label">Reset progress…</span>
+        <span class="account-action-note">Keeps your account</span>
+      </button>
+    </li>
+    <li>
+      <button type="button" class="account-action is-delete" data-open-delete>
+        <span class="account-action-label">Delete account…</span>
+      </button>
     </li>
   </ul>
 </section>
@@ -222,18 +236,60 @@
   </form>
 </dialog>
 
-<dialog class="guest-modal" id="delete-modal" aria-labelledby="delete-title">
-  <form method="post" action="/profile" class="guest-modal-card">
+{# Two lists rather than a paragraph: what goes and what stays are the two
+   questions actually being asked, and each line is checked against what
+   reset_learning_progress() does — the memory log is not in its reach, so it
+   is named under Kept rather than left to be assumed either way. #}
+<dialog class="guest-modal rc-confirm-sheet" id="reset-modal" aria-labelledby="reset-title">
+  <form method="post" action="/profile" class="guest-modal-card rc-confirm-card">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <input type="hidden" name="action" value="reset_progress">
+    <span class="rc-confirm-handle" aria-hidden="true"></span>
+    <h2 class="guest-modal-title rc-confirm-title is-warn" id="reset-title">Reset your progress?</h2>
+    <p class="guest-modal-body rc-confirm-lede">
+      Start over from a clean slate. This cannot be undone.
+    </p>
+    <div class="rc-confirm-panel is-cleared">
+      <p class="rc-confirm-panel-head">Cleared:</p>
+      <ul class="rc-confirm-list">
+        <li>Learning history and your streak</li>
+        <li>Every scheduled revision, and any session in progress</li>
+        <li>Modes seen, and your learning plan</li>
+      </ul>
+    </div>
+    <div class="rc-confirm-panel is-kept">
+      <p class="rc-confirm-panel-head">Kept:</p>
+      <ul class="rc-confirm-list">
+        <li>Your account and sign-in</li>
+        {# Only true where the entitlement boundary is on. With it off there is
+           no access tier and nothing has been claimed, so the line would be
+           describing something the account does not have. #}
+        {% if access and access.enabled %}
+        <li>Your Recall access, and the Free Articles you have claimed</li>
+        {% endif %}
+        <li>Your settings and your memory log</li>
+      </ul>
+    </div>
+    <div class="guest-modal-actions rc-confirm-actions">
+      <button class="btn rc-confirm-go is-warn" type="submit">Reset my progress</button>
+      <button class="btn btn-ghost" type="button" data-close-dialog autofocus>Cancel</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog class="guest-modal rc-confirm-sheet" id="delete-modal" aria-labelledby="delete-title">
+  <form method="post" action="/profile" class="guest-modal-card rc-confirm-card">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
     <input type="hidden" name="action" value="delete_account">
-    <h2 class="guest-modal-title" id="delete-title">Delete this learning record?</h2>
-    <p class="guest-modal-body">
+    <span class="rc-confirm-handle" aria-hidden="true"></span>
+    <h2 class="guest-modal-title rc-confirm-title is-danger" id="delete-title">Delete this learning record?</h2>
+    <p class="guest-modal-body rc-confirm-lede">
       This clears personal progress on this device and signs you out.
       Full account deletion with the identity provider may be added later.
     </p>
     <div class="guest-modal-actions">
       <button class="btn btn-danger" type="submit">Delete and sign out</button>
-      <button class="btn btn-ghost" type="button" data-close-dialog>Cancel</button>
+      <button class="btn btn-ghost" type="button" data-close-dialog autofocus>Cancel</button>
     </div>
   </form>
 </dialog>

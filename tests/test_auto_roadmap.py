@@ -894,9 +894,12 @@ def test_letters_preference_removes_future_parent(tmp_path: Path):
     future = today + timedelta(days=2)
     while future <= roadmap_horizon(today) and not _ids_on(engine, future):
         future += timedelta(days=1)
-    planted = ["parent-x", *_ids_on(engine, future)[:2]]
-    if "parent-x" not in planted:
-        planted = ["parent-x", "u1", "u2"]
+    # parent-x plus two companions that are not parent-x. Prepending it to a
+    # raw slice duplicated it whenever the planner had already put it on this
+    # day, which auto_plan_item's UNIQUE constraint then rejected.
+    companions = [uid for uid in _ids_on(engine, future) if uid != "parent-x"][:2]
+    planted = ["parent-x", *(companions or ["u1", "u2"])]
+    assert len(planted) == len(set(planted))
     engine.replace_auto_plan_day(future, 3, planted)
     assert "parent-x" in _ids_on(engine, future)
     past = today - timedelta(days=1)
@@ -1195,3 +1198,159 @@ def test_done_survives_schema_0014_without_roadmap_column(tmp_path: Path):
     ]
     assert "target_effective_on" not in cols
 
+
+
+# ── Recall Mix on the Auto path ─────────────────────────────────────────────
+#
+# Auto used to fill each day straight from the carryover queue and only call
+# the selector for whatever capacity was left over — passing the full target as
+# the quota and then truncating. A day was therefore a queue prefix plus a
+# truncated mix, never a composed one. These pin the fix.
+
+from constitution_memorizer.planner.graph import CuratedRelationshipGraph  # noqa: E402
+from constitution_memorizer.planner.relationships import build_candidate  # noqa: E402
+from constitution_memorizer.planner.selector import classify  # noqa: E402
+
+
+def _banded_graph() -> CuratedRelationshipGraph:
+    """Articles 101-140 in three curated clusters, so bands are legible."""
+    meta = {}
+    for i in range(1, 81):
+        article = str(100 + i)
+        cluster = "alpha" if i <= 20 else ("beta" if i <= 40 else "gamma")
+        meta[article] = {"primary_cluster": cluster, "clusters": [cluster]}
+    return CuratedRelationshipGraph(
+        {
+            "families": {"core": {"label": "Core"}},
+            "clusters": {
+                "alpha": {
+                    "family": "core",
+                    "same_cluster_bucket": "close",
+                    "related_clusters": ["beta"],
+                    "explore_clusters": ["gamma"],
+                },
+                "beta": {
+                    "family": "core",
+                    "same_cluster_bucket": "close",
+                    "related_clusters": ["alpha"],
+                    "explore_clusters": ["gamma"],
+                },
+                "gamma": {
+                    "family": None,
+                    "same_cluster_bucket": "close",
+                    "related_clusters": ["beta"],
+                    "explore_clusters": ["alpha"],
+                },
+            },
+            "article_metadata": meta,
+            "unit_metadata": {},
+            "article_edges": [],
+            "unit_edges": [],
+        }
+    )
+
+
+def _day_buckets(engine: ReminderEngine, day: date, graph) -> dict[str, int]:
+    ids = _ids_on(engine, day)
+    assert ids, f"no plan for {day}"
+    anchor = build_candidate(engine.units[ids[0]])
+    counts: dict[str, int] = {}
+    for unit_id in ids[1:]:
+        pick = classify(anchor, build_candidate(engine.units[unit_id]), graph=graph)
+        key = pick.effective_bucket or "unclassified"
+        counts[key] = counts.get(key, 0) + 1
+    return counts
+
+
+def test_auto_day_is_a_composed_mix(tmp_path: Path, monkeypatch):
+    """Today's Auto day is anchor + 2 close + 1 related + 1 explore."""
+    graph = _banded_graph()
+    monkeypatch.setattr(
+        "constitution_memorizer.planner.selector.curated_graph", lambda *a, **k: graph
+    )
+    engine = _engine(tmp_path)
+    today = date(2026, 9, 3)
+    _reconcile(engine, today, target=5)
+    assert _day_buckets(engine, today, graph) == {"close": 2, "related": 1, "explore": 1}
+
+
+def test_carryover_leads_the_day_and_nothing_is_dropped(tmp_path: Path):
+    """Owed work keeps its place at the head of the day.
+
+    Composition *around* a partial carryover is pinned in
+    test_learning_selector.py, at the level where it can be constructed: with
+    a real pool the carryover queue is normally deeper than the daily target,
+    so a day is either entirely owed work or entirely fresh, and the composed
+    middle case is rare. What this holds is the part that always applies —
+    the oldest commitment leads, the day never exceeds target, and re-planning
+    loses nothing.
+    """
+    engine = _engine(tmp_path)
+    today = date(2026, 9, 3)
+    _reconcile(engine, today, target=5)
+    first_day = _ids_on(engine, today)
+    assert len(first_day) == 5
+
+    tomorrow = today + timedelta(days=1)
+    _reconcile(engine, tomorrow, target=5)
+    carried = _ids_on(engine, tomorrow)
+    assert len(carried) == 5
+    # Position 0 is the oldest commitment — which is what makes the persisted
+    # anchor theme the day's real anchor.
+    assert carried[0] in first_day
+    # Re-planning re-flows the window; it never silently discards owed units.
+    assert set(first_day) <= set(_window_ids(engine, tomorrow))
+
+
+def test_auto_day_does_not_double_spend_the_free_article_cap(tmp_path: Path):
+    """Carryover is checked against the slot policy, not trusted.
+
+    _window_unit_eligible only knows whether *a* Free slot remains; it cannot
+    count how many distinct new Articles a day has already introduced. Trusting
+    the queue therefore let one day spend the cap twice.
+    """
+    engine = _engine(tmp_path)
+    today = date(2026, 9, 3)
+
+    def _run(as_of: date) -> None:
+        plan = engine.get_learning_plan()
+        if not plan.is_auto:
+            engine.upsert_learning_plan(mode="auto", daily_target=5, as_of=as_of)
+            plan = engine.get_learning_plan()
+        reconcile_auto_roadmap(
+            engine,
+            plan,
+            as_of=as_of,
+            auto_entitled=True,
+            claimed=set(),
+            remaining_slots=1,
+            entitlements_on=True,
+        )
+
+    # The first reconcile has an empty queue, so the selector's allow policy
+    # was always applied. The leak is on the *second*: the queue is populated,
+    # and the old code drained it without counting distinct Articles.
+    _run(today)
+    tomorrow = today + timedelta(days=1)
+    _run(tomorrow)
+    articles = {
+        engine.units[unit_id].article_number for unit_id in _ids_on(engine, tomorrow)
+    }
+    assert len(articles) <= 1, articles
+
+
+def test_reconcile_does_not_persist_the_projected_theme_chain(tmp_path: Path):
+    """The projection's recency chain is in-memory on purpose.
+
+    Reconcile runs on ordinary reads. Persisting day 12's hypothetical anchor
+    would let anchor input drift on GET traffic and make the window
+    non-deterministic. Only a started session records an anchor.
+    """
+    engine = _engine(tmp_path)
+    today = date(2026, 9, 3)
+    _reconcile(engine, today, target=5)
+    before = engine.get_learning_plan().last_anchor_theme
+    first = _fingerprint(engine, today)
+    _reconcile(engine, today, target=5)
+    assert engine.get_learning_plan().last_anchor_theme == before
+    assert _fingerprint(engine, today) == first

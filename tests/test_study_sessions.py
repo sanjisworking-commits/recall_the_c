@@ -397,11 +397,13 @@ def test_today_renders_exactly_one_hero(tmp_path: Path):
     client = _client(tmp_path, multiuser=True)
     _sign_in(client)
 
-    caught_up = client.get("/dashboard").text
-    assert caught_up.count("data-today-mode=") == 1
-    assert 'data-today-mode="learning"' in caught_up
-    assert "/revision/start" not in caught_up
-    assert 'data-daily-goal-streak="0"' in caught_up
+    # A brand-new account gets the first-run zero state (diff.md item 1), not
+    # the learning hero. Still exactly one hero, which is what this pins.
+    first_run = client.get("/dashboard").text
+    assert first_run.count("data-today-mode=") == 1
+    assert 'data-today-mode="firstrun"' in first_run
+    assert "/revision/start" not in first_run
+    assert "You haven\u2019t started yet." in first_run
 
     _make_due(client, ["clause-1", "article-end"])
     due = client.get("/dashboard").text
@@ -516,39 +518,6 @@ def test_exit_modal_copy(tmp_path: Path):
     assert "Exit revision<" in html
 
 
-def test_exit_modal_recall_copy(tmp_path: Path):
-    client = _client(tmp_path)
-    eng = _engine(client)
-    session = eng.create_study_session(
-        session_id="learn-today",
-        kind="auto_learning",
-        plan_date=date.today(),
-        unit_ids=["clause-1", "article-end"],
-    )
-    html = client.get(f"/learn/clause-1?session={session.id}").text
-    assert "data-revision-exit-modal" in html
-    assert "Exit this Recall?" in html
-    assert "Your completed modes are saved." in html
-    assert "You can return later to finish the rest." in html
-    assert "Keep going" in html
-    assert "Exit Recall<" in html
-    assert "Exit session?" not in html
-    assert 'aria-label="Exit Recall"' in html
-
-
-def test_exit_modal_phone_css_is_a_stacked_card():
-    css = (
-        ROOT / "src" / "constitution_memorizer" / "web" / "static" / "styles.css"
-    ).read_text(encoding="utf-8")
-    mobile = MOBILE_JS.parent.joinpath("mobile.css").read_text(encoding="utf-8")
-    block = css.split(".revision-exit-modal {", 1)[1].split(".link-btn", 1)[0]
-    assert "flex-direction: column" in block
-    assert "height: 52px" in block
-    assert "border-radius: 12px" in block
-    assert "border-radius: var(--rc-radius-sheet)" in mobile
-    assert ".revision-exit-modal .guest-modal-actions .btn" in mobile
-
-
 def test_exit_guard_is_armed_by_history_not_by_confirm():
     source = APP_JS.read_text(encoding="utf-8")
     assert "function initRevisionGuard()" in source
@@ -592,16 +561,45 @@ def test_mode_switching_still_cannot_fire_popstate():
     assert "pushState" not in MOBILE_JS.read_text(encoding="utf-8")
 
 
-def test_no_route_deletes_a_study_session():
-    """Exiting preserves the queue so Today can resume it."""
+def test_only_an_explicit_reset_deletes_a_study_session():
+    """Exiting preserves the queue so Today can resume it.
+
+    Reset progress (diff.md item 5) is the one exception, because the user
+    asked for everything to go. It stays an exception by construction: the
+    deletes live in a single repository method, reached from a single engine
+    method, called from a single route action — so no learn or exit path can
+    quietly acquire the ability to drop a queue.
+    """
     app_py = (
         ROOT / "src" / "constitution_memorizer" / "web" / "app.py"
     ).read_text(encoding="utf-8")
     assert "delete_study_session" not in app_py
+    assert "delete_all_study_sessions" not in app_py
+
     repo = (
         ROOT / "src" / "constitution_memorizer" / "progress" / "repository.py"
     ).read_text(encoding="utf-8")
-    assert "DELETE FROM study_session" not in repo
+    owners = [
+        chunk.split("(", 1)[0]
+        for chunk in repo.split("\n    def ")
+        if "DELETE FROM study_session" in chunk
+    ]
+    assert owners == ["delete_all_study_sessions"]
+
+    scheduler = (
+        ROOT / "src" / "constitution_memorizer" / "progress" / "scheduler.py"
+    ).read_text(encoding="utf-8")
+    callers = [
+        chunk.split("(", 1)[0]
+        for chunk in scheduler.split("\n    def ")
+        if "delete_all_study_sessions" in chunk
+    ]
+    assert callers == ["reset_learning_progress"]
+
+    routes = (
+        ROOT / "src" / "constitution_memorizer" / "auth" / "routes.py"
+    ).read_text(encoding="utf-8")
+    assert routes.count("reset_learning_progress") == 1
 
 
 def test_exiting_preserves_the_queue_for_later(tmp_path: Path):
@@ -767,3 +765,48 @@ def test_unmigrated_fallback_also_opens_a_mode(tmp_path: Path):
     location = client.post("/revision/start", follow_redirects=False).headers["location"]
     assert urlsplit(location).path == "/learn/clause-1"
     assert parse_qs(urlsplit(location).query)["mode"] == ["read"]
+
+
+def test_exit_modal_names_the_thing_being_left(tmp_path: Path):
+    """A learning session is a Recall, not a generic "session".
+
+    The confirm and the ✕ label agree with each other, and revision keeps its
+    own wording — leaving a revision queue is a different promise from leaving
+    a Recall, because the queue is what gets returned to.
+    """
+    client = _client(tmp_path)
+    eng = _engine(client)
+    session = eng.create_study_session(
+        session_id="learn-today",
+        kind="auto_learning",
+        plan_date=date.today(),
+        unit_ids=["clause-1", "article-end"],
+    )
+    html = client.get(f"/learn/clause-1?session={session.id}").text
+    assert "data-revision-exit-modal" in html
+    assert "Exit this Recall?" in html
+    assert "Your completed modes are saved." in html
+    assert "Keep going" in html
+    assert "Exit Recall<" in html
+    assert 'aria-label="Exit Recall"' in html
+    assert "Exit session?" not in html
+
+
+def test_exit_confirm_is_a_stacked_floating_card():
+    """Two decisions stacked, not a row of equal-weight buttons."""
+    static = ROOT / "src" / "constitution_memorizer" / "web" / "static"
+    css = (static / "styles.css").read_text(encoding="utf-8")
+    mobile = (static / "mobile.css").read_text(encoding="utf-8")
+    actions = css.split(".revision-exit-modal .guest-modal-actions {", 1)[1].split(
+        "}", 1
+    )[0]
+    assert "flex-direction: column" in actions
+    buttons = css.split(".revision-exit-modal .guest-modal-actions .btn {", 1)[
+        1
+    ].split("}", 1)[0]
+    assert "height: 52px" in buttons
+    assert "width: 100%" in buttons
+    # The phone lifts it off the bottom edge, so it does not read as one of
+    # the progress sheets.
+    phone = mobile.split("  .revision-exit-modal {", 1)[1].split("}", 1)[0]
+    assert "margin: auto 18px 18vh" in phone

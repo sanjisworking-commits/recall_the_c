@@ -6,10 +6,27 @@
   <div class="mobile-topbar">
     <a class="mobile-back" href="/browse">← Browse</a>
   </div>
-  <h1 class="display">Relevant laws</h1>
-  <p class="lede">Statutes whose key clauses map to Articles you revise — open any Act for the clause list. Learn practice for law clauses comes later.</p>
+  <h1 class="display">Laws</h1>
+  <p class="lede">Bare Acts to read in full, and statutes whose key clauses map to Articles you revise.</p>
+
+  {% if bare_acts %}
+  <p class="laws-group-label">Bare Acts</p>
+  <div class="laws-bare-list" role="list">
+    {% for act in bare_acts %}
+    <a class="laws-bare-card" href="/laws/{{ act.slug }}" role="listitem">
+      <span class="laws-bare-head">
+        <span class="laws-bare-tag">Bare Act</span>
+        <span class="laws-bare-chevron" aria-hidden="true">›</span>
+      </span>
+      <span class="laws-bare-name">{{ act.title }}</span>
+      <span class="laws-bare-meta">{{ act.meta_label }}</span>
+    </a>
+    {% endfor %}
+  </div>
+  {% endif %}
 
   {% if acts %}
+  <p class="laws-group-label">Mapped to Articles</p>
   <div class="browse-article-grid laws-grid" role="list">
     {% for act in acts %}
     <a class="browse-article-card is-tracked laws-card" href="/laws/{{ act.id }}" role="listitem">
@@ -18,8 +35,12 @@
     </a>
     {% endfor %}
   </div>
-  {% else %}
+  {% elif not bare_acts %}
   <p class="empty">No laws seeded yet.</p>
   {% endif %}
+
+  <p class="law-practice-note" role="note">
+    Reference-only in this pass — Learn practice for law clauses comes later.
+  </p>
 </section>
 {% endblock %}

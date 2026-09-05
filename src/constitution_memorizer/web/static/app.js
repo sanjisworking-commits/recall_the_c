@@ -134,7 +134,7 @@
       if (blanks.every((index) => tapRevealed.has(index))) {
         completed = true;
         if (onComplete) {
-          onComplete();
+          onComplete({ recalled: tapRevealed.size, total: blanks.length });
         }
       }
     }
@@ -165,6 +165,10 @@
       }
     }
 
+    // Which blank was just tapped. render() rebuilds every span, so without
+    // this the whole revealed set replays its entrance on every tap.
+    let justRevealed = null;
+
     function render() {
       if (!textEl) {
         return;
@@ -181,6 +185,9 @@
           span.setAttribute("aria-label", "Reveal hidden word");
           if (revealed.has(index)) {
             span.classList.add("is-revealed");
+            if (index === justRevealed) {
+              span.classList.add("is-new");
+            }
             span.removeAttribute("tabindex");
             span.removeAttribute("role");
             span.removeAttribute("aria-label");
@@ -188,6 +195,7 @@
             const reveal = () => {
               revealed.add(index);
               tapRevealed.add(index);
+              justRevealed = index;
               render();
               checkTapComplete();
             };
@@ -202,6 +210,9 @@
         }
         textEl.appendChild(span);
       });
+      // Consumed: a later render for any other reason — density, reveal all,
+      // a re-entry into the mode — leaves every word where it is.
+      justRevealed = null;
       updateStatus();
     }
 
@@ -875,6 +886,9 @@
     if (nav) {
       nav.classList.toggle("is-recording", Boolean(on));
     }
+    // diff.md item 7: the level meter is in the panel, not the bar, so it
+    // needs the state marked where CSS can reach it from there.
+    document.body.classList.toggle("is-recording", Boolean(on));
   }
 
   function formatClock(ms) {
@@ -996,13 +1010,16 @@
     // Mirrors the raw value, preserving every space and newline, so the two
     // layers wrap identically. Only ever writes the user's own tokens — the
     // source text must never reach this element.
-    function renderMirror(value) {
+    function renderMirror(value, checked) {
       if (!mirrorEl) {
         return;
       }
       mirrorEl.replaceChildren();
       const parts = value.split(/(\s+)/);
-      const settled = /\s$/.test(value);
+      // Checking evaluates the whole attempt, so the last word is finished
+      // even without a trailing space. Without this it stayed "still being
+      // typed" and was the one word the diff never gave a verdict.
+      const settled = checked || /\s$/.test(value);
       let lastWordPart = -1;
       parts.forEach((part, index) => {
         if (part && !/^\s+$/.test(part)) {
@@ -1021,6 +1038,9 @@
         }
         const span = document.createElement("span");
         span.textContent = part;
+        // diff.md item 7: the checked diff animates word by word, so each
+        // word carries its own position for the stagger.
+        span.style.setProperty("--w", String(wordIndex));
         if (composing || (index === lastWordPart && !settled)) {
           span.className = "learn-type-mirror-word is-typing";
         } else if (isStructuralToken(part)) {
@@ -1065,7 +1085,7 @@
 
     function render(checked) {
       const value = input ? input.value : "";
-      renderMirror(value);
+      renderMirror(value, Boolean(checked));
       renderStats(value, Boolean(checked));
       // Typing again re-arms the check, which is what keeps re-checking
       // possible without a second button.
@@ -1090,6 +1110,7 @@
     function hideResult() {
       if (resultEl) resultEl.hidden = true;
       if (statsEl) statsEl.hidden = false;
+      if (mirrorEl) mirrorEl.classList.remove("is-checked");
       selectTab("score");
     }
 
@@ -1157,7 +1178,18 @@
       }
 
       if (statsEl) statsEl.hidden = true;
-      if (resultEl) resultEl.hidden = false;
+      if (resultEl) {
+        resultEl.hidden = false;
+        resultEl.classList.toggle("is-retry", !perfect);
+      }
+      // The attempt re-reads as a diff on check: matched words in ink, misses
+      // in amber, arriving in reading order. Colour and opacity only — a
+      // transform here would slide the mirror off the caret it sits under.
+      if (mirrorEl) {
+        mirrorEl.classList.remove("is-checked");
+        void mirrorEl.offsetWidth; // restart the stagger on a re-check
+        mirrorEl.classList.add("is-checked");
+      }
       selectTab("score");
     }
 
@@ -1660,8 +1692,55 @@
       : "";
     const cycle = parseInt(panel.getAttribute("data-quiz-cycle") || "0", 10) || 0;
     const fieldsets = Array.from(panel.querySelectorAll("[data-quiz-q]"));
+    const positionEl = panel.querySelector("[data-quiz-position]");
+    const ledeText = positionEl ? positionEl.textContent : "";
     let errorEl = null;
     let submitting = false;
+    // diff.md item 7: the set is graded in one POST, but it is answered — and
+    // then reviewed — one question at a time. "answer" walks the set
+    // collecting picks; "review" walks the same set showing what they were.
+    let phase = "answer";
+    let index = 0;
+    let lastScore = null;
+
+    function isLast() {
+      return index >= fieldsets.length - 1;
+    }
+
+    function answered(fieldset) {
+      if (!fieldset) return false;
+      if (fieldset.getAttribute("data-kind") === "mcq") {
+        return Boolean(fieldset.querySelector("input[type=radio]:checked"));
+      }
+      const fill = fieldset.querySelector("[data-quiz-fill]");
+      return Boolean(fill && fill.value.trim());
+    }
+
+    function syncSubmit() {
+      if (!submitBtn) return;
+      if (phase === "answer") {
+        submitBtn.textContent = isLast() ? "Check answers" : "Next question →";
+        // Dim rather than disable: a button that cannot be pressed still has
+        // to look like the thing you press when you are ready.
+        submitBtn.classList.toggle("is-idle", !answered(fieldsets[index]));
+      } else if (!isLast()) {
+        submitBtn.textContent = "Next question →";
+        submitBtn.classList.remove("is-idle");
+      }
+    }
+
+    function showQuestion(next) {
+      if (!fieldsets.length) return;
+      index = Math.max(0, Math.min(next, fieldsets.length - 1));
+      fieldsets.forEach((fieldset, i) => {
+        fieldset.hidden = i !== index;
+      });
+      if (positionEl) {
+        positionEl.textContent =
+          "Question " + (index + 1) + " of " + fieldsets.length;
+      }
+      syncSubmit();
+    }
 
     function showError(message) {
       if (!errorEl) {
@@ -1699,6 +1778,20 @@
       return { answers: answers, firstMissing: firstMissing };
     }
 
+    function paintPicked(fieldset) {
+      fieldset.querySelectorAll(".learn-test-opt").forEach((label) => {
+        const input = label.querySelector("input[type=radio]");
+        label.classList.toggle("is-picked", Boolean(input && input.checked));
+      });
+    }
+
+    form.addEventListener("change", (event) => {
+      const fieldset = event.target.closest("[data-quiz-q]");
+      if (fieldset) paintPicked(fieldset);
+      syncSubmit();
+    });
+    form.addEventListener("input", () => syncSubmit());
+
     function setFormDisabled(disabled) {
       form.querySelectorAll("input").forEach((el) => {
         el.disabled = disabled;
@@ -1722,26 +1815,62 @@
         resultEl.textContent = result.correct
           ? "✓ Correct"
           : "✗ Correct answer: " + result.expected;
+        // The option cards carry the verdict themselves: the right answer is
+        // marked whether or not it was the one picked, and a wrong pick is
+        // marked as wrong beside it.
+        fieldset.querySelectorAll(".learn-test-opt").forEach((label) => {
+          const input = label.querySelector("input[type=radio]");
+          const text = label.querySelector(".learn-test-opt-text");
+          const mark = label.querySelector(".learn-test-opt-mark");
+          const isExpected =
+            Boolean(text) && text.textContent.trim() === String(result.expected).trim();
+          const picked = Boolean(input && input.checked);
+          label.classList.remove("is-picked");
+          label.classList.toggle("is-correct", isExpected);
+          label.classList.toggle("is-wrong", picked && !isExpected);
+          if (mark) {
+            mark.textContent = isExpected ? "✓" : picked ? "✕" : "";
+          }
+        });
       });
       if (scoreEl && payload.score) {
         scoreEl.hidden = false;
         scoreEl.textContent =
           "You got " + payload.score.correct + " of " + payload.score.total + ".";
+        // The sheet takes the tone of the result: a clean set reads teal, a
+        // set with anything to fix reads amber. A score of 1 of 5 announcing
+        // itself in the "well done" colour is worse than no colour at all.
+        scoreEl.classList.toggle(
+          "is-retry",
+          payload.score.correct < payload.score.total
+        );
       }
       setFormDisabled(true);
-      if (submitBtn) {
-        // Scored: the submit becomes the advance, so there is no second tap
-        // hunting for Next (design 3a #6). It does NOT fire Done — the
-        // right-hand session CTA keeps that job and stays visible (3e).
-        if (payload.score) {
-          submitBtn.textContent =
-            payload.score.correct + " of " + payload.score.total + " — Next →";
-          submitBtn.dataset.quizAdvance = "1";
-          // setFormDisabled just disabled it; the button has a new job now.
-          submitBtn.disabled = false;
-        } else {
-          submitBtn.textContent = "Checked ✓";
-        }
+      lastScore = payload.score || null;
+      // Back to the first question, now as a review: every result is seen,
+      // rather than the score standing in for the answers behind it.
+      phase = "review";
+      showQuestion(0);
+      syncReview();
+    }
+
+    // The review walk ends on the advance the deck already knows: "X of Y —
+    // Next →", then "Try new set". It does NOT fire Done — the right-hand
+    // session CTA keeps that job and stays visible (design 3e).
+    function syncReview() {
+      if (!submitBtn) return;
+      submitBtn.disabled = false;
+      submitBtn.classList.remove("is-idle");
+      if (!isLast()) {
+        submitBtn.textContent = "Next question →";
+        return;
+      }
+      if (lastScore) {
+        submitBtn.textContent =
+          lastScore.correct + " of " + lastScore.total + " — Next →";
+        submitBtn.dataset.quizAdvance = "1";
+      } else {
+        submitBtn.textContent = "Checked ✓";
       }
     }
 
@@ -1758,6 +1887,11 @@
           resultEl.hidden = true;
           resultEl.textContent = "";
         }
+        fieldset.querySelectorAll(".learn-test-opt").forEach((label) => {
+          label.classList.remove("is-picked", "is-correct", "is-wrong");
+          const mark = label.querySelector(".learn-test-opt-mark");
+          if (mark) mark.textContent = "";
+        });
       });
       if (scoreEl) {
         scoreEl.hidden = true;
@@ -1765,10 +1899,12 @@
       }
       showError("");
       setFormDisabled(false);
+      lastScore = null;
+      phase = "answer";
       if (submitBtn) {
         delete submitBtn.dataset.quizAdvance;
-        submitBtn.textContent = "Check answers";
       }
+      showQuestion(0);
     }
 
     form.addEventListener("submit", (event) => {
@@ -1788,7 +1924,28 @@
         resetQuiz();
         return;
       }
+      // Reviewing: the button walks the graded set before it advances.
+      if (phase === "review") {
+        showQuestion(index + 1);
+        syncReview();
+        return;
+      }
       if (submitting || !unitId) {
+        return;
+      }
+      const current = fieldsets[index];
+      if (!answered(current)) {
+        showError("Answer this one to continue.");
+        const field =
+          current.querySelector("input[type=radio]") ||
+          current.querySelector("[data-quiz-fill]");
+        if (field) field.focus();
+        return;
+      }
+      // Not the last question yet: step on, and grade the set at the end.
+      if (!isLast()) {
+        showError("");
+        showQuestion(index + 1);
         return;
       }
       const collected = collectAnswers();
@@ -1847,6 +2004,8 @@
         });
     });
 
+
+    showQuestion(0);
 
     return {
       reset: resetQuiz,
@@ -2072,6 +2231,137 @@
   // switchModeLocal and the phone's showDeck both use replaceState, so they
   // add no entry and structurally cannot fire popstate. A popstate here can
   // only mean the user pressed Back.
+  /* Bare Act footnotes.
+
+     Same interaction contract as initBareFns — hover or focus opens, tap pins,
+     Escape and an outside press close, one open at a time — but a different
+     presentation: the Constitution shows an inline tip beside the word, while a
+     Bare Act pins one card to the bottom of the reading column. Statute
+     amendment notes are long and you read several in a row, so a fixed place to
+     look beats a bubble that moves with the cursor.
+
+     The two want reconciling once this has been used; until then this
+     deliberately does not call initBareFns, which would show the wrong chrome. */
+  function initBareActFootnotes() {
+    const card = document.querySelector("[data-bareact-fn-card]");
+    if (!card) {
+      return;
+    }
+    const slot = card.querySelector("[data-bareact-fn-text]");
+    const anchors = document.querySelectorAll("[data-bareact-fn]");
+    if (!anchors.length || !slot) {
+      return;
+    }
+
+    const LEAVE_MS = 120;
+    let leaveTimer = null;
+    let pinned = null;
+    let open = null;
+
+    function clearLeave() {
+      if (leaveTimer) {
+        window.clearTimeout(leaveTimer);
+        leaveTimer = null;
+      }
+    }
+
+    function hide() {
+      clearLeave();
+      if (open) {
+        open.classList.remove("is-active");
+      }
+      open = null;
+      pinned = null;
+      card.hidden = true;
+      slot.textContent = "";
+    }
+
+    function show(el, pin) {
+      clearLeave();
+      // The note already exists in the page for aria-describedby; read it back
+      // rather than keeping a second copy of the string in a data attribute.
+      const note = document.getElementById("fn-" + el.dataset.bareactFn);
+      if (!note) {
+        return;
+      }
+      if (open && open !== el) {
+        open.classList.remove("is-active");
+      }
+      open = el;
+      el.classList.add("is-active");
+      slot.textContent = note.textContent.trim();
+      card.hidden = false;
+      if (pin) {
+        pinned = el;
+      }
+    }
+
+    anchors.forEach((el) => {
+      el.addEventListener("mouseenter", () => {
+        if (pinned) {
+          return;
+        }
+        show(el, false);
+      });
+      el.addEventListener("mouseleave", () => {
+        clearLeave();
+        leaveTimer = window.setTimeout(() => {
+          if (pinned || el.contains(document.activeElement)) {
+            return;
+          }
+          hide();
+        }, LEAVE_MS);
+      });
+      el.addEventListener("focusin", () => show(el, false));
+      el.addEventListener("focusout", () => {
+        if (pinned) {
+          return;
+        }
+        hide();
+      });
+      el.addEventListener("click", (event) => {
+        event.preventDefault();
+        if (pinned === el) {
+          hide();
+          return;
+        }
+        show(el, true);
+      });
+      el.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter" && event.key !== " ") {
+          return;
+        }
+        event.preventDefault();
+        if (pinned === el) {
+          hide();
+        } else {
+          show(el, true);
+        }
+      });
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key !== "Escape" || card.hidden) {
+        return;
+      }
+      const focusTarget = open;
+      hide();
+      if (focusTarget) {
+        focusTarget.focus();
+      }
+    });
+
+    document.addEventListener("pointerdown", (event) => {
+      if (card.hidden) {
+        return;
+      }
+      if (event.target.closest("[data-bareact-fn]") || card.contains(event.target)) {
+        return;
+      }
+      hide();
+    });
+  }
+
   function initRevisionGuard() {
     const learn = document.querySelector(".learn");
     const modal = document.querySelector("[data-revision-exit-modal]");
@@ -2250,8 +2540,67 @@
     // when the saved view is "Just read", and markModeAttempted reads the
     // consts above. Constructed any earlier, that first callback throws a
     // temporal-dead-zone error and takes the whole Learn page down.
-    const cloze = initCloze(clozePanel, function () {
+    // diff.md item 9 · the feedback sheet. Finishing a mode says how it went
+    // and offers the one next step, in the tone of the result. It sits over
+    // the action bar rather than beside it, so there is never a choice
+    // between "continue" and the bar underneath.
+    const feedback = learn.querySelector("[data-mode-feedback]");
+    const feedbackMsg = learn.querySelector("[data-feedback-msg]");
+    const feedbackSub = learn.querySelector("[data-feedback-sub]");
+    const feedbackGo = learn.querySelector("[data-feedback-go]");
+
+    function hideFeedback() {
+      if (!feedback) return;
+      feedback.hidden = true;
+      learn.classList.remove("is-feedback-open");
+    }
+
+    function showFeedback(result) {
+      if (!feedback) return;
+      const good = result.tone !== "retry";
+      feedback.classList.toggle("is-retry", !good);
+      if (feedbackMsg) feedbackMsg.textContent = result.message || "";
+      if (feedbackSub) {
+        feedbackSub.textContent = result.sub || "";
+        feedbackSub.hidden = !result.sub;
+      }
+      if (feedbackGo) feedbackGo.textContent = result.cta || "Continue";
+      feedback.hidden = false;
+      learn.classList.add("is-feedback-open");
+      // Restart the entrance if a previous sheet was still on screen.
+      feedback.classList.remove("rc-sheet");
+      void feedback.offsetWidth;
+      feedback.classList.add("rc-sheet");
+    }
+
+    if (feedbackGo) {
+      feedbackGo.addEventListener("click", function () {
+        hideFeedback();
+        learn.dispatchEvent(new CustomEvent("learn:advance", { bubbles: true }));
+      });
+    }
+
+    // Leaving the mode takes the sheet with it, however the mode was left —
+    // Continue, a tab, or the deck. Watching the attribute rather than every
+    // caller means a new route out cannot forget to close it.
+    if (feedback) {
+      new MutationObserver(function (records) {
+        for (const record of records) {
+          if (record.attributeName === "data-mode") hideFeedback();
+        }
+      }).observe(learn, { attributes: true, attributeFilter: ["data-mode"] });
+    }
+
+    const cloze = initCloze(clozePanel, function (result) {
       markModeAttempted("cloze");
+      const total = (result && result.total) || 0;
+      const recalled = (result && result.recalled) || 0;
+      showFeedback({
+        tone: "good",
+        message: "You remembered it.",
+        sub: total ? recalled + " of " + total + " recalled" : "",
+        cta: "Continue",
+      });
     });
     const letters = initLetters(lettersPanel, function () {
       markModeAttempted("letters");
@@ -3688,6 +4037,7 @@
 
   function bootInteraction() {
     syncRtcAnim();
+    initBareActFootnotes();
     getDoneAudio();
     initHeadingReveal();
     initDoneInterceptor();

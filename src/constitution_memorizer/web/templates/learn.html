@@ -12,7 +12,7 @@
   {% set sq = (sq ~ ('&' if sq else '?') ~ 'revision_intent=' ~ revision_intent) %}
   {% set sa = sa ~ '&revision_intent=' ~ revision_intent %}
 {% endif %}
-<section class="panel learn" data-mobile-view="mode" data-unit-id="{{ unit.id }}" data-article-number="{{ unit.article_number or '' }}"{% if session_id|default('') %} data-session-id="{{ session_id }}" data-session-kind="{{ session_kind|default('') }}" data-revision-remaining="{{ revision_remaining|default(0) }}"{% endif %} data-mode="{{ learn_mode }}" data-revision-intent="{{ revision_intent|default('') }}" data-done-unlocked="{{ 'true' if done_unlocked else 'false' }}" data-modes-seen="{% if modes_seen is defined %}{{ modes_seen | join(',') }}{% endif %}" data-locked-modes="{{ locked_modes | default(()) | join(',') }}" data-required-modes="{{ required_modes | default(()) | join(',') }}"{% if seen_provisional|default(false) %} data-seen-provisional="true"{% endif %}{% if is_guest|default(false) %} data-guest-learn="true"{% endif %}>
+<section class="panel learn" data-mobile-view="mode" data-unit-id="{{ unit.id }}"{% if session_id|default('') %} data-session-id="{{ session_id }}" data-session-kind="{{ session_kind|default('') }}" data-revision-remaining="{{ revision_remaining|default(0) }}"{% endif %} data-mode="{{ learn_mode }}" data-revision-intent="{{ revision_intent|default('') }}" data-done-unlocked="{{ 'true' if done_unlocked else 'false' }}" data-modes-seen="{% if modes_seen is defined %}{{ modes_seen | join(',') }}{% endif %}" data-locked-modes="{{ locked_modes | default(()) | join(',') }}" data-required-modes="{{ required_modes | default(()) | join(',') }}"{% if seen_provisional|default(false) %} data-seen-provisional="true"{% endif %}{% if is_guest|default(false) %} data-guest-learn="true"{% endif %}>
   {% include "_completion_banner.html" %}
   {% if is_guest|default(false) %}
   <div class="guest-learn-banner" role="status">
@@ -115,32 +115,40 @@
   {# ── Phone chrome (designs 05–13) ────────────────────────────────────────
      One header for the deck, one bar for an open mode. Both are mobile-only;
      the desktop tabs below stay the single source of mode state. #}
+  {# diff.md item 7 · what you are recalling stays on screen. The mode name
+     alone left the clause behind the moment a mode opened. The step count
+     and the segments below are kept in sync by mobile.js as modes advance —
+     server-rendered state cannot, since modes advance without a reload. #}
+  {# The design's session header: one bar — exit, the segments, "Step N of 6",
+     help — and under it the eyebrow that says what you are recalling, then
+     the mode's one-line task. All three text parts are kept in sync by
+     mobile.js as modes advance, since modes advance without a reload. #}
+  {% set mode_tasks = {
+    'read': 'First, read it once.',
+    'cloze': 'Fill the gaps from memory.',
+    'letters': 'Rebuild it from first letters.',
+    'type': 'Write it out, word for word.',
+    'recite': 'Now recall it without looking.',
+    'test': 'A short checkpoint.'
+  } %}
   <div class="learn-mode-bar">
     <button type="button" class="mobile-icon-btn" data-session-exit data-exit-to="{{ back_href }}" aria-label="{% if session_kind|default('') == 'revision' %}Exit revision{% else %}Exit Recall{% endif %}">✕</button>
-    <div class="rc-mode-stepper" aria-hidden="true">
+    <div class="rc-mode-stepper" data-mode-stepper aria-hidden="true">
       {% for mode in learn_modes %}
-      <span class="rc-mode-step{% if mode in seen %} is-done{% elif mode == learn_mode %} is-current{% endif %}"></span>
+      <span class="rc-mode-step{% if mode in seen %} is-done{% elif mode == learn_mode %} is-current{% endif %}" data-step-mode="{{ mode }}"></span>
       {% endfor %}
     </div>
-    {% set mode_step = (learn_modes.index(learn_mode) + 1) if learn_mode in learn_modes else 1 %}
-    <span class="learn-mode-bar-name" data-mode-name>Step {{ mode_step }} of {{ learn_modes|length }}</span>
+    <span class="learn-mode-bar-step" data-mode-step>Step {{ (learn_modes.index(learn_mode) + 1) if learn_mode in learn_modes else 1 }} of {{ learn_modes|length }}</span>
     <button type="button" class="mobile-icon-btn" data-mode-help aria-label="How to use this mode">?</button>
   </div>
-
-  {# Phone mode chrome (Read reference): eyebrow + instructional headline.
-     Desktop hides this; mobile.js rewrites it when the open mode changes. #}
-  {% set mode_headlines = {
-    'read': 'First, read it once.',
-    'cloze': 'Fill the gaps.',
-    'letters': 'Rebuild it from the first letters.',
-    'type': 'Type it from memory.',
-    'recite': 'Say it from memory.',
-    'test': 'Prove you know it.',
-  } %}
-  <header class="learn-mode-heading" data-mode-heading>
-    <p class="learn-mode-eyebrow" data-mode-eyebrow>{{ (mode_labels[learn_mode] if mode_labels else learn_mode)|upper }}{% if unit.article_number %} · ARTICLE {{ unit.article_number }}{% endif %}</p>
-    <h2 class="learn-mode-headline" data-mode-headline>{{ mode_headlines[learn_mode] }}</h2>
-  </header>
+  <div class="learn-mode-head">
+    <p class="learn-mode-eyebrow">
+      <span class="learn-mode-bar-name" data-mode-name>{{ mode_labels[learn_mode] if mode_labels else learn_mode }}</span>
+      <span aria-hidden="true">·</span>
+      <span class="learn-mode-bar-ref">{{ unit.display_title }}</span>
+    </p>
+    <h2 class="learn-mode-task" data-mode-task>{{ mode_tasks.get(learn_mode, '') }}</h2>
+  </div>
 
   <header class="learn-deck-head">
     <a class="mobile-back" href="{{ back_href }}">← {{ back_label }}</a>
@@ -166,6 +174,16 @@
      active mode's own controls in beside this button. #}
   <div class="learn-mode-nav" data-mode-nav>
     <button type="button" class="learn-mode-next" data-mode-next>Next</button>
+  </div>
+
+  {# diff.md item 9 · the feedback sheet. Finishing a mode slides this up over
+     the action bar in the tone of the result — teal when it went well, amber
+     when there is something to fix — and carries the only CTA, so there is
+     never a choice between "continue" and the bar underneath it. #}
+  <div class="learn-feedback" data-mode-feedback hidden aria-live="polite">
+    <p class="learn-feedback-msg" data-feedback-msg></p>
+    <p class="learn-feedback-sub" data-feedback-sub></p>
+    <button type="button" class="learn-feedback-go" data-feedback-go>Continue</button>
   </div>
 
   <div class="learn-deck" data-learn-deck>
@@ -238,7 +256,7 @@
   {% endif %}
 
   <div class="learn-body learn-panel-read" data-learn-panel="read">
-    <article class="unit-text learn-read-text">{% if has_text_annotations %}{{ annotated_text }}{% else %}{{ unit.text }}{% endif %}</article>
+    <article class="unit-text learn-read-text rc-rise">{% if has_text_annotations %}{{ annotated_text }}{% else %}{{ unit.text }}{% endif %}</article>
     <p class="learn-hint">{{ read_hint }}</p>
     <div class="learn-read-controls">
       <button type="button" class="learn-read-done" data-deck-back data-done-mode="read">Mark as read</button>
@@ -251,11 +269,21 @@
     data-cloze-text="{{ unit.text | e }}"
     data-cloze-density="medium"
   >
+    {# Density is main's own control — the design has no equivalent — so it
+       takes the component the design uses for every other three-way choice
+       (Pace, Daily target, Today's mix) rather than a shape of its own.
+       Still buttons, not radios: the JS toggles is-active, and .segmented
+       styles that exactly as it styles a checked input. #}
     <div class="learn-cloze-density" role="group" aria-label="Cloze density">
       <span class="learn-cloze-density-label">Density</span>
-      <button type="button" class="learn-cloze-density-btn" data-cloze-density="light" aria-pressed="false">Light</button>
-      <button type="button" class="learn-cloze-density-btn is-active" data-cloze-density="medium" aria-pressed="true">Medium</button>
-      <button type="button" class="learn-cloze-density-btn" data-cloze-density="heavy" aria-pressed="false">Heavy</button>
+      {# Pills, per the design: three separate choices with the active one
+         filled, rather than a segmented track. Density is a setting for the
+         exercise, not a view switch like Letters' Speak/Read. #}
+      <div class="learn-cloze-density-track">
+        <button type="button" class="learn-cloze-density-btn" data-cloze-density="light" aria-pressed="false">Light</button>
+        <button type="button" class="learn-cloze-density-btn is-active" data-cloze-density="medium" aria-pressed="true">Medium</button>
+        <button type="button" class="learn-cloze-density-btn" data-cloze-density="heavy" aria-pressed="false">Heavy</button>
+      </div>
     </div>
     {% if not cloze_available|default(true) %}
     <p class="learn-hint" data-cloze-unavailable>No cloze exercise available for this text.</p>
@@ -277,9 +305,12 @@
     data-letters-text="{{ unit.text | e }}"
     data-letters-full="false"
   >
-    <div class="learn-letters-viewswitch" role="group" aria-label="Letters practice style">
-      <button type="button" class="learn-letters-view-btn" data-letters-view-set="voice" aria-pressed="true">Speak</button>
-      <button type="button" class="learn-letters-view-btn" data-letters-view-set="plain" aria-pressed="false">Read</button>
+    {# Speak or Read: the same segmented control the rest of the app uses for
+       a two-way choice. The JS already toggles is-active on these buttons,
+       which is exactly what .segmented styles. #}
+    <div class="learn-letters-viewswitch segmented is-on-page" role="group" aria-label="Letters practice style">
+      <button type="button" class="segmented-btn learn-letters-view-btn is-active" data-letters-view-set="voice" aria-pressed="true">Speak</button>
+      <button type="button" class="segmented-btn learn-letters-view-btn" data-letters-view-set="plain" aria-pressed="false">Read</button>
     </div>
     <p class="learn-letters-text is-initials" data-letters-display></p>
     <p class="learn-letters-status" data-letters-status hidden></p>
@@ -343,7 +374,7 @@
     {# Checking swaps the live counter for this block. The wording tab — the
        only place the Bare Act text appears — is offered solely when something
        was actually wrong; a clean attempt reveals nothing. #}
-    <div class="learn-type-result" data-type-result hidden>
+    <div class="learn-type-result rc-sheet" data-type-result hidden>
       <div class="learn-type-tabs" role="tablist" aria-label="Result">
         <button type="button" class="learn-type-tab is-active" role="tab" data-type-tab="score" aria-selected="true">Score</button>
         <button type="button" class="learn-type-tab" role="tab" data-type-tab="wording" aria-selected="false" hidden>Wording</button>
@@ -372,6 +403,12 @@
     data-peeking="false"
   >
     <p class="learn-recite-text is-blurred" data-recite-blur>{{ unit.text }}</p>
+    {# diff.md item 7 · a level meter while the mic is open: twelve staggered
+       bars, so "listening" is visible without another line of text. Idle it
+       is flat and quiet; CSS alone decides, from the recording state. #}
+    <div class="learn-recite-meter" aria-hidden="true">
+      {% for _ in range(12) %}<span class="learn-recite-bar"></span>{% endfor %}
+    </div>
     <div class="learn-recite-controls">
       <button type="button" class="learn-recite-toggle" data-recite-toggle>▸ Start reciting</button>
       <button type="button" class="learn-recite-peek" data-recite-peek>Hold to peek</button>
@@ -401,17 +438,25 @@
 
   <div class="learn-body learn-panel-test" data-learn-panel="test" data-quiz-cycle="{{ quiz_cycle|default(0) }}">
     {% if quiz_available|default(false) and quiz_questions %}
-    <p class="learn-test-lede">Quick check — {{ quiz_questions|length }} question{{ 's' if quiz_questions|length != 1 }} on {{ unit.display_title }}. New questions each revision.</p>
+    {# diff.md item 7 · one question at a time. Every question is rendered —
+       the whole set is still graded in one POST, and no-JS keeps the plain
+       scrolling form — but mobile.js shows them one at a time and says which
+       one you are on. #}
+    <p class="learn-test-lede">
+      <span data-quiz-position>Quick check — {{ quiz_questions|length }} question{{ 's' if quiz_questions|length != 1 }} on {{ unit.display_title }}</span>
+      · new questions every revision
+    </p>
     <form id="learn-quiz-form" data-quiz-form>
       {% for q in quiz_questions %}
       {% set qi = loop.index0 %}
       <fieldset class="learn-test-q" data-quiz-q data-kind="{{ q.kind }}">
-        <legend class="learn-test-legend">{{ loop.index }}. {{ q.prompt }}</legend>
+        <legend class="learn-test-legend">{{ q.prompt }}</legend>
         {% if q.kind == "mcq" %}
           {% for opt in q.options %}
           <label class="learn-test-opt">
-            <input type="radio" name="quiz-q{{ qi }}" value="{{ loop.index0 }}">
-            <span>{{ opt }}</span>
+            <input class="learn-test-opt-input" type="radio" name="quiz-q{{ qi }}" value="{{ loop.index0 }}">
+            <span class="learn-test-opt-text">{{ opt }}</span>
+            <span class="learn-test-opt-mark" aria-hidden="true"></span>
           </label>
           {% endfor %}
         {% else %}
@@ -433,7 +478,7 @@
       {% endfor %}
       <button type="submit" form="learn-quiz-form" class="btn learn-test-submit" data-quiz-submit>Check answers</button>
     </form>
-    <p class="learn-test-score" data-quiz-score hidden aria-live="polite"></p>
+    <p class="learn-test-score rc-sheet" data-quiz-score hidden aria-live="polite"></p>
     <noscript>
       <p class="learn-hint">Enable JavaScript to take the quiz.</p>
     </noscript>

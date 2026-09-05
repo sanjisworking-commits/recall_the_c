@@ -31,6 +31,8 @@
     --rc-teal-tint: #e7f1ef;
     --rc-teal-deep: #0e5b52;
     --rc-pale-done: var(--calendar-done);
+    --rc-blank: #e6e8e7;
+    --rc-wash: #fafaf9;
     --rc-amber: var(--browse-mark-news);
     --rc-amber-tint: #f6efe4;
     --rc-amber-deep: #7c4a12;
@@ -43,6 +45,8 @@
   }
 
   html[data-theme="dark"] {
+    --rc-blank: #2a2a28;
+    --rc-wash: #191918;
     --rc-teal-tint: #143833;
     --rc-teal-deep: #8fd4c8;
     --rc-amber-tint: #3a2a18;
@@ -64,6 +68,17 @@
   @keyframes rcPulse {
     0%, 100% { box-shadow: 0 0 0 0 rgba(20, 20, 20, 0.18); }
     50% { box-shadow: 0 0 0 6px rgba(20, 20, 20, 0); }
+  }
+
+  /* The motion-preference blocks at the foot of this file switch these off,
+     but nothing defined them — so the hooks existed while every animation
+     went around them, out of reach of both the OS setting and Motion Off. */
+  .rc-rise {
+    animation: rcRise 0.35s ease both;
+  }
+
+  .rc-sheet {
+    animation: rcSheet 0.28s ease both;
   }
 
   /* ── Shell ──────────────────────────────────────────────────────────────
@@ -453,6 +468,231 @@
   }
 
   /* ══ 01 / 22 / 23 / 24 · Today ═════════════════════════════════════════ */
+  /* ── First run · diff.md item 1 ───────────────────────────────────────
+     The design's zero state, at the Today route rather than a page of its
+     own: is_new flips the moment the first unit completes and the regular
+     Today home takes over with no redirect. Values are the prototype's. */
+  body[data-mscreen="today"] .dash-firstrun {
+    margin: 0;
+    padding: 0;
+  }
+
+  body[data-mscreen="today"] .dash-firstrun-hero {
+    margin: 12px 18px 0;
+    padding: 18px;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(20, 20, 20, 0.05);
+  }
+
+  body[data-mscreen="today"] .dash-firstrun-eyebrow {
+    margin: 0 0 14px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mid);
+  }
+
+  body[data-mscreen="today"] .dash-firstrun-section {
+    margin: 24px 20px 10px;
+  }
+
+  body[data-mscreen="today"] .dash-firstrun-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  /* Dashed, not a filled arc: there is no workload to be a fraction of yet. */
+  body[data-mscreen="today"] .dash-firstrun-ring {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    width: 64px;
+    height: 64px;
+    border: 2.5px dashed var(--faint);
+    border-radius: 50%;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--done-locked-fg);
+  }
+
+  body[data-mscreen="today"] .dash-firstrun-copy {
+    flex: 1;
+    min-width: 0;
+  }
+
+  body[data-mscreen="today"] .dash-firstrun-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 21px;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  body[data-mscreen="today"] .dash-firstrun-sub {
+    margin: 4px 0 0;
+    font-size: 13px;
+    line-height: 1.45;
+    color: var(--mid);
+    text-wrap: pretty;
+  }
+
+  body[data-mscreen="today"] .dash-firstrun-cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 52px;
+    margin-top: 16px;
+    border: 0;
+    border-radius: 12px;
+    background: var(--ink);
+    color: var(--on-accent);
+    font-size: 15.5px;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.28);
+  }
+
+  body[data-mscreen="today"] .dash-firstrun-cta:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.28);
+  }
+
+  body[data-mscreen="today"] .dash-firstrun-list {
+    margin: 0 18px;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  body[data-mscreen="today"] .dash-firstrun-actions {
+    margin-top: 14px;
+  }
+
+  body[data-mscreen="today"] .dash-firstrun-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 58px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--page);
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  body[data-mscreen="today"] .dash-firstrun-item.is-compact {
+    min-height: 52px;
+    padding: 8px 16px;
+  }
+
+  /* Dividers between rows only, never after the last. */
+  body[data-mscreen="today"] .dash-firstrun-item:last-child {
+    border-bottom: 0;
+  }
+
+  body[data-mscreen="today"] .dash-firstrun-item-copy {
+    flex: 1;
+    min-width: 0;
+  }
+
+  body[data-mscreen="today"] .dash-firstrun-item-title {
+    display: block;
+    font-size: 14.5px;
+    font-weight: 500;
+  }
+
+  body[data-mscreen="today"] .dash-firstrun-item-sub {
+    display: block;
+    margin-top: 1px;
+    font-size: 11.5px;
+    color: var(--mid);
+  }
+
+  body[data-mscreen="today"] .dash-firstrun-item-note {
+    flex: 0 0 auto;
+    font-size: 11.5px;
+    color: var(--mid);
+  }
+
+  body[data-mscreen="today"] .dash-firstrun-chev {
+    flex: 0 0 auto;
+    font-size: 13px;
+    color: var(--faint);
+  }
+
+  /* ── First run · tier branches · diff.md item 2 ────────────────────────
+     One screen, three readings of it. Guests lose the name, the streak and
+     the plan rows and gain the gate note plus a sign-in card; Free gains the
+     plans row; Plus is the screen above, unadorned. */
+  body[data-mscreen="today"] .dash-firstrun-note {
+    margin: 10px 2px 0;
+    font-size: 11.5px;
+    line-height: 1.5;
+    color: var(--mid);
+    text-align: center;
+    text-wrap: pretty;
+  }
+
+  body[data-mscreen="today"] .dash-firstrun-plan {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 14px 18px 0;
+    padding: 13px 16px;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  body[data-mscreen="today"] .dash-firstrun-plan-link {
+    flex: 0 0 auto;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--browse-due);
+    white-space: nowrap;
+  }
+
+  body[data-mscreen="today"] .dash-firstrun-signin {
+    margin: 14px 18px 0;
+    padding: 13px 16px;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+  }
+
+  body[data-mscreen="today"] .dash-firstrun-signin-body {
+    margin: 0;
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--mid);
+    text-wrap: pretty;
+  }
+
+  body[data-mscreen="today"] .dash-firstrun-signin-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 44px;
+    margin-top: 10px;
+    border: 1px solid var(--hairline);
+    border-radius: 11px;
+    background: var(--paper);
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
   body[data-mscreen="today"] .dash-greeting {
     display: flex;
     flex-wrap: wrap;
@@ -529,6 +769,23 @@
   body[data-mscreen="today"] .dash-due .dash-card-body {
     padding: 0;
     border: 0;
+  }
+
+  /* Eyebrow left, "…" hard against the card's top right corner — they share
+     the head's line rather than stacking. */
+  body[data-mscreen="today"] .dash-due .dash-card-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  body[data-mscreen="today"] .dash-due .dash-card-head .dash-eyebrow {
+    margin-bottom: 0;
+  }
+
+  body[data-mscreen="today"] .dash-plan-day-btn {
+    margin: -6px -8px 0 auto;
   }
 
   body[data-mscreen="today"] .dash-eyebrow {
@@ -833,13 +1090,78 @@
   /* 4c · Plan my day — a sheet over Today, not the shipped full page. The
      panel, scrim and title come from the shared sheet furniture above; only
      the eyebrow, lede and button stack are particular to this one. */
-  .plan-day-sheet-eyebrow {
-    margin: 0 0 6px;
-    font-size: 10.5px;
+  /* diff.md item 6 · drag handle, then a pick-then-confirm mix. */
+  /* Density reads as one track, not three loose boxes. */
+  /* Density is a setting for the exercise, so it sits above the count of how
+     the exercise is going — the order the design shows. mobile.js lifts the
+     status out of the action bar into the panel, so this is settled here. */
+  body[data-mscreen="learn"] .learn-cloze-density-track {
+    display: flex;
+    gap: 8px;
+  }
+
+  body[data-mscreen="learn"] .learn-cloze-density-btn {
+    height: 36px;
+    padding: 0 18px;
+    font-size: 13.5px;
+  }
+
+  body[data-mscreen="learn"] .learn-cloze-density-btn:active {
+    transform: translateY(1px);
+  }
+
+  /* No handle of its own: .mobile-sheet-panel::before already draws one for
+     every sheet, and a second element drew a second bar under it. */
+
+  .plan-day-sheet-label {
+    margin: 0 0 8px;
+    font-size: 12px;
     font-weight: 600;
-    letter-spacing: 0.09em;
-    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .plan-day-sheet .segmented {
+    display: flex;
+    width: 100%;
+  }
+
+  .plan-day-sheet .segmented-btn {
+    flex: 1;
+    height: 32px;
+    padding: 0 8px;
+    font-size: 12.5px;
+  }
+
+  .plan-day-sheet-note {
+    margin: 12px 0 16px;
+    font-size: 11.5px;
+    line-height: 1.55;
     color: var(--faint);
+    text-wrap: pretty;
+  }
+
+  /* The affordance the design puts on the hero card itself. */
+  /* The design's "…" — a quiet mark in the card's corner, not a bordered
+     control competing with the CTA below it. */
+  body[data-mscreen="today"] .dash-plan-day-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    margin-left: auto;
+    border: 0;
+    border-radius: 9px;
+    background: none;
+    color: var(--faint);
+    font-size: 15px;
+    letter-spacing: 0.06em;
+    line-height: 1;
+    text-decoration: none;
+  }
+
+  body[data-mscreen="today"] .dash-plan-day-btn:active {
+    transform: translateY(1px);
   }
 
   .plan-day-sheet .mobile-sheet-title {
@@ -953,6 +1275,10 @@
     padding: 0;
   }
 
+  body[data-mscreen="today"] .rc-path-head {
+    margin: 24px 2px 10px;
+  }
+
   body[data-mscreen="today"] .rc-path-node {
     display: grid;
     grid-template-columns: 26px 1fr auto;
@@ -1001,32 +1327,60 @@
     animation: rcPulse 2.4s ease-out infinite;
   }
 
+  /* One card, not two stacked cells. The CTA lives inside the copy now, so
+     the border and radius can close around the whole node — the old split
+     left a band of page wash across the middle of it. */
   body[data-mscreen="today"] .rc-path-node.is-current {
-    display: grid;
-    grid-template-columns: 26px 1fr;
-    grid-template-rows: auto auto;
     align-items: start;
-    /* Row gap would split copy + Start into two cards with page wash
-       showing through (the title block sitting above an empty shell). */
-    gap: 0 14px;
     padding: 4px 0 10px;
     margin: 0;
     background: none;
     box-shadow: none;
   }
 
-  body[data-mscreen="today"] .rc-path-node.is-current .rc-path-mark {
-    grid-row: 1 / span 2;
-  }
-
   body[data-mscreen="today"] .rc-path-node.is-current .rc-path-copy {
-    grid-column: 2;
-    padding: 14px 15px 12px;
+    padding: 14px 15px;
     background: var(--rc-paper);
     border: 1.5px solid var(--rc-ink);
-    border-bottom: 0;
-    border-radius: var(--rc-radius-card) var(--rc-radius-card) 0 0;
+    border-radius: var(--rc-radius-card);
     box-shadow: 0 6px 18px rgba(20, 20, 20, 0.09);
+  }
+
+  body[data-mscreen="today"] .rc-path-eyebrow {
+    display: block;
+    margin: 0 0 3px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--rc-teal);
+  }
+
+  body[data-mscreen="today"] .rc-path-node.is-current .rc-path-title {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 500;
+  }
+
+  /* Title left, ladder day set against it on the same line. */
+  body[data-mscreen="today"] .rc-path-line {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  body[data-mscreen="today"] .rc-path-sub {
+    display: block;
+    margin: 2px 0 0;
+    font-size: 12.5px;
+    line-height: 1.4;
+    color: var(--mid);
+  }
+
+  body[data-mscreen="today"] .rc-path-node:not(.is-current) .rc-path-sub {
+    margin: 1px 0 0;
+    font-size: 12px;
+    color: var(--faint);
   }
 
   body[data-mscreen="today"] .rc-path-cta {
@@ -1037,30 +1391,21 @@
   }
 
   body[data-mscreen="today"] .rc-path-node.is-current .rc-path-cta {
-    grid-column: 2;
     display: flex;
     align-items: center;
     justify-content: center;
+    width: 100%;
     height: 42px;
-    margin: 0;
-    padding: 0 15px 14px;
-    background: var(--rc-paper);
-    border: 1.5px solid var(--rc-ink);
-    border-top: 0;
-    border-radius: 0 0 var(--rc-radius-card) var(--rc-radius-card);
-    box-shadow: 0 6px 18px rgba(20, 20, 20, 0.09);
+    margin-top: 12px;
+    border-radius: 10px;
+    background: var(--rc-ink);
     color: var(--on-accent);
-    box-sizing: content-box;
-    background-image: linear-gradient(var(--rc-ink), var(--rc-ink));
-    background-origin: content-box;
-    background-clip: content-box;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.28);
   }
 
-  body[data-mscreen="today"] .rc-path-note {
-    margin: 6px 2px 0;
-    font-size: 11.5px;
-    line-height: 1.6;
-    color: var(--faint);
+  body[data-mscreen="today"] .rc-path-node.is-current .rc-path-cta:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.28);
   }
 
   body[data-mscreen="today"] .dash-caughtup-mark {
@@ -1101,14 +1446,15 @@
   body[data-mscreen="today"] .rc-path-title {
     display: block;
     font-size: 14.5px;
-    font-weight: 600;
+    font-weight: 500;
   }
 
   body[data-mscreen="today"] .rc-path-meta {
-    display: block;
-    margin-top: 2px;
+    margin-left: auto;
+    flex: 0 0 auto;
     font-size: 12px;
     color: var(--muted);
+    white-space: nowrap;
   }
 
   body[data-mscreen="today"] .rc-path-cta {
@@ -1161,8 +1507,12 @@
     display: none;
   }
 
+  /* diff.md item 4 · Free plan banner: one line, one bordered action. */
   body[data-mscreen="browse"] .browse-access-summary {
-    padding: 13px 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 11px 14px;
     margin: 0 0 12px;
     border: 1px solid var(--rc-hairline);
     border-radius: var(--rc-radius-card);
@@ -1170,11 +1520,33 @@
   }
 
   body[data-mscreen="browse"] .browse-access-status {
-    font-size: 12.5px;
+    flex: 1;
+    margin: 0;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1.5;
+    color: var(--mid);
+    text-wrap: pretty;
   }
 
   body[data-mscreen="browse"] .browse-access-action {
     font-size: 12.5px;
+  }
+
+  body[data-mscreen="browse"] .browse-access-unlock {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    height: 34px;
+    padding: 0 12px;
+    border: 1px solid var(--rc-hairline);
+    border-radius: 10px;
+    background: var(--rc-paper);
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--browse-due);
+    text-decoration: none;
+    white-space: nowrap;
   }
 
   .browse-part-rail {
@@ -2429,9 +2801,18 @@
 
   body[data-mscreen="settings"] .settings > .lede,
   body[data-mscreen="settings"] .settings-access-line,
+  body[data-mscreen="settings"] .settings-saved,
+  body[data-mscreen="settings"] .gcal-notice,
   body[data-mscreen="settings"] .settings-desk-title,
   body[data-mscreen="settings"] .settings-desk-copy {
     display: none;
+  }
+
+  body[data-mscreen="settings"] .settings-account-signin {
+    flex: 0 0 auto;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--browse-due);
   }
 
   .settings-account-row {
@@ -2526,7 +2907,7 @@
     display: flex;
     align-items: center;
     gap: 14px;
-    min-height: 52px;
+    min-height: 54px;
     padding: 10px 16px;
     border-bottom: 1px solid var(--page);
     margin: 0;
@@ -2673,7 +3054,7 @@
   }
 
   .settings-toggle[aria-checked="true"] {
-    background: var(--accent);
+    background: var(--browse-due);
   }
 
   .settings-toggle:disabled {
@@ -2774,17 +3155,23 @@
     order: 0;
   }
 
+  /* The stepper is inside the bar now, so it must NOT be listed here: this
+     order applies to the page's flex children, and inheriting it inside the
+     bar pushed the segments past the exit, step count and help. */
   body[data-mscreen="learn"] .learn-mode-bar,
   body[data-mscreen="learn"] .learn-deck-head {
     order: 1;
+  }
+
+  body[data-mscreen="learn"] .learn-mode-head {
+    order: 3;
   }
 
   body[data-mscreen="learn"] .session-track {
     order: 2;
   }
 
-  body[data-mscreen="learn"] .learn-deck-toast,
-  body[data-mscreen="learn"] .learn-mode-heading {
+  body[data-mscreen="learn"] .learn-deck-toast {
     order: 3;
   }
 
@@ -2820,7 +3207,6 @@
   }
 
   .learn[data-mobile-view="deck"] .learn-mode-bar,
-  .learn[data-mobile-view="deck"] .learn-mode-heading,
   .learn[data-mobile-view="deck"] .learn-body,
   .learn[data-mobile-view="deck"] .session-track {
     display: none;
@@ -3089,52 +3475,74 @@
     align-items: center;
     gap: 8px;
     padding: 2px 0 8px;
-    border-bottom: 1px solid var(--page);
   }
 
-  .learn-mode-bar-name {
-    margin: 0;
-    font-size: 12.5px;
-    font-weight: 500;
-    letter-spacing: 0.01em;
-    white-space: nowrap;
-    color: var(--ink);
+  /* The step count sits at the right of the bar, after the segments. */
+  .learn-mode-bar-step {
+    flex: 0 0 auto;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--mid);
   }
 
-  .learn-mode-heading {
-    order: 3;
-    margin: 16px 0 4px;
+  /* Eyebrow then task: what is being recalled, then what to do with it. */
+  .learn-mode-head {
+    padding: 0;
   }
 
-  .learn[data-mobile-view="deck"] .learn-mode-heading {
-    display: none;
+  /* The task line's own 16px is the whole of the space to the exercise — the
+     panel adds nothing on top of it. */
+  .learn[data-mobile-view="mode"] .learn-body > *:first-child {
+    margin-top: 0;
   }
 
   .learn-mode-eyebrow {
-    margin: 0 0 8px;
-    font-size: 11px;
+    display: flex;
+    align-items: baseline;
+    gap: 5px;
+    margin: 0 0 4px;
+    font-size: 10.5px;
     font-weight: 600;
-    letter-spacing: 0.08em;
+    letter-spacing: 0.09em;
     text-transform: uppercase;
-    color: var(--faint);
+    color: var(--mid);
   }
 
-  .learn-mode-headline {
-    margin: 0 0 18px;
+  .learn-mode-bar-name,
+  .learn-mode-bar-ref {
+    font: inherit;
+  }
+
+  /* The task line carries the space to the content on its own; the panel's
+     own top padding on top of it opened the gap the design does not have. */
+  .learn[data-mobile-view="mode"] .learn-body {
+    padding-top: 0;
+  }
+
+  .learn-mode-task {
+    margin: 0 0 16px;
     font-family: var(--font-display);
-    font-size: 28px;
+    font-size: 22px;
     font-weight: 500;
-    line-height: 1.2;
-    letter-spacing: -0.02em;
-    color: var(--ink);
+    line-height: 1.25;
+    text-wrap: pretty;
   }
 
+  .learn[data-mobile-view="deck"] .learn-mode-head {
+    display: none;
+  }
+
+  /* In the bar, between the exit and the step count, taking the free space. */
   .rc-mode-stepper {
     display: flex;
-    align-items: center;
-    gap: 4px;
     flex: 1;
-    margin: 0 8px;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+  }
+
+  .learn[data-mobile-view="deck"] .rc-mode-stepper {
+    display: none;
   }
 
   .rc-mode-step {
@@ -3143,6 +3551,7 @@
     flex: 1;
     border-radius: 2px;
     background: var(--rc-hairline);
+    transition: all 0.3s ease;
   }
 
   .rc-mode-step.is-done {
@@ -3154,15 +3563,39 @@
     background: var(--rc-ink);
   }
 
-  body[data-mscreen="learn"] .learn-letters-viewswitch,
+  /* The Speak CTA lives in the action bar on the phone — it is the mode's
+     act, and it morphs Speak → Stop → Next there. The Speak/Read switch is
+     a different thing: it chooses how the mode is practised, and the design
+     keeps it under the task line. */
   body[data-mscreen="learn"] .learn-letters-speak {
     display: none;
   }
 
+  body[data-mscreen="learn"] .learn-letters-viewswitch {
+    display: inline-flex;
+    align-self: flex-start;
+    margin: 0 0 16px;
+  }
+
+  body[data-mscreen="learn"] .learn-letters-viewswitch .segmented-btn {
+    height: 32px;
+    padding: 0 16px;
+    font-size: 12.5px;
+  }
+
+  body[data-mscreen="learn"] .learn-letters-hint {
+    margin: 14px 0 0;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--mid);
+  }
+
+  /* The design's session header runs straight from the bar to the eyebrow.
+     This 2px full-bleed rule sat in between and read as a stray divider with
+     space either side; the segments in the bar are the phone's progress. It
+     stays for the desktop layout, which has room for it. */
   body[data-mscreen="learn"] .session-track {
-    height: 2px;
-    margin: 0 calc(var(--m-gutter) * -1);
-    background: var(--track);
+    display: none;
   }
 
   body[data-mscreen="learn"] .learn-body {
@@ -3184,6 +3617,43 @@
     line-height: 1.7;
   }
 
+  /* A blank is a filled slot, not an empty underline: a grey box on a black
+     baseline, sized by the word hiding inside it (the text is transparent,
+     so the box is exactly as wide as what it conceals, plus the design's
+     padding). Revealing pops the word in and turns it teal. */
+  body[data-mscreen="learn"] .learn-cloze-word.is-blank:not(.is-revealed) {
+    display: inline-block;
+    min-width: 2.5em;
+    height: 24px;
+    margin: 0 1px;
+    padding: 0 8px;
+    border-bottom: 2px solid var(--ink);
+    border-radius: 6px 6px 0 0;
+    background: var(--rc-blank, #e6e8e7);
+    vertical-align: -4px;
+    line-height: 24px;
+  }
+
+  body[data-mscreen="learn"] .learn-cloze-word.is-revealed {
+    padding: 0 3px;
+    border-bottom: 2px solid var(--rc-teal);
+    color: var(--rc-teal);
+    font-weight: 400;
+  }
+
+  /* Only the word just tapped animates. The panel re-renders every span on
+     each reveal, so an animation on .is-revealed replayed the entire revealed
+     set every time. styles.css also fades .is-revealed under html.rtc-anim
+     and outranks these, so that rule is overridden to nothing here. */
+  html.rtc-anim body[data-mscreen="learn"] .learn-cloze-word.is-blank.is-revealed {
+    animation: none;
+  }
+
+  body[data-mscreen="learn"] .learn-cloze-word.is-revealed.is-new,
+  html.rtc-anim body[data-mscreen="learn"] .learn-cloze-word.is-blank.is-revealed.is-new {
+    animation: rcPop 0.3s ease both;
+  }
+
   body[data-mscreen="learn"] .learn-cloze-text,
   body[data-mscreen="learn"] .learn-recite-text {
     font-family: var(--font-display);
@@ -3197,11 +3667,329 @@
     line-height: 1.7;
   }
 
-  body[data-mscreen="learn"] .learn-letters-text.is-initials {
+  /* diff.md item 7 · Test is answered one question at a time, and each option
+     is a card that carries its own state. The radio stays in the markup and
+     stays focusable — it is the thing being operated — but the card is what
+     is seen, so the native control is clipped rather than drawn. */
+  body[data-mscreen="learn"] .learn-test-q {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+
+  body[data-mscreen="learn"] .learn-test-legend {
+    display: block;
+    margin: 0 0 16px;
+    padding: 0;
     font-family: var(--font-display);
+    font-size: 19px;
+    font-weight: 400;
+    line-height: 1.5;
+    text-wrap: pretty;
+  }
+
+  body[data-mscreen="learn"] .learn-test-lede {
+    margin: 0 0 14px;
+    font-size: 12.5px;
+    color: var(--mid);
+  }
+
+  body[data-mscreen="learn"] .learn-test-opt {
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    margin: 0 0 9px;
+    padding: 14px;
+    border: 1px solid var(--hairline);
+    border-radius: 12px;
+    background: var(--paper);
+    font-size: 15px;
+    line-height: 1.45;
+  }
+
+  body[data-mscreen="learn"] .learn-test-opt-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    border: 0;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  body[data-mscreen="learn"] .learn-test-opt:has(.learn-test-opt-input:focus-visible) {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+  }
+
+  body[data-mscreen="learn"] .learn-test-opt-text {
+    flex: 1;
+  }
+
+  body[data-mscreen="learn"] .learn-test-opt-mark {
+    flex: 0 0 auto;
+    font-weight: 700;
+  }
+
+  body[data-mscreen="learn"] .learn-test-opt.is-picked {
+    border: 1.5px solid var(--ink);
+    background: var(--rc-paper-tint, var(--paper));
+    box-shadow: 0 2px 6px rgba(20, 20, 20, 0.06);
+  }
+
+  body[data-mscreen="learn"] .learn-test-opt.is-correct {
+    border: 1.5px solid var(--browse-due);
+    background: var(--rc-teal-tint);
+  }
+
+  body[data-mscreen="learn"] .learn-test-opt.is-wrong {
+    border: 1.5px solid var(--rc-amber);
+    background: var(--rc-amber-tint);
+  }
+
+  /* With the verdict on the cards, the sentence under them repeats it. Fill
+     questions have no cards, so they keep theirs. */
+  body[data-mscreen="learn"] [data-kind="mcq"] .learn-test-q-result {
+    display: none;
+  }
+
+  /* The checked attempt re-reads as a diff: matched words in ink, misses in
+     amber, arriving in reading order. Opacity only — the mirror sits under
+     the caret and must not move. */
+  .learn-type-mirror.is-checked .learn-type-mirror-word {
+    animation: rcWordIn 0.22s ease both;
+    animation-delay: calc(var(--w, 0) * 24ms);
+  }
+
+  @keyframes rcWordIn {
+    from { opacity: 0.25; }
+    to { opacity: 1; }
+  }
+
+  /* diff.md item 7 · a Check that cannot do anything yet says so by weight.
+     Never display:none — a button that vanishes reads as a bug. */
+  body[data-mscreen="learn"] .learn-type-check,
+  body[data-mscreen="learn"] .learn-test-submit {
+    transition: opacity 0.2s ease;
+  }
+
+  body[data-mscreen="learn"]
+    [data-learn-panel="type"]:has([data-type-input]:placeholder-shown)
+    .learn-type-check,
+  body[data-mscreen="learn"] .learn-test-submit.is-idle {
+    opacity: 0.45;
+  }
+
+  /* diff.md item 9 · the feedback sheet. Pinned to the bottom edge in the
+     tone of the result, carrying the only CTA — the action bar goes while it
+     is up, so "Continue" is unambiguous. */
+  body[data-mscreen="learn"] .learn-feedback {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 30;
+    padding: 18px 18px calc(30px + env(safe-area-inset-bottom, 0));
+    border-radius: var(--rc-radius-sheet) var(--rc-radius-sheet) 0 0;
+    background: var(--rc-teal-tint);
+    color: var(--rc-teal-deep);
+    box-shadow: 0 -8px 30px rgba(20, 20, 20, 0.12);
+  }
+
+  body[data-mscreen="learn"] .learn-feedback[hidden] {
+    display: none;
+  }
+
+  body[data-mscreen="learn"] .learn-feedback.is-retry {
+    background: var(--rc-amber-tint);
+    color: var(--rc-amber-deep);
+  }
+
+  body[data-mscreen="learn"] .learn-feedback-msg {
+    margin: 0;
+    font-size: 16px;
     font-weight: 600;
+    line-height: 1.35;
+    text-wrap: pretty;
+  }
+
+  body[data-mscreen="learn"] .learn-feedback-sub {
+    margin: 4px 0 0;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  body[data-mscreen="learn"] .learn-feedback-sub[hidden] {
+    display: none;
+  }
+
+  body[data-mscreen="learn"] .learn-feedback-go {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 50px;
+    margin-top: 14px;
+    border: 0;
+    border-radius: var(--rc-radius-button);
+    background: var(--rc-teal);
+    color: var(--on-accent);
+    font: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.22);
+    cursor: pointer;
+  }
+
+  body[data-mscreen="learn"] .learn-feedback.is-retry .learn-feedback-go {
+    background: var(--rc-ink);
+  }
+
+  body[data-mscreen="learn"] .learn-feedback-go:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.22);
+  }
+
+  /* One CTA at a time: the bar underneath would offer a second answer. */
+  body[data-mscreen="learn"] .learn.is-feedback-open .learn-mode-nav {
+    display: none;
+  }
+
+  /* Results carry the tone of the result, and arrive as a sheet does. */
+  body[data-mscreen="learn"] .learn-type-result:not([hidden]),
+  body[data-mscreen="learn"] .learn-test-score:not([hidden]) {
+    margin-top: 14px;
+    padding: 16px 16px 18px;
+    border-radius: 22px 22px 12px 12px;
+    background: var(--rc-teal-tint);
+    color: var(--rc-teal-deep);
+  }
+
+  body[data-mscreen="learn"] .learn-type-result.is-retry,
+  body[data-mscreen="learn"] .learn-test-score.is-retry {
+    background: var(--rc-amber-tint);
+    color: var(--rc-amber-deep);
+  }
+
+  /* diff.md item 7 · recite level meter. Twelve bars, staggered, only while
+     the mic is actually open — idle it sits flat at a third height. */
+  @keyframes rcBar {
+    0%, 100% { transform: scaleY(0.35); }
+    50% { transform: scaleY(1); }
+  }
+
+  body[data-mscreen="learn"] .learn-recite-meter {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 5px;
+    height: 62px;
+    margin: 14px 0 4px;
+  }
+
+  body[data-mscreen="learn"] .learn-recite-bar {
+    display: block;
+    width: 5px;
+    border-radius: 3px;
+    background: var(--browse-due);
+    transform-origin: bottom;
+    transform: scaleY(0.3);
+    opacity: 0.35;
+    transition: opacity 0.2s ease;
+  }
+
+  body.is-recording[data-mscreen="learn"] .learn-recite-bar {
+    transform: none;
+    opacity: 1;
+  }
+
+  body[data-mscreen="learn"] .learn-recite-bar:nth-child(1) { height: 22px; }
+
+  body[data-mscreen="learn"] .learn-recite-bar:nth-child(2) { height: 51px; }
+
+  body[data-mscreen="learn"] .learn-recite-bar:nth-child(3) { height: 40px; }
+
+  body[data-mscreen="learn"] .learn-recite-bar:nth-child(4) { height: 29px; }
+
+  body[data-mscreen="learn"] .learn-recite-bar:nth-child(5) { height: 58px; }
+
+  body[data-mscreen="learn"] .learn-recite-bar:nth-child(6) { height: 47px; }
+
+  body[data-mscreen="learn"] .learn-recite-bar:nth-child(7) { height: 36px; }
+
+  body[data-mscreen="learn"] .learn-recite-bar:nth-child(8) { height: 25px; }
+
+  body[data-mscreen="learn"] .learn-recite-bar:nth-child(9) { height: 54px; }
+
+  body[data-mscreen="learn"] .learn-recite-bar:nth-child(10) { height: 43px; }
+
+  body[data-mscreen="learn"] .learn-recite-bar:nth-child(11) { height: 32px; }
+
+  body[data-mscreen="learn"] .learn-recite-bar:nth-child(12) { height: 61px; }
+
+  body.is-recording[data-mscreen="learn"] .learn-recite-bar:nth-child(1) {
+    animation: rcBar 0.70s ease 0.00s infinite;
+  }
+
+  body.is-recording[data-mscreen="learn"] .learn-recite-bar:nth-child(2) {
+    animation: rcBar 0.82s ease 0.07s infinite;
+  }
+
+  body.is-recording[data-mscreen="learn"] .learn-recite-bar:nth-child(3) {
+    animation: rcBar 0.94s ease 0.14s infinite;
+  }
+
+  body.is-recording[data-mscreen="learn"] .learn-recite-bar:nth-child(4) {
+    animation: rcBar 1.06s ease 0.21s infinite;
+  }
+
+  body.is-recording[data-mscreen="learn"] .learn-recite-bar:nth-child(5) {
+    animation: rcBar 0.70s ease 0.28s infinite;
+  }
+
+  body.is-recording[data-mscreen="learn"] .learn-recite-bar:nth-child(6) {
+    animation: rcBar 0.82s ease 0.35s infinite;
+  }
+
+  body.is-recording[data-mscreen="learn"] .learn-recite-bar:nth-child(7) {
+    animation: rcBar 0.94s ease 0.42s infinite;
+  }
+
+  body.is-recording[data-mscreen="learn"] .learn-recite-bar:nth-child(8) {
+    animation: rcBar 1.06s ease 0.49s infinite;
+  }
+
+  body.is-recording[data-mscreen="learn"] .learn-recite-bar:nth-child(9) {
+    animation: rcBar 0.70s ease 0.56s infinite;
+  }
+
+  body.is-recording[data-mscreen="learn"] .learn-recite-bar:nth-child(10) {
+    animation: rcBar 0.82s ease 0.63s infinite;
+  }
+
+  body.is-recording[data-mscreen="learn"] .learn-recite-bar:nth-child(11) {
+    animation: rcBar 0.94s ease 0.70s infinite;
+  }
+
+  body.is-recording[data-mscreen="learn"] .learn-recite-bar:nth-child(12) {
+    animation: rcBar 1.06s ease 0.77s infinite;
+  }
+
+
+  /* Monospace on the phone, per the design: fixed advance widths line the
+     initials into columns, which is what makes the scaffold scannable. The
+     desktop rule keeps Fraunces — that is a deliberate call for the wider
+     layout, and the design does not cover it. */
+  body[data-mscreen="learn"] .learn-letters-text.is-initials {
+    margin: 0 0 10px;
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-weight: 400;
     font-size: 22px;
-    line-height: 1.7;
+    line-height: 1.9;
     letter-spacing: 0.24em;
   }
 
@@ -3241,10 +4029,15 @@
      Status lines (counts, listening state) are NOT hints and stay. */
   body[data-mscreen="learn"] .learn-panel-read .learn-hint,
   body[data-mscreen="learn"] .learn-type-lede,
-  body[data-mscreen="learn"] .learn-test-lede,
   body[data-mscreen="learn"] .learn-letters-hint,
   body[data-mscreen="learn"] .learn-recite-hint {
     display: none;
+  }
+
+  /* The test lede used to be a hint and was hidden with the others. It now
+     carries "Question N of M", which is a status line by the rule above. */
+  body[data-mscreen="learn"] .learn-test-lede {
+    display: block;
   }
 
   /* Double-tap-to-zoom, killed at the source. `manipulation` keeps scrolling
@@ -3363,13 +4156,13 @@
   .learn-mode-nav .learn-recite-peek:not([hidden]),
   .learn-mode-nav .learn-type-check:not([hidden]),
   .learn-mode-nav .learn-test-submit:not([hidden]) {
-    /* Same 52px / 12px pill as Next, so mode-owned CTAs match the reference.
+    /* Secondaries give way first: they shrink and ellipsize, Next does not.
        display:block + line-height is what makes text-overflow work on a
        button while still centring the label vertically. */
     display: block;
     flex: 0 1 auto;
     min-width: 0;
-    height: 52px;
+    height: 48px;
     margin: 0;
     padding: 0 14px;
     border: 1px solid var(--control-border);
@@ -3378,7 +4171,7 @@
     color: var(--ink);
     font: inherit;
     font-size: 14px;
-    line-height: 50px;
+    line-height: 46px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -3398,19 +4191,12 @@
   .learn-mode-nav.is-recording .learn-recite-toggle,
   .learn-mode-nav.is-recording .learn-letters-speak {
     flex: 2 1 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 52px;
     border-color: var(--accent);
-    border-radius: var(--rc-radius-button);
     background: var(--accent);
     color: var(--on-accent);
-    font-size: 15.5px;
-    font-weight: 600;
-    line-height: normal;
+    font-size: 15px;
+    font-weight: 500;
     text-align: center;
-    box-shadow: var(--rc-press-depth);
   }
 
   .rec-dot {
@@ -3427,19 +4213,12 @@
      primary and Next steps aside — see is-solo-cta below. */
   .learn-mode-nav.is-solo-cta .learn-type-check:not([hidden]) {
     flex: 2 1 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 52px;
     border-color: var(--accent);
-    border-radius: var(--rc-radius-button);
     background: var(--accent);
     color: var(--on-accent);
-    font-size: 15.5px;
-    font-weight: 600;
-    line-height: normal;
+    font-size: 15px;
+    font-weight: 500;
     text-align: center;
-    box-shadow: var(--rc-press-depth);
   }
 
   .learn-mode-nav.is-solo-cta .learn-type-check:disabled {
@@ -3454,19 +4233,12 @@
      The is-recording rule above already paints the Stop state. */
   .learn-mode-nav.is-solo-cta .learn-letters-speak:not([hidden]) {
     flex: 2 1 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 52px;
     border-color: var(--accent);
-    border-radius: var(--rc-radius-button);
     background: var(--accent);
     color: var(--on-accent);
-    font-size: 15.5px;
-    font-weight: 600;
-    line-height: normal;
+    font-size: 15px;
+    font-weight: 500;
     text-align: center;
-    box-shadow: var(--rc-press-depth);
   }
 
   .learn-mode-nav.is-solo-cta .learn-letters-speak:disabled {
@@ -3480,19 +4252,12 @@
   .learn-mode-nav.is-solo-cta .learn-recite-toggle:not([hidden]),
   .learn-mode-nav.is-solo-cta .learn-test-submit:not([hidden]) {
     flex: 2 1 auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 52px;
     border-color: var(--accent);
-    border-radius: var(--rc-radius-button);
     background: var(--accent);
     color: var(--on-accent);
-    font-size: 15.5px;
-    font-weight: 600;
-    line-height: normal;
+    font-size: 15px;
+    font-weight: 500;
     text-align: center;
-    box-shadow: var(--rc-press-depth);
   }
 
   .learn-mode-nav.is-solo-cta .learn-recite-toggle:disabled,
@@ -3583,6 +4348,14 @@
     order: 3;
   }
 
+  /* Density is a setting for the exercise, so it sits above the count of how
+     the exercise is going — the design's order. It has to be stated here:
+     the blanket rule above puts every panel child on order 3, and a rule
+     elsewhere in the file loses to it however specific it is. */
+  .learn[data-mobile-view="mode"] .learn-body > .learn-cloze-density {
+    order: 0;
+  }
+
   .learn[data-mobile-view="mode"] .learn-panel-read .learn-hint {
     order: 1;
     margin: 0 0 20px;
@@ -3648,39 +4421,10 @@
     padding-bottom: 24px;
   }
 
-  /* 12 · Test — the desktop fieldset frame collides with its own legend at
-     this width; the phone reads the question, then the options, as rows. */
-  body[data-mscreen="learn"] .learn-test-q {
-    margin: 0 0 22px;
-    padding: 0;
-    border: 0;
-  }
-
-  body[data-mscreen="learn"] .learn-test-legend {
-    padding: 0;
-    margin-bottom: 16px;
-    font-family: var(--font-display);
-    font-size: 19px;
-    font-weight: 400;
-    line-height: 1.5;
-    text-wrap: pretty;
-  }
-
-  body[data-mscreen="learn"] .learn-test-opt {
-    display: flex;
-    align-items: flex-start;
-    gap: 11px;
-    margin-bottom: 9px;
-    padding: 13px 12px;
-    border: 1px solid var(--hairline);
-    font-size: 15px;
-    line-height: 1.45;
-  }
-
-  body[data-mscreen="learn"] .learn-test-opt:has(input:checked) {
-    border-color: var(--ink);
-    background: var(--wash);
-  }
+  /* 12 · Test — the question, then the options as cards. The card states
+     live with the rest of the Test block above; this used to repeat them
+     here, and being later in the file it quietly won, so a wrong answer
+     kept reading as merely "picked". */
 
   .learn-read-controls {
     margin-top: 20px;
@@ -4381,6 +5125,45 @@
     height: 52px;
     border-radius: var(--rc-radius-button);
     box-shadow: var(--rc-press-depth);
+    font-size: 15.5px;
+    font-weight: 600;
+  }
+
+  body[data-mscreen="welcome"] .welcome-form .btn-ghost,
+  body[data-mscreen="gate"] .guest-gate .btn-ghost,
+  body[data-mscreen="planintro"] .welcome-panel .btn-ghost,
+  body[data-mscreen="purchase"] .purchase-actions .btn-ghost,
+  body[data-mscreen="signedout"] .system-state .btn-ghost,
+  body[data-mscreen="expired"] .system-state .btn-ghost {
+    height: 48px;
+    box-shadow: none;
+    font-size: 14px;
+    font-weight: 400;
+  }
+
+  /* Plan intro · diff.md item 6: full-width tracks, stacked actions. */
+  body[data-mscreen="planintro"] .segmented {
+    display: flex;
+    width: 100%;
+    border-radius: 11px;
+  }
+
+  body[data-mscreen="planintro"] .segmented-btn {
+    flex: 1;
+    gap: 5px;
+    padding: 0 8px;
+    font-size: 14px;
+  }
+
+  body[data-mscreen="planintro"] .plan-intro-target .segmented-btn {
+    height: 32px;
+    font-size: 12.5px;
+  }
+
+  body[data-mscreen="planintro"] .welcome-panel .btn.plan-intro-later {
+    height: 48px;
+    font-size: 14px;
+    box-shadow: none;
   }
 
   body[data-mscreen="browse"] .part-card,
@@ -4400,6 +5183,85 @@
     border-radius: var(--rc-radius-sheet) var(--rc-radius-sheet) 0 0;
   }
 
+  /* Reset and Delete confirm as bottom sheets. Still a <dialog>, so the focus
+     trap, Escape and the backdrop stay the element's job — only where it sits
+     and how it arrives are ours. */
+  .rc-confirm-sheet {
+    position: fixed;
+    top: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    max-width: none;
+    max-height: 88vh;
+    margin: 0;
+    border: 0;
+    background: none;
+    overflow: visible;
+  }
+
+  .rc-confirm-sheet .rc-confirm-card {
+    max-height: 88vh;
+    padding: 18px 18px calc(30px + env(safe-area-inset-bottom, 0));
+    overflow-y: auto;
+    background: var(--rc-paper);
+    box-shadow: 0 -10px 40px rgba(20, 20, 20, 0.18);
+    animation: rcSheet 0.28s ease both;
+  }
+
+  .rc-confirm-sheet .rc-confirm-handle {
+    display: block;
+    width: 36px;
+    height: 4px;
+    margin: 0 auto 14px;
+    border-radius: 2px;
+    background: var(--rc-hairline);
+  }
+
+  .rc-confirm-sheet .rc-confirm-title {
+    margin: 0 0 2px;
+    font-size: 19px;
+  }
+
+  .rc-confirm-sheet .rc-confirm-actions {
+    display: grid;
+    gap: 8px;
+  }
+
+  /* Sheet CTAs to the design's spec. This screen is not in the per-screen
+     .btn list further up, so without these the base square 16px/700 button
+     shows through. Tone buttons take the shallower 0.22 shadow the design
+     gives them, not the ink primary's 0.28. */
+  .rc-confirm-sheet .rc-confirm-actions .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 50px;
+    border-radius: var(--rc-radius-button);
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  .rc-confirm-sheet .rc-confirm-actions .btn:not(.btn-ghost) {
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.22);
+  }
+
+  .rc-confirm-sheet .rc-confirm-actions .btn:not(.btn-ghost):active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.22);
+  }
+
+  .rc-confirm-sheet .rc-confirm-actions .btn-ghost {
+    height: 46px;
+    border: 1px solid var(--rc-hairline);
+    background: var(--rc-paper);
+    font-size: 14px;
+  }
+
+  /* Floating confirm, lifted off the bottom edge so it reads as a decision
+     rather than the sheets the session uses for progress. */
   .revision-exit-modal {
     margin: auto 18px 18vh;
     width: calc(100% - 36px);
@@ -4419,13 +5281,201 @@
   .revision-exit-modal .guest-modal-actions .btn-ghost {
     box-shadow: none;
   }
+
+  /* ── Laws → Bare Acts → section reader ──────────────────────────────────
+     A whole statute, read the way the Constitution is: chapter list, then one
+     section at a time. Reference only — nothing here records progress, so the
+     22px circle on a section row is a marker, not a state. */
+
+  body[data-mscreen="laws"] .laws-group-label {
+    margin: 16px 2px 8px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mid);
+  }
+
+  body[data-mscreen="laws"] .laws-bare-list {
+    display: block;
+  }
+
+  body[data-mscreen="laws"] .laws-bare-card {
+    display: block;
+    padding: 15px 16px 14px;
+    margin-bottom: 10px;
+    background: var(--rc-paper);
+    border: 1px solid var(--rc-hairline);
+    border-radius: var(--rc-radius-card);
+  }
+
+  body[data-mscreen="laws"] .laws-bare-head {
+    margin-bottom: 5px;
+  }
+
+  body[data-mscreen="laws"] .laws-bare-name {
+    font-size: 17px;
+    line-height: 1.3;
+    text-wrap: pretty;
+  }
+
+  body[data-mscreen="laws"] .laws-bare-meta {
+    font-size: 12.5px;
+  }
+
+  /* One card per row, matching the Bare Act above them. The desktop grid puts
+     two per row, which on a phone breaks Act names across four lines. */
+  body[data-mscreen="laws"] .laws-grid {
+    display: block;
+  }
+
+  body[data-mscreen="laws"] .laws-card {
+    display: block;
+    padding: 15px 16px;
+    margin-bottom: 10px;
+  }
+
+  body[data-mscreen="laws"] .laws-card-name {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  body[data-mscreen="laws"] .laws-card-meta {
+    margin-top: 3px;
+    font-size: 12px;
+    color: var(--mid);
+  }
+
+  body[data-mscreen="laws"] .law-practice-note {
+    margin: 14px 2px 0;
+    font-size: 11.5px;
+    line-height: 1.6;
+    color: var(--faint);
+    text-wrap: pretty;
+  }
+
+  /* Chapter list. The Act header keeps the page wash; the chapters below it
+     are on paper, so the header reads as a lid rather than as a first row. */
+  body[data-mscreen="bareact"] .page-wrap,
+  body[data-mscreen="bareact"] .sheet,
+  body[data-mscreen="bareactsection"] .page-wrap,
+  body[data-mscreen="bareactsection"] .sheet {
+    background: var(--rc-paper);
+  }
+
+  body[data-mscreen="bareact"] .panel {
+    padding: 0 0 calc(var(--m-tabbar) + 28px);
+  }
+
+  body[data-mscreen="bareact"] .bareact-head {
+    padding: 2px var(--m-gutter) 14px;
+    background: var(--rc-page);
+    border-bottom: 1px solid var(--rc-hairline);
+  }
+
+  body[data-mscreen="bareact"] .bareact-title {
+    font-size: 19px;
+    text-wrap: pretty;
+  }
+
+  body[data-mscreen="bareact"] .bareact-chapter-row {
+    padding: 10px var(--m-gutter);
+    background: var(--rc-wash);
+  }
+
+  body[data-mscreen="bareact"] .bareact-chapter-name {
+    font-size: 14.5px;
+  }
+
+  body[data-mscreen="bareact"] .bareact-chapter-range {
+    font-size: 11.5px;
+  }
+
+  body[data-mscreen="bareact"] .bareact-section-row {
+    padding: 11px var(--m-gutter);
+    background: var(--rc-paper);
+  }
+
+  body[data-mscreen="bareact"] .bareact-section-row:active {
+    background: var(--rc-wash);
+  }
+
+  body[data-mscreen="bareact"] .bareact-section-name {
+    font-size: 14px;
+  }
+
+  /* Section reader */
+  body[data-mscreen="bareactsection"] .bareact-reader-title {
+    font-size: 23px;
+  }
+
+  body[data-mscreen="bareactsection"] .bareact-reader-sub {
+    margin-bottom: 14px;
+    font-size: 13.5px;
+    text-wrap: pretty;
+  }
+
+  body[data-mscreen="bareactsection"] .bareact-row-text {
+    font-size: 13.5px;
+  }
+
+  body[data-mscreen="bareactsection"] .bareact-row.is-aside .bareact-row-text {
+    font-size: 13px;
+  }
+
+  body[data-mscreen="bareactsection"] .bareact-table {
+    font-size: 12.5px;
+  }
+
+  body[data-mscreen="bareactsection"] .bareact-table th,
+  body[data-mscreen="bareactsection"] .bareact-table td {
+    padding: 8px 11px;
+  }
+
+  body[data-mscreen="bareactsection"] .bareact-nav-num {
+    font-size: 13px;
+  }
+
+  /* The card is sticky inside the reading column, but the tab bar is fixed over
+     the bottom 56px of the viewport — so the sticky stop has to clear it. */
+  .bareact-fn-card {
+    bottom: calc(var(--m-tabbar) + 8px);
+  }
+
+  /* The Schedule: 162 rows of four columns, sized to fit 375px rather than pan. */
+  body[data-mscreen="bareactschedule"] .page-wrap,
+  body[data-mscreen="bareactschedule"] .sheet {
+    background: var(--rc-paper);
+  }
+
+  body[data-mscreen="bareactschedule"] .bareact-reader-title {
+    font-size: 23px;
+    margin-bottom: 14px;
+  }
+
+  body[data-mscreen="bareact"] .bareact-schedule-row {
+    padding: 10px var(--m-gutter);
+    background: var(--rc-wash);
+  }
+
+  body[data-mscreen="bareact"] .bareact-schedule-row:active {
+    background: var(--rc-page);
+  }
+
+  body[data-mscreen="bareact"] .bareact-schedule-name {
+    font-size: 14.5px;
+  }
 }
 
 @media (max-width: 560px) and (prefers-reduced-motion: reduce) {
   .rc-rise,
   .rc-pop,
   .rc-sheet,
-  .rc-pulse {
+  .rc-confirm-card,
+  .rc-pulse,
+  .learn-recite-bar {
     animation: none !important;
   }
 }
@@ -4436,7 +5486,8 @@
   html:not(.rtc-anim) .rc-rise,
   html:not(.rtc-anim) .rc-pop,
   html:not(.rtc-anim) .rc-sheet,
-  html:not(.rtc-anim) .rc-pulse {
+  html:not(.rtc-anim) .rc-pulse,
+  html:not(.rtc-anim) .learn-recite-bar {
     animation: none !important;
   }
 }
@@ -4445,7 +5496,6 @@
 @media (min-width: 561px) {
   .learn-mode-bar,
   .learn-mode-nav,
-  .learn-mode-heading,
   .learn-deck-head,
   .learn-deck,
   .learn-deck-dots,
@@ -4506,4 +5556,5 @@
   .dash-avatar-link {
     display: contents;
   }
+
 }

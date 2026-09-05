@@ -9,11 +9,37 @@
 <meta property="og:title" content="Recall the C — Learn the Constitution of India">
 <meta property="og:description" content="Recall the C is an educational platform for learning, recalling and revising the Constitution of India through structured learning methods, visual explanations, progress tracking and spaced repetition.">
 <link rel="icon" type="image/png" href="/static/main_logo.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<script src="/static/brain-path.js"></script>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,500&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="/static/brain-path.js?v=brain1"></script>
+<link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,500&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+  /* ── Phone launch ───────────────────────────────────────────────────────
+     The desktop landing is a 600vh pinned-scroll corridor: on a phone it is
+     the wrong instrument. Below 560px it stands down entirely and this takes
+     its place — two doors, Constitution or Laws. Width-driven, every visit;
+     there is no "first open" state stored anywhere. */
+  .rc-launch{display:none}
+  @keyframes rcPop{0%{transform:scale(.5);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+  @keyframes rcRise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  @media (max-width:560px){
+    .rc-landing-full{display:none}
+    .rc-launch{display:block;position:fixed;inset:0;background:#141414;color:#f2f2f0;overflow:hidden}
+    .rc-launch-center{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:0 40px 60px;text-align:center}
+    .rc-launch-mark{display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;border:2px solid #f2f2f0;font-family:"Abril Fatface",Georgia,serif;font-size:32px;font-weight:400;line-height:1;margin-bottom:22px;animation:rcPop .5s ease both}
+    .rc-launch-name{margin:0 0 6px;font-family:Fraunces,Georgia,serif;font-size:27px;font-weight:500;animation:rcRise .4s ease .15s both}
+    .rc-launch-tag{margin:0;font-size:13.5px;color:#9a9a9a;animation:rcRise .4s ease .25s both}
+    .rc-launch-actions{position:absolute;left:0;right:0;bottom:calc(56px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:9px;padding:0 24px;animation:rcRise .4s ease .5s both}
+    .rc-launch-cta{display:flex;align-items:center;justify-content:center;height:52px;border-radius:12px;background:#f2f2f0;color:#141414;font-size:15px;font-weight:600}
+    .rc-launch-cta:hover,.rc-launch-cta:active{color:#141414}
+    .rc-launch-cta.is-ghost{height:48px;border:1px solid #4a4a48;background:transparent;color:#f2f2f0;font-size:14px;font-weight:400}
+    .rc-launch-cta.is-ghost:hover,.rc-launch-cta.is-ghost:active{color:#f2f2f0}
+    .rc-launch-foot{position:absolute;left:0;right:0;bottom:calc(22px + env(safe-area-inset-bottom,0px));margin:0;text-align:center;font-size:11px;letter-spacing:.08em;color:#6f6f6d}
+  }
+  @media (max-width:560px) and (prefers-reduced-motion:reduce){
+    .rc-launch-mark,.rc-launch-name,.rc-launch-tag,.rc-launch-actions{animation:none}
+  }
   .j-ink:hover{background:#6E82C8;border-color:#6E82C8;color:#0b0b0b}
   .j-ghost:hover{border-color:#f4f1ea;color:#f4f1ea}
   [data-cloze]:hover{border-bottom-color:#6E82C8 !important}
@@ -179,7 +205,7 @@
 </style>
 </head>
 <body>
-<div style="width:100%;overflow-x:clip;background:#0b0b0b;position:relative">
+<div class="rc-landing-full" style="width:100%;overflow-x:clip;background:#0b0b0b;position:relative">
 
 <div data-progress-track="1" style="position:fixed;top:0;left:0;right:0;height:2px;background:rgba(244,241,234,0.1);z-index:80">
   <div data-progress-bar="1" style="height:2px;width:0;background:#6E82C8"></div>
@@ -459,6 +485,19 @@
 </div>
 
 
-<script src="/static/landing.js" defer></script>
+<section class="rc-launch">
+  <div class="rc-launch-center">
+    <span class="rc-launch-mark" aria-hidden="true">C</span>
+    <p class="rc-launch-name">Recall the C</p>
+    <p class="rc-launch-tag">The Constitution, remembered.</p>
+  </div>
+  <div class="rc-launch-actions">
+    <a class="rc-launch-cta" href="/browse">Explore the Constitution</a>
+    <a class="rc-launch-cta is-ghost" href="/laws">Explore Laws</a>
+  </div>
+  <p class="rc-launch-foot">BARE ACT · VERBATIM · DAY 1 · 3 · 7 · 15 · 30 · 60</p>
+</section>
+
+<script src="/static/landing.js?v=landing1" defer></script>
 </body>
 </html>

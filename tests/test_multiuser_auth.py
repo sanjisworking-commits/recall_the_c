@@ -389,4 +389,4 @@ def test_logout_clears_session(tmp_path: Path):
     assert out.headers["location"] == "/signed-out"
     gate = client.get("/dashboard")
     assert gate.status_code == 200
-    assert "Sign in to save your learning" in gate.text
+    assert "Sign in to save 3 Articles to Recall for free" in gate.text

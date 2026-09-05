@@ -123,7 +123,11 @@ def test_browse_index_phone_cards_match_redesign(tmp_path: Path):
     assert 'class="browse-reference"' in html
     assert 'href="/laws"' in html
     assert 'href="/tables"' in html
-    assert "Relevant laws" in html
+    # Assert the row's own copy, not just the string: the footer also links
+    # /laws, so a bare substring check passes even with the group missing.
+    row = html.split('class="browse-reference-card"', 1)[1].split("</div>", 1)[0]
+    assert '<span class="browse-reference-name">Laws</span>' in row
+    assert "Bare Acts and statutes mapped to Articles" in row
     css = client.get("/static/mobile.css").text
     card = css.split(".part-card {", 1)[1].split("}", 1)[0]
     assert "border-radius: var(--rc-radius-card)" in card
@@ -319,7 +323,7 @@ def test_mobile_assets_are_linked_once(tmp_path: Path):
     assert html.count("/static/mobile.js") == 1
 
 
-# ── Learn action bar (mode completing CTA → … → Done → quote) ────────────────
+# ── Learn action bar (Next → … → Done → quote) ───────────────────────────────
 
 
 def test_learn_page_renders_the_next_action_bar(tmp_path: Path):
@@ -328,46 +332,6 @@ def test_learn_page_renders_the_next_action_bar(tmp_path: Path):
     assert "learn-mode-nav" in html
     assert "data-mode-next" in html
     assert 'class="learn-mode-next"' in html
-
-
-def test_learn_mode_chrome_matches_the_read_reference(tmp_path: Path):
-    """Phone Read shows Step N of 6, READ · ARTICLE N, and First, read it once."""
-    client, _, _ = _client(tmp_path)
-    html = client.get("/learn/clause-1").text
-    assert "Step 1 of 6" in html
-    assert "data-mode-heading" in html
-    assert "data-mode-eyebrow" in html
-    assert "data-mode-headline" in html
-    assert "First, read it once." in html
-    assert "READ · ARTICLE" in html
-    assert 'data-article-number="' in html
-
-    js = client.get("/static/mobile.js").text
-    assert "function syncModeChrome" in js
-    assert 'nameEl.textContent = "Step " + step + " of " + total' in js
-    assert 'read: "First, read it once."' in js
-    assert 'cloze: "Fill the gaps."' in js
-
-
-def test_learn_mode_advance_ctas_use_first_person_copy(tmp_path: Path):
-    """The Read reference is 'I've read this →'; other completing CTAs
-    follow the same first-person + arrow voice instead of a generic Next."""
-    client, _, _ = _client(tmp_path)
-    js = client.get("/static/mobile.js").text
-    labels = js.split("var ADVANCE_LABELS = {", 1)[1].split("};", 1)[0]
-    assert '''read: "I've read this →"''' in labels
-    assert '''cloze: "I've filled the gaps →"''' in labels
-    assert '''letters: "I've heard this →"''' in labels
-    assert '''type: "I've typed this →"''' in labels
-    assert '''recite: "I've recited this →"''' in labels
-    assert '''test: "I've checked this →"''' in labels
-    sync = js.split("function syncNextButton", 1)[1].split("function goToMode", 1)[0]
-    assert "function advanceCopy" in sync
-    assert "btn.textContent = advanceCopy(mode)" in sync
-    assert "nextBtn.textContent = advanceCopy(mode)" in sync
-    # Generic Next is only the fallback, not the painted default.
-    assert 'btn.textContent = "Next →"' not in sync
-    assert 'nextBtn.textContent = "Next →"' not in sync
 
 
 def test_quiz_submit_is_bound_to_its_form_by_id(tmp_path: Path):
@@ -743,11 +707,9 @@ def test_type_bar_has_a_single_cta(tmp_path: Path):
     assert ".learn-mode-nav.is-solo-cta .learn-mode-next" in css
     solo = css.split(".learn-mode-nav.is-solo-cta .learn-type-check:not([hidden]) {", 1)[1]
     solo = solo.split("}", 1)[0]
-    # It is the primary now, not a ghost secondary — same 52px ink pill as Next.
+    # It is the primary now, not a ghost secondary.
     assert "background: var(--accent)" in solo
     assert "flex: 2 1 auto" in solo
-    assert "height: 52px" in solo
-    assert "border-radius: var(--rc-radius-button)" in solo
 
 
 def test_type_check_button_morphs_into_the_advance(tmp_path: Path):
@@ -922,7 +884,8 @@ def test_letters_speak_button_is_the_solo_cta(tmp_path: Path):
     assert "lettersAdvance" in sync
     # One shared tail paints every solo mode, so they cannot drift apart.
     assert "function paintAdvance" in sync
-    assert "function advanceCopy" in sync
+    # The advance label is one decision too: paintAdvance asks advanceCopy
+    # rather than hardcoding a string, so every solo mode says the same thing.
     assert "btn.textContent = advanceCopy(mode)" in sync
     assert "paintAdvance(lettersSpeak, lettersSpeak.dataset.lettersAdvance)" in sync
     assert "typeSolo || lettersSolo || reciteSolo || quizSolo" in sync
@@ -1002,14 +965,7 @@ def test_letters_solo_cta_has_primary_styling(tmp_path: Path):
     css = client.get("/static/mobile.css").text
     assert ".learn-mode-nav.is-solo-cta .learn-letters-speak:not([hidden])" in css
     assert ".learn-mode-nav.is-solo-cta .learn-letters-speak:disabled" in css
-    speak_primary = css.split(
-        ".learn-mode-nav.is-solo-cta .learn-letters-speak:not([hidden]) {", 1
-    )[1].split("}", 1)[0]
-    assert "height: 52px" in speak_primary
-    assert "border-radius: var(--rc-radius-button)" in speak_primary
-    assert "font-weight: 600" in speak_primary
-    # The slot now also carries the completing CTA / "Done", so it reserves
-    # the wider size.
+    # The slot now also carries "Next →"/"Done", so it reserves the wider size.
     speak_slot = css.split(".learn-mode-nav .learn-letters-speak {", 1)[1].split("}", 1)[0]
     assert "min-width: 10.5rem" in speak_slot
 
@@ -1080,24 +1036,33 @@ def test_letters_view_switch_is_centred_and_even(tmp_path: Path):
     assert "min-width: 5.5rem" in btn
 
 
-def test_phone_letters_surface_matches_landing_scaffold(tmp_path: Path):
-    """Landing §03 Letters is Fraunces + 0.24em initials, not mono.
-    Full text must drop the tracking so it reads like Read mode."""
+def test_phone_letters_scaffold_is_monospace_desktop_keeps_fraunces(tmp_path: Path):
+    """The phone scaffold follows the design: monospace, so the initials line
+    into columns and read as a shape. This supersedes the earlier landing-§03
+    match — the 2 Sep design specifies mono here, and only here. Desktop keeps
+    Fraunces, which the design does not cover. Full text drops the tracking in
+    both, so it reads like Read mode."""
     client, _, _ = _client(tmp_path)
     css = client.get("/static/mobile.css").text
     initials = css.split(
         'body[data-mscreen="learn"] .learn-letters-text.is-initials {', 1
     )[1].split("}", 1)[0]
-    assert "var(--font-display)" in initials
+    assert "monospace" in initials
+    assert "var(--font-display)" not in initials
     assert "letter-spacing: 0.24em" in initials
-    assert "font-weight: 600" in initials
-    assert "var(--font-mono)" not in initials
     full = css.split(
         'body[data-mscreen="learn"] .learn-letters-text.is-full {', 1
     )[1].split("}", 1)[0]
     assert "var(--font-display)" in full
     assert "letter-spacing: normal" in full
     assert "font-weight: 400" in full
+
+    desktop = client.get("/static/styles.css").text
+    desk_initials = desktop.split(".learn-letters-text.is-initials {", 1)[1].split(
+        "}", 1
+    )[0]
+    assert "var(--font-display)" in desk_initials
+    assert "font-weight: 600" in desk_initials
 
 
 def test_letters_view_switch_labels(tmp_path: Path):
@@ -1112,6 +1077,46 @@ def test_letters_view_switch_labels(tmp_path: Path):
 # --------------------------------------------------------------------------- #
 # The "?" now means help                                                       #
 # --------------------------------------------------------------------------- #
+
+
+def test_test_mode_renders_option_cards_and_a_position_line(tmp_path: Path):
+    """diff.md item 7: options are cards that can carry a verdict, and the
+    lede says which question you are on. The radio stays in the markup — it is
+    still the control — but the card is what is drawn."""
+    client, _, _ = _client(tmp_path)
+    html = client.get("/learn/clause-1?mode=test").text
+
+    assert "data-quiz-position" in html
+    assert 'class="learn-test-opt-input"' in html
+    assert 'class="learn-test-opt-text"' in html
+    assert 'class="learn-test-opt-mark"' in html
+    # The question number lives in the position line now, not in the legend.
+    assert 'class="learn-test-legend">1.' not in html
+
+    css = client.get("/static/mobile.css").text
+    for rule in (".learn-test-opt.is-picked", ".learn-test-opt.is-correct",
+                 ".learn-test-opt.is-wrong"):
+        assert rule in css, rule
+
+    js = client.get("/static/app.js").text
+    # One at a time in the UI, still one POST to grade the set.
+    assert "function showQuestion(" in js
+    assert 'phase = "review"' in js
+
+
+def test_type_check_marks_the_mirror_as_a_diff(tmp_path: Path):
+    """diff.md item 7: checking re-reads the attempt as a per-word diff."""
+    client, _, _ = _client(tmp_path)
+    client.get("/learn/clause-1?mode=type")
+    css = client.get("/static/mobile.css").text
+    assert ".learn-type-mirror.is-checked .learn-type-mirror-word" in css
+    assert "@keyframes rcWordIn" in css
+
+    desktop = client.get("/static/styles.css").text
+    assert ".learn-type-mirror.is-checked .learn-type-mirror-word.is-correct" in desktop
+
+    js = client.get("/static/app.js").text
+    assert 'mirrorEl.classList.add("is-checked")' in js
 
 
 def test_question_mark_opens_mode_help_not_the_article(tmp_path: Path):
@@ -1339,18 +1344,33 @@ def test_today_goal_ring_centers_the_fraction(tmp_path: Path):
 
 
 def test_today_current_path_node_is_one_card(tmp_path: Path):
-    """Copy + Start must share a card. A 12px row-gap showed page wash
-    between the title block and the button, which read as an empty slot."""
+    """Copy + Start must share a card.
+
+    This used to be held together by a two-cell grid whose halves each drew
+    part of the border — a card with the top rounded and no bottom, over a
+    button with the bottom rounded and no top. Page wash still showed across
+    the join. The CTA lives inside the copy now, so one box draws the whole
+    card and there is no seam to keep closed.
+    """
     client, _, _ = _client(tmp_path)
     css = client.get("/static/mobile.css").text
     path = css.split('body[data-mscreen="today"] .rc-path {', 1)[1].split("}", 1)[0]
     assert "margin: 0" in path
-    assert "margin: 14px 0 0" not in path
-    current = css.split(
-        'body[data-mscreen="today"] .rc-path-node.is-current {', 1
+
+    copy = css.split(
+        'body[data-mscreen="today"] .rc-path-node.is-current .rc-path-copy {', 1
     )[1].split("}", 1)[0]
-    assert "gap: 0 14px" in current
-    assert "gap: 12px 14px" not in current
+    assert "border: 1.5px solid var(--rc-ink)" in copy
+    assert "border-radius: var(--rc-radius-card)" in copy
+    # The halves that used to split the border are gone.
+    assert "border-bottom: 0" not in copy
+
+    cta = css.split(
+        'body[data-mscreen="today"] .rc-path-node.is-current .rc-path-cta {', 1
+    )[1].split("}", 1)[0]
+    assert "border-top: 0" not in cta
+    assert "background-clip: content-box" not in cta
+
 
 
 def test_phone_tables_frame_scrolls_horizontally(tmp_path: Path):
@@ -1368,3 +1388,66 @@ def test_phone_tables_frame_scrolls_horizontally(tmp_path: Path):
     assert "Habeas corpus" in html
     assert 'class="tables-frame"' in html
     assert "What it does" in html
+
+
+def test_cloze_completion_shows_the_feedback_sheet(tmp_path: Path):
+    """diff.md item 9: finishing a mode reports how it went, as a sheet.
+
+    Cloze had no completion moment at all — the last blank simply filled in
+    and the action bar sat there unchanged. The sheet carries the only CTA
+    while it is up, so "Continue" is never competing with the bar beneath it.
+    """
+    client, _, _ = _client(tmp_path)
+    html = client.get("/learn/clause-1?mode=cloze").text
+    assert "data-mode-feedback" in html
+    assert "data-feedback-msg" in html
+    assert "data-feedback-sub" in html
+    assert 'data-feedback-go>Continue' in html
+
+    css = client.get("/static/mobile.css").text
+    sheet = css.split(
+        'body[data-mscreen="learn"] .learn-feedback {', 1
+    )[1].split("}", 1)[0]
+    assert "position: fixed" in sheet
+    assert "bottom: 0" in sheet
+    assert "var(--rc-teal-tint)" in sheet
+    assert "var(--rc-radius-sheet)" in sheet
+    # Retry tone, so a poor result is not congratulated in teal.
+    assert 'body[data-mscreen="learn"] .learn-feedback.is-retry' in css
+    # One CTA at a time.
+    assert (
+        'body[data-mscreen="learn"] .learn.is-feedback-open .learn-mode-nav'
+        in css
+    )
+
+    js = client.get("/static/app.js").text
+    assert "You remembered it." in js
+    assert "recalled" in js
+    # Leaving the mode closes it, however the mode was left.
+    assert 'attributeFilter: ["data-mode"]' in js
+
+
+def test_advance_says_what_you_just_did(tmp_path: Path):
+    """The advance names the act, not the direction.
+
+    Only Read's label is the design file's own ("I’ve read this →"); the other
+    five follow its shape so a session reads as a sequence of things done
+    rather than a row of identical Nexts. That makes the other five a copy
+    decision rather than a design-sync one.
+    """
+    client, _, _ = _client(tmp_path)
+    js = client.get("/static/mobile.js").text
+    labels = js.split("var ADVANCE_LABELS = {", 1)[1].split("};", 1)[0]
+    for mode in ("read", "cloze", "letters", "type", "recite", "test"):
+        assert f"{mode}:" in labels, mode
+    # Typographic apostrophe, as the design file writes it.
+    assert "I\\u2019ve read this \\u2192" in labels
+    assert "I've" not in labels
+
+    # Letters' "Just read" view never had a speak pass, so it must not claim
+    # the learner heard anything.
+    copy = js.split("function advanceCopy", 1)[1].split("function paintAdvance", 1)[0]
+    assert "lettersSpeak.hidden" in copy
+    assert "ADVANCE_LABELS.read" in copy
+    # Anything unmapped still falls back to the neutral label.
+    assert "Next" in copy
