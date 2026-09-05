@@ -115,19 +115,26 @@ def test_browse_index_links_every_part_to_its_page(tmp_path: Path):
 
 
 def test_browse_index_phone_cards_match_redesign(tmp_path: Path):
-    """Phone Browse is Part cards + Reference, not the desktop article grid."""
+    """Phone Browse is Part cards + the Laws/Tables row, not the article grid."""
     client, _, _ = _client(tmp_path)
     html = client.get("/browse").text
     assert 'class="browse-part-rail"' in html
     assert "part-card-track" in html
-    assert 'class="browse-reference"' in html
+    assert 'class="browse-resource-grid"' in html
+    assert "browse-reference" not in html
     assert 'href="/laws"' in html
     assert 'href="/tables"' in html
-    # Assert the row's own copy, not just the string: the footer also links
-    # /laws, so a bare substring check passes even with the group missing.
-    row = html.split('class="browse-reference-card"', 1)[1].split("</div>", 1)[0]
-    assert '<span class="browse-reference-name">Laws</span>' in row
-    assert "Bare Acts and statutes mapped to Articles" in row
+    assert 'class="browse-constitution-label"' in html
+    row = html.split('class="browse-resource-grid"', 1)[1].split(
+        "browse-constitution-label", 1
+    )[0]
+    assert '<span class="browse-resource-name">Laws</span>' in row
+    assert "Bare Acts &amp; statutes" in row
+    assert '<span class="browse-resource-name">Tables</span>' in row
+    assert "Schedules, Parts, writs" in row
+    base = client.get("/static/styles.css").text
+    grid = base.split(".browse-resource-grid {", 1)[1].split("}", 1)[0]
+    assert "display: grid" in grid
     css = client.get("/static/mobile.css").text
     card = css.split(".part-card {", 1)[1].split("}", 1)[0]
     assert "border-radius: var(--rc-radius-card)" in card

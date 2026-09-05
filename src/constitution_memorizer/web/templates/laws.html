@@ -1,46 +1,68 @@
 {% extends "base.html" %}
-{% block title %}Relevant laws · {{ app_name|default('Recall the C') }}{% endblock %}
+{% block title %}Laws · {{ app_name|default('Recall the C') }}{% endblock %}
 {% block mobile_screen %}laws{% endblock %}
 {% block content %}
-<section class="panel laws">
-  <div class="mobile-topbar">
+{% set known_subjects = subjects | map(attribute='id') | list %}
+{% set active_subject = initial_subject if initial_subject in known_subjects else '' %}
+<section
+  class="panel laws"
+  data-laws-index
+  data-initial-q="{{ initial_q|e }}"
+  data-initial-subject="{{ initial_subject|e }}"
+>
+  <div class="laws-index-head">
     <a class="mobile-back" href="/browse">← Browse</a>
+    <h1 class="display laws-index-title">Laws</h1>
+    <button
+      type="button"
+      class="mobile-icon-btn"
+      data-laws-search-toggle
+      aria-expanded="{{ 'true' if initial_q else 'false' }}"
+      aria-controls="laws-q"
+      aria-label="Search"
+    >
+      <svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"></circle><path d="M12.6 12.6 17 17"></path></svg>
+    </button>
   </div>
-  <h1 class="display">Laws</h1>
-  <p class="lede">Bare Acts to read in full, and statutes whose key clauses map to Articles you revise.</p>
+  <div class="laws-search" data-laws-search{% if not initial_q %} hidden{% endif %}>
+    <label class="visually-hidden" for="laws-q">Search laws</label>
+    <input
+      id="laws-q"
+      class="laws-search-input"
+      type="search"
+      name="q"
+      value="{{ initial_q|e }}"
+      autocomplete="off"
+      enterkeyhint="search"
+    >
+  </div>
 
-  {% if bare_acts %}
-  <p class="laws-group-label">Bare Acts</p>
-  <div class="laws-bare-list" role="list">
-    {% for act in bare_acts %}
-    <a class="laws-bare-card" href="/laws/{{ act.slug }}" role="listitem">
-      <span class="laws-bare-head">
-        <span class="laws-bare-tag">Bare Act</span>
-        <span class="laws-bare-chevron" aria-hidden="true">›</span>
+  <div class="laws-chip-strip" role="group" aria-label="Filter by subject">
+    <button type="button" class="laws-chip" data-laws-chip="" aria-pressed="{{ 'true' if not active_subject else 'false' }}">All</button>
+    {% for subject in subjects %}
+    <button type="button" class="laws-chip" data-laws-chip="{{ subject.id }}" aria-pressed="{{ 'true' if subject.id == active_subject else 'false' }}">{{ subject.label }}</button>
+    {% endfor %}
+  </div>
+
+  <div class="laws-catalog" data-laws-catalog role="list">
+    {% for law in laws %}
+    <a
+      class="laws-index-card"
+      href="{{ law.href }}"
+      role="listitem"
+      data-law-id="{{ law.id }}"
+      data-subjects="{{ law.subjects | join(' ') }}"
+      data-search="{{ law.search_blob }}"
+    >
+      <span class="laws-index-head-row">
+        <span class="laws-index-tag">{{ law.tag_line }}</span>
+        <span class="laws-index-chevron" aria-hidden="true">›</span>
       </span>
-      <span class="laws-bare-name">{{ act.title }}</span>
-      <span class="laws-bare-meta">{{ act.meta_label }}</span>
+      <span class="laws-index-name">{{ law.title }}</span>
+      <span class="laws-index-meta">{{ law.scope_label }}</span>
     </a>
     {% endfor %}
   </div>
-  {% endif %}
-
-  {% if acts %}
-  <p class="laws-group-label">Mapped to Articles</p>
-  <div class="browse-article-grid laws-grid" role="list">
-    {% for act in acts %}
-    <a class="browse-article-card is-tracked laws-card" href="/laws/{{ act.id }}" role="listitem">
-      <span class="laws-card-name">{{ act.name }}</span>
-      <span class="laws-card-meta">{{ act.year }} · {{ act.article_labels }}</span>
-    </a>
-    {% endfor %}
-  </div>
-  {% elif not bare_acts %}
-  <p class="empty">No laws seeded yet.</p>
-  {% endif %}
-
-  <p class="law-practice-note" role="note">
-    Reference-only in this pass — Learn practice for law clauses comes later.
-  </p>
+  <p class="laws-empty" data-laws-empty hidden>No laws found</p>
 </section>
 {% endblock %}
