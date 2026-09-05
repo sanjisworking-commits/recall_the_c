@@ -305,10 +305,9 @@ def test_the_chapter_list_and_laws_card(tmp_path: Path):
     assert "Of Offences Affecting the Human Body" in chapters  # title-cased
     assert "bareact-schedule-row" not in chapters  # BNS has no schedule
     laws = client.get("/laws").text
-    assert 'href="/laws/bns"' in laws
-    assert "20 Chapters · Sections 1–358" in laws
-    # NDPS is listed first: registry order, and it shipped first.
-    assert laws.index('href="/laws/ndps"') < laws.index('href="/laws/bns"')
+    # BNS has a reader, but it is not on the live catalogue until seeded.
+    assert 'href="/laws/bns"' not in laws
+    assert 'href="/laws/ndps"' in laws
 
 
 def test_bns_is_free_to_read_and_records_nothing(tmp_path: Path):

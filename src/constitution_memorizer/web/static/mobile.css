@@ -1666,61 +1666,43 @@
     text-wrap: pretty;
   }
 
-  .browse-reference {
-    margin: 16px 0 8px;
+  .browse-resource-grid {
+    gap: 8px;
+    margin: 0 0 16px;
   }
 
-  .browse-reference-label {
-    margin: 0 2px 8px;
-    font-size: 10.5px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--mid);
-  }
-
-  .browse-reference-card {
-    overflow: hidden;
+  .browse-resource-card {
+    min-height: 54px;
+    padding: 10px 12px;
+    background: var(--rc-paper);
     border: 1px solid var(--rc-hairline);
     border-radius: var(--rc-radius-card);
-    background: var(--rc-paper);
   }
 
-  .browse-reference-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    min-height: 54px;
-    padding: 8px 16px;
-    color: var(--rc-ink);
-    text-decoration: none;
+  .browse-resource-card:active {
+    transform: translateY(1px);
   }
 
-  .browse-reference-row + .browse-reference-row {
-    border-top: 1px solid var(--page);
-  }
-
-  .browse-reference-copy {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .browse-reference-name {
-    display: block;
+  .browse-resource-name {
     font-size: 14px;
     font-weight: 500;
   }
 
-  .browse-reference-desc {
-    display: block;
+  .browse-resource-desc {
     margin-top: 1px;
     font-size: 11.5px;
     color: var(--mid);
   }
 
-  .browse-reference-chevron {
+  .browse-resource-chevron {
     font-size: 13px;
     color: var(--faint);
+  }
+
+  .browse-constitution-label {
+    margin: 4px 2px 8px;
+    font-size: 10.5px;
+    color: var(--mid);
   }
 
   /* ══ 03 / 16 / 18 · Part — Articles ════════════════════════════════════ */
@@ -5083,7 +5065,7 @@
     font-weight: 500;
   }
 
-  body[data-mscreen="laws"] .laws-card,
+  body[data-mscreen="laws"] .laws-index-card,
   body[data-mscreen="lawdetail"] .law-clause-row,
   body[data-mscreen="welcome"] .welcome-form,
   body[data-mscreen="gate"] .guest-empty,
@@ -5167,7 +5149,7 @@
   }
 
   body[data-mscreen="browse"] .part-card,
-  body[data-mscreen="browse"] .browse-reference-card,
+  body[data-mscreen="browse"] .browse-resource-card,
   body[data-mscreen="browse"] .guest-strip,
   body[data-mscreen="browse"] .browse-access-summary,
   body[data-mscreen="part"] .part-row,
@@ -5282,78 +5264,47 @@
     box-shadow: none;
   }
 
-  /* ── Laws → Bare Acts → section reader ──────────────────────────────────
-     A whole statute, read the way the Constitution is: chapter list, then one
-     section at a time. Reference only — nothing here records progress, so the
-     22px circle on a section row is a marker, not a state. */
+  /* ── Laws index — catalogue cards, chips, expandable search ─────────── */
 
-  body[data-mscreen="laws"] .laws-group-label {
-    margin: 16px 2px 8px;
-    font-size: 10.5px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--mid);
+  body[data-mscreen="laws"] .laws-index-head {
+    margin: 0 0 8px;
   }
 
-  body[data-mscreen="laws"] .laws-bare-list {
-    display: block;
+  body[data-mscreen="laws"] .laws-index-title {
+    font-size: 23px;
+    font-weight: 500;
   }
 
-  body[data-mscreen="laws"] .laws-bare-card {
-    display: block;
+  body[data-mscreen="laws"] .laws-chip-strip {
+    margin: 0 calc(-1 * var(--m-gutter)) 14px;
+    padding: 0 var(--m-gutter);
+  }
+
+  body[data-mscreen="laws"] .laws-index-card {
     padding: 15px 16px 14px;
-    margin-bottom: 10px;
     background: var(--rc-paper);
     border: 1px solid var(--rc-hairline);
     border-radius: var(--rc-radius-card);
   }
 
-  body[data-mscreen="laws"] .laws-bare-head {
-    margin-bottom: 5px;
+  body[data-mscreen="laws"] .laws-index-card:active {
+    transform: translateY(1px);
   }
 
-  body[data-mscreen="laws"] .laws-bare-name {
+  body[data-mscreen="laws"] .laws-index-name {
     font-size: 17px;
     line-height: 1.3;
     text-wrap: pretty;
   }
 
-  body[data-mscreen="laws"] .laws-bare-meta {
+  body[data-mscreen="laws"] .laws-index-meta {
     font-size: 12.5px;
-  }
-
-  /* One card per row, matching the Bare Act above them. The desktop grid puts
-     two per row, which on a phone breaks Act names across four lines. */
-  body[data-mscreen="laws"] .laws-grid {
-    display: block;
   }
 
   body[data-mscreen="laws"] .laws-card {
     display: block;
     padding: 15px 16px;
     margin-bottom: 10px;
-  }
-
-  body[data-mscreen="laws"] .laws-card-name {
-    font-family: var(--font-display);
-    font-size: 17px;
-    font-weight: 500;
-    line-height: 1.3;
-  }
-
-  body[data-mscreen="laws"] .laws-card-meta {
-    margin-top: 3px;
-    font-size: 12px;
-    color: var(--mid);
-  }
-
-  body[data-mscreen="laws"] .law-practice-note {
-    margin: 14px 2px 0;
-    font-size: 11.5px;
-    line-height: 1.6;
-    color: var(--faint);
-    text-wrap: pretty;
   }
 
   /* Chapter list. The Act header keeps the page wash; the chapters below it
@@ -5519,7 +5470,6 @@
   .mobile-sheet,
   .dash-upcoming,
   .browse-part-rail,
-  .browse-reference,
   .browse-rail-note,
   .revisions-mobile,
   .settings-account-row,

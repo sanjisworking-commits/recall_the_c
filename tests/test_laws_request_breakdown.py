@@ -237,18 +237,22 @@ def test_first_touch_is_a_miss_and_the_next_is_a_hit(
 def test_the_act_cache_is_shared_across_all_four_routes(
     tmp_path: Path, caplog: logging.LogCaptureFixture
 ):
-    """Only the first Laws request on a process can be a genuine miss.
+    """The index must not parse Bare Act JSON; the first reader warms the cache.
 
-    This is why a later route must not be called "cold" merely because it is
-    its first URL hit.
+    Later reader routes must not be called "cold" merely because they are
+    their first URL hit.
     """
     bare_acts._load_cached.cache_clear()
     client = _client(tmp_path, signed_in=False)
     with caplog.at_level(logging.INFO, logger="uvicorn.error"):
         caplog.clear()
         client.get("/laws")
+        index = _breakdowns(caplog)[0]
+        assert "bare_act_cache=miss" not in index
+        caplog.clear()
+        client.get("/laws/ndps")
         assert "bare_act_cache=miss" in _breakdowns(caplog)[0]
-        for path in LAWS_PATHS[1:]:
+        for path in LAWS_PATHS[2:]:
             caplog.clear()
             client.get(path)
             assert "bare_act_cache=hit" in _breakdowns(caplog)[0], path

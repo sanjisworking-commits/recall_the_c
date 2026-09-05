@@ -1074,6 +1074,112 @@
     });
   }
 
+  function normalizeLawsQuery(text) {
+    return String(text || "")
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, " ");
+  }
+
+  function initLawsIndex() {
+    var root = document.querySelector("[data-laws-index]");
+    if (!root) return;
+
+    var cards = Array.prototype.slice.call(root.querySelectorAll("[data-law-id]"));
+    var chips = Array.prototype.slice.call(root.querySelectorAll("[data-laws-chip]"));
+    var empty = root.querySelector("[data-laws-empty]");
+    var toggle = root.querySelector("[data-laws-search-toggle]");
+    var searchWrap = root.querySelector("[data-laws-search]");
+    var input = root.querySelector("#laws-q");
+    var knownSubjects = {};
+    chips.forEach(function (chip) {
+      var id = chip.getAttribute("data-laws-chip") || "";
+      if (id) knownSubjects[id] = true;
+    });
+
+    var subject = root.getAttribute("data-initial-subject") || "";
+    if (subject && !knownSubjects[subject]) subject = "";
+    var query = root.getAttribute("data-initial-q") || "";
+
+    function setExpanded(open) {
+      if (!toggle || !searchWrap) return;
+      toggle.setAttribute("aria-expanded", open ? "true" : "false");
+      if (open) {
+        searchWrap.removeAttribute("hidden");
+        if (input) input.focus();
+      } else {
+        searchWrap.setAttribute("hidden", "");
+      }
+    }
+
+    function syncUrl() {
+      var url = new URL(window.location.href);
+      if (subject) url.searchParams.set("subject", subject);
+      else url.searchParams.delete("subject");
+      var q = normalizeLawsQuery(query);
+      if (q) url.searchParams.set("q", query.trim());
+      else url.searchParams.delete("q");
+      var search = url.searchParams.toString();
+      var next = url.pathname + (search ? "?" + search : "") + url.hash;
+      if (window.history && window.history.replaceState) {
+        window.history.replaceState(null, "", next);
+      }
+    }
+
+    function applyFilter() {
+      var q = normalizeLawsQuery(query);
+      var visible = 0;
+      cards.forEach(function (card) {
+        var subjects = (card.getAttribute("data-subjects") || "").split(/\s+/);
+        var blob = normalizeLawsQuery(card.getAttribute("data-search") || "");
+        var subjectOk = !subject || subjects.indexOf(subject) !== -1;
+        var queryOk = !q || blob.indexOf(q) !== -1;
+        var show = subjectOk && queryOk;
+        card.classList.toggle("is-filtered-out", !show);
+        if (show) visible += 1;
+      });
+      if (empty) {
+        if (visible) empty.setAttribute("hidden", "");
+        else empty.removeAttribute("hidden");
+      }
+      chips.forEach(function (chip) {
+        var id = chip.getAttribute("data-laws-chip") || "";
+        chip.setAttribute("aria-pressed", id === subject ? "true" : "false");
+      });
+      syncUrl();
+    }
+
+    chips.forEach(function (chip) {
+      chip.addEventListener("click", function () {
+        subject = chip.getAttribute("data-laws-chip") || "";
+        applyFilter();
+      });
+    });
+
+    if (toggle) {
+      toggle.addEventListener("click", function () {
+        var open = toggle.getAttribute("aria-expanded") === "true";
+        setExpanded(!open);
+      });
+    }
+
+    if (input) {
+      input.addEventListener("input", function () {
+        query = input.value;
+        applyFilter();
+      });
+    }
+
+    document.addEventListener("keydown", function (event) {
+      if (event.key !== "Escape") return;
+      if (!toggle || toggle.getAttribute("aria-expanded") !== "true") return;
+      setExpanded(false);
+    });
+
+    if (normalizeLawsQuery(query)) setExpanded(true);
+    applyFilter();
+  }
+
   function boot() {
     initSheets();
     initMarkFilter();
@@ -1088,6 +1194,7 @@
     initBarePreview();
     initSearchRecent();
     initCalendarDays();
+    initLawsIndex();
     // After initLearnDeck: the bar only exists in its final form once the
     // deck has moved the active mode's controls into it.
     initKeyboardInset();

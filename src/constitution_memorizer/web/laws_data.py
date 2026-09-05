@@ -11,6 +11,21 @@ from constitution_memorizer.utils.json_io import read_json
 
 DEFAULT_LAWS_PATH = Path.cwd() / "data" / "reference" / "laws.seed.json"
 
+# Lightweight mapped-law registry for the /laws catalogue. Explicit ids — the
+# catalogue loader must not parse laws.seed.json. A regression test asserts
+# this set equals the act ids in that file.
+MAPPED_LAW_IDS: frozenset[str] = frozenset(
+    {
+        "rti-2005",
+        "rpa-1951",
+        "citizenship-1955",
+        "pcr-1955",
+        "rte-2009",
+        "epa-1986",
+        "uapa-1967",
+    }
+)
+
 
 @dataclass(frozen=True)
 class LawClause:

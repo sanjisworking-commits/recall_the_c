@@ -3370,6 +3370,63 @@ code {
   color: var(--faint, #9a9a9a);
 }
 
+.browse-resource-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin: 0 0 20px;
+}
+
+.browse-resource-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 64px;
+  padding: 12px 14px;
+  background: var(--paper);
+  border: 1px solid var(--hairline);
+  border-radius: 14px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.browse-resource-card:hover {
+  background: var(--hover);
+}
+
+.browse-resource-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.browse-resource-name {
+  display: block;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.browse-resource-desc {
+  display: block;
+  margin-top: 2px;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.browse-resource-chevron {
+  flex: 0 0 auto;
+  font-size: 15px;
+  color: var(--faint);
+}
+
+.browse-constitution-label {
+  margin: 8px 0 10px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mid);
+}
+
 .browse-article-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
@@ -3879,10 +3936,162 @@ code {
   font-size: clamp(28px, 4vw, 34px);
 }
 
-.law-practice-note {
+.laws-index-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+}
+
+.laws-index-head .mobile-back {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
   font-size: 13px;
   color: var(--muted);
+  text-decoration: none;
+}
+
+.laws-index-title {
+  flex: 1;
+  margin: 0;
+}
+
+.laws-index-head .mobile-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 auto;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.laws-search {
+  margin: 0 0 12px;
+}
+
+.laws-search[hidden] {
+  display: none;
+}
+
+.laws-search-input {
+  width: 100%;
+  height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  background: var(--paper);
+  font: inherit;
+  font-size: 15px;
+}
+
+.laws-chip-strip {
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  gap: 8px;
   margin: 0 0 16px;
+  scrollbar-width: none;
+}
+
+.laws-chip-strip::-webkit-scrollbar {
+  display: none;
+}
+
+.laws-chip {
+  flex: 0 0 auto;
+  height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--ink);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.laws-chip[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.laws-catalog {
+  display: grid;
+  gap: 10px;
+}
+
+.laws-index-card {
+  display: block;
+  padding: 16px 18px;
+  border: 1px solid var(--hairline);
+  border-radius: 14px;
+  background: var(--paper);
+  text-decoration: none;
+  color: inherit;
+}
+
+.laws-index-card:hover {
+  background: var(--hover);
+}
+
+.laws-index-card.is-filtered-out {
+  display: none;
+}
+
+.laws-index-head-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 5px;
+}
+
+.laws-index-tag {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--mid);
+}
+
+.laws-index-chevron {
+  margin-left: auto;
+  font-size: 15px;
+  color: var(--faint);
+}
+
+.laws-index-name {
+  display: block;
+  margin-bottom: 4px;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.laws-index-meta {
+  display: block;
+  font-size: 12.5px;
+  color: var(--muted);
+}
+
+.laws-empty {
+  margin: 24px 0 0;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.laws-empty[hidden] {
+  display: none;
 }
 
 .law-article-chips {
@@ -3945,75 +4154,6 @@ code {
 
 .law-clause-learn.is-disabled {
   cursor: default;
-}
-
-/* Bare Acts — whole statutes read end to end. The phone design is the source
-   of truth (mobile.css); these rules keep the same screens legible on a wide
-   viewport without redesigning them for it. */
-
-.laws-group-label {
-  margin: 24px 0 10px;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--mid);
-}
-
-.laws-bare-list {
-  display: grid;
-  gap: 10px;
-  margin-bottom: 8px;
-}
-
-.laws-bare-card {
-  display: block;
-  padding: 16px 18px;
-  border: 1px solid var(--hairline);
-  border-radius: 14px;
-  background: var(--paper);
-  text-decoration: none;
-  color: inherit;
-}
-
-.laws-bare-card:hover {
-  background: var(--hover);
-}
-
-.laws-bare-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 5px;
-}
-
-.laws-bare-tag {
-  font-size: 10.5px;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--mid);
-}
-
-.laws-bare-chevron {
-  margin-left: auto;
-  font-size: 15px;
-  color: var(--faint);
-}
-
-.laws-bare-name {
-  display: block;
-  margin-bottom: 4px;
-  font-family: var(--font-display);
-  font-size: 18px;
-  font-weight: 500;
-  line-height: 1.3;
-}
-
-.laws-bare-meta {
-  display: block;
-  font-size: 12.5px;
-  color: var(--muted);
 }
 
 /* Chapter list */

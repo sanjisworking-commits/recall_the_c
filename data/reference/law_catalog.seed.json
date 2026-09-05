@@ -1,0 +1,144 @@
+{
+  "schema_version": "1.0.0",
+  "description": "Index metadata for /laws. Card copy lives here so the index never parses Bare Act JSON or mapped-clause seeds.",
+  "subjects": [
+    {"id": "criminal", "label": "Criminal", "display_order": 10},
+    {"id": "constitutional", "label": "Constitutional", "display_order": 20},
+    {"id": "administrative", "label": "Administrative", "display_order": 30},
+    {"id": "environmental", "label": "Environmental", "display_order": 40}
+  ],
+  "laws": [
+    {
+      "id": "ndps",
+      "title": "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+      "short_title": "NDPS Act",
+      "year": 1985,
+      "aliases": [
+        "NDPS",
+        "Narcotics",
+        "Narcotic Drugs and Psychotropic Substances Act"
+      ],
+      "subjects": ["criminal"],
+      "primary_subject": "criminal",
+      "display_order": 10,
+      "scope_label": "8 Chapters · Sections 1–83",
+      "primary_content": "full_act",
+      "content": {
+        "full_act": {"ref": "ndps"},
+        "key_provisions": null
+      }
+    },
+    {
+      "id": "uapa-1967",
+      "title": "Unlawful Activities (Prevention) Act, 1967",
+      "short_title": "UAPA",
+      "year": 1967,
+      "aliases": ["Unlawful Activities Prevention Act"],
+      "subjects": ["criminal"],
+      "primary_subject": "criminal",
+      "display_order": 20,
+      "scope_label": "Arts 19, 22",
+      "primary_content": "key_provisions",
+      "content": {
+        "full_act": null,
+        "key_provisions": {"ref": "uapa-1967"}
+      }
+    },
+    {
+      "id": "citizenship-1955",
+      "title": "Citizenship Act, 1955",
+      "short_title": "Citizenship Act",
+      "year": 1955,
+      "aliases": ["Citizenship"],
+      "subjects": ["constitutional"],
+      "primary_subject": "constitutional",
+      "display_order": 30,
+      "scope_label": "Arts 5, 6, 7, 8, 9, 10, 11",
+      "primary_content": "key_provisions",
+      "content": {
+        "full_act": null,
+        "key_provisions": {"ref": "citizenship-1955"}
+      }
+    },
+    {
+      "id": "pcr-1955",
+      "title": "Protection of Civil Rights Act, 1955",
+      "short_title": "PCR Act",
+      "year": 1955,
+      "aliases": ["Protection of Civil Rights"],
+      "subjects": ["constitutional"],
+      "primary_subject": "constitutional",
+      "display_order": 40,
+      "scope_label": "Arts 17",
+      "primary_content": "key_provisions",
+      "content": {
+        "full_act": null,
+        "key_provisions": {"ref": "pcr-1955"}
+      }
+    },
+    {
+      "id": "rte-2009",
+      "title": "Right of Children to Free and Compulsory Education Act, 2009",
+      "short_title": "RTE Act",
+      "year": 2009,
+      "aliases": ["Right to Education", "RTE"],
+      "subjects": ["constitutional"],
+      "primary_subject": "constitutional",
+      "display_order": 50,
+      "scope_label": "Arts 21A",
+      "primary_content": "key_provisions",
+      "content": {
+        "full_act": null,
+        "key_provisions": {"ref": "rte-2009"}
+      }
+    },
+    {
+      "id": "rpa-1951",
+      "title": "Representation of the People Act, 1951",
+      "short_title": "RP Act",
+      "year": 1951,
+      "aliases": ["Representation of the People"],
+      "subjects": ["constitutional"],
+      "primary_subject": "constitutional",
+      "display_order": 60,
+      "scope_label": "Arts 324, 325, 326, 327, 329",
+      "primary_content": "key_provisions",
+      "content": {
+        "full_act": null,
+        "key_provisions": {"ref": "rpa-1951"}
+      }
+    },
+    {
+      "id": "rti-2005",
+      "title": "Right to Information Act, 2005",
+      "short_title": "RTI Act",
+      "year": 2005,
+      "aliases": ["RTI", "Right to Information"],
+      "subjects": ["administrative"],
+      "primary_subject": "administrative",
+      "display_order": 70,
+      "scope_label": "Arts 19",
+      "primary_content": "key_provisions",
+      "content": {
+        "full_act": null,
+        "key_provisions": {"ref": "rti-2005"}
+      }
+    },
+    {
+      "id": "epa-1986",
+      "title": "Environment (Protection) Act, 1986",
+      "short_title": "EP Act",
+      "year": 1986,
+      "aliases": ["Environment Protection Act", "EPA"],
+      "subjects": ["environmental"],
+      "primary_subject": "environmental",
+      "display_order": 80,
+      "scope_label": "Arts 48A, 51A",
+      "primary_content": "key_provisions",
+      "content": {
+        "full_act": null,
+        "key_provisions": {"ref": "epa-1986"}
+      }
+    }
+  ]
+}

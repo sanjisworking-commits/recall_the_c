@@ -182,8 +182,9 @@ from constitution_memorizer.web.judicial_evolution import (
     get_judicial_evolution,
     load_judicial_evolution,
 )
-from constitution_memorizer.web.bare_acts import get_bare_act, list_bare_acts
-from constitution_memorizer.web.laws_data import get_law, load_laws
+from constitution_memorizer.web.bare_acts import get_bare_act
+from constitution_memorizer.web.law_catalog import load_catalog
+from constitution_memorizer.web.laws_data import get_law
 from constitution_memorizer.web.memory_calendar import build_memory_month, schedule_chip_states
 from constitution_memorizer.web.progress_stats import progress_dashboard
 from constitution_memorizer.web.search import resolve_search
@@ -2615,7 +2616,14 @@ def create_app(
         "/laws", response_class=HTMLResponse, dependencies=[Depends(_bootstrap_laws_request)]
     )
     async def laws_page(request: Request) -> HTMLResponse:
-        context = {"acts": load_laws(), "bare_acts": list_bare_acts()}
+        catalog = load_catalog()
+        context = {
+            "catalog": catalog,
+            "laws": catalog.laws,
+            "subjects": catalog.visible_subjects,
+            "initial_q": request.query_params.get("q") or "",
+            "initial_subject": request.query_params.get("subject") or "",
+        }
         started = time.perf_counter()
         response = templates.TemplateResponse(request, "laws.html", context)
         record_request_timing("template", started)

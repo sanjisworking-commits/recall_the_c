@@ -374,15 +374,15 @@ def test_laws_lists_bare_acts_above_mapped_articles(tmp_path: Path):
     client, _ = _client(tmp_path)
     html = client.get("/laws").text
     assert ">Laws</h1>" in html
-    assert "Bare Acts" in html
-    assert "Mapped to Articles" in html
     assert 'href="/laws/ndps"' in html
     assert "8 Chapters · Sections 1–83" in html
-    # The seeded mapped-law list is not displaced by the new group.
+    assert "CRIMINAL · FULL ACT" in html
     assert 'href="/laws/rti-2005"' in html
     assert "Right to Information Act" in html
-    # Reading an Act records nothing, so a progress label would never change.
     assert "Not started" not in html
+    assert "Coming soon" not in html
+    assert "Bare Acts" not in html
+    assert "Mapped to Articles" not in html
 
 
 def test_chapter_list_opens_on_chapter_one(tmp_path: Path):
@@ -431,7 +431,7 @@ def test_the_phone_rules_are_scoped_to_the_phone(tmp_path: Path):
         'body[data-mscreen="bareact"] .bareact-chapter-row',
         'body[data-mscreen="bareact"] .bareact-section-row',
         'body[data-mscreen="bareactsection"] .bareact-row-text',
-        'body[data-mscreen="laws"] .laws-bare-card',
+        'body[data-mscreen="laws"] .laws-index-card',
     ):
         assert selector in scoped, selector
     # The chapter rows sit a shade off paper; the sections are on it.

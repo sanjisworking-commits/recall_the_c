@@ -143,6 +143,23 @@
   </div>
   {% endif %}
 
+  <div class="browse-resource-grid" role="list">
+    <a class="browse-resource-card" href="/laws" role="listitem">
+      <span class="browse-resource-copy">
+        <span class="browse-resource-name">Laws</span>
+        <span class="browse-resource-desc">Bare Acts &amp; statutes</span>
+      </span>
+      <span class="browse-resource-chevron" aria-hidden="true">›</span>
+    </a>
+    <a class="browse-resource-card" href="/tables" role="listitem">
+      <span class="browse-resource-copy">
+        <span class="browse-resource-name">Tables</span>
+        <span class="browse-resource-desc">Schedules, Parts, writs</span>
+      </span>
+      <span class="browse-resource-chevron" aria-hidden="true">›</span>
+    </a>
+  </div>
+
   {% if present_marks %}
   <div class="browse-legend" role="group" aria-label="Filter Articles by mark">
     <span class="browse-legend-caption">Marks</span>
@@ -160,6 +177,7 @@
   {% endif %}
 
   {% if part_cards %}
+  <p class="browse-constitution-label">The Constitution</p>
   <div class="browse-part-rail">
     {% for entry in part_cards %}
     {% set section = entry.section %}
@@ -187,25 +205,6 @@
     </a>
     {% endfor %}
     <p class="browse-rail-note">{{ part_cards|length }} Parts, Chapters where the Constitution has them.</p>
-  </div>
-  <div class="browse-reference">
-    <p class="browse-reference-label">Reference</p>
-    <div class="browse-reference-card">
-      <a class="browse-reference-row" href="/laws">
-        <span class="browse-reference-copy">
-          <span class="browse-reference-name">Laws</span>
-          <span class="browse-reference-desc">Bare Acts and statutes mapped to Articles</span>
-        </span>
-        <span class="browse-reference-chevron" aria-hidden="true">›</span>
-      </a>
-      <a class="browse-reference-row" href="/tables">
-        <span class="browse-reference-copy">
-          <span class="browse-reference-name">Tables</span>
-          <span class="browse-reference-desc">Schedules, Parts and writs at a glance</span>
-        </span>
-        <span class="browse-reference-chevron" aria-hidden="true">›</span>
-      </a>
-    </div>
   </div>
   {% endif %}
 
