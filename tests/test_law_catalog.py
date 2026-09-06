@@ -18,6 +18,7 @@ from constitution_memorizer.web.laws_data import MAPPED_LAW_IDS, load_laws
 
 MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
 PRODUCTION_LAW_IDS = (
+    "bns",
     "ndps",
     "uapa-1967",
     "citizenship-1955",
@@ -64,12 +65,14 @@ def test_normalize_search_keeps_punctuation():
     assert normalize_search("NDPS", 1985, ["Narcotics"]) == "ndps 1985 narcotics"
 
 
-def test_production_catalogue_loads_without_bns():
+def test_production_catalogue_lists_both_bare_acts():
     catalog = load_catalog()
     ids = [law.id for law in catalog.laws]
     assert ids == list(PRODUCTION_LAW_IDS)
-    assert "bns" not in ids
-    ndps = catalog.laws[0]
+    bns = catalog.laws[0]
+    assert bns.tag_line == "CRIMINAL · FULL ACT"
+    assert bns.href == "/laws/bns"
+    ndps = catalog.laws[1]
     assert ndps.tag_line == "CRIMINAL · FULL ACT"
     assert ndps.href == "/laws/ndps"
     rti = next(law for law in catalog.laws if law.id == "rti-2005")
@@ -255,7 +258,6 @@ def test_index_html_always_contains_every_production_law(tmp_path: Path):
     assert "Bare Acts" not in html
     assert "Mapped to Articles" not in html
     assert "No laws found" in html
-    assert 'href="/laws/bns"' not in html
 
 
 def test_unknown_subject_initialises_as_all(tmp_path: Path):
@@ -279,7 +281,7 @@ def test_search_blobs_cover_production_examples(tmp_path: Path):
     catalog = load_catalog()
     rti_law = next(law for law in catalog.laws if law.id == "rti-2005")
     assert "rti" in rti_law.search_blob
-    ndps_law = catalog.laws[0]
+    ndps_law = next(law for law in catalog.laws if law.id == "ndps")
     assert "1985" in ndps_law.search_blob
     assert "narcotics" in ndps_law.search_blob
     assert "criminal" in ndps_law.search_blob

@@ -305,9 +305,39 @@ def test_the_chapter_list_and_laws_card(tmp_path: Path):
     assert "Of Offences Affecting the Human Body" in chapters  # title-cased
     assert "bareact-schedule-row" not in chapters  # BNS has no schedule
     laws = client.get("/laws").text
-    # BNS has a reader, but it is not on the live catalogue until seeded.
-    assert 'href="/laws/bns"' not in laws
+    assert 'href="/laws/bns"' in laws
     assert 'href="/laws/ndps"' in laws
+    assert "The Bharatiya Nyaya Sanhita, 2023" in laws
+    assert "20 Chapters · Sections 1–358" in laws
+    # The general penal code sits above a special Act.
+    assert laws.index('href="/laws/bns"') < laws.index('href="/laws/ndps"')
+
+
+def test_the_catalogue_card_matches_the_act_it_links_to():
+    """scope_label is hand-typed in the seed; the Act derives its own.
+
+    Nothing else makes them agree, so a chapter or section added upstream
+    would leave the index quietly advertising the wrong size.
+    """
+    from constitution_memorizer.web.law_catalog import load_catalog
+
+    catalog = load_catalog()
+    for law in catalog.laws:
+        if law.full_act_ref is None:
+            continue
+        act = get_bare_act(law.full_act_ref)
+        assert act is not None, law.id
+        assert law.scope_label == act.meta_label, law.id
+        assert law.title == act.title, law.id
+
+
+def test_every_registered_bare_act_is_reachable_from_the_index():
+    """A reader nothing links to is a page only a URL-typer can find."""
+    from constitution_memorizer.web.bare_acts import BARE_ACTS
+    from constitution_memorizer.web.law_catalog import load_catalog
+
+    linked = {law.full_act_ref for law in load_catalog().laws if law.full_act_ref}
+    assert set(BARE_ACTS) <= linked, set(BARE_ACTS) - linked
 
 
 def test_bns_is_free_to_read_and_records_nothing(tmp_path: Path):
