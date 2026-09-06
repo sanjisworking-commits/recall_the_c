@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}{{ act.short_name }} · Playground{% endblock %}
+{% block mobile_screen %}playground{% endblock %}
+{% block content %}
+<section class="panel playground-law">
+  <p><a href="/playground">← My Playground</a></p>
+  <h1>{{ act.title }}</h1>
+  <p class="playground-lede">
+    <a href="/laws/{{ act.slug }}">Read</a>
+    · <a href="/playground/{{ act.slug }}/select">Select sections</a>
+  </p>
+  {% if not rows %}
+  <p>No sections selected yet.</p>
+  {% else %}
+  {% for row in rows %}
+  <div class="playground-row">
+    <div>
+      <strong>Section {{ row.number }}</strong>
+      <span>{{ row.title }}</span>
+      {% if row.progress %}
+      <p class="playground-meta">
+        {{ row.progress.status }}
+        {% if row.progress.next_revision %} · next {{ row.progress.next_revision }}{% endif %}
+      </p>
+      {% endif %}
+      {% if row.outdated %}
+      <p class="playground-flag">This provision has changed.</p>
+      {% endif %}
+    </div>
+    <a href="/playground/{{ act.slug }}/learn/{{ row.number }}">Learn (Cloze)</a>
+  </div>
+  {% endfor %}
+  {% endif %}
+</section>
+{% endblock %}

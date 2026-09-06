@@ -329,6 +329,23 @@ def create_app(
     speech_provider=None,
 ) -> FastAPI:
     """Create the learning UI app bound to concrete unit/progress paths."""
+    from constitution_memorizer.playground.locators import (  # noqa: PLC0415
+        PLAYGROUND_LAW_IDS,
+        LocatorError,
+    )
+    from constitution_memorizer.playground.source import locators_for_act  # noqa: PLC0415
+    from constitution_memorizer.playground.service import (  # noqa: PLC0415
+        PlaygroundLawError,
+        activate_law,
+        due_revision_count,
+        live_source_hash,
+        mark_outdated,
+        parse_selected_locator,
+        provision_for_learn,
+        require_playground_law,
+        selected_locator_set,
+        selection_rows,
+    )
     root = Path.cwd()
     resolved_units = Path(units_path or root / "data" / "output" / "learning_units.json")
     resolved_db = Path(db_path or root / "data" / "progress" / "progress.db")
@@ -572,6 +589,26 @@ def create_app(
     app.state.razorpay_key_id = str(settings.razorpay_key_id or "")
     app.state.razorpay_key_secret = str(settings.razorpay_key_secret or "")
     app.state.use_postgres_progress = use_postgres
+    if use_postgres:
+        from constitution_memorizer.playground.postgres import (  # noqa: PLC0415
+            PostgresPlaygroundRepository,
+        )
+
+        app.state.playground = PostgresPlaygroundRepository(_ensure_pool())
+    else:
+        from constitution_memorizer.playground.db import (  # noqa: PLC0415
+            ensure_sqlite_schema,
+        )
+        from constitution_memorizer.playground.repository import (  # noqa: PLC0415
+            SqlitePlaygroundRepository,
+        )
+
+        conn = getattr(engine.repo, "conn", None)
+        if conn is not None:
+            ensure_sqlite_schema(conn)
+            app.state.playground = SqlitePlaygroundRepository(conn)
+        else:
+            app.state.playground = None
     app.state.oauth_states = {}
     app.state.otp_limiter = OtpRateLimiter()
     if auth_provider is not None:
@@ -2584,6 +2621,23 @@ def create_app(
             },
         )
 
+    def _playground_user_id(request: Request):
+        if app.state.multiuser_enabled:
+            user = getattr(request.state, "current_user", None)
+            if user is None:
+                return None
+            return user.id
+        return LOCAL_USER_ID
+
+    def _playground_repo():
+        repo = getattr(app.state, "playground", None)
+        if repo is None:
+            raise HTTPException(status_code=503, detail="Playground unavailable")
+        return repo
+
+    def _playground_login_redirect(next_url: str) -> RedirectResponse:
+        return RedirectResponse(url=f"/login?next={next_url}", status_code=303)
+
     def _bootstrap_laws_request(request: Request) -> None:
         """One batched read for the shared template context on Laws pages.
 
@@ -2638,9 +2692,20 @@ def create_app(
         # Articles, so it keeps the page it has always had.
         bare = get_bare_act(law_id)
         if bare is not None:
+            in_playground = False
+            playground = getattr(app.state, "playground", None)
+            uid = _playground_user_id(request)
+            if playground is not None and uid is not None and bare.slug in PLAYGROUND_LAW_IDS:
+                in_playground = playground.get_item(uid, bare.slug) is not None
             started = time.perf_counter()
             response = templates.TemplateResponse(
-                request, "bare_act.html", {"act": bare}
+                request,
+                "bare_act.html",
+                {
+                    "act": bare,
+                    "playground_eligible": bare.slug in PLAYGROUND_LAW_IDS,
+                    "in_playground": in_playground,
+                },
             )
             record_request_timing("template", started)
             return response
@@ -2712,6 +2777,271 @@ def create_app(
         )
         record_request_timing("template", started)
         return response
+
+    @app.get("/playground", response_class=HTMLResponse)
+    async def playground_home(request: Request) -> HTMLResponse:
+        uid = _playground_user_id(request)
+        if uid is None:
+            return _playground_login_redirect("/playground")
+        repo = _playground_repo()
+        today = date.today()
+        cards = []
+        for item in repo.list_items(uid):
+            try:
+                act = require_playground_law(item.law_id)
+            except PlaygroundLawError:
+                continue
+            selections = repo.list_selection(uid, item.law_id)
+            progress_rows = [
+                mark_outdated(row, live_source_hash(item.law_id, row.source_locator))
+                for row in repo.list_progress(uid, item.law_id)
+            ]
+            progress_rows = [row for row in progress_rows if row is not None]
+            selected = selected_locator_set(selections)
+            learned = {
+                row.source_locator
+                for row in progress_rows
+                if row.cloze_done and row.source_locator in selected
+            }
+            to_learn = len(selected - learned)
+            cards.append(
+                {
+                    "item": item,
+                    "act": act,
+                    "selected_count": len(selections),
+                    "to_learn": to_learn,
+                    "due": due_revision_count(
+                        [row for row in progress_rows if row.source_locator in selected],
+                        today,
+                    ),
+                    "outdated": any(
+                        row.source_outdated and row.source_locator in selected
+                        for row in progress_rows
+                    ),
+                }
+            )
+        return templates.TemplateResponse(
+            request,
+            "playground.html",
+            {"cards": cards},
+        )
+
+    @app.post("/playground/{law_id}/add")
+    async def playground_add(
+        request: Request,
+        law_id: str,
+        csrf_token: str = Form(""),
+    ) -> RedirectResponse:
+        uid = _playground_user_id(request)
+        next_reader = f"/laws/{law_id}"
+        if uid is None:
+            return _playground_login_redirect(next_reader)
+        expected = request.cookies.get("rtc_csrf") or ""
+        if expected and csrf_token != expected:
+            raise HTTPException(status_code=403, detail="csrf")
+        try:
+            require_playground_law(law_id)
+        except PlaygroundLawError:
+            raise HTTPException(status_code=404, detail="Law not found") from None
+        repo = _playground_repo()
+        existing = repo.get_item(uid, law_id)
+        activate_law(repo, uid, law_id)
+        if existing is not None and repo.list_selection(uid, law_id):
+            return RedirectResponse(url="/playground", status_code=303)
+        return RedirectResponse(url=f"/playground/{law_id}/select", status_code=303)
+
+    @app.get("/playground/{law_id}", response_class=HTMLResponse)
+    async def playground_law(request: Request, law_id: str) -> HTMLResponse:
+        uid = _playground_user_id(request)
+        if uid is None:
+            return _playground_login_redirect(f"/playground/{law_id}")
+        try:
+            act = require_playground_law(law_id)
+        except PlaygroundLawError:
+            raise HTTPException(status_code=404, detail="Law not found") from None
+        repo = _playground_repo()
+        item = repo.get_item(uid, law_id)
+        if item is None:
+            return RedirectResponse(url=f"/laws/{law_id}", status_code=303)
+        selections = repo.list_selection(uid, law_id)
+        progress_map = {
+            row.source_locator: mark_outdated(
+                row, live_source_hash(law_id, row.source_locator)
+            )
+            for row in repo.list_progress(uid, law_id)
+        }
+        rows = []
+        for sel in selections:
+            loc = parse_selected_locator(sel.source_locator, law_id)
+            if loc is None:
+                continue
+            section = act.section(loc.number)
+            if section is None:
+                continue
+            progress = progress_map.get(sel.source_locator)
+            rows.append(
+                {
+                    "locator": sel.source_locator,
+                    "number": loc.number,
+                    "title": section.list_title,
+                    "progress": progress,
+                    "outdated": bool(progress and progress.source_outdated),
+                }
+            )
+        return templates.TemplateResponse(
+            request,
+            "playground_law.html",
+            {"act": act, "item": item, "rows": rows},
+        )
+
+    @app.get("/playground/{law_id}/select", response_class=HTMLResponse)
+    async def playground_select_page(request: Request, law_id: str) -> HTMLResponse:
+        uid = _playground_user_id(request)
+        if uid is None:
+            return _playground_login_redirect(f"/playground/{law_id}/select")
+        try:
+            act = require_playground_law(law_id)
+        except PlaygroundLawError:
+            raise HTTPException(status_code=404, detail="Law not found") from None
+        repo = _playground_repo()
+        if repo.get_item(uid, law_id) is None:
+            return RedirectResponse(url=f"/laws/{law_id}", status_code=303)
+        selected = selected_locator_set(repo.list_selection(uid, law_id))
+        learnable = {loc.value for loc in locators_for_act(law_id)}
+        sections = []
+        for section in act.section_order:
+            loc = f"{law_id}:section:{section.number}"
+            sections.append(
+                {
+                    "number": section.number,
+                    "title": section.list_title,
+                    "omitted": section.is_omitted,
+                    "learnable": loc in learnable,
+                    "checked": loc in selected,
+                }
+            )
+        return templates.TemplateResponse(
+            request,
+            "playground_select.html",
+            {
+                "act": act,
+                "sections": sections,
+                "entire_checked": bool(selected) and selected == learnable,
+            },
+        )
+
+    @app.post("/playground/{law_id}/select")
+    async def playground_select_save(
+        request: Request,
+        law_id: str,
+    ) -> RedirectResponse:
+        uid = _playground_user_id(request)
+        if uid is None:
+            return _playground_login_redirect(f"/playground/{law_id}/select")
+        form = await request.form()
+        csrf_token = str(form.get("csrf_token") or "")
+        expected = request.cookies.get("rtc_csrf") or ""
+        if expected and csrf_token != expected:
+            raise HTTPException(status_code=403, detail="csrf")
+        try:
+            require_playground_law(law_id)
+        except PlaygroundLawError:
+            raise HTTPException(status_code=404, detail="Law not found") from None
+        repo = _playground_repo()
+        if repo.get_item(uid, law_id) is None:
+            activate_law(repo, uid, law_id)
+        entire_raw = form.get("entire")
+        entire_act = str(entire_raw or "") in {"1", "on", "true", "yes"}
+        numbers = [str(value) for value in form.getlist("section")]
+        rows = selection_rows(law_id, numbers, entire=entire_act)
+        repo.replace_selection(uid, law_id, rows)
+        return RedirectResponse(url=f"/playground/{law_id}", status_code=303)
+
+    @app.get(
+        "/playground/{law_id}/learn/{number}",
+        response_class=HTMLResponse,
+    )
+    async def playground_learn(
+        request: Request, law_id: str, number: str
+    ) -> HTMLResponse:
+        uid = _playground_user_id(request)
+        if uid is None:
+            return _playground_login_redirect(f"/playground/{law_id}/learn/{number}")
+        try:
+            act = require_playground_law(law_id)
+            loc, body, live_hash, source_version, cloze_available = provision_for_learn(
+                law_id, number
+            )
+        except (PlaygroundLawError, LocatorError):
+            raise HTTPException(status_code=404, detail="Section not found") from None
+        repo = _playground_repo()
+        if repo.get_item(uid, law_id) is None:
+            return RedirectResponse(url=f"/laws/{law_id}", status_code=303)
+        selected = selected_locator_set(repo.list_selection(uid, law_id))
+        if loc.value not in selected:
+            return RedirectResponse(url=f"/playground/{law_id}/select", status_code=303)
+        section = act.section(number)
+        progress = mark_outdated(repo.get_progress(uid, law_id, loc.value), live_hash)
+        return templates.TemplateResponse(
+            request,
+            "playground_cloze.html",
+            {
+                "act": act,
+                "section": section,
+                "locator": loc.value,
+                "canonical_body": body,
+                "cloze_available": cloze_available,
+                "progress": progress,
+                "source_outdated": bool(progress and progress.source_outdated),
+                "source_version": source_version,
+                "complete_url": f"/playground/{law_id}/learn/{number}/complete",
+            },
+        )
+
+    @app.post("/playground/{law_id}/learn/{number}/complete")
+    async def playground_cloze_complete(
+        request: Request, law_id: str, number: str
+    ) -> JSONResponse:
+        uid = _playground_user_id(request)
+        if uid is None:
+            return JSONResponse({"ok": False, "error": "auth_required"}, status_code=401)
+        try:
+            loc, body, live_hash, source_version, cloze_available = provision_for_learn(
+                law_id, number
+            )
+        except (PlaygroundLawError, LocatorError):
+            raise HTTPException(status_code=404, detail="Section not found") from None
+        if not cloze_available:
+            return JSONResponse({"ok": False, "error": "cloze_unavailable"}, status_code=400)
+        repo = _playground_repo()
+        if repo.get_item(uid, law_id) is None:
+            return JSONResponse({"ok": False, "error": "not_activated"}, status_code=400)
+        selected = selected_locator_set(repo.list_selection(uid, law_id))
+        if loc.value not in selected:
+            return JSONResponse({"ok": False, "error": "not_selected"}, status_code=400)
+        stored = repo.get_progress(uid, law_id, loc.value)
+        stored_hash = stored.source_hash if stored is not None else live_hash
+        progress = repo.complete_cloze(
+            uid,
+            law_id,
+            loc.value,
+            source_version=source_version,
+            source_hash=stored_hash,
+            as_of=date.today(),
+            live_hash=live_hash,
+        )
+        return JSONResponse(
+            {
+                "ok": True,
+                "canonical_body": body,
+                "source_locator": progress.source_locator,
+                "status": progress.status,
+                "interval_days": progress.interval_days,
+                "next_revision": progress.next_revision,
+                "source_outdated": progress.source_outdated,
+                "revealed": body,
+            }
+        )
 
     @app.get("/memory", response_class=HTMLResponse)
     async def memory_page(

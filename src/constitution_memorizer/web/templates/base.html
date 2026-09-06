@@ -179,6 +179,9 @@
           <a href="/laws" class="footer-link{% if path.startswith('/laws') %} is-active{% endif %}">Relevant laws</a>
           {% endif %}
           {% if not (multiuser_enabled|default(false) and not current_user) %}
+          <a href="/playground" class="footer-link{% if path.startswith('/playground') %} is-active{% endif %}">Playground</a>
+          {% endif %}
+          {% if not (multiuser_enabled|default(false) and not current_user) %}
           {% if memory_log_enabled|default(false) %}
           <a href="/memory" class="footer-link{% if path.startswith('/memory') %} is-active{% endif %}">Memory log</a>
           {% endif %}
@@ -238,6 +241,7 @@
   <script src="/static/recall_align.js?v=sprint22" defer></script>
   <script src="/static/speech_client.js?v=speech2" defer></script>
   <script src="/static/app.js?v=main62" defer></script>
+  <script src="/static/playground.js?v=pg1" defer></script>
   <script src="/static/mobile.js?v=mob27" defer></script>
   <script src="/static/visual-explainer.js?v=ve2" defer></script>
   <script src="/static/auth.js?v=main6" defer></script>
