@@ -9,6 +9,28 @@
   ],
   "laws": [
     {
+      "id": "bns",
+      "title": "The Bharatiya Nyaya Sanhita, 2023",
+      "short_title": "BNS",
+      "year": 2023,
+      "aliases": [
+        "BNS",
+        "Bharatiya Nyaya Sanhita",
+        "Nyaya Sanhita",
+        "IPC",
+        "Indian Penal Code"
+      ],
+      "subjects": ["criminal"],
+      "primary_subject": "criminal",
+      "display_order": 5,
+      "scope_label": "20 Chapters · Sections 1–358",
+      "primary_content": "full_act",
+      "content": {
+        "full_act": {"ref": "bns"},
+        "key_provisions": null
+      }
+    },
+    {
       "id": "ndps",
       "title": "The Narcotic Drugs and Psychotropic Substances Act, 1985",
       "short_title": "NDPS Act",
