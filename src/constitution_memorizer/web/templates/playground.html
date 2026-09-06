@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Playground · {{ app_name|default('Recall the C') }}{% endblock %}
+{% block mobile_screen %}playground{% endblock %}
+{% block content %}
+<section class="panel playground-page">
+  <h1>My Playground</h1>
+  <p class="playground-lede">Laws you added. Reading stays on the Bare Act; Cloze lives here.</p>
+  {% if not cards %}
+  <p>Nothing here yet. Open NDPS or BNS and choose Add to Playground.</p>
+  {% else %}
+  <div class="playground-cards">
+    {% for card in cards %}
+    <article class="playground-card">
+      <h2>{{ card.act.title }}</h2>
+      <p class="playground-meta">
+        {{ card.selected_count }} selected
+        · {{ card.to_learn }} to learn
+        · {{ card.due }} due
+      </p>
+      {% if card.outdated %}
+      <p class="playground-flag">A selected provision has changed in the source JSON.</p>
+      {% endif %}
+      <p>
+        <a href="/playground/{{ card.act.slug }}">Progress</a>
+        · <a href="/playground/{{ card.act.slug }}/select">Select sections</a>
+        · <a href="/laws/{{ card.act.slug }}">Read</a>
+      </p>
+    </article>
+    {% endfor %}
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

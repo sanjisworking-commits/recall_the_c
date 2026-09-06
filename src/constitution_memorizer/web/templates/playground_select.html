@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Select · {{ act.short_name }} · Playground{% endblock %}
+{% block mobile_screen %}playground{% endblock %}
+{% block content %}
+<section class="panel playground-select">
+  <p><a href="/playground">← My Playground</a></p>
+  <h1>{{ act.title }}</h1>
+  <p class="playground-lede">Entire Act or individual sections. Chapter selection is not in this batch.</p>
+  <form method="post" action="/playground/{{ act.slug }}/select">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <p>
+      <label>
+        <input type="checkbox" name="entire" value="1"{% if entire_checked %} checked{% endif %}>
+        Entire Act
+      </label>
+    </p>
+    <ul class="playground-section-pick">
+      {% for section in sections %}
+      <li>
+        <label>
+          <input
+            type="checkbox"
+            name="section"
+            value="{{ section.number }}"
+            {% if section.checked %}checked{% endif %}
+            {% if section.omitted or not section.learnable %}disabled{% endif %}
+          >
+          Section {{ section.number }} — {{ section.title }}
+        </label>
+      </li>
+      {% endfor %}
+    </ul>
+    <p><button type="submit" class="playground-btn">Save selection</button></p>
+  </form>
+</section>
+{% endblock %}
