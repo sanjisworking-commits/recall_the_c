@@ -4,8 +4,24 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <meta name="color-scheme" content="light dark">
-  <title>{% block title %}{{ app_name|default('Recall the C') }}{% endblock %}</title>
-  <meta name="description" content="{% block meta_description %}Recall the C is a study aid for memorising the Constitution of India.{% endblock %}">
+  <title>{% block title %}{{ seo_title|default(default_seo_title, true) }}{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}{{ seo_description|default(default_seo_description, true) }}{% endblock %}">
+  {% if canonical_url %}
+  <link rel="canonical" href="{{ canonical_url }}">
+  {% endif %}
+  {% block social_meta %}
+  <meta property="og:title" content="{{ seo_title|default(default_seo_title, true) }}">
+  <meta property="og:description" content="{{ seo_description|default(default_seo_description, true) }}">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Recall the C">
+  {% if canonical_url %}
+  <meta property="og:url" content="{{ canonical_url }}">
+  {% endif %}
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:site" content="{{ twitter_handle }}">
+  <meta name="twitter:title" content="{{ seo_title|default(default_seo_title, true) }}">
+  <meta name="twitter:description" content="{{ seo_description|default(default_seo_description, true) }}">
+  {% endblock %}
   <script>
     (function () {
       var KEY = "cm-theme";

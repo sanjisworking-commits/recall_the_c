@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Article {{ article.article_number }} · Browse{% endblock %}
+{% block title %}{{ seo_title|default('Article ' ~ article.article_number ~ ' · Browse', true) }}{% endblock %}
 {% block mobile_screen %}article{% endblock %}
 {% block content %}
 {% set has_part = article.part_number and article.part_number != "UNKNOWN" %}
