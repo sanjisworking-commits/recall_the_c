@@ -1,7 +1,9 @@
-"""Server-rendered SEO metadata helpers for Article pages.
+"""Server-rendered SEO metadata helpers for legal provisions.
 
-Pure functions with no I/O: the caller supplies data already loaded via the
-existing ``ArticleBrowseView`` so there is no second corpus read or DB lookup.
+Law-generic: the same engine serves the Constitution's Articles and any Bare
+Act's Sections/Rules. Callers supply data already loaded by their own view
+model, so there is no I/O, corpus read, or DB lookup here. Routing stays
+independent of SEO — the caller passes the canonical URL it knows best.
 """
 
 from __future__ import annotations
@@ -13,12 +15,13 @@ CANONICAL_ORIGIN = "https://recall-the-c.in"
 DEFAULT_SEO_TITLE = "Recall the C"
 
 DEFAULT_SEO_DESCRIPTION = (
-    "Recall the C is a study aid for memorising the Constitution of India."
+    "Learn and memorise Indian law with Recall the C "
+    "using structured learning and spaced revision."
 )
 
 # Minimum length of a cleaned excerpt before it is considered a usable snippet.
-# Below this, the description falls back to the official heading rather than a
-# thin fragment (e.g. Article 368's post-marker text).
+# Below this, the description falls back to the heading rather than a thin
+# fragment (e.g. a provision whose text is only a short sub-clause).
 _MIN_EXCERPT_LEN = 40
 
 # A leading clause / sub-clause marker such as "(1)", "(a)", "(iv)".
@@ -26,8 +29,25 @@ _LEADING_MARKER_RE = re.compile(r"^\s*\([0-9A-Za-z]{1,3}\)\s*")
 
 
 def article_canonical_url(article_number: str) -> str:
-    """Absolute canonical URL for an Article's Browse page."""
+    """Canonical URL for a Constitution Article's Browse page."""
     return f"{CANONICAL_ORIGIN}/browse/article/{article_number}"
+
+
+def provision_canonical_url(
+    law_slug: str, provision_type: str, provision_number: str
+) -> str:
+    """Canonical URL for a Bare Act provision (future ``/laws/...`` routes)."""
+    return (
+        f"{CANONICAL_ORIGIN}/laws/{law_slug}/{provision_type}/{provision_number}"
+    )
+
+
+def _with_the(law_name: str) -> str:
+    """Prefix ``the`` for prose (``of the Constitution of India``)."""
+    name = (law_name or "").strip()
+    if not name:
+        return name
+    return name if name[:4].lower() == "the " else f"the {name}"
 
 
 def _clean_excerpt(text: str | None, limit: int = 120) -> str:
@@ -53,8 +73,73 @@ def _ensure_period(text: str) -> str:
     return stripped if stripped[-1] in ".!?\u2026" else f"{stripped}."
 
 
-def _has_part(part_number: str | None) -> bool:
-    return bool(part_number) and str(part_number).strip().upper() != "UNKNOWN"
+def build_provision_seo(
+    *,
+    law_name: str,
+    provision_label: str,
+    provision_number: str,
+    heading: str | None,
+    full_text: str | None,
+    seo_law_name: str | None = None,
+    parent_label: str | None = None,
+    parent_number: str | None = None,
+    parent_title: str | None = None,
+    include_law_in_title: bool = True,
+    include_law_in_description: bool = True,
+) -> tuple[str, str]:
+    """Build a unique ``(seo_title, seo_description)`` for a legal provision.
+
+    ``provision_label``/``provision_number`` are e.g. ``"Article"``/``"21"`` or
+    ``"Section"``/``"7"``. ``parent_*`` is the enclosing Part or Chapter.
+    ``seo_law_name`` is a short label (``"IBC"``) used in the title when the
+    full ``law_name`` is long. The ``include_law_in_*`` flags let callers whose
+    URL/query already implies the law (the Constitution) drop the law name from
+    the text-led forms; the disambiguating "of the {law}" forms always keep it.
+    """
+    number = str(provision_number).strip()
+    label = (provision_label or "").strip()
+    heading = (heading or "").strip()
+    short_law = (seo_law_name or "").strip() or (law_name or "").strip()
+    the_law = _with_the(law_name)
+
+    if heading:
+        base = f"{label} {number} \u2013 {heading}"
+        if include_law_in_title:
+            seo_title = f"{base} | {short_law} | Recall the C"
+        else:
+            seo_title = f"{base} | Recall the C"
+    else:
+        seo_title = f"{label} {number} of {the_law} | Recall the C"
+
+    excerpt = _clean_excerpt(full_text)
+    if excerpt and len(excerpt) >= _MIN_EXCERPT_LEN:
+        if include_law_in_description:
+            lead = f"{label} {number} of {the_law}: {excerpt}"
+        else:
+            lead = f"{label} {number}: {excerpt}"
+    elif heading:
+        lead = f"{label} {number} of {the_law} covers {heading}."
+    else:
+        lead = f"{label} {number} of {the_law}."
+
+    parts = [_ensure_period(lead)]
+
+    if (
+        parent_label
+        and parent_number
+        and str(parent_number).strip().upper() != "UNKNOWN"
+    ):
+        parent_num = str(parent_number).strip()
+        parent_name = (parent_title or "").strip()
+        if parent_name:
+            parts.append(f"{parent_label} {parent_num}, {parent_name}.")
+        else:
+            parts.append(f"{parent_label} {parent_num}.")
+
+    parts.append("Learn and revise with Recall the C.")
+
+    seo_description = " ".join(parts)
+    return seo_title, seo_description
 
 
 def build_article_seo(
@@ -64,34 +149,20 @@ def build_article_seo(
     part_number: str | None,
     part_title: str | None,
 ) -> tuple[str, str]:
-    """Build a unique ``(seo_title, seo_description)`` for an Article page."""
-    number = str(article_number).strip()
-    heading = (heading or "").strip()
+    """Constitution wrapper over :func:`build_provision_seo`.
 
-    if heading:
-        seo_title = f"Article {number} \u2013 {heading} | Recall the C"
-    else:
-        seo_title = f"Article {number} of the Constitution of India | Recall the C"
-
-    excerpt = _clean_excerpt(full_text)
-    if excerpt and len(excerpt) >= _MIN_EXCERPT_LEN:
-        lead = f"Article {number}: {excerpt}"
-    elif heading:
-        lead = f"Article {number} of the Constitution of India covers {heading}."
-    else:
-        lead = f"Article {number} of the Constitution of India."
-
-    parts = [_ensure_period(lead)]
-
-    if _has_part(part_number):
-        roman = str(part_number).strip()
-        title = (part_title or "").strip()
-        if title:
-            parts.append(f"Part {roman}, {title}.")
-        else:
-            parts.append(f"Part {roman}.")
-
-    parts.append("Learn and revise with Recall the C.")
-
-    seo_description = " ".join(parts)
-    return seo_title, seo_description
+    Omits the law name from the text-led title/description because a
+    ``/browse/article/{n}`` query already reads clearly as the Constitution.
+    """
+    return build_provision_seo(
+        law_name="Constitution of India",
+        provision_label="Article",
+        provision_number=article_number,
+        heading=heading,
+        full_text=full_text,
+        parent_label="Part",
+        parent_number=part_number,
+        parent_title=part_title,
+        include_law_in_title=False,
+        include_law_in_description=False,
+    )

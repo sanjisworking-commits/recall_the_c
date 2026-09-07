@@ -18,8 +18,11 @@ from constitution_memorizer.web.seo import (
     CANONICAL_ORIGIN,
     DEFAULT_SEO_DESCRIPTION,
     _clean_excerpt,
+    _with_the,
     article_canonical_url,
     build_article_seo,
+    build_provision_seo,
+    provision_canonical_url,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -152,6 +155,142 @@ def test_clean_excerpt_strips_marker_and_truncates_on_word_boundary():
 
 def test_clean_excerpt_handles_none():
     assert _clean_excerpt(None) == ""
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Generic engine — other laws (IBC / BNS / NDPS) use the same builder
+# ─────────────────────────────────────────────────────────────────────────────
+
+
+def test_with_the_prefix():
+    assert _with_the("Constitution of India") == "the Constitution of India"
+    assert _with_the("the NDPS Act, 1985") == "the NDPS Act, 1985"
+    assert _with_the("") == ""
+
+
+def test_provision_canonical_url():
+    assert (
+        provision_canonical_url("ibc", "section", "7")
+        == f"{CANONICAL_ORIGIN}/laws/ibc/section/7"
+    )
+
+
+def test_ibc_section_uses_short_law_name_in_title_and_full_in_description():
+    title, desc = build_provision_seo(
+        law_name="Insolvency and Bankruptcy Code, 2016",
+        seo_law_name="IBC",
+        provision_label="Section",
+        provision_number="7",
+        heading="Initiation of corporate insolvency resolution process by financial creditor",
+        full_text=(
+            "A financial creditor may file an application for initiating "
+            "corporate insolvency resolution process against a corporate debtor "
+            "before the Adjudicating Authority when a default has occurred."
+        ),
+        parent_label="Chapter",
+        parent_number="II",
+        parent_title="Corporate Insolvency Resolution Process",
+    )
+    assert title == (
+        "Section 7 \u2013 Initiation of corporate insolvency resolution process "
+        "by financial creditor | IBC | Recall the C"
+    )
+    assert desc.startswith(
+        "Section 7 of the Insolvency and Bankruptcy Code, 2016: A financial creditor"
+    )
+    assert desc.endswith(
+        "Chapter II, Corporate Insolvency Resolution Process. "
+        "Learn and revise with Recall the C."
+    )
+
+
+def test_bns_section_chapter_without_title():
+    title, desc = build_provision_seo(
+        law_name="Bharatiya Nyaya Sanhita, 2023",
+        seo_law_name="BNS",
+        provision_label="Section",
+        provision_number="103",
+        heading="Punishment for murder",
+        full_text=(
+            "Whoever commits murder shall be punished with death or "
+            "imprisonment for life, and shall also be liable to fine."
+        ),
+        parent_label="Chapter",
+        parent_number="VI",
+        parent_title=None,
+    )
+    assert title == "Section 103 \u2013 Punishment for murder | BNS | Recall the C"
+    assert desc.startswith(
+        "Section 103 of the Bharatiya Nyaya Sanhita, 2023: Whoever commits murder"
+    )
+    # Chapter without a friendly title omits the comma-title.
+    assert "Chapter VI. Learn and revise with Recall the C." in desc
+
+
+def test_ndps_section_empty_text_falls_back_to_heading_no_parent():
+    title, desc = build_provision_seo(
+        law_name="Narcotic Drugs and Psychotropic Substances Act, 1985",
+        seo_law_name="NDPS",
+        provision_label="Section",
+        provision_number="20",
+        heading="Punishment for contravention in relation to cannabis plant and cannabis",
+        full_text="",
+        parent_label=None,
+        parent_number=None,
+        parent_title=None,
+    )
+    assert title == (
+        "Section 20 \u2013 Punishment for contravention in relation to cannabis "
+        "plant and cannabis | NDPS | Recall the C"
+    )
+    assert desc == (
+        "Section 20 of the Narcotic Drugs and Psychotropic Substances Act, 1985 "
+        "covers Punishment for contravention in relation to cannabis plant and "
+        "cannabis. Learn and revise with Recall the C."
+    )
+
+
+def test_generic_missing_heading_uses_law_qualified_title():
+    title, desc = build_provision_seo(
+        law_name="Insolvency and Bankruptcy Code, 2016",
+        seo_law_name="IBC",
+        provision_label="Section",
+        provision_number="238",
+        heading=None,
+        full_text="The provisions of this Code shall have effect notwithstanding anything inconsistent therewith contained in any other law.",
+        parent_label="Chapter",
+        parent_number="VII",
+        parent_title=None,
+    )
+    # No heading: the title is law-qualified (short name is not used here).
+    assert title == (
+        "Section 238 of the Insolvency and Bankruptcy Code, 2016 | Recall the C"
+    )
+    assert desc.startswith(
+        "Section 238 of the Insolvency and Bankruptcy Code, 2016: The provisions"
+    )
+
+
+def test_include_law_flags_toggle_text_led_forms():
+    # With the flags off, the text-led title/description drop the law name,
+    # matching the Constitution's cleaner form.
+    title, desc = build_provision_seo(
+        law_name="Constitution of India",
+        provision_label="Article",
+        provision_number="19",
+        heading="Protection of certain rights regarding freedom of speech",
+        full_text="All citizens shall have the right to freedom of speech and expression.",
+        parent_label="Part",
+        parent_number="III",
+        parent_title="Fundamental Rights",
+        include_law_in_title=False,
+        include_law_in_description=False,
+    )
+    assert title == (
+        "Article 19 \u2013 Protection of certain rights regarding freedom of "
+        "speech | Recall the C"
+    )
+    assert desc.startswith("Article 19: All citizens shall have the right")
 
 
 # ─────────────────────────────────────────────────────────────────────────────

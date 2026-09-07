@@ -187,7 +187,12 @@ from constitution_memorizer.web.laws_data import get_law, load_laws
 from constitution_memorizer.web.memory_calendar import build_memory_month, schedule_chip_states
 from constitution_memorizer.web.progress_stats import progress_dashboard
 from constitution_memorizer.web.search import resolve_search
-from constitution_memorizer.web.seo import article_canonical_url, build_article_seo
+from constitution_memorizer.web.seo import (
+    DEFAULT_SEO_DESCRIPTION,
+    DEFAULT_SEO_TITLE,
+    article_canonical_url,
+    build_article_seo,
+)
 from constitution_memorizer.web.service import (
     LEARN_MODE_LABELS,
     active_revision_session,
@@ -547,6 +552,8 @@ def create_app(
     )
     templates.env.globals["visual_explainer"] = visual_explainer
     templates.env.globals["browse_mark"] = BROWSE_MARKS_BY_KEY.get
+    templates.env.globals["default_seo_title"] = DEFAULT_SEO_TITLE
+    templates.env.globals["default_seo_description"] = DEFAULT_SEO_DESCRIPTION
 
     app = FastAPI(title="Recall the C", version="0.8.0", lifespan=_app_lifespan)
     app.state.engine = engine
