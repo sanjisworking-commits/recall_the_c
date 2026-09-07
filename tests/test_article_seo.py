@@ -166,7 +166,35 @@ def test_clean_excerpt_handles_none():
 def test_with_the_prefix():
     assert _with_the("Constitution of India") == "the Constitution of India"
     assert _with_the("the NDPS Act, 1985") == "the NDPS Act, 1985"
+    # A leading capital "The" (as the Bare Act registry ships) is lowered for
+    # mid-sentence prose rather than left as "of The ...".
+    assert _with_the("The BNS, 2023") == "the BNS, 2023"
+    assert (
+        _with_the("The Bharatiya Nyaya Sanhita, 2023")
+        == "the Bharatiya Nyaya Sanhita, 2023"
+    )
     assert _with_the("") == ""
+
+
+def test_capitalised_the_law_name_reads_mid_sentence():
+    # Regression for the "of The ..." defect: a registry short name that starts
+    # with a capital "The" must read cleanly in the description prose.
+    _, desc = build_provision_seo(
+        law_name="The BNS, 2023",
+        seo_law_name="BNS",
+        provision_label="Section",
+        provision_number="103",
+        heading=None,
+        full_text=(
+            "Whoever commits murder shall be punished with death or "
+            "imprisonment for life, and shall also be liable to fine."
+        ),
+        parent_label="Chapter",
+        parent_number="VI",
+        parent_title=None,
+    )
+    assert "of the BNS, 2023:" in desc
+    assert "of The BNS" not in desc
 
 
 def test_provision_canonical_url():

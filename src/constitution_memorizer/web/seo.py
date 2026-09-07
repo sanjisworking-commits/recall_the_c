@@ -47,11 +47,19 @@ def provision_canonical_url(
 
 
 def _with_the(law_name: str) -> str:
-    """Prefix ``the`` for prose (``of the Constitution of India``)."""
+    """Prefix ``the`` for prose (``of the Constitution of India``).
+
+    Used only mid-sentence (``... of {the_law}: ...``), so a name that already
+    carries a leading article is normalised to a lowercase ``the`` rather than
+    left capitalised — otherwise a registry short name like ``The BNS, 2023``
+    would render as ``of The BNS, 2023`` mid-sentence.
+    """
     name = (law_name or "").strip()
     if not name:
         return name
-    return name if name[:4].lower() == "the " else f"the {name}"
+    if name[:4].lower() == "the ":
+        return f"the {name[4:]}"
+    return f"the {name}"
 
 
 def _clean_excerpt(text: str | None, limit: int = 120) -> str:
