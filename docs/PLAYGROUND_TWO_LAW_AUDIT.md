@@ -72,7 +72,7 @@ No edits to Constitution models, Article JSON, `learning_units.json`, `ReminderE
 
 Loader: `get_bare_act(slug)` → `_load_cached` → `_parse`. Non-destructive: `BareAct.raw` keeps the parsed dict; view models do not rewrite files.
 
-Catalogue (index only): `data/reference/law_catalog.seed.json` lists NDPS, **not** BNS. Direct `/laws/bns` still works.
+Catalogue (index only): `data/reference/law_catalog.seed.json` lists NDPS and BNS as full Bare Acts (`primary_content: "full_act"`).
 
 **Out of scope:** `data/reference/laws.seed.json` mapped extracts.
 
