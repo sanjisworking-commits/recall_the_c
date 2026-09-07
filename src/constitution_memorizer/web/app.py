@@ -190,6 +190,7 @@ from constitution_memorizer.web.search import resolve_search
 from constitution_memorizer.web.seo import (
     DEFAULT_SEO_DESCRIPTION,
     DEFAULT_SEO_TITLE,
+    TWITTER_HANDLE,
     article_canonical_url,
     build_article_seo,
 )
@@ -554,6 +555,7 @@ def create_app(
     templates.env.globals["browse_mark"] = BROWSE_MARKS_BY_KEY.get
     templates.env.globals["default_seo_title"] = DEFAULT_SEO_TITLE
     templates.env.globals["default_seo_description"] = DEFAULT_SEO_DESCRIPTION
+    templates.env.globals["twitter_handle"] = TWITTER_HANDLE
 
     app = FastAPI(title="Recall the C", version="0.8.0", lifespan=_app_lifespan)
     app.state.engine = engine

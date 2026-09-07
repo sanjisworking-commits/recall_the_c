@@ -19,6 +19,10 @@ DEFAULT_SEO_DESCRIPTION = (
     "using structured learning and spaced revision."
 )
 
+# Brand account for Twitter/X card attribution. No creator handle: this is the
+# brand, not an individual content author.
+TWITTER_HANDLE = "@recallthec"
+
 # Minimum length of a cleaned excerpt before it is considered a usable snippet.
 # Below this, the description falls back to the heading rather than a thin
 # fragment (e.g. a provision whose text is only a short sub-clause).

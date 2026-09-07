@@ -17,6 +17,7 @@ from constitution_memorizer.web.app import create_app
 from constitution_memorizer.web.seo import (
     CANONICAL_ORIGIN,
     DEFAULT_SEO_DESCRIPTION,
+    TWITTER_HANDLE,
     _clean_excerpt,
     _with_the,
     article_canonical_url,
@@ -357,6 +358,10 @@ def test_article_page_has_wired_metadata(client: TestClient, number: str):
     assert _meta(html, name="twitter:title") == title
     assert _meta(html, prop="og:description") == desc
     assert _meta(html, name="twitter:description") == desc
+
+    # Brand Twitter/X account is attributed; no individual creator handle.
+    assert _meta(html, name="twitter:site") == TWITTER_HANDLE
+    assert _meta(html, name="twitter:creator") is None
 
 
 def test_article_descriptions_are_distinct(client: TestClient):
