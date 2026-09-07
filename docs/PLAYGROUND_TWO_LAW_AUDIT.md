@@ -255,7 +255,9 @@ Changing selection updates `user_playground_selection`; does not delete progress
 
 ## 13. First learning-mode implementation (Cloze)
 
-**Not** Read auto-seen. **Not** Type.
+**Status:** Batch 1 Cloze is the **architectural proof** (verbatim JSON → hide words → reveal equals source → persist). It is **not** the finished Playground learning engine.
+
+**Not** Read auto-seen. Official “Learned” (later in the finished train): all required RecallC-style modes complete, **then** Day 1 revision. Cloze-only must not remain the mastery trigger.
 
 New `GET /playground/{law_id}/learn/{locator}` (locator URL-safe: `section/8`).
 
@@ -270,7 +272,9 @@ Prototype sections (short, cloze-able): NDPS `section:1`; BNS `section:1` (or fi
 
 ## 14. Playground revision state
 
-On first Cloze completion: `status=review`, `interval_days=1`, `next_revision=today+1`. Subsequent completions advance `1→3→7→15→30→60` then `mastered`. Independent of `learning_unit_progress`. Constitution `/calendar` **unchanged** in this batch; due counts appear on My Playground cards.
+**Prototype (this overlay):** on first Cloze completion: `status=review`, `interval_days=1`, `next_revision=today+1`. Subsequent completions advance `1→3→7→15→30→60` then `mastered`. Independent of `learning_unit_progress`. Constitution `/calendar` **unchanged** in this batch; due counts appear on My Playground cards.
+
+**Finished product:** revision Day 1 starts when the section is **Learned** (required modes complete), not when Cloze alone is tapped through.
 
 If `source_hash` ≠ live hash: surface “This provision has changed” on that card; do not auto-advance.
 
