@@ -1,9 +1,12 @@
 """Bare Act registry — full statutes read end to end, not clause extracts.
 
 `laws_data.py` holds the other half of /laws: hand-seeded clauses mapped to
-Articles. This half serves whole Acts from their canonical parsed JSON, and is
+Articles. This half serves whole Acts from their runtime JSON, and is
 deliberately generic — a second Act costs a JSON file and a `BARE_ACTS` entry,
 not another reader.
+
+Importing this module, starting the app, and rendering `/laws` must not
+hydrate any Act. See `docs/law-loading.md`.
 
 The adapter is non-destructive. View models expose what the templates need, but
 nothing here mutates or re-derives the canonical file: annotations, footnote
@@ -66,6 +69,11 @@ class BareActSpec:
     # semantic table in its own handoff. The profile travels as data so the
     # templates never ask which Act they are drawing.
     render_profile: str = "ndps"
+    # Identity of the *runtime* artifact. Not the Gazette/PDF SHA-256, and not
+    # a provenance hash stored inside canonical JSON. The loader never opens
+    # or hashes the runtime file to compute this.
+    source_version: str = "1"
+    source_hash: str | None = None
 
 
 BARE_ACTS: dict[str, BareActSpec] = {
@@ -75,6 +83,7 @@ BARE_ACTS: dict[str, BareActSpec] = {
         short_name="The NDPS Act, 1985",
         back_label="← The NDPS Act, 1985",
         patch_filenames=("ndps_schedule_patch.json",),
+        source_version="1",
     ),
     "bns": BareActSpec(
         slug="bns",
@@ -82,8 +91,19 @@ BARE_ACTS: dict[str, BareActSpec] = {
         short_name="The BNS, 2023",
         back_label="← The BNS, 2023",
         render_profile="bns",
+        source_version="1",
     ),
 }
+
+
+def runtime_cache_identity(spec: BareActSpec) -> str:
+    """Process-cache key fragment from registry metadata only."""
+    return f"{spec.slug}:{spec.source_version}:{spec.source_hash or spec.filename}"
+
+
+def clear_bare_act_cache() -> None:
+    """Drop every process-local hydrated Act. Tests must call this first."""
+    _load_cached.cache_clear()
 
 
 @dataclass(frozen=True)
@@ -695,11 +715,12 @@ def _parse(
 
 
 @lru_cache(maxsize=4)
-def _load_cached(slug: str) -> BareAct:
-    # Diagnostics live *inside* the cached body, which by construction runs only
-    # when this request actually parsed the Act. Comparing cache_info() around a
-    # call would be wrong: it is process-global, so concurrent requests would
-    # read each other's deltas.
+def _load_cached(slug: str, identity: str) -> BareAct:
+    # `identity` is the cache key (slug + runtime source). It is not a path and
+    # is never used to open or hash a file. Diagnostics live *inside* the
+    # cached body, which by construction runs only when this request actually
+    # parsed the Act. Comparing cache_info() around a call would be wrong: it
+    # is process-global, so concurrent requests would read each other's deltas.
     started = perf_counter()
     spec = BARE_ACTS[slug]
     patches = [read_json(_data_path(name)) for name in spec.patch_filenames]
@@ -722,16 +743,25 @@ def _note_cache_outcome(before: int) -> None:
 
 def get_bare_act(slug: str) -> BareAct | None:
     """The Act for this slug, or None — 404 is the caller's decision."""
-    if slug not in BARE_ACTS:
+    spec = BARE_ACTS.get(slug)
+    if spec is None:
         return None
     before = snapshot_request_counters().get("bare_act_cache_misses", 0)
-    act = _load_cached(slug)
+    act = _load_cached(slug, runtime_cache_identity(spec))
     _note_cache_outcome(before)
     return act
 
 
 def list_bare_acts() -> list[BareAct]:
+    """Hydrate every registered Act. Debug/test footgun only.
+
+    Startup, GET /laws, and search must never call this. Adding a law must
+    not make catalogue rendering or process start parse another JSON file.
+    """
     before = snapshot_request_counters().get("bare_act_cache_misses", 0)
-    acts = [_load_cached(slug) for slug in BARE_ACTS]
+    acts = [
+        _load_cached(slug, runtime_cache_identity(spec))
+        for slug, spec in BARE_ACTS.items()
+    ]
     _note_cache_outcome(before)
     return acts

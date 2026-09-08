@@ -25,6 +25,7 @@ from constitution_memorizer.web import bare_acts
 from constitution_memorizer.web.app import create_app
 from constitution_memorizer.web.bare_acts import (
     BareActMissing,
+    clear_bare_act_cache,
     get_bare_act,
     split_on_footnotes,
     title_case_chapter,
@@ -203,20 +204,20 @@ def test_the_adapter_does_not_discard_canonical_fields():
 def test_a_missing_act_raises_rather_than_reading_as_empty(monkeypatch):
     monkeypatch.setattr(bare_acts, "_REPO_ROOT", Path("/nonexistent"))
     monkeypatch.setattr(bare_acts, "_WEB_DIR", Path("/nonexistent"))
-    bare_acts._load_cached.cache_clear()
+    clear_bare_act_cache()
     with pytest.raises(BareActMissing):
         get_bare_act("ndps")
-    bare_acts._load_cached.cache_clear()
+    clear_bare_act_cache()
 
 
 def test_the_packaged_copy_alone_is_enough(monkeypatch):
     """An installed build ships no data/ directory."""
     monkeypatch.setattr(bare_acts, "_REPO_ROOT", Path("/nonexistent"))
-    bare_acts._load_cached.cache_clear()
+    clear_bare_act_cache()
     try:
         assert len(get_bare_act("ndps").section_order) == 129
     finally:
-        bare_acts._load_cached.cache_clear()
+        clear_bare_act_cache()
 
 
 def test_packaged_copy_is_declared_as_package_data():
