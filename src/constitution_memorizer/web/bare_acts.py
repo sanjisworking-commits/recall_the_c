@@ -650,25 +650,68 @@ def _column_key(heading: str, index: int) -> str:
     return key or f"column_{index + 1}"
 
 
+# Provenance and audit keys carried alongside a row's data. Not columns.
+_ROW_NON_DATA_KEYS = frozenset(
+    {"source_pages", "source_page", "source_x", "source_y", "note_ids", "notes"}
+)
+
+
+def _row_fields(row: dict[str, Any]) -> tuple[str, ...]:
+    """A row's data keys, in declared order, minus provenance and audit."""
+    return tuple(
+        key
+        for key in row
+        if key not in _ROW_NON_DATA_KEYS and not key.endswith("_lines")
+    )
+
+
 def _parse_table_part(raw: dict[str, Any], fallback_id: str) -> SchedulePart:
-    """A part whose rows are dicts keyed by column name, in declared order."""
+    """A part whose rows are dicts keyed by field name, in declared order.
+
+    Column keys come from the *rows*, not from the heading text. A heading is
+    display prose and need not be its field name: BNSS's "Cognizable or
+    non-cognizable" column is the field `cognizable`. Slugifying headings
+    happened to work for `Section`/`Offence`/`Punishment` and silently
+    produced empty cells for the three columns where it did not.
+
+    A part whose rows do not line up with its declared columns raises rather
+    than rendering blanks, because a blank cell in a classification table is
+    indistinguishable from the law saying nothing there.
+    """
     headings = [str(c) for c in raw.get("columns") or []]
+    rows_raw = [row for row in raw.get("rows") or [] if isinstance(row, dict)]
+    part_id = str(raw.get("id") or fallback_id)
+
+    if rows_raw:
+        fields = _row_fields(rows_raw[0])
+        if len(fields) != len(headings):
+            raise ValueError(
+                f"schedule part {part_id!r} declares {len(headings)} columns "
+                f"but its rows carry {len(fields)} fields: {fields}"
+            )
+        missing = {
+            field for row in rows_raw for field in fields if field not in row
+        }
+        if missing:
+            raise ValueError(
+                f"schedule part {part_id!r} has rows missing fields: "
+                f"{sorted(missing)}"
+            )
+    else:
+        fields = tuple(_column_key(h, i) for i, h in enumerate(headings))
+
     columns = tuple(
-        ScheduleColumn(key=_column_key(h, i), heading=h) for i, h in enumerate(headings)
+        ScheduleColumn(key=field, heading=heading)
+        for field, heading in zip(fields, headings)
     )
     rows = tuple(
         ScheduleRow(
-            cells=tuple(str(row.get(column.key) or "") for column in columns),
+            cells=tuple(str(row.get(field) or "") for field in fields),
             source_pages=_pages(row),
         )
-        for row in raw.get("rows") or []
+        for row in rows_raw
     )
-    return SchedulePart(
-        id=str(raw.get("id") or fallback_id),
-        title=str(raw.get("title") or ""),
-        columns=columns,
-        rows=rows,
-    )
+    return SchedulePart(id=part_id, title=str(raw.get("title") or ""), columns=columns, rows=rows)
 
 
 # NDPS ships a flat `entries[]` with four named fields rather than parts/rows.

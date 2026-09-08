@@ -158,6 +158,73 @@ def test_named_first_schedule_records_render(tmp_path: Path, section: str):
     assert f">{section}</td>" in html
 
 
+def test_every_first_schedule_cell_is_populated():
+    """No column may come through empty.
+
+    Column keys are derived from the row fields, not from the heading text.
+    Slugifying headings silently blanked `Cognizable or non-cognizable`,
+    `Bailable or non-bailable` and `By what Court triable`, whose fields are
+    `cognizable`, `bailability` and `court`. A blank cell in a classification
+    table is indistinguishable from the law saying nothing there.
+    """
+    schedule = get_bare_act("bnss").schedule("first-schedule")
+    for part in schedule.parts:
+        for row in part.rows:
+            assert len(row.cells) == len(part.columns), part.id
+            blank = [c.key for c, cell in row.paired(part.columns) if not cell.strip()]
+            assert not blank, f"{part.id} {row.cells[0]!r} blank in {blank}"
+
+
+def test_column_keys_are_the_row_field_names():
+    schedule = get_bare_act("bnss").schedule("first-schedule")
+    part_i, part_ii = schedule.parts
+    assert [c.key for c in part_i.columns] == [
+        "section",
+        "offence",
+        "punishment",
+        "cognizable",
+        "bailability",
+        "court",
+    ]
+    assert [c.key for c in part_ii.columns] == [
+        "offence",
+        "cognizable",
+        "bailability",
+        "court",
+    ]
+
+
+def test_a_named_record_carries_all_six_columns(tmp_path: Path):
+    schedule = get_bare_act("bnss").schedule("first-schedule")
+    (row,) = [r for r in schedule.parts[0].rows if r.cells[0] == "103(1)"] or [
+        r for r in schedule.parts[0].rows if r.cells[0] == "49"
+    ][:1]
+    cells = dict(zip([c.key for c in schedule.parts[0].columns], row.cells))
+    assert cells["cognizable"].strip()
+    assert cells["bailability"].strip()
+    assert cells["court"].strip()
+    client, _ = _client(tmp_path)
+    html = client.get("/laws/bnss/schedule/first-schedule").text
+    for key in ("cognizable", "bailability", "court"):
+        assert cells[key] in html, key
+
+
+def test_a_part_whose_rows_do_not_match_its_columns_raises():
+    """Fail loudly rather than render a table of blanks."""
+    from constitution_memorizer.web.bare_acts import _parse_table_part
+
+    with pytest.raises(ValueError, match="declares 3 columns"):
+        _parse_table_part(
+            {"id": "p", "columns": ["A", "B", "C"], "rows": [{"a": "1", "b": "2"}]},
+            "p",
+        )
+    with pytest.raises(ValueError, match="missing fields"):
+        _parse_table_part(
+            {"id": "p", "columns": ["A", "B"], "rows": [{"a": "1", "b": "2"}, {"a": "3"}]},
+            "p",
+        )
+
+
 def test_first_schedule_page_renders_both_parts_and_notes(tmp_path: Path):
     client, _ = _client(tmp_path)
     html = client.get("/laws/bnss/schedule/first-schedule").text
