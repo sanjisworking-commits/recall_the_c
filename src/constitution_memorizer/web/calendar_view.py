@@ -167,7 +167,12 @@ def _overlay_capacity_markers(
     today: date,
     auto_entitled: bool,
 ) -> None:
-    """Add NEW · N / REVIEW · N chips plus exact planned-unit titles."""
+    """Add count chips plus exact planned-unit titles.
+
+    The month-grid stack already colours new vs review, so the aggregate
+    chip shows only the count. ``title`` keeps the full phrase for tooltips
+    and the selected-day list.
+    """
     from constitution_memorizer.planner.eligibility import is_unlearned
     from constitution_memorizer.planner.planner import LearningPlanner, _reviews_from_learn_date
     from constitution_memorizer.planner.roadmap import roadmap_horizon
@@ -257,7 +262,7 @@ def _overlay_capacity_markers(
                 CalendarChip(
                     kind="review_capacity",
                     unit_id="",
-                    label=f"REVIEW · {planned.review_count}",
+                    label=str(planned.review_count),
                     title=(
                         f"{planned.review_count} revision"
                         f"{'s' if planned.review_count != 1 else ''} on this day"
@@ -280,7 +285,7 @@ def _overlay_capacity_markers(
                 CalendarChip(
                     kind="new_planned",
                     unit_id="",
-                    label=f"NEW · {planned.new_capacity}",
+                    label=str(planned.new_capacity),
                     title=(
                         f"{planned.new_capacity} new clause"
                         f"{'s' if planned.new_capacity != 1 else ''} planned"
@@ -307,7 +312,7 @@ def _overlay_capacity_markers(
             CalendarChip(
                 kind="new_planned",
                 unit_id="",
-                label=f"NEW · {len(unit_ids)}",
+                label=str(len(unit_ids)),
                 title=f"{len(unit_ids)} new clauses planned that day",
             )
         ]

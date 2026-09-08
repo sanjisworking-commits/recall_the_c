@@ -121,10 +121,15 @@ def test_calendar_marks_new_and_review_capacity(tmp_path: Path):
         engine, year=2026, month=8, today=today, auto_entitled=True
     )
     day1 = next(d for d in view.days if d.day == 1)
-    assert any(c.kind == "new_planned" and c.label.startswith("NEW ·") for c in day1.chips)
+    assert any(
+        c.kind == "new_planned" and not c.unit_id and c.label.isdigit() for c in day1.chips
+    )
     assert any(c.kind == "new_planned" and c.unit_id for c in day1.chips)
     day2 = next(d for d in view.days if d.day == 2)
-    assert any(c.kind == "review_capacity" and c.label.startswith("REVIEW ·") for c in day2.chips)
+    assert any(
+        c.kind == "review_capacity" and not c.unit_id and c.label.isdigit()
+        for c in day2.chips
+    )
     assert day2.dominant_kind in {"scheduled", "due"}
     assert day1.dominant_kind == "new"
 

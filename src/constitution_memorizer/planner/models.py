@@ -45,9 +45,9 @@ class PlannedDay:
     @property
     def calendar_marker(self) -> str | None:
         if self.kind == "review" and self.review_count:
-            return f"REVIEW · {self.review_count}"
+            return str(self.review_count)
         if self.kind == "new" and self.new_capacity:
-            return f"NEW · {self.new_capacity}"
+            return str(self.new_capacity)
         return None
 
 

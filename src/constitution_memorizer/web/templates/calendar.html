@@ -60,10 +60,10 @@
         {% endif %}
           <span class="revisions-row-dot" aria-hidden="true"></span>
           <span class="revisions-row-copy">
-            <span class="revisions-row-title">{{ chip.label }}</span>
+            <span class="revisions-row-title">{% if chip.unit_id %}{{ chip.label }}{% else %}{{ chip.title }}{% endif %}</span>
             {# Design 4f: a planned unit reads "New · Steady plan", not its own title
-               again — the title is already the row heading. The aggregate NEW · N
-               chip keeps its count copy. #}
+               again — the title is already the row heading. Aggregate chips have
+               a count-only month-grid label, so the list uses chip.title. #}
             {% if chip.kind == 'new_planned' and chip.unit_id %}
             <span class="revisions-row-meta">New{% if pace_label %} · {{ pace_label }} plan{% endif %}</span>
             {% else %}

@@ -310,7 +310,9 @@ def test_admin_auto_plan_generates_new_capacity(tmp_path: Path):
     eng = _engine(client)
     calendar = client.get("/calendar")
     assert calendar.status_code == 200
-    assert "NEW ·" in calendar.text
+    assert "is-new-planned" in calendar.text
+    assert "NEW ·" not in calendar.text
+    assert "REVIEW ·" not in calendar.text
 
     orders, grants = _commerce_rows(repo, user_id)
     assert orders == []
