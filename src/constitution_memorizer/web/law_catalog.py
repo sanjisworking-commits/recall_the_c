@@ -1,4 +1,9 @@
-"""Static /laws index catalogue — metadata only, never Bare Act or clause JSON."""
+"""Static /laws index catalogue — metadata only, never Bare Act or clause JSON.
+
+Startup and GET /laws read this seed (and the `BARE_ACTS` / `MAPPED_LAW_IDS`
+id lists). They must not hydrate a runtime or canonical Act. See
+`docs/law-loading.md`.
+"""
 
 from __future__ import annotations
 

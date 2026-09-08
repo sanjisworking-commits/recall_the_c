@@ -22,6 +22,7 @@ from constitution_memorizer.multiuser.settings import (
     clear_settings_cache,
 )
 from constitution_memorizer.web import bare_acts
+from constitution_memorizer.web.bare_acts import clear_bare_act_cache
 from constitution_memorizer.web.app import create_app
 from constitution_memorizer.web.request_context import (
     begin_request_timings,
@@ -218,7 +219,7 @@ def test_a_stage_means_a_real_read_not_merely_a_call(
 def test_first_touch_is_a_miss_and_the_next_is_a_hit(
     tmp_path: Path, caplog: logging.LogCaptureFixture
 ):
-    bare_acts._load_cached.cache_clear()
+    clear_bare_act_cache()
     client = _client(tmp_path, signed_in=False)
     with caplog.at_level(logging.INFO, logger="uvicorn.error"):
         caplog.clear()
@@ -242,7 +243,7 @@ def test_the_act_cache_is_shared_across_all_four_routes(
     Later reader routes must not be called "cold" merely because they are
     their first URL hit.
     """
-    bare_acts._load_cached.cache_clear()
+    clear_bare_act_cache()
     client = _client(tmp_path, signed_in=False)
     with caplog.at_level(logging.INFO, logger="uvicorn.error"):
         caplog.clear()
@@ -282,7 +283,7 @@ def test_cache_diagnostics_are_request_local():
 
 
 def test_diagnostics_are_silent_outside_a_request():
-    bare_acts._load_cached.cache_clear()
+    clear_bare_act_cache()
     assert bare_acts.get_bare_act("ndps") is not None
     assert snapshot_request_counters() == {}
     assert snapshot_request_notes() == {}
