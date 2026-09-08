@@ -38,7 +38,7 @@ On load: recompute `source_hash` from live JSON. Mismatch → provision changed;
 
 ### 3. Minimum user-owned DB state + RLS
 
-`user_playground_item` / `selection` / `progress` are **persistent learning**, not the monthly roster quota (that quota is planned separately in [PAYMENT_ENTITLEMENT_AUDIT.md](PAYMENT_ENTITLEMENT_AUDIT.md); do not treat overlay rows as capacity).
+`user_playground_item` / `selection` / `progress` are **persistent learning**, not the monthly roster quota and **not** the device registry (those are planned separately in [PAYMENT_ENTITLEMENT_AUDIT.md](PAYMENT_ENTITLEMENT_AUDIT.md); do not treat overlay rows as capacity or as installations).
 
 All Playground tables are **user-owned**. No global generated module table.
 
@@ -223,7 +223,7 @@ Progress row **is** revision state (no fourth table). Ladder `(1, 3, 7, 15, 30, 
 
 **Uniques:** PKs above. One activation per user per law.
 
-These three tables are **persistent learning**, not monthly quota. Leaving a future roster **must not** delete them. Re-add later resumes Learned / revision / `source_hash`. Identity is `law_id`, not JSON version. Do **not** implement `user_playground_law_entitlement` here.
+These three tables are **persistent learning**, not monthly quota and **not** the device registry. Leaving a future roster **must not** delete them. Re-add later resumes Learned / revision / `source_hash`. Identity is `law_id`, not JSON version. Do **not** implement `user_playground_law_entitlement` here.
 
 **RLS:** `ENABLE ROW LEVEL SECURITY` on all three; no PostgREST policies. App filters `user_id`.
 
