@@ -4622,28 +4622,69 @@ code {
   margin: 0 0 8px;
   border: 1px solid var(--hairline);
   border-radius: 14px;
-  overflow: hidden;
+  /* Scrolls horizontally: columns are sized to their content rather than
+     squeezed into the viewport. A legal table is read across the row. */
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
 }
 
-/* Fixed layout so the four columns hold the design's 34px / 1fr / 1fr / 1.4fr
-   proportions and fit a phone without panning. */
+/* Every schedule table scrolls horizontally. Columns are sized to their
+   content rather than squeezed into the viewport: a legal table is read
+   across the row, and wrapping "110ZT" or an offence description into a
+   two-character column destroys that. Panning is the cost, and the right one
+   — cardifying a row would separate an offence from its own cognizability. */
 .bareact-schedule-table {
-  width: 100%;
   border-collapse: collapse;
-  table-layout: fixed;
+  table-layout: auto;
+  /* Fill the wrapper when the content is narrow, grow past it when not. */
+  min-width: 100%;
 }
 
-.bareact-schedule-table col.is-serial {
-  width: 34px;
+/* Identifiers never wrap: a serial or section number is one token. */
+.bareact-schedule-table th.is-serial,
+.bareact-schedule-table td.is-serial,
+.bareact-schedule-table th.is-section,
+.bareact-schedule-table td.is-section {
+  white-space: nowrap;
+  width: 1%;
 }
 
-.bareact-schedule-table col.is-inn,
-.bareact-schedule-table col.is-other {
-  width: 26.5%;
+/* Prose columns wrap at a readable measure instead of running to the width of
+   their longest entry. */
+.bareact-schedule-table th:not(.is-serial):not(.is-section),
+.bareact-schedule-table td:not(.is-serial):not(.is-section) {
+  min-width: 148px;
+  max-width: 280px;
 }
 
-.bareact-schedule-table col.is-chem {
-  width: 37%;
+.bareact-schedule-part {
+  margin: 22px 0 8px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mid);
+}
+
+.bareact-schedule-notes {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid var(--page);
+}
+
+.bareact-schedule-note {
+  margin: 0 0 8px;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.bareact-schedule-note-num {
+  font-weight: 600;
+  margin-right: 5px;
+  color: var(--ink);
 }
 
 .bareact-schedule-table th {
@@ -4671,28 +4712,28 @@ code {
   border-bottom: 0;
 }
 
-.bareact-schedule-serial {
+/* NDPS's per-column typography, now keyed on the column's own key rather than
+   on classes the generic template no longer emits. Any schedule without these
+   columns is simply unaffected. */
+.bareact-schedule-table td.is-serial {
   font-size: 10.5px;
   font-weight: 600;
   color: var(--mid);
 }
 
-.bareact-schedule-inn {
+.bareact-schedule-table td.is-inn {
   font-size: 10.5px;
   font-weight: 500;
-  overflow-wrap: break-word;
 }
 
-.bareact-schedule-other {
+.bareact-schedule-table td.is-other {
   font-size: 10.5px;
   color: var(--muted);
-  overflow-wrap: break-word;
 }
 
-.bareact-schedule-chem {
+.bareact-schedule-table td.is-chemical {
   font-size: 10px;
   color: var(--mid);
-  overflow-wrap: anywhere;
 }
 
 .memory-log-form {

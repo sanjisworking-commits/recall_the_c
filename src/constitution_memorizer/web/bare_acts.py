@@ -93,6 +93,20 @@ BARE_ACTS: dict[str, BareActSpec] = {
         render_profile="bns",
         source_version="1",
     ),
+    "bnss": BareActSpec(
+        slug="bnss",
+        filename="bnss_runtime_v1.json",
+        short_name="The BNSS, 2023",
+        back_label="← The BNSS, 2023",
+        # Not a new profile: BNSS's nine node types are exactly the set BNS
+        # already renders, so a `bnss` profile would fork the renderer for
+        # nothing. Verified node type by node type against ProvisionRow.
+        render_profile="bns",
+        # Identity of the runtime artifact (bnss_runtime_v1.json), not of the
+        # canonical export — that is schema 1.2 / parser v3 and is named
+        # bnss_canonical_v3.json to keep the two generations apart.
+        source_version="1",
+    ),
 }
 
 
@@ -280,42 +294,132 @@ class ProvisionRow:
 
 
 @dataclass(frozen=True)
-class ScheduleEntry:
-    serial_number: str
-    inn: str
-    other_names: str
-    chemical_name: str
-    serial_note_id: str | None = None
+class ScheduleColumn:
+    """A column's stable key and its printed heading."""
 
-    @property
-    def cells(self) -> tuple[str, ...]:
-        return (self.serial_number, self.inn, self.other_names, self.chemical_name)
+    key: str
+    heading: str
+
+
+@dataclass(frozen=True)
+class ScheduleRow:
+    """Cells in column order.
+
+    Positional rather than named: the template reads headings and cell count
+    from the part's columns, so no column name is hardcoded anywhere in the
+    rendering path. `note_ids` is plural because the canonical annotation
+    fields are lists — NDPS carries at most one today, but narrowing the model
+    to match today's data would lose what the source can express.
+    """
+
+    cells: tuple[str, ...]
+    note_ids: tuple[str, ...] = ()
+    source_pages: tuple[int, ...] = ()
+
+    def paired(
+        self, columns: tuple[ScheduleColumn, ...]
+    ) -> tuple[tuple[ScheduleColumn, str], ...]:
+        """Columns zipped to cells, short rows padded rather than truncated."""
+        return tuple(
+            (column, self.cells[i] if i < len(self.cells) else "")
+            for i, column in enumerate(columns)
+        )
+
+
+@dataclass(frozen=True)
+class SchedulePart:
+    """One table within a schedule. A schedule may hold several."""
+
+    id: str
+    title: str
+    columns: tuple[ScheduleColumn, ...]
+    rows: tuple[ScheduleRow, ...]
+
+
+@dataclass(frozen=True)
+class ScheduleNote:
+    """An explanatory note printed under a schedule's tables."""
+
+    number: str
+    text: str
+    source_pages: tuple[int, ...] = ()
 
 
 @dataclass(frozen=True)
 class Schedule:
+    """A schedule, generic across Acts.
+
+    `kind` is "table" when the content fits the parts/columns/rows model above.
+    Anything else — BNSS's Second Schedule is 58 positioned-text forms — is kept
+    whole on `raw_payload` with a reason, and is neither routed nor rendered.
+    That escape hatch is the difference between deferring a structure and
+    silently discarding it; it is not a form abstraction.
+    """
+
     slug: str
     title: str
     reference: str
     heading: str
-    columns: tuple[str, ...]
-    entries: tuple[ScheduleEntry, ...]
+    parts: tuple[SchedulePart, ...] = ()
+    notes: tuple[ScheduleNote, ...] = ()
+    number: str = ""
+    kind: str = "table"
+    unsupported_reason: str = ""
+    source_pages: tuple[int, ...] = ()
+    raw_payload: dict[str, Any] | None = field(default=None, repr=False)
+
+    @property
+    def is_table(self) -> bool:
+        return self.kind == "table"
+
+    @property
+    def label(self) -> str:
+        """What the schedule is called, for the eyebrow above its heading.
+
+        BNSS names its schedules by ordinal (`number: "First"`) and titles them
+        by subject ("CLASSIFICATION OF OFFENCES"); NDPS carries the whole name
+        in the title ("THE SCHEDULE") with no ordinal. Without this the BNSS
+        page would print its subject twice, as eyebrow and as heading.
+        """
+        if self.number:
+            return f"{self.number} Schedule".upper()
+        return self.title
 
     @property
     def display_heading(self) -> str:
-        return title_case_chapter(self.heading)
+        return title_case_chapter(self.heading or self.title)
+
+    @property
+    def row_count(self) -> int:
+        return sum(len(part.rows) for part in self.parts)
 
     @property
     def range_label(self) -> str:
-        if not self.entries:
-            return ""
-        first = self.entries[0].serial_number
-        last = self.entries[-1].serial_number
+        """The short label on the Act's chapter list.
+
+        A single-part schedule that is a numbered list of its own is described
+        by its span: NDPS shows "1-110ZT". Anything else is described by size.
+        BNSS's First Schedule must not show "49-357" — those are *BNS* section
+        numbers in a lookup column, and a span there would read as a range of
+        this Act's own sections.
+        """
+        if len(self.parts) != 1 or not self.parts[0].rows:
+            return f"{self.row_count} entries" if self.row_count else ""
+        keys = [row.cells[0] for row in self.parts[0].rows if row.cells]
+        if not keys or len(set(keys)) != len(keys):
+            return f"{self.row_count} entries"
+        first, last = keys[0], keys[-1]
         return first if first == last else f"{first}{EN_DASH}{last}"
 
     @property
     def note_ids(self) -> tuple[str, ...]:
-        return tuple(e.serial_note_id for e in self.entries if e.serial_note_id)
+        seen: list[str] = []
+        for part in self.parts:
+            for row in part.rows:
+                for note_id in row.note_ids:
+                    if note_id not in seen:
+                        seen.append(note_id)
+        return tuple(seen)
 
 
 @dataclass(frozen=True)
@@ -450,6 +554,15 @@ class BareAct:
         return None, None
 
 
+def _footnote_ids(annotations) -> tuple[str, ...]:
+    """Every footnote id on an annotation list, in order."""
+    return tuple(
+        str(a.get("note_id"))
+        for a in annotations or []
+        if isinstance(a, dict) and a.get("type") == "footnote" and a.get("note_id")
+    )
+
+
 def _first_footnote_id(annotations) -> str | None:
     for ann in annotations or []:
         if ann.get("type") == "footnote" and ann.get("note_id"):
@@ -507,27 +620,142 @@ def _schedule_slug(raw_id: str) -> str:
     return stem.replace("_", "-").strip("-") or "schedule"
 
 
-def _parse_schedule(raw: dict[str, Any]) -> Schedule:
-    entries = tuple(
-        ScheduleEntry(
-            # Strings throughout: 105A and 110ZT are serial numbers too.
-            serial_number=str(e.get("serial_number") or ""),
-            inn=str(e.get("international_non_proprietary_name") or ""),
-            other_names=str(e.get("other_nonproprietary_names") or ""),
-            chemical_name=str(e.get("chemical_name") or ""),
-            serial_note_id=_first_footnote_id(e.get("serial_annotations")),
+def _pages(raw: dict[str, Any]) -> tuple[int, ...]:
+    """Normalise page provenance.
+
+    BNSS's First Schedule uses `source_pages` on Part I rows and the singular
+    `source_page` on Part II rows. Both mean the same thing; the model carries
+    one shape.
+    """
+    pages = raw.get("source_pages")
+    if pages is None:
+        single = raw.get("source_page")
+        pages = [single] if single is not None else []
+    if isinstance(pages, (str, int)):
+        pages = [pages]
+    return tuple(int(p) for p in pages if isinstance(p, (int, str)) and str(p).isdigit())
+
+
+def _column_key(heading: str, index: int) -> str:
+    key = re.sub(r"[^a-z0-9]+", "_", str(heading or "").lower()).strip("_")
+    return key or f"column_{index + 1}"
+
+
+def _parse_table_part(raw: dict[str, Any], fallback_id: str) -> SchedulePart:
+    """A part whose rows are dicts keyed by column name, in declared order."""
+    headings = [str(c) for c in raw.get("columns") or []]
+    columns = tuple(
+        ScheduleColumn(key=_column_key(h, i), heading=h) for i, h in enumerate(headings)
+    )
+    rows = tuple(
+        ScheduleRow(
+            cells=tuple(str(row.get(column.key) or "") for column in columns),
+            source_pages=_pages(row),
         )
-        for e in raw.get("entries") or []
+        for row in raw.get("rows") or []
+    )
+    return SchedulePart(
+        id=str(raw.get("id") or fallback_id),
+        title=str(raw.get("title") or ""),
+        columns=columns,
+        rows=rows,
+    )
+
+
+# NDPS ships a flat `entries[]` with four named fields rather than parts/rows.
+# Adapted here into the generic model so its canonical dataset is never
+# rewritten to suit a newer Act — the loader absorbs the difference.
+_NDPS_ENTRY_FIELDS: tuple[tuple[str, str], ...] = (
+    ("serial", "serial_number"),
+    ("inn", "international_non_proprietary_name"),
+    ("other", "other_nonproprietary_names"),
+    ("chemical", "chemical_name"),
+)
+
+
+def _parse_entry_schedule(raw: dict[str, Any], slug: str) -> Schedule:
+    headings = [str(c) for c in raw.get("columns") or []]
+    columns = tuple(
+        ScheduleColumn(
+            key=key,
+            heading=headings[i] if i < len(headings) else source.replace("_", " "),
+        )
+        for i, (key, source) in enumerate(_NDPS_ENTRY_FIELDS)
+    )
+    rows = tuple(
+        ScheduleRow(
+            # Strings throughout: 105A and 110ZT are serial numbers too.
+            cells=tuple(str(entry.get(source) or "") for _, source in _NDPS_ENTRY_FIELDS),
+            note_ids=_footnote_ids(entry.get("serial_annotations")),
+            source_pages=_pages(entry),
+        )
+        for entry in raw.get("entries") or []
     )
     return Schedule(
-        slug=_schedule_slug(str(raw.get("id") or "")),
+        slug=slug,
         title=str(raw.get("title") or "The Schedule"),
         reference=str(raw.get("reference") or ""),
         heading=str(raw.get("heading") or ""),
-        columns=tuple(str(c) for c in raw.get("columns") or ()),
-        entries=entries,
+        parts=(SchedulePart(id="entries", title="", columns=columns, rows=rows),),
+        number=str(raw.get("number") or ""),
+        source_pages=_pages(raw),
     )
 
+
+def _parse_schedule(raw: dict[str, Any]) -> Schedule:
+    """Dispatch on the shape the source actually has.
+
+    Three shapes so far: `entries[]` (NDPS), `parts[]` of column tables (BNSS's
+    First Schedule), and anything else. The last is kept whole rather than
+    coerced — see Schedule.raw_payload.
+    """
+    slug = _schedule_slug(str(raw.get("id") or ""))
+    if raw.get("entries") is not None:
+        return _parse_entry_schedule(raw, slug)
+
+    if raw.get("parts") is not None:
+        parts = tuple(
+            _parse_table_part(part, f"part_{i + 1}")
+            for i, part in enumerate(raw.get("parts") or [])
+        )
+        notes = tuple(
+            ScheduleNote(
+                number=str(note.get("number") or ""),
+                text=str(note.get("text") or ""),
+                source_pages=_pages(note),
+            )
+            for note in raw.get("explanatory_notes") or []
+        )
+        return Schedule(
+            slug=slug,
+            title=str(raw.get("title") or "The Schedule"),
+            reference=str(raw.get("reference") or ""),
+            heading=str(raw.get("heading") or raw.get("title") or ""),
+            parts=parts,
+            notes=notes,
+            number=str(raw.get("number") or ""),
+            source_pages=_pages(raw),
+        )
+
+    # Unknown shape — BNSS's Second Schedule is 58 positioned-text forms. Keep
+    # every byte, name why it is not rendered, and stay out of the table path.
+    unsupported = sorted(
+        k for k in raw if k not in {"id", "number", "title", "reference", "source_pages"}
+    )
+    return Schedule(
+        slug=slug,
+        title=str(raw.get("title") or "The Schedule"),
+        reference=str(raw.get("reference") or ""),
+        heading=str(raw.get("heading") or raw.get("title") or ""),
+        number=str(raw.get("number") or ""),
+        kind="unsupported",
+        unsupported_reason=(
+            "no table representation for this schedule's content: "
+            + ", ".join(unsupported)
+        ),
+        source_pages=_pages(raw),
+        raw_payload=raw,
+    )
 
 def _collect_footnotes(sources) -> dict[str, Footnote]:
     """One lookup across the Act and its patches. Collisions are fatal.

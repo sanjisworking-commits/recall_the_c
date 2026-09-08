@@ -7,32 +7,39 @@
   <div class="mobile-topbar">
     <a class="mobile-back" href="/laws/{{ act.slug }}">{{ act.back_label }}</a>
   </div>
-  <p class="bareact-reader-eyebrow">{{ schedule.title }}{% if schedule.reference %} · {{ schedule.reference }}{% endif %}</p>
+  <p class="bareact-reader-eyebrow">{{ schedule.label }}{% if schedule.reference %} · {{ schedule.reference }}{% endif %}</p>
   <h1 class="bareact-reader-title">{{ schedule.display_heading }}</h1>
 
+  {# Columns, headings and cell count all come from the schedule's own
+     metadata. A schedule with four drug columns and one with six offence
+     columns render through the same loop; no column name appears here. #}
+  {% for part in schedule.parts %}
+  {% if part.title %}<p class="bareact-schedule-part">{{ part.title|title }}</p>{% endif %}
   <div class="bareact-schedule-wrap">
     <table class="bareact-schedule-table">
-      {# Fixed layout with explicit widths: the design's 34px / 1fr / 1fr / 1.4fr,
-         expressed so a real table can hold it. A table, not a grid of divs, so
-         each cell keeps its column header for a screen reader. #}
-      <colgroup>
-        <col class="is-serial"><col class="is-inn"><col class="is-other"><col class="is-chem">
-      </colgroup>
       <thead>
-        <tr>{% for column in schedule.columns %}<th scope="col">{{ column }}</th>{% endfor %}</tr>
+        <tr>{% for column in part.columns %}<th scope="col" class="is-{{ column.key }}">{{ column.heading }}</th>{% endfor %}</tr>
       </thead>
       <tbody>
-        {% for entry in schedule.entries %}
+        {% for row in part.rows %}
         <tr>
-          <td class="bareact-schedule-serial">{% if entry.serial_note_id %}{{ fn.fn_anchor(entry.serial_note_id, entry.serial_number) }}{% else %}{{ entry.serial_number }}{% endif %}</td>
-          <td class="bareact-schedule-inn">{{ entry.inn }}</td>
-          <td class="bareact-schedule-other">{{ entry.other_names }}</td>
-          <td class="bareact-schedule-chem">{{ entry.chemical_name }}</td>
+          {% for column, cell in row.paired(part.columns) %}
+          <td class="is-{{ column.key }}">{% if loop.first and row.note_ids %}{{ fn.fn_anchor(row.note_ids[0], cell) }}{% else %}{{ cell }}{% endif %}</td>
+          {% endfor %}
         </tr>
         {% endfor %}
       </tbody>
     </table>
   </div>
+  {% endfor %}
+
+  {% if schedule.notes %}
+  <div class="bareact-schedule-notes">
+    {% for note in schedule.notes %}
+    <p class="bareact-schedule-note"><span class="bareact-schedule-note-num">{{ note.number }}.</span>{{ note.text }}</p>
+    {% endfor %}
+  </div>
+  {% endif %}
 
   {% include "partials/bare_act_footnotes.html" %}
 </section>

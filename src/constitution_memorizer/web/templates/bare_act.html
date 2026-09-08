@@ -44,9 +44,12 @@
 
     {# Schedules sit below the chapters, in the chapter row's own clothes:
        they are part of the Act, not an appendix to it. #}
-    {% for schedule in act.schedules %}
+    {# Only schedules the table model can represent are navigable. An
+       unsupported one (BNSS's 58 positioned-text forms) is loaded and
+       preserved, but linking it would promise a page we cannot draw. #}
+    {% for schedule in act.schedules if schedule.is_table %}
     <a class="bareact-schedule-row" href="/laws/{{ act.slug }}/schedule/{{ schedule.slug }}">
-      <span class="bareact-chapter-tag">Schedule</span>
+      <span class="bareact-chapter-tag">{{ schedule.label }}</span>
       <span class="bareact-schedule-copy">
         <span class="bareact-schedule-name">{{ schedule.display_heading }}</span>
         <span class="bareact-schedule-ref">{{ schedule.reference }}</span>

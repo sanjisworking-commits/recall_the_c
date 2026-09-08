@@ -31,6 +31,29 @@
       }
     },
     {
+      "id": "bnss",
+      "title": "The Bharatiya Nagarik Suraksha Sanhita, 2023",
+      "short_title": "BNSS",
+      "year": 2023,
+      "aliases": [
+        "BNSS",
+        "Bharatiya Nagarik Suraksha Sanhita",
+        "Nagarik Suraksha Sanhita",
+        "CrPC",
+        "Code of Criminal Procedure",
+        "Criminal Procedure Code"
+      ],
+      "subjects": ["criminal"],
+      "primary_subject": "criminal",
+      "display_order": 7,
+      "scope_label": "39 Chapters · Sections 1–531",
+      "primary_content": "full_act",
+      "content": {
+        "full_act": {"ref": "bnss"},
+        "key_provisions": null
+      }
+    },
+    {
       "id": "ndps",
       "title": "The Narcotic Drugs and Psychotropic Substances Act, 1985",
       "short_title": "NDPS Act",

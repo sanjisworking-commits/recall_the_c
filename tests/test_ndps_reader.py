@@ -341,15 +341,21 @@ def test_the_schedule_is_the_whole_list():
     assert schedule.title == "THE SCHEDULE"
     assert schedule.reference == "[See clause (xxiii) of Section 2]"
     assert schedule.display_heading == "List of Psychotropic Substances"
-    assert len(schedule.entries) == 162
+    # Adapted into the generic parts/columns/rows model, not migrated: the
+    # NDPS canonical JSON is untouched and still ships flat `entries[]`.
+    assert schedule.is_table
+    assert len(schedule.parts) == 1
+    part = schedule.parts[0]
+    assert len(part.rows) == 162
+    assert schedule.row_count == 162
     assert schedule.range_label == "1–110ZT"
-    assert schedule.columns[0] == "Sl. No."
-    assert len(schedule.columns) == 4
+    assert [c.heading for c in part.columns][0] == "Sl. No."
+    assert len(part.columns) == 4
 
 
 def test_schedule_serials_stay_strings():
     act = get_bare_act("ndps")
-    serials = [e.serial_number for e in act.schedules[0].entries]
+    serials = [row.cells[0] for row in act.schedules[0].parts[0].rows]
     assert serials[0] == "1"
     assert serials[-1] == "110ZT"
     for probe in ("105A", "110A", "110ZF"):
@@ -360,7 +366,7 @@ def test_schedule_serials_stay_strings():
 def test_amended_serials_are_the_schedule_anchors():
     act = get_bare_act("ndps")
     annotated = [
-        e.serial_number for e in act.schedules[0].entries if e.serial_note_id
+        row.cells[0] for row in act.schedules[0].parts[0].rows if row.note_ids
     ]
     assert annotated == [
         "77", "105A", "106", "110", "110A", "110B",
@@ -573,16 +579,25 @@ def test_the_schedule_screen_renders_every_entry(tmp_path: Path):
     assert "bareact-fn" not in first_row
 
 
-def test_the_schedule_table_holds_its_columns_without_panning(tmp_path: Path):
-    """Four columns sized to fit a phone — the design shrinks type for this."""
+def test_the_schedule_table_scrolls_rather_than_squeezing(tmp_path: Path):
+    """Columns are sized to their content and the table pans.
+
+    This replaces an earlier guarantee that four columns fit a phone without
+    panning. Squeezing them made "110ZT" wrap inside a 34px column and broke
+    the serial list's readability; a legal table is read across the row, so
+    scrolling is the right trade. Cardifying is still never an option — it
+    would separate a substance from its own classification.
+    """
     client, _ = _client(tmp_path)
     css = client.get("/static/styles.css").text
-    table = css.split(".bareact-schedule-table {", 1)[1].split("}", 1)[0]
-    assert "table-layout: fixed" in table
-    serial = css.split(".bareact-schedule-table col.is-serial {", 1)[1].split("}", 1)[0]
-    assert "width: 34px" in serial
     wrap = css.split(".bareact-schedule-wrap {", 1)[1].split("}", 1)[0]
-    assert "overflow-x" not in wrap
+    assert "overflow-x: auto" in wrap
+    table = css.split(".bareact-schedule-table {", 1)[1].split("}", 1)[0]
+    assert "table-layout: auto" in table
+    assert "min-width: 100%" in table
+    # A serial or section number is one token and never wraps.
+    serial = css.split(".bareact-schedule-table th.is-serial,", 1)[1].split("}", 1)[0]
+    assert "white-space: nowrap" in serial
 
 
 def test_footnote_colours_go_through_tokens(tmp_path: Path):
