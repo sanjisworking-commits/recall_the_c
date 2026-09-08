@@ -404,6 +404,24 @@ def test_identifier_columns_never_wrap(tmp_path: Path):
     assert "min-width" in prose and "max-width" in prose
 
 
+def test_schedule_tables_set_their_own_type_size(tmp_path: Path):
+    """Table cells are smaller than running prose, and NDPS smaller still.
+
+    Cells inherited the 16px body size, which gave the BNSS First Schedule
+    161px rows and four per screen. A schedule is scanned across rows, so the
+    base is set on the table; NDPS's per-column rules stay below it and keep
+    that Act's appearance fixed.
+    """
+    client, _ = _client(tmp_path)
+    css = client.get("/static/styles.css").text
+    base = css.split(".bareact-schedule-table td {", 1)[1].split("}", 1)[0]
+    assert "font-size: 12.5px" in base
+    for key in ("serial", "inn", "other", "chemical"):
+        rule = css.split(f".bareact-schedule-table td.is-{key} {{", 1)[1].split("}", 1)[0]
+        size = float(rule.split("font-size:", 1)[1].split("px", 1)[0])
+        assert size < 12.5, key
+
+
 def test_ndps_column_typography_survived_the_generic_refactor(tmp_path: Path):
     """Per-column sizing moved to the column key; the appearance did not."""
     client, _ = _client(tmp_path)

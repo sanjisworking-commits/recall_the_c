@@ -4702,10 +4702,16 @@ code {
 }
 
 .bareact-schedule-table td {
-  padding: 8px 12px;
+  padding: 7px 11px;
   vertical-align: top;
   border-bottom: 1px solid var(--page);
-  line-height: 1.5;
+  /* Table type is set smaller than running prose. A schedule is scanned and
+     compared across rows, not read line by line, so density is the point:
+     inheriting the 16px body size gave the BNSS First Schedule 161px rows
+     and four of them per screen. NDPS's per-column sizes below are smaller
+     still and keep overriding this, so its appearance does not move. */
+  font-size: 12.5px;
+  line-height: 1.45;
 }
 
 .bareact-schedule-table tr:last-child td {
