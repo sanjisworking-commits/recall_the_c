@@ -1,138 +1,108 @@
-# Payment & entitlement audit (Plus / Pro / Max → Playground)
+# Payment, entitlement, and Playground — architecture lock
 
-**Date:** 2026-09-07  
-**Scope:** map today’s Razorpay duration-pass system onto RecallC account states plus a **Playground** paid layer. Constitution Learn becomes the signed-in free value.  
-**Companion:** [`docs/PLAYGROUND_TWO_LAW_AUDIT.md`](PLAYGROUND_TWO_LAW_AUDIT.md) (NDPS/BNS overlay on `cursor/playground-220d`). This document is the payment companion. Do not merge overlay architecture into this file.
+**Scope of this document.** This is the **locked product architecture** for RecallC access: user types, monthly Playground roster, clocks, schema to build, CTA states, sequential batches, and remaining commercial open cells. It is **not** a description of current production behaviour. Current code is still Razorpay **one-time duration passes** plus a **two-law overlay** with **no subscription check**. The overlay is a Cloze **proof**, not the finished product.
 
-**Central question:** What is the minimum entitlement architecture that (a) keeps reading laws free, (b) gives every signed-in user full Constitution RecallC learning, (c) sells Plus/Pro/Max as Playground law-acquisition, and (d) **never deletes user progress** when payment state changes?
+**Amendment (this revision).** This document **supersedes** every prior Playground rule in this file that described **lifetime unlocks**, **cumulative acquisition**, **“new laws per billing cycle,”** **forever-free re-entry after first unlock**, or **`user_playground_law_entitlement UNIQUE(user_id, law_id)` as quota**. Those phrases must **not** be implemented.
 
-**Philosophy (non-negotiable):**
+Claude Design copy that said “10 new laws each billing cycle / already-unlocked = 0 next month / Playground grows month over month / reset = provider `period_end`” is **not** to be implemented. That design file is **not in this repo**; this paragraph is the in-repo supersession.
 
-> Payment controls entitlement. It must never control ownership of the user's progress data.
+**Not in this document.** Cursor must **not** invent commercial numbers. Display names, INR prices, GST, monthly vs annual as MVP, Razorpay state → access matrix, `past_due` grace, and refund / partial / chargeback access stay **open** in [§21](#21-open-commercial-and-provider-cells-do-not-invent). Do not encode them as product truth.
 
-Cancellation, expiry, downgrade, and failed renewal **lock Playground learning**. They do not delete Constitution progress, Playground selections, Cloze, revision, or unlock history.
+---
 
-**Single product truth (locked):**
-
-> Guest = explore. Account = complete Constitution. Subscription = Playground. Tier = how many new laws you can bring into Playground.
-
-| User type | Constitution | Laws | Playground |
-|-----------|--------------|------|------------|
-| **Guest** | Read + existing guest Learn (no persist) | Read | No access → **Sign in** |
-| **Signed-in**, no active Playground subscription | **All Articles, all six modes** | Read | No learning → **Subscribe** |
-| **plus** | Full | Read | Full Playground learning, **10 new laws / quota period** |
-| **pro** | Full | Read | Full Playground learning, **30 new laws / quota period** |
-| **max** | Full | Read | Full Playground learning, **unlimited** |
-
-Tiers do **not** differ in modes, ladders, Cloze, or revision quality. They differ only in new-`law_id` quota.
+## Locked product truth (read this first)
 
 ```text
-Who is the user?
-        │
-        ├── Guest
-        │      Constitution → existing guest rules
-        │      Laws → read
-        │      Playground → sign in
-        │
-        ├── Signed-in / no active Playground subscription
-        │      Constitution → FULL
-        │      Laws → read
-        │      Playground → subscribe
-        │
-        └── Active subscriber
-               Constitution → FULL
-               Laws → read
-               Playground → FULL
-                    │
-                    └── new-law quota by tier (plus 10 / pro 30 / max unlimited)
+Guest      → Constitution guest Learn (explore, no persist); laws read; Playground = Sign in (never checkout first)
+Signed-in  → full Constitution (all Articles, all six modes); laws read; Playground = Subscribe
+Subscriber → Constitution full; Playground learning; tier = monthly roster capacity only
 ```
 
-Article-level entitlements (3 free Articles, claims, slots, Type/Recite as premium, per-Article gates) **disappear from active access decisions**. Rows may remain in the DB unread until a later drop.
+Internal SKUs: `plus` / `pro` / `max`. Public `display_name` is config (open until named). **Tiers do not change modes, ladders, or quality** — only **how many distinct laws may be active in the current Playground month**.
+
+```text
+plus → at most 10 distinct laws active in the current Playground month
+pro  → at most 30
+max  → unlimited (law_limit = null)
+```
+
+**A slot is consumed** when `consumed_at` is set for `(user, playground_period, law_id)`. Same-month remove + re-add does **not** increment usage. Remove does **not** refund a slot. Next month does **not** auto-charge last month’s laws; they are **carry-forward candidates** (Keep = consume one **new-period** slot; decline = free that slot for a different law).
+
+**Progress lives forever** in existing overlay tables: [`user_playground_item` / selection / progress](../src/constitution_memorizer/playground/db.py). Leaving the roster **never deletes** them. Re-add later **resumes** Learned / revision / `source_hash`. Identity is `law_id`, not JSON version.
+
+**Clocks stay split:** `billing_period_*` (Razorpay) vs `playground_period_*` (monthly roster). An **annual** billing period still gets a **new roster each Playground month**. Do **not** use Razorpay `current_period_*` as the roster quota clock.
+
+```text
+PAYMENTS → SUBSCRIPTION → USER-TYPE → MONTHLY ROSTER → LEARNING
+```
+
+**Invariant (must hold in every batch):** Payment controls **Playground access**. The monthly roster controls **which laws are active**. **Neither may delete the user's progress.**
 
 ---
 
-## Review gate (answers)
+## 0. Review-gate questions (architecture)
 
-### 1. Account vs subscription vs tier
+### 1. User-type hierarchy (locked)
 
-Do **not** keep a single overloaded `guest | free | subscribed` for product decisions.
+| Type | Constitution Learn | Playground |
+|---|---|---|
+| **Guest** | Guest explore only (today’s unauthenticated Learn: session-only, no persist) | **Sign in** — never jump to checkout |
+| **Signed-in, not subscribed** | **Full** Constitution: all Articles, **all six modes**, persist | **Subscribe** |
+| **Subscriber** | Same full Constitution | Learn laws on the **current-month roster**; capacity by tier |
 
-| Axis | Values | Today | Target |
-|------|--------|-------|--------|
-| **Account** | `guest` \| `authenticated` | `current_user is None` vs signed-in (`auth` middleware) | Unchanged |
-| **Subscription** | `none` \| `active` \| `cancel_at_period_end` \| `past_due` \| `expired` | Derived from latest `billing_orders` pass (`active` / `expiring` / `lapsed` only). `is_subscribed()` is a stub (`False`) | Provider subscription object + period bounds |
-| **Tier** | `plus` \| `pro` \| `max` \| transitional `legacy` | None. Catalog is `plan_days` (3…365) | Configured product mapping, never hardcoded Razorpay IDs in routes |
-| **Capability source** | `none` \| `payment` \| `subscription` \| `admin_override` \| `admin_grant` \| `promotion` \| `legacy` \| `local_owner` | `access_source` on LearnAccess; paid path is `access_grants.source='payment'` | Same idea, plus `admin_override` for Playground unlimited **without pretending Max** |
+Do **not** keep article-count entitlements, Type/Recite as a paid gate, or “3 free Articles” as access control. Those tables remain in the database until a later drop but must **stop being read** for access.
 
-`EntitlementService` (when built) asks **user type**, then only:
+### 2. What payment buys (locked)
 
-1. Can this user use Playground learning?
-2. Can this user unlock another new `law_id` this quota period?
+Payment buys **Playground access** (subscriber user-type) plus a **monthly roster capacity** (`plus` 10 / `pro` 30 / `max` unlimited). It does **not** buy extra modes, a faster ladder, or quality. It does **not** buy a lifetime unlock library that stays fully learnable without current-roster membership.
 
-Templates/routes never branch `if plan == "plus"` for modes. Never `if tier == max` for Cloze quality.
+Constitution Learn for any authenticated user is **included** (all Articles, all six modes). Guests keep explore-only Constitution Learn.
 
-### 2. Constitution: no article-level entitlement in the new resolver
+### 3. One access resolver (locked)
 
-**Today (when `ARTICLE_ENTITLEMENTS_ENABLED`):** signed-in free users claim **3 Articles**; Type/Recite lock at cap; payment `access_grants` unlocks full Constitution Learn.
+One `EntitlementService` (name flexible) answers: authenticated? subscribed? `can_use_constitution_learn`? `can_open_playground`? current `playground_period_*`? `playground_law_limit` / `used` / `remaining`? `is_law_active_this_period(law_id)`? `has_historical_playground_progress(law_id)`? `can_add_law_this_period`?
 
-**Locked target:** `authenticated = true` → Constitution Learn = **full** (all Articles, all six modes, persist). The new resolver **never asks**:
+Routes and templates **do not** call Razorpay, `access_grants`, or `user_free_articles` directly. They never branch `if plan == "plus"` for modes or Cloze quality. Admin override: Playground on, `law_limit=null`, **not** `tier=max`.
 
-- Has this Article been claimed?
-- How many slots remain?
-- Is this mode premium?
-- Is Type/Recite allowed?
-- Has the user crossed the free Article limit?
+### 4. Persistence (locked destination)
 
-**Guests:** keep **today’s** guest Learn (four open modes, no persist). Do not invent a new guest matrix.
+| Store | Role |
+|---|---|
+| **`user_subscription`** (new) | Billing/access: provider ids, SKU, `status`, `billing_period_start` / `billing_period_end`. **Not** the roster quota clock. |
+| **`user_playground_period`** (new) | One row per user per Playground month: `UNIQUE(user_id, period_start)`; `period_end`; `tier_snapshot`; `law_limit` (`null` = max); `status` `draft\|active\|closed`; `confirmed_at`. |
+| **`user_playground_roster_item`** (new) | Which laws occupy this month: `UNIQUE(user_id, period_start, law_id)`; `origin`; `carried_from_previous_period`; `consumed_at` / `removed_at` / `declined_at`. **No statute text.** |
+| **Existing overlay** `user_playground_item` / `selection` / `progress` | **Persistent learning / history only** — not quota. Never deleted because a law left the roster. |
+| **Do not implement** `user_playground_law_entitlement` | That table was the **lifetime unlock** quota. It is **struck**. Do not create it. |
 
-**Migration:** do **not** delete `user_free_articles`, `access_grants`, `billing_orders`, or duration-pass history. Stop **reading** them for allow/deny once the user-type resolver is on. A technical kill-switch may flip old resolver → new resolver for deploy/rollback; that is **not** a second product model and not an open architecture question. Drop obsolete tables only after nothing depends on them. Do **not** map 3-Day/180-Day SKUs onto plus/pro/max.
+**Usage** = `COUNT(distinct law_id)` where `consumed_at IS NOT NULL` for the current period. Atomic add at 9/10 must never yield 11.
 
-### 3. Provider path for billing cycles
+**Statute JSON** stays files on disk. Roster and overlay tables never store act text.
 
-Today: **Razorpay Orders + Standard Checkout**, client HMAC verify, **no webhooks**, **no Subscriptions API**, **no `current_period_start/end`**. Catalog `recurring=True` on 30/60/180/365-day plans is marketing only; `status_from_paid_order` forces `recurring=False`.
+### 5. EntitlementService fields (locked)
 
-**Plus/Pro/Max unlocks are 10 / 30 new laws per month**, not “whatever period the provider invoices.” `quota_period` and `billing_period` are separate clocks (see §14 and the decision gate). Proposed path (implementation after this audit **and** after the decision gate’s open cells are filled):
+| Field | Meaning |
+|---|---|
+| `is_authenticated` | Session user present |
+| `is_subscribed` | Playground-capable subscription in an allowed status (matrix **open** in §21) |
+| `can_use_constitution_learn` | Guest explore **or** any authenticated user (full) |
+| `can_open_playground` | Subscribed (learning). Guests and signed-in non-subscribers still see marketing/CTAs. |
+| `playground_period_start` / `playground_period_end` | **Roster** month, **not** Razorpay `current_period_*` |
+| `billing_period_start` / `billing_period_end` | Provider invoice window (informational / renewals) |
+| `playground_law_limit` | 10 / 30 / `null` (unlimited) from current period `tier_snapshot` |
+| `playground_laws_used` | Distinct `law_id` with `consumed_at` set this period |
+| `playground_laws_remaining` | `null` if unlimited; else `max(0, limit − used)` |
+| `is_law_active_this_period(law_id)` | Roster item exists with `consumed_at` set and not effectively removed for this period |
+| `has_historical_playground_progress(law_id)` | Overlay item/progress exists (any past period) |
+| `can_add_law_this_period` | Subscribed **and** (unlimited **or** used < limit). Re-adding a law **already consumed this period** is always allowed (no extra slot). |
+| ~~`new_laws_unlocked_this_cycle`~~ | **Dropped.** Quota is not “new laws this billing cycle.” |
 
-- New commercial products: RecallC Plus / Pro / Max as **Razorpay Subscriptions** (or Plans + Subscriptions), with **plan IDs in configuration**, not application if-trees.
-- Webhook (or verified subscription fetch) is **authoritative** for `active`, `cancel_at_period_end` (access until `current_period_end`), `past_due`, expired.
-- Until Subscriptions ship, **do not** fake a calendar-month quota on one-time passes.
-- Existing duration passes remain `legacy`: Constitution already free-for-signed-in under target; **no Playground quota** on `legacy` unless a later explicit conversion offer.
-
-### 4. `UserPlaygroundLawEntitlement` vs `user_playground_item`
-
-| Table | Role |
-|-------|------|
-| `user_playground_law_entitlement` (**new**) | Historical unlock of `law_id` (not a JSON version): `UNIQUE(user_id, law_id)`, `first_unlocked_at`, `unlock_quota_period_start`, `tier_at_unlock`. Answers “has this user ever unlocked this law?” Quota counts **first** unlocks whose `unlock_quota_period_start` equals the **current quota period** start. |
-| `user_playground_item` (existing overlay on `cursor/playground-220d`) | Visible activation / last activity. Archive (hide from My Playground) **must not** delete the entitlement row. Re-add of an owned law must not consume quota. |
-| `user_playground_selection` / `user_playground_progress` | Learning state. Never deleted on expiry. Writes require `can_use_playground_law`. |
-
-Constitution Articles are **never** rows in the unlock table.
-
-Quota check + insert must be **one transaction** with a uniqueness constraint so two parallel Add requests cannot create 11/10.
-
-### 5. Central EntitlementService
-
-New module (proposed name `constitution_memorizer.entitlements.service`). **Do not** grow Constitution `compute_learn_access` article matrices. The new path does not read `user_free_articles` for access.
-
-Playground and HTTP handlers call the service. [`web/billing.py`](src/constitution_memorizer/web/billing.py) stays Razorpay I/O. Playground repositories stay learning/progress.
-
-Resolved snapshot is **user type** + Playground answers only:
-
-- `authenticated`
-- `playground` (can use learning on already-unlocked laws)
-- `can_unlock_new_law` + `law_limit` / `used` / `remaining` (`null` = max)
-
-Admin: `admin_override=true`, Playground enabled, `law_limit=null`. **Not** `tier=max`.
-
-Tiers never gate individual Learn modes. An unlocked law gets the **same** Cloze / Type / Recite / Letters / Test / revision as any other paid tier.
-
-Server-side enforcement (UI is not the boundary): add/confirm unlock, Learn writes, revision writes. Guests: sign-in CTA only, never checkout.
+Constitution Article access is **not** an entitlement field (authenticated = all Articles).
 
 ---
 
-## 1. Existing account states
+## 1. Existing account states (code today)
 
-Resolved in [`src/constitution_memorizer/web/entitlements.py`](src/constitution_memorizer/web/entitlements.py):
+Resolved in [`src/constitution_memorizer/web/entitlements.py`](../src/constitution_memorizer/web/entitlements.py):
 
 | Code | Meaning |
 |------|---------|
@@ -140,13 +110,13 @@ Resolved in [`src/constitution_memorizer/web/entitlements.py`](src/constitution_
 | `free` | Signed-in, `is_subscribed()` false, no active grant/admin |
 | `subscribed` | Multiuser off (local owner) **or** `is_subscribed()` **or** `has_active_recall_access()` |
 
-`is_subscribed(user)` **always returns `False`**. Paid Constitution access is **not** that function. It is `has_active_recall_access()` → `AccessOverride.has_recall_access` → admin role **or** unrevoked `access_grants` row (`admin_grant` / `promotion` / `payment`) with `starts_at ≤ now` and `ends_at` null or in the future ([`admin/store.py`](src/constitution_memorizer/admin/store.py)).
+`is_subscribed(user)` **always returns `False`**. Paid Constitution access is **not** that function. It is `has_active_recall_access()` → `AccessOverride.has_recall_access` → admin role **or** unrevoked `access_grants` row (`admin_grant` / `promotion` / `payment`) with `starts_at ≤ now` and `ends_at` null or in the future ([`admin/store.py`](../src/constitution_memorizer/admin/store.py)).
 
-Guest vs authed HTTP: [`auth/guest.py`](src/constitution_memorizer/auth/guest.py) (`GUEST_PUBLIC_PREFIXES`, `AUTH_REQUIRED_PREFIXES`). `/laws` is guest-readable. Playground routes on this overlay redirect guests to login in the handler (`/login?next=…`), not via `AUTH_REQUIRED_PREFIXES`.
+Guest vs authed HTTP: [`auth/guest.py`](../src/constitution_memorizer/auth/guest.py) (`GUEST_PUBLIC_PREFIXES`, `AUTH_REQUIRED_PREFIXES`). `/laws` is guest-readable. Playground routes on this overlay redirect guests to login in the handler (`/login?next=…`), not via `AUTH_REQUIRED_PREFIXES`.
 
 ---
 
-## 2. Existing free-user behaviour
+## 2. Existing free-user behaviour (code today)
 
 Flag: `ARTICLE_ENTITLEMENTS_ENABLED` → `entitlements_active()`. **Default false** (legacy: all six Constitution modes, no claim UI).
 
@@ -164,13 +134,13 @@ When the flag is on:
 
 **Laws / Bare Acts:** not on this matrix. Feature flag `RELEVANT_LAWS_ENABLED` 404s `/laws*` only. Reading is free.
 
-**Playground (existing overlay on `cursor/playground-220d`):** any signed-in user may add NDPS/BNS and Cloze with **no payment check**.
+**Playground (existing overlay on `cursor/playground-220d`):** any signed-in user may add NDPS/BNS and Cloze with **no payment check**. Overlay rows are **persistent learning**, not a monthly roster.
 
 ---
 
-## 3. Existing plans / products
+## 3. Existing plans / products (code today)
 
-[`src/constitution_memorizer/web/pricing.py`](src/constitution_memorizer/web/pricing.py): **one product, seven durations**. Identity = integer `plan_days`. **No Plus/Pro/Max. No Razorpay plan IDs.**
+[`src/constitution_memorizer/web/pricing.py`](../src/constitution_memorizer/web/pricing.py): **one product, seven durations**. Identity = integer `plan_days`. **No Plus/Pro/Max. No Razorpay plan IDs.**
 
 | Days | INR | Catalog `recurring` | Runtime |
 |------|-----|---------------------|---------|
@@ -184,16 +154,18 @@ When the flag is on:
 
 Copy says “Renews every N days” for longer SKUs; `status_from_paid_order` **always** sets `recurring=False`.
 
+These INR figures describe **today’s duration catalog**. They are **not** Plus/Pro/Max prices (those stay **open** in §21).
+
 ---
 
-## 4. Provider integration
+## 4. Provider integration (code today)
 
 | Item | Location / behaviour |
 |------|----------------------|
-| Orders API | `POST https://api.razorpay.com/v1/orders` in [`billing.py`](src/constitution_memorizer/web/billing.py) |
+| Orders API | `POST https://api.razorpay.com/v1/orders` in [`billing.py`](../src/constitution_memorizer/web/billing.py) |
 | Checkout | Razorpay Checkout.js; client sends `{days}` only; server prices from catalog |
 | Verify | `POST /api/billing/verify` HMAC-SHA256 `order_id\|payment_id` |
-| Env | `PRICING_ENABLED`, `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` ([`multiuser/settings.py`](src/constitution_memorizer/multiuser/settings.py)) |
+| Env | `PRICING_ENABLED`, `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET` ([`multiuser/settings.py`](../src/constitution_memorizer/multiuser/settings.py)) |
 | Live checkout | `billing_enabled()` = pricing flag **and** both keys |
 | Webhooks | **None** |
 | Subscriptions API | **None** |
@@ -203,18 +175,21 @@ Failure mode: user pays in Checkout then closes the tab before verify → **no g
 
 Purchase flow: `/pricing` → `/subscribe/confirm` → `/subscribe/pay` → order → Checkout → verify → `access_grants` `source=payment`, `ends_at = now + plan_days` → onboarding or `/subscribe/result`.
 
+**Migration risk:** duration `access_grants` must map onto `user_subscription` **without wiping** overlay progress. Do **not** grandfather duration access as lifetime unlocks or as forever-learnable Playground. Historical overlay rows stay; learning still requires a **current-period roster slot** after the new model ships.
+
 ---
 
-## 5. Subscription DB model
+## 5. Subscription DB model (code today)
 
-**There is no `subscriptions` table.**
+**There is no `subscriptions` table.** There is **no** monthly roster table. Destination schema is [§16](#16-database-plan--do-not-build-in-this-docs-only-change).
 
 | Table | Migration | Role |
 |-------|-----------|------|
-| `billing_orders` | [`20260818_0007_billing_orders.py`](alembic/versions/20260818_0007_billing_orders.py) | `order_id`, `user_id`, `plan_days`, `amount_paise`, `status` `created`\|`paid`, `razorpay_payment_id`, timestamps |
-| `access_grants` | [`20260818_0006`](alembic/versions/20260818_0006_admin_roles_grants_audit.py) + 0007 source `'payment'` | Capability window: `starts_at`, `ends_at`, `revoked_at`, `reason` (`razorpay:{order_id}` for payments) |
+| `billing_orders` | [`20260818_0007_billing_orders.py`](../alembic/versions/20260818_0007_billing_orders.py) | `order_id`, `user_id`, `plan_days`, `amount_paise`, `status` `created`\|`paid`, `razorpay_payment_id`, timestamps |
+| `access_grants` | [`20260818_0006`](../alembic/versions/20260818_0006_admin_roles_grants_audit.py) + 0007 source `'payment'` | Capability window: `starts_at`, `ends_at`, `revoked_at`, `reason` (`razorpay:{order_id}` for payments) |
 | `user_roles` | 0006 | `admin` only |
-| `user_free_articles` | 0004 | Constitution free claims |
+| `user_free_articles` | 0004 | Constitution free claims (**stop reading** for access in Batch B) |
+| Playground overlay | [`20260906_0017_playground_overlay.py`](../alembic/versions/20260906_0017_playground_overlay.py) | `user_playground_item` / `selection` / `progress` — **persistent learning only** |
 
 Paid grant insert is **the same transaction** as marking the order paid (`mark_billing_order_paid`). Replay verify is idempotent (no second grant).
 
@@ -222,13 +197,13 @@ Profile lifecycle uses `latest_paid_billing_order()`, not a subscription id.
 
 ---
 
-## 6. Current entitlement / paywall checks
+## 6. Current entitlement / paywall checks (code today)
 
 No dedicated paywall middleware. Layers:
 
-1. Auth guest gate ([`guest.py`](src/constitution_memorizer/auth/guest.py)).
+1. Auth guest gate ([`guest.py`](../src/constitution_memorizer/auth/guest.py)).
 2. Feature flags (`PRICING_ENABLED` 404s pricing routes; `ARTICLE_ENTITLEMENTS_ENABLED` for Learn matrix; `RELEVANT_LAWS_ENABLED` for `/laws`).
-3. [`entitlements.py`](src/constitution_memorizer/web/entitlements.py): `resolve_learn_access`, `compute_learn_access`, `can_use_auto_plan`, `access_summary`, `subscription_status`.
+3. [`entitlements.py`](../src/constitution_memorizer/web/entitlements.py): `resolve_learn_access`, `compute_learn_access`, `can_use_auto_plan`, `access_summary`, `subscription_status`.
 4. Learn POST `/seen`, `/quiz`, Done, speech routes check `access.is_locked(mode)`.
 5. Billing routes require signed-in user (`_billing_user`).
 
@@ -238,15 +213,15 @@ Playground (existing overlay): **no** entitlement import; sign-in only.
 
 ---
 
-## 7. Webhook lifecycle
+## 7. Webhook lifecycle (code today)
 
 **Does not exist.** Lifecycle is Checkout success handler → `/api/billing/verify`.
 
-Target (after Batch A, blocked until the decision gate is filled): Razorpay subscription webhooks mapped to RecallC states. **Acceptance (hard):** validate `X-Razorpay-Signature` against the **raw request body**; persist `x-razorpay-event-id` for idempotency; tolerate duplicates and out-of-order delivery; support webhook-secret rotation; provider-fetch reconciliation when local state is ambiguous. Client Checkout verify must not be the only grant path.
+Target (after Batch A, blocked until §21 open cells are filled): Razorpay subscription webhooks mapped to RecallC states. **Acceptance (hard):** validate `X-Razorpay-Signature` against the **raw request body**; persist `x-razorpay-event-id` for idempotency; tolerate duplicates and out-of-order delivery; support webhook-secret rotation; provider-fetch reconciliation when local state is ambiguous. Client Checkout verify must not be the only grant path. Webhooks update **billing** dates; they do **not** consume roster slots.
 
 ---
 
-## 8. Cancellation / expiry handling
+## 8. Cancellation / expiry handling (code today)
 
 | Mechanism | Today |
 |-----------|--------|
@@ -259,21 +234,21 @@ Target (after Batch A, blocked until the decision gate is filled): Razorpay subs
 | Extend | Buy another duration pass (“Extend Recall”) |
 | Progress on expiry | Constitution `learning_unit_progress` **kept**. Free matrix may **lock Type/Recite** and block Done on unclaimed Articles. **No row deletion.** |
 
-Target Playground expiry: same ownership rule — **lock learning, keep rows**, CTA **Resume your Playground**.
+Target Playground expiry: **lock learning, keep overlay and roster rows**. Exact `past_due` grace is **open** (§21). Resubscribe starts a **new** playground period; overlay history remains.
 
-`cancel_at_period_end`: not representable today. Must map from provider: Playground remains available until `current_period_end`.
+`cancel_at_period_end`: not representable today. Must map from provider: Playground **access** remains until `billing_period_end`. Roster membership is still **this playground month**.
 
 ---
 
-## 9. Current admin bypass
+## 9. Current admin bypass (code today)
 
-[`AccessOverride.has_recall_access`](src/constitution_memorizer/admin/store.py) = `is_admin` **or** effective grant. Independent of `ADMIN_ENABLED` (console flag). Used by `resolve_learn_access` as `access_source="admin"` while `level` stays `subscribed` — **no fake purchase**.
+[`AccessOverride.has_recall_access`](../src/constitution_memorizer/admin/store.py) = `is_admin` **or** effective grant. Independent of `ADMIN_ENABLED` (console flag). Used by `resolve_learn_access` as `access_source="admin"` while `level` stays `subscribed` — **no fake purchase**.
 
 Admin Entitlement Preview (`rtc_admin_preview`) simulates Learn locks only; **does not persist**; ignored by `can_use_auto_plan`.
 
 **Playground (existing overlay):** no admin bypass. An admin is a normal signed-in user.
 
-Target: EntitlementService `admin_override` → Playground enabled, `law_limit=null`, `tier` unset / not Max.
+Target: EntitlementService `admin_override` → Playground enabled, `law_limit=null`, `tier` unset / not Max. Admin override is **not** a lifetime unlock library.
 
 ---
 
@@ -286,313 +261,273 @@ Target: EntitlementService `admin_override` → Playground enabled, `law_limit=n
 | **Orphan payments** | Paid in Razorpay, never verified → no `access_grants`. Webhook backfill is a later ops batch, not guesswork mapping. |
 | **Catalog `recurring` lie** | Users may believe auto-renew exists. Communication required before Subscriptions launch. |
 | **`is_subscribed` stub** | Any new code that ORs this function without grants will treat **everyone as unpaid**. |
-| **Playground already open on this overlay** | Signed-in users may add NDPS/BNS before paywalls exist. On entitlement launch, treat existing `user_playground_item` rows on `cursor/playground-220d` as **grandfathered unlocks** (write entitlement rows in a migration, **do not** count them against the first Plus quota period). |
+| **Playground already open on this overlay** | Signed-in users may add NDPS/BNS before paywalls exist. On entitlement launch, treat existing `user_playground_item` rows as **historical overlay progress** (persistent learning). They are **not** grandfathered lifetime unlocks and **do not** auto-consume the first Plus roster. After launch, learning those laws requires a **current-period roster slot**. |
 | **3 free Articles** | Turning off enforcement must not delete `user_free_articles`. |
 | **Admin/promo grants** | Keep Constitution (and, if product agrees, Playground) via `admin_grant` / `promotion` without a Max SKU. |
 
-**Transitional `legacy`:** duration-pass grant still active → `subscription_status=legacy_active`, `tier` null, Constitution full (redundant once all signed-in are full), **Playground still locked** unless product later grants a conversion coupon. Do not assign Plus/Pro/Max from day-count.
+**Transitional `legacy`:** duration-pass grant still active → `subscription_status=legacy_active`, `tier` null, Constitution full (redundant once all signed-in are full), **Playground still locked** unless product later grants a conversion coupon. Do not assign Plus/Pro/Max from day-count. Do not write `user_playground_law_entitlement` rows.
 
 ---
 
-## 11. Proposed Plus / Pro / Max mapping
+## 10b. Article entitlements that must stop gating access
 
-After migration, commercial products:
+| Store | Used for (today) | Destination |
+|---|---|---|
+| `user_free_articles` | 3 claimed Articles | **Stop reading** for access. Authenticated users get **all** Articles. |
+| `access_grants` | Duration paid bypass of Type/Recite | **Stop reading** for Article/mode gates. Later drop when unused. |
+| `user_article_progress` / `learning_unit_progress` | SRS / quiz | **Keep.** Learning state, not entitlement. |
+| Playground overlay tables | Item / selection / progress | **Keep** as persistent learning. **Not** monthly quota. |
 
-| Product | Internal `tier` | Playground | New law unlocks per **quota period (month)** |
-|---------|-----------------|------------|-----------------------------------------------|
-| RecallC Plus | `plus` | yes | 10 |
-| RecallC Pro | `pro` | yes | 30 |
-| RecallC Max | `max` | yes | unlimited (`law_limit=null`) |
-
-Public `display_name` (e.g. “RecallC Plus”) is configuration, not entitlement logic. Internal codes stay `plus` / `pro` / `max`.
-
-Provider plan IDs: configuration (env or a small `billing_products` table), e.g. `product_tier=plus`, `provider_plan_id=<configured>`. Feature code never switches on the Razorpay id **or** on marketing names.
-
-Pricing **amounts**, GST, and display names are **open** (decision gate — fill before creating Razorpay Plans). Existing 3…365 day SKUs remain **legacy catalog** until retired; they must not be reused as Plus/Pro/Max aliases.
-
-Constitution: **all authenticated users**, all tiers, including `subscription=none`.
+`can_access_article` / `article_is_locked` / `user_has_paid_access` as **Article gates** are replaced by user-type. `user_has_paid_access` is **not** the Playground subscriber bit once `user_subscription` exists.
 
 ---
 
-## 12. Central EntitlementService design
+## 10c. Target stack (locked)
 
 ```text
-PAYMENTS (Razorpay I/O)
-    → SUBSCRIPTION records (status + period + tier mapping)
-        → EntitlementService.resolve(user, now)
-            → Constitution Learn (authenticated → full)
-            → Playground (capabilities + quota)
+PAYMENTS
+  Razorpay subscriptions (plan ids, webhooks, signature on RAW body)
+        ↓
+SUBSCRIPTION
+  user_subscription: status, SKU, billing_period_*  (not roster quota)
+        ↓
+USER-TYPE
+  Guest | Signed-in | Subscriber
+        ↓
+MONTHLY ROSTER
+  user_playground_period + user_playground_roster_item
+  usage = COUNT(distinct law_id) WHERE consumed_at IS NOT NULL
+  (this period only)
+        ↓
+LEARNING
+  user_playground_item / selection / progress  (lifetime; never deleted by roster)
+  RecallC-style modes on Bare Acts
 ```
 
-Conceptual snapshot:
-
-```json
-{
-  "authenticated": true,
-  "subscription": "active",
-  "tier": "plus",
-  "constitution_learn": true,
-  "playground": true,
-  "can_activate_new_law": true,
-  "law_limit": 10,
-  "used": 4,
-  "remaining": 6,
-  "current_period_start": "2026-09-12",
-  "current_period_end": "2026-10-11",
-  "quota_period_start": "2026-09-12",
-  "quota_period_end": "2026-10-11",
-  "admin_override": false,
-  "access_source": "subscription"
-}
-```
-
-Max: `"law_limit": null, "used": <count or omit>, "remaining": null`.
-
-Expired subscriber with history: `"subscription": "expired", "playground": false, "constitution_learn": true` (if authenticated). Progress rows still exist.
-
-Playground code asks `assert_can_use_playground(user)` and `assert_can_unlock(user, law_id)`. It does not import Razorpay. It does not ask which modes the tier allows.
-
-Constitution Learn for authenticated users is **full** in the new resolver. `compute_learn_access` article questions are not used. A kill-switch may keep the old resolver live during cutover; the new resolver never reads claims.
+Constitution Learn sits on **user-type** only (guest vs authenticated), not on roster.
 
 ---
 
-## 13. Playground law-unlock accounting
 
-A law unlock is consumed only for a **first** `UNIQUE(user_id, law_id)` insert, and only after **confirm**. Accidental Add must not burn the last slot.
+## 11. Unlock accounting — **replaced by monthly roster**
 
-```text
-Add to Playground
-  → guest? Sign-in CTA (preserve law in next=); never checkout
-  → authenticated, no eligible subscription? Unlock Playground CTA (Plus/Pro/Max)
-  → already entitled UNIQUE(user_id, law_id)? allow (re-show item); no quota
-  → else show confirm: “This will use 1 of your N law unlocks”
-       cancel → no write
-       confirm → quota check + entitlement insert in one transaction
-                  Plus used < 10 / Pro used < 30 / Max skip
-                  stamp unlock_quota_period_start + tier_at_unlock
-                  upsert user_playground_item
-```
+**Struck (do not implement):**
 
-**Used this quota period:** count entitlement rows for this user where `unlock_quota_period_start` equals the current **quota period** start. Not: visible cards, not: Cloze completions, not: Constitution, not: the Razorpay invoice period if that period is annual.
+- Lifetime `user_playground_law_entitlement UNIQUE(user_id, law_id)` as quota
+- “N **new** laws per billing cycle”
+- Cumulative library that stays fully learnable forever without using a current-month slot
+- Forever-free re-entry after first unlock
+- Resetting quota from Razorpay `current_period_end` / `billing_period_*`
+- Auto-consuming last month’s laws on the new period
 
-Remove/archive: set item status hidden; entitlement remains; **no quota refund**. Payment refund / chargeback is a **separate** commercial rule (decision gate — open).
+**Locked replacement:**
 
-The commercial object is `law_id` (e.g. `ndps`), not “NDPS version X”. If the Bare Act JSON is amended, the user still owns that law and does **not** spend another monthly unlock. `source_hash` on selection/progress flags review; it does not reopen the shop.
-
-NDPS and BNS are ordinary `law_id`s. Quota is **laws**, not sections.
-
----
-
-## 14. Quota period vs billing period
-
-The product promise is **10 / 30 new laws per month**. That clock is `quota_period`, **not** `billing_period`.
-
-| Clock | Meaning |
-|-------|---------|
-| `billing_period` | Provider invoice window (`current_period_start` / `current_period_end` on the subscription). May later be annual. |
-| `quota_period` | Window that counts new `law_id` unlocks (Plus 10 / Pro 30). Default model: **one calendar-aligned or subscription-anchor month**, independent of whether the customer pays monthly or annually. |
-
-An annual Razorpay plan must **not** mean 10 laws per year. Whether MVP ships monthly-only subscriptions or annual plans with a 30-day quota period is **open** (decision gate — Batch A schema). Implementation must still store both clocks from day one.
-
-Example (monthly billing that matches quota): start 12 Sep → quota through 11 Oct; Plus 10 new laws; reset is **not** 1 Oct unless the quota period is defined that way.
-
-If the provider is unavailable: fail closed for **new** unlocks; do not invent a month. Existing entitled laws remain usable while local status still grants Playground access (see state→access matrix — open).
-
-Upgrade mid-cycle: keep `used`; raise `law_limit` (7/10 → 7/30). Do not reset used to 0.
-
-Downgrade **does not apply mid-cycle** (locked commercial rule, §15): until next renewal the user keeps the higher tier’s limit. After renewal, historical unlocks stay; new unlocks use Plus 10 for the new quota period (`used` for that new period starts at 0).
+| Rule | Behaviour |
+|---|---|
+| Capacity | Plus ≤10 / Pro ≤30 / Max unlimited **distinct laws with `consumed_at` this Playground month** |
+| Consume | First confirm-to-add in this period sets `consumed_at` for that `(user, period, law_id)` |
+| Same-month re-add | Row already consumed this period → **no extra slot** |
+| Remove | Sets `removed_at`; **does not** refund; slot stays used until the period ends |
+| Next month | Previous laws are **candidates**. **Keep** → consume one **new** period slot. **Decline** → `declined_at`; slot free for another law. No auto-charge. |
+| History | Overlay item/selection/progress **unchanged**. Hide from “active Playground” ≠ delete. |
+| Resume | Re-add later (any future period with a free slot) resumes Learned / revision / `source_hash` |
+| Identity | `law_id`, not file version. Version bumps update `source_hash` on existing overlay rows; they do **not** mint a new roster consume. |
+| Confirm copy | First consume this period: “This will use 1 of your N law spaces for {month}.” Already active this month: skip. |
 
 ---
 
-## 15. Downgrade / upgrade behaviour
+## 12. EntitlementService (repeat of §5 — implement against this table)
 
-Quota math after a tier change was already defined (keep `used`, raise/lower **new-unlock** limit, never lock historical laws because lifetime size > 10). The **commercial event** is separate.
-
-**Locked:** **upgrade immediately** (Razorpay update now; extra charge may be prorated). `used` is preserved; `law_limit` becomes the new tier’s monthly cap at once. **Downgrade at next renewal** (schedule the plan change at cycle end). No mid-cycle refund, no mid-cycle quota shrink.
-
-| Change | When it applies | Entitlements | Quota | Progress |
-|--------|-----------------|--------------|-------|----------|
-| Plus → Pro / Max | Immediately | Unchanged ownership | `used` kept; limit 30 or unlimited | Unchanged |
-| Max / Pro → Plus | Next renewal | All previously unlocked laws stay usable while subscription eligible | New quota period uses Plus 10; lifetime size not capped at 10 | Unchanged |
-| Any → expired | At period end / per state matrix | Laws remain in DB; learning locked | n/a | Unchanged |
-
-One RecallC user may have **one** current commercial Playground subscription. A second purchase is an upgrade/change of that subscription, not a parallel Razorpay subscription.
-
-Do not lock laws because total history > 10.
+See [§5](#5-entitlementservice-fields-locked). Drop `new_laws_unlocked_this_cycle`. Do **not** expose a lifetime `unlocked_law_ids` list as the access check; expose **`is_law_active_this_period`** plus **`has_historical_playground_progress`**.
 
 ---
 
-## 16. Expiry / resubscription behaviour
+## 13. Confirm-to-consume (current-period slot)
 
-Expiry / lapsed / cancelled after `period_end`:
+| Step | Rule |
+|---|---|
+| 1 | User picks a law (catalogue or Bare Act). |
+| 2 | If **already active this period** (`consumed_at` set, not treating as removed-for-learning): go to section select / Continue. **No** second confirm. |
+| 3 | If **not** consumed this period **and** `can_add_law_this_period`: confirm **“This will use 1 of your N law spaces for {month}.”** Confirm → insert/update roster item, set `consumed_at`, **then** section select. Overlay item may already exist from a past period — **do not** recreate progress. |
+| 4 | If at cap and this `law_id` was **not** consumed this period: **Playground full**. Existing active laws remain learnable. Offer Remove (no refund) or wait until next Playground month. |
+| 5 | Guest: Sign in. Signed-in not subscribed: Subscribe. Never ask a guest to consume a slot. |
 
-- Constitution: still full if authenticated.
-- Law library: still readable.
-- Playground Learn / revision / new unlocks: locked.
-- UI: **Resume your Playground**, not empty-state new user.
-- Data: do **not** DELETE `user_playground_*` or entitlement rows.
-
-Resubscribe: same user, same unlocks immediately available; new quota period `used` starts at 0 for **new** laws only.
-
-`past_due`, `authenticated`, `pending`, `halted`, `paused`, `completed`, and grace length are **not** chosen here. Fill the state→access matrix in the decision gate before Batch A. Whatever the matrix says, **do not delete** progress or entitlement rows.
+Do **not** silently consume a slot by loading `/playground/{law_id}`.
 
 ---
 
-## 17. DB changes (proposed; not in this phase)
+## 14. Two clocks (locked)
 
-| Object | Purpose |
-|--------|---------|
-| `user_subscription` | `user_id`, provider customer/subscription ids, `status`, `tier`, `billing_period_*`, `quota_period_*`, `cancel_at_period_end`, timestamps. At most one current commercial subscription per user. |
-| `billing_products` or env map | `tier` → `provider_plan_id` + `display_name` (not hardcoded in feature code) |
-| `user_playground_law_entitlement` | `user_id`, `law_id` (identity, not JSON version), `first_unlocked_at`, `unlock_quota_period_start`, `tier_at_unlock`; UNIQUE `(user_id, law_id)`; RLS enable, no policies |
-| `billing_webhook_events` | Persist `x-razorpay-event-id`; idempotent processing |
-| Keep | `billing_orders`, `access_grants` (legacy + admin/promo), `user_free_articles` (**unread** for new access; do not drop until unused) |
-| Playground overlay tables | Unchanged ownership; item “archive” column or status if missing |
+| Clock | Source | Used for |
+|---|---|---|
+| **`billing_period_start` / `billing_period_end`** | Razorpay subscription invoice window | Charging, renewals, “paid through”. **Not** roster capacity. |
+| **`playground_period_start` / `playground_period_end`** | App calendar month (or equivalent monthly window defined in EntitlementService) | Roster capacity, usage count, carry-forward UI. **Renamed from** the withdrawn `quota_period_*`. |
 
-SQLite + Alembic dual path, same as overlay (`ENABLE ROW LEVEL SECURITY`, app role bypasses).
+**Annual billing** still opens a **new playground period every month**. Do **not** give annual Plus twelve months of the same 10-law roster without rollover.
 
-Atomic unlock: only after confirm. `INSERT … ON CONFLICT DO NOTHING` returning whether inserted; if inserted, `SELECT COUNT(*) WHERE unlock_quota_period_start = :quota_period_start` must be `<= limit` else rollback. Serialisable / row lock on a per-user quota ledger if counts race.
+Webhook `period_end` updates **billing** dates only. Creating the next `user_playground_period` is an **app** job (on first Playground hit in the new month, or a daily reconciler — implementer’s choice, must be deterministic).
 
 ---
 
-## 18. API / backend changes (proposed; not in this phase)
+## 15. Upgrade / downgrade (locked product; INR open)
 
-- `EntitlementService` + tests; stop using stub `is_subscribed()` as the paid seam.
-- Playground add/learn/complete: capability asserts; 401 guest; 402/redirect subscribe; 403 quota with reset date.
-- Billing: Subscriptions create/cancel + webhook; keep Orders path for `legacy` until retired.
-- Constitution Learn: authenticated → full in the **new** resolver; guests unchanged; **do not delete** `user_free_articles` (unread for access).
-- Admin: Playground `admin_override`.
-- Intended action after login: guest Add → `/login?next=/laws/{id}`; after login, re-evaluate subscription; first-time unlock still requires **confirm**.
-- Enforce one commercial Playground subscription per user at checkout.
+| Change | When it applies | Roster effect |
+|---|---|---|
+| **Upgrade** (plus→pro→max) | **Immediately** on successful plan change | Current period `law_limit` / `tier_snapshot` rise now. Already consumed laws stay. User may add up to the new cap this month. |
+| **Downgrade** | **At current billing period end** (renewal) | Until then, keep the higher cap. At renewal, new playground period (or period update) uses the lower `law_limit`. If consumed laws exceed the new cap, user must **drop to cap** (Keep/Remove) before adding different laws — **do not** delete overlay progress for dropped laws. |
 
----
+Do **not** say the lifetime library stays fully learnable without roster membership. Dropped laws remain in overlay history and show **Progress saved** until added again.
 
-## 19. UI / paywall changes (proposed; not in this phase)
-
-| Actor | Add to Playground |
-|-------|-------------------|
-| Guest | **Sign in to use Playground** — existing sign-in CTA. **No checkout.** |
-| Authenticated, no eligible Playground sub | **Unlock Playground** — Plus 10 / Pro 30 / Max unlimited |
-| Plus at 10/10 | Copy: used 10 unlocks this month; **Available again: {quota_period_end}**; Upgrade Pro / Max |
-| Pro at 30/30 | Offer Max |
-| Entitled, new `law_id` | Confirm: “This will use 1 of your N law unlocks” → then atomic insert |
-| Entitled, already owned `law_id` | Add / Open Playground; **no** quota, **no** confirm-as-spend |
-
-My Playground allowance (not intrusive):
-
-- Plus: “4 new laws unlocked this month · 6 remaining · Resets {quota_period_end}”
-- Pro: “18 / 30 new laws · 12 remaining”
-- Max: “Unlimited law access”
-- Never include Constitution in totals
-
-Expired: **Resume your Playground** → subscribe. Existing laws listed, Learn locked.
-
-Do not scatter `plan === "plus"` in JS as a security boundary.
+Proration / GST / same-cycle credit: **open** (§21).
 
 ---
 
-## 20. Finished train (Playground is not production-ready until this exists)
+## 16. Database (plan — do not build in this docs-only change)
 
-Cloze on this branch is **architectural proof**, not the finished learning engine. “Other modes later” and “Razorpay later” are **not** leftover product scope. Sequential engineering batches are allowed; omitting any piece below means Playground is **not** done.
+### `user_subscription`
 
-```text
-LAW SOURCE
-   ↓
-Add to Playground
-   ↓
-subscription entitlement
-   ↓
-law quota (confirm to spend)
-   ↓
-section selection
-   ↓
-ALL RecallC-style Learn modes
-   ↓
-Learned (required modes complete)
-   ↓
-1 → 3 → 7 → 15 → 30 → 60 revision
-   ↓
-progress / mastery
-   ↓
-source_hash amendment handling
-```
+As previously locked: `user_id` unique for MVP, provider ids, `plan_sku`, `status`, `billing_period_start`, `billing_period_end`, `cancel_at_period_end`, `raw_payload`. Index `(status, billing_period_end)`.
 
-Payment lifecycle in the same programme:
+**Do not** store roster usage on this row.
 
-```text
-Subscribe · Upgrade · Downgrade · Cancel · Renew
-Failed payment · Expiry · Resubscribe
-Quota reset · Quota limit · Existing-law re-entry
-Admin override · Legacy-plan handling · Webhooks
-```
+### `user_playground_period`
 
-Suggested engineering order (none of these is “out of product”):
+| Column | Notes |
+|---|---|
+| `user_id` | FK users |
+| `period_start` | Date/timestamptz; **UNIQUE(user_id, period_start)** |
+| `period_end` | Exclusive or inclusive — pick one and test it |
+| `tier_snapshot` | `plus` / `pro` / `max` at period confirm or first consume |
+| `law_limit` | `10` / `30` / `NULL` (max) |
+| `status` | `draft` \| `active` \| `closed` |
+| `confirmed_at` | When the period became the live roster |
 
-| Batch | Work |
-|-------|------|
-| **A** | `user_subscription` (billing **and** quota period), product config, webhooks. **Acceptance:** HMAC over raw body, `x-razorpay-event-id`, out-of-order/duplicates, secret rotation, provider-fetch reconcile. One commercial subscription per user. Preserve `billing_orders` / `access_grants` unread for new access. **Go-live of this batch** still needs §21 open cells (Plans, state matrix). |
-| **B** | User-type `EntitlementService`. Guest / signed-in / subscriber. Constitution full if authenticated. **Stop reading** `user_free_articles` for allow/deny. Do not drop the table. Admin override. |
-| **C** | `user_playground_law_entitlement`; confirm + atomic quota; grandfather existing `user_playground_item`; server gates; archive ≠ quota refund. |
-| **D** | Remaining RecallC-style Playground modes; official Learned → then Day 1 revision (Cloze-only trigger retired). |
-| **E** | Lifecycle UI: subscribe/upgrade/downgrade/cancel/renew/failed payment/expiry/resume; allowance; confirm-to-spend; pricing `display_name`. |
-| **F** | Freeze/retire 3…365 catalog; optional order backfill; drop unread article-entitlement tables **only when proven unused**. |
+### `user_playground_roster_item`
 
-§21 open cells (prices, GST, state→access, refunds) block **charging real money / production webhooks**. They do **not** re-open article entitlements or per-tier learning quality.
+| Column | Notes |
+|---|---|
+| `user_id`, `period_start`, `law_id` | **UNIQUE** together. `law_id` = overlay id (`ndps`, `bns`, …). |
+| `origin` | e.g. `new` / `carry_forward` / `re_add` — implementer’s enum |
+| `carried_from_previous_period` | bool |
+| `consumed_at` | Set when the slot is used; **usage counter** |
+| `removed_at` | Hidden from active roster; slot **not** refunded |
+| `declined_at` | Carry-forward candidate declined for the **new** period |
 
-**Proof of progress ownership:** no batch may `DELETE` Constitution or Playground learning rows because payment state changed. Expire fixture → rows remain; resubscribe → learning works. Refund/dispute: rows remain (access outcome still open in §21).
+**No statute text. No `UNIQUE(user_id, law_id)` across all time.**
+
+### Overlay (already exists)
+
+`user_playground_item` / `selection` / `progress` — persistent learning. RLS already enabled without policies; Batch A/C must add policies.
+
+### Struck
+
+`user_playground_law_entitlement` — **do not implement.**
 
 ---
 
-## Confirmation
+## 17. API / service methods (plan)
 
-- [`PLAYGROUND_TWO_LAW_AUDIT.md`](PLAYGROUND_TWO_LAW_AUDIT.md) stays the NDPS/BNS overlay audit; catalogue fact: both laws are listed full Bare Acts.
-- Payment and Playground stay separate domains: payments → subscription → entitlements → Playground capabilities.
-- **Payment controls entitlement. It must never control ownership of the user's progress data.**
-- **Guest = explore. Account = complete Constitution. Subscription = Playground. Tier = new-law quota only.**
-- Commercial numbers, grace, Razorpay state access, and refund-access outcomes stay **product-owner decisions** (§21). Implementation must not fill them in.
+| Method | Behaviour |
+|---|---|
+| `get_entitlements(user)` | §5 snapshot |
+| `assert_can_open_playground` | Else 403 + Subscribe/Sign-in CTA |
+| `assert_law_active_this_period(law_id)` | Else 403 — historical progress is **not** enough to run modes |
+| `preview_add_law(law_id)` | remaining slots; already-consumed-this-period; at-cap |
+| `confirm_add_law(law_id)` | **Atomic** consume (transaction / `SELECT … FOR UPDATE` on the period row). Re-add of same `law_id` this period is idempotent. |
+| `remove_law_this_period(law_id)` | `removed_at`; no refund; overlay untouched |
+| `list_carry_forward_candidates` | Prior period consumed laws still in overlay |
+| `confirm_carry_forward(keep_ids, decline_ids)` | Each Keep consumes a **new** period slot; decline sets `declined_at` |
+| `record_razorpay_webhook` | Billing only; HMAC raw body; `x-razorpay-event-id` |
+
+Section select / Cloze / future modes stay overlay services; they **call** `assert_law_active_this_period` before writing progress.
 
 ---
 
-## 21. Commercial & lifecycle decision gate
+## 18. UI surfaces (plan)
 
-Filled **2026-09-07** (updated same day: user-type lock). Cursor must **not** invent values for **Open** cells. Those cells block **going live** (Plans, production webhooks), not the architecture. They do not re-open article entitlements.
+| Surface | Destination |
+|---|---|
+| `/upgrade` | Plus/Pro/Max (names/prices **open**). Guest: Sign in then return. |
+| Playground home | Active roster this month; usage `used / limit`; carry-forward prompt when a new period starts; historical “Progress saved” list optional |
+| Confirm add | Current-period slot copy (§13) |
+| Law dashboard | Modes only if active this period; else CTA per §19 |
+| Bare Act | Same CTAs |
+| Profile | Plan, billing period, playground period, roster usage — **not** article-claim leftover |
+| Cancel / invoices | Provider or app; **open** copy |
 
-### Locked (this review)
+---
 
-| Topic | Rule |
-|-------|------|
-| Tier codes | Entitlement logic uses only `plus` / `pro` / `max`. Public `display_name` is config/data. |
-| Quota clock | Promise is **10 / 30 new laws per month**, not the provider invoice period. Store `quota_period` separately from `billing_period`. Annual billing must not become 10 laws/year. |
-| Unlock consume | First `law_id` spends quota only after confirm: “This will use 1 of your N law unlocks.” Then atomic insert. Re-open / re-add of an owned law is free. |
-| One subscription | One current commercial Playground subscription per RecallC user. A second checkout is an upgrade/change, not a parallel subscription. |
-| Upgrade / downgrade | **Upgrade immediately** (`used` kept, limit rises; provider may prorate). **Downgrade at next renewal** (no mid-cycle refund or quota shrink). |
-| Webhooks (Batch A bar) | HMAC `X-Razorpay-Signature` over the **raw body**; persist `x-razorpay-event-id` (idempotency); tolerate duplicates and out-of-order delivery; secret rotation; provider-fetch reconcile when local state is ambiguous. |
-| Archive vs money | Removing a law never restores a quota slot. Payment refund / chargeback is a **separate** rule (open). Progress is never deleted. |
-| Amendments | Unlock is `law_id` (e.g. `ndps`), not a JSON version. Source hash detects text change; it does not charge another monthly unlock. |
-| Revision start | Cloze-started Day 1 is the **overlay prototype**. Official: required modes complete → **Learned** → Day 1 revision. |
-| User-type entitlement | Active access is Guest / Signed-in / Subscriber. Article claims, 3-slot cap, and premium Type/Recite are **legacy data only** — unread for allow/deny, not dropped until unused. |
-| Tier learning quality | **Same** modes and ladders on every paid tier. Tiers differ only in 10 / 30 / unlimited new laws per quota period. |
-| Launch ops | Pricing copy, cancellation UX, failed-payment messaging, invoices, tax, legacy-buyer comms, Terms/Refund policy = **separate checklist**. Does not block overlay engineering. |
+## 19. CTA matrix (locked states; commercial copy open)
 
-### Open (product owner fills)
+| Viewer | Law relationship | Primary CTA |
+|---|---|---|
+| Guest | any | **Sign in** |
+| Signed-in, not subscribed | any | **Subscribe** |
+| Subscriber, law **active this period** | roster consumed | **In Playground** / **Continue** |
+| Subscriber, overlay progress, **not** active this period | historical | **Progress saved** + **Add to this month** (if remaining > 0) |
+| Subscriber, never in overlay, remaining > 0 | new | **Add to this month** (confirm slot) |
+| Subscriber, remaining = 0, law not consumed this period | at cap | **Playground full** — existing roster still learnable |
+| Subscriber, removed this period, already consumed | no refund | May **re-add** without extra slot; or wait until next month to free capacity for **other** laws |
+| Carry-forward at month boundary | last month’s laws | **Keep** (uses new-period slot) / **Remove** (decline; progress saved) |
 
-| Topic | Fill before |
-|-------|-------------|
-| `display_name` per tier | Razorpay Plans |
-| INR price per tier | Razorpay Plans |
-| Billing interval (monthly vs annual) | Razorpay Plans / Batch A schema |
-| GST / tax included in **displayed** price? | Razorpay Plans |
-| MVP: monthly subscriptions only **or** annual with a 30-day `quota_period` | Batch A schema |
-| State→access matrix: Razorpay `authenticated`, `pending`, `halted`, `paused`, `completed`, plus RecallC `active`, `cancel_at_period_end`, `past_due`, `expired` — for each: open Playground learning? new unlocks? | Batch A |
-| `past_due`: immediate lock vs grace, and **how many days** | Batch A |
-| Full refund: paid Playground access on or off? | Production webhooks |
-| Partial refund: paid Playground access on or off? | Production webhooks |
-| Chargeback / dispute: paid Playground access on or off? | Production webhooks |
+Hide from active list ≠ decline next month. **Decline** is an explicit next-period choice.
 
-State→access matrix (empty until filled):
+Expiry / `past_due`: lock **learning**; keep overlay + roster **rows**. Exact grace: **open** §21.
 
-| Provider / RecallC state | Can use owned Playground laws | Can unlock a new law | Notes |
-|--------------------------|-------------------------------|----------------------|-------|
+Resubscribe: **new** playground period + empty consumption; overlay history remains; user adds/Keeps again.
+
+---
+
+## 20. Finished train — sequential batches (all in-scope; do not ship a forever-Cloze product)
+
+| Batch | Builds | Notes |
+|---|---|---|
+| **A — Subscription** | `user_subscription`, product config (`plus`/`pro`/`max` **without** inventing INR here), Checkout/Subscriptions, webhooks (HMAC **raw** body, `x-razorpay-event-id`, out-of-order, secret rotation, reconcile) | **No quota on billing period.** `is_subscribed()` becomes real. |
+| **B — User-type** | Resolver; Guest / signed-in / subscriber; Constitution full for authenticated; stop reading `user_free_articles` / article `access_grants` | Playground still overlay-gated only after C+E |
+| **C — Monthly roster** | `user_playground_period` + `user_playground_roster_item`; consume; same-month re-add; carry-forward Keep/decline; atomic 9/10; EntitlementService fields in §5 | **This model.** Tests in [§24](#24-required-tests-document-now-pytest-in-batch-c). **Strike** Batch C lifetime-unlock table. |
+| **D — Learning** | All six RecallC-style modes on Bare Acts; Learned → then Day 1; retire Cloze-only as the only trigger | Overlay progress schema may extend; **do not** use progress rows as quota |
+| **E — Roster + lifecycle UI** | Confirm slot, In Playground / Progress saved / Playground full, Keep/Remove rollover, payment-state CTAs, `/upgrade` | Needs **open** §21 cells for go-live copy |
+| **F — Legacy cleanup** | Freeze duration SKUs on `/upgrade`; drop unread article-entitlement structures only when unused | Never delete overlay or roster history to “clean up” |
+
+---
+
+## 21. Open commercial and provider cells (do not invent)
+
+Still **open** — Cursor must not fill:
+
+| Cell | Status |
+|---|---|
+| Public `display_name` for plus/pro/max | Open |
+| INR prices, GST, inclusive vs exclusive | Open |
+| Monthly vs annual as MVP | Open (annual still = monthly playground periods) |
+| Razorpay `status` → `can_open_playground` matrix | Open |
+| `past_due` / incomplete grace | Open |
+| Refund / partial refund / chargeback → access | Open |
+
+### Locked rows (quota) — **replaces** “10 new laws / month / first unlock forever free”
+
+| Cell | Locked |
+|---|---|
+| Plus capacity | **10** distinct laws with `consumed_at` in the **current playground period** |
+| Pro capacity | **30** |
+| Max capacity | **Unlimited** (`law_limit` null) |
+| Same-month remove + re-add | **No extra** consume |
+| Remove | **No refund** of the slot |
+| Next period | Carry-forward **candidates** only; Keep consumes a **new** slot; decline frees it |
+| Historical resume | Overlay progress **resumes**; still needs a current-period slot to learn |
+| Identity | `law_id`, not version |
+| Upgrade | **Immediate** higher cap |
+| Downgrade | **At billing renewal**; excess laws dropped from **roster** not from **progress** |
+| Guest Playground | Sign in first |
+| Authenticated Constitution | All Articles, all six modes |
+| Progress deletion | **Forbidden** (payment and roster) |
+| One commercial subscription | One current Playground subscription per user. A second checkout is an upgrade/change, not a parallel subscription. |
+| Webhooks (Batch A bar) | HMAC `X-Razorpay-Signature` over the **raw body**; persist `x-razorpay-event-id`; duplicates / out-of-order; secret rotation; provider-fetch reconcile |
+
+State→access matrix (empty until filled — do not invent):
+
+| Provider / RecallC state | Can use **current-roster** Playground laws | Can consume a **new** roster slot | Notes |
+|--------------------------|--------------------------------------------|-----------------------------------|-------|
 | `active` | | | |
 | `cancel_at_period_end` (paid period not over) | | | |
 | `authenticated` | | | |
@@ -603,11 +538,69 @@ State→access matrix (empty until filled):
 | `completed` | | | |
 | `expired` / cancelled after period end | no | no | Progress kept; Resume CTA |
 
-Commercial catalog (empty until filled):
+Commercial catalog (empty until filled — do not invent INR / names / GST):
 
-| `tier` | `display_name` | INR | Interval | GST in displayed price | Law quota / quota period |
-|--------|----------------|-----|----------|------------------------|---------------------------|
-| `plus` | | | | | 10 / month |
-| `pro` | | | | | 30 / month |
+| `tier` | `display_name` | INR | Interval | GST in displayed price | Roster capacity / playground period |
+|--------|----------------|-----|----------|------------------------|-------------------------------------|
+| `plus` | | | | | 10 active distinct laws |
+| `pro` | | | | | 30 active distinct laws |
 | `max` | | | | | unlimited |
 
+---
+
+## 22. Risks if batches are skipped or reordered
+
+- Shipping Cloze-only as the product.
+- Using Razorpay `current_period_*` as roster quota (annual users stuck or over-gifted).
+- Implementing `user_playground_law_entitlement` and treating history as forever-learnable.
+- Auto-adding last month’s laws (silent consume).
+- Deleting overlay rows on Remove or expiry.
+- Letting EntitlementService call Razorpay per request.
+- Inventing GST/prices in Batch A.
+
+---
+
+## 23. Out of this docs-only change
+
+No Alembic, no `EntitlementService` code, no roster tables in SQLite, no UI. Those are Batches A–E **after** this lock (and after §21 open cells where listed for go-live).
+
+---
+
+## 24. Required tests (document now; pytest in Batch C / B / E — do not write pytest in this change)
+
+| # | Assertion |
+|---|---|
+| 1 | Plus: cannot have more than **10** distinct `consumed_at` laws in one playground period |
+| 2 | Pro: cannot have more than **30** |
+| 3 | Max: unlimited consumed distinct laws in the period |
+| 4 | Same-month remove + re-add: usage **unchanged** |
+| 5 | Rollover **Keep**: consumes one slot on the **new** period; overlay progress intact |
+| 6 | Rollover **decline**: no new consume; slot free; overlay progress intact |
+| 7 | Historical resume: re-add in a later period restores Learned / revision / `source_hash` |
+| 8 | Annual subscription: **new** playground period each month; billing period unchanged |
+| 9 | Expiry: learning locked; overlay + roster **rows kept** |
+| 10 | Resubscribe: new roster consumption; old overlay progress still there |
+| 11 | Concurrent confirm at 9/10: **never** 11 (atomic) |
+| 12 | Authenticated Constitution: all Articles, all six modes (Batch B) |
+| 13 | Guest: explore Constitution; Playground Sign in; laws read (unchanged) |
+
+---
+
+## Confirmation
+
+- [PLAYGROUND_TWO_LAW_AUDIT.md](PLAYGROUND_TWO_LAW_AUDIT.md) stays the NDPS/BNS overlay audit (locator / hash / Cloze proof). Overlay item/selection/progress = **persistent learning**, not monthly quota.
+- Payment and Playground stay separate domains: **PAYMENTS → SUBSCRIPTION → USER-TYPE → MONTHLY ROSTER → LEARNING**.
+- **Payment controls Playground access. The monthly roster controls which laws are active. Neither may delete the user's progress.**
+- **Guest = explore. Account = complete Constitution. Subscription = Playground. Tier = monthly roster capacity only.**
+- Commercial numbers, grace, Razorpay state access, and refund-access outcomes stay **product-owner decisions** (§21). Implementation must not fill them in.
+- Do **not** implement `user_playground_law_entitlement`, lifetime unlocks, or “new laws per billing cycle.”
+
+---
+
+## 25. Related docs
+
+- [PLAYGROUND.md](PLAYGROUND.md) — overlay proof + monthly roster product truth
+- [PLAYGROUND_TWO_LAW_AUDIT.md](PLAYGROUND_TWO_LAW_AUDIT.md) — locator/hash; overlay = persistent learning, not quota
+- [BILLING.md](BILLING.md) — current duration-pass runbook (drift vs this lock)
+- [LEARN.md](LEARN.md) / [PROGRESS.md](PROGRESS.md) — Constitution only until Batch D
+- Plan file `docs/plans/2026-03-21-subscription-access-implementation.md` — **historical** (free-article model); do not implement from it
