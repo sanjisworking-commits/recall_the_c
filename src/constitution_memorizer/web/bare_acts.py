@@ -391,6 +391,15 @@ class Schedule:
 
     @property
     def row_count(self) -> int:
+        """Row objects across all parts, as the source supplies them.
+
+        A row is one canonical record, which is not the same thing as one
+        physical row in the source PDF: a First Schedule record may span
+        several printed lines, and the parser does not re-split or re-pair
+        what the export grouped. So BNSS's "444 entries" is 441 Part I row
+        groups plus 3 Part II rows, not a count of printed rows. Do not
+        reinterpret this number as source-document geometry.
+        """
         return sum(len(part.rows) for part in self.parts)
 
     @property
