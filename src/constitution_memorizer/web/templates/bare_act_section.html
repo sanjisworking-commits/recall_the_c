@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Section {{ section.number }} · {{ act.short_name }}{% endblock %}
+{% block title %}{{ seo_title|default('Section ' ~ section.number ~ ' · ' ~ act.short_name, true) }}{% endblock %}
 {% block mobile_screen %}bareactsection{% endblock %}
 {% import "partials/bare_act_macros.html" as fn %}
 {% block content %}

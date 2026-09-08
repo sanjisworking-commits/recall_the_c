@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ act.title }} · {{ app_name|default('Recall the C') }}{% endblock %}
+{% block title %}{{ seo_title|default(act.title ~ ' · ' ~ app_name|default('Recall the C'), true) }}{% endblock %}
 {% block mobile_screen %}bareact{% endblock %}
 {% block content %}
 <section class="panel bareact bareact-page is-{{ act.render_profile }}">
