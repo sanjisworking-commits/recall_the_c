@@ -2678,6 +2678,8 @@ def create_app(
             "subjects": catalog.visible_subjects,
             "initial_q": request.query_params.get("q") or "",
             "initial_subject": request.query_params.get("subject") or "",
+            "initial_status": request.query_params.get("status") or "",
+            "has_repealed": bool(catalog.repealed_laws),
         }
         started = time.perf_counter()
         response = templates.TemplateResponse(request, "laws.html", context)

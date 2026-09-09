@@ -439,6 +439,83 @@ def test_pota_is_still_listed_and_searchable(tmp_path: Path):
     assert 'href="/laws/pota"' in html
 
 
+def test_the_repealed_chip_exists_and_all_is_pressed_by_default(tmp_path: Path):
+    client, _ = _client(tmp_path)
+    html = client.get("/laws").text
+    assert 'data-laws-status="repealed"' in html
+    assert "Repealed</button>" in html
+    assert 'data-laws-chip="" aria-pressed="true"' in html
+
+
+def test_the_repealed_chip_is_pressed_when_that_tab_is_requested(tmp_path: Path):
+    client, _ = _client(tmp_path)
+    html = client.get("/laws?status=repealed").text
+    assert 'data-initial-status="repealed"' in html
+    assert 'data-laws-status="repealed" aria-pressed="true"' in html
+    # One strip, two axes: the status chip clears the subject.
+    assert 'data-laws-chip="" aria-pressed="false"' in html
+    assert 'data-initial-subject=""' in html
+
+
+def test_a_status_chip_beats_a_subject_in_the_url(tmp_path: Path):
+    client, _ = _client(tmp_path)
+    html = client.get("/laws?status=repealed&subject=criminal").text
+    assert 'data-initial-subject=""' in html
+    assert 'data-laws-chip="criminal" aria-pressed="false"' in html
+
+
+def test_an_unknown_status_falls_back_to_all(tmp_path: Path):
+    client, _ = _client(tmp_path)
+    html = client.get("/laws?status=lapsed").text
+    assert 'data-initial-status=""' in html
+    assert 'data-laws-chip="" aria-pressed="true"' in html
+
+
+def test_every_card_declares_its_status(tmp_path: Path):
+    """The filter reads this attribute; without it repealed law leaks into All."""
+    client, _ = _client(tmp_path)
+    html = client.get("/laws").text
+    pota = html.split('data-law-id="pota"', 1)[1].split("</a>", 1)[0]
+    assert 'data-status="repealed"' in pota
+    ndps = html.split('data-law-id="ndps"', 1)[1].split("</a>", 1)[0]
+    assert 'data-status="current"' in ndps
+
+
+def test_repealed_laws_do_not_keep_a_subject_chip_alive():
+    """A subject whose only law is repealed would open onto an empty list."""
+    from constitution_memorizer.web.law_catalog import load_catalog
+
+    catalog = load_catalog()
+    for subject in catalog.visible_subjects:
+        shown = [
+            law
+            for law in catalog.current_laws
+            if subject.id in law.subjects
+        ]
+        assert shown, subject.id
+
+
+def test_the_catalogue_splits_current_from_repealed():
+    from constitution_memorizer.web.law_catalog import load_catalog
+
+    catalog = load_catalog()
+    assert [law.id for law in catalog.repealed_laws] == ["pota"]
+    assert "pota" not in {law.id for law in catalog.current_laws}
+    assert len(catalog.current_laws) + len(catalog.repealed_laws) == len(catalog.laws)
+
+
+def test_the_card_is_still_served_so_search_can_reach_it(tmp_path: Path):
+    """Filtering is client-side: the card ships, the chip decides what shows.
+
+    Keeps the earlier guarantee that a repealed Act stays findable by name
+    rather than being dropped from the document altogether.
+    """
+    client, _ = _client(tmp_path)
+    html = client.get("/laws").text
+    assert 'data-law-id="pota"' in html
+    assert "repealed" in html.split('data-law-id="pota"', 1)[1].split("</a>", 1)[0]
+
+
 def test_pota_is_free_to_read_and_records_nothing(tmp_path: Path):
     client, engine = _client(tmp_path)
     before = engine.stats()
