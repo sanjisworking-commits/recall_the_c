@@ -45,16 +45,35 @@ def _multiuser_client(tmp_path: Path) -> TestClient:
     )
 
 
-def test_sitemap_is_public_xml(tmp_path: Path):
+def test_sitemap_is_public_index(tmp_path: Path):
     client = _multiuser_client(tmp_path)
     resp = client.get("/sitemap.xml", follow_redirects=False)
     assert resp.status_code == 200
     content_type = resp.headers.get("content-type", "")
     assert "xml" in content_type.lower()
     body = resp.text
-    assert PRODUCTION_ORIGIN in body
+    # Root document is now a sitemap index pointing at absolute-HTTPS children.
+    assert "<sitemapindex" in body
+    assert "<urlset" not in body
+    assert f"{PRODUCTION_ORIGIN}/sitemap-core.xml" in body
+    assert f"{PRODUCTION_ORIGIN}/sitemap-laws.xml" in body
+    clear_settings_cache()
+
+
+def test_sitemap_core_preserves_constitution_bytes(tmp_path: Path):
+    """The Constitution/marketing map is the prior static file, byte-for-byte."""
+    client = _multiuser_client(tmp_path)
+    resp = client.get("/sitemap-core.xml", follow_redirects=False)
+    assert resp.status_code == 200
+    assert "xml" in resp.headers.get("content-type", "").lower()
+    body = resp.text
     assert "<urlset" in body
-    assert f"{PRODUCTION_ORIGIN}/" in body
+    assert f"{PRODUCTION_ORIGIN}/browse/article/14" in body  # Constitution URL intact
+    source = (
+        Path(__file__).resolve().parents[1]
+        / "src/constitution_memorizer/web/sitemap-core.xml"
+    )
+    assert body == source.read_text(encoding="utf-8")
     clear_settings_cache()
 
 
