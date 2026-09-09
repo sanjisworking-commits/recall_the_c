@@ -55,7 +55,7 @@
       data-search="{{ law.search_blob }}"
     >
       <span class="laws-index-head-row">
-        <span class="laws-index-tag">{{ law.tag_line }}</span>
+        <span class="laws-index-tag">{{ law.tag_line }}{% if law.status_label %}<span class="laws-index-status">{{ law.status_label }}</span>{% endif %}</span>
         <span class="laws-index-chevron" aria-hidden="true">›</span>
       </span>
       <span class="laws-index-name">{{ law.title }}</span>
