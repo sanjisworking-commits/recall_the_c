@@ -21,6 +21,16 @@ DEFAULT_CATALOG_PATH = Path.cwd() / "data" / "reference" / "law_catalog.seed.jso
 PRIMARY_CONTENT_KINDS = frozenset({"full_act", "key_provisions"})
 KIND_LABELS = {"full_act": "FULL ACT", "key_provisions": "KEY PROVISIONS"}
 
+# An Act's lifecycle, as editorial metadata — never in the statutory JSON.
+# The label is derived from the status rather than stored beside it, so a law
+# cannot be marked current and badged "Repealed" at the same time. "current"
+# maps to no label: a badge on every law says nothing.
+STATUS_LABELS = {
+    "current": "",
+    "repealed": "Repealed / Historical",
+    "historical": "Historical",
+}
+
 
 class CatalogError(ValueError):
     """The catalogue seed is invalid or a capability ref is unregistered."""
@@ -50,12 +60,34 @@ class CatalogLaw:
     tag_line: str
     href: str
     search_blob: str
+    status: str = "current"
+    status_note: str = ""
+
+    @property
+    def status_label(self) -> str:
+        """"Repealed / Historical", or "" for a law still in force."""
+        return STATUS_LABELS[self.status]
+
+    @property
+    def is_current(self) -> bool:
+        return self.status == "current"
 
 
 @dataclass(frozen=True)
 class LawCatalog:
     subjects: tuple[LawSubject, ...]
     laws: tuple[CatalogLaw, ...]
+
+    def by_full_act(self, ref: str) -> CatalogLaw | None:
+        """The catalogue entry for a Bare Act slug, or None.
+
+        Lets the Act reader show editorial metadata (lifecycle, notes) without
+        that metadata being copied onto the statutory model.
+        """
+        for law in self.laws:
+            if law.full_act_ref == ref:
+                return law
+        return None
 
     @property
     def visible_subjects(self) -> tuple[LawSubject, ...]:
@@ -164,14 +196,32 @@ def _parse_law(
             f"{law_id}: key_provisions ref {key_provisions_ref} is not in MAPPED_LAW_IDS"
         )
 
+    status = str(raw.get("status") or "current").strip()
+    if status not in STATUS_LABELS:
+        raise CatalogError(
+            f"{law_id}: unknown status {status!r}; "
+            f"expected one of {sorted(STATUS_LABELS)}"
+        )
+    status_note = str(raw.get("status_note") or "").strip()
+    if status_note and status == "current":
+        raise CatalogError(f"{law_id}: a current law cannot carry a status_note")
+
     href_ref = full_act_ref if primary_content == "full_act" else key_provisions_ref
     aliases = tuple(str(a).strip() for a in (raw.get("aliases") or []) if str(a).strip())
     primary_label = subject_by_id[primary_subject].label
     kind_label = KIND_LABELS[primary_content]
     tag_line = f"{primary_label.upper()} · {kind_label}"
     subject_labels = tuple(subject_by_id[sid].label for sid in subject_ids)
+    # The status label joins the search text so "repealed" finds POTA. It is
+    # a way in, never a way to hide a law from the index.
     search_blob = normalize_search(
-        title, short_title, aliases, year, subject_ids, subject_labels
+        title,
+        short_title,
+        aliases,
+        year,
+        subject_ids,
+        subject_labels,
+        STATUS_LABELS[status],
     )
     return CatalogLaw(
         id=law_id,
@@ -189,6 +239,8 @@ def _parse_law(
         tag_line=tag_line,
         href=f"/laws/{href_ref}",
         search_blob=search_blob,
+        status=status,
+        status_note=status_note,
     )
 
 

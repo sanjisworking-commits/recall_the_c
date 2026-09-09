@@ -50,6 +50,7 @@ constitution_memorizer = [
     "web/bnss_runtime_v1.json",
     "web/sitemap-core.xml",
     "web/law_sitemap_manifest.json",
+    "web/pota_runtime_v1.json",
     "web/sitemap.xml",
     "web/robots.txt",
 ]

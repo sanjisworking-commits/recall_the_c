@@ -7,8 +7,13 @@
     <div class="mobile-topbar">
       <a class="mobile-back" href="/laws">← Laws</a>
     </div>
-    <p class="bareact-tag">Bare Act</p>
+    <p class="bareact-tag">Bare Act{% if catalog_law and catalog_law.status_label %}<span class="bareact-status">{{ catalog_law.status_label }}</span>{% endif %}</p>
     <h1 class="bareact-title">{{ act.title }}</h1>
+    {# Editorial, not statutory: this sentence is nowhere in the Act's own
+       text, and must never be written into its canonical JSON. #}
+    {% if catalog_law and catalog_law.status_note %}
+    <p class="bareact-status-note">{{ catalog_law.status_note }}</p>
+    {% endif %}
   </div>
 
   <div class="bareact-chapters" data-bareact-accordion>
@@ -47,7 +52,7 @@
     {# Only schedules the table model can represent are navigable. An
        unsupported one (BNSS's 58 positioned-text forms) is loaded and
        preserved, but linking it would promise a page we cannot draw. #}
-    {% for schedule in act.schedules if schedule.is_table %}
+    {% for schedule in act.schedules if schedule.is_navigable %}
     <a class="bareact-schedule-row" href="/laws/{{ act.slug }}/schedule/{{ schedule.slug }}">
       <span class="bareact-chapter-tag">{{ schedule.label }}</span>
       <span class="bareact-schedule-copy">
