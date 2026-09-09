@@ -6,13 +6,14 @@ RecallC Playground is the paid learning overlay on verbatim Bare Act JSON. Tiers
 
 | Document | Status |
 |----------|--------|
+| [PLAYGROUND_DELIVERY_TRACKER.md](PLAYGROUND_DELIVERY_TRACKER.md) | **100-point scoreboard.** Cloze/overlay proof does **not** inflate completion. Snapshot: **3.5 / 100** (architecture docs locked; production implementation early). |
 | [PLAYGROUND_TWO_LAW_AUDIT.md](PLAYGROUND_TWO_LAW_AUDIT.md) | Overlay design. Cloze = architectural proof, not the finished mode set. NDPS/BNS = **historical validation corpus**, not a production allowlist. Item/selection/progress = persistent learning, not monthly quota and not the device registry. |
 | [PAYMENT_ENTITLEMENT_AUDIT.md](PAYMENT_ENTITLEMENT_AUDIT.md) | User-type + **device registry** + **monthly roster** (`Asia/Kolkata` period clock). **Not implemented.** See §21 for prices / Razorpay states / refunds / replacement-churn integers. |
 | [law-loading.md](law-loading.md) | Lazy hydration contract Playground inherits. Sitemap inventory is a **build-time manifest**, never request-time Act hydration. |
 
 **On this branch (proof):** Add to Playground, section selection, Cloze, revision rows, guest → sign-in. Routes live in `app.py` as `/playground/{law_id}` — **proof architecture, not production routing.** Locator allowlist is still `{ndps, bns}`. No subscription gate. No monthly roster. No device cookie. Cloze currently starts Day 1 (prototype). Request-time whole-file hashing in `source.py` is a proof artifact to remove.
 
-**Finished train (not done), in this order:**
+**Finished train** is scored in [PLAYGROUND_DELIVERY_TRACKER.md](PLAYGROUND_DELIVERY_TRACKER.md) (100 points). Cloze, the NDPS/BNS overlay, and proof revision rows do **not** make that percentage look finished. Next implementation batches follow that tracker (eligibility helper → `APIRouter` → …), not a second product model.
 
 ```text
 This contract

@@ -778,6 +778,7 @@ Device (Batch C / F):
 ## 25. Related docs
 
 - [PLAYGROUND.md](PLAYGROUND.md) — overlay proof + monthly roster + device cap + **SEO / routing / performance contract**
+- [PLAYGROUND_DELIVERY_TRACKER.md](PLAYGROUND_DELIVERY_TRACKER.md) — 100-point programme; batches map to milestones 0–11
 - [PLAYGROUND_TWO_LAW_AUDIT.md](PLAYGROUND_TWO_LAW_AUDIT.md) — locator/hash; overlay = persistent learning; NDPS/BNS **historical corpus**
 - [law-loading.md](law-loading.md) — lazy hydration; sitemap from **build-time manifest**
 - [BILLING.md](BILLING.md) — current duration-pass runbook (drift vs this lock)
