@@ -23,7 +23,13 @@ from fastapi import (
     UploadFile,
 )
 from pydantic import BaseModel, ValidationError
-from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, RedirectResponse
+from fastapi.responses import (
+    FileResponse,
+    HTMLResponse,
+    JSONResponse,
+    RedirectResponse,
+    Response,
+)
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
@@ -200,6 +206,11 @@ from constitution_memorizer.web.seo import (
     law_canonical_url,
     provision_canonical_url,
     schedule_canonical_url,
+)
+from constitution_memorizer.web.sitemaps import (
+    build_law_sitemap,
+    build_laws_hub_sitemap,
+    build_sitemap_index,
 )
 from constitution_memorizer.web.service import (
     LEARN_MODE_LABELS,
@@ -870,12 +881,30 @@ def create_app(
         return FileResponse(STATIC_DIR / "brand-c.png", media_type="image/png")
 
     @app.get("/sitemap.xml")
-    async def sitemap_xml() -> FileResponse:
-        """Public crawler sitemap. No auth, no login redirect."""
+    async def sitemap_xml() -> Response:
+        """Public crawler sitemap index. Metadata only — hydrates zero Acts."""
+        return Response(build_sitemap_index(), media_type="application/xml")
+
+    @app.get("/sitemap-core.xml")
+    async def sitemap_core_xml() -> FileResponse:
+        """Marketing + Constitution urlset: the prior static bytes, unchanged."""
         return FileResponse(
-            WEB_DIR / "sitemap.xml",
+            WEB_DIR / "sitemap-core.xml",
             media_type="application/xml",
         )
+
+    @app.get("/sitemap-laws.xml")
+    async def sitemap_laws_xml() -> Response:
+        """The /laws hub page. Metadata only — hydrates zero Acts."""
+        return Response(build_laws_hub_sitemap(), media_type="application/xml")
+
+    @app.get("/sitemap-laws-{slug}.xml")
+    async def sitemap_law_xml(slug: str) -> Response:
+        """One registered Bare Act's urlset, built from the manifest only."""
+        xml = build_law_sitemap(slug)
+        if xml is None:
+            raise HTTPException(status_code=404, detail="Sitemap not found")
+        return Response(xml, media_type="application/xml")
 
     @app.get("/robots.txt")
     async def robots_txt() -> FileResponse:

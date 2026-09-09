@@ -540,6 +540,19 @@ class BareAct:
                 return sched
         return None
 
+    @property
+    def public_schedule_slugs(self) -> tuple[str, ...]:
+        """Schedule slugs that have a supported public reader route.
+
+        The single filter point for sitemap/discovery inventory. It mirrors the
+        route contract exactly: ``bare_act_schedule_page`` 404s any schedule
+        without a table representation, so a schedule is public iff it renders
+        as a table. This deliberately excludes parsed-but-unrenderable schedules
+        (e.g. BNSS's deferred Second-Schedule forms) so a sitemap never
+        advertises an unroutable URL.
+        """
+        return tuple(sched.slug for sched in self.schedules if sched.is_table)
+
     def notes(self, note_ids) -> tuple[Footnote, ...]:
         """Resolve ids to notes, skipping any the data does not carry."""
         return tuple(
