@@ -19,6 +19,7 @@ from constitution_memorizer.web.laws_data import MAPPED_LAW_IDS, load_laws
 MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
 PRODUCTION_LAW_IDS = (
     "bns",
+    "bnss",
     "ndps",
     "uapa-1967",
     "citizenship-1955",
@@ -72,7 +73,10 @@ def test_production_catalogue_lists_both_bare_acts():
     bns = catalog.laws[0]
     assert bns.tag_line == "CRIMINAL · FULL ACT"
     assert bns.href == "/laws/bns"
-    ndps = catalog.laws[1]
+    bnss = catalog.laws[1]
+    assert bnss.tag_line == "CRIMINAL · FULL ACT"
+    assert bnss.href == "/laws/bnss"
+    ndps = catalog.laws[2]
     assert ndps.tag_line == "CRIMINAL · FULL ACT"
     assert ndps.href == "/laws/ndps"
     rti = next(law for law in catalog.laws if law.id == "rti-2005")

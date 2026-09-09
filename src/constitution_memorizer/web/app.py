@@ -2720,6 +2720,10 @@ def create_app(
         schedule = bare.schedule(schedule_slug)
         if schedule is None:
             raise HTTPException(status_code=404, detail="Schedule not found")
+        if not schedule.is_table:
+            # Loaded and preserved, but it has no table representation yet.
+            # 404 rather than render an invented one.
+            raise HTTPException(status_code=404, detail="Schedule not available")
         started = time.perf_counter()
         response = templates.TemplateResponse(
             request,
