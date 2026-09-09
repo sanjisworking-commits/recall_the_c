@@ -2688,6 +2688,8 @@ def create_app(
             # Query variants (?q=, ?subject=) are filtered views of the same hub,
             # so they all declare the bare /laws URL as canonical.
             "canonical_url": laws_hub_canonical_url(),
+            "initial_status": request.query_params.get("status") or "",
+            "has_repealed": bool(catalog.repealed_laws),
         }
         started = time.perf_counter()
         response = templates.TemplateResponse(request, "laws.html", context)

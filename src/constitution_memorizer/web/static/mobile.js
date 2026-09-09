@@ -1086,7 +1086,9 @@
     if (!root) return;
 
     var cards = Array.prototype.slice.call(root.querySelectorAll("[data-law-id]"));
-    var chips = Array.prototype.slice.call(root.querySelectorAll("[data-laws-chip]"));
+    var chips = Array.prototype.slice.call(
+      root.querySelectorAll("[data-laws-chip], [data-laws-status]")
+    );
     var empty = root.querySelector("[data-laws-empty]");
     var toggle = root.querySelector("[data-laws-search-toggle]");
     var searchWrap = root.querySelector("[data-laws-search]");
@@ -1099,6 +1101,8 @@
 
     var subject = root.getAttribute("data-initial-subject") || "";
     if (subject && !knownSubjects[subject]) subject = "";
+    var status = root.getAttribute("data-initial-status") || "";
+    if (status) subject = "";
     var query = root.getAttribute("data-initial-q") || "";
 
     function setExpanded(open) {
@@ -1116,6 +1120,8 @@
       var url = new URL(window.location.href);
       if (subject) url.searchParams.set("subject", subject);
       else url.searchParams.delete("subject");
+      if (status) url.searchParams.set("status", status);
+      else url.searchParams.delete("status");
       var q = normalizeLawsQuery(query);
       if (q) url.searchParams.set("q", query.trim());
       else url.searchParams.delete("q");
@@ -1132,9 +1138,14 @@
       cards.forEach(function (card) {
         var subjects = (card.getAttribute("data-subjects") || "").split(/\s+/);
         var blob = normalizeLawsQuery(card.getAttribute("data-search") || "");
+        var repealed = (card.getAttribute("data-status") || "") !== "current";
         var subjectOk = !subject || subjects.indexOf(subject) !== -1;
         var queryOk = !q || blob.indexOf(q) !== -1;
-        var show = subjectOk && queryOk;
+        // Repealed law has its own chip and is kept out of All and the
+        // subject tabs — but a search still reaches it from anywhere. Out of
+        // the way is not the same as unfindable.
+        var statusOk = status === "repealed" ? repealed : !repealed || !!q;
+        var show = subjectOk && queryOk && statusOk;
         card.classList.toggle("is-filtered-out", !show);
         if (show) visible += 1;
       });
@@ -1143,15 +1154,39 @@
         else empty.removeAttribute("hidden");
       }
       chips.forEach(function (chip) {
-        var id = chip.getAttribute("data-laws-chip") || "";
-        chip.setAttribute("aria-pressed", id === subject ? "true" : "false");
+        var chipStatus = chip.getAttribute("data-laws-status") || "";
+        var pressed = chipStatus
+          ? chipStatus === status
+          : !status && (chip.getAttribute("data-laws-chip") || "") === subject;
+        chip.setAttribute("aria-pressed", pressed ? "true" : "false");
       });
       syncUrl();
     }
 
+    function revealPressedChip() {
+      // The strip scrolls, and the newest chips sit at its end. Landing on a
+      // shared ?status= URL with the active chip off-screen reads as no
+      // filter at all. Only ever nudges the strip, never the page.
+      var strip = root.querySelector(".laws-chip-strip");
+      if (!strip) return;
+      var pressed = null;
+      chips.forEach(function (chip) {
+        if (chip.getAttribute("aria-pressed") === "true") pressed = chip;
+      });
+      if (!pressed) return;
+      var right = pressed.offsetLeft + pressed.offsetWidth;
+      if (right > strip.scrollLeft + strip.clientWidth) {
+        strip.scrollLeft = right - strip.clientWidth + 12;
+      } else if (pressed.offsetLeft < strip.scrollLeft) {
+        strip.scrollLeft = Math.max(0, pressed.offsetLeft - 12);
+      }
+    }
+
     chips.forEach(function (chip) {
       chip.addEventListener("click", function () {
-        subject = chip.getAttribute("data-laws-chip") || "";
+        // One strip, two axes: picking either clears the other.
+        status = chip.getAttribute("data-laws-status") || "";
+        subject = status ? "" : chip.getAttribute("data-laws-chip") || "";
         applyFilter();
       });
     });
@@ -1178,6 +1213,7 @@
 
     if (normalizeLawsQuery(query)) setExpanded(true);
     applyFilter();
+    revealPressedChip();
   }
 
   function boot() {

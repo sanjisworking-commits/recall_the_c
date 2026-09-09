@@ -91,8 +91,27 @@ class LawCatalog:
 
     @property
     def visible_subjects(self) -> tuple[LawSubject, ...]:
-        used = {sid for law in self.laws for sid in law.subjects}
+        """Subjects with at least one law a subject chip would actually show.
+
+        Repealed laws live behind their own chip and are excluded from the
+        subject tabs, so they cannot be what keeps a subject visible — that
+        would be a chip opening onto an empty list.
+        """
+        used = {sid for law in self.laws if law.is_current for sid in law.subjects}
         return tuple(s for s in self.subjects if s.id in used)
+
+    @property
+    def current_laws(self) -> tuple[CatalogLaw, ...]:
+        return tuple(law for law in self.laws if law.is_current)
+
+    @property
+    def repealed_laws(self) -> tuple[CatalogLaw, ...]:
+        """Laws no longer in force, in catalogue order.
+
+        Kept out of All and the subject tabs, reachable by their own chip and
+        still findable by search. Out of the way, not out of the app.
+        """
+        return tuple(law for law in self.laws if not law.is_current)
 
 
 def normalize_search(*parts: object) -> str:

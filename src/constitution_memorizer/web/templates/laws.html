@@ -3,12 +3,17 @@
 {% block mobile_screen %}laws{% endblock %}
 {% block content %}
 {% set known_subjects = subjects | map(attribute='id') | list %}
-{% set active_subject = initial_subject if initial_subject in known_subjects else '' %}
+{% set active_status = 'repealed' if has_repealed and initial_status == 'repealed' else '' %}
+{# The strip is one row of mutually exclusive chips, so a status chip clears
+   the subject and vice versa. #}
+{% set active_subject = '' if active_status else (initial_subject if initial_subject in known_subjects else '') %}
 <section
   class="panel laws"
   data-laws-index
   data-initial-q="{{ initial_q|e }}"
-  data-initial-subject="{{ initial_subject|e }}"
+  {# Echoed raw, as before, and validated in JS; a status chip clears it. #}
+  data-initial-subject="{{ '' if active_status else initial_subject|e }}"
+  data-initial-status="{{ active_status|e }}"
 >
   <div class="laws-index-head">
     <a class="mobile-back" href="/browse">← Browse</a>
@@ -37,11 +42,17 @@
     >
   </div>
 
-  <div class="laws-chip-strip" role="group" aria-label="Filter by subject">
-    <button type="button" class="laws-chip" data-laws-chip="" aria-pressed="{{ 'true' if not active_subject else 'false' }}">All</button>
+  <div class="laws-chip-strip" role="group" aria-label="Filter laws">
+    <button type="button" class="laws-chip" data-laws-chip="" aria-pressed="{{ 'true' if not active_subject and not active_status else 'false' }}">All</button>
     {% for subject in subjects %}
     <button type="button" class="laws-chip" data-laws-chip="{{ subject.id }}" aria-pressed="{{ 'true' if subject.id == active_subject else 'false' }}">{{ subject.label }}</button>
     {% endfor %}
+    {# Lifecycle, not a subject — its own chip so repealed law stays reachable
+       without sitting among the law in force. Hidden entirely when there is
+       none, rather than offering a chip onto an empty list. #}
+    {% if has_repealed %}
+    <button type="button" class="laws-chip is-status" data-laws-status="repealed" aria-pressed="{{ 'true' if active_status else 'false' }}">Repealed</button>
+    {% endif %}
   </div>
 
   <div class="laws-catalog" data-laws-catalog role="list">
@@ -52,6 +63,7 @@
       role="listitem"
       data-law-id="{{ law.id }}"
       data-subjects="{{ law.subjects | join(' ') }}"
+      data-status="{{ law.status }}"
       data-search="{{ law.search_blob }}"
     >
       <span class="laws-index-head-row">
