@@ -40,10 +40,24 @@ def article_canonical_url(article_number: str) -> str:
 def provision_canonical_url(
     law_slug: str, provision_type: str, provision_number: str
 ) -> str:
-    """Canonical URL for a Bare Act provision (future ``/laws/...`` routes)."""
+    """Canonical URL for a Bare Act provision (the production ``/laws`` route).
+
+    ``provision_number`` is kept verbatim as a string: amended Acts carry
+    identifiers such as ``27A`` or ``52A``.
+    """
     return (
         f"{CANONICAL_ORIGIN}/laws/{law_slug}/{provision_type}/{provision_number}"
     )
+
+
+def law_canonical_url(law_slug: str) -> str:
+    """Canonical URL for a Bare Act's landing page."""
+    return f"{CANONICAL_ORIGIN}/laws/{law_slug}"
+
+
+def schedule_canonical_url(law_slug: str, schedule_slug: str) -> str:
+    """Canonical URL for a Bare Act schedule page."""
+    return f"{CANONICAL_ORIGIN}/laws/{law_slug}/schedule/{schedule_slug}"
 
 
 def _with_the(law_name: str) -> str:
@@ -178,3 +192,36 @@ def build_article_seo(
         include_law_in_title=False,
         include_law_in_description=False,
     )
+
+
+def build_law_seo(*, law_name: str, meta_label: str | None = None) -> tuple[str, str]:
+    """Build ``(seo_title, seo_description)`` for a Bare Act landing page."""
+    seo_title = f"{law_name} | Recall the C"
+    seo_description = f"Read {_with_the(law_name)} in full on Recall the C."
+    if meta_label:
+        seo_description += f" {_ensure_period(meta_label)}"
+    return seo_title, seo_description
+
+
+def build_schedule_seo(
+    *,
+    law_name: str,
+    schedule_title: str,
+    schedule_heading: str | None = None,
+    seo_law_name: str | None = None,
+) -> tuple[str, str]:
+    """Build ``(seo_title, seo_description)`` for a Bare Act schedule page."""
+    short_law = (seo_law_name or "").strip() or (law_name or "").strip()
+    title = (schedule_title or "Schedule").strip()
+
+    seo_title = f"{title} \u2013 {short_law} | Recall the C"
+
+    lead = f"{title} of {_with_the(law_name)}"
+    heading = (schedule_heading or "").strip()
+    if heading:
+        lead += f": {heading}"
+    seo_description = (
+        f"{_ensure_period(lead)} "
+        "Learn and revise with structured learning and spaced revision."
+    )
+    return seo_title, seo_description

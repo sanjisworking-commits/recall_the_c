@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ schedule.title|title }} · {{ act.short_name }}{% endblock %}
+{% block title %}{{ seo_title|default(schedule.title|title ~ ' · ' ~ act.short_name, true) }}{% endblock %}
 {% block mobile_screen %}bareactschedule{% endblock %}
 {% import "partials/bare_act_macros.html" as fn %}
 {% block content %}

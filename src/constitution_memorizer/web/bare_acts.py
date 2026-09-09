@@ -60,6 +60,10 @@ class BareActSpec:
     filename: str
     short_name: str
     back_label: str
+    # Crisp acronym title for the Act (e.g. "BNS", "NDPS"). A property of the
+    # Act, not of SEO — usable in breadcrumbs, exports, etc. — but consumed by
+    # the SEO layer as the short law name in provision/schedule titles.
+    short_title: str
     # Companion files the upstream parse ships separately. Folded in at load
     # rather than merged on disk: both are frozen artifacts, and rewriting one
     # into the other would replace the canonical dataset with our own.
@@ -82,6 +86,7 @@ BARE_ACTS: dict[str, BareActSpec] = {
         filename="ndps_act_final.json",
         short_name="The NDPS Act, 1985",
         back_label="← The NDPS Act, 1985",
+        short_title="NDPS",
         patch_filenames=("ndps_schedule_patch.json",),
         source_version="1",
     ),
@@ -90,6 +95,7 @@ BARE_ACTS: dict[str, BareActSpec] = {
         filename="bns_runtime_v1.json",
         short_name="The BNS, 2023",
         back_label="← The BNS, 2023",
+        short_title="BNS",
         render_profile="bns",
         source_version="1",
     ),
@@ -98,6 +104,7 @@ BARE_ACTS: dict[str, BareActSpec] = {
         filename="bnss_runtime_v1.json",
         short_name="The BNSS, 2023",
         back_label="← The BNSS, 2023",
+        short_title="BNSS",
         # Not a new profile: BNSS's nine node types are exactly the set BNS
         # already renders, so a `bnss` profile would fork the renderer for
         # nothing. Verified node type by node type against ProvisionRow.
@@ -470,6 +477,21 @@ class ActSection:
         return flatten_body(self.body, profile=self.profile)
 
     @property
+    def plain_text(self) -> str:
+        """Plain non-table body text, in reading order.
+
+        Flattens the structured rows into a single string for consumers that
+        want prose rather than the render tree (SEO snippets, and later search
+        indexing, previews or exports). Tables are excluded deliberately, so a
+        table-only provision yields "" and callers fall back to the heading.
+        """
+        return " ".join(
+            row.text.strip()
+            for row in self.rows
+            if row.text and row.text.strip() and not row.is_table
+        ).strip()
+
+    @property
     def note_ids(self) -> tuple[str, ...]:
         """Every footnote this section cites, once each, in reading order."""
         seen: list[str] = []
@@ -502,6 +524,7 @@ class BareAct:
     slug: str
     title: str
     short_name: str
+    short_title: str
     back_label: str
     act_number: str
     render_profile: str
@@ -982,6 +1005,7 @@ def _parse(
         slug=spec.slug,
         title=str(document.get("title") or spec.short_name),
         short_name=spec.short_name,
+        short_title=spec.short_title,
         back_label=spec.back_label,
         act_number=str(document.get("act_number") or ""),
         render_profile=spec.render_profile,

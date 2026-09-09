@@ -194,6 +194,12 @@ from constitution_memorizer.web.seo import (
     TWITTER_HANDLE,
     article_canonical_url,
     build_article_seo,
+    build_law_seo,
+    build_provision_seo,
+    build_schedule_seo,
+    law_canonical_url,
+    provision_canonical_url,
+    schedule_canonical_url,
 )
 from constitution_memorizer.web.service import (
     LEARN_MODE_LABELS,
@@ -2659,8 +2665,18 @@ def create_app(
         bare = get_bare_act(law_id)
         if bare is not None:
             started = time.perf_counter()
+            seo_title, seo_description = build_law_seo(
+                law_name=bare.title, meta_label=bare.meta_label
+            )
             response = templates.TemplateResponse(
-                request, "bare_act.html", {"act": bare}
+                request,
+                "bare_act.html",
+                {
+                    "act": bare,
+                    "seo_title": seo_title,
+                    "seo_description": seo_description,
+                    "canonical_url": law_canonical_url(bare.slug),
+                },
             )
             record_request_timing("template", started)
             return response
@@ -2691,6 +2707,30 @@ def create_app(
         if section is None:
             raise HTTPException(status_code=404, detail="Section not found")
         previous, following = bare.neighbours(number)
+        # Omitted provisions must not read as live substantive law: preserve the
+        # historical heading but mark it, and give a body that states the status
+        # (long enough to clear the excerpt-quality gate so it leads the meta).
+        if section.is_omitted:
+            seo_heading = (
+                f"{section.former_title} (Omitted)"
+                if section.former_title
+                else "Omitted"
+            )
+            seo_body = "This section has been omitted from the Act."
+        else:
+            seo_heading = section.title
+            seo_body = section.plain_text
+        seo_title, seo_description = build_provision_seo(
+            law_name=bare.title,
+            seo_law_name=bare.short_title,
+            provision_label="Section",
+            provision_number=section.number,
+            heading=seo_heading,
+            full_text=seo_body,
+            parent_label="Chapter",
+            parent_number=section.chapter_number,
+            parent_title=section.chapter_title,
+        )
         started = time.perf_counter()
         response = templates.TemplateResponse(
             request,
@@ -2701,6 +2741,11 @@ def create_app(
                 "prev_section": previous,
                 "next_section": following,
                 "footnotes": bare.notes(section.note_ids),
+                "seo_title": seo_title,
+                "seo_description": seo_description,
+                "canonical_url": provision_canonical_url(
+                    bare.slug, "section", section.number
+                ),
             },
         )
         record_request_timing("template", started)
@@ -2724,6 +2769,12 @@ def create_app(
             # Loaded and preserved, but it has no table representation yet.
             # 404 rather than render an invented one.
             raise HTTPException(status_code=404, detail="Schedule not available")
+        seo_title, seo_description = build_schedule_seo(
+            law_name=bare.title,
+            seo_law_name=bare.short_title,
+            schedule_title=schedule.title.title(),
+            schedule_heading=schedule.display_heading,
+        )
         started = time.perf_counter()
         response = templates.TemplateResponse(
             request,
@@ -2732,6 +2783,9 @@ def create_app(
                 "act": bare,
                 "schedule": schedule,
                 "footnotes": bare.notes(schedule.note_ids),
+                "seo_title": seo_title,
+                "seo_description": seo_description,
+                "canonical_url": schedule_canonical_url(bare.slug, schedule.slug),
             },
         )
         record_request_timing("template", started)
