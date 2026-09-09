@@ -1,7 +1,9 @@
 # Playground two-law audit (NDPS + BNS)
 
+**Historical scope note:** NDPS and BNS were the architecture-validation corpus when this audit was written. They are **not** a production allowlist. Production Playground eligibility derives from the registered full-Bare-Act corpus via one shared helper (see [PLAYGROUND.md](PLAYGROUND.md)).
+
 **Date:** 2026-09-06  
-**Corpus:** the two Bare Acts already on `main`. No other statutes.  
+**Corpus (proof):** the two Bare Acts then on `main`. No other statutes in this overlay proof.  
 **Central question:** What is the minimum new user-state architecture required to let a canonical provision in the existing NDPS/BNS verbatim JSON enter Playground, acquire a RecallC learning state, progress through learning and later revision, while leaving both the law source and Constitution system unchanged?
 
 ---

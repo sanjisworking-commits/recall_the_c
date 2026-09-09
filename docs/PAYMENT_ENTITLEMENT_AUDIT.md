@@ -438,7 +438,7 @@ Do not make this only a login-time UI check. Application-level `user_device.revo
 
 ## 12. EntitlementService (repeat of §5 — implement against this table)
 
-See [§5](#5-entitlementservice-fields-locked). Drop `new_laws_unlocked_this_cycle`. Do **not** expose a lifetime `unlocked_law_ids` list as the access check; expose **`is_law_active_this_period`** plus **`has_historical_playground_progress`**. Do **not** set `is_subscribed` false because of `device_limit` / `device_revoked` — use `playground_block_reason`.
+See [§5](#5-entitlementservice-fields-locked). Drop `new_laws_unlocked_this_cycle`. Do **not** expose a lifetime `unlocked_law_ids` list as the access check; expose **`is_law_active_this_period`** plus **`has_historical_playground_progress`**. Do **not** set `is_subscribed` false because of `device_limit` / `device_revoked` — use `playground_block_reason`. Roster/entitlement **must** call the shared `is_playground_eligible_law` helper ([PLAYGROUND.md](PLAYGROUND.md)); do not re-hardcode `{ndps, bns}`.
 
 ---
 
@@ -452,7 +452,7 @@ See [§5](#5-entitlementservice-fields-locked). Drop `new_laws_unlocked_this_cyc
 | 4 | If at cap and this `law_id` was **not** consumed this period: **Playground full**. Existing active laws remain learnable. Offer Remove (no refund) or wait until next Playground month. |
 | 5 | Guest: Sign in. Signed-in not subscribed: Subscribe. Subscriber over device cap: **device-limit** screen (not Subscribe). Never ask a guest to consume a slot. |
 
-Do **not** silently consume a slot by loading `/playground/{law_id}`.
+Do **not** silently consume a slot by loading the law workspace (`/playground/laws/{law_id}`). The proof URL `/playground/{law_id}` is **not** production routing.
 
 ---
 
@@ -461,9 +461,9 @@ Do **not** silently consume a slot by loading `/playground/{law_id}`.
 | Clock | Source | Used for |
 |---|---|---|
 | **`billing_period_start` / `billing_period_end`** | Razorpay subscription invoice window | Charging, renewals, “paid through”. **Not** roster capacity. |
-| **`playground_period_start` / `playground_period_end`** | App calendar month (or equivalent monthly window defined in EntitlementService) | Roster capacity, usage count, carry-forward UI. **Renamed from** the withdrawn `quota_period_*`. |
+| **`playground_period_start` / `playground_period_end`** | App calendar month in **`Asia/Kolkata`** (configured RecallC timezone; not UTC; not per-account `user_timezone` unless later product) | Roster capacity, usage count, carry-forward UI. **Renamed from** the withdrawn `quota_period_*`. Independent of Razorpay `billing_period_*`. |
 
-**Annual billing** still opens a **new playground period every month**. Do **not** give annual Plus twelve months of the same 10-law roster without rollover.
+**Annual billing** still opens a **new playground period every month** (`Asia/Kolkata`). Do **not** give annual Plus twelve months of the same 10-law roster without rollover.
 
 Webhook `period_end` updates **billing** dates only. Creating the next `user_playground_period` is an **app** job (on first Playground hit in the new month, or a daily reconciler — implementer’s choice, must be deterministic).
 
@@ -575,9 +575,11 @@ Section select / Cloze / future modes stay overlay services; they **call** `asse
 | Surface | Destination |
 |---|---|
 | `/upgrade` | Plus/Pro/Max (names/prices **open**). Guest: Sign in then return. |
-| Playground home | Active roster this month; usage `used / limit`; carry-forward prompt when a new period starts; historical “Progress saved” list optional |
+| Playground home | `GET /playground` — active roster this month; usage `used / limit`; **zero Bare Act hydration**; batched summaries. Historical “Progress saved” list optional |
+| Roster | `GET /playground/roster` (zero hydration); `GET/POST /playground/roster/next` Keep/Remove |
 | Confirm add | Current-period slot copy (§13) |
-| Law dashboard | Modes only if active this period; else CTA per §19 |
+| Law workspace | `GET /playground/laws/{law_id}` — modes only if active this period; else CTA per §19. **Not** proof `/playground/{law_id}` |
+| Section select / Learn | `/playground/laws/{law_id}/sections` and `/playground/laws/{law_id}/sections/{number}/learn/{mode}` |
 | Bare Act | Same CTAs |
 | Profile | Plan, billing period, playground period, roster usage — **not** article-claim leftover |
 | **Profile → Security → Your devices** | `N of 2 devices`; mark **This device**; Remove; last active. **No** “upgrade for more devices.” Unsubscribed users may still manage/remove. |
@@ -618,9 +620,9 @@ Resubscribe: **new** playground period + empty consumption; overlay history **an
 | **A — Subscription** | `user_subscription`, product config (`plus`/`pro`/`max` **without** inventing INR here), Checkout/Subscriptions, webhooks (HMAC **raw** body, `x-razorpay-event-id`, out-of-order, secret rotation, reconcile) | **No quota on billing period.** `is_subscribed()` becomes real. |
 | **B — User-type** | Resolver; Guest / signed-in / subscriber; Constitution full for authenticated; stop reading `user_free_articles` / article `access_grants` | Playground still overlay-gated only after C+D+F |
 | **C — Device registry** | `rtc_device` cookie (survives logout); HMAC store; `user_device` + `user_device_session`; atomic cap=2; revoke; `playground_block_reason`; EntitlementService device fields | Tests in [§24](#24-required-tests-document-now-pytest-in-batches-b--c--d--f--do-not-write-pytest-in-this-change). **Same cap all tiers.** No fingerprinting. Replacement **integers still open** for go-live of churn UI. |
-| **D — Monthly roster** | `user_playground_period` + `user_playground_roster_item`; consume; same-month re-add; carry-forward Keep/decline; atomic 9/10; EntitlementService roster fields in §5 | Was Batch C before the device amendment. **Strike** lifetime-unlock table. |
-| **E — Learning** | All six RecallC-style modes on Bare Acts; Learned → then Day 1; retire Cloze-only as the only trigger | Overlay progress schema may extend; **do not** use progress rows as quota or as device identity |
-| **F — Roster + lifecycle + device UI** | Confirm slot, In Playground / Progress saved / Playground full, Keep/Remove rollover, payment-state CTAs, `/upgrade`, **Profile → Security → Your devices**, device-limit and revoked-device screens | Needs **open** §21 cells for go-live copy (prices **and** churn integers) |
+| **D — Monthly roster** | `user_playground_period` + `user_playground_roster_item`; consume; same-month re-add; carry-forward Keep/decline; atomic 9/10; EntitlementService roster fields in §5; **batched** dashboard `list_playground_summaries` | Was Batch C before the device amendment. **Strike** lifetime-unlock table. Period clock = `Asia/Kolkata`. |
+| **E — Learning** | All six RecallC-style modes on Bare Acts; Learned → then Day 1; retire Cloze-only as the only trigger | Overlay progress schema may extend; **do not** use progress rows as quota or as device identity. URLs under `/playground/laws/{law_id}/…` |
+| **F — Roster + lifecycle + device UI** | Confirm slot, In Playground / Progress saved / Playground full, Keep/Remove rollover, payment-state CTAs, `/upgrade`, **Profile → Security → Your devices**, device-limit and revoked-device screens | Needs **open** §21 cells for go-live copy (prices **and** churn integers). Extract `APIRouter(prefix="/playground")` **before** adding these handlers to `app.py`. |
 | **G — Legacy cleanup** | Freeze duration SKUs on `/upgrade`; drop unread article-entitlement structures only when unused | Never delete overlay, roster, or device history to “clean up” |
 
 ---
@@ -664,6 +666,9 @@ Still **open** — Cursor must not fill:
 | Silent eviction | **Forbidden** — owner removes a device |
 | Third device | Playground gated; **Constitution and `/laws` remain** |
 | Roster vs device | Roster is **account-level**; devices share one 10/30 list |
+| Playground month clock | **`Asia/Kolkata`**, independent of Razorpay billing period |
+| Playground eligibility | Shared helper: `primary_content == full_act` **and** `BareActSpec`. Not `{ndps, bns}` |
+| Production Playground URLs | `/playground/laws/{law_id}/…` — proof `/playground/{law_id}` is **not** production |
 | One commercial subscription | One current Playground subscription per user. A second checkout is an upgrade/change, not a parallel subscription. |
 | Webhooks (Batch A bar) | HMAC `X-Razorpay-Signature` over the **raw body**; persist `x-razorpay-event-id`; duplicates / out-of-order; secret rotation; provider-fetch reconcile |
 
@@ -772,8 +777,9 @@ Device (Batch C / F):
 
 ## 25. Related docs
 
-- [PLAYGROUND.md](PLAYGROUND.md) — overlay proof + monthly roster + device cap
-- [PLAYGROUND_TWO_LAW_AUDIT.md](PLAYGROUND_TWO_LAW_AUDIT.md) — locator/hash; overlay = persistent learning, not quota or device registry
+- [PLAYGROUND.md](PLAYGROUND.md) — overlay proof + monthly roster + device cap + **SEO / routing / performance contract**
+- [PLAYGROUND_TWO_LAW_AUDIT.md](PLAYGROUND_TWO_LAW_AUDIT.md) — locator/hash; overlay = persistent learning; NDPS/BNS **historical corpus**
+- [law-loading.md](law-loading.md) — lazy hydration; sitemap from **build-time manifest**
 - [BILLING.md](BILLING.md) — current duration-pass runbook (drift vs this lock)
 - [LEARN.md](LEARN.md) / [PROGRESS.md](PROGRESS.md) — Constitution only until Batch E
 - Plan file `docs/plans/2026-03-21-subscription-access-implementation.md` — **historical** (free-article model); do not implement from it

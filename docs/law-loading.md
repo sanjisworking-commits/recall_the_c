@@ -70,6 +70,26 @@ Index search uses `search_blob` on this seed. It must not parse every Act.
    changing public routes. Do not implement chunking here.
 6. Do not implement cross-law search by loading every Act.
 
+## Sitemap (never hydrate Acts)
+
+**Root sitemap/index and sitemap discovery must never hydrate runtime/canonical JSON. At scale, sitemap URL enumeration must come from a lightweight build-time manifest, not request-time Act hydration.**
+
+Today’s static [`src/constitution_memorizer/web/sitemap.xml`](../src/constitution_memorizer/web/sitemap.xml) is fine at current size. It is served as a file; do not replace that by parsing every law JSON on `GET /sitemap.xml`.
+
+When URL count requires it (hundreds of Acts × sections), produce a **manifest during ingestion/build**:
+
+```text
+slug
+source_version
+section identifiers
+public schedule slugs
+optional trustworthy last_modified
+```
+
+Then serve a sitemap index (constitution + chunked law sitemaps). The manifest is **not** scraped from the Act during a web request.
+
+Playground, roster, Learn, device, account, and other personalized URLs **never** enter a sitemap. See [PLAYGROUND.md](PLAYGROUND.md).
+
 ## Later stages (not this batch)
 
 | Stage | When |
