@@ -48,6 +48,8 @@ constitution_memorizer = [
     "web/ndps_schedule_patch.json",
     "web/bns_runtime_v1.json",
     "web/bnss_runtime_v1.json",
+    "web/sitemap-core.xml",
+    "web/law_sitemap_manifest.json",
     "web/sitemap.xml",
     "web/robots.txt",
 ]
