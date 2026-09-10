@@ -5,15 +5,15 @@ from __future__ import annotations
 from hashlib import sha256
 from pathlib import Path
 
+from constitution_memorizer.web import bare_acts as bare_act_registry
 from constitution_memorizer.web.bare_acts import (
     ActSection,
     BareAct,
     BARE_ACTS,
     flatten_body,
-    get_bare_act,
 )
+from constitution_memorizer.playground.eligibility import is_playground_eligible_law
 from constitution_memorizer.playground.locators import (
-    PLAYGROUND_LAW_IDS,
     SectionLocator,
     LocatorError,
     section_locator,
@@ -56,7 +56,7 @@ def law_file_hash(law_id: str) -> str:
 
 
 def resolve_section(locator: SectionLocator) -> tuple[BareAct, ActSection]:
-    act = get_bare_act(locator.law_id)
+    act = bare_act_registry.get_bare_act(locator.law_id)
     if act is None:
         raise LocatorError(f"unknown law: {locator.law_id}")
     section = act.section(locator.number)
@@ -66,9 +66,9 @@ def resolve_section(locator: SectionLocator) -> tuple[BareAct, ActSection]:
 
 
 def locators_for_act(law_id: str) -> list[SectionLocator]:
-    if law_id not in PLAYGROUND_LAW_IDS:
+    if not is_playground_eligible_law(law_id):
         raise LocatorError(f"unknown law: {law_id}")
-    act = get_bare_act(law_id)
+    act = bare_act_registry.get_bare_act(law_id)
     if act is None:
         raise LocatorError(f"unknown law: {law_id}")
     out: list[SectionLocator] = []

@@ -6,8 +6,11 @@ from datetime import date
 from uuid import UUID
 
 from constitution_memorizer.playground.cloze import has_cloze_blanks
+from constitution_memorizer.playground.eligibility import (
+    PlaygroundLawError,
+    is_playground_eligible_law,
+)
 from constitution_memorizer.playground.locators import (
-    PLAYGROUND_LAW_IDS,
     LocatorError,
     SectionLocator,
     parse_locator,
@@ -22,17 +25,13 @@ from constitution_memorizer.playground.source import (
     resolve_section,
     source_hash,
 )
-from constitution_memorizer.web.bare_acts import get_bare_act
-
-
-class PlaygroundLawError(LookupError):
-    """Law is not in the Playground MVP corpus."""
+from constitution_memorizer.web import bare_acts as bare_act_registry
 
 
 def require_playground_law(law_id: str):
-    if law_id not in PLAYGROUND_LAW_IDS:
+    if not is_playground_eligible_law(law_id):
         raise PlaygroundLawError(law_id)
-    act = get_bare_act(law_id)
+    act = bare_act_registry.get_bare_act(law_id)
     if act is None:
         raise PlaygroundLawError(law_id)
     return act

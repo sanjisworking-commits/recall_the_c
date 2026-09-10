@@ -1,4 +1,4 @@
-"""Playground overlay on NDPS + BNS verbatim JSON."""
+"""Playground overlay on full Bare Acts (catalogue + BareActSpec)."""
 
 from __future__ import annotations
 
@@ -18,16 +18,32 @@ from constitution_memorizer.multiuser.settings import (
     clear_settings_cache,
 )
 from constitution_memorizer.playground.cloze import has_cloze_blanks
-from constitution_memorizer.playground.locators import parse_locator, section_locator
+from constitution_memorizer.playground.eligibility import (
+    is_playground_eligible_law,
+    list_playground_eligible_laws,
+)
+from constitution_memorizer.playground.locators import (
+    LocatorError,
+    parse_locator,
+    section_locator,
+)
 from constitution_memorizer.playground.revision import INTERVAL_LADDER, advance_interval
 from constitution_memorizer.playground.source import (
     canonical_body_text,
     resolve_section,
     source_hash,
 )
+from constitution_memorizer.playground.urls import (
+    add_path,
+    law_path,
+    learn_complete_path,
+    learn_path,
+    sections_path,
+)
 from constitution_memorizer.progress.user_ids import LOCAL_USER_ID
+from constitution_memorizer.web import bare_acts
 from constitution_memorizer.web.app import create_app
-from constitution_memorizer.web.bare_acts import get_bare_act
+from constitution_memorizer.web.bare_acts import clear_bare_act_cache, get_bare_act
 
 MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
 USER_ID = UUID("11111111-1111-4111-8111-111111111111")
@@ -92,33 +108,86 @@ def _cloze_attr(page: str) -> str:
 
 
 def _add_and_select(client: TestClient, law_id: str, number: str) -> None:
-    added = client.post(f"/playground/{law_id}/add", follow_redirects=False)
+    added = client.post(add_path(law_id), follow_redirects=False)
     assert added.status_code == 303
     saved = client.post(
-        f"/playground/{law_id}/select",
+        sections_path(law_id),
         data={"section": number},
         follow_redirects=False,
     )
     assert saved.status_code == 303
 
 
+def _hydrate_spy(monkeypatch: pytest.MonkeyPatch) -> list[str]:
+    hydrated: list[str] = []
+    real = bare_acts._load_cached
+
+    def wrapped(slug: str, identity: str):
+        hydrated.append(slug)
+        return real(slug, identity)
+
+    monkeypatch.setattr(bare_acts, "_load_cached", wrapped)
+    return hydrated
+
+
+def test_eligibility_covers_full_acts_not_key_provisions():
+    assert is_playground_eligible_law("ndps") is True
+    assert is_playground_eligible_law("bns") is True
+    assert is_playground_eligible_law("bnss") is True
+    assert is_playground_eligible_law("uapa-1967") is False
+    assert is_playground_eligible_law("unknown") is False
+    assert is_playground_eligible_law("") is False
+    assert list_playground_eligible_laws() == ("bns", "bnss", "ndps")
+
+
+def test_eligibility_and_locator_parse_do_not_hydrate(
+    monkeypatch: pytest.MonkeyPatch,
+):
+    clear_bare_act_cache()
+    hydrated = _hydrate_spy(monkeypatch)
+
+    def boom(*_args, **_kwargs):
+        raise AssertionError("eligibility must not call get_bare_act/list_bare_acts")
+
+    monkeypatch.setattr(bare_acts, "get_bare_act", boom)
+    monkeypatch.setattr(bare_acts, "list_bare_acts", boom)
+    assert is_playground_eligible_law("ndps") is True
+    assert is_playground_eligible_law("bnss") is True
+    assert is_playground_eligible_law("uapa-1967") is False
+    assert parse_locator("ndps:section:8").number == "8"
+    assert parse_locator("bnss:section:479").law_id == "bnss"
+    assert hydrated == []
+
+
 def test_locator_round_trip_from_json():
-    for law_id in ("ndps", "bns"):
-        act = get_bare_act(law_id)
-        assert act is not None
-        section = act.section("1")
-        assert section is not None
-        loc = section_locator(law_id, section.number)
+    samples = (("ndps", "8"), ("bns", "103"), ("bnss", "479"))
+    for law_id, number in samples:
+        loc = section_locator(law_id, number)
         parsed = parse_locator(loc.value)
         assert parsed.law_id == law_id
-        assert parsed.number == "1"
+        assert parsed.number == number
+        assert isinstance(parsed.number, str)
+        assert parsed.number != int(number)
         again, resolved = resolve_section(parsed)
         assert again.slug == law_id
-        assert resolved.number == section.number
+        assert resolved.number == number
+
+
+def test_locator_rejects_unknown_and_malformed():
+    with pytest.raises(LocatorError):
+        parse_locator("unknown:section:8")
+    with pytest.raises(LocatorError):
+        parse_locator("ndps:chapter:1")
+    with pytest.raises(LocatorError):
+        parse_locator("ndps:section:")
+    with pytest.raises(LocatorError):
+        parse_locator("NDPS:section:8")
+    with pytest.raises(LocatorError):
+        section_locator("ipc", "1")
 
 
 def test_canonical_body_and_hash_are_deterministic():
-    for law_id in ("ndps", "bns"):
+    for law_id in ("ndps", "bns", "bnss"):
         act = get_bare_act(law_id)
         assert act is not None
         section = act.section("1")
@@ -137,7 +206,7 @@ def test_revision_ladder_matches_audit():
 
 def test_guest_cannot_persist_playground(tmp_path: Path):
     client = _mu_client(tmp_path, signed_in=False)
-    response = client.post("/playground/ndps/add", follow_redirects=False)
+    response = client.post(add_path("ndps"), follow_redirects=False)
     assert response.status_code == 303
     assert response.headers["location"] == "/login?next=/laws/ndps"
     listed = client.get("/playground", follow_redirects=False)
@@ -147,8 +216,8 @@ def test_guest_cannot_persist_playground(tmp_path: Path):
 
 def test_add_to_playground_is_idempotent(tmp_path: Path):
     client = _client(tmp_path)
-    first = client.post("/playground/ndps/add", follow_redirects=False)
-    second = client.post("/playground/ndps/add", follow_redirects=False)
+    first = client.post(add_path("ndps"), follow_redirects=False)
+    second = client.post(add_path("ndps"), follow_redirects=False)
     assert first.status_code == 303
     assert second.status_code == 303
     repo = client.app.state.playground
@@ -156,29 +225,31 @@ def test_add_to_playground_is_idempotent(tmp_path: Path):
     assert [item.law_id for item in items] == ["ndps"]
 
 
-def test_bare_act_head_has_add_button(tmp_path: Path):
+def test_bare_act_head_has_add_button_for_eligible_laws(tmp_path: Path):
     client = _client(tmp_path)
-    ndps = client.get("/laws/ndps")
-    assert ndps.status_code == 200
-    assert "Add to Playground" in ndps.text
-    bns = client.get("/laws/bns")
-    assert bns.status_code == 200
-    assert "Add to Playground" in bns.text
+    for law_id in ("ndps", "bns", "bnss"):
+        page = client.get(f"/laws/{law_id}")
+        assert page.status_code == 200
+        assert "Add to Playground" in page.text
+        assert add_path(law_id) in page.text
+    key_provisions = client.get("/laws/uapa-1967")
+    assert key_provisions.status_code == 200
+    assert "Add to Playground" not in key_provisions.text
 
 
-def test_cloze_integrity_ndps_and_bns_section_1(tmp_path: Path):
+def test_cloze_integrity_ndps_bns_bnss_section_1(tmp_path: Path):
     client = _client(tmp_path)
-    for law_id in ("ndps", "bns"):
+    for law_id in ("ndps", "bns", "bnss"):
         act = get_bare_act(law_id)
         assert act is not None
         section = act.section("1")
         assert section is not None
         canonical = canonical_body_text(section)
         _add_and_select(client, law_id, "1")
-        page = client.get(f"/playground/{law_id}/learn/1")
+        page = client.get(learn_path(law_id, "1"))
         assert page.status_code == 200
         assert _cloze_attr(page.text) == canonical
-        done = client.post(f"/playground/{law_id}/learn/1/complete")
+        done = client.post(learn_complete_path(law_id, "1"))
         assert done.status_code == 200
         payload = done.json()
         assert payload["ok"] is True
@@ -191,7 +262,7 @@ def test_cloze_integrity_ndps_and_bns_section_1(tmp_path: Path):
 def test_source_hash_mismatch_is_flagged_not_wiped(tmp_path: Path):
     client = _client(tmp_path)
     _add_and_select(client, "ndps", "1")
-    client.post("/playground/ndps/learn/1/complete")
+    client.post(learn_complete_path("ndps", "1"))
     loc = section_locator("ndps", "1").value
     repo = client.app.state.playground
     repo.conn.execute(
@@ -203,7 +274,7 @@ def test_source_hash_mismatch_is_flagged_not_wiped(tmp_path: Path):
         (str(LOCAL_USER_ID), "ndps", loc),
     )
     repo.conn.commit()
-    page = client.get("/playground/ndps/learn/1")
+    page = client.get(learn_path("ndps", "1"))
     assert page.status_code == 200
     assert "This provision has changed" in page.text
     remaining = repo.get_progress(LOCAL_USER_ID, "ndps", loc)
@@ -255,8 +326,42 @@ def test_cloze_complete_idempotent_before_due(tmp_path: Path):
 
 def test_unknown_playground_law_404(tmp_path: Path):
     client = _client(tmp_path)
-    response = client.post("/playground/ipc/add", follow_redirects=False)
+    response = client.post(add_path("ipc"), follow_redirects=False)
     assert response.status_code == 404
+    assert client.post(add_path("uapa-1967"), follow_redirects=False).status_code == 404
+
+
+def test_final_namespace_and_retired_proof_urls(tmp_path: Path):
+    client = _client(tmp_path)
+    assert client.get("/playground").status_code == 200
+    for law_id in ("ndps", "bns", "bnss"):
+        added = client.post(add_path(law_id), follow_redirects=False)
+        assert added.status_code == 303
+        assert added.headers["location"] == sections_path(law_id)
+        workspace = client.get(law_path(law_id), follow_redirects=False)
+        assert workspace.status_code == 200
+    assert client.get("/playground/roster").status_code == 404
+    assert client.get("/playground/ndps").status_code == 404
+    assert client.post("/playground/ndps/add", follow_redirects=False).status_code == 404
+    assert client.get("/laws/bnss").status_code == 200
+    assert client.get("/laws/ndps").status_code == 200
+    assert client.get("/").status_code == 200
+
+
+def test_opening_bnss_playground_does_not_hydrate_ndps_or_bns(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    clear_bare_act_cache()
+    hydrated = _hydrate_spy(monkeypatch)
+    client = _client(tmp_path)
+    empty_home = list(hydrated)
+    client.get("/playground")
+    assert hydrated == empty_home
+    client.post(add_path("bnss"), follow_redirects=False)
+    client.get(law_path("bnss"))
+    assert "bnss" in hydrated
+    assert "ndps" not in hydrated
+    assert "bns" not in hydrated
 
 
 def test_alembic_playground_tables_enable_rls():

@@ -10,7 +10,7 @@
     <p class="bareact-tag">Bare Act</p>
     <h1 class="bareact-title">{{ act.title }}</h1>
     {% if playground_eligible|default(false) %}
-    <form class="playground-add" method="post" action="/playground/{{ act.slug }}/add">
+    <form class="playground-add" method="post" action="/playground/laws/{{ act.slug }}/add">
       <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
       <button type="submit" class="playground-add-btn">
         {% if in_playground|default(false) %}Open Playground{% else %}Add to Playground{% endif %}

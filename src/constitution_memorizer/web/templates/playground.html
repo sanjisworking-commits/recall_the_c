@@ -6,7 +6,7 @@
   <h1>My Playground</h1>
   <p class="playground-lede">Laws you added. Reading stays on the Bare Act; Cloze lives here.</p>
   {% if not cards %}
-  <p>Nothing here yet. Open NDPS or BNS and choose Add to Playground.</p>
+  <p>Nothing here yet. Open a full Bare Act and choose Add to Playground.</p>
   {% else %}
   <div class="playground-cards">
     {% for card in cards %}
@@ -21,8 +21,8 @@
       <p class="playground-flag">A selected provision has changed in the source JSON.</p>
       {% endif %}
       <p>
-        <a href="/playground/{{ card.act.slug }}">Progress</a>
-        · <a href="/playground/{{ card.act.slug }}/select">Select sections</a>
+        <a href="/playground/laws/{{ card.act.slug }}">Progress</a>
+        · <a href="/playground/laws/{{ card.act.slug }}/sections">Select sections</a>
         · <a href="/laws/{{ card.act.slug }}">Read</a>
       </p>
     </article>

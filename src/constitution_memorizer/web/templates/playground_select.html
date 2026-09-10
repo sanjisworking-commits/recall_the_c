@@ -6,7 +6,7 @@
   <p><a href="/playground">← My Playground</a></p>
   <h1>{{ act.title }}</h1>
   <p class="playground-lede">Entire Act or individual sections. Chapter selection is not in this batch.</p>
-  <form method="post" action="/playground/{{ act.slug }}/select">
+  <form method="post" action="/playground/laws/{{ act.slug }}/sections">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
     <p>
       <label>

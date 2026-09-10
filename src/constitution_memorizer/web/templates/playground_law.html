@@ -7,7 +7,7 @@
   <h1>{{ act.title }}</h1>
   <p class="playground-lede">
     <a href="/laws/{{ act.slug }}">Read</a>
-    · <a href="/playground/{{ act.slug }}/select">Select sections</a>
+    · <a href="/playground/laws/{{ act.slug }}/sections">Select sections</a>
   </p>
   {% if not rows %}
   <p>No sections selected yet.</p>
@@ -27,7 +27,7 @@
       <p class="playground-flag">This provision has changed.</p>
       {% endif %}
     </div>
-    <a href="/playground/{{ act.slug }}/learn/{{ row.number }}">Learn (Cloze)</a>
+    <a href="/playground/laws/{{ act.slug }}/sections/{{ row.number }}/learn/cloze">Learn (Cloze)</a>
   </div>
   {% endfor %}
   {% endif %}
