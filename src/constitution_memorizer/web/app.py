@@ -204,6 +204,7 @@ from constitution_memorizer.web.seo import (
     build_law_seo,
     build_provision_seo,
     build_schedule_seo,
+    is_noindex_path,
     law_canonical_url,
     laws_hub_canonical_url,
     provision_canonical_url,
@@ -569,6 +570,9 @@ def create_app(
                     getattr(getattr(request.state, "auth_session", None), "csrf_token", None)
                     or request.cookies.get("rtc_csrf")
                 ),
+                # Private/personalized/account/admin surfaces must never be
+                # indexed; base.html emits a noindex meta when this is true.
+                "robots_noindex": is_noindex_path(request.url.path),
             }
         ],
     )

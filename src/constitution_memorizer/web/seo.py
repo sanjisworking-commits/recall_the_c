@@ -60,6 +60,53 @@ def laws_hub_canonical_url() -> str:
     return f"{CANONICAL_ORIGIN}/laws"
 
 
+# Personalized, account, application, and admin surfaces that must never enter a
+# search index. Public marketing, the Constitution Browse pages, and the Bare
+# Act pages are deliberately ABSENT so they stay indexable. A page is no-indexed
+# when its path equals one of these or nests under it (``/settings`` also covers
+# ``/settings/...``). Kept as a data-only allow/deny list here so both the
+# template layer and tests share one definition. Removing a private HTML page
+# from the index requires the crawler to fetch it and read an in-page
+# ``noindex`` — so this is enforced with a meta tag, never via robots.txt.
+NOINDEX_PATH_PREFIXES: tuple[str, ...] = (
+    "/dashboard",
+    "/progress",
+    "/calendar",
+    "/memory",
+    "/settings",
+    "/profile",
+    "/learn",
+    "/learning",
+    "/onboarding",
+    "/playground",
+    "/subscribe",
+    "/admin",
+    "/welcome",
+    # Transient auth surfaces — flows and states, not indexable content.
+    "/login",
+    "/logout",
+    "/signed-out",
+    "/session-expired",
+    "/auth",
+)
+
+
+def is_noindex_path(path: str) -> bool:
+    """Whether a page ``path`` is a private/personalized surface to keep out of
+    search indexes.
+
+    Prefix match on normalized path: ``/settings`` also matches
+    ``/settings/anything``, but ``/laws`` is never caught by ``/learn`` and the
+    public roots (``/``, ``/browse``, ``/search``, ``/tables``, ``/pricing``,
+    ``/terms``, ``/privacy``, ``/grievance``) are never matched.
+    """
+    normalized = "/" + (path or "").strip("/")
+    return any(
+        normalized == prefix or normalized.startswith(prefix + "/")
+        for prefix in NOINDEX_PATH_PREFIXES
+    )
+
+
 def law_canonical_url(law_slug: str) -> str:
     """Canonical URL for a Bare Act's landing page."""
     return f"{CANONICAL_ORIGIN}/laws/{law_slug}"
