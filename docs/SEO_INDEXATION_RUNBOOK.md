@@ -152,7 +152,7 @@ review — file an issue and use the remediation rules in §6.
 | **D3** | Discovery | Sitemaps report should show the index **read** and children **discovered** (~1,524 URLs). Confirm no *Couldn't fetch* / parse errors. Spot-check 2 URL Inspections move to *Crawled* or *Indexed*. |
 | **D7** | Early indexation | Pages report: Indexed count rising; capture the top Not-indexed reasons. Breadcrumbs enhancement: valid items appearing, errors still 0. Re-audit production (nothing regressed to 500 / canonical drift). |
 | **D14** | Coverage depth | Compare Indexed vs 1,524. Investigate any *Discovered – currently not indexed* clusters (see §6). First Performance signal for `/laws` (impressions > 0). |
-| **D28** | Steady state | Assess what proportion of the submitted corpus Google has indexed and whether any persistent exclusion pattern requires investigation (there is no fixed percentage Google must reach). Breadcrumb rich-result eligibility visible. Decide whether any remediation (§6) is warranted; otherwise close the indexation watch. |
+| **D28** | Steady state | Assess what proportion of the submitted corpus Google has indexed and whether any persistent exclusion pattern requires investigation. Do not treat a fixed indexation percentage as an acceptance threshold. Breadcrumb rich-result eligibility visible. Decide whether any remediation (§6) is warranted; otherwise close the indexation watch. |
 
 At every checkpoint also glance at Crawl stats host status — a spike in 5xx is
 the earliest signal of a packaging/deploy regression like the one PR #198 fixed.
