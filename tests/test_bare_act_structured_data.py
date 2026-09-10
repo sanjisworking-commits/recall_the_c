@@ -18,7 +18,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from constitution_memorizer.web.app import create_app
-from constitution_memorizer.web.bare_acts import get_bare_act
+from constitution_memorizer.web.bare_acts import BARE_ACTS, get_bare_act
 from constitution_memorizer.web.seo import (
     CANONICAL_ORIGIN,
     build_breadcrumb_schema,
@@ -31,6 +31,16 @@ from constitution_memorizer.web.seo import (
 from constitution_memorizer.web.sitemaps import build_law_sitemap
 
 MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
+
+# Every publicly routable (table-only) schedule across every registered Act.
+# This tracks the exact public-schedule boundary from Stage 2, so it covers
+# BNSS's supported First Schedule and NDPS's schedule while excluding BNSS's
+# unrenderable Second Schedule.
+PUBLIC_SCHEDULES = [
+    (slug, schedule_slug)
+    for slug in sorted(BARE_ACTS)
+    for schedule_slug in get_bare_act(slug).public_schedule_slugs
+]
 
 _LD_JSON_RE = re.compile(
     r'<script[^>]*type=["\']application/ld\+json["\'][^>]*>(.*?)</script>',
@@ -177,23 +187,40 @@ def test_section_breadcrumb_has_no_chapter_item(
 # ── Integration: schedule page ───────────────────────────────────────────────
 
 
-def test_schedule_breadcrumb_uses_untransformed_display_heading(client: TestClient):
-    act = get_bare_act("ndps")
-    schedule_slug = act.public_schedule_slugs[0]
+@pytest.mark.parametrize(("slug", "schedule_slug"), PUBLIC_SCHEDULES)
+def test_schedule_breadcrumb_uses_untransformed_display_heading(
+    client: TestClient, slug: str, schedule_slug: str
+):
+    # Covers every public (table-only) schedule, incl. BNSS's First Schedule.
+    act = get_bare_act(slug)
     schedule = act.schedule(schedule_slug)
-    html = client.get(f"/laws/ndps/schedule/{schedule_slug}").text
-    schema = _breadcrumb(html)
+    resp = client.get(f"/laws/{slug}/schedule/{schedule_slug}")
+    assert resp.status_code == 200
+    schema = _breadcrumb(resp.text)
 
-    schedule_url = schedule_canonical_url("ndps", schedule_slug)
+    schedule_url = schedule_canonical_url(slug, schedule_slug)
     assert _crumbs(schema) == [
         (1, "Laws", laws_hub_canonical_url()),
-        (2, act.short_title, law_canonical_url("ndps")),
+        (2, act.short_title, law_canonical_url(slug)),
         (3, schedule.display_heading, schedule_url),
     ]
     # The breadcrumb name is the verbatim reader-page identity, not .title()-cased.
     assert schema["itemListElement"][-1]["name"] == schedule.display_heading
-    assert schedule_url == _canonical(html)
-    assert schedule_url in build_law_sitemap("ndps")
+    assert schedule_url == _canonical(resp.text)
+    assert schedule_url in build_law_sitemap(slug)
+
+
+def test_bnss_second_schedule_is_not_a_structured_data_surface(client: TestClient):
+    # BNSS's Second Schedule has no table representation (is_table False), so
+    # the route 404s and it must never surface a public BreadcrumbList page.
+    # This guards the exact table-only boundary established in Stage 2.
+    assert not get_bare_act("bnss").schedule("second-schedule").is_table
+    resp = client.get("/laws/bnss/schedule/second-schedule")
+    assert resp.status_code == 404
+    assert "application/ld+json" not in resp.text
+    assert all(
+        block.get("@type") != "BreadcrumbList" for block in _ld_json_blocks(resp.text)
+    )
 
 
 # ── Isolation: Constitution and private routes ───────────────────────────────
