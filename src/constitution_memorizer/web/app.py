@@ -616,26 +616,6 @@ def create_app(
     app.state.razorpay_key_id = str(settings.razorpay_key_id or "")
     app.state.razorpay_key_secret = str(settings.razorpay_key_secret or "")
     app.state.use_postgres_progress = use_postgres
-    if use_postgres:
-        from constitution_memorizer.playground.postgres import (  # noqa: PLC0415
-            PostgresPlaygroundRepository,
-        )
-
-        app.state.playground = PostgresPlaygroundRepository(_ensure_pool())
-    else:
-        from constitution_memorizer.playground.db import (  # noqa: PLC0415
-            ensure_sqlite_schema,
-        )
-        from constitution_memorizer.playground.repository import (  # noqa: PLC0415
-            SqlitePlaygroundRepository,
-        )
-
-        conn = getattr(engine.repo, "conn", None)
-        if conn is not None:
-            ensure_sqlite_schema(conn)
-            app.state.playground = SqlitePlaygroundRepository(conn)
-        else:
-            app.state.playground = None
     app.state.oauth_states = {}
     app.state.otp_limiter = OtpRateLimiter()
     if auth_provider is not None:
@@ -759,6 +739,30 @@ def create_app(
 
     app.state.admin_enabled = bool(settings.admin_enabled)
     app.state.admin_hint_cache = AdminHintCache()
+
+    # Playground overlay shares the pool other stores already opened. Do not
+    # call _ensure_pool() here: tests inject every Postgres repo so that
+    # create_app leaves db_pool None.
+    if db_pool is not None:
+        from constitution_memorizer.playground.postgres import (  # noqa: PLC0415
+            PostgresPlaygroundRepository,
+        )
+
+        app.state.playground = PostgresPlaygroundRepository(db_pool)
+    else:
+        from constitution_memorizer.playground.db import (  # noqa: PLC0415
+            ensure_sqlite_schema,
+        )
+        from constitution_memorizer.playground.repository import (  # noqa: PLC0415
+            SqlitePlaygroundRepository,
+        )
+
+        conn = getattr(engine.repo, "conn", None)
+        if conn is not None and not use_postgres:
+            ensure_sqlite_schema(conn)
+            app.state.playground = SqlitePlaygroundRepository(conn)
+        else:
+            app.state.playground = None
 
     app.state.db_pool = db_pool
 
