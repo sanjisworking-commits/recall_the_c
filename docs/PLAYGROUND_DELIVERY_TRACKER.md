@@ -2,15 +2,16 @@
 
 **Scoreboard, not an audit.** Product rules live in [PLAYGROUND.md](PLAYGROUND.md), [PAYMENT_ENTITLEMENT_AUDIT.md](PAYMENT_ENTITLEMENT_AUDIT.md), [PLAYGROUND_TWO_LAW_AUDIT.md](PLAYGROUND_TWO_LAW_AUDIT.md), and [law-loading.md](law-loading.md).
 
-**Snapshot (this file’s date of write):** architecture/product definition is **locked in docs**. Production Playground implementation is **early**. The NDPS/BNS overlay + Cloze + proof revision rows **do not** count as milestones 6–8 (or as production milestone 1 routing/eligibility).
+**Snapshot:** architecture/product definition is **locked in docs**. **Stage 1** (build) is **3.5 / 100**. Production implementation is **early**. The NDPS/BNS overlay + Cloze + proof revision rows **do not** count as milestones 6–8 (or as production milestone 1 routing/eligibility). **Do not tick Stage 2 from Cloze or from `main`’s sitemap PRs.** Main SEO/sitemap work can satisfy Stage 1 acceptance once adopted and verified on this branch; it is not evidence that post-production optimization has happened.
 
 | | |
 |--|--|
-| **Overall** | **3.5 / 100** |
+| **Stage 1 (build)** | **3.5 / 100** |
 | Milestone 0 | `IN PROGRESS` — 7/10 items × 5 = **3.5** |
 | Milestones 1–11 | `NOT STARTED` except §21 commercial cells in milestone 2 (`BLOCKED`) |
+| **Stage 2 (optimize)** | **`NOT STARTED` — start gate: Stage 1 = `DONE` (100/100)** |
 
-Do not read Cloze on this branch as ~20% complete. Payments, roster, devices, six Learn modes, and Learned → revision are the actual product weight.
+Do not read Cloze on this branch as ~20% complete. Payments, roster, devices, six Learn modes, and Learned → revision are the actual Stage 1 product weight. Stage 2 is **outside** the 100.
 
 ---
 
@@ -46,6 +47,49 @@ NOT STARTED | IN PROGRESS | BLOCKED | IN REVIEW | DONE
 `DONE` means acceptance criteria and tests have passed. Do not use “mostly done.”
 
 **§21 BLOCKED (do not invent):** public tier `display_name`, INR prices, GST treatment, monthly vs annual as MVP, Razorpay state → access matrix, `past_due` grace, refund / partial / chargeback access, `DEVICE_REPLACEMENT_*` integers. See [PAYMENT_ENTITLEMENT_AUDIT.md](PAYMENT_ENTITLEMENT_AUDIT.md) §21. Internal codes `plus` / `pro` / `max` are already locked.
+
+`BLOCKED` is **only** for unresolved product/provider decisions (such as §21). Stage 2 is **sequenced**, not blocked.
+
+---
+
+## Programme stages
+
+```text
+PLAYGROUND PROGRAMME
+
+STAGE 1 — BUILD
+100-point completion score
+Milestones 0–11
+        ↓
+100/100 + production proof
+        ↓
+STAGE 2 — OPTIMIZE
+Unweighted checklist
+Measured optimization only
+        ↓
+DB tuning
+routing/backend profiling
+law-loading scale
+SEO at scale
+performance
+resilience
+abuse hardening
+observability
+ops tooling
+UX optimization
+scale testing
+cleanup
+```
+
+**Stage 1** is milestones 0–11 below. That score **ends at 100**. Stage 2 stays completely outside it.
+
+**Stage 2 status:** `NOT STARTED` — start gate: Stage 1 = `DONE` (100/100). Do not start Stage 2 during Stage 1. Do not reopen prices, GST, roster math, device cap, URL shape, or Constitution independence in Stage 2.
+
+**Overlap:** Stage 1 **implements** first-time correctness (zero-hydration home/roster, batched dashboard, atomic consume, webhook HMAC/idempotency, `noindex` / `X-Robots-Tag`, first-pass admin diagnostics, concurrency tests, rollout/rollback). Stage 2 **profiles / measures / tunes / automates / scales / retires** after measured production behaviour. Do not re-implement Stage 1 contracts under Stage 2 headings.
+
+**Do not tick Stage 2 from Cloze or from `main`’s sitemap PRs.**
+
+This file is the **only** scoreboard for “how far through the overall Playground programme are we?” Do not duplicate Stage 2 into a new audit.
 
 ---
 
@@ -714,7 +758,8 @@ Playground + payment can safely replace the existing commercial entitlement mode
 | 9. Amendments/source integrity    |      5 | `NOT STARTED` |
 | 10. SEO/routing discoverability   |      4 | `NOT STARTED` on this branch |
 | 11. Production hardening/release  |      7 | `NOT STARTED` |
-| **TOTAL**                         |  **100** | **3.5 / 100** |
+| **TOTAL (Stage 1)**               |  **100** | **3.5 / 100** |
+| Stage 2 — Optimize                |    — | `NOT STARTED` — start gate: Stage 1 = `DONE` (100/100) |
 
 ---
 
@@ -790,3 +835,128 @@ admin override
 ```
 
 without changing the canonical statutory source or the Constitution data model.
+
+That definition is **Stage 1 = 100/100**. Stage 2 does not change it.
+
+---
+
+# Stage 2 — Optimize Playground (unweighted)
+
+**Status: `NOT STARTED` — start gate: Stage 1 = `DONE` (100/100)**
+
+Starts only after Stage 1 contracts are implemented, tested, and proven in production-like use. Improve scale, reliability, performance, security, and operations **without reopening the product model**.
+
+Do **not** prematurely optimize speculative bottlenecks during Stage 1. Do **not** tick these boxes from Cloze, from proof overlay code, or from `main`’s sitemap PRs.
+
+Where Stage 1 already owns first-time correctness, Stage 2 verbs are **profile / measure / tune / automate / scale / retire** — not **implement**.
+
+### Done when (Stage 2)
+
+Measured improvements against production behaviour; proven-dead legacy/proof paths **retired** only after unused. Product model unchanged.
+
+## 1. Database optimization
+
+* [ ] Profile query plans for roster, revisions, devices, subscriptions, and progress
+* [ ] Tune indexes from those plans
+* [ ] Measure and eliminate remaining N+1 (Stage 1 already requires batched dashboard / no-N+1 home)
+* [ ] Measure p95 of aggregates/dashboard reads; tune
+* [ ] Archival / data-retention strategy after real growth is visible
+
+## 2. Routing / backend optimization
+
+* [ ] Measure Playground route latency
+* [ ] Trim unnecessary dependencies/queries found in traces
+* [ ] Tune request-scoped entitlement/bootstrap caching
+* [ ] Profile authorization guard composition; tune
+* [ ] Further batch writes/reads where measurement shows benefit
+
+## 3. Law-loading optimization
+
+* [ ] Verify zero-hydration catalogue / Playground dashboard still holds under load (Stage 1 owns the contract)
+* [ ] Profile `BareAct` hydration
+* [ ] Measure cache effectiveness
+* [ ] Prepare section/chapter chunking **only when corpus size justifies it**
+* [ ] Scale precomputed search/index infrastructure as the corpus grows
+
+## 4. SEO at scale
+
+* [ ] Automate sitemap manifest generation (Stage 1: manifest **contract** works)
+* [ ] Scale / chunk sitemap index for the actual corpus
+* [ ] Large-corpus crawl efficiency
+* [ ] Canonical audits
+* [ ] Structured data/schema where valuable
+* [ ] Search Console / index coverage monitoring
+* [ ] Core Web Vitals on law pages
+
+## 5. Performance
+
+* [ ] Page-weight audit
+* [ ] Tune JS/CSS delivery
+* [ ] Profile template rendering
+* [ ] Measure DB latency
+* [ ] Cold-start behaviour
+* [ ] Caching headers for public immutable/static law assets where appropriate
+
+## 6. Concurrency & resilience
+
+* [ ] Profile roster races beyond Stage 1 atomic-consume tests
+* [ ] Profile device-registration races beyond Stage 1 cap tests
+* [ ] Concurrent progress/revision writes under load
+* [ ] Measure duplicate/out-of-order Razorpay handling (Stage 1 owns HMAC + event-id)
+* [ ] Tune retry/idempotency from observed failures
+* [ ] Degraded-provider scenarios
+
+## 7. Security & misuse prevention
+
+* [ ] Rate limits (tune from observed abuse)
+* [ ] Device-churn detection (numeric policy still §21 for Stage 1)
+* [ ] Suspicious subscription/account-sharing signals (non-authoritative)
+* [ ] Mutation abuse protection
+* [ ] Authorization audits
+* [ ] CSRF/session-cookie hardening
+
+## 8. Observability
+
+* [ ] Entitlement denial reasons
+* [ ] Device-limit events
+* [ ] Roster-full events
+* [ ] Webhook failures
+* [ ] Payment reconciliation failures
+* [ ] Law-load latency
+* [ ] Playground route latency / error rate
+
+## 9. Operational tooling
+
+* [ ] Improve admin subscription diagnostics from observed failures (Stage 1: first-pass diagnostics exist)
+* [ ] Improve device-reset support UX
+* [ ] Improve roster inspection
+* [ ] Improve Razorpay reconciliation tooling
+* [ ] Amendment/source diagnostics
+* [ ] Safer support tooling without raw DB intervention
+
+## 10. UX optimization
+
+* [ ] Funnel analytics: Browse → Add → Learn → Learned → revision
+* [ ] Measure rollover completion rates
+* [ ] Subscription conversion
+* [ ] Abandoned learning sessions
+* [ ] Clearer empty/error states from observed confusion
+* [ ] Accessibility
+* [ ] Mobile/responsive refinements
+
+## 11. Scale testing
+
+* [ ] Realistic 700+ law catalogue
+* [ ] Users with 30 active laws
+* [ ] Large Acts
+* [ ] High progress-row counts
+* [ ] Sitemap inventory scale
+* [ ] Concurrent subscriber traffic
+
+## 12. Cleanup
+
+* [ ] Retire proven-dead legacy entitlement code (Stage 1: stop reading; delete only after unused)
+* [ ] Retire obsolete proof-only paths
+* [ ] Simplify compatibility shims
+* [ ] Consolidate duplicate helpers after real usage is understood
+
