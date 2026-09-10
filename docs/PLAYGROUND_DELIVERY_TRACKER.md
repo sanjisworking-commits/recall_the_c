@@ -17,7 +17,7 @@ Do not read Cloze on this branch as ~20% complete. Payments, roster, devices, si
 
 ## Tracking rule
 
-Playground completion is measured out of **100 points**.
+Playground **Stage 1** completion is measured out of **100 points**. Stage 2 is unweighted and is not part of that 100.
 
 A milestone counts only when:
 

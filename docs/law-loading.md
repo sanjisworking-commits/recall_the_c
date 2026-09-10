@@ -72,11 +72,20 @@ Index search uses `search_blob` on this seed. It must not parse every Act.
 
 ## Sitemap (never hydrate Acts)
 
-**Root sitemap/index and sitemap discovery must never hydrate runtime/canonical JSON. At scale, sitemap URL enumeration must come from a lightweight build-time manifest, not request-time Act hydration.**
+**Root sitemap/index and sitemap discovery must never hydrate runtime/canonical JSON. Sitemap URL enumeration comes from a lightweight build-time manifest, not request-time Act hydration.**
 
-Today’s static [`src/constitution_memorizer/web/sitemap.xml`](../src/constitution_memorizer/web/sitemap.xml) is fine at current size. It is served as a file; do not replace that by parsing every law JSON on `GET /sitemap.xml`.
+Current public layout (generic Bare Act SEO/sitemap from production `main`):
 
-When URL count requires it (hundreds of Acts × sections), produce a **manifest during ingestion/build**:
+```text
+/sitemap.xml              generated sitemap index
+/sitemap-core.xml         static Constitution + marketing urlset
+/sitemap-laws.xml         the /laws hub
+/sitemap-laws-{slug}.xml  one urlset per registered full Bare Act
+```
+
+The index and per-law urlsets are built from the lightweight `BARE_ACTS` registry (`BareActSpec`) plus the committed manifest [`data/reference/law_sitemap_manifest.json`](../data/reference/law_sitemap_manifest.json). Request handlers MUST NOT call `get_bare_act()` / `list_bare_acts()` or open runtime/canonical statute JSON. Rebuild the manifest during ingestion/build (`scripts/build_law_sitemap_manifest.py`), never during a web request.
+
+Manifest fields:
 
 ```text
 slug
@@ -86,9 +95,7 @@ public schedule slugs
 optional trustworthy last_modified
 ```
 
-Then serve a sitemap index (constitution + chunked law sitemaps). The manifest is **not** scraped from the Act during a web request.
-
-Playground, roster, Learn, device, account, and other personalized URLs **never** enter a sitemap. See [PLAYGROUND.md](PLAYGROUND.md).
+Playground, roster, Learn, device, account, and other personalized URLs **never** enter a sitemap. See [PLAYGROUND.md](PLAYGROUND.md). Public `/laws*` remains the indexable surface. Do not add a second SEO engine. Playground `noindex` / `X-Robots-Tag` is a later Stage 1 batch.
 
 ## Later stages (not this batch)
 
@@ -97,4 +104,4 @@ Playground, roster, Learn, device, account, and other personalized URLs **never*
 | Per-law indexes + chapter/section chunks | ~10–30+ larger Acts |
 | DB/object-store corpus + precomputed search index | hundreds of laws or cross-law querying |
 
-BNSS and further Acts land only after this contract is enforced by tests.
+BNSS is already a registered full Bare Act under this loader. Further Acts land only after this contract is enforced by tests.

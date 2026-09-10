@@ -2761,12 +2761,12 @@ def create_app(
                 "bare_act.html",
                 {
                     "act": bare,
-            "seo_title": seo_title,
-            "seo_description": seo_description,
-            "canonical_url": law_canonical_url(bare.slug),
-            "playground_eligible": bare.slug in PLAYGROUND_LAW_IDS,
-            "in_playground": in_playground,
-        },
+                    "seo_title": seo_title,
+                    "seo_description": seo_description,
+                    "canonical_url": law_canonical_url(bare.slug),
+                    "playground_eligible": bare.slug in PLAYGROUND_LAW_IDS,
+                    "in_playground": in_playground,
+                },
             )
             record_request_timing("template", started)
             return response
