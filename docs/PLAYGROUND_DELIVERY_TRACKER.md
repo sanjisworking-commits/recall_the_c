@@ -2,12 +2,12 @@
 
 **Scoreboard, not an audit.** Product rules live in [PLAYGROUND.md](PLAYGROUND.md), [PAYMENT_ENTITLEMENT_AUDIT.md](PAYMENT_ENTITLEMENT_AUDIT.md), [PLAYGROUND_TWO_LAW_AUDIT.md](PLAYGROUND_TWO_LAW_AUDIT.md), and [law-loading.md](law-loading.md).
 
-**Snapshot:** architecture/product definition is **locked in docs**. **Stage 1** (build) is **3.5 / 100**. Production implementation is **early**. The NDPS/BNS overlay + Cloze + proof revision rows **do not** count as milestones 6–8 (or as production milestone 1 routing/eligibility). **Do not tick Stage 2 from Cloze or from `main`’s sitemap PRs.** Main SEO/sitemap work can satisfy Stage 1 acceptance once adopted and verified on this branch; it is not evidence that post-production optimization has happened.
+**Snapshot:** architecture/product definition is **locked in docs**. **Stage 1** (build) is **5 / 100**. Production implementation is **early**. The NDPS/BNS overlay + Cloze + proof revision rows **do not** count as milestones 6–8 (or as production milestone 1 routing/eligibility). **Do not tick Stage 2 from Cloze or from `main`’s sitemap PRs.** This branch now includes main’s Bare Act SEO and generated sitemap index; that is Milestone 0 coexistence, not Milestone 10 (`noindex`) and not Stage 2.
 
 | | |
 |--|--|
-| **Stage 1 (build)** | **3.5 / 100** |
-| Milestone 0 | `IN PROGRESS` — 7/10 items × 5 = **3.5** |
+| **Stage 1 (build)** | **5 / 100** |
+| Milestone 0 | `DONE` — 10/10 items × 5 = **5** |
 | Milestones 1–11 | `NOT STARTED` except §21 commercial cells in milestone 2 (`BLOCKED`) |
 | **Stage 2 (optimize)** | **`NOT STARTED` — start gate: Stage 1 = `DONE` (100/100)** |
 
@@ -95,7 +95,7 @@ This file is the **only** scoreboard for “how far through the overall Playgrou
 
 # 0. Architecture lock + branch baseline — 5 points
 
-**Status: `IN PROGRESS`** (7/10 × 5 = 3.5)
+**Status: `DONE`** (10/10 × 5 = 5)
 
 ### Scope
 
@@ -106,11 +106,11 @@ This file is the **only** scoreboard for “how far through the overall Playgrou
 * [x] Device policy locked
 * [x] Monthly roster policy locked
 * [x] SEO/routing/loading contracts documented
-* [ ] Rebase `cursor/playground-220d` onto **latest** `main`
-* [ ] Resolve law-loader / BNSS / SEO / sitemap integration with current `main`
-* [ ] Full baseline test suite green after that rebase
+* [x] Rebase `cursor/playground-220d` onto **latest** `main`
+* [x] Resolve law-loader / BNSS / SEO / sitemap integration with current `main`
+* [x] Full baseline test suite green after that rebase
 
-A prior rebase landed on `main` at BNSS + lazy loading. `main` has since added Bare Act SEO wiring and a generated sitemap index (PRs #192 / #196). Those commits are **not** on this branch until the next rebase. Overlay `{ndps, bns}` allowlists and `/playground/{law_id}` are **milestone 1**, not a hidden milestone-0 fail.
+Rebased onto `main` at BNSS + lazy loading + Bare Act SEO wiring + generated sitemap index (PRs #192 / #196). BNSS remains a public full Bare Act; it is **not** Playground-eligible via a third hardcoded slug. Overlay `{ndps, bns}` allowlists and `/playground/{law_id}` are **milestone 1**, not a hidden milestone-0 fail.
 
 ### Done when
 
@@ -642,9 +642,9 @@ A statutory amendment can be detected without destroying or silently rewriting t
 
 # 10. SEO & public/private routing — 4 points
 
-**Status: `NOT STARTED` on this branch**
+**Status: `NOT STARTED`**
 
-Public Bare Act SEO and a generated sitemap index exist on **`main`** (not yet merged here). They do **not** complete this milestone until: this branch includes them, Playground/account URLs are `noindex` / absent from sitemap, and query `/laws` canonicalization is verified. Do not re-invent `seo.py`.
+Public Bare Act SEO and a generated sitemap index from **`main`** (PRs #192 / #196) are now on this branch. They still do **not** complete this milestone until Playground/account URLs are `noindex` / absent from sitemap, and query `/laws` canonicalization is verified. Do not re-invent `seo.py`. Do not tick Stage 2 from that adoption.
 
 ## Public law SEO
 
@@ -746,7 +746,7 @@ Playground + payment can safely replace the existing commercial entitlement mode
 
 | Milestone                         | Weight | Status now |
 | --------------------------------- | -----: | ---------- |
-| 0. Architecture + branch baseline |      5 | `IN PROGRESS` (3.5 earned) |
+| 0. Architecture + branch baseline |      5 | `DONE` (5 earned) |
 | 1. Backend foundation             |      8 | `NOT STARTED` |
 | 2. Payment/subscriptions          |     13 | `NOT STARTED` / §21 `BLOCKED` |
 | 3. User-type entitlement          |      7 | `NOT STARTED` |
@@ -756,9 +756,9 @@ Playground + payment can safely replace the existing commercial entitlement mode
 | 7. Complete Learn engine          |     15 | `NOT STARTED` |
 | 8. Learned/revision/mastery       |      8 | `NOT STARTED` |
 | 9. Amendments/source integrity    |      5 | `NOT STARTED` |
-| 10. SEO/routing discoverability   |      4 | `NOT STARTED` on this branch |
+| 10. SEO/routing discoverability   |      4 | `NOT STARTED` |
 | 11. Production hardening/release  |      7 | `NOT STARTED` |
-| **TOTAL (Stage 1)**               |  **100** | **3.5 / 100** |
+| **TOTAL (Stage 1)**               |  **100** | **5 / 100** |
 | Stage 2 — Optimize                |    — | `NOT STARTED` — start gate: Stage 1 = `DONE` (100/100) |
 
 ---
@@ -770,7 +770,7 @@ Each substantive implementation batch should map to one or more tracker mileston
 Recommended order:
 
 ```text
-Batch 0   Rebase onto latest main + contracts (this milestone 0 remainder)
+Batch 0   Rebase onto latest main + contracts — DONE (this milestone 0)
 Batch 1   Eligibility + APIRouter + law-loading/hash cleanup
 Batch 2   Payment/subscription foundation
 Batch 3   User entitlement inversion
@@ -780,7 +780,7 @@ Batch 6   Final Playground UI shell
 Batch 7   Complete Learn modes
 Batch 8   Learned + revision + Today/Calendar
 Batch 9   Amendment handling
-Batch 10  SEO + sitemap (rebase/adopt main; Playground noindex)
+Batch 10  SEO + sitemap (main adopted on this branch; remaining: Playground noindex)
 Batch 11  Legacy transition + production hardening
 ```
 
