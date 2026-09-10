@@ -71,15 +71,9 @@ from a fresh production audit — do **not** hand-edit counts.
 - No private route emits Bare Act structured data (`/progress`, `/dashboard`,
   etc. carry no `BreadcrumbList`).
 
-### One-command re-audit
+### Quick re-audit
 
-Re-run the production smoke audit any time:
-
-```bash
-python3 /tmp/smoke_audit.py   # script used for this deploy; see PR #197/#198 evidence
-```
-
-Or minimally:
+Re-run this self-contained check any time (no external script required):
 
 ```bash
 for p in /robots.txt /sitemap.xml /sitemap-core.xml /sitemap-laws.xml \
@@ -88,6 +82,10 @@ for p in /robots.txt /sitemap.xml /sitemap-core.xml /sitemap-laws.xml \
   printf '%-45s %s\n' "$p" "$(curl -s -o /dev/null -w '%{http_code}' https://recall-the-c.in$p)"
 done
 ```
+
+For a deeper check (sitemap `loc` == page canonical, breadcrumb presence,
+private-route isolation), also confirm the invariants listed above by spot
+inspecting a few `/laws/...` pages and one child sitemap.
 
 ---
 
@@ -154,7 +152,7 @@ review — file an issue and use the remediation rules in §6.
 | **D3** | Discovery | Sitemaps report should show the index **read** and children **discovered** (~1,524 URLs). Confirm no *Couldn't fetch* / parse errors. Spot-check 2 URL Inspections move to *Crawled* or *Indexed*. |
 | **D7** | Early indexation | Pages report: Indexed count rising; capture the top Not-indexed reasons. Breadcrumbs enhancement: valid items appearing, errors still 0. Re-audit production (nothing regressed to 500 / canonical drift). |
 | **D14** | Coverage depth | Compare Indexed vs 1,524. Investigate any *Discovered – currently not indexed* clusters (see §6). First Performance signal for `/laws` (impressions > 0). |
-| **D28** | Steady state | Expect the large majority of the 1,524 indexed (minus intentionally thin/duplicate pages). Breadcrumb rich-result eligibility visible. Decide whether any remediation (§6) is warranted; otherwise close the indexation watch. |
+| **D28** | Steady state | Assess what proportion of the submitted corpus Google has indexed and whether any persistent exclusion pattern requires investigation (there is no fixed percentage Google must reach). Breadcrumb rich-result eligibility visible. Decide whether any remediation (§6) is warranted; otherwise close the indexation watch. |
 
 At every checkpoint also glance at Crawl stats host status — a spike in 5xx is
 the earliest signal of a packaging/deploy regression like the one PR #198 fixed.
