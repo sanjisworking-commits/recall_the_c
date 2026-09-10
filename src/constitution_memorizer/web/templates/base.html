@@ -22,6 +22,9 @@
   <meta name="twitter:title" content="{{ seo_title|default(default_seo_title, true) }}">
   <meta name="twitter:description" content="{{ seo_description|default(default_seo_description, true) }}">
   {% endblock %}
+  {% block structured_data %}{% if structured_data_json %}
+  <script type="application/ld+json">{{ structured_data_json|safe }}</script>
+  {% endif %}{% endblock %}
   <script>
     (function () {
       var KEY = "cm-theme";
