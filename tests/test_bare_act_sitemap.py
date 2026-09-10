@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import re
+import tomllib
 from pathlib import Path
 from xml.etree import ElementTree as ET
 
@@ -17,6 +18,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 import constitution_memorizer.web.bare_acts as bare_acts
+import constitution_memorizer.web.sitemaps as sitemaps
 from constitution_memorizer.web.app import create_app
 from constitution_memorizer.web.bare_acts import (
     BARE_ACTS,
@@ -224,6 +226,33 @@ def test_manifest_is_fresh_against_source_bytes():
         for filename, digest in recorded.items():
             actual = hashlib.sha256(_data_path(filename).read_bytes()).hexdigest()
             assert actual == digest, f"stale digest for {slug}:{filename}"
+
+
+# --- Packaging (deployment contract) ---------------------------------------
+
+
+@pytest.mark.parametrize(
+    "filename", ["law_sitemap_manifest.json", "sitemap-core.xml"]
+)
+def test_sitemap_data_files_ship_inside_the_package(filename: str):
+    """The manifest and core sitemap must live in the package AND be declared
+    package-data, or the built wheel omits them and every file-reading sitemap
+    route 500s in production (only the in-memory hub map survives).
+
+    This guards the exact regression that took the deployed sitemaps down: the
+    files existed in the repo but outside the wheel.
+    """
+    # 1. Physically inside the importable package (what the routes read).
+    assert (sitemaps._WEB_DIR / filename).is_file()
+
+    # 2. Declared as package-data so `pip install .` ships it in the wheel.
+    pyproject = tomllib.loads(
+        (Path(__file__).resolve().parents[1] / "pyproject.toml").read_text()
+    )
+    package_data = pyproject["tool"]["setuptools"]["package-data"][
+        "constitution_memorizer"
+    ]
+    assert f"web/{filename}" in package_data
 
 
 # --- Robots ----------------------------------------------------------------
