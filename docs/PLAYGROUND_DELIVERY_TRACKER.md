@@ -2,12 +2,13 @@
 
 **Scoreboard, not an audit.** Product rules live in [PLAYGROUND.md](PLAYGROUND.md), [PAYMENT_ENTITLEMENT_AUDIT.md](PAYMENT_ENTITLEMENT_AUDIT.md), [PLAYGROUND_TWO_LAW_AUDIT.md](PLAYGROUND_TWO_LAW_AUDIT.md), and [law-loading.md](law-loading.md).
 
-**Snapshot:** architecture/product definition is **locked in docs**. **Stage 1** (build) is **5 / 100**. Production implementation is **early**. The NDPS/BNS overlay + Cloze + proof revision rows **do not** count as milestones 6–8 (or as production milestone 1 routing/eligibility). **Do not tick Stage 2 from Cloze or from `main`’s sitemap PRs.** This branch now includes main’s Bare Act SEO and generated sitemap index; that is Milestone 0 coexistence, not Milestone 10 (`noindex`) and not Stage 2.
+**Snapshot:** architecture/product definition is **locked in docs**. **Stage 1** (build) is **9 / 100**. Production implementation is **early**. The NDPS/BNS overlay + Cloze + proof revision rows **do not** count as milestones 6–8. Milestone 1 routing/eligibility (M1-A) is in progress; hash cleanup and dashboard batching remain M1-B. **Do not tick Stage 2 from Cloze or from `main`’s sitemap PRs.** This branch includes main’s Bare Act SEO and generated sitemap index; that is Milestone 0 coexistence, not Milestone 10 (`noindex`) and not Stage 2.
 
 | | |
 |--|--|
-| **Stage 1 (build)** | **5 / 100** |
+| **Stage 1 (build)** | **9 / 100** |
 | Milestone 0 | `DONE` — 10/10 items × 5 = **5** |
+| Milestone 1 | `IN PROGRESS` — 9/18 items × 8 = **4** |
 | Milestones 1–11 | `NOT STARTED` except §21 commercial cells in milestone 2 (`BLOCKED`) |
 | **Stage 2 (optimize)** | **`NOT STARTED` — start gate: Stage 1 = `DONE` (100/100)** |
 
@@ -110,7 +111,7 @@ This file is the **only** scoreboard for “how far through the overall Playgrou
 * [x] Resolve law-loader / BNSS / SEO / sitemap integration with current `main`
 * [x] Full baseline test suite green after that rebase
 
-Rebased onto `main` at BNSS + lazy loading + Bare Act SEO wiring + generated sitemap index (PRs #192 / #196). BNSS remains a public full Bare Act; it is **not** Playground-eligible via a third hardcoded slug. Overlay `{ndps, bns}` allowlists and `/playground/{law_id}` are **milestone 1**, not a hidden milestone-0 fail.
+Rebased onto `main` at BNSS + lazy loading + Bare Act SEO wiring + generated sitemap index (PRs #192 / #196). BNSS is Playground-eligible through `is_playground_eligible_law()`, not a third hardcoded slug.
 
 ### Done when
 
@@ -128,26 +129,26 @@ existing application tests pass
 
 # 1. Playground backend foundation — 8 points
 
-**Status: `NOT STARTED`**
+**Status: `IN PROGRESS`** (9/18 × 8 = 4)
 
-Proof handlers in `app.py`, `{ndps, bns}` locators, and request-time `read_bytes()` hashing **do not** satisfy this milestone.
+Proof Cloze, request-time `read_bytes()` hashing, and N+1 Playground home queries **do not** satisfy the remaining half of this milestone.
 
 ## Eligibility
 
-* [ ] Add one authoritative `is_playground_eligible_law()`
-* [ ] Add `list_playground_eligible_laws()`
-* [ ] Eligibility = full Bare Act + valid `BareActSpec`
-* [ ] Remove production NDPS/BNS allowlists
-* [ ] Locator accepts eligible law slugs generically
-* [ ] Mapped/key-provision-only laws remain ineligible
+* [x] Add one authoritative `is_playground_eligible_law()`
+* [x] Add `list_playground_eligible_laws()`
+* [x] Eligibility = full Bare Act + valid `BareActSpec`
+* [x] Remove production NDPS/BNS allowlists
+* [x] Locator accepts eligible law slugs generically
+* [x] Mapped/key-provision-only laws remain ineligible
 
 Routes, roster, locators, entitlement, and UI must consume **that same helper**. Do not reconstruct eligibility in five modules.
 
 ## Routing
 
-* [ ] Create dedicated Playground `APIRouter`
-* [ ] Remove Playground HTTP handlers from `app.py`
-* [ ] Lock final URLs:
+* [x] Create dedicated Playground `APIRouter`
+* [x] Remove Playground HTTP handlers from `app.py`
+* [x] Lock final URLs:
 
 ```text
 /playground
@@ -158,7 +159,7 @@ Routes, roster, locators, entitlement, and UI must consume **that same helper**.
 /playground/laws/{law_id}/sections/{number}/learn/{mode}
 ```
 
-Proof `/playground/{law_id}` does **not** count.
+Proof `/playground/{law_id}` is retired (404). Remaining M1-B work: request-time hash cleanup, zero-hydration home, batched dashboard/selection writes.
 
 ## Law-loading compatibility
 
@@ -747,7 +748,7 @@ Playground + payment can safely replace the existing commercial entitlement mode
 | Milestone                         | Weight | Status now |
 | --------------------------------- | -----: | ---------- |
 | 0. Architecture + branch baseline |      5 | `DONE` (5 earned) |
-| 1. Backend foundation             |      8 | `NOT STARTED` |
+| 1. Backend foundation             |      8 | `IN PROGRESS` (4 earned; 9/18) |
 | 2. Payment/subscriptions          |     13 | `NOT STARTED` / §21 `BLOCKED` |
 | 3. User-type entitlement          |      7 | `NOT STARTED` |
 | 4. Device control                 |      8 | `NOT STARTED` |
@@ -758,7 +759,7 @@ Playground + payment can safely replace the existing commercial entitlement mode
 | 9. Amendments/source integrity    |      5 | `NOT STARTED` |
 | 10. SEO/routing discoverability   |      4 | `NOT STARTED` |
 | 11. Production hardening/release  |      7 | `NOT STARTED` |
-| **TOTAL (Stage 1)**               |  **100** | **5 / 100** |
+| **TOTAL (Stage 1)**               |  **100** | **9 / 100** |
 | Stage 2 — Optimize                |    — | `NOT STARTED` — start gate: Stage 1 = `DONE` (100/100) |
 
 ---
@@ -771,7 +772,8 @@ Recommended order:
 
 ```text
 Batch 0   Rebase onto latest main + contracts — DONE (this milestone 0)
-Batch 1   Eligibility + APIRouter + law-loading/hash cleanup
+Batch 1A  Eligibility + APIRouter + final `/playground/laws/{id}` URLs — DONE
+Batch 1B  Law-loading/hash cleanup + batched dashboard/selection
 Batch 2   Payment/subscription foundation
 Batch 3   User entitlement inversion
 Batch 4   Device registry/control

@@ -6,12 +6,12 @@ RecallC Playground is the paid learning overlay on verbatim Bare Act JSON. Tiers
 
 | Document | Status |
 |----------|--------|
-| [PLAYGROUND_DELIVERY_TRACKER.md](PLAYGROUND_DELIVERY_TRACKER.md) | **Programme scoreboard.** Stage 1 = **5 / 100** (build). Stage 2 optimize is `NOT STARTED` until Stage 1 is `DONE` (100/100). Cloze/overlay proof does **not** inflate either stage. |
+| [PLAYGROUND_DELIVERY_TRACKER.md](PLAYGROUND_DELIVERY_TRACKER.md) | **Programme scoreboard.** Stage 1 = **9 / 100** (build). Stage 2 optimize is `NOT STARTED` until Stage 1 is `DONE` (100/100). Cloze/overlay proof does **not** inflate either stage. |
 | [PLAYGROUND_TWO_LAW_AUDIT.md](PLAYGROUND_TWO_LAW_AUDIT.md) | Overlay design. Cloze = architectural proof, not the finished mode set. NDPS/BNS = **historical validation corpus**, not a production allowlist. Item/selection/progress = persistent learning, not monthly quota and not the device registry. |
 | [PAYMENT_ENTITLEMENT_AUDIT.md](PAYMENT_ENTITLEMENT_AUDIT.md) | User-type + **device registry** + **monthly roster** (`Asia/Kolkata` period clock). **Not implemented.** See §21 for prices / Razorpay states / refunds / replacement-churn integers. |
 | [law-loading.md](law-loading.md) | Lazy hydration contract Playground inherits. Sitemap inventory is a **build-time manifest**, never request-time Act hydration. |
 
-**On this branch (proof):** Add to Playground, section selection, Cloze, revision rows, guest → sign-in. Routes live in `app.py` as `/playground/{law_id}` — **proof architecture, not production routing.** Locator allowlist is still `{ndps, bns}`. No subscription gate. No monthly roster. No device cookie. Cloze currently starts Day 1 (prototype). Request-time whole-file hashing in `source.py` is a proof artifact to remove.
+**On this branch (M1-A):** Add to Playground, section selection, Cloze, revision rows, guest → sign-in. Eligibility is `is_playground_eligible_law()` / `list_playground_eligible_laws()` in [`playground/eligibility.py`](../src/constitution_memorizer/playground/eligibility.py) (catalogue `full_act` + `BareActSpec`; NDPS, BNS, and BNSS). HTTP lives in [`playground/routes.py`](../src/constitution_memorizer/playground/routes.py) under `/playground/laws/{law_id}`. Proof `/playground/{law_id}` is retired. No subscription gate. No monthly roster. No device cookie. Cloze currently starts Day 1 (prototype). Request-time whole-file hashing in `source.py` is a proof artifact to remove in M1-B.
 
 **Finished train** is scored in [PLAYGROUND_DELIVERY_TRACKER.md](PLAYGROUND_DELIVERY_TRACKER.md): **Stage 1** is the 100-point build (milestones 0–11); **Stage 2** is an unweighted optimize checklist that starts only after Stage 1 is `DONE` (100/100) and proven. Cloze, the NDPS/BNS overlay, and proof revision rows do **not** make Stage 1 look finished and do **not** tick Stage 2. Next implementation batches follow Stage 1 on that tracker, not a second product model.
 
