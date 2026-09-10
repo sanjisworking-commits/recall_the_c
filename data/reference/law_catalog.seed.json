@@ -2,10 +2,26 @@
   "schema_version": "1.0.0",
   "description": "Index metadata for /laws. Card copy lives here so the index never parses Bare Act JSON or mapped-clause seeds.",
   "subjects": [
-    {"id": "criminal", "label": "Criminal", "display_order": 10},
-    {"id": "constitutional", "label": "Constitutional", "display_order": 20},
-    {"id": "administrative", "label": "Administrative", "display_order": 30},
-    {"id": "environmental", "label": "Environmental", "display_order": 40}
+    {
+      "id": "criminal",
+      "label": "Criminal",
+      "display_order": 10
+    },
+    {
+      "id": "constitutional",
+      "label": "Constitutional",
+      "display_order": 20
+    },
+    {
+      "id": "administrative",
+      "label": "Administrative",
+      "display_order": 30
+    },
+    {
+      "id": "environmental",
+      "label": "Environmental",
+      "display_order": 40
+    }
   ],
   "laws": [
     {
@@ -20,13 +36,17 @@
         "IPC",
         "Indian Penal Code"
       ],
-      "subjects": ["criminal"],
+      "subjects": [
+        "criminal"
+      ],
       "primary_subject": "criminal",
       "display_order": 5,
       "scope_label": "20 Chapters · Sections 1–358",
       "primary_content": "full_act",
       "content": {
-        "full_act": {"ref": "bns"},
+        "full_act": {
+          "ref": "bns"
+        },
         "key_provisions": null
       }
     },
@@ -43,13 +63,45 @@
         "Code of Criminal Procedure",
         "Criminal Procedure Code"
       ],
-      "subjects": ["criminal"],
+      "subjects": [
+        "criminal"
+      ],
       "primary_subject": "criminal",
       "display_order": 7,
       "scope_label": "39 Chapters · Sections 1–531",
       "primary_content": "full_act",
       "content": {
-        "full_act": {"ref": "bnss"},
+        "full_act": {
+          "ref": "bnss"
+        },
+        "key_provisions": null
+      }
+    },
+    {
+      "id": "pota",
+      "title": "The Prevention of Terrorism Act, 2002",
+      "short_title": "POTA",
+      "year": 2002,
+      "aliases": [
+        "POTA",
+        "Prevention of Terrorism Act",
+        "Prevention of Terrorism",
+        "anti-terror law",
+        "terrorism"
+      ],
+      "subjects": [
+        "criminal"
+      ],
+      "primary_subject": "criminal",
+      "display_order": 8,
+      "scope_label": "6 Chapters · Sections 1–64",
+      "status": "repealed",
+      "status_note": "Repealed by the Prevention of Terrorism (Repeal) Act, 2004",
+      "primary_content": "full_act",
+      "content": {
+        "full_act": {
+          "ref": "pota"
+        },
         "key_provisions": null
       }
     },
@@ -63,13 +115,17 @@
         "Narcotics",
         "Narcotic Drugs and Psychotropic Substances Act"
       ],
-      "subjects": ["criminal"],
+      "subjects": [
+        "criminal"
+      ],
       "primary_subject": "criminal",
       "display_order": 10,
       "scope_label": "8 Chapters · Sections 1–83",
       "primary_content": "full_act",
       "content": {
-        "full_act": {"ref": "ndps"},
+        "full_act": {
+          "ref": "ndps"
+        },
         "key_provisions": null
       }
     },
@@ -78,15 +134,21 @@
       "title": "Unlawful Activities (Prevention) Act, 1967",
       "short_title": "UAPA",
       "year": 1967,
-      "aliases": ["Unlawful Activities Prevention Act"],
-      "subjects": ["criminal"],
+      "aliases": [
+        "Unlawful Activities Prevention Act"
+      ],
+      "subjects": [
+        "criminal"
+      ],
       "primary_subject": "criminal",
       "display_order": 20,
       "scope_label": "Arts 19, 22",
       "primary_content": "key_provisions",
       "content": {
         "full_act": null,
-        "key_provisions": {"ref": "uapa-1967"}
+        "key_provisions": {
+          "ref": "uapa-1967"
+        }
       }
     },
     {
@@ -94,15 +156,21 @@
       "title": "Citizenship Act, 1955",
       "short_title": "Citizenship Act",
       "year": 1955,
-      "aliases": ["Citizenship"],
-      "subjects": ["constitutional"],
+      "aliases": [
+        "Citizenship"
+      ],
+      "subjects": [
+        "constitutional"
+      ],
       "primary_subject": "constitutional",
       "display_order": 30,
       "scope_label": "Arts 5, 6, 7, 8, 9, 10, 11",
       "primary_content": "key_provisions",
       "content": {
         "full_act": null,
-        "key_provisions": {"ref": "citizenship-1955"}
+        "key_provisions": {
+          "ref": "citizenship-1955"
+        }
       }
     },
     {
@@ -110,15 +178,21 @@
       "title": "Protection of Civil Rights Act, 1955",
       "short_title": "PCR Act",
       "year": 1955,
-      "aliases": ["Protection of Civil Rights"],
-      "subjects": ["constitutional"],
+      "aliases": [
+        "Protection of Civil Rights"
+      ],
+      "subjects": [
+        "constitutional"
+      ],
       "primary_subject": "constitutional",
       "display_order": 40,
       "scope_label": "Arts 17",
       "primary_content": "key_provisions",
       "content": {
         "full_act": null,
-        "key_provisions": {"ref": "pcr-1955"}
+        "key_provisions": {
+          "ref": "pcr-1955"
+        }
       }
     },
     {
@@ -126,15 +200,22 @@
       "title": "Right of Children to Free and Compulsory Education Act, 2009",
       "short_title": "RTE Act",
       "year": 2009,
-      "aliases": ["Right to Education", "RTE"],
-      "subjects": ["constitutional"],
+      "aliases": [
+        "Right to Education",
+        "RTE"
+      ],
+      "subjects": [
+        "constitutional"
+      ],
       "primary_subject": "constitutional",
       "display_order": 50,
       "scope_label": "Arts 21A",
       "primary_content": "key_provisions",
       "content": {
         "full_act": null,
-        "key_provisions": {"ref": "rte-2009"}
+        "key_provisions": {
+          "ref": "rte-2009"
+        }
       }
     },
     {
@@ -142,15 +223,21 @@
       "title": "Representation of the People Act, 1951",
       "short_title": "RP Act",
       "year": 1951,
-      "aliases": ["Representation of the People"],
-      "subjects": ["constitutional"],
+      "aliases": [
+        "Representation of the People"
+      ],
+      "subjects": [
+        "constitutional"
+      ],
       "primary_subject": "constitutional",
       "display_order": 60,
       "scope_label": "Arts 324, 325, 326, 327, 329",
       "primary_content": "key_provisions",
       "content": {
         "full_act": null,
-        "key_provisions": {"ref": "rpa-1951"}
+        "key_provisions": {
+          "ref": "rpa-1951"
+        }
       }
     },
     {
@@ -158,15 +245,22 @@
       "title": "Right to Information Act, 2005",
       "short_title": "RTI Act",
       "year": 2005,
-      "aliases": ["RTI", "Right to Information"],
-      "subjects": ["administrative"],
+      "aliases": [
+        "RTI",
+        "Right to Information"
+      ],
+      "subjects": [
+        "administrative"
+      ],
       "primary_subject": "administrative",
       "display_order": 70,
       "scope_label": "Arts 19",
       "primary_content": "key_provisions",
       "content": {
         "full_act": null,
-        "key_provisions": {"ref": "rti-2005"}
+        "key_provisions": {
+          "ref": "rti-2005"
+        }
       }
     },
     {
@@ -174,15 +268,22 @@
       "title": "Environment (Protection) Act, 1986",
       "short_title": "EP Act",
       "year": 1986,
-      "aliases": ["Environment Protection Act", "EPA"],
-      "subjects": ["environmental"],
+      "aliases": [
+        "Environment Protection Act",
+        "EPA"
+      ],
+      "subjects": [
+        "environmental"
+      ],
       "primary_subject": "environmental",
       "display_order": 80,
       "scope_label": "Arts 48A, 51A",
       "primary_content": "key_provisions",
       "content": {
         "full_act": null,
-        "key_provisions": {"ref": "epa-1986"}
+        "key_provisions": {
+          "ref": "epa-1986"
+        }
       }
     }
   ]

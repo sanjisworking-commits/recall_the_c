@@ -132,7 +132,7 @@ def test_guest_text_size_api_does_not_write(tmp_path: Path):
 def test_settings_assets_and_hooks(tmp_path: Path):
     client = _client(tmp_path)
     html = client.get("/browse").text
-    assert "styles.css?v=main65" in html
+    assert "styles.css?v=main66" in html
     assert "mobile.css?v=mob91" in html
     assert "app.js?v=main62" in html
     css = client.get("/static/mobile.css?v=mob91").text

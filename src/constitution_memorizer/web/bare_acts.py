@@ -114,6 +114,18 @@ BARE_ACTS: dict[str, BareActSpec] = {
         # bnss_canonical_v3.json to keep the two generations apart.
         source_version="1",
     ),
+    "pota": BareActSpec(
+        slug="pota",
+        filename="pota_runtime_v1.json",
+        short_name="The POTA, 2002",
+        back_label="← The POTA, 2002",
+        short_title="POTA",
+        # POTA's six node types are a strict subset of the nine BNS renders,
+        # at shallower nesting and with the same null-label paragraph/proviso
+        # pattern. Checked type by type against ProvisionRow before reusing it.
+        render_profile="bns",
+        source_version="1",
+    ),
 }
 
 
@@ -344,19 +356,46 @@ class SchedulePart:
 
 
 @dataclass(frozen=True)
-class ScheduleNote:
-    """An explanatory note printed under a schedule's tables."""
+class ScheduleListEntry:
+    """One item of a numbered statutory list.
 
-    number: str
+    POTA's Schedule is 32 terrorist organisations numbered 1-32. That is not a
+    table: it has one column of prose and its own serial, and forcing it into
+    the parts/columns/rows model would mean inventing headings the statute
+    never printed.
+    """
+
+    serial_number: str
     text: str
     source_pages: tuple[int, ...] = ()
+
+
+@dataclass(frozen=True)
+class ScheduleNote:
+    """An explanatory note printed under a schedule's entries or tables.
+
+    Numbered in BNSS ("1.", "2."), labelled in POTA ("Explanation."). The
+    marker is derived from whichever the source supplies so the template never
+    punctuates one itself.
+    """
+
+    number: str = ""
+    label: str = ""
+    text: str = ""
+    source_pages: tuple[int, ...] = ()
+
+    @property
+    def marker(self) -> str:
+        raw = self.number or self.label
+        return f"{raw.rstrip('.')}." if raw else ""
 
 
 @dataclass(frozen=True)
 class Schedule:
     """A schedule, generic across Acts.
 
-    `kind` is "table" when the content fits the parts/columns/rows model above.
+    `kind` is "table" when the content fits the parts/columns/rows model above,
+    and "list" when it is a numbered list of entries (POTA's 32 organisations).
     Anything else — BNSS's Second Schedule is 58 positioned-text forms — is kept
     whole on `raw_payload` with a reason, and is neither routed nor rendered.
     That escape hatch is the difference between deferring a structure and
@@ -368,6 +407,7 @@ class Schedule:
     reference: str
     heading: str
     parts: tuple[SchedulePart, ...] = ()
+    entries: tuple[ScheduleListEntry, ...] = ()
     notes: tuple[ScheduleNote, ...] = ()
     number: str = ""
     kind: str = "table"
@@ -378,6 +418,19 @@ class Schedule:
     @property
     def is_table(self) -> bool:
         return self.kind == "table"
+
+    @property
+    def is_list(self) -> bool:
+        return self.kind == "list"
+
+    @property
+    def is_navigable(self) -> bool:
+        """Has a page we can actually draw.
+
+        Distinct from `is_table`: a list schedule is rendered and routed but
+        has no columns. Only an unsupported schedule is unreachable.
+        """
+        return self.kind in {"table", "list"}
 
     @property
     def label(self) -> str:
@@ -407,7 +460,7 @@ class Schedule:
         groups plus 3 Part II rows, not a count of printed rows. Do not
         reinterpret this number as source-document geometry.
         """
-        return sum(len(part.rows) for part in self.parts)
+        return sum(len(part.rows) for part in self.parts) + len(self.entries)
 
     @property
     def range_label(self) -> str:
@@ -419,9 +472,12 @@ class Schedule:
         numbers in a lookup column, and a span there would read as a range of
         this Act's own sections.
         """
-        if len(self.parts) != 1 or not self.parts[0].rows:
+        if self.entries:
+            keys = [entry.serial_number for entry in self.entries]
+        elif len(self.parts) != 1 or not self.parts[0].rows:
             return f"{self.row_count} entries" if self.row_count else ""
-        keys = [row.cells[0] for row in self.parts[0].rows if row.cells]
+        else:
+            keys = [row.cells[0] for row in self.parts[0].rows if row.cells]
         if not keys or len(set(keys)) != len(keys):
             return f"{self.row_count} entries"
         first, last = keys[0], keys[-1]
@@ -545,13 +601,13 @@ class BareAct:
         """Schedule slugs that have a supported public reader route.
 
         The single filter point for sitemap/discovery inventory. It mirrors the
-        route contract exactly: ``bare_act_schedule_page`` 404s any schedule
-        without a table representation, so a schedule is public iff it renders
-        as a table. This deliberately excludes parsed-but-unrenderable schedules
-        (e.g. BNSS's deferred Second-Schedule forms) so a sitemap never
-        advertises an unroutable URL.
+        route contract exactly: ``bare_act_schedule_page`` 404s any schedule it
+        has no representation for, so a schedule is public iff it is navigable
+        — a table (NDPS, BNSS's First) or a list (POTA's). This deliberately
+        excludes parsed-but-unrenderable schedules (e.g. BNSS's deferred
+        Second-Schedule forms) so a sitemap never advertises an unroutable URL.
         """
-        return tuple(sched.slug for sched in self.schedules if sched.is_table)
+        return tuple(sched.slug for sched in self.schedules if sched.is_navigable)
 
     def notes(self, note_ids) -> tuple[Footnote, ...]:
         """Resolve ids to notes, skipping any the data does not carry."""
@@ -790,29 +846,108 @@ def _parse_entry_schedule(raw: dict[str, Any], slug: str) -> Schedule:
     )
 
 
-def _parse_schedule(raw: dict[str, Any]) -> Schedule:
-    """Dispatch on the shape the source actually has.
+def _parse_list_schedule(raw: dict[str, Any], slug: str) -> Schedule:
+    """A schedule declared `"type": "list"` — numbered entries, no columns.
 
-    Three shapes so far: `entries[]` (NDPS), `parts[]` of column tables (BNSS's
-    First Schedule), and anything else. The last is kept whole rather than
-    coerced — see Schedule.raw_payload.
+    Raises rather than degrading: a declared list whose entries are malformed
+    is a broken export, and rendering it half-empty would look like the statute
+    saying nothing.
+    """
+    raw_entries = raw.get("entries")
+    if not isinstance(raw_entries, list) or not raw_entries:
+        raise ValueError(f"schedule {slug!r} declares type 'list' but has no entries")
+    entries = []
+    for i, entry in enumerate(raw_entries):
+        if not isinstance(entry, dict):
+            raise ValueError(f"schedule {slug!r} entry {i} is not an object")
+        text = str(entry.get("text") or "").strip()
+        if not text:
+            raise ValueError(f"schedule {slug!r} entry {i} has no text")
+        entries.append(
+            ScheduleListEntry(
+                serial_number=str(entry.get("serial_number") or ""),
+                text=text,
+                source_pages=_pages(entry),
+            )
+        )
+    return Schedule(
+        slug=slug,
+        title=str(raw.get("title") or "The Schedule"),
+        reference=str(raw.get("reference") or ""),
+        heading=str(raw.get("heading") or raw.get("title") or ""),
+        entries=tuple(entries),
+        notes=_parse_schedule_notes(raw),
+        number=str(raw.get("number") or ""),
+        kind="list",
+        source_pages=_pages(raw),
+    )
+
+
+def _parse_schedule_notes(raw: dict[str, Any]) -> tuple[ScheduleNote, ...]:
+    """Notes under a schedule, from either shape the sources use.
+
+    BNSS ships `explanatory_notes[]` numbered "1"/"2". POTA ships a single
+    `explanation` object labelled "Explanation" — legally material, since it
+    is what section 1(6) leans on when it carves out serial numbers 24 and 25.
+    Both land on ScheduleNote; neither canonical file is rewritten to match
+    the other.
+    """
+    notes = [
+        ScheduleNote(
+            number=str(note.get("number") or ""),
+            label=str(note.get("label") or ""),
+            text=str(note.get("text") or ""),
+            source_pages=_pages(note),
+        )
+        for note in raw.get("explanatory_notes") or []
+    ]
+    explanation = raw.get("explanation")
+    if isinstance(explanation, dict):
+        notes.append(
+            ScheduleNote(
+                number=str(explanation.get("number") or ""),
+                label=str(explanation.get("label") or "Explanation"),
+                text=str(explanation.get("text") or ""),
+                source_pages=_pages(explanation),
+            )
+        )
+    return tuple(notes)
+
+
+def _is_ndps_entry_schedule(raw: dict[str, Any]) -> bool:
+    """The complete NDPS signature, not a family resemblance.
+
+    `entries[]` is a generic container name that two unrelated shapes use, so
+    matching on it alone routed POTA's 32 organisations into the drug adapter
+    and rendered them as four empty columns. Every required field must be
+    present on every entry; a schedule that only half-matches is unfamiliar,
+    and unfamiliar means preserved, never guessed.
+    """
+    entries = raw.get("entries")
+    if not isinstance(entries, list) or not entries:
+        return False
+    required = [source for _, source in _NDPS_ENTRY_FIELDS]
+    return all(
+        isinstance(entry, dict) and all(field in entry for field in required)
+        for entry in entries
+    )
+
+
+def _parse_schedule(raw: dict[str, Any]) -> Schedule:
+    """Dispatch on what the source declares, then on complete signatures.
+
+    Deterministic and ordered. A declared `type` wins outright; otherwise a
+    shape must match in full to claim a parser. Anything left over is kept
+    whole rather than coerced — see Schedule.raw_payload.
     """
     slug = _schedule_slug(str(raw.get("id") or ""))
-    if raw.get("entries") is not None:
-        return _parse_entry_schedule(raw, slug)
+    if str(raw.get("type") or "") == "list":
+        return _parse_list_schedule(raw, slug)
 
     if raw.get("parts") is not None:
         parts = tuple(
             _parse_table_part(part, f"part_{i + 1}")
             for i, part in enumerate(raw.get("parts") or [])
-        )
-        notes = tuple(
-            ScheduleNote(
-                number=str(note.get("number") or ""),
-                text=str(note.get("text") or ""),
-                source_pages=_pages(note),
-            )
-            for note in raw.get("explanatory_notes") or []
         )
         return Schedule(
             slug=slug,
@@ -820,10 +955,13 @@ def _parse_schedule(raw: dict[str, Any]) -> Schedule:
             reference=str(raw.get("reference") or ""),
             heading=str(raw.get("heading") or raw.get("title") or ""),
             parts=parts,
-            notes=notes,
+            notes=_parse_schedule_notes(raw),
             number=str(raw.get("number") or ""),
             source_pages=_pages(raw),
         )
+
+    if _is_ndps_entry_schedule(raw):
+        return _parse_entry_schedule(raw, slug)
 
     # Unknown shape — BNSS's Second Schedule is 58 positioned-text forms. Keep
     # every byte, name why it is not rendered, and stay out of the table path.

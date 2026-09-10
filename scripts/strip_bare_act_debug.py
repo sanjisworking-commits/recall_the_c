@@ -80,6 +80,15 @@ ARTIFACTS: tuple[tuple[Path, Path, str], ...] = (
         ROOT / "src" / "constitution_memorizer" / "web" / "bnss_runtime_v1.json",
         "bnss",
     ),
+    # POTA needs no path-aware mode: it has no forms, no `*_lines` and no
+    # `source_line_inventory`, and its Schedule is a numbered list whose order
+    # comes from `serial_number` rather than from geometry. `source_x` is
+    # debris everywhere in it, so the flat strip is exactly right.
+    (
+        ROOT / "data" / "reference" / "pota_canonical_v1.json",
+        ROOT / "src" / "constitution_memorizer" / "web" / "pota_runtime_v1.json",
+        "flat",
+    ),
 )
 
 
