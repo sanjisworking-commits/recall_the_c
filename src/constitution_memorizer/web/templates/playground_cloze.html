@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Cloze · Section {{ section.number }} · Playground{% endblock %}
+{% block mobile_screen %}playground{% endblock %}
+{% block content %}
+<section class="panel playground-cloze">
+  <p><a href="/playground/{{ act.slug }}">← {{ act.short_name }}</a></p>
+  <h1>Section {{ section.number }}</h1>
+  <p class="playground-lede">{{ section.title }}</p>
+  {% if source_outdated %}
+  <p class="playground-flag">This provision has changed since you last studied it. Revealed text is the live JSON.</p>
+  {% endif %}
+  <p>
+    <a href="/laws/{{ act.slug }}/section/{{ section.number }}">Read the Bare Act</a>
+  </p>
+
+  <div
+    class="learn-body learn-panel-cloze"
+    data-playground-cloze
+    data-cloze-text="{{ canonical_body | e }}"
+    data-cloze-density="medium"
+    data-complete-url="{{ complete_url }}"
+  >
+    <div class="learn-cloze-density" role="group" aria-label="Cloze density">
+      <span class="learn-cloze-density-label">Density</span>
+      <div class="learn-cloze-density-track">
+        <button type="button" class="learn-cloze-density-btn" data-cloze-density="light" aria-pressed="false">Light</button>
+        <button type="button" class="learn-cloze-density-btn is-active" data-cloze-density="medium" aria-pressed="true">Medium</button>
+        <button type="button" class="learn-cloze-density-btn" data-cloze-density="heavy" aria-pressed="false">Heavy</button>
+      </div>
+    </div>
+    {% if not cloze_available %}
+    <p class="learn-hint">No cloze exercise available for this text.</p>
+    {% else %}
+    <div class="learn-cloze-text" aria-live="polite"></div>
+    <div class="learn-cloze-controls">
+      <button type="button" class="learn-cloze-btn" data-cloze-action="toggle-all">Reveal all</button>
+      <span class="learn-cloze-status" data-cloze-status>0 of 0 revealed — tap a blank</span>
+    </div>
+    {% endif %}
+  </div>
+  <p class="playground-meta" data-playground-complete-status hidden></p>
+</section>
+{% endblock %}
