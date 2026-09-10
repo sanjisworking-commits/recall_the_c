@@ -135,6 +135,7 @@ def _hydrate_spy(monkeypatch: pytest.MonkeyPatch) -> list[str]:
         hydrated.append(slug)
         return real(slug, identity)
 
+    wrapped.cache_clear = real.cache_clear  # type: ignore[attr-defined]
     monkeypatch.setattr(bare_acts, "_load_cached", wrapped)
     return hydrated
 
