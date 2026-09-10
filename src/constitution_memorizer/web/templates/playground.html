@@ -11,19 +11,19 @@
   <div class="playground-cards">
     {% for card in cards %}
     <article class="playground-card">
-      <h2>{{ card.act.title }}</h2>
+      <h2>{{ card.title }}</h2>
       <p class="playground-meta">
         {{ card.selected_count }} selected
         · {{ card.to_learn }} to learn
         · {{ card.due }} due
       </p>
       {% if card.outdated %}
-      <p class="playground-flag">A selected provision has changed in the source JSON.</p>
+      <p class="playground-flag">A source update may require review.</p>
       {% endif %}
       <p>
-        <a href="/playground/laws/{{ card.act.slug }}">Progress</a>
-        · <a href="/playground/laws/{{ card.act.slug }}/sections">Select sections</a>
-        · <a href="/laws/{{ card.act.slug }}">Read</a>
+        <a href="/playground/laws/{{ card.law_id }}">Progress</a>
+        · <a href="/playground/laws/{{ card.law_id }}/sections">Select sections</a>
+        · <a href="/laws/{{ card.law_id }}">Read</a>
       </p>
     </article>
     {% endfor %}

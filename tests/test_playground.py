@@ -4,6 +4,9 @@ from __future__ import annotations
 
 import html
 import re
+import sqlite3
+from contextlib import contextmanager
+from dataclasses import replace
 from datetime import date, timedelta
 from pathlib import Path
 from uuid import UUID
@@ -18,10 +21,16 @@ from constitution_memorizer.multiuser.settings import (
     clear_settings_cache,
 )
 from constitution_memorizer.playground.cloze import has_cloze_blanks
+from constitution_memorizer.playground.db import ensure_sqlite_schema
 from constitution_memorizer.playground.eligibility import (
     is_playground_eligible_law,
     list_playground_eligible_laws,
+    playground_law_source_identity,
 )
+from constitution_memorizer.playground.postgres import PostgresPlaygroundRepository
+from constitution_memorizer.playground.repository import SqlitePlaygroundRepository
+from constitution_memorizer.playground.service import activate_law, playground_home_cards
+from constitution_memorizer.playground import source as playground_source
 from constitution_memorizer.playground.locators import (
     LocatorError,
     parse_locator,
@@ -43,7 +52,7 @@ from constitution_memorizer.playground.urls import (
 from constitution_memorizer.progress.user_ids import LOCAL_USER_ID
 from constitution_memorizer.web import bare_acts
 from constitution_memorizer.web.app import create_app
-from constitution_memorizer.web.bare_acts import clear_bare_act_cache, get_bare_act
+from constitution_memorizer.web.bare_acts import BARE_ACTS, clear_bare_act_cache, get_bare_act
 
 MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
 USER_ID = UUID("11111111-1111-4111-8111-111111111111")
@@ -362,6 +371,461 @@ def test_opening_bnss_playground_does_not_hydrate_ndps_or_bns(
     assert "bnss" in hydrated
     assert "ndps" not in hydrated
     assert "bns" not in hydrated
+
+
+RUNTIME_JSON_NAMES = frozenset(
+    {
+        "ndps_act_final.json",
+        "ndps_schedule_patch.json",
+        "bns_runtime_v1.json",
+        "bnss_runtime_v1.json",
+    }
+)
+
+
+def _sqlite_repo(tmp_path: Path) -> SqlitePlaygroundRepository:
+    tmp_path.mkdir(parents=True, exist_ok=True)
+    conn = sqlite3.connect(tmp_path / "playground-unit.db")
+    conn.row_factory = sqlite3.Row
+    ensure_sqlite_schema(conn)
+    return SqlitePlaygroundRepository(conn)
+
+
+def _guard_runtime_file_bytes(monkeypatch: pytest.MonkeyPatch) -> None:
+    real = Path.read_bytes
+
+    def wrapped(self):
+        if Path(self).name in RUNTIME_JSON_NAMES:
+            raise AssertionError(f"must not read runtime JSON {Path(self).name}")
+        return real(self)
+
+    monkeypatch.setattr(Path, "read_bytes", wrapped)
+
+
+def _insert_progress(
+    conn,
+    user_id,
+    law_id: str,
+    locator: str,
+    *,
+    cloze_done: int = 1,
+    status: str = "review",
+    next_revision: str | None = "2026-09-10",
+) -> None:
+    conn.execute(
+        """
+        INSERT INTO user_playground_progress (
+            user_id, law_id, source_locator, status, cloze_done,
+            times_completed, last_completed, next_revision, interval_days,
+            source_version, source_hash, updated_at
+        ) VALUES (?, ?, ?, ?, ?, 1, ?, ?, 1, '1', 'h', ?)
+        """,
+        (
+            str(user_id),
+            law_id,
+            locator,
+            status,
+            cloze_done,
+            next_revision,
+            next_revision,
+            "2026-09-10T00:00:00+00:00",
+        ),
+    )
+    conn.commit()
+
+
+class _ExecuteProbe:
+    def __init__(self, inner) -> None:
+        self._inner = inner
+        self.execute_sql: list[str] = []
+        self.executemany_sql: list[str] = []
+        self.executemany_rowcounts: list[int] = []
+
+    def execute(self, sql, parameters=()):
+        self.execute_sql.append(sql)
+        return self._inner.execute(sql, parameters)
+
+    def executemany(self, sql, seq):
+        rows = list(seq)
+        self.executemany_sql.append(sql)
+        self.executemany_rowcounts.append(len(rows))
+        return self._inner.executemany(sql, rows)
+
+    def commit(self):
+        return self._inner.commit()
+
+    def __getattr__(self, name):
+        return getattr(self._inner, name)
+
+
+class _PostgresSpyCursor:
+    def __init__(self) -> None:
+        self.execute_sql: list[str] = []
+        self.executemany_sql: list[str] = []
+        self.executemany_rowcounts: list[int] = []
+
+    def execute(self, sql, params=None):
+        self.execute_sql.append(sql)
+
+    def executemany(self, sql, seq_of_params):
+        rows = list(seq_of_params)
+        self.executemany_sql.append(sql)
+        self.executemany_rowcounts.append(len(rows))
+
+    def fetchall(self):
+        return []
+
+    def fetchone(self):
+        return None
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_exc):
+        return False
+
+
+class _PostgresSpyConn:
+    def __init__(self, cursor: _PostgresSpyCursor) -> None:
+        self.cursor_obj = cursor
+        self.commits = 0
+
+    def cursor(self, row_factory=None):
+        return self.cursor_obj
+
+    def commit(self):
+        self.commits += 1
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_exc):
+        return False
+
+
+class _PostgresSpyPool:
+    def __init__(self, conn: _PostgresSpyConn) -> None:
+        self._conn = conn
+
+    @contextmanager
+    def connection(self):
+        yield self._conn
+
+
+def test_request_time_whole_file_hash_helpers_are_gone():
+    assert not hasattr(playground_source, "law_file_hash")
+    assert not hasattr(playground_source, "law_source_version")
+
+
+def test_registry_identity_uses_source_hash_or_filename(monkeypatch: pytest.MonkeyPatch):
+    spec = BARE_ACTS["ndps"]
+    assert spec.source_hash is None
+    missing = playground_law_source_identity("ndps")
+    assert missing.source_version == spec.source_version
+    assert missing.identity_token == spec.filename
+    monkeypatch.setitem(BARE_ACTS, "ndps", replace(spec, source_hash="cafe1234"))
+    present = playground_law_source_identity("ndps")
+    assert present.identity_token == "cafe1234"
+    assert present.source_version == spec.source_version
+
+
+def test_activation_uses_registry_identity_without_reading_runtime(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    _guard_runtime_file_bytes(monkeypatch)
+    opened: list[str] = []
+    real_read_json = bare_acts.read_json
+
+    def wrapped_read_json(path):
+        opened.append(Path(path).name)
+        return real_read_json(path)
+
+    monkeypatch.setattr(bare_acts, "read_json", wrapped_read_json)
+
+    def boom_get(slug):
+        raise AssertionError(f"activation must not hydrate {slug}")
+
+    monkeypatch.setattr(bare_acts, "get_bare_act", boom_get)
+    monkeypatch.setattr(
+        bare_acts,
+        "list_bare_acts",
+        lambda: (_ for _ in ()).throw(AssertionError("list")),
+    )
+    clear_bare_act_cache()
+    hydrated = _hydrate_spy(monkeypatch)
+    repo = _sqlite_repo(tmp_path)
+    spec = BARE_ACTS["ndps"]
+    monkeypatch.setitem(BARE_ACTS, "ndps", replace(spec, source_hash="reg-hash-1"))
+    item = activate_law(repo, LOCAL_USER_ID, "ndps")
+    assert item.source_version == spec.source_version
+    assert item.law_source_hash == "reg-hash-1"
+    fallback = activate_law(_sqlite_repo(tmp_path / "fallback"), LOCAL_USER_ID, "bns")
+    assert fallback.law_source_hash == BARE_ACTS["bns"].filename
+    assert fallback.source_version == BARE_ACTS["bns"].source_version
+    assert opened == []
+    assert hydrated == []
+
+    client = _client(tmp_path)
+    added = client.post(add_path("bnss"), follow_redirects=False)
+    assert added.status_code == 303
+    stored = client.app.state.playground.get_item(LOCAL_USER_ID, "bnss")
+    assert stored is not None
+    assert stored.law_source_hash == BARE_ACTS["bnss"].filename
+    assert stored.source_version == BARE_ACTS["bnss"].source_version
+    assert opened == []
+    assert hydrated == []
+
+
+def test_populated_home_and_summaries_hydrate_zero_acts(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    client = _client(tmp_path)
+    for law_id in ("ndps", "bns", "bnss"):
+        added = client.post(add_path(law_id), follow_redirects=False)
+        assert added.status_code == 303
+    repo = client.app.state.playground
+    repo.replace_selection(
+        LOCAL_USER_ID,
+        "ndps",
+        [("ndps:section:1", "1", "h1"), ("ndps:section:2", "1", "h2")],
+    )
+    _insert_progress(
+        repo.conn,
+        LOCAL_USER_ID,
+        "ndps",
+        "ndps:section:1",
+        next_revision=date.today().isoformat(),
+    )
+
+    def boom_get(slug):
+        raise AssertionError(f"dashboard must not call get_bare_act({slug})")
+
+    def boom_list():
+        raise AssertionError("dashboard must not call list_bare_acts")
+
+    clear_bare_act_cache()
+    hydrated = _hydrate_spy(monkeypatch)
+    monkeypatch.setattr(bare_acts, "get_bare_act", boom_get)
+    monkeypatch.setattr(bare_acts, "list_bare_acts", boom_list)
+    summaries = repo.list_playground_summaries(LOCAL_USER_ID, as_of=date.today())
+    cards = playground_home_cards(summaries)
+    assert {card["law_id"] for card in cards} == {"ndps", "bns", "bnss"}
+    assert "act" not in cards[0]
+    ndps_card = next(card for card in cards if card["law_id"] == "ndps")
+    assert ndps_card["title"] == (
+        "The Narcotic Drugs and Psychotropic Substances Act, 1985"
+    )
+    assert ndps_card["short_title"] == "NDPS Act"
+    assert ndps_card["selected_count"] == 2
+    assert ndps_card["learned_count"] == 1
+    assert ndps_card["to_learn"] == 1
+    page = client.get("/playground")
+    assert page.status_code == 200
+    assert "The Narcotic Drugs and Psychotropic Substances Act, 1985" in page.text
+    assert "The Bharatiya Nyaya Sanhita, 2023" in page.text
+    assert "The Bharatiya Nagarik Suraksha Sanhita, 2023" in page.text
+    assert "Progress" in page.text
+    assert hydrated == []
+
+
+def test_home_outdated_flag_is_law_level_registry_identity(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    client = _client(tmp_path)
+    assert client.post(add_path("ndps"), follow_redirects=False).status_code == 303
+    spec = BARE_ACTS["ndps"]
+    monkeypatch.setitem(BARE_ACTS, "ndps", replace(spec, source_version="changed"))
+    clear_bare_act_cache()
+    hydrated = _hydrate_spy(monkeypatch)
+    page = client.get("/playground")
+    assert page.status_code == 200
+    assert "A source update may require review" in page.text
+    assert hydrated == []
+
+
+@pytest.mark.parametrize(
+    ("law_id", "others"),
+    [
+        ("ndps", ("bns", "bnss")),
+        ("bns", ("ndps", "bnss")),
+        ("bnss", ("ndps", "bns")),
+    ],
+)
+def test_one_law_routes_hydrate_only_that_act(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    law_id: str,
+    others: tuple[str, ...],
+):
+    clear_bare_act_cache()
+    hydrated = _hydrate_spy(monkeypatch)
+    client = _client(tmp_path)
+    _add_and_select(client, law_id, "1")
+    assert law_id in hydrated
+    for other in others:
+        assert other not in hydrated
+    for path in (law_path(law_id), sections_path(law_id), learn_path(law_id, "1")):
+        clear_bare_act_cache()
+        hydrated.clear()
+        response = client.get(path)
+        assert response.status_code == 200
+        assert law_id in hydrated
+        for other in others:
+            assert other not in hydrated
+
+
+def test_summary_counts_do_not_cartesian_inflate(tmp_path: Path):
+    repo = _sqlite_repo(tmp_path)
+    repo.add_item(LOCAL_USER_ID, "demo", source_version="1", law_source_hash="tok")
+    repo.replace_selection(
+        LOCAL_USER_ID,
+        "demo",
+        [
+            ("demo:section:1", "1", "h1"),
+            ("demo:section:2", "1", "h2"),
+            ("demo:section:3", "1", "h3"),
+        ],
+    )
+    _insert_progress(
+        repo.conn,
+        LOCAL_USER_ID,
+        "demo",
+        "demo:section:1",
+        next_revision="2026-09-10",
+    )
+    _insert_progress(
+        repo.conn,
+        LOCAL_USER_ID,
+        "demo",
+        "demo:section:2",
+        next_revision="2026-09-20",
+    )
+    _insert_progress(
+        repo.conn,
+        LOCAL_USER_ID,
+        "demo",
+        "demo:section:4",
+        next_revision="2026-09-01",
+    )
+    rows = repo.list_playground_summaries(
+        LOCAL_USER_ID, as_of=date(2026, 9, 10)
+    )
+    assert len(rows) == 1
+    summary = rows[0]
+    assert summary.selected_count == 3
+    assert summary.learned_count == 2
+    assert summary.to_learn_count == 1
+    assert summary.due_count == 1
+
+
+def test_dashboard_summary_query_count_does_not_scale_with_laws(tmp_path: Path):
+    def run(n: int) -> tuple[int, int]:
+        repo = _sqlite_repo(tmp_path / f"n{n}")
+        now = "2026-09-10T00:00:00+00:00"
+        uid = str(LOCAL_USER_ID)
+        repo.conn.executemany(
+            """
+            INSERT INTO user_playground_item (
+                user_id, law_id, status, added_at, last_activity_at,
+                source_version, law_source_hash
+            ) VALUES (?, ?, 'in_playground', ?, ?, '1', 'tok')
+            """,
+            [(uid, f"law-{i}", now, now) for i in range(n)],
+        )
+        repo.conn.executemany(
+            """
+            INSERT INTO user_playground_selection (
+                user_id, law_id, source_locator, selected_at,
+                source_version, source_hash
+            ) VALUES (?, ?, ?, ?, '1', 'h')
+            """,
+            [
+                (uid, "law-0", f"law-0:section:{i}", now)
+                for i in range(3)
+            ],
+        )
+        repo.conn.commit()
+        _insert_progress(repo.conn, LOCAL_USER_ID, "law-0", "law-0:section:0")
+        _insert_progress(repo.conn, LOCAL_USER_ID, "law-0", "law-0:section:1")
+        probe = _ExecuteProbe(repo.conn)
+        repo.conn = probe
+        summaries = repo.list_playground_summaries(
+            LOCAL_USER_ID, as_of=date(2026, 9, 10)
+        )
+        assert len(summaries) == n
+        law0 = next(row for row in summaries if row.law_id == "law-0")
+        assert law0.selected_count == 3
+        assert law0.learned_count == 2
+        return len(probe.execute_sql), len(probe.executemany_sql)
+
+    count_3, many_3 = run(3)
+    count_30, many_30 = run(30)
+    assert count_3 == count_30 == 1
+    assert many_3 == many_30 == 0
+
+
+def test_sqlite_replace_selection_uses_one_executemany(tmp_path: Path):
+    repo = _sqlite_repo(tmp_path)
+    repo.add_item(LOCAL_USER_ID, "demo", source_version="1", law_source_hash="tok")
+    probe = _ExecuteProbe(repo.conn)
+    repo.conn = probe
+    rows = [(f"demo:section:{i}", "1", f"h{i}") for i in range(12)]
+    repo.replace_selection(LOCAL_USER_ID, "demo", rows)
+    insert_executes = [
+        sql for sql in probe.execute_sql if "INSERT INTO user_playground_selection" in sql
+    ]
+    assert insert_executes == []
+    assert len(probe.executemany_sql) == 1
+    assert probe.executemany_rowcounts == [12]
+    assert any("DELETE FROM user_playground_selection" in sql for sql in probe.execute_sql)
+    assert probe._inner.execute(
+        "SELECT COUNT(*) AS n FROM user_playground_selection"
+    ).fetchone()["n"] == 12
+
+
+def test_postgres_replace_selection_batches_inserts():
+    cursor = _PostgresSpyCursor()
+    conn = _PostgresSpyConn(cursor)
+    repo = PostgresPlaygroundRepository(_PostgresSpyPool(conn))
+    rows = [(f"bnss:section:{i}", "1", f"h{i}") for i in range(20)]
+    repo.replace_selection(LOCAL_USER_ID, "bnss", rows)
+    assert conn.commits == 1
+    assert len(cursor.executemany_sql) == 1
+    assert cursor.executemany_rowcounts == [20]
+    assert any("DELETE FROM user_playground_selection" in sql for sql in cursor.execute_sql)
+    assert not any("INSERT INTO user_playground_selection" in sql for sql in cursor.execute_sql)
+
+
+def test_postgres_list_playground_summaries_is_one_query():
+    cursor = _PostgresSpyCursor()
+    conn = _PostgresSpyConn(cursor)
+    repo = PostgresPlaygroundRepository(_PostgresSpyPool(conn))
+    assert repo.list_playground_summaries(LOCAL_USER_ID, as_of=date(2026, 9, 10)) == []
+    assert len(cursor.execute_sql) == 1
+    assert "selected_count" in cursor.execute_sql[0]
+    assert "learned_count" in cursor.execute_sql[0]
+
+
+def test_entire_act_selection_hydrates_only_that_law(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    clear_bare_act_cache()
+    hydrated = _hydrate_spy(monkeypatch)
+    client = _client(tmp_path)
+    assert client.post(add_path("ndps"), follow_redirects=False).status_code == 303
+    hydrated.clear()
+    clear_bare_act_cache()
+    saved = client.post(
+        sections_path("ndps"),
+        data={"entire": "1"},
+        follow_redirects=False,
+    )
+    assert saved.status_code == 303
+    assert "ndps" in hydrated
+    assert "bns" not in hydrated
+    assert "bnss" not in hydrated
+    selected = client.app.state.playground.list_selection(LOCAL_USER_ID, "ndps")
+    assert len(selected) > 10
 
 
 def test_alembic_playground_tables_enable_rls():

@@ -25,6 +25,14 @@ def _date_iso(value: date | None) -> str | None:
 
 @dataclass(frozen=True)
 class PlaygroundItem:
+    """Activation row. ``law_source_hash`` is a historical column name.
+
+    It stores the registry runtime identity token
+    (``BareActSpec.source_hash`` or, when that is absent, ``filename``).
+    A filename fallback is not a cryptographic hash and is never obtained
+    by reading the runtime JSON file.
+    """
+
     law_id: str
     status: str
     added_at: str
@@ -53,6 +61,86 @@ class PlaygroundProgress:
     source_version: str
     source_hash: str
     source_outdated: bool = False
+
+
+@dataclass(frozen=True)
+class PlaygroundSummary:
+    """Dashboard/roster-summary row. No statutory text. No Act hydration."""
+
+    law_id: str
+    status: str
+    added_at: str
+    last_activity_at: str
+    source_version: str
+    law_source_hash: str
+    selected_count: int
+    learned_count: int
+    to_learn_count: int
+    due_count: int
+
+
+def playground_summary_sql(placeholder: str) -> str:
+    """One aggregate query: items + selection counts + selected-progress counts.
+
+    Placeholders, in order: user_id, as_of, user_id, user_id.
+    Subqueries are grouped by law_id so joins cannot cartesian-inflate counts.
+    """
+    ph = placeholder
+    return f"""
+            SELECT
+                i.law_id, i.status, i.added_at, i.last_activity_at,
+                i.source_version, i.law_source_hash,
+                COALESCE(sel.selected_count, 0) AS selected_count,
+                COALESCE(prog.learned_count, 0) AS learned_count,
+                COALESCE(prog.due_count, 0) AS due_count
+            FROM user_playground_item AS i
+            LEFT JOIN (
+                SELECT law_id, COUNT(*) AS selected_count
+                FROM user_playground_selection
+                WHERE user_id = {ph}
+                GROUP BY law_id
+            ) AS sel ON sel.law_id = i.law_id
+            LEFT JOIN (
+                SELECT s.law_id,
+                    COUNT(DISTINCT CASE
+                        WHEN p.cloze_done != 0 THEN s.source_locator
+                    END) AS learned_count,
+                    COUNT(DISTINCT CASE
+                        WHEN p.cloze_done != 0
+                         AND p.status != 'mastered'
+                         AND p.next_revision IS NOT NULL
+                         AND p.next_revision <= {ph}
+                        THEN s.source_locator
+                    END) AS due_count
+                FROM user_playground_selection AS s
+                LEFT JOIN user_playground_progress AS p
+                  ON p.user_id = s.user_id
+                 AND p.law_id = s.law_id
+                 AND p.source_locator = s.source_locator
+                WHERE s.user_id = {ph}
+                GROUP BY s.law_id
+            ) AS prog ON prog.law_id = i.law_id
+            WHERE i.user_id = {ph}
+            ORDER BY i.added_at ASC
+            """
+
+
+def summary_from_row(row, *, added_at: str, last_activity_at: str) -> PlaygroundSummary:
+    selected = int(row["selected_count"] or 0)
+    learned = int(row["learned_count"] or 0)
+    due = int(row["due_count"] or 0)
+    return PlaygroundSummary(
+        law_id=row["law_id"],
+        status=row["status"],
+        added_at=added_at,
+        last_activity_at=last_activity_at,
+        source_version=row["source_version"],
+        law_source_hash=row["law_source_hash"],
+        selected_count=selected,
+        learned_count=learned,
+        to_learn_count=max(0, selected - learned),
+        due_count=due,
+    )
 
 
 class SqlitePlaygroundRepository:
@@ -135,6 +223,23 @@ class SqlitePlaygroundRepository:
         )
         self.conn.commit()
         return self.get_item(user_id, law_id)  # type: ignore[return-value]
+
+    def list_playground_summaries(
+        self, user_id: UUID | str, *, as_of: date
+    ) -> list[PlaygroundSummary]:
+        uid = as_user_id(user_id)
+        rows = self.conn.execute(
+            playground_summary_sql("?"),
+            (uid, as_of.isoformat(), uid, uid),
+        ).fetchall()
+        return [
+            summary_from_row(
+                row,
+                added_at=row["added_at"],
+                last_activity_at=row["last_activity_at"],
+            )
+            for row in rows
+        ]
 
     def list_selection(self, user_id: UUID | str, law_id: str) -> list[PlaygroundSelection]:
         rows = self.conn.execute(

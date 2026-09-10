@@ -10,8 +10,10 @@ from __future__ import annotations
 
 import re
 
+from dataclasses import dataclass
+
 from constitution_memorizer.web.bare_acts import BARE_ACTS, BareActSpec
-from constitution_memorizer.web.law_catalog import load_catalog
+from constitution_memorizer.web.law_catalog import CatalogLaw, load_catalog
 
 # Safe generic slug: lowercase, digits, hyphenated segments. Catalogue ids
 # such as uapa-1967 match; they still fail eligibility unless they are a
@@ -21,6 +23,20 @@ _LAW_SLUG_RE = re.compile(r"^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$")
 
 class PlaygroundLawError(LookupError):
     """Law is not Playground-eligible (or the runtime Act is missing)."""
+
+
+@dataclass(frozen=True)
+class PlaygroundLawIdentity:
+    """Registry-backed runtime identity. Never derived by reading Act JSON.
+
+    ``identity_token`` is stored in the historical ``law_source_hash`` column.
+    It is ``BareActSpec.source_hash`` when present, otherwise ``filename``.
+    The filename fallback is a registry token, not a cryptographic hash.
+    """
+
+    law_id: str
+    source_version: str
+    identity_token: str
 
 
 def _normalize_law_id(law_id: str) -> str:
@@ -60,6 +76,32 @@ def playground_bare_act_spec(law_id: str) -> BareActSpec | None:
     if ref is None:
         return None
     return BARE_ACTS.get(ref)
+
+
+def playground_law_source_identity(law_id: str) -> PlaygroundLawIdentity:
+    """Law-level identity from ``BareActSpec``. Does not hydrate Acts.
+
+    Same rule as ``runtime_cache_identity``: ``source_hash or filename``.
+    """
+    spec = playground_bare_act_spec(law_id)
+    if spec is None:
+        raise PlaygroundLawError(law_id)
+    return PlaygroundLawIdentity(
+        law_id=spec.slug,
+        source_version=spec.source_version,
+        identity_token=spec.source_hash or spec.filename,
+    )
+
+
+def playground_catalogue_law(law_id: str) -> CatalogLaw | None:
+    """Catalogue row for an eligible Playground law. Metadata only."""
+    ref = _catalogue_full_act_ref(law_id)
+    if ref is None:
+        return None
+    for law in load_catalog().laws:
+        if law.full_act_ref == ref or law.id == ref:
+            return law
+    return None
 
 
 def list_playground_eligible_laws() -> tuple[str, ...]:

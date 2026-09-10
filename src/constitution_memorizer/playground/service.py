@@ -9,6 +9,8 @@ from constitution_memorizer.playground.cloze import has_cloze_blanks
 from constitution_memorizer.playground.eligibility import (
     PlaygroundLawError,
     is_playground_eligible_law,
+    playground_catalogue_law,
+    playground_law_source_identity,
 )
 from constitution_memorizer.playground.locators import (
     LocatorError,
@@ -16,11 +18,9 @@ from constitution_memorizer.playground.locators import (
     parse_locator,
     section_locator,
 )
-from constitution_memorizer.playground.repository import PlaygroundProgress
+from constitution_memorizer.playground.repository import PlaygroundProgress, PlaygroundSummary
 from constitution_memorizer.playground.source import (
     canonical_body_text,
-    law_file_hash,
-    law_source_version,
     locators_for_act,
     resolve_section,
     source_hash,
@@ -38,20 +38,57 @@ def require_playground_law(law_id: str):
 
 
 def activate_law(repo, user_id: UUID | str, law_id: str):
-    act = require_playground_law(law_id)
+    """Persist activation from registry identity. Does not hydrate the Act."""
+    identity = playground_law_source_identity(law_id)
     return repo.add_item(
         user_id,
-        law_id,
-        source_version=law_source_version(act),
-        law_source_hash=law_file_hash(law_id),
+        identity.law_id,
+        source_version=identity.source_version,
+        law_source_hash=identity.identity_token,
     )
 
 
-def selection_rows(law_id: str, numbers: list[str] | None, *, entire: bool) -> list[tuple[str, str, str]]:
-    act = require_playground_law(law_id)
-    version = law_source_version(act)
+def playground_home_cards(summaries: list[PlaygroundSummary]) -> list[dict]:
+    """Card view-models from DB summaries + catalogue/registry metadata."""
+    cards: list[dict] = []
+    for row in summaries:
+        if not is_playground_eligible_law(row.law_id):
+            continue
+        catalog = playground_catalogue_law(row.law_id)
+        if catalog is None:
+            continue
+        identity = playground_law_source_identity(row.law_id)
+        outdated = (
+            row.source_version != identity.source_version
+            or row.law_source_hash != identity.identity_token
+        )
+        cards.append(
+            {
+                "law_id": row.law_id,
+                "title": catalog.title,
+                "short_title": catalog.short_title,
+                "selected_count": row.selected_count,
+                "learned_count": row.learned_count,
+                "to_learn": row.to_learn_count,
+                "due": row.due_count,
+                "outdated": outdated,
+            }
+        )
+    return cards
+
+
+def selection_rows(
+    law_id: str,
+    numbers: list[str] | None,
+    *,
+    entire: bool,
+    act=None,
+) -> list[tuple[str, str, str]]:
+    if act is None:
+        act = require_playground_law(law_id)
+    version = playground_law_source_identity(law_id).source_version
     if entire:
-        locators = locators_for_act(law_id)
+        locators = locators_for_act(law_id, act=act)
     else:
         locators = []
         for number in numbers or []:
@@ -59,25 +96,32 @@ def selection_rows(law_id: str, numbers: list[str] | None, *, entire: bool) -> l
                 loc = section_locator(law_id, number)
             except LocatorError:
                 continue
-            try:
-                _, section = resolve_section(loc)
-            except LocatorError:
-                continue
-            if section.is_omitted or not canonical_body_text(section):
+            section = act.section(loc.number)
+            if section is None or section.is_omitted or not canonical_body_text(section):
                 continue
             locators.append(loc)
     rows: list[tuple[str, str, str]] = []
     for loc in locators:
-        _, section = resolve_section(loc)
+        section = act.section(loc.number)
+        if section is None:
+            continue
         rows.append((loc.value, version, source_hash(section)))
     return rows
 
 
-def provision_for_learn(law_id: str, number: str) -> tuple[SectionLocator, str, str, str, bool]:
+def provision_for_learn(
+    law_id: str, number: str, *, act=None
+) -> tuple[SectionLocator, str, str, str, bool]:
     loc = section_locator(law_id, number)
-    act, section = resolve_section(loc)
+    if act is None:
+        act, section = resolve_section(loc)
+    else:
+        section = act.section(loc.number)
+        if section is None:
+            raise LocatorError(f"unknown section: {loc.value}")
     body = canonical_body_text(section)
-    return loc, body, source_hash(section), law_source_version(act), has_cloze_blanks(body)
+    version = playground_law_source_identity(law_id).source_version
+    return loc, body, source_hash(section), version, has_cloze_blanks(body)
 
 
 def mark_outdated(progress: PlaygroundProgress | None, live_hash: str) -> PlaygroundProgress | None:

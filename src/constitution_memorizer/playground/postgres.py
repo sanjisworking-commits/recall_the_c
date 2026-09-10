@@ -10,6 +10,9 @@ from constitution_memorizer.playground.repository import (
     PlaygroundItem,
     PlaygroundProgress,
     PlaygroundSelection,
+    PlaygroundSummary,
+    playground_summary_sql,
+    summary_from_row,
 )
 from constitution_memorizer.playground.revision import advance_interval, next_revision_date
 from constitution_memorizer.progress.user_ids import as_user_id
@@ -111,6 +114,26 @@ class PostgresPlaygroundRepository:
                 conn.commit()
         return self.get_item(user_id, law_id)  # type: ignore[return-value]
 
+    def list_playground_summaries(
+        self, user_id: UUID | str, *, as_of: date
+    ) -> list[PlaygroundSummary]:
+        uid = as_user_id(user_id)
+        with self._pool.connection() as conn:
+            with conn.cursor(row_factory=self._dict_row) as cur:
+                cur.execute(
+                    playground_summary_sql("%s"),
+                    (uid, as_of, uid, uid),
+                )
+                rows = cur.fetchall()
+        return [
+            summary_from_row(
+                row,
+                added_at=_as_iso(row["added_at"]),
+                last_activity_at=_as_iso(row["last_activity_at"]),
+            )
+            for row in rows
+        ]
+
     def list_selection(self, user_id: UUID | str, law_id: str) -> list[PlaygroundSelection]:
         with self._pool.connection() as conn:
             with conn.cursor(row_factory=self._dict_row) as cur:
@@ -148,15 +171,18 @@ class PostgresPlaygroundRepository:
                     "DELETE FROM user_playground_selection WHERE user_id = %s AND law_id = %s",
                     (uid, law_id),
                 )
-                for loc, ver, digest in rows:
-                    cur.execute(
+                if rows:
+                    cur.executemany(
                         """
                         INSERT INTO user_playground_selection (
                             user_id, law_id, source_locator, selected_at,
                             source_version, source_hash
                         ) VALUES (%s, %s, %s, %s, %s, %s)
                         """,
-                        (uid, law_id, loc, now, ver, digest),
+                        [
+                            (uid, law_id, loc, now, ver, digest)
+                            for loc, ver, digest in rows
+                        ],
                     )
                 cur.execute(
                     """

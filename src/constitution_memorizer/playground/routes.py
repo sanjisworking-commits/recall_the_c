@@ -17,16 +17,15 @@ from constitution_memorizer.playground.http import (
 from constitution_memorizer.playground.locators import LocatorError
 from constitution_memorizer.playground.service import (
     activate_law,
-    due_revision_count,
-    live_source_hash,
     mark_outdated,
     parse_selected_locator,
+    playground_home_cards,
     provision_for_learn,
     require_playground_law,
     selected_locator_set,
     selection_rows,
 )
-from constitution_memorizer.playground.source import locators_for_act
+from constitution_memorizer.playground.source import locators_for_act, source_hash
 from constitution_memorizer.playground.urls import (
     home_path,
     law_path,
@@ -36,6 +35,16 @@ from constitution_memorizer.playground.urls import (
 )
 
 SUPPORTED_LEARN_MODE = "cloze"
+
+
+def _section_source_hash(act, locator: str, law_id: str) -> str:
+    loc = parse_selected_locator(locator, law_id)
+    if loc is None:
+        return ""
+    section = act.section(loc.number)
+    if section is None:
+        return ""
+    return source_hash(section)
 
 
 def create_playground_router(templates: Jinja2Templates) -> APIRouter:
@@ -48,42 +57,8 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         if uid is None:
             return playground_login_redirect(home_path())
         repo = require_playground_repo(request)
-        today = date.today()
-        cards = []
-        for item in repo.list_items(uid):
-            try:
-                act = require_playground_law(item.law_id)
-            except PlaygroundLawError:
-                continue
-            selections = repo.list_selection(uid, item.law_id)
-            progress_rows = [
-                mark_outdated(row, live_source_hash(item.law_id, row.source_locator))
-                for row in repo.list_progress(uid, item.law_id)
-            ]
-            progress_rows = [row for row in progress_rows if row is not None]
-            selected = selected_locator_set(selections)
-            learned = {
-                row.source_locator
-                for row in progress_rows
-                if row.cloze_done and row.source_locator in selected
-            }
-            to_learn = len(selected - learned)
-            cards.append(
-                {
-                    "item": item,
-                    "act": act,
-                    "selected_count": len(selections),
-                    "to_learn": to_learn,
-                    "due": due_revision_count(
-                        [row for row in progress_rows if row.source_locator in selected],
-                        today,
-                    ),
-                    "outdated": any(
-                        row.source_outdated and row.source_locator in selected
-                        for row in progress_rows
-                    ),
-                }
-            )
+        summaries = repo.list_playground_summaries(uid, as_of=date.today())
+        cards = playground_home_cards(summaries)
         return templates.TemplateResponse(
             request,
             "playground.html",
@@ -103,13 +78,12 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         expected = request.cookies.get("rtc_csrf") or ""
         if expected and csrf_token != expected:
             raise HTTPException(status_code=403, detail="csrf")
-        try:
-            require_playground_law(law_id)
-        except PlaygroundLawError:
-            raise HTTPException(status_code=404, detail="Law not found") from None
         repo = require_playground_repo(request)
         existing = repo.get_item(uid, law_id)
-        activate_law(repo, uid, law_id)
+        try:
+            activate_law(repo, uid, law_id)
+        except PlaygroundLawError:
+            raise HTTPException(status_code=404, detail="Law not found") from None
         if existing is not None and repo.list_selection(uid, law_id):
             return RedirectResponse(url=home_path(), status_code=303)
         return RedirectResponse(url=sections_path(law_id), status_code=303)
@@ -130,7 +104,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         selections = repo.list_selection(uid, law_id)
         progress_map = {
             row.source_locator: mark_outdated(
-                row, live_source_hash(law_id, row.source_locator)
+                row, _section_source_hash(act, row.source_locator, law_id)
             )
             for row in repo.list_progress(uid, law_id)
         }
@@ -171,7 +145,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         if repo.get_item(uid, law_id) is None:
             return RedirectResponse(url=f"/laws/{law_id}", status_code=303)
         selected = selected_locator_set(repo.list_selection(uid, law_id))
-        learnable = {loc.value for loc in locators_for_act(law_id)}
+        learnable = {loc.value for loc in locators_for_act(law_id, act=act)}
         sections = []
         for section in act.section_order:
             loc = f"{law_id}:section:{section.number}"
@@ -208,7 +182,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         if expected and csrf_token != expected:
             raise HTTPException(status_code=403, detail="csrf")
         try:
-            require_playground_law(law_id)
+            act = require_playground_law(law_id)
         except PlaygroundLawError:
             raise HTTPException(status_code=404, detail="Law not found") from None
         repo = require_playground_repo(request)
@@ -217,7 +191,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         entire_raw = form.get("entire")
         entire_act = str(entire_raw or "") in {"1", "on", "true", "yes"}
         numbers = [str(value) for value in form.getlist("section")]
-        rows = selection_rows(law_id, numbers, entire=entire_act)
+        rows = selection_rows(law_id, numbers, entire=entire_act, act=act)
         repo.replace_selection(uid, law_id, rows)
         return RedirectResponse(url=law_path(law_id), status_code=303)
 
@@ -236,7 +210,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         try:
             act = require_playground_law(law_id)
             loc, body, live_hash, source_version, cloze_available = provision_for_learn(
-                law_id, number
+                law_id, number, act=act
             )
         except (PlaygroundLawError, LocatorError):
             raise HTTPException(status_code=404, detail="Section not found") from None
