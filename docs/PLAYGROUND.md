@@ -6,7 +6,7 @@ RecallC Playground is the paid learning overlay on verbatim Bare Act JSON. Tiers
 
 | Document | Status |
 |----------|--------|
-| [PLAYGROUND_DELIVERY_TRACKER.md](PLAYGROUND_DELIVERY_TRACKER.md) | **Programme scoreboard.** Stage 1 = **9 / 100** (build). Stage 2 optimize is `NOT STARTED` until Stage 1 is `DONE` (100/100). Cloze/overlay proof does **not** inflate either stage. |
+| [PLAYGROUND_DELIVERY_TRACKER.md](PLAYGROUND_DELIVERY_TRACKER.md) | **Programme scoreboard.** Stage 1 = **13 / 100** (build). Stage 2 optimize is `NOT STARTED` until Stage 1 is `DONE` (100/100). Cloze/overlay proof does **not** inflate either stage. |
 | [PLAYGROUND_TWO_LAW_AUDIT.md](PLAYGROUND_TWO_LAW_AUDIT.md) | Overlay design. Cloze = architectural proof, not the finished mode set. NDPS/BNS = **historical validation corpus**, not a production allowlist. Item/selection/progress = persistent learning, not monthly quota and not the device registry. |
 | [PAYMENT_ENTITLEMENT_AUDIT.md](PAYMENT_ENTITLEMENT_AUDIT.md) | User-type + **device registry** + **monthly roster** (`Asia/Kolkata` period clock). **Not implemented.** See §21 for prices / Razorpay states / refunds / replacement-churn integers. |
 | [law-loading.md](law-loading.md) | Lazy hydration contract Playground inherits. Sitemap inventory is a **build-time manifest**, never request-time Act hydration. |

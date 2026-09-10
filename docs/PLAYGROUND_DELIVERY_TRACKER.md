@@ -2,14 +2,14 @@
 
 **Scoreboard, not an audit.** Product rules live in [PLAYGROUND.md](PLAYGROUND.md), [PAYMENT_ENTITLEMENT_AUDIT.md](PAYMENT_ENTITLEMENT_AUDIT.md), [PLAYGROUND_TWO_LAW_AUDIT.md](PLAYGROUND_TWO_LAW_AUDIT.md), and [law-loading.md](law-loading.md).
 
-**Snapshot:** architecture/product definition is **locked in docs**. **Stage 1** (build) is **9 / 100**. Production implementation is **early**. The NDPS/BNS overlay + Cloze + proof revision rows **do not** count as milestones 6–8. Milestone 1 routing/eligibility (M1-A) is in progress; hash cleanup and dashboard batching remain M1-B. **Do not tick Stage 2 from Cloze or from `main`’s sitemap PRs.** This branch includes main’s Bare Act SEO and generated sitemap index; that is Milestone 0 coexistence, not Milestone 10 (`noindex`) and not Stage 2.
+**Snapshot:** architecture/product definition is **locked in docs**. **Stage 1** (build) is **13 / 100**. Production implementation is **early**. The NDPS/BNS overlay + Cloze + proof revision rows **do not** count as milestones 6–8. Milestone 1 is `DONE` (eligibility, final URLs, registry identity, zero-hydration dashboard/summary path, batched selection writes). **Do not tick Stage 2 from Cloze or from `main`’s sitemap PRs.** This branch includes main’s Bare Act SEO and generated sitemap index; that is Milestone 0 coexistence, not Milestone 10 (`noindex`) and not Stage 2.
 
 | | |
 |--|--|
-| **Stage 1 (build)** | **9 / 100** |
+| **Stage 1 (build)** | **13 / 100** |
 | Milestone 0 | `DONE` — 10/10 items × 5 = **5** |
-| Milestone 1 | `IN PROGRESS` — 9/18 items × 8 = **4** |
-| Milestones 1–11 | `NOT STARTED` except §21 commercial cells in milestone 2 (`BLOCKED`) |
+| Milestone 1 | `DONE` — 18/18 items × 8 = **8** |
+| Milestones 2–11 | `NOT STARTED` except §21 commercial cells in milestone 2 (`BLOCKED`) |
 | **Stage 2 (optimize)** | **`NOT STARTED` — start gate: Stage 1 = `DONE` (100/100)** |
 
 Do not read Cloze on this branch as ~20% complete. Payments, roster, devices, six Learn modes, and Learned → revision are the actual Stage 1 product weight. Stage 2 is **outside** the 100.
@@ -129,9 +129,9 @@ existing application tests pass
 
 # 1. Playground backend foundation — 8 points
 
-**Status: `IN PROGRESS`** (9/18 × 8 = 4)
+**Status: `DONE`** (18/18 × 8 = 8)
 
-Proof Cloze, request-time `read_bytes()` hashing, and N+1 Playground home queries **do not** satisfy the remaining half of this milestone.
+M1-A (eligibility + router + final URLs) and M1-B (registry identity, zero-hydration dashboard/summary path, batched writes) are closed. Proof Cloze still does **not** tick milestones 6–8. There is no `/playground/roster` HTTP page yet; that route belongs to Milestone 5.
 
 ## Eligibility
 
@@ -159,22 +159,22 @@ Routes, roster, locators, entitlement, and UI must consume **that same helper**.
 /playground/laws/{law_id}/sections/{number}/learn/{mode}
 ```
 
-Proof `/playground/{law_id}` is retired (404). Remaining M1-B work: request-time hash cleanup, zero-hydration home, batched dashboard/selection writes.
+Proof `/playground/{law_id}` is retired (404). `/playground/roster` remains a locked URL for Milestone 5; M1 does not implement that HTTP page.
 
 ## Law-loading compatibility
 
-* [ ] Remove request-time whole-file hashing
-* [ ] Use registry `source_version` / `source_hash`
-* [ ] `/playground` hydrates zero Acts
-* [ ] roster pages hydrate zero Acts
-* [ ] one law workspace hydrates only that Act
-* [ ] no cross-law corpus load
+* [x] Remove request-time whole-file hashing
+* [x] Use registry `source_version` / `source_hash`
+* [x] `/playground` hydrates zero Acts
+* [x] Playground dashboard / shared roster-summary data path hydrates zero Acts
+* [x] one law workspace hydrates only that Act
+* [x] no cross-law corpus load
 
 ## Data access
 
-* [ ] Batched Playground dashboard query (`list_playground_summaries`)
-* [ ] No N+1 selection/progress queries across 10/30 laws
-* [ ] Entire-Act section selection uses batched DB writes
+* [x] Batched Playground dashboard query (`list_playground_summaries`)
+* [x] No N+1 selection/progress queries across 10/30 laws
+* [x] Entire-Act section selection uses batched DB writes
 
 ### Done when
 
@@ -748,7 +748,7 @@ Playground + payment can safely replace the existing commercial entitlement mode
 | Milestone                         | Weight | Status now |
 | --------------------------------- | -----: | ---------- |
 | 0. Architecture + branch baseline |      5 | `DONE` (5 earned) |
-| 1. Backend foundation             |      8 | `IN PROGRESS` (4 earned; 9/18) |
+| 1. Backend foundation             |      8 | `DONE` (8 earned; 18/18) |
 | 2. Payment/subscriptions          |     13 | `NOT STARTED` / §21 `BLOCKED` |
 | 3. User-type entitlement          |      7 | `NOT STARTED` |
 | 4. Device control                 |      8 | `NOT STARTED` |
@@ -759,7 +759,7 @@ Playground + payment can safely replace the existing commercial entitlement mode
 | 9. Amendments/source integrity    |      5 | `NOT STARTED` |
 | 10. SEO/routing discoverability   |      4 | `NOT STARTED` |
 | 11. Production hardening/release  |      7 | `NOT STARTED` |
-| **TOTAL (Stage 1)**               |  **100** | **9 / 100** |
+| **TOTAL (Stage 1)**               |  **100** | **13 / 100** |
 | Stage 2 — Optimize                |    — | `NOT STARTED` — start gate: Stage 1 = `DONE` (100/100) |
 
 ---
@@ -773,7 +773,7 @@ Recommended order:
 ```text
 Batch 0   Rebase onto latest main + contracts — DONE (this milestone 0)
 Batch 1A  Eligibility + APIRouter + final `/playground/laws/{id}` URLs — DONE
-Batch 1B  Law-loading/hash cleanup + batched dashboard/selection
+Batch 1B  Law-loading/hash cleanup + batched dashboard/selection — DONE
 Batch 2   Payment/subscription foundation
 Batch 3   User entitlement inversion
 Batch 4   Device registry/control
