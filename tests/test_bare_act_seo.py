@@ -24,9 +24,11 @@ from constitution_memorizer.web.seo import (
     build_provision_seo,
     build_schedule_seo,
     law_canonical_url,
+    laws_hub_canonical_url,
     provision_canonical_url,
     schedule_canonical_url,
 )
+from constitution_memorizer.web.sitemaps import build_laws_hub_sitemap
 
 MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
 
@@ -208,3 +210,31 @@ def test_all_bare_act_canonicals_are_unique():
             canonicals.append(schedule_canonical_url(act.slug, schedule.slug))
 
     assert len(canonicals) == len(set(canonicals))
+
+
+# ── /laws hub canonical (GSC: "User-declared canonical: None") ────────────────
+
+
+def test_laws_hub_declares_self_canonical(client: TestClient):
+    html = client.get("/laws").text
+    assert _canonical(html) == f"{CANONICAL_ORIGIN}/laws"
+    assert _canonical(html) == laws_hub_canonical_url()
+
+
+@pytest.mark.parametrize(
+    "query",
+    ["?q=ndps", "?subject=criminal-law", "?q=bail&subject=criminal-law"],
+)
+def test_laws_hub_query_variants_canonicalize_to_bare_hub(
+    client: TestClient, query: str
+):
+    # Filtered views of the hub must all point at the bare /laws URL so GSC
+    # folds them into one canonical instead of treating each as its own page.
+    html = client.get(f"/laws{query}").text
+    assert _canonical(html) == laws_hub_canonical_url()
+
+
+def test_laws_hub_sitemap_loc_matches_canonical():
+    xml = build_laws_hub_sitemap()
+    locs = re.findall(r"<loc>(.*?)</loc>", xml)
+    assert locs == [laws_hub_canonical_url()]
