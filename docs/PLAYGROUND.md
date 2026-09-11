@@ -8,7 +8,7 @@ RecallC Playground is the paid learning overlay on verbatim Bare Act JSON. Tiers
 |----------|--------|
 | [PLAYGROUND_DELIVERY_TRACKER.md](PLAYGROUND_DELIVERY_TRACKER.md) | **Programme scoreboard.** Stage 1 = **13 / 100** (build). Stage 2 optimize is `NOT STARTED` until Stage 1 is `DONE` (100/100). Cloze/overlay proof does **not** inflate either stage. |
 | [PLAYGROUND_TWO_LAW_AUDIT.md](PLAYGROUND_TWO_LAW_AUDIT.md) | Overlay design. Cloze = architectural proof, not the finished mode set. NDPS/BNS = **historical validation corpus**, not a production allowlist. Item/selection/progress = persistent learning, not monthly quota and not the device registry. |
-| [PAYMENT_ENTITLEMENT_AUDIT.md](PAYMENT_ENTITLEMENT_AUDIT.md) | User-type + **device registry** + **monthly roster** (`Asia/Kolkata` period clock). **Not implemented.** See §21 for prices / Razorpay states / refunds / replacement-churn integers. |
+| [PAYMENT_ENTITLEMENT_AUDIT.md](PAYMENT_ENTITLEMENT_AUDIT.md) | User-type + **device registry** + **monthly roster** (`Asia/Kolkata` period clock). **Not implemented.** Commercial catalogue, access matrix, refunds, and disputes are **locked** in §21. Remaining open cells: device-replacement integers and support channel. |
 | [law-loading.md](law-loading.md) | Lazy hydration contract Playground inherits. Sitemap inventory is a **build-time manifest**, never request-time Act hydration. |
 
 **On this branch (M1-B):** Add to Playground, section selection, Cloze, revision rows, guest → sign-in. Eligibility is `is_playground_eligible_law()` / `list_playground_eligible_laws()` in [`playground/eligibility.py`](../src/constitution_memorizer/playground/eligibility.py) (catalogue `full_act` + `BareActSpec`; NDPS, BNS, and BNSS). HTTP lives in [`playground/routes.py`](../src/constitution_memorizer/playground/routes.py) under `/playground/laws/{law_id}`. Proof `/playground/{law_id}` is retired. Law-level identity is `playground_law_source_identity()` from `BareActSpec.source_version` and `source_hash or filename` (stored in the historical `law_source_hash` column; a filename fallback is not a cryptographic hash). `GET /playground` renders from `list_playground_summaries` plus catalogue/registry metadata and hydrates zero Acts. There is no `/playground/roster` HTTP page yet (Milestone 5); the shared dashboard/roster-summary data path is the zero-hydration contract for this milestone. Entire-Act selection hydrates that one Act and batch-writes section hashes. No subscription gate. No monthly roster. No device cookie. Cloze currently starts Day 1 (prototype).
@@ -33,7 +33,7 @@ learning/workspace routes (all modes)
 sitemap manifest work separately (law-loading, not Playground)
 ```
 
-Also still in-scope: user-type resolver, device registry, Razorpay lifecycle, admin override. Open §21 cells block charging live; they do not restore article entitlements or lifetime unlocks.
+Also still in-scope: user-type resolver, device registry, Razorpay lifecycle, admin override. Locked §21 commercial cells do not restore article entitlements or lifetime unlocks. Remaining open §21 cells are device-churn integers and the support-contact channel only.
 
 ---
 

@@ -1,6 +1,6 @@
 # Payment, entitlement, and Playground — architecture lock
 
-**Scope of this document.** This is the **locked product architecture** for RecallC access: user types, device control for paid Playground, monthly Playground roster, clocks, schema to build, CTA states, sequential batches, and remaining commercial open cells. It is **not** a description of current production behaviour. Current code is still Razorpay **one-time duration passes** plus a **two-law overlay** with **no subscription check** and **no device registry**. The overlay is a Cloze **proof**, not the finished product.
+**Scope of this document.** This is the **locked product architecture** for RecallC access: user types, device control for paid Playground, monthly Playground roster, clocks, schema to build, CTA states, sequential batches, the locked commercial catalogue / subscription-access matrix, and remaining device-churn open cells. It is **not** a description of current production behaviour. Current code is still Razorpay **one-time duration passes** plus a **two-law overlay** with **no subscription check** and **no device registry**. The overlay is a Cloze **proof**, not the finished product.
 
 **Amendment (this revision).** Device restriction applies to the **paid Playground entitlement**, not to signing in or to Constitution Learn. `PLAYGROUND_DEVICE_LIMIT = 2` for every tier. Device identity is a RecallC-issued token (cookie / Android installation UUID), never IP or hardware fingerprinting. This does **not** change roster math (10/30/unlimited).
 
@@ -8,7 +8,7 @@ This document still **supersedes** every prior Playground rule that described **
 
 Claude Design copy that said “10 new laws each billing cycle / already-unlocked = 0 next month / Playground grows month over month / reset = provider `period_end`” is **not** to be implemented. That design file is **not in this repo**; this paragraph is the in-repo supersession. Device-limit and Profile → Security copy below is the in-repo UI lock (Claude Design for devices is also not in this repo).
 
-**Not in this document.** Cursor must **not** invent commercial numbers. Display names, INR prices, GST, monthly vs annual as MVP, Razorpay state → access matrix, `past_due` grace, refund / partial / chargeback access, **`DEVICE_REPLACEMENT_WINDOW_DAYS` / `DEVICE_REPLACEMENT_LIMIT` integers**, and the support-contact channel stay **open** in [§21](#21-open-commercial-and-provider-cells-do-not-invent). Do not encode them as product truth.
+**Still open in [§21](#21-commercial-and-provider-cells) — do not invent:** `DEVICE_REPLACEMENT_WINDOW_DAYS`, `DEVICE_REPLACEMENT_LIMIT`, and the support-contact channel for device-churn lockout. Public names, INR prices, GST-inclusive display, MVP monthly-only interval, provider-status access matrix, `pending` grace, refunds, and dispute/chargeback access are **locked** there. Implementation must use those locked cells and must **not** invent the remaining device-churn integers or a support channel.
 
 ---
 
@@ -24,7 +24,7 @@ Subscriber            → full Constitution + law reading on any device
                       → tier = monthly roster capacity only (not device count)
 ```
 
-Internal SKUs: `plus` / `pro` / `max`. Public `display_name` is config (open until named). **Tiers do not change modes, ladders, quality, or device cap** — only **how many distinct laws may be active in the current Playground month**.
+Internal SKUs: `plus` / `pro` / `max`. Public names: **Plus** / **Pro** / **Max**. MVP billing is **monthly only** (GST-inclusive): Plus **₹199**/month, Pro **₹399**/month, Max **₹999**/month. Annual plans are **not offered** in the MVP; do not invent annual prices. **Tiers do not change modes, ladders, quality, or device cap** — only **how many distinct laws may be active in the current Playground month**.
 
 ```text
 PLAYGROUND_DEVICE_LIMIT = 2   (same for plus / pro / max)
@@ -99,7 +99,7 @@ Routes and templates **do not** call Razorpay, `access_grants`, or `user_free_ar
 | Field | Meaning |
 |---|---|
 | `is_authenticated` | Session user present |
-| `is_subscribed` | Playground-capable subscription in an allowed status (matrix **open** in §21) |
+| `is_subscribed` | Playground-capable subscription in an allowed status per the locked [§21](#21-commercial-and-provider-cells) matrix (`active`, `active` + `cancel_at_period_end` until the paid period ends, `pending` for current-roster only — not `created` / `authenticated` / `halted` / `paused` / `cancelled` / `completed` / `expired`) |
 | `can_use_constitution_learn` | Guest explore **or** any authenticated user (full) |
 | `can_open_playground` | Subscribed **and** current device allowed (or `admin_override`). Guests and signed-in non-subscribers still see marketing/CTAs. Device-blocked subscribers see the **device-limit** / **revoked-device** gate, **not** Subscribe. |
 | `device_limit` | Config `PLAYGROUND_DEVICE_LIMIT` (locked default **2**). Same for every tier. |
@@ -176,7 +176,7 @@ When the flag is on:
 
 Copy says “Renews every N days” for longer SKUs; `status_from_paid_order` **always** sets `recurring=False`.
 
-These INR figures describe **today’s duration catalog**. They are **not** Plus/Pro/Max prices (those stay **open** in §21).
+These INR figures describe **today’s duration catalog**. They are **not** Plus/Pro/Max prices. Locked subscription prices are in [§21](#21-commercial-and-provider-cells) (Plus ₹199 / Pro ₹399 / Max ₹999 per month, GST-inclusive).
 
 ---
 
@@ -242,7 +242,7 @@ Web auth today: `rtc_session` is `HttpOnly` + `SameSite=lax` ([`auth/routes.py`]
 
 **Does not exist.** Lifecycle is Checkout success handler → `/api/billing/verify`.
 
-Target (after Batch A, blocked until §21 open cells are filled): Razorpay subscription webhooks mapped to RecallC states. **Acceptance (hard):** validate `X-Razorpay-Signature` against the **raw request body**; persist `x-razorpay-event-id` for idempotency; tolerate duplicates and out-of-order delivery; support webhook-secret rotation; provider-fetch reconciliation when local state is ambiguous. Client Checkout verify must not be the only grant path. Webhooks update **billing** dates; they do **not** consume roster slots.
+Target (Batch A): Razorpay subscription webhooks mapped to RecallC states using the locked [§21](#21-commercial-and-provider-cells) access matrix. **Acceptance (hard):** validate `X-Razorpay-Signature` against the **raw request body**; persist `x-razorpay-event-id` for idempotency; tolerate duplicates and out-of-order delivery; support webhook-secret rotation; provider-fetch reconciliation when local state is ambiguous. Client Checkout verify must not be the only grant path. Webhooks update **billing** dates; they do **not** consume roster slots. A dispute-created webhook is **not** a destructive account action.
 
 ---
 
@@ -259,9 +259,9 @@ Target (after Batch A, blocked until §21 open cells are filled): Razorpay subsc
 | Extend | Buy another duration pass (“Extend Recall”) |
 | Progress on expiry | Constitution `learning_unit_progress` **kept**. Free matrix may **lock Type/Recite** and block Done on unclaimed Articles. **No row deletion.** |
 
-Target Playground expiry: **lock learning, keep overlay, roster, and device rows**. Exact `past_due` grace is **open** (§21). Resubscribe starts a **new** playground period; overlay history and **registered devices** remain.
+Target Playground expiry / payment-retry: **lock learning when the matrix says no; keep overlay, roster, and device rows**. There is **no** RecallC `past_due` grace-day integer. Payment-retry grace is provider status **`pending` only** (current-roster Playground yes; new law consumption no). When the provider state becomes **`halted`**, Playground learning locks. Resubscribe starts a **new** playground period; overlay history and **registered devices** remain.
 
-`cancel_at_period_end`: not representable today. Must map from provider: Playground **access** remains until `billing_period_end`. Roster membership is still **this playground month**.
+Default **user** cancellation UX must set `cancel_at_period_end = true` (cancel at cycle end). The user retains **full paid** Playground access (`current-roster` yes, `new law consumption` yes) until the already-paid current billing period ends. Immediate cancellation may exist only as an explicit administrative/provider operation; do **not** silently turn normal user cancellation into immediate loss of already-paid access. `cancel_at_period_end` is not representable in today’s duration-pass schema.
 
 ---
 
@@ -463,13 +463,13 @@ Do **not** silently consume a slot by loading the law workspace (`/playground/la
 | **`billing_period_start` / `billing_period_end`** | Razorpay subscription invoice window | Charging, renewals, “paid through”. **Not** roster capacity. |
 | **`playground_period_start` / `playground_period_end`** | App calendar month in **`Asia/Kolkata`** (configured RecallC timezone; not UTC; not per-account `user_timezone` unless later product) | Roster capacity, usage count, carry-forward UI. **Renamed from** the withdrawn `quota_period_*`. Independent of Razorpay `billing_period_*`. |
 
-**Annual billing** still opens a **new playground period every month** (`Asia/Kolkata`). Do **not** give annual Plus twelve months of the same 10-law roster without rollover.
+**Annual billing is not offered in the MVP** (do not invent annual prices). If annual is offered later, it still opens a **new playground period every month** (`Asia/Kolkata`). Do **not** give annual Plus twelve months of the same 10-law roster without rollover.
 
 Webhook `period_end` updates **billing** dates only. Creating the next `user_playground_period` is an **app** job (on first Playground hit in the new month, or a daily reconciler — implementer’s choice, must be deterministic).
 
 ---
 
-## 15. Upgrade / downgrade (locked product; INR open)
+## 15. Upgrade / downgrade (locked)
 
 | Change | When it applies | Roster effect | Device effect |
 |---|---|---|---|
@@ -478,7 +478,7 @@ Webhook `period_end` updates **billing** dates only. Creating the next `user_pla
 
 Do **not** say the lifetime library stays fully learnable without roster membership. Dropped laws remain in overlay history and show **Progress saved** until added again.
 
-Proration / GST / same-cycle credit: **open** (§21).
+Displayed catalogue prices are **GST-inclusive** ([§21](#21-commercial-and-provider-cells)). Do not invent a second exclusive price list. Do not infer tier changes from a refund amount. Proration rupee arithmetic is an implementation detail of **upgrade = immediate / downgrade = billing cycle end**; do not invent a second commercial catalogue to express it.
 
 ---
 
@@ -607,7 +607,7 @@ Section select / Cloze / future modes stay overlay services; they **call** `asse
 
 Hide from active list ≠ decline next month. **Decline** is an explicit next-period choice.
 
-Expiry / `past_due`: lock **learning**; keep overlay, roster, **and device** rows. Exact grace: **open** §21.
+Expiry / `halted` / `cancelled` / `completed` / `expired`: lock **learning**; keep overlay, roster, **and device** rows. Payment-retry grace is **`pending` only** ([§21](#21-commercial-and-provider-cells)); no grace-day integer.
 
 Resubscribe: **new** playground period + empty consumption; overlay history **and registered devices** remain; user adds/Keeps again.
 
@@ -617,31 +617,85 @@ Resubscribe: **new** playground period + empty consumption; overlay history **an
 
 | Batch | Builds | Notes |
 |---|---|---|
-| **A — Subscription** | `user_subscription`, product config (`plus`/`pro`/`max` **without** inventing INR here), Checkout/Subscriptions, webhooks (HMAC **raw** body, `x-razorpay-event-id`, out-of-order, secret rotation, reconcile) | **No quota on billing period.** `is_subscribed()` becomes real. |
+| **A — Subscription** | `user_subscription`, product config (`plus`/`pro`/`max` using the **locked** [§21](#21-commercial-and-provider-cells) catalogue: Plus/Pro/Max, monthly GST-inclusive ₹199/₹399/₹999), Checkout/Subscriptions, webhooks (HMAC **raw** body, `x-razorpay-event-id`, out-of-order, secret rotation, reconcile) | **No quota on billing period.** `is_subscribed()` follows the locked matrix. **Do not** offer annual SKUs in the MVP. |
 | **B — User-type** | Resolver; Guest / signed-in / subscriber; Constitution full for authenticated; stop reading `user_free_articles` / article `access_grants` | Playground still overlay-gated only after C+D+F |
 | **C — Device registry** | `rtc_device` cookie (survives logout); HMAC store; `user_device` + `user_device_session`; atomic cap=2; revoke; `playground_block_reason`; EntitlementService device fields | Tests in [§24](#24-required-tests-document-now-pytest-in-batches-b--c--d--f--do-not-write-pytest-in-this-change). **Same cap all tiers.** No fingerprinting. Replacement **integers still open** for go-live of churn UI. |
 | **D — Monthly roster** | `user_playground_period` + `user_playground_roster_item`; consume; same-month re-add; carry-forward Keep/decline; atomic 9/10; EntitlementService roster fields in §5; **batched** dashboard `list_playground_summaries` | Was Batch C before the device amendment. **Strike** lifetime-unlock table. Period clock = `Asia/Kolkata`. |
 | **E — Learning** | All six RecallC-style modes on Bare Acts; Learned → then Day 1; retire Cloze-only as the only trigger | Overlay progress schema may extend; **do not** use progress rows as quota or as device identity. URLs under `/playground/laws/{law_id}/…` |
-| **F — Roster + lifecycle + device UI** | Confirm slot, In Playground / Progress saved / Playground full, Keep/Remove rollover, payment-state CTAs, `/upgrade`, **Profile → Security → Your devices**, device-limit and revoked-device screens | Needs **open** §21 cells for go-live copy (prices **and** churn integers). Extract `APIRouter(prefix="/playground")` **before** adding these handlers to `app.py`. |
+| **F — Roster + lifecycle + device UI** | Confirm slot, In Playground / Progress saved / Playground full, Keep/Remove rollover, payment-state CTAs, `/upgrade`, **Profile → Security → Your devices**, device-limit and revoked-device screens | Prices/names are **locked** in §21. Churn-lockout copy still needs **open** replacement integers and a support channel. Playground HTTP already lives in `APIRouter(prefix="/playground")`. |
 | **G — Legacy cleanup** | Freeze duration SKUs on `/upgrade`; drop unread article-entitlement structures only when unused | Never delete overlay, roster, or device history to “clean up” |
 
 ---
 
-## 21. Open commercial and provider cells (do not invent)
+## 21. Commercial and provider cells
 
-Still **open** — Cursor must not fill:
+Commercial catalogue, GST-inclusive display, MVP interval, provider-status access matrix, `pending` grace, refunds, and dispute/chargeback access are **locked**. Device-churn operational cells stay **open**. Cursor must **not** invent the remaining open cells. Cursor must **not** invent different prices, names, grace-day integers, or annual MVP SKUs.
 
 | Cell | Status |
 |---|---|
-| Public `display_name` for plus/pro/max | Open |
-| INR prices, GST, inclusive vs exclusive | Open |
-| Monthly vs annual as MVP | Open (annual still = monthly playground periods) |
-| Razorpay `status` → `can_open_playground` matrix | Open (device is a **separate** conjunct; this matrix is subscription only) |
-| `past_due` / incomplete grace | Open |
-| Refund / partial refund / chargeback → access | Open |
-| `DEVICE_REPLACEMENT_WINDOW_DAYS` | Open — do not invent |
-| `DEVICE_REPLACEMENT_LIMIT` | Open — do not invent |
-| Support contact channel for device-churn lockout | Open |
+| Public `display_name` for plus/pro/max | **Locked** — Plus / Pro / Max |
+| INR prices | **Locked** — Plus ₹199 / Pro ₹399 / Max ₹999 per month |
+| GST treatment | **Locked** — displayed prices are GST-inclusive |
+| MVP billing interval | **Locked** — monthly only. Annual plans are **not offered** in the MVP. Do not invent annual prices. Future annual billing must still retain **monthly** Playground roster periods (`Asia/Kolkata`). |
+| Provider `status` + `cancel_at_period_end` / paid-period boundaries → access | **Locked** (matrix below). Device is a **separate** conjunct; this matrix is subscription only. |
+| Payment-retry grace | **Locked** — `pending` is the retry state. **No** separate grace-day integer. Access stays grace-enabled **only** while provider status is `pending`. `halted` locks Playground learning. There is no RecallC `past_due` day count. |
+| Refund → access | **Locked** (below) |
+| Dispute / chargeback → access | **Locked** (below) |
+| `DEVICE_REPLACEMENT_WINDOW_DAYS` | **Open** — do not invent |
+| `DEVICE_REPLACEMENT_LIMIT` | **Open** — do not invent |
+| Support contact channel for device-churn lockout | **Open** — do not invent |
+
+### Commercial catalogue (locked)
+
+| `tier` | Public name | INR / month | Interval | GST in displayed price | Roster capacity / playground period |
+|--------|-------------|-------------|----------|------------------------|-------------------------------------|
+| `plus` | Plus | ₹199 | monthly | inclusive | 10 active distinct laws |
+| `pro` | Pro | ₹399 | monthly | inclusive | 30 active distinct laws |
+| `max` | Max | ₹999 | monthly | inclusive | unlimited |
+
+Internal codes remain `plus` / `pro` / `max`. One current commercial subscription per user. A second checkout must **not** create a parallel subscription (it is an upgrade/change).
+
+### Subscription → access matrix (locked)
+
+Use **provider status** plus RecallC `cancel_at_period_end` / paid-period boundaries. This table is **not** the signed-in user-type. Provider status `authenticated` is mandate/checkout state, not “has an account.”
+
+| Provider / RecallC state | Current-roster Playground | New law consumption | Notes |
+|--------------------------|---------------------------|---------------------|-------|
+| `created` | **NO** | **NO** | Subscription object exists; not paid Playground. |
+| `authenticated` | **NO** | **NO** | Provider mandate authenticated; not paid Playground. |
+| `active` | **YES** | **YES** | |
+| `active` + `cancel_at_period_end` | **YES** | **YES** | Until the already-paid **current billing period** ends. Default user cancel UX. |
+| `pending` | **YES** | **NO** | Payment-retry grace **only** while status is `pending`. No grace-day integer. |
+| `halted` | **NO** | **NO** | Playground learning locks. |
+| `paused` | **NO** | **NO** | |
+| `cancelled` | **NO** | **NO** | |
+| `completed` | **NO** | **NO** | |
+| `expired` | **NO** | **NO** | |
+
+Every row **preserves** Playground overlay progress, revision history, monthly roster rows, device rows, and Constitution progress. Payment status must **never** delete learning data.
+
+**Cancellation.** Default user cancellation UX schedules `cancel_at_period_end = true` (cancel at cycle end) on an `active` subscription. The user retains full paid Playground access until the paid current period ends. Immediate cancellation may exist only as an explicit administrative/provider operation; do **not** silently turn normal user cancellation into immediate loss of already-paid access.
+
+**Upgrade / downgrade (unchanged).** Upgrade = immediate. Downgrade = effective at billing cycle end.
+
+### Refunds (locked)
+
+| Event | Entitlement | Data |
+|---|---|---|
+| Full refund processed | **End** Playground entitlement for the **refunded paid period** | Preserve all learning / roster / device / history rows |
+| Partial refund | **No** automatic entitlement downgrade | Record the event; require reconciliation / support handling |
+
+Do **not** infer tier changes from refund amount.
+
+### Disputes / chargebacks (locked)
+
+| Event | Entitlement | Data |
+|---|---|---|
+| Dispute created / under review | Do **not** treat as a destructive account action | Preserve data; flag subscription/payment for reconciliation; do **not** delete progress |
+| Dispute won / closed in RecallC favour | Follow **normal** provider subscription state | Preserve data |
+| Dispute lost / chargeback confirmed | **End** the affected paid Playground entitlement | Preserve all progress, roster, and device data |
+
+A dispute-created webhook is **not** a destructive account action.
 
 ### Locked rows (quota) — **replaces** “10 new laws / month / first unlock forever free”
 
@@ -659,7 +713,7 @@ Still **open** — Cursor must not fill:
 | Downgrade | **At billing renewal**; excess laws dropped from **roster** not from **progress** |
 | Guest Playground | Sign in first |
 | Authenticated Constitution | All Articles, all six modes |
-| Progress deletion | **Forbidden** (payment, roster, **and device revoke**) |
+| Progress deletion | **Forbidden** (payment, roster, refund, chargeback, **and device revoke**) |
 | Device cap | **`PLAYGROUND_DEVICE_LIMIT = 2`**, **all tiers** |
 | Device identity | RecallC-issued token; **HMAC at rest**; never IP / IMEI / MAC / hardware ID / canvas fingerprint |
 | `rtc_device` vs `rtc_session` | Device cookie **survives logout**; session cookie does not |
@@ -671,28 +725,6 @@ Still **open** — Cursor must not fill:
 | Production Playground URLs | `/playground/laws/{law_id}/…` — proof `/playground/{law_id}` is **not** production |
 | One commercial subscription | One current Playground subscription per user. A second checkout is an upgrade/change, not a parallel subscription. |
 | Webhooks (Batch A bar) | HMAC `X-Razorpay-Signature` over the **raw body**; persist `x-razorpay-event-id`; duplicates / out-of-order; secret rotation; provider-fetch reconcile |
-
-State→access matrix (empty until filled — do not invent):
-
-| Provider / RecallC state | Can use **current-roster** Playground laws | Can consume a **new** roster slot | Notes |
-|--------------------------|--------------------------------------------|-----------------------------------|-------|
-| `active` | | | |
-| `cancel_at_period_end` (paid period not over) | | | |
-| `authenticated` | | | |
-| `pending` | | | |
-| `past_due` | | | grace? |
-| `halted` | | | |
-| `paused` | | | |
-| `completed` | | | |
-| `expired` / cancelled after period end | no | no | Progress kept; Resume CTA |
-
-Commercial catalog (empty until filled — do not invent INR / names / GST):
-
-| `tier` | `display_name` | INR | Interval | GST in displayed price | Roster capacity / playground period |
-|--------|----------------|-----|----------|------------------------|-------------------------------------|
-| `plus` | | | | | 10 active distinct laws |
-| `pro` | | | | | 30 active distinct laws |
-| `max` | | | | | unlimited |
 
 ---
 
@@ -710,13 +742,13 @@ Commercial catalog (empty until filled — do not invent INR / names / GST):
 - Per-tier device SKUs.
 - Overloading `is_subscribed` with `device_limit`.
 - Letting EntitlementService call Razorpay per request.
-- Inventing GST/prices in Batch A, or inventing replacement-limit integers.
+- Inventing annual MVP prices, departing from the locked GST-inclusive catalogue, or inventing replacement-limit integers.
 
 ---
 
 ## 23. Out of this docs-only change
 
-No Alembic, no `rtc_device` cookie, no `EntitlementService` code, no roster or device tables in SQLite, no Profile Security UI, no Android client. Those are Batches A–F **after** this lock (and after §21 open cells where listed for go-live, including churn integers).
+No Alembic, no `rtc_device` cookie, no `EntitlementService` code, no roster or device tables in SQLite, no Profile Security UI, no Android client. Those are Batches A–F **after** this lock (device-churn integers still open for churn-UI go-live).
 
 ---
 
@@ -770,7 +802,8 @@ Device (Batch C / F):
 - Payment and Playground stay separate domains: **AUTHENTICATION → USER-TYPE → SUBSCRIPTION → DEVICE → MONTHLY ROSTER → LEARNING**.
 - **Payment controls whether Playground can be used. The device registry controls where. The monthly roster controls which laws are active. None of these may delete the user's progress.**
 - **Guest = explore. Account = complete Constitution. Subscription = Playground. Tier = monthly roster capacity only. Device cap = 2 for every tier.**
-- Commercial numbers, grace, Razorpay state access, refund-access outcomes, and **device-replacement integers** stay **product-owner decisions** (§21). Implementation must not fill them in.
+- The commercial catalogue, GST-inclusive display, MVP monthly-only interval, provider-status access matrix, `pending` grace, refund access, and dispute/chargeback access are **locked** in [§21](#21-commercial-and-provider-cells). Implementation must use them.
+- **`DEVICE_REPLACEMENT_WINDOW_DAYS`**, **`DEVICE_REPLACEMENT_LIMIT`**, and the support-contact channel for device-churn lockout stay **open**. Implementation must not invent them.
 - Do **not** implement `user_playground_law_entitlement`, lifetime unlocks, “new laws per billing cycle,” per-tier device SKUs, or IP/fingerprint device identity.
 
 ---

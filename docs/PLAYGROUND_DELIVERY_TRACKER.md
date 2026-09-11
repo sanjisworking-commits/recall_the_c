@@ -2,14 +2,14 @@
 
 **Scoreboard, not an audit.** Product rules live in [PLAYGROUND.md](PLAYGROUND.md), [PAYMENT_ENTITLEMENT_AUDIT.md](PAYMENT_ENTITLEMENT_AUDIT.md), [PLAYGROUND_TWO_LAW_AUDIT.md](PLAYGROUND_TWO_LAW_AUDIT.md), and [law-loading.md](law-loading.md).
 
-**Snapshot:** architecture/product definition is **locked in docs**. **Stage 1** (build) is **13 / 100**. Production implementation is **early**. The NDPS/BNS overlay + Cloze + proof revision rows **do not** count as milestones 6–8. Milestone 1 is `DONE` (eligibility, final URLs, registry identity, zero-hydration dashboard/summary path, batched selection writes). **Do not tick Stage 2 from Cloze or from `main`’s sitemap PRs.** This branch includes main’s Bare Act SEO and generated sitemap index; that is Milestone 0 coexistence, not Milestone 10 (`noindex`) and not Stage 2.
+**Snapshot:** architecture/product definition is **locked in docs**. **Stage 1** (build) is **13 / 100**. Production implementation is **early**. The NDPS/BNS overlay + Cloze + proof revision rows **do not** count as milestones 6–8. Milestone 1 is `DONE`. Commercial §21 catalogue / access / refund / dispute cells are **locked in docs**; Milestone 2 implementation is **`NOT STARTED`**. **Do not tick Stage 2 from Cloze or from `main`’s sitemap PRs.** This branch includes main’s Bare Act SEO and generated sitemap index; that is Milestone 0 coexistence, not Milestone 10 (`noindex`) and not Stage 2.
 
 | | |
 |--|--|
 | **Stage 1 (build)** | **13 / 100** |
 | Milestone 0 | `DONE` — 10/10 items × 5 = **5** |
 | Milestone 1 | `DONE` — 18/18 items × 8 = **8** |
-| Milestones 2–11 | `NOT STARTED` except §21 commercial cells in milestone 2 (`BLOCKED`) |
+| Milestones 2–11 | `NOT STARTED`; remaining §21 `BLOCKED` cells are device-churn integers / support channel only |
 | **Stage 2 (optimize)** | **`NOT STARTED` — start gate: Stage 1 = `DONE` (100/100)** |
 
 Do not read Cloze on this branch as ~20% complete. Payments, roster, devices, six Learn modes, and Learned → revision are the actual Stage 1 product weight. Stage 2 is **outside** the 100.
@@ -47,9 +47,11 @@ NOT STARTED | IN PROGRESS | BLOCKED | IN REVIEW | DONE
 
 `DONE` means acceptance criteria and tests have passed. Do not use “mostly done.”
 
-**§21 BLOCKED (do not invent):** public tier `display_name`, INR prices, GST treatment, monthly vs annual as MVP, Razorpay state → access matrix, `past_due` grace, refund / partial / chargeback access, `DEVICE_REPLACEMENT_*` integers. See [PAYMENT_ENTITLEMENT_AUDIT.md](PAYMENT_ENTITLEMENT_AUDIT.md) §21. Internal codes `plus` / `pro` / `max` are already locked.
+**§21 remaining `BLOCKED` (do not invent):** `DEVICE_REPLACEMENT_WINDOW_DAYS`, `DEVICE_REPLACEMENT_LIMIT`, support contact channel for device-churn lockout. See [PAYMENT_ENTITLEMENT_AUDIT.md](PAYMENT_ENTITLEMENT_AUDIT.md) §21.
 
-`BLOCKED` is **only** for unresolved product/provider decisions (such as §21). Stage 2 is **sequenced**, not blocked.
+**§21 locked (do not reopen, do not invent alternatives):** public names Plus / Pro / Max; INR prices ₹199 / ₹399 / ₹999 per month; GST-inclusive display; MVP monthly-only (no annual SKUs); provider-status access matrix; `pending` as payment-retry grace with **no** grace-day integer; refund access; dispute/chargeback access. Internal codes `plus` / `pro` / `max` remain locked. This policy lock does **not** tick Milestone 2 implementation checkboxes.
+
+`BLOCKED` is **only** for unresolved product/provider decisions (remaining §21 device-churn cells). Stage 2 is **sequenced**, not blocked. Locked commercial §21 cells are product truth; they are not Milestone 2 completion.
 
 ---
 
@@ -186,16 +188,16 @@ Playground has a scalable backend shell independent of the two-law proof.
 
 # 2. Payment & subscription foundation — 13 points
 
-**Status: `NOT STARTED`** (commercial name/price/GST/interval/state-matrix/refund items: `BLOCKED` on §21)
+**Status: `NOT STARTED`** (commercial catalogue / access / refund / dispute policy **locked** in §21; implementation checkboxes below remain incomplete)
 
 ## Commercial model
 
-* [ ] Final public tier names — **`BLOCKED` §21**
+* [ ] Final public tier names — **locked §21** (`Plus` / `Pro` / `Max`)
 * [ ] Internal tier codes remain stable (`plus` / `pro` / `max` — **locked**)
-* [ ] Final prices — **`BLOCKED` §21**
-* [ ] GST display treatment — **`BLOCKED` §21**
-* [ ] Monthly billing product configuration — **`BLOCKED` §21** (interval choice)
-* [ ] Annual billing configuration where offered — **`BLOCKED` §21** (annual still = monthly Playground periods)
+* [ ] Final prices — **locked §21** (Plus ₹199 / Pro ₹399 / Max ₹999 per month)
+* [ ] GST display treatment — **locked §21** (displayed prices GST-inclusive)
+* [ ] Monthly billing product configuration — **locked §21** (MVP monthly only)
+* [ ] Annual billing configuration — **not in MVP** (locked: do not offer annual; do not invent annual prices; future annual still = monthly Playground periods)
 
 ## Subscription persistence
 
@@ -218,11 +220,11 @@ Playground has a scalable backend shell independent of the two-law proof.
 * [ ] Downgrade
 * [ ] Expiry
 * [ ] Failed payment
-* [ ] Past due — grace days **`BLOCKED` §21**
-* [ ] Paused/halted
+* [ ] Payment-retry (`pending`) — **policy locked §21** (no grace-day integer; current-roster yes / new consumption no)
+* [ ] Paused/halted — **policy locked §21** (`halted` locks Playground learning)
 * [ ] Resubscribe
-* [ ] Refund handling — access outcome **`BLOCKED` §21**
-* [ ] Dispute/chargeback handling — **`BLOCKED` §21**
+* [ ] Refund handling — access outcome **locked §21**
+* [ ] Dispute/chargeback handling — **locked §21**
 
 ## Webhooks
 
@@ -242,7 +244,7 @@ Playground has a scalable backend shell independent of the two-law proof.
 
 ### Done when
 
-A subscription can move through its full real lifecycle without manually editing the DB. Cursor must **not** invent the §21 cells to tick this milestone.
+A subscription can move through its full real lifecycle without manually editing the DB. Policy documentation does **not** tick these implementation items. Cursor must implement against locked §21 commercial cells and must **not** invent remaining device-churn cells.
 
 **Weight: 13**
 
@@ -749,7 +751,7 @@ Playground + payment can safely replace the existing commercial entitlement mode
 | --------------------------------- | -----: | ---------- |
 | 0. Architecture + branch baseline |      5 | `DONE` (5 earned) |
 | 1. Backend foundation             |      8 | `DONE` (8 earned; 18/18) |
-| 2. Payment/subscriptions          |     13 | `NOT STARTED` / §21 `BLOCKED` |
+| 2. Payment/subscriptions          |     13 | `NOT STARTED` (commercial §21 locked; device-churn cells still open) |
 | 3. User-type entitlement          |      7 | `NOT STARTED` |
 | 4. Device control                 |      8 | `NOT STARTED` |
 | 5. Monthly roster                 |     12 | `NOT STARTED` |
