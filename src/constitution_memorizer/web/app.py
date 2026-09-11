@@ -2685,6 +2685,9 @@ def create_app(
             "subjects": catalog.visible_subjects,
             "initial_q": request.query_params.get("q") or "",
             "initial_subject": request.query_params.get("subject") or "",
+            # Query variants (?q=, ?subject=) are filtered views of the same hub,
+            # so they all declare the bare /laws URL as canonical.
+            "canonical_url": laws_hub_canonical_url(),
         }
         started = time.perf_counter()
         response = templates.TemplateResponse(request, "laws.html", context)
