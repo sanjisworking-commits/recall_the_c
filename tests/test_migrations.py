@@ -10,7 +10,7 @@ from alembic.script import ScriptDirectory
 
 ROOT = Path(__file__).resolve().parents[1]
 VERSIONS = ROOT / "alembic" / "versions"
-EXPECTED_HEAD = "20260906_0017"
+EXPECTED_HEAD = "20260911_0018"
 
 
 def test_every_migration_file_parses():

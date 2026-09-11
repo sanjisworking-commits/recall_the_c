@@ -135,6 +135,12 @@ class MultiUserSettings(BaseSettings):
     # client payload — it is used only server-side (order create + HMAC verify).
     razorpay_key_id: str = Field(default="", alias="RAZORPAY_KEY_ID")
     razorpay_key_secret: str = Field(default="", alias="RAZORPAY_KEY_SECRET")
+    # Externally created Razorpay Subscription Plan IDs. Empty in tests/dev
+    # does not block app startup. Required only when creating a subscription
+    # for that tier. Same KEY_ID/KEY_SECRET as legacy Orders.
+    razorpay_plan_id_plus: str = Field(default="", alias="RAZORPAY_PLAN_ID_PLUS")
+    razorpay_plan_id_pro: str = Field(default="", alias="RAZORPAY_PLAN_ID_PRO")
+    razorpay_plan_id_max: str = Field(default="", alias="RAZORPAY_PLAN_ID_MAX")
 
     # Google Calendar integration. A DEDICATED OAuth client (never the
     # Supabase sign-in client — the Calendar grant must be independently

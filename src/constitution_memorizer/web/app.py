@@ -747,6 +747,27 @@ def create_app(
         else:
             app.state.playground = None
 
+    if db_pool is not None:
+        from constitution_memorizer.subscriptions.postgres import (  # noqa: PLC0415
+            PostgresSubscriptionRepository,
+        )
+
+        app.state.subscriptions = PostgresSubscriptionRepository(db_pool)
+    else:
+        from constitution_memorizer.subscriptions.db import (  # noqa: PLC0415
+            ensure_sqlite_schema as ensure_subscription_sqlite_schema,
+        )
+        from constitution_memorizer.subscriptions.repository import (  # noqa: PLC0415
+            SqliteSubscriptionRepository,
+        )
+
+        conn = getattr(engine.repo, "conn", None)
+        if conn is not None and not use_postgres:
+            ensure_subscription_sqlite_schema(conn)
+            app.state.subscriptions = SqliteSubscriptionRepository(conn)
+        else:
+            app.state.subscriptions = None
+
     app.state.db_pool = db_pool
 
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
