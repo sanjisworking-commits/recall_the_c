@@ -1,6 +1,6 @@
 # Payment, entitlement, and Playground — architecture lock
 
-**Scope of this document.** This is the **locked product architecture** for RecallC access: user types, device control for paid Playground, monthly Playground roster, clocks, schema to build, CTA states, sequential batches, the locked commercial catalogue / subscription-access matrix, and remaining device-churn open cells. It is **not** a description of current production behaviour. Current code is still Razorpay **one-time duration passes** plus a **two-law overlay** with **no subscription check** and **no device registry**. The overlay is a Cloze **proof**, not the finished product.
+**Scope of this document.** This is the **locked product architecture** for RecallC access: user types, device control for paid Playground, monthly Playground roster, clocks, schema to build, CTA states, sequential batches, the locked commercial catalogue / subscription-access matrix, and remaining device-churn open cells. It is **not** a description of current production behaviour. Current code still uses Razorpay **one-time duration passes** for Constitution. Playground now has an additive `user_subscription` table and Plus/Pro/Max catalogue (M2-A) that **do not yet** gate access. Overlay proof still has **no EntitlementService**, **no checkout**, and **no device registry**. The overlay is a Cloze **proof**, not the finished product.
 
 **Amendment (this revision).** Device restriction applies to the **paid Playground entitlement**, not to signing in or to Constitution Learn. `PLAYGROUND_DEVICE_LIMIT = 2` for every tier. Device identity is a RecallC-issued token (cookie / Android installation UUID), never IP or hardware fingerprinting. This does **not** change roster math (10/30/unlimited).
 
@@ -82,7 +82,7 @@ Routes and templates **do not** call Razorpay, `access_grants`, or `user_free_ar
 
 | Store | Role |
 |---|---|
-| **`user_subscription`** (new) | Billing/access: provider ids, SKU, `status`, `billing_period_start` / `billing_period_end`. **Not** the roster quota clock. **Not** the device registry. |
+| **`user_subscription`** (new) | Billing/access: `provider` (`razorpay`), provider ids, `tier`, `status`, `billing_period_start` / `billing_period_end`, `cancel_at_period_end`, `is_current`, `provider_metadata`. History rows are retained; at most one `is_current` row per user. **Not** the roster quota clock. **Not** the device registry. |
 | **`user_device`** (new) | Registered installation: `UNIQUE(user_id, device_key_hash)`; HMAC of device token (never raw); `platform`; `display_name` (metadata only); `revoked_at`. Cap counts `revoked_at IS NULL`. |
 | **`user_device_session`** (new) | Binds current [`app_session`](../src/constitution_memorizer/progress/db.py) (`rtc_session`) to a `user_device`. Logout deletes the session row, **not** the device. |
 | **`user_playground_period`** (new) | One row per user per Playground month: `UNIQUE(user_id, period_start)`; `period_end`; `tier_snapshot`; `law_limit` (`null` = max); `status` `draft\|active\|closed`; `confirmed_at`. |
@@ -314,7 +314,7 @@ PAYMENTS
   Razorpay subscriptions (plan ids, webhooks, signature on RAW body)
         ↓
 SUBSCRIPTION
-  user_subscription: status, SKU, billing_period_*  (not roster quota)
+  user_subscription: status, tier, billing_period_*  (not roster quota)
         ↓
 USER-TYPE
   Guest | Signed-in | Subscriber
@@ -482,13 +482,27 @@ Displayed catalogue prices are **GST-inclusive** ([§21](#21-commercial-and-prov
 
 ---
 
-## 16. Database (plan — do not build in this docs-only change)
+## 16. Database
 
-### `user_subscription`
+### `user_subscription` (M2-A implemented)
 
-As previously locked: `user_id` unique for MVP, provider ids, `plan_sku`, `status`, `billing_period_start`, `billing_period_end`, `cancel_at_period_end`, `raw_payload`. Index `(status, billing_period_end)`.
+History-preserving commercial subscription rows. **Not** one eternal unique `user_id` row: old provider subscriptions stay after `is_current` is cleared so resubscribe/reconcile/support can see them. PostgreSQL enforces **one current row per user** with unique partial index `user_subscription_one_current` on `(user_id) WHERE is_current`. Provider subscription ids are unique when present. Provider column is explicit (`razorpay`). RLS enabled with no policies (app-level `user_id` filter, same as other user-owned tables).
 
-**Do not** store roster usage on this row. **Do not** store device registrations on this row.
+| Column | Notes |
+|---|---|
+| `id` | UUID, generated in application code |
+| `user_id` | Owner; lookups for user-owned methods always include this |
+| `provider` | `razorpay` |
+| `provider_customer_id` / `provider_subscription_id` / `provider_plan_id` | Provider ids. **Never store API secrets.** |
+| `tier` | `plus` / `pro` / `max` only |
+| `status` | Provider set only: `created` `authenticated` `active` `pending` `halted` `paused` `cancelled` `completed` `expired`. No RecallC `past_due`. |
+| `billing_period_start` / `billing_period_end` | Provider invoice window; nullable until a paid period exists. **Not** the Playground roster clock. |
+| `cancel_at_period_end` | bool |
+| `is_current` | At most one `true` per user |
+| `provider_metadata` | JSON/JSONB audit payload. Authorization must not depend on arbitrary keys. |
+| `created_at` / `updated_at` | |
+
+**Do not** store roster usage, `playground_period_*`, or device registrations on this row. Index `(status, billing_period_end)` exists for later expiry/retry work. Checkout, webhooks, and entitlement inversion are **not** in this table's M2-A batch.
 
 ### `user_device`
 

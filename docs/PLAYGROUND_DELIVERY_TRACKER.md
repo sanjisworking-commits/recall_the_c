@@ -2,14 +2,15 @@
 
 **Scoreboard, not an audit.** Product rules live in [PLAYGROUND.md](PLAYGROUND.md), [PAYMENT_ENTITLEMENT_AUDIT.md](PAYMENT_ENTITLEMENT_AUDIT.md), [PLAYGROUND_TWO_LAW_AUDIT.md](PLAYGROUND_TWO_LAW_AUDIT.md), and [law-loading.md](law-loading.md).
 
-**Snapshot:** architecture/product definition is **locked in docs**. **Stage 1** (build) is **13 / 100**. Production implementation is **early**. The NDPS/BNS overlay + Cloze + proof revision rows **do not** count as milestones 6–8. Milestone 1 is `DONE`. Commercial §21 catalogue / access / refund / dispute cells are **locked in docs**; Milestone 2 implementation is **`NOT STARTED`**. **Do not tick Stage 2 from Cloze or from `main`’s sitemap PRs.** This branch includes main’s Bare Act SEO and generated sitemap index; that is Milestone 0 coexistence, not Milestone 10 (`noindex`) and not Stage 2.
+**Snapshot:** architecture/product definition is **locked in docs**. **Stage 1** (build) is **17.6 / 100**. Production implementation is **early**. The NDPS/BNS overlay + Cloze + proof revision rows **do not** count as milestones 6–8. Milestone 1 is `DONE`. Milestone 2 is **`IN PROGRESS` — 13/37** (catalogue + `user_subscription` persistence only; no checkout/webhooks/legacy classification). **Do not tick Stage 2 from Cloze or from `main`’s sitemap PRs.** This branch includes main’s Bare Act SEO and generated sitemap index; that is Milestone 0 coexistence, not Milestone 10 (`noindex`) and not Stage 2.
 
 | | |
 |--|--|
-| **Stage 1 (build)** | **13 / 100** |
+| **Stage 1 (build)** | **17.6 / 100** |
 | Milestone 0 | `DONE` — 10/10 items × 5 = **5** |
 | Milestone 1 | `DONE` — 18/18 items × 8 = **8** |
-| Milestones 2–11 | `NOT STARTED`; remaining §21 `BLOCKED` cells are device-churn integers / support channel only |
+| Milestone 2 | `IN PROGRESS` — 13/37 × 13 ≈ **4.57** (exact: 13/37 of the 13-point weight) |
+| Milestones 3–11 | `NOT STARTED`; remaining §21 `BLOCKED` cells are device-churn integers / support channel only |
 | **Stage 2 (optimize)** | **`NOT STARTED` — start gate: Stage 1 = `DONE` (100/100)** |
 
 Do not read Cloze on this branch as ~20% complete. Payments, roster, devices, six Learn modes, and Learned → revision are the actual Stage 1 product weight. Stage 2 is **outside** the 100.
@@ -188,26 +189,26 @@ Playground has a scalable backend shell independent of the two-law proof.
 
 # 2. Payment & subscription foundation — 13 points
 
-**Status: `NOT STARTED`** (commercial catalogue / access / refund / dispute policy **locked** in §21; implementation checkboxes below remain incomplete)
+**Status: `IN PROGRESS` — 13/37** (M2-A: canonical catalogue + `user_subscription` persistence). Earned **13/37 × 13 ≈ 4.57**. Policy lock in §21 does **not** tick lifecycle items. Do **not** call Milestone 2 `DONE`.
 
 ## Commercial model
 
-* [ ] Final public tier names — **locked §21** (`Plus` / `Pro` / `Max`)
-* [ ] Internal tier codes remain stable (`plus` / `pro` / `max` — **locked**)
-* [ ] Final prices — **locked §21** (Plus ₹199 / Pro ₹399 / Max ₹999 per month)
-* [ ] GST display treatment — **locked §21** (displayed prices GST-inclusive)
-* [ ] Monthly billing product configuration — **locked §21** (MVP monthly only)
-* [ ] Annual billing configuration — **not in MVP** (locked: do not offer annual; do not invent annual prices; future annual still = monthly Playground periods)
+* [x] Final public tier names — **locked §21** (`Plus` / `Pro` / `Max`)
+* [x] Internal tier codes remain stable (`plus` / `pro` / `max` — **locked**)
+* [x] Final prices — **locked §21** (Plus ₹199 / Pro ₹399 / Max ₹999 per month)
+* [x] GST display treatment — **locked §21** (displayed prices GST-inclusive)
+* [x] Monthly billing product configuration — **locked §21** (MVP monthly only)
+* [x] Annual billing configuration — **not in MVP** (locked: do not offer annual; do not invent annual prices; future annual still = monthly Playground periods)
 
 ## Subscription persistence
 
-* [ ] `user_subscription` or final equivalent
-* [ ] Provider subscription ID
-* [ ] status
-* [ ] tier
-* [ ] billing period start/end
-* [ ] cancel-at-period-end
-* [ ] provider metadata
+* [x] `user_subscription` or final equivalent
+* [x] Provider subscription ID
+* [x] status
+* [x] tier
+* [x] billing period start/end
+* [x] cancel-at-period-end
+* [x] provider metadata
 
 ## Razorpay subscription lifecycle
 
@@ -244,7 +245,7 @@ Playground has a scalable backend shell independent of the two-law proof.
 
 ### Done when
 
-A subscription can move through its full real lifecycle without manually editing the DB. Policy documentation does **not** tick these implementation items. Cursor must implement against locked §21 commercial cells and must **not** invent remaining device-churn cells.
+A subscription can move through its full real lifecycle without manually editing the DB. M2-A shipped the server catalogue and `user_subscription` rows only; Create subscription / Checkout / webhooks remain open. Policy documentation does **not** tick these implementation items. Cursor must implement against locked §21 commercial cells and must **not** invent remaining device-churn cells.
 
 **Weight: 13**
 
@@ -751,7 +752,7 @@ Playground + payment can safely replace the existing commercial entitlement mode
 | --------------------------------- | -----: | ---------- |
 | 0. Architecture + branch baseline |      5 | `DONE` (5 earned) |
 | 1. Backend foundation             |      8 | `DONE` (8 earned; 18/18) |
-| 2. Payment/subscriptions          |     13 | `NOT STARTED` (commercial §21 locked; device-churn cells still open) |
+| 2. Payment/subscriptions          |     13 | `IN PROGRESS` — 13/37 × 13 ≈ 4.57 |
 | 3. User-type entitlement          |      7 | `NOT STARTED` |
 | 4. Device control                 |      8 | `NOT STARTED` |
 | 5. Monthly roster                 |     12 | `NOT STARTED` |
@@ -761,7 +762,7 @@ Playground + payment can safely replace the existing commercial entitlement mode
 | 9. Amendments/source integrity    |      5 | `NOT STARTED` |
 | 10. SEO/routing discoverability   |      4 | `NOT STARTED` |
 | 11. Production hardening/release  |      7 | `NOT STARTED` |
-| **TOTAL (Stage 1)**               |  **100** | **13 / 100** |
+| **TOTAL (Stage 1)**               |  **100** | **17.6 / 100** |
 | Stage 2 — Optimize                |    — | `NOT STARTED` — start gate: Stage 1 = `DONE` (100/100) |
 
 ---
