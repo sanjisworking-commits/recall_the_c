@@ -8,6 +8,7 @@ independent of SEO — the caller passes the canonical URL it knows best.
 
 from __future__ import annotations
 
+import json
 import re
 
 CANONICAL_ORIGIN = "https://recall-the-c.in"
@@ -47,6 +48,62 @@ def provision_canonical_url(
     """
     return (
         f"{CANONICAL_ORIGIN}/laws/{law_slug}/{provision_type}/{provision_number}"
+    )
+
+
+def laws_hub_canonical_url() -> str:
+    """Canonical URL for the ``/laws`` hub (the Bare Act breadcrumb root).
+
+    Single source for the breadcrumb root so its URL stays byte-identical to
+    the hub's sitemap ``loc`` in :func:`sitemaps.build_laws_hub_sitemap`.
+    """
+    return f"{CANONICAL_ORIGIN}/laws"
+
+
+# Personalized, account, application, and admin surfaces that must never enter a
+# search index. Public marketing, the Constitution Browse pages, and the Bare
+# Act pages are deliberately ABSENT so they stay indexable. A page is no-indexed
+# when its path equals one of these or nests under it (``/settings`` also covers
+# ``/settings/...``). Kept as a data-only allow/deny list here so both the
+# template layer and tests share one definition. Removing a private HTML page
+# from the index requires the crawler to fetch it and read an in-page
+# ``noindex`` — so this is enforced with a meta tag, never via robots.txt.
+NOINDEX_PATH_PREFIXES: tuple[str, ...] = (
+    "/dashboard",
+    "/progress",
+    "/calendar",
+    "/memory",
+    "/settings",
+    "/profile",
+    "/learn",
+    "/learning",
+    "/onboarding",
+    "/playground",
+    "/subscribe",
+    "/admin",
+    "/welcome",
+    # Transient auth surfaces — flows and states, not indexable content.
+    "/login",
+    "/logout",
+    "/signed-out",
+    "/session-expired",
+    "/auth",
+)
+
+
+def is_noindex_path(path: str) -> bool:
+    """Whether a page ``path`` is a private/personalized surface to keep out of
+    search indexes.
+
+    Prefix match on normalized path: ``/settings`` also matches
+    ``/settings/anything``, but ``/laws`` is never caught by ``/learn`` and the
+    public roots (``/``, ``/browse``, ``/search``, ``/tables``, ``/pricing``,
+    ``/terms``, ``/privacy``, ``/grievance``) are never matched.
+    """
+    normalized = "/" + (path or "").strip("/")
+    return any(
+        normalized == prefix or normalized.startswith(prefix + "/")
+        for prefix in NOINDEX_PATH_PREFIXES
     )
 
 
@@ -225,3 +282,56 @@ def build_schedule_seo(
         "Learn and revise with structured learning and spaced revision."
     )
     return seo_title, seo_description
+
+
+# ── Structured data (JSON-LD) ────────────────────────────────────────────────
+
+# Characters that must never survive verbatim inside an HTML ``<script>`` body.
+# ``<`` and ``>`` prevent a ``</script>`` breakout; ``&`` keeps the payload a
+# valid HTML text node; U+2028/U+2029 are line terminators that break embedded
+# scripts in some parsers. All are represented as their JSON ``\uXXXX`` escapes,
+# which decode back to the identical string.
+_HTML_SCRIPT_ESCAPES = {
+    "<": "\\u003c",
+    ">": "\\u003e",
+    "&": "\\u0026",
+    "\u2028": "\\u2028",
+    "\u2029": "\\u2029",
+}
+_HTML_SCRIPT_ESCAPE_RE = re.compile(r"[<>&\u2028\u2029]")
+
+
+def build_breadcrumb_schema(items: list[tuple[str, str]]) -> dict:
+    """Build a Schema.org ``BreadcrumbList`` from ordered ``(name, url)`` pairs.
+
+    Positions are 1-based and follow list order; the final pair is the current
+    page (Google includes the current page as the last crumb). Callers pass
+    canonical URLs so each ``item`` equals the page's ``<link rel="canonical">``
+    and its sitemap ``loc``.
+    """
+    return {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+            {
+                "@type": "ListItem",
+                "position": position,
+                "name": name,
+                "item": url,
+            }
+            for position, (name, url) in enumerate(items, start=1)
+        ],
+    }
+
+
+def serialize_structured_data(data) -> str:
+    """Serialise JSON-LD for safe embedding in an inline ``<script>`` block.
+
+    Produces compact JSON, then escapes the characters that could terminate the
+    surrounding ``<script>`` element or break parsing (``<``, ``>``, ``&``,
+    U+2028, U+2029) as ``\\uXXXX`` sequences. The result is valid JSON-LD whose
+    values decode to the originals, so a statutory string containing literal
+    ``</script>`` embeds as ``\\u003c/script\\u003e`` and cannot break out.
+    """
+    raw = json.dumps(data, ensure_ascii=False, separators=(",", ":"))
+    return _HTML_SCRIPT_ESCAPE_RE.sub(lambda m: _HTML_SCRIPT_ESCAPES[m.group(0)], raw)

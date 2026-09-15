@@ -200,12 +200,16 @@ from constitution_memorizer.web.seo import (
     TWITTER_HANDLE,
     article_canonical_url,
     build_article_seo,
+    build_breadcrumb_schema,
     build_law_seo,
     build_provision_seo,
     build_schedule_seo,
+    is_noindex_path,
     law_canonical_url,
+    laws_hub_canonical_url,
     provision_canonical_url,
     schedule_canonical_url,
+    serialize_structured_data,
 )
 from constitution_memorizer.web.sitemaps import (
     build_law_sitemap,
@@ -566,6 +570,9 @@ def create_app(
                     getattr(getattr(request.state, "auth_session", None), "csrf_token", None)
                     or request.cookies.get("rtc_csrf")
                 ),
+                # Private/personalized/account/admin surfaces must never be
+                # indexed; base.html emits a noindex meta when this is true.
+                "robots_noindex": is_noindex_path(request.url.path),
             }
         ],
     )
@@ -2728,6 +2735,9 @@ def create_app(
             "subjects": catalog.visible_subjects,
             "initial_q": request.query_params.get("q") or "",
             "initial_subject": request.query_params.get("subject") or "",
+            # Query variants (?q=, ?subject=) are filtered views of the same hub,
+            # so they all declare the bare /laws URL as canonical.
+            "canonical_url": laws_hub_canonical_url(),
         }
         started = time.perf_counter()
         response = templates.TemplateResponse(request, "laws.html", context)
@@ -2761,6 +2771,12 @@ def create_app(
             seo_title, seo_description = build_law_seo(
                 law_name=bare.title, meta_label=bare.meta_label
             )
+            breadcrumb = build_breadcrumb_schema(
+                [
+                    ("Laws", laws_hub_canonical_url()),
+                    (bare.short_title, law_canonical_url(bare.slug)),
+                ]
+            )
             response = templates.TemplateResponse(
                 request,
                 "bare_act.html",
@@ -2769,6 +2785,7 @@ def create_app(
                     "seo_title": seo_title,
                     "seo_description": seo_description,
                     "canonical_url": law_canonical_url(bare.slug),
+                    "structured_data_json": serialize_structured_data(breadcrumb),
                     "playground_eligible": is_playground_eligible_law(bare.slug),
                     "in_playground": in_playground,
                 },
@@ -2826,6 +2843,16 @@ def create_app(
             parent_number=section.chapter_number,
             parent_title=section.chapter_title,
         )
+        section_url = provision_canonical_url(bare.slug, "section", section.number)
+        # No chapter crumb: chapters are reader-navigation groupings with no
+        # canonical/indexable URL, so the breadcrumb tracks the real URL path.
+        breadcrumb = build_breadcrumb_schema(
+            [
+                ("Laws", laws_hub_canonical_url()),
+                (bare.short_title, law_canonical_url(bare.slug)),
+                (f"Section {section.number}", section_url),
+            ]
+        )
         started = time.perf_counter()
         response = templates.TemplateResponse(
             request,
@@ -2838,9 +2865,8 @@ def create_app(
                 "footnotes": bare.notes(section.note_ids),
                 "seo_title": seo_title,
                 "seo_description": seo_description,
-                "canonical_url": provision_canonical_url(
-                    bare.slug, "section", section.number
-                ),
+                "canonical_url": section_url,
+                "structured_data_json": serialize_structured_data(breadcrumb),
             },
         )
         record_request_timing("template", started)
@@ -2870,6 +2896,16 @@ def create_app(
             schedule_title=schedule.title.title(),
             schedule_heading=schedule.display_heading,
         )
+        schedule_url = schedule_canonical_url(bare.slug, schedule.slug)
+        # Breadcrumb name is the schedule's user-facing identity verbatim (the
+        # reader-page H1), not the .title()-cased SEO meta title above.
+        breadcrumb = build_breadcrumb_schema(
+            [
+                ("Laws", laws_hub_canonical_url()),
+                (bare.short_title, law_canonical_url(bare.slug)),
+                (schedule.display_heading or schedule.label, schedule_url),
+            ]
+        )
         started = time.perf_counter()
         response = templates.TemplateResponse(
             request,
@@ -2880,7 +2916,8 @@ def create_app(
                 "footnotes": bare.notes(schedule.note_ids),
                 "seo_title": seo_title,
                 "seo_description": seo_description,
-                "canonical_url": schedule_canonical_url(bare.slug, schedule.slug),
+                "canonical_url": schedule_url,
+                "structured_data_json": serialize_structured_data(breadcrumb),
             },
         )
         record_request_timing("template", started)

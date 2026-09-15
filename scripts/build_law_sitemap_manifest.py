@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
-"""Build data/reference/law_sitemap_manifest.json — the sitemap URL inventory.
+"""Build the sitemap URL inventory (``web/law_sitemap_manifest.json``).
 
 Derived runtime metadata, not the canonical statute: the flattened list of
 publicly routable section/schedule identifiers per registered Bare Act, plus a
-per-source SHA-256 freshness digest. Committed and deployed with the law so the
-web process can emit sitemaps WITHOUT ever hydrating an Act.
+per-source SHA-256 freshness digest. It lives inside the package
+(``src/constitution_memorizer/web/``) so it ships in the built wheel and the web
+process can emit sitemaps WITHOUT ever hydrating an Act — the deployed sitemap
+routes read exactly this file via ``sitemaps._manifest_path()``.
 
 This is the ONE place a full Act is loaded for sitemap purposes. It runs during
 ingestion/build/development and is never imported by FastAPI. Regenerate it
@@ -31,7 +33,9 @@ from constitution_memorizer.web.bare_acts import (
 )
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_OUT = ROOT / "data" / "reference" / "law_sitemap_manifest.json"
+DEFAULT_OUT = (
+    ROOT / "src" / "constitution_memorizer" / "web" / "law_sitemap_manifest.json"
+)
 
 SCHEMA_VERSION = 1
 
