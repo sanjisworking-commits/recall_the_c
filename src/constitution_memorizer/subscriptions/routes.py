@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from fastapi import APIRouter, Form, Request
-from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 
 from constitution_memorizer.subscriptions.catalog import (
@@ -124,8 +124,8 @@ def create_subscription_router(templates: Jinja2Templates) -> APIRouter:
             return _manage_error("state")
         return RedirectResponse(url=f"{MANAGE_PATH}/checkout", status_code=303)
 
-    @router.get("/checkout", response_class=HTMLResponse)
-    async def checkout_page(request: Request) -> HTMLResponse | RedirectResponse:
+    @router.get("/checkout", response_class=HTMLResponse, response_model=None)
+    async def checkout_page(request: Request) -> Response:
         uid = subscription_user_id(request)
         if uid is None:
             return signin_for_subscriptions()

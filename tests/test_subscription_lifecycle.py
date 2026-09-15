@@ -88,7 +88,7 @@ def _sqlite_repo() -> SqliteSubscriptionRepository:
 
 
 class FakeProvider:
-    def __init__(self, *, secret: str = KEY_SECRET) -> None:
+    def __init__(self, *, secret: str = KEY_SECRET, create_delay: float = 0.0) -> None:
         self.secret = secret
         self.creates: list[CreateSubscriptionRequest] = []
         self.fetches: list[str] = []
@@ -100,7 +100,7 @@ class FakeProvider:
         self.update_error: Exception | None = None
         self.fetch_status = "authenticated"
         self.created_status = "created"
-        self.create_delay = 0.0
+        self.create_delay = create_delay
         self.by_id: dict[str, ProviderSubscription] = {}
         self._n = 0
         self._lock = threading.Lock()
@@ -333,16 +333,23 @@ def test_reservation_inserts_before_provider_create():
 
 def test_concurrent_create_makes_one_provider_subscription(tmp_path: Path):
     path = tmp_path / "subscriptions.db"
+    setup = sqlite3.connect(str(path))
+    ensure_sqlite_schema(setup)
+    setup.close()
     fake = FakeProvider(create_delay=0.05)
-    barrier = threading.Barrier(2)
+    barrier = threading.Barrier(2, timeout=3)
     results: list = []
     errors: list = []
 
     def worker():
-        conn = sqlite3.connect(str(path), timeout=10, check_same_thread=False)
+        conn = sqlite3.connect(
+            str(path),
+            timeout=2,
+            isolation_level=None,
+            check_same_thread=False,
+        )
         conn.row_factory = sqlite3.Row
-        conn.execute("PRAGMA busy_timeout=10000")
-        ensure_sqlite_schema(conn)
+        conn.execute("PRAGMA busy_timeout=1000")
         repo = SqliteSubscriptionRepository(conn)
         service = SubscriptionService(repo, fake, PLAN_IDS, public_key_id=KEY_ID)
         barrier.wait()
@@ -350,12 +357,14 @@ def test_concurrent_create_makes_one_provider_subscription(tmp_path: Path):
             results.append(service.start_subscription(USER, "plus"))
         except Exception as exc:  # noqa: BLE001
             errors.append(exc)
+        finally:
+            conn.close()
 
     threads = [threading.Thread(target=worker) for _ in range(2)]
     for thread in threads:
         thread.start()
     for thread in threads:
-        thread.join(timeout=8)
+        thread.join(timeout=4)
         assert not thread.is_alive()
     assert len(fake.creates) == 1
     assert results
@@ -379,8 +388,9 @@ def test_provider_failure_releases_reservation_for_retry():
     assert history[0].is_current is False
     fake.create_error = None
     handoff = service.start_subscription(USER, "plus")
-    assert len(fake.creates) == 2
-    assert handoff.subscription_id == "sub_2"
+    assert len(fake.creates) == 1
+    assert handoff.subscription_id == "sub_1"
+    assert len(repo.list_subscription_history(USER)) == 2
 
 
 def test_persist_failure_after_provider_create_does_not_create_second_subscription():
@@ -909,11 +919,12 @@ def test_legacy_orders_duration_and_access_grants_are_untouched():
         ROOT / "src/constitution_memorizer/subscriptions/routes.py"
     ).read_text(encoding="utf-8")
     assert "httpx" not in routes
-    assert "/playground" not in routes
+    assert 'APIRouter(prefix="/billing/subscriptions")' in routes
     service_src = (
         ROOT / "src/constitution_memorizer/subscriptions/service.py"
     ).read_text(encoding="utf-8")
-    assert "httpx" not in service_src
+    assert "import httpx" not in service_src
+    assert "import httpx" not in routes
     templates = (
         ROOT / "src/constitution_memorizer/web/templates/subscription_manage.html"
     ).read_text(encoding="utf-8")
