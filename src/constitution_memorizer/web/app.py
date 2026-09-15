@@ -605,6 +605,14 @@ def create_app(
     # JSON payload ever reads it.
     app.state.razorpay_key_id = str(settings.razorpay_key_id or "")
     app.state.razorpay_key_secret = str(settings.razorpay_key_secret or "")
+    from constitution_memorizer.subscriptions.webhook_signature import (  # noqa: PLC0415
+        WebhookSecrets,
+    )
+
+    app.state.webhook_secrets = WebhookSecrets(
+        current=str(settings.razorpay_webhook_secret or ""),
+        previous=str(settings.razorpay_webhook_secret_previous or ""),
+    )
     app.state.use_postgres_progress = use_postgres
     app.state.oauth_states = {}
     app.state.otp_limiter = OtpRateLimiter()
@@ -797,6 +805,38 @@ def create_app(
             public_key_id=app.state.razorpay_key_id,
         )
 
+    app.state.webhook_events = None
+    app.state.webhook_processor = None
+    if db_pool is not None:
+        from constitution_memorizer.subscriptions.webhook_postgres import (  # noqa: PLC0415
+            PostgresWebhookEventRepository,
+        )
+
+        app.state.webhook_events = PostgresWebhookEventRepository(db_pool)
+    else:
+        from constitution_memorizer.subscriptions.webhook_repository import (  # noqa: PLC0415
+            SqliteWebhookEventRepository,
+        )
+
+        conn = getattr(engine.repo, "conn", None)
+        if conn is not None and not use_postgres and app.state.subscriptions is not None:
+            app.state.webhook_events = SqliteWebhookEventRepository(conn)
+
+    if (
+        app.state.webhook_events is not None
+        and app.state.subscription_service is not None
+    ):
+        from constitution_memorizer.subscriptions.webhooks import (  # noqa: PLC0415
+            WebhookProcessor,
+        )
+
+        app.state.webhook_processor = WebhookProcessor(
+            events=app.state.webhook_events,
+            subscriptions=app.state.subscriptions,
+            service=app.state.subscription_service,
+            secrets=app.state.webhook_secrets,
+        )
+
     app.state.db_pool = db_pool
 
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
@@ -886,9 +926,13 @@ def create_app(
     from constitution_memorizer.subscriptions.routes import (  # noqa: PLC0415
         create_subscription_router,
     )
+    from constitution_memorizer.subscriptions.webhook_routes import (  # noqa: PLC0415
+        create_webhook_router,
+    )
 
     app.include_router(create_playground_router(templates))
     app.include_router(create_subscription_router(templates))
+    app.include_router(create_webhook_router())
 
     app.include_router(gcal_router)
     app.include_router(speech_router)

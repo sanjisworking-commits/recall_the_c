@@ -81,6 +81,8 @@ def is_guest_public_get(path: str, method: str) -> bool:
 def requires_auth(path: str, method: str) -> bool:
     """Return True when an unauthenticated request must be blocked."""
     m = method.upper()
+    if path.startswith("/api/billing/subscriptions/webhook/"):
+        return False
     if path.startswith("/auth/") or path in ROOT_ASSET_PATHS or path in {
         "/login",
         "/signed-out",

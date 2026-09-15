@@ -38,6 +38,7 @@ from constitution_memorizer.subscriptions.catalog import (
 )
 from constitution_memorizer.subscriptions.config import (
     PLAN_ID_ENV_KEYS,
+    SubscriptionPlanIds,
     plan_ids_from_settings,
     require_plan_id,
 )
@@ -234,6 +235,33 @@ def test_plan_id_env_keys_map_only_to_matching_tiers():
     assert SECRET not in repr(settings.razorpay_plan_id_plus)
 
 
+def test_duplicate_configured_plan_ids_fail_and_unknown_ids_are_not_guessed():
+    settings = _settings(
+        RAZORPAY_PLAN_ID_PLUS="plan_plus_only",
+        RAZORPAY_PLAN_ID_PRO="plan_pro_only",
+        RAZORPAY_PLAN_ID_MAX="plan_max_only",
+    )
+    ids = plan_ids_from_settings(settings)
+    assert ids.tier_for_plan_id("plan_pro_only") == "pro"
+    assert ids.tier_for_plan_id("plan_plus_only") == "plus"
+    assert ids.tier_for_plan_id("plan_max_only") == "max"
+    assert ids.tier_for_plan_id("plan_unknown") is None
+    assert ids.tier_for_plan_id("") is None
+    with pytest.raises(SubscriptionConfigError, match="one tier"):
+        SubscriptionPlanIds(plus="plan_shared", pro="plan_shared", max="plan_max")
+
+
+def test_webhook_secrets_are_optional_at_startup_and_redacted():
+    settings = _settings(RAZORPAY_WEBHOOK_SECRET="whsec_current_test")
+    settings.validate_for_startup()
+    assert settings.razorpay_webhook_secret == "whsec_current_test"
+    assert "whsec_current_test" not in repr(settings)
+    empty = _settings()
+    empty.validate_for_startup()
+    assert empty.razorpay_webhook_secret == ""
+    assert empty.razorpay_webhook_secret_previous == ""
+
+
 def test_missing_plan_ids_fail_only_when_creation_is_requested():
     settings = _settings()
     settings.validate_for_startup()
@@ -256,6 +284,8 @@ def test_settings_have_no_annual_plan_id_fields():
     assert "razorpay_plan_id_max" in fields
     assert "razorpay_key_id" in fields
     assert "razorpay_key_secret" in fields
+    assert "razorpay_webhook_secret" in fields
+    assert "razorpay_webhook_secret_previous" in fields
     annual = [name for name in fields if "annual" in name.lower()]
     assert annual == []
 
@@ -268,9 +298,15 @@ def test_env_example_documents_shared_keys_and_monthly_plan_ids():
     assert "RAZORPAY_PLAN_ID_PRO=" in text
     assert "RAZORPAY_PLAN_ID_MAX=" in text
     assert "RAZORPAY_PLAN_ID_ANNUAL" not in text
-    assert "RAZORPAY_WEBHOOK_SECRET" not in text
+    assert "RAZORPAY_WEBHOOK_SECRET=" in text
+    assert "RAZORPAY_WEBHOOK_SECRET_PREVIOUS=" in text
+    assert text.count("RAZORPAY_WEBHOOK_SECRET=") == 1
+    assert text.count("RAZORPAY_WEBHOOK_SECRET_PREVIOUS=") == 1
     assert text.count("RAZORPAY_KEY_ID=") == 1
     assert text.count("RAZORPAY_KEY_SECRET=") == 1
+    assert "whsec_" not in text
+    assert "current active secret" in text
+    assert "previous secret" in text.lower()
 
 
 # --------------------------------------------------------------------------- #

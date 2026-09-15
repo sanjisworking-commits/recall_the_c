@@ -43,6 +43,37 @@ CREATE INDEX IF NOT EXISTS user_subscription_user_created
 
 CREATE INDEX IF NOT EXISTS user_subscription_status_period
     ON user_subscription (status, billing_period_end);
+
+CREATE TABLE IF NOT EXISTS subscription_webhook_event (
+    id TEXT NOT NULL PRIMARY KEY,
+    provider TEXT NOT NULL
+        CHECK (provider IN ('razorpay')),
+    provider_event_id TEXT NOT NULL,
+    event_name TEXT NOT NULL,
+    provider_subscription_id TEXT,
+    event_created_at TEXT,
+    received_at TEXT NOT NULL,
+    payload_sha256 TEXT NOT NULL,
+    processing_status TEXT NOT NULL
+        CHECK (processing_status IN (
+            'processing', 'processed', 'ignored', 'failed', 'unmatched'
+        )),
+    attempt_count INTEGER NOT NULL DEFAULT 1
+        CHECK (attempt_count >= 1),
+    processed_at TEXT,
+    last_error_code TEXT,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS subscription_webhook_event_provider_event
+    ON subscription_webhook_event (provider, provider_event_id);
+
+CREATE INDEX IF NOT EXISTS subscription_webhook_event_status_received
+    ON subscription_webhook_event (processing_status, received_at);
+
+CREATE INDEX IF NOT EXISTS subscription_webhook_event_provider_sub
+    ON subscription_webhook_event (provider_subscription_id);
 """
 
 

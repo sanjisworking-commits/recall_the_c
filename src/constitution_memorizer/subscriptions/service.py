@@ -1,6 +1,7 @@
 """Playground subscription lifecycle. Routes delegate here; no httpx in routes.
 
-Does not authorize Playground access. Does not process webhooks.
+Does not authorize Playground access. Webhook HMAC lives in webhooks.py;
+this module applies provider GET truth after a verified notification.
 """
 
 from __future__ import annotations
@@ -210,6 +211,34 @@ class SubscriptionService:
     def get_current(self, user_id: UUID | str) -> UserSubscription | None:
         return self._repo.get_current_subscription(user_id)
 
+    def fetch_provider_subscription(self, provider_subscription_id: str):
+        """Authenticated provider GET. Webhook payloads are not authorization truth."""
+        return self._client.fetch_subscription(provider_subscription_id)
+
+    def reconcile_fetched_subscription(
+        self,
+        row: UserSubscription,
+        provider: ProviderSubscription,
+        *,
+        extra_meta: Mapping[str, Any] | None = None,
+    ) -> UserSubscription:
+        """Persist CURRENT provider GET state. Event names do not win."""
+        mapped_tier = self._plan_ids.tier_for_plan_id(provider.plan_id)
+        meta = _safe_metadata(row.provider_metadata)
+        if extra_meta:
+            meta.update(_safe_metadata(extra_meta))
+        apply_tier = None
+        if mapped_tier is not None and mapped_tier != row.tier:
+            apply_tier = mapped_tier
+            meta = _cleared_schedule(meta)
+        return self._persist_provider(
+            row.user_id,
+            row,
+            provider,
+            extra_meta=meta,
+            tier=apply_tier,
+        )
+
     def checkout_handoff(self, row: UserSubscription) -> CheckoutHandoff:
         self._require_public_key()
         product = get_subscription_product(row.tier)
@@ -374,6 +403,17 @@ def _safe_meta_key(key: str) -> bool:
     lowered = str(key).lower()
     if "secret" in lowered:
         return False
-    if lowered in {"key_secret", "authorization"}:
+    if lowered in {
+        "key_secret",
+        "authorization",
+        "card",
+        "cvv",
+        "pan",
+        "signature",
+        "razorpay_signature",
+        "x-razorpay-signature",
+        "webhook_secret",
+        "payment",
+    }:
         return False
     return True

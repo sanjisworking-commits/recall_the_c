@@ -141,6 +141,15 @@ class MultiUserSettings(BaseSettings):
     razorpay_plan_id_plus: str = Field(default="", alias="RAZORPAY_PLAN_ID_PLUS")
     razorpay_plan_id_pro: str = Field(default="", alias="RAZORPAY_PLAN_ID_PRO")
     razorpay_plan_id_max: str = Field(default="", alias="RAZORPAY_PLAN_ID_MAX")
+    # Subscription webhook HMAC. Empty does not block startup. Required when
+    # the webhook endpoint is exercised. PREVIOUS is retained only so Razorpay
+    # retries signed before rotation still verify. Never log these values.
+    razorpay_webhook_secret: str = Field(
+        default="", alias="RAZORPAY_WEBHOOK_SECRET", repr=False
+    )
+    razorpay_webhook_secret_previous: str = Field(
+        default="", alias="RAZORPAY_WEBHOOK_SECRET_PREVIOUS", repr=False
+    )
 
     # Google Calendar integration. A DEDICATED OAuth client (never the
     # Supabase sign-in client — the Calendar grant must be independently

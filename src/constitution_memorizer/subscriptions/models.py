@@ -26,6 +26,13 @@ SUBSCRIPTION_STATUSES: frozenset[str] = frozenset(
     }
 )
 
+WEBHOOK_PROCESSING_STATUSES: frozenset[str] = frozenset(
+    {"processing", "processed", "ignored", "failed", "unmatched"}
+)
+ACK_WEBHOOK_STATUSES: frozenset[str] = frozenset(
+    {"processed", "ignored", "unmatched", "processing"}
+)
+
 
 def require_tier(tier: str) -> str:
     value = str(tier or "")
@@ -48,6 +55,13 @@ def require_provider(provider: str) -> str:
     return value
 
 
+def require_webhook_status(status: str) -> str:
+    value = str(status or "")
+    if value not in WEBHOOK_PROCESSING_STATUSES:
+        raise InvalidSubscriptionValue(f"invalid webhook processing status: {value!r}")
+    return value
+
+
 @dataclass(frozen=True)
 class UserSubscription:
     """One commercial subscription row. No device, roster, or Learn fields."""
@@ -65,5 +79,25 @@ class UserSubscription:
     cancel_at_period_end: bool
     is_current: bool
     provider_metadata: Mapping[str, Any]
+    created_at: datetime
+    updated_at: datetime
+
+
+@dataclass(frozen=True)
+class WebhookEvent:
+    """One provider webhook delivery. Not entitlement and not a payload dump."""
+
+    id: str
+    provider: str
+    provider_event_id: str
+    event_name: str
+    provider_subscription_id: str | None
+    event_created_at: datetime | None
+    received_at: datetime
+    payload_sha256: str
+    processing_status: str
+    attempt_count: int
+    processed_at: datetime | None
+    last_error_code: str | None
     created_at: datetime
     updated_at: datetime

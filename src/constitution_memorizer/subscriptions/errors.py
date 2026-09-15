@@ -73,3 +73,11 @@ class ChangePlanRequiredError(SubscriptionError):
 
 class ResubscribeUnavailableError(SubscriptionStateError):
     """Terminal current row; M2-B does not implement resubscribe."""
+
+
+class WebhookSignatureError(SubscriptionError):
+    """Webhook HMAC did not match the current or previous secret."""
+
+
+class DuplicateWebhookEventError(SubscriptionError):
+    """Provider event id is already stored."""

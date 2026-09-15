@@ -704,6 +704,9 @@ def test_guest_can_read_plans_but_cannot_mutate(tmp_path: Path):
     assert not requires_auth("/billing/subscriptions", "GET")
     assert requires_auth("/billing/subscriptions/checkout", "GET")
     assert not requires_auth("/api/billing/order", "POST")
+    assert not requires_auth(
+        "/api/billing/subscriptions/webhook/razorpay", "POST"
+    )
 
 
 def test_http_create_checkout_complete_cancel_and_change(tmp_path: Path):

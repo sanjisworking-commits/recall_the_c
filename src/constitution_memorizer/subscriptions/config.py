@@ -42,6 +42,29 @@ class SubscriptionPlanIds:
     def as_mapping(self) -> dict[str, str]:
         return {"plus": self.plus, "pro": self.pro, "max": self.max}
 
+    def __post_init__(self) -> None:
+        self._unique_plan_ids()
+
+    def _unique_plan_ids(self) -> dict[str, str]:
+        seen: dict[str, str] = {}
+        for tier, plan_id in self.as_mapping().items():
+            key = str(plan_id or "").strip()
+            if not key:
+                continue
+            if key in seen:
+                raise SubscriptionConfigError(
+                    "RAZORPAY_PLAN_ID_PLUS/PRO/MAX must each map to one tier"
+                )
+            seen[key] = tier
+        return seen
+
+    def tier_for_plan_id(self, plan_id: str) -> str | None:
+        """Strict reverse map. Unknown Plan IDs are not guessed."""
+        key = str(plan_id or "").strip()
+        if not key:
+            return None
+        return self._unique_plan_ids().get(key)
+
 
 def plan_ids_from_settings(settings: object) -> SubscriptionPlanIds:
     """Read Plan IDs from MultiUserSettings-like objects. Empty is allowed."""
