@@ -1,10 +1,10 @@
 # Payment, entitlement, and Playground — architecture lock
 
-**Scope of this document.** This is the **locked product architecture** for RecallC access: user types, device control for paid Playground, monthly Playground roster, clocks, schema to build, CTA states, sequential batches, the locked commercial catalogue / subscription-access matrix, and remaining device-churn open cells. It is **not** a description of current production behaviour. Current code still uses Razorpay **one-time duration passes** for Constitution. Playground now has an additive `user_subscription` table, Plus/Pro/Max catalogue, and M2-B create/checkout/cancel/plan-change that **do not yet** gate access. Overlay proof still has **no EntitlementService**, **no subscription webhooks**, and **no device registry**. The overlay is a Cloze **proof**, not the finished product.
+**Scope of this document.** This is the **locked product architecture** for RecallC access: user types, device control for paid Playground, monthly Playground roster, clocks, schema to build, CTA states, sequential batches, the locked commercial catalogue / subscription-access matrix, and remaining device-churn open cells. It is **not** a description of current production behaviour. Current code still uses Razorpay **one-time duration passes** for Constitution. Playground now has an additive `user_subscription` table, Plus/Pro/Max catalogue, M2-B create/checkout/cancel/plan-change, and M2-C Razorpay subscription webhooks that **do not yet** gate access. Overlay proof still has **no EntitlementService** and **no device registry**. The overlay is a Cloze **proof**, not the finished product.
 
 **Amendment (Max price).** Displayed Max is **₹1,199**/month GST-inclusive (1,19,900 paise). This supersedes any earlier Max lock of ₹999/month. Plus ₹199 and Pro ₹399 are unchanged. Annual plans remain **not offered** in the MVP.
 
-**Implementation note (M2-B provider bound).** Razorpay requires every subscription to be bounded. Create calls use `RAZORPAY_MONTHLY_TOTAL_COUNT = 1200` monthly cycles as a *provider-only* technical horizon — not a 100-year customer commitment, not an annual SKU, and not copy shown to users. RecallC remains monthly cancel-anytime; default user cancel is `cancel_at_cycle_end=true`. Scheduled downgrade targets are stored in `provider_metadata` (`scheduled_tier`, `scheduled_plan_id`, `schedule_change_at`) and are **not** authorization truth. Webhooks, renewal processing, and entitlement inversion remain later batches.
+**Implementation note (M2-B provider bound / M2-C webhooks).** Razorpay requires every subscription to be bounded. Create calls use `RAZORPAY_MONTHLY_TOTAL_COUNT = 1200` monthly cycles as a *provider-only* technical horizon — not a 100-year customer commitment, not an annual SKU, and not copy shown to users. RecallC remains monthly cancel-anytime; default user cancel is `cancel_at_cycle_end=true`. Scheduled downgrade targets are stored in `provider_metadata` (`scheduled_tier`, `scheduled_plan_id`, `schedule_change_at`) and become the paid tier only when a later provider GET confirms the new plan id. Subscription webhooks verify HMAC over the **raw request body**, persist `x-razorpay-event-id`, and reconcile from `GET /v1/subscriptions/{id}` — they are not themselves authorization truth. Failed-payment/paused/expiry/resubscribe/refunds/disputes and entitlement inversion remain later batches.
 
 This document still **supersedes** every prior Playground rule that described **lifetime unlocks**, **cumulative acquisition**, **“new laws per billing cycle,”** **forever-free re-entry after first unlock**, or **`user_playground_law_entitlement UNIQUE(user_id, law_id)` as quota**. Those phrases must **not** be implemented.
 
@@ -242,9 +242,9 @@ Web auth today: `rtc_session` is `HttpOnly` + `SameSite=lax` ([`auth/routes.py`]
 
 ## 7. Webhook lifecycle (code today)
 
-**Does not exist.** Lifecycle is Checkout success handler → `/api/billing/verify`.
+Playground subscriptions: `POST /api/billing/subscriptions/webhook/razorpay` verifies `X-Razorpay-Signature` over the **raw request body** (`RAZORPAY_WEBHOOK_SECRET`, optional `RAZORPAY_WEBHOOK_SECRET_PREVIOUS`), requires `X-Razorpay-Event-Id`, reserves `subscription_webhook_event`, then **fetches** the Razorpay subscription and persists that current state. Duplicate/out-of-order deliveries are safe because the GET is the ordering authority. Unknown provider subscription ids are recorded `unmatched` and do not create a RecallC subscription. Constitution duration checkout is still `/api/billing/verify` (Orders HMAC) and has **no** duration webhooks.
 
-Target (Batch A): Razorpay subscription webhooks mapped to RecallC states using the locked [§21](#21-commercial-and-provider-cells) access matrix. **Acceptance (hard):** validate `X-Razorpay-Signature` against the **raw request body**; persist `x-razorpay-event-id` for idempotency; tolerate duplicates and out-of-order delivery; support webhook-secret rotation; provider-fetch reconciliation when local state is ambiguous. Client Checkout verify must not be the only grant path. Webhooks update **billing** dates; they do **not** consume roster slots. A dispute-created webhook is **not** a destructive account action.
+Target remaining (later batches): failed-payment / pending retry, paused/halted, expiry, resubscribe, refunds, and dispute/chargeback handling against the locked [§21](#21-commercial-and-provider-cells) access matrix. Webhooks update **billing** dates; they do **not** consume roster slots. A dispute-created webhook is **not** a destructive account action. Client Checkout verify must not be the only grant path.
 
 ---
 
@@ -256,7 +256,7 @@ Target (Batch A): Razorpay subscription webhooks mapped to RecallC states using 
 | UI | `active` / `expiring` (≤7 days) / `lapsed` from latest paid order |
 | `renewal_failed` / `cancelled` | Template copy exists; **never emitted** by `status_from_paid_order` |
 | Cancel endpoint | **None** |
-| Auto-renew | **None** |
+| Auto-renew | Constitution duration: **none**. Playground subscriptions: M2-C `subscription.charged` → provider GET updates billing bounds on the same `user_subscription` row |
 | Admin revoke | `POST /admin/grants/{id}/revoke` sets `revoked_at` |
 | Extend | Buy another duration pass (“Extend Recall”) |
 | Progress on expiry | Constitution `learning_unit_progress` **kept**. Free matrix may **lock Type/Recite** and block Done on unclaimed Articles. **No row deletion.** |
@@ -504,7 +504,11 @@ History-preserving commercial subscription rows. **Not** one eternal unique `use
 | `provider_metadata` | JSON/JSONB audit payload. Authorization must not depend on arbitrary keys. |
 | `created_at` / `updated_at` | |
 
-**Do not** store roster usage, `playground_period_*`, or device registrations on this row. Index `(status, billing_period_end)` exists for later expiry/retry work. M2-B create/checkout/cancel/plan-change persist into this table; webhooks and entitlement inversion are **not** in this batch. A scheduled downgrade target may live in `provider_metadata` until M2-C applies the provider-confirmed plan.
+**Do not** store roster usage, `playground_period_*`, or device registrations on this row. Index `(status, billing_period_end)` exists for later expiry/retry work. M2-B create/checkout/cancel/plan-change persist into this table. M2-C webhooks update the same current row from provider GET (renewal bounds, confirmed plan changes). Entitlement inversion is **not** in this batch. A scheduled downgrade target may live in `provider_metadata` until a later provider GET confirms the new plan.
+
+### `subscription_webhook_event` (M2-C)
+
+Provider event-id reservations for idempotent webhook processing. **Not** a user-owned entitlement table. Unique on `(provider, provider_event_id)`. Stores event name, optional provider subscription id, payload SHA-256, and processing status (`processing` / `processed` / `ignored` / `failed` / `unmatched`). Does **not** store raw payment/card payloads, signatures, or webhook secrets. RLS enabled with no policies (application-level isolation).
 
 ### `user_device`
 
