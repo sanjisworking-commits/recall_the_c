@@ -54,7 +54,7 @@ def _product(
 PRODUCTS: tuple[SubscriptionProduct, ...] = (
     _product(tier="plus", display_name="Plus", price_inr=199, playground_law_limit=10),
     _product(tier="pro", display_name="Pro", price_inr=399, playground_law_limit=30),
-    _product(tier="max", display_name="Max", price_inr=999, playground_law_limit=None),
+    _product(tier="max", display_name="Max", price_inr=1199, playground_law_limit=None),
 )
 
 ANNUAL_PRODUCTS: tuple[SubscriptionProduct, ...] = ()

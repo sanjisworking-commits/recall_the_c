@@ -97,8 +97,8 @@ EXPECTED_PRODUCTS = {
     ),
     "max": dict(
         display_name="Max",
-        price_inr=999,
-        amount_paise=99900,
+        price_inr=1199,
+        amount_paise=119900,
         playground_law_limit=None,
     ),
 }
@@ -166,6 +166,11 @@ def test_unknown_tiers_fail_without_fallback(tier: str):
 
 def test_legacy_duration_catalogue_is_unchanged_and_unmapped():
     assert [plan.days for plan in legacy_pricing.PLANS] == [3, 7, 15, 30, 60, 180, 365]
+    year = next(plan for plan in legacy_pricing.PLANS if plan.days == 365)
+    assert year.price_inr == 999
+    assert get_subscription_product("max").price_inr == 1199
+    assert get_subscription_product("max").amount_paise == 119900
+    assert year.price_inr != get_subscription_product("max").price_inr
     assert legacy_pricing.get_plan(999).days == legacy_pricing.DEFAULT_DAYS
     with pytest.raises(UnknownSubscriptionTier):
         get_subscription_product("30")
