@@ -13,8 +13,13 @@
 
   {% if section.is_omitted %}
   <div class="bareact-omission" role="note">
-    {% if section.former_title %}<p class="bareact-omission-former">Formerly: {{ section.former_title }}</p>{% endif %}
-    <p class="bareact-omission-note">{{ section.omission_note or 'Omitted.' }}</p>
+    {# NDPS supplies a former_title beside a "[Omitted]" title; UAPA's 16A
+       keeps its whole statement — former heading and amending Act — in the
+       canonical title. Show whichever the source has, and add a separate note
+       only when there is one, so neither case prints a bare "Omitted." over
+       text that already says it. #}
+    <p class="bareact-omission-former">{% if section.former_title %}Formerly: {% endif %}{{ section.omission_heading }}</p>
+    {% if section.omission_note %}<p class="bareact-omission-note">{{ section.omission_note }}</p>{% endif %}
   </div>
   {% else %}
   <div class="bareact-body">

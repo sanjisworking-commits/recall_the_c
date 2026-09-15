@@ -253,10 +253,13 @@ def test_index_html_always_contains_every_production_law(tmp_path: Path):
     assert "data-laws-index" in html
     assert 'data-initial-q="ndps"' in html
     assert 'data-initial-subject="criminal"' in html
+    # A card links to whatever its primary capability resolves to, which is
+    # not always its id: UAPA is catalogued as uapa-1967 and now leads with
+    # the full Act at /laws/uapa.
+    hrefs = {law.id: law.href for law in load_catalog().laws}
     for law_id in PRODUCTION_LAW_IDS:
         assert f'data-law-id="{law_id}"' in html
-        href_id = "ndps" if law_id == "ndps" else law_id
-        assert f'href="/laws/{href_id}"' in html
+        assert f'href="{hrefs[law_id]}"' in html
     assert "Not started" not in html
     assert "Coming soon" not in html
     assert "law-practice-note" not in html

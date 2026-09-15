@@ -89,6 +89,13 @@ ARTIFACTS: tuple[tuple[Path, Path, str], ...] = (
         ROOT / "src" / "constitution_memorizer" / "web" / "pota_runtime_v1.json",
         "flat",
     ),
+    # Archival name carries the parser generation (schema 1.2 / parser v4);
+    # the runtime name carries this application's first release of it.
+    (
+        ROOT / "data" / "reference" / "uapa_canonical_v4.json",
+        ROOT / "src" / "constitution_memorizer" / "web" / "uapa_runtime_v1.json",
+        "uapa",
+    ),
 )
 
 
@@ -154,9 +161,35 @@ def _strip_schedule(schedule: dict) -> dict:
     return out
 
 
+def strip_uapa(document: Any) -> Any:
+    """Flat strip, plus the one archival-only block the reader cannot use.
+
+    UAPA's source PDF is a 102-page compilation: the printed Act, then 35 pages
+    of Gazette notifications inserting individuals into the Fourth Schedule,
+    then an exact duplicate of those 35 pages. ``source_annexes.pages`` is the
+    raw text of all of it — 186 KB, over half the file — and nothing in the
+    reader reads it.
+
+    Dropped from the runtime copy only; the archival file keeps every page.
+    What stays is the small provenance around it: which pages duplicate which,
+    the 18 explicit insertions and their serials, the two Tribunal pages, and
+    the parser's own note. ``_validation`` already carries the counts, so no
+    runtime-only summary is invented here. The archival file remains the
+    complete record; this is a derived artifact.
+    """
+    out = strip_debug_keys(document)
+    annexes = out.get("source_annexes")
+    if isinstance(annexes, dict):
+        out["source_annexes"] = {k: v for k, v in annexes.items() if k != "pages"}
+    return out
+
+
+_MODES = {"bnss": strip_bnss, "uapa": strip_uapa, "flat": strip_debug_keys}
+
+
 def build(source: Path, target: Path, mode: str) -> tuple[int, int]:
     archival = json.loads(source.read_text(encoding="utf-8"))
-    stripped = strip_bnss(archival) if mode == "bnss" else strip_debug_keys(archival)
+    stripped = _MODES[mode](archival)
     payload = json.dumps(stripped, ensure_ascii=False, indent=1) + "\n"
     target.write_text(payload, encoding="utf-8")
     return source.stat().st_size, target.stat().st_size

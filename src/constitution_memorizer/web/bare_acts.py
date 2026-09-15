@@ -126,6 +126,19 @@ BARE_ACTS: dict[str, BareActSpec] = {
         render_profile="bns",
         source_version="1",
     ),
+    "uapa": BareActSpec(
+        slug="uapa",
+        filename="uapa_runtime_v1.json",
+        short_name="The UAPA, 1967",
+        back_label="← The UAPA, 1967",
+        short_title="UAPA",
+        # Six node types, a strict subset of the nine BNS renders, at shallower
+        # nesting. Checked type by type against ProvisionRow before reusing it.
+        render_profile="bns",
+        # Identity of the runtime artifact. The canonical export is schema 1.2
+        # / parser v4 and is archived as uapa_canonical_v4.json.
+        source_version="1",
+    ),
 }
 
 
@@ -313,6 +326,66 @@ class ProvisionRow:
 
 
 @dataclass(frozen=True)
+class ReferenceSegment:
+    """One run of a reference string, carrying a link target when it has one."""
+
+    text: str
+    href: str = ""
+
+    @property
+    def is_link(self) -> bool:
+        return bool(self.href)
+
+
+# A section citation inside a reference: the number, plus any parenthesised
+# parts printed immediately after it. "35(1)" and "2(1) (m)" are one citation
+# each; the trailing groups stay inside the anchor text because that is what
+# the statute prints, even though the route resolves to the bare section.
+_CITATION = re.compile(r"(\d+[A-Z]*)((?:\s*\([0-9a-zA-Z]+\))*)")
+# Citations are only recognised after the word "section"/"sections", and then
+# through the separators a list of them uses. Anchoring on the keyword is what
+# keeps "clause (b)" and "Explanation" from being mistaken for one.
+_SECTION_KEYWORD = re.compile(r"\bsections?\b", re.IGNORECASE)
+_SEPARATOR = re.compile(r"\s*(?:,|and|&)?\s*", re.IGNORECASE)
+
+
+def _reference_segments(text: str, known: frozenset[str], slug: str):
+    """Split a reference into plain runs and section links.
+
+    The text is preserved byte for byte: every character of the input appears
+    in exactly one segment, in order, unaltered. Nothing is reworded, no
+    punctuation is normalised, "See" is never dropped, and a citation to a
+    section this Act does not have stays plain text rather than becoming a
+    link to a 404.
+    """
+    segments: list[ReferenceSegment] = []
+    plain_from = 0
+    cursor = 0
+
+    def flush(upto: int) -> None:
+        if upto > plain_from:
+            segments.append(ReferenceSegment(text[plain_from:upto]))
+
+    while (keyword := _SECTION_KEYWORD.search(text, cursor)) is not None:
+        cursor = keyword.end()
+        # Walk the run of citations that follows, stopping at the first thing
+        # that is not one.
+        while True:
+            gap = _SEPARATOR.match(text, cursor)
+            citation = _CITATION.match(text, gap.end())
+            if citation is None or citation.group(1) not in known:
+                break
+            flush(citation.start())
+            number = citation.group(1)
+            segments.append(
+                ReferenceSegment(citation.group(0), f"/laws/{slug}/section/{number}")
+            )
+            cursor = plain_from = citation.end()
+    flush(len(text))
+    return tuple(segments)
+
+
+@dataclass(frozen=True)
 class ScheduleColumn:
     """A column's stable key and its printed heading."""
 
@@ -357,17 +430,30 @@ class SchedulePart:
 
 @dataclass(frozen=True)
 class ScheduleListEntry:
-    """One item of a numbered statutory list.
+    """One item of a statutory list.
 
     POTA's Schedule is 32 terrorist organisations numbered 1-32. That is not a
-    table: it has one column of prose and its own serial, and forcing it into
+    table: it has one column of prose and its own marker, and forcing it into
     the parts/columns/rows model would mean inventing headings the statute
     never printed.
+
+    A list marker is not always a serial. UAPA's First Schedule numbers its
+    entries 1-33, but its Second Schedule labels them (i)-(x) and its Third
+    (a)-(c). `marker` is what the statute prints and what the reader shows;
+    `serial_number` and `label` are kept as the source supplied them, so a
+    caller can still ask which of the two it was.
     """
 
-    serial_number: str
+    marker: str
     text: str
     source_pages: tuple[int, ...] = ()
+    serial_number: str = ""
+    label: str = ""
+
+    @property
+    def is_numbered(self) -> bool:
+        """A plain integer serial, which an <ol> can number natively."""
+        return self.marker.isdigit()
 
 
 @dataclass(frozen=True)
@@ -473,7 +559,7 @@ class Schedule:
         this Act's own sections.
         """
         if self.entries:
-            keys = [entry.serial_number for entry in self.entries]
+            keys = [entry.marker for entry in self.entries]
         elif len(self.parts) != 1 or not self.parts[0].rows:
             return f"{self.row_count} entries" if self.row_count else ""
         else:
@@ -527,6 +613,18 @@ class ActSection:
         if self.is_omitted:
             return "Omitted"
         return self.title
+
+    @property
+    def omission_heading(self) -> str:
+        """What the provision was, for an omitted section's own page.
+
+        NDPS supplies `former_title` beside a "[Omitted]" title. UAPA's section
+        16A supplies neither: its whole statement — the former heading and the
+        amending Act that removed it — is the canonical `title`. Falling back
+        to that keeps the text the source preserved rather than replacing it
+        with the word "Omitted".
+        """
+        return self.former_title or self.title
 
     @property
     def rows(self) -> tuple[ProvisionRow, ...]:
@@ -595,6 +693,16 @@ class BareAct:
             if sched.slug == slug:
                 return sched
         return None
+
+    def reference_segments(self, text: str) -> tuple[ReferenceSegment, ...]:
+        """A schedule's reference, split so section citations can be links.
+
+        Presentation only: the canonical string is unchanged, and the segments
+        reassemble to it exactly.
+        """
+        return _reference_segments(
+            str(text or ""), frozenset(self._by_number), self.slug
+        )
 
     @property
     def public_schedule_slugs(self) -> tuple[str, ...]:
@@ -863,11 +971,18 @@ def _parse_list_schedule(raw: dict[str, Any], slug: str) -> Schedule:
         text = str(entry.get("text") or "").strip()
         if not text:
             raise ValueError(f"schedule {slug!r} entry {i} has no text")
+        serial = str(entry.get("serial_number") or "").strip()
+        label = str(entry.get("label") or "").strip()
+        marker = serial or label
+        if not marker:
+            raise ValueError(f"schedule {slug!r} entry {i} has no serial_number or label")
         entries.append(
             ScheduleListEntry(
-                serial_number=str(entry.get("serial_number") or ""),
+                marker=marker,
                 text=text,
                 source_pages=_pages(entry),
+                serial_number=serial,
+                label=label,
             )
         )
     return Schedule(
@@ -941,8 +1056,31 @@ def _parse_schedule(raw: dict[str, Any]) -> Schedule:
     whole rather than coerced — see Schedule.raw_payload.
     """
     slug = _schedule_slug(str(raw.get("id") or ""))
-    if str(raw.get("type") or "") == "list":
+    declared = str(raw.get("type") or "")
+    if declared == "list":
         return _parse_list_schedule(raw, slug)
+
+    if declared == "table":
+        # Two canonical table shapes, both explicit. UAPA declares a single
+        # grid under `table: {columns, rows}`; BNSS supplies `parts[]`. A
+        # declared table with neither is a shape we do not know, and it falls
+        # through to the unsupported path rather than being guessed at.
+        table = raw.get("table")
+        if isinstance(table, dict) and "columns" in table:
+            part = _parse_table_part(
+                {"id": "table", "columns": table.get("columns"), "rows": table.get("rows")},
+                "table",
+            )
+            return Schedule(
+                slug=slug,
+                title=str(raw.get("title") or "The Schedule"),
+                reference=str(raw.get("reference") or ""),
+                heading=str(raw.get("heading") or raw.get("title") or ""),
+                parts=(part,),
+                notes=_parse_schedule_notes(raw),
+                number=str(raw.get("number") or ""),
+                source_pages=_pages(raw),
+            )
 
     if raw.get("parts") is not None:
         parts = tuple(

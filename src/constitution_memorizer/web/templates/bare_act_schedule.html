@@ -7,7 +7,9 @@
   <div class="mobile-topbar">
     <a class="mobile-back" href="/laws/{{ act.slug }}">{{ act.back_label }}</a>
   </div>
-  <p class="bareact-reader-eyebrow">{{ schedule.label }}{% if schedule.reference %} · {{ schedule.reference }}{% endif %}</p>
+  {# The reference is reproduced exactly; only recognised section citations
+     are wrapped in anchors, and "35(1)" keeps its "(1)" in the link text. #}
+  <p class="bareact-reader-eyebrow">{{ schedule.label }}{% if schedule.reference %} · {% for segment in act.reference_segments(schedule.reference) %}{% if segment.is_link %}<a class="bareact-reference-link" href="{{ segment.href }}">{{ segment.text }}</a>{% else %}{{ segment.text }}{% endif %}{% endfor %}{% endif %}</p>
   <h1 class="bareact-reader-title">{{ schedule.display_heading }}</h1>
 
   {# The branch is on the schedule's kind — data, like the render profile —
@@ -16,9 +18,13 @@
   {% if schedule.is_list %}
   <ol class="bareact-schedule-list">
     {% for entry in schedule.entries %}
-    {# `value` carries the statute's own serial, so the numbering can never
-       drift from the source the way a CSS counter would. #}
-    <li class="bareact-schedule-list-item"{% if entry.serial_number|int %} value="{{ entry.serial_number|int }}"{% endif %}>{{ entry.text }}</li>
+    {# The marker is printed from the data, never from a CSS counter: UAPA's
+       Second Schedule is labelled (i)-(x) and its Third (a)-(c), and a
+       counter would silently renumber both to 1, 2, 3. `value` still carries
+       a numeric serial so the list keeps its ordinal semantics. #}
+    <li class="bareact-schedule-list-item"{% if entry.is_numbered %} value="{{ entry.marker }}"{% endif %}>
+      <span class="bareact-schedule-marker">{{ entry.marker }}</span>{{ entry.text }}
+    </li>
     {% endfor %}
   </ol>
   {% endif %}
@@ -44,6 +50,14 @@
       </tbody>
     </table>
   </div>
+  {# A schedule can exist with its headings printed and no rows under them —
+     UAPA's Fourth Schedule is exactly that. Say so plainly rather than
+     leaving a header floating over nothing. This sentence is interface copy
+     about this source document; it is not statutory text and is nowhere in
+     the canonical JSON. #}
+  {% if not part.rows %}
+  <p class="bareact-schedule-empty" role="note">No rows are present in this source.</p>
+  {% endif %}
   {% endfor %}
 
   {% if schedule.notes %}

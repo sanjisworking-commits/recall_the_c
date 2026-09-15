@@ -53,15 +53,24 @@
        unsupported one (BNSS's 58 positioned-text forms) is loaded and
        preserved, but linking it would promise a page we cannot draw. #}
     {% for schedule in act.schedules if schedule.is_navigable %}
-    <a class="bareact-schedule-row" href="/laws/{{ act.slug }}/schedule/{{ schedule.slug }}">
+    {# A div, not an anchor: the reference carries its own section links, and
+       an anchor cannot legally contain another. Nesting them made the parser
+       truncate the row at the first inner link. The row-wide tap target is an
+       overlay anchor instead, so the whole row still navigates. #}
+    <div class="bareact-schedule-row">
+      <a
+        class="bareact-schedule-row-link"
+        href="/laws/{{ act.slug }}/schedule/{{ schedule.slug }}"
+        aria-label="{{ schedule.label }} — {{ schedule.display_heading }}"
+      ></a>
       <span class="bareact-chapter-tag">{{ schedule.label }}</span>
       <span class="bareact-schedule-copy">
         <span class="bareact-schedule-name">{{ schedule.display_heading }}</span>
-        <span class="bareact-schedule-ref">{{ schedule.reference }}</span>
+        <span class="bareact-schedule-ref">{% for segment in act.reference_segments(schedule.reference) %}{% if segment.is_link %}<a class="bareact-reference-link" href="{{ segment.href }}">{{ segment.text }}</a>{% else %}{{ segment.text }}{% endif %}{% endfor %}</span>
       </span>
       <span class="bareact-chapter-range">{{ schedule.range_label }}</span>
       <span class="bareact-section-chevron" aria-hidden="true">›</span>
-    </a>
+    </div>
     {% endfor %}
   </div>
 </section>
