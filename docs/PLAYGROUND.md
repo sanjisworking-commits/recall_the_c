@@ -6,7 +6,7 @@ RecallC Playground is the paid learning overlay on verbatim Bare Act JSON. Tiers
 
 | Document | Status |
 |----------|--------|
-| [PLAYGROUND_DELIVERY_TRACKER.md](PLAYGROUND_DELIVERY_TRACKER.md) | **Programme scoreboard.** Stage 1 = **17.2 / 100** (build). Milestone 2 is `IN PROGRESS` (12/37). Stage 2 optimize is `NOT STARTED` until Stage 1 is `DONE` (100/100). Cloze/overlay proof does **not** inflate either stage. |
+| [PLAYGROUND_DELIVERY_TRACKER.md](PLAYGROUND_DELIVERY_TRACKER.md) | **Programme scoreboard.** Stage 1 = **17.6 / 100** (build). Milestone 2 is `IN PROGRESS` (13/37). Stage 2 optimize is `NOT STARTED` until Stage 1 is `DONE` (100/100). Cloze/overlay proof does **not** inflate either stage. |
 | [PLAYGROUND_TWO_LAW_AUDIT.md](PLAYGROUND_TWO_LAW_AUDIT.md) | Overlay design. Cloze = architectural proof, not the finished mode set. NDPS/BNS = **historical validation corpus**, not a production allowlist. Item/selection/progress = persistent learning, not monthly quota and not the device registry. |
 | [PAYMENT_ENTITLEMENT_AUDIT.md](PAYMENT_ENTITLEMENT_AUDIT.md) | User-type + **device registry** + **monthly roster** (`Asia/Kolkata` period clock). Catalogue + `user_subscription` persistence exist (M2-A); checkout, webhooks, and entitlement inversion are **not** implemented. Commercial catalogue, access matrix, refunds, and disputes are **locked** in §21. Remaining open cells: device-replacement integers and support channel. |
 | [law-loading.md](law-loading.md) | Lazy hydration contract Playground inherits. Sitemap inventory is a **build-time manifest**, never request-time Act hydration. |
