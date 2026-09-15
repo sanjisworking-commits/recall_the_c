@@ -2,14 +2,14 @@
 
 **Scoreboard, not an audit.** Product rules live in [PLAYGROUND.md](PLAYGROUND.md), [PAYMENT_ENTITLEMENT_AUDIT.md](PAYMENT_ENTITLEMENT_AUDIT.md), [PLAYGROUND_TWO_LAW_AUDIT.md](PLAYGROUND_TWO_LAW_AUDIT.md), and [law-loading.md](law-loading.md).
 
-**Snapshot:** architecture/product definition is **locked in docs**. **Stage 1** (build) is **17.6 / 100**. Production implementation is **early**. The NDPS/BNS overlay + Cloze + proof revision rows **do not** count as milestones 6–8. Milestone 1 is `DONE`. Milestone 2 is **`IN PROGRESS` — 13/37** (M2-A catalogue + `user_subscription` persistence closed; no checkout/webhooks/legacy classification). **Do not tick Stage 2 from Cloze or from `main`’s sitemap PRs.** This branch includes main’s Bare Act SEO and generated sitemap index; that is Milestone 0 coexistence, not Milestone 10 (`noindex`) and not Stage 2.
+**Snapshot:** architecture/product definition is **locked in docs**. **Stage 1** (build) is **19.3 / 100**. Production implementation is **early**. The NDPS/BNS overlay + Cloze + proof revision rows **do not** count as milestones 6–8. Milestone 1 is `DONE`. Milestone 2 is **`IN PROGRESS` — 18/37** (M2-A catalogue + persistence and M2-B create/checkout/cancel/upgrade/downgrade closed; no webhooks/renewal/legacy classification). **Do not tick Stage 2 from Cloze or from `main`’s sitemap PRs.** This branch includes main’s Bare Act SEO and generated sitemap index; that is Milestone 0 coexistence, not Milestone 10 (`noindex`) and not Stage 2.
 
 | | |
 |--|--|
-| **Stage 1 (build)** | **17.6 / 100** |
+| **Stage 1 (build)** | **19.3 / 100** |
 | Milestone 0 | `DONE` — 10/10 items × 5 = **5** |
 | Milestone 1 | `DONE` — 18/18 items × 8 = **8** |
-| Milestone 2 | `IN PROGRESS` — 13/37 × 13 ≈ **4.57** (exact: 13/37 of the 13-point weight) |
+| Milestone 2 | `IN PROGRESS` — 18/37 × 13 ≈ **6.32** (exact: 18/37 of the 13-point weight) |
 | Milestones 3–11 | `NOT STARTED`; remaining §21 `BLOCKED` cells are device-churn integers / support channel only |
 | **Stage 2 (optimize)** | **`NOT STARTED` — start gate: Stage 1 = `DONE` (100/100)** |
 
@@ -189,7 +189,7 @@ Playground has a scalable backend shell independent of the two-law proof.
 
 # 2. Payment & subscription foundation — 13 points
 
-**Status: `IN PROGRESS` — 13/37** (M2-A catalogue + persistence closed). Earned **13/37 × 13 ≈ 4.57**. Do **not** tick lifecycle/checkout/webhook items. Do **not** call Milestone 2 `DONE`.
+**Status: `IN PROGRESS` — 18/37** (M2-A catalogue + persistence and M2-B create/checkout/cancel/upgrade/downgrade closed). Earned **18/37 × 13 ≈ 6.32**. Do **not** tick webhook/renewal/resubscribe/legacy-classification items. Do **not** call Milestone 2 `DONE`.
 
 ## Commercial model
 
@@ -212,13 +212,13 @@ Playground has a scalable backend shell independent of the two-law proof.
 
 ## Razorpay subscription lifecycle
 
-* [ ] Create subscription
-* [ ] Checkout
+* [x] Create subscription
+* [x] Checkout
 * [ ] Renewal
 * [ ] Auto-renew
-* [ ] Cancel
-* [ ] Upgrade
-* [ ] Downgrade
+* [x] Cancel
+* [x] Upgrade
+* [x] Downgrade
 * [ ] Expiry
 * [ ] Failed payment
 * [ ] Payment-retry (`pending`) — **policy locked §21** (no grace-day integer; current-roster yes / new consumption no)
@@ -245,7 +245,7 @@ Playground has a scalable backend shell independent of the two-law proof.
 
 ### Done when
 
-A subscription can move through its full real lifecycle without manually editing the DB. M2-A shipped the server catalogue and `user_subscription` rows only; Create subscription / Checkout / webhooks remain open. Policy documentation does **not** tick these implementation items. Cursor must implement against locked §21 commercial cells and must **not** invent remaining device-churn cells.
+A subscription can move through its full real lifecycle without manually editing the DB. M2-A shipped the server catalogue and `user_subscription` rows. M2-B shipped create, Checkout HMAC, cycle-end cancel, immediate upgrade, and cycle-end downgrade. Webhooks, renewal/auto-renew processing, and legacy classification remain open. Policy documentation does **not** tick those remaining items. Cursor must implement against locked §21 commercial cells and must **not** invent remaining device-churn cells.
 
 **Weight: 13**
 
@@ -752,7 +752,7 @@ Playground + payment can safely replace the existing commercial entitlement mode
 | --------------------------------- | -----: | ---------- |
 | 0. Architecture + branch baseline |      5 | `DONE` (5 earned) |
 | 1. Backend foundation             |      8 | `DONE` (8 earned; 18/18) |
-| 2. Payment/subscriptions          |     13 | `IN PROGRESS` — 13/37 × 13 ≈ 4.57 |
+| 2. Payment/subscriptions          |     13 | `IN PROGRESS` — 18/37 × 13 ≈ 6.32 |
 | 3. User-type entitlement          |      7 | `NOT STARTED` |
 | 4. Device control                 |      8 | `NOT STARTED` |
 | 5. Monthly roster                 |     12 | `NOT STARTED` |
@@ -762,7 +762,7 @@ Playground + payment can safely replace the existing commercial entitlement mode
 | 9. Amendments/source integrity    |      5 | `NOT STARTED` |
 | 10. SEO/routing discoverability   |      4 | `NOT STARTED` |
 | 11. Production hardening/release  |      7 | `NOT STARTED` |
-| **TOTAL (Stage 1)**               |  **100** | **17.6 / 100** |
+| **TOTAL (Stage 1)**               |  **100** | **19.3 / 100** |
 | Stage 2 — Optimize                |    — | `NOT STARTED` — start gate: Stage 1 = `DONE` (100/100) |
 
 ---

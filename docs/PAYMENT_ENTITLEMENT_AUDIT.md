@@ -1,8 +1,10 @@
 # Payment, entitlement, and Playground — architecture lock
 
-**Scope of this document.** This is the **locked product architecture** for RecallC access: user types, device control for paid Playground, monthly Playground roster, clocks, schema to build, CTA states, sequential batches, the locked commercial catalogue / subscription-access matrix, and remaining device-churn open cells. It is **not** a description of current production behaviour. Current code still uses Razorpay **one-time duration passes** for Constitution. Playground now has an additive `user_subscription` table and Plus/Pro/Max catalogue (M2-A) that **do not yet** gate access. Overlay proof still has **no EntitlementService**, **no checkout**, and **no device registry**. The overlay is a Cloze **proof**, not the finished product.
+**Scope of this document.** This is the **locked product architecture** for RecallC access: user types, device control for paid Playground, monthly Playground roster, clocks, schema to build, CTA states, sequential batches, the locked commercial catalogue / subscription-access matrix, and remaining device-churn open cells. It is **not** a description of current production behaviour. Current code still uses Razorpay **one-time duration passes** for Constitution. Playground now has an additive `user_subscription` table, Plus/Pro/Max catalogue, and M2-B create/checkout/cancel/plan-change that **do not yet** gate access. Overlay proof still has **no EntitlementService**, **no subscription webhooks**, and **no device registry**. The overlay is a Cloze **proof**, not the finished product.
 
 **Amendment (Max price).** Displayed Max is **₹1,199**/month GST-inclusive (1,19,900 paise). This supersedes any earlier Max lock of ₹999/month. Plus ₹199 and Pro ₹399 are unchanged. Annual plans remain **not offered** in the MVP.
+
+**Implementation note (M2-B provider bound).** Razorpay requires every subscription to be bounded. Create calls use `RAZORPAY_MONTHLY_TOTAL_COUNT = 1200` monthly cycles as a *provider-only* technical horizon — not a 100-year customer commitment, not an annual SKU, and not copy shown to users. RecallC remains monthly cancel-anytime; default user cancel is `cancel_at_cycle_end=true`. Scheduled downgrade targets are stored in `provider_metadata` (`scheduled_tier`, `scheduled_plan_id`, `schedule_change_at`) and are **not** authorization truth. Webhooks, renewal processing, and entitlement inversion remain later batches.
 
 This document still **supersedes** every prior Playground rule that described **lifetime unlocks**, **cumulative acquisition**, **“new laws per billing cycle,”** **forever-free re-entry after first unlock**, or **`user_playground_law_entitlement UNIQUE(user_id, law_id)` as quota**. Those phrases must **not** be implemented.
 
@@ -484,7 +486,7 @@ Displayed catalogue prices are **GST-inclusive** ([§21](#21-commercial-and-prov
 
 ## 16. Database
 
-### `user_subscription` (M2-A implemented)
+### `user_subscription` (M2-A schema; M2-B lifecycle uses it)
 
 History-preserving commercial subscription rows. **Not** one eternal unique `user_id` row: old provider subscriptions stay after `is_current` is cleared so resubscribe/reconcile/support can see them. PostgreSQL enforces **one current row per user** with unique partial index `user_subscription_one_current` on `(user_id) WHERE is_current`. Provider subscription ids are unique when present. Provider column is explicit (`razorpay`). RLS enabled with no policies (app-level `user_id` filter, same as other user-owned tables).
 
@@ -502,7 +504,7 @@ History-preserving commercial subscription rows. **Not** one eternal unique `use
 | `provider_metadata` | JSON/JSONB audit payload. Authorization must not depend on arbitrary keys. |
 | `created_at` / `updated_at` | |
 
-**Do not** store roster usage, `playground_period_*`, or device registrations on this row. Index `(status, billing_period_end)` exists for later expiry/retry work. Checkout, webhooks, and entitlement inversion are **not** in this table's M2-A batch.
+**Do not** store roster usage, `playground_period_*`, or device registrations on this row. Index `(status, billing_period_end)` exists for later expiry/retry work. M2-B create/checkout/cancel/plan-change persist into this table; webhooks and entitlement inversion are **not** in this batch. A scheduled downgrade target may live in `provider_metadata` until M2-C applies the provider-confirmed plan.
 
 ### `user_device`
 
