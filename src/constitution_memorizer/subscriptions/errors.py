@@ -45,3 +45,31 @@ class SubscriptionNetworkError(SubscriptionProviderError):
 
 class SubscriptionResponseError(SubscriptionProviderError):
     """Provider returned a payload that cannot be normalized."""
+
+
+class SubscriptionStateError(SubscriptionError):
+    """The current row is not in a state that allows this action."""
+
+
+class CheckoutInProgressError(SubscriptionStateError):
+    """A creation reservation is current; do not start a second provider sub."""
+
+
+class CheckoutSignatureError(SubscriptionError):
+    """Checkout HMAC did not match the server-stored subscription id."""
+
+
+class CheckoutMismatchError(SubscriptionError):
+    """Client-returned provider subscription id is not the stored one."""
+
+
+class SameTierChangeError(SubscriptionError):
+    """Upgrade/downgrade target is the current paid tier."""
+
+
+class ChangePlanRequiredError(SubscriptionError):
+    """User already has a live subscription; use the plan-change flow."""
+
+
+class ResubscribeUnavailableError(SubscriptionStateError):
+    """Terminal current row; M2-B does not implement resubscribe."""

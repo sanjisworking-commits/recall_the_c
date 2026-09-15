@@ -798,6 +798,7 @@ def install_auth_middleware(app) -> None:
                 or path.startswith("/profile")
                 or path.startswith("/api/theme")
                 or path.startswith("/admin")
+                or path.startswith("/billing/subscriptions/checkout")
             ):
                 return signin_redirect(next_url=path, reason="default")
             elif method != "GET":
@@ -814,7 +815,12 @@ def install_auth_middleware(app) -> None:
                         )
                     )
                 )
-                return signin_redirect(next_url=path, reason=reason)
+                next_url = (
+                    "/billing/subscriptions"
+                    if path == "/billing" or path.startswith("/billing/")
+                    else path
+                )
+                return signin_redirect(next_url=next_url, reason=reason)
 
         if path == "/" and user is not None:
             return RedirectResponse(url="/dashboard", status_code=303)

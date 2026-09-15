@@ -203,6 +203,7 @@ class PostgresSubscriptionRepository:
         provider_subscription_id: Any = _UNSET,
         provider_plan_id: Any = _UNSET,
         provider_metadata: Any = _UNSET,
+        tier: Any = _UNSET,
     ) -> UserSubscription:
         existing = self.get_subscription(user_id, subscription_id)
         if existing is None:
@@ -236,6 +237,7 @@ class PostgresSubscriptionRepository:
         next_plan = (
             existing.provider_plan_id if provider_plan_id is _UNSET else provider_plan_id
         )
+        next_tier = existing.tier if tier is _UNSET else require_tier(tier)
         next_meta = (
             existing.provider_metadata
             if provider_metadata is _UNSET
@@ -258,6 +260,7 @@ class PostgresSubscriptionRepository:
                             provider_subscription_id = %s,
                             provider_plan_id = %s,
                             provider_metadata = %s,
+                            tier = %s,
                             updated_at = %s
                         WHERE user_id = %s AND id = %s
                         RETURNING id, user_id, provider, provider_customer_id,
@@ -275,6 +278,7 @@ class PostgresSubscriptionRepository:
                             next_sub,
                             next_plan,
                             payload,
+                            next_tier,
                             now,
                             as_user_id(user_id),
                             subscription_id,

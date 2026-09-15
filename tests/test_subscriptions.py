@@ -6,6 +6,8 @@ Does not exercise checkout, webhooks, or entitlement inversion.
 from __future__ import annotations
 
 import ast
+import hashlib
+import hmac
 import logging
 import re
 import sqlite3
@@ -30,6 +32,8 @@ from constitution_memorizer.subscriptions.catalog import (
     SUBSCRIPTION_TIERS,
     UnknownSubscriptionTier,
     get_subscription_product,
+    is_downgrade,
+    is_upgrade,
     list_subscription_products,
 )
 from constitution_memorizer.subscriptions.config import (
@@ -62,12 +66,16 @@ from constitution_memorizer.subscriptions.postgres import (
     UniqueViolation,
 )
 from constitution_memorizer.subscriptions.razorpay import (
+    RAZORPAY_MONTHLY_TOTAL_COUNT,
     RAZORPAY_SUBSCRIPTIONS_URL,
+    SCHEDULE_CYCLE_END,
+    SCHEDULE_NOW,
     CreateSubscriptionRequest,
     ProviderSubscription,
     RazorpaySubscriptionsClient,
     _create_payload,
     normalize_provider_subscription,
+    verify_subscription_signature,
 )
 from constitution_memorizer.subscriptions.repository import SqliteSubscriptionRepository
 from constitution_memorizer.web.app import create_app
@@ -154,6 +162,18 @@ def test_canonical_products_are_exactly_plus_pro_max_monthly_gst_inclusive():
         assert row.amount_paise == row.price_inr * 100
         assert row.playground_law_limit == expected["playground_law_limit"]
         assert row == get_subscription_product(row.tier)
+
+
+def test_tier_rank_is_explicit_plus_lt_pro_lt_max():
+    assert is_upgrade("plus", "pro")
+    assert is_upgrade("plus", "max")
+    assert is_upgrade("pro", "max")
+    assert is_downgrade("max", "pro")
+    assert is_downgrade("max", "plus")
+    assert is_downgrade("pro", "plus")
+    assert not is_upgrade("plus", "plus")
+    assert not is_downgrade("pro", "max")
+    assert not is_upgrade("max", "plus")
 
 
 @pytest.mark.parametrize("tier", ["premium", "basic", "PLUS", "plus ", "30", "core", "deep", "infinite", ""])
@@ -317,6 +337,9 @@ def test_update_status_bounds_cancel_flag_and_metadata_round_trip():
     again = repo.get_subscription(USER_A, stored.id)
     assert again is not None
     assert again.provider_metadata["nested"]["ok"] is True
+    promoted = repo.update_subscription_state(USER_A, stored.id, tier="max")
+    assert promoted.tier == "max"
+    assert promoted.status == "active"
 
 
 def test_historical_row_is_retained_when_replaced():
@@ -601,7 +624,8 @@ class _PgStore:
                     "provider_subscription_id": params[5],
                     "provider_plan_id": params[6],
                     "provider_metadata": dict(meta) if isinstance(meta, dict) else {},
-                    "updated_at": params[8],
+                    "tier": params[8],
+                    "updated_at": params[9],
                 }
             )
             self.rows[subscription_id] = row
@@ -721,7 +745,18 @@ def _patch_httpx(monkeypatch: pytest.MonkeyPatch, response=None, error=None):
             return False
 
         def post(self, url, auth=None, json=None):
-            calls.append({"url": url, "auth": auth, "json": json})
+            return self.request("POST", url, auth=auth, json=json)
+
+        def get(self, url, auth=None, json=None):
+            return self.request("GET", url, auth=auth, json=json)
+
+        def patch(self, url, auth=None, json=None):
+            return self.request("PATCH", url, auth=auth, json=json)
+
+        def request(self, method, url, auth=None, json=None):
+            calls.append(
+                {"method": method, "url": url, "auth": auth, "json": json}
+            )
             if error is not None:
                 raise error
             return response
@@ -757,6 +792,7 @@ def test_create_subscription_posts_expected_payload_and_normalizes(monkeypatch):
     assert calls[0]["url"] == RAZORPAY_SUBSCRIPTIONS_URL
     assert RAZORPAY_SUBSCRIPTIONS_URL == "https://api.razorpay.com/v1/subscriptions"
     assert calls[0]["auth"] == ("rzp_test_id", SECRET)
+    assert calls[0]["method"] == "POST"
     assert calls[0]["json"] == {
         "plan_id": "plan_plus",
         "quantity": 1,
@@ -801,8 +837,11 @@ def test_create_subscription_requires_exactly_one_bound_before_http(monkeypatch)
     razorpay_path = ROOT / "src" / "constitution_memorizer" / "subscriptions" / "razorpay.py"
     text = razorpay_path.read_text(encoding="utf-8")
     assert "total_count = 12" not in text
-    assert "1200" not in text
+    assert RAZORPAY_MONTHLY_TOTAL_COUNT == 1200
+    assert "RAZORPAY_MONTHLY_TOTAL_COUNT = 1200" in text
+    assert "provider-only" in text.lower() or "provider api bound" in text.lower()
     assert "100 years" not in text.lower()
+    assert "100-year subscription" not in text.lower()
 
 
 @pytest.mark.parametrize(
@@ -864,6 +903,96 @@ def test_missing_credentials_fail_before_http(monkeypatch):
     assert calls == []
 
 
+def test_fetch_cancel_and_plan_update_use_expected_endpoints(monkeypatch):
+    payload = {
+        "id": "sub_abc",
+        "plan_id": "plan_plus",
+        "status": "active",
+        "current_start": 1,
+        "current_end": 2,
+    }
+    calls = _patch_httpx(monkeypatch, response=_FakeResponse(200, payload))
+    client = RazorpaySubscriptionsClient("rzp_test_id", SECRET)
+    fetched = client.fetch_subscription("sub_abc")
+    assert fetched.id == "sub_abc"
+    assert calls[0]["method"] == "GET"
+    assert calls[0]["url"] == f"{RAZORPAY_SUBSCRIPTIONS_URL}/sub_abc"
+    assert calls[0]["json"] is None
+    client.cancel_subscription("sub_abc", cancel_at_cycle_end=True)
+    assert calls[1]["method"] == "POST"
+    assert calls[1]["url"] == f"{RAZORPAY_SUBSCRIPTIONS_URL}/sub_abc/cancel"
+    assert calls[1]["json"] == {"cancel_at_cycle_end": True}
+    client.update_subscription_plan(
+        "sub_abc", plan_id="plan_pro", schedule_change_at=SCHEDULE_NOW
+    )
+    assert calls[2]["method"] == "PATCH"
+    assert calls[2]["url"] == f"{RAZORPAY_SUBSCRIPTIONS_URL}/sub_abc"
+    assert calls[2]["json"] == {
+        "plan_id": "plan_pro",
+        "schedule_change_at": "now",
+    }
+    client.update_subscription_plan(
+        "sub_abc", plan_id="plan_plus", schedule_change_at=SCHEDULE_CYCLE_END
+    )
+    assert calls[3]["json"] == {
+        "plan_id": "plan_plus",
+        "schedule_change_at": "cycle_end",
+    }
+    assert SECRET not in repr(client)
+
+
+def test_provider_rejects_unsafe_subscription_ids_before_http(monkeypatch):
+    calls = _patch_httpx(monkeypatch, response=_FakeResponse(200, {}))
+    client = RazorpaySubscriptionsClient("rzp_test_id", SECRET)
+    with pytest.raises(SubscriptionValidationError):
+        client.fetch_subscription("sub/abc")
+    with pytest.raises(SubscriptionValidationError):
+        client.cancel_subscription("sub abc")
+    with pytest.raises(SubscriptionValidationError):
+        client.update_subscription_plan(
+            "sub_abc", plan_id="plan_pro", schedule_change_at="tomorrow"
+        )
+    assert calls == []
+
+
+def test_subscription_checkout_hmac_is_payment_id_pipe_subscription_id():
+    sig = hmac.new(
+        SECRET.encode(), b"pay_1|sub_1", hashlib.sha256
+    ).hexdigest()
+    assert verify_subscription_signature(
+        payment_id="pay_1",
+        subscription_id="sub_1",
+        signature=sig,
+        key_secret=SECRET,
+    )
+    assert not verify_subscription_signature(
+        payment_id="pay_1",
+        subscription_id="sub_other",
+        signature=sig,
+        key_secret=SECRET,
+    )
+    orders = hmac.new(
+        SECRET.encode(), b"order_1|pay_1", hashlib.sha256
+    ).hexdigest()
+    assert not verify_subscription_signature(
+        payment_id="pay_1",
+        subscription_id="sub_1",
+        signature=orders,
+        key_secret=SECRET,
+    )
+    client = RazorpaySubscriptionsClient("rzp_test_id", SECRET)
+    assert client.verify_checkout_signature(
+        payment_id="pay_1", subscription_id="sub_1", signature=sig
+    )
+    source = (
+        ROOT / "src" / "constitution_memorizer" / "subscriptions" / "razorpay.py"
+    ).read_text(encoding="utf-8")
+    assert "compare_digest" in source
+    assert "payment_id}|{subscription_id" in source or (
+        'f"{payment_id}|{subscription_id}"' in source
+    )
+
+
 # --------------------------------------------------------------------------- #
 # Startup / wiring
 # --------------------------------------------------------------------------- #
@@ -871,16 +1000,24 @@ def test_create_app_starts_without_plan_ids_and_makes_no_razorpay_calls(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ):
     sys.modules.pop("constitution_memorizer.subscriptions.razorpay", None)
-    posts: list[str] = []
-    original = httpx.Client.post
+    seen: list[str] = []
+    original_request = httpx.Client.request
+    original_post = httpx.Client.post
 
-    def wrapped(self, url, *args, **kwargs):
-        posts.append(str(url))
+    def wrapped_request(self, method, url, *args, **kwargs):
+        seen.append(f"{method} {url}")
         if "razorpay.com" in str(url):
             raise AssertionError(f"startup must not call Razorpay: {url}")
-        return original(self, url, *args, **kwargs)
+        return original_request(self, method, url, *args, **kwargs)
 
-    monkeypatch.setattr(httpx.Client, "post", wrapped)
+    def wrapped_post(self, url, *args, **kwargs):
+        seen.append(f"POST {url}")
+        if "razorpay.com" in str(url):
+            raise AssertionError(f"startup must not call Razorpay: {url}")
+        return original_post(self, url, *args, **kwargs)
+
+    monkeypatch.setattr(httpx.Client, "request", wrapped_request)
+    monkeypatch.setattr(httpx.Client, "post", wrapped_post)
     app = create_app(
         units_path=MINI_UNITS,
         db_path=tmp_path / "progress.db",
@@ -889,8 +1026,8 @@ def test_create_app_starts_without_plan_ids_and_makes_no_razorpay_calls(
     assert app.state.subscriptions is not None
     assert isinstance(app.state.subscriptions, SqliteSubscriptionRepository)
     assert app.state.subscriptions.get_current_subscription(LOCAL_USER_ID) is None
-    assert posts == []
-    assert "constitution_memorizer.subscriptions.razorpay" not in sys.modules
+    assert app.state.subscription_service is not None
+    assert not any("razorpay.com" in item for item in seen)
 
 
 def test_create_app_does_not_consult_subscriptions_for_access(tmp_path: Path):

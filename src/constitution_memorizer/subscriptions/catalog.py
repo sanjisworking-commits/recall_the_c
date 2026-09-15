@@ -13,6 +13,7 @@ class UnknownSubscriptionTier(LookupError):
 
 
 SUBSCRIPTION_TIERS: frozenset[str] = frozenset({"plus", "pro", "max"})
+TIER_RANK: dict[str, int] = {"plus": 1, "pro": 2, "max": 3}
 BILLING_INTERVAL_MONTHLY = "monthly"
 CURRENCY_INR = "INR"
 
@@ -73,3 +74,17 @@ def get_subscription_product(tier: str) -> SubscriptionProduct:
 
 def list_subscription_products() -> tuple[SubscriptionProduct, ...]:
     return PRODUCTS
+
+
+def tier_rank(tier: str) -> int:
+    """Explicit commercial rank. plus < pro < max; never inferred from strings."""
+    get_subscription_product(tier)
+    return TIER_RANK[tier]
+
+
+def is_upgrade(current_tier: str, target_tier: str) -> bool:
+    return tier_rank(target_tier) > tier_rank(current_tier)
+
+
+def is_downgrade(current_tier: str, target_tier: str) -> bool:
+    return tier_rank(target_tier) < tier_rank(current_tier)

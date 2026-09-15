@@ -254,6 +254,7 @@ class SqliteSubscriptionRepository:
         provider_subscription_id: Any = _UNSET,
         provider_plan_id: Any = _UNSET,
         provider_metadata: Any = _UNSET,
+        tier: Any = _UNSET,
     ) -> UserSubscription:
         existing = self.get_subscription(user_id, subscription_id)
         if existing is None:
@@ -291,6 +292,7 @@ class SqliteSubscriptionRepository:
             if provider_plan_id is _UNSET
             else provider_plan_id
         )
+        next_tier = existing.tier if tier is _UNSET else require_tier(tier)
         next_meta = (
             existing.provider_metadata
             if provider_metadata is _UNSET
@@ -309,6 +311,7 @@ class SqliteSubscriptionRepository:
                     provider_subscription_id = ?,
                     provider_plan_id = ?,
                     provider_metadata = ?,
+                    tier = ?,
                     updated_at = ?
                 WHERE user_id = ? AND id = ?
                 """,
@@ -321,6 +324,7 @@ class SqliteSubscriptionRepository:
                     next_sub,
                     next_plan,
                     _metadata_dumps(next_meta),
+                    next_tier,
                     now.isoformat(),
                     as_user_id(user_id),
                     subscription_id,

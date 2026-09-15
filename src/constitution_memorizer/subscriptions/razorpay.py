@@ -1,11 +1,16 @@
 """Razorpay Subscriptions API adapter. Separate from legacy Orders in web/billing.py.
 
-Does not create Plans. Does not invent a subscription lifetime. Callers must
-supply ``total_count`` or ``end_at``.
+Razorpay requires every subscription to be bounded with ``total_count`` or
+``end_at``. RecallC is a monthly cancel-anytime product, so create calls use
+``RAZORPAY_MONTHLY_TOTAL_COUNT`` (1200 months) as a *provider-only* technical
+horizon — not a 100-year commercial commitment and not an annual SKU. Users
+cancel at the end of any paid monthly cycle.
 """
 
 from __future__ import annotations
 
+import hashlib
+import hmac
 import logging
 from dataclasses import dataclass
 from typing import Any, Mapping
@@ -24,6 +29,10 @@ from constitution_memorizer.subscriptions.errors import (
 logger = logging.getLogger(__name__)
 
 RAZORPAY_SUBSCRIPTIONS_URL = "https://api.razorpay.com/v1/subscriptions"
+# Provider API bound only. Not shown to customers. Not prepaid access.
+RAZORPAY_MONTHLY_TOTAL_COUNT = 1200
+SCHEDULE_NOW = "now"
+SCHEDULE_CYCLE_END = "cycle_end"
 _TIMEOUT_SECONDS = 20.0
 _USER_SAFE_FAILURE = "Could not reach the payment provider"
 _USER_SAFE_AUTH = "Payment provider authentication failed"
@@ -82,14 +91,73 @@ class RazorpaySubscriptionsClient:
         self, request: CreateSubscriptionRequest
     ) -> ProviderSubscription:
         payload = _create_payload(request)
+        return self._send_json("POST", RAZORPAY_SUBSCRIPTIONS_URL, payload)
+
+    def fetch_subscription(self, subscription_id: str) -> ProviderSubscription:
+        sub_id = _require_subscription_id(subscription_id)
+        return self._send_json(
+            "GET", f"{RAZORPAY_SUBSCRIPTIONS_URL}/{sub_id}", None
+        )
+
+    def cancel_subscription(
+        self, subscription_id: str, *, cancel_at_cycle_end: bool = True
+    ) -> ProviderSubscription:
+        sub_id = _require_subscription_id(subscription_id)
+        return self._send_json(
+            "POST",
+            f"{RAZORPAY_SUBSCRIPTIONS_URL}/{sub_id}/cancel",
+            {"cancel_at_cycle_end": bool(cancel_at_cycle_end)},
+        )
+
+    def update_subscription_plan(
+        self,
+        subscription_id: str,
+        *,
+        plan_id: str,
+        schedule_change_at: str,
+    ) -> ProviderSubscription:
+        sub_id = _require_subscription_id(subscription_id)
+        plan = str(plan_id or "").strip()
+        if not plan:
+            raise SubscriptionValidationError("plan_id is required")
+        when = str(schedule_change_at or "").strip()
+        if when not in {SCHEDULE_NOW, SCHEDULE_CYCLE_END}:
+            raise SubscriptionValidationError(
+                "schedule_change_at must be now or cycle_end"
+            )
+        return self._send_json(
+            "PATCH",
+            f"{RAZORPAY_SUBSCRIPTIONS_URL}/{sub_id}",
+            {"plan_id": plan, "schedule_change_at": when},
+        )
+
+    def verify_checkout_signature(
+        self,
+        *,
+        payment_id: str,
+        subscription_id: str,
+        signature: str,
+    ) -> bool:
+        """HMAC over the server-stored subscription id. Never logs the secret."""
+        return verify_subscription_signature(
+            payment_id=payment_id,
+            subscription_id=subscription_id,
+            signature=signature,
+            key_secret=self._key_secret,
+        )
+
+    def _send_json(
+        self, method: str, url: str, payload: Mapping[str, Any] | None
+    ) -> ProviderSubscription:
         if not self._key_id.strip() or not self._key_secret.strip():
             raise SubscriptionConfigError(
                 "RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET are required"
             )
         try:
             with httpx.Client(timeout=self._timeout) as client:
-                response = client.post(
-                    RAZORPAY_SUBSCRIPTIONS_URL,
+                response = client.request(
+                    method,
+                    url,
                     auth=(self._key_id, self._key_secret),
                     json=payload,
                 )
@@ -101,7 +169,8 @@ class RazorpaySubscriptionsClient:
             raise SubscriptionAuthError(_USER_SAFE_AUTH)
         if response.status_code >= 400:
             logger.error(
-                "Razorpay subscription creation failed: %s %s",
+                "Razorpay subscription %s failed: %s %s",
+                method,
                 response.status_code,
                 _safe_body(response.text, secret=self._key_secret),
             )
@@ -112,6 +181,24 @@ class RazorpaySubscriptionsClient:
             logger.error("Razorpay subscription response was not JSON")
             raise SubscriptionResponseError(_USER_SAFE_MALFORMED) from exc
         return normalize_provider_subscription(data)
+
+
+def verify_subscription_signature(
+    *,
+    payment_id: str,
+    subscription_id: str,
+    signature: str,
+    key_secret: str,
+) -> bool:
+    """Constant-time Checkout HMAC. Message is payment_id|subscription_id."""
+    if not (payment_id and subscription_id and signature and key_secret):
+        return False
+    expected = hmac.new(
+        key_secret.encode("utf-8"),
+        f"{payment_id}|{subscription_id}".encode("utf-8"),
+        hashlib.sha256,
+    ).hexdigest()
+    return hmac.compare_digest(expected, signature)
 
 
 def _create_payload(request: CreateSubscriptionRequest) -> dict[str, Any]:
@@ -163,6 +250,13 @@ def normalize_provider_subscription(data: Mapping[str, Any]) -> ProviderSubscrip
         has_scheduled_changes=_optional_bool(data.get("has_scheduled_changes")),
         raw=dict(data),
     )
+
+
+def _require_subscription_id(value: str) -> str:
+    text = str(value or "").strip()
+    if not text or "/" in text or " " in text:
+        raise SubscriptionValidationError("invalid provider subscription id")
+    return text
 
 
 def _optional_int(value: Any) -> int | None:

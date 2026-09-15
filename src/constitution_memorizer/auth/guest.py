@@ -114,6 +114,11 @@ def requires_auth(path: str, method: str) -> bool:
         return True
     if path.startswith("/profile") and m == "POST":
         return True
+    if path == "/billing" or path.startswith("/billing/"):
+        if m != "GET":
+            return True
+        if path.startswith("/billing/subscriptions/checkout"):
+            return True
     return False
 
 

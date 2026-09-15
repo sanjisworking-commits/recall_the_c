@@ -3767,7 +3767,98 @@
     });
   }
 
-  function initCheckout() {
+    function initSubscriptionCheckout() {
+      const button = document.querySelector("[data-subscription-checkout-pay]");
+      if (!button) {
+        return;
+      }
+      let config = null;
+      try {
+        const node = document.getElementById("subscription-checkout-data");
+        config = node ? JSON.parse(node.textContent || "null") : null;
+      } catch (_e) {
+        config = null;
+      }
+      const errorEl = document.querySelector("[data-subscription-checkout-error]");
+      if (!config || !config.subscription_id || !config.key_id) {
+        return;
+      }
+
+      function showError(message) {
+        if (errorEl) {
+          errorEl.textContent = message;
+          errorEl.hidden = false;
+        }
+        button.disabled = false;
+      }
+
+      function clearError() {
+        if (errorEl) {
+          errorEl.hidden = true;
+          errorEl.textContent = "";
+        }
+      }
+
+      async function completeCheckout(payload) {
+        const headers = { "Content-Type": "application/json" };
+        if (config.csrf_token) {
+          headers["X-CSRF-Token"] = config.csrf_token;
+        }
+        const resp = await fetch(config.complete_url, {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify({
+            razorpay_payment_id: payload.razorpay_payment_id,
+            razorpay_subscription_id: payload.razorpay_subscription_id,
+            razorpay_signature: payload.razorpay_signature,
+            csrf_token: config.csrf_token || "",
+          }),
+        });
+        const body = await resp.json().catch(function () {
+          return {};
+        });
+        if (resp.ok && body.ok && body.next) {
+          window.location.assign(body.next);
+          return;
+        }
+        showError(
+          "Checkout could not be verified. Nothing further was charged."
+        );
+      }
+
+      button.addEventListener("click", function () {
+        if (typeof window.Razorpay !== "function") {
+          showError("Checkout is still loading — try again in a moment.");
+          return;
+        }
+        clearError();
+        button.disabled = true;
+        const rzp = new window.Razorpay({
+          key: config.key_id,
+          subscription_id: config.subscription_id,
+          name: config.name,
+          description: config.description,
+          handler: function (response) {
+            completeCheckout(response);
+          },
+          modal: {
+            ondismiss: function () {
+              button.disabled = false;
+            },
+          },
+        });
+        rzp.on("payment.failed", function (event) {
+          const reason =
+            event && event.error && event.error.description
+              ? event.error.description
+              : "The payment did not go through.";
+          showError(reason + " Nothing changed on your account — you can try again.");
+        });
+        rzp.open();
+      });
+    }
+
+    function initCheckout() {
     const button = document.querySelector("[data-checkout-pay]");
     if (!button) {
       return;
@@ -4047,6 +4138,7 @@
     initGuestStrip();
     initSlotsWhy();
     initCheckout();
+    initSubscriptionCheckout();
     initFirstPaidSession();
     initGcalTimezone();
     initGcalReminderPrompt();

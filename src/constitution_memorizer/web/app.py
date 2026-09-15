@@ -775,6 +775,28 @@ def create_app(
         else:
             app.state.subscriptions = None
 
+    app.state.subscription_service = None
+    if app.state.subscriptions is not None:
+        from constitution_memorizer.subscriptions.config import (  # noqa: PLC0415
+            plan_ids_from_settings,
+        )
+        from constitution_memorizer.subscriptions.razorpay import (  # noqa: PLC0415
+            RazorpaySubscriptionsClient,
+        )
+        from constitution_memorizer.subscriptions.service import (  # noqa: PLC0415
+            SubscriptionService,
+        )
+
+        app.state.subscription_service = SubscriptionService(
+            app.state.subscriptions,
+            RazorpaySubscriptionsClient(
+                app.state.razorpay_key_id,
+                app.state.razorpay_key_secret,
+            ),
+            plan_ids_from_settings(settings),
+            public_key_id=app.state.razorpay_key_id,
+        )
+
     app.state.db_pool = db_pool
 
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
@@ -861,8 +883,12 @@ def create_app(
         create_playground_router,
     )
     from constitution_memorizer.speech.routes import router as speech_router
+    from constitution_memorizer.subscriptions.routes import (  # noqa: PLC0415
+        create_subscription_router,
+    )
 
     app.include_router(create_playground_router(templates))
+    app.include_router(create_subscription_router(templates))
 
     app.include_router(gcal_router)
     app.include_router(speech_router)

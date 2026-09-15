@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Checkout · {{ app_name|default('Recall the C') }}{% endblock %}
+{% block mobile_screen %}purchase{% endblock %}
+{% block content %}
+<section class="panel purchase">
+  <div class="purchase-card purchase-pay is-live">
+    <p class="purchase-card-title">Opening secure checkout</p>
+    <p class="purchase-lede">
+      Payment is handled by Razorpay. This is a monthly plan, GST included.
+      You can cancel at the end of any paid cycle.
+    </p>
+    <div class="purchase-row">
+      <span class="purchase-row-k">{{ display_name }}</span>
+      <span class="purchase-row-price">{{ price_label }}</span>
+    </div>
+    <div class="purchase-row is-last">
+      <span class="purchase-row-k">Plan</span>
+      <span class="purchase-row-v">{{ description }}</span>
+    </div>
+    <div class="purchase-actions">
+      <button type="button" class="btn btn-accent purchase-pay-cta" data-subscription-checkout-pay>Pay securely →</button>
+      <a class="purchase-change" href="/billing/subscriptions">Back to plans</a>
+    </div>
+    <p class="purchase-error" data-subscription-checkout-error hidden role="alert"></p>
+    <script type="application/json" id="subscription-checkout-data">{{ checkout_data | tojson }}</script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js" defer></script>
+  </div>
+</section>
+{% endblock %}
