@@ -464,6 +464,13 @@ class ScheduleListEntry:
     source_pages: tuple[int, ...] = ()
     serial_number: str = ""
     label: str = ""
+    # Editorial amendment brackets printed before this entry's marker, same
+    # contract as ProvisionRow: a count the parser measured, nothing else.
+    leading_brackets: int = 0
+
+    @property
+    def bracket_prefix(self) -> str:
+        return "[" * self.leading_brackets if self.leading_brackets > 0 else ""
 
     @property
     def is_numbered(self) -> bool:
@@ -733,6 +740,21 @@ class BareAct:
                 label = row.label or row.kind
                 stream.extend((c, f"{where} {label}") for c in row.bracket_prefix)
                 stream.extend((c, f"{where} {label}") for c in row.text if c in "[]")
+        # Schedules are part of the same document stream: UAPA opens a span at
+        # "[THE SECOND SCHEDULE" and closes it on an entry, so leaving them out
+        # would let an orphaned bracket through the validator unseen.
+        for schedule in self.schedules:
+            where = schedule.slug
+            stream.extend((c, f"{where} title") for c in schedule.title if c in "[]")
+            stream.extend((c, f"{where} reference") for c in schedule.reference if c in "[]")
+            stream.extend((c, f"{where} heading") for c in schedule.heading if c in "[]")
+            for entry in schedule.entries:
+                stream.extend((c, f"{where} {entry.marker}") for c in entry.bracket_prefix)
+                stream.extend((c, f"{where} {entry.marker}") for c in entry.text if c in "[]")
+            for part in schedule.parts:
+                for row in part.rows:
+                    for cell in row.cells:
+                        stream.extend((c, f"{where} row") for c in cell if c in "[]")
         return tuple(stream)
 
     def unbalanced_brackets(self) -> tuple[tuple[str, str], ...]:
@@ -1043,6 +1065,7 @@ def _parse_list_schedule(raw: dict[str, Any], slug: str) -> Schedule:
                 source_pages=_pages(entry),
                 serial_number=serial,
                 label=label,
+                leading_brackets=int(entry.get("leading_brackets") or 0),
             )
         )
     return Schedule(

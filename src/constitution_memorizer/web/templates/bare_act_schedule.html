@@ -23,7 +23,7 @@
        counter would silently renumber both to 1, 2, 3. `value` still carries
        a numeric serial so the list keeps its ordinal semantics. #}
     <li class="bareact-schedule-list-item"{% if entry.is_numbered %} value="{{ entry.marker }}"{% endif %}>
-      <span class="bareact-schedule-marker">{{ entry.marker }}</span>{{ entry.text }}
+      {% if entry.bracket_prefix %}<span class="bareact-amendment-open">{{ entry.bracket_prefix }}</span>{% endif %}<span class="bareact-schedule-marker">{{ entry.marker }}</span>{{ entry.text }}
     </li>
     {% endfor %}
   </ol>
