@@ -2688,6 +2688,8 @@ def create_app(
             # Query variants (?q=, ?subject=) are filtered views of the same hub,
             # so they all declare the bare /laws URL as canonical.
             "canonical_url": laws_hub_canonical_url(),
+            "initial_status": request.query_params.get("status") or "",
+            "has_repealed": bool(catalog.repealed_laws),
         }
         started = time.perf_counter()
         response = templates.TemplateResponse(request, "laws.html", context)
@@ -2713,11 +2715,16 @@ def create_app(
                     (bare.short_title, law_canonical_url(bare.slug)),
                 ]
             )
+            # The catalogue entry travels alongside the Act, not inside it:
+            # lifecycle is editorial metadata and the statutory model stays
+            # statutory. load_catalog() is a cached read of the static seed
+            # and hydrates no Act JSON.
             response = templates.TemplateResponse(
                 request,
                 "bare_act.html",
                 {
                     "act": bare,
+                    "catalog_law": load_catalog().by_full_act(law_id),
                     "seo_title": seo_title,
                     "seo_description": seo_description,
                     "canonical_url": law_canonical_url(bare.slug),
@@ -2820,9 +2827,9 @@ def create_app(
         schedule = bare.schedule(schedule_slug)
         if schedule is None:
             raise HTTPException(status_code=404, detail="Schedule not found")
-        if not schedule.is_table:
-            # Loaded and preserved, but it has no table representation yet.
-            # 404 rather than render an invented one.
+        if not schedule.is_navigable:
+            # Loaded and preserved, but it has no representation yet — BNSS's
+            # 58 positioned-text forms. 404 rather than render an invented one.
             raise HTTPException(status_code=404, detail="Schedule not available")
         seo_title, seo_description = build_schedule_seo(
             law_name=bare.title,

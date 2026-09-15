@@ -20,6 +20,7 @@ MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
 PRODUCTION_LAW_IDS = (
     "bns",
     "bnss",
+    "pota",
     "ndps",
     "uapa-1967",
     "citizenship-1955",
@@ -76,7 +77,7 @@ def test_production_catalogue_lists_both_bare_acts():
     bnss = catalog.laws[1]
     assert bnss.tag_line == "CRIMINAL · FULL ACT"
     assert bnss.href == "/laws/bnss"
-    ndps = catalog.laws[2]
+    ndps = next(law for law in catalog.laws if law.id == "ndps")
     assert ndps.tag_line == "CRIMINAL · FULL ACT"
     assert ndps.href == "/laws/ndps"
     rti = next(law for law in catalog.laws if law.id == "rti-2005")

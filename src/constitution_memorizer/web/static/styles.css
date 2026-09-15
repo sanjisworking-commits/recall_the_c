@@ -4687,6 +4687,62 @@ code {
   color: var(--ink);
 }
 
+/* A numbered statutory list — POTA's 32 organisations. Deliberately shares
+   nothing with the table rules above: it has no columns to size, and reusing
+   them would couple two schedule shapes that only look alike. The serials come
+   from each <li value>, so they read the statute's numbering even if an entry
+   is ever filtered or the list is split. */
+.bareact-schedule-list {
+  margin: 0 0 8px;
+  padding: 4px 0 4px 30px;
+  border: 1px solid var(--hairline);
+  border-radius: 14px;
+  list-style-position: outside;
+}
+
+.bareact-schedule-list-item {
+  padding: 7px 12px 7px 4px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+.bareact-schedule-list-item::marker {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--mid);
+}
+
+.bareact-schedule-list-item + .bareact-schedule-list-item {
+  border-top: 1px solid var(--page);
+}
+
+/* Lifecycle badges. Editorial metadata from the catalogue, never statutory
+   text — a law still in force gets no label at all, so the badge means
+   something wherever it appears. */
+.laws-index-status,
+.bareact-status {
+  margin-left: 8px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--wash);
+  border: 1px solid var(--hairline);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mid);
+  white-space: nowrap;
+}
+
+.bareact-status-note {
+  margin: 6px 0 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
 .bareact-schedule-table th {
   padding: 9px 12px;
   text-align: left;
