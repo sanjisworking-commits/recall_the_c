@@ -136,7 +136,7 @@ BARE_ACTS: dict[str, BareActSpec] = {
         # nesting. Checked type by type against ProvisionRow before reusing it.
         render_profile="bns",
         # Identity of the runtime artifact. The canonical export is schema 1.2
-        # / parser v4 and is archived as uapa_canonical_v4.json.
+        # / parser v5 and is archived as uapa_canonical_v5.json.
         source_version="1",
     ),
 }
