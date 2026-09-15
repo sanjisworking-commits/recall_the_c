@@ -2,7 +2,7 @@
 
 **Scope of this document.** This is the **locked product architecture** for RecallC access: user types, device control for paid Playground, monthly Playground roster, clocks, schema to build, CTA states, sequential batches, the locked commercial catalogue / subscription-access matrix, and remaining device-churn open cells. It is **not** a description of current production behaviour. Current code still uses Razorpay **one-time duration passes** for Constitution. Playground now has an additive `user_subscription` table and Plus/Pro/Max catalogue (M2-A) that **do not yet** gate access. Overlay proof still has **no EntitlementService**, **no checkout**, and **no device registry**. The overlay is a Cloze **proof**, not the finished product.
 
-**Amendment (this revision).** Device restriction applies to the **paid Playground entitlement**, not to signing in or to Constitution Learn. `PLAYGROUND_DEVICE_LIMIT = 2` for every tier. Device identity is a RecallC-issued token (cookie / Android installation UUID), never IP or hardware fingerprinting. This does **not** change roster math (10/30/unlimited).
+**Amendment (Max price).** Displayed Max is **₹1,199**/month GST-inclusive (1,19,900 paise). This supersedes any earlier Max lock of ₹999/month. Plus ₹199 and Pro ₹399 are unchanged. Annual plans remain **not offered** in the MVP.
 
 This document still **supersedes** every prior Playground rule that described **lifetime unlocks**, **cumulative acquisition**, **“new laws per billing cycle,”** **forever-free re-entry after first unlock**, or **`user_playground_law_entitlement UNIQUE(user_id, law_id)` as quota**. Those phrases must **not** be implemented.
 
@@ -24,7 +24,7 @@ Subscriber            → full Constitution + law reading on any device
                       → tier = monthly roster capacity only (not device count)
 ```
 
-Internal SKUs: `plus` / `pro` / `max`. Public names: **Plus** / **Pro** / **Max**. MVP billing is **monthly only** (GST-inclusive): Plus **₹199**/month, Pro **₹399**/month, Max **₹999**/month. Annual plans are **not offered** in the MVP; do not invent annual prices. **Tiers do not change modes, ladders, quality, or device cap** — only **how many distinct laws may be active in the current Playground month**.
+Internal SKUs: `plus` / `pro` / `max`. Public names: **Plus** / **Pro** / **Max**. MVP billing is **monthly only** (GST-inclusive): Plus **₹199**/month, Pro **₹399**/month, Max **₹1,199**/month. Annual plans are **not offered** in the MVP; do not invent annual prices. **Tiers do not change modes, ladders, quality, or device cap** — only **how many distinct laws may be active in the current Playground month**.
 
 ```text
 PLAYGROUND_DEVICE_LIMIT = 2   (same for plus / pro / max)
@@ -176,7 +176,7 @@ When the flag is on:
 
 Copy says “Renews every N days” for longer SKUs; `status_from_paid_order` **always** sets `recurring=False`.
 
-These INR figures describe **today’s duration catalog**. They are **not** Plus/Pro/Max prices. Locked subscription prices are in [§21](#21-commercial-and-provider-cells) (Plus ₹199 / Pro ₹399 / Max ₹999 per month, GST-inclusive).
+These INR figures describe **today’s duration catalog**. They are **not** Plus/Pro/Max prices. Locked subscription prices are in [§21](#21-commercial-and-provider-cells) (Plus ₹199 / Pro ₹399 / Max ₹1,199 per month, GST-inclusive).
 
 ---
 
@@ -631,7 +631,7 @@ Resubscribe: **new** playground period + empty consumption; overlay history **an
 
 | Batch | Builds | Notes |
 |---|---|---|
-| **A — Subscription** | `user_subscription`, product config (`plus`/`pro`/`max` using the **locked** [§21](#21-commercial-and-provider-cells) catalogue: Plus/Pro/Max, monthly GST-inclusive ₹199/₹399/₹999), Checkout/Subscriptions, webhooks (HMAC **raw** body, `x-razorpay-event-id`, out-of-order, secret rotation, reconcile) | **No quota on billing period.** `is_subscribed()` follows the locked matrix. **Do not** offer annual SKUs in the MVP. |
+| **A — Subscription** | `user_subscription`, product config (`plus`/`pro`/`max` using the **locked** [§21](#21-commercial-and-provider-cells) catalogue: Plus/Pro/Max, monthly GST-inclusive ₹199/₹399/₹1,199), Checkout/Subscriptions, webhooks (HMAC **raw** body, `x-razorpay-event-id`, out-of-order, secret rotation, reconcile) | **No quota on billing period.** `is_subscribed()` follows the locked matrix. **Do not** offer annual SKUs in the MVP. |
 | **B — User-type** | Resolver; Guest / signed-in / subscriber; Constitution full for authenticated; stop reading `user_free_articles` / article `access_grants` | Playground still overlay-gated only after C+D+F |
 | **C — Device registry** | `rtc_device` cookie (survives logout); HMAC store; `user_device` + `user_device_session`; atomic cap=2; revoke; `playground_block_reason`; EntitlementService device fields | Tests in [§24](#24-required-tests-document-now-pytest-in-batches-b--c--d--f--do-not-write-pytest-in-this-change). **Same cap all tiers.** No fingerprinting. Replacement **integers still open** for go-live of churn UI. |
 | **D — Monthly roster** | `user_playground_period` + `user_playground_roster_item`; consume; same-month re-add; carry-forward Keep/decline; atomic 9/10; EntitlementService roster fields in §5; **batched** dashboard `list_playground_summaries` | Was Batch C before the device amendment. **Strike** lifetime-unlock table. Period clock = `Asia/Kolkata`. |
@@ -648,7 +648,7 @@ Commercial catalogue, GST-inclusive display, MVP interval, provider-status acces
 | Cell | Status |
 |---|---|
 | Public `display_name` for plus/pro/max | **Locked** — Plus / Pro / Max |
-| INR prices | **Locked** — Plus ₹199 / Pro ₹399 / Max ₹999 per month |
+| INR prices | **Locked** — Plus ₹199 / Pro ₹399 / Max ₹1,199 per month |
 | GST treatment | **Locked** — displayed prices are GST-inclusive |
 | MVP billing interval | **Locked** — monthly only. Annual plans are **not offered** in the MVP. Do not invent annual prices. Future annual billing must still retain **monthly** Playground roster periods (`Asia/Kolkata`). |
 | Provider `status` + `cancel_at_period_end` / paid-period boundaries → access | **Locked** (matrix below). Device is a **separate** conjunct; this matrix is subscription only. |
@@ -665,9 +665,9 @@ Commercial catalogue, GST-inclusive display, MVP interval, provider-status acces
 |--------|-------------|-------------|----------|------------------------|-------------------------------------|
 | `plus` | Plus | ₹199 | monthly | inclusive | 10 active distinct laws |
 | `pro` | Pro | ₹399 | monthly | inclusive | 30 active distinct laws |
-| `max` | Max | ₹999 | monthly | inclusive | unlimited |
+| `max` | Max | ₹1,199 | monthly | inclusive | unlimited |
 
-Internal codes remain `plus` / `pro` / `max`. One current commercial subscription per user. A second checkout must **not** create a parallel subscription (it is an upgrade/change).
+Internal codes remain `plus` / `pro` / `max`. Displayed INR amounts are GST-inclusive. Server amounts in paise: Plus **19,900**; Pro **39,900**; Max **1,19,900**. One current commercial subscription per user. A second checkout must **not** create a parallel subscription (it is an upgrade/change).
 
 ### Subscription → access matrix (locked)
 

@@ -2,14 +2,14 @@
 
 **Scoreboard, not an audit.** Product rules live in [PLAYGROUND.md](PLAYGROUND.md), [PAYMENT_ENTITLEMENT_AUDIT.md](PAYMENT_ENTITLEMENT_AUDIT.md), [PLAYGROUND_TWO_LAW_AUDIT.md](PLAYGROUND_TWO_LAW_AUDIT.md), and [law-loading.md](law-loading.md).
 
-**Snapshot:** architecture/product definition is **locked in docs**. **Stage 1** (build) is **17.6 / 100**. Production implementation is **early**. The NDPS/BNS overlay + Cloze + proof revision rows **do not** count as milestones 6–8. Milestone 1 is `DONE`. Milestone 2 is **`IN PROGRESS` — 13/37** (catalogue + `user_subscription` persistence only; no checkout/webhooks/legacy classification). **Do not tick Stage 2 from Cloze or from `main`’s sitemap PRs.** This branch includes main’s Bare Act SEO and generated sitemap index; that is Milestone 0 coexistence, not Milestone 10 (`noindex`) and not Stage 2.
+**Snapshot:** architecture/product definition is **locked in docs**. **Stage 1** (build) is **17.2 / 100**. Production implementation is **early**. The NDPS/BNS overlay + Cloze + proof revision rows **do not** count as milestones 6–8. Milestone 1 is `DONE`. Milestone 2 is **`IN PROGRESS` — 12/37** (catalogue except Max price + `user_subscription` persistence; no checkout/webhooks/legacy classification). Max is now **locked §21 at ₹1,199**; the server catalogue still has ₹999 until a later code batch. **Do not tick Stage 2 from Cloze or from `main`’s sitemap PRs.** This branch includes main’s Bare Act SEO and generated sitemap index; that is Milestone 0 coexistence, not Milestone 10 (`noindex`) and not Stage 2.
 
 | | |
 |--|--|
-| **Stage 1 (build)** | **17.6 / 100** |
+| **Stage 1 (build)** | **17.2 / 100** |
 | Milestone 0 | `DONE` — 10/10 items × 5 = **5** |
 | Milestone 1 | `DONE` — 18/18 items × 8 = **8** |
-| Milestone 2 | `IN PROGRESS` — 13/37 × 13 ≈ **4.57** (exact: 13/37 of the 13-point weight) |
+| Milestone 2 | `IN PROGRESS` — 12/37 × 13 ≈ **4.22** (exact: 12/37 of the 13-point weight) |
 | Milestones 3–11 | `NOT STARTED`; remaining §21 `BLOCKED` cells are device-churn integers / support channel only |
 | **Stage 2 (optimize)** | **`NOT STARTED` — start gate: Stage 1 = `DONE` (100/100)** |
 
@@ -50,7 +50,7 @@ NOT STARTED | IN PROGRESS | BLOCKED | IN REVIEW | DONE
 
 **§21 remaining `BLOCKED` (do not invent):** `DEVICE_REPLACEMENT_WINDOW_DAYS`, `DEVICE_REPLACEMENT_LIMIT`, support contact channel for device-churn lockout. See [PAYMENT_ENTITLEMENT_AUDIT.md](PAYMENT_ENTITLEMENT_AUDIT.md) §21.
 
-**§21 locked (do not reopen, do not invent alternatives):** public names Plus / Pro / Max; INR prices ₹199 / ₹399 / ₹999 per month; GST-inclusive display; MVP monthly-only (no annual SKUs); provider-status access matrix; `pending` as payment-retry grace with **no** grace-day integer; refund access; dispute/chargeback access. Internal codes `plus` / `pro` / `max` remain locked. This policy lock does **not** tick Milestone 2 implementation checkboxes.
+**§21 locked (do not reopen, do not invent alternatives):** public names Plus / Pro / Max; INR prices ₹199 / ₹399 / ₹1,199 per month; GST-inclusive display; MVP monthly-only (no annual SKUs); provider-status access matrix; `pending` as payment-retry grace with **no** grace-day integer; refund access; dispute/chargeback access. Internal codes `plus` / `pro` / `max` remain locked. This policy lock does **not** tick Milestone 2 implementation checkboxes.
 
 `BLOCKED` is **only** for unresolved product/provider decisions (remaining §21 device-churn cells). Stage 2 is **sequenced**, not blocked. Locked commercial §21 cells are product truth; they are not Milestone 2 completion.
 
@@ -189,13 +189,13 @@ Playground has a scalable backend shell independent of the two-law proof.
 
 # 2. Payment & subscription foundation — 13 points
 
-**Status: `IN PROGRESS` — 13/37** (M2-A: canonical catalogue + `user_subscription` persistence). Earned **13/37 × 13 ≈ 4.57**. Policy lock in §21 does **not** tick lifecycle items. Do **not** call Milestone 2 `DONE`.
+**Status: `IN PROGRESS` — 12/37** (M2-A persistence + catalogue except Max price). Earned **12/37 × 13 ≈ 4.22**. §21 Max is **₹1,199**; this docs lock does **not** retick Final prices. Do **not** call Milestone 2 `DONE`.
 
 ## Commercial model
 
 * [x] Final public tier names — **locked §21** (`Plus` / `Pro` / `Max`)
 * [x] Internal tier codes remain stable (`plus` / `pro` / `max` — **locked**)
-* [x] Final prices — **locked §21** (Plus ₹199 / Pro ₹399 / Max ₹999 per month)
+* [ ] Final prices — **locked §21** (Plus ₹199 / Pro ₹399 / Max ₹1,199 per month). Server catalogue still has Max ₹999; do not tick until code matches.
 * [x] GST display treatment — **locked §21** (displayed prices GST-inclusive)
 * [x] Monthly billing product configuration — **locked §21** (MVP monthly only)
 * [x] Annual billing configuration — **not in MVP** (locked: do not offer annual; do not invent annual prices; future annual still = monthly Playground periods)
@@ -752,7 +752,7 @@ Playground + payment can safely replace the existing commercial entitlement mode
 | --------------------------------- | -----: | ---------- |
 | 0. Architecture + branch baseline |      5 | `DONE` (5 earned) |
 | 1. Backend foundation             |      8 | `DONE` (8 earned; 18/18) |
-| 2. Payment/subscriptions          |     13 | `IN PROGRESS` — 13/37 × 13 ≈ 4.57 |
+| 2. Payment/subscriptions          |     13 | `IN PROGRESS` — 12/37 × 13 ≈ 4.22 |
 | 3. User-type entitlement          |      7 | `NOT STARTED` |
 | 4. Device control                 |      8 | `NOT STARTED` |
 | 5. Monthly roster                 |     12 | `NOT STARTED` |
@@ -762,7 +762,7 @@ Playground + payment can safely replace the existing commercial entitlement mode
 | 9. Amendments/source integrity    |      5 | `NOT STARTED` |
 | 10. SEO/routing discoverability   |      4 | `NOT STARTED` |
 | 11. Production hardening/release  |      7 | `NOT STARTED` |
-| **TOTAL (Stage 1)**               |  **100** | **17.6 / 100** |
+| **TOTAL (Stage 1)**               |  **100** | **17.2 / 100** |
 | Stage 2 — Optimize                |    — | `NOT STARTED` — start gate: Stage 1 = `DONE` (100/100) |
 
 ---
