@@ -572,6 +572,84 @@ def test_no_act_gains_an_unexplained_bracket_orphan(slug: str):
     )
 
 
+def test_every_parser_owned_opener_reaches_the_stream():
+    """Nothing the parser counted may be dropped before validation.
+
+    The stream is what the validator sees, so an opener recorded on a node
+    but never emitted would be invisible to it — which is exactly how the
+    schedule-title brackets escaped the earlier audit.
+    """
+    act = get_bare_act("uapa")
+    owned = sum(s.leading_brackets for s in act.section_order)
+    owned += sum(r.leading_brackets for s in act.section_order for r in s.rows)
+    owned += sum(sc.leading_brackets for sc in act.schedules)
+    owned += sum(e.leading_brackets for sc in act.schedules for e in sc.entries)
+    assert owned == 34
+    stream = act.bracket_stream()
+    opens = sum(1 for c, _ in stream if c == "[")
+    closes = sum(1 for c, _ in stream if c == "]")
+    # The stream carries every owned opener plus the source's own
+    # self-contained pairs, and balances Act-wide.
+    assert opens >= owned
+    assert opens == closes == 80
+
+
+def test_the_validator_does_not_claim_opener_to_closer_attribution():
+    """Counting only.
+
+    Amendment spans run in sequence rather than nesting, and s.2(1)(eb)
+    prints a doubled "[[", so no pairing can be inferred from character
+    order. The API deliberately exposes a stream and an orphan list, and
+    nothing that maps one bracket to another.
+    """
+    act = get_bare_act("uapa")
+    assert not hasattr(act, "bracket_pairs")
+    for entry in act.unbalanced_brackets():
+        assert len(entry) == 2 and entry[0] in {"unmatched-close", "unclosed-open"}
+
+
+# ── Cross-boundary spans, taken from the printed source ───────────────────
+
+
+@pytest.mark.parametrize(
+    "opens_at,closes_in",
+    [("18A", "18B"), ("22A", "22B")],
+)
+def test_a_span_opening_at_one_section_closes_in_the_next(opens_at, closes_in):
+    """The PDF prints "4[18A. ..." and "[22A. ...", closing a section later.
+
+    One amendment inserted both sections each time. Neither balances alone
+    and neither should: closing at the boundary and reopening would be
+    manufacturing source text.
+    """
+    act = get_bare_act("uapa")
+    assert act.section(opens_at).leading_brackets == 1
+    assert act.section(closes_in).leading_brackets == 0
+    assert act.section(closes_in).rows[-1].text.rstrip().endswith("]")
+    # And the opener's own section does not close it.
+    assert not act.section(opens_at).rows[-1].text.rstrip().endswith("]")
+
+
+def test_the_second_schedule_span_closes_in_the_third():
+    act = get_bare_act("uapa")
+    second, third = act.schedule("second-schedule"), act.schedule("third-schedule")
+    assert (second.leading_brackets, third.leading_brackets) == (1, 0)
+    assert third.entries[-1].text.rstrip().endswith("]")
+
+
+@pytest.mark.parametrize(
+    "number,label,fragment",
+    [
+        # Source-local pairs that must survive untouched.
+        ("2", "(ha)", "[a Schedule]"),
+        ("11", None, "[Code]"),
+    ],
+)
+def test_source_local_bracket_pairs_are_preserved(number, label, fragment):
+    rows = _rows(number)
+    assert any(fragment in r.text for r in rows), fragment
+
+
 def test_uapa_has_no_editorial_bracket_orphan_at_all():
     assert get_bare_act("uapa").unbalanced_brackets() == ()
 

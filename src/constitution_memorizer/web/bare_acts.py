@@ -779,6 +779,12 @@ class BareAct:
         `kind` is "unmatched-close" for a closer whose opening was lost — the
         exact failure that marker extraction used to cause — or "unclosed-open"
         for the reverse.
+
+        Counting only. The stack here detects orphans; it does not claim which
+        closer belongs to which opener. Nothing in the source establishes that
+        pairing from character order alone — amendment spans run in sequence
+        rather than nesting, and s.2(1)(eb) prints a doubled ``[[`` — so any
+        inferred opener-to-closer attribution is diagnostic, never canonical.
         """
         stack: list[str] = []
         problems: list[tuple[str, str]] = []
