@@ -13,8 +13,13 @@
 
   {% if section.is_omitted %}
   <div class="bareact-omission" role="note">
-    {% if section.former_title %}<p class="bareact-omission-former">Formerly: {{ section.former_title }}</p>{% endif %}
-    <p class="bareact-omission-note">{{ section.omission_note or 'Omitted.' }}</p>
+    {# NDPS supplies a former_title beside a "[Omitted]" title; UAPA's 16A
+       keeps its whole statement — former heading and amending Act — in the
+       canonical title. Show whichever the source has, and add a separate note
+       only when there is one, so neither case prints a bare "Omitted." over
+       text that already says it. #}
+    <p class="bareact-omission-former">{% if section.former_title %}Formerly: {% endif %}{{ section.omission_heading }}</p>
+    {% if section.omission_note %}<p class="bareact-omission-note">{{ section.omission_note }}</p>{% endif %}
   </div>
   {% else %}
   <div class="bareact-body">
@@ -44,7 +49,17 @@
       {% else %}
       <div class="bareact-row{{ row.row_classes }}" style="--depth: {{ row.depth }}">
         {% if row.shows_marker %}<span class="bareact-row-node" aria-hidden="true"></span>{% endif %}
-        <p class="bareact-row-text">{% if row.is_aside and row.kind == 'explanation' %}<span class="bareact-row-kind">Explanation</span>{% elif row.display_label %}<span class="bareact-row-label">{% if row.label_note_id %}{{ fn.fn_anchor(row.label_note_id, row.display_label) }}{% else %}{{ row.display_label }}{% endif %}</span>{% endif %}{% for seg in row.segments %}{% if seg.is_anchor %}{{ fn.fn_anchor(seg.note_id, seg.text) }}{% else %}{{ seg.text }}{% endif %}{% endfor %}</p>
+        {# The source prints an amended provision as "[(ea) ... ;]". The closing
+           bracket is already in the text wherever the span ends — which may be
+           this node, a descendant, or the end of the next section — so the
+           opening one is emitted here, before the marker, to keep the pair in
+           source order. Nothing is moved and no bracket is manufactured. #}
+        {# A whole-section amendment span opens before the section number in
+           print ("2[17. Punishment ..."). "Section 17" is our own chrome, not
+           source text, so the bracket goes against the first line of statute
+           instead — adjacent to real words, and in the same body as the "]"
+           that closes it. #}
+        <p class="bareact-row-text">{% if loop.first and section.bracket_prefix %}<span class="bareact-amendment-open">{{ section.bracket_prefix }}</span>{% endif %}{% if row.bracket_prefix %}<span class="bareact-amendment-open">{{ row.bracket_prefix }}</span>{% endif %}{% if row.is_aside and row.kind == 'explanation' %}<span class="bareact-row-kind">Explanation</span>{% elif row.display_label %}<span class="bareact-row-label">{% if row.label_note_id %}{{ fn.fn_anchor(row.label_note_id, row.display_label) }}{% else %}{{ row.display_label }}{% endif %}</span>{% endif %}{% for seg in row.segments %}{% if seg.is_anchor %}{{ fn.fn_anchor(seg.note_id, seg.text) }}{% else %}{{ seg.text }}{% endif %}{% endfor %}</p>
       </div>
       {% endif %}
     {% endfor %}

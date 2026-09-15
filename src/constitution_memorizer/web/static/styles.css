@@ -4585,6 +4585,7 @@ code {
 /* The Schedule */
 
 .bareact-schedule-row {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -4594,6 +4595,19 @@ code {
   background: var(--wash);
   text-decoration: none;
   color: inherit;
+}
+
+/* Covers the row so the whole thing stays tappable, while the reference's
+   own section links sit above it and win their own hits. */
+.bareact-schedule-row-link {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.bareact-schedule-row .bareact-reference-link {
+  position: relative;
+  z-index: 1;
 }
 
 .bareact-schedule-row:hover {
@@ -4715,6 +4729,57 @@ code {
 
 .bareact-schedule-list-item + .bareact-schedule-list-item {
   border-top: 1px solid var(--page);
+}
+
+/* The marker is printed from the data, so the list itself shows none: a CSS
+   counter would renumber (i)-(x) and (a)-(c) as 1, 2, 3. */
+.bareact-schedule-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.bareact-schedule-list-item {
+  display: flex;
+  gap: 9px;
+}
+
+.bareact-schedule-marker {
+  flex: none;
+  min-width: 26px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--mid);
+  padding-top: 1px;
+}
+
+/* Interface copy about the source document, not statutory text. Set apart
+   from the law so it cannot be mistaken for it. */
+.bareact-schedule-empty {
+  margin: 0 0 8px;
+  padding: 14px 12px;
+  border: 1px dashed var(--hairline);
+  border-radius: 14px;
+  font-size: 12.5px;
+  font-style: italic;
+  color: var(--faint);
+  text-align: center;
+}
+
+/* An editorial amendment bracket the source printed before a marker. Same
+   ink as the provision: it is source text, not an annotation. */
+.bareact-amendment-open {
+  color: inherit;
+}
+
+.bareact-reference-link {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: var(--hairline);
+}
+
+.bareact-reference-link:hover {
+  text-decoration-color: currentColor;
 }
 
 /* Lifecycle badges. Editorial metadata from the catalogue, never statutory

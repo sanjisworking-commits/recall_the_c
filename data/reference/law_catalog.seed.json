@@ -131,21 +131,26 @@
     },
     {
       "id": "uapa-1967",
-      "title": "Unlawful Activities (Prevention) Act, 1967",
+      "title": "The Unlawful Activities (Prevention) Act, 1967",
       "short_title": "UAPA",
       "year": 1967,
       "aliases": [
-        "Unlawful Activities Prevention Act"
+        "UAPA",
+        "Unlawful Activities (Prevention) Act",
+        "Unlawful Activities Prevention Act",
+        "Unlawful Activities (Prevention) Act, 1967"
       ],
       "subjects": [
         "criminal"
       ],
       "primary_subject": "criminal",
       "display_order": 20,
-      "scope_label": "Arts 19, 22",
-      "primary_content": "key_provisions",
+      "scope_label": "7 Chapters · Sections 1–53",
+      "primary_content": "full_act",
       "content": {
-        "full_act": null,
+        "full_act": {
+          "ref": "uapa"
+        },
         "key_provisions": {
           "ref": "uapa-1967"
         }
