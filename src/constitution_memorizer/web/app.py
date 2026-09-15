@@ -605,6 +605,14 @@ def create_app(
     # JSON payload ever reads it.
     app.state.razorpay_key_id = str(settings.razorpay_key_id or "")
     app.state.razorpay_key_secret = str(settings.razorpay_key_secret or "")
+    from constitution_memorizer.subscriptions.webhook_signature import (  # noqa: PLC0415
+        WebhookSecrets,
+    )
+
+    app.state.webhook_secrets = WebhookSecrets(
+        current=str(settings.razorpay_webhook_secret or ""),
+        previous=str(settings.razorpay_webhook_secret_previous or ""),
+    )
     app.state.use_postgres_progress = use_postgres
     app.state.oauth_states = {}
     app.state.otp_limiter = OtpRateLimiter()
@@ -730,6 +738,105 @@ def create_app(
     app.state.admin_enabled = bool(settings.admin_enabled)
     app.state.admin_hint_cache = AdminHintCache()
 
+    # Playground overlay shares the pool other stores already opened. Do not
+    # call _ensure_pool() here: tests inject every Postgres repo so that
+    # create_app leaves db_pool None.
+    if db_pool is not None:
+        from constitution_memorizer.playground.postgres import (  # noqa: PLC0415
+            PostgresPlaygroundRepository,
+        )
+
+        app.state.playground = PostgresPlaygroundRepository(db_pool)
+    else:
+        from constitution_memorizer.playground.db import (  # noqa: PLC0415
+            ensure_sqlite_schema,
+        )
+        from constitution_memorizer.playground.repository import (  # noqa: PLC0415
+            SqlitePlaygroundRepository,
+        )
+
+        conn = getattr(engine.repo, "conn", None)
+        if conn is not None and not use_postgres:
+            ensure_sqlite_schema(conn)
+            app.state.playground = SqlitePlaygroundRepository(conn)
+        else:
+            app.state.playground = None
+
+    if db_pool is not None:
+        from constitution_memorizer.subscriptions.postgres import (  # noqa: PLC0415
+            PostgresSubscriptionRepository,
+        )
+
+        app.state.subscriptions = PostgresSubscriptionRepository(db_pool)
+    else:
+        from constitution_memorizer.subscriptions.db import (  # noqa: PLC0415
+            ensure_sqlite_schema as ensure_subscription_sqlite_schema,
+        )
+        from constitution_memorizer.subscriptions.repository import (  # noqa: PLC0415
+            SqliteSubscriptionRepository,
+        )
+
+        conn = getattr(engine.repo, "conn", None)
+        if conn is not None and not use_postgres:
+            ensure_subscription_sqlite_schema(conn)
+            app.state.subscriptions = SqliteSubscriptionRepository(conn)
+        else:
+            app.state.subscriptions = None
+
+    app.state.subscription_service = None
+    if app.state.subscriptions is not None:
+        from constitution_memorizer.subscriptions.config import (  # noqa: PLC0415
+            plan_ids_from_settings,
+        )
+        from constitution_memorizer.subscriptions.razorpay import (  # noqa: PLC0415
+            RazorpaySubscriptionsClient,
+        )
+        from constitution_memorizer.subscriptions.service import (  # noqa: PLC0415
+            SubscriptionService,
+        )
+
+        app.state.subscription_service = SubscriptionService(
+            app.state.subscriptions,
+            RazorpaySubscriptionsClient(
+                app.state.razorpay_key_id,
+                app.state.razorpay_key_secret,
+            ),
+            plan_ids_from_settings(settings),
+            public_key_id=app.state.razorpay_key_id,
+        )
+
+    app.state.webhook_events = None
+    app.state.webhook_processor = None
+    if db_pool is not None:
+        from constitution_memorizer.subscriptions.webhook_postgres import (  # noqa: PLC0415
+            PostgresWebhookEventRepository,
+        )
+
+        app.state.webhook_events = PostgresWebhookEventRepository(db_pool)
+    else:
+        from constitution_memorizer.subscriptions.webhook_repository import (  # noqa: PLC0415
+            SqliteWebhookEventRepository,
+        )
+
+        conn = getattr(engine.repo, "conn", None)
+        if conn is not None and not use_postgres and app.state.subscriptions is not None:
+            app.state.webhook_events = SqliteWebhookEventRepository(conn)
+
+    if (
+        app.state.webhook_events is not None
+        and app.state.subscription_service is not None
+    ):
+        from constitution_memorizer.subscriptions.webhooks import (  # noqa: PLC0415
+            WebhookProcessor,
+        )
+
+        app.state.webhook_processor = WebhookProcessor(
+            events=app.state.webhook_events,
+            subscriptions=app.state.subscriptions,
+            service=app.state.subscription_service,
+            secrets=app.state.webhook_secrets,
+        )
+
     app.state.db_pool = db_pool
 
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
@@ -812,7 +919,20 @@ def create_app(
     app.include_router(create_admin_router(templates))
 
     from constitution_memorizer.calendar_sync.routes import router as gcal_router
+    from constitution_memorizer.playground.routes import (  # noqa: PLC0415
+        create_playground_router,
+    )
     from constitution_memorizer.speech.routes import router as speech_router
+    from constitution_memorizer.subscriptions.routes import (  # noqa: PLC0415
+        create_subscription_router,
+    )
+    from constitution_memorizer.subscriptions.webhook_routes import (  # noqa: PLC0415
+        create_webhook_router,
+    )
+
+    app.include_router(create_playground_router(templates))
+    app.include_router(create_subscription_router(templates))
+    app.include_router(create_webhook_router())
 
     app.include_router(gcal_router)
     app.include_router(speech_router)
@@ -2703,6 +2823,20 @@ def create_app(
         # Articles, so it keeps the page it has always had.
         bare = get_bare_act(law_id)
         if bare is not None:
+            from constitution_memorizer.playground.eligibility import (  # noqa: PLC0415
+                is_playground_eligible_law,
+            )
+            from constitution_memorizer.playground.http import (  # noqa: PLC0415
+                playground_user_id,
+            )
+
+            in_playground = False
+            playground = getattr(app.state, "playground", None)
+            uid = playground_user_id(request)
+            if playground is not None and uid is not None and is_playground_eligible_law(
+                bare.slug
+            ):
+                in_playground = playground.get_item(uid, bare.slug) is not None
             started = time.perf_counter()
             seo_title, seo_description = build_law_seo(
                 law_name=bare.title, meta_label=bare.meta_label
@@ -2722,6 +2856,8 @@ def create_app(
                     "seo_description": seo_description,
                     "canonical_url": law_canonical_url(bare.slug),
                     "structured_data_json": serialize_structured_data(breadcrumb),
+                    "playground_eligible": is_playground_eligible_law(bare.slug),
+                    "in_playground": in_playground,
                 },
             )
             record_request_timing("template", started)
@@ -2856,6 +2992,7 @@ def create_app(
         )
         record_request_timing("template", started)
         return response
+
 
     @app.get("/memory", response_class=HTMLResponse)
     async def memory_page(

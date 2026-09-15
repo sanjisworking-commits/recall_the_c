@@ -80,6 +80,7 @@ NOINDEX_PATH_PREFIXES: tuple[str, ...] = (
     "/onboarding",
     "/playground",
     "/subscribe",
+    "/billing",
     "/admin",
     "/welcome",
     # Transient auth surfaces — flows and states, not indexable content.

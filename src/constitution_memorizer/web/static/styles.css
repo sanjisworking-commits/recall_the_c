@@ -9601,3 +9601,89 @@ body.is-admin-previewing { padding-top: 40px; }
   }
 }
 
+.playground-add {
+  margin: 12px 0 0;
+}
+
+.playground-add-btn,
+.playground-btn {
+  font: inherit;
+  cursor: pointer;
+  border: 1px solid var(--line, #c9c2b4);
+  background: var(--paper, #f4f1ea);
+  color: inherit;
+  padding: 8px 14px;
+  border-radius: 8px;
+}
+
+.playground-add-btn:hover,
+.playground-btn:hover {
+  border-color: var(--ink, #1b1a17);
+}
+
+.playground-page h1,
+.playground-select h1,
+.playground-law h1,
+.playground-cloze h1 {
+  font-family: Fraunces, Georgia, serif;
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+
+.playground-lede {
+  margin: 0 0 20px;
+  color: var(--muted, #5c574d);
+}
+
+.playground-cards {
+  display: grid;
+  gap: 12px;
+}
+
+.playground-card {
+  border: 1px solid var(--line, #c9c2b4);
+  border-radius: 12px;
+  padding: 16px 18px;
+}
+
+.playground-card h2 {
+  margin: 0 0 6px;
+  font-size: 1.05rem;
+}
+
+.playground-meta {
+  margin: 0 0 12px;
+  font-size: 0.92rem;
+  color: var(--muted, #5c574d);
+}
+
+.playground-flag {
+  margin: 0 0 10px;
+  color: #8a4b12;
+}
+
+.playground-section-pick {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-height: 70vh;
+  overflow: auto;
+}
+
+.playground-section-pick li {
+  display: flex;
+  gap: 10px;
+  align-items: baseline;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line, #e6e0d4);
+}
+
+.playground-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: baseline;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line, #e6e0d4);
+}
+

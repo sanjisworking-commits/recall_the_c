@@ -70,6 +70,33 @@ Index search uses `search_blob` on this seed. It must not parse every Act.
    changing public routes. Do not implement chunking here.
 6. Do not implement cross-law search by loading every Act.
 
+## Sitemap (never hydrate Acts)
+
+**Root sitemap/index and sitemap discovery must never hydrate runtime/canonical JSON. Sitemap URL enumeration comes from a lightweight build-time manifest, not request-time Act hydration.**
+
+Current public layout (generic Bare Act SEO/sitemap from production `main`):
+
+```text
+/sitemap.xml              generated sitemap index
+/sitemap-core.xml         static Constitution + marketing urlset
+/sitemap-laws.xml         the /laws hub
+/sitemap-laws-{slug}.xml  one urlset per registered full Bare Act
+```
+
+The index and per-law urlsets are built from the lightweight `BARE_ACTS` registry (`BareActSpec`) plus the committed manifest [`data/reference/law_sitemap_manifest.json`](../data/reference/law_sitemap_manifest.json). Request handlers MUST NOT call `get_bare_act()` / `list_bare_acts()` or open runtime/canonical statute JSON. Rebuild the manifest during ingestion/build (`scripts/build_law_sitemap_manifest.py`), never during a web request.
+
+Manifest fields:
+
+```text
+slug
+source_version
+section identifiers
+public schedule slugs
+optional trustworthy last_modified
+```
+
+Playground, roster, Learn, device, account, and other personalized URLs **never** enter a sitemap. See [PLAYGROUND.md](PLAYGROUND.md). Public `/laws*` remains the indexable surface. Do not add a second SEO engine. Playground `noindex` / `X-Robots-Tag` is a later Stage 1 batch.
+
 ## Later stages (not this batch)
 
 | Stage | When |
@@ -77,4 +104,4 @@ Index search uses `search_blob` on this seed. It must not parse every Act.
 | Per-law indexes + chapter/section chunks | ~10–30+ larger Acts |
 | DB/object-store corpus + precomputed search index | hundreds of laws or cross-law querying |
 
-BNSS and further Acts land only after this contract is enforced by tests.
+BNSS is already a registered full Bare Act under this loader. Further Acts land only after this contract is enforced by tests.
