@@ -5,7 +5,7 @@
   "act_number": "37 of 1967",
   "date": "30th December, 1967",
   "source_type": "reference_pdf_compilation",
-  "parser": "PyMuPDF deterministic geometry parser (UAPA v4)",
+  "parser": "PyMuPDF deterministic geometry parser (UAPA v5)",
   "source_file": {
    "filename": "Unlawful Activities (Prevention) Act, 1967.pdf",
    "sha256": "29c250620d22aaff2253766aa4436d860d93c2361df69c992ebc250c82f4322f",
@@ -127,7 +127,8 @@
      ],
      "source_pages": [
       4
-     ]
+     ],
+     "leading_brackets": 1
     },
     {
      "id": "section_2",
@@ -194,16 +195,18 @@
          "children": [],
          "source_pages": [
           5
-         ]
+         ],
+         "leading_brackets": 1
         },
         {
          "type": "clause",
          "label": "(eb)",
-         "text": "“Order” means the Prevention and Suppression of Terrorism (Implementation of Security Council Resolutions) Order, 2007, as may be amended from time to time;]",
+         "text": "] “Order” means the Prevention and Suppression of Terrorism (Implementation of Security Council Resolutions) Order, 2007, as may be amended from time to time;]",
          "children": [],
          "source_pages": [
           5
-         ]
+         ],
+         "leading_brackets": 2
         },
         {
          "type": "clause",
@@ -267,7 +270,8 @@
          ],
          "source_pages": [
           5
-         ]
+         ],
+         "leading_brackets": 1
         },
         {
          "type": "clause",
@@ -304,7 +308,8 @@
          ],
          "source_pages": [
           5
-         ]
+         ],
+         "leading_brackets": 1
         },
         {
          "type": "clause",
@@ -313,7 +318,8 @@
          "children": [],
          "source_pages": [
           5
-         ]
+         ],
+         "leading_brackets": 1
         },
         {
          "type": "clause",
@@ -1177,7 +1183,8 @@
      ],
      "source_pages": [
       10
-     ]
+     ],
+     "leading_brackets": 1
     },
     {
      "id": "section_11",
@@ -1337,7 +1344,7 @@
       {
        "type": "subsection",
        "label": "(1)",
-       "text": "Whoever does any act with intent to threaten or likely to threaten the unity, integrity, security [, economic security,] or sovereignty of India or with intent to strike terror or likely to strike terror in the people or any section of the people in India or in any foreign country,—",
+       "text": "] Whoever does any act with intent to threaten or likely to threaten the unity, integrity, security [, economic security,] or sovereignty of India or with intent to strike terror or likely to strike terror in the people or any section of the people in India or in any foreign country,—",
        "children": [
         {
          "type": "clause",
@@ -1378,7 +1385,8 @@
            "children": [],
            "source_pages": [
             11
-           ]
+           ],
+           "leading_brackets": 1
           },
           {
            "type": "subclause",
@@ -1438,12 +1446,14 @@
          ],
          "source_pages": [
           11
-         ]
+         ],
+         "leading_brackets": 1
         }
        ],
        "source_pages": [
         11
-       ]
+       ],
+       "leading_brackets": 1
       },
       {
        "type": "subsection",
@@ -1452,13 +1462,15 @@
        "children": [],
        "source_pages": [
         12
-       ]
+       ],
+       "leading_brackets": 1
       }
      ],
      "source_pages": [
       11,
       12
-     ]
+     ],
+     "leading_brackets": 1
     },
     {
      "id": "section_16",
@@ -1570,7 +1582,8 @@
      ],
      "source_pages": [
       12
-     ]
+     ],
+     "leading_brackets": 1
     },
     {
      "id": "section_18",
@@ -1614,7 +1627,8 @@
      ],
      "source_pages": [
       12
-     ]
+     ],
+     "leading_brackets": 1
     },
     {
      "id": "section_18b",
@@ -1802,7 +1816,8 @@
      ],
      "source_pages": [
       13
-     ]
+     ],
+     "leading_brackets": 1
     },
     {
      "id": "section_22b",
@@ -1971,7 +1986,8 @@
      ],
      "source_pages": [
       14
-     ]
+     ],
+     "leading_brackets": 1
     },
     {
      "id": "section_24a",
@@ -2140,7 +2156,8 @@
            "children": [],
            "source_pages": [
             15
-           ]
+           ],
+           "leading_brackets": 1
           },
           {
            "type": "clause",
@@ -2437,7 +2454,8 @@
        "children": [],
        "source_pages": [
         17
-       ]
+       ],
+       "leading_brackets": 1
       },
       {
        "type": "subsection",
@@ -2614,7 +2632,8 @@
        "children": [],
        "source_pages": [
         18
-       ]
+       ],
+       "leading_brackets": 1
       },
       {
        "type": "subsection",
@@ -2678,7 +2697,8 @@
          "children": [],
          "source_pages": [
           18
-         ]
+         ],
+         "leading_brackets": 1
         }
        ],
        "source_pages": [
@@ -3008,7 +3028,8 @@
          ],
          "source_pages": [
           20
-         ]
+         ],
+         "leading_brackets": 1
         }
        ],
        "source_pages": [
@@ -3126,7 +3147,8 @@
          "children": [],
          "source_pages": [
           20
-         ]
+         ],
+         "leading_brackets": 1
         },
         {
          "type": "clause",
@@ -3178,7 +3200,8 @@
      "source_pages": [
       20,
       21
-     ]
+     ],
+     "leading_brackets": 1
     },
     {
      "id": "section_43b",
@@ -3593,7 +3616,7 @@
       {
        "type": "subsection",
        "label": "(1)",
-       "text": "No court shall take cognizance of any offence—",
+       "text": "] No court shall take cognizance of any offence—",
        "children": [
         {
          "type": "clause",
@@ -3616,7 +3639,8 @@
        ],
        "source_pages": [
         23
-       ]
+       ],
+       "leading_brackets": 1
       },
       {
        "type": "subsection",
@@ -3625,7 +3649,8 @@
        "children": [],
        "source_pages": [
         23
-       ]
+       ],
+       "leading_brackets": 1
       }
      ],
      "source_pages": [
@@ -3860,7 +3885,8 @@
      ],
      "source_pages": [
       24
-     ]
+     ],
+     "leading_brackets": 1
     },
     {
      "id": "section_52",
@@ -3936,7 +3962,8 @@
          "children": [],
          "source_pages": [
           24
-         ]
+         ],
+         "leading_brackets": 1
         },
         {
          "type": "clause",
@@ -3968,12 +3995,13 @@
       {
        "type": "subsection",
        "label": "(1)",
-       "text": "Every order and every rule made by the Central Government under this Act shall be laid, as soon as may be after it is made, before each House of Parliament, while it is in session, for a total period of thirty days which may be comprised in one session or in two or more successive sessions, and if, before the expiry of the session immediately following the session or the successive sessions aforesaid, both Houses agree in making any modification in the order or rule or both Houses agree that the order or rule should not be made, the order or rule shall thereafter have effect only in such modified form or be of no effect, as the case may be; so, however, that any such modification or annulment shall be without prejudice to the validity of anything previously done under that order or rule.",
+       "text": "] Every order and every rule made by the Central Government under this Act shall be laid, as soon as may be after it is made, before each House of Parliament, while it is in session, for a total period of thirty days which may be comprised in one session or in two or more successive sessions, and if, before the expiry of the session immediately following the session or the successive sessions aforesaid, both Houses agree in making any modification in the order or rule or both Houses agree that the order or rule should not be made, the order or rule shall thereafter have effect only in such modified form or be of no effect, as the case may be; so, however, that any such modification or annulment shall be without prejudice to the validity of anything previously done under that order or rule.",
        "children": [],
        "source_pages": [
         24,
         25
-       ]
+       ],
+       "leading_brackets": 1
       },
       {
        "type": "subsection",
@@ -3982,7 +4010,8 @@
        "children": [],
        "source_pages": [
         25
-       ]
+       ],
+       "leading_brackets": 1
       }
      ],
      "source_pages": [
@@ -4239,7 +4268,8 @@
      "text": "Organisations listed in the Schedule to the U.N. Prevention and Suppression of Terrorism (Implementation of Security Council Resolutions) Order, 2007 made under section 2 of the United Nations (Security Council) Act, 1947(43 of 1947) and amended from time to time.]",
      "source_pages": [
       27
-     ]
+     ],
+     "leading_brackets": 1
     }
    ],
    "source_pages": [
@@ -4323,7 +4353,8 @@
      "text": "International Convention for Suppression of Acts of Nuclear Terrorism (2005).]",
      "source_pages": [
       28
-     ]
+     ],
+     "leading_brackets": 1
     }
    ],
    "source_pages": [
@@ -4940,11 +4971,11 @@
   "empty_leaf_nodes": 0,
   "source_parenthesised_markers": 263,
   "parsed_parenthesised_markers": 263,
-  "source_blocks": 2368,
-  "consumed_blocks": 2368,
+  "source_blocks": 2365,
+  "consumed_blocks": 2365,
   "unmatched_blocks": 0,
-  "source_characters": 267567,
-  "consumed_characters": 267567,
+  "source_characters": 267625,
+  "consumed_characters": 267625,
   "coverage_percent": 100.0,
   "blocking_errors": 0,
   "warnings": 0,

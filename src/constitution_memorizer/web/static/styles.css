@@ -4765,6 +4765,12 @@ code {
   text-align: center;
 }
 
+/* An editorial amendment bracket the source printed before a marker. Same
+   ink as the provision: it is source text, not an annotation. */
+.bareact-amendment-open {
+  color: inherit;
+}
+
 .bareact-reference-link {
   color: inherit;
   text-decoration: underline;

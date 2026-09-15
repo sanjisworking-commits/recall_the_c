@@ -34,7 +34,7 @@ from constitution_memorizer.web.bare_acts import BARE_ACTS, get_bare_act
 
 REPO = Path(__file__).resolve().parents[1]
 MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
-ARCHIVAL = REPO / "data" / "reference" / "uapa_canonical_v4.json"
+ARCHIVAL = REPO / "data" / "reference" / "uapa_canonical_v5.json"
 RUNTIME = REPO / "src" / "constitution_memorizer" / "web" / "uapa_runtime_v1.json"
 
 LETTERED = [
@@ -539,6 +539,131 @@ def test_other_acts_schedule_rows_keep_their_content(
     schedule = next(s for s in act.schedules if s.is_navigable)
     assert schedule.range_label in row
     assert f'href="/laws/{slug}/schedule/{schedule.slug}"' in row
+
+
+# ── Editorial amendment brackets ──────────────────────────────────────────
+
+
+@pytest.mark.parametrize("slug", ["uapa", "pota", "ndps", "bns", "bnss"])
+def test_no_act_has_an_unbalanced_editorial_bracket(slug: str):
+    """The validator this defect exists for.
+
+    v4's marker regexes consumed the "[" that opens an amendment span, leaving
+    26 provisions ending in an orphaned "]". Balance is asserted Act-wide in
+    document order, never per node or per section: the source opens a span at
+    s.18A and closes it at the end of s.18B.
+    """
+    assert get_bare_act(slug).unbalanced_brackets() == ()
+
+
+def test_the_validator_catches_a_lost_opening_bracket():
+    """Guards the guard: a stream with a lost "[" must be reported."""
+    from constitution_memorizer.web.bare_acts import BareAct
+
+    act = get_bare_act("uapa")
+    stripped = [
+        (c, w) for c, w in act.bracket_stream() if not (c == "[" and "s17" in w)
+    ]
+    stack, problems = [], []
+    for char, where in stripped:
+        if char == "[":
+            stack.append(where)
+        elif stack:
+            stack.pop()
+        else:
+            problems.append(where)
+    assert problems, "removing an opener must leave a closer unmatched"
+
+
+@pytest.mark.parametrize(
+    "number,label,count",
+    [("2", "(ea)", 1), ("2", "(eb)", 2), ("2", "(ec)", 1), ("15", "(iiia)", 1),
+     ("25", "(ca)", 1), ("36", "(c)", 1), ("43", "(ba)", 1), ("52", "(ee)", 1)],
+)
+def test_amendment_spans_reopen_before_their_marker(number, label, count):
+    (row,) = [r for r in _rows(number) if r.label == label]
+    assert row.leading_brackets == count
+    assert row.bracket_prefix == "[" * count
+
+
+@pytest.mark.parametrize(
+    "number", ["1", "10", "15", "17", "18A", "22A", "24", "43A", "51A"]
+)
+def test_the_nine_amended_section_headings_keep_their_bracket(number: str):
+    """Whole sections printed as amendment spans: ``2[17. ...``."""
+    section = get_bare_act("uapa").section(number)
+    assert section.leading_brackets == 1
+    assert section.bracket_prefix == "["
+
+
+def test_sections_not_printed_as_amendments_carry_no_bracket():
+    """Narrowly typed: only a parser-counted bracket renders one."""
+    act = get_bare_act("uapa")
+    for number in ("2", "3", "16A", "53"):
+        assert act.section(number).leading_brackets == 0
+        assert act.section(number).bracket_prefix == ""
+
+
+def test_the_three_originally_reported_orphans_are_closed():
+    """2(1)(ea), 2(1)(eb) and 2(1)(ec)(vi) — the sites first spotted."""
+    act = get_bare_act("uapa")
+    for label in ("(ea)", "(eb)"):
+        (row,) = [r for r in act.section("2").rows if r.label == label]
+        assert row.text.rstrip().endswith(";]")
+        assert row.leading_brackets >= 1
+    (vi,) = [
+        r for r in act.section("2").rows
+        if r.label == "(vi)" and "preceding sub-clauses" in r.text
+    ]
+    # Its opener is on the ancestor clause (ec), not on itself.
+    assert vi.leading_brackets == 0
+    (ec,) = [r for r in act.section("2").rows if r.label == "(ec)"]
+    assert ec.leading_brackets == 1
+
+
+def test_a_prose_bracket_pair_is_left_exactly_alone():
+    """s.2(1)(ha) prints "8[a Schedule]" — a balanced pair inside prose."""
+    (ha,) = [r for r in _rows("2") if r.label == "(ha)"]
+    assert "[a Schedule]" in ha.text
+    assert ha.leading_brackets == 0
+
+
+def test_the_doubled_bracket_at_2_1_eb_keeps_both_opens():
+    """The source prints "[[(eb)] "Order" ...": two opens, then the marker."""
+    (eb,) = [r for r in _rows("2") if r.label == "(eb)"]
+    assert eb.leading_brackets == 2
+    assert eb.text.startswith("]")
+
+
+def test_the_18a_to_18b_span_is_left_crossing_the_boundary():
+    """One pair opens at 18A and closes at the end of 18B.
+
+    Neither section balances alone, and neither should: closing at the
+    boundary and reopening would be manufacturing source text.
+    """
+    act = get_bare_act("uapa")
+    assert act.section("18A").leading_brackets == 1
+    assert act.section("18B").leading_brackets == 0
+    tail = act.section("18B").rows[-1].text
+    assert tail.rstrip().endswith("]")
+
+
+def test_the_brackets_render_before_the_marker_in_the_dom(tmp_path: Path):
+    client, _ = _client(tmp_path)
+    html = client.get("/laws/uapa/section/2").text
+    assert '<span class="bareact-amendment-open">[</span>' in html
+    assert '<span class="bareact-amendment-open">[[</span>' in html
+    # Source order: the bracket precedes the label, never follows it.
+    opened = html.split('<span class="bareact-amendment-open">[</span>', 1)[1]
+    assert opened.lstrip().startswith('<span class="bareact-row-label">')
+
+
+def test_an_amended_section_heading_renders_its_bracket(tmp_path: Path):
+    client, _ = _client(tmp_path)
+    html = client.get("/laws/uapa/section/17").text
+    assert '<span class="bareact-amendment-open">[</span>Section 17' in html
+    plain = client.get("/laws/uapa/section/3").text
+    assert "bareact-amendment-open" not in plain
 
 
 # ── The other Acts are untouched ──────────────────────────────────────────

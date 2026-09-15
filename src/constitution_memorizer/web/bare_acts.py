@@ -189,6 +189,21 @@ class ProvisionRow:
     # Illustration containers hold no text of their own; the child count is
     # what decides "Illustration" against "Illustrations".
     child_count: int = 0
+    # How many editorial amendment brackets the source printed immediately
+    # before this provision's marker. An int the parser counted, never a
+    # general "has metadata" signal: only a positive count renders a bracket.
+    leading_brackets: int = 0
+
+    @property
+    def bracket_prefix(self) -> str:
+        """The "[" run that belongs before the marker, or "".
+
+        The source prints an amended provision as ``3[(ea) ... ;]`` — footnote
+        anchor, opening bracket, then the marker. The closing bracket already
+        lives in the text, wherever the span ends, so emitting this keeps the
+        pair balanced and in source order without moving any text.
+        """
+        return "[" * self.leading_brackets if self.leading_brackets > 0 else ""
 
     @property
     def is_table(self) -> bool:
@@ -598,6 +613,12 @@ class ActSection:
     division_id: str | None = None
     division_title: str | None = None
     starts_division: bool = False
+    # Nine UAPA sections are printed as whole amendment spans (``2[17. ...``).
+    leading_brackets: int = 0
+
+    @property
+    def bracket_prefix(self) -> str:
+        return "[" * self.leading_brackets if self.leading_brackets > 0 else ""
 
     @property
     def is_omitted(self) -> bool:
@@ -693,6 +714,45 @@ class BareAct:
             if sched.slug == slug:
                 return sched
         return None
+
+    def bracket_stream(self) -> tuple[tuple[str, str], ...]:
+        """Every editorial bracket in the Act, in canonical document order.
+
+        Each item is ``(character, where)``. Balance is an Act-wide property,
+        never a per-node or per-section one: the source opens a span at s.18A
+        and closes it at the end of s.18B, and opens at a clause and closes on
+        a descendant. Checking any smaller unit would demand manufacturing a
+        close/open pair at the boundary, which would be inventing source text.
+        """
+        stream: list[tuple[str, str]] = []
+        for section in self.section_order:
+            where = f"s{section.number}"
+            stream.extend((c, f"{where} heading") for c in section.bracket_prefix)
+            stream.extend((c, f"{where} title") for c in section.title if c in "[]")
+            for row in section.rows:
+                label = row.label or row.kind
+                stream.extend((c, f"{where} {label}") for c in row.bracket_prefix)
+                stream.extend((c, f"{where} {label}") for c in row.text if c in "[]")
+        return tuple(stream)
+
+    def unbalanced_brackets(self) -> tuple[tuple[str, str], ...]:
+        """Brackets with no partner, as ``(kind, where)``. Empty when sound.
+
+        `kind` is "unmatched-close" for a closer whose opening was lost — the
+        exact failure that marker extraction used to cause — or "unclosed-open"
+        for the reverse.
+        """
+        stack: list[str] = []
+        problems: list[tuple[str, str]] = []
+        for char, where in self.bracket_stream():
+            if char == "[":
+                stack.append(where)
+            elif stack:
+                stack.pop()
+            else:
+                problems.append(("unmatched-close", where))
+        problems.extend(("unclosed-open", where) for where in stack)
+        return tuple(problems)
 
     def reference_segments(self, text: str) -> tuple[ReferenceSegment, ...]:
         """A schedule's reference, split so section citations can be links.
@@ -1216,6 +1276,7 @@ def flatten_body(nodes, depth: int = 0, *, profile: str = "ndps") -> tuple[Provi
             label_annotations=tuple(node.get("label_annotations") or ()),
             profile=profile,
             child_count=len(children),
+            leading_brackets=int(node.get("leading_brackets") or 0),
         )
         if text or label or row.is_illustration_heading or row.is_table:
             rows.append(row)
@@ -1260,6 +1321,7 @@ def _parse(
                 status=str(raw_section.get("status") or "active"),
                 former_title=raw_section.get("former_title"),
                 omission_note=raw_section.get("omission_note"),
+                leading_brackets=int(raw_section.get("leading_brackets") or 0),
                 chapter_number=chapter_number,
                 chapter_title=chapter_title,
                 body=tuple(raw_section.get("body") or []),

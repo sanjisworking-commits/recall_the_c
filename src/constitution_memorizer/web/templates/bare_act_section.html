@@ -8,7 +8,7 @@
     <a class="mobile-back" href="/laws/{{ act.slug }}">{{ act.back_label }}</a>
   </div>
   <p class="bareact-reader-eyebrow">Chapter {{ section.chapter_number }} · {{ section.chapter_title }}</p>
-  <h1 class="bareact-reader-title">Section {{ section.number }}</h1>
+  <h1 class="bareact-reader-title">{% if section.bracket_prefix %}<span class="bareact-amendment-open">{{ section.bracket_prefix }}</span>{% endif %}Section {{ section.number }}</h1>
   <p class="bareact-reader-sub">{{ section.list_title }}</p>
 
   {% if section.is_omitted %}
@@ -49,7 +49,12 @@
       {% else %}
       <div class="bareact-row{{ row.row_classes }}" style="--depth: {{ row.depth }}">
         {% if row.shows_marker %}<span class="bareact-row-node" aria-hidden="true"></span>{% endif %}
-        <p class="bareact-row-text">{% if row.is_aside and row.kind == 'explanation' %}<span class="bareact-row-kind">Explanation</span>{% elif row.display_label %}<span class="bareact-row-label">{% if row.label_note_id %}{{ fn.fn_anchor(row.label_note_id, row.display_label) }}{% else %}{{ row.display_label }}{% endif %}</span>{% endif %}{% for seg in row.segments %}{% if seg.is_anchor %}{{ fn.fn_anchor(seg.note_id, seg.text) }}{% else %}{{ seg.text }}{% endif %}{% endfor %}</p>
+        {# The source prints an amended provision as "[(ea) ... ;]". The closing
+           bracket is already in the text wherever the span ends — which may be
+           this node, a descendant, or the end of the next section — so the
+           opening one is emitted here, before the marker, to keep the pair in
+           source order. Nothing is moved and no bracket is manufactured. #}
+        <p class="bareact-row-text">{% if row.bracket_prefix %}<span class="bareact-amendment-open">{{ row.bracket_prefix }}</span>{% endif %}{% if row.is_aside and row.kind == 'explanation' %}<span class="bareact-row-kind">Explanation</span>{% elif row.display_label %}<span class="bareact-row-label">{% if row.label_note_id %}{{ fn.fn_anchor(row.label_note_id, row.display_label) }}{% else %}{{ row.display_label }}{% endif %}</span>{% endif %}{% for seg in row.segments %}{% if seg.is_anchor %}{{ fn.fn_anchor(seg.note_id, seg.text) }}{% else %}{{ seg.text }}{% endif %}{% endfor %}</p>
       </div>
       {% endif %}
     {% endfor %}
