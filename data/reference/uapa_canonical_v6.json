@@ -5,7 +5,7 @@
     "act_number": "37 of 1967",
     "date": "30th December, 1967",
     "source_type": "reference_pdf_compilation",
-    "parser": "PyMuPDF deterministic geometry parser (UAPA v5)",
+    "parser": "PyMuPDF deterministic geometry parser (UAPA v6)",
     "source_file": {
       "filename": "Unlawful Activities (Prevention) Act, 1967.pdf",
       "sha256": "29c250620d22aaff2253766aa4436d860d93c2361df69c992ebc250c82f4322f",
@@ -4358,8 +4358,8 @@
     {
       "id": "first_schedule",
       "number": "First",
-      "title": "THE FIRST SCHEDULE",
-      "reference": "See sections 2(1) (m), 35, 36 and 38 (1)",
+      "title": "[THE FIRST SCHEDULE]",
+      "reference": "[See sections 2(1) (m), 35, 36 and 38 (1)]",
       "heading": "TERRORIST ORGANISATIONS",
       "type": "list",
       "entries": [
@@ -4638,7 +4638,7 @@
       "id": "second_schedule",
       "number": "Second",
       "title": "THE SECOND SCHEDULE",
-      "reference": "See section 15(2)",
+      "reference": "[See section 15(2)]",
       "heading": "",
       "type": "list",
       "entries": [
@@ -4726,13 +4726,14 @@
       ],
       "source_pages": [
         28
-      ]
+      ],
+      "leading_brackets": 1
     },
     {
       "id": "third_schedule",
       "number": "Third",
       "title": "THE THIRD SCHEDULE",
-      "reference": "See clause (b) of Explanation to section 15(1)",
+      "reference": "[See clause (b) of Explanation to section 15(1)]",
       "heading": "Security features to define high quality counterfeit Indian currency notes",
       "type": "list",
       "entries": [
@@ -4769,7 +4770,7 @@
       "id": "fourth_schedule",
       "number": "Fourth",
       "title": "THE FOURTH SCHEDULE",
-      "reference": "See sections 35(1) and 36",
+      "reference": "[See sections 35(1) and 36]",
       "heading": "",
       "type": "table",
       "table": {
@@ -4790,7 +4791,8 @@
       ],
       "source_pages": [
         30
-      ]
+      ],
+      "leading_brackets": 1
     }
   ],
   "source_footnotes": [

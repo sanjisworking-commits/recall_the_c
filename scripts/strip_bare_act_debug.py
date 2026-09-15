@@ -89,10 +89,10 @@ ARTIFACTS: tuple[tuple[Path, Path, str], ...] = (
         ROOT / "src" / "constitution_memorizer" / "web" / "pota_runtime_v1.json",
         "flat",
     ),
-    # Archival name carries the parser generation (schema 1.2 / parser v5);
+    # Archival name carries the parser generation (schema 1.2 / parser v6);
     # the runtime name carries this application's first release of it.
     (
-        ROOT / "data" / "reference" / "uapa_canonical_v5.json",
+        ROOT / "data" / "reference" / "uapa_canonical_v6.json",
         ROOT / "src" / "constitution_memorizer" / "web" / "uapa_runtime_v1.json",
         "uapa",
     ),

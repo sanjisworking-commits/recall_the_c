@@ -34,7 +34,7 @@ from constitution_memorizer.web.bare_acts import BARE_ACTS, get_bare_act
 
 REPO = Path(__file__).resolve().parents[1]
 MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
-ARCHIVAL = REPO / "data" / "reference" / "uapa_canonical_v5.json"
+ARCHIVAL = REPO / "data" / "reference" / "uapa_canonical_v6.json"
 RUNTIME = REPO / "src" / "constitution_memorizer" / "web" / "uapa_runtime_v1.json"
 
 LETTERED = [
@@ -314,7 +314,10 @@ def test_labelled_markers_render_rather_than_being_renumbered(
     client, _ = _client(tmp_path)
     html = client.get(f"/laws/uapa/schedule/{slug}").text
     for marker in markers:
-        assert f'<span class="bareact-schedule-marker">{marker}</span>' in html
+        # The marker column may also carry an amendment bracket before the
+        # marker, so match the marker's own text rather than the whole span.
+        assert f'>{marker}</span>' in html
+        assert 'class="bareact-schedule-marker"' in html
 
 
 def test_every_list_entry_text_reaches_the_page(tmp_path: Path):
@@ -544,17 +547,11 @@ def test_other_acts_schedule_rows_keep_their_content(
 # ── Editorial amendment brackets ──────────────────────────────────────────
 
 
-# Two bracket orphans remain, both understood and neither a marker-extraction
-# defect. They are pinned exactly so the validator stays meaningful and any
-# *new* orphan fails the suite rather than joining a vague allowance.
+# UAPA carries no bracket orphan. NDPS does, and it is not an editorial
+# bracket at all: entry 105E's chemical name is printed with mismatched
+# delimiters, "[4,3,-a) (1,4}". Pinned exactly rather than waved through, so a
+# genuinely new orphan still fails the suite.
 KNOWN_BRACKET_ORPHANS = {
-    # The source opens "[THE SECOND SCHEDULE" and closes at the end of the
-    # THIRD — one amendment inserted both. The parser hardcodes schedule
-    # titles, so that opening bracket is not yet captured.
-    "uapa": (("unmatched-close", "third-schedule (c)"),),
-    # Not an amendment bracket at all: entry 105E's chemical name is printed
-    # with mismatched delimiters, "[4,3,-a) (1,4}". A source typo inside
-    # nomenclature, reproduced faithfully.
     "ndps": (("unclosed-open", "psychotropic-substances row"),),
 }
 
@@ -567,12 +564,75 @@ def test_no_act_gains_an_unexplained_bracket_orphan(slug: str):
     26 provisions ending in an orphaned "]". Balance is checked Act-wide in
     document order — never per node or per section, because the source opens a
     span at s.18A and closes it at the end of s.18B — and across schedules as
-    well as sections, since a span runs from the Second Schedule's title into
+    well as sections, because one runs from the Second Schedule's title into
     the Third.
     """
     assert get_bare_act(slug).unbalanced_brackets() == KNOWN_BRACKET_ORPHANS.get(
         slug, ()
     )
+
+
+def test_uapa_has_no_editorial_bracket_orphan_at_all():
+    assert get_bare_act("uapa").unbalanced_brackets() == ()
+
+
+@pytest.mark.parametrize(
+    "slug,lead",
+    [("first-schedule", 0), ("second-schedule", 1), ("third-schedule", 0),
+     ("fourth-schedule", 1)],
+)
+def test_schedule_level_amendment_spans(slug: str, lead: int):
+    schedule = get_bare_act("uapa").schedule(slug)
+    assert schedule.leading_brackets == lead
+    assert schedule.bracket_prefix == "[" * lead
+
+
+def test_the_second_to_third_schedule_span_crosses_the_boundary():
+    """One amendment inserted both schedules.
+
+    The Second opens the span at its title and the Third closes it on entry
+    (c). Neither balances alone, and closing/reopening at the boundary would
+    be manufacturing source text.
+    """
+    act = get_bare_act("uapa")
+    second, third = act.schedule("second-schedule"), act.schedule("third-schedule")
+    assert second.leading_brackets == 1
+    assert third.leading_brackets == 0
+    assert third.entries[-1].text.rstrip().endswith("]")
+    assert not second.entries[-1].text.rstrip().endswith("].")
+
+
+def test_the_fourth_schedule_span_closes_in_its_residual_line():
+    """It prints no rows, so its closer is a residual fragment."""
+    schedule = get_bare_act("uapa").schedule("fourth-schedule")
+    assert schedule.leading_brackets == 1
+    assert any("]" in r for r in schedule.source_residuals)
+
+
+@pytest.mark.parametrize(
+    "slug,reference",
+    [
+        ("first-schedule", "[See sections 2(1) (m), 35, 36 and 38 (1)]"),
+        ("second-schedule", "[See section 15(2)]"),
+        ("third-schedule", "[See clause (b) of Explanation to section 15(1)]"),
+        ("fourth-schedule", "[See sections 35(1) and 36]"),
+    ],
+)
+def test_schedule_references_keep_their_own_brackets(slug: str, reference: str):
+    """A self-contained pair around a citation, never structural metadata."""
+    schedule = get_bare_act("uapa").schedule(slug)
+    assert schedule.reference == reference
+    assert schedule.leading_brackets == 0 or "[" not in schedule.title
+
+
+def test_reference_links_leave_the_citation_brackets_alone():
+    act = get_bare_act("uapa")
+    segments = act.reference_segments("[See section 15(2)]")
+    assert [(s.text, s.is_link) for s in segments] == [
+        ("[See section ", False),
+        ("15(2)", True),
+        ("]", False),
+    ]
 
 
 def test_the_twenty_six_marker_extraction_orphans_are_all_closed():
@@ -582,11 +642,7 @@ def test_the_twenty_six_marker_extraction_orphans_are_all_closed():
     left in UAPA is one uncaptured schedule-title bracket, which is a
     different cause and is tracked separately.
     """
-    orphans = get_bare_act("uapa").unbalanced_brackets()
-    assert [w for kind, w in orphans if kind == "unmatched-close"] == [
-        "third-schedule (c)"
-    ]
-    assert not any(w.startswith("s") and w[1].isdigit() for _, w in orphans)
+    assert get_bare_act("uapa").unbalanced_brackets() == ()
 
 
 def test_the_validator_catches_a_lost_opening_bracket():

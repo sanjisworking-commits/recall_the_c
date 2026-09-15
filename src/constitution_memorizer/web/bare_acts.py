@@ -136,7 +136,7 @@ BARE_ACTS: dict[str, BareActSpec] = {
         # nesting. Checked type by type against ProvisionRow before reusing it.
         render_profile="bns",
         # Identity of the runtime artifact. The canonical export is schema 1.2
-        # / parser v5 and is archived as uapa_canonical_v5.json.
+        # / parser v6 and is archived as uapa_canonical_v6.json.
         source_version="1",
     ),
 }
@@ -519,9 +519,20 @@ class Schedule:
     notes: tuple[ScheduleNote, ...] = ()
     number: str = ""
     kind: str = "table"
+    # Editorial amendment brackets printed before this schedule's title. The
+    # source opens "[THE SECOND SCHEDULE" and closes at the end of the THIRD,
+    # and opens "[THE FOURTH SCHEDULE" closing in its own residual line.
+    leading_brackets: int = 0
+    # Source fragments the schedule printed but that belong to no row — the
+    # Fourth Schedule's span closes in one, since it prints no rows at all.
+    source_residuals: tuple[str, ...] = ()
     unsupported_reason: str = ""
     source_pages: tuple[int, ...] = ()
     raw_payload: dict[str, Any] | None = field(default=None, repr=False)
+
+    @property
+    def bracket_prefix(self) -> str:
+        return "[" * self.leading_brackets if self.leading_brackets > 0 else ""
 
     @property
     def is_table(self) -> bool:
@@ -745,6 +756,7 @@ class BareAct:
         # would let an orphaned bracket through the validator unseen.
         for schedule in self.schedules:
             where = schedule.slug
+            stream.extend((c, f"{where} heading") for c in schedule.bracket_prefix)
             stream.extend((c, f"{where} title") for c in schedule.title if c in "[]")
             stream.extend((c, f"{where} reference") for c in schedule.reference if c in "[]")
             stream.extend((c, f"{where} heading") for c in schedule.heading if c in "[]")
@@ -755,6 +767,10 @@ class BareAct:
                 for row in part.rows:
                     for cell in row.cells:
                         stream.extend((c, f"{where} row") for c in cell if c in "[]")
+            # The Fourth Schedule's span closes in a residual line rather than
+            # in a row, because the source prints no rows at all.
+            for residual in schedule.source_residuals:
+                stream.extend((c, f"{where} residual") for c in residual if c in "[]")
         return tuple(stream)
 
     def unbalanced_brackets(self) -> tuple[tuple[str, str], ...]:
@@ -1036,6 +1052,14 @@ def _parse_entry_schedule(raw: dict[str, Any], slug: str) -> Schedule:
     )
 
 
+def _residual_texts(raw: dict[str, Any]) -> tuple[str, ...]:
+    return tuple(
+        str(item.get("text") or "")
+        for item in raw.get("source_residuals") or []
+        if isinstance(item, dict)
+    )
+
+
 def _parse_list_schedule(raw: dict[str, Any], slug: str) -> Schedule:
     """A schedule declared `"type": "list"` — numbered entries, no columns.
 
@@ -1076,6 +1100,7 @@ def _parse_list_schedule(raw: dict[str, Any], slug: str) -> Schedule:
         entries=tuple(entries),
         notes=_parse_schedule_notes(raw),
         number=str(raw.get("number") or ""),
+        leading_brackets=int(raw.get("leading_brackets") or 0),
         kind="list",
         source_pages=_pages(raw),
     )
@@ -1162,6 +1187,8 @@ def _parse_schedule(raw: dict[str, Any]) -> Schedule:
                 parts=(part,),
                 notes=_parse_schedule_notes(raw),
                 number=str(raw.get("number") or ""),
+                leading_brackets=int(raw.get("leading_brackets") or 0),
+                source_residuals=_residual_texts(raw),
                 source_pages=_pages(raw),
             )
 
@@ -1178,6 +1205,7 @@ def _parse_schedule(raw: dict[str, Any]) -> Schedule:
             parts=parts,
             notes=_parse_schedule_notes(raw),
             number=str(raw.get("number") or ""),
+            leading_brackets=int(raw.get("leading_brackets") or 0),
             source_pages=_pages(raw),
         )
 

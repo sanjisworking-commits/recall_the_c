@@ -63,7 +63,7 @@
         href="/laws/{{ act.slug }}/schedule/{{ schedule.slug }}"
         aria-label="{{ schedule.label }} — {{ schedule.display_heading }}"
       ></a>
-      <span class="bareact-chapter-tag">{{ schedule.label }}</span>
+      <span class="bareact-chapter-tag">{% if schedule.bracket_prefix %}<span class="bareact-amendment-open">{{ schedule.bracket_prefix }}</span>{% endif %}{{ schedule.label }}</span>
       <span class="bareact-schedule-copy">
         <span class="bareact-schedule-name">{{ schedule.display_heading }}</span>
         <span class="bareact-schedule-ref">{% for segment in act.reference_segments(schedule.reference) %}{% if segment.is_link %}<a class="bareact-reference-link" href="{{ segment.href }}">{{ segment.text }}</a>{% else %}{{ segment.text }}{% endif %}{% endfor %}</span>
