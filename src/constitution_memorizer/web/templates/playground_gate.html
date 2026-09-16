@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}{{ title }} · Playground · {{ app_name|default('Recall the C') }}{% endblock %}
+{% block mobile_screen %}playground{% endblock %}
+{% block content %}
+<section class="panel playground-page playground-gate" data-playground-gate="{{ block_reason }}">
+  <h1>{{ title }}</h1>
+  {% if lede %}
+  <p class="playground-lede">{{ lede }}</p>
+  {% endif %}
+  {% if body %}
+  <p class="playground-lede">{{ body }}</p>
+  {% endif %}
+  <p class="actions">
+    <a class="btn btn-accent" href="{{ cta_href }}">{{ cta_label }}</a>
+    {% if consume_blocked %}
+    <a class="btn btn-ghost" href="/playground">Back to Playground</a>
+    {% endif %}
+  </p>
+</section>
+{% endblock %}

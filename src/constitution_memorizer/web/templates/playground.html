@@ -5,6 +5,11 @@
 <section class="panel playground-page">
   <h1>My Playground</h1>
   <p class="playground-lede">Laws you added. Reading stays on the Bare Act; Cloze lives here.</p>
+  {% if new_law_notice %}
+  <p class="playground-flag" data-playground-gate="new_law_temporarily_unavailable">{{ new_law_notice }}
+    <a href="/billing/subscriptions">Manage subscription</a>
+  </p>
+  {% endif %}
   {% if not cards %}
   <p>Nothing here yet. Open a full Bare Act and choose Add to Playground.</p>
   {% else %}

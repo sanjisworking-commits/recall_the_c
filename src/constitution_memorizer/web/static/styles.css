@@ -9621,10 +9621,18 @@ body.is-admin-previewing { padding-top: 40px; }
   border-color: var(--ink, #1b1a17);
 }
 
+.playground-gate .actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
+}
+
 .playground-page h1,
 .playground-select h1,
 .playground-law h1,
-.playground-cloze h1 {
+.playground-cloze h1,
+.playground-gate h1 {
   font-family: Fraunces, Georgia, serif;
   font-weight: 600;
   margin: 0 0 8px;
