@@ -20,7 +20,10 @@
     {% for chapter in act.chapters %}
     <details class="bareact-chapter"{% if loop.first %} open{% endif %}>
       <summary class="bareact-chapter-row">
-        <span class="bareact-chapter-tag">Chapter {{ chapter.number }}</span>
+        {# A whole chapter can be an amendment span: PSS prints "2[CHAPTER II"
+           and closes inside its only section. Reuses the same bracket span as
+           sections and provisions, so no new styling. #}
+        <span class="bareact-chapter-tag">{% if chapter.bracket_prefix %}<span class="bareact-amendment-open">{{ chapter.bracket_prefix }}</span>{% endif %}Chapter {{ chapter.number }}</span>
         <span class="bareact-chapter-name">{{ chapter.title }}</span>
         <span class="bareact-chapter-range">{{ chapter.range_label }}</span>
         <span class="bareact-chapter-caret" aria-hidden="true"></span>
