@@ -19,6 +19,7 @@ from constitution_memorizer.subscriptions.policy import (
 )
 from constitution_memorizer.subscriptions.charge_repository import (
     _merge_charge_fields,
+    access_effect_for_billing_period,
     charge_from_mapping,
 )
 from constitution_memorizer.subscriptions.repository import _utc_now
@@ -82,6 +83,18 @@ class PostgresChargeRepository:
                 )
                 rows = cur.fetchall()
         return [charge_from_mapping(row) for row in rows]
+
+    def get_charge_access_effect_for_billing_period(
+        self,
+        user_subscription_id: str,
+        billing_period_start: datetime,
+        billing_period_end: datetime,
+    ) -> str | None:
+        return access_effect_for_billing_period(
+            self.list_charges_for_subscription(user_subscription_id),
+            billing_period_start,
+            billing_period_end,
+        )
 
     def upsert_charge(
         self,

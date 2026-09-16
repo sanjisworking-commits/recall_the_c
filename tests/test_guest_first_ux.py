@@ -706,10 +706,9 @@ def test_first_run_free_and_plus_branches(tmp_path: Path):
     )
     free = client.get("/dashboard").text
     assert 'data-today-mode="firstrun"' in free
-    assert "You\u2019re on the Free plan" in free
-    assert "3 Articles free \u00b7 unlock every Article and Schedule" in free
-    assert "See plans" in free
-    # Free is a signed-in tier: the guest branch must not leak into it.
+    assert "You\u2019re on the Free plan" not in free
+    assert "3 Articles free \u00b7 unlock every Article and Schedule" not in free
+    # Signed-in first-run is full Constitution, not a 3-Article free tier.
     assert "Reading as a guest" not in free
     assert "Set a learning plan" in free
 
@@ -817,10 +816,8 @@ def test_browse_free_plan_banner(tmp_path: Path):
         follow_redirects=False,
     )
     html = client.get("/browse").text
-    assert "Free plan \u2014 pick any 3 Articles to learn." in html
-    assert "All 3 slots free." in html
-    assert '<a class="browse-access-unlock" href="/pricing">Unlock all</a>' in html
-    # The old status-block phrasing is gone, not merely restyled.
+    assert "Free plan \u2014 pick any 3 Articles to learn." not in html
+    assert "All 3 slots free." not in html
     assert "Unlock every Article \u2192" not in html
 
     css = client.get("/static/mobile.css").text

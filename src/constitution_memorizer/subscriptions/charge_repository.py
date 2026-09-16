@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import sqlite3
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Mapping
 from uuid import uuid4
 
@@ -14,6 +14,7 @@ from constitution_memorizer.subscriptions.models import (
     require_provider,
 )
 from constitution_memorizer.subscriptions.policy import (
+    ACCESS_EFFECT_PERIOD_ENDED,
     compute_charge_access_effect,
     require_access_effect,
     require_access_effect_reason,
@@ -89,6 +90,24 @@ class SqliteChargeRepository:
             (user_subscription_id,),
         ).fetchall()
         return [charge_from_mapping(row) for row in rows]
+
+    def get_charge_access_effect_for_billing_period(
+        self,
+        user_subscription_id: str,
+        billing_period_start: datetime,
+        billing_period_end: datetime,
+    ) -> str | None:
+        """Access effect for the matching current paid period, not latest-global.
+
+        Prefer ``period_ended`` when any matching charge carries it (full refund
+        / dispute loss). Datetime equality is applied in Python so SQLite ISO
+        text and aware timestamps compare the same way.
+        """
+        return access_effect_for_billing_period(
+            self.list_charges_for_subscription(user_subscription_id),
+            billing_period_start,
+            billing_period_end,
+        )
 
     def upsert_charge(
         self,
@@ -249,6 +268,34 @@ class SqliteChargeRepository:
         stored = self.get_charge_by_payment_id(payment_id, provider=provider)
         assert stored is not None
         return stored
+
+
+def _aware(value: datetime | None) -> datetime | None:
+    if value is None:
+        return None
+    if value.tzinfo is None:
+        return value.replace(tzinfo=timezone.utc)
+    return value
+
+
+def access_effect_for_billing_period(
+    charges: list[SubscriptionCharge],
+    billing_period_start: datetime,
+    billing_period_end: datetime,
+) -> str | None:
+    start = _aware(billing_period_start)
+    end = _aware(billing_period_end)
+    matched = [
+        charge.access_effect
+        for charge in charges
+        if _aware(charge.billing_period_start) == start
+        and _aware(charge.billing_period_end) == end
+    ]
+    if not matched:
+        return None
+    if ACCESS_EFFECT_PERIOD_ENDED in matched:
+        return ACCESS_EFFECT_PERIOD_ENDED
+    return matched[-1]
 
 
 def _merge_charge_fields(existing: SubscriptionCharge | None, **incoming: Any) -> dict[str, Any]:

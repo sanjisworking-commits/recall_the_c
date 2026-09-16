@@ -847,6 +847,18 @@ def create_app(
             charges=app.state.subscription_charges,
         )
 
+    from constitution_memorizer.entitlements.service import (  # noqa: PLC0415
+        EntitlementService,
+    )
+
+    legacy_store = engine.repo if hasattr(engine.repo, "list_payment_access_grants") else None
+    app.state.entitlement_service = EntitlementService(
+        subscriptions=getattr(app.state, "subscriptions", None),
+        charges=getattr(app.state, "subscription_charges", None),
+        access_store=getattr(app.state, "access_store", None),
+        legacy_store=legacy_store,
+    )
+
     app.state.db_pool = db_pool
 
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
@@ -1194,7 +1206,7 @@ def create_app(
             # roundtrip per sibling.
             eng.bootstrap_request(
                 include_modes=True,
-                include_account=entitlements_active(request),
+                include_account=False,
             )
 
         # Every hop inside a session has to keep carrying it, so redirects
@@ -1475,8 +1487,6 @@ def create_app(
         # completed attempt and the server takes its word (no leaderboard).
         # Test is /quiz-only — never recorded here.
         # Locked modes must never be recorded as seen (UI lock is not trusted).
-        if entitlements_active(request):
-            eng.preload_account_claims()
         access = resolve_learn_access(request, eng, unit.article_number)
         if access.is_locked(mode):
             return JSONResponse(

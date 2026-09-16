@@ -489,7 +489,7 @@ def test_learn_logs_omit_sensitive_data(tmp_path: Path, caplog):
     assert "phone" not in joined.lower()
 
 
-def test_seen_preloads_claims_without_full_bootstrap(tmp_path: Path):
+def test_seen_does_not_read_article_claims(tmp_path: Path):
     client, repo = _counting_client(
         tmp_path, ARTICLE_ENTITLEMENTS_ENABLED="true"
     )
@@ -502,11 +502,10 @@ def test_seen_preloads_claims_without_full_bootstrap(tmp_path: Path):
     assert resp.json().get("persisted") is True
     assert repo.load_request_bootstrap_calls == 0
     assert repo.mark_mode_seen_calls == 1
-    assert repo.get_setting_calls >= 1
-    assert repo.claimed_articles_calls == 1
+    assert repo.claimed_articles_calls == 0
 
 
-def test_learn_get_includes_account_when_entitlements_on(tmp_path: Path):
+def test_learn_get_does_not_load_article_claims(tmp_path: Path):
     client, repo = _counting_client(
         tmp_path, ARTICLE_ENTITLEMENTS_ENABLED="true"
     )
@@ -516,7 +515,7 @@ def test_learn_get_includes_account_when_entitlements_on(tmp_path: Path):
     assert repo.load_request_bootstrap_calls == 1
     assert repo.last_bootstrap_kwargs is not None
     assert repo.last_bootstrap_kwargs.get("include_modes") is True
-    assert repo.last_bootstrap_kwargs.get("include_account") is True
+    assert repo.last_bootstrap_kwargs.get("include_account") is not True
     assert repo.claimed_articles_calls == 0
 
 

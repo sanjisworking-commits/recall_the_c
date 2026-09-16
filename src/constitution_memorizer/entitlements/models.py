@@ -1,0 +1,60 @@
+"""Frozen commercial entitlement snapshot. Not a route gate and not a DB row.
+
+Milestone 3A defines identity + Constitution + Playground *commercial* fields.
+Device and monthly-roster fields are added in Milestones 4 and 5; they are
+intentionally absent here so callers cannot pretend those systems exist.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from datetime import datetime
+
+CONSTITUTION_ACCESS_GUEST_EXPLORE = "guest_explore"
+CONSTITUTION_ACCESS_FULL = "full"
+CONSTITUTION_ACCESS: frozenset[str] = frozenset(
+    {CONSTITUTION_ACCESS_GUEST_EXPLORE, CONSTITUTION_ACCESS_FULL}
+)
+
+LEGACY_STATUS_ACTIVE = "legacy_active"
+LEGACY_STATUS_EXPIRED = "legacy_expired"
+LEGACY_STATUSES: frozenset[str] = frozenset(
+    {LEGACY_STATUS_ACTIVE, LEGACY_STATUS_EXPIRED}
+)
+
+BLOCK_SIGN_IN_REQUIRED = "sign_in_required"
+BLOCK_NOT_SUBSCRIBED = "not_subscribed"
+BLOCK_PAID_PERIOD_ENDED = "paid_period_ended"
+BLOCK_PAYMENT_HALTED = "payment_halted"
+BLOCK_SUBSCRIPTION_PAUSED = "subscription_paused"
+
+PLAYGROUND_BLOCK_REASONS: frozenset[str] = frozenset(
+    {
+        BLOCK_SIGN_IN_REQUIRED,
+        BLOCK_NOT_SUBSCRIBED,
+        BLOCK_PAID_PERIOD_ENDED,
+        BLOCK_PAYMENT_HALTED,
+        BLOCK_SUBSCRIPTION_PAUSED,
+    }
+)
+
+
+@dataclass(frozen=True)
+class EntitlementSnapshot:
+    """Immutable per-request commercial result. Routes must not re-derive it."""
+
+    is_authenticated: bool
+    subscription_status: str | None
+    tier: str | None
+    is_subscribed: bool
+    admin_override: bool
+    can_use_constitution_learn: bool
+    constitution_access: str
+    can_read_laws: bool
+    can_open_playground: bool
+    can_consume_new_playground_law: bool
+    playground_law_limit: int | None
+    playground_block_reason: str | None
+    billing_period_start: datetime | None
+    billing_period_end: datetime | None
+    legacy_status: str | None
