@@ -252,6 +252,10 @@ class ReminderRepositoryProtocol(Protocol):
         self, user_id: UUID | str
     ) -> BillingOrder | None: ...
 
+    def list_payment_access_grants(
+        self, user_id: UUID | str
+    ) -> list[dict]: ...
+
     def mark_billing_order_paid(
         self,
         user_id: UUID | str,

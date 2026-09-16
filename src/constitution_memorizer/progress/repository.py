@@ -1631,6 +1631,18 @@ class ProgressRepository:
         ).fetchone()
         return _billing_order_from_row(row) if row is not None else None
 
+    def list_payment_access_grants(self, user_id: UUID | str) -> list[dict]:
+        rows = self._conn.execute(
+            """
+            SELECT id, user_id, source, starts_at, ends_at, reason, revoked_at
+            FROM access_grants
+            WHERE user_id = ? AND source = 'payment'
+            ORDER BY starts_at ASC
+            """,
+            (as_user_id(user_id),),
+        ).fetchall()
+        return [dict(row) for row in rows]
+
     def mark_billing_order_paid(
         self,
         user_id: UUID | str,

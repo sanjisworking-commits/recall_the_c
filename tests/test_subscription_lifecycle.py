@@ -32,7 +32,6 @@ from constitution_memorizer.subscriptions.errors import (
     CheckoutMismatchError,
     CheckoutSignatureError,
     CurrentSubscriptionExistsError,
-    ResubscribeUnavailableError,
     SameTierChangeError,
     SubscriptionConfigError,
     SubscriptionNetworkError,
@@ -102,6 +101,7 @@ class FakeProvider:
         self.created_status = "created"
         self.create_delay = create_delay
         self.by_id: dict[str, ProviderSubscription] = {}
+        self.status_by_id: dict[str, str] = {}
         self._n = 0
         self._lock = threading.Lock()
 
@@ -144,7 +144,8 @@ class FakeProvider:
         rec = self.by_id.get(subscription_id) or _sub(
             subscription_id, "plan_plus", self.fetch_status
         )
-        return _sub(rec.id, rec.plan_id, self.fetch_status)
+        status = self.status_by_id.get(subscription_id, self.fetch_status)
+        return _sub(rec.id, rec.plan_id, status)
 
     def cancel_subscription(
         self, subscription_id: str, *, cancel_at_cycle_end: bool = True
@@ -438,18 +439,29 @@ def test_live_subscription_blocks_parallel_create():
     assert len(fake.creates) == 1
 
 
-def test_terminal_current_row_does_not_resubscribe():
+def test_terminal_current_row_resubscribes_after_provider_confirms_terminal():
     service, fake, repo = _service()
-    repo.create_subscription_record(
+    old = repo.create_subscription_record(
         USER,
         tier="plus",
         status="cancelled",
         provider_subscription_id="sub_old",
         is_current=True,
     )
-    with pytest.raises(ResubscribeUnavailableError):
-        service.start_subscription(USER, "plus")
-    assert fake.creates == []
+    fake.status_by_id["sub_old"] = "cancelled"
+    handoff = service.start_subscription(USER, "pro")
+    assert len(fake.creates) == 1
+    assert fake.creates[0].plan_id == "plan_pro"
+    assert handoff.subscription_id != "sub_old"
+    stored_old = repo.get_subscription(USER, old.id)
+    assert stored_old.is_current is False
+    assert stored_old.status == "cancelled"
+    assert stored_old.provider_subscription_id == "sub_old"
+    current = repo.get_current_subscription(USER)
+    assert current is not None
+    assert current.id != old.id
+    assert current.tier == "pro"
+    assert current.provider_subscription_id == handoff.subscription_id
 
 
 def test_in_progress_reservation_does_not_create_another_provider_subscription():
@@ -955,3 +967,156 @@ def test_service_honors_one_current_row_constraint():
     assert len(fake.creates) == 1
     assert len(repo.list_subscription_history(USER)) == 1
     assert str(USER) != LOCAL_USER_ID
+
+
+def test_stale_local_cancelled_reconciles_live_provider_and_blocks_parallel():
+    service, fake, repo = _service()
+    old = repo.create_subscription_record(
+        USER,
+        tier="plus",
+        status="cancelled",
+        provider_subscription_id="sub_old",
+        is_current=True,
+    )
+    fake.fetch_status = "active"
+    with pytest.raises(ChangePlanRequiredError):
+        service.start_subscription(USER, "pro")
+    assert fake.creates == []
+    stored = repo.get_current_subscription(USER)
+    assert stored is not None
+    assert stored.id == old.id
+    assert stored.status == "active"
+    assert stored.is_current is True
+
+
+def test_concurrent_resubscribe_creates_one_provider_subscription(tmp_path: Path):
+    path = tmp_path / "resubscribe.db"
+    setup = sqlite3.connect(str(path))
+    ensure_sqlite_schema(setup)
+    setup.row_factory = sqlite3.Row
+    seed = SqliteSubscriptionRepository(setup)
+    seed.create_subscription_record(
+        USER,
+        tier="plus",
+        status="cancelled",
+        provider_subscription_id="sub_old",
+        is_current=True,
+    )
+    setup.close()
+    fake = FakeProvider(create_delay=0.05)
+    fake.status_by_id["sub_old"] = "cancelled"
+    barrier = threading.Barrier(2, timeout=3)
+    results: list = []
+    errors: list = []
+
+    def worker():
+        conn = sqlite3.connect(
+            str(path),
+            timeout=2,
+            isolation_level=None,
+            check_same_thread=False,
+        )
+        conn.row_factory = sqlite3.Row
+        conn.execute("PRAGMA busy_timeout=1000")
+        repo = SqliteSubscriptionRepository(conn)
+        service = SubscriptionService(repo, fake, PLAN_IDS, public_key_id=KEY_ID)
+        barrier.wait()
+        try:
+            results.append(service.start_subscription(USER, "max"))
+        except Exception as exc:  # noqa: BLE001
+            errors.append(exc)
+        finally:
+            conn.close()
+
+    threads = [threading.Thread(target=worker) for _ in range(2)]
+    for thread in threads:
+        thread.start()
+    for thread in threads:
+        thread.join(timeout=4)
+        assert not thread.is_alive()
+    assert len(fake.creates) == 1
+    assert results
+    assert all(item.subscription_id == results[0].subscription_id for item in results)
+    assert not errors or all(
+        isinstance(err, (CheckoutInProgressError, ChangePlanRequiredError))
+        for err in errors
+    )
+
+
+def test_manage_page_lifecycle_messages_and_resubscribe_options(tmp_path: Path):
+    client, _fake, app = _http_client(tmp_path)
+    repo = app.state.subscriptions
+    repo.create_subscription_record(
+        USER,
+        tier="plus",
+        status="pending",
+        provider_subscription_id="sub_pending",
+        is_current=True,
+    )
+    page = client.get("/billing/subscriptions")
+    assert page.status_code == 200
+    assert "Payment retry in progress" in page.text
+    assert "Resubscribe unavailable" not in page.text
+    repo.mark_not_current(USER, repo.get_current_subscription(USER).id)
+    repo.create_subscription_record(
+        USER,
+        tier="plus",
+        status="halted",
+        provider_subscription_id="sub_halted",
+        is_current=True,
+    )
+    page = client.get("/billing/subscriptions")
+    assert "Automatic retries have stopped" in page.text
+    repo.mark_not_current(USER, repo.get_current_subscription(USER).id)
+    repo.create_subscription_record(
+        USER,
+        tier="plus",
+        status="paused",
+        provider_subscription_id="sub_paused",
+        is_current=True,
+    )
+    page = client.get("/billing/subscriptions")
+    assert "Subscription paused" in page.text
+    repo.mark_not_current(USER, repo.get_current_subscription(USER).id)
+    repo.create_subscription_record(
+        USER,
+        tier="plus",
+        status="cancelled",
+        provider_subscription_id="sub_ended",
+        is_current=False,
+    )
+    page = client.get("/billing/subscriptions")
+    assert page.status_code == 200
+    assert "Subscribe to Plus" in page.text
+    assert "Subscribe to Pro" in page.text
+    assert "Subscribe to Max" in page.text
+    assert "Previous subscription ended; subscribe again" in page.text
+    assert "Resubscribe unavailable" not in page.text
+
+
+def test_http_resubscribe_creates_new_provider_subscription(tmp_path: Path):
+    client, fake, app = _http_client(tmp_path)
+    repo = app.state.subscriptions
+    old = repo.create_subscription_record(
+        USER,
+        tier="plus",
+        status="cancelled",
+        provider_subscription_id="sub_old",
+        is_current=False,
+    )
+    csrf = client.cookies.get(CSRF_COOKIE_NAME)
+    resp = client.post(
+        "/billing/subscriptions/create",
+        data={"csrf_token": csrf, "tier": "pro"},
+        follow_redirects=False,
+    )
+    assert resp.status_code == 303
+    assert "/checkout" in resp.headers["location"]
+    assert len(fake.creates) == 1
+    assert fake.creates[0].plan_id == "plan_pro"
+    current = repo.get_current_subscription(USER)
+    assert current is not None
+    assert current.id != old.id
+    assert current.tier == "pro"
+    assert repo.get_subscription(USER, old.id).is_current is False
+    assert "resubscribe" not in (resp.headers.get("location") or "")

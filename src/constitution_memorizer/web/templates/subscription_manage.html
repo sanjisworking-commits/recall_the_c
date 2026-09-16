@@ -42,6 +42,9 @@
       <span class="purchase-row-v">{{ current.scheduled_tier }} at cycle end</span>
     </div>
     {% endif %}
+    {% if current.lifecycle_message %}
+    <p class="purchase-note">{{ current.lifecycle_message }}</p>
+    {% endif %}
 
     <div class="purchase-actions">
       {% if can_checkout %}
@@ -79,6 +82,9 @@
   {% endif %}
 
   {% if not current %}
+  {% if ended_message %}
+  <p class="purchase-note">{{ ended_message }}</p>
+  {% endif %}
   {% for product in products %}
   <div class="purchase-card purchase-confirm">
     <p class="purchase-card-title">{{ product.display_name }}</p>

@@ -74,6 +74,46 @@ CREATE INDEX IF NOT EXISTS subscription_webhook_event_status_received
 
 CREATE INDEX IF NOT EXISTS subscription_webhook_event_provider_sub
     ON subscription_webhook_event (provider_subscription_id);
+
+CREATE TABLE IF NOT EXISTS subscription_charge (
+    id TEXT NOT NULL PRIMARY KEY,
+    provider TEXT NOT NULL
+        CHECK (provider IN ('razorpay')),
+    provider_payment_id TEXT NOT NULL,
+    provider_invoice_id TEXT,
+    provider_subscription_id TEXT,
+    user_subscription_id TEXT,
+    billing_period_start TEXT,
+    billing_period_end TEXT,
+    amount_paise INTEGER,
+    currency TEXT,
+    payment_status TEXT,
+    refund_status TEXT,
+    amount_refunded_paise INTEGER NOT NULL DEFAULT 0
+        CHECK (amount_refunded_paise >= 0),
+    last_refund_id TEXT,
+    dispute_id TEXT,
+    dispute_status TEXT,
+    access_effect TEXT NOT NULL DEFAULT 'none'
+        CHECK (access_effect IN ('none', 'period_ended')),
+    access_effect_reason TEXT
+        CHECK (
+            access_effect_reason IS NULL
+            OR access_effect_reason IN ('full_refund', 'dispute_lost')
+        ),
+    access_effect_at TEXT,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS subscription_charge_provider_payment
+    ON subscription_charge (provider, provider_payment_id);
+
+CREATE INDEX IF NOT EXISTS subscription_charge_provider_sub
+    ON subscription_charge (provider_subscription_id);
+
+CREATE INDEX IF NOT EXISTS subscription_charge_user_sub
+    ON subscription_charge (user_subscription_id);
 """
 
 

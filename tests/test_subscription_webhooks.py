@@ -26,11 +26,11 @@ from constitution_memorizer.multiuser.settings import (
 )
 from constitution_memorizer.progress.db import open_progress_db
 from constitution_memorizer.progress.repository import ProgressRepository
+from constitution_memorizer.subscriptions.charge_repository import SqliteChargeRepository
 from constitution_memorizer.subscriptions.config import SubscriptionPlanIds
 from constitution_memorizer.subscriptions.db import SCHEMA_SQL, ensure_sqlite_schema
 from constitution_memorizer.subscriptions.errors import (
     InvalidSubscriptionValue,
-    ResubscribeUnavailableError,
     SubscriptionConfigError,
     SubscriptionNetworkError,
     WebhookSignatureError,
@@ -39,7 +39,12 @@ from constitution_memorizer.subscriptions.models import (
     WEBHOOK_PROCESSING_STATUSES,
     require_webhook_status,
 )
-from constitution_memorizer.subscriptions.razorpay import ProviderSubscription
+from constitution_memorizer.subscriptions.razorpay import (
+    ProviderDispute,
+    ProviderInvoice,
+    ProviderPayment,
+    ProviderSubscription,
+)
 from constitution_memorizer.subscriptions.repository import SqliteSubscriptionRepository
 from constitution_memorizer.subscriptions.service import SubscriptionService
 from constitution_memorizer.subscriptions.webhook_postgres import (
@@ -54,6 +59,9 @@ from constitution_memorizer.subscriptions.webhook_signature import (
     verify_webhook_signature,
 )
 from constitution_memorizer.subscriptions.webhooks import (
+    SUPPORTED_DISPUTE_EVENTS,
+    SUPPORTED_PAYMENT_EVENTS,
+    SUPPORTED_REFUND_EVENTS,
     SUPPORTED_SUBSCRIPTION_EVENTS,
     WebhookProcessor,
 )
@@ -143,6 +151,17 @@ class FakeProvider:
         self.current_start = SEP
         self.current_end = OCT
         self.has_scheduled_changes = False
+        self.payments: dict[str, ProviderPayment] = {}
+        self.invoices: dict[str, ProviderInvoice] = {}
+        self.disputes: dict[str, ProviderDispute] = {}
+        self.payment_error: Exception | None = None
+        self.invoice_error: Exception | None = None
+        self.dispute_error: Exception | None = None
+        self.payment_fetches: list[str] = []
+        self.invoice_fetches: list[str] = []
+        self.dispute_fetches: list[str] = []
+        self.creates: list = []
+        self._n = 0
         self._lock = threading.Lock()
 
     def fetch_subscription(self, subscription_id: str) -> ProviderSubscription:
@@ -158,6 +177,43 @@ class FakeProvider:
             current_end=self.current_end,
             has_scheduled_changes=self.has_scheduled_changes,
         )
+
+    def fetch_payment(self, payment_id: str) -> ProviderPayment:
+        with self._lock:
+            self.payment_fetches.append(payment_id)
+        if self.payment_error is not None:
+            raise self.payment_error
+        rec = self.payments.get(payment_id)
+        if rec is None:
+            raise SubscriptionNetworkError("Could not reach the payment provider")
+        return rec
+
+    def create_subscription(self, request) -> ProviderSubscription:
+        with self._lock:
+            self.creates.append(request)
+            self._n += 1
+            rec = _sub(f"sub_new_{self._n}", request.plan_id, "created")
+        return rec
+
+    def fetch_invoice(self, invoice_id: str) -> ProviderInvoice:
+        with self._lock:
+            self.invoice_fetches.append(invoice_id)
+        if self.invoice_error is not None:
+            raise self.invoice_error
+        rec = self.invoices.get(invoice_id)
+        if rec is None:
+            raise SubscriptionNetworkError("Could not reach the payment provider")
+        return rec
+
+    def fetch_dispute(self, dispute_id: str) -> ProviderDispute:
+        with self._lock:
+            self.dispute_fetches.append(dispute_id)
+        if self.dispute_error is not None:
+            raise self.dispute_error
+        rec = self.disputes.get(dispute_id)
+        if rec is None:
+            raise SubscriptionNetworkError("Could not reach the payment provider")
+        return rec
 
 
 def _sqlite():
@@ -178,12 +234,14 @@ def _processor(conn=None, fake=None, secrets=None):
         subs = SqliteSubscriptionRepository(conn)
         events = SqliteWebhookEventRepository(conn)
     fake = fake or FakeProvider()
+    charges = SqliteChargeRepository(conn)
     service = SubscriptionService(subs, fake, PLAN_IDS, public_key_id=KEY_ID)
     processor = WebhookProcessor(
         events=events,
         subscriptions=subs,
         service=service,
         secrets=secrets or _secrets(),
+        charges=charges,
     )
     return processor, fake, subs, events, service
 
@@ -257,6 +315,7 @@ def _http_client(tmp_path: Path, *, fake=None, secrets=None, signed_in: bool = F
         subscriptions=app.state.subscriptions,
         service=service,
         secrets=secrets,
+        charges=app.state.subscription_charges,
     )
     client = TestClient(app)
     if signed_in:
@@ -388,6 +447,8 @@ def test_guest_webhook_does_not_redirect_to_sign_in(tmp_path):
 # --------------------------------------------------------------------------- #
 def test_sqlite_webhook_schema_and_status_check():
     assert "CREATE TABLE IF NOT EXISTS subscription_webhook_event" in SCHEMA_SQL
+    assert "CREATE TABLE IF NOT EXISTS subscription_charge" in SCHEMA_SQL
+    assert "subscription_charge_provider_payment" in SCHEMA_SQL
     assert "subscription_webhook_event_provider_event" in SCHEMA_SQL
     assert "raw_payload" not in SCHEMA_SQL
     assert "card_details" not in SCHEMA_SQL
@@ -751,11 +812,11 @@ def test_scheduled_downgrade_applies_only_when_provider_plan_changes():
     assert is_subscribed(object()) is False
     fake.status = "cancelled"
     _deliver(processor, "subscription.cancelled", event_id="evt_cancel")
-    terminal = subs.get_current_subscription(USER)
+    assert subs.get_current_subscription(USER) is None
+    terminal = subs.get_subscription_by_provider_id("sub_1")
     assert terminal.status == "cancelled"
-    assert terminal.is_current is True
-    with pytest.raises(ResubscribeUnavailableError):
-        service.start_subscription(USER, "plus")
+    assert terminal.is_current is False
+    assert terminal.id == row.id
 
 
 def test_renewal_and_auto_renew_update_same_row_bounds():
@@ -848,6 +909,10 @@ def test_supported_event_names_match_razorpay_docs():
     assert "subscription.payment_failed" not in SUPPORTED_SUBSCRIPTION_EVENTS
     assert "subscription.charged" in SUPPORTED_SUBSCRIPTION_EVENTS
     assert "subscription.authenticated" in SUPPORTED_SUBSCRIPTION_EVENTS
+    assert "refund.processed" in SUPPORTED_REFUND_EVENTS
+    assert "refund.created" in SUPPORTED_PAYMENT_EVENTS
+    assert "payment.dispute.lost" in SUPPORTED_DISPUTE_EVENTS
+    assert "payment.dispute.won" in SUPPORTED_PAYMENT_EVENTS
 
 
 def test_concurrent_duplicate_event_id_fetches_once(tmp_path: Path):
@@ -1033,6 +1098,35 @@ def test_migration_0019_schema_indexes_rls_and_downgrade():
     assert "subscription_webhook_event" not in older
 
 
+def test_migration_0020_schema_indexes_rls_and_downgrade():
+    path = ROOT / "alembic" / "versions" / "20260916_0020_subscription_charge.py"
+    source = path.read_text(encoding="utf-8")
+    tree = ast.parse(source)
+    revision = down_revision = None
+    for node in tree.body:
+        if isinstance(node, ast.Assign):
+            for target in node.targets:
+                if isinstance(target, ast.Name) and target.id == "revision":
+                    revision = ast.literal_eval(node.value)
+                if isinstance(target, ast.Name) and target.id == "down_revision":
+                    down_revision = ast.literal_eval(node.value)
+    assert revision == "20260916_0020"
+    assert down_revision == "20260915_0019"
+    assert "CREATE TABLE IF NOT EXISTS subscription_charge" in source
+    assert "subscription_charge_provider_payment" in source
+    assert "ENABLE ROW LEVEL SECURITY" in source
+    assert "DROP TABLE IF EXISTS subscription_charge" in source
+    assert "email" not in source.lower() or "email" not in source
+    assert "card" not in source.lower()
+    assert "contact" not in source
+    assert "vpa" not in source.lower()
+    assert "raw_payload" not in source
+    older = (
+        ROOT / "alembic/versions/20260915_0019_subscription_webhook_event.py"
+    ).read_text(encoding="utf-8")
+    assert "subscription_charge" not in older
+
+
 def test_create_app_starts_without_webhook_secret(tmp_path: Path):
     app = create_app(
         units_path=MINI_UNITS,
@@ -1060,3 +1154,494 @@ def test_create_app_starts_without_webhook_secret(tmp_path: Path):
     )
     assert resp.status_code == 503
     assert resp.json()["error"] == "config"
+
+
+def _deliver_payload(processor, payload: dict, event_id: str):
+    raw = _raw(payload)
+    return processor.process_delivery(raw, _sign_body(raw), event_id)
+
+
+def _payment(
+    payment_id: str = "pay_1",
+    *,
+    invoice_id: str | None = "inv_1",
+    refund_status: str | None = None,
+    amount_refunded: int | None = 0,
+    amount: int = 19900,
+) -> ProviderPayment:
+    return ProviderPayment(
+        id=payment_id,
+        amount=amount,
+        currency="INR",
+        status="captured",
+        invoice_id=invoice_id,
+        refund_status=refund_status,
+        amount_refunded=amount_refunded,
+    )
+
+
+def _invoice(
+    invoice_id: str = "inv_1",
+    *,
+    sub_id: str = "sub_1",
+    payment_id: str = "pay_1",
+    start: int = SEP,
+    end: int = OCT,
+    amount: int = 19900,
+) -> ProviderInvoice:
+    return ProviderInvoice(
+        id=invoice_id,
+        subscription_id=sub_id,
+        payment_id=payment_id,
+        billing_start=start,
+        billing_end=end,
+        status="paid",
+        amount=amount,
+        currency="INR",
+    )
+
+
+def _dispute(
+    dispute_id: str = "disp_1",
+    *,
+    payment_id: str = "pay_1",
+    status: str = "open",
+) -> ProviderDispute:
+    return ProviderDispute(
+        id=dispute_id,
+        payment_id=payment_id,
+        status=status,
+        amount=19900,
+        currency="INR",
+        phase="chargeback",
+        created_at=SEP,
+    )
+
+
+def _charged_payload(
+    *,
+    payment_id: str = "pay_1",
+    invoice_id: str = "inv_1",
+    sub_id: str = "sub_1",
+    amount: int = 19900,
+) -> dict:
+    return {
+        "entity": "event",
+        "event": "subscription.charged",
+        "payload": {
+            "subscription": {
+                "entity": {"id": sub_id, "status": "active", "plan_id": "plan_plus"}
+            },
+            "payment": {
+                "entity": {
+                    "id": payment_id,
+                    "invoice_id": invoice_id,
+                    "amount": amount,
+                    "currency": "INR",
+                    "status": "captured",
+                    "card": {"number": "4111111111111111"},
+                    "email": "buyer@example.com",
+                    "contact": "+919999999999",
+                }
+            },
+        },
+        "created_at": SEP,
+    }
+
+
+def _refund_payload(event_name: str, *, refund_id: str = "rfnd_1", payment_id: str = "pay_1") -> dict:
+    return {
+        "entity": "event",
+        "event": event_name,
+        "payload": {
+            "refund": {
+                "entity": {
+                    "id": refund_id,
+                    "payment_id": payment_id,
+                    "status": event_name.rsplit(".", 1)[-1],
+                    "email": "buyer@example.com",
+                }
+            },
+            "payment": {"entity": {"id": payment_id}},
+        },
+        "created_at": SEP,
+    }
+
+
+def _dispute_payload(event_name: str, *, dispute_id: str = "disp_1", payment_id: str = "pay_1") -> dict:
+    return {
+        "entity": "event",
+        "event": event_name,
+        "payload": {
+            "dispute": {
+                "entity": {
+                    "id": dispute_id,
+                    "payment_id": payment_id,
+                    "status": "open",
+                    "email": "buyer@example.com",
+                }
+            }
+        },
+        "created_at": SEP,
+    }
+
+
+def test_active_to_pending_is_failed_recurring_charge_same_row():
+    from constitution_memorizer.subscriptions.policy import disposition_for_status
+
+    processor, fake, subs, _events, _service = _processor()
+    original = _seed_active(subs)
+    fake.status = "pending"
+    result, _ = _deliver(processor, "subscription.pending", event_id="evt_pending")
+    assert result.status_code == 200
+    current = subs.get_current_subscription(USER)
+    assert current.id == original.id
+    assert current.status == "pending"
+    assert current.is_current is True
+    disp = disposition_for_status(current.status)
+    assert disp.can_use_existing_playground is True
+    assert disp.can_consume_new_law is False
+    fake.status = "active"
+    _deliver(processor, "subscription.activated", event_id="evt_retry_ok")
+    recovered = subs.get_current_subscription(USER)
+    assert recovered.id == original.id
+    assert recovered.status == "active"
+    assert disposition_for_status(recovered.status).can_consume_new_law is True
+
+
+def test_pending_to_halted_and_halted_recovery_same_row():
+    from constitution_memorizer.subscriptions.policy import disposition_for_status
+
+    processor, fake, subs, _events, _service = _processor()
+    original = _seed_active(subs, status="pending")
+    fake.status = "halted"
+    _deliver(processor, "subscription.halted", event_id="evt_halted")
+    halted = subs.get_current_subscription(USER)
+    assert halted.id == original.id
+    assert halted.status == "halted"
+    assert halted.is_current is True
+    disp = disposition_for_status(halted.status)
+    assert disp.can_use_existing_playground is False
+    assert disp.can_consume_new_law is False
+    fake.status = "active"
+    _deliver(processor, "subscription.activated", event_id="evt_halt_ok")
+    recovered = subs.get_current_subscription(USER)
+    assert recovered.id == original.id
+    assert recovered.status == "active"
+
+
+def test_paused_blocks_both_and_resumes_same_row():
+    from constitution_memorizer.subscriptions.policy import disposition_for_status
+
+    processor, fake, subs, _events, _service = _processor()
+    original = _seed_active(subs)
+    fake.status = "paused"
+    _deliver(processor, "subscription.paused", event_id="evt_paused")
+    paused = subs.get_current_subscription(USER)
+    assert paused.id == original.id
+    assert paused.status == "paused"
+    assert paused.is_current is True
+    disp = disposition_for_status("paused")
+    assert disp.can_use_existing_playground is False
+    assert disp.can_consume_new_law is False
+    fake.status = "active"
+    _deliver(processor, "subscription.resumed", event_id="evt_resumed")
+    resumed = subs.get_current_subscription(USER)
+    assert resumed.id == original.id
+    assert resumed.status == "active"
+
+
+@pytest.mark.parametrize("status", ["expired", "completed", "cancelled"])
+def test_provider_confirmed_terminal_states_are_archived(status):
+    processor, fake, subs, _events, _service = _processor()
+    original = _seed_active(subs, status="authenticated")
+    fake.status = status
+    result, _ = _deliver(processor, "subscription.updated", event_id=f"evt_{status}")
+    assert result.status_code == 200
+    assert subs.get_current_subscription(USER) is None
+    stored = subs.get_subscription_by_provider_id("sub_1")
+    assert stored.id == original.id
+    assert stored.status == status
+    assert stored.is_current is False
+    history = subs.list_subscription_history(USER)
+    assert len(history) == 1
+    assert history[0].id == original.id
+
+
+def test_late_webhook_updates_historical_row_only():
+    processor, fake, subs, _events, service = _processor()
+    old = _seed_active(subs)
+    fake.status = "cancelled"
+    _deliver(processor, "subscription.cancelled", event_id="evt_old_cancel")
+    assert subs.get_current_subscription(USER) is None
+    handoff = service.start_subscription(USER, "pro")
+    assert len(fake.creates) == 1
+    new_current = subs.get_current_subscription(USER)
+    assert new_current is not None
+    assert new_current.id != old.id
+    assert new_current.tier == "pro"
+    assert new_current.provider_subscription_id == handoff.subscription_id
+    fake.status = "pending"
+    _deliver(processor, "subscription.pending", event_id="evt_late_old", sub_id="sub_1")
+    historical = subs.get_subscription(USER, old.id)
+    assert historical.status == "pending"
+    assert historical.is_current is False
+    still_new = subs.get_current_subscription(USER)
+    assert still_new.id == new_current.id
+    assert still_new.status == "created"
+    assert still_new.provider_subscription_id == handoff.subscription_id
+
+
+def test_charged_webhook_upserts_one_charge_and_duplicate_does_not():
+    processor, fake, subs, _events, _service = _processor()
+    original = _seed_active(subs)
+    fake.status = "active"
+    fake.invoices["inv_1"] = _invoice()
+    result = _deliver_payload(processor, _charged_payload(), "evt_pay_map")
+    assert result.status_code == 200
+    charges = SqliteChargeRepository(subs.conn)
+    row = charges.get_charge_by_payment_id("pay_1")
+    assert row is not None
+    assert row.provider_invoice_id == "inv_1"
+    assert row.provider_subscription_id == "sub_1"
+    assert row.user_subscription_id == original.id
+    assert row.amount_paise == 19900
+    assert row.currency == "INR"
+    assert row.billing_period_start == datetime.fromtimestamp(SEP, tz=timezone.utc)
+    assert row.billing_period_end == datetime.fromtimestamp(OCT, tz=timezone.utc)
+    assert row.access_effect == "none"
+    dumped = str(dict(subs.conn.execute("SELECT * FROM subscription_charge").fetchone()))
+    assert "4111111111111111" not in dumped
+    assert "buyer@example.com" not in dumped
+    again = _deliver_payload(processor, _charged_payload(), "evt_pay_map")
+    assert again.status_code == 200
+    assert len(charges.list_charges_for_subscription(original.id)) == 1
+    second = _deliver_payload(processor, _charged_payload(), "evt_pay_map_2")
+    assert second.status_code == 200
+    assert len(charges.list_charges_for_subscription(original.id)) == 1
+
+
+def test_refund_created_pending_partial_full_and_failed():
+    processor, fake, subs, events, _service = _processor()
+    original = _seed_active(subs)
+    fake.status = "active"
+    fake.invoices["inv_1"] = _invoice()
+    _deliver_payload(processor, _charged_payload(), "evt_sep")
+    charges = SqliteChargeRepository(subs.conn)
+    fake.payments["pay_1"] = _payment(refund_status=None, amount_refunded=0)
+    created = _deliver_payload(processor, _refund_payload("refund.created"), "evt_rfnd_c")
+    assert created.status_code == 200
+    assert created.processing_status == "processed"
+    row = charges.get_charge_by_payment_id("pay_1")
+    assert row.access_effect == "none"
+    assert row.access_effect_reason is None
+    fake.payments["pay_1"] = _payment(refund_status="partial", amount_refunded=5000)
+    partial = _deliver_payload(
+        processor, _refund_payload("refund.processed"), "evt_rfnd_p"
+    )
+    assert partial.status_code == 200
+    row = charges.get_charge_by_payment_id("pay_1")
+    assert row.refund_status == "partial"
+    assert row.amount_refunded_paise == 5000
+    assert row.access_effect == "none"
+    current = subs.get_current_subscription(USER)
+    assert current.status == "active"
+    assert current.id == original.id
+    fake.payments["pay_1"] = _payment(refund_status="full", amount_refunded=19900)
+    full = _deliver_payload(
+        processor, _refund_payload("refund.processed", refund_id="rfnd_full"), "evt_rfnd_f"
+    )
+    assert full.status_code == 200
+    row = charges.get_charge_by_payment_id("pay_1")
+    assert row.refund_status == "full"
+    assert row.access_effect == "period_ended"
+    assert row.access_effect_reason == "full_refund"
+    assert subs.get_current_subscription(USER).status == "active"
+    fake.payments["pay_1"] = _payment(refund_status="full", amount_refunded=19900)
+    failed = _deliver_payload(
+        processor, _refund_payload("refund.failed"), "evt_rfnd_fail"
+    )
+    assert failed.status_code == 200
+    row = charges.get_charge_by_payment_id("pay_1")
+    assert row.access_effect == "period_ended"
+    assert row.access_effect_reason == "full_refund"
+    stored = events.get_event_by_provider_event_id("evt_rfnd_c")
+    assert stored.provider_subscription_id == "sub_1"
+
+
+def test_out_of_order_refund_created_uses_provider_full_truth():
+    processor, fake, subs, _events, _service = _processor()
+    _seed_active(subs)
+    fake.invoices["inv_1"] = _invoice()
+    fake.payments["pay_1"] = _payment(refund_status="full", amount_refunded=19900)
+    result = _deliver_payload(processor, _refund_payload("refund.created"), "evt_old_rfnd")
+    assert result.status_code == 200
+    charges = SqliteChargeRepository(subs.conn)
+    row = charges.get_charge_by_payment_id("pay_1")
+    assert row.refund_status == "full"
+    assert row.access_effect == "period_ended"
+    assert row.access_effect_reason == "full_refund"
+
+
+def test_september_full_refund_does_not_end_october_period():
+    processor, fake, subs, _events, _service = _processor()
+    original = _seed_active(subs)
+    fake.status = "active"
+    fake.invoices["inv_sep"] = _invoice(
+        "inv_sep", payment_id="pay_sep", start=SEP, end=OCT
+    )
+    fake.invoices["inv_oct"] = _invoice(
+        "inv_oct", payment_id="pay_oct", start=OCT, end=NOV, amount=19900
+    )
+    _deliver_payload(
+        processor,
+        _charged_payload(payment_id="pay_sep", invoice_id="inv_sep"),
+        "evt_sep_ch",
+    )
+    fake.current_start = OCT
+    fake.current_end = NOV
+    _deliver_payload(
+        processor,
+        _charged_payload(payment_id="pay_oct", invoice_id="inv_oct"),
+        "evt_oct_ch",
+    )
+    fake.payments["pay_sep"] = _payment(
+        "pay_sep", invoice_id="inv_sep", refund_status="full", amount_refunded=19900
+    )
+    _deliver_payload(
+        processor,
+        _refund_payload("refund.processed", refund_id="rfnd_sep", payment_id="pay_sep"),
+        "evt_sep_rfnd",
+    )
+    charges = SqliteChargeRepository(subs.conn)
+    september = charges.get_charge_by_payment_id("pay_sep")
+    october = charges.get_charge_by_payment_id("pay_oct")
+    assert september.access_effect == "period_ended"
+    assert september.access_effect_reason == "full_refund"
+    assert october.access_effect == "none"
+    assert october.access_effect_reason is None
+    current = subs.get_current_subscription(USER)
+    assert current.id == original.id
+    assert current.status == "active"
+
+
+def test_dispute_open_review_won_lost_and_full_refund_precedence():
+    processor, fake, subs, _events, _service = _processor()
+    _seed_active(subs)
+    fake.invoices["inv_1"] = _invoice()
+    _deliver_payload(processor, _charged_payload(), "evt_disp_ch")
+    charges = SqliteChargeRepository(subs.conn)
+    fake.payments["pay_1"] = _payment()
+    fake.disputes["disp_1"] = _dispute(status="open")
+    created = _deliver_payload(
+        processor, _dispute_payload("payment.dispute.created"), "evt_disp_c"
+    )
+    assert created.status_code == 200
+    assert charges.get_charge_by_payment_id("pay_1").access_effect == "none"
+    fake.disputes["disp_1"] = _dispute(status="under_review")
+    _deliver_payload(processor, _dispute_payload("payment.dispute.created"), "evt_disp_r")
+    assert charges.get_charge_by_payment_id("pay_1").access_effect == "none"
+    fake.disputes["disp_1"] = _dispute(status="won")
+    won = _deliver_payload(
+        processor, _dispute_payload("payment.dispute.won"), "evt_disp_w"
+    )
+    assert won.status_code == 200
+    assert charges.get_charge_by_payment_id("pay_1").dispute_status == "won"
+    assert charges.get_charge_by_payment_id("pay_1").access_effect == "none"
+    fake.disputes["disp_1"] = _dispute(status="lost")
+    lost = _deliver_payload(
+        processor, _dispute_payload("payment.dispute.lost"), "evt_disp_l"
+    )
+    assert lost.status_code == 200
+    row = charges.get_charge_by_payment_id("pay_1")
+    assert row.access_effect == "period_ended"
+    assert row.access_effect_reason == "dispute_lost"
+    fake.payments["pay_1"] = _payment(refund_status="full", amount_refunded=19900)
+    fake.disputes["disp_1"] = _dispute(status="lost")
+    _deliver_payload(processor, _dispute_payload("payment.dispute.lost"), "evt_disp_both")
+    row = charges.get_charge_by_payment_id("pay_1")
+    assert row.access_effect == "period_ended"
+    assert row.access_effect_reason == "full_refund"
+
+
+def test_out_of_order_dispute_created_uses_provider_won_truth():
+    processor, fake, subs, _events, _service = _processor()
+    _seed_active(subs)
+    fake.invoices["inv_1"] = _invoice()
+    fake.payments["pay_1"] = _payment()
+    fake.disputes["disp_1"] = _dispute(status="won")
+    result = _deliver_payload(
+        processor, _dispute_payload("payment.dispute.created"), "evt_old_disp"
+    )
+    assert result.status_code == 200
+    charges = SqliteChargeRepository(subs.conn)
+    row = charges.get_charge_by_payment_id("pay_1")
+    assert row.dispute_status == "won"
+    assert row.access_effect == "none"
+
+
+def test_refund_fallback_maps_via_invoice_and_unmatched_does_not_guess():
+    processor, fake, subs, events, _service = _processor()
+    original = _seed_active(subs)
+    fake.payments["pay_hist"] = _payment("pay_hist", invoice_id="inv_hist")
+    fake.invoices["inv_hist"] = _invoice("inv_hist", payment_id="pay_hist")
+    fake.payments["pay_hist"] = _payment(
+        "pay_hist", invoice_id="inv_hist", refund_status="full", amount_refunded=19900
+    )
+    mapped = _deliver_payload(
+        processor,
+        _refund_payload("refund.processed", payment_id="pay_hist"),
+        "evt_hist",
+    )
+    assert mapped.status_code == 200
+    assert mapped.processing_status == "processed"
+    charges = SqliteChargeRepository(subs.conn)
+    row = charges.get_charge_by_payment_id("pay_hist")
+    assert row.user_subscription_id == original.id
+    assert row.access_effect == "period_ended"
+    fake.payments["pay_orphan"] = _payment("pay_orphan", invoice_id=None)
+    missing = _deliver_payload(
+        processor,
+        _refund_payload("refund.processed", payment_id="pay_orphan"),
+        "evt_orphan",
+    )
+    assert missing.status_code == 200
+    assert missing.processing_status == "unmatched"
+    assert charges.get_charge_by_payment_id("pay_orphan") is None
+    fake.payments["pay_unknown"] = _payment("pay_unknown", invoice_id="inv_unknown")
+    fake.invoices["inv_unknown"] = _invoice(
+        "inv_unknown", sub_id="sub_other", payment_id="pay_unknown"
+    )
+    unknown = _deliver_payload(
+        processor,
+        _refund_payload("refund.processed", payment_id="pay_unknown"),
+        "evt_unknown_sub",
+    )
+    assert unknown.status_code == 200
+    assert unknown.processing_status == "unmatched"
+    assert events.get_event_by_provider_event_id("evt_unknown_sub").processing_status == (
+        "unmatched"
+    )
+    fake.payment_error = SubscriptionNetworkError("Could not reach the payment provider")
+    transient = _deliver_payload(
+        processor, _refund_payload("refund.processed"), "evt_pay_down"
+    )
+    assert transient.status_code == 503
+    assert transient.processing_status == "failed"
+
+
+def test_refund_and_dispute_use_same_event_table_and_hmac():
+    processor, fake, subs, events, _service = _processor()
+    _seed_active(subs)
+    fake.payments["pay_1"] = _payment()
+    fake.invoices["inv_1"] = _invoice()
+    result = _deliver_payload(processor, _refund_payload("refund.created"), "evt_same_tbl")
+    assert result.status_code == 200
+    stored = events.get_event_by_provider_event_id("evt_same_tbl")
+    assert stored.event_name == "refund.created"
+    assert stored.processing_status == "processed"
+    raw = _raw(_refund_payload("refund.processed"))
+    bad = processor.process_delivery(raw, "deadbeef", "evt_bad_sig")
+    assert bad.status_code == 400
+    assert events.get_event_by_provider_event_id("evt_bad_sig") is None
+

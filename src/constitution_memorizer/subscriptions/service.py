@@ -24,7 +24,6 @@ from constitution_memorizer.subscriptions.errors import (
     CheckoutMismatchError,
     CheckoutSignatureError,
     CurrentSubscriptionExistsError,
-    ResubscribeUnavailableError,
     SameTierChangeError,
     SubscriptionConfigError,
     SubscriptionStateError,
@@ -211,9 +210,21 @@ class SubscriptionService:
     def get_current(self, user_id: UUID | str) -> UserSubscription | None:
         return self._repo.get_current_subscription(user_id)
 
+    def list_history(self, user_id: UUID | str) -> list[UserSubscription]:
+        return self._repo.list_subscription_history(user_id)
+
     def fetch_provider_subscription(self, provider_subscription_id: str):
         """Authenticated provider GET. Webhook payloads are not authorization truth."""
         return self._client.fetch_subscription(provider_subscription_id)
+
+    def fetch_provider_payment(self, payment_id: str):
+        return self._client.fetch_payment(payment_id)
+
+    def fetch_provider_invoice(self, invoice_id: str):
+        return self._client.fetch_invoice(invoice_id)
+
+    def fetch_provider_dispute(self, dispute_id: str):
+        return self._client.fetch_dispute(dispute_id)
 
     def reconcile_fetched_subscription(
         self,
@@ -273,10 +284,47 @@ class SubscriptionService:
                 raise ChangePlanRequiredError("already subscribed")
             raise ChangePlanRequiredError("use the plan-change flow")
         if current.status in TERMINAL_STATUSES:
-            raise ResubscribeUnavailableError(
-                "resubscribe is not available in this batch"
-            )
+            return self._resubscribe(user_id, current, tier)
         raise SubscriptionStateError("cannot start a parallel subscription")
+
+    def _resubscribe(
+        self,
+        user_id: UUID | str,
+        current: UserSubscription,
+        tier: str,
+    ) -> CheckoutHandoff:
+        """Archive a provider-confirmed terminal row, then create a new subscription.
+
+        Never reuses the historical Razorpay subscription id.
+        """
+        provider_id = str(current.provider_subscription_id or "")
+        if provider_id:
+            provider = self._client.fetch_subscription(provider_id)
+            stored = self._persist_provider(user_id, current, provider)
+            if stored.status not in TERMINAL_STATUSES:
+                return self._start_with_existing(user_id, stored, tier)
+        elif current.is_current:
+            self._repo.mark_not_current(user_id, current.id)
+        existing = self._repo.get_current_subscription(user_id)
+        if existing is not None:
+            return self._start_with_existing(user_id, existing, tier)
+        product = get_subscription_product(tier)
+        plan_id = self._plan_ids.for_tier(tier)
+        try:
+            reservation = self._repo.create_subscription_record(
+                user_id,
+                tier=tier,
+                status="created",
+                provider_plan_id=plan_id,
+                is_current=True,
+                provider_metadata={"reservation": True},
+            )
+        except CurrentSubscriptionExistsError:
+            raced = self._repo.get_current_subscription(user_id)
+            if raced is None:
+                raise
+            return self._start_with_existing(user_id, raced, tier)
+        return self._create_provider_for_reservation(user_id, reservation, product, plan_id)
 
     def _create_provider_for_reservation(
         self,
@@ -349,7 +397,10 @@ class SubscriptionService:
             kwargs["tier"] = require_tier(tier)
         if cancel_at_period_end is not None:
             kwargs["cancel_at_period_end"] = cancel_at_period_end
-        return self._repo.update_subscription_state(user_id, row.id, **kwargs)
+        stored = self._repo.update_subscription_state(user_id, row.id, **kwargs)
+        if stored.status in TERMINAL_STATUSES and stored.is_current:
+            stored = self._repo.mark_not_current(user_id, stored.id)
+        return stored
 
     def _require_current(self, user_id: UUID | str) -> UserSubscription:
         current = self._repo.get_current_subscription(user_id)

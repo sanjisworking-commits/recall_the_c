@@ -84,6 +84,33 @@ class UserSubscription:
 
 
 @dataclass(frozen=True)
+class SubscriptionCharge:
+    """One recurring provider payment. Not a card dump and not entitlement."""
+
+    id: str
+    provider: str
+    provider_payment_id: str
+    provider_invoice_id: str | None
+    provider_subscription_id: str | None
+    user_subscription_id: str | None
+    billing_period_start: datetime | None
+    billing_period_end: datetime | None
+    amount_paise: int | None
+    currency: str | None
+    payment_status: str | None
+    refund_status: str | None
+    amount_refunded_paise: int
+    last_refund_id: str | None
+    dispute_id: str | None
+    dispute_status: str | None
+    access_effect: str
+    access_effect_reason: str | None
+    access_effect_at: datetime | None
+    created_at: datetime
+    updated_at: datetime
+
+
+@dataclass(frozen=True)
 class WebhookEvent:
     """One provider webhook delivery. Not entitlement and not a payload dump."""
 

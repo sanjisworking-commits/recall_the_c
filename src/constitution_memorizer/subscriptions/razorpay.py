@@ -29,6 +29,9 @@ from constitution_memorizer.subscriptions.errors import (
 logger = logging.getLogger(__name__)
 
 RAZORPAY_SUBSCRIPTIONS_URL = "https://api.razorpay.com/v1/subscriptions"
+RAZORPAY_PAYMENTS_URL = "https://api.razorpay.com/v1/payments"
+RAZORPAY_INVOICES_URL = "https://api.razorpay.com/v1/invoices"
+RAZORPAY_DISPUTES_URL = "https://api.razorpay.com/v1/disputes"
 # Provider API bound only. Not shown to customers. Not prepaid access.
 RAZORPAY_MONTHLY_TOTAL_COUNT = 1200
 SCHEDULE_NOW = "now"
@@ -67,6 +70,46 @@ class ProviderSubscription:
     raw: Mapping[str, Any]
 
 
+@dataclass(frozen=True)
+class ProviderPayment:
+    """Normalized Razorpay payment. Card/contact/email are never stored here."""
+
+    id: str
+    amount: int | None
+    currency: str | None
+    status: str | None
+    invoice_id: str | None
+    refund_status: str | None
+    amount_refunded: int | None
+
+
+@dataclass(frozen=True)
+class ProviderInvoice:
+    """Normalized subscription invoice. Billing window comes from the invoice."""
+
+    id: str
+    subscription_id: str | None
+    payment_id: str | None
+    billing_start: int | None
+    billing_end: int | None
+    status: str | None
+    amount: int | None
+    currency: str | None
+
+
+@dataclass(frozen=True)
+class ProviderDispute:
+    """Normalized Razorpay dispute. Webhook names are not stored as status."""
+
+    id: str
+    payment_id: str | None
+    status: str | None
+    amount: int | None
+    currency: str | None
+    phase: str | None
+    created_at: int | None
+
+
 class RazorpaySubscriptionsClient:
     """Server-to-server Subscriptions client. Basic auth with existing keys."""
 
@@ -94,15 +137,33 @@ class RazorpaySubscriptionsClient:
         return self._send_json("POST", RAZORPAY_SUBSCRIPTIONS_URL, payload)
 
     def fetch_subscription(self, subscription_id: str) -> ProviderSubscription:
-        sub_id = _require_subscription_id(subscription_id)
-        return self._send_json(
-            "GET", f"{RAZORPAY_SUBSCRIPTIONS_URL}/{sub_id}", None
+        sub_id = _require_provider_id(subscription_id)
+        return normalize_provider_subscription(
+            self._request_json("GET", f"{RAZORPAY_SUBSCRIPTIONS_URL}/{sub_id}", None)
+        )
+
+    def fetch_payment(self, payment_id: str) -> ProviderPayment:
+        pay_id = _require_provider_id(payment_id)
+        return normalize_provider_payment(
+            self._request_json("GET", f"{RAZORPAY_PAYMENTS_URL}/{pay_id}", None)
+        )
+
+    def fetch_invoice(self, invoice_id: str) -> ProviderInvoice:
+        inv_id = _require_provider_id(invoice_id)
+        return normalize_provider_invoice(
+            self._request_json("GET", f"{RAZORPAY_INVOICES_URL}/{inv_id}", None)
+        )
+
+    def fetch_dispute(self, dispute_id: str) -> ProviderDispute:
+        disp_id = _require_provider_id(dispute_id)
+        return normalize_provider_dispute(
+            self._request_json("GET", f"{RAZORPAY_DISPUTES_URL}/{disp_id}", None)
         )
 
     def cancel_subscription(
         self, subscription_id: str, *, cancel_at_cycle_end: bool = True
     ) -> ProviderSubscription:
-        sub_id = _require_subscription_id(subscription_id)
+        sub_id = _require_provider_id(subscription_id)
         return self._send_json(
             "POST",
             f"{RAZORPAY_SUBSCRIPTIONS_URL}/{sub_id}/cancel",
@@ -116,7 +177,7 @@ class RazorpaySubscriptionsClient:
         plan_id: str,
         schedule_change_at: str,
     ) -> ProviderSubscription:
-        sub_id = _require_subscription_id(subscription_id)
+        sub_id = _require_provider_id(subscription_id)
         plan = str(plan_id or "").strip()
         if not plan:
             raise SubscriptionValidationError("plan_id is required")
@@ -149,6 +210,11 @@ class RazorpaySubscriptionsClient:
     def _send_json(
         self, method: str, url: str, payload: Mapping[str, Any] | None
     ) -> ProviderSubscription:
+        return normalize_provider_subscription(self._request_json(method, url, payload))
+
+    def _request_json(
+        self, method: str, url: str, payload: Mapping[str, Any] | None
+    ) -> dict[str, Any]:
         if not self._key_id.strip() or not self._key_secret.strip():
             raise SubscriptionConfigError(
                 "RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET are required"
@@ -180,7 +246,9 @@ class RazorpaySubscriptionsClient:
         except ValueError as exc:
             logger.error("Razorpay subscription response was not JSON")
             raise SubscriptionResponseError(_USER_SAFE_MALFORMED) from exc
-        return normalize_provider_subscription(data)
+        if not isinstance(data, dict):
+            raise SubscriptionResponseError(_USER_SAFE_MALFORMED)
+        return data
 
 
 def verify_subscription_signature(
@@ -252,10 +320,65 @@ def normalize_provider_subscription(data: Mapping[str, Any]) -> ProviderSubscrip
     )
 
 
-def _require_subscription_id(value: str) -> str:
+def normalize_provider_payment(data: Mapping[str, Any]) -> ProviderPayment:
+    try:
+        pay_id = str(data["id"])
+    except (KeyError, TypeError) as exc:
+        raise SubscriptionResponseError(_USER_SAFE_MALFORMED) from exc
+    if not pay_id:
+        raise SubscriptionResponseError(_USER_SAFE_MALFORMED)
+    return ProviderPayment(
+        id=pay_id,
+        amount=_optional_int(data.get("amount")),
+        currency=_optional_str(data.get("currency")),
+        status=_optional_str(data.get("status")),
+        invoice_id=_optional_str(data.get("invoice_id")),
+        refund_status=_optional_str(data.get("refund_status")),
+        amount_refunded=_optional_int(data.get("amount_refunded")),
+    )
+
+
+def normalize_provider_invoice(data: Mapping[str, Any]) -> ProviderInvoice:
+    try:
+        inv_id = str(data["id"])
+    except (KeyError, TypeError) as exc:
+        raise SubscriptionResponseError(_USER_SAFE_MALFORMED) from exc
+    if not inv_id:
+        raise SubscriptionResponseError(_USER_SAFE_MALFORMED)
+    return ProviderInvoice(
+        id=inv_id,
+        subscription_id=_optional_str(data.get("subscription_id")),
+        payment_id=_optional_str(data.get("payment_id")),
+        billing_start=_optional_int(data.get("billing_start")),
+        billing_end=_optional_int(data.get("billing_end")),
+        status=_optional_str(data.get("status")),
+        amount=_optional_int(data.get("amount")),
+        currency=_optional_str(data.get("currency")),
+    )
+
+
+def normalize_provider_dispute(data: Mapping[str, Any]) -> ProviderDispute:
+    try:
+        disp_id = str(data["id"])
+    except (KeyError, TypeError) as exc:
+        raise SubscriptionResponseError(_USER_SAFE_MALFORMED) from exc
+    if not disp_id:
+        raise SubscriptionResponseError(_USER_SAFE_MALFORMED)
+    return ProviderDispute(
+        id=disp_id,
+        payment_id=_optional_str(data.get("payment_id")),
+        status=_optional_str(data.get("status")),
+        amount=_optional_int(data.get("amount")),
+        currency=_optional_str(data.get("currency")),
+        phase=_optional_str(data.get("phase")),
+        created_at=_optional_int(data.get("created_at")),
+    )
+
+
+def _require_provider_id(value: str) -> str:
     text = str(value or "").strip()
     if not text or "/" in text or " " in text:
-        raise SubscriptionValidationError("invalid provider subscription id")
+        raise SubscriptionValidationError("invalid provider id")
     return text
 
 

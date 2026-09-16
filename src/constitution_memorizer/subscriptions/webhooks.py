@@ -1,6 +1,6 @@
 """Razorpay subscription webhook processor. Notification in; provider GET is truth.
 
-Does not authorize Playground access. Does not handle refunds or disputes.
+Does not authorize Playground access. Refunds and disputes reuse this endpoint.
 """
 
 from __future__ import annotations
@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Mapping
 
+from constitution_memorizer.subscriptions.charge_sync import ChargeRecorder
 from constitution_memorizer.subscriptions.errors import (
     SubscriptionConfigError,
     SubscriptionProviderError,
@@ -39,6 +40,21 @@ SUPPORTED_SUBSCRIPTION_EVENTS = frozenset(
         "subscription.cancelled",
     }
 )
+SUPPORTED_REFUND_EVENTS = frozenset(
+    {
+        "refund.created",
+        "refund.processed",
+        "refund.failed",
+    }
+)
+SUPPORTED_DISPUTE_EVENTS = frozenset(
+    {
+        "payment.dispute.created",
+        "payment.dispute.won",
+        "payment.dispute.lost",
+    }
+)
+SUPPORTED_PAYMENT_EVENTS = SUPPORTED_REFUND_EVENTS | SUPPORTED_DISPUTE_EVENTS
 
 
 @dataclass(frozen=True)
@@ -58,11 +74,18 @@ class WebhookProcessor:
         subscriptions: Any,
         service: Any,
         secrets: WebhookSecrets,
+        charges: Any = None,
     ) -> None:
         self._events = events
         self._subscriptions = subscriptions
         self._service = service
         self._secrets = secrets
+        self._charges = charges
+        self._recorder = (
+            ChargeRecorder(charges, subscriptions, service)
+            if charges is not None
+            else None
+        )
 
     def process_delivery(
         self,
@@ -152,6 +175,7 @@ class WebhookProcessor:
                 event,
                 event_name=event_name,
                 provider_sub_id=provider_sub_id,
+                payload=payload,
                 used_slot=used_slot,
             )
         except Exception:
@@ -181,8 +205,16 @@ class WebhookProcessor:
         *,
         event_name: str,
         provider_sub_id: str | None,
+        payload: Mapping[str, Any],
         used_slot: str,
     ) -> WebhookDeliveryResult:
+        if event_name in SUPPORTED_PAYMENT_EVENTS:
+            return self._process_payment_event(
+                event,
+                event_name=event_name,
+                payload=payload,
+                used_slot=used_slot,
+            )
         if event_name not in SUPPORTED_SUBSCRIPTION_EVENTS:
             stored = self._events.mark_event_status(event.id, "ignored")
             self._log(stored, used_slot, "ignored")
@@ -244,8 +276,25 @@ class WebhookProcessor:
                 microsecond=0
             ).isoformat()
         try:
-            self._service.reconcile_fetched_subscription(
+            stored_row = self._service.reconcile_fetched_subscription(
                 local, provider, extra_meta=extra or None
+            )
+            if event_name == "subscription.charged" and self._recorder is not None:
+                self._recorder.record_charged_payload(payload, stored_row)
+        except SubscriptionProviderError:
+            stored = self._events.mark_event_status(
+                event.id,
+                "failed",
+                error_code="provider",
+                provider_subscription_id=provider_sub_id,
+            )
+            self._log(stored, used_slot, "failed")
+            return WebhookDeliveryResult(
+                503,
+                error="provider",
+                processing_status="failed",
+                used_secret_slot=used_slot,
+                owned=True,
             )
         except Exception:
             logger.exception(
@@ -282,6 +331,56 @@ class WebhookProcessor:
         return WebhookDeliveryResult(
             200,
             processing_status="processed",
+            used_secret_slot=used_slot,
+            owned=True,
+        )
+
+    def _process_payment_event(
+        self,
+        event: Any,
+        *,
+        event_name: str,
+        payload: Mapping[str, Any],
+        used_slot: str,
+    ) -> WebhookDeliveryResult:
+        if self._recorder is None:
+            stored = self._events.mark_event_status(
+                event.id, "failed", error_code="provider"
+            )
+            self._log(stored, used_slot, "failed")
+            return WebhookDeliveryResult(
+                503,
+                error="provider",
+                processing_status="failed",
+                used_secret_slot=used_slot,
+                owned=True,
+            )
+        try:
+            if event_name in SUPPORTED_REFUND_EVENTS:
+                status, sub_id = self._recorder.apply_refund(payload)
+            else:
+                status, sub_id = self._recorder.apply_dispute(payload)
+        except SubscriptionProviderError:
+            stored = self._events.mark_event_status(
+                event.id, "failed", error_code="provider"
+            )
+            self._log(stored, used_slot, "failed")
+            return WebhookDeliveryResult(
+                503,
+                error="provider",
+                processing_status="failed",
+                used_secret_slot=used_slot,
+                owned=True,
+            )
+        stored = self._events.mark_event_status(
+            event.id,
+            status,
+            provider_subscription_id=sub_id,
+        )
+        self._log(stored, used_slot, status)
+        return WebhookDeliveryResult(
+            200,
+            processing_status=status,
             used_secret_slot=used_slot,
             owned=True,
         )

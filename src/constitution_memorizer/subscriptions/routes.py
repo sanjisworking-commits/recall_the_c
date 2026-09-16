@@ -34,6 +34,15 @@ from constitution_memorizer.subscriptions.http import (
 )
 from constitution_memorizer.subscriptions.models import UserSubscription
 
+LIFECYCLE_MESSAGES = {
+    "pending": "Payment retry in progress",
+    "halted": "Automatic retries have stopped",
+    "paused": "Subscription paused",
+    "expired": "Subscription checkout expired",
+    "cancelled": "Previous subscription ended; subscribe again",
+    "completed": "Previous subscription ended; subscribe again",
+}
+ENDED_MESSAGE = "Previous subscription ended; subscribe again"
 ERROR_MESSAGES = {
     "config": "Payment provider is not configured.",
     "provider": "Could not complete the payment-provider request. Nothing else changed.",
@@ -59,6 +68,11 @@ def create_subscription_router(templates: Jinja2Templates) -> APIRouter:
         service = require_subscription_service(request)
         uid = subscription_user_id(request)
         current = service.get_current(uid) if uid is not None else None
+        ended_message = ""
+        if uid is not None and current is None:
+            history = service.list_history(uid)
+            if any(row.status in {"cancelled", "completed", "expired"} for row in history):
+                ended_message = ENDED_MESSAGE
         products = [
             {
                 "tier": product.tier,
@@ -86,6 +100,7 @@ def create_subscription_router(templates: Jinja2Templates) -> APIRouter:
                     and current.status == "created"
                     and current.provider_subscription_id
                 ),
+                "ended_message": ended_message,
                 "signed_in": uid is not None,
                 "error_message": ERROR_MESSAGES.get(error or "", ""),
             },
@@ -286,6 +301,7 @@ def _public_current(row: UserSubscription) -> dict[str, object]:
         "cancel_at_period_end": row.cancel_at_period_end,
         "billing_period_end": row.billing_period_end,
         "scheduled_tier": scheduled if isinstance(scheduled, str) else "",
+        "lifecycle_message": LIFECYCLE_MESSAGES.get(row.status, ""),
     }
 
 

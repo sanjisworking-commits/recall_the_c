@@ -1349,6 +1349,20 @@ class PostgresProgressRepository:
             row = cur.fetchone()
         return _billing_order_from_row(row) if row is not None else None
 
+    def list_payment_access_grants(self, user_id: UUID | str) -> list[dict]:
+        with self._cursor() as (_conn, cur):
+            cur.execute(
+                """
+                SELECT id, user_id, source, starts_at, ends_at, reason, revoked_at
+                FROM access_grants
+                WHERE user_id = %s AND source = 'payment'
+                ORDER BY starts_at ASC
+                """,
+                (as_user_id(user_id),),
+            )
+            rows = cur.fetchall()
+        return [dict(row) for row in rows]
+
     def mark_billing_order_paid(
         self,
         user_id: UUID | str,

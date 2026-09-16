@@ -807,13 +807,21 @@ def create_app(
 
     app.state.webhook_events = None
     app.state.webhook_processor = None
+    app.state.subscription_charges = None
     if db_pool is not None:
+        from constitution_memorizer.subscriptions.charge_postgres import (  # noqa: PLC0415
+            PostgresChargeRepository,
+        )
         from constitution_memorizer.subscriptions.webhook_postgres import (  # noqa: PLC0415
             PostgresWebhookEventRepository,
         )
 
         app.state.webhook_events = PostgresWebhookEventRepository(db_pool)
+        app.state.subscription_charges = PostgresChargeRepository(db_pool)
     else:
+        from constitution_memorizer.subscriptions.charge_repository import (  # noqa: PLC0415
+            SqliteChargeRepository,
+        )
         from constitution_memorizer.subscriptions.webhook_repository import (  # noqa: PLC0415
             SqliteWebhookEventRepository,
         )
@@ -821,6 +829,7 @@ def create_app(
         conn = getattr(engine.repo, "conn", None)
         if conn is not None and not use_postgres and app.state.subscriptions is not None:
             app.state.webhook_events = SqliteWebhookEventRepository(conn)
+            app.state.subscription_charges = SqliteChargeRepository(conn)
 
     if (
         app.state.webhook_events is not None
@@ -835,6 +844,7 @@ def create_app(
             subscriptions=app.state.subscriptions,
             service=app.state.subscription_service,
             secrets=app.state.webhook_secrets,
+            charges=app.state.subscription_charges,
         )
 
     app.state.db_pool = db_pool

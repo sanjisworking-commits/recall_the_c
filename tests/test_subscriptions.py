@@ -67,7 +67,10 @@ from constitution_memorizer.subscriptions.postgres import (
     UniqueViolation,
 )
 from constitution_memorizer.subscriptions.razorpay import (
+    RAZORPAY_DISPUTES_URL,
+    RAZORPAY_INVOICES_URL,
     RAZORPAY_MONTHLY_TOTAL_COUNT,
+    RAZORPAY_PAYMENTS_URL,
     RAZORPAY_SUBSCRIPTIONS_URL,
     SCHEDULE_CYCLE_END,
     SCHEDULE_NOW,
@@ -75,6 +78,9 @@ from constitution_memorizer.subscriptions.razorpay import (
     ProviderSubscription,
     RazorpaySubscriptionsClient,
     _create_payload,
+    normalize_provider_dispute,
+    normalize_provider_invoice,
+    normalize_provider_payment,
     normalize_provider_subscription,
     verify_subscription_signature,
 )
@@ -975,6 +981,70 @@ def test_fetch_cancel_and_plan_update_use_expected_endpoints(monkeypatch):
         "schedule_change_at": "cycle_end",
     }
     assert SECRET not in repr(client)
+
+
+def test_fetch_payment_invoice_and_dispute_use_expected_endpoints(monkeypatch):
+    payment_payload = {
+        "id": "pay_1",
+        "amount": 19900,
+        "currency": "INR",
+        "status": "captured",
+        "invoice_id": "inv_1",
+        "refund_status": "partial",
+        "amount_refunded": 100,
+        "email": "hidden@example.com",
+        "contact": "9999999999",
+        "card": {"last4": "1111"},
+    }
+    calls = _patch_httpx(monkeypatch, response=_FakeResponse(200, payment_payload))
+    client = RazorpaySubscriptionsClient("rzp_test_id", SECRET)
+    payment = client.fetch_payment("pay_1")
+    assert calls[0]["method"] == "GET"
+    assert calls[0]["url"] == f"{RAZORPAY_PAYMENTS_URL}/pay_1"
+    assert RAZORPAY_PAYMENTS_URL == "https://api.razorpay.com/v1/payments"
+    assert payment.id == "pay_1"
+    assert payment.refund_status == "partial"
+    assert payment.amount_refunded == 100
+    assert not hasattr(payment, "email")
+    assert not hasattr(payment, "card")
+    invoice_payload = {
+        "id": "inv_1",
+        "subscription_id": "sub_1",
+        "payment_id": "pay_1",
+        "billing_start": 1,
+        "billing_end": 2,
+        "status": "paid",
+        "amount": 19900,
+        "currency": "INR",
+    }
+    _patch_httpx(monkeypatch, response=_FakeResponse(200, invoice_payload))
+    invoice = client.fetch_invoice("inv_1")
+    assert invoice.subscription_id == "sub_1"
+    assert invoice.billing_start == 1
+    dispute_payload = {
+        "id": "disp_1",
+        "payment_id": "pay_1",
+        "status": "won",
+        "amount": 19900,
+        "currency": "INR",
+        "phase": "chargeback",
+        "created_at": 3,
+    }
+    calls = _patch_httpx(monkeypatch, response=_FakeResponse(200, dispute_payload))
+    dispute = client.fetch_dispute("disp_1")
+    assert calls[0]["url"] == f"{RAZORPAY_DISPUTES_URL}/disp_1"
+    assert RAZORPAY_DISPUTES_URL == "https://api.razorpay.com/v1/disputes"
+    assert RAZORPAY_INVOICES_URL == "https://api.razorpay.com/v1/invoices"
+    assert dispute.status == "won"
+    assert normalize_provider_payment(payment_payload).invoice_id == "inv_1"
+    assert normalize_provider_invoice(invoice_payload).payment_id == "pay_1"
+    assert normalize_provider_dispute(dispute_payload).phase == "chargeback"
+    with pytest.raises(SubscriptionValidationError):
+        client.fetch_payment("pay/1")
+    with pytest.raises(SubscriptionValidationError):
+        client.fetch_invoice("inv 1")
+    with pytest.raises(SubscriptionValidationError):
+        client.fetch_dispute("disp/1")
 
 
 def test_provider_rejects_unsafe_subscription_ids_before_http(monkeypatch):
