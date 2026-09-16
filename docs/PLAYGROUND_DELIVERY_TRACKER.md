@@ -2,15 +2,15 @@
 
 **Scoreboard, not an audit.** Product rules live in [PLAYGROUND.md](PLAYGROUND.md), [PAYMENT_ENTITLEMENT_AUDIT.md](PAYMENT_ENTITLEMENT_AUDIT.md), [PLAYGROUND_TWO_LAW_AUDIT.md](PLAYGROUND_TWO_LAW_AUDIT.md), and [law-loading.md](law-loading.md).
 
-**Snapshot:** architecture/product definition is **locked in docs**. **Stage 1** (build) is **31.1 / 100**. Production implementation is **early**. The NDPS/BNS overlay + Cloze + proof revision rows **do not** count as milestones 6–8. Milestone 1 is `DONE`. Milestone 2 is **`DONE` — 37/37**. Milestone 3 is **`IN PROGRESS` — 11/15** (M3-A Constitution/user-type inversion; M3-B Playground gating is not started). **Do not tick Stage 2 from Cloze or from `main`’s sitemap PRs.** This branch includes main’s Bare Act SEO and generated sitemap index; that is Milestone 0 coexistence, not Milestone 10 (`noindex`) and not Stage 2.
+**Snapshot:** architecture/product definition is **locked in docs**. **Stage 1** (build) is **33.0 / 100**. Production implementation is **early**. The NDPS/BNS overlay + Cloze + proof revision rows **do not** count as milestones 6–8. Milestone 1 is `DONE`. Milestone 2 is **`DONE` — 37/37**. Milestone 3 is **`DONE` — 15/15** (M3-A Constitution inversion + M3-B Playground commercial gate). Device enforcement remains Milestone 4. Monthly roster enforcement remains Milestone 5. **Do not tick Stage 2 from Cloze or from `main`’s sitemap PRs.** This branch includes main’s Bare Act SEO and generated sitemap index; that is Milestone 0 coexistence, not Milestone 10 (`noindex`) and not Stage 2.
 
 | | |
 |--|--|
-| **Stage 1 (build)** | **31.1 / 100** |
+| **Stage 1 (build)** | **33.0 / 100** |
 | Milestone 0 | `DONE` — 10/10 items × 5 = **5** |
 | Milestone 1 | `DONE` — 18/18 items × 8 = **8** |
 | Milestone 2 | `DONE` — 37/37 × 13 = **13** |
-| Milestone 3 | `IN PROGRESS` — 11/15 × 7 ≈ **5.13** (M3-A; M3-B unticked) |
+| Milestone 3 | `DONE` — 15/15 × 7 = **7** |
 | Milestones 4–11 | `NOT STARTED`; remaining §21 `BLOCKED` cells are device-churn integers / support channel only |
 | **Stage 2 (optimize)** | **`NOT STARTED` — start gate: Stage 1 = `DONE` (100/100)** |
 
@@ -254,7 +254,7 @@ A subscription can move through its full real lifecycle without manually editing
 
 # 3. User-type entitlement inversion — 7 points
 
-**Status: `IN PROGRESS` — 11/15** (M3-A Constitution inversion + EntitlementService). Do **not** call Milestone 3 `DONE`. M3-B wires the same snapshot into `/playground`.
+**Status: `DONE` — 15/15** (M3-A Constitution inversion + EntitlementService; M3-B Playground commercial HTTP gate). Device enforcement remains Milestone 4. Monthly roster enforcement remains Milestone 5. Pending existing-item behaviour is transitional until M5 can identify current-period roster membership; overlay items are **not** the current roster.
 
 Implement one authoritative entitlement resolver.
 
@@ -262,7 +262,7 @@ Implement one authoritative entitlement resolver.
 
 * [x] Constitution guest behaviour preserved
 * [x] laws readable
-* [ ] Playground → Sign in
+* [x] Playground → Sign in
 
 ## Signed-in / no Playground subscription
 
@@ -271,13 +271,13 @@ Implement one authoritative entitlement resolver.
 * [x] no 3-Article access restriction
 * [x] no Type/Recite premium restriction
 * [x] laws readable
-* [ ] Playground → Subscribe
+* [x] Playground → Subscribe
 
 ## Subscriber
 
 * [x] Full Constitution
-* [ ] Full Playground learning capability
-* [ ] tier affects only monthly law capacity
+* [x] Full Playground learning capability
+* [x] tier affects only monthly law capacity
 
 ## Legacy logic retirement
 
@@ -310,7 +310,7 @@ billing_period_start / billing_period_end
 legacy_status
 ```
 
-M3-A source of truth: [`src/constitution_memorizer/entitlements/`](../src/constitution_memorizer/entitlements/). [`web/entitlements.py`](../src/constitution_memorizer/web/entitlements.py) is the Constitution adapter. `/playground` HTTP is still the signed-in proof (M3-B). Device/roster snapshot fields are not fabricated.
+M3-A source of truth: [`src/constitution_memorizer/entitlements/`](../src/constitution_memorizer/entitlements/). [`web/entitlements.py`](../src/constitution_memorizer/web/entitlements.py) is the Constitution adapter. M3-B Playground HTTP uses [`playground/access.py`](../src/constitution_memorizer/playground/access.py) (`get_entitlement_snapshot` once per request). **M3 commercial gate is complete.** Device enforcement remains M4. Monthly roster enforcement remains M5. Pending users may open existing overlay/progress (transitional commercial bit until M5 `is_law_active_this_period`). Overlay items are not current roster. Device/roster snapshot fields are not fabricated. `playground_law_limit` is catalogue metadata only; 10/30/unlimited is not counted against overlay rows.
 
 ### Done when
 
@@ -762,7 +762,7 @@ Playground + payment can safely replace the existing commercial entitlement mode
 | 0. Architecture + branch baseline |      5 | `DONE` (5 earned) |
 | 1. Backend foundation             |      8 | `DONE` (8 earned; 18/18) |
 | 2. Payment/subscriptions          |     13 | `DONE` — 37/37 × 13 = 13 |
-| 3. User-type entitlement          |      7 | `IN PROGRESS` — 11/15 × 7 ≈ 5.13 |
+| 3. User-type entitlement          |      7 | `DONE` — 15/15 × 7 = 7 |
 | 4. Device control                 |      8 | `NOT STARTED` |
 | 5. Monthly roster                 |     12 | `NOT STARTED` |
 | 6. Finished UX                    |      8 | `NOT STARTED` |
@@ -771,7 +771,7 @@ Playground + payment can safely replace the existing commercial entitlement mode
 | 9. Amendments/source integrity    |      5 | `NOT STARTED` |
 | 10. SEO/routing discoverability   |      4 | `NOT STARTED` |
 | 11. Production hardening/release  |      7 | `NOT STARTED` |
-| **TOTAL (Stage 1)**               |  **100** | **31.1 / 100** |
+| **TOTAL (Stage 1)**               |  **100** | **33.0 / 100** |
 | Stage 2 — Optimize                |    — | `NOT STARTED` — start gate: Stage 1 = `DONE` (100/100) |
 
 ---
@@ -787,7 +787,7 @@ Batch 0   Rebase onto latest main + contracts — DONE (this milestone 0)
 Batch 1A  Eligibility + APIRouter + final `/playground/laws/{id}` URLs — DONE
 Batch 1B  Law-loading/hash cleanup + batched dashboard/selection — DONE
 Batch 2   Payment/subscription foundation
-Batch 3   User entitlement inversion — M3-A DONE (Constitution); M3-B next
+Batch 3   User entitlement inversion — DONE (M3-A Constitution + M3-B Playground gate)
 Batch 4   Device registry/control
 Batch 5   Monthly roster + rollover
 Batch 6   Final Playground UI shell

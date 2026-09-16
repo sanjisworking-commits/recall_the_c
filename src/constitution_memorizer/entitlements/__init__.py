@@ -1,7 +1,7 @@
 """Central commercial entitlement package.
 
 ``web/entitlements.py`` is the Constitution Learn adapter around this snapshot.
-Playground HTTP gates land in Milestone 3B; devices in M4; roster in M5.
+Playground HTTP gates consume the snapshot (M3-B). Devices remain M4; roster remains M5.
 """
 
 from constitution_memorizer.entitlements.dependencies import get_entitlement_snapshot

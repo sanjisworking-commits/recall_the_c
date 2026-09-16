@@ -1,6 +1,6 @@
 # Payment, entitlement, and Playground — architecture lock
 
-**Scope of this document.** This is the **locked product architecture** for RecallC access: user types, device control for paid Playground, monthly Playground roster, clocks, schema to build, CTA states, sequential batches, the locked commercial catalogue / subscription-access matrix, and remaining device-churn open cells. It is **not** a description of current production behaviour. Current code still uses Razorpay **one-time duration passes** as historical Constitution commerce. Playground has an additive `user_subscription` table, Plus/Pro/Max catalogue, M2 lifecycle, and M3-A [`EntitlementService`](../src/constitution_memorizer/entitlements/service.py) that inverts Constitution (authenticated = full Learn). That snapshot does **not** yet gate `/playground` HTTP (M3-B), and there is **no device registry**. The overlay is a Cloze **proof**, not the finished product.
+**Scope of this document.** This is the **locked product architecture** for RecallC access: user types, device control for paid Playground, monthly Playground roster, clocks, schema to build, CTA states, sequential batches, the locked commercial catalogue / subscription-access matrix, and remaining device-churn open cells. It is **not** a description of current production behaviour. Current code still uses Razorpay **one-time duration passes** as historical Constitution commerce. Playground has an additive `user_subscription` table, Plus/Pro/Max catalogue, M2 lifecycle, M3-A [`EntitlementService`](../src/constitution_memorizer/entitlements/service.py) that inverts Constitution (authenticated = full Learn), and an M3-B commercial HTTP gate on `/playground` via [`playground/access.py`](../src/constitution_memorizer/playground/access.py). **There is no device registry** (Milestone 4) and **no monthly roster** (Milestone 5). Overlay items are persistent learning, not current-month roster membership. The overlay is a Cloze **proof**, not the finished product.
 
 **Amendment (Max price).** Displayed Max is **₹1,199**/month GST-inclusive (1,19,900 paise). This supersedes any earlier Max lock of ₹999/month. Plus ₹199 and Pro ₹399 are unchanged. Annual plans remain **not offered** in the MVP.
 
@@ -135,7 +135,7 @@ Constitution Learn capability is resolved in [`src/constitution_memorizer/web/en
 
 `web.entitlements.is_subscribed(user)` **always returns `False`**. Auto Plan still uses `has_active_recall_access()` (admin role or unrevoked grant). Playground `is_subscribed` lives on `EntitlementSnapshot` and means current Plus/Pro/Max commercial state (`active` / `pending`, after current-period `access_effect` and billing-end checks).
 
-Guest vs authed HTTP: [`auth/guest.py`](../src/constitution_memorizer/auth/guest.py) (`GUEST_PUBLIC_PREFIXES`, `AUTH_REQUIRED_PREFIXES`). `/laws` is guest-readable. Playground routes on this overlay still redirect guests to login in the handler (`/login?next=…`); M3-B replaces that with the snapshot.
+Guest vs authed HTTP: [`auth/guest.py`](../src/constitution_memorizer/auth/guest.py) (`GUEST_PUBLIC_PREFIXES`, `AUTH_REQUIRED_PREFIXES`). `/laws` is guest-readable. Playground routes consume `get_entitlement_snapshot(request)` in [`playground/access.py`](../src/constitution_memorizer/playground/access.py): guests `/login?next=…`; signed-in non-subscribers see the Subscribe gate; payment-state blocks use typed copy. Constitution Learn is not routed through `can_open_playground`.
 
 ---
 
@@ -155,7 +155,7 @@ When the flag is on:
 
 **Laws / Bare Acts:** not on this matrix. Feature flag `RELEVANT_LAWS_ENABLED` 404s `/laws*` only. Reading is free.
 
-**Playground (existing overlay on `cursor/playground-220d`):** any signed-in user may add NDPS/BNS and Cloze with **no payment check** and **no device check** until M3-B. Overlay rows are **persistent learning**, not a monthly roster and not a device registry. `EntitlementSnapshot` already computes Playground commercial bits (`can_open_playground`, `playground_law_limit`, block reasons) without wiring them to those routes.
+**Playground (existing overlay on `cursor/playground-220d`):** M3-B commercially gates `/playground` from `EntitlementSnapshot` (`can_open_playground` vs `can_consume_new_playground_law`). Guests Sign in; signed-in free/legacy Subscribe; halted/paused/paid-period-ended use payment-state copy; pending may open existing overlay/progress but cannot activate a new law (transitional until M5 current-period roster membership). Active and admin keep the Cloze proof. Overlay rows are **persistent learning**, not a monthly roster and not a device registry. **M3 commercial gate is complete.** Device enforcement remains M4. Monthly roster enforcement remains M5. Do not count overlay rows against 10/30/unlimited.
 
 ---
 
@@ -241,7 +241,7 @@ Web auth today: `rtc_session` is `HttpOnly` + `SameSite=lax` ([`auth/routes.py`]
 
 Playground subscriptions: `POST /api/billing/subscriptions/webhook/razorpay` verifies `X-Razorpay-Signature` over the **raw request body** (`RAZORPAY_WEBHOOK_SECRET`, optional `RAZORPAY_WEBHOOK_SECRET_PREVIOUS`), requires `X-Razorpay-Event-Id`, reserves `subscription_webhook_event`, then **fetches** current provider truth. Subscription notifications fetch `GET /v1/subscriptions/{id}`. Refund notifications fetch the payment; dispute notifications fetch the dispute. Duplicate/out-of-order deliveries are safe because the GET is the ordering authority. Unknown provider subscription or unresolvable payment→invoice links are recorded `unmatched` and do not create a RecallC subscription or guess an account. Constitution duration checkout is still `/api/billing/verify` (Orders HMAC) and has **no** duration webhooks.
 
-M2-D records failed-payment/`pending`, paused/halted, expiry, resubscribe, refunds, and dispute/chargeback **billing facts** against the locked [§21](#21-commercial-and-provider-cells) access matrix. Webhooks update **billing** dates and `subscription_charge.access_effect`; they do **not** consume roster slots and do **not** authorize Playground. A dispute-created webhook is **not** a destructive account action. Client Checkout verify must not be the only grant path. M3-A `EntitlementService` consumes these facts; M3-B puts the snapshot in front of `/playground`.
+M2-D records failed-payment/`pending`, paused/halted, expiry, resubscribe, refunds, and dispute/chargeback **billing facts** against the locked [§21](#21-commercial-and-provider-cells) access matrix. Webhooks update **billing** dates and `subscription_charge.access_effect`; they do **not** consume roster slots. A dispute-created webhook is **not** a destructive account action. Client Checkout verify must not be the only grant path. M3-A `EntitlementService` consumes these facts; M3-B Playground HTTP uses the snapshot. Device and roster still do not authorize or block.
 
 ---
 
