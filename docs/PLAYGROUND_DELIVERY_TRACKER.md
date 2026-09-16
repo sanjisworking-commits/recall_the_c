@@ -2,15 +2,16 @@
 
 **Scoreboard, not an audit.** Product rules live in [PLAYGROUND.md](PLAYGROUND.md), [PAYMENT_ENTITLEMENT_AUDIT.md](PAYMENT_ENTITLEMENT_AUDIT.md), [PLAYGROUND_TWO_LAW_AUDIT.md](PLAYGROUND_TWO_LAW_AUDIT.md), and [law-loading.md](law-loading.md).
 
-**Snapshot:** architecture/product definition is **locked in docs**. **Stage 1** (build) is **26.0 / 100**. Production implementation is **early**. The NDPS/BNS overlay + Cloze + proof revision rows **do not** count as milestones 6–8. Milestone 1 is `DONE`. Milestone 2 is **`DONE` — 37/37**. **Do not tick Stage 2 from Cloze or from `main`’s sitemap PRs.** This branch includes main’s Bare Act SEO and generated sitemap index; that is Milestone 0 coexistence, not Milestone 10 (`noindex`) and not Stage 2.
+**Snapshot:** architecture/product definition is **locked in docs**. **Stage 1** (build) is **31.1 / 100**. Production implementation is **early**. The NDPS/BNS overlay + Cloze + proof revision rows **do not** count as milestones 6–8. Milestone 1 is `DONE`. Milestone 2 is **`DONE` — 37/37**. Milestone 3 is **`IN PROGRESS` — 11/15** (M3-A Constitution/user-type inversion; M3-B Playground gating is not started). **Do not tick Stage 2 from Cloze or from `main`’s sitemap PRs.** This branch includes main’s Bare Act SEO and generated sitemap index; that is Milestone 0 coexistence, not Milestone 10 (`noindex`) and not Stage 2.
 
 | | |
 |--|--|
-| **Stage 1 (build)** | **26.0 / 100** |
+| **Stage 1 (build)** | **31.1 / 100** |
 | Milestone 0 | `DONE` — 10/10 items × 5 = **5** |
 | Milestone 1 | `DONE` — 18/18 items × 8 = **8** |
 | Milestone 2 | `DONE` — 37/37 × 13 = **13** |
-| Milestones 3–11 | `NOT STARTED`; remaining §21 `BLOCKED` cells are device-churn integers / support channel only |
+| Milestone 3 | `IN PROGRESS` — 11/15 × 7 ≈ **5.13** (M3-A; M3-B unticked) |
+| Milestones 4–11 | `NOT STARTED`; remaining §21 `BLOCKED` cells are device-churn integers / support channel only |
 | **Stage 2 (optimize)** | **`NOT STARTED` — start gate: Stage 1 = `DONE` (100/100)** |
 
 Do not read Cloze on this branch as ~20% complete. Payments, roster, devices, six Learn modes, and Learned → revision are the actual Stage 1 product weight. Stage 2 is **outside** the 100.
@@ -253,28 +254,28 @@ A subscription can move through its full real lifecycle without manually editing
 
 # 3. User-type entitlement inversion — 7 points
 
-**Status: `NOT STARTED`**
+**Status: `IN PROGRESS` — 11/15** (M3-A Constitution inversion + EntitlementService). Do **not** call Milestone 3 `DONE`. M3-B wires the same snapshot into `/playground`.
 
 Implement one authoritative entitlement resolver.
 
 ## Guest
 
-* [ ] Constitution guest behaviour preserved
-* [ ] laws readable
+* [x] Constitution guest behaviour preserved
+* [x] laws readable
 * [ ] Playground → Sign in
 
 ## Signed-in / no Playground subscription
 
-* [ ] ALL Constitution Articles available
-* [ ] ALL six Constitution Learn modes available
-* [ ] no 3-Article access restriction
-* [ ] no Type/Recite premium restriction
-* [ ] laws readable
+* [x] ALL Constitution Articles available
+* [x] ALL six Constitution Learn modes available
+* [x] no 3-Article access restriction
+* [x] no Type/Recite premium restriction
+* [x] laws readable
 * [ ] Playground → Subscribe
 
 ## Subscriber
 
-* [ ] Full Constitution
+* [x] Full Constitution
 * [ ] Full Playground learning capability
 * [ ] tier affects only monthly law capacity
 
@@ -282,9 +283,9 @@ Implement one authoritative entitlement resolver.
 
 Stop consulting for access:
 
-* [ ] article claim count
-* [ ] 3-Article slot cap
-* [ ] selective premium Learn modes
+* [x] article claim count
+* [x] 3-Article slot cap
+* [x] selective premium Learn modes
 
 Do **NOT** delete historical tables yet.
 
@@ -296,12 +297,20 @@ Entitlement snapshot includes:
 authenticated
 subscription_status
 tier
+is_subscribed
+admin_override
 can_use_constitution_learn
-can_use_playground
-block_reason
+constitution_access   # guest_explore | full
+can_read_laws
+can_open_playground
+can_consume_new_playground_law
+playground_law_limit
+playground_block_reason
+billing_period_start / billing_period_end
+legacy_status
 ```
 
-(Plus roster and device fields already locked in the payment audit.)
+M3-A source of truth: [`src/constitution_memorizer/entitlements/`](../src/constitution_memorizer/entitlements/). [`web/entitlements.py`](../src/constitution_memorizer/web/entitlements.py) is the Constitution adapter. `/playground` HTTP is still the signed-in proof (M3-B). Device/roster snapshot fields are not fabricated.
 
 ### Done when
 
@@ -753,7 +762,7 @@ Playground + payment can safely replace the existing commercial entitlement mode
 | 0. Architecture + branch baseline |      5 | `DONE` (5 earned) |
 | 1. Backend foundation             |      8 | `DONE` (8 earned; 18/18) |
 | 2. Payment/subscriptions          |     13 | `DONE` — 37/37 × 13 = 13 |
-| 3. User-type entitlement          |      7 | `NOT STARTED` |
+| 3. User-type entitlement          |      7 | `IN PROGRESS` — 11/15 × 7 ≈ 5.13 |
 | 4. Device control                 |      8 | `NOT STARTED` |
 | 5. Monthly roster                 |     12 | `NOT STARTED` |
 | 6. Finished UX                    |      8 | `NOT STARTED` |
@@ -762,7 +771,7 @@ Playground + payment can safely replace the existing commercial entitlement mode
 | 9. Amendments/source integrity    |      5 | `NOT STARTED` |
 | 10. SEO/routing discoverability   |      4 | `NOT STARTED` |
 | 11. Production hardening/release  |      7 | `NOT STARTED` |
-| **TOTAL (Stage 1)**               |  **100** | **26.0 / 100** |
+| **TOTAL (Stage 1)**               |  **100** | **31.1 / 100** |
 | Stage 2 — Optimize                |    — | `NOT STARTED` — start gate: Stage 1 = `DONE` (100/100) |
 
 ---
@@ -778,7 +787,7 @@ Batch 0   Rebase onto latest main + contracts — DONE (this milestone 0)
 Batch 1A  Eligibility + APIRouter + final `/playground/laws/{id}` URLs — DONE
 Batch 1B  Law-loading/hash cleanup + batched dashboard/selection — DONE
 Batch 2   Payment/subscription foundation
-Batch 3   User entitlement inversion
+Batch 3   User entitlement inversion — M3-A DONE (Constitution); M3-B next
 Batch 4   Device registry/control
 Batch 5   Monthly roster + rollover
 Batch 6   Final Playground UI shell

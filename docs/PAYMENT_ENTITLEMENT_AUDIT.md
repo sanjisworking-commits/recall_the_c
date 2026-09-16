@@ -1,10 +1,10 @@
 # Payment, entitlement, and Playground — architecture lock
 
-**Scope of this document.** This is the **locked product architecture** for RecallC access: user types, device control for paid Playground, monthly Playground roster, clocks, schema to build, CTA states, sequential batches, the locked commercial catalogue / subscription-access matrix, and remaining device-churn open cells. It is **not** a description of current production behaviour. Current code still uses Razorpay **one-time duration passes** for Constitution. Playground now has an additive `user_subscription` table, Plus/Pro/Max catalogue, M2-B create/checkout/cancel/plan-change, M2-C Razorpay subscription webhooks, and M2-D failure/terminal/refund/dispute/resubscribe/legacy classification that **do not yet** gate access. Overlay proof still has **no EntitlementService** and **no device registry**. The overlay is a Cloze **proof**, not the finished product.
+**Scope of this document.** This is the **locked product architecture** for RecallC access: user types, device control for paid Playground, monthly Playground roster, clocks, schema to build, CTA states, sequential batches, the locked commercial catalogue / subscription-access matrix, and remaining device-churn open cells. It is **not** a description of current production behaviour. Current code still uses Razorpay **one-time duration passes** as historical Constitution commerce. Playground has an additive `user_subscription` table, Plus/Pro/Max catalogue, M2 lifecycle, and M3-A [`EntitlementService`](../src/constitution_memorizer/entitlements/service.py) that inverts Constitution (authenticated = full Learn). That snapshot does **not** yet gate `/playground` HTTP (M3-B), and there is **no device registry**. The overlay is a Cloze **proof**, not the finished product.
 
 **Amendment (Max price).** Displayed Max is **₹1,199**/month GST-inclusive (1,19,900 paise). This supersedes any earlier Max lock of ₹999/month. Plus ₹199 and Pro ₹399 are unchanged. Annual plans remain **not offered** in the MVP.
 
-**Implementation note (M2-B provider bound / M2-C webhooks / M2-D lifecycle).** Razorpay requires every subscription to be bounded. Create calls use `RAZORPAY_MONTHLY_TOTAL_COUNT = 1200` monthly cycles as a *provider-only* technical horizon — not a 100-year customer commitment, not an annual SKU, and not copy shown to users. RecallC remains monthly cancel-anytime; default user cancel is `cancel_at_cycle_end=true`. Scheduled downgrade targets are stored in `provider_metadata` (`scheduled_tier`, `scheduled_plan_id`, `schedule_change_at`) and become the paid tier only when a later provider GET confirms the new plan id. Subscription webhooks verify HMAC over the **raw request body**, persist `x-razorpay-event-id`, and reconcile from `GET /v1/subscriptions/{id}` — they are not themselves authorization truth. Failed auto-charge persists provider `pending`; exhausted retries persist `halted`; both stay current and recoverable. Provider-confirmed `cancelled` / `completed` / `expired` archive the row (`is_current=false`) so resubscribe creates a **new** provider subscription. Refunds and disputes resolve payment → invoice → `subscription_charge` (never email/amount matching); `access_effect` is computed from current provider refund/dispute status. Legacy N-day buyers are classified from `access_grants.source='payment'` plus optional `billing_orders` via `reason='razorpay:{order_id}'` — they are not migrated into `user_subscription` and are not Plus/Pro/Max. Entitlement inversion remains Milestone 3.
+**Implementation note (M2-B provider bound / M2-C webhooks / M2-D lifecycle).** Razorpay requires every subscription to be bounded. Create calls use `RAZORPAY_MONTHLY_TOTAL_COUNT = 1200` monthly cycles as a *provider-only* technical horizon — not a 100-year customer commitment, not an annual SKU, and not copy shown to users. RecallC remains monthly cancel-anytime; default user cancel is `cancel_at_cycle_end=true`. Scheduled downgrade targets are stored in `provider_metadata` (`scheduled_tier`, `scheduled_plan_id`, `schedule_change_at`) and become the paid tier only when a later provider GET confirms the new plan id. Subscription webhooks verify HMAC over the **raw request body**, persist `x-razorpay-event-id`, and reconcile from `GET /v1/subscriptions/{id}` — they are not themselves authorization truth. Failed auto-charge persists provider `pending`; exhausted retries persist `halted`; both stay current and recoverable. Provider-confirmed `cancelled` / `completed` / `expired` archive the row (`is_current=false`) so resubscribe creates a **new** provider subscription. Refunds and disputes resolve payment → invoice → `subscription_charge` (never email/amount matching); `access_effect` is computed from current provider refund/dispute status. Legacy N-day buyers are classified from `access_grants.source='payment'` plus optional `billing_orders` via `reason='razorpay:{order_id}'` — they are not migrated into `user_subscription` and are not Plus/Pro/Max. M3-A `EntitlementService` consumes those facts for Playground *commercial* snapshot fields; `/playground` HTTP gating is Milestone 3B.
 
 This document still **supersedes** every prior Playground rule that described **lifetime unlocks**, **cumulative acquisition**, **“new laws per billing cycle,”** **forever-free re-entry after first unlock**, or **`user_playground_law_entitlement UNIQUE(user_id, law_id)` as quota**. Those phrases must **not** be implemented.
 
@@ -126,39 +126,36 @@ Constitution Article access is **not** an entitlement field (authenticated = all
 
 ## 1. Existing account states (code today)
 
-Resolved in [`src/constitution_memorizer/web/entitlements.py`](../src/constitution_memorizer/web/entitlements.py):
+Constitution Learn capability is resolved in [`src/constitution_memorizer/web/entitlements.py`](../src/constitution_memorizer/web/entitlements.py) as an adapter around [`entitlements/`](../src/constitution_memorizer/entitlements/):
 
-| Code | Meaning |
+| Code | Meaning after M3-A |
 |------|---------|
-| `guest` | Multiuser on, no `current_user` |
-| `free` | Signed-in, `is_subscribed()` false, no active grant/admin |
-| `subscribed` | Multiuser off (local owner) **or** `is_subscribed()` **or** `has_active_recall_access()` |
+| `guest` | Multiuser on, no `current_user` — explore (flag-on: four open modes) |
+| `subscribed` (capability label) | Any signed-in account, or local single-user owner — full Constitution. **Not** a Playground purchase. |
 
-`is_subscribed(user)` **always returns `False`**. Paid Constitution access is **not** that function. It is `has_active_recall_access()` → `AccessOverride.has_recall_access` → admin role **or** unrevoked `access_grants` row (`admin_grant` / `promotion` / `payment`) with `starts_at ≤ now` and `ends_at` null or in the future ([`admin/store.py`](../src/constitution_memorizer/admin/store.py)).
+`web.entitlements.is_subscribed(user)` **always returns `False`**. Auto Plan still uses `has_active_recall_access()` (admin role or unrevoked grant). Playground `is_subscribed` lives on `EntitlementSnapshot` and means current Plus/Pro/Max commercial state (`active` / `pending`, after current-period `access_effect` and billing-end checks).
 
-Guest vs authed HTTP: [`auth/guest.py`](../src/constitution_memorizer/auth/guest.py) (`GUEST_PUBLIC_PREFIXES`, `AUTH_REQUIRED_PREFIXES`). `/laws` is guest-readable. Playground routes on this overlay redirect guests to login in the handler (`/login?next=…`), not via `AUTH_REQUIRED_PREFIXES`.
+Guest vs authed HTTP: [`auth/guest.py`](../src/constitution_memorizer/auth/guest.py) (`GUEST_PUBLIC_PREFIXES`, `AUTH_REQUIRED_PREFIXES`). `/laws` is guest-readable. Playground routes on this overlay still redirect guests to login in the handler (`/login?next=…`); M3-B replaces that with the snapshot.
 
 ---
 
 ## 2. Existing free-user behaviour (code today)
 
-Flag: `ARTICLE_ENTITLEMENTS_ENABLED` → `entitlements_active()`. **Default false** (legacy: all six Constitution modes, no claim UI).
+Flag: `ARTICLE_ENTITLEMENTS_ENABLED` → `entitlements_active()`. **Default false.** After M3-A the flag is **partially obsolete**: it no longer restores the 3-Article cap or Type/Recite premium lock for **signed-in** accounts. Authenticated Learn is always full Constitution (all Articles, all six modes, persistent Done / `modes_seen`, no claim prompt). The flag still controls **guest** explore (four open modes when on; legacy full guest access when off) and historical status-surface rendering.
 
 When the flag is on:
 
 | Actor | Constitution Learn |
 |-------|-------------------|
 | Guest | `read`, `cloze`, `letters`, `test` open; Type/Recite locked; no persist Done/`modes_seen` |
-| Free + claimed Article | All 6, persist |
-| Free + slots remaining | All 6, claim prompt on Done, provisional modes |
-| Free + 3/3 cap, unclaimed | 4 open modes; Type/Recite locked; Done → subscription gate (`402` / `?gate=subscription`) |
-| Grant / admin / payment grant | Full access; `access_source` distinguishes; `is_subscribed` stays false for admin/grant |
+| Signed-in account (any payment state) | All 6 modes, all Articles, persist; claims / slot cap / premium-mode names are not authorization input |
+| Admin Entitlement Preview | Still synthesizes the historical free/guest matrix without writing progress |
 
-`FREE_ARTICLE_LIMIT = 3`. Table `user_free_articles`. Grandfathering: Articles with `times_completed >= 1` backfilled once (`legacy_over_cap` possible).
+`FREE_ARTICLE_LIMIT = 3`. Table `user_free_articles` is retained as history. Grandfathering still exists on `claimed_articles()`; normal authenticated Done does not insert a new claim.
 
 **Laws / Bare Acts:** not on this matrix. Feature flag `RELEVANT_LAWS_ENABLED` 404s `/laws*` only. Reading is free.
 
-**Playground (existing overlay on `cursor/playground-220d`):** any signed-in user may add NDPS/BNS and Cloze with **no payment check** and **no device check**. Overlay rows are **persistent learning**, not a monthly roster and not a device registry.
+**Playground (existing overlay on `cursor/playground-220d`):** any signed-in user may add NDPS/BNS and Cloze with **no payment check** and **no device check** until M3-B. Overlay rows are **persistent learning**, not a monthly roster and not a device registry. `EntitlementSnapshot` already computes Playground commercial bits (`can_open_playground`, `playground_law_limit`, block reasons) without wiring them to those routes.
 
 ---
 
@@ -244,7 +241,7 @@ Web auth today: `rtc_session` is `HttpOnly` + `SameSite=lax` ([`auth/routes.py`]
 
 Playground subscriptions: `POST /api/billing/subscriptions/webhook/razorpay` verifies `X-Razorpay-Signature` over the **raw request body** (`RAZORPAY_WEBHOOK_SECRET`, optional `RAZORPAY_WEBHOOK_SECRET_PREVIOUS`), requires `X-Razorpay-Event-Id`, reserves `subscription_webhook_event`, then **fetches** current provider truth. Subscription notifications fetch `GET /v1/subscriptions/{id}`. Refund notifications fetch the payment; dispute notifications fetch the dispute. Duplicate/out-of-order deliveries are safe because the GET is the ordering authority. Unknown provider subscription or unresolvable payment→invoice links are recorded `unmatched` and do not create a RecallC subscription or guess an account. Constitution duration checkout is still `/api/billing/verify` (Orders HMAC) and has **no** duration webhooks.
 
-M2-D records failed-payment/`pending`, paused/halted, expiry, resubscribe, refunds, and dispute/chargeback **billing facts** against the locked [§21](#21-commercial-and-provider-cells) access matrix. Webhooks update **billing** dates and `subscription_charge.access_effect`; they do **not** consume roster slots and do **not** authorize Playground. A dispute-created webhook is **not** a destructive account action. Client Checkout verify must not be the only grant path. Milestone 3 consumes these facts.
+M2-D records failed-payment/`pending`, paused/halted, expiry, resubscribe, refunds, and dispute/chargeback **billing facts** against the locked [§21](#21-commercial-and-provider-cells) access matrix. Webhooks update **billing** dates and `subscription_charge.access_effect`; they do **not** consume roster slots and do **not** authorize Playground. A dispute-created webhook is **not** a destructive account action. Client Checkout verify must not be the only grant path. M3-A `EntitlementService` consumes these facts; M3-B puts the snapshot in front of `/playground`.
 
 ---
 
@@ -252,7 +249,7 @@ M2-D records failed-payment/`pending`, paused/halted, expiry, resubscribe, refun
 
 | Mechanism | Today |
 |-----------|--------|
-| Pass expiry | `access_grants.ends_at`; store query drops expired grants; user returns to Free Constitution matrix |
+| Pass expiry | `access_grants.ends_at`; store query drops expired grants; user keeps full Constitution because they are authenticated. Playground snapshot `legacy_status` becomes `legacy_expired`. |
 | UI | `active` / `expiring` (≤7 days) / `lapsed` from latest paid order |
 | `renewal_failed` / `cancelled` | Template copy exists; **never emitted** by `status_from_paid_order` |
 | Cancel endpoint | **None** |
