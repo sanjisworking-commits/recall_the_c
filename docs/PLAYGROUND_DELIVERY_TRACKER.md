@@ -2,14 +2,14 @@
 
 **Scoreboard, not an audit.** Product rules live in [PLAYGROUND.md](PLAYGROUND.md), [PAYMENT_ENTITLEMENT_AUDIT.md](PAYMENT_ENTITLEMENT_AUDIT.md), [PLAYGROUND_TWO_LAW_AUDIT.md](PLAYGROUND_TWO_LAW_AUDIT.md), and [law-loading.md](law-loading.md).
 
-**Snapshot:** architecture/product definition is **locked in docs**. **Stage 1** (build) is **22.5 / 100**. Production implementation is **early**. The NDPS/BNS overlay + Cloze + proof revision rows **do not** count as milestones 6–8. Milestone 1 is `DONE`. Milestone 2 is **`IN PROGRESS` — 27/37** (M2-A catalogue + persistence, M2-B create/checkout/cancel/upgrade/downgrade, and M2-C webhooks/renewal/auto-renew closed; remaining lifecycle/legacy items open). **Do not tick Stage 2 from Cloze or from `main`’s sitemap PRs.** This branch includes main’s Bare Act SEO and generated sitemap index; that is Milestone 0 coexistence, not Milestone 10 (`noindex`) and not Stage 2.
+**Snapshot:** architecture/product definition is **locked in docs**. **Stage 1** (build) is **26.0 / 100**. Production implementation is **early**. The NDPS/BNS overlay + Cloze + proof revision rows **do not** count as milestones 6–8. Milestone 1 is `DONE`. Milestone 2 is **`DONE` — 37/37**. **Do not tick Stage 2 from Cloze or from `main`’s sitemap PRs.** This branch includes main’s Bare Act SEO and generated sitemap index; that is Milestone 0 coexistence, not Milestone 10 (`noindex`) and not Stage 2.
 
 | | |
 |--|--|
-| **Stage 1 (build)** | **22.5 / 100** |
+| **Stage 1 (build)** | **26.0 / 100** |
 | Milestone 0 | `DONE` — 10/10 items × 5 = **5** |
 | Milestone 1 | `DONE` — 18/18 items × 8 = **8** |
-| Milestone 2 | `IN PROGRESS` — 27/37 × 13 ≈ **9.49** (exact: 27/37 of the 13-point weight) |
+| Milestone 2 | `DONE` — 37/37 × 13 = **13** |
 | Milestones 3–11 | `NOT STARTED`; remaining §21 `BLOCKED` cells are device-churn integers / support channel only |
 | **Stage 2 (optimize)** | **`NOT STARTED` — start gate: Stage 1 = `DONE` (100/100)** |
 
@@ -50,9 +50,9 @@ NOT STARTED | IN PROGRESS | BLOCKED | IN REVIEW | DONE
 
 **§21 remaining `BLOCKED` (do not invent):** `DEVICE_REPLACEMENT_WINDOW_DAYS`, `DEVICE_REPLACEMENT_LIMIT`, support contact channel for device-churn lockout. See [PAYMENT_ENTITLEMENT_AUDIT.md](PAYMENT_ENTITLEMENT_AUDIT.md) §21.
 
-**§21 locked (do not reopen, do not invent alternatives):** public names Plus / Pro / Max; INR prices ₹199 / ₹399 / ₹1,199 per month; GST-inclusive display; MVP monthly-only (no annual SKUs); provider-status access matrix; `pending` as payment-retry grace with **no** grace-day integer; refund access; dispute/chargeback access. Internal codes `plus` / `pro` / `max` remain locked. This policy lock does **not** tick Milestone 2 implementation checkboxes.
+**§21 locked (do not reopen, do not invent alternatives):** public names Plus / Pro / Max; INR prices ₹199 / ₹399 / ₹1,199 per month; GST-inclusive display; MVP monthly-only (no annual SKUs); provider-status access matrix; `pending` as payment-retry grace with **no** grace-day integer; refund access; dispute/chargeback access. Internal codes `plus` / `pro` / `max` remain locked. Milestone 2 implementation against those locked cells is `DONE` — 37/37.
 
-`BLOCKED` is **only** for unresolved product/provider decisions (remaining §21 device-churn cells). Stage 2 is **sequenced**, not blocked. Locked commercial §21 cells are product truth; they are not Milestone 2 completion.
+`BLOCKED` is **only** for unresolved product/provider decisions (remaining §21 device-churn cells). Stage 2 is **sequenced**, not blocked. Locked commercial §21 cells remain product truth for Milestone 3 entitlement composition.
 
 ---
 
@@ -189,7 +189,7 @@ Playground has a scalable backend shell independent of the two-law proof.
 
 # 2. Payment & subscription foundation — 13 points
 
-**Status: `IN PROGRESS` — 27/37** (M2-A catalogue + persistence, M2-B create/checkout/cancel/upgrade/downgrade, and M2-C webhooks/renewal/auto-renew closed). Earned **27/37 × 13 ≈ 9.49**. Do **not** tick failed-payment/paused/expiry/resubscribe/refund/dispute or legacy-classification items. Do **not** call Milestone 2 `DONE`.
+**Status: `DONE` — 37/37** (M2-A catalogue + persistence, M2-B create/checkout/cancel/upgrade/downgrade, M2-C webhooks/renewal/auto-renew, and M2-D failure/terminal lifecycle + refunds/disputes + resubscribe + legacy classification). Earned **13**. Do **not** tick Milestone 3 entitlement inversion, Playground route gates, devices, or roster.
 
 ## Commercial model
 
@@ -219,13 +219,13 @@ Playground has a scalable backend shell independent of the two-law proof.
 * [x] Cancel
 * [x] Upgrade
 * [x] Downgrade
-* [ ] Expiry
-* [ ] Failed payment
-* [ ] Payment-retry (`pending`) — **policy locked §21** (no grace-day integer; current-roster yes / new consumption no)
-* [ ] Paused/halted — **policy locked §21** (`halted` locks Playground learning)
-* [ ] Resubscribe
-* [ ] Refund handling — access outcome **locked §21**
-* [ ] Dispute/chargeback handling — **locked §21**
+* [x] Expiry
+* [x] Failed payment
+* [x] Payment-retry (`pending`) — **policy locked §21** (no grace-day integer; current-roster yes / new consumption no)
+* [x] Paused/halted — **policy locked §21** (`halted` locks Playground learning)
+* [x] Resubscribe
+* [x] Refund handling — access outcome **locked §21**
+* [x] Dispute/chargeback handling — **locked §21**
 
 ## Webhooks
 
@@ -239,13 +239,13 @@ Playground has a scalable backend shell independent of the two-law proof.
 
 ## Legacy
 
-* [ ] Existing N-day buyers recognized as `legacy`
-* [ ] No silent Plus/Pro/Max remapping
-* [ ] Paid entitlement preserved for already-paid period
+* [x] Existing N-day buyers recognized as `legacy`
+* [x] No silent Plus/Pro/Max remapping
+* [x] Paid entitlement preserved for already-paid period
 
 ### Done when
 
-A subscription can move through its full real lifecycle without manually editing the DB. M2-A shipped the server catalogue and `user_subscription` rows. M2-B shipped create, Checkout HMAC, cycle-end cancel, immediate upgrade, and cycle-end downgrade. M2-C shipped Razorpay subscription webhooks (raw-body HMAC, event-id idempotency, provider GET reconciliation) plus renewal/auto-renew billing-bound sync. Failed-payment/paused/expiry/resubscribe/refunds/disputes and legacy classification remain open. Policy documentation does **not** tick those remaining items. Cursor must implement against locked §21 commercial cells and must **not** invent remaining device-churn cells.
+A subscription can move through its full real lifecycle without manually editing the DB. M2-A shipped the server catalogue and `user_subscription` rows. M2-B shipped create, Checkout HMAC, cycle-end cancel, immediate upgrade, and cycle-end downgrade. M2-C shipped Razorpay subscription webhooks (raw-body HMAC, event-id idempotency, provider GET reconciliation) plus renewal/auto-renew billing-bound sync. M2-D shipped failed-payment/`pending`, paused/halted, expiry/terminalization, resubscribe (new provider subscription), refunds/disputes via `subscription_charge`, and read-only legacy N-day classification. These are commercial facts for Milestone 3; they do **not** authorize `/playground` or invert Constitution entitlement. Cursor must implement Milestone 3 against locked §21 commercial cells and must **not** invent remaining device-churn cells.
 
 **Weight: 13**
 
@@ -752,7 +752,7 @@ Playground + payment can safely replace the existing commercial entitlement mode
 | --------------------------------- | -----: | ---------- |
 | 0. Architecture + branch baseline |      5 | `DONE` (5 earned) |
 | 1. Backend foundation             |      8 | `DONE` (8 earned; 18/18) |
-| 2. Payment/subscriptions          |     13 | `IN PROGRESS` — 27/37 × 13 ≈ 9.49 |
+| 2. Payment/subscriptions          |     13 | `DONE` — 37/37 × 13 = 13 |
 | 3. User-type entitlement          |      7 | `NOT STARTED` |
 | 4. Device control                 |      8 | `NOT STARTED` |
 | 5. Monthly roster                 |     12 | `NOT STARTED` |
@@ -762,7 +762,7 @@ Playground + payment can safely replace the existing commercial entitlement mode
 | 9. Amendments/source integrity    |      5 | `NOT STARTED` |
 | 10. SEO/routing discoverability   |      4 | `NOT STARTED` |
 | 11. Production hardening/release  |      7 | `NOT STARTED` |
-| **TOTAL (Stage 1)**               |  **100** | **22.5 / 100** |
+| **TOTAL (Stage 1)**               |  **100** | **26.0 / 100** |
 | Stage 2 — Optimize                |    — | `NOT STARTED` — start gate: Stage 1 = `DONE` (100/100) |
 
 ---
