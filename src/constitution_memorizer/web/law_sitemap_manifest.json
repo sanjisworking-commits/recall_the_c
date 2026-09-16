@@ -1141,6 +1141,60 @@
         "schedule"
       ]
     },
+    "pss": {
+      "runtime_identity": "pss:1:pss_runtime_v1.json",
+      "sources": [
+        {
+          "filename": "pss_runtime_v1.json",
+          "sha256": "0d9f78ded8d8c25a3aaf90298f2bcbeaab179baccd2cf6f3bfdf4774b8d2af4c"
+        }
+      ],
+      "sections": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "6",
+        "7",
+        "8",
+        "9",
+        "10",
+        "10A",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "16",
+        "17",
+        "18",
+        "19",
+        "20",
+        "21",
+        "22",
+        "23",
+        "23A",
+        "24",
+        "25",
+        "26",
+        "27",
+        "28",
+        "29",
+        "30",
+        "31",
+        "32",
+        "33",
+        "34",
+        "34A",
+        "34B",
+        "35",
+        "36",
+        "37",
+        "38"
+      ],
+      "schedules": []
+    },
     "uapa": {
       "runtime_identity": "uapa:1:uapa_runtime_v1.json",
       "sources": [

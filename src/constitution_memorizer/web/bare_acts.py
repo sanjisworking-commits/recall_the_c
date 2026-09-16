@@ -139,6 +139,20 @@ BARE_ACTS: dict[str, BareActSpec] = {
         # / parser v6 and is archived as uapa_canonical_v6.json.
         source_version="1",
     ),
+    "pss": BareActSpec(
+        slug="pss",
+        filename="pss_runtime_v1.json",
+        short_name="The PSS Act, 2007",
+        back_label="← The PSS Act, 2007",
+        short_title="PSS",
+        # Six node types, a strict subset of the nine BNS renders. Verified by
+        # loading the canonical through this module before the entry existed.
+        render_profile="bns",
+        # Identity of the runtime artifact, not the canonical parser
+        # generation: the export is parser v3, archived as
+        # pss_canonical_v3.json, and this is its first runtime release.
+        source_version="1",
+    ),
 }
 
 
@@ -700,6 +714,15 @@ class ActChapter:
     number: str
     title: str
     sections: tuple[ActSection, ...]
+    # An amendment span can cover a whole chapter: PSS prints "2[CHAPTER II"
+    # and closes at the end of its only section. Same contract as sections,
+    # rows, schedules and list entries — a count the parser measured, and only
+    # a positive one renders a bracket.
+    leading_brackets: int = 0
+
+    @property
+    def bracket_prefix(self) -> str:
+        return "[" * self.leading_brackets if self.leading_brackets > 0 else ""
 
     @property
     def range_label(self) -> str:
@@ -743,14 +766,21 @@ class BareAct:
         close/open pair at the boundary, which would be inventing source text.
         """
         stream: list[tuple[str, str]] = []
-        for section in self.section_order:
-            where = f"s{section.number}"
-            stream.extend((c, f"{where} heading") for c in section.bracket_prefix)
-            stream.extend((c, f"{where} title") for c in section.title if c in "[]")
-            for row in section.rows:
-                label = row.label or row.kind
-                stream.extend((c, f"{where} {label}") for c in row.bracket_prefix)
-                stream.extend((c, f"{where} {label}") for c in row.text if c in "[]")
+        # Chapter, then its own sections: a chapter-level span opens before its
+        # first section and closes inside one of them, so the walk has to
+        # interleave rather than list every chapter and then every section.
+        for chapter in self.chapters:
+            where = f"chapter {chapter.number}"
+            stream.extend((c, f"{where} heading") for c in chapter.bracket_prefix)
+            stream.extend((c, f"{where} title") for c in chapter.title if c in "[]")
+            for section in chapter.sections:
+                where = f"s{section.number}"
+                stream.extend((c, f"{where} heading") for c in section.bracket_prefix)
+                stream.extend((c, f"{where} title") for c in section.title if c in "[]")
+                for row in section.rows:
+                    label = row.label or row.kind
+                    stream.extend((c, f"{where} {label}") for c in row.bracket_prefix)
+                    stream.extend((c, f"{where} {label}") for c in row.text if c in "[]")
         # Schedules are part of the same document stream: UAPA opens a span at
         # "[THE SECOND SCHEDULE" and closes it on an entry, so leaving them out
         # would let an orphaned bracket through the validator unseen.
@@ -1397,6 +1427,7 @@ def _parse(
                 number=chapter_number,
                 title=chapter_title,
                 sections=tuple(sections),
+                leading_brackets=int(raw_chapter.get("leading_brackets") or 0),
             )
         )
     schedules = [_parse_schedule(s) for s in data.get("schedules") or []]

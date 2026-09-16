@@ -96,6 +96,14 @@ ARTIFACTS: tuple[tuple[Path, Path, str], ...] = (
         ROOT / "src" / "constitution_memorizer" / "web" / "uapa_runtime_v1.json",
         "uapa",
     ),
+    # PSS needs no path-aware mode: it has no schedules, no forms and no
+    # archival-only bulk — its largest non-operative block is 4 KB. `source_x`
+    # is debris throughout, so the flat strip is exactly right.
+    (
+        ROOT / "data" / "reference" / "pss_canonical_v3.json",
+        ROOT / "src" / "constitution_memorizer" / "web" / "pss_runtime_v1.json",
+        "flat",
+    ),
 )
 
 

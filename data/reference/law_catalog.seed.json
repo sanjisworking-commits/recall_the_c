@@ -21,6 +21,11 @@
       "id": "environmental",
       "label": "Environmental",
       "display_order": 40
+    },
+    {
+      "id": "financial",
+      "label": "Financial",
+      "display_order": 50
     }
   ],
   "laws": [
@@ -154,6 +159,33 @@
         "key_provisions": {
           "ref": "uapa-1967"
         }
+      }
+    },
+    {
+      "id": "pss",
+      "title": "The Payment and Settlement Systems Act, 2007",
+      "short_title": "PSS",
+      "year": 2007,
+      "aliases": [
+        "PSS",
+        "PSS Act",
+        "Payment and Settlement Systems Act",
+        "Payment and Settlement Systems Act 2007",
+        "payment systems",
+        "payment settlement systems"
+      ],
+      "subjects": [
+        "financial"
+      ],
+      "primary_subject": "financial",
+      "display_order": 25,
+      "scope_label": "8 Chapters · Sections 1–38",
+      "primary_content": "full_act",
+      "content": {
+        "full_act": {
+          "ref": "pss"
+        },
+        "key_provisions": null
       }
     },
     {

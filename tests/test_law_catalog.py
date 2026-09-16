@@ -23,6 +23,7 @@ PRODUCTION_LAW_IDS = (
     "pota",
     "ndps",
     "uapa-1967",
+    "pss",
     "citizenship-1955",
     "pcr-1955",
     "rte-2009",
@@ -88,6 +89,7 @@ def test_production_catalogue_lists_both_bare_acts():
         "constitutional",
         "administrative",
         "environmental",
+        "financial",
     }
 
 
