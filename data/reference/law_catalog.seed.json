@@ -47,6 +47,13 @@
       "primary_subject": "criminal",
       "display_order": 5,
       "scope_label": "20 Chapters · Sections 1–358",
+      "act_info": {
+        "in_force": "01-07-2024",
+        "ministry": "Ministry of Home Affairs",
+        "department": "Department of Internal Security",
+        "jurisdiction": "Central",
+        "last_modified": "07-11-2025"
+      },
       "primary_content": "full_act",
       "content": {
         "full_act": {
@@ -74,6 +81,13 @@
       "primary_subject": "criminal",
       "display_order": 7,
       "scope_label": "39 Chapters · Sections 1–531",
+      "act_info": {
+        "in_force": "01-07-2024",
+        "ministry": "Ministry of Home Affairs",
+        "department": "Department of Internal Security",
+        "jurisdiction": "Central",
+        "last_modified": "01-07-2024"
+      },
       "primary_content": "full_act",
       "content": {
         "full_act": {
@@ -126,6 +140,13 @@
       "primary_subject": "criminal",
       "display_order": 10,
       "scope_label": "8 Chapters · Sections 1–83",
+      "act_info": {
+        "in_force": "14-11-1985",
+        "ministry": "Ministry of Finance",
+        "department": "Department of Revenue",
+        "jurisdiction": "Central",
+        "last_modified": "02-12-2019"
+      },
       "primary_content": "full_act",
       "content": {
         "full_act": {
@@ -151,6 +172,13 @@
       "primary_subject": "criminal",
       "display_order": 20,
       "scope_label": "7 Chapters · Sections 1–53",
+      "act_info": {
+        "in_force": "30-12-1967",
+        "ministry": "Ministry of Home Affairs",
+        "department": "Department of Internal Security",
+        "jurisdiction": "Central",
+        "last_modified": "15-09-2025"
+      },
       "primary_content": "full_act",
       "content": {
         "full_act": {

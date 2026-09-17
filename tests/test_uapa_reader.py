@@ -591,7 +591,12 @@ def test_every_parser_owned_opener_reaches_the_stream():
     # The stream carries every owned opener plus the source's own
     # self-contained pairs, and balances Act-wide.
     assert opens >= owned
-    assert opens == closes == 80
+    # 81, not 80: the long title joined the stream when the Act-info card
+    # started rendering it. Its one pair — "[, and for dealing with terrorist
+    # activities,]" — is a real amendment span that used to sit on screen
+    # nowhere and in the validator nowhere. It is now in both.
+    assert opens == closes == 81
+    assert sum(1 for _, where in stream if where == "long title") == 2
 
 
 def test_the_validator_does_not_claim_opener_to_closer_attribution():
