@@ -744,6 +744,10 @@ class BareAct:
     back_label: str
     act_number: str
     render_profile: str
+    # Statutory front matter. Read for the Act-info card and the bracket
+    # stream; never edited, never written back.
+    long_title: str
+    enactment_date: str
     chapters: tuple[ActChapter, ...]
     section_order: tuple[ActSection, ...]
     footnotes: dict[str, Footnote] = field(default_factory=dict)
@@ -766,6 +770,11 @@ class BareAct:
         close/open pair at the boundary, which would be inventing source text.
         """
         stream: list[tuple[str, str]] = []
+        # Front matter first, because it is first in the document. UAPA's long
+        # title carries "[, and for dealing with terrorist activities,]" — a
+        # real amendment span that the card now puts on screen, so leaving it
+        # out would mean rendering a bracket the validator never examines.
+        stream.extend((c, "long title") for c in self.long_title if c in "[]")
         # Chapter, then its own sections: a chapter-level span opens before its
         # first section and closes inside one of them, so the walk has to
         # interleave rather than list every chapter and then every section.
@@ -1448,6 +1457,12 @@ def _parse(
         back_label=spec.back_label,
         act_number=str(document.get("act_number") or ""),
         render_profile=spec.render_profile,
+        long_title=str(data.get("long_title") or ""),
+        # NDPS, BNS and BNSS print `enactment_date`; UAPA and PSS print
+        # `date`. POTA's source carries neither, and no date is invented for it.
+        enactment_date=str(
+            document.get("enactment_date") or document.get("date") or ""
+        ),
         chapters=tuple(chapters),
         # One ordered list of every section in the Act, in the Act's own order.
         section_order=tuple(order),

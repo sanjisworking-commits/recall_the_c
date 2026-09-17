@@ -43,6 +43,28 @@ class LawSubject:
     display_order: int
 
 
+# The half of the "About this act" card that is nowhere in the statute.
+# Commencement, ministry, department and jurisdiction are administrative facts
+# about an Act; `last_modified` is the source register's own record date, which
+# is not the date the Act was last amended and is never labelled as one.
+ACT_INFO_FIELDS = (
+    "in_force",
+    "ministry",
+    "department",
+    "jurisdiction",
+    "last_modified",
+)
+
+
+@dataclass(frozen=True)
+class ActInfoSource:
+    in_force: str = ""
+    ministry: str = ""
+    department: str = ""
+    jurisdiction: str = ""
+    last_modified: str = ""
+
+
 @dataclass(frozen=True)
 class CatalogLaw:
     id: str
@@ -62,6 +84,7 @@ class CatalogLaw:
     search_blob: str
     status: str = "current"
     status_note: str = ""
+    act_info: ActInfoSource | None = None
 
     @property
     def status_label(self) -> str:
@@ -163,6 +186,25 @@ def _parse_subjects(raw: Any) -> tuple[LawSubject, ...]:
     return tuple(subjects)
 
 
+def _parse_act_info(law_id: str, raw: Any) -> ActInfoSource | None:
+    """Optional. Unknown keys are an error, not a shrug.
+
+    A typo here would silently drop a row from the card, and a missing row and
+    a misspelt one look identical on screen.
+    """
+    if raw is None:
+        return None
+    if not isinstance(raw, dict):
+        raise CatalogError(f"{law_id}: act_info must be an object")
+    unknown = sorted(set(raw) - set(ACT_INFO_FIELDS))
+    if unknown:
+        raise CatalogError(f"{law_id}: unknown act_info field(s): {', '.join(unknown)}")
+    values = {key: str(raw.get(key) or "").strip() for key in ACT_INFO_FIELDS}
+    if not any(values.values()):
+        raise CatalogError(f"{law_id}: act_info is present but empty")
+    return ActInfoSource(**values)
+
+
 def _parse_law(
     raw: dict[str, Any],
     subject_by_id: dict[str, LawSubject],
@@ -221,6 +263,7 @@ def _parse_law(
             f"{law_id}: unknown status {status!r}; "
             f"expected one of {sorted(STATUS_LABELS)}"
         )
+    act_info = _parse_act_info(law_id, raw.get("act_info"))
     status_note = str(raw.get("status_note") or "").strip()
     if status_note and status == "current":
         raise CatalogError(f"{law_id}: a current law cannot carry a status_note")
@@ -260,6 +303,7 @@ def _parse_law(
         search_blob=search_blob,
         status=status,
         status_note=status_note,
+        act_info=act_info,
     )
 
 

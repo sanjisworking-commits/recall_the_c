@@ -188,6 +188,7 @@ from constitution_memorizer.web.judicial_evolution import (
     get_judicial_evolution,
     load_judicial_evolution,
 )
+from constitution_memorizer.web.act_info import build_act_info
 from constitution_memorizer.web.bare_acts import get_bare_act
 from constitution_memorizer.web.law_catalog import load_catalog
 from constitution_memorizer.web.laws_data import get_law
@@ -2719,12 +2720,16 @@ def create_app(
             # lifecycle is editorial metadata and the statutory model stays
             # statutory. load_catalog() is a cached read of the static seed
             # and hydrates no Act JSON.
+            catalog_law = load_catalog().by_full_act(law_id)
             response = templates.TemplateResponse(
                 request,
                 "bare_act.html",
                 {
                     "act": bare,
-                    "catalog_law": load_catalog().by_full_act(law_id),
+                    "catalog_law": catalog_law,
+                    # Built per request from two already-loaded objects. It
+                    # holds no state and reads no file of its own.
+                    "act_info": build_act_info(bare, catalog_law),
                     "seo_title": seo_title,
                     "seo_description": seo_description,
                     "canonical_url": law_canonical_url(bare.slug),

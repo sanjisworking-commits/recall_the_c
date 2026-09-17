@@ -5331,6 +5331,17 @@
     text-wrap: pretty;
   }
 
+  /* The card and the tab row live inside the header's gutter, so they line
+     up with the title above and the chapter rows below. */
+  body[data-mscreen="bareact"] .bareact-info {
+    background: var(--rc-paper);
+    border-color: var(--rc-hairline);
+  }
+
+  body[data-mscreen="bareact"] .bareact-schedules-empty {
+    padding: 20px var(--m-gutter);
+  }
+
   body[data-mscreen="bareact"] .bareact-chapter-row {
     padding: 10px var(--m-gutter);
     background: var(--rc-wash);

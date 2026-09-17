@@ -769,6 +769,70 @@
     });
   }
 
+  /* ── Act info card + Chapters/Schedules tabs ───────────────────────────
+     Both are progressive: the card ships collapsed and the tab row ships
+     hidden, so a page without JS is the page as it was before either
+     existed — chapters, then schedules, all of it readable and every
+     schedule link still in the document for a crawler to follow. */
+
+  function initActInfo() {
+    var toggle = document.querySelector("[data-bareact-info-toggle]");
+    var card = document.querySelector("[data-bareact-info]");
+    if (!toggle || !card) return;
+    toggle.addEventListener("click", function () {
+      var open = toggle.getAttribute("aria-expanded") === "true";
+      toggle.setAttribute("aria-expanded", open ? "false" : "true");
+      toggle.textContent = open ? "About this act" : "Hide act info";
+      card.hidden = open;
+    });
+  }
+
+  function initActTabs() {
+    var row = document.querySelector("[data-bareact-tabs]");
+    if (!row) return;
+    var tabs = Array.prototype.slice.call(
+      row.querySelectorAll("[data-bareact-tab]")
+    );
+    var panels = Array.prototype.slice.call(
+      document.querySelectorAll("[data-bareact-panel]")
+    );
+    if (tabs.length < 2 || panels.length < 2) return;
+
+    function select(name) {
+      tabs.forEach(function (tab) {
+        var on = tab.getAttribute("data-bareact-tab") === name;
+        tab.classList.toggle("is-active", on);
+        tab.setAttribute("aria-selected", on ? "true" : "false");
+        // Only the selected tab is in the tab sequence; the arrow keys move
+        // between them, which is what a tablist is supposed to do.
+        tab.setAttribute("tabindex", on ? "0" : "-1");
+      });
+      panels.forEach(function (panel) {
+        panel.hidden = panel.getAttribute("data-bareact-panel") !== name;
+      });
+    }
+
+    tabs.forEach(function (tab, index) {
+      tab.addEventListener("click", function () {
+        select(tab.getAttribute("data-bareact-tab"));
+      });
+      tab.addEventListener("keydown", function (event) {
+        var step =
+          event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0;
+        if (!step) return;
+        event.preventDefault();
+        var next = tabs[(index + step + tabs.length) % tabs.length];
+        select(next.getAttribute("data-bareact-tab"));
+        next.focus();
+      });
+    });
+
+    // Claim the row only once the handlers are attached, so it is never on
+    // screen as an inert control.
+    row.hidden = false;
+    select("chapters");
+  }
+
   /* ── Mode status lines (designs 06, 08–12) ─────────────────────────────
      Every mode screen opens with one grey line saying where you are. In the
      desktop markup those lines sit in each mode's control row — which the
@@ -1221,6 +1285,8 @@
     initMarkFilter();
     initBareAct();
     initActAccordion();
+    initActInfo();
+    initActTabs();
     // Must precede initLearnDeck: the deck moves each mode's control row into
     // the action bar, and the status lines have to be lifted out of those rows
     // first or they travel along and get hidden.
