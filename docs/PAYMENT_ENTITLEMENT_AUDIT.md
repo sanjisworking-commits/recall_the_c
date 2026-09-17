@@ -1,6 +1,6 @@
 # Payment, entitlement, and Playground — architecture lock
 
-**Scope of this document.** This is the **locked product architecture** for RecallC access: user types, device control for paid Playground, monthly Playground roster, clocks, schema to build, CTA states, sequential batches, the locked commercial catalogue / subscription-access matrix, and remaining device-churn open cells. It is **not** a description of current production behaviour. Current code still uses Razorpay **one-time duration passes** as historical Constitution commerce. Playground has an additive `user_subscription` table, Plus/Pro/Max catalogue, M2 lifecycle, M3-A [`EntitlementService`](../src/constitution_memorizer/entitlements/service.py) that inverts Constitution (authenticated = full Learn), an M3-B commercial HTTP gate on `/playground` via [`playground/access.py`](../src/constitution_memorizer/playground/access.py), and **M4-A core two-device authorization** plus **M4-B owner/admin management** in [`devices/`](../src/constitution_memorizer/devices/) (`user_device` / `user_device_session`, cookie `rtc_device`, cap 2 for every paid tier, platforms `web | android | ios`, `GET /profile/security/devices`, audited admin reset). Device registry + management are implemented. Replacement-churn rate policy remains **BLOCKED**. There is **no monthly roster** (Milestone 5). Overlay items are persistent learning, not current-month roster membership. The overlay is a Cloze **proof**, not the finished product.
+**Scope of this document.** This is the **locked product architecture** for RecallC access: user types, device control for paid Playground, monthly Playground roster, clocks, schema to build, CTA states, sequential batches, the locked commercial catalogue / subscription-access matrix, and locked device-churn cells. It is **not** a description of current production behaviour. Current code still uses Razorpay **one-time duration passes** as historical Constitution commerce. Playground has an additive `user_subscription` table, Plus/Pro/Max catalogue, M2 lifecycle, M3-A [`EntitlementService`](../src/constitution_memorizer/entitlements/service.py) that inverts Constitution (authenticated = full Learn), an M3-B commercial HTTP gate on `/playground` via [`playground/access.py`](../src/constitution_memorizer/playground/access.py), and **M4 device authorization + management + replacement-churn** in [`devices/`](../src/constitution_memorizer/devices/) (`user_device` / `user_device_session` / `user_device_replacement`, cookie `rtc_device`, cap 2 for every paid tier, platforms `web | android | ios`, `GET /profile/security/devices`, audited admin reset, rolling 3/30 replacement limit, configurable `SUPPORT_EMAIL`). Device registry, management, and replacement-churn policy are implemented. There is **no monthly roster** (Milestone 5). Overlay items are persistent learning, not current-month roster membership. The overlay is a Cloze **proof**, not the finished product.
 
 **Amendment (Max price).** Displayed Max is **₹1,199**/month GST-inclusive (1,19,900 paise). This supersedes any earlier Max lock of ₹999/month. Plus ₹199 and Pro ₹399 are unchanged. Annual plans remain **not offered** in the MVP.
 
@@ -10,7 +10,7 @@ This document still **supersedes** every prior Playground rule that described **
 
 Claude Design copy that said “10 new laws each billing cycle / already-unlocked = 0 next month / Playground grows month over month / reset = provider `period_end`” is **not** to be implemented. That design file is **not in this repo**; this paragraph is the in-repo supersession. Device-limit and Profile → Security copy below is the in-repo UI lock (Claude Design for devices is also not in this repo).
 
-**Still open in [§21](#21-commercial-and-provider-cells) — do not invent:** `DEVICE_REPLACEMENT_WINDOW_DAYS`, `DEVICE_REPLACEMENT_LIMIT`, and the support-contact channel for device-churn lockout. Public names, INR prices, GST-inclusive display, MVP monthly-only interval, provider-status access matrix, `pending` grace, refunds, and dispute/chargeback access are **locked** there. Implementation must use those locked cells and must **not** invent the remaining device-churn integers or a support channel.
+**Locked in [§21](#21-commercial-and-provider-cells):** public names, INR prices, GST-inclusive display, MVP monthly-only interval, provider-status access matrix, `pending` grace, refunds, dispute/chargeback access, `DEVICE_REPLACEMENT_WINDOW_DAYS = 30`, `DEVICE_REPLACEMENT_LIMIT = 3`, and support contact channel = email via `SUPPORT_EMAIL`. Implementation must use those locked cells. Do **not** invent a different replacement window, a different replacement cap, or a hard-coded support address.
 
 ---
 
@@ -103,7 +103,7 @@ Routes and templates **do not** call Razorpay, `access_grants`, or `user_free_ar
 | `is_authenticated` | Session user present |
 | `is_subscribed` | Playground-capable subscription in an allowed status per the locked [§21](#21-commercial-and-provider-cells) matrix (`active`, `active` + `cancel_at_period_end` until the paid period ends, `pending` for current-roster only — not `created` / `authenticated` / `halted` / `paused` / `cancelled` / `completed` / `expired`) |
 | `can_use_constitution_learn` | Guest explore **or** any authenticated user (full) |
-| `can_open_playground` | Subscribed **and** current device allowed (or `admin_override`). Guests and signed-in non-subscribers still see marketing/CTAs. Device-blocked subscribers see the **device-limit** / **revoked-device** gate, **not** Subscribe. |
+| `can_open_playground` | Subscribed **and** current device allowed (or `admin_override`). Guests and signed-in non-subscribers still see marketing/CTAs. Device-blocked subscribers see the **device-limit** / **revoked-device** / **device-replacement-limit** gate, **not** Subscribe. |
 | `device_limit` | Config `PLAYGROUND_DEVICE_LIMIT` (locked default **2**). Same for every tier. |
 | `registered_device_count` | Active rows (`revoked_at IS NULL`) for this user |
 | `current_device_registered` | HMAC of presented `rtc_device` matches an active `user_device` |
@@ -155,7 +155,7 @@ When the flag is on:
 
 **Laws / Bare Acts:** not on this matrix. Feature flag `RELEVANT_LAWS_ENABLED` 404s `/laws*` only. Reading is free.
 
-**Playground (existing overlay on `cursor/playground-220d`):** M3-B commercially gates `/playground` from `EntitlementSnapshot` (`can_open_playground` vs `can_consume_new_playground_law`). Guests Sign in; signed-in free/legacy Subscribe; halted/paused/paid-period-ended use payment-state copy; pending may open existing overlay/progress but cannot activate a new law (transitional until M5 current-period roster membership). Active and admin keep the Cloze proof. Overlay rows are **persistent learning**, not a monthly roster and not a device registry. **M3 commercial gate is complete.** **M4-A core two-device authorization is shipped:** paid Playground registers HMAC-hashed `rtc_device` installations (limit 2, all tiers, `web | android | ios`) on first eligible use; a third or revoked installation is Playground-blocked with `device_limit` / `device_revoked` while `is_subscribed` stays true and Constitution / `/laws` stay open. **M4-B owner/admin management is shipped** (`GET /profile/security/devices`, current-device HMAC label, owner revoke, device-limit/revoked gates, audited `POST /admin/users/{user_id}/devices/reset`). Device registry + management are implemented. Replacement-churn rate policy remains BLOCKED (`DEVICE_REPLACEMENT_WINDOW_DAYS`, `DEVICE_REPLACEMENT_LIMIT`, support contact channel — do not invent). Monthly roster enforcement remains M5. Do not count overlay rows against 10/30/unlimited.
+**Playground (existing overlay on `cursor/playground-220d`):** M3-B commercially gates `/playground` from `EntitlementSnapshot` (`can_open_playground` vs `can_consume_new_playground_law`). Guests Sign in; signed-in free/legacy Subscribe; halted/paused/paid-period-ended use payment-state copy; pending may open existing overlay/progress but cannot activate a new law (transitional until M5 current-period roster membership). Active and admin keep the Cloze proof. Overlay rows are **persistent learning**, not a monthly roster and not a device registry. **M3 commercial gate is complete.** **M4-A core two-device authorization is shipped:** paid Playground registers HMAC-hashed `rtc_device` installations (limit 2, all tiers, `web | android | ios`) on first eligible use; a third or revoked installation is Playground-blocked with `device_limit` / `device_revoked` while `is_subscribed` stays true and Constitution / `/laws` stay open. **M4-B owner/admin management is shipped** (`GET /profile/security/devices`, current-device HMAC label, owner revoke, device-limit/revoked gates, audited `POST /admin/users/{user_id}/devices/reset`). **M4-C replacement-churn is shipped:** at most 3 counted replacements in a rolling 30-day UTC window; a fourth attempt returns `playground_block_reason=device_replacement_limit` without banning, cancelling, or deleting progress; existing active devices remain usable; support CTA is `mailto:` only when `SUPPORT_EMAIL` is configured; admin `reset_devices` does not erase replacement history; audited `POST /admin/users/{user_id}/devices/clear-replacement-limit` clears the rolling lock. Monthly roster enforcement remains M5. Do not count overlay rows against 10/30/unlimited.
 
 ---
 
@@ -202,7 +202,7 @@ Purchase flow: `/pricing` → `/subscribe/confirm` → `/subscribe/pay` → orde
 
 ## 5. Subscription DB model (code today)
 
-**There is no `subscriptions` table.** There is **no** monthly roster table. **`user_device` / `user_device_session` exist** (M4-A, [`20260916_0021_devices.py`](../alembic/versions/20260916_0021_devices.py); iOS platform CHECK in [`20260917_0022_device_ios_platform.py`](../alembic/versions/20260917_0022_device_ios_platform.py)). Destination roster schema is [§16](#16-database-plan--do-not-build-in-this-docs-only-change). Open §21 cells remain **open**: `DEVICE_REPLACEMENT_WINDOW_DAYS`, `DEVICE_REPLACEMENT_LIMIT`, support contact channel.
+**There is no `subscriptions` table.** There is **no** monthly roster table. **`user_device` / `user_device_session` / `user_device_replacement` exist** (M4-A, [`20260916_0021_devices.py`](../alembic/versions/20260916_0021_devices.py); iOS platform CHECK in [`20260917_0022_device_ios_platform.py`](../alembic/versions/20260917_0022_device_ios_platform.py); replacement events in [`20260917_0023_device_replacement.py`](../alembic/versions/20260917_0023_device_replacement.py)). Destination roster schema is [§16](#16-database-plan--do-not-build-in-this-docs-only-change). §21 device-churn cells are **locked**: `DEVICE_REPLACEMENT_WINDOW_DAYS = 30`, `DEVICE_REPLACEMENT_LIMIT = 3`, support channel = email via `SUPPORT_EMAIL`.
 
 | Table | Migration | Role |
 |-------|-----------|------|
@@ -212,7 +212,8 @@ Purchase flow: `/pricing` → `/subscribe/confirm` → `/subscribe/pay` → orde
 | `user_free_articles` | 0004 | Constitution free claims (**stop reading** for access in Batch B) |
 | Playground overlay | [`20260906_0017_playground_overlay.py`](../alembic/versions/20260906_0017_playground_overlay.py) | `user_playground_item` / `selection` / `progress` — **persistent learning only** |
 | `app_session` | [`20260801_0001_multiuser_schema.py`](../alembic/versions/20260801_0001_multiuser_schema.py) | Cookie `rtc_session` ([`auth/sessions.py`](../src/constitution_memorizer/auth/sessions.py)). **Auth session, not a device.** Logout deletes this cookie and row. |
-| `user_device` / `user_device_session` | [`20260916_0021_devices.py`](../alembic/versions/20260916_0021_devices.py) + [`20260917_0022_device_ios_platform.py`](../alembic/versions/20260917_0022_device_ios_platform.py) | Installation HMAC registry + auth-session bind. Cookie `rtc_device` survives logout. Cap 2. Platforms `web \| android \| ios`. Owner UI and admin reset are implemented. Churn integers remain open in §21. |
+| `user_device` / `user_device_session` | [`20260916_0021_devices.py`](../alembic/versions/20260916_0021_devices.py) + [`20260917_0022_device_ios_platform.py`](../alembic/versions/20260917_0022_device_ios_platform.py) | Installation HMAC registry + auth-session bind. Cookie `rtc_device` survives logout. Cap 2. Platforms `web \| android \| ios`. Owner UI and admin reset are implemented. |
+| `user_device_replacement` | [`20260917_0023_device_replacement.py`](../alembic/versions/20260917_0023_device_replacement.py) | Counted replacement events for the locked 3 / rolling-30-day policy. Index `(user_id, occurred_at)`. No HMAC, IP, or fingerprints. |
 
 Paid grant insert is **the same transaction** as marking the order paid (`mark_billing_order_paid`). Replay verify is idempotent (no second grant).
 
@@ -424,7 +425,7 @@ Never silently evict the oldest device. The owner removes a device from **Profil
 
 Removing **this** device: confirm → set `revoked_at` → terminate `rtc_session` (sign out) → return to sign-in. Keep `rtc_device` unless the client is being discarded.
 
-Config names flexible: `PLAYGROUND_DEVICE_LIMIT` (locked default **2**); `DEVICE_REPLACEMENT_WINDOW_DAYS` / `DEVICE_REPLACEMENT_LIMIT` (**open** — do not invent integers). Exceeding churn → “Too many device changes” + Contact support. **No** auto-ban. **No** deletion of subscription or learning rows. Risk signals (rapid churn, many registration attempts, repeated limit failures) are **operational only** — not authorization, not IP-as-identity.
+Config names flexible: `PLAYGROUND_DEVICE_LIMIT` (locked default **2**); `DEVICE_REPLACEMENT_WINDOW_DAYS = 30`; `DEVICE_REPLACEMENT_LIMIT = 3`. A replacement is counted only when a previously registered device has been revoked **and** a different installation successfully registers into the freed slot. Original first/second registrations, same-installation login, failed third-device attempts, and revoke-without-register are **not** counted. Exceeding churn (`count >= 3` in the rolling UTC window) → `playground_block_reason=device_replacement_limit`, copy “Too many recent device changes”, Contact support via `SUPPORT_EMAIL` when configured. **No** auto-ban. **No** deletion of subscription or learning rows. Existing active registered devices remain usable. Admin `reset_devices` does **not** erase replacement history. Risk signals (rapid churn, many registration attempts, repeated limit failures) beyond this authorization gate are **operational only** — not IP-as-identity.
 
 Expiry keeps device rows. Resubscribe recognizes them. Upgrade/downgrade does **not** change the device cap or rows. Owner may manage devices while unsubscribed.
 
@@ -579,11 +580,12 @@ Playground checks **`user_device.revoked_at`**, not merely “session cookie sti
 | Method | Behaviour |
 |---|---|
 | `get_entitlements(user, device)` | §5 snapshot including device fields |
-| `assert_can_open_playground` | Else 403 + Sign-in / Subscribe / **device-limit** / **revoked-device** per `playground_block_reason` |
+| `assert_can_open_playground` | Else 403 + Sign-in / Subscribe / **device-limit** / **revoked-device** / **device-replacement-limit** per `playground_block_reason` |
 | `assert_current_device_allowed` | HMAC lookup; fail if missing, over cap, or `revoked_at` set |
 | `register_current_device` | **Atomic** insert if under cap; idempotent on same `(user_id, device_key_hash)` while active |
 | `list_devices` / `revoke_device` | Owner management; revoke sets `revoked_at`; never deletes overlay/roster/subscription |
-| `admin_reset_devices` | Audited; clears/revokes registrations only |
+| `admin_reset_devices` | Audited; clears/revokes registrations only; does **not** erase `user_device_replacement` |
+| `clear_device_replacement_limit` | Audited; deletes recent replacement events only; does not unrevoke devices or change billing/progress |
 | `assert_law_active_this_period(law_id)` | Else 403 — historical progress is **not** enough to run modes |
 | `preview_add_law(law_id)` | remaining slots; already-consumed-this-period; at-cap |
 | `confirm_add_law(law_id)` | **Atomic** consume (transaction / `SELECT … FOR UPDATE` on the period row). Re-add of same `law_id` this period is idempotent. Requires allowed device. |
@@ -611,7 +613,7 @@ Section select / Cloze / future modes stay overlay services; they **call** `asse
 | **Profile → Security → Your devices** | `N of 2 devices`; mark **This device**; Remove; last active. **No** “upgrade for more devices.” Unsubscribed users may still manage/remove. |
 | Device-limit (Playground) | “Your subscription supports Playground on 2 registered devices.” **[Manage devices]** **[Continue to Constitution]**. Not Subscribe, not upgrade. |
 | Revoked device (Playground) | “This device no longer has Playground access.” **[Manage devices]**. Constitution still works. |
-| Too many replacements | Copy when churn config exceeded (**integers open**). **[Contact support]**. |
+| Too many replacements | “Too many recent device changes.” Constitution/progress unaffected. **[Contact support]** (`mailto:` when `SUPPORT_EMAIL` is set; omit if empty) **[Back to Constitution]**. |
 | Cancel / invoices | Provider or app; **open** copy |
 
 ---
@@ -645,17 +647,17 @@ Resubscribe: **new** playground period + empty consumption; overlay history **an
 |---|---|---|
 | **A — Subscription** | `user_subscription`, product config (`plus`/`pro`/`max` using the **locked** [§21](#21-commercial-and-provider-cells) catalogue: Plus/Pro/Max, monthly GST-inclusive ₹199/₹399/₹1,199), Checkout/Subscriptions, webhooks (HMAC **raw** body, `x-razorpay-event-id`, out-of-order, secret rotation, reconcile) | **No quota on billing period.** `is_subscribed()` follows the locked matrix. **Do not** offer annual SKUs in the MVP. |
 | **B — User-type** | Resolver; Guest / signed-in / subscriber; Constitution full for authenticated; stop reading `user_free_articles` / article `access_grants` | Playground still overlay-gated only after C+D+F |
-| **C — Device registry** | `rtc_device` cookie (survives logout); HMAC store; `user_device` + `user_device_session`; atomic cap=2; revoke; `playground_block_reason`; EntitlementService device fields | Tests in [§24](#24-required-tests-document-now-pytest-in-batches-b--c--d--f--do-not-write-pytest-in-this-change). **Same cap all tiers.** No fingerprinting. Replacement **integers still open** for go-live of churn UI. |
+| **C — Device registry** | `rtc_device` cookie (survives logout); HMAC store; `user_device` + `user_device_session` + `user_device_replacement`; atomic cap=2; revoke; rolling 3/30 replacement limit; `playground_block_reason`; EntitlementService device fields | Tests in [§24](#24-required-tests-document-now-pytest-in-batches-b--c--d--f--do-not-write-pytest-in-this-change). **Same cap all tiers.** No fingerprinting. Replacement integers are **locked** in §21. |
 | **D — Monthly roster** | `user_playground_period` + `user_playground_roster_item`; consume; same-month re-add; carry-forward Keep/decline; atomic 9/10; EntitlementService roster fields in §5; **batched** dashboard `list_playground_summaries` | Was Batch C before the device amendment. **Strike** lifetime-unlock table. Period clock = `Asia/Kolkata`. |
 | **E — Learning** | All six RecallC-style modes on Bare Acts; Learned → then Day 1; retire Cloze-only as the only trigger | Overlay progress schema may extend; **do not** use progress rows as quota or as device identity. URLs under `/playground/laws/{law_id}/…` |
-| **F — Roster + lifecycle + device UI** | Confirm slot, In Playground / Progress saved / Playground full, Keep/Remove rollover, payment-state CTAs, `/upgrade`, **Profile → Security → Your devices**, device-limit and revoked-device screens | Prices/names are **locked** in §21. Churn-lockout copy still needs **open** replacement integers and a support channel. Playground HTTP already lives in `APIRouter(prefix="/playground")`. |
+| **F — Roster + lifecycle + device UI** | Confirm slot, In Playground / Progress saved / Playground full, Keep/Remove rollover, payment-state CTAs, `/upgrade`, **Profile → Security → Your devices**, device-limit, revoked-device, and replacement-limit screens | Prices/names and churn policy are **locked** in §21. Support CTA uses configured `SUPPORT_EMAIL`. Playground HTTP already lives in `APIRouter(prefix="/playground")`. |
 | **G — Legacy cleanup** | Freeze duration SKUs on `/upgrade`; drop unread article-entitlement structures only when unused | Never delete overlay, roster, or device history to “clean up” |
 
 ---
 
 ## 21. Commercial and provider cells
 
-Commercial catalogue, GST-inclusive display, MVP interval, provider-status access matrix, `pending` grace, refunds, and dispute/chargeback access are **locked**. Device-churn operational cells stay **open**. Cursor must **not** invent the remaining open cells. Cursor must **not** invent different prices, names, grace-day integers, or annual MVP SKUs.
+Commercial catalogue, GST-inclusive display, MVP interval, provider-status access matrix, `pending` grace, refunds, dispute/chargeback access, and device-churn cells are **locked**. Cursor must **not** invent different prices, names, grace-day integers, annual MVP SKUs, a different replacement window/limit, or a hard-coded support address.
 
 | Cell | Status |
 |---|---|
@@ -667,9 +669,9 @@ Commercial catalogue, GST-inclusive display, MVP interval, provider-status acces
 | Payment-retry grace | **Locked** — `pending` is the retry state. **No** separate grace-day integer. Access stays grace-enabled **only** while provider status is `pending`. `halted` locks Playground learning. There is no RecallC `past_due` day count. |
 | Refund → access | **Locked** (below) |
 | Dispute / chargeback → access | **Locked** (below) |
-| `DEVICE_REPLACEMENT_WINDOW_DAYS` | **Open** — do not invent |
-| `DEVICE_REPLACEMENT_LIMIT` | **Open** — do not invent |
-| Support contact channel for device-churn lockout | **Open** — do not invent |
+| `DEVICE_REPLACEMENT_WINDOW_DAYS` | **Locked** — **30** (rolling UTC days, not calendar/billing/roster month) |
+| `DEVICE_REPLACEMENT_LIMIT` | **Locked** — **3** counted replacements per rolling window |
+| Support contact channel for device-churn lockout | **Locked** — email via deployment setting `SUPPORT_EMAIL` (optional at boot; omit Contact support if empty; never invent an address) |
 
 ### Commercial catalogue (locked)
 
@@ -774,7 +776,7 @@ A dispute-created webhook is **not** a destructive account action.
 
 ## 23. Out of this docs-only change
 
-No Alembic, no `rtc_device` cookie, no `EntitlementService` code, no roster or device tables in SQLite, no Profile Security UI, no Android client. Those are Batches A–F **after** this lock (device-churn integers still open for churn-UI go-live).
+No Alembic, no `rtc_device` cookie, no `EntitlementService` code, no roster or device tables in SQLite, no Profile Security UI, no Android client. Those are Batches A–F **after** this lock (device-churn integers are now locked in §21; M4 implements them).
 
 ---
 
@@ -817,7 +819,7 @@ Device (Batch C / F):
 | 26 | Resubscribe recognizes retained devices |
 | 27 | Device removal does **not** delete overlay / roster / Constitution progress |
 | 28 | Simultaneous registrations cannot exceed the limit |
-| 29 | Rapid replacement threshold enforced (**when §21 integers are filled**) |
+| 29 | Rapid replacement threshold enforced (`DEVICE_REPLACEMENT_LIMIT = 3` in `DEVICE_REPLACEMENT_WINDOW_DAYS = 30`; `playground_block_reason=device_replacement_limit`) |
 | 30 | Admin device reset does not affect learning or payment rows |
 
 ---
@@ -828,8 +830,7 @@ Device (Batch C / F):
 - Payment and Playground stay separate domains: **AUTHENTICATION → USER-TYPE → SUBSCRIPTION → DEVICE → MONTHLY ROSTER → LEARNING**.
 - **Payment controls whether Playground can be used. The device registry controls where. The monthly roster controls which laws are active. None of these may delete the user's progress.**
 - **Guest = explore. Account = complete Constitution. Subscription = Playground. Tier = monthly roster capacity only. Device cap = 2 for every tier.**
-- The commercial catalogue, GST-inclusive display, MVP monthly-only interval, provider-status access matrix, `pending` grace, refund access, and dispute/chargeback access are **locked** in [§21](#21-commercial-and-provider-cells). Implementation must use them.
-- **`DEVICE_REPLACEMENT_WINDOW_DAYS`**, **`DEVICE_REPLACEMENT_LIMIT`**, and the support-contact channel for device-churn lockout stay **open**. Implementation must not invent them.
+- The commercial catalogue, GST-inclusive display, MVP monthly-only interval, provider-status access matrix, `pending` grace, refund access, dispute/chargeback access, **`DEVICE_REPLACEMENT_WINDOW_DAYS = 30`**, **`DEVICE_REPLACEMENT_LIMIT = 3`**, and support contact channel **email via `SUPPORT_EMAIL`** are **locked** in [§21](#21-commercial-and-provider-cells). Implementation must use them.
 - Do **not** implement `user_playground_law_entitlement`, lifetime unlocks, “new laws per billing cycle,” per-tier device SKUs, or IP/fingerprint device identity.
 
 ---
