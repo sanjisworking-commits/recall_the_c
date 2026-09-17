@@ -1,6 +1,6 @@
 # Payment, entitlement, and Playground — architecture lock
 
-**Scope of this document.** This is the **locked product architecture** for RecallC access: user types, device control for paid Playground, monthly Playground roster, clocks, schema to build, CTA states, sequential batches, the locked commercial catalogue / subscription-access matrix, and remaining device-churn open cells. It is **not** a description of current production behaviour. Current code still uses Razorpay **one-time duration passes** as historical Constitution commerce. Playground has an additive `user_subscription` table, Plus/Pro/Max catalogue, M2 lifecycle, M3-A [`EntitlementService`](../src/constitution_memorizer/entitlements/service.py) that inverts Constitution (authenticated = full Learn), and an M3-B commercial HTTP gate on `/playground` via [`playground/access.py`](../src/constitution_memorizer/playground/access.py). **There is no device registry** (Milestone 4) and **no monthly roster** (Milestone 5). Overlay items are persistent learning, not current-month roster membership. The overlay is a Cloze **proof**, not the finished product.
+**Scope of this document.** This is the **locked product architecture** for RecallC access: user types, device control for paid Playground, monthly Playground roster, clocks, schema to build, CTA states, sequential batches, the locked commercial catalogue / subscription-access matrix, and remaining device-churn open cells. It is **not** a description of current production behaviour. Current code still uses Razorpay **one-time duration passes** as historical Constitution commerce. Playground has an additive `user_subscription` table, Plus/Pro/Max catalogue, M2 lifecycle, M3-A [`EntitlementService`](../src/constitution_memorizer/entitlements/service.py) that inverts Constitution (authenticated = full Learn), an M3-B commercial HTTP gate on `/playground` via [`playground/access.py`](../src/constitution_memorizer/playground/access.py), and **M4-A core two-device authorization** in [`devices/`](../src/constitution_memorizer/devices/) (`user_device` / `user_device_session`, cookie `rtc_device`, cap 2 for every paid tier). Owner device-management UI remains M4-B. Replacement-churn rate policy remains **BLOCKED**. There is **no monthly roster** (Milestone 5). Overlay items are persistent learning, not current-month roster membership. The overlay is a Cloze **proof**, not the finished product.
 
 **Amendment (Max price).** Displayed Max is **₹1,199**/month GST-inclusive (1,19,900 paise). This supersedes any earlier Max lock of ₹999/month. Plus ₹199 and Pro ₹399 are unchanged. Annual plans remain **not offered** in the MVP.
 
@@ -155,7 +155,7 @@ When the flag is on:
 
 **Laws / Bare Acts:** not on this matrix. Feature flag `RELEVANT_LAWS_ENABLED` 404s `/laws*` only. Reading is free.
 
-**Playground (existing overlay on `cursor/playground-220d`):** M3-B commercially gates `/playground` from `EntitlementSnapshot` (`can_open_playground` vs `can_consume_new_playground_law`). Guests Sign in; signed-in free/legacy Subscribe; halted/paused/paid-period-ended use payment-state copy; pending may open existing overlay/progress but cannot activate a new law (transitional until M5 current-period roster membership). Active and admin keep the Cloze proof. Overlay rows are **persistent learning**, not a monthly roster and not a device registry. **M3 commercial gate is complete.** Device enforcement remains M4. Monthly roster enforcement remains M5. Do not count overlay rows against 10/30/unlimited.
+**Playground (existing overlay on `cursor/playground-220d`):** M3-B commercially gates `/playground` from `EntitlementSnapshot` (`can_open_playground` vs `can_consume_new_playground_law`). Guests Sign in; signed-in free/legacy Subscribe; halted/paused/paid-period-ended use payment-state copy; pending may open existing overlay/progress but cannot activate a new law (transitional until M5 current-period roster membership). Active and admin keep the Cloze proof. Overlay rows are **persistent learning**, not a monthly roster and not a device registry. **M3 commercial gate is complete.** **M4-A core two-device authorization is shipped:** paid Playground registers HMAC-hashed `rtc_device` installations (limit 2, all tiers) on first eligible use; a third or revoked installation is Playground-blocked with `device_limit` / `device_revoked` while `is_subscribed` stays true and Constitution / `/laws` stay open. Owner device-management UI remains M4-B. Replacement-churn rate policy remains BLOCKED (`DEVICE_REPLACEMENT_WINDOW_DAYS`, `DEVICE_REPLACEMENT_LIMIT`, support contact channel — do not invent). Monthly roster enforcement remains M5. Do not count overlay rows against 10/30/unlimited.
 
 ---
 
@@ -202,7 +202,7 @@ Purchase flow: `/pricing` → `/subscribe/confirm` → `/subscribe/pay` → orde
 
 ## 5. Subscription DB model (code today)
 
-**There is no `subscriptions` table.** There is **no** monthly roster table. There is **no** `user_device` table. Destination schema is [§16](#16-database-plan--do-not-build-in-this-docs-only-change).
+**There is no `subscriptions` table.** There is **no** monthly roster table. **`user_device` / `user_device_session` exist** (M4-A, [`20260916_0021_devices.py`](../alembic/versions/20260916_0021_devices.py)). Destination roster schema is [§16](#16-database-plan--do-not-build-in-this-docs-only-change). Open §21 cells remain **open**: `DEVICE_REPLACEMENT_WINDOW_DAYS`, `DEVICE_REPLACEMENT_LIMIT`, support contact channel.
 
 | Table | Migration | Role |
 |-------|-----------|------|
@@ -212,6 +212,7 @@ Purchase flow: `/pricing` → `/subscribe/confirm` → `/subscribe/pay` → orde
 | `user_free_articles` | 0004 | Constitution free claims (**stop reading** for access in Batch B) |
 | Playground overlay | [`20260906_0017_playground_overlay.py`](../alembic/versions/20260906_0017_playground_overlay.py) | `user_playground_item` / `selection` / `progress` — **persistent learning only** |
 | `app_session` | [`20260801_0001_multiuser_schema.py`](../alembic/versions/20260801_0001_multiuser_schema.py) | Cookie `rtc_session` ([`auth/sessions.py`](../src/constitution_memorizer/auth/sessions.py)). **Auth session, not a device.** Logout deletes this cookie and row. |
+| `user_device` / `user_device_session` | [`20260916_0021_devices.py`](../alembic/versions/20260916_0021_devices.py) | Installation HMAC registry + auth-session bind. Cookie `rtc_device` survives logout. Cap 2. Owner UI is M4-B. Churn integers remain open in §21. |
 
 Paid grant insert is **the same transaction** as marking the order paid (`mark_billing_order_paid`). Replay verify is idempotent (no second grant).
 
@@ -231,9 +232,9 @@ No dedicated paywall middleware. Layers:
 
 Templates (`learn.html`, `_locked_mode.html`, dashboard, profile, pricing) branch on `is_guest`, `access.is_free`, `pricing_enabled` — not on duration.
 
-Playground (existing overlay): **no** entitlement import; sign-in only; **no** device cookie.
+Playground (existing overlay): M3-B commercial gate plus M4-A device overlay on the same snapshot. Cookie `rtc_device` is minted on the first authenticated response (`HttpOnly`, `SameSite=lax`, `Secure` when `COOKIE_SECURE`). `POST /logout` deletes `rtc_session` and ends `user_device_session`; it does **not** delete `rtc_device` or `user_device`.
 
-Web auth today: `rtc_session` is `HttpOnly` + `SameSite=lax` ([`auth/routes.py`](../src/constitution_memorizer/auth/routes.py) `_establish_session`). `POST /logout` deletes `rtc_session` only. Planned `rtc_device` must **survive** that logout.
+Web auth today: `rtc_session` is `HttpOnly` + `SameSite=lax` ([`auth/routes.py`](../src/constitution_memorizer/auth/routes.py) `_establish_session`). `POST /logout` deletes `rtc_session` only. `rtc_device` survives that logout.
 
 ---
 
@@ -241,7 +242,7 @@ Web auth today: `rtc_session` is `HttpOnly` + `SameSite=lax` ([`auth/routes.py`]
 
 Playground subscriptions: `POST /api/billing/subscriptions/webhook/razorpay` verifies `X-Razorpay-Signature` over the **raw request body** (`RAZORPAY_WEBHOOK_SECRET`, optional `RAZORPAY_WEBHOOK_SECRET_PREVIOUS`), requires `X-Razorpay-Event-Id`, reserves `subscription_webhook_event`, then **fetches** current provider truth. Subscription notifications fetch `GET /v1/subscriptions/{id}`. Refund notifications fetch the payment; dispute notifications fetch the dispute. Duplicate/out-of-order deliveries are safe because the GET is the ordering authority. Unknown provider subscription or unresolvable payment→invoice links are recorded `unmatched` and do not create a RecallC subscription or guess an account. Constitution duration checkout is still `/api/billing/verify` (Orders HMAC) and has **no** duration webhooks.
 
-M2-D records failed-payment/`pending`, paused/halted, expiry, resubscribe, refunds, and dispute/chargeback **billing facts** against the locked [§21](#21-commercial-and-provider-cells) access matrix. Webhooks update **billing** dates and `subscription_charge.access_effect`; they do **not** consume roster slots. A dispute-created webhook is **not** a destructive account action. Client Checkout verify must not be the only grant path. M3-A `EntitlementService` consumes these facts; M3-B Playground HTTP uses the snapshot. Device and roster still do not authorize or block.
+M2-D records failed-payment/`pending`, paused/halted, expiry, resubscribe, refunds, and dispute/chargeback **billing facts** against the locked [§21](#21-commercial-and-provider-cells) access matrix. Webhooks update **billing** dates and `subscription_charge.access_effect`; they do **not** consume roster slots. A dispute-created webhook is **not** a destructive account action. Client Checkout verify must not be the only grant path. M3-A `EntitlementService` consumes these facts; M3-B Playground HTTP uses the snapshot; M4-A overlays device authorization without changing `is_subscribed`. Roster still does not authorize or block.
 
 ---
 

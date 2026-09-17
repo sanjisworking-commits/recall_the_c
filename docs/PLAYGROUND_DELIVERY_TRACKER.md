@@ -2,16 +2,17 @@
 
 **Scoreboard, not an audit.** Product rules live in [PLAYGROUND.md](PLAYGROUND.md), [PAYMENT_ENTITLEMENT_AUDIT.md](PAYMENT_ENTITLEMENT_AUDIT.md), [PLAYGROUND_TWO_LAW_AUDIT.md](PLAYGROUND_TWO_LAW_AUDIT.md), and [law-loading.md](law-loading.md).
 
-**Snapshot:** architecture/product definition is **locked in docs**. **Stage 1** (build) is **33.0 / 100**. Production implementation is **early**. The NDPS/BNS overlay + Cloze + proof revision rows **do not** count as milestones 6–8. Milestone 1 is `DONE`. Milestone 2 is **`DONE` — 37/37**. Milestone 3 is **`DONE` — 15/15** (M3-A Constitution inversion + M3-B Playground commercial gate). Device enforcement remains Milestone 4. Monthly roster enforcement remains Milestone 5. **Do not tick Stage 2 from Cloze or from `main`’s sitemap PRs.** This branch includes main’s Bare Act SEO and generated sitemap index; that is Milestone 0 coexistence, not Milestone 10 (`noindex`) and not Stage 2.
+**Snapshot:** architecture/product definition is **locked in docs**. **Stage 1** (build) is **39.1 / 100**. Production implementation is **early**. The NDPS/BNS overlay + Cloze + proof revision rows **do not** count as milestones 6–8. Milestone 1 is `DONE`. Milestone 2 is **`DONE` — 37/37**. Milestone 3 is **`DONE` — 15/15** (M3-A Constitution inversion + M3-B Playground commercial gate). Milestone 4 is **`IN PROGRESS` — 19/25** (M4-A core two-device authorization). Owner device-management UI remains M4-B. Replacement-churn rate policy remains `BLOCKED`. Monthly roster enforcement remains Milestone 5. **Do not tick Stage 2 from Cloze or from `main`’s sitemap PRs.** This branch includes main’s Bare Act SEO and generated sitemap index; that is Milestone 0 coexistence, not Milestone 10 (`noindex`) and not Stage 2.
 
 | | |
 |--|--|
-| **Stage 1 (build)** | **33.0 / 100** |
+| **Stage 1 (build)** | **39.1 / 100** |
 | Milestone 0 | `DONE` — 10/10 items × 5 = **5** |
 | Milestone 1 | `DONE` — 18/18 items × 8 = **8** |
 | Milestone 2 | `DONE` — 37/37 × 13 = **13** |
 | Milestone 3 | `DONE` — 15/15 × 7 = **7** |
-| Milestones 4–11 | `NOT STARTED`; remaining §21 `BLOCKED` cells are device-churn integers / support channel only |
+| Milestone 4 | `IN PROGRESS` — 19/25 × 8 = **6.08** (M4-A). Device-management UI is M4-B. Replacement-churn integers remain `BLOCKED`. |
+| Milestones 5–11 | `NOT STARTED`; remaining §21 `BLOCKED` cells are device-churn integers / support channel only |
 | **Stage 2 (optimize)** | **`NOT STARTED` — start gate: Stage 1 = `DONE` (100/100)** |
 
 Do not read Cloze on this branch as ~20% complete. Payments, roster, devices, six Learn modes, and Learned → revision are the actual Stage 1 product weight. Stage 2 is **outside** the 100.
@@ -254,7 +255,7 @@ A subscription can move through its full real lifecycle without manually editing
 
 # 3. User-type entitlement inversion — 7 points
 
-**Status: `DONE` — 15/15** (M3-A Constitution inversion + EntitlementService; M3-B Playground commercial HTTP gate). Device enforcement remains Milestone 4. Monthly roster enforcement remains Milestone 5. Pending existing-item behaviour is transitional until M5 can identify current-period roster membership; overlay items are **not** the current roster.
+**Status: `DONE` — 15/15** (M3-A Constitution inversion + EntitlementService; M3-B Playground commercial HTTP gate). M4-A overlays device fields onto that snapshot. Monthly roster enforcement remains Milestone 5. Pending existing-item behaviour is transitional until M5 can identify current-period roster membership; overlay items are **not** the current roster.
 
 Implement one authoritative entitlement resolver.
 
@@ -310,7 +311,7 @@ billing_period_start / billing_period_end
 legacy_status
 ```
 
-M3-A source of truth: [`src/constitution_memorizer/entitlements/`](../src/constitution_memorizer/entitlements/). [`web/entitlements.py`](../src/constitution_memorizer/web/entitlements.py) is the Constitution adapter. M3-B Playground HTTP uses [`playground/access.py`](../src/constitution_memorizer/playground/access.py) (`get_entitlement_snapshot` once per request). **M3 commercial gate is complete.** Device enforcement remains M4. Monthly roster enforcement remains M5. Pending users may open existing overlay/progress (transitional commercial bit until M5 `is_law_active_this_period`). Overlay items are not current roster. Device/roster snapshot fields are not fabricated. `playground_law_limit` is catalogue metadata only; 10/30/unlimited is not counted against overlay rows.
+M3-A source of truth: [`src/constitution_memorizer/entitlements/`](../src/constitution_memorizer/entitlements/). [`web/entitlements.py`](../src/constitution_memorizer/web/entitlements.py) is the Constitution adapter. M3-B Playground HTTP uses [`playground/access.py`](../src/constitution_memorizer/playground/access.py) (`get_entitlement_snapshot` once per request). **M3 commercial gate is complete.** **M4-A device authorization is in progress (19/25):** [`devices/`](../src/constitution_memorizer/devices/) registers HMAC-hashed `rtc_device` installations (cap 2, all tiers) on first eligible Playground use. Owner device-management UI remains M4-B. Replacement-churn rate policy remains `BLOCKED`. Monthly roster enforcement remains Milestone 5. Pending users may open existing overlay/progress (transitional commercial bit until M5 `is_law_active_this_period`). Overlay items are not current roster. Roster snapshot fields are not fabricated. `playground_law_limit` is catalogue metadata only; 10/30/unlimited is not counted against overlay rows.
 
 ### Done when
 
@@ -328,31 +329,33 @@ Subscription = Playground
 
 # 4. Device control — 8 points
 
-**Status: `NOT STARTED`** (replacement-churn numeric policy: `BLOCKED` on §21)
+**Status: `IN PROGRESS` — 19/25** (M4-A core two-device authorization). Owner device-management UI remains M4-B. Replacement-churn numeric policy: `BLOCKED` on §21 (`DEVICE_REPLACEMENT_WINDOW_DAYS`, `DEVICE_REPLACEMENT_LIMIT`, support contact channel).
+
+Core two-device authorization shipped. `PLAYGROUND_DEVICE_LIMIT = 2` for Plus/Pro/Max. Cookie `rtc_device` survives logout. Server stores HMAC, not the raw token. Registration is atomic (SQLite `BEGIN IMMEDIATE` / Postgres `pg_advisory_xact_lock`). Minimal device-limit / revoked Playground copy exists so authorization is understandable; Profile → Security → Your devices is **not** ticked.
 
 ## Registry
 
-* [ ] `user_device`
-* [ ] `user_device_session`
-* [ ] 2-device configurable limit
-* [ ] same limit for all paid tiers
-* [ ] `rtc_device` separate from auth session
-* [ ] secure random installation token
-* [ ] server stores HMAC, not raw secret
+* [x] `user_device`
+* [x] `user_device_session`
+* [x] 2-device configurable limit
+* [x] same limit for all paid tiers
+* [x] `rtc_device` separate from auth session
+* [x] secure random installation token
+* [x] server stores HMAC, not raw secret
 
 ## Behaviour
 
-* [ ] first device registers
-* [ ] second device registers
-* [ ] third device Playground-blocked
-* [ ] third device still gets full Constitution
-* [ ] logout does not consume new device slot
-* [ ] revoke device
-* [ ] replacement registration
-* [ ] revoked device immediately loses Playground authorization
-* [ ] progress unaffected
-* [ ] subscription expiry retains device registry
-* [ ] resubscription recognizes existing devices
+* [x] first device registers
+* [x] second device registers
+* [x] third device Playground-blocked
+* [x] third device still gets full Constitution
+* [x] logout does not consume new device slot
+* [x] revoke device
+* [x] replacement registration
+* [x] revoked device immediately loses Playground authorization
+* [x] progress unaffected
+* [x] subscription expiry retains device registry
+* [x] resubscription recognizes existing devices
 
 ## Device management
 
@@ -365,7 +368,7 @@ Subscription = Playground
 
 ## Concurrency
 
-* [ ] simultaneous registrations cannot create 3 active devices
+* [x] simultaneous registrations cannot create 3 active devices
 
 ### Done when
 
@@ -763,7 +766,7 @@ Playground + payment can safely replace the existing commercial entitlement mode
 | 1. Backend foundation             |      8 | `DONE` (8 earned; 18/18) |
 | 2. Payment/subscriptions          |     13 | `DONE` — 37/37 × 13 = 13 |
 | 3. User-type entitlement          |      7 | `DONE` — 15/15 × 7 = 7 |
-| 4. Device control                 |      8 | `NOT STARTED` |
+| 4. Device control                 |      8 | `IN PROGRESS` — 19/25 × 8 = 6.08 |
 | 5. Monthly roster                 |     12 | `NOT STARTED` |
 | 6. Finished UX                    |      8 | `NOT STARTED` |
 | 7. Complete Learn engine          |     15 | `NOT STARTED` |
@@ -771,7 +774,7 @@ Playground + payment can safely replace the existing commercial entitlement mode
 | 9. Amendments/source integrity    |      5 | `NOT STARTED` |
 | 10. SEO/routing discoverability   |      4 | `NOT STARTED` |
 | 11. Production hardening/release  |      7 | `NOT STARTED` |
-| **TOTAL (Stage 1)**               |  **100** | **33.0 / 100** |
+| **TOTAL (Stage 1)**               |  **100** | **39.1 / 100** |
 | Stage 2 — Optimize                |    — | `NOT STARTED` — start gate: Stage 1 = `DONE` (100/100) |
 
 ---
@@ -788,7 +791,7 @@ Batch 1A  Eligibility + APIRouter + final `/playground/laws/{id}` URLs — DONE
 Batch 1B  Law-loading/hash cleanup + batched dashboard/selection — DONE
 Batch 2   Payment/subscription foundation
 Batch 3   User entitlement inversion — DONE (M3-A Constitution + M3-B Playground gate)
-Batch 4   Device registry/control
+Batch 4   Device registry/control — IN PROGRESS (M4-A 19/25; M4-B device-management UI next; churn BLOCKED)
 Batch 5   Monthly roster + rollover
 Batch 6   Final Playground UI shell
 Batch 7   Complete Learn modes
