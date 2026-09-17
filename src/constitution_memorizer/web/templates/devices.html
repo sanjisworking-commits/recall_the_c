@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% block title %}Your devices · {{ app_name|default('Recall the C') }}{% endblock %}
+{% block mobile_screen %}account{% endblock %}
+{% block content %}
+<section class="panel profile-panel">
+  <div class="mobile-topbar">
+    <a class="mobile-back" href="/profile">← Profile</a>
+  </div>
+  <p class="eyebrow">Security</p>
+  <h1 class="display">Your devices</h1>
+  <p class="lede">{{ active_count }} of {{ device_limit }} devices</p>
+
+  {% if removed %}
+  <div class="auth-banner is-ok" role="status">
+    <span class="auth-banner-icon" aria-hidden="true">✓</span>
+    <p>Device removed. It no longer counts toward the Playground limit.</p>
+  </div>
+  {% endif %}
+
+  {% if confirm_current %}
+  <article class="device-confirm">
+    <h2>Remove this device?</h2>
+    <p>You’ll be signed out on this device. Your learning progress and subscription will not be deleted.</p>
+    <form method="post" action="/profile/security/devices/{{ confirm_current.id }}/remove" class="device-confirm-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <p class="actions">
+        <button class="btn" type="submit">Remove this device</button>
+        <a class="btn btn-ghost" href="/profile/security/devices">Cancel</a>
+      </p>
+    </form>
+  </article>
+  {% endif %}
+
+  <h2 class="section-title">Active devices</h2>
+  {% if active_devices %}
+  {% for device in active_devices %}
+  <article class="device-row{% if device.is_current %} is-current{% endif %}">
+    <div class="device-main">
+      <p class="device-name">{{ device.display_name or 'Device' }}</p>
+      <p class="device-meta">
+        <span>{{ device.platform_label }}</span>
+        · Last seen {{ device.last_seen_at.strftime('%d %b %Y %H:%M') }}
+        {% if device.first_registered_at %}
+        · Registered {{ device.first_registered_at.strftime('%d %b %Y') }}
+        {% endif %}
+        · {{ device.status_label }}
+      </p>
+      {% if device.current_label %}
+      <p class="device-current">{{ device.current_label }}</p>
+      {% endif %}
+    </div>
+    <div class="device-actions">
+      {% if device.is_current %}
+      <a class="btn btn-ghost" href="/profile/security/devices?confirm={{ device.id }}">Remove this device</a>
+      {% else %}
+      <form method="post" action="/profile/security/devices/{{ device.id }}/remove">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button class="btn btn-ghost" type="submit">Remove</button>
+      </form>
+      {% endif %}
+    </div>
+  </article>
+  {% endfor %}
+  {% else %}
+  <p class="muted">No active devices. A device is registered the first time Playground is used while subscribed.</p>
+  {% endif %}
+
+  {% if revoked_devices %}
+  <h2 class="section-title">Removed devices</h2>
+  {% for device in revoked_devices %}
+  <article class="device-row is-removed{% if device.is_current %} is-current{% endif %}">
+    <div class="device-main">
+      <p class="device-name">{{ device.display_name or 'Device' }}</p>
+      <p class="device-meta">
+        <span>{{ device.platform_label }}</span>
+        · Last seen {{ device.last_seen_at.strftime('%d %b %Y %H:%M') }}
+        {% if device.first_registered_at %}
+        · Registered {{ device.first_registered_at.strftime('%d %b %Y') }}
+        {% endif %}
+        · {{ device.status_label }}
+      </p>
+      {% if device.current_label %}
+      <p class="device-current">{{ device.current_label }}</p>
+      {% endif %}
+    </div>
+  </article>
+  {% endfor %}
+  {% endif %}
+</section>
+{% endblock %}

@@ -973,6 +973,11 @@ def create_app(
                 reset_request_timings(token)
 
     app.include_router(create_auth_router(templates))
+    from constitution_memorizer.devices.routes import (  # noqa: PLC0415
+        create_device_router,
+    )
+
+    app.include_router(create_device_router(templates))
     app.include_router(create_admin_router(templates))
 
     from constitution_memorizer.calendar_sync.routes import router as gcal_router

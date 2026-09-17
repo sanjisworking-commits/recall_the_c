@@ -487,6 +487,43 @@ def create_admin_router(templates: Jinja2Templates) -> APIRouter:
             url=f"/admin/users/{grant.user_id}?notice={notice}", status_code=303
         )
 
+    @router.post(
+        "/users/{user_id}/devices/reset",
+        dependencies=[Depends(require_csrf)],
+    )
+    async def admin_reset_devices(
+        request: Request,
+        user_id: str,
+        reason: str = Form(default=""),
+    ) -> RedirectResponse:
+        repo = _repo(request)
+        try:
+            uid = UUID(user_id)
+        except ValueError:
+            raise HTTPException(status_code=404, detail="Not Found")
+        if repo.get_user_overview(uid) is None:
+            raise HTTPException(status_code=404, detail="Not Found")
+        reason = reason.strip()
+        if not reason:
+            raise HTTPException(status_code=400, detail="Reason is required")
+        devices = getattr(request.app.state, "device_service", None)
+        if devices is None:
+            raise HTTPException(status_code=503, detail="Device registry unavailable")
+        admin_user = request.state.current_user
+        devices.reset_devices_audited(
+            uid,
+            admin_user_id=admin_user.id,
+            reason=reason,
+        )
+        notice = (
+            "Device registry reset · audit row reset_devices written in the "
+            "same transaction. Playground must re-register; Constitution "
+            "account sessions were not terminated."
+        )
+        return RedirectResponse(
+            url=f"/admin/users/{user_id}?notice={notice}", status_code=303
+        )
+
     # ------------------------------------------------------------------ #
     # Roster + all grants                                                #
     # ------------------------------------------------------------------ #

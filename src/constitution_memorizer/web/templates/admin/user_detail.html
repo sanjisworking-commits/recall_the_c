@@ -155,6 +155,49 @@
     </div>
   </div>
 
+  <div class="admin-block admin-grant-panel">
+    <div class="admin-grant-form">
+      <h2 class="admin-block-title">Reset Playground devices</h2>
+      <p class="admin-subtitle">
+        Revokes every active registered installation for this account.
+        Subscription, billing, Playground progress, Constitution progress, and
+        the admin roster are not changed. Account sessions stay usable for
+        Constitution; the next Playground request must register a new device
+        when eligible.
+      </p>
+      <form method="post" action="/admin/users/{{ target.user_id }}/devices/reset">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <span class="admin-label">Reason — required</span>
+        <textarea
+          name="reason"
+          rows="2"
+          required
+          placeholder="Lost phone — revoke both registered installations"
+        ></textarea>
+        <div class="admin-grant-actions">
+          <button type="submit" class="admin-btn is-destructive">Reset devices</button>
+        </div>
+      </form>
+      <p class="admin-footnote">
+        Writes <span class="admin-mono">admin_audit_log</span> action
+        <span class="admin-mono">reset_devices</span> in the same transaction.
+        Rows are revoked, never deleted. There is no unaudited helper path.
+      </p>
+    </div>
+    <div class="admin-grant-consequences">
+      <h2 class="admin-block-title">What the write does</h2>
+      <p class="admin-subtitle">Device rows and the audit row commit together. If the audit insert fails, devices stay active.</p>
+      <div class="admin-write-plan is-ink">
+        <span class="admin-label">user_device / user_device_session</span>
+        <p class="admin-mono">revoked_at=now() on every active row · no DELETE</p>
+      </div>
+      <div class="admin-write-plan is-ink">
+        <span class="admin-label">admin_audit_log</span>
+        <p class="admin-mono">action=reset_devices · target_type=user_device · counts and device ids only</p>
+      </div>
+    </div>
+  </div>
+
   <div class="admin-block">
     <span class="admin-label">Audit</span>
     {% include "admin/_audit_table.html" %}

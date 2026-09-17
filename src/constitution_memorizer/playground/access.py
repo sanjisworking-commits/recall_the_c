@@ -55,7 +55,7 @@ from constitution_memorizer.playground.urls import home_path
 
 PLAYGROUND_BILLING_PATH = "/billing/subscriptions"
 CONSTITUTION_HOME_PATH = "/dashboard"
-MANAGE_DEVICES_PATH = "/profile"
+MANAGE_DEVICES_PATH = "/profile/security/devices"
 NEW_LAW_TEMPORARILY_UNAVAILABLE = "new_law_temporarily_unavailable"
 
 _OPEN_COPY: dict[str, dict[str, str]] = {
@@ -96,21 +96,22 @@ _OPEN_COPY: dict[str, dict[str, str]] = {
         "title": "Device limit reached",
         "lede": "",
         "body": (
-            "Your subscription supports Playground on up to 2 registered devices."
+            "Your subscription supports Playground on up to 2 registered devices. "
+            "Remove a device to use Playground here."
         ),
-        "cta_label": "Back to Constitution",
-        "secondary_label": "Manage devices",
-        "secondary_href": MANAGE_DEVICES_PATH,
-        "cta_href": CONSTITUTION_HOME_PATH,
+        "cta_label": "Manage devices",
+        "secondary_label": "Back to Constitution",
+        "secondary_href": CONSTITUTION_HOME_PATH,
+        "cta_href": MANAGE_DEVICES_PATH,
     },
     BLOCK_DEVICE_REVOKED: {
         "title": "This device no longer has Playground access.",
         "lede": "",
         "body": "Constitution Learn stays available on this installation.",
-        "cta_label": "Back to Constitution",
-        "secondary_label": "Manage devices",
-        "secondary_href": MANAGE_DEVICES_PATH,
-        "cta_href": CONSTITUTION_HOME_PATH,
+        "cta_label": "Manage devices",
+        "secondary_label": "Back to Constitution",
+        "secondary_href": CONSTITUTION_HOME_PATH,
+        "cta_href": MANAGE_DEVICES_PATH,
     },
     BLOCK_DEVICE_CONFIG_ERROR: {
         "title": "Playground is temporarily unavailable on this device",
@@ -285,6 +286,8 @@ def _ensure_device_and_refresh(
         auth_session_id=session_id,
         commercially_eligible=True,
         admin_override=False,
+        # Website cookie installation. Safari on iPhone stays web; native
+        # iOS apps are not registered from this HTTP path.
         platform=PLATFORM_WEB,
         display_name=display_name_from_user_agent(
             request.headers.get("user-agent")
@@ -364,7 +367,7 @@ def _gate_page(
     else:
         copy = _OPEN_COPY.get(reason, _OPEN_COPY[BLOCK_NOT_SUBSCRIBED])
         if reason in _DEVICE_OPEN_REASONS:
-            cta_href = copy.get("cta_href", CONSTITUTION_HOME_PATH)
+            cta_href = copy.get("cta_href", MANAGE_DEVICES_PATH)
         elif reason == BLOCK_SIGN_IN_REQUIRED:
             cta_href = f"/login?next={home_path()}"
         else:

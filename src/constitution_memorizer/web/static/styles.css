@@ -5175,6 +5175,55 @@ html[data-theme="dark"] {
   text-decoration: underline;
 }
 
+.device-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.device-row.is-removed {
+  opacity: 0.72;
+}
+
+.device-name {
+  margin: 0 0 4px;
+  font-size: 15.5px;
+  font-weight: 600;
+}
+
+.device-meta,
+.device-current {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.device-current {
+  margin-top: 4px;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.device-confirm {
+  margin: 0 0 24px;
+  padding: 16px 18px;
+  border: 1px solid var(--hairline);
+}
+
+.device-confirm h2 {
+  margin: 0 0 8px;
+  font-size: 1.15rem;
+}
+
+.device-confirm p {
+  margin: 0 0 12px;
+  color: var(--muted);
+}
+
 @keyframes dash-skel-shine {
   0% { background-position: 100% 0; }
   100% { background-position: -100% 0; }

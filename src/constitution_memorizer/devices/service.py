@@ -15,8 +15,12 @@ from constitution_memorizer.devices.models import (
     REGISTER_LIMIT,
     REGISTER_REVOKED,
     DeviceAccess,
+    DeviceResetSummary,
+    DeviceSummary,
     UserDevice,
     device_access_from_state,
+    device_summary,
+    sort_device_summaries,
 )
 from constitution_memorizer.devices.token import DeviceHmacConfigError, hash_device_token
 from constitution_memorizer.progress.user_ids import as_user_id
@@ -202,6 +206,26 @@ class DeviceService:
     def list_devices(self, user_id: UUID | str) -> list[UserDevice]:
         return list(self._repo.list_devices(user_id))
 
+    def list_device_summaries(
+        self,
+        user_id: UUID | str,
+        token: str | None,
+    ) -> list[DeviceSummary]:
+        """Request-scoped presentation. ``is_current`` is never persisted."""
+
+        current, _config_error = self._lookup(user_id, token)
+        current_id = current.id if current is not None else None
+        summaries = [
+            device_summary(row, current_id=current_id)
+            for row in self.list_devices(user_id)
+        ]
+        return sort_device_summaries(summaries)
+
+    def get_device(
+        self, user_id: UUID | str, device_id: str
+    ) -> UserDevice | None:
+        return self._repo.get_by_id(user_id, device_id)
+
     def revoke_device(
         self,
         user_id: UUID | str,
@@ -210,6 +234,32 @@ class DeviceService:
         now: datetime | None = None,
     ) -> UserDevice | None:
         return self._repo.revoke_device(user_id, device_id, now=now)
+
+    def revoke_all_devices(
+        self,
+        user_id: UUID | str,
+        *,
+        now: datetime | None = None,
+    ) -> DeviceResetSummary:
+        return self._repo.revoke_all_devices(user_id, now=now)
+
+    def reset_devices_audited(
+        self,
+        user_id: UUID | str,
+        *,
+        admin_user_id: UUID | str,
+        reason: str,
+        now: datetime | None = None,
+    ) -> DeviceResetSummary:
+        cleaned = (reason or "").strip()
+        if not cleaned:
+            raise ValueError("Reason is required")
+        return self._repo.reset_devices_audited(
+            user_id,
+            admin_user_id=admin_user_id,
+            reason=cleaned,
+            now=now,
+        )
 
     def bind_session(
         self,
