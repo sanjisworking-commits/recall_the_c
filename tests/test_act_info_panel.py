@@ -228,12 +228,23 @@ def test_an_act_with_no_schedules_says_so(tmp_path):
     assert "This Act has no Schedules." not in client.get("/laws/uapa").text
 
 
-def test_uapa_shows_all_four_schedules_and_bnss_only_the_navigable_one(tmp_path):
+def test_every_schedule_the_act_prints_is_listed(tmp_path):
     client = _client(tmp_path)
-    assert client.get("/laws/uapa").text.count("/laws/uapa/schedule/") == 4
-    # BNSS's Second Schedule is 58 positioned-text forms: preserved in the
-    # data, still unrenderable, so still not linked.
-    assert client.get("/laws/bnss").text.count("/laws/bnss/schedule/") == 1
+    uapa = client.get("/laws/uapa").text
+    assert uapa.count('<div class="bareact-schedule-row') == 4
+    assert uapa.count("/laws/uapa/schedule/") == 4
+    # BNSS's Second Schedule is 58 positioned-text forms: listed, because
+    # s.522 sends the reader to it by name; unlinked, because we cannot draw it.
+    bnss = client.get("/laws/bnss").text
+    assert bnss.count('<div class="bareact-schedule-row') == 2
+    assert bnss.count("/laws/bnss/schedule/") == 1
+
+
+def test_the_empty_state_is_keyed_off_every_schedule_not_the_drawable_ones(tmp_path):
+    # Otherwise an Act whose only schedules were undrawable would print "no
+    # Schedules" directly above a row listing one.
+    html = _client(tmp_path).get("/laws/bnss").text
+    assert "This Act has no Schedules." not in html
 
 
 def test_the_long_title_is_printed_verbatim_brackets_and_all(tmp_path):
