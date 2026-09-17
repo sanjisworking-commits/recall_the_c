@@ -1,8 +1,7 @@
-"""Frozen commercial entitlement snapshot. Not a route gate and not a DB row.
+"""Frozen entitlement snapshot. Not a route gate and not a DB row.
 
-Milestone 3A defines identity + Constitution + Playground *commercial* fields.
-Device and monthly-roster fields are added in Milestones 4 and 5; they are
-intentionally absent here so callers cannot pretend those systems exist.
+Milestone 3 defines identity + Constitution + Playground *commercial* fields.
+Milestone 4A adds device-authorization fields. Monthly roster remains M5.
 """
 
 from __future__ import annotations
@@ -27,6 +26,9 @@ BLOCK_NOT_SUBSCRIBED = "not_subscribed"
 BLOCK_PAID_PERIOD_ENDED = "paid_period_ended"
 BLOCK_PAYMENT_HALTED = "payment_halted"
 BLOCK_SUBSCRIPTION_PAUSED = "subscription_paused"
+BLOCK_DEVICE_LIMIT = "device_limit"
+BLOCK_DEVICE_REVOKED = "device_revoked"
+BLOCK_DEVICE_CONFIG_ERROR = "device_config_error"
 
 PLAYGROUND_BLOCK_REASONS: frozenset[str] = frozenset(
     {
@@ -35,6 +37,9 @@ PLAYGROUND_BLOCK_REASONS: frozenset[str] = frozenset(
         BLOCK_PAID_PERIOD_ENDED,
         BLOCK_PAYMENT_HALTED,
         BLOCK_SUBSCRIPTION_PAUSED,
+        BLOCK_DEVICE_LIMIT,
+        BLOCK_DEVICE_REVOKED,
+        BLOCK_DEVICE_CONFIG_ERROR,
     }
 )
 
@@ -58,3 +63,10 @@ class EntitlementSnapshot:
     billing_period_start: datetime | None
     billing_period_end: datetime | None
     legacy_status: str | None
+    device_limit: int | None = None
+    registered_device_count: int = 0
+    current_device_id: str | None = None
+    current_device_registered: bool = False
+    current_device_allowed: bool = False
+    current_device_revoked: bool = False
+    device_slots_remaining: int | None = None

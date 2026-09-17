@@ -1,11 +1,15 @@
 """Central commercial entitlement package.
 
 ``web/entitlements.py`` is the Constitution Learn adapter around this snapshot.
-Playground HTTP gates consume the snapshot (M3-B). Devices remain M4; roster remains M5.
+Playground HTTP gates consume the snapshot (M3-B commercial + M4-A device overlay).
+Roster remains M5.
 """
 
 from constitution_memorizer.entitlements.dependencies import get_entitlement_snapshot
 from constitution_memorizer.entitlements.models import (
+    BLOCK_DEVICE_CONFIG_ERROR,
+    BLOCK_DEVICE_LIMIT,
+    BLOCK_DEVICE_REVOKED,
     BLOCK_NOT_SUBSCRIBED,
     BLOCK_PAID_PERIOD_ENDED,
     BLOCK_PAYMENT_HALTED,
@@ -20,6 +24,9 @@ from constitution_memorizer.entitlements.models import (
 from constitution_memorizer.entitlements.service import EntitlementService
 
 __all__ = [
+    "BLOCK_DEVICE_CONFIG_ERROR",
+    "BLOCK_DEVICE_LIMIT",
+    "BLOCK_DEVICE_REVOKED",
     "BLOCK_NOT_SUBSCRIBED",
     "BLOCK_PAID_PERIOD_ENDED",
     "BLOCK_PAYMENT_HALTED",

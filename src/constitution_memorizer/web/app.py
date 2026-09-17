@@ -859,6 +859,41 @@ def create_app(
         legacy_store=legacy_store,
     )
 
+    device_repo = None
+    if db_pool is not None:
+        from constitution_memorizer.devices.postgres import (  # noqa: PLC0415
+            PostgresDeviceRepository,
+        )
+
+        device_repo = PostgresDeviceRepository(db_pool)
+    else:
+        from constitution_memorizer.devices.db import (  # noqa: PLC0415
+            ensure_sqlite_schema as ensure_device_sqlite_schema,
+        )
+        from constitution_memorizer.devices.repository import (  # noqa: PLC0415
+            SqliteDeviceRepository,
+        )
+
+        conn = getattr(engine.repo, "conn", None)
+        if conn is not None and not use_postgres:
+            ensure_device_sqlite_schema(conn)
+            device_repo = SqliteDeviceRepository(conn)
+
+    app.state.device_service = None
+    if device_repo is not None:
+        from constitution_memorizer.devices.service import (  # noqa: PLC0415
+            DeviceService,
+        )
+        from constitution_memorizer.devices.token import (  # noqa: PLC0415
+            resolve_hmac_secret,
+        )
+
+        app.state.device_service = DeviceService(
+            device_repo,
+            hmac_secret=resolve_hmac_secret(settings),
+            device_limit=getattr(settings, "playground_device_limit", 2),
+        )
+
     app.state.db_pool = db_pool
 
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")

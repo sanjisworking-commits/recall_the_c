@@ -1,0 +1,344 @@
+"""Postgres device registry. Isolation is application-level (ENABLE RLS, no policies)."""
+
+from __future__ import annotations
+
+import hashlib
+from datetime import datetime, timezone
+from typing import Any
+from uuid import UUID, uuid4
+
+from constitution_memorizer.devices.models import (
+    REGISTER_CREATED,
+    REGISTER_EXISTING,
+    REGISTER_INVALID,
+    REGISTER_LIMIT,
+    REGISTER_REVOKED,
+    RegisterOutcome,
+    UserDevice,
+    UserDeviceSession,
+)
+from constitution_memorizer.devices.repository import (
+    _require_platform,
+    device_from_mapping,
+    session_from_mapping,
+)
+from constitution_memorizer.progress.user_ids import as_user_id
+
+# Namespace for pg_advisory_xact_lock(namespace, key). Not a secret.
+_DEVICE_LOCK_NS = 872011
+
+_DEVICE_SELECT = """
+SELECT id, user_id, device_key_hash, platform, display_name,
+       first_registered_at, last_seen_at, revoked_at, created_at, updated_at
+FROM user_device
+"""
+
+
+def _utc_now() -> datetime:
+    return datetime.now(timezone.utc).replace(microsecond=0)
+
+
+def _lock_key(user_id: str) -> int:
+    digest = hashlib.sha256(user_id.encode("utf-8")).digest()[:4]
+    return int.from_bytes(digest, "big", signed=True)
+
+
+class PostgresDeviceRepository:
+    """Production registration: advisory xact lock, then re-check, then insert."""
+
+    def __init__(self, pool: Any) -> None:
+        from psycopg.rows import dict_row
+
+        self._pool = pool
+        self._dict_row = dict_row
+
+    def get_by_hash(self, user_id: UUID | str, device_key_hash: str) -> UserDevice | None:
+        uid = as_user_id(user_id)
+        with self._pool.connection() as conn:
+            with conn.cursor(row_factory=self._dict_row) as cur:
+                cur.execute(
+                    _DEVICE_SELECT + " WHERE user_id = %s AND device_key_hash = %s",
+                    (uid, device_key_hash),
+                )
+                row = cur.fetchone()
+        return device_from_mapping(row) if row is not None else None
+
+    def get_by_id(self, user_id: UUID | str, device_id: str) -> UserDevice | None:
+        uid = as_user_id(user_id)
+        with self._pool.connection() as conn:
+            with conn.cursor(row_factory=self._dict_row) as cur:
+                cur.execute(
+                    _DEVICE_SELECT + " WHERE user_id = %s AND id = %s",
+                    (uid, device_id),
+                )
+                row = cur.fetchone()
+        return device_from_mapping(row) if row is not None else None
+
+    def list_devices(self, user_id: UUID | str) -> list[UserDevice]:
+        uid = as_user_id(user_id)
+        with self._pool.connection() as conn:
+            with conn.cursor(row_factory=self._dict_row) as cur:
+                cur.execute(
+                    _DEVICE_SELECT
+                    + " WHERE user_id = %s ORDER BY first_registered_at ASC",
+                    (uid,),
+                )
+                rows = cur.fetchall()
+        return [device_from_mapping(row) for row in rows]
+
+    def count_active(self, user_id: UUID | str) -> int:
+        uid = as_user_id(user_id)
+        with self._pool.connection() as conn:
+            with conn.cursor(row_factory=self._dict_row) as cur:
+                cur.execute(
+                    """
+                    SELECT COUNT(*) AS n FROM user_device
+                    WHERE user_id = %s AND revoked_at IS NULL
+                    """,
+                    (uid,),
+                )
+                row = cur.fetchone()
+        return int(row["n"] if row is not None else 0)
+
+    def register_if_under_cap(
+        self,
+        user_id: UUID | str,
+        *,
+        device_key_hash: str,
+        platform: str,
+        display_name: str | None,
+        limit: int,
+        now: datetime | None = None,
+    ) -> RegisterOutcome:
+        if limit < 1:
+            return RegisterOutcome(status=REGISTER_INVALID, device=None)
+        try:
+            platform = _require_platform(platform)
+        except ValueError:
+            return RegisterOutcome(status=REGISTER_INVALID, device=None)
+        uid = as_user_id(user_id)
+        clock = now or _utc_now()
+        with self._pool.connection() as conn:
+            with conn.cursor(row_factory=self._dict_row) as cur:
+                cur.execute(
+                    "SELECT pg_advisory_xact_lock(%s, %s)",
+                    (_DEVICE_LOCK_NS, _lock_key(uid)),
+                )
+                cur.execute(
+                    _DEVICE_SELECT + " WHERE user_id = %s AND device_key_hash = %s",
+                    (uid, device_key_hash),
+                )
+                existing = cur.fetchone()
+                if existing is not None:
+                    device = device_from_mapping(existing)
+                    if device.is_revoked:
+                        conn.commit()
+                        return RegisterOutcome(status=REGISTER_REVOKED, device=device)
+                    cur.execute(
+                        """
+                        UPDATE user_device
+                        SET last_seen_at = %s, updated_at = %s
+                        WHERE user_id = %s AND id = %s
+                        """,
+                        (clock, clock, uid, device.id),
+                    )
+                    cur.execute(
+                        _DEVICE_SELECT + " WHERE user_id = %s AND id = %s",
+                        (uid, device.id),
+                    )
+                    row = cur.fetchone()
+                    conn.commit()
+                    return RegisterOutcome(
+                        status=REGISTER_EXISTING,
+                        device=device_from_mapping(row) if row else device,
+                    )
+                cur.execute(
+                    """
+                    SELECT COUNT(*) AS n FROM user_device
+                    WHERE user_id = %s AND revoked_at IS NULL
+                    """,
+                    (uid,),
+                )
+                count_row = cur.fetchone()
+                active = int(count_row["n"] if count_row is not None else 0)
+                if active >= limit:
+                    conn.commit()
+                    return RegisterOutcome(status=REGISTER_LIMIT, device=None)
+                device_id = str(uuid4())
+                cur.execute(
+                    """
+                    INSERT INTO user_device (
+                        id, user_id, device_key_hash, platform, display_name,
+                        first_registered_at, last_seen_at, revoked_at,
+                        created_at, updated_at
+                    ) VALUES (%s, %s, %s, %s, %s, %s, %s, NULL, %s, %s)
+                    """,
+                    (
+                        device_id,
+                        uid,
+                        device_key_hash,
+                        platform,
+                        display_name,
+                        clock,
+                        clock,
+                        clock,
+                        clock,
+                    ),
+                )
+                cur.execute(
+                    _DEVICE_SELECT + " WHERE user_id = %s AND id = %s",
+                    (uid, device_id),
+                )
+                row = cur.fetchone()
+                conn.commit()
+        return RegisterOutcome(
+            status=REGISTER_CREATED,
+            device=device_from_mapping(row) if row is not None else None,
+        )
+
+    def revoke_device(
+        self,
+        user_id: UUID | str,
+        device_id: str,
+        *,
+        now: datetime | None = None,
+    ) -> UserDevice | None:
+        uid = as_user_id(user_id)
+        clock = now or _utc_now()
+        with self._pool.connection() as conn:
+            with conn.cursor(row_factory=self._dict_row) as cur:
+                cur.execute(
+                    _DEVICE_SELECT + " WHERE user_id = %s AND id = %s",
+                    (uid, device_id),
+                )
+                row = cur.fetchone()
+                if row is None:
+                    return None
+                cur.execute(
+                    """
+                    UPDATE user_device
+                    SET revoked_at = COALESCE(revoked_at, %s), updated_at = %s
+                    WHERE user_id = %s AND id = %s
+                    """,
+                    (clock, clock, uid, device_id),
+                )
+                cur.execute(
+                    """
+                    UPDATE user_device_session
+                    SET revoked_at = COALESCE(revoked_at, %s)
+                    WHERE user_id = %s AND device_id = %s AND revoked_at IS NULL
+                    """,
+                    (clock, uid, device_id),
+                )
+                cur.execute(
+                    _DEVICE_SELECT + " WHERE user_id = %s AND id = %s",
+                    (uid, device_id),
+                )
+                updated = cur.fetchone()
+                conn.commit()
+        return device_from_mapping(updated) if updated is not None else None
+
+    def touch_last_seen(
+        self,
+        user_id: UUID | str,
+        device_id: str,
+        *,
+        now: datetime | None = None,
+    ) -> None:
+        uid = as_user_id(user_id)
+        clock = now or _utc_now()
+        with self._pool.connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    UPDATE user_device
+                    SET last_seen_at = %s, updated_at = %s
+                    WHERE user_id = %s AND id = %s AND revoked_at IS NULL
+                    """,
+                    (clock, clock, uid, device_id),
+                )
+                conn.commit()
+
+    def bind_session(
+        self,
+        user_id: UUID | str,
+        device_id: str,
+        auth_session_id: str,
+        *,
+        now: datetime | None = None,
+    ) -> UserDeviceSession | None:
+        if not auth_session_id:
+            return None
+        uid = as_user_id(user_id)
+        device = self.get_by_id(uid, device_id)
+        if device is None or device.is_revoked:
+            return None
+        clock = now or _utc_now()
+        session_row_id = str(uuid4())
+        with self._pool.connection() as conn:
+            with conn.cursor(row_factory=self._dict_row) as cur:
+                cur.execute(
+                    """
+                    INSERT INTO user_device_session (
+                        id, user_id, device_id, auth_session_id,
+                        started_at, last_seen_at, revoked_at
+                    ) VALUES (%s, %s, %s, %s, %s, %s, NULL)
+                    ON CONFLICT (user_id, auth_session_id) DO UPDATE SET
+                        device_id = EXCLUDED.device_id,
+                        last_seen_at = EXCLUDED.last_seen_at,
+                        revoked_at = NULL
+                    """,
+                    (session_row_id, uid, device_id, auth_session_id, clock, clock),
+                )
+                cur.execute(
+                    """
+                    SELECT id, user_id, device_id, auth_session_id,
+                           started_at, last_seen_at, revoked_at
+                    FROM user_device_session
+                    WHERE user_id = %s AND auth_session_id = %s
+                    """,
+                    (uid, auth_session_id),
+                )
+                row = cur.fetchone()
+                conn.commit()
+        return session_from_mapping(row) if row is not None else None
+
+    def end_session_binding(
+        self,
+        user_id: UUID | str,
+        auth_session_id: str,
+        *,
+        now: datetime | None = None,
+    ) -> None:
+        if not auth_session_id:
+            return
+        uid = as_user_id(user_id)
+        clock = now or _utc_now()
+        with self._pool.connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    UPDATE user_device_session
+                    SET revoked_at = COALESCE(revoked_at, %s)
+                    WHERE user_id = %s AND auth_session_id = %s AND revoked_at IS NULL
+                    """,
+                    (clock, uid, auth_session_id),
+                )
+                conn.commit()
+
+    def list_sessions(self, user_id: UUID | str, device_id: str) -> list[UserDeviceSession]:
+        uid = as_user_id(user_id)
+        with self._pool.connection() as conn:
+            with conn.cursor(row_factory=self._dict_row) as cur:
+                cur.execute(
+                    """
+                    SELECT id, user_id, device_id, auth_session_id,
+                           started_at, last_seen_at, revoked_at
+                    FROM user_device_session
+                    WHERE user_id = %s AND device_id = %s
+                    ORDER BY started_at ASC
+                    """,
+                    (uid, device_id),
+                )
+                rows = cur.fetchall()
+        return [session_from_mapping(row) for row in rows]

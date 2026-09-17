@@ -8,6 +8,7 @@ Consumes Milestone 2 facts:
 * admin role (not promotion / admin_grant / payment grants)
 
 Does not import or call a provider HTTP client.
+Device overlay is applied after this commercial resolve (Milestone 4A).
 """
 
 from __future__ import annotations

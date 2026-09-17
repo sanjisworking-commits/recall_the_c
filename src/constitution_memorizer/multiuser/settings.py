@@ -151,6 +151,14 @@ class MultiUserSettings(BaseSettings):
         default="", alias="RAZORPAY_WEBHOOK_SECRET_PREVIOUS", repr=False
     )
 
+    # Paid Playground installation cap. Same integer for Plus/Pro/Max.
+    # Not a catalogue/SKU field. Invalid values (0, negative, non-integer)
+    # are rejected. Missing HMAC secret does not block app startup.
+    playground_device_limit: int = Field(default=2, alias="PLAYGROUND_DEVICE_LIMIT")
+    playground_device_hmac_secret: str = Field(
+        default="", alias="PLAYGROUND_DEVICE_HMAC_SECRET", repr=False
+    )
+
     # Google Calendar integration. A DEDICATED OAuth client (never the
     # Supabase sign-in client — the Calendar grant must be independently
     # revocable). GCAL_TOKEN_KEY is the Fernet key sealing refresh tokens at
@@ -189,6 +197,27 @@ class MultiUserSettings(BaseSettings):
         if self.app_env == "test":
             return self.auth_phone_enabled
         return False
+
+    @field_validator("playground_device_limit", mode="before")
+    @classmethod
+    def _parse_device_limit(cls, value: object) -> object:
+        if value is None or value == "":
+            return 2
+        if isinstance(value, bool):
+            raise ValueError("PLAYGROUND_DEVICE_LIMIT must be a positive integer")
+        if isinstance(value, int):
+            parsed = value
+        elif isinstance(value, str):
+            text = value.strip()
+            if text[1:].isdigit() if text[:1] in "+-" else text.isdigit():
+                parsed = int(text)
+            else:
+                raise ValueError("PLAYGROUND_DEVICE_LIMIT must be a positive integer")
+        else:
+            raise ValueError("PLAYGROUND_DEVICE_LIMIT must be a positive integer")
+        if parsed < 1:
+            raise ValueError("PLAYGROUND_DEVICE_LIMIT must be a positive integer")
+        return parsed
 
     @field_validator(
         "auth_google_enabled",

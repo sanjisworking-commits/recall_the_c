@@ -499,7 +499,9 @@ def test_legacy_active_gets_subscribe_gate_not_a_tier(tmp_path: Path):
     added = _mutate(client, add_path("ndps"))
     assert added.status_code == 303
     assert client.app.state.playground.get_item(USER, "ndps") is None
-    snap = client.app.state.entitlement_service.resolve(USER, now=NOW)
+    snap = client.app.state.entitlement_service.resolve(
+        USER, now=datetime.now(timezone.utc)
+    )
     assert snap.legacy_status == "legacy_active"
     assert snap.tier is None
     assert snap.can_open_playground is False
@@ -682,10 +684,9 @@ def test_playground_modules_do_not_call_provider_or_rederive_status():
     assert "RazorpaySubscriptionsClient" not in service_src
 
 
-def test_no_m3b_schema_or_device_or_roster_tables():
+def test_m3b_still_has_no_roster_tables():
     versions = ROOT / "alembic" / "versions"
     names = [path.name for path in versions.glob("*.py")]
-    assert not any("user_device" in name for name in names)
     assert not any("playground_period" in name for name in names)
     assert not any("playground_roster" in name for name in names)
     access_src = (ROOT / "src/constitution_memorizer/playground/access.py").read_text(

@@ -329,7 +329,12 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
         settings = request.app.state.multiuser_settings
         session_id = request.cookies.get(SESSION_COOKIE_NAME)
         if session_id:
+            stored = request.app.state.session_store.get(session_id)
+            user_id = stored.user.id if stored is not None else None
             request.app.state.session_store.delete(session_id)
+            devices = getattr(request.app.state, "device_service", None)
+            if devices is not None and user_id is not None:
+                devices.end_session_binding(user_id, session_id)
         response = RedirectResponse(url="/signed-out", status_code=303)
         response.delete_cookie(SESSION_COOKIE_NAME, path="/")
         response.delete_cookie("rtc_oauth_state", path="/")
@@ -712,6 +717,21 @@ def _establish_session(
         )
     else:
         response.delete_cookie("rtc_auth_next", path="/")
+    from constitution_memorizer.devices.token import (
+        DEVICE_COOKIE_NAME,
+        apply_device_cookie,
+        mint_installation_token,
+    )
+
+    existing_device = request.cookies.get(DEVICE_COOKIE_NAME)
+    if existing_device:
+        request.state.device_token = existing_device
+    else:
+        device_token = mint_installation_token()
+        request.state.device_token = device_token
+        apply_device_cookie(
+            response, device_token, secure=bool(settings.cookie_secure)
+        )
     return response
 
 
@@ -775,6 +795,12 @@ def install_auth_middleware(app) -> None:
             request.state.bound_memory = (
                 memory.for_user(user.id) if memory is not None else None
             )
+            from constitution_memorizer.devices.token import (
+                ensure_request_device_token,
+                maybe_set_device_cookie,
+            )
+
+            ensure_request_device_token(request)
         else:
             request.state.bound_engine = request.app.state.engine
             request.state.bound_memory = getattr(request.app.state, "memory", None)
@@ -823,12 +849,21 @@ def install_auth_middleware(app) -> None:
                 return signin_redirect(next_url=next_url, reason=reason)
 
         if path == "/" and user is not None:
-            return RedirectResponse(url="/dashboard", status_code=303)
+            response = RedirectResponse(url="/dashboard", status_code=303)
+            from constitution_memorizer.devices.token import maybe_set_device_cookie
+
+            maybe_set_device_cookie(request, response)
+            return response
 
         token_e = bound_engine.set(request.state.bound_engine)
         token_m = bound_memory.set(request.state.bound_memory)
         try:
-            return await call_next(request)
+            response = await call_next(request)
+            if user is not None:
+                from constitution_memorizer.devices.token import maybe_set_device_cookie
+
+                maybe_set_device_cookie(request, response)
+            return response
         finally:
             bound_engine.reset(token_e)
             bound_memory.reset(token_m)

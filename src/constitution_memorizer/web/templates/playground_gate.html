@@ -12,7 +12,9 @@
   {% endif %}
   <p class="actions">
     <a class="btn btn-accent" href="{{ cta_href }}">{{ cta_label }}</a>
-    {% if consume_blocked %}
+    {% if secondary_label and secondary_href %}
+    <a class="btn btn-ghost" href="{{ secondary_href }}">{{ secondary_label }}</a>
+    {% elif consume_blocked %}
     <a class="btn btn-ghost" href="/playground">Back to Playground</a>
     {% endif %}
   </p>

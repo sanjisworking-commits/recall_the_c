@@ -439,7 +439,7 @@ def test_legacy_active_is_not_a_playground_tier(tmp_path: Path):
     client, repo = _authed_client(tmp_path)
     ends = NOW + timedelta(days=300)
     _seed_legacy(repo, ends_at=ends)
-    snap = _service_for_app(client).resolve(USER, now=NOW)
+    snap = _service_for_app(client).resolve(USER, now=datetime.now(timezone.utc))
     _assert_full_constitution(snap)
     assert snap.legacy_status == LEGACY_STATUS_ACTIVE
     assert snap.subscription_status == LEGACY_STATUS_ACTIVE

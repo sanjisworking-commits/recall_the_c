@@ -1,7 +1,8 @@
-"""Playground commercial HTTP gate. Consumes EntitlementSnapshot only.
+"""Playground commercial + device HTTP gate. Consumes EntitlementSnapshot.
 
-Milestone 3B implements authentication + commercial entitlement. Device
-enforcement is Milestone 4. Monthly roster enforcement is Milestone 5.
+Milestone 3B implements authentication + commercial entitlement.
+Milestone 4A adds device inspection/registration on eligible Playground use.
+Monthly roster enforcement is Milestone 5.
 
 Pending subscribers may open existing overlay items and continue proof
 learning. That is a transitional commercial bit, not current-month roster
@@ -15,6 +16,7 @@ tier inside a handler.
 
 Never calls a payment provider. Never reads billing or claim tables from
 this module; commercial answers come from the memoized entitlement snapshot.
+Device SQL lives in ``devices/``.
 """
 
 from __future__ import annotations
@@ -27,8 +29,15 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from starlette.responses import Response
 
-from constitution_memorizer.entitlements.dependencies import get_entitlement_snapshot
+from constitution_memorizer.entitlements.dependencies import (
+    apply_device_access,
+    get_entitlement_snapshot,
+    invalidate_entitlement_snapshot,
+)
 from constitution_memorizer.entitlements.models import (
+    BLOCK_DEVICE_CONFIG_ERROR,
+    BLOCK_DEVICE_LIMIT,
+    BLOCK_DEVICE_REVOKED,
     BLOCK_NOT_SUBSCRIBED,
     BLOCK_PAID_PERIOD_ENDED,
     BLOCK_PAYMENT_HALTED,
@@ -45,6 +54,8 @@ from constitution_memorizer.playground.http import (
 from constitution_memorizer.playground.urls import home_path
 
 PLAYGROUND_BILLING_PATH = "/billing/subscriptions"
+CONSTITUTION_HOME_PATH = "/dashboard"
+MANAGE_DEVICES_PATH = "/profile"
 NEW_LAW_TEMPORARILY_UNAVAILABLE = "new_law_temporarily_unavailable"
 
 _OPEN_COPY: dict[str, dict[str, str]] = {
@@ -81,6 +92,33 @@ _OPEN_COPY: dict[str, dict[str, str]] = {
         "body": "Manage your Playground subscription to continue.",
         "cta_label": "Manage subscription",
     },
+    BLOCK_DEVICE_LIMIT: {
+        "title": "Device limit reached",
+        "lede": "",
+        "body": (
+            "Your subscription supports Playground on up to 2 registered devices."
+        ),
+        "cta_label": "Back to Constitution",
+        "secondary_label": "Manage devices",
+        "secondary_href": MANAGE_DEVICES_PATH,
+        "cta_href": CONSTITUTION_HOME_PATH,
+    },
+    BLOCK_DEVICE_REVOKED: {
+        "title": "This device no longer has Playground access.",
+        "lede": "",
+        "body": "Constitution Learn stays available on this installation.",
+        "cta_label": "Back to Constitution",
+        "secondary_label": "Manage devices",
+        "secondary_href": MANAGE_DEVICES_PATH,
+        "cta_href": CONSTITUTION_HOME_PATH,
+    },
+    BLOCK_DEVICE_CONFIG_ERROR: {
+        "title": "Playground is temporarily unavailable on this device",
+        "lede": "",
+        "body": "Constitution Learn stays available. Try again from this installation later.",
+        "cta_label": "Back to Constitution",
+        "cta_href": CONSTITUTION_HOME_PATH,
+    },
 }
 
 _NEW_LAW_COPY = {
@@ -93,10 +131,14 @@ _NEW_LAW_COPY = {
     "cta_label": "Manage subscription",
 }
 
+_DEVICE_OPEN_REASONS = frozenset(
+    {BLOCK_DEVICE_LIMIT, BLOCK_DEVICE_REVOKED, BLOCK_DEVICE_CONFIG_ERROR}
+)
+
 
 @dataclass(frozen=True)
 class PlaygroundAccess:
-    """Resolved commercial capability for one Playground request."""
+    """Resolved commercial + device capability for one Playground request."""
 
     user_id: Any
     snapshot: EntitlementSnapshot | None
@@ -118,6 +160,16 @@ def playground_access(request: Request) -> PlaygroundAccess:
             local_owner=True,
         )
     snapshot = get_entitlement_snapshot(request)
+    if snapshot.admin_override:
+        return PlaygroundAccess(
+            user_id=uid,
+            snapshot=snapshot,
+            can_open=True,
+            can_consume_new_law=True,
+            local_owner=False,
+        )
+    if snapshot.is_subscribed:
+        snapshot = _ensure_device_and_refresh(request, snapshot)
     return PlaygroundAccess(
         user_id=uid,
         snapshot=snapshot,
@@ -134,7 +186,7 @@ def require_playground_open(
     next_url: str,
     json_mode: bool = False,
 ) -> PlaygroundAccess | Response:
-    """Allow existing Playground surfaces, or return the commercial block."""
+    """Allow existing Playground surfaces, or return the commercial/device block."""
 
     access = playground_access(request)
     if access.can_open:
@@ -210,6 +262,40 @@ def ensure_playground_item(
     return allowed
 
 
+def _ensure_device_and_refresh(
+    request: Request, snapshot: EntitlementSnapshot
+) -> EntitlementSnapshot:
+    service = getattr(request.app.state, "device_service", None)
+    if service is None:
+        return snapshot
+    user = getattr(request.state, "current_user", None)
+    if user is None:
+        return snapshot
+    from constitution_memorizer.devices.models import PLATFORM_WEB
+    from constitution_memorizer.devices.token import (
+        display_name_from_user_agent,
+        request_device_token,
+    )
+
+    session = getattr(request.state, "auth_session", None)
+    session_id = getattr(session, "session_id", None)
+    access = service.ensure_current_device(
+        user.id,
+        request_device_token(request),
+        auth_session_id=session_id,
+        commercially_eligible=True,
+        admin_override=False,
+        platform=PLATFORM_WEB,
+        display_name=display_name_from_user_agent(
+            request.headers.get("user-agent")
+        ),
+    )
+    invalidate_entitlement_snapshot(request)
+    refreshed = apply_device_access(snapshot, access)
+    request.state.entitlement_snapshot = refreshed
+    return refreshed
+
+
 def _deny_open(
     request: Request,
     templates: Jinja2Templates,
@@ -273,12 +359,18 @@ def _gate_page(
     if consume_blocked:
         copy = _NEW_LAW_COPY
         cta_href = PLAYGROUND_BILLING_PATH
+        secondary_label = ""
+        secondary_href = ""
     else:
         copy = _OPEN_COPY.get(reason, _OPEN_COPY[BLOCK_NOT_SUBSCRIBED])
-        if reason == BLOCK_SIGN_IN_REQUIRED:
+        if reason in _DEVICE_OPEN_REASONS:
+            cta_href = copy.get("cta_href", CONSTITUTION_HOME_PATH)
+        elif reason == BLOCK_SIGN_IN_REQUIRED:
             cta_href = f"/login?next={home_path()}"
         else:
             cta_href = PLAYGROUND_BILLING_PATH
+        secondary_label = copy.get("secondary_label", "")
+        secondary_href = copy.get("secondary_href", "")
     return templates.TemplateResponse(
         request,
         "playground_gate.html",
@@ -288,6 +380,8 @@ def _gate_page(
             "body": copy["body"],
             "cta_label": copy["cta_label"],
             "cta_href": cta_href,
+            "secondary_label": secondary_label,
+            "secondary_href": secondary_href,
             "block_reason": reason,
             "consume_blocked": consume_blocked,
         },
