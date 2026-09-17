@@ -3,6 +3,11 @@
 The raw ``rtc_device`` cookie value is a cryptographically random secret.
 The server persists only HMAC(server_secret, token). Stolen DB hashes are
 not reusable offline without the server key.
+
+Native Android and iOS clients generate the same class of random token in
+the app and store it in app secure storage (iOS: Keychain). The token is
+never derived from IDFV, IDFA, IMEI, serial number, MAC address, hardware
+UUID, or a device fingerprint.
 """
 
 from __future__ import annotations

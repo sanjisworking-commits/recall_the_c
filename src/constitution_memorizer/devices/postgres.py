@@ -7,7 +7,13 @@ from datetime import datetime, timezone
 from typing import Any
 from uuid import UUID, uuid4
 
+from constitution_memorizer.admin.audit import (
+    AuditEntry,
+    PG_AUDIT_INSERT,
+    pg_audit_params,
+)
 from constitution_memorizer.devices.models import (
+    DeviceResetSummary,
     REGISTER_CREATED,
     REGISTER_EXISTING,
     REGISTER_INVALID,
@@ -16,9 +22,10 @@ from constitution_memorizer.devices.models import (
     RegisterOutcome,
     UserDevice,
     UserDeviceSession,
+    require_platform,
+    safe_registry_state,
 )
 from constitution_memorizer.devices.repository import (
-    _require_platform,
     device_from_mapping,
     session_from_mapping,
 )
@@ -113,7 +120,7 @@ class PostgresDeviceRepository:
         if limit < 1:
             return RegisterOutcome(status=REGISTER_INVALID, device=None)
         try:
-            platform = _require_platform(platform)
+            platform = require_platform(platform)
         except ValueError:
             return RegisterOutcome(status=REGISTER_INVALID, device=None)
         uid = as_user_id(user_id)
@@ -237,6 +244,88 @@ class PostgresDeviceRepository:
                 updated = cur.fetchone()
                 conn.commit()
         return device_from_mapping(updated) if updated is not None else None
+
+    def revoke_all_devices(
+        self,
+        user_id: UUID | str,
+        *,
+        now: datetime | None = None,
+    ) -> DeviceResetSummary:
+        uid = as_user_id(user_id)
+        clock = now or _utc_now()
+        with self._pool.connection() as conn:
+            with conn.cursor(row_factory=self._dict_row) as cur:
+                summary = self._revoke_all_on_cursor(cur, uid, clock)
+                conn.commit()
+        return summary
+
+    def reset_devices_audited(
+        self,
+        user_id: UUID | str,
+        *,
+        admin_user_id: UUID | str,
+        reason: str,
+        now: datetime | None = None,
+    ) -> DeviceResetSummary:
+        uid = as_user_id(user_id)
+        clock = now or _utc_now()
+        with self._pool.connection() as conn:
+            try:
+                with conn.cursor(row_factory=self._dict_row) as cur:
+                    summary = self._revoke_all_on_cursor(cur, uid, clock)
+                    entry = AuditEntry(
+                        admin_user_id=as_user_id(admin_user_id),
+                        action="reset_devices",
+                        target_user_id=uid,
+                        target_type="user_device",
+                        target_id=None,
+                        before_state=summary.before,
+                        after_state=summary.after,
+                        reason=reason,
+                    )
+                    cur.execute(PG_AUDIT_INSERT, pg_audit_params(entry, clock))
+                    conn.commit()
+            except Exception:
+                conn.rollback()
+                raise
+        return summary
+
+    def _revoke_all_on_cursor(
+        self, cur: Any, uid: str, clock: datetime
+    ) -> DeviceResetSummary:
+        cur.execute(
+            _DEVICE_SELECT + " WHERE user_id = %s ORDER BY first_registered_at ASC",
+            (uid,),
+        )
+        devices = [device_from_mapping(row) for row in cur.fetchall()]
+        before = safe_registry_state(devices)
+        cur.execute(
+            """
+            UPDATE user_device
+            SET revoked_at = COALESCE(revoked_at, %s), updated_at = %s
+            WHERE user_id = %s AND revoked_at IS NULL
+            """,
+            (clock, clock, uid),
+        )
+        cur.execute(
+            """
+            UPDATE user_device_session
+            SET revoked_at = COALESCE(revoked_at, %s)
+            WHERE user_id = %s AND revoked_at IS NULL
+            """,
+            (clock, uid),
+        )
+        cur.execute(
+            _DEVICE_SELECT + " WHERE user_id = %s ORDER BY first_registered_at ASC",
+            (uid,),
+        )
+        after_devices = [device_from_mapping(row) for row in cur.fetchall()]
+        revoked_ids = tuple(row.id for row in devices if not row.is_revoked)
+        return DeviceResetSummary(
+            before=before,
+            after=safe_registry_state(after_devices),
+            revoked_device_ids=revoked_ids,
+        )
 
     def touch_last_seen(
         self,

@@ -20,12 +20,16 @@ from constitution_memorizer.devices.models import (
     BLOCK_DEVICE_CONFIG_ERROR,
     BLOCK_DEVICE_LIMIT,
     BLOCK_DEVICE_REVOKED,
+    DEVICE_PLATFORMS,
     PLATFORM_ANDROID,
+    PLATFORM_IOS,
     PLATFORM_WEB,
     REGISTER_CREATED,
     REGISTER_EXISTING,
+    REGISTER_INVALID,
     REGISTER_LIMIT,
     REGISTER_REVOKED,
+    require_platform,
 )
 from constitution_memorizer.devices.repository import SqliteDeviceRepository
 from constitution_memorizer.devices.service import DeviceService, normalize_device_limit
@@ -310,6 +314,105 @@ def test_display_name_is_conservative_and_safe():
     ) == "Safari on iPhone"
     assert display_name_from_user_agent(None) == "Web browser"
     assert display_name_from_user_agent("") == "Web browser"
+
+
+def test_device_platforms_include_ios():
+    assert DEVICE_PLATFORMS == {PLATFORM_WEB, PLATFORM_ANDROID, PLATFORM_IOS}
+    assert require_platform("web") == PLATFORM_WEB
+    assert require_platform("android") == PLATFORM_ANDROID
+    assert require_platform("ios") == PLATFORM_IOS
+    for bogus in ("iphone", "apple", "desktop", "ipad", "mobile_ios"):
+        with pytest.raises(ValueError):
+            require_platform(bogus)
+
+
+def test_sqlite_accepts_ios_and_rejects_unknown_platform(tmp_path: Path):
+    repo = _sqlite_repo(tmp_path)
+    ios = repo.register_if_under_cap(
+        USER,
+        device_key_hash=hash_device_token(HMAC_SECRET, "ios-token"),
+        platform=PLATFORM_IOS,
+        display_name="RecallC on iPhone",
+        limit=2,
+    )
+    assert ios.status == REGISTER_CREATED
+    assert ios.device is not None
+    assert ios.device.platform == PLATFORM_IOS
+    bogus = repo.register_if_under_cap(
+        USER,
+        device_key_hash=hash_device_token(HMAC_SECRET, "iphone-token"),
+        platform="iphone",
+        display_name="iPhone",
+        limit=2,
+    )
+    assert bogus.status == REGISTER_INVALID
+    conn = repo._conn
+    with pytest.raises(sqlite3.IntegrityError):
+        conn.execute(
+            """
+            INSERT INTO user_device (
+                id, user_id, device_key_hash, platform, display_name,
+                first_registered_at, last_seen_at, revoked_at,
+                created_at, updated_at
+            ) VALUES (?, ?, ?, 'iphone', NULL, ?, ?, NULL, ?, ?)
+            """,
+            ("bad-id", str(USER), "abc", NOW.isoformat(), NOW.isoformat(),
+             NOW.isoformat(), NOW.isoformat()),
+        )
+
+
+def test_sqlite_rebuilds_legacy_platform_check(tmp_path: Path):
+    conn = sqlite3.connect(tmp_path / "legacy.db")
+    conn.row_factory = sqlite3.Row
+    conn.executescript(
+        """
+        CREATE TABLE user_device (
+            id TEXT NOT NULL PRIMARY KEY,
+            user_id TEXT NOT NULL,
+            device_key_hash TEXT NOT NULL,
+            platform TEXT NOT NULL CHECK (platform IN ('web', 'android')),
+            display_name TEXT,
+            first_registered_at TEXT NOT NULL,
+            last_seen_at TEXT NOT NULL,
+            revoked_at TEXT,
+            created_at TEXT NOT NULL,
+            updated_at TEXT NOT NULL,
+            UNIQUE (user_id, device_key_hash)
+        );
+        """
+    )
+    conn.commit()
+    ensure_sqlite_schema(conn)
+    sql = conn.execute(
+        "SELECT sql FROM sqlite_master WHERE type='table' AND name='user_device'"
+    ).fetchone()["sql"]
+    assert "'ios'" in sql
+    stamp = NOW.isoformat()
+    conn.execute(
+        """
+        INSERT INTO user_device (
+            id, user_id, device_key_hash, platform, display_name,
+            first_registered_at, last_seen_at, revoked_at,
+            created_at, updated_at
+        ) VALUES (?, ?, ?, 'ios', 'RecallC on iPhone', ?, ?, NULL, ?, ?)
+        """,
+        ("ios-row", str(USER), "hash-ios", stamp, stamp, stamp, stamp),
+    )
+    conn.commit()
+
+
+def test_migration_0022_adds_ios_and_0021_is_unchanged():
+    versions = ROOT / "alembic" / "versions"
+    latest = (versions / "20260917_0022_device_ios_platform.py").read_text(
+        encoding="utf-8"
+    )
+    original = (versions / "20260916_0021_devices.py").read_text(encoding="utf-8")
+    assert "revision = \"20260917_0022\"" in latest
+    assert "down_revision = \"20260916_0021\"" in latest
+    assert "'ios'" in latest
+    assert "CHECK (platform IN ('web', 'android', 'ios'))" in latest
+    assert "CHECK (platform IN ('web', 'android'))" in original
+    assert "'ios'" not in original
 
 
 # --------------------------------------------------------------------------- #
@@ -798,7 +901,7 @@ def test_alembic_head_is_devices_revision():
 
     cfg = Config(str(ROOT / "alembic.ini"))
     heads = ScriptDirectory.from_config(cfg).get_heads()
-    assert heads == ["20260916_0021"]
+    assert heads == ["20260917_0022"]
 
 
 def test_no_churn_or_roster_or_support_invention():

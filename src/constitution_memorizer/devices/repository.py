@@ -9,8 +9,13 @@ from datetime import datetime, timezone
 from typing import Any, Iterator, Protocol
 from uuid import UUID, uuid4
 
+from constitution_memorizer.admin.audit import (
+    AuditEntry,
+    SQLITE_AUDIT_INSERT,
+    sqlite_audit_params,
+)
 from constitution_memorizer.devices.models import (
-    DEVICE_PLATFORMS,
+    DeviceResetSummary,
     REGISTER_CREATED,
     REGISTER_EXISTING,
     REGISTER_INVALID,
@@ -19,6 +24,8 @@ from constitution_memorizer.devices.models import (
     RegisterOutcome,
     UserDevice,
     UserDeviceSession,
+    require_platform,
+    safe_registry_state,
 )
 from constitution_memorizer.progress.user_ids import as_user_id
 
@@ -49,13 +56,6 @@ def _dt_iso(value: datetime | None) -> str | None:
     if value.tzinfo is None:
         value = value.replace(tzinfo=timezone.utc)
     return value.isoformat()
-
-
-def _require_platform(platform: str) -> str:
-    value = (platform or "").strip().lower()
-    if value not in DEVICE_PLATFORMS:
-        raise ValueError("unsupported device platform")
-    return value
 
 
 def device_from_mapping(row: Any) -> UserDevice:
@@ -114,6 +114,22 @@ class DeviceRepository(Protocol):
         *,
         now: datetime | None = None,
     ) -> UserDevice | None: ...
+
+    def revoke_all_devices(
+        self,
+        user_id: UUID | str,
+        *,
+        now: datetime | None = None,
+    ) -> DeviceResetSummary: ...
+
+    def reset_devices_audited(
+        self,
+        user_id: UUID | str,
+        *,
+        admin_user_id: UUID | str,
+        reason: str,
+        now: datetime | None = None,
+    ) -> DeviceResetSummary: ...
 
     def touch_last_seen(
         self,
@@ -207,7 +223,7 @@ class SqliteDeviceRepository:
         if limit < 1:
             return RegisterOutcome(status=REGISTER_INVALID, device=None)
         try:
-            platform = _require_platform(platform)
+            platform = require_platform(platform)
         except ValueError:
             return RegisterOutcome(status=REGISTER_INVALID, device=None)
         uid = as_user_id(user_id)
@@ -300,6 +316,84 @@ class SqliteDeviceRepository:
                 (stamp, uid, device_id),
             )
             return self.get_by_id(uid, device_id)
+
+    def revoke_all_devices(
+        self,
+        user_id: UUID | str,
+        *,
+        now: datetime | None = None,
+    ) -> DeviceResetSummary:
+        uid = as_user_id(user_id)
+        clock = now or _utc_now()
+        with self._exclusive():
+            return self._revoke_all_locked(uid, clock)
+
+    def reset_devices_audited(
+        self,
+        user_id: UUID | str,
+        *,
+        admin_user_id: UUID | str,
+        reason: str,
+        now: datetime | None = None,
+    ) -> DeviceResetSummary:
+        uid = as_user_id(user_id)
+        clock = now or _utc_now()
+        stamp = _dt_iso(clock)
+        with self._exclusive():
+            summary = self._revoke_all_locked(uid, clock)
+            entry = AuditEntry(
+                admin_user_id=as_user_id(admin_user_id),
+                action="reset_devices",
+                target_user_id=uid,
+                target_type="user_device",
+                target_id=None,
+                before_state=summary.before,
+                after_state=summary.after,
+                reason=reason,
+            )
+            self._conn.execute(
+                SQLITE_AUDIT_INSERT,
+                sqlite_audit_params(entry, str(uuid4()), stamp or ""),
+            )
+            return summary
+
+    def _revoke_all_locked(self, uid: str, clock: datetime) -> DeviceResetSummary:
+        before_rows = self._conn.execute(
+            _DEVICE_SELECT + " WHERE user_id = ? ORDER BY first_registered_at ASC",
+            (uid,),
+        ).fetchall()
+        devices = [device_from_mapping(row) for row in before_rows]
+        before = safe_registry_state(devices)
+        stamp = _dt_iso(clock)
+        self._conn.execute(
+            """
+            UPDATE user_device
+            SET revoked_at = COALESCE(revoked_at, ?), updated_at = ?
+            WHERE user_id = ? AND revoked_at IS NULL
+            """,
+            (stamp, stamp, uid),
+        )
+        self._conn.execute(
+            """
+            UPDATE user_device_session
+            SET revoked_at = COALESCE(revoked_at, ?)
+            WHERE user_id = ? AND revoked_at IS NULL
+            """,
+            (stamp, uid),
+        )
+        after_rows = self._conn.execute(
+            _DEVICE_SELECT + " WHERE user_id = ? ORDER BY first_registered_at ASC",
+            (uid,),
+        ).fetchall()
+        after_devices = [device_from_mapping(row) for row in after_rows]
+        revoked_ids = tuple(
+            row.id for row in devices if not row.is_revoked
+        )
+        return DeviceResetSummary(
+            before=before,
+            after=safe_registry_state(after_devices),
+            revoked_device_ids=revoked_ids,
+        )
 
     def touch_last_seen(
         self,
