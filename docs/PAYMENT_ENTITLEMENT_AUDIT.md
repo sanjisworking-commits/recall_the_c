@@ -1,6 +1,6 @@
 # Payment, entitlement, and Playground — architecture lock
 
-**Scope of this document.** This is the **locked product architecture** for RecallC access: user types, device control for paid Playground, monthly Playground roster, clocks, schema to build, CTA states, sequential batches, the locked commercial catalogue / subscription-access matrix, and remaining device-churn open cells. It is **not** a description of current production behaviour. Current code still uses Razorpay **one-time duration passes** as historical Constitution commerce. Playground has an additive `user_subscription` table, Plus/Pro/Max catalogue, M2 lifecycle, M3-A [`EntitlementService`](../src/constitution_memorizer/entitlements/service.py) that inverts Constitution (authenticated = full Learn), an M3-B commercial HTTP gate on `/playground` via [`playground/access.py`](../src/constitution_memorizer/playground/access.py), and **M4-A core two-device authorization** in [`devices/`](../src/constitution_memorizer/devices/) (`user_device` / `user_device_session`, cookie `rtc_device`, cap 2 for every paid tier). Owner device-management UI remains M4-B. Replacement-churn rate policy remains **BLOCKED**. There is **no monthly roster** (Milestone 5). Overlay items are persistent learning, not current-month roster membership. The overlay is a Cloze **proof**, not the finished product.
+**Scope of this document.** This is the **locked product architecture** for RecallC access: user types, device control for paid Playground, monthly Playground roster, clocks, schema to build, CTA states, sequential batches, the locked commercial catalogue / subscription-access matrix, and remaining device-churn open cells. It is **not** a description of current production behaviour. Current code still uses Razorpay **one-time duration passes** as historical Constitution commerce. Playground has an additive `user_subscription` table, Plus/Pro/Max catalogue, M2 lifecycle, M3-A [`EntitlementService`](../src/constitution_memorizer/entitlements/service.py) that inverts Constitution (authenticated = full Learn), an M3-B commercial HTTP gate on `/playground` via [`playground/access.py`](../src/constitution_memorizer/playground/access.py), and **M4-A core two-device authorization** plus **M4-B owner/admin management** in [`devices/`](../src/constitution_memorizer/devices/) (`user_device` / `user_device_session`, cookie `rtc_device`, cap 2 for every paid tier, platforms `web | android | ios`, `GET /profile/security/devices`, audited admin reset). Device registry + management are implemented. Replacement-churn rate policy remains **BLOCKED**. There is **no monthly roster** (Milestone 5). Overlay items are persistent learning, not current-month roster membership. The overlay is a Cloze **proof**, not the finished product.
 
 **Amendment (Max price).** Displayed Max is **₹1,199**/month GST-inclusive (1,19,900 paise). This supersedes any earlier Max lock of ₹999/month. Plus ₹199 and Pro ₹399 are unchanged. Annual plans remain **not offered** in the MVP.
 
@@ -155,7 +155,7 @@ When the flag is on:
 
 **Laws / Bare Acts:** not on this matrix. Feature flag `RELEVANT_LAWS_ENABLED` 404s `/laws*` only. Reading is free.
 
-**Playground (existing overlay on `cursor/playground-220d`):** M3-B commercially gates `/playground` from `EntitlementSnapshot` (`can_open_playground` vs `can_consume_new_playground_law`). Guests Sign in; signed-in free/legacy Subscribe; halted/paused/paid-period-ended use payment-state copy; pending may open existing overlay/progress but cannot activate a new law (transitional until M5 current-period roster membership). Active and admin keep the Cloze proof. Overlay rows are **persistent learning**, not a monthly roster and not a device registry. **M3 commercial gate is complete.** **M4-A core two-device authorization is shipped:** paid Playground registers HMAC-hashed `rtc_device` installations (limit 2, all tiers) on first eligible use; a third or revoked installation is Playground-blocked with `device_limit` / `device_revoked` while `is_subscribed` stays true and Constitution / `/laws` stay open. Owner device-management UI remains M4-B. Replacement-churn rate policy remains BLOCKED (`DEVICE_REPLACEMENT_WINDOW_DAYS`, `DEVICE_REPLACEMENT_LIMIT`, support contact channel — do not invent). Monthly roster enforcement remains M5. Do not count overlay rows against 10/30/unlimited.
+**Playground (existing overlay on `cursor/playground-220d`):** M3-B commercially gates `/playground` from `EntitlementSnapshot` (`can_open_playground` vs `can_consume_new_playground_law`). Guests Sign in; signed-in free/legacy Subscribe; halted/paused/paid-period-ended use payment-state copy; pending may open existing overlay/progress but cannot activate a new law (transitional until M5 current-period roster membership). Active and admin keep the Cloze proof. Overlay rows are **persistent learning**, not a monthly roster and not a device registry. **M3 commercial gate is complete.** **M4-A core two-device authorization is shipped:** paid Playground registers HMAC-hashed `rtc_device` installations (limit 2, all tiers, `web | android | ios`) on first eligible use; a third or revoked installation is Playground-blocked with `device_limit` / `device_revoked` while `is_subscribed` stays true and Constitution / `/laws` stay open. **M4-B owner/admin management is shipped** (`GET /profile/security/devices`, current-device HMAC label, owner revoke, device-limit/revoked gates, audited `POST /admin/users/{user_id}/devices/reset`). Device registry + management are implemented. Replacement-churn rate policy remains BLOCKED (`DEVICE_REPLACEMENT_WINDOW_DAYS`, `DEVICE_REPLACEMENT_LIMIT`, support contact channel — do not invent). Monthly roster enforcement remains M5. Do not count overlay rows against 10/30/unlimited.
 
 ---
 
@@ -202,7 +202,7 @@ Purchase flow: `/pricing` → `/subscribe/confirm` → `/subscribe/pay` → orde
 
 ## 5. Subscription DB model (code today)
 
-**There is no `subscriptions` table.** There is **no** monthly roster table. **`user_device` / `user_device_session` exist** (M4-A, [`20260916_0021_devices.py`](../alembic/versions/20260916_0021_devices.py)). Destination roster schema is [§16](#16-database-plan--do-not-build-in-this-docs-only-change). Open §21 cells remain **open**: `DEVICE_REPLACEMENT_WINDOW_DAYS`, `DEVICE_REPLACEMENT_LIMIT`, support contact channel.
+**There is no `subscriptions` table.** There is **no** monthly roster table. **`user_device` / `user_device_session` exist** (M4-A, [`20260916_0021_devices.py`](../alembic/versions/20260916_0021_devices.py); iOS platform CHECK in [`20260917_0022_device_ios_platform.py`](../alembic/versions/20260917_0022_device_ios_platform.py)). Destination roster schema is [§16](#16-database-plan--do-not-build-in-this-docs-only-change). Open §21 cells remain **open**: `DEVICE_REPLACEMENT_WINDOW_DAYS`, `DEVICE_REPLACEMENT_LIMIT`, support contact channel.
 
 | Table | Migration | Role |
 |-------|-----------|------|
@@ -212,7 +212,7 @@ Purchase flow: `/pricing` → `/subscribe/confirm` → `/subscribe/pay` → orde
 | `user_free_articles` | 0004 | Constitution free claims (**stop reading** for access in Batch B) |
 | Playground overlay | [`20260906_0017_playground_overlay.py`](../alembic/versions/20260906_0017_playground_overlay.py) | `user_playground_item` / `selection` / `progress` — **persistent learning only** |
 | `app_session` | [`20260801_0001_multiuser_schema.py`](../alembic/versions/20260801_0001_multiuser_schema.py) | Cookie `rtc_session` ([`auth/sessions.py`](../src/constitution_memorizer/auth/sessions.py)). **Auth session, not a device.** Logout deletes this cookie and row. |
-| `user_device` / `user_device_session` | [`20260916_0021_devices.py`](../alembic/versions/20260916_0021_devices.py) | Installation HMAC registry + auth-session bind. Cookie `rtc_device` survives logout. Cap 2. Owner UI is M4-B. Churn integers remain open in §21. |
+| `user_device` / `user_device_session` | [`20260916_0021_devices.py`](../alembic/versions/20260916_0021_devices.py) + [`20260917_0022_device_ios_platform.py`](../alembic/versions/20260917_0022_device_ios_platform.py) | Installation HMAC registry + auth-session bind. Cookie `rtc_device` survives logout. Cap 2. Platforms `web \| android \| ios`. Owner UI and admin reset are implemented. Churn integers remain open in §21. |
 
 Paid grant insert is **the same transaction** as marking the order paid (`mark_billing_order_paid`). Replay verify is idempotent (no second grant).
 
@@ -383,9 +383,13 @@ Mint `rtc_device` on **first authenticated response** (any page) so logout befor
 
 **Token:** cryptographically strong random UUID. Client presents it. Server stores **HMAC** with a keyed server secret — never the raw credential. `UNIQUE(user_id, device_key_hash)`.
 
-**Do not identify a device with** IP address, IMEI, Android hardware ID, MAC address, browser canvas fingerprint, or other invasive fingerprinting. Cookie-clear or app reinstall = new installation; the old `user_device` row stays visible until the owner removes it.
+**Do not identify a device with** IP address, IMEI, Android hardware ID, IDFV, IDFA, serial number, MAC address, hardware UUID, browser canvas fingerprint, or other invasive fingerprinting. Cookie-clear or app reinstall = new installation; the old `user_device` row stays visible until the owner removes it.
 
-**Android (not in this repo):** when a client exists, generate a random installation UUID once; store it in the same encrypted local session store used for auth tokens. Do not derive it from hardware.
+**Android (not in this repo):** random installation token generated by the app; stored securely by the app; never hardware-derived.
+
+**iOS (not in this repo):** random installation token generated by the app; stored securely in Keychain / app secure storage; never hardware-derived.
+
+Web Safari on iPhone is `platform=web` (website cookie). A native iOS app supplies `platform=ios`. Do not infer native iOS from User-Agent.
 
 ### Registration flow
 
@@ -518,7 +522,7 @@ One Razorpay recurring payment, unique on `(provider, provider_payment_id)`. Lin
 |---|---|
 | `user_id` | FK users |
 | `device_key_hash` | HMAC of the client token. **Never store the raw secret.** **UNIQUE(user_id, device_key_hash)** |
-| `platform` | `web` \| `android` |
+| `platform` | `web` \| `android` \| `ios` |
 | `display_name` | UI only (e.g. “Chrome on macOS”). **Not** authorization. Prefer server-derived User-Agent / client platform. |
 | `first_registered_at` / `last_seen_at` / `created_at` / `updated_at` | |
 | `revoked_at` | Null = counts toward cap and may use Playground |
