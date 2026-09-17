@@ -1,22 +1,18 @@
-"""Playground commercial + device HTTP gate. Consumes EntitlementSnapshot.
+"""Playground commercial + device + current-period roster HTTP gate.
 
-Milestone 3B implements authentication + commercial entitlement.
-Milestone 4A adds device inspection/registration on eligible Playground use.
-Monthly roster enforcement is Milestone 5.
+Locked authorization chain for sensitive law routes:
 
-Pending subscribers may open existing overlay items and continue proof
-learning. That is a transitional commercial bit, not current-month roster
-membership. Overlay rows (``user_playground_item`` / selection / progress)
-are persistent learning history, not a roster. M5 replaces this distinction
-with ``is_law_active_this_period(law_id)``.
+    commercial entitlement → allowed device → active current-period law
 
-Local single-user mode has no guest/subscribe wall (same as Constitution
-``local_owner``). Multi-user Playground never re-derives provider status or
-tier inside a handler.
+Overlay rows (``user_playground_item`` / selection / progress) are lifetime
+learning history, not the roster. Pending subscribers may continue laws that
+are active on the **current** roster; historical overlay alone is not enough
+to learn or to consume a new law. Same-period re-add of an already-consumed
+removed law is not new consumption.
 
 Never calls a payment provider. Never reads billing or claim tables from
 this module; commercial answers come from the memoized entitlement snapshot.
-Device SQL lives in ``devices/``.
+Device SQL lives in ``devices/``. Roster SQL lives in ``playground/roster/``.
 """
 
 from __future__ import annotations
@@ -31,6 +27,7 @@ from starlette.responses import Response
 
 from constitution_memorizer.entitlements.dependencies import (
     apply_device_access,
+    apply_roster_capacity,
     get_entitlement_snapshot,
     invalidate_entitlement_snapshot,
 )
@@ -46,13 +43,25 @@ from constitution_memorizer.entitlements.models import (
     BLOCK_SUBSCRIPTION_PAUSED,
     EntitlementSnapshot,
 )
-from constitution_memorizer.playground.eligibility import PlaygroundLawError
-from constitution_memorizer.playground.service import activate_law
+from constitution_memorizer.playground.eligibility import (
+    PlaygroundLawError,
+    is_playground_eligible_law,
+)
 from constitution_memorizer.playground.http import (
     playground_login_redirect,
     playground_user_id,
+    require_roster_service,
 )
-from constitution_memorizer.playground.urls import home_path
+from constitution_memorizer.playground.roster.models import (
+    BLOCK_PROGRESS_SAVED,
+    BLOCK_ROSTER_FULL,
+    RESULT_NEW_BLOCKED,
+    RESULT_ROSTER_FULL,
+    ROSTER_ADD_CONFIRM,
+)
+from constitution_memorizer.playground.roster.period import playground_month_name
+from constitution_memorizer.playground.roster.service import roster_full_body
+from constitution_memorizer.playground.urls import home_path, roster_path
 
 PLAYGROUND_BILLING_PATH = "/billing/subscriptions"
 CONSTITUTION_HOME_PATH = "/dashboard"
@@ -140,10 +149,17 @@ _NEW_LAW_COPY = {
     "title": "New laws are temporarily unavailable",
     "lede": "",
     "body": (
-        "You can keep learning laws already in Playground. "
+        "You can keep learning laws already in this month’s Playground. "
         "New laws cannot be added while payment retries."
     ),
     "cta_label": "Manage subscription",
+}
+
+_PROGRESS_SAVED_COPY = {
+    "title": "Progress saved",
+    "lede": "",
+    "body": "Add to this month",
+    "cta_label": "Add to this month",
 }
 
 _DEVICE_OPEN_REASONS = frozenset(
@@ -210,7 +226,7 @@ def require_playground_open(
 
     access = playground_access(request)
     if access.can_open:
-        return access
+        return _attach_current_period(request, access)
     return _deny_open(
         request,
         templates,
@@ -227,11 +243,9 @@ def require_playground_new_law(
     next_url: str,
     json_mode: bool = False,
 ) -> PlaygroundAccess | Response:
-    """Allow creating a new overlay item, or return the commercial block.
+    """Allow **new** roster consumption, or return the pending/commercial block.
 
-    Call only when the user does not already have ``user_playground_item``
-    for that law. Existing overlay rows are not a monthly roster; M5 will
-    authorize current-period membership separately.
+    Do not use this for same-period re-add of an already-consumed law.
     """
 
     opened = require_playground_open(
@@ -249,37 +263,67 @@ def require_playground_new_law(
     )
 
 
-def ensure_playground_item(
+def require_law_active_this_period(
     request: Request,
     templates: Jinja2Templates,
-    repo: Any,
+    overlay,
     law_id: str,
     *,
     next_url: str,
+    json_mode: bool = False,
 ) -> PlaygroundAccess | Response:
-    """Activate a missing overlay item only when consume is commercially allowed.
-
-    Existing items skip the new-law bit. That is not roster membership.
-    """
+    """Require current-roster membership before Act hydration or paid Learn."""
 
     opened = require_playground_open(
-        request, templates, next_url=next_url
+        request, templates, next_url=next_url, json_mode=json_mode
     )
     if isinstance(opened, Response):
         return opened
-    if repo.get_item(opened.user_id, law_id) is not None:
-        activate_law(repo, opened.user_id, law_id)
+    roster = require_roster_service(request)
+    if roster.is_law_active_this_period(opened.user_id, law_id):
         return opened
-    allowed = require_playground_new_law(
-        request, templates, next_url=next_url
+    return _deny_inactive_law(
+        request,
+        templates,
+        opened,
+        overlay,
+        law_id,
+        json_mode=json_mode,
     )
-    if isinstance(allowed, Response):
-        return allowed
-    try:
-        activate_law(repo, allowed.user_id, law_id)
-    except PlaygroundLawError:
-        raise HTTPException(status_code=404, detail="Law not found") from None
-    return allowed
+
+
+def is_add_confirmed(value: str) -> bool:
+    return str(value or "").strip().lower() == ROSTER_ADD_CONFIRM
+
+
+def require_eligible_law(law_id: str) -> str:
+    if not is_playground_eligible_law(law_id):
+        raise HTTPException(status_code=404, detail="Law not found")
+    return law_id
+
+
+def _attach_current_period(request: Request, access: PlaygroundAccess) -> PlaygroundAccess:
+    if access.user_id is None:
+        return access
+    roster = getattr(request.app.state, "roster", None)
+    if roster is None:
+        return access
+    capacity = roster.capacity(
+        access.user_id,
+        access.snapshot,
+        local_owner=access.local_owner,
+    )
+    if access.snapshot is None:
+        return access
+    refreshed = apply_roster_capacity(access.snapshot, capacity)
+    request.state.entitlement_snapshot = refreshed
+    return PlaygroundAccess(
+        user_id=access.user_id,
+        snapshot=refreshed,
+        can_open=access.can_open,
+        can_consume_new_law=access.can_consume_new_law,
+        local_owner=access.local_owner,
+    )
 
 
 def _ensure_device_and_refresh(
@@ -369,6 +413,119 @@ def _deny_new_law(
     )
 
 
+def _deny_inactive_law(
+    request: Request,
+    templates: Jinja2Templates,
+    access: PlaygroundAccess,
+    overlay: Any,
+    law_id: str,
+    *,
+    json_mode: bool,
+) -> Response:
+    if json_mode:
+        return JSONResponse(
+            {"ok": False, "error": "not_active_this_period"},
+            status_code=403,
+        )
+    historical = overlay.get_item(access.user_id, law_id) is not None
+    if request.method.upper() != "GET":
+        if historical:
+            return RedirectResponse(url=roster_path(add=law_id), status_code=303)
+        return RedirectResponse(url=f"/laws/{law_id}", status_code=303)
+    if not historical:
+        return RedirectResponse(url=f"/laws/{law_id}", status_code=303)
+    roster = require_roster_service(request)
+    already = roster.already_consumed_this_period(access.user_id, law_id)
+    if already:
+        return _progress_saved_page(request, templates, law_id)
+    if not access.can_consume_new_law:
+        return _gate_page(
+            request,
+            templates,
+            reason=NEW_LAW_TEMPORARILY_UNAVAILABLE,
+            consume_blocked=True,
+            snapshot=access.snapshot,
+        )
+    snapshot = access.snapshot
+    remaining = snapshot.playground_laws_remaining if snapshot is not None else None
+    if remaining == 0:
+        return roster_full_page(request, templates, access)
+    return _progress_saved_page(request, templates, law_id)
+
+
+def roster_full_page(
+    request: Request,
+    templates: Jinja2Templates,
+    access: PlaygroundAccess,
+) -> Response:
+    snapshot = access.snapshot
+    month = "this month"
+    limit = 10
+    if snapshot is not None and snapshot.playground_period_start is not None:
+        month = playground_month_name(snapshot.playground_period_start)
+    if snapshot is not None and snapshot.playground_law_limit is not None:
+        limit = snapshot.playground_law_limit
+    return templates.TemplateResponse(
+        request,
+        "playground_gate.html",
+        {
+            "title": "Playground full",
+            "lede": "",
+            "body": roster_full_body(month_name=month, law_limit=limit),
+            "cta_label": "Back to Playground",
+            "cta_href": home_path(),
+            "secondary_label": "Manage roster",
+            "secondary_href": roster_path(),
+            "block_reason": BLOCK_ROSTER_FULL,
+            "consume_blocked": False,
+        },
+    )
+
+
+def _progress_saved_page(
+    request: Request,
+    templates: Jinja2Templates,
+    law_id: str,
+) -> Response:
+    copy = _PROGRESS_SAVED_COPY
+    return templates.TemplateResponse(
+        request,
+        "playground_gate.html",
+        {
+            "title": copy["title"],
+            "lede": copy["lede"],
+            "body": copy["body"],
+            "cta_label": copy["cta_label"],
+            "cta_href": roster_path(add=law_id),
+            "secondary_label": "Back to Playground",
+            "secondary_href": home_path(),
+            "block_reason": BLOCK_PROGRESS_SAVED,
+            "consume_blocked": False,
+        },
+    )
+
+
+def consume_blocked_response(
+    request: Request,
+    templates: Jinja2Templates,
+    access: PlaygroundAccess,
+    result_status: str,
+    *,
+    json_mode: bool = False,
+) -> Response:
+    if result_status == RESULT_NEW_BLOCKED:
+        return _deny_new_law(
+            request, templates, access, json_mode=json_mode
+        )
+    if result_status == RESULT_ROSTER_FULL:
+        if json_mode:
+            return JSONResponse({"ok": False, "error": BLOCK_ROSTER_FULL}, status_code=403)
+        return roster_full_page(request, templates, access)
+    if json_mode:
+        return JSONResponse({"ok": False, "error": result_status}, status_code=400)
+    raise PlaygroundLawError(result_status)
+
+
 def _gate_page(
     request: Request,
     templates: Jinja2Templates,
@@ -413,7 +570,7 @@ def _gate_page(
 
 
 def new_law_home_notice(request: Request, access: PlaygroundAccess) -> str | None:
-    """Optional home banner after a blocked add. Not a roster message."""
+    """Optional home banner after a blocked add. Not a capacity message."""
 
     if access.can_open and not access.can_consume_new_law:
         blocked = request.query_params.get("blocked")

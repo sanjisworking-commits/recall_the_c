@@ -8,7 +8,7 @@ invalidate this memo so the request sees the registered installation.
 from __future__ import annotations
 
 from dataclasses import replace
-from datetime import datetime
+from datetime import date, datetime
 from typing import Any
 
 from constitution_memorizer.entitlements.models import (
@@ -108,4 +108,16 @@ def apply_device_access(snapshot: EntitlementSnapshot, access: Any) -> Entitleme
         current_device_allowed=access.current_device_allowed,
         current_device_revoked=access.current_device_revoked,
         device_slots_remaining=access.device_slots_remaining,
+    )
+
+
+def apply_roster_capacity(snapshot: EntitlementSnapshot, capacity: Any) -> EntitlementSnapshot:
+    """Copy current-period roster metadata. Never lists lifetime law ids."""
+
+    return replace(
+        snapshot,
+        playground_period_start=capacity.period_start,
+        playground_period_end=capacity.period_end,
+        playground_laws_used=capacity.used,
+        playground_laws_remaining=capacity.remaining,
     )

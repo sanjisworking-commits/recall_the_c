@@ -33,6 +33,7 @@ from constitution_memorizer.playground.urls import (
     law_path,
     learn_complete_path,
     learn_path,
+    roster_path,
     sections_path,
 )
 from constitution_memorizer.progress.db import open_progress_db
@@ -146,6 +147,27 @@ def _mutate(client: TestClient, path: str, **fields):
     payload = dict(fields)
     payload.update(_csrf(client))
     return client.post(path, data=payload, follow_redirects=False)
+
+
+def _add_law(client: TestClient, law_id: str):
+    preview = _mutate(client, add_path(law_id))
+    location = preview.headers.get("location") or ""
+    if preview.status_code == 303 and "/playground/roster" in location:
+        return _mutate(client, add_path(law_id), confirm="add")
+    return preview
+
+
+def _consume_on_roster(client: TestClient, law_id: str = "ndps") -> None:
+    roster = client.app.state.roster
+    snap = client.app.state.entitlement_service.resolve(USER, now=NOW)
+    result = roster.confirm_add_law(
+        USER,
+        law_id,
+        snap,
+        now=NOW,
+        can_consume_new_law=True,
+    )
+    assert result.ok
 
 
 def _add_subscription(
@@ -367,7 +389,7 @@ def test_free_account_snapshot_is_memoized_on_playground_request(tmp_path: Path)
 def test_active_subscriber_keeps_existing_playground_proof(tmp_path: Path):
     client, _repo = _authed_client(tmp_path)
     _add_subscription(client, tier="pro", status="active")
-    added = _mutate(client, add_path("ndps"))
+    added = _add_law(client, "ndps")
     assert added.status_code == 303
     assert added.headers["location"] == sections_path("ndps")
     saved = _mutate(client, sections_path("ndps"), section="1")
@@ -391,10 +413,36 @@ def test_active_subscriber_keeps_existing_playground_proof(tmp_path: Path):
     assert snap.playground_law_limit == 30
 
 
-def test_pending_opens_existing_and_blocks_new_law(tmp_path: Path):
+def test_pending_opens_current_roster_and_blocks_historical_overlay(tmp_path: Path):
     client, _repo = _authed_client(tmp_path)
+    _add_subscription(client, tier="plus", status="active")
     _seed_ndps_overlay(client)
-    _add_subscription(client, tier="plus", status="pending")
+    _consume_on_roster(client, "ndps")
+    from constitution_memorizer.playground.service import activate_law, selection_rows
+    from constitution_memorizer.playground.source import source_hash
+    from constitution_memorizer.web.bare_acts import get_bare_act
+
+    playground = client.app.state.playground
+    activate_law(playground, USER, "bns")
+    act = get_bare_act("bns")
+    assert act is not None
+    playground.replace_selection(
+        USER, "bns", selection_rows("bns", ["1"], entire=False, act=act)
+    )
+    loc = section_locator("bns", "1")
+    section = act.section("1")
+    assert section is not None
+    playground.complete_cloze(
+        USER,
+        "bns",
+        loc.value,
+        source_version="1",
+        source_hash=source_hash(section),
+        as_of=NOW.date(),
+        live_hash=source_hash(section),
+    )
+    sub = client.app.state.subscriptions.get_current_subscription(USER)
+    _set_status(client, sub.id, "pending")
     home = client.get("/playground")
     assert home.status_code == 200
     assert "My Playground" in home.text
@@ -405,13 +453,14 @@ def test_pending_opens_existing_and_blocks_new_law(tmp_path: Path):
     done = client.post(learn_complete_path("ndps", "1"))
     assert done.status_code == 200
     assert done.json()["ok"] is True
-    added = _mutate(client, add_path("bns"))
+    historical = client.get(law_path("bns"), follow_redirects=False)
+    assert historical.status_code == 200
+    assert "new_law_temporarily_unavailable" in historical.text or (
+        "temporarily unavailable" in historical.text.lower()
+    )
+    added = _mutate(client, add_path("bns"), confirm="add")
     assert added.status_code == 303
-    assert "playground" in added.headers["location"]
-    assert client.app.state.playground.get_item(USER, "bns") is None
-    bypass = _mutate(client, sections_path("bns"), section="1")
-    assert bypass.status_code == 303
-    assert client.app.state.playground.get_item(USER, "bns") is None
+    assert client.app.state.roster.is_law_active_this_period(USER, "bns") is False
     snap = client.app.state.entitlement_service.resolve(USER, now=NOW)
     assert snap.can_open_playground is True
     assert snap.can_consume_new_playground_law is False
@@ -520,7 +569,7 @@ def test_admin_without_subscription_is_allowed(tmp_path: Path):
     home = client.get("/playground")
     assert home.status_code == 200
     assert "My Playground" in home.text
-    added = _mutate(client, add_path("ndps"))
+    added = _add_law(client, "ndps")
     assert added.status_code == 303
     assert client.app.state.playground.get_item(USER, "ndps") is not None
     snap = client.app.state.entitlement_service.resolve(USER, now=NOW)
@@ -542,7 +591,7 @@ def test_active_tiers_have_identical_playground_learning(
 ):
     client, _repo = _authed_client(tmp_path)
     _add_subscription(client, tier=tier, status="active")
-    added = _mutate(client, add_path("ndps"))
+    added = _add_law(client, "ndps")
     assert added.status_code == 303
     saved = _mutate(client, sections_path("ndps"), section="1")
     assert saved.status_code == 303
@@ -567,6 +616,7 @@ def test_overlay_survives_halt_and_resumes_when_active(tmp_path: Path):
     client, _repo = _authed_client(tmp_path)
     sub = _add_subscription(client, tier="plus", status="active")
     _seed_ndps_overlay(client)
+    _consume_on_roster(client, "ndps")
     before = _overlay_fingerprint(client)
     _set_status(client, sub.id, "halted")
     home = client.get("/playground")
@@ -589,6 +639,7 @@ def test_overlay_survives_pause_and_resumes(tmp_path: Path):
     client, _repo = _authed_client(tmp_path)
     sub = _add_subscription(client, tier="pro", status="active")
     _seed_ndps_overlay(client)
+    _consume_on_roster(client, "ndps")
     before = _overlay_fingerprint(client)
     _set_status(client, sub.id, "paused")
     assert "paused" in client.get("/playground").text.lower()
@@ -620,7 +671,7 @@ def test_active_and_admin_add_succeed_where_pending_is_blocked(tmp_path: Path):
     active_dir.mkdir()
     active, _repo2 = _authed_client(active_dir)
     _add_subscription(active, tier="plus", status="active")
-    _mutate(active, add_path("ndps"))
+    _add_law(active, "ndps")
     assert active.app.state.playground.get_item(USER, "ndps") is not None
 
 
@@ -642,6 +693,7 @@ def test_workspace_hydrates_only_requested_act(
     client, _repo = _authed_client(tmp_path)
     _add_subscription(client, tier="pro", status="active")
     _seed_ndps_overlay(client)
+    _consume_on_roster(client, "ndps")
     clear_bare_act_cache()
     hydrated = _hydrate_spy(monkeypatch)
     client.get(law_path("ndps"))
@@ -684,16 +736,13 @@ def test_playground_modules_do_not_call_provider_or_rederive_status():
     assert "RazorpaySubscriptionsClient" not in service_src
 
 
-def test_m3b_still_has_no_roster_tables():
-    versions = ROOT / "alembic" / "versions"
-    names = [path.name for path in versions.glob("*.py")]
-    assert not any("playground_period" in name for name in names)
-    assert not any("playground_roster" in name for name in names)
+def test_m3b_gate_does_not_query_subscription_tables():
     access_src = (ROOT / "src/constitution_memorizer/playground/access.py").read_text(
         encoding="utf-8"
     )
     assert "PLAYGROUND_DEVICE_LIMIT" not in access_src
-    assert "user_playground_period" not in access_src
+    assert "FROM user_subscription" not in access_src
+    assert "RazorpaySubscriptionsClient" not in access_src
 
 
 def test_local_owner_access_is_open_without_snapshot():

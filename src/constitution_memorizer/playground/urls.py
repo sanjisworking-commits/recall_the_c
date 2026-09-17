@@ -9,8 +9,18 @@ def home_path() -> str:
     return PREFIX
 
 
+def roster_path(*, add: str | None = None) -> str:
+    if add:
+        return f"{PREFIX}/roster?add={add}"
+    return f"{PREFIX}/roster"
+
+
 def add_path(law_id: str) -> str:
     return f"{PREFIX}/laws/{law_id}/add"
+
+
+def remove_path(law_id: str) -> str:
+    return f"{PREFIX}/roster/{law_id}/remove"
 
 
 def law_path(law_id: str) -> str:

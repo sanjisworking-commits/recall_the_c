@@ -47,6 +47,7 @@ from constitution_memorizer.playground.urls import (
     law_path,
     learn_complete_path,
     learn_path,
+    roster_path,
     sections_path,
 )
 from constitution_memorizer.progress.user_ids import LOCAL_USER_ID
@@ -116,8 +117,29 @@ def _cloze_attr(page: str) -> str:
     return html.unescape(match.group(1))
 
 
+def _confirm_payload(client: TestClient, extra: dict | None = None) -> dict[str, str]:
+    data = {"confirm": "add"}
+    token = client.cookies.get("rtc_csrf") or ""
+    if token:
+        data["csrf_token"] = token
+    if extra:
+        data.update(extra)
+    return data
+
+
+def _add_law(client: TestClient, law_id: str):
+    preview = client.post(add_path(law_id), follow_redirects=False)
+    if preview.status_code == 303 and "/playground/roster" in (
+        preview.headers.get("location") or ""
+    ):
+        return client.post(
+            add_path(law_id), data=_confirm_payload(client), follow_redirects=False
+        )
+    return preview
+
+
 def _add_and_select(client: TestClient, law_id: str, number: str) -> None:
-    added = client.post(add_path(law_id), follow_redirects=False)
+    added = _add_law(client, law_id)
     assert added.status_code == 303
     saved = client.post(
         sections_path(law_id),
@@ -226,13 +248,17 @@ def test_guest_cannot_persist_playground(tmp_path: Path):
 
 def test_add_to_playground_is_idempotent(tmp_path: Path):
     client = _client(tmp_path)
-    first = client.post(add_path("ndps"), follow_redirects=False)
+    first = _add_law(client, "ndps")
     second = client.post(add_path("ndps"), follow_redirects=False)
     assert first.status_code == 303
     assert second.status_code == 303
     repo = client.app.state.playground
     items = repo.list_items(LOCAL_USER_ID)
     assert [item.law_id for item in items] == ["ndps"]
+    roster = client.app.state.roster
+    assert roster.is_law_active_this_period(LOCAL_USER_ID, "ndps") is True
+    used = roster.capacity(LOCAL_USER_ID, None, local_owner=True).used
+    assert used == 1
 
 
 def test_bare_act_head_has_add_button_for_eligible_laws(tmp_path: Path):
@@ -345,12 +371,14 @@ def test_final_namespace_and_retired_proof_urls(tmp_path: Path):
     client = _client(tmp_path)
     assert client.get("/playground").status_code == 200
     for law_id in ("ndps", "bns", "bnss"):
-        added = client.post(add_path(law_id), follow_redirects=False)
+        added = _add_law(client, law_id)
         assert added.status_code == 303
         assert added.headers["location"] == sections_path(law_id)
         workspace = client.get(law_path(law_id), follow_redirects=False)
         assert workspace.status_code == 200
-    assert client.get("/playground/roster").status_code == 404
+    roster_page = client.get("/playground/roster")
+    assert roster_page.status_code == 200
+    assert "Playground" in roster_page.text
     assert client.get("/playground/ndps").status_code == 404
     assert client.post("/playground/ndps/add", follow_redirects=False).status_code == 404
     assert client.get("/laws/bnss").status_code == 200
@@ -367,7 +395,12 @@ def test_opening_bnss_playground_does_not_hydrate_ndps_or_bns(
     empty_home = list(hydrated)
     client.get("/playground")
     assert hydrated == empty_home
-    client.post(add_path("bnss"), follow_redirects=False)
+    preview = client.post(add_path("bnss"), follow_redirects=False)
+    assert preview.status_code == 303
+    assert "/playground/roster" in preview.headers["location"]
+    client.get(roster_path(add="bnss"))
+    _add_law(client, "bnss")
+    assert "bnss" not in hydrated
     client.get(law_path("bnss"))
     assert "bnss" in hydrated
     assert "ndps" not in hydrated
@@ -567,7 +600,7 @@ def test_activation_uses_registry_identity_without_reading_runtime(
     assert hydrated == []
 
     client = _client(tmp_path)
-    added = client.post(add_path("bnss"), follow_redirects=False)
+    added = _add_law(client, "bnss")
     assert added.status_code == 303
     stored = client.app.state.playground.get_item(LOCAL_USER_ID, "bnss")
     assert stored is not None
@@ -582,7 +615,7 @@ def test_populated_home_and_summaries_hydrate_zero_acts(
 ):
     client = _client(tmp_path)
     for law_id in ("ndps", "bns", "bnss"):
-        added = client.post(add_path(law_id), follow_redirects=False)
+        added = _add_law(client, law_id)
         assert added.status_code == 303
     repo = client.app.state.playground
     repo.replace_selection(
@@ -633,7 +666,7 @@ def test_home_outdated_flag_is_law_level_registry_identity(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ):
     client = _client(tmp_path)
-    assert client.post(add_path("ndps"), follow_redirects=False).status_code == 303
+    assert _add_law(client, "ndps").status_code == 303
     spec = BARE_ACTS["ndps"]
     monkeypatch.setitem(BARE_ACTS, "ndps", replace(spec, source_version="changed"))
     clear_bare_act_cache()
@@ -813,7 +846,9 @@ def test_entire_act_selection_hydrates_only_that_law(
     clear_bare_act_cache()
     hydrated = _hydrate_spy(monkeypatch)
     client = _client(tmp_path)
-    assert client.post(add_path("ndps"), follow_redirects=False).status_code == 303
+    preview = client.post(add_path("ndps"), follow_redirects=False)
+    assert preview.status_code == 303
+    assert _add_law(client, "ndps").status_code == 303
     hydrated.clear()
     clear_bare_act_cache()
     saved = client.post(

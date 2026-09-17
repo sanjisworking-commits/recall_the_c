@@ -4,7 +4,8 @@
 {% block content %}
 <section class="panel playground-page">
   <h1>My Playground</h1>
-  <p class="playground-lede">Laws you added. Reading stays on the Bare Act; Cloze lives here.</p>
+  <p class="playground-lede">Laws on this month’s Playground. Reading stays on the Bare Act; Cloze lives here.</p>
+  <p><a href="{{ roster_path|default('/playground/roster') }}">Manage this month</a></p>
   {% if new_law_notice %}
   <p class="playground-flag" data-playground-gate="new_law_temporarily_unavailable">{{ new_law_notice }}
     <a href="/billing/subscriptions">Manage subscription</a>

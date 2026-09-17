@@ -79,13 +79,20 @@ class PlaygroundSummary:
     due_count: int
 
 
-def playground_summary_sql(placeholder: str) -> str:
+def playground_summary_sql(
+    placeholder: str, *, law_ids: list[str] | tuple[str, ...] | None = None
+) -> str:
     """One aggregate query: items + selection counts + selected-progress counts.
 
-    Placeholders, in order: user_id, as_of, user_id, user_id.
+    Placeholders, in order: user_id, as_of, user_id, user_id[, law_id...].
     Subqueries are grouped by law_id so joins cannot cartesian-inflate counts.
+    When ``law_ids`` is set, the outer query is restricted to those laws so
+    cost scales with current-roster size rather than lifetime overlay history.
     """
     ph = placeholder
+    extra = ""
+    if law_ids:
+        extra = " AND i.law_id IN (" + ", ".join(ph for _ in law_ids) + ")"
     return f"""
             SELECT
                 i.law_id, i.status, i.added_at, i.last_activity_at,
@@ -120,7 +127,7 @@ def playground_summary_sql(placeholder: str) -> str:
                 WHERE s.user_id = {ph}
                 GROUP BY s.law_id
             ) AS prog ON prog.law_id = i.law_id
-            WHERE i.user_id = {ph}
+            WHERE i.user_id = {ph}{extra}
             ORDER BY i.added_at ASC
             """
 
@@ -225,13 +232,20 @@ class SqlitePlaygroundRepository:
         return self.get_item(user_id, law_id)  # type: ignore[return-value]
 
     def list_playground_summaries(
-        self, user_id: UUID | str, *, as_of: date
+        self,
+        user_id: UUID | str,
+        *,
+        as_of: date,
+        law_ids: list[str] | tuple[str, ...] | None = None,
     ) -> list[PlaygroundSummary]:
+        if law_ids is not None and len(law_ids) == 0:
+            return []
         uid = as_user_id(user_id)
-        rows = self.conn.execute(
-            playground_summary_sql("?"),
-            (uid, as_of.isoformat(), uid, uid),
-        ).fetchall()
+        sql = playground_summary_sql("?", law_ids=law_ids)
+        params: tuple = (uid, as_of.isoformat(), uid, uid)
+        if law_ids:
+            params = params + tuple(law_ids)
+        rows = self.conn.execute(sql, params).fetchall()
         return [
             summary_from_row(
                 row,

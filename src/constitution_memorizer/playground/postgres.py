@@ -115,15 +115,22 @@ class PostgresPlaygroundRepository:
         return self.get_item(user_id, law_id)  # type: ignore[return-value]
 
     def list_playground_summaries(
-        self, user_id: UUID | str, *, as_of: date
+        self,
+        user_id: UUID | str,
+        *,
+        as_of: date,
+        law_ids: list[str] | tuple[str, ...] | None = None,
     ) -> list[PlaygroundSummary]:
+        if law_ids is not None and len(law_ids) == 0:
+            return []
         uid = as_user_id(user_id)
+        sql = playground_summary_sql("%s", law_ids=law_ids)
+        params: tuple = (uid, as_of, uid, uid)
+        if law_ids:
+            params = params + tuple(law_ids)
         with self._pool.connection() as conn:
             with conn.cursor(row_factory=self._dict_row) as cur:
-                cur.execute(
-                    playground_summary_sql("%s"),
-                    (uid, as_of, uid, uid),
-                )
+                cur.execute(sql, params)
                 rows = cur.fetchall()
         return [
             summary_from_row(

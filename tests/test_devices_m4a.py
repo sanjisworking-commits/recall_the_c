@@ -901,7 +901,7 @@ def test_alembic_head_is_replacement_revision():
 
     cfg = Config(str(ROOT / "alembic.ini"))
     heads = ScriptDirectory.from_config(cfg).get_heads()
-    assert heads == ["20260917_0023"]
+    assert heads == ["20260917_0024"]
 
 
 def test_no_roster_or_invented_support_address():
@@ -916,7 +916,7 @@ def test_no_roster_or_invented_support_address():
     assert "support@" not in access.lower()
     versions = [path.name for path in (ROOT / "alembic" / "versions").glob("*.py")]
     assert any("0021" in name and "device" in name for name in versions)
-    assert not any("playground_period" in name for name in versions)
+    assert any("0024" in name and "playground_roster" in name for name in versions)
 
 
 def test_sqlite_begin_immediate_not_check_then_insert():

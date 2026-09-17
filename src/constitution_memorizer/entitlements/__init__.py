@@ -2,7 +2,7 @@
 
 ``web/entitlements.py`` is the Constitution Learn adapter around this snapshot.
 Playground HTTP gates consume the snapshot (M3-B commercial + M4-A device overlay).
-Roster remains M5.
+Current-period roster membership is Milestone 5.
 """
 
 from constitution_memorizer.entitlements.dependencies import get_entitlement_snapshot

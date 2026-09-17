@@ -747,6 +747,14 @@ def create_app(
         )
 
         app.state.playground = PostgresPlaygroundRepository(db_pool)
+        from constitution_memorizer.playground.roster.postgres import (  # noqa: PLC0415
+            PostgresRosterRepository,
+        )
+        from constitution_memorizer.playground.roster.service import (  # noqa: PLC0415
+            RosterService,
+        )
+
+        app.state.roster = RosterService(PostgresRosterRepository(db_pool))
     else:
         from constitution_memorizer.playground.db import (  # noqa: PLC0415
             ensure_sqlite_schema,
@@ -755,12 +763,25 @@ def create_app(
             SqlitePlaygroundRepository,
         )
 
+        from constitution_memorizer.playground.roster.db import (  # noqa: PLC0415
+            ensure_sqlite_schema as ensure_roster_sqlite_schema,
+        )
+        from constitution_memorizer.playground.roster.repository import (  # noqa: PLC0415
+            SqliteRosterRepository,
+        )
+        from constitution_memorizer.playground.roster.service import (  # noqa: PLC0415
+            RosterService,
+        )
+
         conn = getattr(engine.repo, "conn", None)
         if conn is not None and not use_postgres:
             ensure_sqlite_schema(conn)
+            ensure_roster_sqlite_schema(conn)
             app.state.playground = SqlitePlaygroundRepository(conn)
+            app.state.roster = RosterService(SqliteRosterRepository(conn))
         else:
             app.state.playground = None
+            app.state.roster = None
 
     if db_pool is not None:
         from constitution_memorizer.subscriptions.postgres import (  # noqa: PLC0415
@@ -2891,12 +2912,12 @@ def create_app(
             )
 
             in_playground = False
-            playground = getattr(app.state, "playground", None)
+            roster = getattr(app.state, "roster", None)
             uid = playground_user_id(request)
-            if playground is not None and uid is not None and is_playground_eligible_law(
+            if roster is not None and uid is not None and is_playground_eligible_law(
                 bare.slug
             ):
-                in_playground = playground.get_item(uid, bare.slug) is not None
+                in_playground = roster.is_law_active_this_period(uid, bare.slug)
             started = time.perf_counter()
             seo_title, seo_description = build_law_seo(
                 law_name=bare.title, meta_label=bare.meta_label

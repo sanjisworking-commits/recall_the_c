@@ -10,14 +10,37 @@ from fastapi.templating import Jinja2Templates
 from starlette.responses import Response
 
 from constitution_memorizer.playground.access import (
-    ensure_playground_item,
+    consume_blocked_response,
+    is_add_confirmed,
     new_law_home_notice,
+    require_eligible_law,
+    require_law_active_this_period,
     require_playground_open,
 )
-from constitution_memorizer.playground.eligibility import PlaygroundLawError
-from constitution_memorizer.playground.http import require_playground_repo
+from constitution_memorizer.playground.eligibility import (
+    PlaygroundLawError,
+    playground_catalogue_law,
+)
+from constitution_memorizer.playground.http import (
+    require_playground_repo,
+    require_roster_service,
+)
 from constitution_memorizer.playground.locators import LocatorError
+from constitution_memorizer.playground.roster.models import (
+    RESULT_ALREADY_ACTIVE,
+    RESULT_INELIGIBLE,
+    RESULT_NEEDS_CONFIRM,
+    RESULT_NEW_BLOCKED,
+    RESULT_RE_ADD_CONFIRM,
+    RESULT_ROSTER_FULL,
+    ROSTER_ADD_CONFIRM,
+)
+from constitution_memorizer.playground.roster.period import (
+    playground_month_name,
+    playground_today,
+)
 from constitution_memorizer.playground.service import (
+    activate_law,
     mark_outdated,
     parse_selected_locator,
     playground_home_cards,
@@ -32,6 +55,7 @@ from constitution_memorizer.playground.urls import (
     law_path,
     learn_complete_path,
     learn_path,
+    roster_path,
     sections_path,
 )
 
@@ -54,6 +78,33 @@ def _denied(result: object) -> Response | None:
     return None
 
 
+def _require_csrf(request: Request, csrf_token: str) -> None:
+    expected = request.cookies.get("rtc_csrf") or ""
+    if expected and csrf_token != expected:
+        raise HTTPException(status_code=403, detail="csrf")
+
+
+def _after_active_redirect(overlay, user_id, law_id: str) -> RedirectResponse:
+    if overlay.get_item(user_id, law_id) is not None and overlay.list_selection(
+        user_id, law_id
+    ):
+        return RedirectResponse(url=law_path(law_id), status_code=303)
+    return RedirectResponse(url=sections_path(law_id), status_code=303)
+
+
+def _roster_law_card(item) -> dict:
+    catalog = playground_catalogue_law(item.law_id)
+    title = catalog.title if catalog is not None else item.law_id
+    short = catalog.short_title if catalog is not None else item.law_id
+    return {
+        "law_id": item.law_id,
+        "title": title,
+        "short_title": short,
+        "origin": item.origin,
+        "removed": item.removed_at is not None,
+    }
+
+
 def create_playground_router(templates: Jinja2Templates) -> APIRouter:
     router = APIRouter(prefix="/playground")
 
@@ -66,15 +117,114 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         blocked = _denied(access)
         if blocked is not None:
             return blocked  # type: ignore[return-value]
-        repo = require_playground_repo(request)
-        summaries = repo.list_playground_summaries(access.user_id, as_of=date.today())
-        cards = playground_home_cards(summaries)
+        overlay = require_playground_repo(request)
+        roster = require_roster_service(request)
+        active = roster.active_roster_items(access.user_id)
+        law_ids = [item.law_id for item in active]
+        summaries = overlay.list_playground_summaries(
+            access.user_id, as_of=playground_today(), law_ids=law_ids
+        )
+        by_id = {row.law_id: row for row in summaries}
+        ordered = [by_id[item.law_id] for item in active if item.law_id in by_id]
+        cards = playground_home_cards(ordered)
+        present = {card["law_id"] for card in cards}
+        for item in active:
+            if item.law_id in present:
+                continue
+            catalog = playground_catalogue_law(item.law_id)
+            if catalog is None:
+                continue
+            cards.append(
+                {
+                    "law_id": item.law_id,
+                    "title": catalog.title,
+                    "short_title": catalog.short_title,
+                    "selected_count": 0,
+                    "learned_count": 0,
+                    "to_learn": 0,
+                    "due": 0,
+                    "outdated": False,
+                }
+            )
         return templates.TemplateResponse(
             request,
             "playground.html",
             {
                 "cards": cards,
                 "new_law_notice": new_law_home_notice(request, access),
+                "roster_path": roster_path(),
+            },
+        )
+
+    @router.get("/roster", response_class=HTMLResponse)
+    async def playground_roster(request: Request) -> HTMLResponse:
+        access = require_playground_open(
+            request, templates, next_url=roster_path()
+        )
+        blocked = _denied(access)
+        if blocked is not None:
+            return blocked  # type: ignore[return-value]
+        roster = require_roster_service(request)
+        add_id = (request.query_params.get("add") or "").strip()
+        preview = None
+        if add_id:
+            require_eligible_law(add_id)
+            preview = roster.preview_add_law(
+                access.user_id,
+                add_id,
+                access.snapshot,
+                local_owner=access.local_owner,
+                can_consume_new_law=access.can_consume_new_law,
+            )
+            if preview.status == RESULT_ALREADY_ACTIVE:
+                overlay = require_playground_repo(request)
+                return _after_active_redirect(overlay, access.user_id, add_id)
+            if preview.status == RESULT_NEW_BLOCKED:
+                denied = consume_blocked_response(
+                    request, templates, access, RESULT_NEW_BLOCKED
+                )
+                return denied  # type: ignore[return-value]
+        capacity = roster.capacity(
+            access.user_id,
+            access.snapshot,
+            local_owner=access.local_owner,
+        )
+        month = playground_month_name(capacity.period_start)
+        active_cards = [
+            _roster_law_card(item) for item in roster.active_roster_items(access.user_id)
+        ]
+        removed_cards = [
+            _roster_law_card(item) for item in roster.removed_roster_items(access.user_id)
+        ]
+        add_catalog = playground_catalogue_law(add_id) if add_id else None
+        show_confirm = preview is not None and preview.status in {
+            RESULT_NEEDS_CONFIRM,
+            RESULT_RE_ADD_CONFIRM,
+        }
+        show_full = preview is not None and preview.status == RESULT_ROSTER_FULL
+        return templates.TemplateResponse(
+            request,
+            "playground_roster.html",
+            {
+                "month_name": month,
+                "tier_snapshot": capacity.tier_snapshot,
+                "law_limit": capacity.law_limit,
+                "used": capacity.used,
+                "remaining": capacity.remaining,
+                "active_laws": active_cards,
+                "removed_laws": removed_cards,
+                "add_law_id": add_id or None,
+                "add_title": add_catalog.title if add_catalog is not None else add_id,
+                "show_confirm": show_confirm,
+                "show_full": show_full,
+                "confirmation_copy": preview.confirmation_copy if preview else "",
+                "confirm_value": ROSTER_ADD_CONFIRM,
+                "full_copy": (
+                    f"You've used all {capacity.law_limit} law spaces for {month}. "
+                    "Your current Playground laws remain available."
+                    if show_full and capacity.law_limit is not None
+                    else ""
+                ),
             },
         )
 
@@ -83,6 +233,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         request: Request,
         law_id: str,
         csrf_token: str = Form(""),
+        confirm: str = Form(""),
     ) -> RedirectResponse:
         next_reader = f"/laws/{law_id}"
         opened = require_playground_open(
@@ -91,43 +242,92 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         blocked = _denied(opened)
         if blocked is not None:
             return blocked  # type: ignore[return-value]
-        expected = request.cookies.get("rtc_csrf") or ""
-        if expected and csrf_token != expected:
-            raise HTTPException(status_code=403, detail="csrf")
-        repo = require_playground_repo(request)
-        existing = repo.get_item(opened.user_id, law_id)
-        ensured = ensure_playground_item(
-            request, templates, repo, law_id, next_url=next_reader
+        _require_csrf(request, csrf_token)
+        require_eligible_law(law_id)
+        overlay = require_playground_repo(request)
+        roster = require_roster_service(request)
+        preview = roster.preview_add_law(
+            opened.user_id,
+            law_id,
+            opened.snapshot,
+            local_owner=opened.local_owner,
+            can_consume_new_law=opened.can_consume_new_law,
         )
-        blocked_new = _denied(ensured)
-        if blocked_new is not None:
-            return blocked_new  # type: ignore[return-value]
-        if existing is not None and repo.list_selection(ensured.user_id, law_id):
-            return RedirectResponse(url=home_path(), status_code=303)
-        return RedirectResponse(url=sections_path(law_id), status_code=303)
+        if preview.status == RESULT_INELIGIBLE:
+            raise HTTPException(status_code=404, detail="Law not found")
+        if preview.status == RESULT_ALREADY_ACTIVE:
+            return _after_active_redirect(overlay, opened.user_id, law_id)
+        if not is_add_confirmed(confirm):
+            if preview.status == RESULT_NEW_BLOCKED:
+                denied = consume_blocked_response(
+                    request, templates, opened, RESULT_NEW_BLOCKED
+                )
+                return denied  # type: ignore[return-value]
+            return RedirectResponse(url=roster_path(add=law_id), status_code=303)
+        result = roster.confirm_add_law(
+            opened.user_id,
+            law_id,
+            opened.snapshot,
+            local_owner=opened.local_owner,
+            can_consume_new_law=opened.can_consume_new_law,
+        )
+        if result.status == RESULT_INELIGIBLE:
+            raise HTTPException(status_code=404, detail="Law not found")
+        if not result.ok:
+            denied = consume_blocked_response(
+                request, templates, opened, result.status
+            )
+            return denied  # type: ignore[return-value]
+        activate_law(overlay, opened.user_id, law_id)
+        return _after_active_redirect(overlay, opened.user_id, law_id)
+
+    @router.post("/roster/{law_id}/remove")
+    async def playground_remove(
+        request: Request,
+        law_id: str,
+        csrf_token: str = Form(""),
+    ) -> RedirectResponse:
+        opened = require_playground_open(
+            request, templates, next_url=roster_path()
+        )
+        blocked = _denied(opened)
+        if blocked is not None:
+            return blocked  # type: ignore[return-value]
+        _require_csrf(request, csrf_token)
+        require_eligible_law(law_id)
+        roster = require_roster_service(request)
+        roster.remove_law_this_period(
+            opened.user_id,
+            law_id,
+            opened.snapshot,
+            local_owner=opened.local_owner,
+        )
+        return RedirectResponse(url=roster_path(), status_code=303)
 
     @router.get("/laws/{law_id}", response_class=HTMLResponse)
     async def playground_law(request: Request, law_id: str) -> HTMLResponse:
-        access = require_playground_open(
-            request, templates, next_url=law_path(law_id)
+        overlay = require_playground_repo(request)
+        access = require_law_active_this_period(
+            request,
+            templates,
+            overlay,
+            law_id,
+            next_url=law_path(law_id),
         )
         blocked = _denied(access)
         if blocked is not None:
             return blocked  # type: ignore[return-value]
-        repo = require_playground_repo(request)
-        item = repo.get_item(access.user_id, law_id)
-        if item is None:
-            return RedirectResponse(url=f"/laws/{law_id}", status_code=303)
+        item = overlay.get_item(access.user_id, law_id)
         try:
             act = require_playground_law(law_id)
         except PlaygroundLawError:
             raise HTTPException(status_code=404, detail="Law not found") from None
-        selections = repo.list_selection(access.user_id, law_id)
+        selections = overlay.list_selection(access.user_id, law_id)
         progress_map = {
             row.source_locator: mark_outdated(
                 row, _section_source_hash(act, row.source_locator, law_id)
             )
-            for row in repo.list_progress(access.user_id, law_id)
+            for row in overlay.list_progress(access.user_id, law_id)
         }
         rows = []
         for sel in selections:
@@ -155,20 +355,22 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
 
     @router.get("/laws/{law_id}/sections", response_class=HTMLResponse)
     async def playground_select_page(request: Request, law_id: str) -> HTMLResponse:
-        access = require_playground_open(
-            request, templates, next_url=sections_path(law_id)
+        overlay = require_playground_repo(request)
+        access = require_law_active_this_period(
+            request,
+            templates,
+            overlay,
+            law_id,
+            next_url=sections_path(law_id),
         )
         blocked = _denied(access)
         if blocked is not None:
             return blocked  # type: ignore[return-value]
-        repo = require_playground_repo(request)
-        if repo.get_item(access.user_id, law_id) is None:
-            return RedirectResponse(url=f"/laws/{law_id}", status_code=303)
         try:
             act = require_playground_law(law_id)
         except PlaygroundLawError:
             raise HTTPException(status_code=404, detail="Law not found") from None
-        selected = selected_locator_set(repo.list_selection(access.user_id, law_id))
+        selected = selected_locator_set(overlay.list_selection(access.user_id, law_id))
         learnable = {loc.value for loc in locators_for_act(law_id, act=act)}
         sections = []
         for section in act.section_order:
@@ -197,33 +399,27 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         request: Request,
         law_id: str,
     ) -> RedirectResponse:
-        opened = require_playground_open(
-            request, templates, next_url=sections_path(law_id)
+        overlay = require_playground_repo(request)
+        opened = require_law_active_this_period(
+            request, templates, overlay, law_id, next_url=sections_path(law_id)
         )
         blocked = _denied(opened)
         if blocked is not None:
             return blocked  # type: ignore[return-value]
         form = await request.form()
         csrf_token = str(form.get("csrf_token") or "")
-        expected = request.cookies.get("rtc_csrf") or ""
-        if expected and csrf_token != expected:
-            raise HTTPException(status_code=403, detail="csrf")
-        repo = require_playground_repo(request)
-        ensured = ensure_playground_item(
-            request, templates, repo, law_id, next_url=sections_path(law_id)
-        )
-        blocked_new = _denied(ensured)
-        if blocked_new is not None:
-            return blocked_new  # type: ignore[return-value]
+        _require_csrf(request, csrf_token)
         try:
             act = require_playground_law(law_id)
         except PlaygroundLawError:
             raise HTTPException(status_code=404, detail="Law not found") from None
+        if overlay.get_item(opened.user_id, law_id) is None:
+            activate_law(overlay, opened.user_id, law_id)
         entire_raw = form.get("entire")
         entire_act = str(entire_raw or "") in {"1", "on", "true", "yes"}
         numbers = [str(value) for value in form.getlist("section")]
         rows = selection_rows(law_id, numbers, entire=entire_act, act=act)
-        repo.replace_selection(ensured.user_id, law_id, rows)
+        overlay.replace_selection(opened.user_id, law_id, rows)
         return RedirectResponse(url=law_path(law_id), status_code=303)
 
     @router.get(
@@ -235,15 +431,17 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
     ) -> HTMLResponse:
         if mode != SUPPORTED_LEARN_MODE:
             raise HTTPException(status_code=404, detail="Learn mode not found")
-        access = require_playground_open(
-            request, templates, next_url=learn_path(law_id, number, mode)
+        overlay = require_playground_repo(request)
+        access = require_law_active_this_period(
+            request,
+            templates,
+            overlay,
+            law_id,
+            next_url=learn_path(law_id, number, mode),
         )
         blocked = _denied(access)
         if blocked is not None:
             return blocked  # type: ignore[return-value]
-        repo = require_playground_repo(request)
-        if repo.get_item(access.user_id, law_id) is None:
-            return RedirectResponse(url=f"/laws/{law_id}", status_code=303)
         try:
             act = require_playground_law(law_id)
             loc, body, live_hash, source_version, cloze_available = provision_for_learn(
@@ -251,12 +449,12 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             )
         except (PlaygroundLawError, LocatorError):
             raise HTTPException(status_code=404, detail="Section not found") from None
-        selected = selected_locator_set(repo.list_selection(access.user_id, law_id))
+        selected = selected_locator_set(overlay.list_selection(access.user_id, law_id))
         if loc.value not in selected:
             return RedirectResponse(url=sections_path(law_id), status_code=303)
         section = act.section(number)
         progress = mark_outdated(
-            repo.get_progress(access.user_id, law_id, loc.value), live_hash
+            overlay.get_progress(access.user_id, law_id, loc.value), live_hash
         )
         return templates.TemplateResponse(
             request,
@@ -280,18 +478,18 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
     ) -> JSONResponse:
         if mode != SUPPORTED_LEARN_MODE:
             raise HTTPException(status_code=404, detail="Learn mode not found")
-        access = require_playground_open(
+        overlay = require_playground_repo(request)
+        access = require_law_active_this_period(
             request,
             templates,
+            overlay,
+            law_id,
             next_url=learn_path(law_id, number, mode),
             json_mode=True,
         )
         blocked = _denied(access)
         if blocked is not None:
             return blocked  # type: ignore[return-value]
-        repo = require_playground_repo(request)
-        if repo.get_item(access.user_id, law_id) is None:
-            return JSONResponse({"ok": False, "error": "not_activated"}, status_code=400)
         try:
             loc, body, live_hash, source_version, cloze_available = provision_for_learn(
                 law_id, number
@@ -300,12 +498,12 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             raise HTTPException(status_code=404, detail="Section not found") from None
         if not cloze_available:
             return JSONResponse({"ok": False, "error": "cloze_unavailable"}, status_code=400)
-        selected = selected_locator_set(repo.list_selection(access.user_id, law_id))
+        selected = selected_locator_set(overlay.list_selection(access.user_id, law_id))
         if loc.value not in selected:
             return JSONResponse({"ok": False, "error": "not_selected"}, status_code=400)
-        stored = repo.get_progress(access.user_id, law_id, loc.value)
+        stored = overlay.get_progress(access.user_id, law_id, loc.value)
         stored_hash = stored.source_hash if stored is not None else live_hash
-        progress = repo.complete_cloze(
+        progress = overlay.complete_cloze(
             access.user_id,
             law_id,
             loc.value,

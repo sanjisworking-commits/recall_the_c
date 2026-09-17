@@ -665,7 +665,10 @@ def test_no_m5_roster_schema_from_churn_batch():
     assert "user_playground_roster_item" not in blob
     assert "/playground/roster" not in blob
     versions = [path.name for path in (ROOT / "alembic" / "versions").glob("*.py")]
-    assert not any("playground_period" in name for name in versions)
+    assert any("0023" in name and "device_replacement" in name for name in versions)
+    assert any("0024" in name and "playground_roster" in name for name in versions)
+    churn = ROOT / "alembic" / "versions" / "20260917_0023_device_replacement.py"
+    assert "user_playground_period" not in churn.read_text(encoding="utf-8")
     env = (ROOT / ".env.example").read_text(encoding="utf-8")
     assert "SUPPORT_EMAIL=" in env
     assert "support@recall" not in env.lower()

@@ -1,1 +1,1 @@
-"""Playground overlay: user state on verbatim Bare Act JSON."""
+"""Playground overlay + current-month roster. Overlay is lifetime history."""

@@ -1,13 +1,15 @@
 """Frozen entitlement snapshot. Not a route gate and not a DB row.
 
 Milestone 3 defines identity + Constitution + Playground *commercial* fields.
-Milestone 4A adds device-authorization fields. Monthly roster remains M5.
+Milestone 4A adds device-authorization fields. Milestone 5 overlays current
+roster period metadata. Law membership is ``is_law_active_this_period``, not
+a lifetime unlocked-id list.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import date, datetime
 
 CONSTITUTION_ACCESS_GUEST_EXPLORE = "guest_explore"
 CONSTITUTION_ACCESS_FULL = "full"
@@ -72,3 +74,7 @@ class EntitlementSnapshot:
     current_device_allowed: bool = False
     current_device_revoked: bool = False
     device_slots_remaining: int | None = None
+    playground_period_start: date | None = None
+    playground_period_end: date | None = None
+    playground_laws_used: int | None = None
+    playground_laws_remaining: int | None = None

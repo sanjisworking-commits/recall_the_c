@@ -24,5 +24,12 @@ def require_playground_repo(request: Request):
     return repo
 
 
+def require_roster_service(request: Request):
+    service = getattr(request.app.state, "roster", None)
+    if service is None:
+        raise HTTPException(status_code=503, detail="Playground unavailable")
+    return service
+
+
 def playground_login_redirect(next_url: str) -> RedirectResponse:
     return RedirectResponse(url=f"/login?next={next_url}", status_code=303)
