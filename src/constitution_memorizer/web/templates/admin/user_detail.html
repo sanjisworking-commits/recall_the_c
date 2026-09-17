@@ -198,6 +198,48 @@
     </div>
   </div>
 
+  <div class="admin-block admin-grant-panel">
+    <div class="admin-grant-form">
+      <h2 class="admin-block-title">Clear device replacement lock</h2>
+      <p class="admin-subtitle">
+        Deletes recent Playground device-replacement events for this account
+        so a new eligible installation may register. Does not unrevoke devices,
+        change the subscription, or touch Constitution or Playground progress.
+        Resetting devices does not clear this history.
+      </p>
+      <form method="post" action="/admin/users/{{ target.user_id }}/devices/clear-replacement-limit">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <span class="admin-label">Reason — required</span>
+        <textarea
+          name="reason"
+          rows="2"
+          required
+          placeholder="Verified device replacement lockout — clear rolling window"
+        ></textarea>
+        <div class="admin-grant-actions">
+          <button type="submit" class="admin-btn is-destructive">Clear replacement lock</button>
+        </div>
+      </form>
+      <p class="admin-footnote">
+        Writes <span class="admin-mono">admin_audit_log</span> action
+        <span class="admin-mono">clear_device_replacement_limit</span> in the same
+        transaction. Replacement-policy rows only. There is no unaudited helper path.
+      </p>
+    </div>
+    <div class="admin-grant-consequences">
+      <h2 class="admin-block-title">What the write does</h2>
+      <p class="admin-subtitle">Replacement events and the audit row commit together. Devices stay as they are.</p>
+      <div class="admin-write-plan is-ink">
+        <span class="admin-label">user_device_replacement</span>
+        <p class="admin-mono">DELETE recent events in the rolling window · no device unrevoke</p>
+      </div>
+      <div class="admin-write-plan is-ink">
+        <span class="admin-label">admin_audit_log</span>
+        <p class="admin-mono">action=clear_device_replacement_limit · recent_replacement_count only</p>
+      </div>
+    </div>
+  </div>
+
   <div class="admin-block">
     <span class="admin-label">Audit</span>
     {% include "admin/_audit_table.html" %}

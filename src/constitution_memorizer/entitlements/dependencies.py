@@ -14,6 +14,7 @@ from typing import Any
 from constitution_memorizer.entitlements.models import (
     BLOCK_DEVICE_CONFIG_ERROR,
     BLOCK_DEVICE_LIMIT,
+    BLOCK_DEVICE_REPLACEMENT_LIMIT,
     BLOCK_DEVICE_REVOKED,
     EntitlementSnapshot,
 )
@@ -26,6 +27,7 @@ _DEVICE_BLOCKS = frozenset(
         BLOCK_DEVICE_LIMIT,
         BLOCK_DEVICE_REVOKED,
         BLOCK_DEVICE_CONFIG_ERROR,
+        BLOCK_DEVICE_REPLACEMENT_LIMIT,
     }
 )
 

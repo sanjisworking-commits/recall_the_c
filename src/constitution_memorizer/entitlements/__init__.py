@@ -9,6 +9,7 @@ from constitution_memorizer.entitlements.dependencies import get_entitlement_sna
 from constitution_memorizer.entitlements.models import (
     BLOCK_DEVICE_CONFIG_ERROR,
     BLOCK_DEVICE_LIMIT,
+    BLOCK_DEVICE_REPLACEMENT_LIMIT,
     BLOCK_DEVICE_REVOKED,
     BLOCK_NOT_SUBSCRIBED,
     BLOCK_PAID_PERIOD_ENDED,
@@ -26,6 +27,7 @@ from constitution_memorizer.entitlements.service import EntitlementService
 __all__ = [
     "BLOCK_DEVICE_CONFIG_ERROR",
     "BLOCK_DEVICE_LIMIT",
+    "BLOCK_DEVICE_REPLACEMENT_LIMIT",
     "BLOCK_DEVICE_REVOKED",
     "BLOCK_NOT_SUBSCRIBED",
     "BLOCK_PAID_PERIOD_ENDED",

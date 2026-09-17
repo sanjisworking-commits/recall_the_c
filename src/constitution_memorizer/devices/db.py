@@ -52,6 +52,21 @@ CREATE INDEX IF NOT EXISTS user_device_session_device
 
 CREATE INDEX IF NOT EXISTS user_device_session_user
     ON user_device_session (user_id);
+
+CREATE TABLE IF NOT EXISTS user_device_replacement (
+    id TEXT NOT NULL PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    revoked_device_id TEXT NOT NULL,
+    replacement_device_id TEXT NOT NULL,
+    occurred_at TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    platform TEXT,
+    FOREIGN KEY (revoked_device_id) REFERENCES user_device(id),
+    FOREIGN KEY (replacement_device_id) REFERENCES user_device(id)
+);
+
+CREATE INDEX IF NOT EXISTS user_device_replacement_user_occurred
+    ON user_device_replacement (user_id, occurred_at);
 """
 
 

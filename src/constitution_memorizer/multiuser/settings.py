@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import re
 from functools import lru_cache
 from pathlib import Path
 from typing import Literal
@@ -14,6 +15,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from constitution_memorizer.auth.exceptions import AuthConfigError
 
 AppEnv = Literal["development", "staging", "production", "test"]
+
+# Conservative check for optional SUPPORT_EMAIL. Empty is allowed at boot.
+_SUPPORT_EMAIL_RE = re.compile(r"^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$")
 
 
 def load_env_file(path: Path | str | None = None, *, override: bool = False) -> Path | None:
@@ -159,6 +163,11 @@ class MultiUserSettings(BaseSettings):
         default="", alias="PLAYGROUND_DEVICE_HMAC_SECRET", repr=False
     )
 
+    # Optional customer-support inbox for the device-replacement lockout CTA.
+    # Empty does not block startup. Non-empty values must look like an email.
+    # Do not fall back to LEGAL_SUPPORT_EMAIL.
+    support_email: str = Field(default="", alias="SUPPORT_EMAIL")
+
     # Google Calendar integration. A DEDICATED OAuth client (never the
     # Supabase sign-in client — the Calendar grant must be independently
     # revocable). GCAL_TOKEN_KEY is the Fernet key sealing refresh tokens at
@@ -218,6 +227,18 @@ class MultiUserSettings(BaseSettings):
         if parsed < 1:
             raise ValueError("PLAYGROUND_DEVICE_LIMIT must be a positive integer")
         return parsed
+
+    @field_validator("support_email", mode="before")
+    @classmethod
+    def _parse_support_email(cls, value: object) -> object:
+        if value is None:
+            return ""
+        text = str(value).strip()
+        if not text:
+            return ""
+        if _SUPPORT_EMAIL_RE.fullmatch(text) is None:
+            raise ValueError("SUPPORT_EMAIL must be a valid email address")
+        return text
 
     @field_validator(
         "auth_google_enabled",

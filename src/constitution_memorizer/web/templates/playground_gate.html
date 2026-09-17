@@ -11,9 +11,11 @@
   <p class="playground-lede">{{ body }}</p>
   {% endif %}
   <p class="actions">
+    {% if cta_href and cta_label %}
     <a class="btn btn-accent" href="{{ cta_href }}">{{ cta_label }}</a>
+    {% endif %}
     {% if secondary_label and secondary_href %}
-    <a class="btn btn-ghost" href="{{ secondary_href }}">{{ secondary_label }}</a>
+    <a class="btn {% if cta_href %}btn-ghost{% else %}btn-accent{% endif %}" href="{{ secondary_href }}">{{ secondary_label }}</a>
     {% elif consume_blocked %}
     <a class="btn btn-ghost" href="/playground">Back to Playground</a>
     {% endif %}

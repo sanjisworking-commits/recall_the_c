@@ -2,24 +2,29 @@
 
 from __future__ import annotations
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 from uuid import UUID
 
 from constitution_memorizer.devices.models import (
     BLOCK_DEVICE_CONFIG_ERROR,
+    DEVICE_REPLACEMENT_LIMIT,
+    DEVICE_REPLACEMENT_WINDOW_DAYS,
     PLATFORM_WEB,
     REGISTER_CREATED,
     REGISTER_EXISTING,
     REGISTER_INVALID,
     REGISTER_LIMIT,
+    REGISTER_REPLACEMENT_LIMIT,
     REGISTER_REVOKED,
     DeviceAccess,
+    DeviceReplacementClearSummary,
     DeviceResetSummary,
     DeviceSummary,
     UserDevice,
     device_access_from_state,
     device_summary,
+    replacement_window_start,
     sort_device_summaries,
 )
 from constitution_memorizer.devices.token import DeviceHmacConfigError, hash_device_token
@@ -55,9 +60,13 @@ class DeviceService:
         *,
         hmac_secret: str = "",
         device_limit: int = DEFAULT_DEVICE_LIMIT,
+        replacement_limit: int = DEVICE_REPLACEMENT_LIMIT,
+        replacement_window_days: int = DEVICE_REPLACEMENT_WINDOW_DAYS,
     ) -> None:
         self._repo = repo
         self._hmac_secret = hmac_secret or ""
+        self._replacement_limit = int(replacement_limit)
+        self._replacement_window_days = int(replacement_window_days)
         try:
             self._limit = normalize_device_limit(device_limit)
             self._limit_error = False
@@ -78,6 +87,7 @@ class DeviceService:
         token: str | None,
         *,
         admin_bypass: bool = False,
+        now: datetime | None = None,
     ) -> DeviceAccess:
         if self._limit_error:
             return device_access_from_state(
@@ -94,6 +104,7 @@ class DeviceService:
             current=current,
             admin_bypass=admin_bypass,
             config_error=config_error,
+            replacement_limited=self._replacement_limited(user_id, now=now),
         )
 
     def ensure_current_device(
@@ -170,6 +181,8 @@ class DeviceService:
             display_name=display_name,
             limit=self._limit,
             now=now,
+            replacement_limit=self._replacement_limit,
+            replacement_window_days=self._replacement_window_days,
         )
         if outcome.status == REGISTER_REVOKED:
             return device_access_from_state(
@@ -193,6 +206,13 @@ class DeviceService:
                 limit=self._limit,
                 active_count=self._safe_count(user_id),
                 current=None,
+            )
+        if outcome.status == REGISTER_REPLACEMENT_LIMIT:
+            return device_access_from_state(
+                limit=self._limit,
+                active_count=self._safe_count(user_id),
+                current=None,
+                replacement_limited=True,
             )
         if outcome.status == REGISTER_INVALID:
             return device_access_from_state(
@@ -261,6 +281,57 @@ class DeviceService:
             now=now,
         )
 
+    def count_recent_replacements(
+        self,
+        user_id: UUID | str,
+        *,
+        now: datetime | None = None,
+    ) -> int:
+        clock = now or datetime.now(timezone.utc).replace(microsecond=0)
+        since = replacement_window_start(
+            clock, days=self._replacement_window_days
+        )
+        try:
+            return int(self._repo.count_recent_replacements(user_id, since))
+        except Exception:
+            return 0
+
+    def record_replacement(
+        self,
+        user_id: UUID | str,
+        *,
+        revoked_device_id: str,
+        replacement_device_id: str,
+        occurred_at: datetime | None = None,
+        platform: str | None = None,
+    ) -> None:
+        self._repo.record_replacement(
+            user_id,
+            revoked_device_id=revoked_device_id,
+            replacement_device_id=replacement_device_id,
+            occurred_at=occurred_at,
+            platform=platform,
+        )
+
+    def clear_device_replacement_limit_audited(
+        self,
+        user_id: UUID | str,
+        *,
+        admin_user_id: UUID | str,
+        reason: str,
+        now: datetime | None = None,
+    ) -> DeviceReplacementClearSummary:
+        cleaned = (reason or "").strip()
+        if not cleaned:
+            raise ValueError("Reason is required")
+        return self._repo.clear_device_replacement_limit_audited(
+            user_id,
+            admin_user_id=admin_user_id,
+            reason=cleaned,
+            now=now,
+            replacement_window_days=self._replacement_window_days,
+        )
+
     def bind_session(
         self,
         user_id: UUID | str,
@@ -290,6 +361,19 @@ class DeviceService:
             return int(self._repo.count_active(user_id))
         except Exception:
             return 0
+
+    def _replacement_limited(
+        self, user_id: UUID | str, *, now: datetime | None = None
+    ) -> bool:
+        """True when a new installation would be a blocked replacement."""
+
+        try:
+            unpaired = self._repo.find_unpaired_revoked(user_id)
+        except Exception:
+            return False
+        if unpaired is None:
+            return False
+        return self.count_recent_replacements(user_id, now=now) >= self._replacement_limit
 
     def _hash(self, token: str | None) -> tuple[str | None, bool]:
         if not token:

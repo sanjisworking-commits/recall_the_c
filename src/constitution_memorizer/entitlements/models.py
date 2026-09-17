@@ -29,6 +29,7 @@ BLOCK_SUBSCRIPTION_PAUSED = "subscription_paused"
 BLOCK_DEVICE_LIMIT = "device_limit"
 BLOCK_DEVICE_REVOKED = "device_revoked"
 BLOCK_DEVICE_CONFIG_ERROR = "device_config_error"
+BLOCK_DEVICE_REPLACEMENT_LIMIT = "device_replacement_limit"
 
 PLAYGROUND_BLOCK_REASONS: frozenset[str] = frozenset(
     {
@@ -40,6 +41,7 @@ PLAYGROUND_BLOCK_REASONS: frozenset[str] = frozenset(
         BLOCK_DEVICE_LIMIT,
         BLOCK_DEVICE_REVOKED,
         BLOCK_DEVICE_CONFIG_ERROR,
+        BLOCK_DEVICE_REPLACEMENT_LIMIT,
     }
 )
 

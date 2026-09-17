@@ -895,26 +895,25 @@ def test_postgres_repository_uses_advisory_lock():
     assert "register_if_under_cap" in source
 
 
-def test_alembic_head_is_devices_revision():
+def test_alembic_head_is_replacement_revision():
     from alembic.config import Config
     from alembic.script import ScriptDirectory
 
     cfg = Config(str(ROOT / "alembic.ini"))
     heads = ScriptDirectory.from_config(cfg).get_heads()
-    assert heads == ["20260917_0022"]
+    assert heads == ["20260917_0023"]
 
 
-def test_no_churn_or_roster_or_support_invention():
+def test_no_roster_or_invented_support_address():
     devices_root = ROOT / "src/constitution_memorizer/devices"
     blob = "\n".join(path.read_text(encoding="utf-8") for path in devices_root.glob("*.py"))
-    assert "DEVICE_REPLACEMENT_WINDOW_DAYS" not in blob
-    assert "DEVICE_REPLACEMENT_LIMIT" not in blob
     assert "user_playground_period" not in blob
     assert "user_playground_roster_item" not in blob
+    assert "support@" not in blob.lower()
     access = (ROOT / "src/constitution_memorizer/playground/access.py").read_text(
         encoding="utf-8"
     )
-    assert "Contact support" not in access
+    assert "support@" not in access.lower()
     versions = [path.name for path in (ROOT / "alembic" / "versions").glob("*.py")]
     assert any("0021" in name and "device" in name for name in versions)
     assert not any("playground_period" in name for name in versions)

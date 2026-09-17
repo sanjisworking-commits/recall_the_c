@@ -23,11 +23,15 @@ This repository does not ship mobile client code.
 """
 
 from constitution_memorizer.devices.models import (
+    ACTION_CLEAR_DEVICE_REPLACEMENT_LIMIT,
     BLOCK_DEVICE_CONFIG_ERROR,
     BLOCK_DEVICE_LIMIT,
+    BLOCK_DEVICE_REPLACEMENT_LIMIT,
     BLOCK_DEVICE_REVOKED,
     DEVICE_BLOCK_REASONS,
     DEVICE_PLATFORMS,
+    DEVICE_REPLACEMENT_LIMIT,
+    DEVICE_REPLACEMENT_WINDOW_DAYS,
     PLATFORM_ANDROID,
     PLATFORM_IOS,
     PLATFORM_WEB,
@@ -47,12 +51,16 @@ from constitution_memorizer.devices.token import (
 DEVICES_MANAGE_PATH = "/profile/security/devices"
 
 __all__ = [
+    "ACTION_CLEAR_DEVICE_REPLACEMENT_LIMIT",
     "BLOCK_DEVICE_CONFIG_ERROR",
     "BLOCK_DEVICE_LIMIT",
+    "BLOCK_DEVICE_REPLACEMENT_LIMIT",
     "BLOCK_DEVICE_REVOKED",
     "DEVICE_BLOCK_REASONS",
     "DEVICE_COOKIE_NAME",
     "DEVICE_PLATFORMS",
+    "DEVICE_REPLACEMENT_LIMIT",
+    "DEVICE_REPLACEMENT_WINDOW_DAYS",
     "DEVICES_MANAGE_PATH",
     "DeviceAccess",
     "DeviceService",

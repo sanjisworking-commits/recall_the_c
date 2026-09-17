@@ -13,15 +13,21 @@ from constitution_memorizer.admin.audit import (
     pg_audit_params,
 )
 from constitution_memorizer.devices.models import (
+    ACTION_CLEAR_DEVICE_REPLACEMENT_LIMIT,
+    DEVICE_REPLACEMENT_LIMIT,
+    DEVICE_REPLACEMENT_WINDOW_DAYS,
+    DeviceReplacementClearSummary,
     DeviceResetSummary,
     REGISTER_CREATED,
     REGISTER_EXISTING,
     REGISTER_INVALID,
     REGISTER_LIMIT,
+    REGISTER_REPLACEMENT_LIMIT,
     REGISTER_REVOKED,
     RegisterOutcome,
     UserDevice,
     UserDeviceSession,
+    replacement_window_start,
     require_platform,
     safe_registry_state,
 )
@@ -116,6 +122,8 @@ class PostgresDeviceRepository:
         display_name: str | None,
         limit: int,
         now: datetime | None = None,
+        replacement_limit: int = DEVICE_REPLACEMENT_LIMIT,
+        replacement_window_days: int = DEVICE_REPLACEMENT_WINDOW_DAYS,
     ) -> RegisterOutcome:
         if limit < 1:
             return RegisterOutcome(status=REGISTER_INVALID, device=None)
@@ -171,6 +179,17 @@ class PostgresDeviceRepository:
                 if active >= limit:
                     conn.commit()
                     return RegisterOutcome(status=REGISTER_LIMIT, device=None)
+                unpaired = self._unpaired_revoked_on_cursor(cur, uid)
+                if unpaired is not None:
+                    since = replacement_window_start(
+                        clock, days=replacement_window_days
+                    )
+                    recent = self._count_recent_on_cursor(cur, uid, since)
+                    if recent >= replacement_limit:
+                        conn.commit()
+                        return RegisterOutcome(
+                            status=REGISTER_REPLACEMENT_LIMIT, device=None
+                        )
                 device_id = str(uuid4())
                 cur.execute(
                     """
@@ -192,6 +211,15 @@ class PostgresDeviceRepository:
                         clock,
                     ),
                 )
+                if unpaired is not None:
+                    self._insert_replacement_on_cursor(
+                        cur,
+                        uid,
+                        revoked_device_id=unpaired.id,
+                        replacement_device_id=device_id,
+                        occurred_at=clock,
+                        platform=platform,
+                    )
                 cur.execute(
                     _DEVICE_SELECT + " WHERE user_id = %s AND id = %s",
                     (uid, device_id),
@@ -431,3 +459,148 @@ class PostgresDeviceRepository:
                 )
                 rows = cur.fetchall()
         return [session_from_mapping(row) for row in rows]
+
+    def count_recent_replacements(
+        self,
+        user_id: UUID | str,
+        since: datetime,
+    ) -> int:
+        uid = as_user_id(user_id)
+        with self._pool.connection() as conn:
+            with conn.cursor(row_factory=self._dict_row) as cur:
+                return self._count_recent_on_cursor(cur, uid, since)
+
+    def find_unpaired_revoked(self, user_id: UUID | str) -> UserDevice | None:
+        uid = as_user_id(user_id)
+        with self._pool.connection() as conn:
+            with conn.cursor(row_factory=self._dict_row) as cur:
+                return self._unpaired_revoked_on_cursor(cur, uid)
+
+    def record_replacement(
+        self,
+        user_id: UUID | str,
+        *,
+        revoked_device_id: str,
+        replacement_device_id: str,
+        occurred_at: datetime | None = None,
+        platform: str | None = None,
+    ) -> None:
+        uid = as_user_id(user_id)
+        clock = occurred_at or _utc_now()
+        with self._pool.connection() as conn:
+            with conn.cursor(row_factory=self._dict_row) as cur:
+                self._insert_replacement_on_cursor(
+                    cur,
+                    uid,
+                    revoked_device_id=revoked_device_id,
+                    replacement_device_id=replacement_device_id,
+                    occurred_at=clock,
+                    platform=platform,
+                )
+                conn.commit()
+
+    def clear_device_replacement_limit_audited(
+        self,
+        user_id: UUID | str,
+        *,
+        admin_user_id: UUID | str,
+        reason: str,
+        now: datetime | None = None,
+        replacement_window_days: int = DEVICE_REPLACEMENT_WINDOW_DAYS,
+    ) -> DeviceReplacementClearSummary:
+        uid = as_user_id(user_id)
+        clock = now or _utc_now()
+        since = replacement_window_start(clock, days=replacement_window_days)
+        with self._pool.connection() as conn:
+            try:
+                with conn.cursor(row_factory=self._dict_row) as cur:
+                    cur.execute(
+                        "SELECT pg_advisory_xact_lock(%s, %s)",
+                        (_DEVICE_LOCK_NS, _lock_key(uid)),
+                    )
+                    recent = self._count_recent_on_cursor(cur, uid, since)
+                    cur.execute(
+                        """
+                        DELETE FROM user_device_replacement
+                        WHERE user_id = %s AND occurred_at >= %s
+                        """,
+                        (uid, since),
+                    )
+                    deleted = int(cur.rowcount or 0)
+                    summary = DeviceReplacementClearSummary(
+                        before={"recent_replacement_count": recent},
+                        after={"recent_replacement_count": 0},
+                        deleted_count=max(0, deleted),
+                    )
+                    entry = AuditEntry(
+                        admin_user_id=as_user_id(admin_user_id),
+                        action=ACTION_CLEAR_DEVICE_REPLACEMENT_LIMIT,
+                        target_user_id=uid,
+                        target_type="user_device_replacement",
+                        target_id=None,
+                        before_state=summary.before,
+                        after_state=summary.after,
+                        reason=reason,
+                    )
+                    cur.execute(PG_AUDIT_INSERT, pg_audit_params(entry, clock))
+                    conn.commit()
+            except Exception:
+                conn.rollback()
+                raise
+        return summary
+
+    def _unpaired_revoked_on_cursor(self, cur: Any, uid: str) -> UserDevice | None:
+        cur.execute(
+            _DEVICE_SELECT
+            + """
+            WHERE user_id = %s AND revoked_at IS NOT NULL
+              AND id NOT IN (
+                  SELECT revoked_device_id FROM user_device_replacement
+                  WHERE user_id = %s
+              )
+            ORDER BY revoked_at DESC, id DESC
+            LIMIT 1
+            """,
+            (uid, uid),
+        )
+        row = cur.fetchone()
+        return device_from_mapping(row) if row is not None else None
+
+    def _count_recent_on_cursor(self, cur: Any, uid: str, since: datetime) -> int:
+        cur.execute(
+            """
+            SELECT COUNT(*) AS n FROM user_device_replacement
+            WHERE user_id = %s AND occurred_at >= %s
+            """,
+            (uid, since),
+        )
+        row = cur.fetchone()
+        return int(row["n"] if row is not None else 0)
+
+    def _insert_replacement_on_cursor(
+        self,
+        cur: Any,
+        uid: str,
+        *,
+        revoked_device_id: str,
+        replacement_device_id: str,
+        occurred_at: datetime,
+        platform: str | None,
+    ) -> None:
+        cur.execute(
+            """
+            INSERT INTO user_device_replacement (
+                id, user_id, revoked_device_id, replacement_device_id,
+                occurred_at, created_at, platform
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """,
+            (
+                str(uuid4()),
+                uid,
+                revoked_device_id,
+                replacement_device_id,
+                occurred_at,
+                occurred_at,
+                platform,
+            ),
+        )

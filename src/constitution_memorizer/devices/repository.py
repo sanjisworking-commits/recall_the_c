@@ -15,15 +15,21 @@ from constitution_memorizer.admin.audit import (
     sqlite_audit_params,
 )
 from constitution_memorizer.devices.models import (
+    ACTION_CLEAR_DEVICE_REPLACEMENT_LIMIT,
+    DEVICE_REPLACEMENT_LIMIT,
+    DEVICE_REPLACEMENT_WINDOW_DAYS,
+    DeviceReplacementClearSummary,
     DeviceResetSummary,
     REGISTER_CREATED,
     REGISTER_EXISTING,
     REGISTER_INVALID,
     REGISTER_LIMIT,
+    REGISTER_REPLACEMENT_LIMIT,
     REGISTER_REVOKED,
     RegisterOutcome,
     UserDevice,
     UserDeviceSession,
+    replacement_window_start,
     require_platform,
     safe_registry_state,
 )
@@ -55,6 +61,7 @@ def _dt_iso(value: datetime | None) -> str | None:
         return None
     if value.tzinfo is None:
         value = value.replace(tzinfo=timezone.utc)
+    value = value.replace(microsecond=0)
     return value.isoformat()
 
 
@@ -105,7 +112,39 @@ class DeviceRepository(Protocol):
         display_name: str | None,
         limit: int,
         now: datetime | None = None,
+        replacement_limit: int = DEVICE_REPLACEMENT_LIMIT,
+        replacement_window_days: int = DEVICE_REPLACEMENT_WINDOW_DAYS,
     ) -> RegisterOutcome: ...
+
+    def count_recent_replacements(
+        self,
+        user_id: UUID | str,
+        since: datetime,
+    ) -> int: ...
+
+    def record_replacement(
+        self,
+        user_id: UUID | str,
+        *,
+        revoked_device_id: str,
+        replacement_device_id: str,
+        occurred_at: datetime | None = None,
+        platform: str | None = None,
+    ) -> None: ...
+
+    def find_unpaired_revoked(
+        self, user_id: UUID | str
+    ) -> UserDevice | None: ...
+
+    def clear_device_replacement_limit_audited(
+        self,
+        user_id: UUID | str,
+        *,
+        admin_user_id: UUID | str,
+        reason: str,
+        now: datetime | None = None,
+        replacement_window_days: int = DEVICE_REPLACEMENT_WINDOW_DAYS,
+    ) -> DeviceReplacementClearSummary: ...
 
     def revoke_device(
         self,
@@ -219,6 +258,8 @@ class SqliteDeviceRepository:
         display_name: str | None,
         limit: int,
         now: datetime | None = None,
+        replacement_limit: int = DEVICE_REPLACEMENT_LIMIT,
+        replacement_window_days: int = DEVICE_REPLACEMENT_WINDOW_DAYS,
     ) -> RegisterOutcome:
         if limit < 1:
             return RegisterOutcome(status=REGISTER_INVALID, device=None)
@@ -258,6 +299,16 @@ class SqliteDeviceRepository:
             active = int(count_row["n"] if count_row is not None else 0)
             if active >= limit:
                 return RegisterOutcome(status=REGISTER_LIMIT, device=None)
+            unpaired = self._unpaired_revoked_locked(uid)
+            if unpaired is not None:
+                since = replacement_window_start(
+                    clock, days=replacement_window_days
+                )
+                recent = self._count_recent_locked(uid, since)
+                if recent >= replacement_limit:
+                    return RegisterOutcome(
+                        status=REGISTER_REPLACEMENT_LIMIT, device=None
+                    )
             device_id = str(uuid4())
             self._conn.execute(
                 """
@@ -279,6 +330,14 @@ class SqliteDeviceRepository:
                     stamp,
                 ),
             )
+            if unpaired is not None:
+                self._insert_replacement_locked(
+                    uid,
+                    revoked_device_id=unpaired.id,
+                    replacement_device_id=device_id,
+                    occurred_at=clock,
+                    platform=platform,
+                )
             created = self.get_by_id(uid, device_id)
             return RegisterOutcome(status=REGISTER_CREATED, device=created)
 
@@ -476,6 +535,133 @@ class SqliteDeviceRepository:
             (stamp, uid, auth_session_id),
         )
         self._conn.commit()
+
+    def count_recent_replacements(
+        self,
+        user_id: UUID | str,
+        since: datetime,
+    ) -> int:
+        return self._count_recent_locked(as_user_id(user_id), since)
+
+    def find_unpaired_revoked(self, user_id: UUID | str) -> UserDevice | None:
+        return self._unpaired_revoked_locked(as_user_id(user_id))
+
+    def record_replacement(
+        self,
+        user_id: UUID | str,
+        *,
+        revoked_device_id: str,
+        replacement_device_id: str,
+        occurred_at: datetime | None = None,
+        platform: str | None = None,
+    ) -> None:
+        uid = as_user_id(user_id)
+        clock = occurred_at or _utc_now()
+        with self._exclusive():
+            self._insert_replacement_locked(
+                uid,
+                revoked_device_id=revoked_device_id,
+                replacement_device_id=replacement_device_id,
+                occurred_at=clock,
+                platform=platform,
+            )
+
+    def clear_device_replacement_limit_audited(
+        self,
+        user_id: UUID | str,
+        *,
+        admin_user_id: UUID | str,
+        reason: str,
+        now: datetime | None = None,
+        replacement_window_days: int = DEVICE_REPLACEMENT_WINDOW_DAYS,
+    ) -> DeviceReplacementClearSummary:
+        uid = as_user_id(user_id)
+        clock = now or _utc_now()
+        stamp = _dt_iso(clock)
+        since = replacement_window_start(clock, days=replacement_window_days)
+        with self._exclusive():
+            recent = self._count_recent_locked(uid, since)
+            deleted = self._conn.execute(
+                """
+                DELETE FROM user_device_replacement
+                WHERE user_id = ? AND occurred_at >= ?
+                """,
+                (uid, _dt_iso(since)),
+            ).rowcount
+            summary = DeviceReplacementClearSummary(
+                before={"recent_replacement_count": recent},
+                after={"recent_replacement_count": 0},
+                deleted_count=max(0, int(deleted or 0)),
+            )
+            entry = AuditEntry(
+                admin_user_id=as_user_id(admin_user_id),
+                action=ACTION_CLEAR_DEVICE_REPLACEMENT_LIMIT,
+                target_user_id=uid,
+                target_type="user_device_replacement",
+                target_id=None,
+                before_state=summary.before,
+                after_state=summary.after,
+                reason=reason,
+            )
+            self._conn.execute(
+                SQLITE_AUDIT_INSERT,
+                sqlite_audit_params(entry, str(uuid4()), stamp or ""),
+            )
+            return summary
+
+    def _unpaired_revoked_locked(self, uid: str) -> UserDevice | None:
+        row = self._conn.execute(
+            _DEVICE_SELECT
+            + """
+            WHERE user_id = ? AND revoked_at IS NOT NULL
+              AND id NOT IN (
+                  SELECT revoked_device_id FROM user_device_replacement
+                  WHERE user_id = ?
+              )
+            ORDER BY revoked_at DESC, id DESC
+            LIMIT 1
+            """,
+            (uid, uid),
+        ).fetchone()
+        return device_from_mapping(row) if row is not None else None
+
+    def _count_recent_locked(self, uid: str, since: datetime) -> int:
+        row = self._conn.execute(
+            """
+            SELECT COUNT(*) AS n FROM user_device_replacement
+            WHERE user_id = ? AND occurred_at >= ?
+            """,
+            (uid, _dt_iso(since)),
+        ).fetchone()
+        return int(row["n"] if row is not None else 0)
+
+    def _insert_replacement_locked(
+        self,
+        uid: str,
+        *,
+        revoked_device_id: str,
+        replacement_device_id: str,
+        occurred_at: datetime,
+        platform: str | None,
+    ) -> None:
+        stamp = _dt_iso(occurred_at)
+        self._conn.execute(
+            """
+            INSERT INTO user_device_replacement (
+                id, user_id, revoked_device_id, replacement_device_id,
+                occurred_at, created_at, platform
+            ) VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                str(uuid4()),
+                uid,
+                revoked_device_id,
+                replacement_device_id,
+                stamp,
+                stamp,
+                platform,
+            ),
+        )
 
     def list_sessions(self, user_id: UUID | str, device_id: str) -> list[UserDeviceSession]:
         uid = as_user_id(user_id)

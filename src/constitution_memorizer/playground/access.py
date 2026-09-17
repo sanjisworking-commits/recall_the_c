@@ -37,6 +37,7 @@ from constitution_memorizer.entitlements.dependencies import (
 from constitution_memorizer.entitlements.models import (
     BLOCK_DEVICE_CONFIG_ERROR,
     BLOCK_DEVICE_LIMIT,
+    BLOCK_DEVICE_REPLACEMENT_LIMIT,
     BLOCK_DEVICE_REVOKED,
     BLOCK_NOT_SUBSCRIBED,
     BLOCK_PAID_PERIOD_ENDED,
@@ -120,6 +121,19 @@ _OPEN_COPY: dict[str, dict[str, str]] = {
         "cta_label": "Back to Constitution",
         "cta_href": CONSTITUTION_HOME_PATH,
     },
+    BLOCK_DEVICE_REPLACEMENT_LIMIT: {
+        "title": "Too many recent device changes",
+        "lede": "",
+        "body": (
+            "For account security, new Playground devices are temporarily limited "
+            "after several device replacements. "
+            "Your Constitution access and saved progress are unaffected. "
+            "You can try again after the recent-device-change window clears."
+        ),
+        "cta_label": "Contact support",
+        "secondary_label": "Back to Constitution",
+        "secondary_href": CONSTITUTION_HOME_PATH,
+    },
 }
 
 _NEW_LAW_COPY = {
@@ -133,7 +147,12 @@ _NEW_LAW_COPY = {
 }
 
 _DEVICE_OPEN_REASONS = frozenset(
-    {BLOCK_DEVICE_LIMIT, BLOCK_DEVICE_REVOKED, BLOCK_DEVICE_CONFIG_ERROR}
+    {
+        BLOCK_DEVICE_LIMIT,
+        BLOCK_DEVICE_REVOKED,
+        BLOCK_DEVICE_CONFIG_ERROR,
+        BLOCK_DEVICE_REPLACEMENT_LIMIT,
+    }
 )
 
 
@@ -366,7 +385,9 @@ def _gate_page(
         secondary_href = ""
     else:
         copy = _OPEN_COPY.get(reason, _OPEN_COPY[BLOCK_NOT_SUBSCRIBED])
-        if reason in _DEVICE_OPEN_REASONS:
+        if reason == BLOCK_DEVICE_REPLACEMENT_LIMIT:
+            cta_href = _support_mailto(request) or ""
+        elif reason in _DEVICE_OPEN_REASONS:
             cta_href = copy.get("cta_href", MANAGE_DEVICES_PATH)
         elif reason == BLOCK_SIGN_IN_REQUIRED:
             cta_href = f"/login?next={home_path()}"
@@ -399,3 +420,15 @@ def new_law_home_notice(request: Request, access: PlaygroundAccess) -> str | Non
         if blocked == NEW_LAW_TEMPORARILY_UNAVAILABLE:
             return _NEW_LAW_COPY["body"]
     return None
+
+
+def _support_mailto(request: Request) -> str:
+    """Return a mailto CTA only when SUPPORT_EMAIL is configured. Never invent one."""
+
+    settings = getattr(request.app.state, "multiuser_settings", None)
+    email = ""
+    if settings is not None:
+        email = (getattr(settings, "support_email", "") or "").strip()
+    if not email:
+        return ""
+    return f"mailto:{email}"

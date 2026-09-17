@@ -3,19 +3,27 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 
 BLOCK_DEVICE_LIMIT = "device_limit"
 BLOCK_DEVICE_REVOKED = "device_revoked"
 BLOCK_DEVICE_CONFIG_ERROR = "device_config_error"
+BLOCK_DEVICE_REPLACEMENT_LIMIT = "device_replacement_limit"
 
 DEVICE_BLOCK_REASONS: frozenset[str] = frozenset(
     {
         BLOCK_DEVICE_LIMIT,
         BLOCK_DEVICE_REVOKED,
         BLOCK_DEVICE_CONFIG_ERROR,
+        BLOCK_DEVICE_REPLACEMENT_LIMIT,
     }
 )
+
+# Locked §21 replacement-churn policy. Rolling UTC window, not a calendar
+# month, billing month, or Playground roster month.
+DEVICE_REPLACEMENT_WINDOW_DAYS = 30
+DEVICE_REPLACEMENT_LIMIT = 3
+ACTION_CLEAR_DEVICE_REPLACEMENT_LIMIT = "clear_device_replacement_limit"
 
 PLATFORM_WEB = "web"
 PLATFORM_ANDROID = "android"
@@ -50,7 +58,21 @@ REGISTER_CREATED = "created"
 REGISTER_EXISTING = "existing"
 REGISTER_REVOKED = "revoked"
 REGISTER_LIMIT = "limit"
+REGISTER_REPLACEMENT_LIMIT = "replacement_limit"
 REGISTER_INVALID = "invalid"
+
+
+def replacement_window_start(
+    now: datetime,
+    *,
+    days: int = DEVICE_REPLACEMENT_WINDOW_DAYS,
+) -> datetime:
+    """Inclusive rolling floor: count events with occurred_at >= this instant."""
+
+    clock = now
+    if clock.tzinfo is None:
+        clock = clock.replace(tzinfo=timezone.utc)
+    return clock.replace(microsecond=0) - timedelta(days=int(days))
 
 
 @dataclass(frozen=True)
@@ -144,6 +166,15 @@ class DeviceResetSummary:
     revoked_device_ids: tuple[str, ...]
 
 
+@dataclass(frozen=True)
+class DeviceReplacementClearSummary:
+    """Safe before/after counts for an audited churn-history clear."""
+
+    before: dict
+    after: dict
+    deleted_count: int
+
+
 def device_summary(device: UserDevice, *, current_id: str | None) -> DeviceSummary:
     return DeviceSummary(
         id=device.id,
@@ -196,6 +227,7 @@ def device_access_from_state(
     current: UserDevice | None,
     admin_bypass: bool = False,
     config_error: bool = False,
+    replacement_limited: bool = False,
 ) -> DeviceAccess:
     remaining = slots_remaining(limit, active_count)
     if config_error:
@@ -255,6 +287,17 @@ def device_access_from_state(
             current_device_revoked=False,
             device_slots_remaining=0,
             block_reason=BLOCK_DEVICE_LIMIT,
+        )
+    if replacement_limited:
+        return DeviceAccess(
+            device_limit=limit,
+            registered_device_count=active_count,
+            current_device_id=None,
+            current_device_registered=False,
+            current_device_allowed=False,
+            current_device_revoked=False,
+            device_slots_remaining=remaining,
+            block_reason=BLOCK_DEVICE_REPLACEMENT_LIMIT,
         )
     return DeviceAccess(
         device_limit=limit,

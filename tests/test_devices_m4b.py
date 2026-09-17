@@ -1,6 +1,6 @@
 """Milestone 4B: owner device management and audited admin reset.
 
-Does not implement replacement-churn rate policy.
+Replacement-churn rate policy lives in test_devices_m4c.py.
 """
 
 from __future__ import annotations
@@ -644,7 +644,7 @@ def test_admin_reset_audit_failure_rolls_back(tmp_path: Path):
     assert len(remaining) == 2
 
 
-def test_no_unrevoke_or_churn_schema():
+def test_no_unrevoke_ui():
     root = Path(__file__).resolve().parents[1]
     devices = "\n".join(
         path.read_text(encoding="utf-8")
@@ -652,9 +652,6 @@ def test_no_unrevoke_or_churn_schema():
     )
     assert "Restore device" not in devices
     assert "undo remove" not in devices.lower()
-    assert "DEVICE_REPLACEMENT_WINDOW_DAYS" not in devices
-    assert "DEVICE_REPLACEMENT_LIMIT" not in devices
-    assert "device_replacement_event" not in devices
     assert "/reset-device-limit" not in devices
     html = (root / "src/constitution_memorizer/web/templates/devices.html").read_text(
         encoding="utf-8"
@@ -664,6 +661,5 @@ def test_no_unrevoke_or_churn_schema():
     access = (root / "src/constitution_memorizer/playground/access.py").read_text(
         encoding="utf-8"
     )
-    assert "Contact support" not in access
     assert "Get Max" not in access
     assert "Upgrade" not in access
