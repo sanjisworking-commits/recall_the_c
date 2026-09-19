@@ -55,6 +55,7 @@ class CountingProgressRepo:
         self.load_request_bootstrap_calls = 0
         self.get_notification_frequency_calls = 0
         self.claimed_articles_calls = 0
+        self.load_account_preload_calls = 0
         self.latest_paid_billing_order_calls = 0
         self.claim_article_calls = 0
         self.set_setting_calls = 0
@@ -113,6 +114,10 @@ class CountingProgressRepo:
     def claimed_articles(self, user_id):
         self.claimed_articles_calls += 1
         return self.inner.claimed_articles(user_id)
+
+    def load_account_preload(self, user_id):
+        self.load_account_preload_calls += 1
+        return self.inner.load_account_preload(user_id)
 
     def latest_paid_billing_order(self, user_id):
         self.latest_paid_billing_order_calls += 1
@@ -991,10 +996,14 @@ def test_preload_account_claims_skips_followup_selects(tmp_path: Path):
     engine._invalidate_account_cache()
     repo.reset_counts()
     engine.preload_account_claims()
-    assert repo.get_setting_calls == 1
-    assert repo.claimed_articles_calls == 1
+    # Backfill flag + claims now come from one pipelined preload, not two
+    # separate reads.
+    assert repo.load_account_preload_calls == 1
+    assert repo.get_setting_calls == 0
+    assert repo.claimed_articles_calls == 0
     assert repo.load_request_bootstrap_calls == 0
     repo.reset_counts()
     assert engine.claimed_articles() == set()
     assert repo.get_setting_calls == 0
     assert repo.claimed_articles_calls == 0
+    assert repo.load_account_preload_calls == 0
