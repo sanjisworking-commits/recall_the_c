@@ -237,6 +237,24 @@ class AutoPlanDay:
     updated_at: str | None = None
 
 
+# Setting key for the one-time grandfather backfill marker. Shared so the
+# account preload and the engine agree on the flag name.
+FREE_ARTICLES_BACKFILLED_KEY = "free_articles_backfilled"
+
+
+@dataclass(frozen=True)
+class AccountPreload:
+    """Minimal account read for mutation routes (/seen, /quiz).
+
+    Just the grandfather-backfill flag and the claimed-Article set — the two
+    reads ``preload_account_claims`` needs — so they can be fetched in one
+    pipelined round trip instead of two sequential ones.
+    """
+
+    backfilled: bool
+    claimed_articles: frozenset[str]
+
+
 @dataclass(frozen=True)
 class AutoPlanSnapshot:
     """Locked read of everything the Auto reconciler needs."""
@@ -812,6 +830,23 @@ class ProgressRepository:
             (as_user_id(user_id),),
         ).fetchall()
         return {str(r["article_number"]) for r in rows}
+
+    def load_account_preload(self, user_id: UUID | str) -> AccountPreload:
+        uid = as_user_id(user_id)
+        flag_row = self._conn.execute(
+            "SELECT value FROM app_settings WHERE user_id = ? AND key = ?",
+            (uid, FREE_ARTICLES_BACKFILLED_KEY),
+        ).fetchone()
+        claim_rows = self._conn.execute(
+            "SELECT article_number FROM user_free_articles WHERE user_id = ?",
+            (uid,),
+        ).fetchall()
+        return AccountPreload(
+            backfilled=flag_row is not None and str(flag_row["value"]) == "1",
+            claimed_articles=frozenset(
+                str(r["article_number"]) for r in claim_rows
+            ),
+        )
 
     def claimed_articles_with_dates(self, user_id: UUID | str) -> dict[str, str]:
         """Claimed parent Articles mapped to their claimed_at ISO timestamp."""

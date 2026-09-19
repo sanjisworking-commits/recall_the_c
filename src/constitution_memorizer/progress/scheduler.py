@@ -228,6 +228,21 @@ class ReminderEngine:
         preload progress, splits, or modes, and does not install a partial
         settings cache.
         """
+        need_backfill_read = (
+            not self._backfill_checked and self._settings_cache is None
+        )
+        need_claims_read = self._claimed_cache is None
+        if need_backfill_read and need_claims_read:
+            # Both reads are outstanding and no settings cache to satisfy the
+            # flag: fetch the backfill marker and the claims in ONE pipelined
+            # round trip (Postgres) instead of two sequential ones.
+            started = perf_counter()
+            preload = self.repo.load_account_preload(self.user_id)
+            _record_timing("claimed_articles", started)
+            self._claimed_cache = set(preload.claimed_articles)
+            if preload.backfilled:
+                self._backfill_checked = True
+            return
         if not self._backfill_checked:
             if self._settings_cache is not None:
                 flag = self._settings_cache.get(self._FREE_ARTICLES_BACKFILLED_KEY)

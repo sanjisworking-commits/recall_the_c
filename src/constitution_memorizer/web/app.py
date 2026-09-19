@@ -1394,6 +1394,11 @@ def create_app(
             app.state.multiuser_enabled
             and getattr(request.state, "current_user", None) is None
         )
+        # Smallest mutation preload: fetch the backfill flag + claims in one
+        # pipelined round trip so the later entitlement check reuses them
+        # instead of reading the claim store again.
+        if not is_guest and entitlements_active(request):
+            eng.preload_account_claims()
         # Stale-cycle protection: a Done in another tab advances the cycle and
         # clears unit_modes_seen — an old tab's submission must not complete
         # the new cycle. The server's own cycle is authoritative.

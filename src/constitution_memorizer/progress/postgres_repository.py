@@ -16,11 +16,13 @@ from constitution_memorizer.progress.repository import (
     NEWS_ARTICLES_KEY,
     NOTIFICATION_FREQUENCY_KEY,
     NOTIFICATION_LAST_SLOT_KEY,
+    FREE_ARTICLES_BACKFILLED_KEY,
     THEME_KEY,
     VALID_DAILY_TARGETS,
     VALID_NOTIFICATION_FREQUENCIES,
     VALID_THEMES,
     AccountBootstrap,
+    AccountPreload,
     AutoPlanDay,
     AutoPlanItem,
     AutoPlanSnapshot,
@@ -709,6 +711,45 @@ class PostgresProgressRepository:
             )
             rows = cur.fetchall()
         return {str(row["article_number"]) for row in rows}
+
+    def load_account_preload(self, user_id: UUID | str) -> AccountPreload:
+        """Backfill flag + claimed Articles in one pipelined round trip."""
+        uid = as_user_id(user_id)
+        with self._pool.connection() as conn:
+            with ExitStack() as stack:
+                flag_cur = stack.enter_context(
+                    conn.cursor(row_factory=self._dict_row)
+                )
+                claims_cur = stack.enter_context(
+                    conn.cursor(row_factory=self._dict_row)
+                )
+
+                def _queue() -> None:
+                    flag_cur.execute(
+                        "SELECT value FROM app_settings "
+                        "WHERE user_id = %s AND key = %s",
+                        (uid, FREE_ARTICLES_BACKFILLED_KEY),
+                    )
+                    claims_cur.execute(
+                        "SELECT article_number FROM user_free_articles "
+                        "WHERE user_id = %s",
+                        (uid,),
+                    )
+
+                if _pipeline_supported():
+                    with conn.pipeline():
+                        _queue()
+                else:
+                    _queue()
+
+                flag_row = flag_cur.fetchone()
+                claim_rows = claims_cur.fetchall()
+        return AccountPreload(
+            backfilled=flag_row is not None and str(flag_row["value"]) == "1",
+            claimed_articles=frozenset(
+                str(row["article_number"]) for row in claim_rows
+            ),
+        )
 
     def claimed_articles_with_dates(self, user_id: UUID | str) -> dict[str, str]:
         """Claimed parent Articles mapped to their claimed_at ISO timestamp."""

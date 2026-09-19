@@ -8,6 +8,7 @@ from typing import Protocol
 from uuid import UUID
 
 from constitution_memorizer.progress.repository import (
+    AccountPreload,
     AutoPlanDay,
     AutoPlanSnapshot,
     BillingOrder,
@@ -102,6 +103,8 @@ class ReminderRepositoryProtocol(Protocol):
     def delete_gloss(self, user_id: UUID | str, article_number: str) -> None: ...
 
     def claimed_articles(self, user_id: UUID | str) -> set[str]: ...
+
+    def load_account_preload(self, user_id: UUID | str) -> AccountPreload: ...
 
     def claimed_articles_with_dates(self, user_id: UUID | str) -> dict[str, str]: ...
 
