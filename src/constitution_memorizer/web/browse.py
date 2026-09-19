@@ -615,6 +615,121 @@ def _split_cards_by_chapter(
     return loose, groups
 
 
+# ── Immutable Browse structure cache (Phase 6) ────────────────────────────────
+# The reviewed corpus is deploy-time static, so the Part/Chapter grouping,
+# titles, and article ranges never change within a process. Only the per-card
+# due/tracked/news overlay is per-user. We memoize the immutable skeleton keyed
+# by the reviewed document object (a strong ref is held, so its id can't be
+# reused while cached), and rebuild only the personalized overlay per request.
+
+
+@dataclass(frozen=True)
+class _CardSpec:
+    article_number: str
+    title: str
+
+
+@dataclass(frozen=True)
+class _ChapterSpec:
+    chapter_number: str
+    chapter_title: str
+    article_range: str
+    cards: tuple[_CardSpec, ...]
+
+
+@dataclass(frozen=True)
+class _PartSkeleton:
+    part_number: str
+    part_title: str
+    article_range: str
+    note: str | None
+    loose: tuple[_CardSpec, ...]
+    chapters: tuple[_ChapterSpec, ...]
+
+
+# id(reviewed) -> (reviewed_ref, skeleton). Holding reviewed_ref keeps the id
+# stable; there is effectively one reviewed doc per process (a few in tests).
+_SKELETON_CACHE: dict[int, tuple[ConstitutionDocument, tuple[_PartSkeleton, ...]]] = {}
+
+
+def clear_browse_skeleton_cache() -> None:
+    """Drop the memoized reviewed skeletons (tests / hot reload)."""
+    _SKELETON_CACHE.clear()
+
+
+def _build_reviewed_skeleton(
+    reviewed: ConstitutionDocument,
+) -> tuple[_PartSkeleton, ...]:
+    from constitution_memorizer.web.progress_stats import (  # noqa: PLC0415
+        _article_range_label,
+        _display_part_title,
+        _part_articles,
+    )
+
+    skeleton: list[_PartSkeleton] = []
+    for part in reviewed.parts:
+        if str(part.part_number).upper() in {"UNKNOWN", "—", ""}:
+            continue
+        articles = _part_articles(part)
+        numbers = [a.article_number for a in articles]
+        title = _display_part_title(part.title)
+        if not articles and "VII" in str(part.part_number).upper():
+            skeleton.append(
+                _PartSkeleton(
+                    part_number=str(part.part_number),
+                    part_title=title,
+                    article_range="—",
+                    note="Repealed — States in Part B of the First Schedule.",
+                    loose=(),
+                    chapters=(),
+                )
+            )
+            continue
+        if not articles:
+            continue
+        loose = tuple(
+            _CardSpec(a.article_number, _short_article_title(a.title))
+            for a in part.articles
+        )
+        chapters: list[_ChapterSpec] = []
+        for chapter in part.chapters:
+            if not chapter.articles:
+                continue
+            ch_numbers = [a.article_number for a in chapter.articles]
+            chapters.append(
+                _ChapterSpec(
+                    chapter_number=str(chapter.chapter_number),
+                    chapter_title=_display_part_title(chapter.title),
+                    article_range=_article_range_label(ch_numbers),
+                    cards=tuple(
+                        _CardSpec(a.article_number, _short_article_title(a.title))
+                        for a in chapter.articles
+                    ),
+                )
+            )
+        skeleton.append(
+            _PartSkeleton(
+                part_number=str(part.part_number),
+                part_title=title,
+                article_range=_article_range_label(numbers),
+                note=None,
+                loose=loose,
+                chapters=tuple(chapters),
+            )
+        )
+    return tuple(skeleton)
+
+
+def _reviewed_skeleton(reviewed: ConstitutionDocument) -> tuple[_PartSkeleton, ...]:
+    key = id(reviewed)
+    cached = _SKELETON_CACHE.get(key)
+    if cached is not None and cached[0] is reviewed:
+        return cached[1]
+    skeleton = _build_reviewed_skeleton(reviewed)
+    _SKELETON_CACHE[key] = (reviewed, skeleton)
+    return skeleton
+
+
 def browse_parts_sections(
     engine: ReminderEngine,
     reviewed: ConstitutionDocument | None,
@@ -623,22 +738,17 @@ def browse_parts_sections(
     news_articles: set[str] | None = None,
 ) -> list[BrowsePartSection]:
     """Part-grouped Browse index (Sprint 29) with due/overdue card badges."""
-    from constitution_memorizer.web.progress_stats import (  # noqa: PLC0415
-        _article_range_label,
-        _display_part_title,
-        _part_articles,
-    )
-
     dues = article_due_summaries(engine, as_of=as_of)
     if news_articles is None:
         news_articles = parse_news_articles(engine.get_news_articles_raw())
 
-    def _card(number: str, title: str) -> BrowseArticleCard:
+    def _card(spec: _CardSpec) -> BrowseArticleCard:
+        number = spec.article_number
         summary = dues.get(number)
         flagged = number in news_articles
         return BrowseArticleCard(
             article_number=number,
-            title=title,
+            title=spec.title,
             href=f"/browse/article/{number}",
             tracked=_article_is_tracked(engine, number),
             due_count=summary.due_count if summary else 0,
@@ -647,59 +757,30 @@ def browse_parts_sections(
             marks=marks_for_article(number, in_news=flagged),
         )
 
-    sections: list[BrowsePartSection] = []
     if reviewed is None:
         # learning_units.json is tracked; reviewed Bare Act JSON is often local-only.
         return browse_parts_from_units(
             engine, as_of=as_of, news_articles=news_articles
         )
 
-    for part in reviewed.parts:
-        if str(part.part_number).upper() in {"UNKNOWN", "—", ""}:
-            continue
-        articles = _part_articles(part)
-        numbers = [a.article_number for a in articles]
-        title = _display_part_title(part.title)
-        if not articles and "VII" in str(part.part_number).upper():
-            sections.append(
-                BrowsePartSection(
-                    part_number=str(part.part_number),
-                    part_title=title,
-                    article_range="—",
-                    cards=[],
-                    note="Repealed — States in Part B of the First Schedule.",
-                )
-            )
-            continue
-        if not articles:
-            continue
-        loose = [
-            _card(a.article_number, _short_article_title(a.title))
-            for a in part.articles
-        ]
-        chapter_groups: list[BrowseChapterGroup] = []
-        for chapter in part.chapters:
-            if not chapter.articles:
-                continue
-            ch_numbers = [a.article_number for a in chapter.articles]
-            chapter_groups.append(
-                BrowseChapterGroup(
-                    chapter_number=str(chapter.chapter_number),
-                    chapter_title=_display_part_title(chapter.title),
-                    article_range=_article_range_label(ch_numbers),
-                    cards=[
-                        _card(a.article_number, _short_article_title(a.title))
-                        for a in chapter.articles
-                    ],
-                )
-            )
+    sections: list[BrowsePartSection] = []
+    for part in _reviewed_skeleton(reviewed):
         sections.append(
             BrowsePartSection(
-                part_number=str(part.part_number),
-                part_title=title,
-                article_range=_article_range_label(numbers),
-                cards=loose,
-                chapters=chapter_groups,
+                part_number=part.part_number,
+                part_title=part.part_title,
+                article_range=part.article_range,
+                cards=[_card(spec) for spec in part.loose],
+                chapters=[
+                    BrowseChapterGroup(
+                        chapter_number=chapter.chapter_number,
+                        chapter_title=chapter.chapter_title,
+                        article_range=chapter.article_range,
+                        cards=[_card(spec) for spec in chapter.cards],
+                    )
+                    for chapter in part.chapters
+                ],
+                note=part.note,
             )
         )
     return sections
