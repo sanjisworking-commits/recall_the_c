@@ -2315,7 +2315,12 @@ def create_app(
         prev_number, next_number = adjacent_article_numbers(
             eng, app.state.reviewed, view.article_number
         )
-        gloss_text = eng.get_gloss(view.article_number) or ""
+        # A guest has no personal Explain-it-back gloss, so skip the DB read
+        # entirely (~230 ms per round trip in production) and render it empty.
+        if getattr(request.state, "is_guest", False):
+            gloss_text = ""
+        else:
+            gloss_text = eng.get_gloss(view.article_number) or ""
         gloss_ph = gloss_placeholder_for(
             app.state.gloss_placeholders, view.article_number
         )
