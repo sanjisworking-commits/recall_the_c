@@ -18,7 +18,7 @@ from typing import Any
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, Form, HTTPException, Request
-from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 
 from constitution_memorizer.admin.dependencies import require_admin
@@ -186,6 +186,23 @@ def create_admin_router(templates: Jinja2Templates) -> APIRouter:
         }
         ctx.update(extra)
         return ctx
+
+    # ------------------------------------------------------------------ #
+    # Diagnostics: real DB round-trip latency + deployment regions        #
+    # ------------------------------------------------------------------ #
+    @router.get("/diagnostics/db-latency")
+    async def db_latency(request: Request) -> JSONResponse:
+        """Measure Postgres RTT from this process using the live pool.
+
+        Admin-only (router-wide ``require_admin``). Returns connection-acquire
+        time, first-query time, and p50/p95 over 20 sequential ``SELECT 1``
+        calls, plus Railway/database region hints — no credentials.
+        """
+        from constitution_memorizer.admin.db_diagnostics import measure_db_rtt
+
+        pool = getattr(request.app.state, "db_pool", None)
+        report = measure_db_rtt(pool)
+        return JSONResponse(report.as_dict())
 
     # ------------------------------------------------------------------ #
     # Home                                                               #
