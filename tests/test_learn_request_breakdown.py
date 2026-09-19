@@ -46,6 +46,7 @@ class CountingProgressRepo:
         self.get_theme_calls = 0
         self.get_setting_calls = 0
         self.claimed_articles_calls = 0
+        self.load_account_preload_calls = 0
         self.get_news_articles_raw_calls = 0
         self.last_bootstrap_kwargs = None
 
@@ -76,6 +77,10 @@ class CountingProgressRepo:
     def claimed_articles(self, user_id):
         self.claimed_articles_calls += 1
         return self.inner.claimed_articles(user_id)
+
+    def load_account_preload(self, user_id):
+        self.load_account_preload_calls += 1
+        return self.inner.load_account_preload(user_id)
 
     def load_completion_state(self, user_id, unit_id: str):
         self.load_completion_state_calls += 1
@@ -150,6 +155,7 @@ class CountingProgressRepo:
             "get_news_articles_raw": self.get_news_articles_raw_calls,
             "get_setting": self.get_setting_calls,
             "claimed_articles": self.claimed_articles_calls,
+            "load_account_preload": self.load_account_preload_calls,
         }
 
     def reset_counts(self) -> None:
@@ -500,10 +506,33 @@ def test_seen_preloads_claims_without_full_bootstrap(tmp_path: Path):
     resp = client.post("/learn/clause-1/seen", data={"mode": "cloze"})
     assert resp.status_code == 200
     assert resp.json().get("persisted") is True
+    # Still no full page bootstrap; the account preload is now one pipelined
+    # round trip (backfill flag + claims) instead of two sequential reads.
     assert repo.load_request_bootstrap_calls == 0
     assert repo.mark_mode_seen_calls == 1
-    assert repo.get_setting_calls >= 1
-    assert repo.claimed_articles_calls == 1
+    assert repo.load_account_preload_calls == 1
+    # The backfill-setting and claims reads are folded into the one preload; no
+    # separate claimed read remains. The lone get_setting is user_today's
+    # timezone lookup, which is a different setting.
+    assert repo.claimed_articles_calls == 0
+    assert repo.get_setting_calls == 1
+
+
+def test_quiz_preloads_claims_once_without_full_bootstrap(tmp_path: Path):
+    client, repo = _counting_client(tmp_path, ARTICLE_ENTITLEMENTS_ENABLED="true")
+    engine = client.app.state.engine.for_user(USER)
+    engine.set_setting("free_articles_backfilled", "1")
+    engine.claim_article("20")
+    from tests.quiz_helpers import submit_quiz
+
+    repo.reset_counts()
+    resp = submit_quiz(client, MINI_UNITS, "clause-1", cycle=0)
+    assert resp.status_code == 200
+    # No full page bootstrap; the account preload runs at most once and there is
+    # no separate claimed-Article read inside the request.
+    assert repo.load_request_bootstrap_calls == 0
+    assert repo.load_account_preload_calls <= 1
+    assert repo.claimed_articles_calls == 0
 
 
 def test_learn_get_includes_account_when_entitlements_on(tmp_path: Path):
