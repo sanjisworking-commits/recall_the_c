@@ -6,8 +6,11 @@ from dataclasses import dataclass
 from datetime import date, timedelta
 from pathlib import Path
 from time import perf_counter
-from typing import Iterable, Mapping
+from typing import TYPE_CHECKING, Iterable, Mapping
 from uuid import UUID
+
+if TYPE_CHECKING:
+    from constitution_memorizer.admin.store import AccessOverride
 
 from constitution_memorizer.learning.schemas import LearningUnit, LearningUnitsDocument
 from constitution_memorizer.progress.db import open_progress_db
@@ -219,6 +222,28 @@ class ReminderEngine:
         ):
             self._backfill_checked = True
         return bundle
+
+    def preload_learn_mutation(self, *, now) -> "AccessOverride":
+        """One pipelined read for a mutation route (/seen, /quiz).
+
+        Seeds the settings, claimed-Article, and progress request caches and
+        returns the authoritative :class:`AccessOverride` so the route can seed
+        ``request.state`` and ``resolve_learn_access`` never re-reads it. The
+        grandfather backfill is NOT marked done unless the persisted flag says
+        so — a false flag leaves ``_backfill_checked`` unset so the legacy
+        backfill still runs on first ``claimed_articles()``.
+        """
+        started = perf_counter()
+        bundle = self.repo.load_learn_mutation_preload(self.user_id, now=now)
+        _record_timing("learn_mutation_preload", started)
+        self._settings_cache = dict(bundle.settings or {})
+        self._claimed_cache = set(bundle.claimed_articles)
+        self._progress_cache = {
+            row.learning_unit_id: row for row in bundle.progress
+        }
+        if self._settings_cache.get(self._FREE_ARTICLES_BACKFILLED_KEY) == "1":
+            self._backfill_checked = True
+        return bundle.access_override
 
     def preload_account_claims(self) -> None:
         """Seed backfill + claimed caches without a full request bootstrap.

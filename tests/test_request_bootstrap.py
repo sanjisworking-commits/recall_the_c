@@ -1007,3 +1007,44 @@ def test_preload_account_claims_skips_followup_selects(tmp_path: Path):
     assert repo.get_setting_calls == 0
     assert repo.claimed_articles_calls == 0
     assert repo.load_account_preload_calls == 0
+
+
+def test_learn_mutation_preload_seeds_caches_and_returns_override(tmp_path: Path):
+    from datetime import datetime, timezone
+
+    repo, engine = _seeded_engine(tmp_path)
+    engine.set_setting("free_articles_backfilled", "1")
+    engine.claim_article("20")
+    engine._invalidate_settings_cache()
+    engine._invalidate_account_cache()
+    engine._invalidate_progress_cache()
+
+    override = engine.preload_learn_mutation(now=datetime.now(timezone.utc))
+
+    # Caches seeded from the one bundle.
+    assert engine._settings_cache is not None
+    assert engine._settings_cache.get("free_articles_backfilled") == "1"
+    assert engine._progress_cache is not None and "clause-1" in engine._progress_cache
+    assert engine.claimed_articles() == {"20"}
+    assert override.is_admin is False
+    assert override.effective_grant is None
+
+
+def test_learn_mutation_preload_preserves_backfill_when_flag_false(tmp_path: Path):
+    from datetime import datetime, timezone
+
+    # _seeded_engine marks clause-1 (Article 20) Done, so the grandfather
+    # backfill has something to claim. The backfill flag is unset.
+    repo, engine = _seeded_engine(tmp_path)
+    assert engine.get_setting("free_articles_backfilled") is None
+
+    engine.preload_learn_mutation(now=datetime.now(timezone.utc))
+    # Flag was false, so the preload must NOT mark the backfill complete.
+    assert engine._backfill_checked is False
+
+    # The legacy grandfather backfill still runs on first claimed_articles(),
+    # claiming the Done Article and persisting the flag.
+    claimed = engine.claimed_articles()
+    assert "20" in claimed
+    assert engine._backfill_checked is True
+    assert engine.get_setting("free_articles_backfilled") == "1"

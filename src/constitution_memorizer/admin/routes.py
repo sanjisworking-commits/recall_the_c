@@ -191,12 +191,16 @@ def create_admin_router(templates: Jinja2Templates) -> APIRouter:
     # Diagnostics: real DB round-trip latency + deployment regions        #
     # ------------------------------------------------------------------ #
     @router.get("/diagnostics/db-latency")
-    async def db_latency(request: Request) -> JSONResponse:
+    def db_latency(request: Request) -> JSONResponse:
         """Measure Postgres RTT from this process using the live pool.
 
         Admin-only (router-wide ``require_admin``). Returns connection-acquire
         time, first-query time, and p50/p95 over 20 sequential ``SELECT 1``
         calls, plus Railway/database region hints — no credentials.
+
+        Deliberately a *sync* ``def`` route: ``measure_db_rtt`` runs 21
+        blocking queries (~5 s at 230 ms RTT), so FastAPI runs it in the
+        threadpool and it never stalls the event loop for other requests.
         """
         from constitution_memorizer.admin.db_diagnostics import measure_db_rtt
 

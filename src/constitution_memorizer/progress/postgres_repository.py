@@ -29,6 +29,7 @@ from constitution_memorizer.progress.repository import (
     BillingOrder,
     CompletionProgress,
     CompletionState,
+    LearnMutationPreload,
     LearningPlanMode,
     PlannerReadBundle,
     UserLearningPlan,
@@ -749,6 +750,80 @@ class PostgresProgressRepository:
             claimed_articles=frozenset(
                 str(row["article_number"]) for row in claim_rows
             ),
+        )
+
+    def load_learn_mutation_preload(
+        self, user_id: UUID | str, *, now: datetime
+    ) -> LearnMutationPreload:
+        """Settings + progress + claims + access-override in one pipelined read.
+
+        All four SELECTs (including the role/grant override, which lives in the
+        same database) are queued on their own cursors on one connection, so
+        Postgres pays a single network round trip. The route then seeds the
+        engine caches and request.state.access_override, leaving only the
+        mutation write.
+        """
+        from constitution_memorizer.admin.store import (
+            AccessOverride,
+            _PG_OVERRIDE_SQL,
+            _row_override,
+        )
+
+        uid = as_user_id(user_id)
+        with self._pool.connection() as conn:
+            with ExitStack() as stack:
+                settings_cur = stack.enter_context(
+                    conn.cursor(row_factory=self._dict_row)
+                )
+                progress_cur = stack.enter_context(
+                    conn.cursor(row_factory=self._dict_row)
+                )
+                claims_cur = stack.enter_context(
+                    conn.cursor(row_factory=self._dict_row)
+                )
+                override_cur = stack.enter_context(
+                    conn.cursor(row_factory=self._dict_row)
+                )
+
+                def _queue() -> None:
+                    settings_cur.execute(
+                        "SELECT key, value FROM app_settings WHERE user_id = %s",
+                        (uid,),
+                    )
+                    progress_cur.execute(
+                        "SELECT * FROM learning_unit_progress WHERE user_id = %s",
+                        (uid,),
+                    )
+                    claims_cur.execute(
+                        "SELECT article_number FROM user_free_articles "
+                        "WHERE user_id = %s",
+                        (uid,),
+                    )
+                    override_cur.execute(_PG_OVERRIDE_SQL, {"uid": uid, "now": now})
+
+                if _pipeline_supported():
+                    with conn.pipeline():
+                        _queue()
+                else:
+                    _queue()
+
+                settings_rows = settings_cur.fetchall()
+                progress_rows = progress_cur.fetchall()
+                claim_rows = claims_cur.fetchall()
+                override_row = override_cur.fetchone()
+
+        override = (
+            _row_override(override_row)
+            if override_row is not None
+            else AccessOverride()
+        )
+        return LearnMutationPreload(
+            settings={str(r["key"]): str(r["value"]) for r in settings_rows},
+            progress=tuple(_row_progress(r) for r in progress_rows),
+            claimed_articles=frozenset(
+                str(r["article_number"]) for r in claim_rows
+            ),
+            access_override=override,
         )
 
     def claimed_articles_with_dates(self, user_id: UUID | str) -> dict[str, str]:

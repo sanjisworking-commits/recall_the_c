@@ -12,6 +12,7 @@ from constitution_memorizer.progress.repository import (
     AutoPlanDay,
     AutoPlanSnapshot,
     BillingOrder,
+    LearnMutationPreload,
     CompletionProgress,
     CompletionState,
     NotificationFrequency,
@@ -105,6 +106,10 @@ class ReminderRepositoryProtocol(Protocol):
     def claimed_articles(self, user_id: UUID | str) -> set[str]: ...
 
     def load_account_preload(self, user_id: UUID | str) -> AccountPreload: ...
+
+    def load_learn_mutation_preload(
+        self, user_id: UUID | str, *, now: datetime
+    ) -> LearnMutationPreload: ...
 
     def claimed_articles_with_dates(self, user_id: UUID | str) -> dict[str, str]: ...
 

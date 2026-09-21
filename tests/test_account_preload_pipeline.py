@@ -110,3 +110,97 @@ def test_account_preload_falls_back_without_pipeline(monkeypatch):
     assert _executes_before_first_fetch(conn) == 2
     assert preload.backfilled is True
     assert preload.claimed_articles == frozenset({"20"})
+
+
+# ── LearnMutationPreload: settings + progress + claims + override in 1 round trip
+
+
+class _MutationCursor:
+    def __init__(self, conn: "_MutationConn") -> None:
+        self.conn = conn
+        self._kind: str | None = None
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        return None
+
+    def execute(self, sql, params=None):
+        text = " ".join(str(sql).split()).lower()
+        self.conn.events.append(("execute", text))
+        if "app_settings" in text:
+            self._kind = "settings"
+        elif "learning_unit_progress" in text:
+            self._kind = "progress"
+        elif "user_free_articles" in text:
+            self._kind = "claims"
+        else:
+            self._kind = "override"
+
+    def fetchone(self):
+        self.conn.events.append(("fetchone", self._kind))
+        # Only the override query fetchone()s here.
+        return {"is_admin": False, "grant_id": None, "source": None,
+                "starts_at": None, "ends_at": None}
+
+    def fetchall(self):
+        self.conn.events.append(("fetchall", self._kind))
+        if self._kind == "settings":
+            return [{"key": "user_timezone", "value": "Asia/Kolkata"}]
+        if self._kind == "claims":
+            return [{"article_number": "20"}]
+        return []  # progress
+
+
+class _MutationConn:
+    def __init__(self) -> None:
+        self.events: list[tuple] = []
+        self.pipeline_entries = 0
+
+    def cursor(self, row_factory=None):
+        return _MutationCursor(self)
+
+    @contextmanager
+    def pipeline(self):
+        self.pipeline_entries += 1
+        yield
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        return None
+
+
+class _MutationPool:
+    def __init__(self, conn: _MutationConn) -> None:
+        self.conn = conn
+
+    @contextmanager
+    def connection(self):
+        yield self.conn
+
+
+def test_learn_mutation_preload_pipelines_four_reads(monkeypatch):
+    from datetime import datetime, timezone
+
+    conn = _MutationConn()
+    monkeypatch.setattr(
+        "constitution_memorizer.progress.postgres_repository._pipeline_capability",
+        lambda: (True, None),
+    )
+    repo = PostgresProgressRepository(_MutationPool(conn))
+
+    bundle = repo.load_learn_mutation_preload(
+        USER, now=datetime(2026, 9, 21, tzinfo=timezone.utc)
+    )
+
+    assert conn.pipeline_entries == 1
+    # All four independent SELECTs are queued before any result is read.
+    kinds = [e[0] for e in conn.events]
+    first_fetch = next(i for i, k in enumerate(kinds) if k in {"fetchall", "fetchone"})
+    assert kinds[:first_fetch].count("execute") == 4
+    assert bundle.settings == {"user_timezone": "Asia/Kolkata"}
+    assert bundle.claimed_articles == frozenset({"20"})
+    assert bundle.access_override.is_admin is False
