@@ -6,7 +6,7 @@
     "date": "14th October, 1988",
     "source_type": "IndiaCode_consolidation",
     "source_as_on": "15th August, 2026",
-    "parser": "PyMuPDF deterministic geometry parser (Motor Vehicles v2)",
+    "parser": "PyMuPDF deterministic geometry parser (Motor Vehicles v3)",
     "toolchain": {
       "pymupdf": "1.28.2",
       "mupdf": "1.28.2"
@@ -271,43 +271,43 @@
                         10
                       ],
                       "source_x": 126.02
+                    },
+                    {
+                      "type": "paragraph",
+                      "label": "",
+                      "text": "and in either case, without stopping to pick up or set down passengers not included in the contract anywhere during the journey, and includes—",
+                      "children": [
+                        {
+                          "type": "subclause",
+                          "label": "(i)",
+                          "text": "a maxicab; and",
+                          "children": [],
+                          "source_pages": [
+                            11
+                          ],
+                          "source_x": 144.02
+                        },
+                        {
+                          "type": "subclause",
+                          "label": "(ii)",
+                          "text": "a motor cab notwithstanding that separate fares are charged for its passengers;",
+                          "children": [],
+                          "source_pages": [
+                            11
+                          ],
+                          "source_x": 144.02
+                        }
+                      ],
+                      "source_pages": [
+                        11
+                      ],
+                      "source_x": 72.02
                     }
                   ],
                   "source_pages": [
                     10
                   ],
                   "source_x": 108.02
-                },
-                {
-                  "type": "paragraph",
-                  "label": "",
-                  "text": "and in either case, without stopping to pick up or set down passengers not included in the contract anywhere during the journey, and includes—",
-                  "children": [
-                    {
-                      "type": "subclause",
-                      "label": "(i)",
-                      "text": "a maxicab; and",
-                      "children": [],
-                      "source_pages": [
-                        11
-                      ],
-                      "source_x": 144.02
-                    },
-                    {
-                      "type": "subclause",
-                      "label": "(ii)",
-                      "text": "a motor cab notwithstanding that separate fares are charged for its passengers;",
-                      "children": [],
-                      "source_pages": [
-                        11
-                      ],
-                      "source_x": 144.02
-                    }
-                  ],
-                  "source_pages": [
-                    11
-                  ],
-                  "source_x": 72.02
                 },
                 {
                   "type": "clause",
@@ -895,18 +895,7 @@
                       "type": "subclause",
                       "label": "(iv)",
                       "text": "Zilla Parishad or any other similar local authority.]",
-                      "children": [
-                        {
-                          "type": "explanation",
-                          "label": "Explanation",
-                          "text": "For the purposes of this clause, “road transport service” means a service of motor vehicles carrying passengers or goods or both by road for hire or reward;",
-                          "children": [],
-                          "source_pages": [
-                            13
-                          ],
-                          "source_x": 108.02
-                        }
-                      ],
+                      "children": [],
                       "source_pages": [
                         13
                       ],
@@ -923,6 +912,17 @@
                           "source_page": 13
                         }
                       ]
+                    },
+                    {
+                      "type": "explanation",
+                      "label": "Explanation",
+                      "text": "For the purposes of this clause, “road transport service” means a service of motor vehicles carrying passengers or goods or both by road for hire or reward;",
+                      "children": [],
+                      "source_pages": [
+                        13
+                      ],
+                      "source_x": 108.02,
+                      "scope_declared": "clause"
                     }
                   ],
                   "source_pages": [
@@ -1726,8 +1726,39 @@
                     {
                       "type": "subclause",
                       "label": "(a)",
-                      "text": "(i) the applicant has previously held a driving licence to drive such class of vehicle and that the period between the date of expiry of that licence and the date of the application does not exceed five years, or",
-                      "children": [],
+                      "text": "",
+                      "children": [
+                        {
+                          "type": "item",
+                          "label": "(i)",
+                          "text": "the applicant has previously held a driving licence to drive such class of vehicle and that the period between the date of expiry of that licence and the date of the application does not exceed five years, or",
+                          "children": [],
+                          "source_pages": [
+                            16
+                          ],
+                          "source_x": 108.02
+                        },
+                        {
+                          "type": "item",
+                          "label": "(ii)",
+                          "text": "the applicant holds or has previously held a driving licence to drive such class of vehicle issued under section 18, or",
+                          "children": [],
+                          "source_pages": [
+                            16
+                          ],
+                          "source_x": 111.38
+                        },
+                        {
+                          "type": "item",
+                          "label": "(iii)",
+                          "text": "the applicant holds a driving licence to drive such class of vehicle issued by a competent authority of any country outside India, subject to the condition that the applicant complies with the provisions of sub-section (3) of section 8,",
+                          "children": [],
+                          "source_pages": [
+                            16
+                          ],
+                          "source_x": 111.38
+                        }
+                      ],
                       "source_pages": [
                         16
                       ],
@@ -1735,52 +1766,9 @@
                     },
                     {
                       "type": "subclause",
-                      "label": "(ii)",
-                      "text": "the applicant holds or has previously held a driving licence to drive such class of vehicle issued under section 18, or",
-                      "children": [],
-                      "source_pages": [
-                        16
-                      ],
-                      "source_x": 111.38
-                    },
-                    {
-                      "type": "subclause",
-                      "label": "(iii)",
-                      "text": "the applicant holds a driving licence to drive such class of vehicle issued by a competent authority of any country outside India, subject to the condition that the applicant complies with the provisions of sub-section (3) of section 8,",
-                      "children": [],
-                      "source_pages": [
-                        16
-                      ],
-                      "source_x": 111.38
-                    },
-                    {
-                      "type": "subclause",
                       "label": "(b)",
                       "text": "the applicant is not suffering from any disability which is likely to cause the driving by him to be a source of danger to the public; and the licensing authority may, for that purpose, require the applicant to produce a medical certificate in the same form and in the same manner as is referred to in sub-section (3) of section 8:",
-                      "children": [
-                        {
-                          "type": "proviso",
-                          "label": "",
-                          "text": "Provided further that a driving licence for driving an adapted vehicle may be issued to the applicant, if the licensing authority is satisfied that he is fit to drive such motor vehicle.]]",
-                          "children": [],
-                          "source_pages": [
-                            16
-                          ],
-                          "source_x": 108.02,
-                          "leading_brackets": 1,
-                          "annotations": [
-                            {
-                              "type": "footnote",
-                              "marker": "5",
-                              "note_id": "footnote_p16_5",
-                              "start": 0,
-                              "end": 188,
-                              "anchor_text": "Provided further that a driving licence for driving an adapted vehicle may be issued to the applicant, if the licensing authority is satisfied that he is fit to drive such motor vehicle.]]",
-                              "source_page": 16
-                            }
-                          ]
-                        }
-                      ],
+                      "children": [],
                       "source_pages": [
                         16
                       ],
@@ -1791,6 +1779,28 @@
                     16
                   ],
                   "source_x": 90.02
+                },
+                {
+                  "type": "proviso",
+                  "label": "",
+                  "text": "Provided further that a driving licence for driving an adapted vehicle may be issued to the applicant, if the licensing authority is satisfied that he is fit to drive such motor vehicle.]]",
+                  "children": [],
+                  "source_pages": [
+                    16
+                  ],
+                  "source_x": 108.02,
+                  "leading_brackets": 1,
+                  "annotations": [
+                    {
+                      "type": "footnote",
+                      "marker": "5",
+                      "note_id": "footnote_p16_5",
+                      "start": 0,
+                      "end": 188,
+                      "anchor_text": "Provided further that a driving licence for driving an adapted vehicle may be issued to the applicant, if the licensing authority is satisfied that he is fit to drive such motor vehicle.]]",
+                      "source_page": 16
+                    }
+                  ]
                 }
               ],
               "source_pages": [
@@ -4024,14 +4034,15 @@
                   ],
                   "source_x": 108.02,
                   "leading_brackets": 1,
-                  "annotations": [
+                  "label_annotations": [
                     {
                       "type": "footnote",
                       "marker": "2",
                       "note_id": "footnote_p26_2",
+                      "target": "label",
                       "start": 0,
-                      "end": 0,
-                      "anchor_text": "",
+                      "end": 4,
+                      "anchor_text": "(aa)",
                       "source_page": 26
                     }
                   ]
@@ -5699,22 +5710,22 @@
                             33
                           ],
                           "source_x": 126.02
+                        },
+                        {
+                          "type": "paragraph",
+                          "label": "",
+                          "text": "together with a declaration that he has not received any communication from such authority refusing to grant such certificate or requiring him to comply with any direction subject to which such certificate may be granted:",
+                          "children": [],
+                          "source_pages": [
+                            33
+                          ],
+                          "source_x": 72.02
                         }
                       ],
                       "source_pages": [
                         33
                       ],
                       "source_x": 108.02
-                    },
-                    {
-                      "type": "paragraph",
-                      "label": "",
-                      "text": "together with a declaration that he has not received any communication from such authority refusing to grant such certificate or requiring him to comply with any direction subject to which such certificate may be granted:",
-                      "children": [],
-                      "source_pages": [
-                        33
-                      ],
-                      "source_x": 72.02
                     }
                   ],
                   "source_pages": [
@@ -6116,22 +6127,22 @@
                                 35
                               ],
                               "source_x": 162.02
+                            },
+                            {
+                              "type": "paragraph",
+                              "label": "",
+                              "text": "together with a declaration that he has not received any communication from such authority refusing to grant such certificate or requiring him to comply with any direction subject to which such certificate may be granted;",
+                              "children": [],
+                              "source_pages": [
+                                35
+                              ],
+                              "source_x": 108.02
                             }
                           ],
                           "source_pages": [
                             35
                           ],
                           "source_x": 144.02
-                        },
-                        {
-                          "type": "paragraph",
-                          "label": "",
-                          "text": "together with a declaration that he has not received any communication from such authority refusing to grant such certificate or requiring him to comply with any direction subject to which such certificate may be granted;",
-                          "children": [],
-                          "source_pages": [
-                            35
-                          ],
-                          "source_x": 108.02
                         }
                       ],
                       "source_pages": [
@@ -6411,7 +6422,8 @@
                   "source_pages": [
                     37
                   ],
-                  "source_x": 90.02
+                  "source_x": 90.02,
+                  "scope_declared": "subsection"
                 }
               ],
               "source_pages": [
@@ -6823,22 +6835,22 @@
               "type": "subsection",
               "label": "(5)",
               "text": "Subject to the provisions made under sub-sections (1), (2), (3) and (4), no person holding a vehicle under a hire-purchase agreement shall make any alteration to the vehicle except with the written consent of the registered owner.",
-              "children": [
-                {
-                  "type": "explanation",
-                  "label": "Explanation",
-                  "text": "For the purposes of this section, “alteration” means a change in the structure of a vehicle which results in a change in its basic feature.]",
-                  "children": [],
-                  "source_pages": [
-                    39
-                  ],
-                  "source_x": 90.02
-                }
-              ],
+              "children": [],
               "source_pages": [
                 39
               ],
               "source_x": 90.02
+            },
+            {
+              "type": "explanation",
+              "label": "Explanation",
+              "text": "For the purposes of this section, “alteration” means a change in the structure of a vehicle which results in a change in its basic feature.]",
+              "children": [],
+              "source_pages": [
+                39
+              ],
+              "source_x": 90.02,
+              "scope_declared": "section"
             }
           ],
           "source_pages": [
@@ -9642,22 +9654,22 @@
                   "type": "clause",
                   "label": "(c)",
                   "text": "the minimum and maximum number of daily trips proposed to be provided and the time-table of the normal trips.",
-                  "children": [
-                    {
-                      "type": "explanation",
-                      "label": "Explanation",
-                      "text": "For the purposes of this section, section 72, section 80 and section 102, “trip” means a single journey from one point to another, and every return journey shall be deemed to be a separate trip;",
-                      "children": [],
-                      "source_pages": [
-                        51
-                      ],
-                      "source_x": 108.02
-                    }
-                  ],
+                  "children": [],
                   "source_pages": [
                     51
                   ],
                   "source_x": 108.02
+                },
+                {
+                  "type": "explanation",
+                  "label": "Explanation",
+                  "text": "For the purposes of this section, section 72, section 80 and section 102, “trip” means a single journey from one point to another, and every return journey shall be deemed to be a separate trip;",
+                  "children": [],
+                  "source_pages": [
+                    51
+                  ],
+                  "source_x": 108.02,
+                  "scope_declared": "section"
                 },
                 {
                   "type": "clause",
@@ -9773,77 +9785,47 @@
             {
               "type": "subsection",
               "label": "(3)",
-              "text": "(a) The State Government shall, if so directed by the Central Government having regard to the number of vehicles, road conditions and other relevant matters, by notification in the Official Gazette, direct a State Transport Authority and a Regional Transport Authority to limit the number of stage carriages generally or of any specified type, as may be fixed and specified in the notification, operating on city routes in towns with a population of not less than five lakhs.",
-              "children": [],
-              "source_pages": [
-                52
-              ],
-              "source_x": 90.02
-            },
-            {
-              "type": "subsection",
-              "label": "(b)",
-              "text": "Where the number of stage carriages are fixed under clause (a), the Government of the State shall reserve in the State certain percentage of stage carriage permits for the scheduled castes and the scheduled tribes in the same ratio as in the case of appointments made by direct recruitment to public services in the State.",
-              "children": [],
-              "source_pages": [
-                52
-              ],
-              "source_x": 90.02
-            },
-            {
-              "type": "subsection",
-              "label": "(c)",
-              "text": "Where the number of stage carriages are fixed under clause (a), the Regional Transport Authority shall reserve such number of permits for the scheduled castes and the scheduled tribes as may be fixed by the State Government under sub-clause (b).",
-              "children": [],
-              "source_pages": [
-                52
-              ],
-              "source_x": 90.02
-            },
-            {
-              "type": "subsection",
-              "label": "(d)",
-              "text": "After reserving such number of permits as is referred to in clause (c), the Regional Transport Authority shall in considering an application have regard to the following matters, namely:—",
+              "text": "",
               "children": [
                 {
                   "type": "clause",
-                  "label": "(i)",
-                  "text": "financial stability of the applicant;",
+                  "label": "(a)",
+                  "text": "The State Government shall, if so directed by the Central Government having regard to the number of vehicles, road conditions and other relevant matters, by notification in the Official Gazette, direct a State Transport Authority and a Regional Transport Authority to limit the number of stage carriages generally or of any specified type, as may be fixed and specified in the notification, operating on city routes in towns with a population of not less than five lakhs.",
                   "children": [],
                   "source_pages": [
                     52
                   ],
-                  "source_x": 108.02
+                  "source_x": 90.02
                 },
                 {
                   "type": "clause",
-                  "label": "(ii)",
-                  "text": "satisfactory performance as a stage carriage operator including payment of tax if the applicant is or has been an operator of stage carriage service; and",
+                  "label": "(b)",
+                  "text": "Where the number of stage carriages are fixed under clause (a), the Government of the State shall reserve in the State certain percentage of stage carriage permits for the scheduled castes and the scheduled tribes in the same ratio as in the case of appointments made by direct recruitment to public services in the State.",
                   "children": [],
                   "source_pages": [
                     52
                   ],
-                  "source_x": 108.02
+                  "source_x": 90.02
                 },
                 {
                   "type": "clause",
-                  "label": "(iii)",
-                  "text": "such other matters as may be prescribed by the State Government:",
+                  "label": "(c)",
+                  "text": "Where the number of stage carriages are fixed under clause (a), the Regional Transport Authority shall reserve such number of permits for the scheduled castes and the scheduled tribes as may be fixed by the State Government under sub-clause (b).",
                   "children": [],
                   "source_pages": [
                     52
                   ],
-                  "source_x": 108.02
+                  "source_x": 90.02
                 },
                 {
-                  "type": "proviso",
-                  "label": "",
-                  "text": "Provided that, other conditions being equal, preference shall be given to applications for permits from—",
+                  "type": "clause",
+                  "label": "(d)",
+                  "text": "After reserving such number of permits as is referred to in clause (c), the Regional Transport Authority shall in considering an application have regard to the following matters, namely:—",
                   "children": [
                     {
                       "type": "subclause",
                       "label": "(i)",
-                      "text": "State transport undertakings;",
+                      "text": "financial stability of the applicant;",
                       "children": [],
                       "source_pages": [
                         52
@@ -9853,72 +9835,134 @@
                     {
                       "type": "subclause",
                       "label": "(ii)",
-                      "text": "co-operative societies registered or deemed to have been registered under any enactment for the time being in force; ***",
+                      "text": "satisfactory performance as a stage carriage operator including payment of tax if the applicant is or has been an operator of stage carriage service; and",
                       "children": [],
                       "source_pages": [
                         52
                       ],
-                      "source_x": 108.02,
-                      "annotations": [
-                        {
-                          "type": "footnote",
-                          "marker": "1",
-                          "note_id": "footnote_p52_1",
-                          "start": 117,
-                          "end": 120,
-                          "anchor_text": "***",
-                          "source_page": 52
-                        }
-                      ]
+                      "source_x": 108.02
                     },
                     {
                       "type": "subclause",
                       "label": "(iii)",
-                      "text": "ex-servicemen; [or]",
+                      "text": "such other matters as may be prescribed by the State Government:",
                       "children": [],
                       "source_pages": [
                         52
                       ],
-                      "source_x": 108.02,
-                      "annotations": [
-                        {
-                          "type": "footnote",
-                          "marker": "2",
-                          "note_id": "footnote_p52_2",
-                          "start": 15,
-                          "end": 19,
-                          "anchor_text": "[or]",
-                          "source_page": 52
-                        }
-                      ]
+                      "source_x": 108.02
                     },
                     {
-                      "type": "subclause",
-                      "label": "(iv)",
-                      "text": "any other class or category of persons, as the State Government may, for reasons to be recorded in writing, consider necessary.]",
-                      "children": [],
+                      "type": "proviso",
+                      "label": "",
+                      "text": "Provided that, other conditions being equal, preference shall be given to applications for permits from—",
+                      "children": [
+                        {
+                          "type": "item",
+                          "label": "(i)",
+                          "text": "State transport undertakings;",
+                          "children": [],
+                          "source_pages": [
+                            52
+                          ],
+                          "source_x": 108.02
+                        },
+                        {
+                          "type": "item",
+                          "label": "(ii)",
+                          "text": "co-operative societies registered or deemed to have been registered under any enactment for the time being in force; ***",
+                          "children": [],
+                          "source_pages": [
+                            52
+                          ],
+                          "source_x": 108.02,
+                          "annotations": [
+                            {
+                              "type": "footnote",
+                              "marker": "1",
+                              "note_id": "footnote_p52_1",
+                              "start": 117,
+                              "end": 120,
+                              "anchor_text": "***",
+                              "source_page": 52
+                            }
+                          ]
+                        },
+                        {
+                          "type": "item",
+                          "label": "(iii)",
+                          "text": "ex-servicemen; [or]",
+                          "children": [],
+                          "source_pages": [
+                            52
+                          ],
+                          "source_x": 108.02,
+                          "annotations": [
+                            {
+                              "type": "footnote",
+                              "marker": "2",
+                              "note_id": "footnote_p52_2",
+                              "start": 15,
+                              "end": 19,
+                              "anchor_text": "[or]",
+                              "source_page": 52
+                            }
+                          ]
+                        },
+                        {
+                          "type": "item",
+                          "label": "(iv)",
+                          "text": "any other class or category of persons, as the State Government may, for reasons to be recorded in writing, consider necessary.]",
+                          "children": [],
+                          "source_pages": [
+                            52
+                          ],
+                          "source_x": 108.02,
+                          "leading_brackets": 1,
+                          "annotations": [
+                            {
+                              "type": "footnote",
+                              "marker": "2",
+                              "note_id": "footnote_p52_2",
+                              "start": 0,
+                              "end": 128,
+                              "anchor_text": "any other class or category of persons, as the State Government may, for reasons to be recorded in writing, consider necessary.]",
+                              "source_page": 52
+                            }
+                          ]
+                        }
+                      ],
                       "source_pages": [
                         52
                       ],
-                      "source_x": 108.02,
-                      "leading_brackets": 1,
-                      "annotations": [
-                        {
-                          "type": "footnote",
-                          "marker": "2",
-                          "note_id": "footnote_p52_2",
-                          "start": 0,
-                          "end": 128,
-                          "anchor_text": "any other class or category of persons, as the State Government may, for reasons to be recorded in writing, consider necessary.]",
-                          "source_page": 52
-                        }
-                      ]
+                      "source_x": 90.02
                     }
                   ],
                   "source_pages": [
                     52
                   ],
                   "source_x": 90.02
+                },
+                {
+                  "type": "omission",
+                  "label": "",
+                  "text": "* * * * *",
+                  "children": [],
+                  "source_pages": [
+                    52
+                  ],
+                  "source_x": 90.02,
+                  "annotations": [
+                    {
+                      "type": "footnote",
+                      "marker": "3",
+                      "note_id": "footnote_p52_3",
+                      "start": 0,
+                      "end": 9,
+                      "anchor_text": "* * * * *",
+                      "source_page": 52
+                    }
+                  ]
                 }
               ],
               "source_pages": [
@@ -9927,36 +9971,15 @@
               "source_x": 90.02
             },
             {
-              "type": "omission",
-              "label": "",
-              "text": "* * * * *",
-              "children": [
-                {
-                  "type": "explanation",
-                  "label": "Explanation",
-                  "text": "For the purposes of this section “company” means any body corporate, and includes a firm or other association of individuals; and “director”, in relation to a firm, means a partner in the firm.",
-                  "children": [],
-                  "source_pages": [
-                    52
-                  ],
-                  "source_x": 90.02
-                }
-              ],
+              "type": "explanation",
+              "label": "Explanation",
+              "text": "For the purposes of this section “company” means any body corporate, and includes a firm or other association of individuals; and “director”, in relation to a firm, means a partner in the firm.",
+              "children": [],
               "source_pages": [
                 52
               ],
               "source_x": 90.02,
-              "annotations": [
-                {
-                  "type": "footnote",
-                  "marker": "3",
-                  "note_id": "footnote_p52_3",
-                  "start": 0,
-                  "end": 9,
-                  "anchor_text": "* * * * *",
-                  "source_page": 52
-                }
-              ]
+              "scope_declared": "section"
             }
           ],
           "source_pages": [
@@ -10582,57 +10605,27 @@
             {
               "type": "subsection",
               "label": "(3)",
-              "text": "(a) The State Government shall, if so directed by the Central Government, having regard to the number of vehicles, road conditions and other relevant matters, by notification in the Official Gazette, direct a State Transport Authority and a Regional Transport Authority to limit the number of contract carriages generally or of any specified type, as may be fixed and specified in the notification, operating on city routes in towns with a population of not less than five lakhs.",
-              "children": [],
-              "source_pages": [
-                55
-              ],
-              "source_x": 90.02
-            },
-            {
-              "type": "subsection",
-              "label": "(b)",
-              "text": "Where the number of contract carriages are fixed under clause (a), the Regional Transport Authority shall, in considering an application for the grant of permit in respect of any such contract carriage, have regard to the following matters, namely:—",
+              "text": "",
               "children": [
                 {
                   "type": "clause",
-                  "label": "(i)",
-                  "text": "financial stability of the applicant;",
+                  "label": "(a)",
+                  "text": "The State Government shall, if so directed by the Central Government, having regard to the number of vehicles, road conditions and other relevant matters, by notification in the Official Gazette, direct a State Transport Authority and a Regional Transport Authority to limit the number of contract carriages generally or of any specified type, as may be fixed and specified in the notification, operating on city routes in towns with a population of not less than five lakhs.",
                   "children": [],
                   "source_pages": [
                     55
                   ],
-                  "source_x": 108.02
+                  "source_x": 90.02
                 },
                 {
                   "type": "clause",
-                  "label": "(ii)",
-                  "text": "satisfactory performance as a contract carriage operator including payment of tax if the applicant is or has been an operator of contract carriages; and",
-                  "children": [],
-                  "source_pages": [
-                    55
-                  ],
-                  "source_x": 108.02
-                },
-                {
-                  "type": "clause",
-                  "label": "(iii)",
-                  "text": "such other matters as may be prescribed by the State Government:",
-                  "children": [],
-                  "source_pages": [
-                    55
-                  ],
-                  "source_x": 108.02
-                },
-                {
-                  "type": "proviso",
-                  "label": "",
-                  "text": "Provided that, other conditions being equal, preference shall be given to applications for permits from—",
+                  "label": "(b)",
+                  "text": "Where the number of contract carriages are fixed under clause (a), the Regional Transport Authority shall, in considering an application for the grant of permit in respect of any such contract carriage, have regard to the following matters, namely:—",
                   "children": [
                     {
                       "type": "subclause",
                       "label": "(i)",
-                      "text": "the India Tourism Development Corporation;",
+                      "text": "financial stability of the applicant;",
                       "children": [],
                       "source_pages": [
                         55
@@ -10642,7 +10635,7 @@
                     {
                       "type": "subclause",
                       "label": "(ii)",
-                      "text": "State Tourism Development Corporations;",
+                      "text": "satisfactory performance as a contract carriage operator including payment of tax if the applicant is or has been an operator of contract carriages; and",
                       "children": [],
                       "source_pages": [
                         55
@@ -10652,7 +10645,7 @@
                     {
                       "type": "subclause",
                       "label": "(iii)",
-                      "text": "State Tourism Departments;",
+                      "text": "such other matters as may be prescribed by the State Government:",
                       "children": [],
                       "source_pages": [
                         55
@@ -10660,56 +10653,97 @@
                       "source_x": 108.02
                     },
                     {
-                      "type": "subclause",
-                      "label": "(iv)",
-                      "text": "State transport undertakings;",
-                      "children": [],
-                      "source_pages": [
-                        55
-                      ],
-                      "source_x": 108.02
-                    },
-                    {
-                      "type": "subclause",
-                      "label": "(v)",
-                      "text": "co-operative societies registered or deemed to have been registered under any enactment for the time being in force;",
-                      "children": [],
-                      "source_pages": [
-                        55
-                      ],
-                      "source_x": 108.02
-                    },
-                    {
-                      "type": "subclause",
-                      "label": "(vi)",
-                      "text": "ex-servicemen;",
-                      "children": [],
-                      "source_pages": [
-                        55
-                      ],
-                      "source_x": 108.02
-                    },
-                    {
-                      "type": "subclause",
-                      "label": "(vii)",
-                      "text": "self-help groups.]",
-                      "children": [],
-                      "source_pages": [
-                        55
-                      ],
-                      "source_x": 108.02,
-                      "leading_brackets": 1,
-                      "annotations": [
+                      "type": "proviso",
+                      "label": "",
+                      "text": "Provided that, other conditions being equal, preference shall be given to applications for permits from—",
+                      "children": [
                         {
-                          "type": "footnote",
-                          "marker": "1",
-                          "note_id": "footnote_p55_1",
-                          "start": 0,
-                          "end": 18,
-                          "anchor_text": "self-help groups.]",
-                          "source_page": 55
+                          "type": "item",
+                          "label": "(i)",
+                          "text": "the India Tourism Development Corporation;",
+                          "children": [],
+                          "source_pages": [
+                            55
+                          ],
+                          "source_x": 108.02
+                        },
+                        {
+                          "type": "item",
+                          "label": "(ii)",
+                          "text": "State Tourism Development Corporations;",
+                          "children": [],
+                          "source_pages": [
+                            55
+                          ],
+                          "source_x": 108.02
+                        },
+                        {
+                          "type": "item",
+                          "label": "(iii)",
+                          "text": "State Tourism Departments;",
+                          "children": [],
+                          "source_pages": [
+                            55
+                          ],
+                          "source_x": 108.02
+                        },
+                        {
+                          "type": "item",
+                          "label": "(iv)",
+                          "text": "State transport undertakings;",
+                          "children": [],
+                          "source_pages": [
+                            55
+                          ],
+                          "source_x": 108.02
+                        },
+                        {
+                          "type": "item",
+                          "label": "(v)",
+                          "text": "co-operative societies registered or deemed to have been registered under any enactment for the time being in force;",
+                          "children": [],
+                          "source_pages": [
+                            55
+                          ],
+                          "source_x": 108.02
+                        },
+                        {
+                          "type": "item",
+                          "label": "(vi)",
+                          "text": "ex-servicemen;",
+                          "children": [],
+                          "source_pages": [
+                            55
+                          ],
+                          "source_x": 108.02
+                        },
+                        {
+                          "type": "item",
+                          "label": "(vii)",
+                          "text": "self-help groups.]",
+                          "children": [],
+                          "source_pages": [
+                            55
+                          ],
+                          "source_x": 108.02,
+                          "leading_brackets": 1,
+                          "annotations": [
+                            {
+                              "type": "footnote",
+                              "marker": "1",
+                              "note_id": "footnote_p55_1",
+                              "start": 0,
+                              "end": 18,
+                              "anchor_text": "self-help groups.]",
+                              "source_page": 55
+                            }
+                          ]
                         }
-                      ]
+                      ],
+                      "source_pages": [
+                        55
+                      ],
+                      "source_x": 90.02
                     }
                   ],
                   "source_pages": [
@@ -12541,100 +12575,70 @@
             {
               "type": "subsection",
               "label": "(14)",
-              "text": "(a) The Central Government may make rules for carrying out the provisions of this section.",
-              "children": [],
-              "source_pages": [
-                63
-              ],
-              "source_x": 90.02
-            },
-            {
-              "type": "subsection",
-              "label": "(b)",
-              "text": "In particular, and without prejudice to the generality of the foregoing power, such rules may provide for all or any of the following matters, namely:—",
+              "text": "",
               "children": [
                 {
                   "type": "clause",
-                  "label": "(i)",
-                  "text": "the authorisation fee payable for the issue of a permit referred to in sub-sections (9) and (12);",
+                  "label": "(a)",
+                  "text": "The Central Government may make rules for carrying out the provisions of this section.",
                   "children": [],
                   "source_pages": [
                     63
                   ],
-                  "source_x": 108.02
+                  "source_x": 90.02
                 },
                 {
                   "type": "clause",
-                  "label": "(ii)",
-                  "text": "the fixation of the laden weight of the motor vehicle;",
-                  "children": [],
-                  "source_pages": [
-                    63
-                  ],
-                  "source_x": 108.02
-                },
-                {
-                  "type": "clause",
-                  "label": "(iii)",
-                  "text": "the distinguishing particulars or marks to be carried or exhibited in or on the motor vehicle;",
-                  "children": [],
-                  "source_pages": [
-                    63
-                  ],
-                  "source_x": 108.02
-                },
-                {
-                  "type": "clause",
-                  "label": "(iv)",
-                  "text": "the colour or colours in which the motor vehicle is to be painted;",
-                  "children": [],
-                  "source_pages": [
-                    63
-                  ],
-                  "source_x": 108.02
-                },
-                {
-                  "type": "clause",
-                  "label": "(v)",
-                  "text": "such other matters as the appropriate authority shall consider in granting a national permit.",
-                  "children": [],
-                  "source_pages": [
-                    63
-                  ],
-                  "source_x": 108.02
-                },
-                {
-                  "type": "explanation",
-                  "label": "Explanation",
-                  "text": "In this section,—",
+                  "label": "(b)",
+                  "text": "In particular, and without prejudice to the generality of the foregoing power, such rules may provide for all or any of the following matters, namely:—",
                   "children": [
                     {
                       "type": "subclause",
-                      "label": "(a)",
-                      "text": "“appropriate authority”, in relation to a national permit, means the authority which is authorised under this Act to grant a goods carriage permit;",
+                      "label": "(i)",
+                      "text": "the authorisation fee payable for the issue of a permit referred to in sub-sections (9) and (12);",
                       "children": [],
                       "source_pages": [
-                        64
+                        63
                       ],
                       "source_x": 108.02
                     },
                     {
                       "type": "subclause",
-                      "label": "(b)",
-                      "text": "“authorisation fee” means the annual fee, not exceeding one thousand rupees, which may be charged by the appropriate authority of a State to enable a motor vehicle, covered by the permit referred to in sub-sections (9) and (12) to be used in other States subject to the payment of taxes or fees, if any, levied by the States concerned;",
+                      "label": "(ii)",
+                      "text": "the fixation of the laden weight of the motor vehicle;",
                       "children": [],
                       "source_pages": [
-                        64
+                        63
                       ],
                       "source_x": 108.02
                     },
                     {
                       "type": "subclause",
-                      "label": "(c)",
-                      "text": "“national permit” means a permit granted by the appropriate authority to goods carriages to operate throughout the territory of India or in such contiguous States, not being less than four in number, including the State in which the permit is issued as may be specified in such permit in accordance with the choice indicated in the application.",
+                      "label": "(iii)",
+                      "text": "the distinguishing particulars or marks to be carried or exhibited in or on the motor vehicle;",
                       "children": [],
                       "source_pages": [
-                        64
+                        63
+                      ],
+                      "source_x": 108.02
+                    },
+                    {
+                      "type": "subclause",
+                      "label": "(iv)",
+                      "text": "the colour or colours in which the motor vehicle is to be painted;",
+                      "children": [],
+                      "source_pages": [
+                        63
+                      ],
+                      "source_x": 108.02
+                    },
+                    {
+                      "type": "subclause",
+                      "label": "(v)",
+                      "text": "such other matters as the appropriate authority shall consider in granting a national permit.",
+                      "children": [],
+                      "source_pages": [
+                        63
                       ],
                       "source_x": 108.02
                     }
@@ -12649,6 +12653,48 @@
                 63
               ],
               "source_x": 90.02
+            },
+            {
+              "type": "explanation",
+              "label": "Explanation",
+              "text": "In this section,—",
+              "children": [
+                {
+                  "type": "item",
+                  "label": "(a)",
+                  "text": "“appropriate authority”, in relation to a national permit, means the authority which is authorised under this Act to grant a goods carriage permit;",
+                  "children": [],
+                  "source_pages": [
+                    64
+                  ],
+                  "source_x": 108.02
+                },
+                {
+                  "type": "item",
+                  "label": "(b)",
+                  "text": "“authorisation fee” means the annual fee, not exceeding one thousand rupees, which may be charged by the appropriate authority of a State to enable a motor vehicle, covered by the permit referred to in sub-sections (9) and (12) to be used in other States subject to the payment of taxes or fees, if any, levied by the States concerned;",
+                  "children": [],
+                  "source_pages": [
+                    64
+                  ],
+                  "source_x": 108.02
+                },
+                {
+                  "type": "item",
+                  "label": "(c)",
+                  "text": "“national permit” means a permit granted by the appropriate authority to goods carriages to operate throughout the territory of India or in such contiguous States, not being less than four in number, including the State in which the permit is issued as may be specified in such permit in accordance with the choice indicated in the application.",
+                  "children": [],
+                  "source_pages": [
+                    64
+                  ],
+                  "source_x": 108.02
+                }
+              ],
+              "source_pages": [
+                63
+              ],
+              "source_x": 90.02,
+              "scope_declared": "section"
             }
           ],
           "source_pages": [
@@ -14016,14 +14062,15 @@
               ],
               "source_x": 90.02,
               "leading_brackets": 1,
-              "annotations": [
+              "label_annotations": [
                 {
                   "type": "footnote",
                   "marker": "2",
                   "note_id": "footnote_p69_2",
+                  "target": "label",
                   "start": 0,
-                  "end": 0,
-                  "anchor_text": "",
+                  "end": 3,
+                  "anchor_text": "(1)",
                   "source_page": 69
                 }
               ]
@@ -14424,22 +14471,21 @@
                   "type": "clause",
                   "label": "(b)",
                   "text": "for part of a month not exceeding fifteen days of the unexpired period of the permit One hundred rupees:",
-                  "children": [
-                    {
-                      "type": "proviso",
-                      "label": "",
-                      "text": "Provided that the amount of compensation shall, in no case, be less than four hundred rupees.",
-                      "children": [],
-                      "source_pages": [
-                        72
-                      ],
-                      "source_x": 108.02
-                    }
-                  ],
+                  "children": [],
                   "source_pages": [
                     71
                   ],
                   "source_x": 104.42
+                },
+                {
+                  "type": "proviso",
+                  "label": "",
+                  "text": "Provided that the amount of compensation shall, in no case, be less than four hundred rupees.",
+                  "children": [],
+                  "source_pages": [
+                    72
+                  ],
+                  "source_x": 108.02
                 }
               ],
               "source_pages": [
@@ -14455,7 +14501,7 @@
                 {
                   "type": "formula",
                   "label": "",
-                  "text": "Y A / R",
+                  "text": "(Y × A) / R",
                   "children": [],
                   "source_pages": [
                     72
@@ -14465,7 +14511,7 @@
                     "Y A",
                     "R"
                   ],
-                  "formula_note": "printed as a displayed fraction: the source draws a rule between the lines; '/' stands for that rule. A vector glyph drawn between the terms of the first line has no text-layer character and is not invented.",
+                  "formula_note": "printed as a displayed fraction: the source draws a rule between the lines; '/' stands for that rule.",
                   "drawings": [
                     [
                       292.9,
@@ -14485,7 +14531,16 @@
                       309.7,
                       143.6
                     ]
-                  ]
+                  ],
+                  "transcription": {
+                    "expression": "(Y × A) / R",
+                    "page": 72,
+                    "text_layer_lines": [
+                      "Y A",
+                      "R"
+                    ],
+                    "basis": "read from the page: a multiplication sign is drawn between Y and A and a rule under them; neither has a text-layer character"
+                  }
                 },
                 {
                   "type": "explanation",
@@ -15840,18 +15895,29 @@
             {
               "type": "subsection",
               "label": "(1)",
-              "text": "(a) The State Government or any authority authorised in this behalf by the State Government may cause or permit traffic signs to be placed or erected in any public place for the purpose of bringing to public notice any speed limits fixed under sub-section (2) of section 112 or any prohibitions or restrictions imposed under section 115 or generally for the purpose of regulating motor vehicle traffic.",
-              "children": [],
-              "source_pages": [
-                77
+              "text": "",
+              "children": [
+                {
+                  "type": "clause",
+                  "label": "(a)",
+                  "text": "The State Government or any authority authorised in this behalf by the State Government may cause or permit traffic signs to be placed or erected in any public place for the purpose of bringing to public notice any speed limits fixed under sub-section (2) of section 112 or any prohibitions or restrictions imposed under section 115 or generally for the purpose of regulating motor vehicle traffic.",
+                  "children": [],
+                  "source_pages": [
+                    77
+                  ],
+                  "source_x": 90.02
+                },
+                {
+                  "type": "clause",
+                  "label": "(b)",
+                  "text": "A State Government or any authority authorised in this behalf by the State Government may, by notification in the Official Gazette or by the erection at suitable places of the appropriate traffic sign referred to in Part A of the Schedule, designate certain roads as main roads for the purposes of the driving regulations made by the Central Government.",
+                  "children": [],
+                  "source_pages": [
+                    77
+                  ],
+                  "source_x": 90.02
+                }
               ],
-              "source_x": 90.02
-            },
-            {
-              "type": "subsection",
-              "label": "(b)",
-              "text": "A State Government or any authority authorised in this behalf by the State Government may, by notification in the Official Gazette or by the erection at suitable places of the appropriate traffic sign referred to in Part A of the Schedule, designate certain roads as main roads for the purposes of the driving regulations made by the Central Government.",
-              "children": [],
               "source_pages": [
                 77
               ],
@@ -16264,43 +16330,44 @@
                     79
                   ],
                   "source_x": 90.02
-                },
-                {
-                  "type": "explanation",
-                  "label": "Explanation",
-                  "text": "In this section,—",
-                  "children": [
-                    {
-                      "type": "subclause",
-                      "label": "(a)",
-                      "text": "“pass” means a duty, privilege or courtesy pass entitling the person to whom it is given to travel in a stage carriage gratuitously and includes a pass issued on payment for travel in a stage carriage for the period specified therein;",
-                      "children": [],
-                      "source_pages": [
-                        79
-                      ],
-                      "source_x": 108.02
-                    },
-                    {
-                      "type": "subclause",
-                      "label": "(b)",
-                      "text": "“ticket” includes a single ticket, a return ticket or a season ticket.",
-                      "children": [],
-                      "source_pages": [
-                        79
-                      ],
-                      "source_x": 108.02
-                    }
-                  ],
-                  "source_pages": [
-                    79
-                  ],
-                  "source_x": 90.02
                 }
               ],
               "source_pages": [
                 79
               ],
               "source_x": 90.02
+            },
+            {
+              "type": "explanation",
+              "label": "Explanation",
+              "text": "In this section,—",
+              "children": [
+                {
+                  "type": "subclause",
+                  "label": "(a)",
+                  "text": "“pass” means a duty, privilege or courtesy pass entitling the person to whom it is given to travel in a stage carriage gratuitously and includes a pass issued on payment for travel in a stage carriage for the period specified therein;",
+                  "children": [],
+                  "source_pages": [
+                    79
+                  ],
+                  "source_x": 108.02
+                },
+                {
+                  "type": "subclause",
+                  "label": "(b)",
+                  "text": "“ticket” includes a single ticket, a return ticket or a season ticket.",
+                  "children": [],
+                  "source_pages": [
+                    79
+                  ],
+                  "source_x": 108.02
+                }
+              ],
+              "source_pages": [
+                79
+              ],
+              "source_x": 90.02,
+              "scope_declared": "section"
             }
           ],
           "source_pages": [
@@ -16612,7 +16679,8 @@
                   "source_pages": [
                     80
                   ],
-                  "source_x": 90.02
+                  "source_x": 90.02,
+                  "scope_declared": "subsection"
                 }
               ],
               "source_pages": [
@@ -16910,16 +16978,6 @@
                         81
                       ],
                       "source_x": 126.02
-                    },
-                    {
-                      "type": "explanation",
-                      "label": "Explanation",
-                      "text": "For the purposes of this section, the expression “driver” includes the owner of the vehicle.]",
-                      "children": [],
-                      "source_pages": [
-                        81
-                      ],
-                      "source_x": 108.02
                     }
                   ],
                   "source_pages": [
@@ -16944,6 +17002,17 @@
                 81
               ],
               "source_x": 90.02
+            },
+            {
+              "type": "explanation",
+              "label": "Explanation",
+              "text": "For the purposes of this section, the expression “driver” includes the owner of the vehicle.]",
+              "children": [],
+              "source_pages": [
+                81
+              ],
+              "source_x": 108.02,
+              "scope_declared": "section"
             }
           ],
           "source_pages": [
@@ -16972,22 +17041,22 @@
               "type": "subsection",
               "label": "(2)",
               "text": "The Central Government may by rules provide for the procedure for questioning or examination of the Good Samaritan, disclosure of personal information of the Good Samaritan and such other related matters.",
-              "children": [
-                {
-                  "type": "explanation",
-                  "label": "Explanation",
-                  "text": "For the purposes of this section, “Good Samaritan” means a person, who in good faith, voluntarily and without expectation of any reward or compensation renders emergency medical or non-medical care or assistance at the scene of an accident to the victim or transports such victim to the hospital.]",
-                  "children": [],
-                  "source_pages": [
-                    82
-                  ],
-                  "source_x": 90.02
-                }
-              ],
+              "children": [],
               "source_pages": [
                 82
               ],
               "source_x": 90.02
+            },
+            {
+              "type": "explanation",
+              "label": "Explanation",
+              "text": "For the purposes of this section, “Good Samaritan” means a person, who in good faith, voluntarily and without expectation of any reward or compensation renders emergency medical or non-medical care or assistance at the scene of an accident to the victim or transports such victim to the hospital.]",
+              "children": [],
+              "source_pages": [
+                82
+              ],
+              "source_x": 90.02,
+              "scope_declared": "section"
             }
           ],
           "source_pages": [
@@ -17213,22 +17282,22 @@
               "type": "subsection",
               "label": "(2)",
               "text": "The Central Government shall make rules for the electronic monitoring and enforcement of road safety including speed cameras, closed-circuit television cameras, speed guns, body wearable cameras and such other technology.",
-              "children": [
-                {
-                  "type": "explanation",
-                  "label": "Explanation",
-                  "text": "For the purpose of this section the expression “body wearable camera” means a mobile audio and video capture device worn on the body or uniform of a person authorised by the State Government.]",
-                  "children": [],
-                  "source_pages": [
-                    82
-                  ],
-                  "source_x": 90.02
-                }
-              ],
+              "children": [],
               "source_pages": [
                 82
               ],
               "source_x": 90.02
+            },
+            {
+              "type": "explanation",
+              "label": "Explanation",
+              "text": "For the purpose of this section the expression “body wearable camera” means a mobile audio and video capture device worn on the body or uniform of a person authorised by the State Government.]",
+              "children": [],
+              "source_pages": [
+                82
+              ],
+              "source_x": 90.02,
+              "scope_declared": "section"
             }
           ],
           "source_pages": [
@@ -18011,7 +18080,8 @@
                     85,
                     86
                   ],
-                  "source_x": 90.02
+                  "source_x": 90.02,
+                  "scope_declared": "subsection"
                 }
               ],
               "source_pages": [
@@ -18113,7 +18183,8 @@
                   "source_pages": [
                     86
                   ],
-                  "source_x": 86.18
+                  "source_x": 86.18,
+                  "scope_declared": "subsection"
                 }
               ],
               "source_pages": [
@@ -18537,63 +18608,63 @@
               "type": "subsection",
               "label": "(6)",
               "text": "If on the date of filing of any claim, the claimant is not aware of the insurance company with which the vehicle had been insured, it shall be the duty of the owner of the vehicle to furnish to the tribunal or court the information as to whether the vehicle had been insured on the date of the accident, and if so, the name of the insurance company with which it is insured.",
+              "children": [],
+              "source_pages": [
+                88
+              ],
+              "source_x": 90.02
+            },
+            {
+              "type": "explanation",
+              "label": "Explanation",
+              "text": "For the purposes of this section,—",
               "children": [
                 {
-                  "type": "explanation",
-                  "label": "Explanation",
-                  "text": "For the purposes of this section,—",
-                  "children": [
-                    {
-                      "type": "subclause",
-                      "label": "(a)",
-                      "text": "“award” means an award made by the Claims Tribunal under section 168;",
-                      "children": [],
-                      "source_pages": [
-                        88
-                      ],
-                      "source_x": 108.02
-                    },
-                    {
-                      "type": "subclause",
-                      "label": "(b)",
-                      "text": "“Claims Tribunal” means a Claims Tribunal constituted under section 165;",
-                      "children": [],
-                      "source_pages": [
-                        88
-                      ],
-                      "source_x": 108.02
-                    },
-                    {
-                      "type": "subclause",
-                      "label": "(c)",
-                      "text": "“liability covered by the terms of the policy” means the liability which is covered by the policy or which would be so covered but for the fact that the insurer is entitled to avoid or cancel or has avoided or cancelled the policy; and",
-                      "children": [],
-                      "source_pages": [
-                        88
-                      ],
-                      "source_x": 108.02
-                    },
-                    {
-                      "type": "subclause",
-                      "label": "(d)",
-                      "text": "“material fact” and “material particular” mean, respectively, a fact or particular of such a nature as to influence the judgment of a prudent insurer in determining whether he shall take the risk and, if so, at what premium and on what conditions.",
-                      "children": [],
-                      "source_pages": [
-                        89
-                      ],
-                      "source_x": 108.02
-                    }
-                  ],
+                  "type": "subclause",
+                  "label": "(a)",
+                  "text": "“award” means an award made by the Claims Tribunal under section 168;",
+                  "children": [],
                   "source_pages": [
                     88
                   ],
-                  "source_x": 90.02
+                  "source_x": 108.02
+                },
+                {
+                  "type": "subclause",
+                  "label": "(b)",
+                  "text": "“Claims Tribunal” means a Claims Tribunal constituted under section 165;",
+                  "children": [],
+                  "source_pages": [
+                    88
+                  ],
+                  "source_x": 108.02
+                },
+                {
+                  "type": "subclause",
+                  "label": "(c)",
+                  "text": "“liability covered by the terms of the policy” means the liability which is covered by the policy or which would be so covered but for the fact that the insurer is entitled to avoid or cancel or has avoided or cancelled the policy; and",
+                  "children": [],
+                  "source_pages": [
+                    88
+                  ],
+                  "source_x": 108.02
+                },
+                {
+                  "type": "subclause",
+                  "label": "(d)",
+                  "text": "“material fact” and “material particular” mean, respectively, a fact or particular of such a nature as to influence the judgment of a prudent insurer in determining whether he shall take the risk and, if so, at what premium and on what conditions.",
+                  "children": [],
+                  "source_pages": [
+                    89
+                  ],
+                  "source_x": 108.02
                 }
               ],
               "source_pages": [
                 88
               ],
-              "source_x": 90.02
+              "source_x": 90.02,
+              "scope_declared": "section"
             }
           ],
           "source_pages": [
@@ -19371,7 +19442,8 @@
                   "source_pages": [
                     93
                   ],
-                  "source_x": 90.02
+                  "source_x": 90.02,
+                  "scope_declared": "subsection"
                 }
               ],
               "source_pages": [
@@ -21174,18 +21246,7 @@
               "type": "subsection",
               "label": "(1)",
               "text": "Whoever travels in a stage carriage without having a proper pass or ticket with him or being in or having alighted from a stage carriage fails or refuses to present for examination or to deliver up his pass or ticket immediately on a requisition being made therefor, shall be [liable for a penalty] which may extend to five hundred rupees.",
-              "children": [
-                {
-                  "type": "explanation",
-                  "label": "Explanation",
-                  "text": "In this section, “pass” and “ticket” have the meanings respectively assigned to them in section 124.",
-                  "children": [],
-                  "source_pages": [
-                    100
-                  ],
-                  "source_x": 90.02
-                }
-              ],
+              "children": [],
               "source_pages": [
                 100
               ],
@@ -21201,6 +21262,17 @@
                   "source_page": 100
                 }
               ]
+            },
+            {
+              "type": "explanation",
+              "label": "Explanation",
+              "text": "In this section, “pass” and “ticket” have the meanings respectively assigned to them in section 124.",
+              "children": [],
+              "source_pages": [
+                100
+              ],
+              "source_x": 90.02,
+              "scope_declared": "section"
             },
             {
               "type": "subsection",
@@ -21832,101 +21904,7 @@
               "type": "paragraph",
               "label": "",
               "text": "Whoever, drives a motor vehicle at a speed or in a manner which is dangerous to the public [or which causes a sense of alarm or distress to the occupants of the vehicle, other road users, and persons near roads,] having regard to all the circumstances of case including the nature, condition and use of the place where the vehicle is driven and the amount of traffic which actually is at the time or which might reasonably be expected to be in the place, shall be punishable for the first offence with imprisonment for a term [which may extend to one year but shall not be less than six months or with fine which shall not be less than one thousand rupees but may extend to five thousand rupees, or with both], and for any second or subsequent offence if committed within three years of the commission of a previous similar offence with imprisonment for a term which may extend to two years, or with fine [of ten thousand rupees], or with both.",
-              "children": [
-                {
-                  "type": "explanation",
-                  "label": "Explanation",
-                  "text": "For the purpose of this section,—",
-                  "children": [
-                    {
-                      "type": "subclause",
-                      "label": "(a)",
-                      "text": "jumping a red light;",
-                      "children": [],
-                      "source_pages": [
-                        103
-                      ],
-                      "source_x": 100.46
-                    },
-                    {
-                      "type": "subclause",
-                      "label": "(b)",
-                      "text": "violating a stop sign;",
-                      "children": [],
-                      "source_pages": [
-                        103
-                      ],
-                      "source_x": 100.46
-                    },
-                    {
-                      "type": "subclause",
-                      "label": "(c)",
-                      "text": "use of handheld communications devices while driving;",
-                      "children": [],
-                      "source_pages": [
-                        103
-                      ],
-                      "source_x": 100.46
-                    },
-                    {
-                      "type": "subclause",
-                      "label": "(d)",
-                      "text": "passing or overtaking other vehicles in a manner contrary to law;",
-                      "children": [],
-                      "source_pages": [
-                        103
-                      ],
-                      "source_x": 100.46
-                    },
-                    {
-                      "type": "subclause",
-                      "label": "(e)",
-                      "text": "driving against the authorised flow of traffic; or",
-                      "children": [],
-                      "source_pages": [
-                        103
-                      ],
-                      "source_x": 100.46
-                    },
-                    {
-                      "type": "subclause",
-                      "label": "(f)",
-                      "text": "driving in any manner that falls far below what would be expected of a competent and careful driver and where it would be obvious to a competent and careful driver that driving in that manner would be dangerous,",
-                      "children": [],
-                      "source_pages": [
-                        103
-                      ],
-                      "source_x": 100.46
-                    },
-                    {
-                      "type": "paragraph",
-                      "label": "",
-                      "text": "shall amount to driving in such manner which is dangerous to the public.]",
-                      "children": [],
-                      "source_pages": [
-                        103
-                      ],
-                      "source_x": 72.02
-                    }
-                  ],
-                  "source_pages": [
-                    103
-                  ],
-                  "source_x": 86.18,
-                  "leading_brackets": 1,
-                  "annotations": [
-                    {
-                      "type": "footnote",
-                      "marker": "1",
-                      "note_id": "footnote_p103_1",
-                      "start": 0,
-                      "end": 33,
-                      "anchor_text": "For the purpose of this section,—",
-                      "source_page": 103
-                    }
-                  ]
-                }
-              ],
+              "children": [],
               "source_pages": [
                 102
               ],
@@ -21958,6 +21936,100 @@
                   "end": 929,
                   "anchor_text": "[of ten thousand rupees]",
                   "source_page": 102
+                }
+              ]
+            },
+            {
+              "type": "explanation",
+              "label": "Explanation",
+              "text": "For the purpose of this section,—",
+              "children": [
+                {
+                  "type": "subclause",
+                  "label": "(a)",
+                  "text": "jumping a red light;",
+                  "children": [],
+                  "source_pages": [
+                    103
+                  ],
+                  "source_x": 100.46
+                },
+                {
+                  "type": "subclause",
+                  "label": "(b)",
+                  "text": "violating a stop sign;",
+                  "children": [],
+                  "source_pages": [
+                    103
+                  ],
+                  "source_x": 100.46
+                },
+                {
+                  "type": "subclause",
+                  "label": "(c)",
+                  "text": "use of handheld communications devices while driving;",
+                  "children": [],
+                  "source_pages": [
+                    103
+                  ],
+                  "source_x": 100.46
+                },
+                {
+                  "type": "subclause",
+                  "label": "(d)",
+                  "text": "passing or overtaking other vehicles in a manner contrary to law;",
+                  "children": [],
+                  "source_pages": [
+                    103
+                  ],
+                  "source_x": 100.46
+                },
+                {
+                  "type": "subclause",
+                  "label": "(e)",
+                  "text": "driving against the authorised flow of traffic; or",
+                  "children": [],
+                  "source_pages": [
+                    103
+                  ],
+                  "source_x": 100.46
+                },
+                {
+                  "type": "subclause",
+                  "label": "(f)",
+                  "text": "driving in any manner that falls far below what would be expected of a competent and careful driver and where it would be obvious to a competent and careful driver that driving in that manner would be dangerous,",
+                  "children": [],
+                  "source_pages": [
+                    103
+                  ],
+                  "source_x": 100.46
+                },
+                {
+                  "type": "paragraph",
+                  "label": "",
+                  "text": "shall amount to driving in such manner which is dangerous to the public.]",
+                  "children": [],
+                  "source_pages": [
+                    103
+                  ],
+                  "source_x": 72.02
+                }
+              ],
+              "source_pages": [
+                103
+              ],
+              "source_x": 86.18,
+              "leading_brackets": 1,
+              "scope_declared": "section",
+              "annotations": [
+                {
+                  "type": "footnote",
+                  "marker": "1",
+                  "note_id": "footnote_p103_1",
+                  "start": 0,
+                  "end": 33,
+                  "anchor_text": "For the purpose of this section,—",
+                  "source_page": 103
                 }
               ]
             }
@@ -22058,34 +22130,35 @@
                       "source_page": 103
                     }
                   ]
-                },
-                {
-                  "type": "explanation",
-                  "label": "Explanation",
-                  "text": "For the purposes of this section, the expression “drug” means any intoxicant other than alcohol, natural or synthetic, or any natural material or any salt, or preparation of such substance or material as may be notified by the Central Government under this Act and includes a narcotic drug and psychotropic substance as defined in clause (xiv) and clause (xxiii) of section 2 of the Narcotic Drugs and Psychotropic Substances Act, 1985 (61 of 1985).]",
-                  "children": [],
-                  "source_pages": [
-                    103
-                  ],
-                  "source_x": 90.02,
-                  "leading_brackets": 1,
-                  "annotations": [
-                    {
-                      "type": "footnote",
-                      "marker": "7",
-                      "note_id": "footnote_p103_7",
-                      "start": 0,
-                      "end": 450,
-                      "anchor_text": "For the purposes of this section, the expression “drug” means any intoxicant other than alcohol, natural or synthetic, or any natural material or any salt, or preparation of such substance or material as may be notified by the Central Government under this Act and includes a narcotic drug and psychotropic substance as defined in clause (xiv) and clause (xxiii) of section 2 of the Narcotic Drugs and Psychotropic Substances Act, 1985 (61 of 1985).]",
-                      "source_page": 103
-                    }
-                  ]
                 }
               ],
               "source_pages": [
                 103
               ],
               "source_x": 90.02
+            },
+            {
+              "type": "explanation",
+              "label": "Explanation",
+              "text": "For the purposes of this section, the expression “drug” means any intoxicant other than alcohol, natural or synthetic, or any natural material or any salt, or preparation of such substance or material as may be notified by the Central Government under this Act and includes a narcotic drug and psychotropic substance as defined in clause (xiv) and clause (xxiii) of section 2 of the Narcotic Drugs and Psychotropic Substances Act, 1985 (61 of 1985).]",
+              "children": [],
+              "source_pages": [
+                103
+              ],
+              "source_x": 90.02,
+              "leading_brackets": 1,
+              "scope_declared": "section",
+              "annotations": [
+                {
+                  "type": "footnote",
+                  "marker": "7",
+                  "note_id": "footnote_p103_7",
+                  "start": 0,
+                  "end": 450,
+                  "anchor_text": "For the purposes of this section, the expression “drug” means any intoxicant other than alcohol, natural or synthetic, or any natural material or any salt, or preparation of such substance or material as may be notified by the Central Government under this Act and includes a narcotic drug and psychotropic substance as defined in clause (xiv) and clause (xxiii) of section 2 of the Narcotic Drugs and Psychotropic Substances Act, 1985 (61 of 1985).]",
+                  "source_page": 103
+                }
+              ]
             }
           ],
           "source_pages": [
@@ -23629,22 +23702,23 @@
                       "source_page": 109
                     }
                   ]
-                },
-                {
-                  "type": "explanation",
-                  "label": "Explanation",
-                  "text": "For the purposes of this section, the term “contractor” shall include sub-contractors and all such persons who are responsible for any stage in the design, construction and maintenance of a stretch of road.]",
-                  "children": [],
-                  "source_pages": [
-                    109
-                  ],
-                  "source_x": 90.02
                 }
               ],
               "source_pages": [
                 109
               ],
               "source_x": 90.02
+            },
+            {
+              "type": "explanation",
+              "label": "Explanation",
+              "text": "For the purposes of this section, the term “contractor” shall include sub-contractors and all such persons who are responsible for any stage in the design, construction and maintenance of a stretch of road.]",
+              "children": [],
+              "source_pages": [
+                109
+              ],
+              "source_x": 90.02,
+              "scope_declared": "section"
             }
           ],
           "source_pages": [
@@ -23696,43 +23770,43 @@
               "type": "subsection",
               "label": "(2)",
               "text": "Notwithstanding anything contained in sub-section (1), where an offence under this Act has been committed by a company, and it is proved that the offence was committed with the consent or connivance of, or is attributable to any neglect on the part of any director, manager, secretary or other officer of the company, such director, manager, secretary or other officer shall also be deemed to be guilty of that offence and shall be liable to be proceeded against and punished accordingly.",
+              "children": [],
+              "source_pages": [
+                109
+              ],
+              "source_x": 90.02
+            },
+            {
+              "type": "explanation",
+              "label": "Explanation",
+              "text": "For the purposes of this section—",
               "children": [
                 {
-                  "type": "explanation",
-                  "label": "Explanation",
-                  "text": "For the purposes of this section—",
-                  "children": [
-                    {
-                      "type": "subclause",
-                      "label": "(a)",
-                      "text": "“company”, means any body corporate and includes a firm or other association of individuals; and",
-                      "children": [],
-                      "source_pages": [
-                        109
-                      ],
-                      "source_x": 108.02
-                    },
-                    {
-                      "type": "subclause",
-                      "label": "(b)",
-                      "text": "“director”, in relation to a firm, means a partner in the firm.",
-                      "children": [],
-                      "source_pages": [
-                        109
-                      ],
-                      "source_x": 108.02
-                    }
-                  ],
+                  "type": "subclause",
+                  "label": "(a)",
+                  "text": "“company”, means any body corporate and includes a firm or other association of individuals; and",
+                  "children": [],
                   "source_pages": [
                     109
                   ],
-                  "source_x": 90.02
+                  "source_x": 108.02
+                },
+                {
+                  "type": "subclause",
+                  "label": "(b)",
+                  "text": "“director”, in relation to a firm, means a partner in the firm.",
+                  "children": [],
+                  "source_pages": [
+                    109
+                  ],
+                  "source_x": 108.02
                 }
               ],
               "source_pages": [
                 109
               ],
-              "source_x": 90.02
+              "source_x": 90.02,
+              "scope_declared": "section"
             }
           ],
           "source_pages": [
@@ -23761,22 +23835,23 @@
                     109
                   ],
                   "source_x": 90.02
-                },
-                {
-                  "type": "explanation",
-                  "label": "Explanation",
-                  "text": "For the purposes of this section, the Court shall presume that the use of the motor vehicle by the juvenile was with the consent of the guardian of such juvenile or the owner of the motor vehicle, as the case may be.",
-                  "children": [],
-                  "source_pages": [
-                    109
-                  ],
-                  "source_x": 90.02
                 }
               ],
               "source_pages": [
                 109
               ],
               "source_x": 90.02
+            },
+            {
+              "type": "explanation",
+              "label": "Explanation",
+              "text": "For the purposes of this section, the Court shall presume that the use of the motor vehicle by the juvenile was with the consent of the guardian of such juvenile or the owner of the motor vehicle, as the case may be.",
+              "children": [],
+              "source_pages": [
+                109
+              ],
+              "source_x": 90.02,
+              "scope_declared": "section"
             },
             {
               "type": "subsection",
@@ -24115,30 +24190,7 @@
               "type": "subsection",
               "label": "(3)",
               "text": "Sub-section (1) shall not apply where the motor vehicle has suffered an unforeseen breakdown and is in the process of being removed.]",
-              "children": [
-                {
-                  "type": "explanation",
-                  "label": "Explanation",
-                  "text": "For the purposes of this section, “removal charges” includes any costs involved in the removal of the motor vehicle from one location to another and also includes any costs related to storage of such motor vehicle.]",
-                  "children": [],
-                  "source_pages": [
-                    111
-                  ],
-                  "source_x": 90.02,
-                  "leading_brackets": 1,
-                  "annotations": [
-                    {
-                      "type": "footnote",
-                      "marker": "3",
-                      "note_id": "footnote_p111_3",
-                      "start": 0,
-                      "end": 215,
-                      "anchor_text": "For the purposes of this section, “removal charges” includes any costs involved in the removal of the motor vehicle from one location to another and also includes any costs related to storage of such motor vehicle.]",
-                      "source_page": 111
-                    }
-                  ]
-                }
-              ],
+              "children": [],
               "source_pages": [
                 111
               ],
@@ -24152,6 +24204,29 @@
                   "start": 0,
                   "end": 133,
                   "anchor_text": "Sub-section (1) shall not apply where the motor vehicle has suffered an unforeseen breakdown and is in the process of being removed.]",
+                  "source_page": 111
+                }
+              ]
+            },
+            {
+              "type": "explanation",
+              "label": "Explanation",
+              "text": "For the purposes of this section, “removal charges” includes any costs involved in the removal of the motor vehicle from one location to another and also includes any costs related to storage of such motor vehicle.]",
+              "children": [],
+              "source_pages": [
+                111
+              ],
+              "source_x": 90.02,
+              "leading_brackets": 1,
+              "scope_declared": "section",
+              "annotations": [
+                {
+                  "type": "footnote",
+                  "marker": "3",
+                  "note_id": "footnote_p111_3",
+                  "start": 0,
+                  "end": 215,
+                  "anchor_text": "For the purposes of this section, “removal charges” includes any costs involved in the removal of the motor vehicle from one location to another and also includes any costs related to storage of such motor vehicle.]",
                   "source_page": 111
                 }
               ]
@@ -24344,22 +24419,22 @@
               "type": "subsection",
               "label": "(6)",
               "text": "The results of a breath test made in pursuance of the provisions of this section shall be admissible in evidence.",
-              "children": [
-                {
-                  "type": "explanation",
-                  "label": "Explanation",
-                  "text": "For the purposes of this section, “breath test”, means a test for the purpose of obtaining an indication of the presence of alcohol in a person’s blood carried out, on one or more specimens of breath provided by that person, by means of a device of a type approved by the Central Government, by notification in the Official Gazette, for the purpose of such a test.",
-                  "children": [],
-                  "source_pages": [
-                    112
-                  ],
-                  "source_x": 90.02
-                }
-              ],
+              "children": [],
               "source_pages": [
                 112
               ],
               "source_x": 90.02
+            },
+            {
+              "type": "explanation",
+              "label": "Explanation",
+              "text": "For the purposes of this section, “breath test”, means a test for the purpose of obtaining an indication of the presence of alcohol in a person’s blood carried out, on one or more specimens of breath provided by that person, by means of a device of a type approved by the Central Government, by notification in the Official Gazette, for the purpose of such a test.",
+              "children": [],
+              "source_pages": [
+                112
+              ],
+              "source_x": 90.02,
+              "scope_declared": "section"
             }
           ],
           "source_pages": [
@@ -24460,22 +24535,22 @@
               "type": "subsection",
               "label": "(3)",
               "text": "The results of a laboratory test made in pursuance of this section shall be admissible in evidence.",
-              "children": [
-                {
-                  "type": "explanation",
-                  "label": "Explanation",
-                  "text": "For the purposes of this section, “laboratory test” means the analysis of a specimen of blood made at a laboratory established, maintained or recognised by the Central Government or a State Government.",
-                  "children": [],
-                  "source_pages": [
-                    112
-                  ],
-                  "source_x": 90.02
-                }
-              ],
+              "children": [],
               "source_pages": [
                 112
               ],
               "source_x": 90.02
+            },
+            {
+              "type": "explanation",
+              "label": "Explanation",
+              "text": "For the purposes of this section, “laboratory test” means the analysis of a specimen of blood made at a laboratory established, maintained or recognised by the Central Government or a State Government.",
+              "children": [],
+              "source_pages": [
+                112
+              ],
+              "source_x": 90.02,
+              "scope_declared": "section"
             }
           ],
           "source_pages": [
@@ -30329,18 +30404,18 @@
       "195"
     ],
     "schedules": 2,
-    "body_nodes": 1831,
+    "body_nodes": 1836,
     "node_types": {
-      "clause": 714,
+      "clause": 713,
       "explanation": 32,
       "formula": 1,
-      "item": 39,
+      "item": 56,
       "omission": 25,
       "paragraph": 121,
       "proviso": 170,
-      "subclause": 128,
+      "subclause": 123,
       "subitem": 2,
-      "subsection": 599
+      "subsection": 593
     },
     "max_depth": 5,
     "empty_leaf_nodes": 0,
@@ -30372,14 +30447,352 @@
     "source_chars_unmatched": 0,
     "statutory_chars_unmatched": 0,
     "coverage_percent": 100.0,
-    "marker_inventory_source": 1771,
-    "marker_inventory_canonical": 1771,
+    "marker_inventory_source": 1776,
+    "marker_inventory_canonical": 1776,
     "marker_reconciled": true,
     "bracket_open_count": 325,
     "bracket_close_count": 325,
     "bracket_problems": [],
     "reading_order_violations": 0,
     "unrecognised_paren_tokens": [],
+    "inline_marker_chain_mismatches": [],
+    "label_annotations": 2,
+    "explanation_scopes": [
+      {
+        "section": "2",
+        "label": "Explanation",
+        "scope": "clause",
+        "owner_before": "subclause (iv)",
+        "page": 13,
+        "owner_after": "clause (42)",
+        "basis": "printed scope"
+      },
+      {
+        "section": "51",
+        "label": "Explanation",
+        "scope": "sub-section",
+        "owner_before": "subsection (6)",
+        "page": 37,
+        "owner_after": "subsection (6)",
+        "basis": "printed scope (already there)"
+      },
+      {
+        "section": "52",
+        "label": "Explanation",
+        "scope": "section",
+        "owner_before": "subsection (5)",
+        "page": 39,
+        "owner_after": "section",
+        "basis": "printed scope"
+      },
+      {
+        "section": "70",
+        "label": "Explanation",
+        "scope": "section",
+        "owner_before": "clause (c)",
+        "page": 51,
+        "owner_after": "subsection (1)",
+        "basis": "printed scope 'section' recorded; raised as far as reading order allows, the enclosing provision continues after it"
+      },
+      {
+        "section": "71",
+        "label": "Explanation",
+        "scope": "section",
+        "owner_before": "subsection (3)",
+        "page": 52,
+        "owner_after": "section",
+        "basis": "printed scope"
+      },
+      {
+        "section": "88",
+        "label": "Explanation",
+        "scope": "section",
+        "owner_before": "clause (b)",
+        "page": 63,
+        "owner_after": "section",
+        "basis": "printed scope"
+      },
+      {
+        "section": "89",
+        "label": "Explanation",
+        "scope": null,
+        "owner_before": "subsection (3)",
+        "page": 65,
+        "owner_after": "subsection (3)",
+        "basis": "geometry (no printed scope)"
+      },
+      {
+        "section": "100",
+        "label": "Explanation",
+        "scope": null,
+        "owner_before": "subsection (4)",
+        "page": 70,
+        "owner_after": "subsection (4)",
+        "basis": "geometry (no printed scope)"
+      },
+      {
+        "section": "105",
+        "label": "Explanation",
+        "scope": "formula",
+        "owner_before": "subsection (5)",
+        "page": 72,
+        "owner_after": "subsection (5)",
+        "basis": "geometry (scope kept)"
+      },
+      {
+        "section": "124",
+        "label": "Explanation",
+        "scope": "section",
+        "owner_before": "paragraph",
+        "page": 79,
+        "owner_after": "section",
+        "basis": "printed scope"
+      },
+      {
+        "section": "129",
+        "label": "Explanation",
+        "scope": null,
+        "owner_before": "paragraph",
+        "page": 80,
+        "owner_after": "paragraph",
+        "basis": "geometry (no printed scope)"
+      },
+      {
+        "section": "130",
+        "label": "Explanation",
+        "scope": "sub-section",
+        "owner_before": "subsection (3)",
+        "page": 80,
+        "owner_after": "subsection (3)",
+        "basis": "printed scope (already there)"
+      },
+      {
+        "section": "134",
+        "label": "Explanation",
+        "scope": "section",
+        "owner_before": "clause (c)",
+        "page": 81,
+        "owner_after": "section",
+        "basis": "printed scope"
+      },
+      {
+        "section": "134A",
+        "label": "Explanation",
+        "scope": "section",
+        "owner_before": "subsection (2)",
+        "page": 82,
+        "owner_after": "section",
+        "basis": "printed scope"
+      },
+      {
+        "section": "136A",
+        "label": "Explanation",
+        "scope": "section",
+        "owner_before": "subsection (2)",
+        "page": 82,
+        "owner_after": "section",
+        "basis": "printed scope"
+      },
+      {
+        "section": "146",
+        "label": "Explanation",
+        "scope": "sub-section",
+        "owner_before": "subsection (1)",
+        "page": 85,
+        "owner_after": "subsection (1)",
+        "basis": "printed scope (already there)"
+      },
+      {
+        "section": "146",
+        "label": "Explanation",
+        "scope": "sub-section",
+        "owner_before": "subsection (3)",
+        "page": 86,
+        "owner_after": "subsection (3)",
+        "basis": "printed scope (already there)"
+      },
+      {
+        "section": "147",
+        "label": "Explanation",
+        "scope": null,
+        "owner_before": "clause (b)",
+        "page": 86,
+        "owner_after": "clause (b)",
+        "basis": "geometry (no printed scope)"
+      },
+      {
+        "section": "150",
+        "label": "Explanation",
+        "scope": "section",
+        "owner_before": "subsection (6)",
+        "page": 88,
+        "owner_after": "section",
+        "basis": "printed scope"
+      },
+      {
+        "section": "157",
+        "label": "Explanation",
+        "scope": null,
+        "owner_before": "subsection (1)",
+        "page": 91,
+        "owner_after": "subsection (1)",
+        "basis": "geometry (no printed scope)"
+      },
+      {
+        "section": "163",
+        "label": "Explanation",
+        "scope": "sub-section",
+        "owner_before": "subsection (2)",
+        "page": 93,
+        "owner_after": "subsection (2)",
+        "basis": "printed scope (already there)"
+      },
+      {
+        "section": "165",
+        "label": "Explanation",
+        "scope": null,
+        "owner_before": "subsection (1)",
+        "page": 96,
+        "owner_after": "subsection (1)",
+        "basis": "geometry (no printed scope)"
+      },
+      {
+        "section": "178",
+        "label": "Explanation",
+        "scope": "section",
+        "owner_before": "subsection (1)",
+        "page": 100,
+        "owner_after": "section",
+        "basis": "printed scope"
+      },
+      {
+        "section": "184",
+        "label": "Explanation",
+        "scope": "section",
+        "owner_before": "paragraph",
+        "page": 103,
+        "owner_after": "section",
+        "basis": "printed scope"
+      },
+      {
+        "section": "185",
+        "label": "Explanation",
+        "scope": "section",
+        "owner_before": "paragraph",
+        "page": 103,
+        "owner_after": "section",
+        "basis": "printed scope"
+      },
+      {
+        "section": "192",
+        "label": "Explanation",
+        "scope": null,
+        "owner_before": "subsection (3)",
+        "page": 105,
+        "owner_after": "subsection (3)",
+        "basis": "geometry (no printed scope)"
+      },
+      {
+        "section": "198A",
+        "label": "Explanation",
+        "scope": "section",
+        "owner_before": "subsection (3)",
+        "page": 109,
+        "owner_after": "section",
+        "basis": "printed scope"
+      },
+      {
+        "section": "199",
+        "label": "Explanation",
+        "scope": "section",
+        "owner_before": "subsection (2)",
+        "page": 109,
+        "owner_after": "section",
+        "basis": "printed scope"
+      },
+      {
+        "section": "199A",
+        "label": "Explanation",
+        "scope": "section",
+        "owner_before": "subsection (1)",
+        "page": 109,
+        "owner_after": "section",
+        "basis": "printed scope"
+      },
+      {
+        "section": "201",
+        "label": "Explanation",
+        "scope": "section",
+        "owner_before": "subsection (3)",
+        "page": 111,
+        "owner_after": "section",
+        "basis": "printed scope"
+      },
+      {
+        "section": "203",
+        "label": "Explanation",
+        "scope": "section",
+        "owner_before": "subsection (6)",
+        "page": 112,
+        "owner_after": "section",
+        "basis": "printed scope"
+      },
+      {
+        "section": "204",
+        "label": "Explanation",
+        "scope": "section",
+        "owner_before": "subsection (3)",
+        "page": 112,
+        "owner_after": "section",
+        "basis": "printed scope"
+      }
+    ],
+    "ownership_overrides": [
+      {
+        "section": "2",
+        "node_type": "paragraph",
+        "node_prefix": "and in either case, without stopping",
+        "owner_label": "(7)",
+        "relation": "previous_sibling",
+        "page": 11,
+        "reason": "concluding words of the contract-carriage definition: 'in either case' refers to alternatives (a) and (b) of clause (7), and the maxicab/motor-cab items that follow are part of the same definition; the page sets them at the section band",
+        "applied": true,
+        "owner_before": "paragraph"
+      },
+      {
+        "section": "47",
+        "node_type": "paragraph",
+        "node_prefix": "together with a declaration",
+        "owner_label": "(ii)",
+        "relation": "previous_sibling",
+        "page": 33,
+        "reason": "the declaration accompanies whichever of (a) or (b) is produced: concluding words of sub-clause (ii), printed at the proviso's band",
+        "applied": true,
+        "owner_before": "proviso"
+      },
+      {
+        "section": "50",
+        "node_type": "paragraph",
+        "node_prefix": "together with a declaration",
+        "owner_label": "(B)",
+        "relation": "previous_sibling",
+        "page": 35,
+        "reason": "the declaration accompanies whichever of (I) or (II) is produced: concluding words of item (B), printed at the sub-clause's band",
+        "applied": true,
+        "owner_before": "subclause (ii)"
+      },
+      {
+        "section": "105",
+        "node_type": "proviso",
+        "node_prefix": "Provided that the amount of compensation shall, in no case",
+        "owner_label": "(4)",
+        "relation": "ancestor",
+        "page": 72,
+        "reason": "a floor on the compensation computed under sub-section (4) as a whole, not a qualification of amount alternative (b); the page sets it at the clause band",
+        "applied": true,
+        "owner_before": "clause (b)"
+      }
+    ],
     "repairs_total": 221,
     "repairs_by_type": {
       "span_gap_space": 221

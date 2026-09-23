@@ -23,6 +23,12 @@ regeneration cannot quietly undo it:
   (X) and seven sections are printed as omitted; s.193's amended marker is
   printed "[1]" and is kept exactly so; s.105 prints a two-column list and a
   displayed fraction, both kept in reading order rather than reflowed.
+
+v3 answers the independent audit of v2 (2026-09-23), and its findings are
+pinned in the "Independent audit" block below: marker chains on one line
+("(a) (i) ..."), Explanations owned by their printed scope, four reviewed
+ownership overrides recorded with page and reason, notes that target a
+bracketed label, and the formula transcribed from the page as (Y × A) / R.
 """
 
 from __future__ import annotations
@@ -43,7 +49,7 @@ from constitution_memorizer.web.bare_acts import BARE_ACTS, get_bare_act
 
 REPO = Path(__file__).resolve().parents[1]
 MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
-ARCHIVAL = REPO / "data" / "reference" / "mva_canonical_v2.json"
+ARCHIVAL = REPO / "data" / "reference" / "mva_canonical_v3.json"
 RUNTIME = REPO / "src" / "constitution_memorizer" / "web" / "mva_runtime_v1.json"
 
 CHAPTERS = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV"]
@@ -263,17 +269,22 @@ def test_section_2_is_one_definitions_list_under_its_lead():
     assert all(r.kind == "clause" for r in labelled)
 
 
-def test_section_2_7_concluding_words_and_their_items():
+def test_section_2_7_owns_its_concluding_words_and_their_items():
+    """"in either case" refers to (a) and (b) of the contract-carriage
+    definition, and the maxicab/motor-cab items belong to it. The page sets
+    these at the section band; a reviewed override (p.11) places them."""
     rows = _rows("2")
     seven = next(i for i, r in enumerate(rows) if r.label == "(7)")
-    assert [r.label for r in rows[seven + 1: seven + 3]] == ["(a)", "(b)"]
+    assert [(r.label, r.depth) for r in rows[seven + 1: seven + 3]] == [("(a)", 2), ("(b)", 2)]
     tail = rows[seven + 3]
-    assert tail.kind == "paragraph" and tail.depth == 1
+    assert tail.kind == "paragraph" and tail.depth == 2
     assert tail.text.startswith("and in either case, without stopping")
     assert tail.text.endswith("and includes—")
-    assert [(r.label, r.depth) for r in rows[seven + 4: seven + 6]] == [("(i)", 2), ("(ii)", 2)]
+    assert [(r.label, r.depth) for r in rows[seven + 4: seven + 6]] == [("(i)", 3), ("(ii)", 3)]
     assert rows[seven + 4].text == "a maxicab; and"
-    assert rows[seven + 6].label == "(8)"
+    assert (rows[seven + 6].label, rows[seven + 6].depth) == ("(8)", 1)
+    node = next(c for c in _canonical_section("2")["body"][0]["children"] if c["label"] == "(7)")
+    assert [c.get("label") or c["type"] for c in node["children"]] == ["(a)", "(b)", "paragraph"]
 
 
 def test_section_8_6_has_three_sibling_provisos():
@@ -334,11 +345,15 @@ def test_section_105_5_formula_is_a_node_not_prose():
     five = next(r for r in rows if r.label == "(5)")
     assert "Y A" not in five.text
     formula = next(r for r in rows if r.kind == "formula")
-    assert formula.text == "Y A / R"
+    assert formula.text == "(Y × A) / R"
     node = next(n for n in _walk(_canonical_section("105")["body"]) if n["type"] == "formula")
+    # The × and the rule are drawn, not typed: the text layer is kept beside
+    # the transcription, which names the page it was read from.
     assert node["formula_lines"] == ["Y A", "R"]
     assert node["drawings"], "the drawn fraction rule is recorded"
-    assert "not invented" in node["formula_note"]
+    assert node["transcription"]["expression"] == "(Y × A) / R"
+    assert node["transcription"]["page"] == 72
+    assert node["transcription"]["text_layer_lines"] == ["Y A", "R"]
 
 
 def test_section_150_2_irregular_bands_nest_by_relative_geometry():
@@ -372,18 +387,25 @@ def test_section_194_1_owns_only_its_own_text():
     assert one_a.label == "(1A)" and one_a.leading_brackets == 1
 
 
-def test_a_concluding_paragraph_set_left_of_its_list_is_placed_by_geometry():
-    """s.47(1)'s proviso lists (a)/(b) under sub-clause (ii) and then prints
-    "together with a declaration ..." at the proviso's own continuation band.
-    The sentence reads as (ii)'s tail; the page sets it two bands left. The
-    parser follows the page and records the case, so this is pinned as a
-    known layout rather than corrected by reading the words."""
+def test_the_reviewed_ownership_overrides_are_recorded_and_applied():
+    """Where geometry cannot decide, the owner is a reviewed decision with a
+    page and a reason, not a logged anomaly."""
+    overrides = _archival()["_validation"]["ownership_overrides"]
+    assert [(o["section"], o["owner_label"], o["page"]) for o in overrides] == [
+        ("2", "(7)", 11), ("47", "(ii)", 33), ("50", "(B)", 35), ("105", "(4)", 72),
+    ]
+    assert all(o["applied"] and o["reason"] for o in overrides)
+    # s.47: "together with a declaration" accompanies (a) or (b) — sub-clause (ii)'s words.
     rows = _rows("47")
     i = next(k for k, r in enumerate(rows) if r.text.startswith("together with a declaration"))
     assert rows[i].kind == "paragraph"
-    assert rows[i - 1].label == "(b)" and rows[i - 1].depth == rows[i].depth + 1
-    notes = _archival()["_validation"]
-    assert notes["reading_order_violations"] == 0
+    assert rows[i - 1].label == "(b)" and rows[i - 1].depth == rows[i].depth
+    assert next(r for r in reversed(rows[:i]) if r.label == "(ii)").depth == rows[i].depth - 1
+    # s.50: the same words under item (B).
+    rows = _rows("50")
+    i = next(k for k, r in enumerate(rows) if r.text.startswith("together with a declaration"))
+    assert next(r for r in reversed(rows[:i]) if r.label == "(B)").depth == rows[i].depth - 1
+    assert _archival()["_validation"]["reading_order_violations"] == 0
 
 
 # ── Footnotes ─────────────────────────────────────────────────────────────
@@ -408,6 +430,7 @@ def test_every_footnote_is_loaded_and_every_anchor_resolves():
             everywhere |= {a["note_id"] for a in section.get("title_annotations") or []}
             for node in _walk(section["body"]):
                 everywhere |= {a["note_id"] for a in node.get("annotations") or []}
+                everywhere |= {a["note_id"] for a in node.get("label_annotations") or []}
     for schedule in _archival()["schedules"]:
         everywhere |= {a["note_id"] for a in schedule.get("heading_annotations") or []}
     assert everywhere == set(act.footnotes)
@@ -445,6 +468,121 @@ def test_the_footnote_card_is_wired_on_a_section_page(tmp_path: Path):
     assert 'aria-describedby="fn-footnote_p10_1"' in html
     assert '<p id="fn-footnote_p10_1">' in html
     assert "data-bareact-fn-card" in html
+
+
+# ── Independent audit of v2 (2026-09-23): the twelve failed assertions ────
+
+
+@pytest.mark.parametrize("number, parent, children", [
+    ("71", "(3)", ["(a)", "(b)", "(c)", "(d)"]),
+    ("74", "(3)", ["(a)", "(b)"]),
+    ("88", "(14)", ["(a)", "(b)"]),
+    ("116", "(1)", ["(a)", "(b)"]),
+])
+def test_a_marker_chain_on_one_line_keeps_its_level(number: str, parent: str, children: list[str]):
+    """"(3) (a) The State Government ..." is two markers. v2 left (a) in
+    (3)'s text and filed (b) beside (3); every clause belongs to (3)."""
+    node = next(n for n in _canonical_section(number)["body"] if n.get("label") == parent)
+    assert node["text"] == ""
+    assert [c["label"] for c in node["children"] if c.get("label")][: len(children)] == children
+    assert not any(n.get("label") in children[1:] for n in _canonical_section(number)["body"])
+    rows = _rows(number)
+    p = next(i for i, r in enumerate(rows) if r.label == parent)
+    assert [r.label for r in rows[p + 1: p + 1 + len(children)]] == children
+    assert {r.depth for r in rows[p + 1: p + 1 + len(children)]} == {rows[p].depth + 1}
+
+
+def test_section_9_3_first_proviso_clause_a_owns_its_three_subclauses():
+    rows = _rows("9")
+    a = next(i for i, r in enumerate(rows) if r.label == "(a)" and r.text == "")
+    # Under the first proviso to (3), so a sub-clause; its items sit one deeper.
+    assert rows[a].kind == "subclause" and rows[a - 1].kind == "proviso"
+    assert [(r.label, r.depth) for r in rows[a + 1: a + 4]] == [
+        ("(i)", rows[a].depth + 1), ("(ii)", rows[a].depth + 1), ("(iii)", rows[a].depth + 1),
+    ]
+    assert rows[a + 1].text.startswith("the applicant has previously held a driving licence")
+    assert rows[a + 4].label == "(b)" and rows[a + 4].depth == rows[a].depth
+    # "Provided further" continues the chain: the next proviso to (3), not to (b).
+    further = next(r for r in rows[a + 5:] if r.kind == "proviso")
+    assert further.text.startswith("Provided further") and further.depth == rows[a - 1].depth
+
+
+def test_section_2_42_explanation_belongs_to_the_definition_not_the_last_alternative():
+    node = next(c for c in _canonical_section("2")["body"][0]["children"] if c["label"] == "(42)")
+    assert [c.get("label") or c["type"] for c in node["children"]] == ["(i)", "(ii)", "(iii)", "(iv)", "Explanation"]
+    expl = node["children"][-1]
+    assert expl["text"].startswith("For the purposes of this clause")
+    assert expl["scope_declared"] == "clause"
+
+
+def test_section_150_explanation_is_section_wide():
+    assert [n.get("label") or n["type"] for n in _canonical_section("150")["body"]] == [
+        "(1)", "(2)", "(3)", "(4)", "(5)", "(6)", "Explanation",
+    ]
+    rows = _rows("150")
+    expl = next(r for r in rows if r.kind == "explanation")
+    assert expl.depth == 0 and expl.text == "For the purposes of this section,—"
+
+
+def test_section_71_explanation_is_not_part_of_omitted_material():
+    body = _canonical_section("71")["body"]
+    assert [n.get("label") or n["type"] for n in body] == ["(1)", "omission", "(2)", "(3)", "Explanation"]
+    assert all(not n["children"] for n in body if n["type"] == "omission")
+    assert body[-1]["text"].startswith("For the purposes of this section")
+
+
+def test_section_105_4_minimum_compensation_qualifies_the_subsection():
+    four = next(n for n in _canonical_section("105")["body"] if n.get("label") == "(4)")
+    assert [c.get("label") or c["type"] for c in four["children"]] == ["(a)", "(b)", "proviso"]
+    rows = _rows("105")
+    proviso = next(r for r in rows if r.text.startswith("Provided that the amount of compensation shall, in no case"))
+    assert proviso.depth == next(r for r in rows if r.label == "(4)").depth + 1
+
+
+def test_explanations_are_owned_by_their_printed_scope():
+    scopes = _archival()["_validation"]["explanation_scopes"]
+    assert len(scopes) == 32
+    moved = {e["section"] for e in scopes if e["owner_before"] != e["owner_after"]}
+    assert moved == {"2", "52", "70", "71", "88", "124", "134", "134A", "136A", "150", "178", "184",
+                     "185", "198A", "199", "199A", "201", "203", "204"}
+    # s.70's section-wide Explanation is printed between clauses (c) and (d)
+    # of sub-section (1); moving it would reorder the statute, so it stays,
+    # with its scope recorded.
+    partial = [e for e in scopes if "raised as far as reading order allows" in e["basis"]]
+    assert [(e["section"], e["scope"], e["owner_after"]) for e in partial] == [("70", "section", "subsection (1)")]
+    assert not [e for e in scopes if "kept in place" in e["basis"]]
+    one = _canonical_section("70")["body"][0]
+    assert [c.get("label") or c["type"] for c in one["children"]] == ["(a)", "(b)", "(c)", "Explanation", "(d)", "(e)", "(f)"]
+    assert one["children"][3]["scope_declared"] == "section"
+    assert [e["section"] for e in scopes if e["scope"] is None] == ["89", "100", "129", "147", "157", "165", "192"]
+
+
+@pytest.mark.parametrize("number, label, note_id", [("27", "(aa)", "footnote_p26_2"), ("99", "(1)", "footnote_p69_2")])
+def test_a_note_printed_against_a_bracketed_label_targets_the_label(tmp_path: Path, number: str, label: str, note_id: str):
+    """"2[(aa)]" — the amendment renumbered the label itself. The note is
+    stored against the label, with a non-empty range, and the reader anchors
+    the label."""
+    node = next(n for n in _walk(_canonical_section(number)["body"]) if n.get("label") == label)
+    assert not node.get("annotations")
+    assert node["label_annotations"] == [{
+        "type": "footnote", "marker": "2", "note_id": note_id, "target": "label",
+        "start": 0, "end": len(label), "anchor_text": label, "source_page": int(note_id.split("_p")[1].split("_")[0]),
+    }]
+    row = next(r for r in _rows(number) if r.label == label)
+    assert row.label_note_id == note_id
+    client, _ = _client(tmp_path)
+    html = client.get(f"/laws/mva/section/{number}").text
+    assert f'data-bareact-fn="{note_id}"' in html
+    assert f'<p id="fn-{note_id}">' in html
+
+
+def test_every_body_annotation_covers_a_non_empty_range():
+    for section in (s for ch in _archival()["chapters"] for s in ch["sections"]):
+        for node in _walk(section["body"]):
+            for a in node.get("annotations") or []:
+                assert 0 <= a["start"] < a["end"] <= len(node["text"]), (section["number"], node.get("label"), a)
+    assert _archival()["_validation"]["label_annotations"] == 2
+    assert _archival()["_validation"]["inline_marker_chain_mismatches"] == []
 
 
 # ── State amendments ──────────────────────────────────────────────────────
