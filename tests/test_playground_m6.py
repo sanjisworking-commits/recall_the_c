@@ -560,6 +560,8 @@ def test_semantic_classes_and_reduced_motion_contract():
     ):
         assert name in css
     assert "prefers-reduced-motion" in css
+    assert ".PlaygroundShell a.pg-btn" in css
+    assert "color: var(--pg-paper)" in css
     runtime = (ROOT / "src/constitution_memorizer/web/templates/playground_base.html").read_text()
     assert "Playground.dc.html" not in runtime
     assert "support.js" not in runtime
