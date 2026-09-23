@@ -19,6 +19,56 @@ Labelled **"Design preview — not part of the product."** Never ship them.
 
 Remove, Add back, Add to Playground, and Keep/Remove are live in the prototype, so the capacity rules can be tried by clicking.
 
+## M6 production implementation
+
+M6 production implementation uses the design artifact.
+The preview controls remain design-only.
+M1–M5 contracts remain unchanged.
+
+Runtime: FastAPI + Jinja + vanilla JS + [`/static/playground.css`](../../src/constitution_memorizer/web/static/playground.css). Tokens follow `--pg-*` on `html[data-theme]`. There is no separate Playground theme preference.
+
+**Locked prototype questions (do not reopen):**
+
+- Pending + same-month Add back is allowed because it consumes 0 new slots. Pending still blocks a new law, a historical law not consumed this month, and rollover Keep into a new period.
+- Undecided rollover is not carried forward, consumes 0 target-period spaces, and remains an unresolved candidate until explicit Keep.
+
+**Status badges (production facts):**
+
+| Badge | Backend fact |
+|---|---|
+| Not started | no selected sections, or progress without Cloze complete and not due |
+| Learning | overlay `learned_count` / `cloze_done` (Cloze-complete is **not** product Learned) |
+| Due | `due_count > 0` or `next_revision <= today` |
+| Mastered | existing overlay `status = mastered` only |
+| Learned | reserved; M8 owns the product transition |
+
+**Scenario parity (production, not the design preview switcher):**
+
+| Prototype scenario | Production surface | Backend trigger | Expected UI | Test |
+|---|---|---|---|---|
+| Active Plus 8/10 | `GET /playground` | plus, 8 consumed | `8 of 10 laws` / `2 spaces available` | `test_plus_home_8_of_10_capacity_and_shell` |
+| Active Plus 10/10 | `GET /playground` | plus, 10 consumed | `10 of 10 laws` / `Playground full for {month}` | `test_plus_home_full_10_of_10` |
+| Empty Plus | `GET /playground` | plus, 0 used | `0 of 10 laws` / empty copy | `test_empty_plus_home` |
+| Pro | `GET /playground` | pro | `N of 30 laws` | `test_pro_and_max_capacity_copy` |
+| Max | `GET /playground` | max | `N laws this month` / `Unlimited` | `test_pro_and_max_capacity_copy` |
+| Historical law | `GET /laws/{id}` | overlay, inactive this month | Progress saved / Add to this month | `test_historical_saved_progress_copy` |
+| Guest | `GET /playground` 303; `GET /laws/{id}` | unauthenticated | Sign in, never checkout | `test_guest_law_cta_is_sign_in_not_checkout` |
+| Free account | `GET /playground`, `GET /laws/{id}` | signed-in, not subscribed | View Playground plans | `test_free_account_law_cta_is_plans_not_constitution_lock` |
+| Pending | `GET /playground` | `status=pending` | PaymentStateBanner; roster usable; new add blocked; Add back allowed | `test_pending_banner_blocks_new_and_keeps_roster` |
+| Halted | `GET /playground` | `status=halted` | EntitlementGate, Manage subscription | `test_hard_gates_copy_and_ctas` |
+| Paused | `GET /playground` | `status=paused` | EntitlementGate | `test_hard_gates_copy_and_ctas` |
+| Expired | `GET /playground` | paid_period_ended | Your Playground is paused | `test_hard_gates_copy_and_ctas` |
+| Device limit | `GET /playground` | 3rd installation | Manage devices, no Subscribe | `test_device_gates_do_not_offer_subscribe` |
+| Device revoked | `GET /playground` | revoked this device | This device no longer has Playground access | `tests/test_devices_m4b.py` |
+| Replacement limit | `GET /playground` | 4th replacement / 30d | Too many recent device changes | `tests/test_devices_m4c.py` |
+| Cancel at period end | `GET /playground` | `cancel_at_period_end` | Plan ends {date} | `test_cancel_upgrade_welcome_banners` |
+| Upgrade | `GET /playground?notice=upgrade` | confirmed upgrade | Your Playground now supports {limit} laws | `test_cancel_upgrade_welcome_banners` |
+| Downgrade scheduled | `GET /playground` | `scheduled_tier` lower | Pro until {date} / Changes to Plus | `test_cancel_upgrade_welcome_banners` |
+| Resubscribed | `GET /playground?notice=welcome` | welcome/empty+saved | Welcome back | `test_cancel_upgrade_welcome_banners` |
+| Rollover | `GET /playground/roster/next` | previous-month candidates | Keep / Remove / Undecided radiogroup | `test_rollover_keep_remove_undecided_and_browse` |
+
+Seven prototype screens map as: Home `/playground`; Roster `/playground/roster`; Rollover `/playground/roster/next`; Law workspace `/playground/laws/{id}`; Law states distributed across `/laws` and Bare Act; Add confirm `GET /playground/laws/{id}/add`; Remove confirm `GET /playground/roster/{id}/remove`.
+
 ## Semantic class names
 
 | Class | Region |
@@ -115,6 +165,5 @@ Fraunces 700 for display, Source Sans 3 for body. Square corners, 1px hairlines,
 
 ## Prototype simplifications / open questions
 
-- Only NDPS Act and TPA have section data, so "Continue" opens the workspace only for those two. Read Bare Act, Manage sections, and billing/device CTAs are inert.
-- Undecided rollover candidates consume no October space, consistent with "no automatic carry-forward". The final default for candidates left undecided at period start is a product call.
-- During Pending, "Add back" on a same-month removed law is left enabled (it consumes nothing). Confirm this against the locked pending rule before building.
+- Only NDPS Act and TPA have section data **in the prototype**, so those Continue targets are illustrative. Production Continue uses real overlay selection and the existing Cloze launch path.
+- The two previously open prototype questions are **locked by M5** and implemented in M6: Undecided rollover is not auto-carried; pending permits same-month Add back.

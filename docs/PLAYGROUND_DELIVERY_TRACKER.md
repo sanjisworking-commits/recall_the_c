@@ -2,18 +2,19 @@
 
 **Scoreboard, not an audit.** Product rules live in [PLAYGROUND.md](PLAYGROUND.md), [PAYMENT_ENTITLEMENT_AUDIT.md](PAYMENT_ENTITLEMENT_AUDIT.md), [PLAYGROUND_TWO_LAW_AUDIT.md](PLAYGROUND_TWO_LAW_AUDIT.md), and [law-loading.md](law-loading.md).
 
-**Snapshot:** architecture/product definition is **locked in docs**. **Stage 1** (build) is **53.0 / 100**. Production implementation is **early**. The NDPS/BNS overlay + Cloze + proof revision rows **do not** count as milestones 6–8. Milestone 1 is `DONE`. Milestone 2 is **`DONE` — 37/37**. Milestone 3 is **`DONE` — 15/15** (M3-A Constitution inversion + M3-B Playground commercial gate). Milestone 4 is **`DONE` — 25/25** (M4-A registry + M4-B owner/admin management + M4-C replacement-churn). Milestone 5 is **`DONE` — 27/27** (M5-A period/capacity/tables/same-month and M5-B carry-forward plus later-month historical reactivation). Platforms are `web | android | ios`. Overlay is lifetime learning history; roster is current-month membership (`overlay != roster`). Previous-period laws are candidates only. Keep consumes a new-period slot. Decline consumes none. Historical progress never waives monthly capacity. Pending + current-roster law remains learnable; pending + historical overlay only is not. **Do not tick Stage 2 from Cloze or from `main`’s sitemap PRs.** This branch includes main’s Bare Act SEO and generated sitemap index; that is Milestone 0 coexistence, not Milestone 10 (`noindex`) and not Stage 2.
+**Snapshot:** architecture/product definition is **locked in docs**. **Stage 1** (build) is **61.0 / 100**. Milestone 1 is `DONE`. Milestone 2 is **`DONE` — 37/37**. Milestone 3 is **`DONE` — 15/15** (M3-A Constitution inversion + M3-B Playground commercial gate). Milestone 4 is **`DONE` — 25/25** (M4-A registry + M4-B owner/admin management + M4-C replacement-churn). Milestone 5 is **`DONE` — 27/27** (M5-A period/capacity/tables/same-month and M5-B carry-forward plus later-month historical reactivation). Milestone 6 is **`DONE` — 37/37** (production UX/state integration of the locked design). The NDPS/BNS overlay + Cloze + proof revision rows **do not** count as milestones 7–8. Platforms are `web | android | ios`. Overlay is lifetime learning history; roster is current-month membership (`overlay != roster`). Previous-period laws are candidates only. Keep consumes a new-period slot. Decline consumes none. Historical progress never waives monthly capacity. Pending + current-roster law remains learnable; pending + historical overlay only is not. **Do not tick Stage 2 from Cloze or from `main`’s sitemap PRs.** This branch includes main’s Bare Act SEO and generated sitemap index; that is Milestone 0 coexistence, not Milestone 10 (`noindex`) and not Stage 2.
 
 | | |
 |--|--|
-| **Stage 1 (build)** | **53.0 / 100** |
+| **Stage 1 (build)** | **61.0 / 100** |
 | Milestone 0 | `DONE` — 10/10 items × 5 = **5** |
 | Milestone 1 | `DONE` — 18/18 items × 8 = **8** |
 | Milestone 2 | `DONE` — 37/37 × 13 = **13** |
 | Milestone 3 | `DONE` — 15/15 × 7 = **7** |
 | Milestone 4 | `DONE` — 25/25 × 8 = **8** (M4-A + M4-B + M4-C). |
 | Milestone 5 | `DONE` — 27/27 × 12 = **12** |
-| Milestones 6–11 | `NOT STARTED` |
+| Milestone 6 | `DONE` — 37/37 × 8 = **8** |
+| Milestones 7–11 | `NOT STARTED` |
 | **Stage 2 (optimize)** | **`NOT STARTED` — start gate: Stage 1 = `DONE` (100/100)** |
 
 Do not read Cloze on this branch as ~20% complete. Payments, roster, devices, six Learn modes, and Learned → revision are the actual Stage 1 product weight. Stage 2 is **outside** the 100.
@@ -137,7 +138,7 @@ existing application tests pass
 
 **Status: `DONE`** (18/18 × 8 = 8)
 
-M1-A (eligibility + router + final URLs) and M1-B (registry identity, zero-hydration dashboard/summary path, batched writes) are closed. Proof Cloze still does **not** tick milestones 6–8. `/playground/roster` is implemented in Milestone 5A as the current-month capacity/confirm/management surface (not the M6 visual redesign).
+M1-A (eligibility + router + final URLs) and M1-B (registry identity, zero-hydration dashboard/summary path, batched writes) are closed. Proof Cloze still does **not** tick milestones 7–8. `/playground/roster` is implemented in Milestone 5A as the current-month capacity/confirm/management surface; Milestone 6 ports the production visual language onto those same routes.
 
 ## Eligibility
 
@@ -448,70 +449,70 @@ Max  = unlimited
 
 # 6. Finished Playground UX — 8 points
 
-**Status: `NOT STARTED`**
+**Status: `DONE` — 37/37** (production UX/state integration). Design prototype existence scores **0**. Cloze/Add/Select proof screens do **not** count as this milestone.
 
-Proof Add/Select/Cloze screens do **not** count. Implement the final Claude Design against real entitlement state.
+M6 maps locked M1–M5 facts into Jinja/CSS/vanilla JS. It does not change quota, device, or payment semantics. Alembic head remains `20260917_0024`. M7–M10 remain `NOT STARTED`.
 
 ## Navigation
 
-* [ ] Today
-* [ ] Browse
-* [ ] Playground
-* [ ] Calendar
-* [ ] Profile
+* [x] Today
+* [x] Browse
+* [x] Playground
+* [x] Calendar
+* [x] Profile
 
 ## Playground home
 
-* [ ] current monthly roster
-* [ ] capacity display
-* [ ] active laws
-* [ ] progress summaries
-* [ ] due state
-* [ ] Learned/mastered state
-* [ ] Manage action
+* [x] current monthly roster
+* [x] capacity display
+* [x] active laws
+* [x] progress summaries
+* [x] due state
+* [x] Learned/mastered state
+* [x] Manage action
 
 ## Law states
 
-* [ ] Add to Playground
-* [ ] In Playground
-* [ ] Continue
-* [ ] Previously learned / progress saved
-* [ ] Add to this month
-* [ ] Playground full this month
+* [x] Add to Playground
+* [x] In Playground
+* [x] Continue
+* [x] Previously learned / progress saved
+* [x] Add to this month
+* [x] Playground full this month
 
 ## User gates
 
-* [ ] Guest → Sign in
-* [ ] Signed-in free → Subscribe
-* [ ] Device limit → Manage devices
-* [ ] Expired → Playground visible but learning paused
-* [ ] payment failure
-* [ ] cancel-at-period-end
-* [ ] upgrade
-* [ ] downgrade scheduled
-* [ ] paused
-* [ ] resubscribed
+* [x] Guest → Sign in
+* [x] Signed-in free → Subscribe
+* [x] Device limit → Manage devices
+* [x] Expired → Playground visible but learning paused
+* [x] payment failure
+* [x] cancel-at-period-end
+* [x] upgrade
+* [x] downgrade scheduled
+* [x] paused
+* [x] resubscribed
 
 ## Rollover UX
 
-* [ ] Your {month} Playground
-* [ ] Keep
-* [ ] Remove
-* [ ] slots remaining
-* [ ] Add new laws
-* [ ] Manage next month
+* [x] Your {month} Playground
+* [x] Keep
+* [x] Remove
+* [x] slots remaining
+* [x] Add new laws
+* [x] Manage next month
 
 ## Trust
 
-* [ ] “Verbatim, always.”
-* [ ] canonical statutory reveal
-* [ ] no AI-generated statute presentation
+* [x] “Verbatim, always.”
+* [x] canonical statutory reveal
+* [x] no AI-generated statute presentation
 
 ### Done when
 
 Every backend entitlement/roster/payment/device state has an intentional UI state.
 
-**Weight: 8**
+**Weight: 8** (37/37 × 8 = **8**; Stage 1 **53.0 + 8 = 61.0**)
 
 ---
 
@@ -769,13 +770,13 @@ Playground + payment can safely replace the existing commercial entitlement mode
 | 3. User-type entitlement          |      7 | `DONE` — 15/15 × 7 = 7 |
 | 4. Device control                 |      8 | `DONE` — 25/25 × 8 = 8 |
 | 5. Monthly roster                 |     12 | `DONE` — 27/27 × 12 = 12 |
-| 6. Finished UX                    |      8 | `NOT STARTED` |
+| 6. Finished UX                    |      8 | `DONE` — 37/37 × 8 = 8 |
 | 7. Complete Learn engine          |     15 | `NOT STARTED` |
 | 8. Learned/revision/mastery       |      8 | `NOT STARTED` |
 | 9. Amendments/source integrity    |      5 | `NOT STARTED` |
 | 10. SEO/routing discoverability   |      4 | `NOT STARTED` |
 | 11. Production hardening/release  |      7 | `NOT STARTED` |
-| **TOTAL (Stage 1)**               |  **100** | **53.0 / 100** |
+| **TOTAL (Stage 1)**               |  **100** | **61.0 / 100** |
 | Stage 2 — Optimize                |    — | `NOT STARTED` — start gate: Stage 1 = `DONE` (100/100) |
 
 ---
@@ -794,7 +795,7 @@ Batch 2   Payment/subscription foundation
 Batch 3   User entitlement inversion — DONE (M3-A Constitution + M3-B Playground gate)
 Batch 4   Device registry/control — DONE (M4-A+M4-B+M4-C 25/25)
 Batch 5   Monthly roster + rollover — DONE (27/27)
-Batch 6   Final Playground UI shell
+Batch 6   Final Playground UI shell — DONE (37/37)
 Batch 7   Complete Learn modes
 Batch 8   Learned + revision + Today/Calendar
 Batch 9   Amendment handling
