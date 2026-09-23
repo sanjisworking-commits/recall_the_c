@@ -492,9 +492,10 @@ def test_dashboard_multiuser_layout(tmp_path: Path):
     assert "User A" in html
     assert "a@example.com" in html
     assert "account-provider-badge is-google" in html
-    profile_i = html.index('href="/profile"')
-    settings_i = html.index('href="/settings"')
-    calendar_i = html.index('href="/calendar"')
+    menu = html.split('role="menu"', 1)[1]
+    profile_i = menu.index('href="/profile"')
+    settings_i = menu.index('href="/settings"')
+    calendar_i = menu.index('href="/calendar"')
     assert profile_i < settings_i < calendar_i
     # Memory log is feature-flagged off for V1 production.
     assert 'href="/memory"' not in html
