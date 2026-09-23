@@ -528,7 +528,8 @@ def test_free_account_mints_cookie_but_does_not_register(tmp_path: Path):
     assert client.cookies.get(DEVICE_COOKIE_NAME)
     assert _devices(client).list_devices(USER) == []
     playground = client.get("/playground")
-    assert "Subscribe" in playground.text
+    assert "View Playground plans" in playground.text
+    assert "complete Constitution" in playground.text
     assert _devices(client).list_devices(USER) == []
 
 
@@ -670,7 +671,7 @@ def test_subscription_expiry_keeps_registry_and_resubscribe_recognizes(
     )
     client.app.state.subscriptions.mark_not_current(USER, first.id)
     blocked = client.get("/playground")
-    assert "Subscribe" in blocked.text or "not_subscribed" in blocked.text
+    assert "View Playground plans" in blocked.text or "not_subscribed" in blocked.text
     remaining = _devices(client).list_devices(USER)
     assert len(remaining) == 1
     assert remaining[0].id == device_id

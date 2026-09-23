@@ -471,7 +471,7 @@ def test_replacement_from_management_page(tmp_path: Path):
     b.get("/playground")
     blocked = c.get("/playground")
     assert "Device limit reached" in blocked.text
-    assert "Remove a device to use Playground here." in blocked.text
+    assert "Your subscription supports Playground on up to 2 registered devices." in blocked.text
     assert "Manage devices" in blocked.text
     assert "Back to Constitution" in blocked.text
     assert f'href="{DEVICES_PATH}"' in blocked.text

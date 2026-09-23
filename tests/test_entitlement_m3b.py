@@ -269,10 +269,11 @@ def _hydrate_spy(monkeypatch: pytest.MonkeyPatch) -> list[str]:
 def _assert_subscribe_gate(response) -> None:
     assert response.status_code == 200
     assert 'data-playground-gate="not_subscribed"' in response.text
-    assert "Subscribe to use Playground" in response.text
-    assert "Playground is included with Plus, Pro, or Max." in response.text
+    assert "Your RecallC account already includes the complete Constitution." in response.text
+    assert "Playground adds structured learning for laws." in response.text
     assert "View Playground plans" in response.text
     assert PLAYGROUND_BILLING_PATH in response.text
+    assert "Subscribe to use Playground" not in response.text
     assert "Sign in to use Playground" not in response.text
 
 
@@ -501,7 +502,7 @@ def test_paused_blocks_playground_with_paused_copy(tmp_path: Path):
     _add_subscription(client, tier="pro", status="paused")
     home = client.get("/playground")
     assert 'data-playground-gate="subscription_paused"' in home.text
-    assert "Playground subscription is paused" in home.text
+    assert "Playground subscription paused" in home.text
     assert "Subscribe to use Playground" not in home.text
     snap = client.app.state.entitlement_service.resolve(USER, now=NOW)
     assert snap.playground_block_reason == BLOCK_SUBSCRIPTION_PAUSED
@@ -522,7 +523,7 @@ def test_paid_period_ended_blocks_all_playground_surfaces(tmp_path: Path):
     assert charge.access_effect == "period_ended"
     home = client.get("/playground")
     assert 'data-playground-gate="paid_period_ended"' in home.text
-    assert "Playground access for this paid period has ended" in home.text
+    assert "Your Playground is paused" in home.text
     learn = client.get(learn_path("ndps", "1"), follow_redirects=False)
     assert 'data-playground-gate="paid_period_ended"' in learn.text
     done = client.post(learn_complete_path("ndps", "1"))

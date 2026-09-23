@@ -611,19 +611,27 @@ def test_fourth_tab_reads_calendar():
         Path(__file__).parent.parent
         / "src/constitution_memorizer/web/templates/base.html"
     ).read_text()
-    tabbar = base.split('class="mobile-tabbar" aria-label="Mobile"', 1)[1].split(
+    tabbar = base.split('class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom"', 1)[1].split(
         "</nav>", 1
     )[0]
+    assert ">Today</a>" in tabbar or ">Today<" in tabbar
+    assert ">Browse</a>" in tabbar or ">Browse<" in tabbar
+    assert ">Playground</a>" in tabbar or ">Playground<" in tabbar
     assert ">Calendar</a>" in tabbar
     assert ">Profile</a>" in tabbar
     assert ">Learn</a>" not in tabbar
     assert ">Revisions</a>" not in tabbar
+    assert 'href="/dashboard"' in tabbar
+    assert 'href="/browse"' in tabbar
+    assert 'href="/playground"' in tabbar
     assert 'href="/calendar"' in tabbar
-    assert 'href="/progress"' in tabbar
-    assert "path.startswith('/progress')" in tabbar
+    assert 'href="/profile"' in tabbar
+    assert "path.startswith('/profile')" in tabbar
+    assert 'aria-current="page"' in tabbar
     # Calendar must not also light up on Profile.
     calendar_line = [line for line in tabbar.splitlines() if 'href="/calendar"' in line][0]
     assert "/progress" not in calendar_line
+    assert "/profile" not in calendar_line
 
 
 def test_dominant_kind_priority(tmp_path: Path):
@@ -1223,11 +1231,12 @@ def test_signed_in_tabbar_ships_icons_and_keeps_label_contract():
         Path(__file__).parent.parent
         / "src/constitution_memorizer/web/templates/base.html"
     ).read_text()
-    tabbar = base.split('class="mobile-tabbar" aria-label="Mobile"', 1)[1].split(
+    tabbar = base.split('class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom"', 1)[1].split(
         "</nav>", 1
     )[0]
     assert ">Calendar</a>" in tabbar
     assert ">Profile</a>" in tabbar
+    assert ">Playground</a>" in tabbar or ">Playground<" in tabbar
     assert "mobile-tab-icon" in tabbar
     css = (
         Path(__file__).parent.parent

@@ -312,7 +312,7 @@ def test_source_hash_mismatch_is_flagged_not_wiped(tmp_path: Path):
     repo.conn.commit()
     page = client.get(learn_path("ndps", "1"))
     assert page.status_code == 200
-    assert "This provision has changed" in page.text
+    assert "Law updated. Revealed text is the live Bare Act wording." in page.text
     remaining = repo.get_progress(LOCAL_USER_ID, "ndps", loc)
     assert remaining is not None
     assert remaining.source_hash == "deadbeef"
@@ -673,7 +673,8 @@ def test_home_outdated_flag_is_law_level_registry_identity(
     hydrated = _hydrate_spy(monkeypatch)
     page = client.get("/playground")
     assert page.status_code == 200
-    assert "A source update may require review" in page.text
+    assert "Law updated" in page.text
+    assert "Review affected provisions" in page.text
     assert hydrated == []
 
 

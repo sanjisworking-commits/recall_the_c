@@ -764,7 +764,7 @@ def test_max_confirm_copy_has_no_denominator(tmp_path: Path):
     client = _authed_client(tmp_path)
     _subscribe(client, tier="max")
     page = client.get(roster_path(add="ndps"))
-    assert "Add this law to your September Playground?" in page.text
+    assert "Add NDPS Act to September Playground?" in page.text or "Add this law to your September Playground?" in page.text
     assert "1 of your" not in page.text
 
 
