@@ -162,34 +162,35 @@ def test_article_124_omits_struck_down_njac_wording():
     assert "[Provided that]—" in clause2.text
 
 
-def test_seven_annotation_uses_hidden_tip_element():
+def test_seven_annotation_anchors_the_word_and_carries_its_note():
     catalog = load_text_annotations()
     anns = catalog["article-124-clause-1"]
     assert anns[0].target == "seven"
-    rendered = str(
-        annotate_plain_text(
-            "of not more than seven other Judges.",
-            anns,
-        )
+    annotated = annotate_plain_text(
+        "of not more than seven other Judges.",
+        anns,
     )
-    assert 'class="bare-fn"' in rendered
-    assert 'class="bare-fn-word">seven</span>' in rendered
-    assert 'class="bare-fn-tip"' in rendered
-    assert "hidden" in rendered
-    assert "thirty-three" in rendered
-    assert "37 of 2019" in rendered
-    # Footnote must not leak as adjacent body text when tip is hidden.
+    rendered = str(annotated.html)
+    assert 'class="bareact-fn"' in rendered
+    assert ">seven</span>" in rendered
+    assert 'aria-describedby="fn-fn-note-0"' in rendered
+    # The note travels beside the text, never inside it.
+    note = annotated.footnotes[0].text
+    assert "thirty-three" in note
+    assert "37 of 2019" in note
+    assert "thirty-three" not in rendered
     assert "sevenNow" not in rendered
     assert ">seven</span>Now" not in rendered
 
 
 def test_annotate_escapes_and_skips_missing_targets():
-    html = annotate_plain_text(
+    annotated = annotate_plain_text(
         "alpha <beta> gamma",
         [TextAnnotation(target="missing", note="n")],
     )
-    assert "&lt;beta&gt;" in str(html)
-    assert "bare-fn" not in str(html)
+    assert "&lt;beta&gt;" in str(annotated.html)
+    assert "bareact-fn" not in str(annotated.html)
+    assert annotated.footnotes == ()
 
 
 def test_article_326_title_body_split_and_eighteen_hover():
@@ -259,9 +260,11 @@ def test_article_326_title_body_split_and_eighteen_hover():
 
     anns = load_text_annotations()["article-326"]
     assert anns[0].target == "eighteen"
-    rendered = str(annotate_plain_text(unit.text, anns))
-    assert 'class="bare-fn-word">eighteen</span>' in rendered
-    assert 'class="bare-fn-tip"' in rendered
-    assert "Sixty-first Amendment" in rendered
-    assert "twenty-one years" in rendered
+    annotated = annotate_plain_text(unit.text, anns)
+    rendered = str(annotated.html)
+    assert ">eighteen</span>" in rendered
+    assert 'class="bareact-fn"' in rendered
+    note = annotated.footnotes[0].text
+    assert "Sixty-first Amendment" in note
+    assert "twenty-one years" in note
     assert "2 [eighteen" not in rendered

@@ -2012,216 +2012,6 @@
     };
   }
 
-  function initBareFns(root) {
-    const scope = root || document;
-    const LEAVE_MS = 120;
-    let pinnedPrimary = null;
-
-    function closeNested(trigger) {
-      if (!trigger) {
-        return;
-      }
-      const tipId = trigger.getAttribute("aria-controls");
-      const nested = tipId ? document.getElementById(tipId) : null;
-      trigger.setAttribute("aria-expanded", "false");
-      trigger.classList.remove("is-open");
-      if (nested) {
-        nested.hidden = true;
-        nested.classList.remove("is-open");
-      }
-    }
-
-    function openNested(trigger) {
-      if (!trigger) {
-        return;
-      }
-      const tipId = trigger.getAttribute("aria-controls");
-      const nested = tipId ? document.getElementById(tipId) : null;
-      trigger.setAttribute("aria-expanded", "true");
-      trigger.classList.add("is-open");
-      if (nested) {
-        nested.hidden = false;
-        nested.classList.add("is-open");
-      }
-    }
-
-    function closePrimary(el, tip) {
-      el.querySelectorAll(".bare-fn-nested-trigger").forEach(closeNested);
-      tip.hidden = true;
-      el.classList.remove("is-open", "is-pinned");
-      if (pinnedPrimary === el) {
-        pinnedPrimary = null;
-      }
-    }
-
-    function openPrimary(el, tip, pin) {
-      if (pinnedPrimary && pinnedPrimary !== el) {
-        const otherTip = pinnedPrimary.querySelector(":scope > .bare-fn-tip");
-        if (otherTip) {
-          closePrimary(pinnedPrimary, otherTip);
-        }
-      }
-      tip.hidden = false;
-      el.classList.add("is-open");
-      if (pin) {
-        el.classList.add("is-pinned");
-        pinnedPrimary = el;
-      }
-    }
-
-    scope.querySelectorAll(".bare-fn").forEach((el) => {
-      const tip = el.querySelector(":scope > .bare-fn-tip");
-      if (!tip || el.dataset.bareFnBound === "1") {
-        return;
-      }
-      el.dataset.bareFnBound = "1";
-      let leaveTimer = null;
-
-      function clearLeave() {
-        if (leaveTimer) {
-          window.clearTimeout(leaveTimer);
-          leaveTimer = null;
-        }
-      }
-
-      function scheduleLeave() {
-        clearLeave();
-        leaveTimer = window.setTimeout(() => {
-          if (el.classList.contains("is-pinned")) {
-            return;
-          }
-          if (el.contains(document.activeElement)) {
-            return;
-          }
-          closePrimary(el, tip);
-        }, LEAVE_MS);
-      }
-
-      el.addEventListener("mouseenter", () => {
-        clearLeave();
-        openPrimary(el, tip, false);
-      });
-      el.addEventListener("mouseleave", scheduleLeave);
-      el.addEventListener("focusin", () => {
-        clearLeave();
-        openPrimary(el, tip, false);
-      });
-      el.addEventListener("focusout", (event) => {
-        if (el.contains(event.relatedTarget)) {
-          return;
-        }
-        scheduleLeave();
-      });
-
-      // Tap/click on the marked word toggles pin (nested triggers stopPropagation).
-      el.addEventListener("click", (event) => {
-        if (event.target.closest(".bare-fn-nested-trigger")) {
-          return;
-        }
-        event.preventDefault();
-        if (el.classList.contains("is-pinned")) {
-          closePrimary(el, tip);
-        } else {
-          openPrimary(el, tip, true);
-        }
-      });
-
-      tip.querySelectorAll(".bare-fn-nested-trigger").forEach((trigger) => {
-        if (trigger.dataset.bareNestedBound === "1") {
-          return;
-        }
-        trigger.dataset.bareNestedBound = "1";
-        const nestedId = trigger.getAttribute("aria-controls");
-        const nested = nestedId ? document.getElementById(nestedId) : null;
-
-        function showChild() {
-          clearLeave();
-          openPrimary(el, tip, el.classList.contains("is-pinned"));
-          openNested(trigger);
-        }
-
-        function hideChild() {
-          closeNested(trigger);
-        }
-
-        trigger.addEventListener("mouseenter", showChild);
-        trigger.addEventListener("focus", showChild);
-        if (nested) {
-          nested.addEventListener("mouseenter", () => {
-            clearLeave();
-            showChild();
-          });
-          nested.addEventListener("mouseleave", () => {
-            if (trigger.getAttribute("aria-expanded") !== "true") {
-              return;
-            }
-            // Keep open while pinned via click; hover-only closes with parent leave.
-          });
-        }
-        // Nested click must not toggle the parent tip.
-        trigger.addEventListener("click", (event) => {
-          event.preventDefault();
-          event.stopPropagation();
-          clearLeave();
-          openPrimary(el, tip, true);
-          if (trigger.getAttribute("aria-expanded") === "true") {
-            hideChild();
-          } else {
-            showChild();
-          }
-        });
-        trigger.addEventListener("keydown", (event) => {
-          if (event.key === "Enter" || event.key === " ") {
-            event.preventDefault();
-            event.stopPropagation();
-            trigger.click();
-          }
-        });
-      });
-    });
-
-    if (scope.dataset.bareFnGlobalBound === "1") {
-      return;
-    }
-    scope.dataset.bareFnGlobalBound = "1";
-
-    document.addEventListener("keydown", (event) => {
-      if (event.key !== "Escape") {
-        return;
-      }
-      const openNestedBtn = document.querySelector(
-        ".bare-fn-nested-trigger[aria-expanded='true']"
-      );
-      if (openNestedBtn) {
-        closeNested(openNestedBtn);
-        openNestedBtn.focus();
-        event.preventDefault();
-        return;
-      }
-      const openPrimaryEl = document.querySelector(".bare-fn.is-open, .bare-fn.is-pinned");
-      if (openPrimaryEl) {
-        const tip = openPrimaryEl.querySelector(":scope > .bare-fn-tip");
-        if (tip) {
-          closePrimary(openPrimaryEl, tip);
-        }
-        openPrimaryEl.focus();
-        event.preventDefault();
-      }
-    });
-
-    document.addEventListener("pointerdown", (event) => {
-      const inside = event.target.closest(".bare-fn");
-      document.querySelectorAll(".bare-fn.is-open, .bare-fn.is-pinned").forEach((el) => {
-        if (inside === el || (inside && el.contains(inside))) {
-          return;
-        }
-        const tip = el.querySelector(":scope > .bare-fn-tip");
-        if (tip) {
-          closePrimary(el, tip);
-        }
-      });
-    });
-  }
 
   // Leaving an active revision queue asks first. Deliberately outside
   // initLearn: the guard is about history, not mode state, and initLearn is
@@ -2231,32 +2021,38 @@
   // switchModeLocal and the phone's showDeck both use replaceState, so they
   // add no entry and structurally cannot fire popstate. A popstate here can
   // only mean the user pressed Back.
-  /* Bare Act footnotes.
+  /* Footnotes — one presentation for every reading surface.
 
-     Same interaction contract as initBareFns — hover or focus opens, tap pins,
-     Escape and an outside press close, one open at a time — but a different
-     presentation: the Constitution shows an inline tip beside the word, while a
-     Bare Act pins one card to the bottom of the reading column. Statute
-     amendment notes are long and you read several in a row, so a fixed place to
-     look beats a bubble that moves with the cursor.
+     The Constitution's Bare Act text and an Act's sections mark the same thing:
+     a run of statute carrying a note, most often "which Act changed this, and
+     from when". They used to differ — an inline tip beside the word there, a
+     card here — and the split did not survive the corpus. The Constitution's
+     notes are the longer ones, not the shorter ones (median 142 characters
+     against an Act's 68), its inline tip was rendered inside the browse
+     preview's own `overflow: hidden` and got clipped mid-sentence on phone, and
+     `.bare-fn` was `inline-block`, which cannot wrap — so it could never have
+     carried an Act's anchors, which run to 391 characters across four lines.
+     The card is indifferent to both lengths, so it is the one that generalises.
 
-     The two want reconciling once this has been used; until then this
-     deliberately does not call initBareFns, which would show the wrong chrome. */
+     Anchors are delegated, not bound one by one, so a note that cites another
+     note opens it exactly the way body text does. The card keeps a stack for
+     that, and Escape walks back out one level at a time. */
   function initBareActFootnotes() {
     const card = document.querySelector("[data-bareact-fn-card]");
-    if (!card) {
+    if (!card || !document.querySelector("[data-bareact-fn]")) {
       return;
     }
     const slot = card.querySelector("[data-bareact-fn-text]");
-    const anchors = document.querySelectorAll("[data-bareact-fn]");
-    if (!anchors.length || !slot) {
+    const back = card.querySelector("[data-bareact-fn-back]");
+    if (!slot) {
       return;
     }
 
     const LEAVE_MS = 120;
     let leaveTimer = null;
-    let pinned = null;
-    let open = null;
+    let pinned = false;
+    // Anchors from the outermost inwards. The last one is what the card shows.
+    const trail = [];
 
     function clearLeave() {
       if (leaveTimer) {
@@ -2265,89 +2061,180 @@
       }
     }
 
+    function scheduleHide() {
+      clearLeave();
+      leaveTimer = window.setTimeout(() => {
+        if (pinned || card.contains(document.activeElement)) {
+          return;
+        }
+        const active = trail[trail.length - 1];
+        if (active && active.contains(document.activeElement)) {
+          return;
+        }
+        hide();
+      }, LEAVE_MS);
+    }
+
+    function noteFor(el) {
+      return document.getElementById("fn-" + el.dataset.bareactFn);
+    }
+
+    // These listeners sit on document, which can itself be the event target —
+    // and document has no closest().
+    function anchorFrom(target) {
+      if (!target || typeof target.closest !== "function") {
+        return null;
+      }
+      const el = target.closest("[data-bareact-fn]");
+      // Anchors in the hidden notes block are copies, not the page's own.
+      return el && !el.closest(".bareact-fn-notes") ? el : null;
+    }
+
     function hide() {
       clearLeave();
-      if (open) {
-        open.classList.remove("is-active");
-      }
-      open = null;
-      pinned = null;
+      trail.forEach((el) => el.classList.remove("is-active"));
+      trail.length = 0;
+      pinned = false;
       card.hidden = true;
       slot.textContent = "";
+      if (back) {
+        back.hidden = true;
+      }
+    }
+
+    // Paint whatever sits at the end of the trail. The note body is markup the
+    // server escaped; anchors inside it are tab stops only once they are here,
+    // where they can be seen.
+    function render() {
+      const el = trail[trail.length - 1];
+      const note = noteFor(el);
+      if (!note) {
+        return;
+      }
+      slot.innerHTML = note.innerHTML;
+      slot.querySelectorAll("[data-bareact-fn]").forEach((nested) => {
+        nested.setAttribute("tabindex", "0");
+      });
+      card.hidden = false;
+      if (back) {
+        back.hidden = trail.length < 2;
+      }
     }
 
     function show(el, pin) {
       clearLeave();
-      // The note already exists in the page for aria-describedby; read it back
-      // rather than keeping a second copy of the string in a data attribute.
-      const note = document.getElementById("fn-" + el.dataset.bareactFn);
-      if (!note) {
+      if (!noteFor(el)) {
         return;
       }
-      if (open && open !== el) {
-        open.classList.remove("is-active");
+      if (card.contains(el)) {
+        // Reached from inside a note: go deeper rather than replacing.
+        trail.push(el);
+      } else {
+        trail.forEach((prev) => prev.classList.remove("is-active"));
+        trail.length = 0;
+        trail.push(el);
       }
-      open = el;
       el.classList.add("is-active");
-      slot.textContent = note.textContent.trim();
-      card.hidden = false;
+      render();
       if (pin) {
-        pinned = el;
+        pinned = true;
       }
     }
 
-    anchors.forEach((el) => {
-      el.addEventListener("mouseenter", () => {
-        if (pinned) {
-          return;
-        }
-        show(el, false);
-      });
-      el.addEventListener("mouseleave", () => {
-        clearLeave();
-        leaveTimer = window.setTimeout(() => {
-          if (pinned || el.contains(document.activeElement)) {
-            return;
-          }
-          hide();
-        }, LEAVE_MS);
-      });
-      el.addEventListener("focusin", () => show(el, false));
-      el.addEventListener("focusout", () => {
-        if (pinned) {
-          return;
-        }
-        hide();
-      });
-      el.addEventListener("click", (event) => {
+    function pop() {
+      if (trail.length < 2) {
+        return null;
+      }
+      const leaving = trail.pop();
+      leaving.classList.remove("is-active");
+      const id = leaving.dataset.bareactFn;
+      render();
+      return slot.querySelector('[data-bareact-fn="' + id + '"]');
+    }
+
+    document.addEventListener("mouseover", (event) => {
+      const el = anchorFrom(event.target);
+      if (!el || pinned || el === trail[trail.length - 1]) {
+        return;
+      }
+      show(el, false);
+    });
+
+    document.addEventListener("mouseout", (event) => {
+      if (!anchorFrom(event.target) || card.hidden) {
+        return;
+      }
+      scheduleHide();
+    });
+
+    // The card has to be reachable with the pointer: its own notes carry
+    // anchors, and its text is worth selecting.
+    card.addEventListener("mouseenter", clearLeave);
+    card.addEventListener("mouseleave", scheduleHide);
+
+    document.addEventListener("focusin", (event) => {
+      const el = anchorFrom(event.target);
+      if (!el || el === trail[trail.length - 1]) {
+        return;
+      }
+      show(el, false);
+    });
+
+    document.addEventListener("focusout", () => {
+      if (pinned || card.hidden) {
+        return;
+      }
+      scheduleHide();
+    });
+
+    document.addEventListener("click", (event) => {
+      const el = anchorFrom(event.target);
+      if (el) {
         event.preventDefault();
-        if (pinned === el) {
-          hide();
-          return;
-        }
-        show(el, true);
-      });
-      el.addEventListener("keydown", (event) => {
-        if (event.key !== "Enter" && event.key !== " ") {
-          return;
-        }
-        event.preventDefault();
-        if (pinned === el) {
+        if (pinned && el === trail[trail.length - 1]) {
           hide();
         } else {
           show(el, true);
         }
-      });
+        return;
+      }
+      const backHit =
+        back &&
+        typeof event.target.closest === "function" &&
+        event.target.closest("[data-bareact-fn-back]");
+      if (backHit) {
+        const target = pop();
+        if (target) {
+          target.focus();
+        }
+      }
     });
 
     document.addEventListener("keydown", (event) => {
+      const el = anchorFrom(event.target);
+      if (el && (event.key === "Enter" || event.key === " ")) {
+        event.preventDefault();
+        if (pinned && el === trail[trail.length - 1]) {
+          hide();
+        } else {
+          show(el, true);
+        }
+        return;
+      }
       if (event.key !== "Escape" || card.hidden) {
         return;
       }
-      const focusTarget = open;
+      event.preventDefault();
+      // Escape walks out of a nested note before it closes the card.
+      const parent = pop();
+      if (parent) {
+        parent.focus();
+        return;
+      }
+      const root = trail[trail.length - 1];
       hide();
-      if (focusTarget) {
-        focusTarget.focus();
+      if (root) {
+        root.focus();
       }
     });
 
@@ -2355,7 +2242,7 @@
       if (card.hidden) {
         return;
       }
-      if (event.target.closest("[data-bareact-fn]") || card.contains(event.target)) {
+      if (anchorFrom(event.target) || card.contains(event.target)) {
         return;
       }
       hide();
@@ -2446,7 +2333,6 @@
       return;
     }
     learn.classList.add("is-ready");
-    initBareFns(learn);
 
     const clozePanel = learn.querySelector('[data-learn-panel="cloze"]');
     const lettersPanel = learn.querySelector('[data-learn-panel="letters"]');
@@ -2956,14 +2842,6 @@
         doneBtn.setAttribute("disabled", "disabled");
       }
     }
-  }
-
-  function initBrowseArticle() {
-    const root = document.querySelector(".browse-article [data-bare-fn-root]");
-    if (!root) {
-      return;
-    }
-    initBareFns(root);
   }
 
   function cardHasMark(card, key) {
@@ -4056,7 +3934,6 @@
     document.addEventListener("DOMContentLoaded", () => {
       initLearn();
       initRevisionGuard();
-      initBrowseArticle();
       initBrowseIndex();
       initExplainBack();
       initThemeToggle();
@@ -4065,7 +3942,6 @@
   } else {
     initLearn();
     initRevisionGuard();
-    initBrowseArticle();
     initBrowseIndex();
     initExplainBack();
     initThemeToggle();
