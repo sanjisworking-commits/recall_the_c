@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RecallC Playground — design prototype</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#ececea;font-family:"Source Sans 3","Segoe UI",sans-serif;color:#141414}
+.PreviewPage button:focus-visible,.PreviewPage select:focus-visible,.PreviewPage a:focus-visible{outline:2px solid var(--pg-ink);outline-offset:2px}
+.PreviewPage button{-webkit-tap-highlight-color:transparent}
+.PreviewPage button[disabled]{cursor:not-allowed}
+.PreviewPage p,.PreviewPage h1,.PreviewPage h2,.PreviewPage h3{overflow-wrap:break-word}
+@media (prefers-reduced-motion: reduce){.PreviewPage *{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+</style>
+</helmet>
+<div class="PreviewPage" data-theme="{{theme}}" style="{{pageStyle}}">
+
+  <div class="DesignPreviewControls" role="region" aria-label="Design preview controls" style="{{previewBarStyle}}">
+    <p style="margin:0 0 10px;font-size:11.5px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:var(--pg-muted)">Design preview — not part of the product.</p>
+    <div style="display:flex;flex-wrap:wrap;gap:12px 20px;align-items:flex-end">
+      <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--pg-muted)">Scenario
+        <select value="{{scenario}}" onChange="{{onScenario}}" style="{{S.select}}">
+          <sc-for list="{{scenarioOptions}}" as="o"><option value="{{o.value}}" label="{{o.label}}"></option></sc-for>
+        </select>
+      </label>
+      <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--pg-muted)">Screen
+        <select value="{{screen}}" onChange="{{onScreen}}" style="{{S.select}}">
+          <sc-for list="{{screenOptions}}" as="o"><option value="{{o.value}}" label="{{o.label}}"></option></sc-for>
+        </select>
+      </label>
+      <div style="display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--pg-muted)">Viewport
+        <div role="group" aria-label="Viewport" style="display:flex">
+          <sc-for list="{{viewportOptions}}" as="o"><button onClick="{{o.pick}}" aria-pressed="{{o.pressed}}" style="{{o.style}}">{{o.label}}</button></sc-for>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:4px;font-size:12px;font-weight:600;color:var(--pg-muted)">Theme
+        <div role="group" aria-label="Theme" style="display:flex">
+          <sc-for list="{{themeOptions}}" as="o"><button onClick="{{o.pick}}" aria-pressed="{{o.pressed}}" style="{{o.style}}">{{o.label}}</button></sc-for>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="PlaygroundShell" data-viewport="{{viewport}}" data-scenario="{{scenario}}" style="{{frameStyle}}">
+
+    <header class="AppHeader" style="{{headerStyle}}">
+      <span style="font-family:Fraunces,Georgia,serif;font-size:19px;font-weight:700;letter-spacing:-0.02em">RecallC</span>
+      <sc-if value="{{showDesktopTabs}}">
+      <nav class="PrimaryTabs PrimaryTabs--top" aria-label="Primary" style="display:flex;gap:2px;flex:1;justify-content:center">
+        <sc-for list="{{tabs}}" as="t"><button onClick="{{t.pick}}" aria-current="{{t.current}}" style="{{t.topStyle}}" style-hover="color:var(--pg-ink)">{{t.label}}</button></sc-for>
+      </nav>
+      </sc-if>
+      <sc-if value="{{header.showChip}}"><span style="{{S.planChip}}">{{header.chip}}</span></sc-if>
+      <sc-if value="{{header.showSignIn}}"><button onClick="{{noop}}" style="{{S.btnQuiet}}">Sign in</button></sc-if>
+    </header>
+
+    <sc-if value="{{banner.show}}">
+    <div class="PaymentStateBanner" data-state="{{banner.kind}}" role="status" style="{{S.banner}}">
+      <span aria-hidden="true" style="{{S.bannerMark}}"></span>
+      <div style="flex:1 1 220px;min-width:0">
+        <p style="margin:0;font-weight:700;font-size:15.5px">{{banner.title}}</p>
+        <sc-if value="{{banner.hasBody}}"><p style="margin:3px 0 0;font-size:14px;line-height:1.45;color:var(--pg-muted)">{{banner.body}}</p></sc-if>
+      </div>
+      <sc-if value="{{banner.hasCta}}"><button onClick="{{noop}}" style="{{S.btnSecondarySm}}">{{banner.cta}}</button></sc-if>
+    </div>
+    </sc-if>
+
+    <main style="{{mainStyle}}">
+
+      <sc-if value="{{isGate}}">
+      <section class="EntitlementGate" data-gate="{{gate.kind}}" aria-labelledby="pg-gate-title" style="{{S.gate}}">
+        <p style="{{S.eyebrow}}">{{gate.eyebrow}}</p>
+        <h1 id="pg-gate-title" style="{{S.gateTitle}}">{{gate.title}}</h1>
+        <sc-for list="{{gate.lines}}" as="ln"><p style="{{ln.style}}">{{ln.text}}</p></sc-for>
+        <sc-if value="{{gate.showSaved}}">
+        <div class="ProgressSummary" aria-label="Your saved progress" style="{{S.summaryGrid2}}">
+          <sc-for list="{{gate.saved}}" as="s"><div style="{{S.summaryCell}}"><div style="{{S.summaryValue}}">{{s.value}}</div><div style="{{S.summaryLabel}}">{{s.label}}</div></div></sc-for>
+        </div>
+        </sc-if>
+        <div style="{{S.actionRow}}">
+          <sc-for list="{{gate.actions}}" as="a"><button onClick="{{noop}}" style="{{a.style}}">{{a.label}}</button></sc-for>
+        </div>
+        <sc-if value="{{gate.showHow}}">
+        <div class="HowPlaygroundWorks" style="margin-top:34px;border-top:1px solid var(--pg-ink)">
+          <p style="{{S.eyebrowTop}}">How Playground works</p>
+          <sc-for list="{{howItWorks}}" as="hw">
+          <div style="display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--pg-hairline)">
+            <span aria-hidden="true" style="{{S.howNum}}">{{hw.n}}</span>
+            <div><p style="margin:0;font-weight:700;font-size:15.5px">{{hw.title}}</p><p style="margin:2px 0 0;font-size:14px;line-height:1.45;color:var(--pg-muted)">{{hw.body}}</p></div>
+          </div>
+          </sc-for>
+        </div>
+        </sc-if>
+      </section>
+      </sc-if>
+
+      <sc-if value="{{isPlaceholder}}">
+      <section class="ShellPlaceholder" aria-labelledby="pg-ph-title" style="padding:40px 0">
+        <p style="{{S.eyebrow}}">RecallC</p>
+        <h1 id="pg-ph-title" style="{{S.h1}}">{{placeholder.title}}</h1>
+        <p style="margin:10px 0 0;font-size:16px;line-height:1.5;color:var(--pg-muted);max-width:520px">{{placeholder.body}}</p>
+      </section>
+      </sc-if>
+
+      <sc-if value="{{showBody}}">
+      <div style="{{bodyGrid}}">
+        <div style="min-width:0">
+
+          <sc-if value="{{note.show}}">
+          <div class="RosterNote" role="status" style="{{S.note}}">
+            <span aria-hidden="true" style="{{S.noteMark}}"></span>
+            <span style="flex:1;min-width:0;font-size:14.5px;line-height:1.4">{{note.text}}</span>
+            <sc-if value="{{note.hasAction}}"><button onClick="{{note.action}}" style="{{S.linkBtn}}">{{note.actionLabel}}</button></sc-if>
+            <button onClick="{{dismissNote}}" aria-label="Dismiss message" style="{{S.iconBtn}}">×</button>
+          </div>
+          </sc-if>
+
+          <sc-if value="{{isHome}}">
+          <section class="PlaygroundHome" data-screen-label="Home" aria-labelledby="pg-home-title">
+            <sc-if value="{{home.showRolloverCard}}">
+            <div class="RolloverPrompt" style="border:1px solid var(--pg-ink);padding:16px 18px;margin:0 0 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+              <span aria-hidden="true" style="{{S.monthTile}}">OCT</span>
+              <div style="flex:1;min-width:180px"><p style="margin:0;font-weight:700;font-size:16px">Plan your October Playground</p><p style="margin:2px 0 0;color:var(--pg-muted);font-size:14px;line-height:1.4">Keep what you’re learning, or make room for something new.</p></div>
+              <button onClick="{{goRollover}}" style="{{S.btnPrimary}}">Plan next month</button>
+            </div>
+            </sc-if>
+            <div class="RosterCapacity RosterCapacity--hero">
+              <p style="{{S.eyebrow}}">My Playground</p>
+              <h1 id="pg-home-title" style="{{S.h1}}">September</h1>
+              <sc-if value="{{cap.isEmpty}}">
+                <p style="font-size:19px;font-weight:700;margin:12px 0 4px">Your September Playground is empty</p>
+                <p style="margin:0 0 6px;color:var(--pg-muted);font-size:15.5px;line-height:1.5;max-width:520px">Add laws you want to learn this month. Your saved progress stays with you even when a law leaves Playground.</p>
+              </sc-if>
+              <sc-if value="{{inlineCap}}">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:4px 16px;flex-wrap:wrap;margin:12px 0 10px">
+                <p style="margin:0;font-size:21px;font-weight:700;letter-spacing:-0.01em">{{cap.countLine}}</p>
+                <p style="{{cap.availStyle}}">{{cap.availLine}}</p>
+              </div>
+              <div role="img" aria-label="{{cap.aria}}" style="{{cap.barStyle}}"><sc-for list="{{cap.blocks}}" as="b"><span style="{{b.style}}"></span></sc-for></div>
+              <div style="{{S.legendRow}}"><sc-for list="{{cap.legend}}" as="l"><span style="display:inline-flex;align-items:center;gap:6px"><span aria-hidden="true" style="{{l.swatch}}"></span>{{l.label}}</span></sc-for></div>
+              </sc-if>
+              <sc-if value="{{cap.isFull}}"><p style="margin:12px 0 0;font-size:14px;line-height:1.45;color:var(--pg-muted)">Every law in it stays fully usable. Laws removed this month can be added back without using a space.</p></sc-if>
+              <sc-if value="{{planNote.show}}">
+              <div class="PaymentStateBanner PaymentStateBanner--quiet" data-state="{{planNote.kind}}" style="{{S.planNote}}">
+                <span style="flex:1;min-width:0"><span style="font-weight:700">{{planNote.line1}}</span><sc-if value="{{planNote.hasLine2}}"><span style="color:var(--pg-muted)"> · {{planNote.line2}}</span></sc-if></span>
+                <button onClick="{{noop}}" style="{{S.linkBtnSm}}">Manage subscription</button>
+              </div>
+              </sc-if>
+              <div style="{{S.actionRow}}">
+                <button onClick="{{goStates}}" style="{{home.browseStyle}}">Browse laws</button>
+                <button onClick="{{goRoster}}" style="{{home.manageStyle}}">Manage September</button>
+              </div>
+              <p class="TrustMark" style="{{S.trust}}"><span aria-hidden="true" style="{{S.trustGlyph}}">§</span><span><strong style="color:var(--pg-ink)">Verbatim, always.</strong> Every provision you learn is the Bare Act text, word for word.</span></p>
+            </div>
+
+            <sc-if value="{{home.hasActive}}">
+            <div class="ProgressSummary" aria-label="September progress" style="{{S.summaryGrid}}">
+              <sc-for list="{{home.summary}}" as="s"><div style="{{S.summaryCell}}"><div style="{{S.summaryValue}}">{{s.value}}</div><div style="{{S.summaryLabel}}">{{s.label}}</div></div></sc-for>
+            </div>
+            <div style="{{S.sectionHead}}"><h2 style="{{S.h2}}">In Playground this month</h2><span style="font-size:13px;color:var(--pg-muted)">{{home.activeCountLine}}</span></div>
+            <div style="{{S.lawGrid}}">
+              <sc-for list="{{home.cards}}" as="c">
+              <article class="LawCard" data-law="{{c.id}}" aria-label="{{c.short}}" style="{{c.style}}">
+                <sc-if value="{{c.featured}}"><p style="{{S.eyebrow}}">Up next</p></sc-if>
+                <h3 style="{{S.h3}}">{{c.short}}</h3>
+                <p style="{{S.fullName}}">{{c.full}}</p>
+                <div style="{{S.badgeRow}}"><sc-for list="{{c.badges}}" as="bd"><span class="{{bd.cls}}" style="{{bd.style}}"><span aria-hidden="true" style="{{bd.mark}}"></span>{{bd.label}}</span></sc-for></div>
+                <div class="LawProgress" style="margin:14px 0 0">
+                  <div style="display:flex;justify-content:space-between;gap:10px;font-size:13.5px;color:var(--pg-muted)"><span>{{c.selLine}}</span><span style="color:var(--pg-ink);font-weight:600">{{c.learnedLine}}</span></div>
+                  <div aria-hidden="true" style="height:4px;background:var(--pg-hairline);margin-top:6px"><div style="{{c.barFill}}"></div></div>
+                </div>
+                <sc-if value="{{c.updated}}">
+                <div class="LawUpdatedNotice" style="{{S.updatedNotice}}">
+                  <span class="LawStatusBadge" style="{{S.badgeOutline}}"><span aria-hidden="true" style="{{S.markUpdated}}"></span>Law updated</span>
+                  <button onClick="{{noop}}" style="{{S.linkBtnSm}}">Review affected provisions</button>
+                </div>
+                </sc-if>
+                <div style="{{S.cardActions}}">
+                  <button onClick="{{c.primary}}" style="{{c.primaryStyle}}">{{c.primaryLabel}}</button>
+                  <button onClick="{{noop}}" aria-label="{{c.readAria}}" style="{{S.btnQuiet}}" style-hover="border-color:var(--pg-ink)">Read Bare Act</button>
+                  <button onClick="{{goRoster}}" aria-label="{{c.manageAria}}" style="{{S.btnQuiet}}" style-hover="border-color:var(--pg-ink)">Manage</button>
+                </div>
+              </article>
+              </sc-for>
+            </div>
+            </sc-if>
+
+            <sc-if value="{{home.hasRemoved}}">
+            <div style="{{S.sectionHead}}"><h2 style="{{S.h2}}">Removed this month</h2><span style="font-size:13px;color:var(--pg-muted)">Still uses a September space</span></div>
+            <div style="border-top:1px solid var(--pg-hairline)">
+              <sc-for list="{{home.removed}}" as="r">
+              <div class="LawCard LawCard--compact" data-law="{{r.id}}" style="{{S.compactRow}}">
+                <div style="flex:1;min-width:0">
+                  <p style="margin:0;font-weight:700;font-size:16px">{{r.short}}</p>
+                  <p style="margin:1px 0 0;font-size:13.5px;color:var(--pg-muted)">{{r.full}}</p>
+                  <div style="{{S.badgeRow}}"><sc-for list="{{r.badges}}" as="bd"><span class="{{bd.cls}}" style="{{bd.style}}"><span aria-hidden="true" style="{{bd.mark}}"></span>{{bd.label}}</span></sc-for></div>
+                  <sc-if value="{{r.hasNote}}"><p style="{{S.noteLine}}">{{r.note}}</p></sc-if>
+                </div>
+                <button onClick="{{r.act}}" disabled="{{r.actDisabled}}" aria-label="{{r.actAria}}" style="{{r.actStyle}}">{{r.actLabel}}</button>
+              </div>
+              </sc-for>
+            </div>
+            </sc-if>
+
+            <sc-if value="{{home.hasHistory}}">
+            <div style="{{S.sectionHead}}"><h2 style="{{S.h2}}">Saved progress</h2><span style="font-size:13px;color:var(--pg-muted)">Not in Playground this month</span></div>
+            <div style="border-top:1px solid var(--pg-hairline)">
+              <sc-for list="{{home.history}}" as="r">
+              <div class="LawCard LawCard--compact" data-law="{{r.id}}" style="{{S.compactRow}}">
+                <div style="flex:1;min-width:0">
+                  <p style="margin:0;font-weight:700;font-size:16px">{{r.short}}</p>
+                  <p style="margin:1px 0 0;font-size:13.5px;color:var(--pg-muted)">{{r.full}}</p>
+                  <div style="{{S.badgeRow}}"><sc-for list="{{r.badges}}" as="bd"><span class="{{bd.cls}}" style="{{bd.style}}"><span aria-hidden="true" style="{{bd.mark}}"></span>{{bd.label}}</span></sc-for></div>
+                  <sc-if value="{{r.hasNote}}"><p style="{{S.noteLine}}">{{r.note}}</p></sc-if>
+                </div>
+                <button onClick="{{r.act}}" disabled="{{r.actDisabled}}" aria-label="{{r.actAria}}" style="{{r.actStyle}}">{{r.actLabel}}</button>
+              </div>
+              </sc-for>
+            </div>
+            </sc-if>
+
+            <sc-if value="{{home.showPlanLink}}">
+            <button class="PlanNextMonth" onClick="{{goRollover}}" style="{{S.planRow}}" style-hover="background:var(--pg-subtle)">
+              <span aria-hidden="true" style="{{S.monthTile}}">OCT</span>
+              <span style="flex:1;min-width:0;text-align:left"><span style="display:block;font-weight:700;font-size:16px">Plan next month</span><span style="display:block;font-size:14px;color:var(--pg-muted);margin-top:2px">Manage October — choose what continues.</span></span>
+              <span aria-hidden="true" style="font-size:20px">→</span>
+            </button>
+            </sc-if>
+          </section>
+          </sc-if>
+
+          <sc-if value="{{showRoster}}">
+          <section class="RosterManager" data-screen-label="Roster" data-route="/playground/roster" aria-labelledby="pg-roster-title">
+            <p style="{{S.eyebrow}}">Playground</p>
+            <h1 id="pg-roster-title" style="{{S.h1}}">September Playground</h1>
+            <div style="display:flex;align-items:baseline;gap:4px 16px;flex-wrap:wrap;margin:12px 0 10px">
+              <p style="margin:0;font-size:21px;font-weight:700">{{roster.usedLine}}</p>
+              <p style="{{cap.availStyle}}">{{roster.remainLine}}</p>
+            </div>
+            <sc-if value="{{inlineCap}}">
+            <div role="img" aria-label="{{cap.aria}}" style="{{cap.barStyle}}"><sc-for list="{{cap.blocks}}" as="b"><span style="{{b.style}}"></span></sc-for></div>
+            <div style="{{S.legendRow}}"><sc-for list="{{cap.legend}}" as="l"><span style="display:inline-flex;align-items:center;gap:6px"><span aria-hidden="true" style="{{l.swatch}}"></span>{{l.label}}</span></sc-for></div>
+            </sc-if>
+            <p style="{{S.rules}}">Removing a law saves its progress. It doesn’t free a space this month, and adding it back doesn’t use another one.</p>
+
+            <div style="{{S.sectionHead}}"><h2 style="{{S.h2}}">Active this month</h2><span style="font-size:13px;color:var(--pg-muted)">{{roster.activeCount}}</span></div>
+            <sc-if value="{{roster.hasActive}}">
+            <div style="border-top:1px solid var(--pg-ink)">
+              <sc-for list="{{roster.active}}" as="r">
+              <div class="RosterRow" data-law="{{r.id}}" style="{{S.rosterRow}}">
+                <div style="flex:1;min-width:0">
+                  <p style="margin:0;font-weight:700;font-size:16px">{{r.short}}</p>
+                  <p style="margin:1px 0 0;font-size:13.5px;color:var(--pg-muted)">{{r.full}}</p>
+                  <div style="{{S.badgeRow}}"><sc-for list="{{r.badges}}" as="bd"><span class="{{bd.cls}}" style="{{bd.style}}"><span aria-hidden="true" style="{{bd.mark}}"></span>{{bd.label}}</span></sc-for></div>
+                  <p style="margin:8px 0 0;font-size:13.5px;color:var(--pg-muted)">{{r.progressLine}}</p>
+                </div>
+                <div style="{{S.rowActions}}">
+                  <button onClick="{{r.cont}}" style="{{S.btnSecondarySm}}">{{r.primaryLabel}}</button>
+                  <button onClick="{{noop}}" aria-label="{{r.readAria}}" style="{{S.btnQuiet}}" style-hover="border-color:var(--pg-ink)">Read</button>
+                  <button onClick="{{r.remove}}" aria-label="{{r.removeAria}}" style="{{S.btnQuiet}}" style-hover="border-color:var(--pg-ink)">Remove</button>
+                </div>
+              </div>
+              </sc-for>
+            </div>
+            </sc-if>
+            <sc-if value="{{roster.noActive}}"><p style="{{S.emptyLine}}">No laws in September yet. Browse laws to add your first.</p></sc-if>
+
+            <div style="{{S.sectionHead}}"><h2 style="{{S.h2}}">Removed this month</h2><span style="font-size:13px;color:var(--pg-muted)">{{roster.removedCount}}</span></div>
+            <sc-if value="{{roster.hasRemoved}}">
+            <div style="border-top:1px solid var(--pg-hairline)">
+              <sc-for list="{{roster.removed}}" as="r">
+              <div class="RosterRow RosterRow--removed" data-law="{{r.id}}" style="{{S.compactRow}}">
+                <div style="flex:1;min-width:0">
+                  <p style="margin:0;font-weight:700;font-size:16px">{{r.short}}</p>
+                  <p style="margin:1px 0 0;font-size:13.5px;color:var(--pg-muted)">{{r.full}}</p>
+                  <div style="{{S.badgeRow}}"><sc-for list="{{r.badges}}" as="bd"><span class="{{bd.cls}}" style="{{bd.style}}"><span aria-hidden="true" style="{{bd.mark}}"></span>{{bd.label}}</span></sc-for></div>
+                  <sc-if value="{{r.hasNote}}"><p style="{{S.noteLine}}">{{r.note}}</p></sc-if>
+                </div>
+                <button onClick="{{r.act}}" disabled="{{r.actDisabled}}" aria-label="{{r.actAria}}" style="{{r.actStyle}}">{{r.actLabel}}</button>
+              </div>
+              </sc-for>
+            </div>
+            </sc-if>
+            <sc-if value="{{roster.noRemoved}}"><p style="{{S.emptyLine}}">Nothing removed this month.</p></sc-if>
+
+            <button class="PlanNextMonth" onClick="{{goRollover}}" style="{{S.planRow}}" style-hover="background:var(--pg-subtle)">
+              <span aria-hidden="true" style="{{S.monthTile}}">OCT</span>
+              <span style="flex:1;min-width:0;text-align:left"><span style="display:block;font-weight:700;font-size:16px">Plan next month</span><span style="display:block;font-size:14px;color:var(--pg-muted);margin-top:2px">Manage October — choose what continues.</span></span>
+              <span aria-hidden="true" style="font-size:20px">→</span>
+            </button>
+          </section>
+          </sc-if>
+
+          <sc-if value="{{isRollover}}">
+          <section class="RolloverPlanner" data-screen-label="Rollover" data-route="/playground/roster/next" aria-labelledby="pg-roll-title">
+            <button onClick="{{goRoster}}" style="{{S.backLink}}">← September Playground</button>
+            <p style="{{S.eyebrow}}">Plan next month</p>
+            <h1 id="pg-roll-title" style="{{S.h1}}">Your October Playground</h1>
+            <p style="{{S.lede}}">Continue with last month’s laws, or make room for something new.</p>
+            <sc-if value="{{roll.hasDowngrade}}">
+            <div class="PaymentStateBanner PaymentStateBanner--inline" data-state="downgrade" role="note" style="{{S.inlineNotice}}">
+              <span aria-hidden="true" style="{{S.bannerMark}}"></span>
+              <p style="margin:0;font-size:15px;line-height:1.45;font-weight:600">Your plan now supports 10 laws. Choose which 10 to keep for October.</p>
+            </div>
+            </sc-if>
+            <div class="RosterCapacity RosterCapacity--next">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:4px 16px;flex-wrap:wrap;margin:18px 0 10px">
+                <p style="margin:0;font-size:21px;font-weight:700">{{ncap.countLine}}</p>
+                <p style="{{ncap.availStyle}}">{{ncap.availLine}}</p>
+              </div>
+              <sc-if value="{{inlineCap}}">
+              <div role="img" aria-label="{{ncap.aria}}" style="{{ncap.barStyle}}"><sc-for list="{{ncap.blocks}}" as="b"><span style="{{b.style}}"></span></sc-for></div>
+              <div style="{{S.legendRow}}"><sc-for list="{{ncap.legend}}" as="l"><span style="display:inline-flex;align-items:center;gap:6px"><span aria-hidden="true" style="{{l.swatch}}"></span>{{l.label}}</span></sc-for></div>
+              </sc-if>
+            </div>
+            <div class="RolloverKey" style="{{S.rolloverKey}}">
+              <sc-for list="{{roll.key}}" as="k"><div style="display:flex;gap:10px;align-items:baseline"><span style="{{k.style}}">{{k.label}}</span><span style="font-size:13.5px;line-height:1.4;color:var(--pg-muted)">{{k.body}}</span></div></sc-for>
+            </div>
+
+            <div style="{{S.sectionHead}}"><h2 style="{{S.h2}}">From September</h2><span style="font-size:13px;color:var(--pg-muted)">{{roll.countLine}}</span></div>
+            <sc-if value="{{roll.hasCandidates}}">
+            <div style="{{S.lawGrid}}">
+              <sc-for list="{{roll.candidates}}" as="c">
+              <div class="RolloverCandidate" data-law="{{c.id}}" data-decision="{{c.decision}}" style="{{c.rowStyle}}">
+                <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">
+                  <div style="min-width:0;flex:1">
+                    <p style="margin:0;font-weight:700;font-size:16px">{{c.short}}</p>
+                    <p style="margin:1px 0 0;font-size:13.5px;color:var(--pg-muted)">{{c.full}}</p>
+                    <p style="margin:6px 0 0;font-size:13.5px;color:var(--pg-muted)">{{c.progressLine}}</p>
+                  </div>
+                  <sc-if value="{{c.isUndecided}}"><span class="LawStatusBadge" style="{{S.badgeDashed}}">Undecided</span></sc-if>
+                </div>
+                <div role="radiogroup" aria-label="{{c.groupAria}}" style="{{S.segGroup}}">
+                  <button role="radio" aria-checked="{{c.keepChecked}}" disabled="{{c.keepDisabled}}" onClick="{{c.keep}}" style="{{c.keepStyle}}"><span aria-hidden="true">{{c.keepGlyph}}</span>Keep</button>
+                  <button role="radio" aria-checked="{{c.removeChecked}}" onClick="{{c.remove}}" style="{{c.removeStyle}}"><span aria-hidden="true">{{c.removeGlyph}}</span>Remove</button>
+                </div>
+                <p style="margin:8px 0 0;font-size:13.5px;line-height:1.4;color:var(--pg-muted)">{{c.helper}}</p>
+              </div>
+              </sc-for>
+            </div>
+            </sc-if>
+            <sc-if value="{{roll.noCandidates}}"><p style="{{S.emptyLine}}">Nothing carries over from September.</p></sc-if>
+
+            <div class="RolloverNewLaws" style="border:1px solid var(--pg-hairline);padding:18px;margin-top:24px">
+              <p style="margin:0;font-weight:700;font-size:17px">{{roll.newSpacesLine}}</p>
+              <p style="margin:4px 0 14px;font-size:14px;line-height:1.45;color:var(--pg-muted)">Add new laws whenever you’re ready. Spaces don’t need to be filled now.</p>
+              <button onClick="{{goStates}}" style="{{S.btnSecondary}}">Browse laws</button>
+            </div>
+          </section>
+          </sc-if>
+
+          <sc-if value="{{isWorkspace}}">
+          <section class="LawWorkspace" data-screen-label="Law workspace" data-law="{{ws.id}}" aria-labelledby="pg-ws-title">
+            <button onClick="{{goHome}}" style="{{S.backLink}}">← My Playground</button>
+            <p style="{{S.eyebrow}}">Law</p>
+            <h1 id="pg-ws-title" style="{{S.h1}}">{{ws.short}}</h1>
+            <p style="margin:4px 0 0;font-size:16px;line-height:1.4;color:var(--pg-muted)">{{ws.full}}</p>
+            <div style="{{S.badgeRow}}"><sc-for list="{{ws.badges}}" as="bd"><span class="{{bd.cls}}" style="{{bd.style}}"><span aria-hidden="true" style="{{bd.mark}}"></span>{{bd.label}}</span></sc-for></div>
+            <sc-if value="{{ws.hasNote}}"><p style="margin:12px 0 0;font-size:15px;line-height:1.5;max-width:560px">{{ws.note}}</p></sc-if>
+            <div style="{{S.actionRow}}">
+              <sc-for list="{{ws.actions}}" as="a"><button onClick="{{a.fn}}" disabled="{{a.disabled}}" style="{{a.style}}">{{a.label}}</button></sc-for>
+            </div>
+            <div class="ProgressSummary" aria-label="Law progress" style="{{S.summaryGrid}}">
+              <sc-for list="{{ws.summary}}" as="s"><div style="{{S.summaryCell}}"><div style="{{S.summaryValue}}">{{s.value}}</div><div style="{{S.summaryLabel}}">{{s.label}}</div></div></sc-for>
+            </div>
+
+            <div class="CanonicalText" style="border:1px solid var(--pg-ink);margin-top:24px">
+              <sc-if value="{{ws.hasPrompt}}">
+              <div class="LearningPrompt" style="padding:16px 18px;border-bottom:1px solid var(--pg-hairline)">
+                <p style="{{S.eyebrow}}">Up next · Learning prompt</p>
+                <p style="margin:0 0 14px;font-size:16px;line-height:1.5">{{ws.prompt}}</p>
+                <button onClick="{{noop}}" style="{{S.cardPrimary}}">Continue</button>
+              </div>
+              </sc-if>
+              <div class="VerbatimText" style="padding:16px 18px;background:var(--pg-subtle)">
+                <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+                  <p style="{{S.verbatimLabel}}"><span aria-hidden="true" style="{{S.trustGlyphSm}}">§</span>VERBATIM TEXT</p>
+                  <button onClick="{{toggleVerbatim}}" aria-expanded="{{verbatimOpen}}" style="{{S.linkBtnSm}}">{{verbatimToggleLabel}}</button>
+                </div>
+                <p style="margin:6px 0 0;font-size:13px;color:var(--pg-muted)">{{ws.citation}}</p>
+                <sc-if value="{{verbatimOpen}}"><blockquote style="{{S.verbatimBody}}">{{ws.verbatim}}</blockquote></sc-if>
+                <p class="TrustMark" style="{{S.trustSm}}"><strong style="color:var(--pg-ink)">Verbatim, always.</strong> Bare Act wording, never rewritten.</p>
+              </div>
+            </div>
+
+            <div style="{{S.sectionHead}}"><h2 style="{{S.h2}}">Selected sections</h2><span style="font-size:13px;color:var(--pg-muted)">{{ws.selLine}}</span></div>
+            <div style="border-top:1px solid var(--pg-ink)">
+              <sc-for list="{{ws.sections}}" as="s">
+              <div class="SectionRow" data-section="{{s.num}}" style="{{S.sectionRow}}">
+                <span style="{{S.secNum}}">{{s.numLabel}}</span>
+                <div style="flex:1;min-width:0">
+                  <p style="margin:0;font-weight:600;font-size:15px;line-height:1.35">{{s.title}}</p>
+                  <div style="{{S.badgeRowSm}}"><sc-for list="{{s.badges}}" as="bd"><span class="{{bd.cls}}" style="{{bd.style}}"><span aria-hidden="true" style="{{bd.mark}}"></span>{{bd.label}}</span></sc-for></div>
+                  <sc-if value="{{s.updated}}"><button onClick="{{noop}}" style="{{S.linkBtnSm}}">Review affected provisions</button></sc-if>
+                </div>
+                <button onClick="{{noop}}" aria-label="{{s.aria}}" style="{{S.btnQuietStrong}}" style-hover="background:var(--pg-subtle)">{{s.actLabel}}</button>
+              </div>
+              </sc-for>
+            </div>
+          </section>
+          </sc-if>
+
+          <sc-if value="{{showStates}}">
+          <section class="LawBrowse" data-screen-label="Law states" aria-labelledby="pg-browse-title">
+            <p style="{{S.eyebrow}}">Browse</p>
+            <h1 id="pg-browse-title" style="{{S.h1}}">Laws</h1>
+            <p style="{{S.lede}}">Choose what to learn in September. Saved progress stays with each law, in or out of Playground.</p>
+            <sc-if value="{{inlineCap}}">
+            <div class="RosterCapacity RosterCapacity--compact" style="border:1px solid var(--pg-hairline);padding:12px 14px;margin:0 0 6px">
+              <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:0 0 8px;font-size:14.5px"><span style="font-weight:700">{{cap.countLine}}</span><span style="color:var(--pg-muted);font-weight:600">{{cap.availLine}}</span></div>
+              <div role="img" aria-label="{{cap.aria}}" style="{{cap.barStyleSm}}"><sc-for list="{{cap.blocks}}" as="b"><span style="{{b.styleSm}}"></span></sc-for></div>
+            </div>
+            </sc-if>
+            <sc-for list="{{browse.groups}}" as="g">
+            <div style="{{S.sectionHead}}"><h2 style="{{S.h2}}">{{g.title}}</h2><span style="font-size:13px;color:var(--pg-muted)">{{g.sub}}</span></div>
+            <div style="{{S.lawGrid}}">
+              <sc-for list="{{g.cards}}" as="c">
+              <article class="LawCard" data-law="{{c.id}}" data-state="{{c.state}}" aria-label="{{c.short}}" style="{{c.style}}">
+                <h3 style="{{S.h3}}">{{c.short}}</h3>
+                <p style="{{S.fullName}}">{{c.full}}</p>
+                <div style="{{S.badgeRow}}"><sc-for list="{{c.badges}}" as="bd"><span class="{{bd.cls}}" style="{{bd.style}}"><span aria-hidden="true" style="{{bd.mark}}"></span>{{bd.label}}</span></sc-for></div>
+                <p style="margin:12px 0 0;font-size:13.5px;color:var(--pg-muted)">{{c.meta}}</p>
+                <sc-if value="{{c.hasNote}}"><p style="{{S.noteLine}}">{{c.note}}</p></sc-if>
+                <div style="{{S.cardActions}}">
+                  <button onClick="{{c.primary}}" disabled="{{c.primaryDisabled}}" style="{{c.primaryStyle}}">{{c.primaryLabel}}</button>
+                  <button onClick="{{noop}}" aria-label="{{c.readAria}}" style="{{S.btnQuiet}}" style-hover="border-color:var(--pg-ink)">Read Bare Act</button>
+                </div>
+              </article>
+              </sc-for>
+            </div>
+            </sc-for>
+          </section>
+          </sc-if>
+
+        </div>
+
+        <sc-if value="{{showAside}}">
+        <aside class="RosterCapacity RosterCapacity--rail" aria-label="{{aside.aria}}" style="{{S.aside}}">
+          <p style="{{S.eyebrow}}">{{aside.eyebrow}}</p>
+          <p style="margin:0;font-family:Fraunces,Georgia,serif;font-size:30px;font-weight:700;letter-spacing:-0.02em;line-height:1.1">{{aside.month}}</p>
+          <p style="margin:12px 0 2px;font-size:19px;font-weight:700">{{aside.cap.countLine}}</p>
+          <p style="{{aside.cap.availStyle}}">{{aside.cap.availLine}}</p>
+          <div role="img" aria-label="{{aside.cap.aria}}" style="{{aside.cap.barStyle}};margin-top:12px"><sc-for list="{{aside.cap.blocks}}" as="b"><span style="{{b.style}}"></span></sc-for></div>
+          <div style="{{S.legendCol}}"><sc-for list="{{aside.cap.legend}}" as="l"><span style="display:inline-flex;align-items:center;gap:6px"><span aria-hidden="true" style="{{l.swatch}}"></span>{{l.label}}</span></sc-for></div>
+          <div style="display:flex;flex-direction:column;gap:8px;margin-top:18px">
+            <sc-for list="{{aside.links}}" as="a"><button onClick="{{a.fn}}" style="{{a.style}}" style-hover="background:var(--pg-subtle)">{{a.label}}</button></sc-for>
+          </div>
+          <p class="TrustMark" style="{{S.trust}}"><span aria-hidden="true" style="{{S.trustGlyph}}">§</span><span><strong style="color:var(--pg-ink)">Verbatim, always.</strong> Bare Act text, word for word.</span></p>
+        </aside>
+        </sc-if>
+      </div>
+      </sc-if>
+    </main>
+
+    <sc-if value="{{showMobileTabs}}">
+    <nav class="PrimaryTabs PrimaryTabs--bottom" aria-label="Primary" style="{{S.tabBar}}">
+      <sc-for list="{{tabs}}" as="t">
+      <button onClick="{{t.pick}}" aria-current="{{t.current}}" style="{{t.bottomStyle}}">
+        <sc-if value="{{t.isToday}}"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="12" cy="12" r="7.5"></circle><circle cx="12" cy="12" r="2.2" fill="{{t.fill}}"></circle></svg></sc-if>
+        <sc-if value="{{t.isBrowse}}"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M3.5 5.5h6.5l2 1.5v12l-2-1.5H3.5z" fill="{{t.fill}}"></path><path d="M20.5 5.5H14l-2 1.5v12l2-1.5h6.5z"></path></svg></sc-if>
+        <sc-if value="{{t.isPlayground}}"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><rect x="4" y="4" width="7" height="7" fill="{{t.fill}}"></rect><rect x="13" y="4" width="7" height="7" fill="{{t.fill}}"></rect><rect x="4" y="13" width="7" height="7" fill="{{t.fill}}"></rect><rect x="13" y="13" width="7" height="7"></rect></svg></sc-if>
+        <sc-if value="{{t.isCalendar}}"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><rect x="4" y="5.5" width="16" height="14.5"></rect><path d="M4 10h16M8.5 3v4.5M15.5 3v4.5"></path><rect x="7.5" y="13" width="3" height="3" fill="{{t.fill}}"></rect></svg></sc-if>
+        <sc-if value="{{t.isProfile}}"><svg aria-hidden="true" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="12" cy="8.5" r="3.5" fill="{{t.fill}}"></circle><path d="M5 20c1.2-3.6 3.8-5.5 7-5.5s5.8 1.9 7 5.5"></path></svg></sc-if>
+        <span>{{t.label}}</span>
+      </button>
+      </sc-for>
+    </nav>
+    </sc-if>
+
+    <sc-if value="{{sheet.show}}">
+    <div class="ConfirmOverlay" style="{{sheet.overlayStyle}}">
+      <div class="ConfirmSheet" data-kind="{{sheet.kind}}" role="dialog" aria-modal="true" aria-labelledby="pg-sheet-title" style="{{sheet.panelStyle}}">
+        <p style="{{S.eyebrow}}">{{sheet.eyebrow}}</p>
+        <h2 id="pg-sheet-title" style="{{S.sheetTitle}}">{{sheet.title}}</h2>
+        <sc-for list="{{sheet.lines}}" as="ln"><p style="{{ln.style}}">{{ln.text}}</p></sc-for>
+        <sc-if value="{{sheet.hasBadges}}"><div style="{{S.badgeRow}}"><sc-for list="{{sheet.badges}}" as="bd"><span class="{{bd.cls}}" style="{{bd.style}}"><span aria-hidden="true" style="{{bd.mark}}"></span>{{bd.label}}</span></sc-for></div></sc-if>
+        <sc-if value="{{sheet.hasBar}}">
+        <div class="RosterCapacity RosterCapacity--preview" style="margin-top:16px">
+          <div role="img" aria-label="{{sheet.bar.aria}}" style="{{sheet.bar.barStyle}}"><sc-for list="{{sheet.bar.blocks}}" as="b"><span style="{{b.style}}"></span></sc-for></div>
+          <div style="{{S.legendRow}}"><sc-for list="{{sheet.bar.legend}}" as="l"><span style="display:inline-flex;align-items:center;gap:6px"><span aria-hidden="true" style="{{l.swatch}}"></span>{{l.label}}</span></sc-for></div>
+        </div>
+        </sc-if>
+        <div style="{{S.sheetActions}}">
+          <sc-for list="{{sheet.actions}}" as="a"><button onClick="{{a.fn}}" style="{{a.style}}">{{a.label}}</button></sc-for>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+  </div>
+
+  <p style="max-width:1040px;margin:14px auto 0;font-size:11.5px;line-height:1.5;color:var(--pg-faint);text-align:center">Design prototype — Playground state demonstrator. September 2026 (October on the rollover screen). Law text shown is Bare Act wording, verbatim.</p>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    scenario: 'plus8', screen: 'home', viewport: 'mobile', theme: 'light',
+    tab: null, roster: null, decisions: null, wsLaw: null,
+    addTarget: null, removeTarget: null, note: null, verbatimOpen: true
+  };
+
+  catalog() {
+    if (this._C) return this._C;
+    const L = (short, full, sel, learned, total, extra) => Object.assign({ short, full, sel, learned, total, dueToday: 0, overdue: 0, updated: false, mastered: false }, extra || {});
+    this._C = {
+      ndps: L('NDPS Act', 'Narcotic Drugs and Psychotropic Substances Act, 1985', 12, 8, 83, { dueToday: 3 }),
+      bnss: L('BNSS', 'Bharatiya Nagarik Suraksha Sanhita, 2023', 18, 0, 531),
+      bsa: L('BSA', 'Bharatiya Sakshya Adhiniyam, 2023', 9, 9, 170),
+      contract: L('Contract Act', 'Indian Contract Act, 1872', 15, 15, 238, { mastered: true }),
+      cpc: L('CPC', 'Code of Civil Procedure, 1908', 10, 4, 158, { overdue: 2 }),
+      arb: L('Arbitration Act', 'Arbitration and Conciliation Act, 1996', 8, 3, 87, { dueToday: 1, updated: true }),
+      ni: L('NI Act', 'Negotiable Instruments Act, 1881', 6, 2, 147),
+      limitation: L('Limitation Act', 'Limitation Act, 1963', 11, 5, 32),
+      tpa: L('TPA', 'Transfer of Property Act, 1882', 12, 7, 137),
+      sra: L('Specific Relief Act', 'Specific Relief Act, 1963', 8, 8, 44, { mastered: true }),
+      itact: L('IT Act', 'Information Technology Act, 2000', 10, 6, 94, { dueToday: 2 }),
+      companies: L('Companies Act', 'Companies Act, 2013', 14, 3, 470),
+      cpa: L('Consumer Protection Act', 'Consumer Protection Act, 2019', 9, 4, 107),
+      pocso: L('POCSO Act', 'Protection of Children from Sexual Offences Act, 2012', 8, 8, 46),
+      rti: L('RTI Act', 'Right to Information Act, 2005', 7, 1, 31),
+      hma: L('Hindu Marriage Act', 'Hindu Marriage Act, 1955', 6, 0, 30),
+      sga: L('Sale of Goods Act', 'Sale of Goods Act, 1930', 9, 5, 66, { overdue: 1 }),
+      partnership: L('Partnership Act', 'Indian Partnership Act, 1932', 8, 2, 74),
+      bns: L('BNS', 'Bharatiya Nyaya Sanhita, 2023', 0, 0, 358)
+    };
+    return this._C;
+  }
+
+  sections() {
+    return {
+      ndps: {
+        citation: 'Section 8 · Narcotic Drugs and Psychotropic Substances Act, 1985',
+        verbatim: 'No person shall\u2014\n(a) cultivate any coca plant or gather any portion of coca plant; or\n(b) cultivate the opium poppy or any cannabis plant; or',
+        prompt: 'Section 8 \u2014 Prohibition of certain operations. Recall clauses (a) and (b) from memory, then check yourself against the verbatim text.',
+        rows: [
+          ['2', 'Definitions', 'learned'],
+          ['8', 'Prohibition of certain operations', 'due'],
+          ['15', 'Punishment for contravention in relation to poppy straw', 'learned'],
+          ['18', 'Punishment for contravention in relation to opium poppy and opium', 'learning'],
+          ['20', 'Punishment for contravention in relation to cannabis plant and cannabis', 'due'],
+          ['21', 'Punishment for contravention in relation to manufactured drugs and preparations', 'mastered'],
+          ['22', 'Punishment for contravention in relation to psychotropic substances', 'learned'],
+          ['27A', 'Punishment for financing illicit traffic and harbouring offenders', 'notStarted'],
+          ['29', 'Punishment for abetment and criminal conspiracy', 'learned'],
+          ['37', 'Offences to be cognizable and non-bailable', 'due'],
+          ['50', 'Conditions under which search of persons shall be conducted', 'learning'],
+          ['52A', 'Disposal of seized narcotic drugs and psychotropic substances', 'learning', true]
+        ]
+      },
+      tpa: {
+        citation: 'Section 54 · Transfer of Property Act, 1882',
+        verbatim: '\u201cSale\u201d is a transfer of ownership in exchange for a price paid or promised or part-paid and part-promised.',
+        prompt: '',
+        rows: [
+          ['5', '\u201cTransfer of property\u201d defined', 'learned'],
+          ['6', 'What may be transferred', 'learned'],
+          ['7', 'Persons competent to transfer', 'learned'],
+          ['8', 'Operation of transfer', 'learned'],
+          ['10', 'Condition restraining alienation', 'notStarted'],
+          ['52', 'Transfer of property pending suit relating thereto', 'notStarted'],
+          ['53A', 'Part performance', 'learning'],
+          ['54', '\u201cSale\u201d defined', 'learned'],
+          ['58', '\u201cMortgage\u201d, \u201cmortgagor\u201d, \u201cmortgagee\u201d, \u201cmortgage-money\u201d and \u201cmortgage-deed\u201d defined', 'learning'],
+          ['105', 'Lease defined', 'learned'],
+          ['106', 'Duration of certain leases in absence of written contract or local usage', 'notStarted'],
+          ['122', '\u201cGift\u201d defined', 'mastered']
+        ]
+      }
+    };
+  }
+
+  scenarios() {
+    if (this._S) return this._S;
+    const base8 = { active: ['ndps', 'bnss', 'bsa', 'contract', 'cpc', 'arb', 'ni'], removed: ['limitation'], history: ['tpa', 'sra'] };
+    const full10 = { active: ['ndps', 'bnss', 'bsa', 'contract', 'cpc', 'arb', 'ni', 'itact', 'companies'], removed: ['limitation'], history: ['tpa', 'sra'] };
+    const pro15 = { active: ['ndps', 'bnss', 'bsa', 'contract', 'cpc', 'arb', 'ni', 'itact', 'companies', 'cpa', 'pocso', 'rti', 'sga', 'partnership'], removed: ['limitation'], history: ['tpa', 'sra'] };
+    const max8 = { active: ['ndps', 'bnss', 'bsa', 'contract', 'cpc', 'arb', 'ni', 'itact'], removed: [], history: ['tpa', 'sra', 'limitation'] };
+    const empty = { active: [], removed: [], history: ['ndps', 'contract', 'limitation', 'tpa'] };
+    const resub = { active: ['ndps', 'contract', 'bnss'], removed: [], history: ['bsa', 'cpc', 'arb', 'ni', 'limitation', 'tpa', 'sra'] };
+    const list = [
+      ['plus8', 'Active Plus 8/10', { plan: 'plus', roster: base8 }],
+      ['plus10', 'Active Plus 10/10', { plan: 'plus', roster: full10 }],
+      ['empty', 'Empty Plus', { plan: 'plus', roster: empty }],
+      ['pro', 'Pro', { plan: 'pro', roster: pro15 }],
+      ['max', 'Max', { plan: 'max', roster: max8 }],
+      ['historical', 'Historical law', { plan: 'plus', roster: base8, focus: 'tpa', jump: 'states' }],
+      ['guest', 'Guest', { gate: 'guest' }],
+      ['free', 'Free account', { gate: 'free' }],
+      ['pending', 'Pending', { plan: 'plus', roster: base8, banner: 'pending', addBlocked: true }],
+      ['halted', 'Halted', { plan: 'plus', roster: base8, gate: 'halted' }],
+      ['paused', 'Paused', { plan: 'plus', roster: base8, gate: 'paused' }],
+      ['expired', 'Expired', { plan: 'plus', roster: base8, gate: 'expired' }],
+      ['device', 'Device limit', { plan: 'plus', roster: base8, gate: 'device' }],
+      ['revoked', 'Device revoked', { plan: 'plus', roster: base8, gate: 'revoked' }],
+      ['replacement', 'Replacement limit', { plan: 'plus', roster: base8, gate: 'replacement' }],
+      ['cancel', 'Cancel at period end', { plan: 'plus', roster: base8, planNote: 'cancel' }],
+      ['upgrade', 'Upgrade', { plan: 'pro', roster: base8, banner: 'upgrade' }],
+      ['downgrade', 'Downgrade scheduled', { plan: 'pro', roster: pro15, planNote: 'downgrade', nextPlan: 'plus' }],
+      ['resub', 'Resubscribed', { plan: 'plus', roster: resub, banner: 'resub' }],
+      ['rollover', 'Rollover', { plan: 'plus', roster: base8, jump: 'rollover', rolloverCard: true }]
+    ];
+    this._S = {};
+    this._SList = list;
+    list.forEach(([key, label, def]) => { this._S[key] = Object.assign({ key, label }, def); });
+    return this._S;
+  }
+
+  scenario() { return this.scenarios()[this.state.scenario] || this.scenarios().plus8; }
+
+  roster() {
+    if (this.state.roster) return this.state.roster;
+    const r = this.scenario().roster || { active: [], removed: [], history: [] };
+    return { active: r.active.slice(), removed: r.removed.slice(), history: r.history.slice() };
+  }
+
+  capFor(plan) { return plan === 'pro' ? 30 : plan === 'max' ? Infinity : 10; }
+
+  membership(id, R) {
+    if (R.active.includes(id)) return 'active';
+    if (R.removed.includes(id)) return 'removed';
+    if (R.history.includes(id)) return 'history';
+    return 'never';
+  }
+
+  addLaw(id) {
+    const R = this.roster(), C = this.catalog();
+    const cap = this.capFor(this.scenario().plan);
+    const used = R.active.length + R.removed.length;
+    const next = { active: R.active.slice(), removed: R.removed.slice(), history: R.history.slice() };
+    if (next.removed.includes(id)) {
+      next.removed = next.removed.filter(x => x !== id);
+      next.active.push(id);
+      this.setState({ roster: next, note: { text: C[id].short + ' is back in September. No extra space used.' } });
+      return;
+    }
+    if (used >= cap || next.active.includes(id)) return;
+    next.history = next.history.filter(x => x !== id);
+    next.active.push(id);
+    const left = cap - used - 1;
+    const tail = cap === Infinity ? '' : left === 0 ? ' September is now full.' : ' ' + left + (left === 1 ? ' space' : ' spaces') + ' remaining.';
+    this.setState({ roster: next, screen: 'states', note: { text: C[id].short + ' added to September.' + tail } });
+  }
+
+  removeLaw(id) {
+    const R = this.roster(), C = this.catalog();
+    if (!R.active.includes(id)) return;
+    const next = { active: R.active.filter(x => x !== id), removed: R.removed.concat([id]), history: R.history.slice() };
+    this.setState({ roster: next, screen: 'roster', note: { text: C[id].short + ' removed this month. Progress saved.', actionLabel: 'Add back', action: () => this.addLaw(id) } });
+  }
+
+  rolloverDefaults(sc, R, capNext) {
+    const d = {};
+    R.removed.forEach(id => { d[id] = 'remove'; });
+    if (sc.key === 'downgrade') {
+      R.active.forEach((id, i) => { d[id] = i < 7 ? 'keep' : i === 7 ? 'remove' : 'undecided'; });
+    } else {
+      R.active.forEach((id, i) => { d[id] = (R.active.length > 1 && i === R.active.length - 1) ? 'undecided' : 'keep'; });
+    }
+    let k = 0;
+    R.active.concat(R.removed).forEach(id => { if (d[id] === 'keep') { k++; if (k > capNext) d[id] = 'undecided'; } });
+    return d;
+  }
+
+  renderVals() {
+    const st = this.state;
+    const C = this.catalog();
+    const SCN = this.scenarios();
+    const sc = this.scenario();
+    const isMobile = st.viewport === 'mobile';
+    const dark = st.theme === 'dark';
+    const R = this.roster();
+    const gateKind = sc.gate || null;
+    const isGate = !!gateKind;
+    const cap = this.capFor(sc.plan);
+    const unlimited = cap === Infinity;
+    const used = R.active.length + R.removed.length;
+    const avail = unlimited ? Infinity : Math.max(0, cap - used);
+    const full = !unlimited && used >= cap;
+    const addBlocked = !!sc.addBlocked;
+    const plural = (n, one, many) => n + ' ' + (n === 1 ? one : many);
+    const noop = () => {};
+
+    // ---- tokens
+    const T = dark
+      ? { ink: '#ecebe6', muted: '#a8a59e', faint: '#7d7a73', hairline: '#34322e', page: '#0f0e0d', paper: '#1a1917', destructive: '#E4776B', subtle: '#232220', 'on-ink': '#1a1917', edge: '#2c2a27' }
+      : { ink: '#141414', muted: '#6b6b6b', faint: '#9a9a9a', hairline: '#dcdcdc', page: '#ececea', paper: '#ffffff', destructive: '#B42318', subtle: '#f7f7f6', 'on-ink': '#ffffff', edge: '#cfcfcd' };
+    const vars = Object.keys(T).map(k => '--pg-' + k + ':' + T[k]).join(';');
+
+    // ---- shared styles
+    const btnBase = 'min-height:48px;padding:0 20px;font:inherit;font-size:15px;font-weight:700;cursor:pointer;border-radius:0;display:inline-flex;align-items:center;justify-content:center;gap:8px;box-sizing:border-box;text-align:center;line-height:1.2';
+    const btnPrimary = btnBase + ';background:var(--pg-ink);color:var(--pg-on-ink);border:1px solid var(--pg-ink)';
+    const btnSecondary = btnBase + ';background:transparent;color:var(--pg-ink);border:1px solid var(--pg-ink)';
+    const btnDisabled = btnBase + ';background:transparent;color:var(--pg-faint);border:1px dashed var(--pg-hairline);cursor:not-allowed';
+    const smBase = 'min-height:44px;padding:0 14px;font:inherit;font-size:14px;font-weight:700;cursor:pointer;border-radius:0;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box;white-space:nowrap';
+    const btnPrimarySm = smBase + ';background:var(--pg-ink);color:var(--pg-on-ink);border:1px solid var(--pg-ink)';
+    const btnSecondarySm = smBase + ';background:transparent;color:var(--pg-ink);border:1px solid var(--pg-ink)';
+    const btnQuiet = smBase + ';font-weight:600;background:transparent;color:var(--pg-ink);border:1px solid var(--pg-hairline)';
+    const btnQuietStrong = smBase + ';background:transparent;color:var(--pg-ink);border:1px solid var(--pg-ink);flex:none';
+    const linkBtn = 'min-height:44px;padding:0 4px;font:inherit;font-size:14.5px;font-weight:700;cursor:pointer;background:none;border:none;color:var(--pg-ink);text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1px;display:inline-flex;align-items:center';
+    const linkBtnSm = linkBtn + ';font-size:13.5px;min-height:36px;padding:0';
+    const eyebrow = 'margin:0 0 6px;text-transform:uppercase;letter-spacing:0.08em;font-size:11.5px;font-weight:700;color:var(--pg-muted)';
+
+    const markBase = 'display:inline-block;width:9px;height:9px;box-sizing:border-box;flex:none';
+    const MARK = {
+      notStarted: markBase + ';border:1.5px solid currentColor',
+      learning: markBase + ';border:1.5px solid currentColor;background:linear-gradient(to top, currentColor 50%, transparent 50%)',
+      learned: markBase + ';background:currentColor',
+      mastered: markBase + ';background:currentColor;box-shadow:0 0 0 1.5px var(--pg-paper), 0 0 0 2.5px currentColor;margin:0 2px',
+      due: markBase + ';border:1.5px solid currentColor;background:radial-gradient(circle, currentColor 0 1.6px, transparent 2px)',
+      overdue: markBase + ';border:1.5px solid currentColor;background:linear-gradient(currentColor, currentColor) center / 1.5px 5px no-repeat',
+      inPlayground: markBase + ';border:1px solid currentColor;background:conic-gradient(currentColor 0 25%, transparent 0 50%, currentColor 0 75%, transparent 0)',
+      saved: 'display:inline-block;width:5px;height:9px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:translateY(-1px) rotate(45deg);margin:0 3px 0 2px;box-sizing:border-box;flex:none',
+      removed: markBase + ';border:1.5px dashed currentColor',
+      full: markBase + ';border:1px solid currentColor;background:repeating-linear-gradient(135deg, currentColor 0 1.5px, transparent 1.5px 3.5px)',
+      updated: 'display:inline-block;width:7px;height:7px;border:1.5px solid currentColor;transform:rotate(45deg);margin:0 2px;box-sizing:border-box;flex:none'
+    };
+    const badgeBase = 'display:inline-flex;align-items:center;gap:6px;min-height:24px;padding:2px 8px;box-sizing:border-box;font-size:11.5px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;white-space:nowrap;line-height:1.2';
+    const BADGE = {
+      plain: badgeBase + ';border:1px solid var(--pg-hairline);color:var(--pg-ink)',
+      strong: badgeBase + ';border:1px solid var(--pg-ink);background:var(--pg-ink);color:var(--pg-on-ink)',
+      outline: badgeBase + ';border:1px solid var(--pg-ink);color:var(--pg-ink)',
+      dashed: badgeBase + ';border:1px dashed var(--pg-ink);color:var(--pg-ink)',
+      muted: badgeBase + ';border:1px solid var(--pg-hairline);color:var(--pg-muted)'
+    };
+    const badge = (tone, mark, label, cls) => ({ label, cls: cls || 'LawStatusBadge', style: BADGE[tone], mark: MARK[mark] });
+    const STATUS_LABEL = { notStarted: 'Not started', learning: 'Learning', learned: 'Learned', due: 'Due', mastered: 'Mastered' };
+    const statusBadge = s => badge('plain', s, STATUS_LABEL[s], 'LawStatusBadge');
+    const lawStatus = L => L.learned === 0 ? 'notStarted' : L.learned >= L.sel ? (L.mastered ? 'mastered' : 'learned') : 'learning';
+    const dueBadge = L => L.overdue > 0 ? badge('outline', 'overdue', L.overdue + ' overdue', 'DueBadge')
+      : L.dueToday > 1 ? badge('outline', 'due', L.dueToday + ' due today', 'DueBadge')
+      : L.dueToday === 1 ? badge('outline', 'due', 'Due today', 'DueBadge') : null;
+    const B_IN = badge('strong', 'inPlayground', 'In Playground');
+    const B_SAVED = badge('outline', 'saved', 'Progress saved');
+    const B_REMOVED = badge('dashed', 'removed', 'Removed this month');
+    const B_FULL = badge('muted', 'full', 'Playground full this month');
+
+    // ---- capacity (planning bar)
+    const BLOCK = {
+      active: 'background:var(--pg-ink);border:1px solid var(--pg-ink)',
+      removed: 'background:repeating-linear-gradient(135deg, var(--pg-ink) 0 1.5px, transparent 1.5px 4.5px);border:1px solid var(--pg-ink)',
+      pending: 'background:transparent;border:2px solid var(--pg-ink)',
+      empty: 'background:var(--pg-subtle);border:1px solid var(--pg-hairline)'
+    };
+    const swatch = k => 'display:inline-block;width:12px;height:12px;box-sizing:border-box;' + BLOCK[k];
+    const buildBar = (segments, total) => {
+      const dense = total > 12;
+      const h = dense ? 12 : 16;
+      const blocks = [];
+      segments.forEach(([kind, n]) => { for (let i = 0; i < n; i++) blocks.push(kind); });
+      if (total !== Infinity) while (blocks.length < total) blocks.push('empty');
+      const out = blocks.map(k => ({
+        style: 'display:block;box-sizing:border-box;min-width:0;height:' + h + 'px;' + (total === Infinity ? 'flex:none;width:16px;' : 'flex:1 1 0;') + BLOCK[k],
+        styleSm: 'display:block;box-sizing:border-box;min-width:0;height:8px;' + (total === Infinity ? 'flex:none;width:12px;' : 'flex:1 1 0;') + BLOCK[k]
+      }));
+      if (total === Infinity) out.push({
+        style: 'display:block;flex:1 1 auto;min-width:24px;height:' + h + 'px;box-sizing:border-box;border:1px dashed var(--pg-faint);background:transparent',
+        styleSm: 'display:block;flex:1 1 auto;min-width:24px;height:8px;box-sizing:border-box;border:1px dashed var(--pg-faint);background:transparent'
+      });
+      return {
+        blocks: out,
+        barStyle: 'display:flex;gap:' + (dense ? 2 : 3) + 'px;align-items:stretch',
+        barStyleSm: 'display:flex;gap:2px;align-items:stretch'
+      };
+    };
+    const availMuted = 'margin:0;font-size:15px;font-weight:600;color:var(--pg-muted)';
+    const availStrong = 'margin:0;font-size:15px;font-weight:700;color:var(--pg-ink)';
+    const capSept = (() => {
+      const nA = R.active.length, nR = R.removed.length;
+      const bar = buildBar([['active', nA], ['removed', nR]], cap);
+      const legend = nA ? [{ swatch: swatch('active'), label: nA + ' in Playground' }] : [];
+      if (nR) legend.push({ swatch: swatch('removed'), label: nR + ' removed this month · space still used' });
+      if (!unlimited && avail > 0) legend.push({ swatch: swatch('empty'), label: avail + ' available' });
+      if (unlimited) legend.push({ swatch: 'display:inline-block;width:12px;height:12px;box-sizing:border-box;border:1px dashed var(--pg-faint)', label: 'No monthly limit' });
+      return Object.assign(bar, {
+        countLine: unlimited ? plural(used, 'law this month', 'laws this month') : used + ' of ' + cap + ' laws',
+        availLine: unlimited ? 'Unlimited' : full ? 'Playground full for September' : plural(avail, 'space available', 'spaces available'),
+        availStyle: full ? availStrong : availMuted,
+        aria: unlimited ? 'September: ' + used + ' laws, no monthly limit' : 'September: ' + used + ' of ' + cap + ' law spaces used. ' + nA + ' in Playground, ' + nR + ' removed this month, ' + avail + ' available.',
+        legend, isFull: full, isEmpty: used === 0
+      });
+    })();
+
+    // ---- rollover (October)
+    const capNext = this.capFor(sc.nextPlan || sc.plan);
+    const nextUnlimited = capNext === Infinity;
+    const cands = R.active.concat(R.removed);
+    const dec = Object.assign(this.rolloverDefaults(sc, R, capNext), st.decisions || {});
+    const planned = cands.filter(id => dec[id] === 'keep').length;
+    const undecidedN = cands.filter(id => (dec[id] || 'undecided') === 'undecided').length;
+    const nextAvail = nextUnlimited ? Infinity : Math.max(0, capNext - planned);
+    const ncap = (() => {
+      const bar = buildBar([['active', planned]], capNext);
+      const legend = [{ swatch: swatch('active'), label: planned + ' kept' }];
+      if (!nextUnlimited) legend.push({ swatch: swatch('empty'), label: nextAvail + ' available' });
+      return Object.assign(bar, {
+        countLine: nextUnlimited ? plural(planned, 'law planned', 'laws planned') : planned + ' of ' + capNext + ' planned',
+        availLine: nextUnlimited ? 'Unlimited' : nextAvail === 0 ? 'October full' : plural(nextAvail, 'space available', 'spaces available'),
+        availStyle: availMuted,
+        aria: nextUnlimited ? 'October: ' + planned + ' laws planned, no monthly limit' : 'October: ' + planned + ' of ' + capNext + ' law spaces planned, ' + nextAvail + ' available.',
+        legend, isFull: false, isEmpty: planned === 0
+      });
+    })();
+    const setDecision = (id, v) => this.setState(s => ({ decisions: Object.assign({}, s.decisions || {}, { [id]: (dec[id] === v ? 'undecided' : v) }) }));
+    const segBase = 'min-height:46px;font:inherit;font-size:14.5px;font-weight:700;cursor:pointer;border:none;border-radius:0;display:inline-flex;align-items:center;justify-content:center;gap:8px';
+    const segOn = segBase + ';background:var(--pg-ink);color:var(--pg-on-ink)';
+    const segRemoveOn = segBase + ';background:var(--pg-paper);color:var(--pg-ink);box-shadow:inset 0 0 0 2px var(--pg-ink)';
+    const segOff = segBase + ';background:transparent;color:var(--pg-muted)';
+    const segDisabled = segBase + ';background:transparent;color:var(--pg-faint);cursor:not-allowed';
+    const rollCandidates = cands.map(id => {
+      const L = C[id], d = dec[id] || 'undecided';
+      const keepDisabled = d !== 'keep' && !nextUnlimited && planned >= capNext;
+      const helper = d === 'keep' ? (nextUnlimited ? 'Continues into October.' : 'Uses 1 October space.')
+        : d === 'remove' ? 'No October space. Progress saved.'
+        : keepDisabled ? 'October is full. Remove another law to keep this one.' : 'Choose Keep or Remove.';
+      return {
+        id, short: L.short, full: L.full, decision: d,
+        progressLine: L.learned + ' of ' + L.sel + ' sections learned' + (R.removed.includes(id) ? ' · removed in September' : ''),
+        isUndecided: d === 'undecided',
+        rowStyle: 'padding:16px;box-sizing:border-box;' + (d === 'keep' ? 'border:1px solid var(--pg-ink)' : d === 'remove' ? 'border:1px solid var(--pg-hairline);background:var(--pg-subtle)' : 'border:1px dashed var(--pg-ink)'),
+        groupAria: 'October decision for ' + L.short,
+        keepChecked: d === 'keep', removeChecked: d === 'remove', keepDisabled,
+        keepGlyph: d === 'keep' ? '\u2713' : '', removeGlyph: d === 'remove' ? '\u2013' : '',
+        keepStyle: d === 'keep' ? segOn : keepDisabled ? segDisabled : segOff,
+        removeStyle: (d === 'remove' ? segRemoveOn : segOff) + ';border-left:1px solid var(--pg-hairline)',
+        keep: () => { if (!keepDisabled) setDecision(id, 'keep'); },
+        remove: () => setDecision(id, 'remove'),
+        helper
+      };
+    });
+
+    // ---- navigation
+    const screen = st.screen;
+    const tabKey = st.tab;
+    const showBody = !isGate && !tabKey;
+    const isHome = showBody && screen === 'home';
+    const showRoster = showBody && (screen === 'roster' || screen === 'remove');
+    const isRollover = showBody && screen === 'rollover';
+    const isWorkspace = showBody && screen === 'workspace';
+    const showStates = showBody && (screen === 'states' || screen === 'add');
+    const sheetOpen = showBody && (screen === 'add' || screen === 'remove');
+    const activeTab = tabKey || (screen === 'states' || screen === 'add' ? 'browse' : 'playground');
+    const go = (screenName) => () => this.setState({ screen: screenName, tab: null });
+    const goWorkspace = id => () => this.setState({ screen: 'workspace', tab: null, wsLaw: id });
+    const hasSections = id => !!this.sections()[id];
+    const tabDefs = [['today', 'Today'], ['browse', 'Browse'], ['playground', 'Playground'], ['calendar', 'Calendar'], ['profile', 'Profile']];
+    const tabs = tabDefs.map(([key, label]) => {
+      const on = activeTab === key;
+      return {
+        key, label, current: on ? 'page' : undefined,
+        isToday: key === 'today', isBrowse: key === 'browse', isPlayground: key === 'playground', isCalendar: key === 'calendar', isProfile: key === 'profile',
+        fill: on ? 'currentColor' : 'none',
+        pick: () => {
+          if (key === 'browse') this.setState({ tab: null, screen: 'states' });
+          else if (key === 'playground') this.setState({ tab: null, screen: 'home' });
+          else this.setState({ tab: key });
+        },
+        topStyle: 'min-height:44px;padding:0 14px;background:none;border:none;border-bottom:2px solid ' + (on ? 'var(--pg-ink)' : 'transparent') + ';font:inherit;font-size:14px;font-weight:' + (on ? 700 : 600) + ';color:' + (on ? 'var(--pg-ink)' : 'var(--pg-muted)') + ';cursor:pointer',
+        bottomStyle: 'min-height:60px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:6px 0 8px;background:' + (on && key === 'playground' ? 'var(--pg-subtle)' : 'transparent') + ';border:none;border-top:3px solid ' + (on ? 'var(--pg-ink)' : 'transparent') + ';margin-top:-1px;font:inherit;font-size:11.5px;letter-spacing:0.02em;font-weight:' + (on ? 700 : 600) + ';color:' + (on ? 'var(--pg-ink)' : 'var(--pg-muted)') + ';cursor:pointer'
+      };
+    });
+
+    // ---- style bundle
+    const S = {
+      eyebrow,
+      eyebrowTop: eyebrow + ';margin:14px 0 2px',
+      h1: 'font-family:Fraunces,Georgia,serif;font-size:' + (isMobile ? 40 : 48) + 'px;line-height:1.04;letter-spacing:-0.025em;margin:0;font-weight:700',
+      h2: 'font-family:Fraunces,Georgia,serif;font-size:21px;line-height:1.2;margin:0;font-weight:700;letter-spacing:-0.01em',
+      h3: 'font-family:Fraunces,Georgia,serif;font-size:23px;line-height:1.15;margin:0;font-weight:700;letter-spacing:-0.015em',
+      sheetTitle: 'font-family:Fraunces,Georgia,serif;font-size:27px;line-height:1.15;margin:0 0 10px;font-weight:700;letter-spacing:-0.02em',
+      gateTitle: 'font-family:Fraunces,Georgia,serif;font-size:' + (isMobile ? 32 : 40) + 'px;line-height:1.1;margin:0 0 12px;font-weight:700;letter-spacing:-0.02em;max-width:620px',
+      lede: 'margin:8px 0 18px;font-size:16px;line-height:1.5;color:var(--pg-muted);max-width:560px',
+      fullName: 'margin:3px 0 0;font-size:13.5px;line-height:1.35;color:var(--pg-muted)',
+      badgeRow: 'display:flex;flex-wrap:wrap;gap:6px;margin-top:10px',
+      badgeRowSm: 'display:flex;flex-wrap:wrap;gap:6px;margin-top:6px',
+      badgeOutline: BADGE.outline, badgeDashed: BADGE.dashed, markUpdated: MARK.updated,
+      btnPrimary, btnSecondary, btnSecondarySm, btnPrimarySm, btnQuiet, btnQuietStrong, linkBtn, linkBtnSm,
+      cardPrimary: btnPrimary + ';flex:1 1 100%',
+      cardSecondary: btnSecondary + ';flex:1 1 100%',
+      cardActions: 'display:flex;flex-wrap:wrap;gap:8px;margin-top:16px',
+      actionRow: 'display:flex;flex-wrap:wrap;gap:10px;margin-top:18px',
+      sheetActions: 'display:flex;flex-wrap:wrap;gap:10px;margin-top:20px;' + (isMobile ? 'flex-direction:column' : 'justify-content:flex-end'),
+      rowActions: 'display:flex;flex-wrap:wrap;gap:8px;' + (isMobile ? 'width:100%;margin-top:12px' : 'flex:none;align-self:center'),
+      lawGrid: 'display:grid;grid-template-columns:' + (isMobile ? '1fr' : 'repeat(2,minmax(0,1fr))') + ';gap:' + (isMobile ? 12 : 16) + 'px',
+      sectionHead: 'display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:32px 0 12px',
+      summaryGrid: 'display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:var(--pg-hairline);border:1px solid var(--pg-hairline);margin-top:26px',
+      summaryGrid2: 'display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--pg-hairline);border:1px solid var(--pg-hairline);margin-top:22px;max-width:460px',
+      summaryCell: 'background:var(--pg-paper);padding:' + (isMobile ? '12px 12px' : '16px 18px'),
+      summaryValue: 'font-family:Fraunces,Georgia,serif;font-size:' + (isMobile ? 23 : 28) + 'px;font-weight:700;line-height:1.1;letter-spacing:-0.01em',
+      summaryLabel: 'font-size:11.5px;color:var(--pg-muted);text-transform:uppercase;letter-spacing:0.06em;font-weight:700;margin-top:4px',
+      legendRow: 'display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:10px;font-size:12.5px;color:var(--pg-muted)',
+      legendCol: 'display:flex;flex-direction:column;gap:6px;margin-top:10px;font-size:12.5px;color:var(--pg-muted)',
+      compactRow: 'display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--pg-hairline);' + (isMobile ? 'flex-wrap:wrap;align-items:flex-start' : 'align-items:center'),
+      rosterRow: 'display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--pg-hairline);flex-wrap:' + (isMobile ? 'wrap' : 'nowrap') + ';align-items:flex-start',
+      sectionRow: 'display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--pg-hairline);align-items:flex-start',
+      secNum: 'flex:none;white-space:nowrap;width:' + (isMobile ? 54 : 64) + 'px;font-family:Fraunces,Georgia,serif;font-size:17px;font-weight:700;line-height:1.3',
+      noteLine: 'margin:8px 0 0;font-size:14px;line-height:1.45;color:var(--pg-muted)',
+      emptyLine: 'margin:0;padding:14px 0;border-top:1px solid var(--pg-hairline);font-size:14.5px;color:var(--pg-muted)',
+      rules: 'margin:14px 0 0;padding:12px 14px;border-left:2px solid var(--pg-ink);background:var(--pg-subtle);font-size:14px;line-height:1.5',
+      updatedNotice: 'display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px;padding-top:10px;border-top:1px solid var(--pg-hairline)',
+      monthTile: 'flex:none;width:46px;height:46px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--pg-ink);font-size:11.5px;font-weight:700;letter-spacing:0.08em',
+      planRow: 'margin-top:28px;width:100%;display:flex;align-items:center;gap:14px;padding:14px 16px;min-height:72px;border:1px solid var(--pg-ink);background:transparent;color:var(--pg-ink);font:inherit;cursor:pointer;box-sizing:border-box;text-align:left',
+      planNote: 'display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:16px;padding:8px 0;border-top:1px solid var(--pg-hairline);border-bottom:1px solid var(--pg-hairline);font-size:14px',
+      trust: 'display:flex;gap:10px;align-items:flex-start;margin:22px 0 0;font-size:13.5px;line-height:1.45;color:var(--pg-muted)',
+      trustSm: 'margin:12px 0 0;font-size:12.5px;color:var(--pg-muted)',
+      trustGlyph: 'flex:none;width:22px;height:22px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--pg-ink);color:var(--pg-ink);font-family:Fraunces,Georgia,serif;font-size:14px;font-weight:700',
+      trustGlyphSm: 'display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border:1px solid var(--pg-ink);font-family:Fraunces,Georgia,serif;font-size:11px;margin-right:8px;letter-spacing:0',
+      verbatimLabel: 'margin:0;display:inline-flex;align-items:center;font-size:11.5px;font-weight:700;letter-spacing:0.12em;color:var(--pg-ink)',
+      verbatimBody: 'margin:12px 0 0;padding:0 0 0 14px;border-left:2px solid var(--pg-ink);font-size:17px;line-height:1.7;white-space:pre-wrap',
+      backLink: linkBtnSm + ';text-decoration:none;margin:0 0 12px;color:var(--pg-muted);font-weight:600',
+      banner: 'display:flex;gap:12px;align-items:' + (isMobile ? 'flex-start' : 'center') + ';flex-wrap:wrap;padding:14px ' + (isMobile ? 20 : 40) + 'px;border-bottom:1px solid var(--pg-hairline);background:var(--pg-subtle)',
+      bannerMark: 'flex:none;width:3px;align-self:stretch;min-height:22px;background:var(--pg-ink)',
+      inlineNotice: 'display:flex;gap:12px;align-items:stretch;padding:12px 14px;margin:0 0 6px;border:1px solid var(--pg-ink)',
+      note: 'display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:6px 6px 6px 14px;margin:0 0 20px;border:1px solid var(--pg-ink);background:var(--pg-paper)',
+      noteMark: MARK.saved,
+      iconBtn: 'flex:none;width:44px;height:44px;background:none;border:none;font:inherit;font-size:22px;line-height:1;color:var(--pg-muted);cursor:pointer',
+      rolloverKey: 'display:grid;gap:8px;margin-top:18px;padding:14px;border:1px solid var(--pg-hairline)',
+      segGroup: 'display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--pg-ink);margin-top:14px',
+      gate: 'max-width:680px;padding:' + (isMobile ? '28px 0 12px' : '48px 0 24px'),
+      howNum: 'flex:none;width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;border:1px solid var(--pg-ink);font-family:Fraunces,Georgia,serif;font-weight:700;font-size:14px',
+      aside: 'position:sticky;top:24px;border:1px solid var(--pg-ink);padding:20px;box-sizing:border-box',
+      tabBar: 'position:sticky;bottom:0;z-index:2;display:grid;grid-template-columns:repeat(5,1fr);border-top:1px solid var(--pg-ink);background:var(--pg-paper)',
+      planChip: 'font-size:11px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:4px 8px;border:1px solid var(--pg-ink);white-space:nowrap',
+      select: 'min-height:40px;min-width:' + (isMobile ? 190 : 200) + 'px;padding:0 10px;border:1px solid var(--pg-ink);border-radius:0;background:var(--pg-paper);color:var(--pg-ink);font:inherit;font-size:14px;cursor:pointer'
+    };
+
+    // ---- law cards (home)
+    const featuredId = R.active.find(id => C[id].dueToday || C[id].overdue) || R.active[0];
+    const homeCards = R.active.map(id => {
+      const L = C[id], s = lawStatus(L), db = dueBadge(L);
+      const badges = [statusBadge(s)];
+      if (db) badges.push(db);
+      return {
+        id, short: L.short, full: L.full, badges,
+        featured: id === featuredId,
+        style: 'padding:18px;box-sizing:border-box;background:var(--pg-paper);border:1px solid ' + (id === featuredId ? 'var(--pg-ink)' : 'var(--pg-hairline)'),
+        selLine: L.sel + ' sections selected',
+        learnedLine: L.learned + ' learned',
+        barFill: 'height:4px;background:var(--pg-ink);width:' + Math.round(100 * L.learned / Math.max(1, L.sel)) + '%',
+        updated: !!L.updated,
+        primaryLabel: s === 'notStarted' ? 'Start learning' : 'Continue',
+        primaryStyle: id === featuredId ? S.cardPrimary : S.cardSecondary,
+        primary: hasSections(id) ? goWorkspace(id) : noop,
+        readAria: 'Read Bare Act: ' + L.full,
+        manageAria: 'Manage ' + L.short + ' in September'
+      };
+    });
+    const addAction = id => {
+      if (addBlocked) return noop;
+      return () => this.setState({ screen: 'add', tab: null, addTarget: id });
+    };
+    const compactFor = (id, kind) => {
+      const L = C[id], s = lawStatus(L);
+      if (kind === 'removed') return {
+        id, short: L.short, full: L.full,
+        badges: [B_REMOVED, B_SAVED],
+        hasNote: true, note: L.learned + ' of ' + L.sel + ' sections learned. Adding back doesn\u2019t use another space.',
+        actLabel: 'Add back', act: () => this.addLaw(id), actDisabled: false, actStyle: btnSecondarySm, actAria: 'Add ' + L.short + ' back to September'
+      };
+      const blocked = addBlocked || full;
+      return {
+        id, short: L.short, full: L.full,
+        badges: full ? [B_SAVED, statusBadge(s), B_FULL] : [B_SAVED, statusBadge(s)],
+        hasNote: true, note: L.learned + ' of ' + L.sel + ' sections learned' + (addBlocked ? '. Adding new laws is temporarily unavailable.' : full ? '. Plan it for October, or add it back when a space is free next month.' : '.'),
+        actLabel: full ? 'Plan next month' : 'Add to this month',
+        act: full ? go('rollover') : addAction(id),
+        actDisabled: addBlocked, actStyle: addBlocked ? smBase + ';background:transparent;color:var(--pg-faint);border:1px dashed var(--pg-hairline)' : btnSecondarySm,
+        actAria: (full ? 'Plan next month for ' : 'Add to this month: ') + L.short
+      };
+    };
+    const sum = (ids, k) => ids.reduce((a, id) => a + C[id][k], 0);
+    const home = {
+      showRolloverCard: !!sc.rolloverCard,
+      hasActive: R.active.length > 0,
+      activeCountLine: plural(R.active.length, 'law', 'laws'),
+      summary: [
+        { value: String(sum(R.active, 'dueToday')), label: 'Due today' },
+        { value: String(sum(R.active, 'overdue')), label: 'Overdue' },
+        { value: sum(R.active, 'learned') + '/' + sum(R.active, 'sel'), label: 'Sections learned' }
+      ],
+      cards: homeCards,
+      hasRemoved: R.removed.length > 0,
+      removed: R.removed.map(id => compactFor(id, 'removed')),
+      hasHistory: R.history.length > 0,
+      history: R.history.map(id => compactFor(id, 'history')),
+      showPlanLink: !sc.rolloverCard && used > 0,
+      browseStyle: (used === 0 || (!full && !addBlocked)) ? btnPrimary : btnSecondary,
+      manageStyle: btnSecondary
+    };
+
+    const planNote = sc.planNote === 'cancel' ? { show: true, kind: 'cancel', line1: 'Plan ends 28 September', hasLine2: false, line2: '' }
+      : sc.planNote === 'downgrade' ? { show: true, kind: 'downgrade', line1: 'Pro until 28 September', hasLine2: true, line2: 'Changes to Plus next billing cycle' }
+      : { show: false, kind: '', line1: '', hasLine2: false, line2: '' };
+
+    // ---- roster manager
+    const roster = {
+      usedLine: unlimited ? plural(used, 'law this month', 'laws this month') : used + ' of ' + cap + ' used',
+      remainLine: unlimited ? 'Unlimited' : full ? 'Playground full for September' : avail + ' remaining',
+      activeCount: plural(R.active.length, 'law', 'laws'),
+      removedCount: R.removed.length ? plural(R.removed.length, 'law', 'laws') + ' · progress saved' : '',
+      hasActive: R.active.length > 0, noActive: R.active.length === 0,
+      hasRemoved: R.removed.length > 0, noRemoved: R.removed.length === 0,
+      active: R.active.map(id => {
+        const L = C[id], s = lawStatus(L), db = dueBadge(L);
+        const badges = [statusBadge(s)];
+        if (db) badges.push(db);
+        return {
+          id, short: L.short, full: L.full, badges,
+          progressLine: L.learned + ' of ' + L.sel + ' sections learned',
+          primaryLabel: s === 'notStarted' ? 'Start learning' : 'Continue',
+          cont: hasSections(id) ? goWorkspace(id) : noop,
+          readAria: 'Read Bare Act: ' + L.full,
+          remove: () => this.setState({ screen: 'remove', tab: null, removeTarget: id }),
+          removeAria: 'Remove ' + L.short + ' from September'
+        };
+      }),
+      removed: R.removed.map(id => compactFor(id, 'removed'))
+    };
+
+    // ---- rollover screen
+    const roll = {
+      hasDowngrade: sc.key === 'downgrade',
+      hasCandidates: cands.length > 0, noCandidates: cands.length === 0,
+      candidates: rollCandidates,
+      countLine: plural(cands.length, 'law', 'laws') + (undecidedN ? ' · ' + undecidedN + ' undecided' : ''),
+      newSpacesLine: nextUnlimited ? 'Room for as many new laws as you like' : nextAvail === 0 ? 'No spaces left for new laws' : plural(nextAvail, 'space available for new laws', 'spaces available for new laws'),
+      key: [
+        { label: 'Keep', style: BADGE.strong, body: nextUnlimited ? 'Continues into October.' : 'Uses one October space.' },
+        { label: 'Remove', style: BADGE.outline, body: 'No October space. Progress stays saved.' },
+        { label: 'Undecided', style: BADGE.dashed, body: 'Not chosen yet.' }
+      ]
+    };
+
+    // ---- law workspace
+    const secData = this.sections();
+    let wsId = st.wsLaw || sc.focus || 'ndps';
+    if (!secData[wsId] || this.membership(wsId, R) === 'never') wsId = this.membership('ndps', R) !== 'never' ? 'ndps' : 'tpa';
+    const wsL = C[wsId], wsMem = this.membership(wsId, R), wsSec = secData[wsId];
+    const wsActive = wsMem === 'active';
+    const wsBadges = wsMem === 'active' ? [badge('strong', 'inPlayground', 'In September Playground'), statusBadge(lawStatus(wsL))]
+      : wsMem === 'removed' ? [B_REMOVED, B_SAVED, statusBadge(lawStatus(wsL))]
+      : [B_SAVED, statusBadge(lawStatus(wsL))].concat(full ? [B_FULL] : []);
+    const wsDue = dueBadge(wsL);
+    if (wsActive && wsDue) wsBadges.push(wsDue);
+    const wsActions = wsActive
+      ? [{ label: 'Read Bare Act', fn: noop, style: btnSecondary, disabled: false }, { label: 'Manage sections', fn: noop, style: btnSecondary, disabled: false }]
+      : wsMem === 'removed'
+        ? [{ label: 'Add back', fn: () => this.addLaw(wsId), style: btnPrimary, disabled: false }, { label: 'Read Bare Act', fn: noop, style: btnSecondary, disabled: false }]
+        : [full
+            ? { label: 'Plan next month', fn: go('rollover'), style: btnPrimary, disabled: false }
+            : { label: 'Add to this month', fn: addAction(wsId), style: addBlocked ? btnDisabled : btnPrimary, disabled: addBlocked },
+           { label: 'Read Bare Act', fn: noop, style: btnSecondary, disabled: false }];
+    const secBadges = (status, updated) => {
+      const b = [statusBadge(status)];
+      if (status === 'due' && wsActive) b.push(badge('outline', 'due', 'Due today', 'DueBadge'));
+      if (updated) b.push(badge('outline', 'updated', 'Law updated', 'LawStatusBadge LawUpdated'));
+      return b;
+    };
+    const ws = {
+      id: wsId, short: wsL.short, full: wsL.full, badges: wsBadges,
+      hasNote: !wsActive,
+      note: wsMem === 'removed' ? 'Removed this month. Progress saved. Adding it back doesn\u2019t use another space.'
+        : addBlocked ? 'You studied this law previously. Adding new laws is temporarily unavailable.'
+        : full ? 'You studied this law previously. Playground full this month \u2014 plan it for October.'
+        : 'You studied this law previously. Add it to September to continue where you left off.',
+      actions: wsActions,
+      summary: wsActive
+        ? [{ value: String(wsL.sel), label: 'Sections selected' }, { value: String(wsL.learned), label: 'Learned' }, { value: String(wsL.dueToday + wsL.overdue), label: wsL.overdue ? 'Overdue' : 'Due today' }]
+        : [{ value: String(wsL.sel), label: 'Sections selected' }, { value: String(wsL.learned), label: 'Learned' }, { value: String(wsL.sel - wsL.learned), label: 'Still to learn' }],
+      hasPrompt: wsActive && !!wsSec.prompt,
+      prompt: wsSec.prompt,
+      citation: wsSec.citation,
+      verbatim: wsSec.verbatim,
+      selLine: plural(wsSec.rows.length, 'section', 'sections') + ' · ' + wsL.learned + ' learned',
+      sections: wsSec.rows.map(([num, title, status, updated]) => ({
+        num, numLabel: '\u00a7 ' + num, title,
+        badges: secBadges(status, !!updated), updated: !!updated,
+        actLabel: wsActive ? 'Continue' : 'Read',
+        aria: (wsActive ? 'Continue Section ' : 'Read Section ') + num + ': ' + title
+      }))
+    };
+
+    // ---- browse / law states
+    const cardStyle = strong => 'padding:18px;box-sizing:border-box;background:var(--pg-paper);border:1px solid ' + (strong ? 'var(--pg-ink)' : 'var(--pg-hairline)');
+    const browseCard = id => {
+      const L = C[id], mem = this.membership(id, R), s = lawStatus(L);
+      const base = { id, short: L.short, full: L.full, readAria: 'Read Bare Act: ' + L.full, hasNote: false, note: '', primaryDisabled: false };
+      if (mem === 'active') {
+        const b = [B_IN, statusBadge(s)];
+        const db = dueBadge(L);
+        if (db) b.push(db);
+        return Object.assign(base, {
+          state: s === 'notStarted' ? 'active-not-started' : 'active-in-progress',
+          badges: b, style: cardStyle(true),
+          meta: L.sel + ' sections selected · ' + L.learned + ' learned',
+          primaryLabel: s === 'notStarted' ? 'Start learning' : 'Continue',
+          primaryStyle: S.cardSecondary, primary: hasSections(id) ? goWorkspace(id) : noop
+        });
+      }
+      if (mem === 'removed') return Object.assign(base, {
+        state: 'removed-this-month', badges: [B_REMOVED, B_SAVED, statusBadge(s)], style: cardStyle(false),
+        meta: L.learned + ' of ' + L.sel + ' sections learned',
+        hasNote: true, note: 'Adding back doesn\u2019t use another space.',
+        primaryLabel: 'Add back', primaryStyle: S.cardSecondary, primary: () => this.addLaw(id)
+      });
+      const hist = mem === 'history';
+      const b = hist ? [B_SAVED, statusBadge(s)] : [];
+      if (full) b.push(B_FULL);
+      const grow = ';flex:1 1 100%';
+      let note = hist ? 'You studied this law previously. Add it to September to continue where you left off.' : '';
+      let primaryLabel = hist ? 'Add to this month' : 'Add to Playground';
+      let primaryStyle = S.cardPrimary, primary = addAction(id), primaryDisabled = false;
+      if (addBlocked) { note = (hist ? 'You studied this law previously. ' : '') + 'Adding new laws is temporarily unavailable.'; primaryStyle = btnDisabled + grow; primaryDisabled = true; }
+      else if (full) { note = (hist ? 'Your progress is saved. ' : '') + 'Your September spaces are in use. Plan it for October.'; primaryLabel = 'Plan next month'; primaryStyle = btnSecondary + grow; primary = go('rollover'); }
+      return Object.assign(base, {
+        state: hist ? (full ? 'previously-studied-month-full' : 'previously-studied') : (full ? 'not-active-month-full' : 'never-added'),
+        badges: b, style: cardStyle(false),
+        meta: hist ? L.learned + ' of ' + L.sel + ' sections learned' : L.total + ' sections in the Act',
+        hasNote: !!note, note, primaryLabel, primaryStyle, primary, primaryDisabled
+      });
+    };
+    const moreLaws = ['bns', 'cpa', 'pocso', 'rti', 'hma', 'sga', 'partnership', 'itact', 'companies'].filter(id => this.membership(id, R) === 'never').slice(0, 4);
+    const groups = [];
+    const gActive = { title: 'In your September Playground', sub: plural(R.active.length, 'law', 'laws'), cards: R.active.map(browseCard) };
+    const gHist = { title: 'Saved progress', sub: 'Not in Playground this month', cards: R.history.map(browseCard) };
+    const gRemoved = { title: 'Removed this month', sub: 'Progress saved', cards: R.removed.map(browseCard) };
+    const gMore = { title: 'More laws', sub: 'Not yet studied', cards: moreLaws.map(browseCard) };
+    (sc.focus ? [gHist, gActive, gRemoved, gMore] : [gActive, gRemoved, gHist, gMore]).forEach(g => { if (g.cards.length) groups.push(g); });
+
+    // ---- confirm sheets
+    const sheetBase = { show: false, kind: '', eyebrow: '', title: '', lines: [], hasBadges: false, badges: [], hasBar: false, bar: { blocks: [], barStyle: '', legend: [], aria: '' }, actions: [], overlayStyle: '', panelStyle: '' };
+    const lineMain = 'margin:0 0 6px;font-size:16px;line-height:1.5';
+    const lineMuted = 'margin:0 0 6px;font-size:14.5px;line-height:1.5;color:var(--pg-muted)';
+    const cancelSheet = (target) => () => this.setState({ screen: target, tab: null });
+    let sheet = sheetBase;
+    if (sheetOpen && screen === 'add') {
+      let target = st.addTarget;
+      const addable = id => id && ['never', 'history'].includes(this.membership(id, R));
+      if (!addable(target)) target = (sc.focus && addable(sc.focus)) ? sc.focus : addable('bns') ? 'bns' : moreLaws[0];
+      const L = C[target], hist = this.membership(target, R) === 'history';
+      if (addBlocked) {
+        sheet = Object.assign({}, sheetBase, { show: true, kind: 'add-unavailable', eyebrow: 'Payment retry in progress', title: 'Adding new laws is temporarily unavailable',
+          lines: [{ text: 'You can continue your current Playground.', style: lineMain }],
+          actions: [{ label: 'Manage subscription', fn: noop, style: btnPrimary }, { label: 'Close', fn: cancelSheet('states'), style: btnSecondary }] });
+      } else if (full) {
+        sheet = Object.assign({}, sheetBase, { show: true, kind: 'add-full', eyebrow: L.short, title: 'Playground full this month',
+          lines: [{ text: 'All ' + cap + ' September spaces are in use. Every law in your Playground stays fully usable.', style: lineMain }, { text: 'Laws removed this month can be added back without using a space.', style: lineMuted }],
+          hasBar: true, bar: Object.assign({ legend: capSept.legend, aria: capSept.aria }, buildBar([['active', R.active.length], ['removed', R.removed.length]], cap)),
+          actions: [{ label: 'Plan next month', fn: go('rollover'), style: btnPrimary }, { label: 'Cancel', fn: cancelSheet('states'), style: btnSecondary }] });
+      } else {
+        const left = unlimited ? 0 : cap - used - 1;
+        const lines = unlimited
+          ? [{ text: L.full + '.', style: lineMain }]
+          : [{ text: 'This will use 1 of your ' + cap + ' law spaces for September.', style: lineMain },
+             { text: left === 0 ? 'This uses your last law space for September.' : 'You\u2019ll have ' + plural(left, 'space', 'spaces') + ' remaining.', style: lineMain }];
+        if (hist) lines.push({ text: 'Your saved progress comes with it: ' + L.learned + ' of ' + L.sel + ' sections learned.', style: lineMuted });
+        const barLegend = [{ swatch: swatch('active'), label: 'Already used' }, { swatch: swatch('pending'), label: L.short }];
+        if (left > 0) barLegend.push({ swatch: swatch('empty'), label: left + ' left after' });
+        sheet = Object.assign({}, sheetBase, {
+          show: true, kind: 'add', eyebrow: hist ? 'Progress saved' : 'Add law',
+          title: unlimited ? 'Add ' + L.short + ' to September Playground?' : 'Add ' + L.short + ' to September?',
+          lines,
+          hasBadges: hist, badges: hist ? [B_SAVED, statusBadge(lawStatus(L))] : [],
+          hasBar: !unlimited,
+          bar: unlimited ? sheetBase.bar : Object.assign({ legend: barLegend, aria: 'After adding: ' + (used + 1) + ' of ' + cap + ' September spaces used.' }, buildBar([['active', used], ['pending', 1]], cap)),
+          actions: [{ label: 'Add to Playground', fn: () => this.addLaw(target), style: btnPrimary }, { label: 'Cancel', fn: cancelSheet('states'), style: btnSecondary }]
+        });
+      }
+    }
+    if (sheetOpen && screen === 'remove') {
+      let target = st.removeTarget;
+      const known = id => id && (R.active.includes(id) || R.removed.includes(id));
+      if (!known(target)) target = R.active.includes('ni') ? 'ni' : R.active[0] || null;
+      if (!target) {
+        sheet = Object.assign({}, sheetBase, { show: true, kind: 'remove-empty', eyebrow: 'September', title: 'Nothing in September yet',
+          lines: [{ text: 'Add laws from Browse to start your September Playground.', style: lineMain }],
+          actions: [{ label: 'Browse laws', fn: go('states'), style: btnPrimary }, { label: 'Close', fn: cancelSheet('roster'), style: btnSecondary }] });
+      } else if (R.removed.includes(target)) {
+        const L = C[target];
+        sheet = Object.assign({}, sheetBase, { show: true, kind: 'removed', eyebrow: L.short, title: 'Removed this month',
+          lines: [{ text: 'Progress saved: ' + L.learned + ' of ' + L.sel + ' sections learned.', style: lineMain }, { text: 'Adding it back doesn\u2019t use another space.', style: lineMuted }],
+          hasBadges: true, badges: [B_REMOVED, B_SAVED],
+          actions: [{ label: 'Add back', fn: () => { this.addLaw(target); this.setState({ screen: 'roster' }); }, style: btnPrimary }, { label: 'Close', fn: cancelSheet('roster'), style: btnSecondary }] });
+      } else {
+        const L = C[target];
+        sheet = Object.assign({}, sheetBase, { show: true, kind: 'remove', eyebrow: L.short + ' · ' + L.learned + ' of ' + L.sel + ' learned', title: 'Remove from September',
+          lines: [{ text: 'Your progress will be saved.', style: lineMain }].concat(unlimited ? [] : [{ text: 'This does not free a law space this month.', style: lineMain }]),
+          actions: [{ label: 'Remove from September', fn: () => this.removeLaw(target), style: btnPrimary }, { label: 'Cancel', fn: cancelSheet('roster'), style: btnSecondary }] });
+      }
+    }
+    if (sheet.show) {
+      sheet.overlayStyle = 'position:absolute;inset:0;z-index:5;display:flex;background:' + (dark ? 'rgba(0,0,0,0.62)' : 'rgba(20,20,20,0.42)') + ';' + (isMobile ? 'align-items:flex-end' : 'align-items:center;justify-content:center;padding:24px');
+      sheet.panelStyle = 'background:var(--pg-paper);color:var(--pg-ink);box-sizing:border-box;border-top:1px solid var(--pg-ink);' + (isMobile ? 'width:100%;padding:24px 20px 28px' : 'width:480px;max-width:100%;padding:28px;border:1px solid var(--pg-ink)');
+    }
+
+    // ---- gates
+    const savedLaws = R.active.concat(R.removed, R.history).filter(id => C[id].learned > 0);
+    const gateDefs = {
+      guest: { eyebrow: 'Playground', title: 'Sign in to build your law-learning Playground.', lines: [], actions: [['Sign in', 'primary']], showHow: true },
+      free: { eyebrow: 'Playground', title: 'Your RecallC account already includes the complete Constitution.', lines: ['Playground adds structured learning for laws.'], actions: [['View Playground plans', 'primary']], showHow: true },
+      device: { eyebrow: 'Playground on this device', title: 'Device limit reached', lines: ['Your subscription supports Playground on up to 2 registered devices.'], actions: [['Manage devices', 'primary'], ['Back to Constitution', 'secondary']] },
+      revoked: { eyebrow: 'Playground on this device', title: 'This device no longer has Playground access.', lines: [], actions: [['Manage devices', 'primary']] },
+      replacement: { eyebrow: 'Playground on this device', title: 'Too many recent device changes', lines: ['For account security, new Playground devices are temporarily limited after several replacements.', 'Your Constitution access and saved progress are unaffected.'], actions: [['Contact support', 'primary'], ['Back to Constitution', 'secondary']] },
+      halted: { eyebrow: 'Playground subscription', title: 'Payment retries have stopped', lines: ['Playground learning is paused. Your progress is saved.'], actions: [['Manage subscription', 'primary'], ['Back to Constitution', 'secondary']], showSaved: true },
+      paused: { eyebrow: 'Playground subscription', title: 'Playground subscription paused', lines: ['Your laws and learning progress are saved.'], actions: [['Manage subscription', 'primary']], showSaved: true },
+      expired: { eyebrow: 'Playground subscription', title: 'Your Playground is paused', lines: ['Your roster and progress are still here. Resume a Playground plan to continue learning.'], actions: [['View Playground plans', 'primary'], ['Back to Constitution', 'secondary']], showSaved: true }
+    };
+    const gd = gateDefs[gateKind] || { eyebrow: '', title: '', lines: [], actions: [] };
+    const gate = {
+      kind: gateKind || '', eyebrow: gd.eyebrow, title: gd.title,
+      lines: gd.lines.map((t, i) => ({ text: t, style: i === 0 ? 'margin:0 0 8px;font-size:17px;line-height:1.5;max-width:560px' : 'margin:0 0 8px;font-size:15.5px;line-height:1.5;color:var(--pg-muted);max-width:560px' })),
+      actions: gd.actions.map(([label, kind]) => ({ label, style: (kind === 'primary' ? btnPrimary : btnSecondary) + (isMobile ? ';flex:1 1 100%' : '') })),
+      showSaved: !!gd.showSaved,
+      saved: [{ value: String(savedLaws.length), label: 'Laws with saved progress' }, { value: String(sum(savedLaws, 'learned')), label: 'Sections learned' }],
+      showHow: !!gd.showHow
+    };
+
+    // ---- banner (shell level)
+    const bannerDefs = {
+      pending: { title: 'Payment retry in progress', body: 'You can continue your current Playground. Adding new laws is temporarily unavailable.', cta: 'Manage subscription' },
+      upgrade: { title: 'Your Playground now supports 30 laws.', body: plural(avail, 'space', 'spaces') + ' available for September.', cta: '' },
+      resub: { title: 'Welcome back', body: 'Your saved law progress is ready. Build your September Playground.', cta: '' }
+    };
+    const bd = (!isGate && bannerDefs[sc.banner]) || null;
+    const banner = bd ? { show: true, kind: sc.banner, title: bd.title, hasBody: !!bd.body, body: bd.body, hasCta: !!bd.cta, cta: bd.cta } : { show: false, kind: '', title: '', hasBody: false, body: '', hasCta: false, cta: '' };
+
+    // ---- desktop rail
+    const showAside = !isMobile && showBody;
+    const aside = isRollover
+      ? { eyebrow: 'Plan next month', month: 'October', aria: 'October capacity', cap: ncap,
+          links: [{ label: 'Browse laws', fn: go('states'), style: btnSecondarySm + ';width:100%' }, { label: 'Back to September', fn: go('roster'), style: btnQuiet + ';width:100%' }] }
+      : { eyebrow: 'My Playground', month: 'September', aria: 'September capacity', cap: capSept,
+          links: [{ label: 'Browse laws', fn: go('states'), style: btnSecondarySm + ';width:100%' }, { label: 'Manage September', fn: go('roster'), style: btnQuiet + ';width:100%' }, { label: 'Plan next month', fn: go('rollover'), style: btnQuiet + ';width:100%' }] };
+
+    // ---- placeholders
+    const phCopy = { today: 'Today', calendar: 'Calendar', profile: 'Profile' };
+    const placeholder = { title: phCopy[tabKey] || '', body: (phCopy[tabKey] || '') + ' already exists in RecallC; this prototype does not design revision behavior.' };
+
+    // ---- header
+    const planName = { plus: 'Playground Plus', pro: 'Playground Pro', max: 'Playground Max' }[sc.plan] || '';
+    const header = {
+      showChip: !!planName && !['guest', 'free'].includes(gateKind) && !isGate,
+      chip: planName,
+      showSignIn: gateKind === 'guest'
+    };
+
+    // ---- preview controls
+    const segBtn = on => 'min-height:40px;padding:0 14px;font:inherit;font-size:13.5px;font-weight:700;cursor:pointer;border:1px solid var(--pg-ink);margin-left:-1px;border-radius:0;background:' + (on ? 'var(--pg-ink)' : 'var(--pg-paper)') + ';color:' + (on ? 'var(--pg-on-ink)' : 'var(--pg-ink)');
+    const scenarioOptions = this._SList.map(([value, label]) => ({ value, label }));
+    const screenOptions = [['home', 'Home'], ['roster', 'Roster'], ['rollover', 'Rollover'], ['workspace', 'Law workspace'], ['states', 'Law states'], ['add', 'Add confirm'], ['remove', 'Remove confirm']].map(([value, label]) => ({ value, label }));
+
+    const frameW = isMobile ? 'width:390px;max-width:100%' : 'width:min(1040px,100%)';
+    const frameH = sheet.show ? (isMobile ? 'height:844px;overflow:hidden' : 'height:780px;overflow:hidden') : (isMobile ? 'min-height:844px' : 'min-height:760px');
+
+    return {
+      noop, S, theme: st.theme, scenario: st.scenario, screen: st.screen, viewport: st.viewport,
+      pageStyle: vars + ';color-scheme:' + (dark ? 'dark' : 'light') + ';min-height:100vh;padding:24px 16px 40px;box-sizing:border-box;background:var(--pg-page);color:var(--pg-ink);font-family:"Source Sans 3","Segoe UI",sans-serif',
+      previewBarStyle: 'width:min(1040px,100%);margin:0 auto 18px;box-sizing:border-box;border:1px dashed var(--pg-faint);padding:12px 16px 14px',
+      scenarioOptions, screenOptions,
+      onScenario: e => {
+        const v = e.target.value, def = SCN[v] || {};
+        this.setState({ scenario: v, roster: null, decisions: null, note: null, tab: null, wsLaw: null, addTarget: null, removeTarget: null, screen: def.jump || this.state.screen });
+      },
+      onScreen: e => this.setState({ screen: e.target.value, tab: null }),
+      viewportOptions: [['mobile', 'Mobile 390×844'], ['desktop', 'Desktop']].map(([v, label]) => ({ label, pressed: st.viewport === v, style: segBtn(st.viewport === v), pick: () => this.setState({ viewport: v }) })),
+      themeOptions: [['light', 'Light'], ['dark', 'Dark']].map(([v, label]) => ({ label, pressed: st.theme === v, style: segBtn(st.theme === v), pick: () => this.setState({ theme: v }) })),
+
+      frameStyle: frameW + ';' + frameH + ';margin:0 auto;box-sizing:border-box;position:relative;display:flex;flex-direction:column;background:var(--pg-paper);color:var(--pg-ink);border:1px solid var(--pg-edge);box-shadow:0 2px 10px rgba(0,0,0,0.05)',
+      headerStyle: 'display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 ' + (isMobile ? 20 : 40) + 'px;min-height:' + (isMobile ? 56 : 64) + 'px;border-bottom:1px solid var(--pg-ink);box-sizing:border-box',
+      mainStyle: 'flex:1 0 auto;box-sizing:border-box;padding:' + (isMobile ? '24px 20px 36px' : '36px 40px 56px'),
+      bodyGrid: showAside ? 'display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:40px;align-items:start' : 'display:block',
+      showDesktopTabs: !isMobile && !isGate,
+      showMobileTabs: isMobile && !isGate,
+      tabs, header, banner,
+
+      isGate, gate,
+      howItWorks: [
+        { n: '1', title: 'Choose your laws each month', body: 'Pick the laws you want to learn. Your Playground holds them for the calendar month.' },
+        { n: '2', title: 'Progress never disappears', body: 'What you learn stays saved, even when a law leaves your Playground.' },
+        { n: '3', title: 'Next month, decide what to keep', body: 'Carry laws forward, or make room for something new.' },
+        { n: '4', title: 'Read the law, verbatim', body: 'Every provision is the Bare Act text. Verbatim, always.' }
+      ],
+      isPlaceholder: !isGate && !!tabKey, placeholder,
+      showBody,
+      note: st.note ? { show: true, text: st.note.text, hasAction: !!st.note.action, actionLabel: st.note.actionLabel || '', action: st.note.action || noop } : { show: false, text: '', hasAction: false, actionLabel: '', action: noop },
+      dismissNote: () => this.setState({ note: null }),
+
+      inlineCap: isMobile,
+      cap: capSept, ncap, planNote,
+      isHome, home,
+      showRoster, roster,
+      isRollover, roll,
+      isWorkspace, ws,
+      verbatimOpen: !!st.verbatimOpen,
+      verbatimToggleLabel: st.verbatimOpen ? 'Hide verbatim text' : 'Show verbatim text',
+      toggleVerbatim: () => this.setState(s => ({ verbatimOpen: !s.verbatimOpen })),
+      showStates, browse: { groups },
+      showAside, aside,
+      sheet,
+
+      goHome: go('home'), goRoster: go('roster'), goRollover: go('rollover'), goStates: go('states')
+    };
+  }
+}
+</script>
+</body>
+</html>
