@@ -1348,8 +1348,11 @@ def create_app(
         # Locked modes must never be recorded as seen (UI lock is not trusted).
         # One pipelined read seeds settings (timezone), claims, progress, and the
         # authoritative access override, so the only remaining DB turn is the
-        # mark_mode_seen write.
-        _seed_learn_mutation_preload(request, eng)
+        # mark_mode_seen write. Only when the entitlement boundary is live: a
+        # dormant flag must keep legacy behavior with zero entitlement-store
+        # reads (no claims, no access override).
+        if entitlements_active(request):
+            _seed_learn_mutation_preload(request, eng)
         access = resolve_learn_access(request, eng, unit.article_number)
         if access.is_locked(mode):
             return JSONResponse(
@@ -1399,7 +1402,10 @@ def create_app(
         # One pipelined read (settings/claims/progress/access override) seeds the
         # request caches so the stale-cycle progress read, entitlement check, and
         # timezone lookup below reuse it; the only DB write is mark_mode_seen.
-        _seed_learn_mutation_preload(request, eng)
+        # Gated on the live entitlement boundary so a dormant flag keeps legacy
+        # behavior with zero entitlement-store reads.
+        if entitlements_active(request):
+            _seed_learn_mutation_preload(request, eng)
         # Stale-cycle protection: a Done in another tab advances the cycle and
         # clears unit_modes_seen — an old tab's submission must not complete
         # the new cycle. The server's own cycle is authoritative.
