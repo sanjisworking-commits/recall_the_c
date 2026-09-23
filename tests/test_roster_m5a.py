@@ -783,10 +783,20 @@ def test_local_owner_uses_roster_not_overlay_alone(tmp_path: Path):
     assert cap.remaining is None
 
 
-def test_roster_next_is_not_implemented(tmp_path: Path):
+def test_roster_next_get_does_not_consume(tmp_path: Path):
     client = _authed_client(tmp_path)
     _subscribe(client)
-    assert client.get("/playground/roster/next").status_code == 404
+    _confirm_add(client, "ndps")
+    before = client.app.state.roster.capacity(
+        USER, client.app.state.entitlement_service.resolve(USER, now=NOW), now=NOW
+    ).used
+    page = client.get("/playground/roster/next")
+    assert page.status_code == 200
+    assert "Playground" in page.text
+    after = client.app.state.roster.capacity(
+        USER, client.app.state.entitlement_service.resolve(USER, now=NOW), now=NOW
+    ).used
+    assert after == before
 
 
 def test_no_lifetime_entitlement_table():

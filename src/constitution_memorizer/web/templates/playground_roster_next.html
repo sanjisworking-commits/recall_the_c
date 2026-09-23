@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}{{ month_name }} Playground · {{ app_name|default('Recall the C') }}{% endblock %}
+{% block mobile_screen %}playground{% endblock %}
+{% block content %}
+<section class="panel playground-page" data-playground-roster="next" data-rollover-status="{{ target_status }}">
+  <h1>Your {{ month_name }} Playground</h1>
+  <p class="playground-lede">Continue with last month’s laws, or make room for something new.</p>
+  <p class="playground-lede" data-roster-used="{{ used }}" data-roster-limit="{{ limit_label }}">
+    {% if law_limit is none %}
+    Unlimited law spaces. {{ used }} planned.
+    {% else %}
+    {{ used }} of {{ law_limit }} law spaces planned
+    {% if remaining is not none %} · {{ remaining }} remaining{% endif %}.
+    {% endif %}
+  </p>
+  {% if adjustment_required and law_limit is not none %}
+  <p class="playground-flag" data-playground-gate="rollover_adjustment_required">
+    Your plan now supports {{ law_limit }} laws.
+    Choose which {{ law_limit }} to keep for {{ month_name }}.
+  </p>
+  {% endif %}
+  {% if blocked == 'roster_full' %}
+  <p class="playground-flag" data-playground-gate="roster_full">Choose a set that fits this month. Nothing was changed.</p>
+  {% elif blocked == 'new_law_temporarily_unavailable' %}
+  <p class="playground-flag" data-playground-gate="new_law_temporarily_unavailable">New laws are temporarily unavailable. You can still remove a candidate.</p>
+  {% elif blocked == 'active_slot_locked' %}
+  <p class="playground-flag" data-playground-gate="active_slot_locked">A law already kept this month cannot free its space.</p>
+  {% endif %}
+  {% if not candidates %}
+  <p>No carry-forward candidates.</p>
+  {% else %}
+  <form method="post" action="/playground/roster/next">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    {% for law in candidates %}
+    <article class="playground-card" data-rollover-candidate="{{ law.law_id }}" data-rollover-decision="{{ law.target_decision or 'undecided' }}" data-previously-removed="{{ 'true' if law.previously_removed else 'false' }}">
+      <h2>{{ law.title }}</h2>
+      {% if law.target_decision == 'keep' and not law.can_decline %}
+      <p>Keeping</p>
+      {% else %}
+      <label>
+        <input type="radio" name="choice_{{ law.law_id }}" value="keep" {% if law.target_decision == 'keep' %}checked{% endif %}>
+        Keep
+      </label>
+      <label>
+        <input type="radio" name="choice_{{ law.law_id }}" value="decline" {% if law.target_decision == 'decline' %}checked{% endif %}>
+        Remove
+      </label>
+      {% endif %}
+    </article>
+    {% endfor %}
+    <button type="submit" class="btn btn-accent">Confirm</button>
+  </form>
+  {% endif %}
+  <p><a href="/playground/roster">This month</a> · <a href="/playground">Back to Playground</a></p>
+</section>
+{% endblock %}

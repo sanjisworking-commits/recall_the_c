@@ -29,6 +29,12 @@ RESULT_NEW_BLOCKED = "new_law_temporarily_unavailable"
 RESULT_INELIGIBLE = "ineligible"
 RESULT_NEEDS_CONFIRM = "needs_confirm"
 RESULT_RE_ADD_CONFIRM = "re_add"
+RESULT_INVALID_CANDIDATE = "invalid_candidate"
+RESULT_SLOT_LOCKED = "active_slot_locked"
+RESULT_ADJUSTMENT_REQUIRED = "rollover_adjustment_required"
+
+DECISION_KEEP = "keep"
+DECISION_DECLINE = "decline"
 
 ROSTER_ADD_CONFIRM = "add"
 
@@ -132,3 +138,48 @@ class RosterCapacity:
     used: int
     remaining: int | None
     tier_snapshot: str | None
+
+
+@dataclass(frozen=True)
+class CarryForwardCandidate:
+    """One law from the immediately previous period. Not statutory text."""
+
+    law_id: str
+    previously_removed: bool
+    target_decision: str | None
+    target_consumed: bool
+    target_declined: bool
+
+
+@dataclass(frozen=True)
+class RolloverPlan:
+    """Read model for ``/playground/roster/next``. Not an entitlement snapshot."""
+
+    source_period_start: date
+    source_period_end: date
+    target_period_start: date
+    target_period_end: date
+    target_status: str | None
+    month_name: str
+    tier_snapshot: str | None
+    law_limit: int | None
+    used: int
+    remaining: int | None
+    candidates: tuple[CarryForwardCandidate, ...]
+    adjustment_required: bool
+    manages_current_period: bool
+
+
+@dataclass(frozen=True)
+class RolloverResult:
+    """Atomic Keep/decline outcome. No partial writes."""
+
+    status: str
+    used: int
+    remaining: int | None
+    period: PlaygroundPeriod | None = None
+    adjustment_required: bool = False
+
+    @property
+    def ok(self) -> bool:
+        return self.status == RESULT_OK

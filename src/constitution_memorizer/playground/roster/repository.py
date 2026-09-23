@@ -12,11 +12,14 @@ from datetime import date, datetime, timezone
 from typing import Any, Iterator, Protocol
 from uuid import UUID, uuid4
 
+from constitution_memorizer.playground.roster.decisions import plan_rollover_batch
 from constitution_memorizer.playground.roster.models import (
+    ORIGIN_CARRY_FORWARD,
     ORIGIN_NEW,
     ORIGIN_RE_ADD,
     PERIOD_STATUS_ACTIVE,
     PERIOD_STATUS_CLOSED,
+    PERIOD_STATUS_DRAFT,
     RESULT_ALREADY_ACTIVE,
     RESULT_NEW_BLOCKED,
     RESULT_OK,
@@ -24,6 +27,7 @@ from constitution_memorizer.playground.roster.models import (
     RESULT_ROSTER_FULL,
     ConsumeResult,
     PlaygroundPeriod,
+    RolloverResult,
     RosterItem,
     remaining_capacity,
 )
@@ -157,8 +161,25 @@ class RosterRepository(Protocol):
         law_id: str,
         law_limit: int | None,
         allow_new: bool,
+        origin_for_new: str = ORIGIN_NEW,
         now: datetime | None = None,
     ) -> ConsumeResult: ...
+
+    def apply_rollover(
+        self,
+        user_id: UUID | str,
+        *,
+        period_start: date,
+        period_end: date,
+        tier_snapshot: str | None,
+        law_limit: int | None,
+        activate: bool,
+        keep_ids: list[str],
+        decline_ids: list[str],
+        allowed_ids: frozenset[str],
+        allow_new_keep: bool,
+        now: datetime | None = None,
+    ) -> RolloverResult: ...
 
     def remove_law(
         self,
@@ -185,18 +206,20 @@ class SqliteRosterRepository:
         self, user_id: UUID | str, period_start: date
     ) -> PlaygroundPeriod | None:
         uid = as_user_id(user_id)
-        row = self._conn.execute(
-            _PERIOD_SELECT + " WHERE user_id = ? AND period_start = ?",
-            (uid, _date_iso(period_start)),
-        ).fetchone()
+        with self._lock:
+            row = self._conn.execute(
+                _PERIOD_SELECT + " WHERE user_id = ? AND period_start = ?",
+                (uid, _date_iso(period_start)),
+            ).fetchone()
         return period_from_mapping(row) if row is not None else None
 
     def list_periods(self, user_id: UUID | str) -> list[PlaygroundPeriod]:
         uid = as_user_id(user_id)
-        rows = self._conn.execute(
-            _PERIOD_SELECT + " WHERE user_id = ? ORDER BY period_start ASC",
-            (uid,),
-        ).fetchall()
+        with self._lock:
+            rows = self._conn.execute(
+                _PERIOD_SELECT + " WHERE user_id = ? ORDER BY period_start ASC",
+                (uid,),
+            ).fetchall()
         return [period_from_mapping(row) for row in rows]
 
     def ensure_period(
@@ -215,109 +238,49 @@ class SqliteRosterRepository:
         start = _date_iso(period_start)
         end = _date_iso(period_end)
         with self._exclusive():
-            self._conn.execute(
-                """
-                UPDATE user_playground_period
-                SET status = ?, updated_at = ?
-                WHERE user_id = ? AND status = ? AND period_start < ?
-                """,
-                (PERIOD_STATUS_CLOSED, stamp, uid, PERIOD_STATUS_ACTIVE, start),
+            return self._ensure_period_locked(
+                uid,
+                start=start,
+                end=end,
+                tier_snapshot=tier_snapshot,
+                law_limit=law_limit,
+                stamp=stamp,
             )
-            existing = self._conn.execute(
-                _PERIOD_SELECT + " WHERE user_id = ? AND period_start = ?",
-                (uid, start),
-            ).fetchone()
-            if existing is None:
-                period_id = str(uuid4())
-                try:
-                    self._conn.execute(
-                        """
-                        INSERT INTO user_playground_period (
-                            id, user_id, period_start, period_end, tier_snapshot,
-                            law_limit, status, confirmed_at, created_at, updated_at
-                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                        """,
-                        (
-                            period_id,
-                            uid,
-                            start,
-                            end,
-                            tier_snapshot,
-                            law_limit,
-                            PERIOD_STATUS_ACTIVE,
-                            stamp,
-                            stamp,
-                            stamp,
-                        ),
-                    )
-                except sqlite3.IntegrityError:
-                    pass
-                existing = self._conn.execute(
-                    _PERIOD_SELECT + " WHERE user_id = ? AND period_start = ?",
-                    (uid, start),
-                ).fetchone()
-            period = period_from_mapping(existing)
-            updates: list[str] = []
-            params: list[Any] = []
-            if period.tier_snapshot != tier_snapshot or period.law_limit != law_limit:
-                updates.extend(["tier_snapshot = ?", "law_limit = ?"])
-                params.extend([tier_snapshot, law_limit])
-            if period.status != PERIOD_STATUS_ACTIVE:
-                updates.append("status = ?")
-                params.append(PERIOD_STATUS_ACTIVE)
-                if period.confirmed_at is None:
-                    updates.append("confirmed_at = ?")
-                    params.append(stamp)
-            if updates:
-                updates.append("updated_at = ?")
-                params.append(stamp)
-                params.extend([uid, start])
-                self._conn.execute(
-                    f"""
-                    UPDATE user_playground_period
-                    SET {", ".join(updates)}
-                    WHERE user_id = ? AND period_start = ?
-                    """,
-                    params,
-                )
-                existing = self._conn.execute(
-                    _PERIOD_SELECT + " WHERE user_id = ? AND period_start = ?",
-                    (uid, start),
-                ).fetchone()
-                period = period_from_mapping(existing)
-            return period
 
     def get_item(
         self, user_id: UUID | str, period_start: date, law_id: str
     ) -> RosterItem | None:
         uid = as_user_id(user_id)
-        row = self._conn.execute(
-            _ITEM_SELECT + " WHERE user_id = ? AND period_start = ? AND law_id = ?",
-            (uid, _date_iso(period_start), law_id),
-        ).fetchone()
+        with self._lock:
+            row = self._conn.execute(
+                _ITEM_SELECT + " WHERE user_id = ? AND period_start = ? AND law_id = ?",
+                (uid, _date_iso(period_start), law_id),
+            ).fetchone()
         return item_from_mapping(row) if row is not None else None
 
     def list_items(
         self, user_id: UUID | str, period_start: date
     ) -> list[RosterItem]:
         uid = as_user_id(user_id)
-        rows = self._conn.execute(
-            _ITEM_SELECT
-            + " WHERE user_id = ? AND period_start = ? ORDER BY created_at ASC, law_id ASC",
-            (uid, _date_iso(period_start)),
-        ).fetchall()
+        with self._lock:
+            rows = self._conn.execute(
+                _ITEM_SELECT
+                + " WHERE user_id = ? AND period_start = ? ORDER BY created_at ASC, law_id ASC",
+                (uid, _date_iso(period_start)),
+            ).fetchall()
         return [item_from_mapping(row) for row in rows]
 
     def count_consumed(self, user_id: UUID | str, period_start: date) -> int:
         uid = as_user_id(user_id)
-        row = self._conn.execute(
-            """
-            SELECT COUNT(DISTINCT law_id) AS n
-            FROM user_playground_roster_item
-            WHERE user_id = ? AND period_start = ? AND consumed_at IS NOT NULL
-            """,
-            (uid, _date_iso(period_start)),
-        ).fetchone()
+        with self._lock:
+            row = self._conn.execute(
+                """
+                SELECT COUNT(DISTINCT law_id) AS n
+                FROM user_playground_roster_item
+                WHERE user_id = ? AND period_start = ? AND consumed_at IS NOT NULL
+                """,
+                (uid, _date_iso(period_start)),
+            ).fetchone()
         return int(row["n"] if row is not None else 0)
 
     def consume_law(
@@ -328,6 +291,7 @@ class SqliteRosterRepository:
         law_id: str,
         law_limit: int | None,
         allow_new: bool,
+        origin_for_new: str = ORIGIN_NEW,
         now: datetime | None = None,
     ) -> ConsumeResult:
         uid = as_user_id(user_id)
@@ -368,7 +332,7 @@ class SqliteRosterRepository:
                 self._conn.execute(
                     """
                     UPDATE user_playground_roster_item
-                    SET removed_at = NULL, origin = ?, updated_at = ?
+                    SET removed_at = NULL, declined_at = NULL, origin = ?, updated_at = ?
                     WHERE user_id = ? AND period_start = ? AND law_id = ?
                     """,
                     (ORIGIN_RE_ADD, stamp, uid, start, law_id),
@@ -408,11 +372,11 @@ class SqliteRosterRepository:
                 self._conn.execute(
                     """
                     UPDATE user_playground_roster_item
-                    SET consumed_at = ?, removed_at = NULL, origin = ?,
-                        updated_at = ?
+                    SET consumed_at = ?, removed_at = NULL, declined_at = NULL,
+                        origin = ?, updated_at = ?
                     WHERE user_id = ? AND period_start = ? AND law_id = ?
                     """,
-                    (stamp, ORIGIN_NEW, stamp, uid, start, law_id),
+                    (stamp, origin_for_new, stamp, uid, start, law_id),
                 )
             else:
                 try:
@@ -429,7 +393,7 @@ class SqliteRosterRepository:
                             uid,
                             start,
                             law_id,
-                            ORIGIN_NEW,
+                            origin_for_new,
                             stamp,
                             stamp,
                             stamp,
@@ -506,6 +470,315 @@ class SqliteRosterRepository:
                 (uid, start, law_id),
             ).fetchone()
             return item_from_mapping(refreshed)
+
+    def _ensure_period_locked(
+        self,
+        uid: str,
+        *,
+        start: str,
+        end: str,
+        tier_snapshot: str | None,
+        law_limit: int | None,
+        stamp: str | None,
+    ) -> PlaygroundPeriod:
+        """Insert or reconcile one period. Caller holds ``BEGIN IMMEDIATE``.
+
+        A prepared draft whose Keep count exceeds the reconciled limit stays
+        ``draft``. It is not promoted and older active periods are left as
+        they are. Every other current-month visit promotes or stays active
+        and closes older active periods.
+        """
+
+        existing = self._conn.execute(
+            _PERIOD_SELECT + " WHERE user_id = ? AND period_start = ?",
+            (uid, start),
+        ).fetchone()
+        if existing is None:
+            try:
+                self._conn.execute(
+                    """
+                    INSERT INTO user_playground_period (
+                        id, user_id, period_start, period_end, tier_snapshot,
+                        law_limit, status, confirmed_at, created_at, updated_at
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        str(uuid4()),
+                        uid,
+                        start,
+                        end,
+                        tier_snapshot,
+                        law_limit,
+                        PERIOD_STATUS_ACTIVE,
+                        stamp,
+                        stamp,
+                        stamp,
+                    ),
+                )
+            except sqlite3.IntegrityError:
+                pass
+            self._close_older_active(uid, start, stamp)
+            row = self._conn.execute(
+                _PERIOD_SELECT + " WHERE user_id = ? AND period_start = ?",
+                (uid, start),
+            ).fetchone()
+            return period_from_mapping(row)
+        period = period_from_mapping(existing)
+        used = self._count_consumed_locked(uid, start)
+        hold_draft = (
+            period.status == PERIOD_STATUS_DRAFT
+            and law_limit is not None
+            and used > law_limit
+        )
+        if hold_draft:
+            self._conn.execute(
+                """
+                UPDATE user_playground_period
+                SET tier_snapshot = ?, law_limit = ?, updated_at = ?
+                WHERE user_id = ? AND period_start = ?
+                """,
+                (tier_snapshot, law_limit, stamp, uid, start),
+            )
+            row = self._conn.execute(
+                _PERIOD_SELECT + " WHERE user_id = ? AND period_start = ?",
+                (uid, start),
+            ).fetchone()
+            return period_from_mapping(row)
+        confirmed = stamp if period.confirmed_at is None else _dt_iso(period.confirmed_at)
+        self._conn.execute(
+            """
+            UPDATE user_playground_period
+            SET tier_snapshot = ?, law_limit = ?, status = ?, confirmed_at = ?,
+                updated_at = ?
+            WHERE user_id = ? AND period_start = ?
+            """,
+            (
+                tier_snapshot,
+                law_limit,
+                PERIOD_STATUS_ACTIVE,
+                confirmed,
+                stamp,
+                uid,
+                start,
+            ),
+        )
+        self._close_older_active(uid, start, stamp)
+        row = self._conn.execute(
+            _PERIOD_SELECT + " WHERE user_id = ? AND period_start = ?",
+            (uid, start),
+        ).fetchone()
+        return period_from_mapping(row)
+
+    def _close_older_active(self, uid: str, start: str, stamp: str | None) -> None:
+        self._conn.execute(
+            """
+            UPDATE user_playground_period
+            SET status = ?, updated_at = ?
+            WHERE user_id = ? AND status = ? AND period_start < ?
+            """,
+            (PERIOD_STATUS_CLOSED, stamp, uid, PERIOD_STATUS_ACTIVE, start),
+        )
+
+    def apply_rollover(
+        self,
+        user_id: UUID | str,
+        *,
+        period_start: date,
+        period_end: date,
+        tier_snapshot: str | None,
+        law_limit: int | None,
+        activate: bool,
+        keep_ids: list[str],
+        decline_ids: list[str],
+        allowed_ids: frozenset[str],
+        allow_new_keep: bool,
+        now: datetime | None = None,
+    ) -> RolloverResult:
+        uid = as_user_id(user_id)
+        start = _date_iso(period_start)
+        end = _date_iso(period_end)
+        stamp = _dt_iso(_utc_now(now))
+
+        class _Abort(Exception):
+            def __init__(self, result: RolloverResult) -> None:
+                self.result = result
+
+        try:
+            with self._exclusive():
+                existing = self._conn.execute(
+                    _PERIOD_SELECT + " WHERE user_id = ? AND period_start = ?",
+                    (uid, start),
+                ).fetchone()
+                period = period_from_mapping(existing) if existing is not None else None
+                status = (
+                    period.status
+                    if period is not None
+                    else (PERIOD_STATUS_ACTIVE if activate else PERIOD_STATUS_DRAFT)
+                )
+                item_rows = self._conn.execute(
+                    _ITEM_SELECT + " WHERE user_id = ? AND period_start = ?",
+                    (uid, start),
+                ).fetchall()
+                items = {row["law_id"]: item_from_mapping(row) for row in item_rows}
+                used = self._count_consumed_locked(uid, start)
+                plan = plan_rollover_batch(
+                    period_status=status,
+                    law_limit=law_limit,
+                    items=items,
+                    used=used,
+                    keep_ids=list(keep_ids),
+                    decline_ids=list(decline_ids),
+                    allowed_ids=set(allowed_ids),
+                    allow_new_keep=allow_new_keep,
+                )
+                if not plan.ok:
+                    raise _Abort(
+                        RolloverResult(
+                            status=plan.status,
+                            used=used,
+                            remaining=remaining_capacity(law_limit, used),
+                            period=period,
+                            adjustment_required=(
+                                period is not None
+                                and period.status == PERIOD_STATUS_DRAFT
+                                and law_limit is not None
+                                and used > law_limit
+                            ),
+                        )
+                    )
+                if period is None and not plan.writes:
+                    raise _Abort(
+                        RolloverResult(
+                            status=RESULT_OK,
+                            used=0,
+                            remaining=remaining_capacity(law_limit, 0),
+                            period=None,
+                        )
+                    )
+                if period is None:
+                    self._conn.execute(
+                        """
+                        INSERT INTO user_playground_period (
+                            id, user_id, period_start, period_end, tier_snapshot,
+                            law_limit, status, confirmed_at, created_at, updated_at
+                        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                        """,
+                        (
+                            str(uuid4()),
+                            uid,
+                            start,
+                            end,
+                            tier_snapshot,
+                            law_limit,
+                            PERIOD_STATUS_DRAFT if not activate else PERIOD_STATUS_ACTIVE,
+                            stamp if activate else None,
+                            stamp,
+                            stamp,
+                        ),
+                    )
+                for write in plan.writes:
+                    self._write_rollover_decision(
+                        uid, start, write.law_id, keep=write.keep, stamp=stamp
+                    )
+                used_now = self._count_consumed_locked(uid, start)
+                over = law_limit is not None and used_now > law_limit
+                if activate and not over:
+                    self._conn.execute(
+                        """
+                        UPDATE user_playground_period
+                        SET tier_snapshot = ?, law_limit = ?, status = ?,
+                            confirmed_at = COALESCE(confirmed_at, ?), updated_at = ?
+                        WHERE user_id = ? AND period_start = ?
+                        """,
+                        (
+                            tier_snapshot,
+                            law_limit,
+                            PERIOD_STATUS_ACTIVE,
+                            stamp,
+                            stamp,
+                            uid,
+                            start,
+                        ),
+                    )
+                    self._close_older_active(uid, start, stamp)
+                else:
+                    self._conn.execute(
+                        """
+                        UPDATE user_playground_period
+                        SET tier_snapshot = ?, law_limit = ?, updated_at = ?
+                        WHERE user_id = ? AND period_start = ?
+                        """,
+                        (tier_snapshot, law_limit, stamp, uid, start),
+                    )
+                row = self._conn.execute(
+                    _PERIOD_SELECT + " WHERE user_id = ? AND period_start = ?",
+                    (uid, start),
+                ).fetchone()
+                stored = period_from_mapping(row)
+                return RolloverResult(
+                    status=RESULT_OK,
+                    used=used_now,
+                    remaining=remaining_capacity(stored.law_limit, used_now),
+                    period=stored,
+                    adjustment_required=stored.status == PERIOD_STATUS_DRAFT and over,
+                )
+        except _Abort as exc:
+            return exc.result
+
+    def _write_rollover_decision(
+        self,
+        uid: str,
+        start: str,
+        law_id: str,
+        *,
+        keep: bool,
+        stamp: str | None,
+    ) -> None:
+        consumed = stamp if keep else None
+        declined = None if keep else stamp
+        existing = self._conn.execute(
+            _ITEM_SELECT + " WHERE user_id = ? AND period_start = ? AND law_id = ?",
+            (uid, start, law_id),
+        ).fetchone()
+        if existing is None:
+            self._conn.execute(
+                """
+                INSERT INTO user_playground_roster_item (
+                    id, user_id, period_start, law_id, origin,
+                    carried_from_previous_period, consumed_at, removed_at,
+                    declined_at, created_at, updated_at
+                ) VALUES (?, ?, ?, ?, ?, 1, ?, NULL, ?, ?, ?)
+                """,
+                (
+                    str(uuid4()),
+                    uid,
+                    start,
+                    law_id,
+                    ORIGIN_CARRY_FORWARD,
+                    consumed,
+                    declined,
+                    stamp,
+                    stamp,
+                ),
+            )
+            return
+        self._conn.execute(
+            """
+            UPDATE user_playground_roster_item
+            SET origin = ?, carried_from_previous_period = 1,
+                consumed_at = ?, removed_at = NULL, declined_at = ?, updated_at = ?
+            WHERE user_id = ? AND period_start = ? AND law_id = ?
+            """,
+            (
+                ORIGIN_CARRY_FORWARD,
+                consumed,
+                declined,
+                stamp,
+                uid,
+                start,
+                law_id,
+            ),
+        )
 
     def _count_consumed_locked(self, uid: str, period_start: str) -> int:
         row = self._conn.execute(

@@ -28,9 +28,11 @@ from constitution_memorizer.playground.http import (
 from constitution_memorizer.playground.locators import LocatorError
 from constitution_memorizer.playground.roster.models import (
     RESULT_ALREADY_ACTIVE,
+    RESULT_INVALID_CANDIDATE,
     RESULT_INELIGIBLE,
     RESULT_NEEDS_CONFIRM,
     RESULT_NEW_BLOCKED,
+    RESULT_OK,
     RESULT_RE_ADD_CONFIRM,
     RESULT_ROSTER_FULL,
     ROSTER_ADD_CONFIRM,
@@ -55,6 +57,7 @@ from constitution_memorizer.playground.urls import (
     law_path,
     learn_complete_path,
     learn_path,
+    roster_next_path,
     roster_path,
     sections_path,
 )
@@ -90,6 +93,20 @@ def _after_active_redirect(overlay, user_id, law_id: str) -> RedirectResponse:
     ):
         return RedirectResponse(url=law_path(law_id), status_code=303)
     return RedirectResponse(url=sections_path(law_id), status_code=303)
+
+
+def _rollover_ids(form) -> tuple[list[str], list[str]]:
+    keep_ids = [str(value) for value in form.getlist("keep_ids") if str(value)]
+    decline_ids = [str(value) for value in form.getlist("decline_ids") if str(value)]
+    for key, value in form.multi_items():
+        if not str(key).startswith("choice_"):
+            continue
+        law_id = str(key)[len("choice_") :]
+        if value == "keep" and law_id not in keep_ids:
+            keep_ids.append(law_id)
+        elif value == "decline" and law_id not in decline_ids:
+            decline_ids.append(law_id)
+    return keep_ids, decline_ids
 
 
 def _roster_law_card(item) -> dict:
@@ -228,6 +245,87 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             },
         )
 
+    @router.get("/roster/next", response_class=HTMLResponse)
+    async def playground_roster_next(request: Request) -> HTMLResponse:
+        access = require_playground_open(
+            request, templates, next_url=roster_next_path()
+        )
+        blocked = _denied(access)
+        if blocked is not None:
+            return blocked  # type: ignore[return-value]
+        overlay = require_playground_repo(request)
+        roster = require_roster_service(request)
+        plan = roster.get_rollover_plan(
+            access.user_id,
+            access.snapshot,
+            has_overlay=lambda law_id: overlay.get_item(access.user_id, law_id) is not None,
+            local_owner=access.local_owner,
+        )
+        cards = []
+        for candidate in plan.candidates:
+            catalog = playground_catalogue_law(candidate.law_id)
+            cards.append(
+                {
+                    "law_id": candidate.law_id,
+                    "title": catalog.title if catalog is not None else candidate.law_id,
+                    "previously_removed": candidate.previously_removed,
+                    "target_decision": candidate.target_decision,
+                    "target_consumed": candidate.target_consumed,
+                    "can_decline": plan.target_status != "active" or not candidate.target_consumed,
+                }
+            )
+        notice = request.query_params.get("blocked") or ""
+        limit_label = (
+            "unlimited" if plan.law_limit is None else str(plan.law_limit)
+        )
+        return templates.TemplateResponse(
+            request,
+            "playground_roster_next.html",
+            {
+                "month_name": plan.month_name,
+                "law_limit": plan.law_limit,
+                "limit_label": limit_label,
+                "used": plan.used,
+                "remaining": plan.remaining,
+                "candidates": cards,
+                "adjustment_required": plan.adjustment_required,
+                "target_status": plan.target_status or "",
+                "blocked": notice,
+                "manages_current": plan.manages_current_period,
+            },
+        )
+
+    @router.post("/roster/next")
+    async def playground_roster_next_submit(request: Request) -> Response:
+        opened = require_playground_open(
+            request, templates, next_url=roster_next_path()
+        )
+        blocked = _denied(opened)
+        if blocked is not None:
+            return blocked
+        form = await request.form()
+        _require_csrf(request, str(form.get("csrf_token") or ""))
+        keep_ids, decline_ids = _rollover_ids(form)
+        overlay = require_playground_repo(request)
+        roster = require_roster_service(request)
+        result = roster.confirm_carry_forward(
+            opened.user_id,
+            keep_ids,
+            decline_ids,
+            opened.snapshot,
+            has_overlay=lambda law_id: overlay.get_item(opened.user_id, law_id) is not None,
+            local_owner=opened.local_owner,
+            can_consume_new_law=opened.can_consume_new_law,
+        )
+        if result.status == RESULT_INVALID_CANDIDATE:
+            raise HTTPException(status_code=400, detail=RESULT_INVALID_CANDIDATE)
+        if result.status != RESULT_OK:
+            return RedirectResponse(
+                url=roster_next_path(blocked=result.status),
+                status_code=303,
+            )
+        return RedirectResponse(url=roster_next_path(), status_code=303)
+
     @router.post("/laws/{law_id}/add")
     async def playground_add(
         request: Request,
@@ -270,6 +368,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             opened.snapshot,
             local_owner=opened.local_owner,
             can_consume_new_law=opened.can_consume_new_law,
+            has_historical_overlay=overlay.get_item(opened.user_id, law_id) is not None,
         )
         if result.status == RESULT_INELIGIBLE:
             raise HTTPException(status_code=404, detail="Law not found")

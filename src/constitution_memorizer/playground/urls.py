@@ -15,6 +15,12 @@ def roster_path(*, add: str | None = None) -> str:
     return f"{PREFIX}/roster"
 
 
+def roster_next_path(*, blocked: str | None = None) -> str:
+    if blocked:
+        return f"{PREFIX}/roster/next?blocked={blocked}"
+    return f"{PREFIX}/roster/next"
+
+
 def add_path(law_id: str) -> str:
     return f"{PREFIX}/laws/{law_id}/add"
 
