@@ -2880,6 +2880,13 @@ def create_app(
     )
     async def laws_page(request: Request) -> HTMLResponse:
         catalog = load_catalog()
+        from constitution_memorizer.playground.access import (  # noqa: PLC0415
+            public_law_states,
+        )
+        from constitution_memorizer.playground.eligibility import (  # noqa: PLC0415
+            list_playground_eligible_laws,
+        )
+
         context = {
             "catalog": catalog,
             "laws": catalog.laws,
@@ -2889,6 +2896,9 @@ def create_app(
             # Query variants (?q=, ?subject=) are filtered views of the same hub,
             # so they all declare the bare /laws URL as canonical.
             "canonical_url": laws_hub_canonical_url(),
+            "playground_states": public_law_states(
+                request, list_playground_eligible_laws()
+            ),
         }
         started = time.perf_counter()
         response = templates.TemplateResponse(request, "laws.html", context)
@@ -2904,20 +2914,16 @@ def create_app(
         # Articles, so it keeps the page it has always had.
         bare = get_bare_act(law_id)
         if bare is not None:
+            from constitution_memorizer.playground.access import (  # noqa: PLC0415
+                public_law_states,
+            )
             from constitution_memorizer.playground.eligibility import (  # noqa: PLC0415
                 is_playground_eligible_law,
             )
-            from constitution_memorizer.playground.http import (  # noqa: PLC0415
-                playground_user_id,
-            )
 
-            in_playground = False
-            roster = getattr(app.state, "roster", None)
-            uid = playground_user_id(request)
-            if roster is not None and uid is not None and is_playground_eligible_law(
-                bare.slug
-            ):
-                in_playground = roster.is_law_active_this_period(uid, bare.slug)
+            playground_state = None
+            if is_playground_eligible_law(bare.slug):
+                playground_state = public_law_states(request, (bare.slug,)).get(bare.slug)
             started = time.perf_counter()
             seo_title, seo_description = build_law_seo(
                 law_name=bare.title, meta_label=bare.meta_label
@@ -2938,7 +2944,10 @@ def create_app(
                     "canonical_url": law_canonical_url(bare.slug),
                     "structured_data_json": serialize_structured_data(breadcrumb),
                     "playground_eligible": is_playground_eligible_law(bare.slug),
-                    "in_playground": in_playground,
+                    "playground_state": playground_state,
+                    "in_playground": bool(
+                        playground_state and playground_state.active_this_period
+                    ),
                 },
             )
             record_request_timing("template", started)

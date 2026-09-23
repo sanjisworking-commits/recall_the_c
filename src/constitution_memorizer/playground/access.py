@@ -61,89 +61,18 @@ from constitution_memorizer.playground.roster.models import (
 )
 from constitution_memorizer.playground.roster.period import playground_month_name
 from constitution_memorizer.playground.roster.service import roster_full_body
-from constitution_memorizer.playground.urls import home_path, roster_path
+from constitution_memorizer.playground.urls import add_path, home_path, roster_path
+from constitution_memorizer.playground.view import (
+    gate_view,
+    law_membership,
+    load_membership_index,
+    saved_progress_summary,
+)
 
 PLAYGROUND_BILLING_PATH = "/billing/subscriptions"
 CONSTITUTION_HOME_PATH = "/dashboard"
 MANAGE_DEVICES_PATH = "/profile/security/devices"
 NEW_LAW_TEMPORARILY_UNAVAILABLE = "new_law_temporarily_unavailable"
-
-_OPEN_COPY: dict[str, dict[str, str]] = {
-    BLOCK_SIGN_IN_REQUIRED: {
-        "title": "Sign in to use Playground",
-        "lede": "",
-        "body": "Sign in to open Playground. Constitution Learn stays available as a guest.",
-        "cta_label": "Sign in",
-    },
-    BLOCK_NOT_SUBSCRIBED: {
-        "title": "Subscribe to use Playground",
-        "lede": "Playground is included with Plus, Pro, or Max.",
-        "body": (
-            "Your RecallC account already includes the complete Constitution. "
-            "Subscribe to add laws to Playground."
-        ),
-        "cta_label": "View Playground plans",
-    },
-    BLOCK_PAYMENT_HALTED: {
-        "title": "Payment retries have stopped",
-        "lede": "",
-        "body": "Manage your Playground subscription to continue.",
-        "cta_label": "Manage subscription",
-    },
-    BLOCK_SUBSCRIPTION_PAUSED: {
-        "title": "Playground subscription is paused",
-        "lede": "",
-        "body": "Manage your Playground subscription to continue.",
-        "cta_label": "Manage subscription",
-    },
-    BLOCK_PAID_PERIOD_ENDED: {
-        "title": "Playground access for this paid period has ended",
-        "lede": "",
-        "body": "Manage your Playground subscription to continue.",
-        "cta_label": "Manage subscription",
-    },
-    BLOCK_DEVICE_LIMIT: {
-        "title": "Device limit reached",
-        "lede": "",
-        "body": (
-            "Your subscription supports Playground on up to 2 registered devices. "
-            "Remove a device to use Playground here."
-        ),
-        "cta_label": "Manage devices",
-        "secondary_label": "Back to Constitution",
-        "secondary_href": CONSTITUTION_HOME_PATH,
-        "cta_href": MANAGE_DEVICES_PATH,
-    },
-    BLOCK_DEVICE_REVOKED: {
-        "title": "This device no longer has Playground access.",
-        "lede": "",
-        "body": "Constitution Learn stays available on this installation.",
-        "cta_label": "Manage devices",
-        "secondary_label": "Back to Constitution",
-        "secondary_href": CONSTITUTION_HOME_PATH,
-        "cta_href": MANAGE_DEVICES_PATH,
-    },
-    BLOCK_DEVICE_CONFIG_ERROR: {
-        "title": "Playground is temporarily unavailable on this device",
-        "lede": "",
-        "body": "Constitution Learn stays available. Try again from this installation later.",
-        "cta_label": "Back to Constitution",
-        "cta_href": CONSTITUTION_HOME_PATH,
-    },
-    BLOCK_DEVICE_REPLACEMENT_LIMIT: {
-        "title": "Too many recent device changes",
-        "lede": "",
-        "body": (
-            "For account security, new Playground devices are temporarily limited "
-            "after several device replacements. "
-            "Your Constitution access and saved progress are unaffected. "
-            "You can try again after the recent-device-change window clears."
-        ),
-        "cta_label": "Contact support",
-        "secondary_label": "Back to Constitution",
-        "secondary_href": CONSTITUTION_HOME_PATH,
-    },
-}
 
 _NEW_LAW_COPY = {
     "title": "New laws are temporarily unavailable",
@@ -153,13 +82,6 @@ _NEW_LAW_COPY = {
         "New laws cannot be added while payment retries."
     ),
     "cta_label": "Manage subscription",
-}
-
-_PROGRESS_SAVED_COPY = {
-    "title": "Progress saved",
-    "lede": "",
-    "body": "Add to this month",
-    "cta_label": "Add to this month",
 }
 
 _DEVICE_OPEN_REASONS = frozenset(
@@ -184,7 +106,11 @@ class PlaygroundAccess:
 
 
 def playground_access(request: Request) -> PlaygroundAccess:
-    """Resolve once. Snapshot is memoized on ``request.state``."""
+    """Resolve once. Snapshot is memoized on ``request.state``.
+
+    Paid Playground may register the current installation. Public law
+    pages must use :func:`playground_view_access` instead.
+    """
 
     uid = playground_user_id(request)
     if not getattr(request.app.state, "multiuser_enabled", False):
@@ -213,6 +139,49 @@ def playground_access(request: Request) -> PlaygroundAccess:
         can_consume_new_law=snapshot.can_consume_new_playground_law,
         local_owner=False,
     )
+
+
+def playground_view_access(request: Request) -> PlaygroundAccess:
+    """Read-only access for public law CTAs. Does not register a device."""
+
+    uid = playground_user_id(request)
+    if not getattr(request.app.state, "multiuser_enabled", False):
+        return PlaygroundAccess(
+            user_id=uid,
+            snapshot=None,
+            can_open=True,
+            can_consume_new_law=True,
+            local_owner=True,
+        )
+    snapshot = get_entitlement_snapshot(request)
+    return PlaygroundAccess(
+        user_id=uid,
+        snapshot=snapshot,
+        can_open=snapshot.can_open_playground,
+        can_consume_new_law=snapshot.can_consume_new_playground_law,
+        local_owner=False,
+    )
+
+
+def public_law_states(request: Request, law_ids: list[str] | tuple[str, ...]) -> dict[str, Any]:
+    """Batched Playground CTAs for eligible public laws. Zero Act hydration."""
+
+    access = playground_view_access(request)
+    roster = getattr(request.app.state, "roster", None)
+    overlay = getattr(request.app.state, "playground", None)
+    index = load_membership_index(access, roster, overlay)
+    states = {}
+    for law_id in law_ids:
+        if not is_playground_eligible_law(law_id):
+            continue
+        states[law_id] = law_membership(
+            law_id=law_id,
+            access=access,
+            roster=roster,
+            overlay=overlay,
+            index=index,
+        )
+    return states
 
 
 def require_playground_open(
@@ -453,6 +422,31 @@ def _deny_inactive_law(
     return _progress_saved_page(request, templates, law_id)
 
 
+def _render_gate(
+    request: Request,
+    templates: Jinja2Templates,
+    gate,
+    *,
+    saved: tuple[int, int] | None = None,
+) -> Response:
+    context = {
+        "gate": gate,
+        "playground_gate": gate.reason,
+        "title": gate.title,
+        "lede": gate.lines[0] if gate.lines else "",
+        "body": gate.lines[1] if len(gate.lines) > 1 else "",
+        "cta_label": gate.cta_label,
+        "cta_href": gate.cta_href,
+        "secondary_label": gate.secondary_label,
+        "secondary_href": gate.secondary_href,
+        "block_reason": gate.reason,
+        "consume_blocked": gate.consume_blocked,
+        "saved_laws": saved[0] if saved else 0,
+        "saved_learned": saved[1] if saved else 0,
+    }
+    return templates.TemplateResponse(request, "playground_gate.html", context)
+
+
 def roster_full_page(
     request: Request,
     templates: Jinja2Templates,
@@ -460,25 +454,12 @@ def roster_full_page(
 ) -> Response:
     snapshot = access.snapshot
     month = "this month"
-    limit = 10
     if snapshot is not None and snapshot.playground_period_start is not None:
         month = playground_month_name(snapshot.playground_period_start)
-    if snapshot is not None and snapshot.playground_law_limit is not None:
-        limit = snapshot.playground_law_limit
-    return templates.TemplateResponse(
+    return _render_gate(
         request,
-        "playground_gate.html",
-        {
-            "title": "Playground full",
-            "lede": "",
-            "body": roster_full_body(month_name=month, law_limit=limit),
-            "cta_label": "Back to Playground",
-            "cta_href": home_path(),
-            "secondary_label": "Manage roster",
-            "secondary_href": roster_path(),
-            "block_reason": BLOCK_ROSTER_FULL,
-            "consume_blocked": False,
-        },
+        templates,
+        gate_view(reason=BLOCK_ROSTER_FULL, month_name=month),
     )
 
 
@@ -487,21 +468,18 @@ def _progress_saved_page(
     templates: Jinja2Templates,
     law_id: str,
 ) -> Response:
-    copy = _PROGRESS_SAVED_COPY
-    return templates.TemplateResponse(
+    month = "this month"
+    snapshot = getattr(request.state, "entitlement_snapshot", None)
+    if snapshot is not None and snapshot.playground_period_start is not None:
+        month = playground_month_name(snapshot.playground_period_start)
+    return _render_gate(
         request,
-        "playground_gate.html",
-        {
-            "title": copy["title"],
-            "lede": copy["lede"],
-            "body": copy["body"],
-            "cta_label": copy["cta_label"],
-            "cta_href": roster_path(add=law_id),
-            "secondary_label": "Back to Playground",
-            "secondary_href": home_path(),
-            "block_reason": BLOCK_PROGRESS_SAVED,
-            "consume_blocked": False,
-        },
+        templates,
+        gate_view(
+            reason=BLOCK_PROGRESS_SAVED,
+            cta_href=add_path(law_id),
+            month_name=month,
+        ),
     )
 
 
@@ -535,38 +513,33 @@ def _gate_page(
     snapshot: EntitlementSnapshot | None = None,
 ) -> Response:
     del snapshot  # Copy is keyed by reason, never raw provider status.
+    cta_href = ""
     if consume_blocked:
-        copy = _NEW_LAW_COPY
         cta_href = PLAYGROUND_BILLING_PATH
-        secondary_label = ""
-        secondary_href = ""
-    else:
-        copy = _OPEN_COPY.get(reason, _OPEN_COPY[BLOCK_NOT_SUBSCRIBED])
-        if reason == BLOCK_DEVICE_REPLACEMENT_LIMIT:
-            cta_href = _support_mailto(request) or ""
-        elif reason in _DEVICE_OPEN_REASONS:
-            cta_href = copy.get("cta_href", MANAGE_DEVICES_PATH)
-        elif reason == BLOCK_SIGN_IN_REQUIRED:
-            cta_href = f"/login?next={home_path()}"
-        else:
-            cta_href = PLAYGROUND_BILLING_PATH
-        secondary_label = copy.get("secondary_label", "")
-        secondary_href = copy.get("secondary_href", "")
-    return templates.TemplateResponse(
-        request,
-        "playground_gate.html",
-        {
-            "title": copy["title"],
-            "lede": copy["lede"],
-            "body": copy["body"],
-            "cta_label": copy["cta_label"],
-            "cta_href": cta_href,
-            "secondary_label": secondary_label,
-            "secondary_href": secondary_href,
-            "block_reason": reason,
-            "consume_blocked": consume_blocked,
-        },
-    )
+    elif reason == BLOCK_DEVICE_REPLACEMENT_LIMIT:
+        cta_href = _support_mailto(request) or ""
+    elif reason in _DEVICE_OPEN_REASONS:
+        cta_href = MANAGE_DEVICES_PATH
+    elif reason == BLOCK_SIGN_IN_REQUIRED:
+        cta_href = f"/login?next={home_path()}"
+    elif reason in {BLOCK_NOT_SUBSCRIBED, BLOCK_PAID_PERIOD_ENDED}:
+        cta_href = PLAYGROUND_BILLING_PATH
+    elif reason in {BLOCK_PAYMENT_HALTED, BLOCK_SUBSCRIPTION_PAUSED}:
+        cta_href = PLAYGROUND_BILLING_PATH
+    elif reason in {
+        BLOCK_DEVICE_LIMIT,
+        BLOCK_DEVICE_REVOKED,
+        BLOCK_DEVICE_CONFIG_ERROR,
+    }:
+        cta_href = MANAGE_DEVICES_PATH if reason != BLOCK_DEVICE_CONFIG_ERROR else CONSTITUTION_HOME_PATH
+    gate = gate_view(reason=reason, consume_blocked=consume_blocked, cta_href=cta_href)
+    saved = None
+    if gate.show_saved:
+        overlay = getattr(request.app.state, "playground", None)
+        uid = playground_user_id(request)
+        if overlay is not None and uid is not None:
+            saved = saved_progress_summary(overlay, uid)
+    return _render_gate(request, templates, gate, saved=saved)
 
 
 def new_law_home_notice(request: Request, access: PlaygroundAccess) -> str | None:

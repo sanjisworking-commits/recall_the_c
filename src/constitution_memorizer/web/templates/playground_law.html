@@ -1,35 +1,54 @@
-{% extends "base.html" %}
+{% extends "playground_base.html" %}
+{% from "partials/playground.html" import trust_mark, status_badge, due_badge %}
 {% block title %}{{ act.short_name }} · Playground{% endblock %}
-{% block mobile_screen %}playground{% endblock %}
-{% block content %}
-<section class="panel playground-law">
-  <p><a href="/playground">← My Playground</a></p>
-  <h1>{{ act.title }}</h1>
-  <p class="playground-lede">
-    <a href="/laws/{{ act.slug }}">Read</a>
-    · <a href="/playground/laws/{{ act.slug }}/sections">Select sections</a>
+{% block playground %}
+<section class="pg-workspace">
+  <p class="pg-eyebrow">In {{ month_name }} Playground</p>
+  <h1>{{ act.short_name }}</h1>
+  <p>{{ status_badge('in_playground', 'In ' + month_name + ' Playground') }}</p>
+  <p class="pg-actions">
+    <a class="pg-btn pg-btn--ghost" href="/laws/{{ act.slug }}">Read Bare Act</a>
+    <a class="pg-btn pg-btn--quiet" href="/playground/laws/{{ act.slug }}/sections">Manage sections</a>
   </p>
+  {{ trust_mark("Bare Act wording, never rewritten.") }}
   {% if not rows %}
-  <p>No sections selected yet.</p>
+  <p class="pg-lede">No sections selected yet.</p>
+  <p class="pg-actions"><a class="pg-btn" href="/playground/laws/{{ act.slug }}/sections">Manage sections</a></p>
   {% else %}
-  {% for row in rows %}
-  <div class="playground-row">
-    <div>
-      <strong>Section {{ row.number }}</strong>
-      <span>{{ row.title }}</span>
-      {% if row.progress %}
-      <p class="playground-meta">
-        {{ row.progress.status }}
-        {% if row.progress.next_revision %} · next {{ row.progress.next_revision }}{% endif %}
-      </p>
-      {% endif %}
-      {% if row.outdated %}
-      <p class="playground-flag">This provision has changed.</p>
-      {% endif %}
+  {% if launch %}
+  <div class="CanonicalText">
+    <div class="LearningPrompt">
+      <p class="pg-eyebrow">Up next · Learning prompt</p>
+      <p class="pg-lede">Practice Section {{ launch.number }} — {{ launch.title }}</p>
+      <p class="pg-actions"><a class="pg-btn" href="{{ launch.href }}">{{ launch.cta }}</a></p>
     </div>
-    <a href="/playground/laws/{{ act.slug }}/sections/{{ row.number }}/learn/cloze">Learn (Cloze)</a>
+    {% if launch_verbatim %}
+    <div class="VerbatimText" data-verbatim data-open="true">
+      <p class="VerbatimText-kicker">VERBATIM TEXT</p>
+      <p>Section {{ launch.number }} — {{ launch.title }}</p>
+      <blockquote>{{ launch_verbatim }}</blockquote>
+      <p class="pg-actions">
+        <button type="button" class="pg-btn pg-btn--quiet" data-verbatim-toggle aria-expanded="true">Hide verbatim text</button>
+      </p>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+  {% for row in rows %}
+  <div class="pg-workspace-row">
+    <div>
+      <strong>§ {{ row.number }}</strong>
+      <span>{{ row.title }}</span>
+      <p>
+        {{ status_badge(row.status, row.status_label) }}
+        {% if row.due %}{{ due_badge(1) }}{% endif %}
+        {% if row.outdated %}{{ status_badge('updated', 'Law updated') }}{% endif %}
+      </p>
+    </div>
+    <a class="pg-btn pg-btn--ghost" href="{{ row.href }}">{{ row.cta }}</a>
   </div>
   {% endfor %}
   {% endif %}
+  <p class="pg-actions"><a class="pg-btn pg-btn--quiet" href="/playground">← My Playground</a></p>
 </section>
 {% endblock %}

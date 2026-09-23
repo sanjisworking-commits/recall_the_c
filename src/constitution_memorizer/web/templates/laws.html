@@ -45,7 +45,28 @@
   </div>
 
   <div class="laws-catalog" data-laws-catalog role="list">
+    {% from "partials/playground.html" import playground_cta %}
     {% for law in laws %}
+    {% set pg_state = playground_states.get(law.id) if playground_states is defined else none %}
+    {% if pg_state %}
+    <article
+      class="laws-index-card"
+      role="listitem"
+      data-law-id="{{ law.id }}"
+      data-subjects="{{ law.subjects | join(' ') }}"
+      data-search="{{ law.search_blob }}"
+    >
+      <a class="laws-index-card-link" href="{{ law.href }}">
+        <span class="laws-index-head-row">
+          <span class="laws-index-tag">{{ law.tag_line }}</span>
+          <span class="laws-index-chevron" aria-hidden="true">›</span>
+        </span>
+        <span class="laws-index-name">{{ law.title }}</span>
+        <span class="laws-index-meta">{{ law.scope_label }}</span>
+      </a>
+      {{ playground_cta(pg_state) }}
+    </article>
+    {% else %}
     <a
       class="laws-index-card"
       href="{{ law.href }}"
@@ -61,6 +82,7 @@
       <span class="laws-index-name">{{ law.title }}</span>
       <span class="laws-index-meta">{{ law.scope_label }}</span>
     </a>
+    {% endif %}
     {% endfor %}
   </div>
   <p class="laws-empty" data-laws-empty hidden>No laws found</p>

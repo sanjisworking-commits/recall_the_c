@@ -1,68 +1,78 @@
-{% extends "base.html" %}
-{% block title %}Playground roster · {{ app_name|default('Recall the C') }}{% endblock %}
-{% block mobile_screen %}playground{% endblock %}
-{% block content %}
-<section class="panel playground-page" data-playground-roster="current">
+{% extends "playground_base.html" %}
+{% from "partials/playground.html" import capacity_block, status_badge %}
+{% block title %}{{ month_name }} Playground · {{ app_name|default('Recall the C') }}{% endblock %}
+{% block playground %}
+<section class="RosterManager" data-playground-roster="current">
+  <p class="pg-eyebrow">{{ month_name }} Playground</p>
   <h1>{{ month_name }} Playground</h1>
-  <p class="playground-lede" data-roster-used="{{ used }}" data-roster-limit="{{ law_limit if law_limit is not none else 'unlimited' }}">
-    {% if law_limit is none %}
-    Unlimited law spaces this month. {{ used }} in use.
-    {% else %}
-    {{ used }} of {{ law_limit }} law spaces used
-    {% if remaining is not none %} · {{ remaining }} remaining{% endif %}.
-    {% endif %}
+  {{ capacity_block(capacity) }}
+  <p class="RosterManager-rules">
+    Removing a law saves its progress.
+    It doesn’t free a space this month,
+    and adding it back doesn’t use another one.
   </p>
   {% if show_full %}
-  <p class="playground-flag" data-playground-gate="roster_full">{{ full_copy }}</p>
+  <p class="pg-note" data-playground-gate="roster_full">{{ full_copy }}</p>
   {% endif %}
+  {% if notice %}
+  <p class="pg-note" role="status">{{ notice }}</p>
+  {% endif %}
+
   {% if show_confirm and add_law_id %}
-  <article class="playground-card" data-roster-confirm="{{ add_law_id }}">
-    <h2>{{ add_title }}</h2>
-    <p>{{ confirmation_copy }}</p>
+  <article class="LawCard" data-roster-confirm="{{ add_law_id }}">
+    <h2>{{ confirm_title }}</h2>
+    {% for line in confirm_lines %}
+    <p class="pg-lede">{{ line }}</p>
+    {% endfor %}
     <form method="post" action="/playground/laws/{{ add_law_id }}/add">
       <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
       <input type="hidden" name="confirm" value="{{ confirm_value }}">
-      <button type="submit" class="btn btn-accent">Confirm</button>
+      <p class="pg-actions">
+        <button type="submit" class="pg-btn">{{ confirm_action }}</button>
+        <a class="pg-btn pg-btn--ghost" href="/playground/roster">Cancel</a>
+      </p>
     </form>
   </article>
   {% endif %}
-  <h2>This month</h2>
+
+  <h2>Active this month</h2>
   {% if not active_laws %}
-  <p>No laws on this month’s roster yet.</p>
+  <p class="pg-lede">No laws on this month’s roster yet.</p>
   {% else %}
-  <div class="playground-cards">
-    {% for law in active_laws %}
-    <article class="playground-card" data-roster-active="{{ law.law_id }}">
-      <h2>{{ law.title }}</h2>
-      <p>
-        <a href="/playground/laws/{{ law.law_id }}">Continue</a>
-        · <a href="/laws/{{ law.law_id }}">Read</a>
-      </p>
-      <form method="post" action="/playground/roster/{{ law.law_id }}/remove">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-        <button type="submit" class="btn btn-ghost">Remove from this month</button>
-      </form>
-    </article>
-    {% endfor %}
-  </div>
+  {% for law in active_laws %}
+  <article class="LawCard" data-roster-active="{{ law.law_id }}">
+    <h2>{{ law.short_title }}</h2>
+    <p class="LawCard-full">{{ law.title }}</p>
+    <div class="pg-card-actions">
+      <a class="pg-btn pg-btn--ghost" href="/playground/laws/{{ law.law_id }}">Continue</a>
+      <a class="pg-btn pg-btn--quiet" href="/laws/{{ law.law_id }}">Read</a>
+      <a class="pg-btn pg-btn--quiet" href="/playground/roster/{{ law.law_id }}/remove" data-pg-sheet>Remove</a>
+    </div>
+  </article>
+  {% endfor %}
   {% endif %}
+
   {% if removed_laws %}
   <h2>Removed this month</h2>
-  <p class="playground-lede">Removing does not free a law space this month.</p>
-  <div class="playground-cards">
-    {% for law in removed_laws %}
-    <article class="playground-card" data-roster-removed="{{ law.law_id }}">
-      <h2>{{ law.title }}</h2>
-      <form method="post" action="/playground/laws/{{ law.law_id }}/add">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-        <input type="hidden" name="confirm" value="{{ confirm_value }}">
-        <button type="submit" class="btn btn-ghost">Add back</button>
-      </form>
-    </article>
-    {% endfor %}
-  </div>
+  {% for law in removed_laws %}
+  <article class="LawCard LawCard--compact" data-roster-removed="{{ law.law_id }}">
+    <h2>{{ law.short_title }}</h2>
+    <p>
+      {{ status_badge('removed_this_month', 'Removed this month') }}
+      {{ status_badge('progress_saved', 'Progress saved') }}
+    </p>
+    <a class="pg-btn pg-btn--ghost" href="/playground/laws/{{ law.law_id }}/add" data-pg-sheet>Add back</a>
+  </article>
+  {% endfor %}
   {% endif %}
-  <p><a href="/playground/roster/next">Next month</a></p>
-  <p><a href="/playground">Back to Playground</a></p>
+
+  <div class="pg-plan-row">
+    <div>
+      <p class="pg-eyebrow">Plan next month</p>
+      <p>Manage {{ next_month_name }} — choose what continues.</p>
+    </div>
+    <a class="pg-btn pg-btn--ghost" href="/playground/roster/next">Plan next month</a>
+  </div>
+  <p class="pg-actions"><a class="pg-btn pg-btn--quiet" href="/playground">Back to Playground</a></p>
 </section>
 {% endblock %}

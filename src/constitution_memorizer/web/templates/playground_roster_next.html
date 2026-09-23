@@ -1,56 +1,87 @@
-{% extends "base.html" %}
-{% block title %}{{ month_name }} Playground · {{ app_name|default('Recall the C') }}{% endblock %}
-{% block mobile_screen %}playground{% endblock %}
-{% block content %}
-<section class="panel playground-page" data-playground-roster="next" data-rollover-status="{{ target_status }}">
+{% extends "playground_base.html" %}
+{% from "partials/playground.html" import capacity_block, status_badge %}
+{% block title %}Your {{ month_name }} Playground · {{ app_name|default('Recall the C') }}{% endblock %}
+{% block playground %}
+<section data-playground-roster="next" data-rollover-status="{{ target_status }}">
   <h1>Your {{ month_name }} Playground</h1>
-  <p class="playground-lede">Continue with last month’s laws, or make room for something new.</p>
-  <p class="playground-lede" data-roster-used="{{ used }}" data-roster-limit="{{ limit_label }}">
-    {% if law_limit is none %}
-    Unlimited law spaces. {{ used }} planned.
-    {% else %}
-    {{ used }} of {{ law_limit }} law spaces planned
-    {% if remaining is not none %} · {{ remaining }} remaining{% endif %}.
-    {% endif %}
-  </p>
+  <p class="pg-lede">Continue with last month’s laws, or make room for something new.</p>
+  {{ capacity_block(capacity) }}
   {% if adjustment_required and law_limit is not none %}
-  <p class="playground-flag" data-playground-gate="rollover_adjustment_required">
+  <p class="PaymentStateBanner" data-playground-gate="rollover_adjustment_required" data-state="scheduled_downgrade" role="status">
     Your plan now supports {{ law_limit }} laws.
     Choose which {{ law_limit }} to keep for {{ month_name }}.
   </p>
   {% endif %}
   {% if blocked == 'roster_full' %}
-  <p class="playground-flag" data-playground-gate="roster_full">Choose a set that fits this month. Nothing was changed.</p>
+  <p class="pg-note" data-playground-gate="roster_full">Choose a set that fits this month. Nothing was changed.</p>
   {% elif blocked == 'new_law_temporarily_unavailable' %}
-  <p class="playground-flag" data-playground-gate="new_law_temporarily_unavailable">New laws are temporarily unavailable. You can still remove a candidate.</p>
+  <p class="pg-note" data-playground-gate="new_law_temporarily_unavailable">New laws are temporarily unavailable. You can still remove a candidate.</p>
   {% elif blocked == 'active_slot_locked' %}
-  <p class="playground-flag" data-playground-gate="active_slot_locked">A law already kept this month cannot free its space.</p>
+  <p class="pg-note" data-playground-gate="active_slot_locked">A law already kept this month cannot free its space.</p>
   {% endif %}
+
+  <div class="RolloverKey">
+    <p><strong>Keep</strong> — Uses one {{ month_name }} space.</p>
+    <p><strong>Remove</strong> — No {{ month_name }} space. Progress stays saved.</p>
+    <p><strong>Undecided</strong> — Not chosen yet.</p>
+  </div>
+
   {% if not candidates %}
-  <p>No carry-forward candidates.</p>
+  <p class="pg-lede">No carry-forward candidates.</p>
   {% else %}
-  <form method="post" action="/playground/roster/next">
+  <form method="post" action="/playground/roster/next" data-rollover-form data-remaining="{{ remaining if remaining is not none else '' }}" data-used="{{ used }}" data-limit="{{ law_limit if law_limit is not none else '' }}" data-month="{{ month_name }}">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
     {% for law in candidates %}
-    <article class="playground-card" data-rollover-candidate="{{ law.law_id }}" data-rollover-decision="{{ law.target_decision or 'undecided' }}" data-previously-removed="{{ 'true' if law.previously_removed else 'false' }}">
+    <article
+      class="RolloverCandidate{% if not law.can_keep %} is-locked{% endif %}"
+      data-rollover-candidate="{{ law.law_id }}"
+      data-rollover-decision="{{ law.target_decision or 'undecided' }}"
+      data-previously-removed="{{ 'true' if law.previously_removed else 'false' }}"
+    >
       <h2>{{ law.title }}</h2>
+      {% if not law.target_decision %}
+      {{ status_badge('undecided', 'Undecided') }}
+      {% endif %}
       {% if law.target_decision == 'keep' and not law.can_decline %}
       <p>Keeping</p>
       {% else %}
-      <label>
-        <input type="radio" name="choice_{{ law.law_id }}" value="keep" {% if law.target_decision == 'keep' %}checked{% endif %}>
-        Keep
-      </label>
-      <label>
-        <input type="radio" name="choice_{{ law.law_id }}" value="decline" {% if law.target_decision == 'decline' %}checked{% endif %}>
-        Remove
-      </label>
+      <div class="RolloverCandidate-controls" role="radiogroup" aria-label="{{ law.title }} for {{ month_name }}">
+        <label data-choice="keep"{% if law.target_decision == 'keep' %} class="is-selected"{% endif %}>
+          <input type="radio" name="choice_{{ law.law_id }}" value="keep"{% if law.target_decision == 'keep' %} checked{% endif %}{% if not law.can_keep %} disabled data-server-disabled="true"{% endif %}>
+          Keep
+        </label>
+        <label data-choice="decline"{% if law.target_decision == 'decline' %} class="is-selected"{% endif %}>
+          <input type="radio" name="choice_{{ law.law_id }}" value="decline"{% if law.target_decision == 'decline' %} checked{% endif %}>
+          Remove
+        </label>
+        <label data-choice="undecided"{% if not law.target_decision %} class="is-selected"{% endif %}>
+          <input type="radio" name="choice_{{ law.law_id }}" value="undecided"{% if not law.target_decision %} checked{% endif %}>
+          Undecided
+        </label>
+      </div>
+      {% if not law.can_keep and law.target_decision != 'keep' %}
+      <p class="pg-lede">{{ month_name }} is full. Remove another law to keep this one.</p>
+      {% endif %}
       {% endif %}
     </article>
     {% endfor %}
-    <button type="submit" class="btn btn-accent">Confirm</button>
+    <p class="pg-actions"><button type="submit" class="pg-btn">Confirm</button></p>
   </form>
   {% endif %}
-  <p><a href="/playground/roster">This month</a> · <a href="/playground">Back to Playground</a></p>
+
+  {% if remaining is none or remaining > 0 %}
+  <div class="pg-plan-row">
+    <div>
+      <p class="pg-eyebrow">New laws</p>
+      <p>{% if remaining is none %}Unlimited spaces{% else %}{{ remaining }} space{% if remaining != 1 %}s{% endif %} available{% endif %} for new laws</p>
+      <p class="pg-lede">Add new laws whenever you’re ready. Spaces don’t need to be filled now.</p>
+    </div>
+    <a class="pg-btn pg-btn--ghost" href="/laws">Browse laws</a>
+  </div>
+  {% endif %}
+  <p class="pg-actions">
+    <a class="pg-btn pg-btn--quiet" href="/playground/roster">This month</a>
+    <a class="pg-btn pg-btn--quiet" href="/playground">Back to Playground</a>
+  </p>
 </section>
 {% endblock %}

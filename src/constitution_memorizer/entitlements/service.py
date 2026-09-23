@@ -124,6 +124,8 @@ class EntitlementService:
                 billing_period_start=snapshot.billing_period_start,
                 billing_period_end=snapshot.billing_period_end,
                 legacy_status=snapshot.legacy_status,
+                cancel_at_period_end=snapshot.cancel_at_period_end,
+                scheduled_tier=snapshot.scheduled_tier,
             )
         return snapshot
 
@@ -216,6 +218,14 @@ def _unsubscribed_account(*, legacy: Any, legacy_status: str | None) -> Entitlem
     )
 
 
+def _scheduled_tier(subscription: Any) -> str | None:
+    meta = getattr(subscription, "provider_metadata", None) or {}
+    if not isinstance(meta, dict):
+        return None
+    value = str(meta.get("scheduled_tier") or "").strip()
+    return value or None
+
+
 def _from_subscription(
     subscription: Any,
     *,
@@ -229,6 +239,8 @@ def _from_subscription(
     end = subscription.billing_period_end
     law_limit = _catalogue_limit(tier)
     period_over = _paid_period_over(end, now)
+    cancel_at_period_end = bool(getattr(subscription, "cancel_at_period_end", False))
+    scheduled_tier = _scheduled_tier(subscription)
     if period_over or charge_effect == ACCESS_EFFECT_PERIOD_ENDED:
         return EntitlementSnapshot(
             is_authenticated=True,
@@ -246,6 +258,8 @@ def _from_subscription(
             billing_period_start=start,
             billing_period_end=end,
             legacy_status=legacy_status,
+            cancel_at_period_end=cancel_at_period_end,
+            scheduled_tier=scheduled_tier,
         )
     disposition = disposition_for_status(status)
     block = _block_reason(status, disposition.can_use_existing_playground)
@@ -265,6 +279,8 @@ def _from_subscription(
         billing_period_start=start,
         billing_period_end=end,
         legacy_status=legacy_status,
+        cancel_at_period_end=cancel_at_period_end,
+        scheduled_tier=scheduled_tier,
     )
 
 

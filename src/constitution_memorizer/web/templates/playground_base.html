@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% block body_class %} playground-app{% endblock %}
+{% block mobile_screen %}playground{% endblock %}
+{% block content %}
+<div class="PlaygroundShell"{% if playground_gate %} data-playground-gate="{{ playground_gate }}"{% endif %}>
+  {% block playground %}{% endblock %}
+</div>
+{% endblock %}

@@ -18,7 +18,7 @@
 @media (max-width: 560px) {
   :root {
     --m-gutter: 18px;
-    --m-tabbar: 56px;
+    --m-tabbar: 60px;
     --m-actionbar: 76px;
     /* Redesign semantic tokens. Light values follow the prototype; dark maps
        onto the existing theme so tints stay readable. Do not hardcode #fff
@@ -125,7 +125,7 @@
      stays text-only (prototype never redesigned it). */
   body[data-mscreen] .mobile-tabbar {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     position: fixed;
     left: 0;
     right: 0;
@@ -135,6 +135,10 @@
     backdrop-filter: saturate(1.1) blur(16px);
     border-top: 1px solid var(--rc-hairline);
     padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+
+  body[data-mscreen] .mobile-tabbar.is-guest {
+    grid-template-columns: repeat(4, 1fr);
   }
 
   body[data-mscreen] .mobile-tab {

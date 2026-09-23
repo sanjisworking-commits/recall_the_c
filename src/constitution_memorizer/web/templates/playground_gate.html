@@ -1,24 +1,35 @@
-{% extends "base.html" %}
-{% block title %}{{ title }} · Playground · {{ app_name|default('Recall the C') }}{% endblock %}
-{% block mobile_screen %}playground{% endblock %}
-{% block content %}
-<section class="panel playground-page playground-gate" data-playground-gate="{{ block_reason }}">
-  <h1>{{ title }}</h1>
-  {% if lede %}
-  <p class="playground-lede">{{ lede }}</p>
+{% extends "playground_base.html" %}
+{% from "partials/playground.html" import how_it_works %}
+{% block title %}{{ gate.title }} · Playground · {{ app_name|default('Recall the C') }}{% endblock %}
+{% block playground %}
+<section class="EntitlementGate" data-playground-gate="{{ gate.reason }}" aria-labelledby="pg-gate-title">
+  <p class="pg-eyebrow">{{ gate.eyebrow }}</p>
+  <h1 id="pg-gate-title">{{ gate.title }}</h1>
+  {% for line in gate.lines %}
+  <p class="pg-lede">{{ line }}</p>
+  {% endfor %}
+  {% if gate.show_saved %}
+  <div class="ProgressSummary" aria-label="Your saved progress">
+    <div class="ProgressSummary-cell">
+      <div class="ProgressSummary-value">{{ saved_laws }}</div>
+      <div class="ProgressSummary-label">Laws with saved progress</div>
+    </div>
+    <div class="ProgressSummary-cell">
+      <div class="ProgressSummary-value">{{ saved_learned }}</div>
+      <div class="ProgressSummary-label">Sections learned</div>
+    </div>
+  </div>
   {% endif %}
-  {% if body %}
-  <p class="playground-lede">{{ body }}</p>
-  {% endif %}
-  <p class="actions">
-    {% if cta_href and cta_label %}
-    <a class="btn btn-accent" href="{{ cta_href }}">{{ cta_label }}</a>
+  <p class="pg-actions">
+    {% if gate.cta_label and gate.cta_href %}
+    <a class="pg-btn" href="{{ gate.cta_href }}">{{ gate.cta_label }}</a>
     {% endif %}
-    {% if secondary_label and secondary_href %}
-    <a class="btn {% if cta_href %}btn-ghost{% else %}btn-accent{% endif %}" href="{{ secondary_href }}">{{ secondary_label }}</a>
-    {% elif consume_blocked %}
-    <a class="btn btn-ghost" href="/playground">Back to Playground</a>
+    {% if gate.secondary_label and gate.secondary_href %}
+    <a class="pg-btn pg-btn--ghost" href="{{ gate.secondary_href }}">{{ gate.secondary_label }}</a>
     {% endif %}
   </p>
+  {% if gate.show_how %}
+  {{ how_it_works() }}
+  {% endif %}
 </section>
 {% endblock %}

@@ -1,0 +1,149 @@
+{% macro trust_mark(body="") %}
+<p class="TrustMark">
+  <span class="TrustMark-mark" aria-hidden="true">§</span>
+  <span><strong>Verbatim, always.</strong> {{ body or "Every provision you learn is the Bare Act text, word for word." }}</span>
+</p>
+{% endmacro %}
+
+{% macro status_badge(status, label) %}
+{% if status and label %}
+<span class="LawStatusBadge" data-status="{{ status }}">
+  <span class="LawStatusBadge-mark" aria-hidden="true"></span>
+  {{ label }}
+</span>
+{% endif %}
+{% endmacro %}
+
+{% macro due_badge(count, overdue=0) %}
+{% if overdue == 1 %}
+<span class="DueBadge"><span class="DueBadge-mark" aria-hidden="true"></span>1 overdue</span>
+{% elif overdue and overdue > 1 %}
+<span class="DueBadge"><span class="DueBadge-mark" aria-hidden="true"></span>{{ overdue }} overdue</span>
+{% elif count == 1 %}
+<span class="DueBadge"><span class="DueBadge-mark" aria-hidden="true"></span>Due today</span>
+{% elif count and count > 1 %}
+<span class="DueBadge"><span class="DueBadge-mark" aria-hidden="true"></span>{{ count }} due today</span>
+{% endif %}
+{% endmacro %}
+
+{% macro capacity_block(cap, planned=false) %}
+<div class="RosterCapacity" role="img" aria-label="{{ cap.aria_label }}" data-roster-used="{{ cap.used }}" data-roster-limit="{{ cap.law_limit if cap.law_limit is not none else 'unlimited' }}">
+  <div class="RosterCapacity-counts">
+    <span>{{ cap.used_label }}</span>
+    <span class="RosterCapacity-remaining">{{ cap.remaining_label }}</span>
+  </div>
+  {% if not cap.unlimited %}
+  <div class="RosterCapacity-bar" aria-hidden="true">
+    {% for _ in range(cap.active_count) %}
+    <span class="RosterCapacity-cell is-active"></span>
+    {% endfor %}
+    {% for _ in range(cap.removed_consumed_count) %}
+    <span class="RosterCapacity-cell is-removed"></span>
+    {% endfor %}
+    {% if cap.remaining %}
+    {% for _ in range(cap.remaining) %}
+    <span class="RosterCapacity-cell is-open"></span>
+    {% endfor %}
+    {% endif %}
+  </div>
+  <p class="RosterCapacity-legend">
+    <span>{{ cap.legend_in }}</span>
+    {% if cap.legend_removed %}<span>{{ cap.legend_removed }}</span>{% endif %}
+    <span>{{ cap.legend_available }}</span>
+  </p>
+  {% endif %}
+</div>
+{% endmacro %}
+
+{% macro banner(view) %}
+{% if view %}
+<div class="PaymentStateBanner{% if view.quiet %} PaymentStateBanner--quiet{% endif %}" data-state="{{ view.kind }}" role="status">
+  <div>
+    <p><strong>{{ view.title }}</strong></p>
+    {% if view.body %}<p class="pg-lede">{{ view.body }}</p>{% endif %}
+    {% if view.cta_label and view.cta_href %}
+    <p class="pg-actions"><a class="pg-btn pg-btn--quiet" href="{{ view.cta_href }}">{{ view.cta_label }}</a></p>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+{% endmacro %}
+
+{% macro law_card(card) %}
+<article class="LawCard{% if card.membership != 'in_playground' %} LawCard--compact{% endif %}" data-law-id="{{ card.law_id }}" data-membership="{{ card.membership }}">
+  {% if card.is_next %}<p class="LawCard-kicker">Up next</p>{% endif %}
+  <h2 class="LawCard-title">{{ card.short_title }}</h2>
+  <p class="LawCard-full">{{ card.title }}</p>
+  <p>
+    {{ status_badge(card.status, card.status_label) }}
+    {{ status_badge(card.membership, card.membership_label) }}
+    {% if card.membership == 'removed_this_month' %}{{ status_badge('progress_saved', 'Progress saved') }}{% endif %}
+    {{ due_badge(card.due_count, card.overdue_count) }}
+    {% if card.outdated %}{{ status_badge('updated', 'Law updated') }}{% endif %}
+  </p>
+  <p class="LawCard-meta">
+    <span>{{ card.selected_count }} section{% if card.selected_count != 1 %}s{% endif %} selected</span>
+    <span>{{ card.learned_count }} learned</span>
+  </p>
+  {% if card.outdated %}
+  <p class="pg-note">Review affected provisions</p>
+  {% endif %}
+  <div class="pg-card-actions">
+    {% if card.is_next %}
+    <a class="pg-btn" href="{{ card.primary_href }}"{% if card.membership != 'in_playground' %} data-pg-sheet{% endif %}>{{ card.primary_label }}</a>
+    {% else %}
+    <a class="pg-btn pg-btn--ghost" href="{{ card.primary_href }}"{% if card.membership != 'in_playground' %} data-pg-sheet{% endif %}>{{ card.primary_label }}</a>
+    {% endif %}
+    <a class="pg-btn pg-btn--quiet" href="{{ card.read_href }}">Read Bare Act</a>
+    {% if card.membership == 'in_playground' %}
+    <a class="pg-btn pg-btn--quiet" href="{{ card.manage_href }}">Manage</a>
+    {% endif %}
+  </div>
+</article>
+{% endmacro %}
+
+{% macro playground_cta(state) %}
+{% if state and state.eligible %}
+<div class="LawPlaygroundCta" data-law-id="{{ state.law_id }}" data-membership="{{ state.badge }}">
+  {{ status_badge(state.badge, state.badge_label) }}
+  {% if state.secondary_copy %}<p class="pg-lede">{{ state.secondary_copy }}</p>{% endif %}
+  {% if state.primary_href and state.primary_label %}
+  <a class="pg-btn{% if state.badge == 'in_playground' %} pg-btn--ghost{% endif %}" href="{{ state.primary_href }}"{% if state.opens_sheet %} data-pg-sheet{% endif %}>{{ state.primary_label }}</a>
+  {% endif %}
+</div>
+{% endif %}
+{% endmacro %}
+
+{% macro how_it_works() %}
+<div class="HowPlaygroundWorks">
+  <p class="pg-eyebrow">How Playground works</p>
+  <div class="HowPlaygroundWorks-row">
+    <span class="HowPlaygroundWorks-n" aria-hidden="true">1</span>
+    <div>
+      <p><strong>Choose your laws each month</strong></p>
+      <p class="pg-lede">Pick the laws you want to learn. Your Playground holds them for the calendar month.</p>
+    </div>
+  </div>
+  <div class="HowPlaygroundWorks-row">
+    <span class="HowPlaygroundWorks-n" aria-hidden="true">2</span>
+    <div>
+      <p><strong>Progress never disappears</strong></p>
+      <p class="pg-lede">What you learn stays saved, even when a law leaves your Playground.</p>
+    </div>
+  </div>
+  <div class="HowPlaygroundWorks-row">
+    <span class="HowPlaygroundWorks-n" aria-hidden="true">3</span>
+    <div>
+      <p><strong>Next month, decide what to keep</strong></p>
+      <p class="pg-lede">Carry laws forward, or make room for something new.</p>
+    </div>
+  </div>
+  <div class="HowPlaygroundWorks-row">
+    <span class="HowPlaygroundWorks-n" aria-hidden="true">4</span>
+    <div>
+      <p><strong>Read the law, verbatim</strong></p>
+      <p class="pg-lede">Every provision is the Bare Act text. Verbatim, always.</p>
+    </div>
+  </div>
+</div>
+{% endmacro %}

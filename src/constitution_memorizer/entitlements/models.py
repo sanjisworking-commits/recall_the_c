@@ -78,3 +78,6 @@ class EntitlementSnapshot:
     playground_period_end: date | None = None
     playground_laws_used: int | None = None
     playground_laws_remaining: int | None = None
+    # Presentation-only. Authorization still uses can_open / can_consume.
+    cancel_at_period_end: bool = False
+    scheduled_tier: str | None = None

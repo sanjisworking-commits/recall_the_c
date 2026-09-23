@@ -1,11 +1,10 @@
-{% extends "base.html" %}
+{% extends "playground_base.html" %}
 {% block title %}Select · {{ act.short_name }} · Playground{% endblock %}
-{% block mobile_screen %}playground{% endblock %}
-{% block content %}
-<section class="panel playground-select">
+{% block playground %}
+<section class="playground-select">
   <p><a href="/playground">← My Playground</a></p>
   <h1>{{ act.title }}</h1>
-  <p class="playground-lede">Entire Act or individual sections. Chapter selection is not in this batch.</p>
+  <p class="pg-lede">Entire Act or individual sections. Chapter selection is not in this batch.</p>
   <form method="post" action="/playground/laws/{{ act.slug }}/sections">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
     <p>
@@ -30,7 +29,7 @@
       </li>
       {% endfor %}
     </ul>
-    <p><button type="submit" class="playground-btn">Save selection</button></p>
+    <p><button type="submit" class="pg-btn">Save selection</button></p>
   </form>
 </section>
 {% endblock %}

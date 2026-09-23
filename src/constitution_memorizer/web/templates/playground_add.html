@@ -1,0 +1,34 @@
+{% extends "playground_base.html" %}
+{% block title %}{{ title }} · Playground{% endblock %}
+{% block playground %}
+<section class="pg-sheet-panel" data-roster-confirm="{{ law_id }}" role="dialog" aria-modal="true" aria-labelledby="pg-add-title">
+  <p class="pg-eyebrow">{{ month_name }}</p>
+  <h1 id="pg-add-title">{{ title }}</h1>
+  {% for line in lines %}
+  <p class="pg-lede">{{ line }}</p>
+  {% endfor %}
+  {% if blocked_pending %}
+  <p class="pg-note" data-playground-gate="new_law_temporarily_unavailable">Adding new laws is temporarily unavailable</p>
+  <p class="pg-actions">
+    <a class="pg-btn" href="/billing/subscriptions">Manage subscription</a>
+    <a class="pg-btn pg-btn--ghost" href="/playground">Cancel</a>
+  </p>
+  {% elif blocked_full %}
+  <p class="pg-note" data-playground-gate="roster_full">Playground full this month</p>
+  <p class="pg-lede">Existing laws remain fully usable. Removing a law does not free a space this month.</p>
+  <p class="pg-actions">
+    <a class="pg-btn" href="/playground/roster/next">Plan next month</a>
+    <a class="pg-btn pg-btn--ghost" href="/playground">Back to Playground</a>
+  </p>
+  {% else %}
+  <form method="post" action="/playground/laws/{{ law_id }}/add">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <input type="hidden" name="confirm" value="{{ confirm_value }}">
+    <p class="pg-actions">
+      <button type="submit" class="pg-btn">{{ action_label }}</button>
+      <a class="pg-btn pg-btn--ghost" href="{{ cancel_href }}">Cancel</a>
+    </p>
+  </form>
+  {% endif %}
+</section>
+{% endblock %}

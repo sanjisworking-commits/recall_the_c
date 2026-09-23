@@ -1,0 +1,684 @@
+/* Playground M6. Tokens follow docs/design/PLAYGROUND-HANDOFF.md.
+   Theme comes from html[data-theme]; there is no separate Playground preference. */
+
+:root,
+html[data-theme="light"] {
+  --pg-ink: #141414;
+  --pg-muted: #6b6b6b;
+  --pg-faint: #9a9a9a;
+  --pg-hairline: #dcdcdc;
+  --pg-page: #ececea;
+  --pg-paper: #fff;
+  --pg-destructive: #b42318;
+  --pg-subtle: #f7f7f6;
+}
+
+html[data-theme="dark"] {
+  --pg-ink: #ecebe6;
+  --pg-muted: #a8a59e;
+  --pg-faint: #7d7a73;
+  --pg-hairline: #34322e;
+  --pg-page: #0f0e0d;
+  --pg-paper: #1a1917;
+  --pg-destructive: #e4776b;
+  --pg-subtle: #232220;
+}
+
+.PlaygroundShell,
+.PlaygroundShell * {
+  box-sizing: border-box;
+}
+
+.PlaygroundShell {
+  color: var(--pg-ink);
+  max-width: 1040px;
+  margin: 0 auto;
+}
+
+.PlaygroundShell :focus-visible {
+  outline: 2px solid var(--pg-ink);
+  outline-offset: 2px;
+}
+
+.PlaygroundShell a {
+  color: inherit;
+}
+
+.pg-eyebrow {
+  margin: 0 0 6px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pg-muted);
+}
+
+.PlaygroundShell h1,
+.pg-display {
+  font-family: Fraunces, Georgia, serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-size: clamp(32px, 6vw, 44px);
+  line-height: 1.08;
+  margin: 0 0 10px;
+}
+
+.PlaygroundShell h2 {
+  font-family: Fraunces, Georgia, serif;
+  font-weight: 700;
+  font-size: 22px;
+  margin: 28px 0 12px;
+}
+
+.pg-lede {
+  margin: 0 0 16px;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--pg-muted);
+  max-width: 36em;
+}
+
+.pg-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 18px 0 8px;
+}
+
+.pg-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  min-width: 44px;
+  padding: 12px 18px;
+  border: 1px solid var(--pg-ink);
+  background: var(--pg-ink);
+  color: var(--pg-paper);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.pg-btn:hover {
+  filter: brightness(1.08);
+}
+
+.pg-btn--ghost {
+  background: transparent;
+  color: var(--pg-ink);
+}
+
+.pg-btn--quiet {
+  background: transparent;
+  border-color: var(--pg-hairline);
+  color: var(--pg-ink);
+  font-weight: 600;
+}
+
+.pg-btn:disabled,
+.pg-btn.is-disabled {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.PaymentStateBanner {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  margin: 0 0 22px;
+  border: 1px solid var(--pg-ink);
+  background: var(--pg-subtle);
+}
+
+.PaymentStateBanner--quiet {
+  border-color: var(--pg-hairline);
+  background: transparent;
+  padding: 0 0 12px;
+  margin: 0 0 8px;
+}
+
+.PaymentStateBanner p {
+  margin: 0;
+}
+
+.PaymentStateBanner .pg-lede {
+  margin: 4px 0 0;
+  font-size: 14.5px;
+}
+
+.RosterCapacity {
+  margin: 0 0 8px;
+}
+
+.RosterCapacity-counts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 16px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.RosterCapacity-remaining {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--pg-muted);
+}
+
+.RosterCapacity-bar {
+  display: flex;
+  gap: 3px;
+  margin: 12px 0 8px;
+  min-height: 14px;
+}
+
+.RosterCapacity-cell {
+  flex: 1 1 0;
+  min-width: 8px;
+  height: 12px;
+  border: 1px solid var(--pg-ink);
+  background: transparent;
+}
+
+.RosterCapacity-cell.is-active {
+  background: var(--pg-ink);
+}
+
+.RosterCapacity-cell.is-removed {
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--pg-ink),
+    var(--pg-ink) 2px,
+    transparent 2px,
+    transparent 5px
+  );
+}
+
+.RosterCapacity-cell.is-open {
+  border-color: var(--pg-hairline);
+}
+
+.RosterCapacity-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--pg-muted);
+}
+
+.TrustMark {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 18px 0 8px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--pg-muted);
+}
+
+.TrustMark-mark {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--pg-ink);
+  display: grid;
+  place-items: center;
+  font-family: Fraunces, Georgia, serif;
+  font-size: 13px;
+  color: var(--pg-ink);
+}
+
+.ProgressSummary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border: 1px solid var(--pg-hairline);
+  margin: 22px 0 8px;
+}
+
+.ProgressSummary-cell {
+  padding: 14px 12px;
+  border-right: 1px solid var(--pg-hairline);
+}
+
+.ProgressSummary-cell:last-child {
+  border-right: 0;
+}
+
+.ProgressSummary-value {
+  font-family: Fraunces, Georgia, serif;
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.ProgressSummary-label {
+  margin-top: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pg-muted);
+}
+
+.LawCard {
+  border: 1px solid var(--pg-ink);
+  padding: 18px 18px 16px;
+  background: var(--pg-paper);
+}
+
+.LawCard + .LawCard {
+  margin-top: 12px;
+}
+
+.LawCard--compact {
+  border-color: var(--pg-hairline);
+}
+
+.LawCard-kicker {
+  margin: 0 0 4px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pg-muted);
+}
+
+.LawCard h2,
+.LawCard-title {
+  font-family: Fraunces, Georgia, serif;
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 2px;
+}
+
+.LawCard-full {
+  margin: 0 0 10px;
+  font-size: 13.5px;
+  color: var(--pg-muted);
+}
+
+.LawCard-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 10px 0 14px;
+  font-size: 13.5px;
+  color: var(--pg-muted);
+}
+
+.LawStatusBadge,
+.DueBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--pg-ink);
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.LawStatusBadge-mark,
+.DueBadge-mark {
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--pg-ink);
+  background: transparent;
+  flex: none;
+}
+
+.LawStatusBadge[data-status="learning"] .LawStatusBadge-mark,
+.LawStatusBadge[data-status="in_playground"] .LawStatusBadge-mark {
+  background: var(--pg-ink);
+}
+
+.LawStatusBadge[data-status="mastered"] .LawStatusBadge-mark {
+  box-shadow: inset 0 0 0 1px var(--pg-paper);
+  background: var(--pg-ink);
+}
+
+.LawStatusBadge[data-status="progress_saved"],
+.LawStatusBadge[data-status="removed_this_month"] {
+  border-style: dashed;
+}
+
+.DueBadge {
+  border-color: var(--pg-ink);
+}
+
+.pg-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pg-card-actions .pg-btn {
+  min-height: 44px;
+  padding: 10px 14px;
+}
+
+.pg-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pg-section-count {
+  font-size: 13px;
+  color: var(--pg-muted);
+}
+
+.pg-plan-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 1px solid var(--pg-hairline);
+}
+
+.EntitlementGate {
+  padding: 8px 0 28px;
+}
+
+.HowPlaygroundWorks {
+  margin-top: 34px;
+  border-top: 1px solid var(--pg-ink);
+}
+
+.HowPlaygroundWorks-row {
+  display: flex;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--pg-hairline);
+}
+
+.HowPlaygroundWorks-n {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--pg-ink);
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.RosterManager-rules {
+  margin: 0 0 20px;
+  padding: 12px 14px;
+  border: 1px solid var(--pg-hairline);
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--pg-muted);
+}
+
+.RolloverKey {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 18px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.RolloverCandidate {
+  border: 1px solid var(--pg-ink);
+  padding: 16px;
+  margin: 0 0 12px;
+}
+
+.RolloverCandidate[data-rollover-decision="undecided"] {
+  border-style: dashed;
+}
+
+.RolloverCandidate[data-rollover-decision="decline"] {
+  background: var(--pg-subtle);
+}
+
+.RolloverCandidate-controls {
+  display: flex;
+  margin-top: 12px;
+  border: 1px solid var(--pg-ink);
+}
+
+.RolloverCandidate-controls label {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  cursor: pointer;
+  font-weight: 700;
+  position: relative;
+}
+
+.RolloverCandidate-controls label + label {
+  border-left: 1px solid var(--pg-ink);
+}
+
+.RolloverCandidate-controls input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.RolloverCandidate-controls label:has(input:checked) {
+  background: var(--pg-ink);
+  color: var(--pg-paper);
+}
+
+.RolloverCandidate-controls label[data-choice="decline"]:has(input:checked) {
+  background: var(--pg-subtle);
+  color: var(--pg-ink);
+}
+
+.RolloverCandidate-controls label[data-choice="undecided"]:has(input:checked),
+.RolloverCandidate-controls label[data-choice="undecided"].is-selected {
+  background: transparent;
+  color: var(--pg-ink);
+}
+
+.RolloverCandidate-controls label:has(input:focus-visible) {
+  outline: 2px solid var(--pg-ink);
+  outline-offset: 2px;
+}
+
+.RolloverCandidate.is-locked .RolloverCandidate-controls {
+  opacity: 0.55;
+}
+
+.pg-workspace-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--pg-hairline);
+}
+
+.CanonicalText {
+  margin: 8px 0 24px;
+}
+
+.LearningPrompt {
+  margin-bottom: 18px;
+}
+
+.VerbatimText {
+  border: 1px solid var(--pg-ink);
+  padding: 16px 16px 14px;
+}
+
+.VerbatimText-kicker {
+  margin: 0 0 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.VerbatimText blockquote {
+  margin: 8px 0 12px;
+  padding: 0;
+  border: 0;
+  font-size: 16.5px;
+  line-height: 1.6;
+}
+
+.VerbatimText[data-open="false"] blockquote {
+  display: none;
+}
+
+.pg-sheet {
+  border: 0;
+  padding: 0;
+  max-width: 480px;
+  width: calc(100% - 24px);
+  background: transparent;
+}
+
+.pg-sheet::backdrop {
+  background: rgba(20, 20, 20, 0.42);
+}
+
+.pg-sheet-panel {
+  background: var(--pg-paper);
+  color: var(--pg-ink);
+  border: 1px solid var(--pg-ink);
+  padding: 24px 20px 22px;
+}
+
+.pg-sheet-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.pg-note {
+  margin: 0 0 16px;
+  font-size: 14.5px;
+}
+
+.pg-home-grid {
+  display: block;
+}
+
+.pg-aside {
+  display: none;
+}
+
+.playground-add .LawStatusBadge,
+.bareact-head .LawPlaygroundCta {
+  margin-top: 12px;
+}
+
+.LawPlaygroundCta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+@media (min-width: 900px) {
+  .pg-home-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 280px;
+    gap: 36px;
+    align-items: start;
+  }
+
+  .pg-aside {
+    display: block;
+    position: sticky;
+    top: 16px;
+    border: 1px solid var(--pg-hairline);
+    padding: 16px;
+  }
+
+  .pg-law-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .pg-law-grid .LawCard + .LawCard {
+    margin-top: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .PlaygroundShell *,
+  .pg-sheet * {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.laws-index-card-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.PrimaryTabs--top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+}
+
+.PrimaryTabs--bottom .mobile-tab,
+.PrimaryTabs--bottom.mobile-tabbar .mobile-tab {
+  min-height: 60px;
+}
+
+.RolloverCandidate-controls label.is-selected {
+  background: var(--pg-ink);
+  color: var(--pg-paper);
+}
+
+.RolloverCandidate-controls label[data-choice="decline"].is-selected {
+  background: var(--pg-subtle);
+  color: var(--pg-ink);
+}
+
+.RolloverCandidate-controls label[data-choice="undecided"].is-selected {
+  background: transparent;
+  color: var(--pg-ink);
+}
+
+.LawPlaygroundCta .pg-lede {
+  margin: 6px 0 8px;
+  font-size: 14px;
+}
+
+.pg-sheet[open] {
+  border: 0;
+  padding: 0;
+  max-width: 480px;
+  width: calc(100% - 24px);
+  background: transparent;
+}
+
+.pg-sheet[open]::backdrop {
+  background: rgba(20, 20, 20, 0.42);
+}

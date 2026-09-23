@@ -1,39 +1,82 @@
-{% extends "base.html" %}
+{% extends "playground_base.html" %}
+{% from "partials/playground.html" import trust_mark, capacity_block, banner, law_card %}
 {% block title %}Playground · {{ app_name|default('Recall the C') }}{% endblock %}
-{% block mobile_screen %}playground{% endblock %}
-{% block content %}
-<section class="panel playground-page">
-  <h1>My Playground</h1>
-  <p class="playground-lede">Laws on this month’s Playground. Reading stays on the Bare Act; Cloze lives here.</p>
-  <p><a href="{{ roster_path|default('/playground/roster') }}">Manage this month</a></p>
-  {% if new_law_notice %}
-  <p class="playground-flag" data-playground-gate="new_law_temporarily_unavailable">{{ new_law_notice }}
-    <a href="/billing/subscriptions">Manage subscription</a>
-  </p>
-  {% endif %}
-  {% if not cards %}
-  <p>Nothing here yet. Open a full Bare Act and choose Add to Playground.</p>
-  {% else %}
-  <div class="playground-cards">
-    {% for card in cards %}
-    <article class="playground-card">
-      <h2>{{ card.title }}</h2>
-      <p class="playground-meta">
-        {{ card.selected_count }} selected
-        · {{ card.to_learn }} to learn
-        · {{ card.due }} due
-      </p>
-      {% if card.outdated %}
-      <p class="playground-flag">A source update may require review.</p>
-      {% endif %}
-      <p>
-        <a href="/playground/laws/{{ card.law_id }}">Progress</a>
-        · <a href="/playground/laws/{{ card.law_id }}/sections">Select sections</a>
-        · <a href="/laws/{{ card.law_id }}">Read</a>
-      </p>
-    </article>
+{% block playground %}
+{% set home = home_view %}
+{{ banner(home.banner) }}
+<div class="pg-home-grid">
+  <div>
+    <p class="pg-eyebrow">My Playground</p>
+    <h1>{{ home.capacity.month_name }}</h1>
+    {{ banner(home.quiet) }}
+    {{ capacity_block(home.capacity) }}
+    {% if home.empty %}
+    <p class="pg-lede">Your {{ home.capacity.month_name }} Playground is empty</p>
+    <p class="pg-lede">Add laws you want to learn this month. Your saved progress stays with you even when a law leaves Playground.</p>
+    {% endif %}
+    <p class="pg-actions">
+      <a class="pg-btn" href="{{ home.browse_href }}">Browse laws</a>
+      <a class="pg-btn pg-btn--ghost" href="{{ home.manage_href }}">{{ home.manage_label }}</a>
+    </p>
+    {{ trust_mark() }}
+    {% if home.active or home.removed %}
+    <div class="ProgressSummary" aria-label="This month’s progress">
+      <div class="ProgressSummary-cell">
+        <div class="ProgressSummary-value">{{ home.due_today }}</div>
+        <div class="ProgressSummary-label">Due today</div>
+      </div>
+      <div class="ProgressSummary-cell">
+        <div class="ProgressSummary-value">{{ home.to_learn }}</div>
+        <div class="ProgressSummary-label">To learn</div>
+      </div>
+      <div class="ProgressSummary-cell">
+        <div class="ProgressSummary-value">{{ home.sections_learned }}/{{ home.sections_selected }}</div>
+        <div class="ProgressSummary-label">Learned</div>
+      </div>
+    </div>
+    {% endif %}
+
+    {% if home.active %}
+    <div class="pg-section-head">
+      <h2>In Playground this month</h2>
+      <span class="pg-section-count">{{ home.active|length }} law{% if home.active|length != 1 %}s{% endif %}</span>
+    </div>
+    <div class="pg-law-grid">
+      {% for card in home.active %}
+      {{ law_card(card) }}
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    {% if home.removed %}
+    <h2>Removed this month</h2>
+    {% for card in home.removed %}
+    {{ law_card(card) }}
     {% endfor %}
+    {% endif %}
+
+    {% if home.saved %}
+    <h2>Saved progress</h2>
+    {% for card in home.saved %}
+    {{ law_card(card) }}
+    {% endfor %}
+    {% endif %}
+
+    <div class="pg-plan-row">
+      <div>
+        <p class="pg-eyebrow">Plan next month</p>
+        <p>{{ home.plan_next_label }}</p>
+      </div>
+      <a class="pg-btn pg-btn--ghost" href="{{ home.plan_next_href }}">Plan next month</a>
+    </div>
   </div>
-  {% endif %}
-</section>
+  <aside class="pg-aside" aria-label="{{ home.capacity.month_name }} capacity">
+    <p class="pg-eyebrow">My Playground</p>
+    <p><strong>{{ home.capacity.month_name }}</strong></p>
+    {{ capacity_block(home.capacity) }}
+    <p class="pg-actions">
+      <a class="pg-btn pg-btn--ghost" href="{{ home.browse_href }}">Browse laws</a>
+    </p>
+  </aside>
+</div>
 {% endblock %}
