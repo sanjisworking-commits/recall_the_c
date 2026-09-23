@@ -104,6 +104,17 @@ ARTIFACTS: tuple[tuple[Path, Path, str], ...] = (
         ROOT / "src" / "constitution_memorizer" / "web" / "pss_runtime_v1.json",
         "flat",
     ),
+    # MTP: flat, plus one archival-only array. `source_lines` is the parser's
+    # line-by-line record of all eight pages — every row's coordinates, raw
+    # text and superscript markers — the same kind of audit trail BNSS keeps
+    # as `source_line_inventory`, and it is two thirds of the file. Nothing
+    # at runtime reads it; the footnotes, annotations and provenance that
+    # point into it by line id are kept.
+    (
+        ROOT / "data" / "reference" / "mtp_canonical_v1.json",
+        ROOT / "src" / "constitution_memorizer" / "web" / "mtp_runtime_v1.json",
+        "mtp",
+    ),
 )
 
 
@@ -192,7 +203,27 @@ def strip_uapa(document: Any) -> Any:
     return out
 
 
-_MODES = {"bnss": strip_bnss, "uapa": strip_uapa, "flat": strip_debug_keys}
+def strip_mtp(document: Any) -> Any:
+    """Flat strip, minus the parse's line-by-line record.
+
+    ``source_lines`` is every printed line of the source PDF with its page,
+    coordinates, raw text and superscript markers: the material the parser's
+    reconstruction check ran over, and what ``source_line_ids`` on every node,
+    footnote and annotation index into. It is audit data for the export, never
+    read by the reader, and 65 KB of a 100 KB file. The archival copy keeps
+    it; the ids that reference it stay on the runtime nodes as provenance.
+    """
+    out = strip_debug_keys(document)
+    out.pop("source_lines", None)
+    return out
+
+
+_MODES = {
+    "bnss": strip_bnss,
+    "uapa": strip_uapa,
+    "mtp": strip_mtp,
+    "flat": strip_debug_keys,
+}
 
 
 def build(source: Path, target: Path, mode: str) -> tuple[int, int]:

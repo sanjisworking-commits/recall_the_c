@@ -56,7 +56,9 @@
         aria-selected="true"
         aria-controls="bareact-panel-chapters"
         data-bareact-tab="chapters"
-      >Chapters</button>
+      >{# The panel key stays "chapters" for the controller; only the word the
+         reader sees changes. An Act with no chapters lists its sections flat,
+         so a tab called "Chapters" would name a thing that is not there. #}{% if act.chapters %}Chapters{% else %}Sections{% endif %}</button>
       <button
         type="button"
         class="bareact-tab"
@@ -77,6 +79,23 @@
     data-bareact-panel="chapters"
   >
     <div class="bareact-chapters" data-bareact-accordion>
+      {# An Act that prints no chapters (MTP) gets its sections as one flat
+         list in the chapter rows' own clothes: no accordion, no invented
+         "Chapter I" over sections the statute never grouped. #}
+      {% if not act.chapters %}
+      <div class="bareact-section-list">
+        {% for section in act.unchaptered_sections %}
+        <a class="bareact-section-row" href="/laws/{{ act.slug }}/section/{{ section.number }}">
+          <span class="bareact-section-node" aria-hidden="true"></span>
+          <span class="bareact-section-copy">
+            <span class="bareact-section-tag">Section {{ section.number }}</span>
+            <span class="bareact-section-name{% if section.is_omitted %} is-omitted{% endif %}">{{ section.list_title }}</span>
+          </span>
+          <span class="bareact-section-chevron" aria-hidden="true">›</span>
+        </a>
+        {% endfor %}
+      </div>
+      {% endif %}
       {% for chapter in act.chapters %}
       <details class="bareact-chapter"{% if loop.first %} open{% endif %}>
         <summary class="bareact-chapter-row">

@@ -916,6 +916,27 @@
         "first-schedule"
       ]
     },
+    "mtp": {
+      "runtime_identity": "mtp:1:mtp_runtime_v1.json",
+      "sources": [
+        {
+          "filename": "mtp_runtime_v1.json",
+          "sha256": "8cb56b03ca521bc8db9b1e28dfcc850d9104dcc5c99c7b54b635ace13085160a"
+        }
+      ],
+      "sections": [
+        "1",
+        "2",
+        "3",
+        "4",
+        "5",
+        "5A",
+        "6",
+        "7",
+        "8"
+      ],
+      "schedules": []
+    },
     "ndps": {
       "runtime_identity": "ndps:1:ndps_act_final.json",
       "sources": [

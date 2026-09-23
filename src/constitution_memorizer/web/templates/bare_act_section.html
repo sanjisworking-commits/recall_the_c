@@ -7,7 +7,11 @@
   <div class="mobile-topbar">
     <a class="mobile-back" href="/laws/{{ act.slug }}">{{ act.back_label }}</a>
   </div>
+  {# No eyebrow at all for a section of a chapterless Act: the source prints
+     nothing above it, and "Chapter  · " would be a heading for nothing. #}
+  {% if section.has_chapter %}
   <p class="bareact-reader-eyebrow">Chapter {{ section.chapter_number }} · {{ section.chapter_title }}</p>
+  {% endif %}
   <h1 class="bareact-reader-title">Section {{ section.number }}</h1>
   <p class="bareact-reader-sub">{{ section.list_title }}</p>
 

@@ -1,0 +1,1429 @@
+{
+ "schema_version": "1.2",
+ "document": {
+  "title": "The Medical Termination of Pregnancy Act, 1971",
+  "act_number": "34 of 1971",
+  "date": "10th August, 1971",
+  "source_type": "IndiaCode_consolidation",
+  "source_as_on": "27th July, 2025",
+  "parser": "PyMuPDF deterministic geometry parser (MTP v1)",
+  "toolchain": {
+   "pymupdf": "1.26.6"
+  },
+  "source_file": {
+   "filename": "MTP.pdf",
+   "sha256": "6e091b4327fa5c2829724ff9bf0f645ad545bb64ed3afd278fe50998b53980ac",
+   "page_count": 8
+  },
+  "hierarchy_note": "No chapters in source; sections are stored at top level.",
+  "scope_note": "Transcription of the supplied consolidation; not a check of subsequent law or Rules."
+ },
+ "source_front_matter": {
+  "cover_page": {
+   "page": 1,
+   "text": "The Medical Termination of Pregnancy Act, 1971\n(ACT NO. 34 OF 1971)\n(As on the 27th July , 2025)"
+  },
+  "amending_acts_and_abbreviations": {
+   "page": 2,
+   "text": "LIST OF AMENDING ACTS\n1. The Medical Termination of Pregnancy (Amendment) Act, 2002 (64 of 2002).\n2. The Delegated Legislation Provisions (Amendment) Act, 2004 (4 of 2005).\n3. The Jammu and Kashmir Reorganisation Act, 2019 (34 of 2019).\n4. The Medical Termination of Pregnancy (Amendment) Act, 2021 (8 of 2021).\n_______\nLIST OF ABBREVIATIONS USED\nCl., cls.\n.\n.\n.\n. . for Clause, clauses.\nIns.\n.\n.\n.\n.\n. ,, Inserted.\nNotifn.\n.\n.\n.\n.\n.\n,,\nNotification.\nS., ss.\n.\n.\n.\n.\n.\n,,\nSection, sections.\nSch.\n.\n.\n.\n.\n.\n,,\nSchedule.\nSubs.\n.\n.\n.\n.\n.\n,,\nSubstituted.\nw.e.f.\n.\n.\n.\n.\n.\n,,\nwith effect from."
+  },
+  "arrangement_of_sections_pages": [
+   {
+    "page": 3,
+    "text": "THE MEDICAL TERMINATION OF PREGNANCY ACT, 1971\n_________\nARRANGEMENT OF SECTIONS\n__________\nSECTIONS\n1.\nShort title, extent and commencement.\n2.\nDefinitions.\n3.\nWhen pregnancies may be terminated by registered medical practitioners.\n4.\nPlace where pregnancy may be terminated.\n5.\nSections 3 and 4 when not to apply.\n5A. Protection of privacy of a woman.\n6.\nPower to make rules.\n7.\nPower to make regulations.\n8.\nProtection of action taken in good faith."
+   }
+  ]
+ },
+ "long_title": "An Act to provide for the termination of certain pregnancies by registered medical practitioners and for matters connected therewith or incidental thereto.",
+ "enacting_formula": "BE it enacted by Parliament in the Twenty-second Year of the Republic of India as follows:—",
+ "chapters": [],
+ "sections": [
+  {
+   "id": "section_1",
+   "number": "1",
+   "title": "Short title, extent and commencement",
+   "status": "active",
+   "division_id": null,
+   "division_title": null,
+   "body": [
+    {
+     "type": "subsection",
+     "label": "(1)",
+     "text": "This Act may be called the Medical Termination of Pregnancy Act, 1971.",
+     "children": [],
+     "source_pages": [
+      4
+     ],
+     "source_line_ids": [
+      "p4_l7",
+      "p4_l8"
+     ],
+     "id": "section_1_subsection_1"
+    },
+    {
+     "type": "subsection",
+     "label": "(2)",
+     "text": "It extends to the whole of India.",
+     "children": [],
+     "source_pages": [
+      4
+     ],
+     "source_line_ids": [
+      "p4_l9"
+     ],
+     "id": "section_1_subsection_2"
+    },
+    {
+     "type": "subsection",
+     "label": "(3)",
+     "text": "It shall come into force on such date as the Central Government may, by notification in the Official Gazette, appoint.",
+     "children": [],
+     "source_pages": [
+      4
+     ],
+     "source_line_ids": [
+      "p4_l10",
+      "p4_l11"
+     ],
+     "id": "section_1_subsection_3"
+    }
+   ],
+   "source_pages": [
+    4
+   ],
+   "source_line_ids": [
+    "p4_l7",
+    "p4_l8",
+    "p4_l9",
+    "p4_l10",
+    "p4_l11"
+   ],
+   "annotations": [
+    {
+     "type": "footnote",
+     "marker": "1",
+     "note_id": "footnote_p4_1",
+     "source_page": 4,
+     "source_line_id": "p4_l9",
+     "section_id": "section_1",
+     "source_text": "(2) It extends to the whole of India 1***."
+    },
+    {
+     "type": "footnote",
+     "marker": "2",
+     "note_id": "footnote_p4_2",
+     "source_page": 4,
+     "source_line_id": "p4_l10",
+     "section_id": "section_1",
+     "source_text": "(3) It shall come into force on such date2 as the Central Government may, by notification in the"
+    }
+   ]
+  },
+  {
+   "id": "section_2",
+   "number": "2",
+   "title": "Definitions",
+   "status": "active",
+   "division_id": null,
+   "division_title": null,
+   "body": [
+    {
+     "type": "paragraph",
+     "label": "",
+     "text": "In this Act, unless the context otherwise requires,—",
+     "children": [
+      {
+       "type": "clause",
+       "label": "(a)",
+       "text": "“guardian” means a person having the care of the person of a minor or a mentally ill person;",
+       "children": [],
+       "source_pages": [
+        4
+       ],
+       "source_line_ids": [
+        "p4_l13"
+       ],
+       "id": "section_2_paragraph_1_clause_a"
+      },
+      {
+       "type": "clause",
+       "label": "(aa)",
+       "text": "“Medical Board” means the Medical Board constituted under sub-section (2C) of section 3 of the Act;",
+       "children": [],
+       "source_pages": [
+        4
+       ],
+       "source_line_ids": [
+        "p4_l14",
+        "p4_l15"
+       ],
+       "id": "section_2_paragraph_1_clause_aa"
+      },
+      {
+       "type": "clause",
+       "label": "(b)",
+       "text": "“mentally ill person” means a person who is in need of treatment by reason of any mental disorder other than mental retardation;",
+       "children": [],
+       "source_pages": [
+        4
+       ],
+       "source_line_ids": [
+        "p4_l16",
+        "p4_l17"
+       ],
+       "id": "section_2_paragraph_1_clause_b"
+      },
+      {
+       "type": "clause",
+       "label": "(c)",
+       "text": "“minor” means a person who, under the provisions of the Indian Majority Act, 1875 (9 of 1875), is to be deemed not to have attained his majority;",
+       "children": [],
+       "source_pages": [
+        4
+       ],
+       "source_line_ids": [
+        "p4_l18",
+        "p4_l19"
+       ],
+       "id": "section_2_paragraph_1_clause_c"
+      },
+      {
+       "type": "clause",
+       "label": "(d)",
+       "text": "“registered medical practitioner” means a medical practitioner who possesses any recognised medical qualification as defined in clause (h) of section 2 of the Indian Medical Council Act, 1956 (102 of 1956), whose name has been entered in a State Medical Register and who has such experience or training in gynaecology and obstetrics as may be prescribed by rules made under this Act.",
+       "children": [],
+       "source_pages": [
+        4
+       ],
+       "source_line_ids": [
+        "p4_l20",
+        "p4_l21",
+        "p4_l22",
+        "p4_l23"
+       ],
+       "id": "section_2_paragraph_1_clause_d"
+      },
+      {
+       "type": "clause",
+       "label": "(e)",
+       "text": "“termination of pregnancy” means a procedure to terminate a pregnancy by using medical or surgical methods.",
+       "children": [],
+       "source_pages": [
+        4
+       ],
+       "source_line_ids": [
+        "p4_l24",
+        "p4_l25"
+       ],
+       "id": "section_2_paragraph_1_clause_e"
+      }
+     ],
+     "source_pages": [
+      4
+     ],
+     "source_line_ids": [
+      "p4_l12"
+     ],
+     "id": "section_2_paragraph_1"
+    }
+   ],
+   "source_pages": [
+    4
+   ],
+   "source_line_ids": [
+    "p4_l12",
+    "p4_l13",
+    "p4_l14",
+    "p4_l15",
+    "p4_l16",
+    "p4_l17",
+    "p4_l18",
+    "p4_l19",
+    "p4_l20",
+    "p4_l21",
+    "p4_l22",
+    "p4_l23",
+    "p4_l24",
+    "p4_l25"
+   ],
+   "annotations": [
+    {
+     "type": "footnote",
+     "marker": "3",
+     "note_id": "footnote_p4_3",
+     "source_page": 4,
+     "source_line_id": "p4_l13",
+     "section_id": "section_2",
+     "source_text": "(a) “guardian” means a person having the care of the person of a minor or a 3[mentally ill person];"
+    },
+    {
+     "type": "footnote",
+     "marker": "4",
+     "note_id": "footnote_p4_4",
+     "source_page": 4,
+     "source_line_id": "p4_l14",
+     "section_id": "section_2",
+     "source_text": "4[(aa) “Medical Board” means the Medical Board constituted under sub-section (2C) of section 3"
+    },
+    {
+     "type": "footnote",
+     "marker": "5",
+     "note_id": "footnote_p4_5",
+     "source_page": 4,
+     "source_line_id": "p4_l16",
+     "section_id": "section_2",
+     "source_text": "5[(b) “mentally ill person” means a person who is in need of treatment by reason of any mental"
+    },
+    {
+     "type": "footnote",
+     "marker": "4",
+     "note_id": "footnote_p4_4",
+     "source_page": 4,
+     "source_line_id": "p4_l24",
+     "section_id": "section_2",
+     "source_text": "4[(e) “termination of pregnancy” means a procedure to terminate a pregnancy by using medical or"
+    }
+   ]
+  },
+  {
+   "id": "section_3",
+   "number": "3",
+   "title": "When pregnancies may be terminated by registered medical practitioners",
+   "status": "active",
+   "division_id": null,
+   "division_title": null,
+   "body": [
+    {
+     "type": "subsection",
+     "label": "(1)",
+     "text": "Notwithstanding anything contained in the Indian Penal Code (45 of 1860), a registered medical practitioner shall not be guilty of any offence under that Code or under any other law for the time being in force, if any pregnancy is terminated by him in accordance with the provisions of this Act.",
+     "children": [],
+     "source_pages": [
+      4
+     ],
+     "source_line_ids": [
+      "p4_l26",
+      "p4_l27",
+      "p4_l28",
+      "p4_l29"
+     ],
+     "id": "section_3_subsection_1"
+    },
+    {
+     "type": "subsection",
+     "label": "(2)",
+     "text": "Subject to the provisions of sub-section (4), a pregnancy may be terminated by a registered medical practitioner,—",
+     "children": [
+      {
+       "type": "clause",
+       "label": "(a)",
+       "text": "where the length of the pregnancy does not exceed twenty weeks, if such medical practitioner is, or",
+       "children": [],
+       "source_pages": [
+        4
+       ],
+       "source_line_ids": [
+        "p4_l32",
+        "p4_l33"
+       ],
+       "id": "section_3_subsection_2_clause_a"
+      },
+      {
+       "type": "clause",
+       "label": "(b)",
+       "text": "where the length of the pregnancy exceeds twenty weeks but does not exceed twenty-four weeks in case of such category of woman as may be prescribed by rules made under this Act, if not less than two registered medical practitioners are,",
+       "children": [],
+       "source_pages": [
+        4
+       ],
+       "source_line_ids": [
+        "p4_l34",
+        "p4_l35",
+        "p4_l36"
+       ],
+       "id": "section_3_subsection_2_clause_b"
+      },
+      {
+       "type": "paragraph",
+       "label": "",
+       "text": "of the opinion, formed in good faith, that—",
+       "children": [],
+       "source_pages": [
+        4
+       ],
+       "source_line_ids": [
+        "p4_l37"
+       ],
+       "id": "section_3_subsection_2_paragraph_3"
+      },
+      {
+       "type": "clause",
+       "label": "(i)",
+       "text": "the continuance of the pregnancy would involve a risk to the life of the pregnant woman or of grave injury to her physical or mental health; or",
+       "children": [],
+       "source_pages": [
+        5
+       ],
+       "source_line_ids": [
+        "p5_l1",
+        "p5_l2"
+       ],
+       "id": "section_3_subsection_2_clause_i"
+      },
+      {
+       "type": "clause",
+       "label": "(ii)",
+       "text": "there is a substantial risk that if the child were born, it would suffer from any serious physical or mental abnormality.",
+       "children": [],
+       "source_pages": [
+        5
+       ],
+       "source_line_ids": [
+        "p5_l3",
+        "p5_l4"
+       ],
+       "id": "section_3_subsection_2_clause_ii"
+      },
+      {
+       "type": "explanation",
+       "label": "Explanation 1",
+       "text": "For the purposes of clause (a), where any pregnancy occurs as a result of failure of any device or method used by any woman or her partner for the purpose of limiting the number of children or preventing pregnancy, the anguish caused by such pregnancy may be presumed to constitute a grave injury to the mental health of the pregnant woman.",
+       "children": [],
+       "source_pages": [
+        5
+       ],
+       "source_line_ids": [
+        "p5_l5",
+        "p5_l6",
+        "p5_l7",
+        "p5_l8"
+       ],
+       "id": "section_3_subsection_2_explanation_Explanation_1"
+      },
+      {
+       "type": "explanation",
+       "label": "Explanation 2",
+       "text": "For the purposes of clauses (a) and (b), where any pregnancy is alleged by the pregnant woman to have been caused by rape, the anguish caused by the pregnancy shall be presumed to constitute a grave injury to the mental health of the pregnant woman.",
+       "children": [],
+       "source_pages": [
+        5
+       ],
+       "source_line_ids": [
+        "p5_l9",
+        "p5_l10",
+        "p5_l11"
+       ],
+       "id": "section_3_subsection_2_explanation_Explanation_2"
+      }
+     ],
+     "source_pages": [
+      4
+     ],
+     "source_line_ids": [
+      "p4_l30",
+      "p4_l31"
+     ],
+     "id": "section_3_subsection_2"
+    },
+    {
+     "type": "subsection",
+     "label": "(2A)",
+     "text": "The norms for the registered medical practitioner whose opinion is required for termination of pregnancy at different gestational age shall be such as may be prescribed by rules made under this Act.",
+     "children": [],
+     "source_pages": [
+      5
+     ],
+     "source_line_ids": [
+      "p5_l12",
+      "p5_l13",
+      "p5_l14"
+     ],
+     "id": "section_3_subsection_2A"
+    },
+    {
+     "type": "subsection",
+     "label": "(2B)",
+     "text": "The provisions of sub-section (2) relating to the length of the pregnancy shall not apply to the termination of pregnancy by the medical practitioner where such termination is necessitated by the diagnosis of any of the substantial foetal abnormalities diagnosed by a Medical Board.",
+     "children": [],
+     "source_pages": [
+      5
+     ],
+     "source_line_ids": [
+      "p5_l15",
+      "p5_l16",
+      "p5_l17"
+     ],
+     "id": "section_3_subsection_2B"
+    },
+    {
+     "type": "subsection",
+     "label": "(2C)",
+     "text": "Every State Government or Union territory, as the case may be, shall, by notification in the Official Gazette, constitute a Board to be called a Medical Board for the purposes of this Act to exercise such powers and functions as may be prescribed by rules made under this Act.",
+     "children": [],
+     "source_pages": [
+      5
+     ],
+     "source_line_ids": [
+      "p5_l18",
+      "p5_l19",
+      "p5_l20"
+     ],
+     "id": "section_3_subsection_2C"
+    },
+    {
+     "type": "subsection",
+     "label": "(2D)",
+     "text": "The Medical Board shall consist of the following, namely:—",
+     "children": [
+      {
+       "type": "clause",
+       "label": "(a)",
+       "text": "a Gynaecologist;",
+       "children": [],
+       "source_pages": [
+        5
+       ],
+       "source_line_ids": [
+        "p5_l22"
+       ],
+       "id": "section_3_subsection_2D_clause_a"
+      },
+      {
+       "type": "clause",
+       "label": "(b)",
+       "text": "a Paediatrician;",
+       "children": [],
+       "source_pages": [
+        5
+       ],
+       "source_line_ids": [
+        "p5_l23"
+       ],
+       "id": "section_3_subsection_2D_clause_b"
+      },
+      {
+       "type": "clause",
+       "label": "(c)",
+       "text": "a Radiologist or Sonologist; and",
+       "children": [],
+       "source_pages": [
+        5
+       ],
+       "source_line_ids": [
+        "p5_l24"
+       ],
+       "id": "section_3_subsection_2D_clause_c"
+      },
+      {
+       "type": "clause",
+       "label": "(d)",
+       "text": "such other number of members as may be notified in the Official Gazette by the State Government or Union territory, as the case may be.",
+       "children": [],
+       "source_pages": [
+        5
+       ],
+       "source_line_ids": [
+        "p5_l25",
+        "p5_l26"
+       ],
+       "id": "section_3_subsection_2D_clause_d"
+      }
+     ],
+     "source_pages": [
+      5
+     ],
+     "source_line_ids": [
+      "p5_l21"
+     ],
+     "id": "section_3_subsection_2D"
+    },
+    {
+     "type": "subsection",
+     "label": "(3)",
+     "text": "In determining whether the continuance of a pregnancy would involve such risk of injury to the health as is mentioned in sub-section (2), account may be taken of the pregnant woman’s actual or reasonably foreseeable environment.",
+     "children": [],
+     "source_pages": [
+      5
+     ],
+     "source_line_ids": [
+      "p5_l27",
+      "p5_l28",
+      "p5_l29"
+     ],
+     "id": "section_3_subsection_3"
+    },
+    {
+     "type": "subsection",
+     "label": "(4)",
+     "text": "",
+     "children": [
+      {
+       "type": "clause",
+       "label": "(a)",
+       "text": "No pregnancy of a woman, who has not attained the age of eighteen years, or, who having attained the age of eighteen years, is a mentally ill person, shall be terminated except with the consent in writing of her guardian.",
+       "children": [],
+       "source_pages": [
+        5
+       ],
+       "source_line_ids": [
+        "p5_l30",
+        "p5_l31",
+        "p5_l32"
+       ],
+       "id": "section_3_subsection_4_clause_a"
+      },
+      {
+       "type": "clause",
+       "label": "(b)",
+       "text": "Save as otherwise provided in clause (a), no pregnancy shall be terminated except with the consent of the pregnant woman.",
+       "children": [],
+       "source_pages": [
+        5
+       ],
+       "source_line_ids": [
+        "p5_l33",
+        "p5_l34"
+       ],
+       "id": "section_3_subsection_4_clause_b"
+      }
+     ],
+     "source_pages": [
+      5
+     ],
+     "source_line_ids": [
+      "p5_l30"
+     ],
+     "id": "section_3_subsection_4"
+    }
+   ],
+   "source_pages": [
+    4,
+    5
+   ],
+   "source_line_ids": [
+    "p4_l26",
+    "p4_l27",
+    "p4_l28",
+    "p4_l29",
+    "p4_l30",
+    "p4_l31",
+    "p4_l32",
+    "p4_l33",
+    "p4_l34",
+    "p4_l35",
+    "p4_l36",
+    "p4_l37",
+    "p5_l1",
+    "p5_l2",
+    "p5_l3",
+    "p5_l4",
+    "p5_l5",
+    "p5_l6",
+    "p5_l7",
+    "p5_l8",
+    "p5_l9",
+    "p5_l10",
+    "p5_l11",
+    "p5_l12",
+    "p5_l13",
+    "p5_l14",
+    "p5_l15",
+    "p5_l16",
+    "p5_l17",
+    "p5_l18",
+    "p5_l19",
+    "p5_l20",
+    "p5_l21",
+    "p5_l22",
+    "p5_l23",
+    "p5_l24",
+    "p5_l25",
+    "p5_l26",
+    "p5_l27",
+    "p5_l28",
+    "p5_l29",
+    "p5_l30",
+    "p5_l31",
+    "p5_l32",
+    "p5_l33",
+    "p5_l34"
+   ],
+   "annotations": [
+    {
+     "type": "footnote",
+     "marker": "6",
+     "note_id": "footnote_p4_6",
+     "source_page": 4,
+     "source_line_id": "p4_l30",
+     "section_id": "section_3",
+     "source_text": "6[(2) Subject to the provisions of sub-section (4), a pregnancy may be terminated by a registered"
+    },
+    {
+     "type": "footnote",
+     "marker": "1",
+     "note_id": "footnote_p5_1",
+     "source_page": 5,
+     "source_line_id": "p5_l31",
+     "section_id": "section_3",
+     "source_text": "attained the age of eighteen years, is a 1[mentally ill person], shall be terminated except with the"
+    }
+   ]
+  },
+  {
+   "id": "section_4",
+   "number": "4",
+   "title": "Place where pregnancy may be terminated",
+   "status": "active",
+   "division_id": null,
+   "division_title": null,
+   "body": [
+    {
+     "type": "paragraph",
+     "label": "",
+     "text": "No termination of pregnancy shall be made in accordance with this Act at any place other than—",
+     "children": [
+      {
+       "type": "clause",
+       "label": "(a)",
+       "text": "a hospital established or maintained by Government, or",
+       "children": [],
+       "source_pages": [
+        5
+       ],
+       "source_line_ids": [
+        "p5_l37"
+       ],
+       "id": "section_4_paragraph_1_clause_a"
+      },
+      {
+       "type": "clause",
+       "label": "(b)",
+       "text": "a place for the time being approved for the purpose of this Act by Government or a District Level Committee constituted by that Government with the Chief Medical Officer or District Health Officer as the Chairperson of the said Committee:",
+       "children": [],
+       "source_pages": [
+        5
+       ],
+       "source_line_ids": [
+        "p5_l38",
+        "p5_l39",
+        "p5_l40"
+       ],
+       "id": "section_4_paragraph_1_clause_b"
+      }
+     ],
+     "source_pages": [
+      5
+     ],
+     "source_line_ids": [
+      "p5_l35",
+      "p5_l36"
+     ],
+     "id": "section_4_paragraph_1"
+    },
+    {
+     "type": "proviso",
+     "label": "",
+     "text": "Provided that the District Level Committee shall consist of not less than three and not more than five members including the Chairperson, as the Government may specify from time to time.",
+     "children": [],
+     "source_pages": [
+      5
+     ],
+     "source_line_ids": [
+      "p5_l41",
+      "p5_l42"
+     ],
+     "id": "section_4_proviso_2"
+    }
+   ],
+   "source_pages": [
+    5
+   ],
+   "source_line_ids": [
+    "p5_l35",
+    "p5_l36",
+    "p5_l37",
+    "p5_l38",
+    "p5_l39",
+    "p5_l40",
+    "p5_l41",
+    "p5_l42"
+   ],
+   "annotations": [
+    {
+     "type": "footnote",
+     "marker": "2",
+     "note_id": "footnote_p5_2",
+     "source_page": 5,
+     "source_line_id": "p5_l35",
+     "section_id": "section_4",
+     "source_text": "2[4. Place where pregnancy may be terminated.—No termination of pregnancy shall be made in"
+    }
+   ]
+  },
+  {
+   "id": "section_5",
+   "number": "5",
+   "title": "Sections 3 and 4 when not to apply",
+   "status": "active",
+   "division_id": null,
+   "division_title": null,
+   "body": [
+    {
+     "type": "subsection",
+     "label": "(1)",
+     "text": "The provisions of section 4, and so much of the provisions of sub-section (2) of section 3 as relate to the length of the pregnancy and the opinion of not less than two registered medical practitioners, shall not apply to the termination of a pregnancy by a registered medical practitioner in a case where he is of opinion, formed in good faith, that the termination of such pregnancy is immediately necessary to save the life of the pregnant woman.",
+     "children": [],
+     "source_pages": [
+      6
+     ],
+     "source_line_ids": [
+      "p6_l1",
+      "p6_l2",
+      "p6_l3",
+      "p6_l4",
+      "p6_l5"
+     ],
+     "id": "section_5_subsection_1"
+    },
+    {
+     "type": "subsection",
+     "label": "(2)",
+     "text": "Notwithstanding anything contained in the Indian Penal Code (45 of 1860), the termination of pregnancy by a person who is not a registered medical practitioner shall be an offence punishable with rigorous imprisonment for a term which shall not be less than two years but which may extend to seven years under that Code, and that Code shall, to this extent, stand modified.",
+     "children": [],
+     "source_pages": [
+      6
+     ],
+     "source_line_ids": [
+      "p6_l6",
+      "p6_l7",
+      "p6_l8",
+      "p6_l9"
+     ],
+     "id": "section_5_subsection_2"
+    },
+    {
+     "type": "subsection",
+     "label": "(3)",
+     "text": "Whoever terminates any pregnancy in a place other than that mentioned in section 4, shall be punishable with rigorous imprisonment for a term which shall not be less than two years but which may extend to seven years.",
+     "children": [],
+     "source_pages": [
+      6
+     ],
+     "source_line_ids": [
+      "p6_l10",
+      "p6_l11",
+      "p6_l12"
+     ],
+     "id": "section_5_subsection_3"
+    },
+    {
+     "type": "subsection",
+     "label": "(4)",
+     "text": "Any person being owner of a place which is not approved under clause (b) of section 4 shall be punishable with rigorous imprisonment for a term which shall not be less than two years but which may extend to seven years.",
+     "children": [],
+     "source_pages": [
+      6
+     ],
+     "source_line_ids": [
+      "p6_l13",
+      "p6_l14",
+      "p6_l15"
+     ],
+     "id": "section_5_subsection_4"
+    },
+    {
+     "type": "explanation",
+     "label": "Explanation 1",
+     "text": "For the purposes of this section, the expression “owner” in relation to a place means any person who is the administrative head or otherwise responsible for the working or maintenance of a hospital or place, by whatever name called, where the pregnancy may be terminated under this Act.",
+     "children": [],
+     "source_pages": [
+      6
+     ],
+     "source_line_ids": [
+      "p6_l16",
+      "p6_l17",
+      "p6_l18"
+     ],
+     "id": "section_5_explanation_Explanation_1"
+    },
+    {
+     "type": "explanation",
+     "label": "Explanation 2",
+     "text": "For the purposes of this section, so much of the provisions of clause (d) of section 2 as relate to the possession, by registered medical practitioner, of experience or training in gynaecology and obstetrics shall not apply.",
+     "children": [],
+     "source_pages": [
+      6
+     ],
+     "source_line_ids": [
+      "p6_l19",
+      "p6_l20",
+      "p6_l21"
+     ],
+     "id": "section_5_explanation_Explanation_2"
+    }
+   ],
+   "source_pages": [
+    6
+   ],
+   "source_line_ids": [
+    "p6_l1",
+    "p6_l2",
+    "p6_l3",
+    "p6_l4",
+    "p6_l5",
+    "p6_l6",
+    "p6_l7",
+    "p6_l8",
+    "p6_l9",
+    "p6_l10",
+    "p6_l11",
+    "p6_l12",
+    "p6_l13",
+    "p6_l14",
+    "p6_l15",
+    "p6_l16",
+    "p6_l17",
+    "p6_l18",
+    "p6_l19",
+    "p6_l20",
+    "p6_l21"
+   ],
+   "annotations": [
+    {
+     "type": "footnote",
+     "marker": "1",
+     "note_id": "footnote_p6_1",
+     "source_page": 6,
+     "source_line_id": "p6_l6",
+     "section_id": "section_5",
+     "source_text": "1[(2) Notwithstanding anything contained in the Indian Penal Code (45 of 1860), the termination of"
+    }
+   ]
+  },
+  {
+   "id": "section_5A",
+   "number": "5A",
+   "title": "Protection of privacy of a woman",
+   "status": "active",
+   "division_id": null,
+   "division_title": null,
+   "body": [
+    {
+     "type": "subsection",
+     "label": "(1)",
+     "text": "No registered medical practitioner shall reveal the name and other particulars of a woman whose pregnancy has been terminated under this Act except to a person authorised by any law for the time being in force.",
+     "children": [],
+     "source_pages": [
+      6
+     ],
+     "source_line_ids": [
+      "p6_l22",
+      "p6_l23",
+      "p6_l24"
+     ],
+     "id": "section_5A_subsection_1"
+    },
+    {
+     "type": "subsection",
+     "label": "(2)",
+     "text": "Whoever contravenes the provisions of sub-section (1) shall be punishable with imprisonment which may extend to one year, or with fine, or with both.",
+     "children": [],
+     "source_pages": [
+      6
+     ],
+     "source_line_ids": [
+      "p6_l25",
+      "p6_l26"
+     ],
+     "id": "section_5A_subsection_2"
+    }
+   ],
+   "source_pages": [
+    6
+   ],
+   "source_line_ids": [
+    "p6_l22",
+    "p6_l23",
+    "p6_l24",
+    "p6_l25",
+    "p6_l26"
+   ],
+   "annotations": [
+    {
+     "type": "footnote",
+     "marker": "2",
+     "note_id": "footnote_p6_2",
+     "source_page": 6,
+     "source_line_id": "p6_l22",
+     "section_id": "section_5A",
+     "source_text": "2[5A. Protection of privacy of a woman.—(1) No registered medical practitioner shall reveal the"
+    }
+   ]
+  },
+  {
+   "id": "section_6",
+   "number": "6",
+   "title": "Power to make rules",
+   "status": "active",
+   "division_id": null,
+   "division_title": null,
+   "body": [
+    {
+     "type": "subsection",
+     "label": "(1)",
+     "text": "The Central Government may, by notification in the Official Gazette, make rules to carry out the provisions of this Act.",
+     "children": [],
+     "source_pages": [
+      6
+     ],
+     "source_line_ids": [
+      "p6_l27",
+      "p6_l28"
+     ],
+     "id": "section_6_subsection_1"
+    },
+    {
+     "type": "subsection",
+     "label": "(2)",
+     "text": "In particular, and without prejudice to the generality of the foregoing power, such rules may provide for all or any of the following matters, namely:—",
+     "children": [
+      {
+       "type": "clause",
+       "label": "(a)",
+       "text": "the experience or training, or both, which a registered medical practitioner shall have if he intends to terminate any pregnancy under this Act; and",
+       "children": [],
+       "source_pages": [
+        6
+       ],
+       "source_line_ids": [
+        "p6_l31",
+        "p6_l32"
+       ],
+       "id": "section_6_subsection_2_clause_a"
+      },
+      {
+       "type": "clause",
+       "label": "(aa)",
+       "text": "the category of woman under clause (b) of sub-section (2) of section 3;",
+       "children": [],
+       "source_pages": [
+        6
+       ],
+       "source_line_ids": [
+        "p6_l33"
+       ],
+       "id": "section_6_subsection_2_clause_aa"
+      },
+      {
+       "type": "clause",
+       "label": "(ab)",
+       "text": "the norms for the registered medical practitioner whose opinion is required for termination of pregnancy at different gestational age under sub-section (2A) of section 3;",
+       "children": [],
+       "source_pages": [
+        6
+       ],
+       "source_line_ids": [
+        "p6_l34",
+        "p6_l35"
+       ],
+       "id": "section_6_subsection_2_clause_ab"
+      },
+      {
+       "type": "clause",
+       "label": "(ac)",
+       "text": "the powers and functions of the Medical Board under sub-section (2C) of section 3.",
+       "children": [],
+       "source_pages": [
+        6
+       ],
+       "source_line_ids": [
+        "p6_l36"
+       ],
+       "id": "section_6_subsection_2_clause_ac"
+      },
+      {
+       "type": "clause",
+       "label": "(b)",
+       "text": "such other matters as are required to be or may be, provided by rules made under this Act.",
+       "children": [],
+       "source_pages": [
+        6
+       ],
+       "source_line_ids": [
+        "p6_l37"
+       ],
+       "id": "section_6_subsection_2_clause_b"
+      }
+     ],
+     "source_pages": [
+      6
+     ],
+     "source_line_ids": [
+      "p6_l29",
+      "p6_l30"
+     ],
+     "id": "section_6_subsection_2"
+    },
+    {
+     "type": "subsection",
+     "label": "(3)",
+     "text": "Every rule made by the Central Government under this Act shall be laid, as soon as may be after it is made, before each House of Parliament while it is in session for a total period of thirty days which may be comprised in one session or in two successive sessions, and if, before the expiry of the session in which it is so laid or the session immediately following, both Houses agree in making any modification in the rule or both Houses agree that the rule should not be made, the rule shall thereafter have effect only in such modified form or be of no effect, as the case may be; so, however, that any such modification or annulment shall be without prejudice to the validity of anything previously done under that rule.",
+     "children": [],
+     "source_pages": [
+      6,
+      7
+     ],
+     "source_line_ids": [
+      "p6_l38",
+      "p6_l39",
+      "p6_l40",
+      "p6_l41",
+      "p6_l42",
+      "p7_l1",
+      "p7_l2"
+     ],
+     "id": "section_6_subsection_3"
+    }
+   ],
+   "source_pages": [
+    6,
+    7
+   ],
+   "source_line_ids": [
+    "p6_l27",
+    "p6_l28",
+    "p6_l29",
+    "p6_l30",
+    "p6_l31",
+    "p6_l32",
+    "p6_l33",
+    "p6_l34",
+    "p6_l35",
+    "p6_l36",
+    "p6_l37",
+    "p6_l38",
+    "p6_l39",
+    "p6_l40",
+    "p6_l41",
+    "p6_l42",
+    "p7_l1",
+    "p7_l2"
+   ],
+   "annotations": [
+    {
+     "type": "footnote",
+     "marker": "3",
+     "note_id": "footnote_p6_3",
+     "source_page": 6,
+     "source_line_id": "p6_l33",
+     "section_id": "section_6",
+     "source_text": "3[(aa) the category of woman under clause (b) of sub-section (2) of section 3;"
+    }
+   ]
+  },
+  {
+   "id": "section_7",
+   "number": "7",
+   "title": "Power to make regulations",
+   "status": "active",
+   "division_id": null,
+   "division_title": null,
+   "body": [
+    {
+     "type": "subsection",
+     "label": "(1)",
+     "text": "The State Government may, by regulations,—",
+     "children": [
+      {
+       "type": "clause",
+       "label": "(a)",
+       "text": "require any such opinion as is referred to in sub-section (2) of section 3 to be certified by a registered medical practitioner or practitioners concerned, in such form and at such time as may be specified in such regulations, and the preservation or disposal of such certificates;",
+       "children": [],
+       "source_pages": [
+        7
+       ],
+       "source_line_ids": [
+        "p7_l4",
+        "p7_l5",
+        "p7_l6"
+       ],
+       "id": "section_7_subsection_1_clause_a"
+      },
+      {
+       "type": "clause",
+       "label": "(b)",
+       "text": "require any registered medical practitioner, who terminates a pregnancy, to give intimation of such termination and such other information relating to the termination as may be specified in such regulations;",
+       "children": [],
+       "source_pages": [
+        7
+       ],
+       "source_line_ids": [
+        "p7_l7",
+        "p7_l8",
+        "p7_l9"
+       ],
+       "id": "section_7_subsection_1_clause_b"
+      },
+      {
+       "type": "clause",
+       "label": "(c)",
+       "text": "prohibit the disclosure, except to such persons and for such purposes as may be specified in such regulations, of intimations given or information furnished in pursuance of such regulations.",
+       "children": [],
+       "source_pages": [
+        7
+       ],
+       "source_line_ids": [
+        "p7_l10",
+        "p7_l11"
+       ],
+       "id": "section_7_subsection_1_clause_c"
+      }
+     ],
+     "source_pages": [
+      7
+     ],
+     "source_line_ids": [
+      "p7_l3"
+     ],
+     "id": "section_7_subsection_1"
+    },
+    {
+     "type": "subsection",
+     "label": "(2)",
+     "text": "The intimation given and the information furnished in pursuance of regulations made by virtue of clause (b) of sub-section (1) shall be given or furnished, as the case may be, to the Chief Medical Officer of the State.",
+     "children": [],
+     "source_pages": [
+      7
+     ],
+     "source_line_ids": [
+      "p7_l12",
+      "p7_l13",
+      "p7_l14"
+     ],
+     "id": "section_7_subsection_2"
+    },
+    {
+     "type": "subsection",
+     "label": "(2A)",
+     "text": "Every regulation made by the State Government under this Act shall be laid, as soon as may be after it is made, before the State Legislature.",
+     "children": [],
+     "source_pages": [
+      7
+     ],
+     "source_line_ids": [
+      "p7_l15",
+      "p7_l16"
+     ],
+     "id": "section_7_subsection_2A"
+    },
+    {
+     "type": "subsection",
+     "label": "(3)",
+     "text": "Any person who wilfully contravenes or wilfully fails to comply with the requirements of any regulation made under sub-section (1) shall be liable to be punished with fine which may extend to one thousand rupees.",
+     "children": [],
+     "source_pages": [
+      7
+     ],
+     "source_line_ids": [
+      "p7_l17",
+      "p7_l18",
+      "p7_l19"
+     ],
+     "id": "section_7_subsection_3"
+    }
+   ],
+   "source_pages": [
+    7
+   ],
+   "source_line_ids": [
+    "p7_l3",
+    "p7_l4",
+    "p7_l5",
+    "p7_l6",
+    "p7_l7",
+    "p7_l8",
+    "p7_l9",
+    "p7_l10",
+    "p7_l11",
+    "p7_l12",
+    "p7_l13",
+    "p7_l14",
+    "p7_l15",
+    "p7_l16",
+    "p7_l17",
+    "p7_l18",
+    "p7_l19"
+   ],
+   "annotations": [
+    {
+     "type": "footnote",
+     "marker": "1",
+     "note_id": "footnote_p7_1",
+     "source_page": 7,
+     "source_line_id": "p7_l15",
+     "section_id": "section_7",
+     "source_text": "1[(2A) Every regulation made by the State Government under this Act shall be laid, as soon as may be"
+    }
+   ]
+  },
+  {
+   "id": "section_8",
+   "number": "8",
+   "title": "Protection of action taken in good faith",
+   "status": "active",
+   "division_id": null,
+   "division_title": null,
+   "body": [
+    {
+     "type": "paragraph",
+     "label": "",
+     "text": "No suit or other legal proceeding shall lie against any registered medical practitioner for any damage caused or likely to be caused by anything which is in good faith done or intended to be done under this Act.",
+     "children": [],
+     "source_pages": [
+      7
+     ],
+     "source_line_ids": [
+      "p7_l20",
+      "p7_l21",
+      "p7_l22"
+     ],
+     "id": "section_8_paragraph_1"
+    }
+   ],
+   "source_pages": [
+    7
+   ],
+   "source_line_ids": [
+    "p7_l20",
+    "p7_l21",
+    "p7_l22"
+   ],
+   "annotations": []
+  }
+ ],
+ "schedules": [],
+ "footnotes": [
+  {
+   "id": "footnote_p4_1",
+   "marker": "1",
+   "page": 4,
+   "text": "The words “except the State of Jammu and Kashmir” omitted by Act 34 of 2019, s. 95 and the Fifth Schedule (w.e.f. 31- 10- 2019).",
+   "source_line_ids": [
+    "p4_l38",
+    "p4_l39"
+   ]
+  },
+  {
+   "id": "footnote_p4_2",
+   "marker": "2",
+   "page": 4,
+   "text": "1st April, 1972, vide notification No. G.S.R. 285, dated 19th February, 1972, see Gazette of India, Part II, sec. 3 (i).",
+   "source_line_ids": [
+    "p4_l40"
+   ]
+  },
+  {
+   "id": "footnote_p4_3",
+   "marker": "3",
+   "page": 4,
+   "text": "Subs. by Act 64 of 2002, s. 2, for “lunatic” (w.e.f. 18-6-2003).",
+   "source_line_ids": [
+    "p4_l41"
+   ]
+  },
+  {
+   "id": "footnote_p4_4",
+   "marker": "4",
+   "page": 4,
+   "text": "Ins. by Act 8 of 2021, s. 2 (w.e.f. 24-9-2021).",
+   "source_line_ids": [
+    "p4_l42"
+   ]
+  },
+  {
+   "id": "footnote_p4_5",
+   "marker": "5",
+   "page": 4,
+   "text": "Subs. by s. 2, ibid., for clause (b) (w.e.f. 18-6-2003).",
+   "source_line_ids": [
+    "p4_l43"
+   ]
+  },
+  {
+   "id": "footnote_p4_6",
+   "marker": "6",
+   "page": 4,
+   "text": "Subs. by Act 8 of 2021, s. 3, for sub-section (2) (w.e.f. 24-9-2021).",
+   "source_line_ids": [
+    "p4_l44"
+   ]
+  },
+  {
+   "id": "footnote_p5_1",
+   "marker": "1",
+   "page": 5,
+   "text": "Subs. by Act 64 of 2002, s. 3, for “lunatic” (w.e.f. 18-6-2003).",
+   "source_line_ids": [
+    "p5_l43"
+   ]
+  },
+  {
+   "id": "footnote_p5_2",
+   "marker": "2",
+   "page": 5,
+   "text": "Subs. by s. 4, ibid., for section 4 (w.e.f. 18-6-2003).",
+   "source_line_ids": [
+    "p5_l44"
+   ]
+  },
+  {
+   "id": "footnote_p6_1",
+   "marker": "1",
+   "page": 6,
+   "text": "Subs. by Act 64 of 2002, s. 5, for sub-section (2) and the Explanation (w.e.f. 18-6-2003).",
+   "source_line_ids": [
+    "p6_l43"
+   ]
+  },
+  {
+   "id": "footnote_p6_2",
+   "marker": "2",
+   "page": 6,
+   "text": "Ins. by Act 8 of 2021, s. 4 (w.e.f. 24-9-2021).",
+   "source_line_ids": [
+    "p6_l44"
+   ]
+  },
+  {
+   "id": "footnote_p6_3",
+   "marker": "3",
+   "page": 6,
+   "text": "Ins. by Act s. 5, ibid. (w.e.f. 24-9-2021).",
+   "source_line_ids": [
+    "p6_l45"
+   ]
+  },
+  {
+   "id": "footnote_p7_1",
+   "marker": "1",
+   "page": 7,
+   "text": "Ins. by Act 4 of 2005, s. 2 and the Schedule (w.e.f. 11-1-2005).",
+   "source_line_ids": [
+    "p7_l23"
+   ]
+  }
+ ],
+ "source_back_matter": [
+  {
+   "page": 8,
+   "text": "STATEMENT OF OBJECTS AND REASONS\nThe Medical Termination of Pregnancy Act, 1971 (34 of 1971) was enacted to provide for the\ntermination of certain pregnancies by registered medical practitioners and for matters connected therewith\nor incidental thereto. The said Act recognised the importance of safe, affordable, accessible abortion\nservices to women who need to terminate pregnancy under certain specified conditions.\n2. With the passage of time and advancement of medical technology for safe abortion, there is a scope\nfor increasing upper gestational limit for terminating pregnancies especially for vulnerable women and for\npregnancies with substantial foetal anomalies detected late in pregnancy. Further, there is also a need for\nincreasing access of women to legal and safe abortion service in order to reduce maternal mortality and\nmorbidity caused by unsafe abortion and its complications. Considering the need and demand for\nincreased gestational limit under certain specified conditions and to ensure safety and well-being of\nwomen, it is proposed to amend the said Act. Besides this, several Writ Petitions have been filed before\nthe Supreme Court and various High Courts seeking permission for aborting pregnancies at gestational\nage beyond the present permissible limit on the grounds of foetal abnormalities or pregnancies due to\nsexual violence faced by women.\n3. Accordingly, the Medical Termination of Pregnancy (Amendment) Bill, 2020, inter alia, provides\nfor,—\n(a) requirement of opinion of one registered medical practitioner for termination of pregnancy up to\ntwenty weeks of gestation;\n(b) requirement of opinion of two registered medical practitioners for termination of pregnancy of\ntwenty to twenty-four weeks of gestation;\n(c) enhancing the upper gestation limit from twenty to twenty-four weeks for such category of woman\nas may be prescribed by rules in this behalf;\n(d) non applicability of the provisions relating to the length of pregnancy in cases where the\ntermination of pregnancy is necessitated by the diagnosis of any of the substantial foetal abnormalities\ndiagnosed by a Medical Board;\n(e) protection of privacy of a woman whose pregnancy has been terminated.\n4. The proposed Bill is a step towards safety and well-being of women and will enlarge the ambit and\naccess of women to safe and legal abortion without compromising on safety and quality of care. The\nproposal will also ensure dignity, autonomy, confidentiality and justice for women who need to terminate\npregnancy.\n5. The Bill seeks to achieve the above objects.",
+   "type": "statement_of_objects_and_reasons",
+   "context": "Statement accompanying the Medical Termination of Pregnancy (Amendment) Bill, 2020; non-operative material."
+  }
+ ],
+ "editorial_policy": {
+  "reading_text": "Whitespace normalised; editorial square brackets, deletion asterisks and superscript footnote numbers removed. All source text retained in source_lines.",
+  "statutory_references": "Preserved exactly as printed; no modernisation.",
+  "footnotes": "Linked at source-line and section level; page-scoped IDs."
+ }
+}

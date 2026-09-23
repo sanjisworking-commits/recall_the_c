@@ -24,6 +24,7 @@ PRODUCTION_LAW_IDS = (
     "ndps",
     "uapa-1967",
     "pss",
+    "mtp",
     "citizenship-1955",
     "pcr-1955",
     "rte-2009",
@@ -90,6 +91,7 @@ def test_production_catalogue_lists_both_bare_acts():
         "administrative",
         "environmental",
         "financial",
+        "health",
     }
 
 
