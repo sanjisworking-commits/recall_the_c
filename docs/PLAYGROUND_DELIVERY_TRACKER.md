@@ -2,17 +2,17 @@
 
 **Scoreboard, not an audit.** Product rules live in [PLAYGROUND.md](PLAYGROUND.md), [PAYMENT_ENTITLEMENT_AUDIT.md](PAYMENT_ENTITLEMENT_AUDIT.md), [PLAYGROUND_TWO_LAW_AUDIT.md](PLAYGROUND_TWO_LAW_AUDIT.md), and [law-loading.md](law-loading.md).
 
-**Snapshot:** architecture/product definition is **locked in docs**. **Stage 1** (build) is **48.6 / 100**. Production implementation is **early**. The NDPS/BNS overlay + Cloze + proof revision rows **do not** count as milestones 6–8. Milestone 1 is `DONE`. Milestone 2 is **`DONE` — 37/37**. Milestone 3 is **`DONE` — 15/15** (M3-A Constitution inversion + M3-B Playground commercial gate). Milestone 4 is **`DONE` — 25/25** (M4-A registry + M4-B owner/admin management + M4-C replacement-churn). Milestone 5 is **`IN PROGRESS` — 17/27** (M5-A monthly period, capacity, tables, same-month add/remove/re-add). Platforms are `web | android | ios`. Overlay is lifetime learning history; roster is current-month membership. Pending + current-roster law remains learnable; pending + historical overlay only is not. **Do not tick M5-B rollover/later-month items. Do not call Milestone 5 `DONE`.** **Do not tick Stage 2 from Cloze or from `main`’s sitemap PRs.** This branch includes main’s Bare Act SEO and generated sitemap index; that is Milestone 0 coexistence, not Milestone 10 (`noindex`) and not Stage 2.
+**Snapshot:** architecture/product definition is **locked in docs**. **Stage 1** (build) is **53.0 / 100**. Production implementation is **early**. The NDPS/BNS overlay + Cloze + proof revision rows **do not** count as milestones 6–8. Milestone 1 is `DONE`. Milestone 2 is **`DONE` — 37/37**. Milestone 3 is **`DONE` — 15/15** (M3-A Constitution inversion + M3-B Playground commercial gate). Milestone 4 is **`DONE` — 25/25** (M4-A registry + M4-B owner/admin management + M4-C replacement-churn). Milestone 5 is **`DONE` — 27/27** (M5-A period/capacity/tables/same-month and M5-B carry-forward plus later-month historical reactivation). Platforms are `web | android | ios`. Overlay is lifetime learning history; roster is current-month membership (`overlay != roster`). Previous-period laws are candidates only. Keep consumes a new-period slot. Decline consumes none. Historical progress never waives monthly capacity. Pending + current-roster law remains learnable; pending + historical overlay only is not. **Do not tick Stage 2 from Cloze or from `main`’s sitemap PRs.** This branch includes main’s Bare Act SEO and generated sitemap index; that is Milestone 0 coexistence, not Milestone 10 (`noindex`) and not Stage 2.
 
 | | |
 |--|--|
-| **Stage 1 (build)** | **48.6 / 100** |
+| **Stage 1 (build)** | **53.0 / 100** |
 | Milestone 0 | `DONE` — 10/10 items × 5 = **5** |
 | Milestone 1 | `DONE` — 18/18 items × 8 = **8** |
 | Milestone 2 | `DONE` — 37/37 × 13 = **13** |
 | Milestone 3 | `DONE` — 15/15 × 7 = **7** |
 | Milestone 4 | `DONE` — 25/25 × 8 = **8** (M4-A + M4-B + M4-C). |
-| Milestone 5 | `IN PROGRESS` — 17/27 × 12 ≈ **7.56** (M5-A period/capacity/tables/same-month; M5-B rollover/historical later-month open). |
+| Milestone 5 | `DONE` — 27/27 × 12 = **12** |
 | Milestones 6–11 | `NOT STARTED` |
 | **Stage 2 (optimize)** | **`NOT STARTED` — start gate: Stage 1 = `DONE` (100/100)** |
 
@@ -312,7 +312,7 @@ billing_period_start / billing_period_end
 legacy_status
 ```
 
-M3-A source of truth: [`src/constitution_memorizer/entitlements/`](../src/constitution_memorizer/entitlements/). [`web/entitlements.py`](../src/constitution_memorizer/web/entitlements.py) is the Constitution adapter. M3-B Playground HTTP uses [`playground/access.py`](../src/constitution_memorizer/playground/access.py) (`get_entitlement_snapshot` once per request). **M3 commercial gate is complete.** **M4 device registry, management, and replacement-churn are implemented (25/25):** [`devices/`](../src/constitution_memorizer/devices/) registers HMAC-hashed `rtc_device` installations (`web | android | ios`, cap 2, all tiers) on first eligible Playground use. Owners manage devices at `/profile/security/devices`; admins reset via audited `POST /admin/users/{user_id}/devices/reset`. Replacement-churn uses `user_device_replacement` (3 replacements / rolling 30 UTC days; `device_replacement_limit`; `SUPPORT_EMAIL` CTA; audited `clear_device_replacement_limit`). **M5-A current-period roster is implemented (17/27):** [`playground/roster/`](../src/constitution_memorizer/playground/roster/) (`user_playground_period` / `user_playground_roster_item`, Asia/Kolkata month, atomic consume). Sensitive law routes require `is_law_active_this_period`. Pending + current-roster law remains learnable; pending + historical overlay only is not. Same-period re-add of an already-consumed removed law is not new consumption. Full roster does not set `can_open_playground` false. Overlay rows remain lifetime learning history. M5-B rollover / later-month historical reactivation remains open. `playground_law_limit` is catalogue metadata reconciled onto the current period; usage is distinct `law_id` with `consumed_at` set this period (remove does not refund).
+M3-A source of truth: [`src/constitution_memorizer/entitlements/`](../src/constitution_memorizer/entitlements/). [`web/entitlements.py`](../src/constitution_memorizer/web/entitlements.py) is the Constitution adapter. M3-B Playground HTTP uses [`playground/access.py`](../src/constitution_memorizer/playground/access.py) (`get_entitlement_snapshot` once per request). **M3 commercial gate is complete.** **M4 device registry, management, and replacement-churn are implemented (25/25):** [`devices/`](../src/constitution_memorizer/devices/) registers HMAC-hashed `rtc_device` installations (`web | android | ios`, cap 2, all tiers) on first eligible Playground use. Owners manage devices at `/profile/security/devices`; admins reset via audited `POST /admin/users/{user_id}/devices/reset`. Replacement-churn uses `user_device_replacement` (3 replacements / rolling 30 UTC days; `device_replacement_limit`; `SUPPORT_EMAIL` CTA; audited `clear_device_replacement_limit`). **M5 monthly roster and rollover are implemented (27/27):** [`playground/roster/`](../src/constitution_memorizer/playground/roster/) (`user_playground_period` / `user_playground_roster_item`, Asia/Kolkata month, atomic consume). Sensitive law routes require `is_law_active_this_period`. Pending + current-roster law remains learnable; pending + historical overlay only is not. Same-period re-add of an already-consumed removed law is not new consumption. Full roster does not set `can_open_playground` false. Overlay rows remain lifetime learning history. Carry-forward is explicit (`/playground/roster/next`): Keep consumes the target month, decline does not, and a later-month Add of saved progress consumes one new slot. `playground_law_limit` is catalogue metadata reconciled onto the current period; usage is distinct `law_id` with `consumed_at` set this period (remove does not refund).
 
 ### Done when
 
@@ -330,7 +330,7 @@ Subscription = Playground
 
 # 4. Device control — 8 points
 
-**Status: `DONE` — 25/25** (M4-A core two-device authorization + M4-B owner/admin management + M4-C replacement-churn). Platforms: `web | android | ios`. Device registry, management, and the locked §21 replacement-churn policy are implemented (`DEVICE_REPLACEMENT_WINDOW_DAYS = 30`, `DEVICE_REPLACEMENT_LIMIT = 3`, support channel = email via `SUPPORT_EMAIL`). Milestone 5A current-period roster is implemented separately (17/27).
+**Status: `DONE` — 25/25** (M4-A core two-device authorization + M4-B owner/admin management + M4-C replacement-churn). Platforms: `web | android | ios`. Device registry, management, and the locked §21 replacement-churn policy are implemented (`DEVICE_REPLACEMENT_WINDOW_DAYS = 30`, `DEVICE_REPLACEMENT_LIMIT = 3`, support channel = email via `SUPPORT_EMAIL`). Milestone 5 monthly roster, rollover, and later-month historical reactivation are `DONE` — 27/27.
 
 Core two-device authorization shipped. `PLAYGROUND_DEVICE_LIMIT = 2` for Plus/Pro/Max. Cookie `rtc_device` survives logout. Server stores HMAC, not the raw token. Registration is atomic (SQLite `BEGIN IMMEDIATE` / Postgres `pg_advisory_xact_lock`). Owner page `GET /profile/security/devices` lists active vs removed devices, marks **This device** from the HMAC of `rtc_device`, and can revoke another installation or this one (this-device removal signs out and keeps `rtc_device`). Device-limit, revoked, and replacement-limit Playground gates send the owner to Manage devices / Contact support / Constitution (no Subscribe/Upgrade CTA). Admin `POST /admin/users/{user_id}/devices/reset` revokes all active rows in the same transaction as `admin_audit_log` (`action=reset_devices`) and does **not** erase replacement history. Admin `POST /admin/users/{user_id}/devices/clear-replacement-limit` is the audited churn-lock recovery (`action=clear_device_replacement_limit`). Constitution/account sessions are not terminated by admin reset.
 
@@ -381,7 +381,7 @@ Paid Playground works on no more than two registered installations while the res
 
 # 5. Monthly Playground roster — 12 points
 
-**Status: `IN PROGRESS` — 17/27** (M5-A). Do **not** call this milestone `DONE`. M5-B owns rollover and later-month historical reactivation.
+**Status: `DONE` — 27/27.** Previous-period laws are carry-forward candidates only. Keep consumes one slot in the target period. Decline (`declined_at`) consumes none. A removed law keeps overlay progress. Adding it in a later month consumes one new-period slot and resumes the same selection and progress. There is no automatic rollover and no lifetime unlock.
 
 This replaces cumulative/lifetime unlock accounting. Do **not** implement `user_playground_law_entitlement`. Overlay (`user_playground_item` / selection / progress) is lifetime learning history. Roster (`user_playground_period` / `user_playground_roster_item`) is which laws may participate **this** Playground month. `overlay != roster`.
 
@@ -422,19 +422,19 @@ Max  = unlimited
 
 ## Rollover
 
-* [ ] previous laws become carry-forward candidates
-* [ ] Keep consumes new-period slot
-* [ ] Remove consumes no new-period slot
-* [ ] user may add new laws into free spaces
-* [ ] rollover can be prepared before month end
-* [ ] annual subscribers behave identically
+* [x] previous laws become carry-forward candidates
+* [x] Keep consumes new-period slot
+* [x] Remove consumes no new-period slot
+* [x] user may add new laws into free spaces
+* [x] rollover can be prepared before month end
+* [x] annual subscribers behave identically
 
 ## Historical laws
 
-* [ ] removed law retains all progress
-* [ ] historical law can be added in later month
-* [ ] later activation consumes one slot for that new month
-* [ ] progress resumes exactly where left
+* [x] removed law retains all progress
+* [x] historical law can be added in later month
+* [x] later activation consumes one slot for that new month
+* [x] progress resumes exactly where left
 
 ### Done when
 
@@ -768,14 +768,14 @@ Playground + payment can safely replace the existing commercial entitlement mode
 | 2. Payment/subscriptions          |     13 | `DONE` — 37/37 × 13 = 13 |
 | 3. User-type entitlement          |      7 | `DONE` — 15/15 × 7 = 7 |
 | 4. Device control                 |      8 | `DONE` — 25/25 × 8 = 8 |
-| 5. Monthly roster                 |     12 | `IN PROGRESS` — 17/27 × 12 ≈ 7.56 |
+| 5. Monthly roster                 |     12 | `DONE` — 27/27 × 12 = 12 |
 | 6. Finished UX                    |      8 | `NOT STARTED` |
 | 7. Complete Learn engine          |     15 | `NOT STARTED` |
 | 8. Learned/revision/mastery       |      8 | `NOT STARTED` |
 | 9. Amendments/source integrity    |      5 | `NOT STARTED` |
 | 10. SEO/routing discoverability   |      4 | `NOT STARTED` |
 | 11. Production hardening/release  |      7 | `NOT STARTED` |
-| **TOTAL (Stage 1)**               |  **100** | **48.6 / 100** |
+| **TOTAL (Stage 1)**               |  **100** | **53.0 / 100** |
 | Stage 2 — Optimize                |    — | `NOT STARTED` — start gate: Stage 1 = `DONE` (100/100) |
 
 ---
@@ -793,7 +793,7 @@ Batch 1B  Law-loading/hash cleanup + batched dashboard/selection — DONE
 Batch 2   Payment/subscription foundation
 Batch 3   User entitlement inversion — DONE (M3-A Constitution + M3-B Playground gate)
 Batch 4   Device registry/control — DONE (M4-A+M4-B+M4-C 25/25)
-Batch 5   Monthly roster + rollover — IN PROGRESS (M5-A 17/27; M5-B rollover open)
+Batch 5   Monthly roster + rollover — DONE (27/27)
 Batch 6   Final Playground UI shell
 Batch 7   Complete Learn modes
 Batch 8   Learned + revision + Today/Calendar
