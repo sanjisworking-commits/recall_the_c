@@ -365,6 +365,35 @@
       }
     },
     {
+      "id": "mva",
+      "title": "The Motor Vehicles Act, 1988",
+      "short_title": "MVA",
+      "year": 1988,
+      "aliases": [
+        "MVA",
+        "MV Act",
+        "Motor Vehicles Act",
+        "Motor Vehicles Act 1988",
+        "motor vehicles",
+        "driving licence",
+        "traffic",
+        "road safety"
+      ],
+      "subjects": [
+        "administrative"
+      ],
+      "primary_subject": "administrative",
+      "display_order": 75,
+      "scope_label": "14 Chapters · Sections 1–217A",
+      "primary_content": "full_act",
+      "content": {
+        "full_act": {
+          "ref": "mva"
+        },
+        "key_provisions": null
+      }
+    },
+    {
       "id": "epa-1986",
       "title": "Environment (Protection) Act, 1986",
       "short_title": "EP Act",

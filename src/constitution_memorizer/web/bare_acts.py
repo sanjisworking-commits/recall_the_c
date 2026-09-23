@@ -171,6 +171,23 @@ BARE_ACTS: dict[str, BareActSpec] = {
         # v3, archived as mtp_canonical_v3.json.
         source_version="1",
     ),
+    "mva": BareActSpec(
+        slug="mva",
+        filename="mva_runtime_v1.json",
+        short_name="The Motor Vehicles Act, 1988",
+        back_label="← The Motor Vehicles Act, 1988",
+        short_title="MVA",
+        # Ten node types. Six are the BNS set; `omission` is NDPS's asterisk
+        # run and renders through the profile-agnostic is_omission branch;
+        # `item`/`subitem` are the fourth and fifth nesting levels the Act
+        # prints — "(A)" under "(i)" under "(a)" — and draw as ordinary rows
+        # at their depth; `formula` is s.105(5)'s displayed fraction, kept as
+        # one row of text. Checked kind by kind against ProvisionRow.
+        render_profile="bns",
+        # First runtime release of the parser v2 export, archived as
+        # mva_canonical_v2.json.
+        source_version="1",
+    ),
 }
 
 

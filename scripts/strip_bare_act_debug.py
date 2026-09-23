@@ -115,6 +115,16 @@ ARTIFACTS: tuple[tuple[Path, Path, str], ...] = (
         ROOT / "src" / "constitution_memorizer" / "web" / "mtp_runtime_v1.json",
         "mtp",
     ),
+    # Motor Vehicles: flat as well. Its non-operative blocks — nine pages of
+    # front matter, six State amendment inserts, the Second Schedule's
+    # omission line — are text the reader may later want, not debris; only
+    # `source_x` is. The First Schedule carries no pixels, just page numbers
+    # and the explanatory notes, so there is nothing bulky to shed.
+    (
+        ROOT / "data" / "reference" / "mva_canonical_v2.json",
+        ROOT / "src" / "constitution_memorizer" / "web" / "mva_runtime_v1.json",
+        "flat",
+    ),
 )
 
 
