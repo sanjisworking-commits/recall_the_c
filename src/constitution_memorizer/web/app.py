@@ -1346,8 +1346,13 @@ def create_app(
         # completed attempt and the server takes its word (no leaderboard).
         # Test is /quiz-only — never recorded here.
         # Locked modes must never be recorded as seen (UI lock is not trusted).
+        # One pipelined read seeds settings (timezone), claims, progress, and the
+        # authoritative access override, so the only remaining DB turn is the
+        # mark_mode_seen write. Only when the entitlement boundary is live: a
+        # dormant flag must keep legacy behavior with zero entitlement-store
+        # reads (no claims, no access override).
         if entitlements_active(request):
-            eng.preload_account_claims()
+            _seed_learn_mutation_preload(request, eng)
         access = resolve_learn_access(request, eng, unit.article_number)
         if access.is_locked(mode):
             return JSONResponse(
@@ -1394,6 +1399,13 @@ def create_app(
             app.state.multiuser_enabled
             and getattr(request.state, "current_user", None) is None
         )
+        # One pipelined read (settings/claims/progress/access override) seeds the
+        # request caches so the stale-cycle progress read, entitlement check, and
+        # timezone lookup below reuse it; the only DB write is mark_mode_seen.
+        # Gated on the live entitlement boundary so a dormant flag keeps legacy
+        # behavior with zero entitlement-store reads.
+        if entitlements_active(request):
+            _seed_learn_mutation_preload(request, eng)
         # Stale-cycle protection: a Done in another tab advances the cycle and
         # clears unit_modes_seen — an old tab's submission must not complete
         # the new cycle. The server's own cycle is authoritative.
@@ -1501,6 +1513,22 @@ def create_app(
             required_modes=required_modes,
             claim_article=claim_article,
         )
+
+    def _seed_learn_mutation_preload(request: Request, eng: ReminderEngine) -> None:
+        """One pipelined read for a persisted mutation route (/seen, /quiz).
+
+        Seeds the settings/claims/progress request caches and
+        request.state.access_override so the rest of the request touches the DB
+        only for its write. No-op for guests, who never persist.
+        """
+        if app.state.multiuser_enabled and (
+            getattr(request.state, "current_user", None) is None
+        ):
+            return
+        override = eng.preload_learn_mutation(now=datetime.now(timezone.utc))
+        request.state.access_override = override
+        if getattr(request.state, "is_admin", None) is None:
+            request.state.is_admin = override.is_admin
 
     def _schedule_calendar_sync(request: Request, eng: ReminderEngine) -> None:
         """Fire-and-forget Google Calendar reconciliation after a state change."""
@@ -2315,7 +2343,12 @@ def create_app(
         prev_number, next_number = adjacent_article_numbers(
             eng, app.state.reviewed, view.article_number
         )
-        gloss_text = eng.get_gloss(view.article_number) or ""
+        # A guest has no personal Explain-it-back gloss, so skip the DB read
+        # entirely (~230 ms per round trip in production) and render it empty.
+        if getattr(request.state, "is_guest", False):
+            gloss_text = ""
+        else:
+            gloss_text = eng.get_gloss(view.article_number) or ""
         gloss_ph = gloss_placeholder_for(
             app.state.gloss_placeholders, view.article_number
         )

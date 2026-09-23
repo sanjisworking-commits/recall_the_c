@@ -46,6 +46,8 @@ class CountingProgressRepo:
         self.get_theme_calls = 0
         self.get_setting_calls = 0
         self.claimed_articles_calls = 0
+        self.load_account_preload_calls = 0
+        self.load_learn_mutation_preload_calls = 0
         self.get_news_articles_raw_calls = 0
         self.last_bootstrap_kwargs = None
 
@@ -76,6 +78,14 @@ class CountingProgressRepo:
     def claimed_articles(self, user_id):
         self.claimed_articles_calls += 1
         return self.inner.claimed_articles(user_id)
+
+    def load_account_preload(self, user_id):
+        self.load_account_preload_calls += 1
+        return self.inner.load_account_preload(user_id)
+
+    def load_learn_mutation_preload(self, user_id, **kwargs):
+        self.load_learn_mutation_preload_calls += 1
+        return self.inner.load_learn_mutation_preload(user_id, **kwargs)
 
     def load_completion_state(self, user_id, unit_id: str):
         self.load_completion_state_calls += 1
@@ -150,6 +160,8 @@ class CountingProgressRepo:
             "get_news_articles_raw": self.get_news_articles_raw_calls,
             "get_setting": self.get_setting_calls,
             "claimed_articles": self.claimed_articles_calls,
+            "load_account_preload": self.load_account_preload_calls,
+            "load_learn_mutation_preload": self.load_learn_mutation_preload_calls,
         }
 
     def reset_counts(self) -> None:
@@ -489,10 +501,21 @@ def test_learn_logs_omit_sensitive_data(tmp_path: Path, caplog):
     assert "phone" not in joined.lower()
 
 
-def test_seen_preloads_claims_without_full_bootstrap(tmp_path: Path):
+def test_seen_total_db_round_trips_is_one_read_plus_one_write(tmp_path: Path, monkeypatch):
     client, repo = _counting_client(
         tmp_path, ARTICLE_ENTITLEMENTS_ENABLED="true"
     )
+    # Count authoritative access-override reads too (they hit the DB).
+    store = client.app.state.access_store
+    override_calls = {"n": 0}
+    real_override = store.resolve_access_override
+
+    def counting_override(user_id, now):
+        override_calls["n"] += 1
+        return real_override(user_id, now)
+
+    monkeypatch.setattr(store, "resolve_access_override", counting_override)
+
     engine = client.app.state.engine.for_user(USER)
     engine.set_setting("free_articles_backfilled", "1")
     engine.claim_article("20")
@@ -500,10 +523,98 @@ def test_seen_preloads_claims_without_full_bootstrap(tmp_path: Path):
     resp = client.post("/learn/clause-1/seen", data={"mode": "cloze"})
     assert resp.status_code == 200
     assert resp.json().get("persisted") is True
-    assert repo.load_request_bootstrap_calls == 0
+
+    # COMPLETE request path: exactly one pipelined read + one write.
+    assert repo.load_learn_mutation_preload_calls == 1
     assert repo.mark_mode_seen_calls == 1
-    assert repo.get_setting_calls >= 1
-    assert repo.claimed_articles_calls == 1
+    # No full bootstrap, and none of the reads folded into the preload recur.
+    assert repo.load_request_bootstrap_calls == 0
+    assert repo.load_account_preload_calls == 0
+    assert repo.claimed_articles_calls == 0
+    assert repo.get_setting_calls == 0
+    assert repo.get_progress_calls == 0
+    assert repo.list_all_progress_calls == 0
+    # The access override was seeded on request.state, not re-read.
+    assert override_calls["n"] == 0
+
+
+def test_quiz_total_db_round_trips_is_one_read_plus_one_write(tmp_path: Path, monkeypatch):
+    client, repo = _counting_client(tmp_path, ARTICLE_ENTITLEMENTS_ENABLED="true")
+    store = client.app.state.access_store
+    override_calls = {"n": 0}
+    real_override = store.resolve_access_override
+
+    def counting_override(user_id, now):
+        override_calls["n"] += 1
+        return real_override(user_id, now)
+
+    monkeypatch.setattr(store, "resolve_access_override", counting_override)
+
+    engine = client.app.state.engine.for_user(USER)
+    engine.set_setting("free_articles_backfilled", "1")
+    engine.claim_article("20")
+    from tests.quiz_helpers import submit_quiz
+
+    repo.reset_counts()
+    resp = submit_quiz(client, MINI_UNITS, "clause-1", cycle=0)
+    assert resp.status_code == 200
+
+    # COMPLETE request path: one pipelined read + one write (mark_mode_seen).
+    assert repo.load_learn_mutation_preload_calls == 1
+    assert repo.mark_mode_seen_calls == 1
+    assert repo.load_request_bootstrap_calls == 0
+    assert repo.load_account_preload_calls == 0
+    assert repo.claimed_articles_calls == 0
+    assert repo.get_setting_calls == 0
+    assert repo.get_progress_calls == 0
+    assert override_calls["n"] == 0
+
+
+def _spy_override(client, monkeypatch) -> dict:
+    store = client.app.state.access_store
+    calls = {"n": 0}
+    real = store.resolve_access_override
+
+    def counting(user_id, now):
+        calls["n"] += 1
+        return real(user_id, now)
+
+    monkeypatch.setattr(store, "resolve_access_override", counting)
+    return calls
+
+
+def test_seen_with_entitlements_off_does_zero_entitlement_reads(tmp_path: Path, monkeypatch):
+    # Dormant flag (default off): legacy behavior with no entitlement-store reads.
+    client, repo = _counting_client(tmp_path)
+    override_calls = _spy_override(client, monkeypatch)
+    repo.reset_counts()
+
+    resp = client.post("/learn/clause-1/seen", data={"mode": "cloze"})
+    assert resp.status_code == 200
+    assert resp.json().get("persisted") is True  # legacy persistence still works
+    assert repo.mark_mode_seen_calls == 1
+    # Zero entitlement-store reads while the boundary is dormant.
+    assert repo.load_learn_mutation_preload_calls == 0
+    assert repo.load_account_preload_calls == 0
+    assert repo.claimed_articles_calls == 0
+    assert override_calls["n"] == 0
+
+
+def test_quiz_with_entitlements_off_does_zero_entitlement_reads(tmp_path: Path, monkeypatch):
+    from tests.quiz_helpers import submit_quiz
+
+    client, repo = _counting_client(tmp_path)
+    override_calls = _spy_override(client, monkeypatch)
+    repo.reset_counts()
+
+    resp = submit_quiz(client, MINI_UNITS, "clause-1", cycle=0)
+    assert resp.status_code == 200
+    assert resp.json().get("persisted") is True  # legacy persistence still works
+    assert repo.mark_mode_seen_calls == 1
+    assert repo.load_learn_mutation_preload_calls == 0
+    assert repo.load_account_preload_calls == 0
+    assert repo.claimed_articles_calls == 0
+    assert override_calls["n"] == 0
 
 
 def test_learn_get_includes_account_when_entitlements_on(tmp_path: Path):
