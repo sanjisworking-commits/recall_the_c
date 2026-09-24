@@ -90,8 +90,8 @@
   <div class="learn-body pg-learn-panel" data-pg-learn-panel="read">
     <article class="unit-text learn-read-text">{{ canonical_body }}</article>
     <p class="learn-hint">Read it closely. Bare Act wording, verbatim.</p>
-    <div class="learn-read-controls">
-      <button type="button" class="learn-read-done pg-btn" data-pg-complete>Mark as read</button>
+    <div class="pg-learn-actions">
+      <button type="button" class="pg-btn" data-pg-complete>Mark as read</button>
     </div>
   </div>
   {% elif learn_mode == 'cloze' %}
@@ -112,7 +112,7 @@
     {% if cloze_fallback %}
     <p class="learn-hint">This provision is short. Read the Bare Act wording, then mark Cloze complete.</p>
     <article class="unit-text">{{ canonical_body }}</article>
-    <p class="learn-read-controls">
+    <p class="pg-learn-actions">
       <button type="button" class="pg-btn" data-pg-complete>Mark Cloze complete</button>
     </p>
     {% else %}

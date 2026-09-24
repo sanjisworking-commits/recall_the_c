@@ -755,14 +755,119 @@ html[data-theme="dark"] {
 }
 
 .pg-learn-deck {
-  display: grid;
+  display: none;
   grid-template-columns: 1fr;
   gap: 10px;
   margin: 0 0 20px;
 }
 
+.pg-learn-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 160px;
+  padding: 14px 14px 0;
+  border: 1px solid var(--pg-hairline);
+  background: var(--pg-paper);
+  color: var(--pg-ink);
+  text-decoration: none;
+}
+
+.pg-learn-card .learn-deck-card-eyebrow {
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--pg-muted);
+}
+
+.pg-learn-card .learn-deck-card-title {
+  font-family: Fraunces, Georgia, serif;
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+
+.pg-learn-card .learn-deck-card-lede {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--pg-muted);
+}
+
+.pg-learn-card .learn-deck-card-foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  margin: auto -14px 0;
+  padding: 0 14px;
+  border-top: 1px solid var(--pg-hairline);
+  font-size: 14px;
+}
+
+.pg-learn-card .learn-deck-card-state {
+  color: var(--pg-muted);
+}
+
+.pg-learn-card.is-done .learn-deck-card-state {
+  color: var(--pg-ink);
+  font-weight: 700;
+}
+
+.pg-learn-card .learn-deck-card-open {
+  margin-left: auto;
+}
+
+.pg-mode-tabs.mode-tabs {
+  flex-wrap: wrap;
+  overflow: visible;
+  gap: 6px;
+  width: auto;
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0 0 16px;
+}
+
+.pg-mode-tabs .mode-tab {
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--pg-hairline);
+  color: var(--pg-ink) !important;
+}
+
+.pg-mode-tabs .mode-tab.is-active {
+  background: var(--pg-ink);
+  color: var(--pg-paper) !important;
+  border-color: var(--pg-ink);
+}
+
+.pg-mode-tabs .mode-tab.is-done {
+  font-weight: 700;
+}
+
+.pg-learn-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 16px 0 8px;
+}
+
+/* Constitution desktop hides .learn-read-controls at ≥561px. Playground
+   completion is explicit on every viewport, so never reuse that class. */
+.pg-learn .learn-read-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 16px 0 8px;
+}
+
+.pg-learn-panel {
+  margin: 0 0 20px;
+}
+
 @media (min-width: 1040px) {
   .pg-learn-deck {
+    display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 

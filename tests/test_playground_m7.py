@@ -308,6 +308,22 @@ def test_read_get_does_not_complete(tmp_path: Path):
     assert "Done." in reload_page.text
 
 
+def test_read_complete_control_not_constitution_desktop_hidden():
+    html = (
+        ROOT / "src/constitution_memorizer/web/templates/playground_learn.html"
+    ).read_text(encoding="utf-8")
+    css = (
+        ROOT / "src/constitution_memorizer/web/static/playground.css"
+    ).read_text(encoding="utf-8")
+    assert "learn-read-controls" not in html
+    assert "pg-learn-actions" in html
+    assert "Mark as read" in html
+    assert ".pg-learn-actions" in css
+    before_desktop = css.split("@media (min-width: 1040px)")[0]
+    deck = before_desktop.split(".pg-learn-deck")[1][:160]
+    assert "display: none" in deck
+
+
 @pytest.mark.parametrize("mode", ("read", "cloze", "letters", "type", "recite"))
 def test_mode_complete_persists_and_leaves_others(tmp_path: Path, mode: str):
     client = _client(tmp_path)
