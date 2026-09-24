@@ -318,6 +318,11 @@ def test_read_complete_control_not_constitution_desktop_hidden():
     assert "learn-read-controls" not in html
     assert "pg-learn-actions" in html
     assert "Mark as read" in html
+    assert "learn-panel-cloze" not in html
+    assert "learn-panel-letters" not in html
+    assert "learn-panel-type" not in html
+    assert "learn-panel-recite" not in html
+    assert "learn-panel-test" not in html
     assert ".pg-learn-actions" in css
     before_desktop = css.split("@media (min-width: 1040px)")[0]
     deck = before_desktop.split(".pg-learn-deck")[1][:160]
@@ -372,6 +377,9 @@ def test_six_modes_generic_across_ndps_bns_bnss(tmp_path: Path):
             assert page.status_code == 200
             html = unescape(page.text)
             assert body[:60] in html
+            if mode == "cloze":
+                assert "learn-cloze-density" in html
+                assert "learn-panel-cloze" not in html
             if mode != "test":
                 done = _complete(client, law_id, "1", mode)
                 assert done.status_code == 200

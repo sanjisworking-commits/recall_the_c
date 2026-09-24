@@ -862,7 +862,17 @@ html[data-theme="dark"] {
 }
 
 .pg-learn-panel {
+  display: block;
   margin: 0 0 20px;
+}
+
+/* Constitution hides unused .learn-panel-* unless .learn[data-mode=…] wraps them. */
+.pg-learn .learn-panel-cloze,
+.pg-learn .learn-panel-letters,
+.pg-learn .learn-panel-type,
+.pg-learn .learn-panel-recite,
+.pg-learn .learn-panel-test {
+  display: block;
 }
 
 @media (min-width: 1040px) {
