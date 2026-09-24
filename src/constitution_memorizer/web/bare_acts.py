@@ -168,7 +168,7 @@ BARE_ACTS: dict[str, BareActSpec] = {
         # beside an empty `chapters`. Nothing about the reader changes per
         # Act; the loader reads either shape.
         # Identity of the runtime artifact. The canonical export is parser
-        # v1, archived as mtp_canonical_v1.json.
+        # v2, archived as mtp_canonical_v2.json.
         source_version="1",
     ),
 }

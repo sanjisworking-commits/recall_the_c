@@ -6,9 +6,9 @@
   "date": "10th August, 1971",
   "source_type": "IndiaCode_consolidation",
   "source_as_on": "27th July, 2025",
-  "parser": "PyMuPDF deterministic geometry parser (MTP v1)",
+  "parser": "PyMuPDF deterministic geometry parser (MTP v2)",
   "toolchain": {
-   "pymupdf": "1.26.6"
+   "pymupdf": "1.28.2"
   },
   "source_file": {
    "filename": "MTP.pdf",
@@ -1425,5 +1425,111 @@
   "reading_text": "Whitespace normalised; editorial square brackets, deletion asterisks and superscript footnote numbers removed. All source text retained in source_lines.",
   "statutory_references": "Preserved exactly as printed; no modernisation.",
   "footnotes": "Linked at source-line and section level; page-scoped IDs."
+ },
+ "_validation": {
+  "pages": 8,
+  "operative_pages": [
+   4,
+   7
+  ],
+  "chapters": 0,
+  "sections": 9,
+  "section_ids": [
+   "1",
+   "2",
+   "3",
+   "4",
+   "5",
+   "5A",
+   "6",
+   "7",
+   "8"
+  ],
+  "schedules": 0,
+  "footnotes": 12,
+  "footnote_references": 13,
+  "unresolved_footnote_references": 0,
+  "node_counts": {
+   "clause": 26,
+   "explanation": 4,
+   "paragraph": 4,
+   "proviso": 1,
+   "subsection": 24
+  },
+  "operative_source_lines": 137,
+  "unparsed_lines": 0,
+  "section_checks": [
+   {
+    "section": "1",
+    "text_reconstruction_match": true
+   },
+   {
+    "section": "2",
+    "text_reconstruction_match": true
+   },
+   {
+    "section": "3",
+    "text_reconstruction_match": true
+   },
+   {
+    "section": "4",
+    "text_reconstruction_match": true
+   },
+   {
+    "section": "5",
+    "text_reconstruction_match": true
+   },
+   {
+    "section": "5A",
+    "text_reconstruction_match": true
+   },
+   {
+    "section": "6",
+    "text_reconstruction_match": true
+   },
+   {
+    "section": "7",
+    "text_reconstruction_match": true
+   },
+   {
+    "section": "8",
+    "text_reconstruction_match": true
+   }
+  ],
+  "bracket_open_count": 11,
+  "bracket_close_count": 12,
+  "bracket_problems": [
+   {
+    "kind": "unmatched_close",
+    "page": 5,
+    "line_id": "p5_l32",
+    "section": "3",
+    "raw_text": "consent in writing of her guardian.]"
+   }
+  ],
+  "source_anomalies": [
+   {
+    "kind": "unmatched_editorial_bracket",
+    "page": 5,
+    "section": "3",
+    "source_line_id": "p5_l32",
+    "printed": "consent in writing of her guardian.]",
+    "note": "Closing \"]\" with no matching opener anywhere in the Act; a printing fault in the source. Kept in source_lines.raw_text, removed from the reading text like every other editorial bracket."
+   },
+   {
+    "kind": "footnote_missing_act_number",
+    "page": 6,
+    "footnote_id": "footnote_p6_3",
+    "printed": "Ins. by Act s. 5, ibid. (w.e.f. 24-9-2021).",
+    "note": "The amending Act number is absent in the source. Text kept exactly as printed. \"ibid.\" refers to the preceding note on the page (Ins. by Act 8 of 2021, s. 4 (w.e.f. 24-9-2021).), which is an inference recorded here, not written into the note."
+   }
+  ],
+  "blocking_errors": [],
+  "warnings": [
+   "Source p.5 has an unmatched closing editorial bracket after section 3(4)(a); retained in raw source, removed from reading text.",
+   "Footnote p.6 no.3 reads “Ins. by Act s. 5, ibid.”; retained without correction.",
+   "No legal currency verification beyond the supplied PDF dated 27 July 2025."
+  ],
+  "status": "passed"
  }
 }

@@ -15,8 +15,14 @@ What is new to the reader:
 * the bracket validator walks unchaptered sections too.
 
 The parser-side facts are pinned here as well: the source's own oddities are
-preserved rather than repaired, and the runtime is the archival copy minus the
-parse's line-by-line record.
+preserved rather than repaired and recorded in the canonical's `_validation`
+block so they cannot be mistaken for extraction faults, and the runtime is the
+archival copy minus the parse's line-by-line record.
+
+Footnotes, stated precisely: MTP's twelve notes hydrate, but no reference is
+anchored to a character span, so the reader shows no marker and a user has no
+way to reach them yet. NDPS anchors its notes and renders them; MTP does not.
+That gap is pinned here as the current behaviour, not claimed as a feature.
 """
 
 from __future__ import annotations
@@ -36,7 +42,7 @@ from constitution_memorizer.web.bare_acts import BARE_ACTS, get_bare_act
 
 REPO = Path(__file__).resolve().parents[1]
 MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
-ARCHIVAL = REPO / "data" / "reference" / "mtp_canonical_v1.json"
+ARCHIVAL = REPO / "data" / "reference" / "mtp_canonical_v2.json"
 RUNTIME = REPO / "src" / "constitution_memorizer" / "web" / "mtp_runtime_v1.json"
 
 SECTION_IDS = ["1", "2", "3", "4", "5", "5A", "6", "7", "8"]
@@ -59,6 +65,16 @@ def _all_rows():
 
 def _labels(nodes) -> list[str]:
     return [n.get("label") or "" for n in nodes]
+
+
+def _walk(nodes):
+    for node in nodes:
+        yield node
+        yield from _walk(node.get("children") or [])
+
+
+def _validation() -> dict:
+    return json.loads(ARCHIVAL.read_text(encoding="utf-8"))["_validation"]
 
 
 # ── The Act ───────────────────────────────────────────────────────────────
@@ -353,13 +369,20 @@ def test_the_twelve_footnotes_load_by_page_scoped_id():
     assert notes["footnote_p5_1"].marker == "1"
 
 
-def test_footnotes_are_loaded_but_not_yet_anchored_in_the_text():
+def test_footnotes_are_loaded_but_not_anchored_in_the_text():
     """The references are recorded at section level (`annotations` with a
-    source line and the printed text), not as character offsets on nodes,
-    so no row carries a note id and no marker renders. Deliberate: no Act
-    renders footnotes today, and the data to do so later is all here."""
+    source line and the printed text), not as `{start, end}` offsets on
+    nodes, so no row carries a note id. NDPS does carry offsets and renders
+    its markers; MTP's notes are therefore loaded but unreachable from any
+    page until the parser emits node-level anchors. The line ids and printed
+    text it does record are enough to derive them later."""
     act = get_bare_act("mtp")
     assert all(section.note_ids == () for section in act.section_order)
+    assert all(
+        not node.get("annotations") and not node.get("label_annotations")
+        for section in act.raw["sections"]
+        for node in _walk(section["body"])
+    )
     archival = json.loads(ARCHIVAL.read_text(encoding="utf-8"))
     anchors = [a for s in archival["sections"] for a in s["annotations"]]
     assert len(anchors) == 13
@@ -370,12 +393,67 @@ def test_footnotes_are_loaded_but_not_yet_anchored_in_the_text():
     }
 
 
-def test_the_misprinted_footnote_is_kept_as_printed():
-    """p.6 n.3 reads "Ins. by Act s. 5, ibid." — an Act number is missing in
-    the source. Recorded in the parser's diagnostics and left uncorrected."""
+def test_no_page_shows_a_footnote_marker_or_note(tmp_path: Path):
+    """The user-visible consequence of the test above, pinned so that the
+    day anchors land this fails and gets rewritten as a positive check."""
+    client, _ = _client(tmp_path)
+    ndps = client.get("/laws/ndps/section/1").text
+    assert 'id="fn-' in ndps  # the apparatus exists and NDPS uses it
+    for number in SECTION_IDS:
+        html = client.get(f"/laws/mtp/section/{number}").text
+        assert 'id="fn-' not in html, number
+        assert "bareact-fn" not in html, number
+
+
+def test_the_misprinted_footnote_is_kept_as_printed_and_recorded():
+    """p.6 n.3 reads "Ins. by Act s. 5, ibid." — the Act number is missing in
+    the source. Left uncorrected in the note, and named in the canonical's
+    `source_anomalies` so it reads as a printing fault, not a dropped token."""
     assert get_bare_act("mtp").footnotes["footnote_p6_3"].text == (
         "Ins. by Act s. 5, ibid. (w.e.f. 24-9-2021)."
     )
+    anomaly = next(
+        a for a in _validation()["source_anomalies"]
+        if a["kind"] == "footnote_missing_act_number"
+    )
+    assert anomaly["footnote_id"] == "footnote_p6_3"
+    assert anomaly["printed"] == "Ins. by Act s. 5, ibid. (w.e.f. 24-9-2021)."
+    assert "Act 8 of 2021" in anomaly["note"]
+
+
+def test_the_orphan_closing_bracket_is_recorded_not_repaired():
+    """s.3(4)(a) prints "...her guardian.]" with no opener anywhere in the
+    Act: 11 "[" against 12 "]" over the operative lines. The reading text
+    drops it with every other editorial bracket, and the raw line keeps it."""
+    validation = _validation()
+    assert (validation["bracket_open_count"], validation["bracket_close_count"]) == (11, 12)
+    [problem] = validation["bracket_problems"]
+    assert problem["kind"] == "unmatched_close"
+    assert problem["line_id"] == "p5_l32"
+    anomaly = next(
+        a for a in validation["source_anomalies"]
+        if a["kind"] == "unmatched_editorial_bracket"
+    )
+    assert anomaly["section"] == "3" and anomaly["source_line_id"] == "p5_l32"
+    assert anomaly["printed"] == "consent in writing of her guardian.]"
+    archival = json.loads(ARCHIVAL.read_text(encoding="utf-8"))
+    raw = next(l for l in archival["source_lines"] if l["id"] == "p5_l32")
+    assert raw["raw_text"].endswith("guardian.]")
+    clause_a = get_bare_act("mtp").section("3").body[-1]["children"][0]
+    assert clause_a["text"].endswith("consent in writing of her guardian.")
+
+
+def test_the_anomaly_set_is_exactly_these_two():
+    """A regeneration that finds a different set is a different source or a
+    different parser, and must be looked at rather than absorbed."""
+    kinds = [(a["kind"], a.get("source_line_id") or a.get("footnote_id"))
+             for a in _validation()["source_anomalies"]]
+    assert kinds == [
+        ("unmatched_editorial_bracket", "p5_l32"),
+        ("footnote_missing_act_number", "footnote_p6_3"),
+    ]
+    assert _validation()["status"] == "passed"
+    assert _validation()["blocking_errors"] == []
 
 
 # ── Catalogue ─────────────────────────────────────────────────────────────
@@ -498,7 +576,7 @@ def test_the_runtime_keeps_every_block_the_reader_may_later_need():
     assert runtime["chapters"] == []
     for key in (
         "source_front_matter", "source_back_matter", "long_title",
-        "enacting_formula", "editorial_policy",
+        "enacting_formula", "editorial_policy", "_validation",
     ):
         assert runtime[key], key
     assert runtime["source_back_matter"][0]["type"] == "statement_of_objects_and_reasons"
@@ -514,6 +592,11 @@ def test_the_archival_canonical_is_the_reviewed_parse():
         "6e091b4327fa5c2829724ff9bf0f645ad545bb64ed3afd278fe50998b53980ac"
     )
     assert archival["document"]["source_as_on"] == "27th July, 2025"
+    assert archival["document"]["parser"].endswith("(MTP v2)")
+    checks = archival["_validation"]["section_checks"]
+    assert [c["section"] for c in checks] == SECTION_IDS
+    assert all(c["text_reconstruction_match"] for c in checks)
+    assert archival["_validation"]["unparsed_lines"] == 0
     assert archival["document"]["hierarchy_note"] == (
         "No chapters in source; sections are stored at top level."
     )

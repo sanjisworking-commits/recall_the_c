@@ -111,7 +111,7 @@ ARTIFACTS: tuple[tuple[Path, Path, str], ...] = (
     # at runtime reads it; the footnotes, annotations and provenance that
     # point into it by line id are kept.
     (
-        ROOT / "data" / "reference" / "mtp_canonical_v1.json",
+        ROOT / "data" / "reference" / "mtp_canonical_v2.json",
         ROOT / "src" / "constitution_memorizer" / "web" / "mtp_runtime_v1.json",
         "mtp",
     ),
