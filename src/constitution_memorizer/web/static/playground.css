@@ -692,3 +692,138 @@ html[data-theme="dark"] {
 .pg-sheet[open]::backdrop {
   background: rgba(20, 20, 20, 0.42);
 }
+
+.pg-learn {
+  padding-bottom: 96px;
+}
+
+.pg-mode-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0 8px;
+}
+
+.pg-mode-exit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  text-decoration: none;
+  border: 1px solid var(--pg-hairline);
+}
+
+.pg-mode-stepper {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+}
+
+.pg-mode-step {
+  flex: 1;
+  height: 6px;
+  background: var(--pg-hairline);
+}
+
+.pg-mode-step.is-current {
+  background: var(--pg-ink);
+}
+
+.pg-mode-step.is-done {
+  background: var(--pg-muted);
+}
+
+.pg-mode-step-label,
+.pg-methods-tracker,
+.pg-methods-count {
+  font-size: 13px;
+  color: var(--pg-muted);
+}
+
+.pg-mode-task {
+  font-family: Fraunces, Georgia, serif;
+  font-size: 22px;
+  margin: 0 0 16px;
+}
+
+.pg-mode-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 16px;
+}
+
+.pg-learn-deck {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin: 0 0 20px;
+}
+
+@media (min-width: 1040px) {
+  .pg-learn-deck {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pg-learn {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+    gap: 24px;
+  }
+
+  .pg-learn > .pg-eyebrow,
+  .pg-learn > h1,
+  .pg-learn > .pg-lede,
+  .pg-learn > .pg-note,
+  .pg-learn > .pg-mode-bar,
+  .pg-learn > .pg-mode-head,
+  .pg-learn > .pg-mode-tabs,
+  .pg-learn > .pg-methods-tracker {
+    grid-column: 1 / -1;
+  }
+
+  .pg-learn-deck {
+    grid-column: 1;
+  }
+
+  .pg-learn-panel,
+  .pg-learn-feedback,
+  .pg-learn > .VerbatimText,
+  .pg-learn > .pg-actions {
+    grid-column: 2;
+  }
+}
+
+.pg-learn-card.is-current {
+  outline: 2px solid var(--pg-ink);
+}
+
+.pg-learn-feedback {
+  margin: 16px 0;
+  padding: 16px;
+  background: var(--pg-subtle);
+  border: 1px solid var(--pg-hairline);
+}
+
+.pg-learn .learn-read-done,
+.pg-learn .learn-cloze-density-btn,
+.pg-learn .learn-letters-speak,
+.pg-learn .learn-letters-btn,
+.pg-learn .learn-recite-toggle,
+.pg-learn .learn-recite-peek,
+.pg-learn .learn-recite-check,
+.pg-learn .learn-letters-check-text,
+.pg-learn .learn-type-input,
+.pg-learn .learn-test-fill,
+.pg-learn button[data-pg-complete] {
+  min-height: 44px;
+}
+
+.pg-learn .learn-type-input,
+.pg-learn .learn-letters-manual,
+.pg-learn .learn-recite-manual,
+.pg-learn .learn-test-fill {
+  width: 100%;
+  font: inherit;
+}

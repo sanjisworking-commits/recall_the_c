@@ -43,3 +43,11 @@ def learn_path(law_id: str, number: str, mode: str = "cloze") -> str:
 
 def learn_complete_path(law_id: str, number: str, mode: str = "cloze") -> str:
     return f"{learn_path(law_id, number, mode)}/complete"
+
+
+def learn_start_path(law_id: str, number: str, mode: str) -> str:
+    return f"{learn_path(law_id, number, mode)}/start"
+
+
+def learn_quiz_path(law_id: str, number: str) -> str:
+    return f"{learn_path(law_id, number, 'test')}/quiz"

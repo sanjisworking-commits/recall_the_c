@@ -46,7 +46,7 @@ from tests.test_roster_m5a import (
 )
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED_HEAD = "20260917_0024"
+EXPECTED_HEAD = "20260924_0025"
 
 FORBIDDEN_AI = (
     "AI-generated statute",

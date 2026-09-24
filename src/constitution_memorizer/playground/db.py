@@ -41,9 +41,62 @@ CREATE TABLE IF NOT EXISTS user_playground_progress (
     updated_at TEXT NOT NULL,
     PRIMARY KEY (user_id, law_id, source_locator)
 );
+
+CREATE TABLE IF NOT EXISTS user_playground_mode_progress (
+    user_id TEXT NOT NULL,
+    law_id TEXT NOT NULL,
+    source_locator TEXT NOT NULL,
+    mode TEXT NOT NULL,
+    status TEXT NOT NULL,
+    attempt_count INTEGER NOT NULL DEFAULT 0,
+    first_started_at TEXT,
+    last_attempt_at TEXT,
+    completed_at TEXT,
+    source_version TEXT NOT NULL,
+    source_hash TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    PRIMARY KEY (user_id, law_id, source_locator, mode),
+    CHECK (mode IN ('read', 'cloze', 'letters', 'type', 'recite', 'test')),
+    CHECK (status IN ('in_progress', 'completed'))
+);
+
+CREATE INDEX IF NOT EXISTS user_playground_mode_progress_user_law
+    ON user_playground_mode_progress (user_id, law_id, source_locator);
 """
+
+BACKFILL_CLOZE_SQL = """
+INSERT INTO user_playground_mode_progress (
+    user_id, law_id, source_locator, mode, status, attempt_count,
+    first_started_at, last_attempt_at, completed_at,
+    source_version, source_hash, created_at, updated_at
+)
+SELECT
+    user_id,
+    law_id,
+    source_locator,
+    'cloze',
+    'completed',
+    CASE WHEN times_completed < 1 THEN 1 ELSE times_completed END,
+    COALESCE(updated_at, last_completed),
+    COALESCE(updated_at, last_completed),
+    COALESCE(last_completed, updated_at),
+    source_version,
+    source_hash,
+    COALESCE(updated_at, last_completed),
+    COALESCE(updated_at, last_completed)
+FROM user_playground_progress
+WHERE cloze_done != 0
+ON CONFLICT (user_id, law_id, source_locator, mode) DO NOTHING;
+"""
+
+
+def backfill_sqlite_cloze_mode_progress(conn: sqlite3.Connection) -> None:
+    conn.execute(BACKFILL_CLOZE_SQL)
+    conn.commit()
 
 
 def ensure_sqlite_schema(conn: sqlite3.Connection) -> None:
     conn.executescript(SCHEMA_SQL)
     conn.commit()
+    backfill_sqlite_cloze_mode_progress(conn)

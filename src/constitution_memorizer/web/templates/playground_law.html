@@ -41,6 +41,7 @@
       <span>{{ row.title }}</span>
       <p>
         {{ status_badge(row.status, row.status_label) }}
+        {% if row.methods_label %}<span class="pg-methods-count">{{ row.methods_label }}</span>{% endif %}
         {% if row.due %}{{ due_badge(1) }}{% endif %}
         {% if row.outdated %}{{ status_badge('updated', 'Law updated') }}{% endif %}
       </p>

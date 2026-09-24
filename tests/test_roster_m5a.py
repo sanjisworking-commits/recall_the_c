@@ -514,7 +514,7 @@ def test_postgres_consume_locks_period_row():
 def test_alembic_head_and_rls():
     cfg = Config(str(ROOT / "alembic.ini"))
     heads = ScriptDirectory.from_config(cfg).get_heads()
-    assert heads == ["20260917_0024"]
+    assert heads == ["20260924_0025"]
     text = (
         ROOT / "alembic" / "versions" / "20260917_0024_playground_roster.py"
     ).read_text(encoding="utf-8")
@@ -588,7 +588,7 @@ def test_remove_readd_progress_and_full_gate(tmp_path: Path):
         data={**_csrf(client), "section": "1"},
         follow_redirects=False,
     )
-    client.post(learn_complete_path("ndps", "1"))
+    client.post(learn_complete_path("ndps", "1"), data=_csrf(client))
     overlay = client.app.state.playground
     before_item = overlay.get_item(USER, "ndps")
     before_sel = overlay.list_selection(USER, "ndps")
@@ -728,7 +728,7 @@ def test_full_roster_does_not_close_playground(tmp_path: Path):
     assert "My Playground" in home.text
     assert client.get(law_path("ndps")).status_code == 200
     assert client.get(learn_path("ndps", "1")).status_code == 200
-    done = client.post(learn_complete_path("ndps", "1"))
+    done = client.post(learn_complete_path("ndps", "1"), data=_csrf(client))
     assert done.status_code == 200
     assert done.json()["ok"] is True
     blocked = _confirm_add(client, "bns")

@@ -1,0 +1,259 @@
+{% extends "playground_base.html" %}
+{% from "partials/playground.html" import trust_mark, status_badge %}
+{% block title %}{{ mode_label }} · Section {{ section.number }} · Playground{% endblock %}
+{% block playground %}
+{% set completed = summary.completed_modes %}
+<section
+  class="pg-learn"
+  data-pg-learn
+  data-pg-mode="{{ learn_mode }}"
+  data-pg-complete-url="{{ complete_url }}"
+  data-pg-start-url="{{ start_url }}"
+  data-pg-quiz-url="{{ quiz_url }}"
+  data-pg-csrf="{{ csrf_token }}"
+  data-pg-cycle="{{ quiz_cycle }}"
+  data-pg-next-mode="{{ summary.next_mode or '' }}"
+  data-pg-completed="{{ completed | join(',') }}"
+>
+  <p class="pg-eyebrow">
+    <a href="/playground/laws/{{ act.slug }}">{{ act.short_name }}</a>
+    · Section {{ section.number }}
+  </p>
+  <h1>{{ mode_label }}</h1>
+  <p class="pg-lede">{{ section.title }}</p>
+  {% if source_outdated %}
+  <p class="pg-note">Law updated. Revealed text is the live Bare Act wording.</p>
+  {% endif %}
+
+  <div class="pg-mode-bar">
+    <a class="pg-mode-exit" href="/playground/laws/{{ act.slug }}" aria-label="Exit learning">✕</a>
+    <div class="pg-mode-stepper" role="img" aria-label="Step {{ step_n }} of 6">
+      {% for item in learn_modes %}
+      <span
+        class="pg-mode-step{% if item.id in completed %} is-done{% elif item.id == learn_mode %} is-current{% endif %}"
+        data-step-mode="{{ item.id }}"
+      ></span>
+      {% endfor %}
+    </div>
+    <span class="pg-mode-step-label">Step {{ step_n }} of 6</span>
+  </div>
+  <div class="pg-mode-head">
+    <p class="pg-eyebrow">
+      <span>{{ mode_label }}</span>
+      <span aria-hidden="true">·</span>
+      <span>Section {{ section.number }}</span>
+    </p>
+    <h2 class="pg-mode-task">
+      {% for item in learn_modes %}{% if item.id == learn_mode %}{{ item.task }}{% endif %}{% endfor %}
+    </h2>
+  </div>
+
+  <div class="mode-tabs pg-mode-tabs" role="tablist" aria-label="Learning methods">
+    {% for item in learn_modes %}
+    <a
+      class="mode-tab{% if item.id == learn_mode %} is-active{% endif %}{% if item.id in completed %} is-done{% endif %}"
+      role="tab"
+      aria-selected="{{ 'true' if item.id == learn_mode else 'false' }}"
+      {% if item.id == learn_mode %}aria-current="page"{% endif %}
+      href="/playground/laws/{{ act.slug }}/sections/{{ section.number }}/learn/{{ item.id }}"
+    >{{ item.label }}{% if item.id in completed %} ✓{% endif %}</a>
+    {% endfor %}
+  </div>
+
+  <p class="pg-methods-tracker" role="status">
+    {% if summary.all_methods_complete %}
+    6 of 6 methods complete
+    {% else %}
+    {{ summary.completed_count }} of 6 methods
+    {% endif %}
+  </p>
+
+  <div class="pg-learn-deck" data-pg-learn-deck>
+    {% for item in learn_modes %}
+    {% set state = 'Done' if item.id in completed else ('In progress' if item.id in summary.in_progress_modes else 'Not started') %}
+    <a
+      class="learn-deck-card pg-learn-card{% if item.id in completed %} is-done{% endif %}{% if item.id == learn_mode %} is-current{% endif %}"
+      href="/playground/laws/{{ act.slug }}/sections/{{ section.number }}/learn/{{ item.id }}"
+    >
+      <span class="learn-deck-card-eyebrow">{{ item.ordinal_label }} · {{ item.label | upper }}</span>
+      <span class="learn-deck-card-title">{{ item.title }}</span>
+      <span class="learn-deck-card-lede">{{ item.lede }}</span>
+      <span class="learn-deck-card-foot">
+        <span class="learn-deck-card-state">{{ state }}</span>
+        <span class="learn-deck-card-open">{% if item.id in completed %}Review →{% else %}Open →{% endif %}</span>
+      </span>
+    </a>
+    {% endfor %}
+  </div>
+
+  {% if learn_mode == 'read' %}
+  <div class="learn-body pg-learn-panel" data-pg-learn-panel="read">
+    <article class="unit-text learn-read-text">{{ canonical_body }}</article>
+    <p class="learn-hint">Read it closely. Bare Act wording, verbatim.</p>
+    <div class="learn-read-controls">
+      <button type="button" class="learn-read-done pg-btn" data-pg-complete>Mark as read</button>
+    </div>
+  </div>
+  {% elif learn_mode == 'cloze' %}
+  <div
+    class="learn-body learn-panel-cloze pg-learn-panel"
+    data-pg-learn-panel="cloze"
+    data-cloze-text="{{ canonical_body | e }}"
+    data-cloze-density="medium"
+  >
+    <div class="learn-cloze-density" role="group" aria-label="Cloze density">
+      <span class="learn-cloze-density-label">Density</span>
+      <div class="learn-cloze-density-track">
+        <button type="button" class="learn-cloze-density-btn" data-cloze-density="light" aria-pressed="false">Light</button>
+        <button type="button" class="learn-cloze-density-btn is-active" data-cloze-density="medium" aria-pressed="true">Medium</button>
+        <button type="button" class="learn-cloze-density-btn" data-cloze-density="heavy" aria-pressed="false">Heavy</button>
+      </div>
+    </div>
+    {% if cloze_fallback %}
+    <p class="learn-hint">This provision is short. Read the Bare Act wording, then mark Cloze complete.</p>
+    <article class="unit-text">{{ canonical_body }}</article>
+    <p class="learn-read-controls">
+      <button type="button" class="pg-btn" data-pg-complete>Mark Cloze complete</button>
+    </p>
+    {% else %}
+    <div class="learn-cloze-text" aria-live="polite"></div>
+    <div class="learn-cloze-controls">
+      <button type="button" class="learn-cloze-btn" data-cloze-action="toggle-all">Reveal all</button>
+      <span class="learn-cloze-status" data-cloze-status>0 of 0 revealed — tap a blank</span>
+    </div>
+    {% endif %}
+  </div>
+  {% elif learn_mode == 'letters' %}
+  <div
+    class="learn-body pg-learn-panel"
+    data-pg-learn-panel="letters"
+    data-letters-text="{{ canonical_body | e }}"
+  >
+    <div class="learn-letters-viewswitch segmented is-on-page" role="group" aria-label="Letters practice style">
+      <button type="button" class="segmented-btn learn-letters-view-btn is-active" data-letters-view-set="voice" aria-pressed="true">Speak</button>
+      <button type="button" class="segmented-btn learn-letters-view-btn" data-letters-view-set="plain" aria-pressed="false">Read</button>
+    </div>
+    <p class="learn-letters-text is-initials" data-letters-display></p>
+    <p class="learn-letters-status" data-letters-status hidden></p>
+    <div class="learn-letters-controls">
+      <button type="button" class="learn-letters-speak" data-letters-speak>▸ Speak</button>
+      <button type="button" class="learn-letters-btn" data-letters-toggle>Full text</button>
+      <span class="learn-letters-hint">Use the first letters. Rebuild the clause from initials.</span>
+    </div>
+    <div class="learn-letters-fallback" data-letters-fallback hidden>
+      <p class="learn-letters-fallback-lede">Speech recognition is unavailable. Type the next words, then check.</p>
+      <label class="visually-hidden" for="pg-letters-manual">What you said</label>
+      <textarea id="pg-letters-manual" class="learn-letters-manual" data-letters-manual rows="2" autocomplete="off" spellcheck="false"></textarea>
+      <button type="button" class="learn-letters-check-text" data-letters-check-text>Check typed words</button>
+    </div>
+    <p class="pg-actions">
+      <button type="button" class="pg-btn" data-pg-complete>Mark Letters complete</button>
+    </p>
+  </div>
+  {% elif learn_mode == 'type' %}
+  <div
+    class="learn-body pg-learn-panel"
+    data-pg-learn-panel="type"
+    data-type-text="{{ canonical_body | e }}"
+  >
+    <p class="learn-type-lede">Type it from memory — words are checked as you go.</p>
+    <label class="visually-hidden" for="pg-type-input">Type the Bare Act text from memory</label>
+    <div class="learn-type-field" data-type-field>
+      <div class="learn-type-mirror" data-type-mirror aria-hidden="true"></div>
+      <textarea
+        id="pg-type-input"
+        class="learn-type-input"
+        data-type-input
+        rows="4"
+        placeholder="Start typing…"
+        autocomplete="off"
+        autocorrect="off"
+        autocapitalize="off"
+        spellcheck="false"
+      ></textarea>
+    </div>
+    <p class="learn-type-stats" data-type-stats><span data-type-count>0 of 0 words · 0 correct</span></p>
+    <p class="pg-actions">
+      <button type="button" class="pg-btn" data-type-check>Check</button>
+      <button type="button" class="pg-btn pg-btn--ghost" data-pg-complete hidden>Mark Type complete</button>
+    </p>
+  </div>
+  {% elif learn_mode == 'recite' %}
+  <div
+    class="learn-body pg-learn-panel"
+    data-pg-learn-panel="recite"
+    data-recite-text="{{ canonical_body | e }}"
+  >
+    <p class="learn-recite-text is-blurred" data-recite-blur>{{ canonical_body }}</p>
+    <div class="learn-recite-controls">
+      <button type="button" class="learn-recite-toggle" data-recite-toggle>▸ Start reciting</button>
+      <button type="button" class="learn-recite-peek" data-recite-peek>Hold to peek</button>
+      <span class="learn-recite-hint">Speak the clause; stop for your accuracy map.</span>
+    </div>
+    <p class="learn-recite-status" data-recite-status hidden></p>
+    <div class="learn-recite-fallback" data-recite-fallback>
+      <p class="learn-recite-fallback-lede">Speech may be unavailable. Type what you recited, then check accuracy.</p>
+      <label class="visually-hidden" for="pg-recite-manual">What you recited</label>
+      <textarea id="pg-recite-manual" class="learn-recite-manual" data-recite-manual rows="3" placeholder="Type what you said…" autocomplete="off" spellcheck="false"></textarea>
+      <button type="button" class="learn-recite-check" data-recite-check>Check accuracy</button>
+    </div>
+    <div class="learn-recite-map" data-recite-map hidden aria-live="polite"></div>
+    <p class="learn-recite-stats" data-recite-stats hidden></p>
+    <p class="pg-actions">
+      <button type="button" class="pg-btn" data-pg-complete hidden>Mark Recite complete</button>
+    </p>
+  </div>
+  {% elif learn_mode == 'test' %}
+  <div class="learn-body pg-learn-panel" data-pg-learn-panel="test">
+    <p class="learn-test-lede">A short checkpoint · {{ quiz_questions|length }} question{{ 's' if quiz_questions|length != 1 }}</p>
+    <form data-pg-quiz-form>
+      {% for q in quiz_questions %}
+      {% set qi = loop.index0 %}
+      <fieldset class="learn-test-q" data-quiz-q data-kind="{{ q.kind }}">
+        <legend class="learn-test-legend">{{ q.prompt }}</legend>
+        {% if q.kind == 'mcq' %}
+          {% for opt in q.options %}
+          <label class="learn-test-opt">
+            <input class="learn-test-opt-input" type="radio" name="quiz-q{{ qi }}" value="{{ loop.index0 }}">
+            <span class="learn-test-opt-text">{{ opt }}</span>
+          </label>
+          {% endfor %}
+        {% else %}
+          <label class="visually-hidden" for="pg-quiz-fill-{{ qi }}">Missing word</label>
+          <input type="text" id="pg-quiz-fill-{{ qi }}" class="learn-test-fill" data-quiz-fill name="quiz-q{{ qi }}" autocomplete="off" spellcheck="false">
+        {% endif %}
+      </fieldset>
+      {% endfor %}
+      <p class="pg-actions">
+        <button type="submit" class="pg-btn">Check answers</button>
+      </p>
+    </form>
+  </div>
+  {% endif %}
+
+  <p class="pg-note" data-pg-complete-status{% if current_status != 'completed' %} hidden{% endif %}>
+    {% if current_status == 'completed' %}Done.{% endif %}
+  </p>
+  <div class="pg-learn-feedback" data-pg-feedback hidden role="status">
+    <p class="pg-learn-feedback-msg" data-pg-feedback-msg></p>
+    <p class="pg-learn-feedback-sub" data-pg-feedback-sub></p>
+    <p class="pg-actions">
+      <a class="pg-btn" data-pg-feedback-go href="/playground/laws/{{ act.slug }}">Continue</a>
+    </p>
+  </div>
+
+  <div class="VerbatimText" data-verbatim data-open="false">
+    <p class="VerbatimText-kicker">VERBATIM TEXT</p>
+    <p>Section {{ section.number }} — {{ section.title }}</p>
+    <blockquote hidden>{{ canonical_body }}</blockquote>
+    <p class="pg-actions">
+      <button type="button" class="pg-btn pg-btn--quiet" data-verbatim-toggle aria-expanded="false">Show verbatim text</button>
+    </p>
+    {{ trust_mark("Bare Act wording, never rewritten.") }}
+  </div>
+  <p class="pg-actions">
+    <a class="pg-btn pg-btn--quiet" href="/laws/{{ act.slug }}/section/{{ section.number }}">Read the Bare Act</a>
+    <a class="pg-btn pg-btn--ghost" href="/playground/laws/{{ act.slug }}">Back to {{ act.short_name }}</a>
+  </p>
+</section>
+{% endblock %}

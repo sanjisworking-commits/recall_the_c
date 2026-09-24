@@ -312,7 +312,11 @@ def test_guest_playground_mutations_go_to_login(tmp_path: Path):
     saved = _mutate(client, sections_path("ndps"), section="1")
     assert saved.status_code == 303
     assert saved.headers["location"] == f"/login?next={sections_path('ndps')}"
-    done = client.post(learn_complete_path("ndps", "1"), follow_redirects=False)
+    done = client.post(
+        learn_complete_path("ndps", "1"),
+        data=_csrf(client),
+        follow_redirects=False,
+    )
     assert done.status_code == 401
     assert done.json()["error"] == "auth_required"
     assert client.app.state.playground.get_item(USER, "ndps") is None
@@ -364,7 +368,11 @@ def test_free_account_blocked_deep_link_hydrates_zero_acts(
         client.get(path, follow_redirects=False)
     _mutate(client, add_path("ndps"))
     _mutate(client, sections_path("ndps"), section="1")
-    client.post(learn_complete_path("ndps", "1"), follow_redirects=False)
+    client.post(
+        learn_complete_path("ndps", "1"),
+        data=_csrf(client),
+        follow_redirects=False,
+    )
     assert hydrated == before
     assert client.app.state.playground.list_items(USER) == []
 
@@ -403,8 +411,8 @@ def test_active_subscriber_keeps_existing_playground_proof(tmp_path: Path):
     assert workspace.status_code == 200
     page = client.get(learn_path("ndps", "1"))
     assert page.status_code == 200
-    assert "data-playground-cloze" in page.text
-    done = client.post(learn_complete_path("ndps", "1"))
+    assert 'data-pg-learn-panel="cloze"' in page.text
+    done = client.post(learn_complete_path("ndps", "1"), data=_csrf(client))
     assert done.status_code == 200
     assert done.json()["ok"] is True
     snap = client.app.state.entitlement_service.resolve(USER, now=NOW)
@@ -451,7 +459,7 @@ def test_pending_opens_current_roster_and_blocks_historical_overlay(tmp_path: Pa
     assert workspace.status_code == 200
     learn = client.get(learn_path("ndps", "1"))
     assert learn.status_code == 200
-    done = client.post(learn_complete_path("ndps", "1"))
+    done = client.post(learn_complete_path("ndps", "1"), data=_csrf(client))
     assert done.status_code == 200
     assert done.json()["ok"] is True
     historical = client.get(law_path("bns"), follow_redirects=False)
@@ -526,7 +534,7 @@ def test_paid_period_ended_blocks_all_playground_surfaces(tmp_path: Path):
     assert "Your Playground is paused" in home.text
     learn = client.get(learn_path("ndps", "1"), follow_redirects=False)
     assert 'data-playground-gate="paid_period_ended"' in learn.text
-    done = client.post(learn_complete_path("ndps", "1"))
+    done = client.post(learn_complete_path("ndps", "1"), data=_csrf(client))
     assert done.status_code == 403
     assert done.json()["ok"] is False
     added = _mutate(client, add_path("bns"))
@@ -605,7 +613,7 @@ def test_active_tiers_have_identical_playground_learning(
     assert select.status_code == 200
     learn = client.get(learn_path("ndps", "1"))
     assert learn.status_code == 200
-    done = client.post(learn_complete_path("ndps", "1"))
+    done = client.post(learn_complete_path("ndps", "1"), data=_csrf(client))
     assert done.status_code == 200
     assert done.json()["ok"] is True
     snap = client.app.state.entitlement_service.resolve(USER, now=NOW)
@@ -622,14 +630,14 @@ def test_overlay_survives_halt_and_resumes_when_active(tmp_path: Path):
     _set_status(client, sub.id, "halted")
     home = client.get("/playground")
     assert "Payment retries have stopped" in home.text
-    done = client.post(learn_complete_path("ndps", "1"))
+    done = client.post(learn_complete_path("ndps", "1"), data=_csrf(client))
     assert done.status_code == 403
     assert _overlay_fingerprint(client) == before
     _set_status(client, sub.id, "active")
     learn = client.get(learn_path("ndps", "1"))
     assert learn.status_code == 200
     assert _overlay_fingerprint(client) == before
-    again = client.post(learn_complete_path("ndps", "1"))
+    again = client.post(learn_complete_path("ndps", "1"), data=_csrf(client))
     assert again.status_code == 200
     resumed = _overlay_fingerprint(client)
     assert resumed[0] == before[0]

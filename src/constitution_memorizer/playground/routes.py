@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from datetime import date
-
 from fastapi import APIRouter, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
@@ -43,11 +41,22 @@ from constitution_memorizer.playground.roster.period import (
     playground_month_name,
     playground_today,
 )
+from constitution_memorizer.playground.learning.service import (
+    LearnProvisionError,
+    cloze_needs_fallback,
+    coerce_quiz_answers,
+    grade_section_quiz,
+    is_playground_learn_mode,
+    load_learn_provision,
+    mode_definitions,
+    provision_mode_view,
+    quiz_for_attempt,
+    summaries_for_locators,
+)
 from constitution_memorizer.playground.service import (
     activate_law,
     mark_outdated,
     parse_selected_locator,
-    provision_for_learn,
     require_playground_law,
     selected_locator_set,
     selection_rows,
@@ -59,6 +68,8 @@ from constitution_memorizer.playground.urls import (
     law_path,
     learn_complete_path,
     learn_path,
+    learn_quiz_path,
+    learn_start_path,
     roster_next_path,
     roster_path,
     sections_path,
@@ -71,7 +82,7 @@ from constitution_memorizer.playground.view import (
     section_row_view,
 )
 
-SUPPORTED_LEARN_MODE = "cloze"
+from constitution_memorizer.playground.learning.modes import PLAYGROUND_MODE_LABELS
 
 
 def _section_source_hash(act, locator: str, law_id: str) -> str:
@@ -94,6 +105,25 @@ def _require_csrf(request: Request, csrf_token: str) -> None:
     expected = request.cookies.get("rtc_csrf") or ""
     if expected and csrf_token != expected:
         raise HTTPException(status_code=403, detail="csrf")
+
+
+async def _mutation_payload(request: Request) -> dict:
+    header = request.headers.get("X-CSRF-Token") or ""
+    content_type = (request.headers.get("content-type") or "").lower()
+    data: dict = {}
+    if "application/json" in content_type:
+        try:
+            raw = await request.json()
+        except Exception:
+            raw = {}
+        if isinstance(raw, dict):
+            data = raw
+    elif content_type:
+        form = await request.form()
+        data = {str(key): form.get(key) for key in form.keys()}
+    token = header or str(data.get("csrf_token") or "")
+    _require_csrf(request, token)
+    return data
 
 
 def _after_active_redirect(overlay, user_id, law_id: str) -> RedirectResponse:
@@ -595,6 +625,15 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             )
             for row in overlay.list_progress(access.user_id, law_id)
         }
+        live_hashes = {
+            sel.source_locator: _section_source_hash(act, sel.source_locator, law_id)
+            for sel in selections
+        }
+        mode_summaries = summaries_for_locators(
+            overlay.list_mode_progress(access.user_id, law_id),
+            [sel.source_locator for sel in selections],
+            live_hashes=live_hashes,
+        )
         rows = []
         as_of = playground_today()
         month = ""
@@ -619,9 +658,13 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                     title=section.list_title,
                     locator=sel.source_locator,
                     progress=progress,
-                    outdated=bool(progress and progress.source_outdated),
+                    outdated=bool(
+                        (progress and progress.source_outdated)
+                        or live_hashes.get(sel.source_locator) != sel.source_hash
+                    ),
                     as_of=as_of,
                     law_id=law_id,
+                    mode_progress=mode_summaries.get(sel.source_locator),
                 )
             )
         launch = None
@@ -629,6 +672,11 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             if row["due"]:
                 launch = row
                 break
+        if launch is None:
+            for row in rows:
+                if int(row.get("completed_count") or 0) < 6:
+                    launch = row
+                    break
         if launch is None and rows:
             launch = rows[0]
         launch_verbatim = ""
@@ -718,6 +766,72 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         overlay.replace_selection(opened.user_id, law_id, rows)
         return RedirectResponse(url=law_path(law_id), status_code=303)
 
+    def _gate_learn(
+        request: Request,
+        law_id: str,
+        number: str,
+        mode: str,
+        *,
+        json_mode: bool,
+    ):
+        if not is_playground_learn_mode(mode):
+            raise HTTPException(status_code=404, detail="Learn mode not found")
+        overlay = require_playground_repo(request)
+        access = require_law_active_this_period(
+            request,
+            templates,
+            overlay,
+            law_id,
+            next_url=learn_path(law_id, number, mode),
+            json_mode=json_mode,
+        )
+        blocked = _denied(access)
+        if blocked is not None:
+            return blocked
+        try:
+            act = require_playground_law(law_id)
+            loc, act, section, body, live_hash, source_version = load_learn_provision(
+                law_id, number, act=act
+            )
+        except (PlaygroundLawError, LocatorError, LearnProvisionError):
+            raise HTTPException(status_code=404, detail="Section not found") from None
+        selected = selected_locator_set(overlay.list_selection(access.user_id, law_id))
+        if loc.value not in selected:
+            if json_mode:
+                return JSONResponse({"ok": False, "error": "not_selected"}, status_code=400)
+            return RedirectResponse(url=sections_path(law_id), status_code=303)
+        return {
+            "overlay": overlay,
+            "access": access,
+            "act": act,
+            "section": section,
+            "locator": loc,
+            "body": body,
+            "live_hash": live_hash,
+            "source_version": source_version,
+        }
+
+    def _mode_payload(summary, row, *, body: str, live_hash: str) -> dict:
+        stored_hash = row.source_hash if row is not None else live_hash
+        return {
+            "ok": True,
+            "mode": row.mode if row is not None else "",
+            "status": row.status if row is not None else None,
+            "attempt_count": row.attempt_count if row is not None else 0,
+            "completed_count": summary.completed_count,
+            "total_modes": summary.total_modes,
+            "next_mode": summary.next_mode,
+            "all_methods_complete": summary.all_methods_complete,
+            "completed_modes": list(summary.completed_modes),
+            "canonical_body": body,
+            "revealed": body,
+            "source_locator": summary.source_locator,
+            "source_outdated": summary.source_outdated or (
+                row is not None and row.source_hash != live_hash
+            ),
+            "stored_source_hash": stored_hash,
+        }
+
     @router.get(
         "/laws/{law_id}/sections/{number}/learn/{mode}",
         response_class=HTMLResponse,
@@ -725,100 +839,198 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
     async def playground_learn(
         request: Request, law_id: str, number: str, mode: str
     ) -> HTMLResponse:
-        if mode != SUPPORTED_LEARN_MODE:
-            raise HTTPException(status_code=404, detail="Learn mode not found")
-        overlay = require_playground_repo(request)
-        access = require_law_active_this_period(
-            request,
-            templates,
-            overlay,
-            law_id,
-            next_url=learn_path(law_id, number, mode),
-        )
-        blocked = _denied(access)
+        opened = _gate_learn(request, law_id, number, mode, json_mode=False)
+        blocked = _denied(opened)
         if blocked is not None:
             return blocked  # type: ignore[return-value]
-        try:
-            act = require_playground_law(law_id)
-            loc, body, live_hash, source_version, cloze_available = provision_for_learn(
-                law_id, number, act=act
-            )
-        except (PlaygroundLawError, LocatorError):
-            raise HTTPException(status_code=404, detail="Section not found") from None
-        selected = selected_locator_set(overlay.list_selection(access.user_id, law_id))
-        if loc.value not in selected:
-            return RedirectResponse(url=sections_path(law_id), status_code=303)
-        section = act.section(number)
+        overlay = opened["overlay"]
+        access = opened["access"]
+        loc = opened["locator"]
+        live_hash = opened["live_hash"]
+        body = opened["body"]
+        mode_rows = overlay.list_mode_progress(
+            access.user_id, law_id, loc.value
+        )
+        summary = provision_mode_view(
+            source_locator=loc.value, rows=mode_rows, live_hash=live_hash
+        )
         progress = mark_outdated(
             overlay.get_progress(access.user_id, law_id, loc.value), live_hash
         )
+        source_outdated = bool(
+            summary.source_outdated or (progress and progress.source_outdated)
+        )
+        test_row = next((row for row in mode_rows if row.mode == "test"), None)
+        cycle = test_row.attempt_count if test_row is not None else 0
+        quiz_questions = []
+        if mode == "test":
+            quiz_questions = [
+                question.public_dict()
+                for question in quiz_for_attempt(
+                    law_id=law_id,
+                    source_locator=loc.value,
+                    canonical_body=body,
+                    cycle=cycle,
+                    source_hash=live_hash,
+                )
+            ]
+        current = next(
+            (row for row in mode_rows if row.mode == mode),
+            None,
+        )
+        current_status = current.status if current is not None else "not_started"
+        definitions = mode_definitions()
+        step_n = next(
+            (item["ordinal"] for item in definitions if item["id"] == mode),
+            1,
+        )
         return templates.TemplateResponse(
             request,
-            "playground_cloze.html",
+            "playground_learn.html",
             {
-                "act": act,
-                "section": section,
+                "act": opened["act"],
+                "section": opened["section"],
                 "locator": loc.value,
                 "canonical_body": body,
-                "cloze_available": cloze_available,
+                "learn_mode": mode,
+                "learn_modes": definitions,
+                "mode_label": PLAYGROUND_MODE_LABELS[mode],
+                "step_n": step_n,
+                "summary": summary,
+                "current_status": current_status,
                 "progress": progress,
-                "source_outdated": bool(progress and progress.source_outdated),
-                "source_version": source_version,
+                "source_outdated": source_outdated,
+                "source_version": opened["source_version"],
                 "complete_url": learn_complete_path(law_id, number, mode),
+                "start_url": learn_start_path(law_id, number, mode),
+                "quiz_url": learn_quiz_path(law_id, number),
+                "quiz_cycle": cycle,
+                "quiz_questions": quiz_questions,
+                "cloze_fallback": cloze_needs_fallback(body),
             },
         )
 
-    @router.post("/laws/{law_id}/sections/{number}/learn/{mode}/complete")
-    async def playground_cloze_complete(
+    @router.post("/laws/{law_id}/sections/{number}/learn/{mode}/start")
+    async def playground_learn_start(
         request: Request, law_id: str, number: str, mode: str
     ) -> JSONResponse:
-        if mode != SUPPORTED_LEARN_MODE:
-            raise HTTPException(status_code=404, detail="Learn mode not found")
-        overlay = require_playground_repo(request)
-        access = require_law_active_this_period(
-            request,
-            templates,
-            overlay,
-            law_id,
-            next_url=learn_path(law_id, number, mode),
-            json_mode=True,
-        )
-        blocked = _denied(access)
+        await _mutation_payload(request)
+        opened = _gate_learn(request, law_id, number, mode, json_mode=True)
+        blocked = _denied(opened)
         if blocked is not None:
             return blocked  # type: ignore[return-value]
-        try:
-            loc, body, live_hash, source_version, cloze_available = provision_for_learn(
-                law_id, number
-            )
-        except (PlaygroundLawError, LocatorError):
-            raise HTTPException(status_code=404, detail="Section not found") from None
-        if not cloze_available:
-            return JSONResponse({"ok": False, "error": "cloze_unavailable"}, status_code=400)
-        selected = selected_locator_set(overlay.list_selection(access.user_id, law_id))
-        if loc.value not in selected:
-            return JSONResponse({"ok": False, "error": "not_selected"}, status_code=400)
-        stored = overlay.get_progress(access.user_id, law_id, loc.value)
-        stored_hash = stored.source_hash if stored is not None else live_hash
-        progress = overlay.complete_cloze(
+        overlay = opened["overlay"]
+        access = opened["access"]
+        loc = opened["locator"]
+        row = overlay.start_mode(
             access.user_id,
             law_id,
             loc.value,
-            source_version=source_version,
-            source_hash=stored_hash,
-            as_of=date.today(),
-            live_hash=live_hash,
+            mode,
+            source_version=opened["source_version"],
+            source_hash=opened["live_hash"],
+        )
+        summary = provision_mode_view(
+            source_locator=loc.value,
+            rows=overlay.list_mode_progress(access.user_id, law_id, loc.value),
+            live_hash=opened["live_hash"],
         )
         return JSONResponse(
-            {
-                "ok": True,
-                "canonical_body": body,
-                "source_locator": progress.source_locator,
-                "status": progress.status,
-                "interval_days": progress.interval_days,
-                "next_revision": progress.next_revision,
-                "source_outdated": progress.source_outdated,
-                "revealed": body,
-            }
+            _mode_payload(
+                summary, row, body=opened["body"], live_hash=opened["live_hash"]
+            )
         )
+
+    @router.post("/laws/{law_id}/sections/{number}/learn/{mode}/complete")
+    async def playground_learn_complete(
+        request: Request, law_id: str, number: str, mode: str
+    ) -> JSONResponse:
+        if mode == "test":
+            raise HTTPException(status_code=404, detail="Learn mode not found")
+        await _mutation_payload(request)
+        opened = _gate_learn(request, law_id, number, mode, json_mode=True)
+        blocked = _denied(opened)
+        if blocked is not None:
+            return blocked  # type: ignore[return-value]
+        overlay = opened["overlay"]
+        access = opened["access"]
+        loc = opened["locator"]
+        row = overlay.complete_mode(
+            access.user_id,
+            law_id,
+            loc.value,
+            mode,
+            source_version=opened["source_version"],
+            source_hash=opened["live_hash"],
+        )
+        summary = provision_mode_view(
+            source_locator=loc.value,
+            rows=overlay.list_mode_progress(access.user_id, law_id, loc.value),
+            live_hash=opened["live_hash"],
+        )
+        payload = _mode_payload(
+            summary, row, body=opened["body"], live_hash=opened["live_hash"]
+        )
+        if summary.all_methods_complete:
+            payload["methods_complete_label"] = "6 of 6 methods complete"
+        return JSONResponse(payload)
+
+    @router.post("/laws/{law_id}/sections/{number}/learn/test/quiz")
+    async def playground_learn_quiz(
+        request: Request, law_id: str, number: str
+    ) -> JSONResponse:
+        data = await _mutation_payload(request)
+        opened = _gate_learn(request, law_id, number, "test", json_mode=True)
+        blocked = _denied(opened)
+        if blocked is not None:
+            return blocked  # type: ignore[return-value]
+        overlay = opened["overlay"]
+        access = opened["access"]
+        loc = opened["locator"]
+        live_hash = opened["live_hash"]
+        body = opened["body"]
+        stored = overlay.get_mode_progress(
+            access.user_id, law_id, loc.value, "test"
+        )
+        cycle = stored.attempt_count if stored is not None else 0
+        try:
+            submitted_cycle = int(data.get("cycle"))
+        except (TypeError, ValueError):
+            return JSONResponse({"ok": False, "error": "malformed"}, status_code=400)
+        if submitted_cycle != cycle:
+            return JSONResponse({"ok": False, "error": "stale"}, status_code=409)
+        questions = quiz_for_attempt(
+            law_id=law_id,
+            source_locator=loc.value,
+            canonical_body=body,
+            cycle=cycle,
+            source_hash=live_hash,
+        )
+        if not questions:
+            return JSONResponse({"ok": False, "error": "quiz_unavailable"}, status_code=400)
+        answers = coerce_quiz_answers(data.get("answers"), len(questions))
+        if answers is None:
+            return JSONResponse({"ok": False, "error": "malformed"}, status_code=400)
+        graded = grade_section_quiz(questions, answers)
+        row = overlay.complete_mode(
+            access.user_id,
+            law_id,
+            loc.value,
+            "test",
+            source_version=opened["source_version"],
+            source_hash=live_hash,
+        )
+        summary = provision_mode_view(
+            source_locator=loc.value,
+            rows=overlay.list_mode_progress(access.user_id, law_id, loc.value),
+            live_hash=live_hash,
+        )
+        payload = _mode_payload(summary, row, body=body, live_hash=live_hash)
+        payload["correct"] = graded["correct"]
+        payload["total"] = graded["total"]
+        payload["results"] = graded["results"]
+        if summary.all_methods_complete:
+            payload["methods_complete_label"] = "6 of 6 methods complete"
+        return JSONResponse(payload)
 
     return router

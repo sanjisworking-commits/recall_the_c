@@ -13,7 +13,9 @@ from constitution_memorizer.playground.repository import (
     PlaygroundSummary,
     playground_summary_sql,
     summary_from_row,
+    _require_learn_mode,
 )
+from constitution_memorizer.playground.learning.models import ModeProgressRow
 from constitution_memorizer.playground.revision import advance_interval, next_revision_date
 from constitution_memorizer.progress.user_ids import as_user_id
 
@@ -356,6 +358,196 @@ class PostgresPlaygroundRepository:
             source_outdated=outdated or live_hash != row.source_hash,
         )
 
+    def get_mode_progress(
+        self,
+        user_id: UUID | str,
+        law_id: str,
+        source_locator: str,
+        mode: str,
+    ) -> ModeProgressRow | None:
+        with self._pool.connection() as conn:
+            with conn.cursor(row_factory=self._dict_row) as cur:
+                cur.execute(
+                    """
+                    SELECT source_locator, mode, status, attempt_count,
+                           first_started_at, last_attempt_at, completed_at,
+                           source_version, source_hash
+                    FROM user_playground_mode_progress
+                    WHERE user_id = %s AND law_id = %s AND source_locator = %s AND mode = %s
+                    """,
+                    (as_user_id(user_id), law_id, source_locator, mode),
+                )
+                row = cur.fetchone()
+        if row is None:
+            return None
+        return self._mode_from_row(row)
+
+    def list_mode_progress(
+        self,
+        user_id: UUID | str,
+        law_id: str,
+        source_locator: str | None = None,
+    ) -> list[ModeProgressRow]:
+        uid = as_user_id(user_id)
+        with self._pool.connection() as conn:
+            with conn.cursor(row_factory=self._dict_row) as cur:
+                if source_locator:
+                    cur.execute(
+                        """
+                        SELECT source_locator, mode, status, attempt_count,
+                               first_started_at, last_attempt_at, completed_at,
+                               source_version, source_hash
+                        FROM user_playground_mode_progress
+                        WHERE user_id = %s AND law_id = %s AND source_locator = %s
+                        """,
+                        (uid, law_id, source_locator),
+                    )
+                else:
+                    cur.execute(
+                        """
+                        SELECT source_locator, mode, status, attempt_count,
+                               first_started_at, last_attempt_at, completed_at,
+                               source_version, source_hash
+                        FROM user_playground_mode_progress
+                        WHERE user_id = %s AND law_id = %s
+                        """,
+                        (uid, law_id),
+                    )
+                rows = cur.fetchall()
+        return [self._mode_from_row(row) for row in rows]
+
+    def start_mode(
+        self,
+        user_id: UUID | str,
+        law_id: str,
+        source_locator: str,
+        mode: str,
+        *,
+        source_version: str,
+        source_hash: str,
+    ) -> ModeProgressRow:
+        _require_learn_mode(mode)
+        uid = as_user_id(user_id)
+        now = datetime.now(timezone.utc)
+        with self._pool.connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    INSERT INTO user_playground_mode_progress (
+                        user_id, law_id, source_locator, mode, status, attempt_count,
+                        first_started_at, last_attempt_at, completed_at,
+                        source_version, source_hash, created_at, updated_at
+                    ) VALUES (%s, %s, %s, %s, 'in_progress', 0, %s, %s, NULL, %s, %s, %s, %s)
+                    ON CONFLICT (user_id, law_id, source_locator, mode) DO UPDATE SET
+                        status = CASE
+                            WHEN user_playground_mode_progress.status = 'completed'
+                            THEN 'completed'
+                            ELSE 'in_progress'
+                        END,
+                        first_started_at = COALESCE(
+                            user_playground_mode_progress.first_started_at,
+                            EXCLUDED.first_started_at
+                        ),
+                        last_attempt_at = EXCLUDED.last_attempt_at,
+                        updated_at = EXCLUDED.updated_at
+                    """,
+                    (
+                        uid,
+                        law_id,
+                        source_locator,
+                        mode,
+                        now,
+                        now,
+                        source_version,
+                        source_hash,
+                        now,
+                        now,
+                    ),
+                )
+                cur.execute(
+                    """
+                    UPDATE user_playground_item
+                    SET last_activity_at = %s,
+                        status = CASE
+                            WHEN status IN ('revising', 'mastered') THEN status
+                            ELSE 'learning'
+                        END
+                    WHERE user_id = %s AND law_id = %s
+                    """,
+                    (now, uid, law_id),
+                )
+                conn.commit()
+        row = self.get_mode_progress(user_id, law_id, source_locator, mode)
+        assert row is not None
+        return row
+
+    def complete_mode(
+        self,
+        user_id: UUID | str,
+        law_id: str,
+        source_locator: str,
+        mode: str,
+        *,
+        source_version: str,
+        source_hash: str,
+    ) -> ModeProgressRow:
+        _require_learn_mode(mode)
+        uid = as_user_id(user_id)
+        now = datetime.now(timezone.utc)
+        with self._pool.connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    """
+                    INSERT INTO user_playground_mode_progress (
+                        user_id, law_id, source_locator, mode, status, attempt_count,
+                        first_started_at, last_attempt_at, completed_at,
+                        source_version, source_hash, created_at, updated_at
+                    ) VALUES (%s, %s, %s, %s, 'completed', 1, %s, %s, %s, %s, %s, %s, %s)
+                    ON CONFLICT (user_id, law_id, source_locator, mode) DO UPDATE SET
+                        status = 'completed',
+                        attempt_count = user_playground_mode_progress.attempt_count + 1,
+                        first_started_at = COALESCE(
+                            user_playground_mode_progress.first_started_at,
+                            EXCLUDED.first_started_at
+                        ),
+                        last_attempt_at = EXCLUDED.last_attempt_at,
+                        completed_at = COALESCE(
+                            user_playground_mode_progress.completed_at,
+                            EXCLUDED.completed_at
+                        ),
+                        updated_at = EXCLUDED.updated_at
+                    """,
+                    (
+                        uid,
+                        law_id,
+                        source_locator,
+                        mode,
+                        now,
+                        now,
+                        now,
+                        source_version,
+                        source_hash,
+                        now,
+                        now,
+                    ),
+                )
+                cur.execute(
+                    """
+                    UPDATE user_playground_item
+                    SET last_activity_at = %s,
+                        status = CASE
+                            WHEN status IN ('revising', 'mastered') THEN status
+                            ELSE 'learning'
+                        END
+                    WHERE user_id = %s AND law_id = %s
+                    """,
+                    (now, uid, law_id),
+                )
+                conn.commit()
+        row = self.get_mode_progress(user_id, law_id, source_locator, mode)
+        assert row is not None
+        return row
+
     def _item_from_row(self, row: dict[str, Any]) -> PlaygroundItem:
         return PlaygroundItem(
             law_id=row["law_id"],
@@ -375,6 +567,19 @@ class PostgresPlaygroundRepository:
             last_completed=_as_iso_opt(row["last_completed"]),
             next_revision=_as_iso_opt(row["next_revision"]),
             interval_days=int(row["interval_days"]),
+            source_version=row["source_version"],
+            source_hash=row["source_hash"],
+        )
+
+    def _mode_from_row(self, row: dict[str, Any]) -> ModeProgressRow:
+        return ModeProgressRow(
+            source_locator=row["source_locator"],
+            mode=row["mode"],
+            status=row["status"],
+            attempt_count=int(row["attempt_count"] or 0),
+            first_started_at=_as_iso_opt(row["first_started_at"]),
+            last_attempt_at=_as_iso_opt(row["last_attempt_at"]),
+            completed_at=_as_iso_opt(row["completed_at"]),
             source_version=row["source_version"],
             source_hash=row["source_hash"],
         )

@@ -291,8 +291,16 @@ def test_cloze_integrity_ndps_bns_bnss_section_1(tmp_path: Path):
         assert payload["ok"] is True
         assert payload["revealed"] == canonical
         assert payload["canonical_body"] == canonical
-        assert payload["status"] == "review"
-        assert payload["interval_days"] == 1
+        assert payload["status"] == "completed"
+        assert "interval_days" not in payload
+        assert "next_revision" not in payload
+        overlay = client.app.state.playground
+        loc = section_locator(law_id, "1").value
+        mode_row = overlay.get_mode_progress(LOCAL_USER_ID, law_id, loc, "cloze")
+        assert mode_row is not None
+        assert mode_row.status == "completed"
+        legacy = overlay.get_progress(LOCAL_USER_ID, law_id, loc)
+        assert legacy is None
 
 
 def test_source_hash_mismatch_is_flagged_not_wiped(tmp_path: Path):
@@ -303,9 +311,9 @@ def test_source_hash_mismatch_is_flagged_not_wiped(tmp_path: Path):
     repo = client.app.state.playground
     repo.conn.execute(
         """
-        UPDATE user_playground_progress
+        UPDATE user_playground_mode_progress
         SET source_hash = 'deadbeef'
-        WHERE user_id = ? AND law_id = ? AND source_locator = ?
+        WHERE user_id = ? AND law_id = ? AND source_locator = ? AND mode = 'cloze'
         """,
         (str(LOCAL_USER_ID), "ndps", loc),
     )
@@ -313,12 +321,13 @@ def test_source_hash_mismatch_is_flagged_not_wiped(tmp_path: Path):
     page = client.get(learn_path("ndps", "1"))
     assert page.status_code == 200
     assert "Law updated. Revealed text is the live Bare Act wording." in page.text
-    remaining = repo.get_progress(LOCAL_USER_ID, "ndps", loc)
+    remaining = repo.get_mode_progress(LOCAL_USER_ID, "ndps", loc, "cloze")
     assert remaining is not None
     assert remaining.source_hash == "deadbeef"
 
 
 def test_cloze_complete_idempotent_before_due(tmp_path: Path):
+    """Legacy complete_cloze still schedules Day 1. M7 HTTP no longer calls it."""
     client = _client(tmp_path)
     _add_and_select(client, "ndps", "1")
     repo = client.app.state.playground
@@ -466,6 +475,27 @@ def _insert_progress(
         ),
     )
     conn.commit()
+    if cloze_done:
+        conn.execute(
+            """
+            INSERT INTO user_playground_mode_progress (
+                user_id, law_id, source_locator, mode, status, attempt_count,
+                first_started_at, last_attempt_at, completed_at,
+                source_version, source_hash, created_at, updated_at
+            ) VALUES (?, ?, ?, 'cloze', 'completed', 1, ?, ?, ?, '1', 'h', ?, ?)
+            """,
+            (
+                str(user_id),
+                law_id,
+                locator,
+                next_revision or "2026-09-10",
+                next_revision or "2026-09-10",
+                next_revision or "2026-09-10",
+                "2026-09-10T00:00:00+00:00",
+                "2026-09-10T00:00:00+00:00",
+            ),
+        )
+        conn.commit()
 
 
 class _ExecuteProbe:

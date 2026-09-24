@@ -251,15 +251,18 @@ def display_status_for_summary(*, selected: int, learned: int, due: int) -> str:
     return STATUS_LEARNING
 
 
-def display_status_for_progress(progress: Any, *, as_of: date) -> str:
-    if progress is None:
-        return STATUS_NOT_STARTED
-    if str(getattr(progress, "status", "") or "") == "mastered":
+def display_status_for_progress(
+    progress: Any, *, as_of: date, mode_progress: Any = None
+) -> str:
+    if progress is not None and str(getattr(progress, "status", "") or "") == "mastered":
         return STATUS_MASTERED
-    next_rev = getattr(progress, "next_revision", None)
+    next_rev = getattr(progress, "next_revision", None) if progress is not None else None
     if next_rev and str(next_rev) <= as_of.isoformat():
         return STATUS_DUE
-    if getattr(progress, "cloze_done", False):
+    completed = int(getattr(mode_progress, "completed_count", 0) or 0)
+    if completed > 0:
+        return STATUS_LEARNING
+    if progress is not None and getattr(progress, "cloze_done", False):
         return STATUS_LEARNING
     return STATUS_NOT_STARTED
 
@@ -1123,19 +1126,41 @@ def section_row_view(
     outdated: bool,
     as_of: date,
     law_id: str,
+    mode_progress: Any = None,
 ) -> dict[str, Any]:
-    status = display_status_for_progress(progress, as_of=as_of)
+    status = display_status_for_progress(
+        progress, as_of=as_of, mode_progress=mode_progress
+    )
     due = status == STATUS_DUE
-    cta = "Learn" if status == STATUS_NOT_STARTED else "Continue"
+    completed = int(getattr(mode_progress, "completed_count", 0) or 0)
+    next_mode = getattr(mode_progress, "next_mode", None) or "read"
+    if completed >= 6:
+        cta = "Continue"
+        methods_label = "6 of 6 methods"
+        href_mode = "read"
+    elif completed > 0:
+        cta = "Continue"
+        methods_label = f"{completed} of 6 methods"
+        href_mode = next_mode
+    else:
+        cta = "Start learning"
+        methods_label = ""
+        href_mode = "read"
+    source_outdated = bool(
+        outdated or getattr(mode_progress, "source_outdated", False)
+    )
     return {
         "locator": locator,
         "number": number,
         "title": title,
         "progress": progress,
-        "outdated": outdated,
+        "mode_progress": mode_progress,
+        "outdated": source_outdated,
         "status": status,
         "status_label": STATUS_LABELS[status],
         "due": due,
         "cta": cta,
-        "href": learn_path(law_id, number, "cloze"),
+        "methods_label": methods_label,
+        "completed_count": completed,
+        "href": learn_path(law_id, number, href_mode),
     }

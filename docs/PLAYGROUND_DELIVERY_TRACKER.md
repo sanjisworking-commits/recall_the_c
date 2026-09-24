@@ -2,11 +2,11 @@
 
 **Scoreboard, not an audit.** Product rules live in [PLAYGROUND.md](PLAYGROUND.md), [PAYMENT_ENTITLEMENT_AUDIT.md](PAYMENT_ENTITLEMENT_AUDIT.md), [PLAYGROUND_TWO_LAW_AUDIT.md](PLAYGROUND_TWO_LAW_AUDIT.md), and [law-loading.md](law-loading.md).
 
-**Snapshot:** architecture/product definition is **locked in docs**. **Stage 1** (build) is **61.0 / 100**. Milestone 1 is `DONE`. Milestone 2 is **`DONE` — 37/37**. Milestone 3 is **`DONE` — 15/15** (M3-A Constitution inversion + M3-B Playground commercial gate). Milestone 4 is **`DONE` — 25/25** (M4-A registry + M4-B owner/admin management + M4-C replacement-churn). Milestone 5 is **`DONE` — 27/27** (M5-A period/capacity/tables/same-month and M5-B carry-forward plus later-month historical reactivation). Milestone 6 is **`DONE` — 37/37** (production UX/state integration of the locked design). The NDPS/BNS overlay + Cloze + proof revision rows **do not** count as milestones 7–8. Platforms are `web | android | ios`. Overlay is lifetime learning history; roster is current-month membership (`overlay != roster`). Previous-period laws are candidates only. Keep consumes a new-period slot. Decline consumes none. Historical progress never waives monthly capacity. Pending + current-roster law remains learnable; pending + historical overlay only is not. **Do not tick Stage 2 from Cloze or from `main`’s sitemap PRs.** This branch includes main’s Bare Act SEO and generated sitemap index; that is Milestone 0 coexistence, not Milestone 10 (`noindex`) and not Stage 2.
+**Snapshot:** architecture/product definition is **locked in docs**. **Stage 1** (build) is **76.0 / 100**. Milestone 1 is `DONE`. Milestone 2 is **`DONE` — 37/37**. Milestone 3 is **`DONE` — 15/15** (M3-A Constitution inversion + M3-B Playground commercial gate). Milestone 4 is **`DONE` — 25/25** (M4-A registry + M4-B owner/admin management + M4-C replacement-churn). Milestone 5 is **`DONE` — 27/27** (M5-A period/capacity/tables/same-month and M5-B carry-forward plus later-month historical reactivation). Milestone 6 is **`DONE` — 37/37** (production UX/state integration of the locked design). Milestone 7 is **`DONE`** (six-mode law-learning engine; Type is write-it-out; no seventh Write mode; Learned → Day 1 remains M8). Proof revision rows **do not** count as milestone 8. Platforms are `web | android | ios`. Overlay is lifetime learning history; roster is current-month membership (`overlay != roster`). Previous-period laws are candidates only. Keep consumes a new-period slot. Decline consumes none. Historical progress never waives monthly capacity. Pending + current-roster law remains learnable; pending + historical overlay only is not. **Do not tick Stage 2 from Cloze or from `main`’s sitemap PRs.** This branch includes main’s Bare Act SEO and generated sitemap index; that is Milestone 0 coexistence, not Milestone 10 (`noindex`) and not Stage 2.
 
 | | |
 |--|--|
-| **Stage 1 (build)** | **61.0 / 100** |
+| **Stage 1 (build)** | **76.0 / 100** |
 | Milestone 0 | `DONE` — 10/10 items × 5 = **5** |
 | Milestone 1 | `DONE` — 18/18 items × 8 = **8** |
 | Milestone 2 | `DONE` — 37/37 × 13 = **13** |
@@ -14,10 +14,11 @@
 | Milestone 4 | `DONE` — 25/25 × 8 = **8** (M4-A + M4-B + M4-C). |
 | Milestone 5 | `DONE` — 27/27 × 12 = **12** |
 | Milestone 6 | `DONE` — 37/37 × 8 = **8** |
-| Milestones 7–11 | `NOT STARTED` |
+| Milestone 7 | `DONE` — 15 |
+| Milestones 8–11 | `NOT STARTED` |
 | **Stage 2 (optimize)** | **`NOT STARTED` — start gate: Stage 1 = `DONE` (100/100)** |
 
-Do not read Cloze on this branch as ~20% complete. Payments, roster, devices, six Learn modes, and Learned → revision are the actual Stage 1 product weight. Stage 2 is **outside** the 100.
+Do not read leftover proof Cloze/Day-1 rows as Learned → revision. Six Learn modes are production (M7). Learned → Day 1 remains Milestone 8.
 
 ---
 
@@ -451,7 +452,7 @@ Max  = unlimited
 
 **Status: `DONE` — 37/37** (production UX/state integration). Design prototype existence scores **0**. Cloze/Add/Select proof screens do **not** count as this milestone.
 
-M6 maps locked M1–M5 facts into Jinja/CSS/vanilla JS. It does not change quota, device, or payment semantics. Alembic head remains `20260917_0024`. M7–M10 remain `NOT STARTED`.
+M6 maps locked M1–M5 facts into Jinja/CSS/vanilla JS. It does not change quota, device, or payment semantics. M7 adds Alembic `20260924_0025` (`user_playground_mode_progress`). M8–M10 remain `NOT STARTED`.
 
 ## Navigation
 
@@ -518,50 +519,52 @@ Every backend entitlement/roster/payment/device state has an intentional UI stat
 
 # 7. Complete Playground learning engine — 15 points
 
-**Status: `NOT STARTED`**
+**Status: `DONE`**
 
-Cloze on this branch is **architecture proof only**. It does **not** tick “Cloze productionized.”
+Playground six modes = **Read → Cloze → Letters → Type → Recite → Test**. **Type** is the write-it-out method. There is no seventh Write mode. Mode completion is production (`user_playground_mode_progress`). Learned / revision remains M8. Proof Cloze no longer starts Day 1 on the production six-mode path. Alembic head `20260924_0025`.
 
-The production Playground must support the complete RecallC learning philosophy independently from Constitution code.
+The production Playground supports the complete RecallC learning philosophy independently from Constitution persistence.
 
 ## Learn modes
 
 For every required Playground mode:
 
-* [ ] mode design finalized
-* [ ] source read from canonical law JSON
-* [ ] no copied canonical statute
-* [ ] progress persisted independently
-* [ ] source hash/version recorded
-* [ ] resume behaviour works
-* [ ] completion recorded
-* [ ] mobile/web UX complete
-* [ ] tests
+* [x] mode design finalized
+* [x] source read from canonical law JSON
+* [x] no copied canonical statute
+* [x] progress persisted independently
+* [x] source hash/version recorded
+* [x] resume behaviour works
+* [x] completion recorded
+* [x] mobile/web UX complete
+* [x] tests
 
 Complete:
 
-* [ ] Cloze **productionized** (proof Cloze ≠ this box)
-* [ ] Type
-* [ ] Recite
-* [ ] Write
-* [ ] remaining RecallC mode 5
-* [ ] remaining RecallC mode 6
+* [x] Read
+* [x] Cloze productionized
+* [x] Letters
+* [x] Type
+* [x] Recite
+* [x] Test
+
+Authoritative RecallC six modes (order is the product): `read` → `cloze` → `letters` → `type` → `recite` → `test`. **Type** is the write-it-out, word-for-word method. There is no seventh `Write` mode; do not rename `type` to `write`; do not drop `letters`.
 
 Use the exact existing RecallC six-mode ideology/design rather than inventing a Constitution refactor.
 
 ## Law scope
 
-* [ ] Entire Act selection
-* [ ] section selection
-* [ ] selected sections can enter any mode
-* [ ] omitted/empty statutory nodes excluded correctly
-* [ ] generic across every Playground-eligible Bare Act
+* [x] Entire Act selection
+* [x] section selection
+* [x] selected sections can enter any mode
+* [x] omitted/empty statutory nodes excluded correctly
+* [x] generic across every Playground-eligible Bare Act
 
 ### Done when
 
 A user can take a selected law provision through the complete law-learning experience, not merely Cloze.
 
-**Weight: 15**
+**Weight: 15** (Stage 1 **61.0 + 15 = 76.0**)
 
 ---
 
@@ -771,12 +774,12 @@ Playground + payment can safely replace the existing commercial entitlement mode
 | 4. Device control                 |      8 | `DONE` — 25/25 × 8 = 8 |
 | 5. Monthly roster                 |     12 | `DONE` — 27/27 × 12 = 12 |
 | 6. Finished UX                    |      8 | `DONE` — 37/37 × 8 = 8 |
-| 7. Complete Learn engine          |     15 | `NOT STARTED` |
+| 7. Complete Learn engine          |     15 | `DONE` |
 | 8. Learned/revision/mastery       |      8 | `NOT STARTED` |
 | 9. Amendments/source integrity    |      5 | `NOT STARTED` |
 | 10. SEO/routing discoverability   |      4 | `NOT STARTED` |
 | 11. Production hardening/release  |      7 | `NOT STARTED` |
-| **TOTAL (Stage 1)**               |  **100** | **61.0 / 100** |
+| **TOTAL (Stage 1)**               |  **100** | **76.0 / 100** |
 | Stage 2 — Optimize                |    — | `NOT STARTED` — start gate: Stage 1 = `DONE` (100/100) |
 
 ---
@@ -796,7 +799,7 @@ Batch 3   User entitlement inversion — DONE (M3-A Constitution + M3-B Playgrou
 Batch 4   Device registry/control — DONE (M4-A+M4-B+M4-C 25/25)
 Batch 5   Monthly roster + rollover — DONE (27/27)
 Batch 6   Final Playground UI shell — DONE (37/37)
-Batch 7   Complete Learn modes
+Batch 7   Complete Learn modes — DONE (six modes; no Write; Learned remains M8)
 Batch 8   Learned + revision + Today/Calendar
 Batch 9   Amendment handling
 Batch 10  SEO + sitemap (main adopted on this branch; remaining: Playground noindex)
