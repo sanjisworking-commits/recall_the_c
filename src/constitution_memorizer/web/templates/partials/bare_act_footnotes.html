@@ -1,9 +1,14 @@
-{# Footnote apparatus shared by the section reader and the Schedule.
+{# Footnote apparatus, shared by the Constitution's reading surfaces, the
+   section reader and the Schedule. One presentation for all of them.
 
    The notes are in the page whether or not the card is showing: `aria-describedby`
-   points here, so a screen reader reads the amendment on focus, and the text
+   points here, so a screen reader reads the note on focus, and the text
    survives with JS off. `.visually-hidden` rather than `hidden` — hidden content
-   is removed from the accessibility tree, which would defeat the point. #}
+   is removed from the accessibility tree, which would defeat the point.
+
+   `note.text` is escaped by whoever built it. An Act's notes are plain strings
+   and Jinja escapes them here; the Constitution's arrive as `Markup`, already
+   escaped, because a note may carry an anchor to another note. #}
 {% if footnotes %}
 <div class="bareact-fn-notes visually-hidden">
   {% for note in footnotes %}
@@ -11,7 +16,11 @@
   {% endfor %}
 </div>
 <div class="bareact-fn-card" data-bareact-fn-card hidden>
-  <p class="bareact-fn-label">Footnote</p>
+  <div class="bareact-fn-head">
+    <p class="bareact-fn-label">Footnote</p>
+    {# Shown only while a note reached from inside another note is open. #}
+    <button type="button" class="bareact-fn-back" data-bareact-fn-back hidden>← Back</button>
+  </div>
   <p class="bareact-fn-text" data-bareact-fn-text aria-live="polite"></p>
 </div>
 {% endif %}

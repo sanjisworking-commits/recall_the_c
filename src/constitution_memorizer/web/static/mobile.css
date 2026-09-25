@@ -5412,10 +5412,18 @@
     font-size: 13px;
   }
 
-  /* The card is sticky inside the reading column, but the tab bar is fixed over
-     the bottom 56px of the viewport — so the sticky stop has to clear it. */
+  /* The card is sticky inside the reading column, but fixed chrome covers the
+     bottom of the viewport, so the sticky stop has to clear whatever is there.
+     A section has the tab bar under it; an Article's Bare Act has the taller
+     action bar, which shares the card's z-index and would otherwise paint over
+     its last line. The +24 slack matches what the action bar already gets from
+     the page's own padding-bottom. */
   .bareact-fn-card {
-    bottom: calc(var(--m-tabbar) + 8px);
+    bottom: var(--m-fn-stop, calc(var(--m-tabbar) + 8px));
+  }
+
+  .browse-article .bareact-fn-card {
+    --m-fn-stop: calc(var(--m-actionbar) + 24px);
   }
 
   /* The Schedule: 162 rows of four columns, sized to fit 375px rather than pan. */

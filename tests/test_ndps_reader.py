@@ -617,7 +617,7 @@ def test_footnote_colours_go_through_tokens(tmp_path: Path):
     assert "--rc-fn-card: #17322c" in css
 
 
-def test_the_footnote_card_clears_the_tab_bar(tmp_path: Path):
+def test_the_footnote_card_clears_whatever_is_fixed_below_it(tmp_path: Path):
     client, _ = _client(tmp_path)
     css = client.get("/static/mobile.css").text
     phone = [
@@ -628,7 +628,12 @@ def test_the_footnote_card_clears_the_tab_bar(tmp_path: Path):
     ]
     scoped = "\n".join(phone)
     card = scoped.split(".bareact-fn-card {", 1)[1].split("}", 1)[0]
+    # A section has the tab bar under it...
     assert "calc(var(--m-tabbar) + 8px)" in card
+    # ...an Article the taller action bar, which shares the card's z-index and
+    # would otherwise paint over the last line of a long note.
+    override = scoped.split(".browse-article .bareact-fn-card {", 1)[1].split("}", 1)[0]
+    assert "var(--m-actionbar)" in override
 
 
 def test_an_unknown_schedule_is_404(tmp_path: Path):
@@ -682,3 +687,4 @@ def test_reading_the_act_records_nothing(tmp_path: Path):
         assert client.get(path).status_code == 200
     assert engine.stats() == before
     assert engine.due_today() == []
+
