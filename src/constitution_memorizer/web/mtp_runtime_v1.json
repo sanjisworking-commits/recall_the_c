@@ -6,7 +6,7 @@
   "date": "10th August, 1971",
   "source_type": "IndiaCode_consolidation",
   "source_as_on": "27th July, 2025",
-  "parser": "PyMuPDF deterministic geometry parser (MTP v2)",
+  "parser": "PyMuPDF deterministic geometry parser (MTP v3)",
   "toolchain": {
    "pymupdf": "1.28.2"
   },
@@ -71,7 +71,18 @@
      "source_line_ids": [
       "p4_l9"
      ],
-     "id": "section_1_subsection_2"
+     "id": "section_1_subsection_2",
+     "annotations": [
+      {
+       "type": "footnote",
+       "marker": "1",
+       "note_id": "footnote_p4_1",
+       "source_page": 4,
+       "start": 27,
+       "end": 32,
+       "anchor_text": "India"
+      }
+     ]
     },
     {
      "type": "subsection",
@@ -85,7 +96,18 @@
       "p4_l10",
       "p4_l11"
      ],
-     "id": "section_1_subsection_3"
+     "id": "section_1_subsection_3",
+     "annotations": [
+      {
+       "type": "footnote",
+       "marker": "2",
+       "note_id": "footnote_p4_2",
+       "source_page": 4,
+       "start": 33,
+       "end": 37,
+       "anchor_text": "date"
+      }
+     ]
     }
    ],
    "source_pages": [
@@ -106,7 +128,8 @@
      "source_page": 4,
      "source_line_id": "p4_l9",
      "section_id": "section_1",
-     "source_text": "(2) It extends to the whole of India 1***."
+     "source_text": "(2) It extends to the whole of India 1***.",
+     "placement": "text"
     },
     {
      "type": "footnote",
@@ -115,7 +138,8 @@
      "source_page": 4,
      "source_line_id": "p4_l10",
      "section_id": "section_1",
-     "source_text": "(3) It shall come into force on such date2 as the Central Government may, by notification in the"
+     "source_text": "(3) It shall come into force on such date2 as the Central Government may, by notification in the",
+     "placement": "text"
     }
    ]
   },
@@ -143,7 +167,18 @@
        "source_line_ids": [
         "p4_l13"
        ],
-       "id": "section_2_paragraph_1_clause_a"
+       "id": "section_2_paragraph_1_clause_a",
+       "annotations": [
+        {
+         "type": "footnote",
+         "marker": "3",
+         "note_id": "footnote_p4_3",
+         "source_page": 4,
+         "start": 72,
+         "end": 91,
+         "anchor_text": "mentally ill person"
+        }
+       ]
       },
       {
        "type": "clause",
@@ -157,7 +192,18 @@
         "p4_l14",
         "p4_l15"
        ],
-       "id": "section_2_paragraph_1_clause_aa"
+       "id": "section_2_paragraph_1_clause_aa",
+       "label_annotations": [
+        {
+         "type": "footnote",
+         "marker": "4",
+         "note_id": "footnote_p4_4",
+         "source_page": 4,
+         "start": 0,
+         "end": 4,
+         "anchor_text": "(aa)"
+        }
+       ]
       },
       {
        "type": "clause",
@@ -171,7 +217,18 @@
         "p4_l16",
         "p4_l17"
        ],
-       "id": "section_2_paragraph_1_clause_b"
+       "id": "section_2_paragraph_1_clause_b",
+       "label_annotations": [
+        {
+         "type": "footnote",
+         "marker": "5",
+         "note_id": "footnote_p4_5",
+         "source_page": 4,
+         "start": 0,
+         "end": 3,
+         "anchor_text": "(b)"
+        }
+       ]
       },
       {
        "type": "clause",
@@ -215,7 +272,18 @@
         "p4_l24",
         "p4_l25"
        ],
-       "id": "section_2_paragraph_1_clause_e"
+       "id": "section_2_paragraph_1_clause_e",
+       "label_annotations": [
+        {
+         "type": "footnote",
+         "marker": "4",
+         "note_id": "footnote_p4_4",
+         "source_page": 4,
+         "start": 0,
+         "end": 3,
+         "anchor_text": "(e)"
+        }
+       ]
       }
      ],
      "source_pages": [
@@ -254,7 +322,8 @@
      "source_page": 4,
      "source_line_id": "p4_l13",
      "section_id": "section_2",
-     "source_text": "(a) “guardian” means a person having the care of the person of a minor or a 3[mentally ill person];"
+     "source_text": "(a) “guardian” means a person having the care of the person of a minor or a 3[mentally ill person];",
+     "placement": "text"
     },
     {
      "type": "footnote",
@@ -263,7 +332,8 @@
      "source_page": 4,
      "source_line_id": "p4_l14",
      "section_id": "section_2",
-     "source_text": "4[(aa) “Medical Board” means the Medical Board constituted under sub-section (2C) of section 3"
+     "source_text": "4[(aa) “Medical Board” means the Medical Board constituted under sub-section (2C) of section 3",
+     "placement": "label"
     },
     {
      "type": "footnote",
@@ -272,7 +342,8 @@
      "source_page": 4,
      "source_line_id": "p4_l16",
      "section_id": "section_2",
-     "source_text": "5[(b) “mentally ill person” means a person who is in need of treatment by reason of any mental"
+     "source_text": "5[(b) “mentally ill person” means a person who is in need of treatment by reason of any mental",
+     "placement": "label"
     },
     {
      "type": "footnote",
@@ -281,7 +352,8 @@
      "source_page": 4,
      "source_line_id": "p4_l24",
      "section_id": "section_2",
-     "source_text": "4[(e) “termination of pregnancy” means a procedure to terminate a pregnancy by using medical or"
+     "source_text": "4[(e) “termination of pregnancy” means a procedure to terminate a pregnancy by using medical or",
+     "placement": "label"
     }
    ]
   },
@@ -423,7 +495,18 @@
       "p4_l30",
       "p4_l31"
      ],
-     "id": "section_3_subsection_2"
+     "id": "section_3_subsection_2",
+     "label_annotations": [
+      {
+       "type": "footnote",
+       "marker": "6",
+       "note_id": "footnote_p4_6",
+       "source_page": 4,
+       "start": 0,
+       "end": 3,
+       "anchor_text": "(2)"
+      }
+     ]
     },
     {
      "type": "subsection",
@@ -570,7 +653,18 @@
         "p5_l31",
         "p5_l32"
        ],
-       "id": "section_3_subsection_4_clause_a"
+       "id": "section_3_subsection_4_clause_a",
+       "annotations": [
+        {
+         "type": "footnote",
+         "marker": "1",
+         "note_id": "footnote_p5_1",
+         "source_page": 5,
+         "start": 129,
+         "end": 148,
+         "anchor_text": "mentally ill person"
+        }
+       ]
       },
       {
        "type": "clause",
@@ -656,7 +750,8 @@
      "source_page": 4,
      "source_line_id": "p4_l30",
      "section_id": "section_3",
-     "source_text": "6[(2) Subject to the provisions of sub-section (4), a pregnancy may be terminated by a registered"
+     "source_text": "6[(2) Subject to the provisions of sub-section (4), a pregnancy may be terminated by a registered",
+     "placement": "label"
     },
     {
      "type": "footnote",
@@ -665,7 +760,8 @@
      "source_page": 5,
      "source_line_id": "p5_l31",
      "section_id": "section_3",
-     "source_text": "attained the age of eighteen years, is a 1[mentally ill person], shall be terminated except with the"
+     "source_text": "attained the age of eighteen years, is a 1[mentally ill person], shall be terminated except with the",
+     "placement": "text"
     }
    ]
   },
@@ -756,7 +852,19 @@
      "source_page": 5,
      "source_line_id": "p5_l35",
      "section_id": "section_4",
-     "source_text": "2[4. Place where pregnancy may be terminated.—No termination of pregnancy shall be made in"
+     "source_text": "2[4. Place where pregnancy may be terminated.—No termination of pregnancy shall be made in",
+     "placement": "title"
+    }
+   ],
+   "title_annotations": [
+    {
+     "type": "footnote",
+     "marker": "2",
+     "note_id": "footnote_p5_2",
+     "source_page": 5,
+     "start": 0,
+     "end": 39,
+     "anchor_text": "Place where pregnancy may be terminated"
     }
    ]
   },
@@ -799,7 +907,18 @@
       "p6_l8",
       "p6_l9"
      ],
-     "id": "section_5_subsection_2"
+     "id": "section_5_subsection_2",
+     "label_annotations": [
+      {
+       "type": "footnote",
+       "marker": "1",
+       "note_id": "footnote_p6_1",
+       "source_page": 6,
+       "start": 0,
+       "end": 3,
+       "anchor_text": "(2)"
+      }
+     ]
     },
     {
      "type": "subsection",
@@ -896,7 +1015,8 @@
      "source_page": 6,
      "source_line_id": "p6_l6",
      "section_id": "section_5",
-     "source_text": "1[(2) Notwithstanding anything contained in the Indian Penal Code (45 of 1860), the termination of"
+     "source_text": "1[(2) Notwithstanding anything contained in the Indian Penal Code (45 of 1860), the termination of",
+     "placement": "label"
     }
    ]
   },
@@ -956,7 +1076,19 @@
      "source_page": 6,
      "source_line_id": "p6_l22",
      "section_id": "section_5A",
-     "source_text": "2[5A. Protection of privacy of a woman.—(1) No registered medical practitioner shall reveal the"
+     "source_text": "2[5A. Protection of privacy of a woman.—(1) No registered medical practitioner shall reveal the",
+     "placement": "title"
+    }
+   ],
+   "title_annotations": [
+    {
+     "type": "footnote",
+     "marker": "2",
+     "note_id": "footnote_p6_2",
+     "source_page": 6,
+     "start": 0,
+     "end": 32,
+     "anchor_text": "Protection of privacy of a woman"
     }
    ]
   },
@@ -1012,7 +1144,18 @@
        "source_line_ids": [
         "p6_l33"
        ],
-       "id": "section_6_subsection_2_clause_aa"
+       "id": "section_6_subsection_2_clause_aa",
+       "label_annotations": [
+        {
+         "type": "footnote",
+         "marker": "3",
+         "note_id": "footnote_p6_3",
+         "source_page": 6,
+         "start": 0,
+         "end": 4,
+         "anchor_text": "(aa)"
+        }
+       ]
       },
       {
        "type": "clause",
@@ -1117,7 +1260,8 @@
      "source_page": 6,
      "source_line_id": "p6_l33",
      "section_id": "section_6",
-     "source_text": "3[(aa) the category of woman under clause (b) of sub-section (2) of section 3;"
+     "source_text": "3[(aa) the category of woman under clause (b) of sub-section (2) of section 3;",
+     "placement": "label"
     }
    ]
   },
@@ -1214,7 +1358,18 @@
       "p7_l15",
       "p7_l16"
      ],
-     "id": "section_7_subsection_2A"
+     "id": "section_7_subsection_2A",
+     "label_annotations": [
+      {
+       "type": "footnote",
+       "marker": "1",
+       "note_id": "footnote_p7_1",
+       "source_page": 7,
+       "start": 0,
+       "end": 4,
+       "anchor_text": "(2A)"
+      }
+     ]
     },
     {
      "type": "subsection",
@@ -1262,7 +1417,8 @@
      "source_page": 7,
      "source_line_id": "p7_l15",
      "section_id": "section_7",
-     "source_text": "1[(2A) Every regulation made by the State Government under this Act shall be laid, as soon as may be"
+     "source_text": "1[(2A) Every regulation made by the State Government under this Act shall be laid, as soon as may be",
+     "placement": "label"
     }
    ]
   },
@@ -1524,6 +1680,15 @@
     "note": "The amending Act number is absent in the source. Text kept exactly as printed. \"ibid.\" refers to the preceding note on the page (Ins. by Act 8 of 2021, s. 4 (w.e.f. 24-9-2021).), which is an inference recorded here, not written into the note."
    }
   ],
+  "footnote_anchors_source": 13,
+  "footnote_anchors_attached": 13,
+  "footnote_anchors_unlinked": 0,
+  "footnote_notes_unlinked": 0,
+  "footnote_anchor_placements": {
+   "title": 2,
+   "label": 7,
+   "text": 4
+  },
   "blocking_errors": [],
   "warnings": [
    "Source p.5 has an unmatched closing editorial bracket after section 3(4)(a); retained in raw source, removed from reading text.",

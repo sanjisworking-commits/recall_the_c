@@ -13,7 +13,10 @@
   <p class="bareact-reader-eyebrow">Chapter {{ section.chapter_number }} · {{ section.chapter_title }}</p>
   {% endif %}
   <h1 class="bareact-reader-title">Section {{ section.number }}</h1>
-  <p class="bareact-reader-sub">{{ section.list_title }}</p>
+  {# A note printed against the section number ("2[4. Place where ...")
+     hangs on the heading, so the heading is its anchor — the same span the
+     body uses, so the interaction is identical wherever a footnote sits. #}
+  <p class="bareact-reader-sub">{% if section.title_note_id and not section.is_omitted %}{{ fn.fn_anchor(section.title_note_id, section.list_title) }}{% else %}{{ section.list_title }}{% endif %}</p>
 
   {% if section.is_omitted %}
   <div class="bareact-omission" role="note">

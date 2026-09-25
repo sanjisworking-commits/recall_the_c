@@ -19,10 +19,10 @@ preserved rather than repaired and recorded in the canonical's `_validation`
 block so they cannot be mistaken for extraction faults, and the runtime is the
 archival copy minus the parse's line-by-line record.
 
-Footnotes, stated precisely: MTP's twelve notes hydrate, but no reference is
-anchored to a character span, so the reader shows no marker and a user has no
-way to reach them yet. NDPS anchors its notes and renders them; MTP does not.
-That gap is pinned here as the current behaviour, not claimed as a feature.
+Footnotes: the twelve notes hydrate and all thirteen references are anchored
+in the shape NDPS uses — four runs of text, seven labels, and two section
+titles. Title anchors are new to the *reader* (NDPS records 27 and never drew
+them); the section heading is now their anchor.
 """
 
 from __future__ import annotations
@@ -42,7 +42,7 @@ from constitution_memorizer.web.bare_acts import BARE_ACTS, get_bare_act
 
 REPO = Path(__file__).resolve().parents[1]
 MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
-ARCHIVAL = REPO / "data" / "reference" / "mtp_canonical_v2.json"
+ARCHIVAL = REPO / "data" / "reference" / "mtp_canonical_v3.json"
 RUNTIME = REPO / "src" / "constitution_memorizer" / "web" / "mtp_runtime_v1.json"
 
 SECTION_IDS = ["1", "2", "3", "4", "5", "5A", "6", "7", "8"]
@@ -369,40 +369,115 @@ def test_the_twelve_footnotes_load_by_page_scoped_id():
     assert notes["footnote_p5_1"].marker == "1"
 
 
-def test_footnotes_are_loaded_but_not_anchored_in_the_text():
-    """The references are recorded at section level (`annotations` with a
-    source line and the printed text), not as `{start, end}` offsets on
-    nodes, so no row carries a note id. NDPS does carry offsets and renders
-    its markers; MTP's notes are therefore loaded but unreachable from any
-    page until the parser emits node-level anchors. The line ids and printed
-    text it does record are enough to derive them later."""
+# Every reference, as the source prints it, and where its anchor was hung.
+# Checked one by one against pages 4-7 of the PDF on 2026-09-25.
+ANCHORS = [
+    # (section, placement, label-or-None, marker, note, anchor_text)
+    ("1", "text", "(2)", "1", "footnote_p4_1", "India"),               # "India 1***."
+    ("1", "text", "(3)", "2", "footnote_p4_2", "date"),                # "such date2"
+    ("2", "text", "(a)", "3", "footnote_p4_3", "mentally ill person"), # "3[mentally ill person]"
+    ("2", "label", "(aa)", "4", "footnote_p4_4", "(aa)"),              # "4[(aa) ..."
+    ("2", "label", "(b)", "5", "footnote_p4_5", "(b)"),                # "5[(b) ..."
+    ("2", "label", "(e)", "4", "footnote_p4_4", "(e)"),                # "4[(e) ..."
+    ("3", "label", "(2)", "6", "footnote_p4_6", "(2)"),                # "6[(2) ..."
+    ("3", "text", "(a)", "1", "footnote_p5_1", "mentally ill person"), # s.3(4)(a)
+    ("4", "title", None, "2", "footnote_p5_2", "Place where pregnancy may be terminated"),
+    ("5", "label", "(2)", "1", "footnote_p6_1", "(2)"),                # "1[(2) ..."
+    ("5A", "title", None, "2", "footnote_p6_2", "Protection of privacy of a woman"),
+    ("6", "label", "(aa)", "3", "footnote_p6_3", "(aa)"),              # "3[(aa) ..."
+    ("7", "label", "(2A)", "1", "footnote_p7_1", "(2A)"),              # "1[(2A) ..."
+]
+
+
+def test_every_reference_is_anchored_exactly_where_the_source_prints_it():
+    archival = json.loads(ARCHIVAL.read_text(encoding="utf-8"))
+    found = []
+    for section in archival["sections"]:
+        for a in section.get("title_annotations") or []:
+            assert (a["start"], a["end"]) == (0, len(section["title"]))
+            found.append((section["number"], "title", None, a["marker"], a["note_id"], a["anchor_text"]))
+        for node in _walk(section["body"]):
+            for a in node.get("label_annotations") or []:
+                assert (a["start"], a["end"]) == (0, len(node["label"]))
+                found.append((section["number"], "label", node["label"], a["marker"], a["note_id"], a["anchor_text"]))
+            for a in node.get("annotations") or []:
+                assert node["text"][a["start"]:a["end"]] == a["anchor_text"]
+                found.append((section["number"], "text", node["label"], a["marker"], a["note_id"], a["anchor_text"]))
+    assert found == ANCHORS
+    validation = archival["_validation"]
+    assert validation["footnote_anchors_source"] == validation["footnote_anchors_attached"] == 13
+    assert validation["footnote_anchors_unlinked"] == 0
+    assert validation["footnote_notes_unlinked"] == 0
+    assert validation["footnote_anchor_placements"] == {"title": 2, "label": 7, "text": 4}
+
+
+def test_every_anchor_resolves_and_every_note_is_reachable():
     act = get_bare_act("mtp")
-    assert all(section.note_ids == () for section in act.section_order)
-    assert all(
-        not node.get("annotations") and not node.get("label_annotations")
-        for section in act.raw["sections"]
-        for node in _walk(section["body"])
-    )
+    via_pages = {n for s in act.section_order for n in s.note_ids}
+    assert via_pages == set(act.footnotes)
+    assert len(via_pages) == 12
+    assert act.section("2").note_ids == (
+        "footnote_p4_3", "footnote_p4_4", "footnote_p4_5",
+    )  # once each, in reading order, though p4_4 is cited twice
+    assert act.section("4").note_ids == ("footnote_p5_2",)
+    assert act.section("8").note_ids == ()
+
+
+def test_the_section_level_reference_record_is_unchanged():
+    """v3 adds anchors beside the v1/v2 record; it does not replace it."""
     archival = json.loads(ARCHIVAL.read_text(encoding="utf-8"))
     anchors = [a for s in archival["sections"] for a in s["annotations"]]
     assert len(anchors) == 13
-    assert {a["note_id"] for a in anchors} <= set(act.footnotes)
-    assert {a["section_id"] for a in anchors} == {
-        "section_1", "section_2", "section_3", "section_4",
-        "section_5", "section_5A", "section_6", "section_7",
-    }
+    assert all(a["source_line_id"] and a["source_text"] for a in anchors)
+    assert [a["placement"] for a in anchors].count("title") == 2
 
 
-def test_no_page_shows_a_footnote_marker_or_note(tmp_path: Path):
-    """The user-visible consequence of the test above, pinned so that the
-    day anchors land this fails and gets rewritten as a positive check."""
+def test_a_run_of_text_renders_as_an_anchor(tmp_path: Path):
     client, _ = _client(tmp_path)
-    ndps = client.get("/laws/ndps/section/1").text
-    assert 'id="fn-' in ndps  # the apparatus exists and NDPS uses it
+    html = client.get("/laws/mtp/section/1").text
+    assert (
+        'It extends to the whole of <span class="bareact-fn" tabindex="0" '
+        'data-bareact-fn="footnote_p4_1" aria-describedby="fn-footnote_p4_1">India</span>.'
+    ) in html
+    assert '<p id="fn-footnote_p4_1">The words “except the State of Jammu and Kashmir” omitted' in html
+    assert "data-bareact-fn-card" in html
+
+
+def test_a_label_renders_as_an_anchor(tmp_path: Path):
+    client, _ = _client(tmp_path)
+    html = client.get("/laws/mtp/section/2").text
+    assert (
+        '<span class="bareact-row-label"><span class="bareact-fn" tabindex="0" '
+        'data-bareact-fn="footnote_p4_4" aria-describedby="fn-footnote_p4_4">(aa)</span></span>'
+    ) in html
+    assert html.count('data-bareact-fn="footnote_p4_4"') == 2  # (aa) and (e)
+    assert html.count('<p id="fn-footnote_p4_4">') == 1
+
+
+def test_a_section_title_renders_as_an_anchor(tmp_path: Path):
+    """New to the reader: NDPS records 27 title anchors and never drew them."""
+    client, _ = _client(tmp_path)
+    for number, note in (("4", "footnote_p5_2"), ("5A", "footnote_p6_2")):
+        html = client.get(f"/laws/mtp/section/{number}").text
+        sub = html.split('<p class="bareact-reader-sub">', 1)[1].split("</p>", 1)[0]
+        assert f'data-bareact-fn="{note}"' in sub, number
+        assert f'<p id="fn-{note}">' in html, number
+    ndps = client.get("/laws/ndps/section/8A").text
+    sub = ndps.split('<p class="bareact-reader-sub">', 1)[1].split("</p>", 1)[0]
+    assert 'data-bareact-fn="footnote_p12_2"' in sub
+
+
+def test_every_page_anchor_points_at_a_note_on_that_page(tmp_path: Path):
+    client, _ = _client(tmp_path)
+    total = 0
     for number in SECTION_IDS:
         html = client.get(f"/laws/mtp/section/{number}").text
-        assert 'id="fn-' not in html, number
-        assert "bareact-fn" not in html, number
+        ids = re.findall(r'data-bareact-fn="([^"]+)"', html)
+        total += len(ids)
+        for note_id in ids:
+            assert f'<p id="fn-{note_id}">' in html, (number, note_id)
+    assert total == 13
+    assert "data-bareact-fn" not in client.get("/laws/mtp/section/8").text
 
 
 def test_the_misprinted_footnote_is_kept_as_printed_and_recorded():
@@ -592,7 +667,7 @@ def test_the_archival_canonical_is_the_reviewed_parse():
         "6e091b4327fa5c2829724ff9bf0f645ad545bb64ed3afd278fe50998b53980ac"
     )
     assert archival["document"]["source_as_on"] == "27th July, 2025"
-    assert archival["document"]["parser"].endswith("(MTP v2)")
+    assert archival["document"]["parser"].endswith("(MTP v3)")
     checks = archival["_validation"]["section_checks"]
     assert [c["section"] for c in checks] == SECTION_IDS
     assert all(c["text_reconstruction_match"] for c in checks)

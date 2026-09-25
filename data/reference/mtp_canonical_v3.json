@@ -6,7 +6,7 @@
     "date": "10th August, 1971",
     "source_type": "IndiaCode_consolidation",
     "source_as_on": "27th July, 2025",
-    "parser": "PyMuPDF deterministic geometry parser (MTP v2)",
+    "parser": "PyMuPDF deterministic geometry parser (MTP v3)",
     "toolchain": {
       "pymupdf": "1.28.2"
     },
@@ -73,7 +73,18 @@
           "source_line_ids": [
             "p4_l9"
           ],
-          "id": "section_1_subsection_2"
+          "id": "section_1_subsection_2",
+          "annotations": [
+            {
+              "type": "footnote",
+              "marker": "1",
+              "note_id": "footnote_p4_1",
+              "source_page": 4,
+              "start": 27,
+              "end": 32,
+              "anchor_text": "India"
+            }
+          ]
         },
         {
           "type": "subsection",
@@ -88,7 +99,18 @@
             "p4_l10",
             "p4_l11"
           ],
-          "id": "section_1_subsection_3"
+          "id": "section_1_subsection_3",
+          "annotations": [
+            {
+              "type": "footnote",
+              "marker": "2",
+              "note_id": "footnote_p4_2",
+              "source_page": 4,
+              "start": 33,
+              "end": 37,
+              "anchor_text": "date"
+            }
+          ]
         }
       ],
       "source_pages": [
@@ -109,7 +131,8 @@
           "source_page": 4,
           "source_line_id": "p4_l9",
           "section_id": "section_1",
-          "source_text": "(2) It extends to the whole of India 1***."
+          "source_text": "(2) It extends to the whole of India 1***.",
+          "placement": "text"
         },
         {
           "type": "footnote",
@@ -118,7 +141,8 @@
           "source_page": 4,
           "source_line_id": "p4_l10",
           "section_id": "section_1",
-          "source_text": "(3) It shall come into force on such date2 as the Central Government may, by notification in the"
+          "source_text": "(3) It shall come into force on such date2 as the Central Government may, by notification in the",
+          "placement": "text"
         }
       ]
     },
@@ -147,7 +171,18 @@
               "source_line_ids": [
                 "p4_l13"
               ],
-              "id": "section_2_paragraph_1_clause_a"
+              "id": "section_2_paragraph_1_clause_a",
+              "annotations": [
+                {
+                  "type": "footnote",
+                  "marker": "3",
+                  "note_id": "footnote_p4_3",
+                  "source_page": 4,
+                  "start": 72,
+                  "end": 91,
+                  "anchor_text": "mentally ill person"
+                }
+              ]
             },
             {
               "type": "clause",
@@ -162,7 +197,18 @@
                 "p4_l14",
                 "p4_l15"
               ],
-              "id": "section_2_paragraph_1_clause_aa"
+              "id": "section_2_paragraph_1_clause_aa",
+              "label_annotations": [
+                {
+                  "type": "footnote",
+                  "marker": "4",
+                  "note_id": "footnote_p4_4",
+                  "source_page": 4,
+                  "start": 0,
+                  "end": 4,
+                  "anchor_text": "(aa)"
+                }
+              ]
             },
             {
               "type": "clause",
@@ -177,7 +223,18 @@
                 "p4_l16",
                 "p4_l17"
               ],
-              "id": "section_2_paragraph_1_clause_b"
+              "id": "section_2_paragraph_1_clause_b",
+              "label_annotations": [
+                {
+                  "type": "footnote",
+                  "marker": "5",
+                  "note_id": "footnote_p4_5",
+                  "source_page": 4,
+                  "start": 0,
+                  "end": 3,
+                  "anchor_text": "(b)"
+                }
+              ]
             },
             {
               "type": "clause",
@@ -224,7 +281,18 @@
                 "p4_l24",
                 "p4_l25"
               ],
-              "id": "section_2_paragraph_1_clause_e"
+              "id": "section_2_paragraph_1_clause_e",
+              "label_annotations": [
+                {
+                  "type": "footnote",
+                  "marker": "4",
+                  "note_id": "footnote_p4_4",
+                  "source_page": 4,
+                  "start": 0,
+                  "end": 3,
+                  "anchor_text": "(e)"
+                }
+              ]
             }
           ],
           "source_pages": [
@@ -264,7 +332,8 @@
           "source_page": 4,
           "source_line_id": "p4_l13",
           "section_id": "section_2",
-          "source_text": "(a) “guardian” means a person having the care of the person of a minor or a 3[mentally ill person];"
+          "source_text": "(a) “guardian” means a person having the care of the person of a minor or a 3[mentally ill person];",
+          "placement": "text"
         },
         {
           "type": "footnote",
@@ -273,7 +342,8 @@
           "source_page": 4,
           "source_line_id": "p4_l14",
           "section_id": "section_2",
-          "source_text": "4[(aa) “Medical Board” means the Medical Board constituted under sub-section (2C) of section 3"
+          "source_text": "4[(aa) “Medical Board” means the Medical Board constituted under sub-section (2C) of section 3",
+          "placement": "label"
         },
         {
           "type": "footnote",
@@ -282,7 +352,8 @@
           "source_page": 4,
           "source_line_id": "p4_l16",
           "section_id": "section_2",
-          "source_text": "5[(b) “mentally ill person” means a person who is in need of treatment by reason of any mental"
+          "source_text": "5[(b) “mentally ill person” means a person who is in need of treatment by reason of any mental",
+          "placement": "label"
         },
         {
           "type": "footnote",
@@ -291,7 +362,8 @@
           "source_page": 4,
           "source_line_id": "p4_l24",
           "section_id": "section_2",
-          "source_text": "4[(e) “termination of pregnancy” means a procedure to terminate a pregnancy by using medical or"
+          "source_text": "4[(e) “termination of pregnancy” means a procedure to terminate a pregnancy by using medical or",
+          "placement": "label"
         }
       ]
     },
@@ -442,7 +514,18 @@
             "p4_l30",
             "p4_l31"
           ],
-          "id": "section_3_subsection_2"
+          "id": "section_3_subsection_2",
+          "label_annotations": [
+            {
+              "type": "footnote",
+              "marker": "6",
+              "note_id": "footnote_p4_6",
+              "source_page": 4,
+              "start": 0,
+              "end": 3,
+              "anchor_text": "(2)"
+            }
+          ]
         },
         {
           "type": "subsection",
@@ -599,7 +682,18 @@
                 "p5_l31",
                 "p5_l32"
               ],
-              "id": "section_3_subsection_4_clause_a"
+              "id": "section_3_subsection_4_clause_a",
+              "annotations": [
+                {
+                  "type": "footnote",
+                  "marker": "1",
+                  "note_id": "footnote_p5_1",
+                  "source_page": 5,
+                  "start": 129,
+                  "end": 148,
+                  "anchor_text": "mentally ill person"
+                }
+              ]
             },
             {
               "type": "clause",
@@ -687,7 +781,8 @@
           "source_page": 4,
           "source_line_id": "p4_l30",
           "section_id": "section_3",
-          "source_text": "6[(2) Subject to the provisions of sub-section (4), a pregnancy may be terminated by a registered"
+          "source_text": "6[(2) Subject to the provisions of sub-section (4), a pregnancy may be terminated by a registered",
+          "placement": "label"
         },
         {
           "type": "footnote",
@@ -696,7 +791,8 @@
           "source_page": 5,
           "source_line_id": "p5_l31",
           "section_id": "section_3",
-          "source_text": "attained the age of eighteen years, is a 1[mentally ill person], shall be terminated except with the"
+          "source_text": "attained the age of eighteen years, is a 1[mentally ill person], shall be terminated except with the",
+          "placement": "text"
         }
       ]
     },
@@ -791,7 +887,19 @@
           "source_page": 5,
           "source_line_id": "p5_l35",
           "section_id": "section_4",
-          "source_text": "2[4. Place where pregnancy may be terminated.—No termination of pregnancy shall be made in"
+          "source_text": "2[4. Place where pregnancy may be terminated.—No termination of pregnancy shall be made in",
+          "placement": "title"
+        }
+      ],
+      "title_annotations": [
+        {
+          "type": "footnote",
+          "marker": "2",
+          "note_id": "footnote_p5_2",
+          "source_page": 5,
+          "start": 0,
+          "end": 39,
+          "anchor_text": "Place where pregnancy may be terminated"
         }
       ]
     },
@@ -836,7 +944,18 @@
             "p6_l8",
             "p6_l9"
           ],
-          "id": "section_5_subsection_2"
+          "id": "section_5_subsection_2",
+          "label_annotations": [
+            {
+              "type": "footnote",
+              "marker": "1",
+              "note_id": "footnote_p6_1",
+              "source_page": 6,
+              "start": 0,
+              "end": 3,
+              "anchor_text": "(2)"
+            }
+          ]
         },
         {
           "type": "subsection",
@@ -937,7 +1056,8 @@
           "source_page": 6,
           "source_line_id": "p6_l6",
           "section_id": "section_5",
-          "source_text": "1[(2) Notwithstanding anything contained in the Indian Penal Code (45 of 1860), the termination of"
+          "source_text": "1[(2) Notwithstanding anything contained in the Indian Penal Code (45 of 1860), the termination of",
+          "placement": "label"
         }
       ]
     },
@@ -999,7 +1119,19 @@
           "source_page": 6,
           "source_line_id": "p6_l22",
           "section_id": "section_5A",
-          "source_text": "2[5A. Protection of privacy of a woman.—(1) No registered medical practitioner shall reveal the"
+          "source_text": "2[5A. Protection of privacy of a woman.—(1) No registered medical practitioner shall reveal the",
+          "placement": "title"
+        }
+      ],
+      "title_annotations": [
+        {
+          "type": "footnote",
+          "marker": "2",
+          "note_id": "footnote_p6_2",
+          "source_page": 6,
+          "start": 0,
+          "end": 32,
+          "anchor_text": "Protection of privacy of a woman"
         }
       ]
     },
@@ -1058,7 +1190,18 @@
               "source_line_ids": [
                 "p6_l33"
               ],
-              "id": "section_6_subsection_2_clause_aa"
+              "id": "section_6_subsection_2_clause_aa",
+              "label_annotations": [
+                {
+                  "type": "footnote",
+                  "marker": "3",
+                  "note_id": "footnote_p6_3",
+                  "source_page": 6,
+                  "start": 0,
+                  "end": 4,
+                  "anchor_text": "(aa)"
+                }
+              ]
             },
             {
               "type": "clause",
@@ -1168,7 +1311,8 @@
           "source_page": 6,
           "source_line_id": "p6_l33",
           "section_id": "section_6",
-          "source_text": "3[(aa) the category of woman under clause (b) of sub-section (2) of section 3;"
+          "source_text": "3[(aa) the category of woman under clause (b) of sub-section (2) of section 3;",
+          "placement": "label"
         }
       ]
     },
@@ -1271,7 +1415,18 @@
             "p7_l15",
             "p7_l16"
           ],
-          "id": "section_7_subsection_2A"
+          "id": "section_7_subsection_2A",
+          "label_annotations": [
+            {
+              "type": "footnote",
+              "marker": "1",
+              "note_id": "footnote_p7_1",
+              "source_page": 7,
+              "start": 0,
+              "end": 4,
+              "anchor_text": "(2A)"
+            }
+          ]
         },
         {
           "type": "subsection",
@@ -1320,7 +1475,8 @@
           "source_page": 7,
           "source_line_id": "p7_l15",
           "section_id": "section_7",
-          "source_text": "1[(2A) Every regulation made by the State Government under this Act shall be laid, as soon as may be"
+          "source_text": "1[(2A) Every regulation made by the State Government under this Act shall be laid, as soon as may be",
+          "placement": "label"
         }
       ]
     },
@@ -1488,6 +1644,7 @@
       "raw_text": "The Medical Termination of Pregnancy Act, 1971",
       "text": "The Medical Termination of Pregnancy Act, 1971",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 18.0,
       "id": "p1_l1"
     },
@@ -1498,6 +1655,7 @@
       "raw_text": "(ACT NO. 34 OF 1971)",
       "text": "(ACT NO. 34 OF 1971)",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 12.0,
       "id": "p1_l2"
     },
@@ -1508,6 +1666,7 @@
       "raw_text": "(As on the 27th July , 2025)",
       "text": "(As on the 27th July , 2025)",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p1_l3"
     },
@@ -1518,6 +1677,7 @@
       "raw_text": "LIST OF AMENDING ACTS",
       "text": "LIST OF AMENDING ACTS",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 12.0,
       "id": "p2_l1"
     },
@@ -1528,6 +1688,7 @@
       "raw_text": "1. The Medical Termination of Pregnancy (Amendment) Act, 2002 (64 of 2002).",
       "text": "1. The Medical Termination of Pregnancy (Amendment) Act, 2002 (64 of 2002).",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l2"
     },
@@ -1538,6 +1699,7 @@
       "raw_text": "2. The Delegated Legislation Provisions (Amendment) Act, 2004 (4 of 2005).",
       "text": "2. The Delegated Legislation Provisions (Amendment) Act, 2004 (4 of 2005).",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l3"
     },
@@ -1548,6 +1710,7 @@
       "raw_text": "3. The Jammu and Kashmir Reorganisation Act, 2019 (34 of 2019).",
       "text": "3. The Jammu and Kashmir Reorganisation Act, 2019 (34 of 2019).",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l4"
     },
@@ -1558,6 +1721,7 @@
       "raw_text": "4. The Medical Termination of Pregnancy (Amendment) Act, 2021 (8 of 2021).",
       "text": "4. The Medical Termination of Pregnancy (Amendment) Act, 2021 (8 of 2021).",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l5"
     },
@@ -1568,6 +1732,7 @@
       "raw_text": "_______",
       "text": "_______",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 12.0,
       "id": "p2_l6"
     },
@@ -1578,6 +1743,7 @@
       "raw_text": "LIST OF ABBREVIATIONS USED",
       "text": "LIST OF ABBREVIATIONS USED",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 12.0,
       "id": "p2_l7"
     },
@@ -1588,6 +1754,7 @@
       "raw_text": "Cl., cls.",
       "text": "Cl., cls.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l8"
     },
@@ -1598,6 +1765,7 @@
       "raw_text": ".",
       "text": ".",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l9"
     },
@@ -1608,6 +1776,7 @@
       "raw_text": ".",
       "text": ".",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l10"
     },
@@ -1618,6 +1787,7 @@
       "raw_text": ".",
       "text": ".",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l11"
     },
@@ -1628,6 +1798,7 @@
       "raw_text": ".            .            for            Clause, clauses.",
       "text": ". . for Clause, clauses.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l12"
     },
@@ -1638,6 +1809,7 @@
       "raw_text": "Ins.",
       "text": "Ins.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l13"
     },
@@ -1648,6 +1820,7 @@
       "raw_text": ".",
       "text": ".",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l14"
     },
@@ -1658,6 +1831,7 @@
       "raw_text": ".",
       "text": ".",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l15"
     },
@@ -1668,6 +1842,7 @@
       "raw_text": ".",
       "text": ".",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l16"
     },
@@ -1678,6 +1853,7 @@
       "raw_text": ".",
       "text": ".",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l17"
     },
@@ -1688,6 +1864,7 @@
       "raw_text": ".            ,,               Inserted.",
       "text": ". ,, Inserted.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l18"
     },
@@ -1698,6 +1875,7 @@
       "raw_text": "Notifn.",
       "text": "Notifn.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l19"
     },
@@ -1708,6 +1886,7 @@
       "raw_text": ".",
       "text": ".",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l20"
     },
@@ -1718,6 +1897,7 @@
       "raw_text": ".",
       "text": ".",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l21"
     },
@@ -1728,6 +1908,7 @@
       "raw_text": ".",
       "text": ".",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l22"
     },
@@ -1738,6 +1919,7 @@
       "raw_text": ".",
       "text": ".",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l23"
     },
@@ -1748,6 +1930,7 @@
       "raw_text": ".",
       "text": ".",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l24"
     },
@@ -1758,6 +1941,7 @@
       "raw_text": ",,",
       "text": ",,",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l25"
     },
@@ -1768,6 +1952,7 @@
       "raw_text": "Notification.",
       "text": "Notification.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l26"
     },
@@ -1778,6 +1963,7 @@
       "raw_text": "S., ss.",
       "text": "S., ss.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l27"
     },
@@ -1788,6 +1974,7 @@
       "raw_text": ".",
       "text": ".",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l28"
     },
@@ -1798,6 +1985,7 @@
       "raw_text": ".",
       "text": ".",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l29"
     },
@@ -1808,6 +1996,7 @@
       "raw_text": ".",
       "text": ".",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l30"
     },
@@ -1818,6 +2007,7 @@
       "raw_text": ".",
       "text": ".",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l31"
     },
@@ -1828,6 +2018,7 @@
       "raw_text": ".",
       "text": ".",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l32"
     },
@@ -1838,6 +2029,7 @@
       "raw_text": ",,",
       "text": ",,",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l33"
     },
@@ -1848,6 +2040,7 @@
       "raw_text": "Section, sections.",
       "text": "Section, sections.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l34"
     },
@@ -1858,6 +2051,7 @@
       "raw_text": "Sch.",
       "text": "Sch.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l35"
     },
@@ -1868,6 +2062,7 @@
       "raw_text": ".",
       "text": ".",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l36"
     },
@@ -1878,6 +2073,7 @@
       "raw_text": ".",
       "text": ".",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l37"
     },
@@ -1888,6 +2084,7 @@
       "raw_text": ".",
       "text": ".",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l38"
     },
@@ -1898,6 +2095,7 @@
       "raw_text": ".",
       "text": ".",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l39"
     },
@@ -1908,6 +2106,7 @@
       "raw_text": ".",
       "text": ".",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l40"
     },
@@ -1918,6 +2117,7 @@
       "raw_text": ",,",
       "text": ",,",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l41"
     },
@@ -1928,6 +2128,7 @@
       "raw_text": "Schedule.",
       "text": "Schedule.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l42"
     },
@@ -1938,6 +2139,7 @@
       "raw_text": "Subs.",
       "text": "Subs.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l43"
     },
@@ -1948,6 +2150,7 @@
       "raw_text": ".",
       "text": ".",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l44"
     },
@@ -1958,6 +2161,7 @@
       "raw_text": ".",
       "text": ".",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l45"
     },
@@ -1968,6 +2172,7 @@
       "raw_text": ".",
       "text": ".",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l46"
     },
@@ -1978,6 +2183,7 @@
       "raw_text": ".",
       "text": ".",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l47"
     },
@@ -1988,6 +2194,7 @@
       "raw_text": ".",
       "text": ".",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l48"
     },
@@ -1998,6 +2205,7 @@
       "raw_text": ",,",
       "text": ",,",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l49"
     },
@@ -2008,6 +2216,7 @@
       "raw_text": "Substituted.",
       "text": "Substituted.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l50"
     },
@@ -2018,6 +2227,7 @@
       "raw_text": "w.e.f.",
       "text": "w.e.f.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l51"
     },
@@ -2028,6 +2238,7 @@
       "raw_text": ".",
       "text": ".",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l52"
     },
@@ -2038,6 +2249,7 @@
       "raw_text": ".",
       "text": ".",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l53"
     },
@@ -2048,6 +2260,7 @@
       "raw_text": ".",
       "text": ".",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l54"
     },
@@ -2058,6 +2271,7 @@
       "raw_text": ".",
       "text": ".",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l55"
     },
@@ -2068,6 +2282,7 @@
       "raw_text": ".",
       "text": ".",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l56"
     },
@@ -2078,6 +2293,7 @@
       "raw_text": ",,",
       "text": ",,",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l57"
     },
@@ -2088,6 +2304,7 @@
       "raw_text": "with effect from.",
       "text": "with effect from.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p2_l58"
     },
@@ -2098,6 +2315,7 @@
       "raw_text": "THE MEDICAL TERMINATION OF PREGNANCY ACT, 1971",
       "text": "THE MEDICAL TERMINATION OF PREGNANCY ACT, 1971",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 12.0,
       "id": "p3_l1"
     },
@@ -2108,6 +2326,7 @@
       "raw_text": "_________",
       "text": "_________",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 12.0,
       "id": "p3_l2"
     },
@@ -2118,6 +2337,7 @@
       "raw_text": "ARRANGEMENT OF SECTIONS",
       "text": "ARRANGEMENT OF SECTIONS",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 12.0,
       "id": "p3_l3"
     },
@@ -2128,6 +2348,7 @@
       "raw_text": "__________",
       "text": "__________",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 12.0,
       "id": "p3_l4"
     },
@@ -2138,6 +2359,7 @@
       "raw_text": "SECTIONS",
       "text": "SECTIONS",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 12.0,
       "id": "p3_l5"
     },
@@ -2148,6 +2370,7 @@
       "raw_text": "1.",
       "text": "1.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p3_l6"
     },
@@ -2158,6 +2381,7 @@
       "raw_text": "Short title, extent and commencement.",
       "text": "Short title, extent and commencement.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p3_l7"
     },
@@ -2168,6 +2392,7 @@
       "raw_text": "2.",
       "text": "2.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p3_l8"
     },
@@ -2178,6 +2403,7 @@
       "raw_text": "Definitions.",
       "text": "Definitions.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p3_l9"
     },
@@ -2188,6 +2414,7 @@
       "raw_text": "3.",
       "text": "3.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p3_l10"
     },
@@ -2198,6 +2425,7 @@
       "raw_text": "When pregnancies may be terminated by registered medical practitioners.",
       "text": "When pregnancies may be terminated by registered medical practitioners.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p3_l11"
     },
@@ -2208,6 +2436,7 @@
       "raw_text": "4.",
       "text": "4.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p3_l12"
     },
@@ -2218,6 +2447,7 @@
       "raw_text": "Place where pregnancy may be terminated.",
       "text": "Place where pregnancy may be terminated.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p3_l13"
     },
@@ -2228,6 +2458,7 @@
       "raw_text": "5.",
       "text": "5.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p3_l14"
     },
@@ -2238,6 +2469,7 @@
       "raw_text": "Sections 3 and 4 when not to apply.",
       "text": "Sections 3 and 4 when not to apply.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p3_l15"
     },
@@ -2248,6 +2480,7 @@
       "raw_text": "5A. Protection of privacy of a woman.",
       "text": "5A. Protection of privacy of a woman.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p3_l16"
     },
@@ -2258,6 +2491,7 @@
       "raw_text": "6.",
       "text": "6.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p3_l17"
     },
@@ -2268,6 +2502,7 @@
       "raw_text": "Power to make rules.",
       "text": "Power to make rules.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p3_l18"
     },
@@ -2278,6 +2513,7 @@
       "raw_text": "7.",
       "text": "7.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p3_l19"
     },
@@ -2288,6 +2524,7 @@
       "raw_text": "Power to make regulations.",
       "text": "Power to make regulations.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p3_l20"
     },
@@ -2298,6 +2535,7 @@
       "raw_text": "8.",
       "text": "8.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p3_l21"
     },
@@ -2308,6 +2546,7 @@
       "raw_text": "Protection of action taken in good faith.",
       "text": "Protection of action taken in good faith.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p3_l22"
     },
@@ -2318,6 +2557,7 @@
       "raw_text": "THE MEDICAL TERMINATION OF PREGNANCY ACT, 1971",
       "text": "THE MEDICAL TERMINATION OF PREGNANCY ACT, 1971",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 12.0,
       "id": "p4_l1"
     },
@@ -2328,6 +2568,7 @@
       "raw_text": "ACT NO. 34 OF 1971",
       "text": "ACT NO. 34 OF 1971",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 12.0,
       "id": "p4_l2"
     },
@@ -2338,6 +2579,7 @@
       "raw_text": "[10th August, 1971.]",
       "text": "[10th August, 1971.]",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p4_l3"
     },
@@ -2348,6 +2590,7 @@
       "raw_text": "An Act to provide for the termination of certain pregnancies by registered medical practitioners",
       "text": "An Act to provide for the termination of certain pregnancies by registered medical practitioners",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 12.0,
       "id": "p4_l4"
     },
@@ -2358,6 +2601,7 @@
       "raw_text": "and for matters connected therewith or incidental thereto.",
       "text": "and for matters connected therewith or incidental thereto.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 12.0,
       "id": "p4_l5"
     },
@@ -2368,6 +2612,7 @@
       "raw_text": "BE it enacted by Parliament in the Twenty-second Year of the Republic of India as follows:—",
       "text": "BE it enacted by Parliament in the Twenty-second Year of the Republic of India as follows:—",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p4_l6"
     },
@@ -2378,6 +2623,7 @@
       "raw_text": "1. Short title, extent and commencement.—(1) This Act may be called the Medical Termination of",
       "text": "1. Short title, extent and commencement.—(1) This Act may be called the Medical Termination of",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p4_l7"
     },
@@ -2388,6 +2634,7 @@
       "raw_text": "Pregnancy Act, 1971.",
       "text": "Pregnancy Act, 1971.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p4_l8"
     },
@@ -2399,6 +2646,12 @@
       "text": "(2) It extends to the whole of India ***.",
       "markers": [
         "1"
+      ],
+      "marker_offsets": [
+        [
+          "1",
+          37
+        ]
       ],
       "max_size": 11.039999961853027,
       "id": "p4_l9"
@@ -2412,6 +2665,12 @@
       "markers": [
         "2"
       ],
+      "marker_offsets": [
+        [
+          "2",
+          41
+        ]
+      ],
       "max_size": 11.039999961853027,
       "id": "p4_l10"
     },
@@ -2422,6 +2681,7 @@
       "raw_text": "Official Gazette, appoint.",
       "text": "Official Gazette, appoint.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p4_l11"
     },
@@ -2432,6 +2692,7 @@
       "raw_text": "2. Definitions.—In this Act, unless the context otherwise requires,—",
       "text": "2. Definitions.—In this Act, unless the context otherwise requires,—",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p4_l12"
     },
@@ -2443,6 +2704,12 @@
       "text": "(a) “guardian” means a person having the care of the person of a minor or a [mentally ill person];",
       "markers": [
         "3"
+      ],
+      "marker_offsets": [
+        [
+          "3",
+          76
+        ]
       ],
       "max_size": 11.039999961853027,
       "id": "p4_l13"
@@ -2456,6 +2723,12 @@
       "markers": [
         "4"
       ],
+      "marker_offsets": [
+        [
+          "4",
+          0
+        ]
+      ],
       "max_size": 11.039999961853027,
       "id": "p4_l14"
     },
@@ -2466,6 +2739,7 @@
       "raw_text": "of the Act;]",
       "text": "of the Act;]",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p4_l15"
     },
@@ -2478,6 +2752,12 @@
       "markers": [
         "5"
       ],
+      "marker_offsets": [
+        [
+          "5",
+          0
+        ]
+      ],
       "max_size": 11.039999961853027,
       "id": "p4_l16"
     },
@@ -2488,6 +2768,7 @@
       "raw_text": "disorder other than mental retardation;]",
       "text": "disorder other than mental retardation;]",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p4_l17"
     },
@@ -2498,6 +2779,7 @@
       "raw_text": "(c) “minor” means a person who, under the provisions of the Indian Majority Act, 1875 (9 of",
       "text": "(c) “minor” means a person who, under the provisions of the Indian Majority Act, 1875 (9 of",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p4_l18"
     },
@@ -2508,6 +2790,7 @@
       "raw_text": "1875), is to be deemed not to have attained his majority;",
       "text": "1875), is to be deemed not to have attained his majority;",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p4_l19"
     },
@@ -2518,6 +2801,7 @@
       "raw_text": "(d) “registered medical practitioner” means a medical practitioner who possesses any recognised",
       "text": "(d) “registered medical practitioner” means a medical practitioner who possesses any recognised",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p4_l20"
     },
@@ -2528,6 +2812,7 @@
       "raw_text": "medical qualification as defined in clause (h) of section 2 of the Indian Medical Council Act, 1956",
       "text": "medical qualification as defined in clause (h) of section 2 of the Indian Medical Council Act, 1956",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p4_l21"
     },
@@ -2538,6 +2823,7 @@
       "raw_text": "(102 of 1956), whose name has been entered in a State Medical Register and who has such experience",
       "text": "(102 of 1956), whose name has been entered in a State Medical Register and who has such experience",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p4_l22"
     },
@@ -2548,6 +2834,7 @@
       "raw_text": "or training in gynaecology and obstetrics as may be prescribed by rules made under this Act.",
       "text": "or training in gynaecology and obstetrics as may be prescribed by rules made under this Act.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p4_l23"
     },
@@ -2560,6 +2847,12 @@
       "markers": [
         "4"
       ],
+      "marker_offsets": [
+        [
+          "4",
+          0
+        ]
+      ],
       "max_size": 11.039999961853027,
       "id": "p4_l24"
     },
@@ -2570,6 +2863,7 @@
       "raw_text": "surgical methods.]",
       "text": "surgical methods.]",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p4_l25"
     },
@@ -2580,6 +2874,7 @@
       "raw_text": "3. When pregnancies may be terminated by registered medical practitioners. —(1)",
       "text": "3. When pregnancies may be terminated by registered medical practitioners. —(1)",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p4_l26"
     },
@@ -2590,6 +2885,7 @@
       "raw_text": "Notwithstanding anything contained in the Indian Penal Code (45 of 1860), a registered medical",
       "text": "Notwithstanding anything contained in the Indian Penal Code (45 of 1860), a registered medical",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p4_l27"
     },
@@ -2600,6 +2896,7 @@
       "raw_text": "practitioner shall not be guilty of any offence under that Code or under any other law for the time being in",
       "text": "practitioner shall not be guilty of any offence under that Code or under any other law for the time being in",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p4_l28"
     },
@@ -2610,6 +2907,7 @@
       "raw_text": "force, if any pregnancy is terminated by him in accordance with the provisions of this Act.",
       "text": "force, if any pregnancy is terminated by him in accordance with the provisions of this Act.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p4_l29"
     },
@@ -2622,6 +2920,12 @@
       "markers": [
         "6"
       ],
+      "marker_offsets": [
+        [
+          "6",
+          0
+        ]
+      ],
       "max_size": 11.039999961853027,
       "id": "p4_l30"
     },
@@ -2632,6 +2936,7 @@
       "raw_text": "medical practitioner,—",
       "text": "medical practitioner,—",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p4_l31"
     },
@@ -2642,6 +2947,7 @@
       "raw_text": "(a) where the length of the pregnancy does not exceed twenty weeks, if such medical practitioner",
       "text": "(a) where the length of the pregnancy does not exceed twenty weeks, if such medical practitioner",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p4_l32"
     },
@@ -2652,6 +2958,7 @@
       "raw_text": "is, or",
       "text": "is, or",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p4_l33"
     },
@@ -2662,6 +2969,7 @@
       "raw_text": "(b) where the length of the pregnancy exceeds twenty weeks but does not exceed twenty-four",
       "text": "(b) where the length of the pregnancy exceeds twenty weeks but does not exceed twenty-four",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p4_l34"
     },
@@ -2672,6 +2980,7 @@
       "raw_text": "weeks in case of such category of woman as may be prescribed by rules made under this Act, if not",
       "text": "weeks in case of such category of woman as may be prescribed by rules made under this Act, if not",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p4_l35"
     },
@@ -2682,6 +2991,7 @@
       "raw_text": "less than two registered medical practitioners are,",
       "text": "less than two registered medical practitioners are,",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p4_l36"
     },
@@ -2692,6 +3002,7 @@
       "raw_text": "of the opinion, formed in good faith, that—",
       "text": "of the opinion, formed in good faith, that—",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p4_l37"
     },
@@ -2702,6 +3013,7 @@
       "raw_text": "1. The words “except the State of Jammu and Kashmir” omitted by Act 34 of 2019, s. 95 and the Fifth Schedule (w.e.f. 31-",
       "text": "1. The words “except the State of Jammu and Kashmir” omitted by Act 34 of 2019, s. 95 and the Fifth Schedule (w.e.f. 31-",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 9.0,
       "id": "p4_l38"
     },
@@ -2712,6 +3024,7 @@
       "raw_text": "10- 2019).",
       "text": "10- 2019).",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 9.0,
       "id": "p4_l39"
     },
@@ -2722,6 +3035,7 @@
       "raw_text": "2. 1st April, 1972, vide notification No. G.S.R. 285, dated 19th February, 1972, see Gazette of India, Part II, sec. 3 (i).",
       "text": "2. 1st April, 1972, vide notification No. G.S.R. 285, dated 19th February, 1972, see Gazette of India, Part II, sec. 3 (i).",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 9.0,
       "id": "p4_l40"
     },
@@ -2732,6 +3046,7 @@
       "raw_text": "3. Subs. by Act 64 of 2002, s. 2, for “lunatic” (w.e.f. 18-6-2003).",
       "text": "3. Subs. by Act 64 of 2002, s. 2, for “lunatic” (w.e.f. 18-6-2003).",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 9.0,
       "id": "p4_l41"
     },
@@ -2742,6 +3057,7 @@
       "raw_text": "4. Ins. by Act 8 of 2021, s. 2 (w.e.f. 24-9-2021).",
       "text": "4. Ins. by Act 8 of 2021, s. 2 (w.e.f. 24-9-2021).",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 9.0,
       "id": "p4_l42"
     },
@@ -2752,6 +3068,7 @@
       "raw_text": "5. Subs. by s. 2, ibid., for clause (b) (w.e.f. 18-6-2003).",
       "text": "5. Subs. by s. 2, ibid., for clause (b) (w.e.f. 18-6-2003).",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 9.0,
       "id": "p4_l43"
     },
@@ -2762,6 +3079,7 @@
       "raw_text": "6. Subs. by Act 8 of 2021, s. 3, for sub-section (2) (w.e.f. 24-9-2021).",
       "text": "6. Subs. by Act 8 of 2021, s. 3, for sub-section (2) (w.e.f. 24-9-2021).",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 9.0,
       "id": "p4_l44"
     },
@@ -2772,6 +3090,7 @@
       "raw_text": "(i) the continuance of the pregnancy would involve a risk to the life of the pregnant woman or of",
       "text": "(i) the continuance of the pregnancy would involve a risk to the life of the pregnant woman or of",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l1"
     },
@@ -2782,6 +3101,7 @@
       "raw_text": "grave injury to her physical or mental health; or",
       "text": "grave injury to her physical or mental health; or",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l2"
     },
@@ -2792,6 +3112,7 @@
       "raw_text": "(ii) there is a substantial risk that if the child were born, it would suffer from any serious physical",
       "text": "(ii) there is a substantial risk that if the child were born, it would suffer from any serious physical",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l3"
     },
@@ -2802,6 +3123,7 @@
       "raw_text": "or mental abnormality.",
       "text": "or mental abnormality.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l4"
     },
@@ -2812,6 +3134,7 @@
       "raw_text": "Explanation 1.—For the purposes of clause (a), where any pregnancy occurs as a result of failure",
       "text": "Explanation 1.—For the purposes of clause (a), where any pregnancy occurs as a result of failure",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l5"
     },
@@ -2822,6 +3145,7 @@
       "raw_text": "of any device or method used by any woman or her partner for the purpose of limiting the number of",
       "text": "of any device or method used by any woman or her partner for the purpose of limiting the number of",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l6"
     },
@@ -2832,6 +3156,7 @@
       "raw_text": "children or preventing pregnancy, the anguish caused by such pregnancy may be presumed to",
       "text": "children or preventing pregnancy, the anguish caused by such pregnancy may be presumed to",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l7"
     },
@@ -2842,6 +3167,7 @@
       "raw_text": "constitute a grave injury to the mental health of the pregnant woman.",
       "text": "constitute a grave injury to the mental health of the pregnant woman.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l8"
     },
@@ -2852,6 +3178,7 @@
       "raw_text": "Explanation 2.—For the purposes of clauses (a) and (b), where any pregnancy is alleged by the",
       "text": "Explanation 2.—For the purposes of clauses (a) and (b), where any pregnancy is alleged by the",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l9"
     },
@@ -2862,6 +3189,7 @@
       "raw_text": "pregnant woman to have been caused by rape, the anguish caused by the pregnancy shall be presumed",
       "text": "pregnant woman to have been caused by rape, the anguish caused by the pregnancy shall be presumed",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l10"
     },
@@ -2872,6 +3200,7 @@
       "raw_text": "to constitute a grave injury to the mental health of the pregnant woman.",
       "text": "to constitute a grave injury to the mental health of the pregnant woman.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l11"
     },
@@ -2882,6 +3211,7 @@
       "raw_text": "(2A) The norms for the registered medical practitioner whose opinion is required for termination",
       "text": "(2A) The norms for the registered medical practitioner whose opinion is required for termination",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l12"
     },
@@ -2892,6 +3222,7 @@
       "raw_text": "of pregnancy at different gestational age shall be such as may be prescribed by rules made under this",
       "text": "of pregnancy at different gestational age shall be such as may be prescribed by rules made under this",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l13"
     },
@@ -2902,6 +3233,7 @@
       "raw_text": "Act.",
       "text": "Act.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l14"
     },
@@ -2912,6 +3244,7 @@
       "raw_text": "(2B) The provisions of sub-section (2) relating to the length of the pregnancy shall not apply to",
       "text": "(2B) The provisions of sub-section (2) relating to the length of the pregnancy shall not apply to",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l15"
     },
@@ -2922,6 +3255,7 @@
       "raw_text": "the termination of pregnancy by the medical practitioner where such termination is necessitated by",
       "text": "the termination of pregnancy by the medical practitioner where such termination is necessitated by",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l16"
     },
@@ -2932,6 +3266,7 @@
       "raw_text": "the diagnosis of any of the substantial foetal abnormalities diagnosed by a Medical Board.",
       "text": "the diagnosis of any of the substantial foetal abnormalities diagnosed by a Medical Board.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l17"
     },
@@ -2942,6 +3277,7 @@
       "raw_text": "(2C) Every State Government or Union territory, as the case may be, shall, by notification in the",
       "text": "(2C) Every State Government or Union territory, as the case may be, shall, by notification in the",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l18"
     },
@@ -2952,6 +3288,7 @@
       "raw_text": "Official Gazette, constitute a Board to be called a Medical Board for the purposes of this Act to",
       "text": "Official Gazette, constitute a Board to be called a Medical Board for the purposes of this Act to",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l19"
     },
@@ -2962,6 +3299,7 @@
       "raw_text": "exercise such powers and functions as may be prescribed by rules made under this Act.",
       "text": "exercise such powers and functions as may be prescribed by rules made under this Act.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l20"
     },
@@ -2972,6 +3310,7 @@
       "raw_text": "(2D) The Medical Board shall consist of the following, namely:—",
       "text": "(2D) The Medical Board shall consist of the following, namely:—",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l21"
     },
@@ -2982,6 +3321,7 @@
       "raw_text": "(a) a Gynaecologist;",
       "text": "(a) a Gynaecologist;",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l22"
     },
@@ -2992,6 +3332,7 @@
       "raw_text": "(b) a Paediatrician;",
       "text": "(b) a Paediatrician;",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l23"
     },
@@ -3002,6 +3343,7 @@
       "raw_text": "(c) a Radiologist or Sonologist; and",
       "text": "(c) a Radiologist or Sonologist; and",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l24"
     },
@@ -3012,6 +3354,7 @@
       "raw_text": "(d) such other number of members as may be notified in the Official Gazette by the State",
       "text": "(d) such other number of members as may be notified in the Official Gazette by the State",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l25"
     },
@@ -3022,6 +3365,7 @@
       "raw_text": "Government or Union territory, as the case may be.]",
       "text": "Government or Union territory, as the case may be.]",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l26"
     },
@@ -3032,6 +3376,7 @@
       "raw_text": "(3) In determining whether the continuance of a pregnancy would involve such risk of injury to",
       "text": "(3) In determining whether the continuance of a pregnancy would involve such risk of injury to",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l27"
     },
@@ -3042,6 +3387,7 @@
       "raw_text": "the health as is mentioned in sub-section (2), account may be taken of the pregnant woman’s actual or",
       "text": "the health as is mentioned in sub-section (2), account may be taken of the pregnant woman’s actual or",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l28"
     },
@@ -3052,6 +3398,7 @@
       "raw_text": "reasonably foreseeable environment.",
       "text": "reasonably foreseeable environment.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l29"
     },
@@ -3062,6 +3409,7 @@
       "raw_text": "(4) (a) No pregnancy of a woman, who has not attained the age of eighteen years, or, who having",
       "text": "(4) (a) No pregnancy of a woman, who has not attained the age of eighteen years, or, who having",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l30"
     },
@@ -3074,6 +3422,12 @@
       "markers": [
         "1"
       ],
+      "marker_offsets": [
+        [
+          "1",
+          41
+        ]
+      ],
       "max_size": 11.039999961853027,
       "id": "p5_l31"
     },
@@ -3084,6 +3438,7 @@
       "raw_text": "consent in writing of her guardian.]",
       "text": "consent in writing of her guardian.]",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l32"
     },
@@ -3094,6 +3449,7 @@
       "raw_text": "(b) Save as otherwise provided in clause (a), no pregnancy shall be terminated except with",
       "text": "(b) Save as otherwise provided in clause (a), no pregnancy shall be terminated except with",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l33"
     },
@@ -3104,6 +3460,7 @@
       "raw_text": "the consent of the pregnant woman.",
       "text": "the consent of the pregnant woman.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l34"
     },
@@ -3116,6 +3473,12 @@
       "markers": [
         "2"
       ],
+      "marker_offsets": [
+        [
+          "2",
+          0
+        ]
+      ],
       "max_size": 11.039999961853027,
       "id": "p5_l35"
     },
@@ -3126,6 +3489,7 @@
       "raw_text": "accordance with this Act at any place other than—",
       "text": "accordance with this Act at any place other than—",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l36"
     },
@@ -3136,6 +3500,7 @@
       "raw_text": "(a) a hospital established or maintained by Government, or",
       "text": "(a) a hospital established or maintained by Government, or",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l37"
     },
@@ -3146,6 +3511,7 @@
       "raw_text": "(b) a place for the time being approved for the purpose of this Act by Government or a District",
       "text": "(b) a place for the time being approved for the purpose of this Act by Government or a District",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l38"
     },
@@ -3156,6 +3522,7 @@
       "raw_text": "Level Committee constituted by that Government with the Chief Medical Officer or District Health",
       "text": "Level Committee constituted by that Government with the Chief Medical Officer or District Health",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l39"
     },
@@ -3166,6 +3533,7 @@
       "raw_text": "Officer as the Chairperson of the said Committee:",
       "text": "Officer as the Chairperson of the said Committee:",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l40"
     },
@@ -3176,6 +3544,7 @@
       "raw_text": "Provided that the District Level Committee shall consist of not less than three and not more than five",
       "text": "Provided that the District Level Committee shall consist of not less than three and not more than five",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l41"
     },
@@ -3186,6 +3555,7 @@
       "raw_text": "members including the Chairperson, as the Government may specify from time to time.]",
       "text": "members including the Chairperson, as the Government may specify from time to time.]",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p5_l42"
     },
@@ -3196,6 +3566,7 @@
       "raw_text": "1. Subs. by Act 64 of 2002, s. 3, for “lunatic” (w.e.f. 18-6-2003).",
       "text": "1. Subs. by Act 64 of 2002, s. 3, for “lunatic” (w.e.f. 18-6-2003).",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 9.0,
       "id": "p5_l43"
     },
@@ -3206,6 +3577,7 @@
       "raw_text": "2. Subs. by s. 4, ibid., for section 4 (w.e.f. 18-6-2003).",
       "text": "2. Subs. by s. 4, ibid., for section 4 (w.e.f. 18-6-2003).",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 9.0,
       "id": "p5_l44"
     },
@@ -3216,6 +3588,7 @@
       "raw_text": "5. Sections 3 and 4 when not to apply.—(1) The provisions of section 4, and so much of the",
       "text": "5. Sections 3 and 4 when not to apply.—(1) The provisions of section 4, and so much of the",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l1"
     },
@@ -3226,6 +3599,7 @@
       "raw_text": "provisions of sub-section (2) of section 3 as relate to the length of the pregnancy and the opinion of not",
       "text": "provisions of sub-section (2) of section 3 as relate to the length of the pregnancy and the opinion of not",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l2"
     },
@@ -3236,6 +3610,7 @@
       "raw_text": "less than two registered medical practitioners, shall not apply to the termination of a pregnancy by a",
       "text": "less than two registered medical practitioners, shall not apply to the termination of a pregnancy by a",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l3"
     },
@@ -3246,6 +3621,7 @@
       "raw_text": "registered medical practitioner in a case where he is of opinion, formed in good faith, that the termination",
       "text": "registered medical practitioner in a case where he is of opinion, formed in good faith, that the termination",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l4"
     },
@@ -3256,6 +3632,7 @@
       "raw_text": "of such pregnancy is immediately necessary to save the life of the pregnant woman.",
       "text": "of such pregnancy is immediately necessary to save the life of the pregnant woman.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l5"
     },
@@ -3268,6 +3645,12 @@
       "markers": [
         "1"
       ],
+      "marker_offsets": [
+        [
+          "1",
+          0
+        ]
+      ],
       "max_size": 11.039999961853027,
       "id": "p6_l6"
     },
@@ -3278,6 +3661,7 @@
       "raw_text": "pregnancy by a person who is not a registered medical practitioner shall be an offence punishable with",
       "text": "pregnancy by a person who is not a registered medical practitioner shall be an offence punishable with",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l7"
     },
@@ -3288,6 +3672,7 @@
       "raw_text": "rigorous imprisonment for a term which shall not be less than two years but which may extend to seven",
       "text": "rigorous imprisonment for a term which shall not be less than two years but which may extend to seven",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l8"
     },
@@ -3298,6 +3683,7 @@
       "raw_text": "years under that Code, and that Code shall, to this extent, stand modified.",
       "text": "years under that Code, and that Code shall, to this extent, stand modified.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l9"
     },
@@ -3308,6 +3694,7 @@
       "raw_text": "(3) Whoever terminates any pregnancy in a place other than that mentioned in section 4, shall be",
       "text": "(3) Whoever terminates any pregnancy in a place other than that mentioned in section 4, shall be",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l10"
     },
@@ -3318,6 +3705,7 @@
       "raw_text": "punishable with rigorous imprisonment for a term which shall not be less than two years but which may",
       "text": "punishable with rigorous imprisonment for a term which shall not be less than two years but which may",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l11"
     },
@@ -3328,6 +3716,7 @@
       "raw_text": "extend to seven years.",
       "text": "extend to seven years.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l12"
     },
@@ -3338,6 +3727,7 @@
       "raw_text": "(4) Any person being owner of a place which is not approved under clause (b) of section 4 shall be",
       "text": "(4) Any person being owner of a place which is not approved under clause (b) of section 4 shall be",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l13"
     },
@@ -3348,6 +3738,7 @@
       "raw_text": "punishable with rigorous imprisonment for a term which shall not be less than two years but which may",
       "text": "punishable with rigorous imprisonment for a term which shall not be less than two years but which may",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l14"
     },
@@ -3358,6 +3749,7 @@
       "raw_text": "extend to seven years.",
       "text": "extend to seven years.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l15"
     },
@@ -3368,6 +3760,7 @@
       "raw_text": "Explanation 1.—For the purposes of this section, the expression “owner” in relation to a place means",
       "text": "Explanation 1.—For the purposes of this section, the expression “owner” in relation to a place means",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l16"
     },
@@ -3378,6 +3771,7 @@
       "raw_text": "any person who is the administrative head or otherwise responsible for the working or maintenance of a",
       "text": "any person who is the administrative head or otherwise responsible for the working or maintenance of a",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l17"
     },
@@ -3388,6 +3782,7 @@
       "raw_text": "hospital or place, by whatever name called, where the pregnancy may be terminated under this Act.",
       "text": "hospital or place, by whatever name called, where the pregnancy may be terminated under this Act.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l18"
     },
@@ -3398,6 +3793,7 @@
       "raw_text": "Explanation 2.—For the purposes of this section, so much of the provisions of clause (d) of section 2",
       "text": "Explanation 2.—For the purposes of this section, so much of the provisions of clause (d) of section 2",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l19"
     },
@@ -3408,6 +3804,7 @@
       "raw_text": "as relate to the possession, by registered medical practitioner, of experience or training in gynaecology",
       "text": "as relate to the possession, by registered medical practitioner, of experience or training in gynaecology",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l20"
     },
@@ -3418,6 +3815,7 @@
       "raw_text": "and obstetrics shall not apply.]",
       "text": "and obstetrics shall not apply.]",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l21"
     },
@@ -3430,6 +3828,12 @@
       "markers": [
         "2"
       ],
+      "marker_offsets": [
+        [
+          "2",
+          0
+        ]
+      ],
       "max_size": 11.039999961853027,
       "id": "p6_l22"
     },
@@ -3440,6 +3844,7 @@
       "raw_text": "name and other particulars of a woman whose pregnancy has been terminated under this Act except to a",
       "text": "name and other particulars of a woman whose pregnancy has been terminated under this Act except to a",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l23"
     },
@@ -3450,6 +3855,7 @@
       "raw_text": "person authorised by any law for the time being in force.",
       "text": "person authorised by any law for the time being in force.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l24"
     },
@@ -3460,6 +3866,7 @@
       "raw_text": "(2) Whoever contravenes the provisions of sub-section (1) shall be punishable with imprisonment",
       "text": "(2) Whoever contravenes the provisions of sub-section (1) shall be punishable with imprisonment",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l25"
     },
@@ -3470,6 +3877,7 @@
       "raw_text": "which may extend to one year, or with fine, or with both.]",
       "text": "which may extend to one year, or with fine, or with both.]",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l26"
     },
@@ -3480,6 +3888,7 @@
       "raw_text": "6. Power to make rules.—(1) The Central Government may, by notification in the Official Gazette,",
       "text": "6. Power to make rules.—(1) The Central Government may, by notification in the Official Gazette,",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l27"
     },
@@ -3490,6 +3899,7 @@
       "raw_text": "make rules to carry out the provisions of this Act.",
       "text": "make rules to carry out the provisions of this Act.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l28"
     },
@@ -3500,6 +3910,7 @@
       "raw_text": "(2) In particular, and without prejudice to the generality of the foregoing power, such rules may",
       "text": "(2) In particular, and without prejudice to the generality of the foregoing power, such rules may",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l29"
     },
@@ -3510,6 +3921,7 @@
       "raw_text": "provide for all or any of the following matters, namely:—",
       "text": "provide for all or any of the following matters, namely:—",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l30"
     },
@@ -3520,6 +3932,7 @@
       "raw_text": "(a) the experience or training, or both, which a registered medical practitioner shall have if he",
       "text": "(a) the experience or training, or both, which a registered medical practitioner shall have if he",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l31"
     },
@@ -3530,6 +3943,7 @@
       "raw_text": "intends to terminate any pregnancy under this Act; and",
       "text": "intends to terminate any pregnancy under this Act; and",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l32"
     },
@@ -3542,6 +3956,12 @@
       "markers": [
         "3"
       ],
+      "marker_offsets": [
+        [
+          "3",
+          0
+        ]
+      ],
       "max_size": 11.039999961853027,
       "id": "p6_l33"
     },
@@ -3552,6 +3972,7 @@
       "raw_text": "(ab) the norms for the registered medical practitioner whose opinion is required for termination of",
       "text": "(ab) the norms for the registered medical practitioner whose opinion is required for termination of",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l34"
     },
@@ -3562,6 +3983,7 @@
       "raw_text": "pregnancy at different gestational age under sub-section (2A) of section 3;",
       "text": "pregnancy at different gestational age under sub-section (2A) of section 3;",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l35"
     },
@@ -3572,6 +3994,7 @@
       "raw_text": "(ac) the powers and functions of the Medical Board under sub-section (2C) of section 3.]",
       "text": "(ac) the powers and functions of the Medical Board under sub-section (2C) of section 3.]",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l36"
     },
@@ -3582,6 +4005,7 @@
       "raw_text": "(b) such other matters as are required to be or may be, provided by rules made under this Act.",
       "text": "(b) such other matters as are required to be or may be, provided by rules made under this Act.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l37"
     },
@@ -3592,6 +4016,7 @@
       "raw_text": "(3) Every rule made by the Central Government under this Act shall be laid, as soon as may be after it",
       "text": "(3) Every rule made by the Central Government under this Act shall be laid, as soon as may be after it",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l38"
     },
@@ -3602,6 +4027,7 @@
       "raw_text": "is made, before each House of Parliament while it is in session for a total period of thirty days which may",
       "text": "is made, before each House of Parliament while it is in session for a total period of thirty days which may",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l39"
     },
@@ -3612,6 +4038,7 @@
       "raw_text": "be comprised in one session or in two successive sessions, and if, before the expiry of the session in",
       "text": "be comprised in one session or in two successive sessions, and if, before the expiry of the session in",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l40"
     },
@@ -3622,6 +4049,7 @@
       "raw_text": "which it is so laid or the session immediately following, both Houses agree in making any modification in",
       "text": "which it is so laid or the session immediately following, both Houses agree in making any modification in",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l41"
     },
@@ -3632,6 +4060,7 @@
       "raw_text": "the rule or both Houses agree that the rule should not be made, the rule shall thereafter have effect only in",
       "text": "the rule or both Houses agree that the rule should not be made, the rule shall thereafter have effect only in",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p6_l42"
     },
@@ -3642,6 +4071,7 @@
       "raw_text": "1. Subs. by Act 64 of 2002, s. 5, for sub-section (2) and the Explanation (w.e.f. 18-6-2003).",
       "text": "1. Subs. by Act 64 of 2002, s. 5, for sub-section (2) and the Explanation (w.e.f. 18-6-2003).",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 9.0,
       "id": "p6_l43"
     },
@@ -3652,6 +4082,7 @@
       "raw_text": "2. Ins. by Act 8 of 2021, s. 4 (w.e.f. 24-9-2021).",
       "text": "2. Ins. by Act 8 of 2021, s. 4 (w.e.f. 24-9-2021).",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 9.0,
       "id": "p6_l44"
     },
@@ -3662,6 +4093,7 @@
       "raw_text": "3. Ins. by Act s. 5, ibid. (w.e.f. 24-9-2021).",
       "text": "3. Ins. by Act s. 5, ibid. (w.e.f. 24-9-2021).",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 9.0,
       "id": "p6_l45"
     },
@@ -3672,6 +4104,7 @@
       "raw_text": "such modified form or be of no effect, as the case may be; so, however, that any such modification or",
       "text": "such modified form or be of no effect, as the case may be; so, however, that any such modification or",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p7_l1"
     },
@@ -3682,6 +4115,7 @@
       "raw_text": "annulment shall be without prejudice to the validity of anything previously done under that rule.",
       "text": "annulment shall be without prejudice to the validity of anything previously done under that rule.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p7_l2"
     },
@@ -3692,6 +4126,7 @@
       "raw_text": "7. Power to make regulations.—(1) The State Government may, by regulations,—",
       "text": "7. Power to make regulations.—(1) The State Government may, by regulations,—",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p7_l3"
     },
@@ -3702,6 +4137,7 @@
       "raw_text": "(a) require any such opinion as is referred to in sub-section (2) of section 3 to be certified by a",
       "text": "(a) require any such opinion as is referred to in sub-section (2) of section 3 to be certified by a",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p7_l4"
     },
@@ -3712,6 +4148,7 @@
       "raw_text": "registered medical practitioner or practitioners concerned, in such form and at such time as may be",
       "text": "registered medical practitioner or practitioners concerned, in such form and at such time as may be",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p7_l5"
     },
@@ -3722,6 +4159,7 @@
       "raw_text": "specified in such regulations, and the preservation or disposal of such certificates;",
       "text": "specified in such regulations, and the preservation or disposal of such certificates;",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p7_l6"
     },
@@ -3732,6 +4170,7 @@
       "raw_text": "(b) require any registered medical practitioner, who terminates a pregnancy, to give intimation of",
       "text": "(b) require any registered medical practitioner, who terminates a pregnancy, to give intimation of",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p7_l7"
     },
@@ -3742,6 +4181,7 @@
       "raw_text": "such termination and such other information relating to the termination as may be specified in such",
       "text": "such termination and such other information relating to the termination as may be specified in such",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p7_l8"
     },
@@ -3752,6 +4192,7 @@
       "raw_text": "regulations;",
       "text": "regulations;",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p7_l9"
     },
@@ -3762,6 +4203,7 @@
       "raw_text": "(c) prohibit the disclosure, except to such persons and for such purposes as may be specified in",
       "text": "(c) prohibit the disclosure, except to such persons and for such purposes as may be specified in",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p7_l10"
     },
@@ -3772,6 +4214,7 @@
       "raw_text": "such regulations, of intimations given or information furnished in pursuance of such regulations.",
       "text": "such regulations, of intimations given or information furnished in pursuance of such regulations.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p7_l11"
     },
@@ -3782,6 +4225,7 @@
       "raw_text": "(2) The intimation given and the information furnished in pursuance of regulations made by virtue of",
       "text": "(2) The intimation given and the information furnished in pursuance of regulations made by virtue of",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p7_l12"
     },
@@ -3792,6 +4236,7 @@
       "raw_text": "clause (b) of sub-section (1) shall be given or furnished, as the case may be, to the Chief Medical Officer",
       "text": "clause (b) of sub-section (1) shall be given or furnished, as the case may be, to the Chief Medical Officer",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p7_l13"
     },
@@ -3802,6 +4247,7 @@
       "raw_text": "of the State.",
       "text": "of the State.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p7_l14"
     },
@@ -3814,6 +4260,12 @@
       "markers": [
         "1"
       ],
+      "marker_offsets": [
+        [
+          "1",
+          0
+        ]
+      ],
       "max_size": 11.039999961853027,
       "id": "p7_l15"
     },
@@ -3824,6 +4276,7 @@
       "raw_text": "after it is made, before the State Legislature.]",
       "text": "after it is made, before the State Legislature.]",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p7_l16"
     },
@@ -3834,6 +4287,7 @@
       "raw_text": "(3) Any person who wilfully contravenes or wilfully fails to comply with the requirements of any",
       "text": "(3) Any person who wilfully contravenes or wilfully fails to comply with the requirements of any",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p7_l17"
     },
@@ -3844,6 +4298,7 @@
       "raw_text": "regulation made under sub-section (1) shall be liable to be punished with fine which may extend to one",
       "text": "regulation made under sub-section (1) shall be liable to be punished with fine which may extend to one",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p7_l18"
     },
@@ -3854,6 +4309,7 @@
       "raw_text": "thousand rupees.",
       "text": "thousand rupees.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p7_l19"
     },
@@ -3864,6 +4320,7 @@
       "raw_text": "8. Protection of action taken in good faith.—No suit or other legal proceeding shall lie against any",
       "text": "8. Protection of action taken in good faith.—No suit or other legal proceeding shall lie against any",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p7_l20"
     },
@@ -3874,6 +4331,7 @@
       "raw_text": "registered medical practitioner for any damage caused or likely to be caused by anything which is in good",
       "text": "registered medical practitioner for any damage caused or likely to be caused by anything which is in good",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p7_l21"
     },
@@ -3884,6 +4342,7 @@
       "raw_text": "faith done or intended to be done under this Act.",
       "text": "faith done or intended to be done under this Act.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p7_l22"
     },
@@ -3894,6 +4353,7 @@
       "raw_text": "1. Ins. by Act 4 of 2005, s. 2 and the Schedule (w.e.f. 11-1-2005).",
       "text": "1. Ins. by Act 4 of 2005, s. 2 and the Schedule (w.e.f. 11-1-2005).",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 9.0,
       "id": "p7_l23"
     },
@@ -3904,6 +4364,7 @@
       "raw_text": "STATEMENT OF OBJECTS AND REASONS",
       "text": "STATEMENT OF OBJECTS AND REASONS",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p8_l1"
     },
@@ -3914,6 +4375,7 @@
       "raw_text": "The Medical Termination of Pregnancy Act, 1971 (34 of 1971) was enacted to provide for the",
       "text": "The Medical Termination of Pregnancy Act, 1971 (34 of 1971) was enacted to provide for the",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p8_l2"
     },
@@ -3924,6 +4386,7 @@
       "raw_text": "termination of certain pregnancies by registered medical practitioners and for matters connected therewith",
       "text": "termination of certain pregnancies by registered medical practitioners and for matters connected therewith",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p8_l3"
     },
@@ -3934,6 +4397,7 @@
       "raw_text": "or incidental thereto. The said Act recognised the importance of safe, affordable, accessible abortion",
       "text": "or incidental thereto. The said Act recognised the importance of safe, affordable, accessible abortion",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p8_l4"
     },
@@ -3944,6 +4408,7 @@
       "raw_text": "services to women who need to terminate pregnancy under certain specified conditions.",
       "text": "services to women who need to terminate pregnancy under certain specified conditions.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p8_l5"
     },
@@ -3954,6 +4419,7 @@
       "raw_text": "2. With the passage of time and advancement of medical technology for safe abortion, there is a scope",
       "text": "2. With the passage of time and advancement of medical technology for safe abortion, there is a scope",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p8_l6"
     },
@@ -3964,6 +4430,7 @@
       "raw_text": "for increasing upper gestational limit for terminating pregnancies especially for vulnerable women and for",
       "text": "for increasing upper gestational limit for terminating pregnancies especially for vulnerable women and for",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p8_l7"
     },
@@ -3974,6 +4441,7 @@
       "raw_text": "pregnancies with substantial foetal anomalies detected late in pregnancy. Further, there is also a need for",
       "text": "pregnancies with substantial foetal anomalies detected late in pregnancy. Further, there is also a need for",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p8_l8"
     },
@@ -3984,6 +4452,7 @@
       "raw_text": "increasing access of women to legal and safe abortion service in order to reduce maternal mortality and",
       "text": "increasing access of women to legal and safe abortion service in order to reduce maternal mortality and",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p8_l9"
     },
@@ -3994,6 +4463,7 @@
       "raw_text": "morbidity caused by unsafe abortion and its complications. Considering the need and demand for",
       "text": "morbidity caused by unsafe abortion and its complications. Considering the need and demand for",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p8_l10"
     },
@@ -4004,6 +4474,7 @@
       "raw_text": "increased gestational limit under certain specified conditions and to ensure safety and well-being of",
       "text": "increased gestational limit under certain specified conditions and to ensure safety and well-being of",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p8_l11"
     },
@@ -4014,6 +4485,7 @@
       "raw_text": "women, it is proposed to amend the said Act. Besides this, several Writ Petitions have been filed before",
       "text": "women, it is proposed to amend the said Act. Besides this, several Writ Petitions have been filed before",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p8_l12"
     },
@@ -4024,6 +4496,7 @@
       "raw_text": "the Supreme Court and various High Courts seeking permission for aborting pregnancies at gestational",
       "text": "the Supreme Court and various High Courts seeking permission for aborting pregnancies at gestational",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p8_l13"
     },
@@ -4034,6 +4507,7 @@
       "raw_text": "age beyond the present permissible limit on the grounds of foetal abnormalities or pregnancies due to",
       "text": "age beyond the present permissible limit on the grounds of foetal abnormalities or pregnancies due to",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p8_l14"
     },
@@ -4044,6 +4518,7 @@
       "raw_text": "sexual violence faced by women.",
       "text": "sexual violence faced by women.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p8_l15"
     },
@@ -4054,6 +4529,7 @@
       "raw_text": "3. Accordingly, the Medical Termination of Pregnancy (Amendment) Bill, 2020, inter alia, provides",
       "text": "3. Accordingly, the Medical Termination of Pregnancy (Amendment) Bill, 2020, inter alia, provides",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p8_l16"
     },
@@ -4064,6 +4540,7 @@
       "raw_text": "for,—",
       "text": "for,—",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p8_l17"
     },
@@ -4074,6 +4551,7 @@
       "raw_text": "(a) requirement of opinion of one registered medical practitioner for termination of pregnancy up to",
       "text": "(a) requirement of opinion of one registered medical practitioner for termination of pregnancy up to",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p8_l18"
     },
@@ -4084,6 +4562,7 @@
       "raw_text": "twenty weeks of gestation;",
       "text": "twenty weeks of gestation;",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p8_l19"
     },
@@ -4094,6 +4573,7 @@
       "raw_text": "(b) requirement of opinion of two registered medical practitioners for termination of pregnancy of",
       "text": "(b) requirement of opinion of two registered medical practitioners for termination of pregnancy of",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p8_l20"
     },
@@ -4104,6 +4584,7 @@
       "raw_text": "twenty to twenty-four weeks of gestation;",
       "text": "twenty to twenty-four weeks of gestation;",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p8_l21"
     },
@@ -4114,6 +4595,7 @@
       "raw_text": "(c) enhancing the upper gestation limit from twenty to twenty-four weeks for such category of woman",
       "text": "(c) enhancing the upper gestation limit from twenty to twenty-four weeks for such category of woman",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p8_l22"
     },
@@ -4124,6 +4606,7 @@
       "raw_text": "as may be prescribed by rules in this behalf;",
       "text": "as may be prescribed by rules in this behalf;",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p8_l23"
     },
@@ -4134,6 +4617,7 @@
       "raw_text": "(d) non applicability of the provisions relating to the length of pregnancy in cases where the",
       "text": "(d) non applicability of the provisions relating to the length of pregnancy in cases where the",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p8_l24"
     },
@@ -4144,6 +4628,7 @@
       "raw_text": "termination of pregnancy is necessitated by the diagnosis of any of the substantial foetal abnormalities",
       "text": "termination of pregnancy is necessitated by the diagnosis of any of the substantial foetal abnormalities",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p8_l25"
     },
@@ -4154,6 +4639,7 @@
       "raw_text": "diagnosed by a Medical Board;",
       "text": "diagnosed by a Medical Board;",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p8_l26"
     },
@@ -4164,6 +4650,7 @@
       "raw_text": "(e) protection of privacy of a woman whose pregnancy has been terminated.",
       "text": "(e) protection of privacy of a woman whose pregnancy has been terminated.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p8_l27"
     },
@@ -4174,6 +4661,7 @@
       "raw_text": "4. The proposed Bill is a step towards safety and well-being of women and will enlarge the ambit and",
       "text": "4. The proposed Bill is a step towards safety and well-being of women and will enlarge the ambit and",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p8_l28"
     },
@@ -4184,6 +4672,7 @@
       "raw_text": "access of women to safe and legal abortion without compromising on safety and quality of care. The",
       "text": "access of women to safe and legal abortion without compromising on safety and quality of care. The",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p8_l29"
     },
@@ -4194,6 +4683,7 @@
       "raw_text": "proposal will also ensure dignity, autonomy, confidentiality and justice for women who need to terminate",
       "text": "proposal will also ensure dignity, autonomy, confidentiality and justice for women who need to terminate",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p8_l30"
     },
@@ -4204,6 +4694,7 @@
       "raw_text": "pregnancy.",
       "text": "pregnancy.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p8_l31"
     },
@@ -4214,6 +4705,7 @@
       "raw_text": "5. The Bill seeks to achieve the above objects.",
       "text": "5. The Bill seeks to achieve the above objects.",
       "markers": [],
+      "marker_offsets": [],
       "max_size": 11.039999961853027,
       "id": "p8_l32"
     }
@@ -4321,6 +4813,15 @@
         "note": "The amending Act number is absent in the source. Text kept exactly as printed. \"ibid.\" refers to the preceding note on the page (Ins. by Act 8 of 2021, s. 4 (w.e.f. 24-9-2021).), which is an inference recorded here, not written into the note."
       }
     ],
+    "footnote_anchors_source": 13,
+    "footnote_anchors_attached": 13,
+    "footnote_anchors_unlinked": 0,
+    "footnote_notes_unlinked": 0,
+    "footnote_anchor_placements": {
+      "title": 2,
+      "label": 7,
+      "text": 4
+    },
     "blocking_errors": [],
     "warnings": [
       "Source p.5 has an unmatched closing editorial bracket after section 3(4)(a); retained in raw source, removed from reading text.",

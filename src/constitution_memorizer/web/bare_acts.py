@@ -168,7 +168,7 @@ BARE_ACTS: dict[str, BareActSpec] = {
         # beside an empty `chapters`. Nothing about the reader changes per
         # Act; the loader reads either shape.
         # Identity of the runtime artifact. The canonical export is parser
-        # v2, archived as mtp_canonical_v2.json.
+        # v3, archived as mtp_canonical_v3.json.
         source_version="1",
     ),
 }
@@ -665,10 +665,19 @@ class ActSection:
     starts_division: bool = False
     # Nine UAPA sections are printed as whole amendment spans (``2[17. ...``).
     leading_brackets: int = 0
+    # A footnote whose superscript is printed before the section number
+    # ("2[4. Place where ...") hangs on the title. NDPS records 27 of these
+    # and MTP two; the anchor is the whole title, as the canonical stores it.
+    title_annotations: tuple[dict[str, Any], ...] = ()
 
     @property
     def bracket_prefix(self) -> str:
         return "[" * self.leading_brackets if self.leading_brackets > 0 else ""
+
+    @property
+    def title_note_id(self) -> str | None:
+        """The note hung on the section heading, if the source printed one."""
+        return _first_footnote_id(self.title_annotations)
 
     @property
     def has_chapter(self) -> bool:
@@ -729,6 +738,8 @@ class ActSection:
     def note_ids(self) -> tuple[str, ...]:
         """Every footnote this section cites, once each, in reading order."""
         seen: list[str] = []
+        if self.title_note_id:
+            seen.append(self.title_note_id)
         for row in self.rows:
             for note_id in row.note_ids:
                 if note_id not in seen:
@@ -1470,6 +1481,7 @@ def _parse(
                 former_title=raw_section.get("former_title"),
                 omission_note=raw_section.get("omission_note"),
                 leading_brackets=int(raw_section.get("leading_brackets") or 0),
+                title_annotations=tuple(raw_section.get("title_annotations") or ()),
                 chapter_number=chapter_number,
                 chapter_title=chapter_title,
                 body=tuple(raw_section.get("body") or []),
