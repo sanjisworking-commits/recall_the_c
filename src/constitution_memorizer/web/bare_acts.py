@@ -576,6 +576,11 @@ class Schedule:
     # Fourth Schedule's span closes in one, since it prints no rows at all.
     source_residuals: tuple[str, ...] = ()
     unsupported_reason: str = ""
+    # What a reader should know about an unrenderable schedule, in the
+    # canonical's own words: the Motor Vehicles First Schedule is 52 pages of
+    # road-sign diagrams with no text layer. `unsupported_reason` says why the
+    # renderer declines; this says what the source holds. Shown only when set.
+    reader_note: str = ""
     source_pages: tuple[int, ...] = ()
     raw_payload: dict[str, Any] | None = field(default=None, repr=False)
 
@@ -1352,6 +1357,7 @@ def _parse_schedule(raw: dict[str, Any]) -> Schedule:
             "no table representation for this schedule's content: "
             + ", ".join(unsupported)
         ),
+        reader_note=str(raw.get("reader_note") or ""),
         source_pages=_pages(raw),
         raw_payload=raw,
     )

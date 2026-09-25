@@ -121,7 +121,7 @@ ARTIFACTS: tuple[tuple[Path, Path, str], ...] = (
     # `source_x` is. The First Schedule carries no pixels, just page numbers
     # and the explanatory notes, so there is nothing bulky to shed.
     (
-        ROOT / "data" / "reference" / "mva_canonical_v3.json",
+        ROOT / "data" / "reference" / "mva_canonical_v4.json",
         ROOT / "src" / "constitution_memorizer" / "web" / "mva_runtime_v1.json",
         "flat",
     ),

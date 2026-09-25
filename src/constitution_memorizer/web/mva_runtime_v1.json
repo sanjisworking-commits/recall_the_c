@@ -6,7 +6,7 @@
   "date": "14th October, 1988",
   "source_type": "IndiaCode_consolidation",
   "source_as_on": "15th August, 2026",
-  "parser": "PyMuPDF deterministic geometry parser (Motor Vehicles v3)",
+  "parser": "PyMuPDF deterministic geometry parser (Motor Vehicles v4)",
   "toolchain": {
    "pymupdf": "1.28.2",
    "mupdf": "1.28.2"
@@ -20933,31 +20933,30 @@
        "type": "subsection",
        "label": "(3)",
        "text": "The court to which an appeal lies from any conviction in respect of an offence of the nature specified in sub-section (1), may set aside or vary any order made by the court below, notwithstanding that no appeal lies against the conviction in connection with which such order was made.",
-       "children": [
-        {
-         "type": "explanation",
-         "label": "Explanation",
-         "text": "Use of a motor vehicle in contravention of the provisions of section 56 shall be deemed to be a contravention of the provisions of section 39 and shall be punishable in the same manner as provided in sub-section (1).]",
-         "children": [],
-         "source_pages": [
-          105
-         ],
-         "leading_brackets": 1,
-         "annotations": [
-          {
-           "type": "footnote",
-           "marker": "1",
-           "note_id": "footnote_p105_1",
-           "start": 0,
-           "end": 217,
-           "anchor_text": "Use of a motor vehicle in contravention of the provisions of section 56 shall be deemed to be a contravention of the provisions of section 39 and shall be punishable in the same manner as provided in sub-section (1).]",
-           "source_page": 105
-          }
-         ]
-        }
-       ],
+       "children": [],
        "source_pages": [
         105
+       ]
+      },
+      {
+       "type": "explanation",
+       "label": "Explanation",
+       "text": "Use of a motor vehicle in contravention of the provisions of section 56 shall be deemed to be a contravention of the provisions of section 39 and shall be punishable in the same manner as provided in sub-section (1).]",
+       "children": [],
+       "source_pages": [
+        105
+       ],
+       "leading_brackets": 1,
+       "annotations": [
+        {
+         "type": "footnote",
+         "marker": "1",
+         "note_id": "footnote_p105_1",
+         "start": 0,
+         "end": 217,
+         "anchor_text": "Use of a motor vehicle in contravention of the provisions of section 56 shall be deemed to be a contravention of the provisions of section 39 and shall be punishable in the same manner as provided in sub-section (1).]",
+         "source_page": 105
+        }
        ]
       }
      ],
@@ -24423,7 +24422,8 @@
    ],
    "title": "MANDATORY SIGNS OF SCHEDULE OF THE MOTOR VEHICLES ACT, 1988",
    "content_type": "visual_road_signs",
-   "note": "The road-sign diagrams on pages 122-172 are images with no text layer; they are not transcribed. The printed explanatory notes on page 173 are kept verbatim.",
+   "note": "The road-sign diagrams on pages 121-172 are images with no text layer; they are not transcribed. The printed explanatory notes on page 173 are kept verbatim.",
+   "reader_note": "The 52 pages of road-sign diagrams (PDF pages 121–172) are images and are not transcribed here; only the Schedule's printed explanatory notes are.",
    "image_pages": [
     {
      "page": 121,
@@ -24729,6 +24729,7 @@
    ],
    "title": "Schedule for compensation for third party fatal accidents/injury cases claims",
    "omission_note": "Omitted by the Motor Vehicles (Amendment) Act, 2019 (32 of 2019), s. 93 (w.e.f. 1-4-2022).",
+   "reader_note": "Omitted by the Motor Vehicles (Amendment) Act, 2019 (32 of 2019), s. 93 (w.e.f. 1-4-2022).",
    "printed_text": "[THE SECOND SCHEDULE.—[Schedule for compensation for third party fatal accidents/injury cases claims] Omitted by the Motor Vehicles (Amendment) Act, 2019 (32 of 2019), s. 93 (w.e.f. 1-4-2022).]",
    "source_pages": [
     174
@@ -28955,6 +28956,17 @@
     "reason": "a floor on the compensation computed under sub-section (4) as a whole, not a qualification of amount alternative (b); the page sets it at the clause band",
     "applied": true,
     "owner_before": "clause (b)"
+   },
+   {
+    "section": "192",
+    "node_type": "explanation",
+    "node_prefix": "Use of a motor vehicle in contravention of the provisions of section 56",
+    "owner_label": null,
+    "relation": "section",
+    "page": 105,
+    "reason": "deems use contrary to section 56 a contravention of section 39 punishable under sub-section (1); it does not explain sub-section (3), the appellate power it is printed after. Section-wide by its words, with no printed scope phrase; placed at section level immediately after (3)",
+    "applied": true,
+    "owner_before": "subsection (3)"
    }
   ],
   "repairs_total": 221,

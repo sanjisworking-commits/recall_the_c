@@ -49,7 +49,7 @@ from constitution_memorizer.web.bare_acts import BARE_ACTS, get_bare_act
 
 REPO = Path(__file__).resolve().parents[1]
 MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
-ARCHIVAL = REPO / "data" / "reference" / "mva_canonical_v3.json"
+ARCHIVAL = REPO / "data" / "reference" / "mva_canonical_v4.json"
 RUNTIME = REPO / "src" / "constitution_memorizer" / "web" / "mva_runtime_v1.json"
 
 CHAPTERS = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI", "XII", "XIII", "XIV"]
@@ -392,7 +392,7 @@ def test_the_reviewed_ownership_overrides_are_recorded_and_applied():
     page and a reason, not a logged anomaly."""
     overrides = _archival()["_validation"]["ownership_overrides"]
     assert [(o["section"], o["owner_label"], o["page"]) for o in overrides] == [
-        ("2", "(7)", 11), ("47", "(ii)", 33), ("50", "(B)", 35), ("105", "(4)", 72),
+        ("2", "(7)", 11), ("47", "(ii)", 33), ("50", "(B)", 35), ("105", "(4)", 72), ("192", None, 105),
     ]
     assert all(o["applied"] and o["reason"] for o in overrides)
     # s.47: "together with a declaration" accompanies (a) or (b) — sub-clause (ii)'s words.
@@ -574,6 +574,39 @@ def test_a_note_printed_against_a_bracketed_label_targets_the_label(tmp_path: Pa
     html = client.get(f"/laws/mva/section/{number}").text
     assert f'data-bareact-fn="{note_id}"' in html
     assert f'<p id="fn-{note_id}">' in html
+
+
+def test_section_192_explanation_is_section_wide_after_subsection_3():
+    """Follow-up audit (2026-09-25): printed after (3), the appellate power,
+    but it deems use contrary to s.56 a contravention of s.39 punishable
+    under (1). No printed scope phrase; a reviewed override (p.105) places it
+    at section level, bracket and note intact."""
+    body = _canonical_section("192")["body"]
+    assert [n.get("label") or n["type"] for n in body] == ["(1)", "(2)", "(3)", "Explanation"]
+    expl = body[3]
+    assert expl["leading_brackets"] == 1
+    assert expl["text"].startswith("Use of a motor vehicle in contravention of the provisions of section 56")
+    assert expl["text"].endswith("sub-section (1).]")
+    assert [(a["marker"], a["note_id"]) for a in expl["annotations"]] == [("1", "footnote_p105_1")]
+    rows = _rows("192")
+    row = next(r for r in rows if r.kind == "explanation")
+    assert row.depth == 0 and row.leading_brackets == 1
+    assert rows.index(row) > rows.index(next(r for r in rows if r.label == "(3)"))
+    assert _archival()["_validation"]["reading_order_violations"] == 0
+
+
+def test_the_first_schedule_omission_is_disclosed_to_the_reader(tmp_path: Path):
+    first, second = _archival()["schedules"]
+    assert "pages 121-172" in first["note"]
+    assert [p["page"] for p in first["image_pages"]][0] == 121
+    assert first["reader_note"].startswith("The 52 pages of road-sign diagrams (PDF pages 121–172) are images")
+    assert second["reader_note"] == second["omission_note"]
+    act = get_bare_act("mva")
+    assert act.schedules[0].reader_note == first["reader_note"]
+    client, _ = _client(tmp_path)
+    html = client.get("/laws/mva").text
+    assert "road-sign diagrams (PDF pages 121–172) are images" in html
+    assert "s. 93 (w.e.f. 1-4-2022)" in html
 
 
 def test_every_body_annotation_covers_a_non_empty_range():
