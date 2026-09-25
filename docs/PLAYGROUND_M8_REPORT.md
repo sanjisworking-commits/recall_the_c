@@ -270,6 +270,8 @@ Result: **2274 passed**, 9 skipped, 1 deselected, **0 failed** (was 2242 passed 
 
 Alembic head after this batch: `20260925_0026`.
 
+GitHub CI on `cursor/playground-220d`: **success** for implementation `706f11f` and HEAD `f7ea6a1`.
+
 ---
 
 ## Git
@@ -280,8 +282,11 @@ Alembic head after this batch: `20260925_0026`.
 | [`73833db`](https://github.com/sanjisworking-commits/recall_the_c/commit/73833db8fa66c767d53421abd64c94dd8d1c4bfa) | Record the Milestone 8 implementation SHA in the close-out report |
 | [`2ac33be`](https://github.com/sanjisworking-commits/recall_the_c/commit/2ac33be077a7c32316c558e31a4fc9688102792a) | Add Milestone 8 suite counts and report SHAs |
 | [`706f11f`](https://github.com/sanjisworking-commits/recall_the_c/commit/706f11fce8cf418bbbca57d513ebddc20d3c32e5) | Stop labeling overdue Playground sections as Due today |
+| [`f7ea6a1`](https://github.com/sanjisworking-commits/recall_the_c/commit/f7ea6a1508ce199e79e78a9b58dd287c8f357e15) | Record remaining Milestone 8 SHAs in the close-out report |
 
-HEAD at report time: `706f11fce8cf418bbbca57d513ebddc20d3c32e5`. Parent of the engine commit is M7 close-out `0859f9d247758473c2bafc47ab9155b1c767cd15`.
+Implementation SHA: `a9e6c18a660702261f581f2e8160d92395490b0f`. Tracker/report HEAD at write time: `f7ea6a1508ce199e79e78a9b58dd287c8f357e15`. Parent of the engine commit is M7 close-out `0859f9d247758473c2bafc47ab9155b1c767cd15`.
+
+PR [#188](https://github.com/sanjisworking-commits/recall_the_c/pull/188) is open on this branch. The cloud PR-metadata tool could not rewrite the GitHub description (repo rename `memorize_the_c` → `recall_the_c`; 502 on the old URL). The code and this report are on the branch.
 
 ---
 
