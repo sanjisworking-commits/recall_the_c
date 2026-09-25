@@ -612,7 +612,7 @@ def test_postgres_rollover_locks_period_row():
 
 def test_alembic_head_unchanged():
     cfg = Config(str(ROOT / "alembic.ini"))
-    assert ScriptDirectory.from_config(cfg).get_heads() == ["20260924_0025"]
+    assert ScriptDirectory.from_config(cfg).get_heads() == ["20260925_0026"]
 
 
 def _mu_settings() -> MultiUserSettings:

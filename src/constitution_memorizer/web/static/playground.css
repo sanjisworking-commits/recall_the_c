@@ -349,6 +349,11 @@ html[data-theme="dark"] {
   background: var(--pg-ink);
 }
 
+.LawStatusBadge[data-status="learned"] .LawStatusBadge-mark,
+.LawStatusBadge[data-status="due"] .LawStatusBadge-mark {
+  background: var(--pg-ink);
+}
+
 .LawStatusBadge[data-status="mastered"] .LawStatusBadge-mark {
   box-shadow: inset 0 0 0 1px var(--pg-paper);
   background: var(--pg-ink);

@@ -2746,6 +2746,38 @@ def create_app(
             today=today,
             auto_entitled=can_use_auto_plan(request),
         )
+        if not is_guest:
+            try:
+                from constitution_memorizer.playground.schedule import (
+                    attach_playground_calendar_chips,
+                    playground_calendar_chips,
+                )
+                from constitution_memorizer.playground.http import playground_user_id
+                from constitution_memorizer.playground.roster.period import (
+                    playground_today as playground_study_today,
+                )
+
+                overlay = getattr(app.state, "playground", None)
+                roster = getattr(app.state, "roster", None)
+                uid = playground_user_id(request)
+                if overlay is not None and roster is not None and uid is not None:
+                    month_start = date(y, m, 1)
+                    month_end = (
+                        date(y + 1, 1, 1) - timedelta(days=1)
+                        if m == 12
+                        else date(y, m + 1, 1) - timedelta(days=1)
+                    )
+                    extra = playground_calendar_chips(
+                        overlay,
+                        roster,
+                        uid,
+                        month_start=month_start,
+                        month_end=month_end,
+                        today=playground_study_today(),
+                    )
+                    attach_playground_calendar_chips(view, extra)
+            except Exception:  # noqa: BLE001 — Constitution calendar must still render
+                logger.exception("playground calendar chips failed")
         # The phone shows this month's data as a week strip + today + ladder
         # (design 19); only meaningful for the current month.
         revisions = (

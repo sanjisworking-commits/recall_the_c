@@ -53,7 +53,9 @@
       <div class="cal-m-daylist" data-day-list="{{ day.iso }}" hidden>
         <p class="revisions-eyebrow">{{ day.long_label }} · {{ day.chips|length }} unit{{ 's' if day.chips|length != 1 }}</p>
         {% for chip in day.chips %}
-        {% if chip.unit_id %}
+        {% if chip.href %}
+        <a class="revisions-row is-{{ row_state.get(chip.kind, 'scheduled') }}" href="{{ chip.href }}">
+        {% elif chip.unit_id %}
         <a class="revisions-row is-{{ row_state.get(chip.kind, 'scheduled') }}" href="/learn/{{ chip.unit_id }}">
         {% else %}
         <div class="revisions-row is-{{ row_state.get(chip.kind, 'scheduled') }}">
@@ -67,11 +69,11 @@
             {% if chip.kind == 'new_planned' and chip.unit_id %}
             <span class="revisions-row-meta">New{% if pace_label %} · {{ pace_label }} plan{% endif %}</span>
             {% else %}
-            <span class="revisions-row-meta">{{ chip.title }}</span>
+            <span class="revisions-row-meta">{% if chip.category %}{{ chip.category }} · {% endif %}{{ chip.title }}</span>
             {% endif %}
           </span>
-          <span class="revisions-row-mark" aria-hidden="true">{% if chip.unit_id %}›{% endif %}</span>
-        {% if chip.unit_id %}</a>{% else %}</div>{% endif %}
+          <span class="revisions-row-mark" aria-hidden="true">{% if chip.href or chip.unit_id %}›{% endif %}</span>
+        {% if chip.href or chip.unit_id %}</a>{% else %}</div>{% endif %}
         {% endfor %}
       </div>
       {% endif %}
@@ -148,7 +150,13 @@
       >
         <div class="calendar-daynum">{{ day.day }}</div>
         {% for chip in day.chips %}
-        {% if chip.unit_id %}
+        {% if chip.href %}
+        <a
+          class="calendar-chip is-{{ chip.kind | replace('_', '-') }}{% if chip.category %} is-law-revision{% endif %}"
+          href="{{ chip.href }}"
+          title="{{ chip.title }}"
+        >{{ chip.label }}</a>
+        {% elif chip.unit_id %}
         <a
           class="calendar-chip is-{{ chip.kind | replace('_', '-') }}"
           href="/learn/{{ chip.unit_id }}"

@@ -69,7 +69,7 @@ from tests.test_roster_m5a import (
 )
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED_HEAD = "20260924_0025"
+EXPECTED_HEAD = "20260925_0026"
 MODES = PLAYGROUND_LEARN_MODES
 
 
@@ -107,7 +107,7 @@ def test_alembic_0025_parent_one_head_rls_and_sqlite_parity():
     cfg = Config(str(ROOT / "alembic.ini"))
     script = ScriptDirectory.from_config(cfg)
     assert script.get_heads() == [EXPECTED_HEAD]
-    rev = script.get_revision(EXPECTED_HEAD)
+    rev = script.get_revision("20260924_0025")
     assert rev.down_revision == "20260917_0024"
     path = ROOT / "alembic" / "versions" / "20260924_0025_playground_mode_progress.py"
     text = path.read_text(encoding="utf-8")
@@ -632,7 +632,9 @@ def test_workspace_shows_method_progress_not_learned(tmp_path: Path):
     answers = [q.answer_index if q.kind == "mcq" else q.answer_text for q in questions]
     _json_post(client, learn_quiz_path("ndps", "1"), {"cycle": 0, "answers": answers})
     done = client.get(law_path("ndps"))
-    assert "6 of 6 methods" in done.text
+    assert "Learned" in done.text
+    assert "First revision" in done.text
+    assert "Day 1" in done.text
     assert "product Learned" not in done.text
 
 

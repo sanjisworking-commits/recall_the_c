@@ -902,7 +902,7 @@ def test_alembic_head_is_replacement_revision():
 
     cfg = Config(str(ROOT / "alembic.ini"))
     heads = ScriptDirectory.from_config(cfg).get_heads()
-    assert heads == ["20260924_0025"]
+    assert heads == ["20260925_0026"]
 
 
 def test_no_roster_or_invented_support_address():

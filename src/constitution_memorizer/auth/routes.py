@@ -461,6 +461,16 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
             # Lifecycle surfaces (design 04/07): only expiring-soon and lapsed
             # may appear outside Profile. Dormant while billing returns None.
             ctx["subscription"] = subscription_status(request, eng)
+            from constitution_memorizer.playground.schedule import (
+                playground_today_context,
+            )
+            from constitution_memorizer.playground.roster.period import playground_today
+
+            law_ctx = playground_today_context(request, as_of=playground_today())
+            ctx.update(law_ctx)
+            ctx["due_count"] = int(ctx.get("due_count") or 0) + int(
+                law_ctx.get("law_revision_count") or 0
+            )
             done_id = request.query_params.get("done")
             started = time.perf_counter()
             ctx["completion"] = build_completion(

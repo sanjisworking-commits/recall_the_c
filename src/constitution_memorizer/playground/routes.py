@@ -53,6 +53,13 @@ from constitution_memorizer.playground.learning.service import (
     quiz_for_attempt,
     summaries_for_locators,
 )
+from constitution_memorizer.playground.lifecycle import (
+    REVISION_RUNGS_SET,
+    RevisionNotDueError,
+    StaleRevisionError,
+    build_revision_mode_progress,
+    revision_is_due,
+)
 from constitution_memorizer.playground.service import (
     activate_law,
     mark_outdated,
@@ -124,6 +131,44 @@ async def _mutation_payload(request: Request) -> dict:
     token = header or str(data.get("csrf_token") or "")
     _require_csrf(request, token)
     return data
+
+
+def _revision_flag(request: Request, data: dict | None = None) -> tuple[bool, int | None]:
+    raw_flag = request.query_params.get("revision")
+    if data is not None and data.get("revision") not in (None, ""):
+        raw_flag = data.get("revision")
+    wants = str(raw_flag or "").strip().lower() in {"1", "true", "yes", "on"}
+    raw_rung = request.query_params.get("rung_days")
+    if data is not None and data.get("rung_days") not in (None, ""):
+        raw_rung = data.get("rung_days")
+    rung: int | None = None
+    if raw_rung not in (None, ""):
+        try:
+            rung = int(raw_rung)
+        except (TypeError, ValueError):
+            rung = None
+    return wants, rung
+
+
+def _current_due_rung(progress, as_of, claimed: int | None) -> int:
+    if progress is None or str(progress.status) == "mastered" or not progress.next_revision:
+        raise StaleRevisionError("stale_revision")
+    current = int(progress.interval_days or 0)
+    if current not in REVISION_RUNGS_SET:
+        raise StaleRevisionError("stale_revision")
+    if claimed is not None and int(claimed) != current:
+        raise StaleRevisionError("stale_revision")
+    if as_of.isoformat() < str(progress.next_revision)[:10]:
+        raise RevisionNotDueError("not_due")
+    return current
+
+
+def _revision_error(exc: BaseException) -> JSONResponse:
+    if isinstance(exc, StaleRevisionError):
+        return JSONResponse({"ok": False, "error": "stale_revision"}, status_code=409)
+    if isinstance(exc, RevisionNotDueError):
+        return JSONResponse({"ok": False, "error": "not_due"}, status_code=409)
+    raise exc
 
 
 def _after_active_redirect(overlay, user_id, law_id: str) -> RedirectResponse:
@@ -634,6 +679,12 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             [sel.source_locator for sel in selections],
             live_hashes=live_hashes,
         )
+        revision_rows = overlay.list_revision_mode_progress(access.user_id, law_id)
+        revision_by_key: dict[tuple[str, int], list] = {}
+        for row in revision_rows:
+            if row.rung_days is None:
+                continue
+            revision_by_key.setdefault((row.source_locator, row.rung_days), []).append(row)
         rows = []
         as_of = playground_today()
         month = ""
@@ -652,6 +703,15 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             if section is None:
                 continue
             progress = progress_map.get(sel.source_locator)
+            interval = int(getattr(progress, "interval_days", 0) or 0) if progress else 0
+            rev_modes = None
+            if interval in REVISION_RUNGS_SET:
+                rev_modes = build_revision_mode_progress(
+                    sel.source_locator,
+                    interval,
+                    revision_by_key.get((sel.source_locator, interval), ()),
+                    live_hash=live_hashes.get(sel.source_locator, ""),
+                )
             rows.append(
                 section_row_view(
                     number=loc.number,
@@ -665,6 +725,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                     as_of=as_of,
                     law_id=law_id,
                     mode_progress=mode_summaries.get(sel.source_locator),
+                    revision_modes=rev_modes,
                 )
             )
         launch = None
@@ -848,15 +909,36 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         loc = opened["locator"]
         live_hash = opened["live_hash"]
         body = opened["body"]
-        mode_rows = overlay.list_mode_progress(
-            access.user_id, law_id, loc.value
-        )
-        summary = provision_mode_view(
-            source_locator=loc.value, rows=mode_rows, live_hash=live_hash
-        )
+        as_of = playground_today()
+        wants_revision, _claimed = _revision_flag(request)
         progress = mark_outdated(
             overlay.get_progress(access.user_id, law_id, loc.value), live_hash
         )
+        is_revision = bool(
+            wants_revision
+            and progress is not None
+            and revision_is_due(
+                status=progress.status,
+                next_revision=progress.next_revision,
+                today=as_of,
+            )
+            and int(progress.interval_days or 0) in REVISION_RUNGS_SET
+        )
+        rung = int(progress.interval_days) if is_revision and progress is not None else None
+        if is_revision and rung is not None:
+            mode_rows = overlay.list_revision_mode_progress(
+                access.user_id, law_id, loc.value, rung
+            )
+            summary = build_revision_mode_progress(
+                loc.value, rung, mode_rows, live_hash=live_hash
+            )
+        else:
+            mode_rows = overlay.list_mode_progress(
+                access.user_id, law_id, loc.value
+            )
+            summary = provision_mode_view(
+                source_locator=loc.value, rows=mode_rows, live_hash=live_hash
+            )
         source_outdated = bool(
             summary.source_outdated or (progress and progress.source_outdated)
         )
@@ -872,6 +954,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                     canonical_body=body,
                     cycle=cycle,
                     source_hash=live_hash,
+                    rung_days=rung,
                 )
             ]
         current = next(
@@ -907,6 +990,9 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                 "quiz_cycle": cycle,
                 "quiz_questions": quiz_questions,
                 "cloze_fallback": cloze_needs_fallback(body),
+                "is_revision": is_revision,
+                "revision_rung": rung,
+                "revision_qs": "?revision=1" if is_revision else "",
             },
         )
 
@@ -914,7 +1000,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
     async def playground_learn_start(
         request: Request, law_id: str, number: str, mode: str
     ) -> JSONResponse:
-        await _mutation_payload(request)
+        data = await _mutation_payload(request)
         opened = _gate_learn(request, law_id, number, mode, json_mode=True)
         blocked = _denied(opened)
         if blocked is not None:
@@ -922,19 +1008,46 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         overlay = opened["overlay"]
         access = opened["access"]
         loc = opened["locator"]
-        row = overlay.start_mode(
-            access.user_id,
-            law_id,
-            loc.value,
-            mode,
-            source_version=opened["source_version"],
-            source_hash=opened["live_hash"],
-        )
-        summary = provision_mode_view(
-            source_locator=loc.value,
-            rows=overlay.list_mode_progress(access.user_id, law_id, loc.value),
-            live_hash=opened["live_hash"],
-        )
+        wants_revision, claimed = _revision_flag(request, data)
+        as_of = playground_today()
+        if wants_revision:
+            try:
+                row = overlay.start_revision_mode(
+                    access.user_id,
+                    law_id,
+                    loc.value,
+                    mode,
+                    source_version=opened["source_version"],
+                    source_hash=opened["live_hash"],
+                    as_of=as_of,
+                    claimed_rung=claimed,
+                )
+            except (StaleRevisionError, RevisionNotDueError) as exc:
+                return _revision_error(exc)
+            lifecycle = overlay.get_progress(access.user_id, law_id, loc.value)
+            rung = int(lifecycle.interval_days) if lifecycle is not None else claimed
+            summary = build_revision_mode_progress(
+                loc.value,
+                rung,
+                overlay.list_revision_mode_progress(
+                    access.user_id, law_id, loc.value, rung
+                ),
+                live_hash=opened["live_hash"],
+            )
+        else:
+            row = overlay.start_mode(
+                access.user_id,
+                law_id,
+                loc.value,
+                mode,
+                source_version=opened["source_version"],
+                source_hash=opened["live_hash"],
+            )
+            summary = provision_mode_view(
+                source_locator=loc.value,
+                rows=overlay.list_mode_progress(access.user_id, law_id, loc.value),
+                live_hash=opened["live_hash"],
+            )
         return JSONResponse(
             _mode_payload(
                 summary, row, body=opened["body"], live_hash=opened["live_hash"]
@@ -947,7 +1060,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
     ) -> JSONResponse:
         if mode == "test":
             raise HTTPException(status_code=404, detail="Learn mode not found")
-        await _mutation_payload(request)
+        data = await _mutation_payload(request)
         opened = _gate_learn(request, law_id, number, mode, json_mode=True)
         blocked = _denied(opened)
         if blocked is not None:
@@ -955,6 +1068,40 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         overlay = opened["overlay"]
         access = opened["access"]
         loc = opened["locator"]
+        wants_revision, claimed = _revision_flag(request, data)
+        as_of = playground_today()
+        if wants_revision:
+            try:
+                row = overlay.complete_revision_mode_and_advance_if_ready(
+                    access.user_id,
+                    law_id,
+                    loc.value,
+                    mode,
+                    source_version=opened["source_version"],
+                    source_hash=opened["live_hash"],
+                    as_of=as_of,
+                    claimed_rung=claimed,
+                )
+            except (StaleRevisionError, RevisionNotDueError) as exc:
+                return _revision_error(exc)
+            rung = int(row.rung_days or claimed or 0)
+            summary = build_revision_mode_progress(
+                loc.value,
+                rung,
+                overlay.list_revision_mode_progress(
+                    access.user_id, law_id, loc.value, rung
+                ),
+                live_hash=opened["live_hash"],
+            )
+            payload = _mode_payload(
+                summary, row, body=opened["body"], live_hash=opened["live_hash"]
+            )
+            payload["revision"] = True
+            if summary.all_methods_complete:
+                payload["methods_complete_label"] = (
+                    f"Day {row.rung_days} complete"
+                )
+            return JSONResponse(payload)
         row = overlay.complete_mode(
             access.user_id,
             law_id,
@@ -962,6 +1109,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             mode,
             source_version=opened["source_version"],
             source_hash=opened["live_hash"],
+            as_of=as_of,
         )
         summary = provision_mode_view(
             source_locator=loc.value,
@@ -972,7 +1120,8 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             summary, row, body=opened["body"], live_hash=opened["live_hash"]
         )
         if summary.all_methods_complete:
-            payload["methods_complete_label"] = "6 of 6 methods complete"
+            payload["methods_complete_label"] = "Learned"
+            payload["learned"] = True
         return JSONResponse(payload)
 
     @router.post("/laws/{law_id}/sections/{number}/learn/test/quiz")
@@ -989,6 +1138,67 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         loc = opened["locator"]
         live_hash = opened["live_hash"]
         body = opened["body"]
+        wants_revision, claimed = _revision_flag(request, data)
+        as_of = playground_today()
+        if wants_revision:
+            lifecycle = overlay.get_progress(access.user_id, law_id, loc.value)
+            try:
+                rung = _current_due_rung(lifecycle, as_of, claimed)
+            except (StaleRevisionError, RevisionNotDueError) as exc:
+                return _revision_error(exc)
+            stored = overlay.get_revision_mode_progress(
+                access.user_id, law_id, loc.value, rung, "test"
+            )
+            cycle = stored.attempt_count if stored is not None else 0
+            try:
+                submitted_cycle = int(data.get("cycle"))
+            except (TypeError, ValueError):
+                return JSONResponse({"ok": False, "error": "malformed"}, status_code=400)
+            if submitted_cycle != cycle:
+                return JSONResponse({"ok": False, "error": "stale"}, status_code=409)
+            questions = quiz_for_attempt(
+                law_id=law_id,
+                source_locator=loc.value,
+                canonical_body=body,
+                cycle=cycle,
+                source_hash=live_hash,
+                rung_days=rung,
+            )
+            if not questions:
+                return JSONResponse({"ok": False, "error": "quiz_unavailable"}, status_code=400)
+            answers = coerce_quiz_answers(data.get("answers"), len(questions))
+            if answers is None:
+                return JSONResponse({"ok": False, "error": "malformed"}, status_code=400)
+            graded = grade_section_quiz(questions, answers)
+            try:
+                row = overlay.complete_revision_mode_and_advance_if_ready(
+                    access.user_id,
+                    law_id,
+                    loc.value,
+                    "test",
+                    source_version=opened["source_version"],
+                    source_hash=live_hash,
+                    as_of=as_of,
+                    claimed_rung=rung,
+                )
+            except (StaleRevisionError, RevisionNotDueError) as exc:
+                return _revision_error(exc)
+            summary = build_revision_mode_progress(
+                loc.value,
+                rung,
+                overlay.list_revision_mode_progress(
+                    access.user_id, law_id, loc.value, rung
+                ),
+                live_hash=live_hash,
+            )
+            payload = _mode_payload(summary, row, body=body, live_hash=live_hash)
+            payload["correct"] = graded["correct"]
+            payload["total"] = graded["total"]
+            payload["results"] = graded["results"]
+            payload["revision"] = True
+            if summary.all_methods_complete:
+                payload["methods_complete_label"] = f"Day {rung} complete"
+            return JSONResponse(payload)
         stored = overlay.get_mode_progress(
             access.user_id, law_id, loc.value, "test"
         )
@@ -1019,6 +1229,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             "test",
             source_version=opened["source_version"],
             source_hash=live_hash,
+            as_of=as_of,
         )
         summary = provision_mode_view(
             source_locator=loc.value,
@@ -1030,7 +1241,8 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         payload["total"] = graded["total"]
         payload["results"] = graded["results"]
         if summary.all_methods_complete:
-            payload["methods_complete_label"] = "6 of 6 methods complete"
+            payload["methods_complete_label"] = "Learned"
+            payload["learned"] = True
         return JSONResponse(payload)
 
     return router

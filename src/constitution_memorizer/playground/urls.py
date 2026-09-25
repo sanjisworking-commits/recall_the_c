@@ -37,8 +37,17 @@ def sections_path(law_id: str) -> str:
     return f"{PREFIX}/laws/{law_id}/sections"
 
 
-def learn_path(law_id: str, number: str, mode: str = "cloze") -> str:
-    return f"{PREFIX}/laws/{law_id}/sections/{number}/learn/{mode}"
+def learn_path(
+    law_id: str,
+    number: str,
+    mode: str = "cloze",
+    *,
+    revision: bool | int | None = None,
+) -> str:
+    path = f"{PREFIX}/laws/{law_id}/sections/{number}/learn/{mode}"
+    if revision:
+        path += "?revision=1"
+    return path
 
 
 def learn_complete_path(law_id: str, number: str, mode: str = "cloze") -> str:

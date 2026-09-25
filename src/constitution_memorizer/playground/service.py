@@ -138,6 +138,7 @@ def mark_outdated(progress: PlaygroundProgress | None, live_hash: str) -> Playgr
         source_version=progress.source_version,
         source_hash=progress.source_hash,
         source_outdated=progress.source_hash != live_hash,
+        learned_at=progress.learned_at,
     )
 
 
@@ -170,8 +171,6 @@ def due_revision_count(progress_rows: list[PlaygroundProgress], as_of: date) -> 
     today = as_of.isoformat()
     count = 0
     for row in progress_rows:
-        if not row.cloze_done:
-            continue
         if row.status == "mastered":
             continue
         if row.next_revision and row.next_revision <= today:

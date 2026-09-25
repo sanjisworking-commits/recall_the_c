@@ -541,6 +541,10 @@ html[data-theme="dark"] .theme-toggle {
   font-weight: 700;
 }
 
+.calendar-chip.is-law-revision {
+  border-style: dotted;
+}
+
 .calendar-chip.is-memorized:hover,
 .calendar-chip.is-review-done:hover {
   color: var(--on-accent);

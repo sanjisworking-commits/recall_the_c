@@ -14,12 +14,15 @@
   data-pg-cycle="{{ quiz_cycle }}"
   data-pg-next-mode="{{ summary.next_mode or '' }}"
   data-pg-completed="{{ completed | join(',') }}"
+  data-pg-revision="{{ '1' if is_revision else '' }}"
+  data-pg-rung="{{ revision_rung or '' }}"
 >
   <p class="pg-eyebrow">
     <a href="/playground/laws/{{ act.slug }}">{{ act.short_name }}</a>
     · Section {{ section.number }}
+    {% if is_revision %}· Revision · Day {{ revision_rung }}{% endif %}
   </p>
-  <h1>{{ mode_label }}</h1>
+  <h1>{% if is_revision %}Revision · {{ mode_label }}{% else %}{{ mode_label }}{% endif %}</h1>
   <p class="pg-lede">{{ section.title }}</p>
   {% if source_outdated %}
   <p class="pg-note">Law updated. Revealed text is the live Bare Act wording.</p>
@@ -35,13 +38,17 @@
       ></span>
       {% endfor %}
     </div>
-    <span class="pg-mode-step-label">Step {{ step_n }} of 6</span>
+    <span class="pg-mode-step-label">Step {{ step_n }} of 6{% if is_revision %} · Day {{ revision_rung }}{% endif %}</span>
   </div>
   <div class="pg-mode-head">
     <p class="pg-eyebrow">
+      {% if is_revision %}<span>Revision · Day {{ revision_rung }}</span>
+      <span aria-hidden="true">·</span>{% endif %}
       <span>{{ mode_label }}</span>
       <span aria-hidden="true">·</span>
       <span>Section {{ section.number }}</span>
+      <span aria-hidden="true">·</span>
+      <span>Step {{ step_n }} of 6</span>
     </p>
     <h2 class="pg-mode-task">
       {% for item in learn_modes %}{% if item.id == learn_mode %}{{ item.task }}{% endif %}{% endfor %}
@@ -55,13 +62,15 @@
       role="tab"
       aria-selected="{{ 'true' if item.id == learn_mode else 'false' }}"
       {% if item.id == learn_mode %}aria-current="page"{% endif %}
-      href="/playground/laws/{{ act.slug }}/sections/{{ section.number }}/learn/{{ item.id }}"
+      href="/playground/laws/{{ act.slug }}/sections/{{ section.number }}/learn/{{ item.id }}{{ revision_qs }}"
     >{{ item.label }}{% if item.id in completed %} ✓{% endif %}</a>
     {% endfor %}
   </div>
 
   <p class="pg-methods-tracker" role="status">
-    {% if summary.all_methods_complete %}
+    {% if is_revision %}
+    Revision · Day {{ revision_rung }} · {{ summary.completed_count }} of 6 methods
+    {% elif summary.all_methods_complete %}
     6 of 6 methods complete
     {% else %}
     {{ summary.completed_count }} of 6 methods
@@ -73,7 +82,7 @@
     {% set state = 'Done' if item.id in completed else ('In progress' if item.id in summary.in_progress_modes else 'Not started') %}
     <a
       class="learn-deck-card pg-learn-card{% if item.id in completed %} is-done{% endif %}{% if item.id == learn_mode %} is-current{% endif %}"
-      href="/playground/laws/{{ act.slug }}/sections/{{ section.number }}/learn/{{ item.id }}"
+      href="/playground/laws/{{ act.slug }}/sections/{{ section.number }}/learn/{{ item.id }}{{ revision_qs }}"
     >
       <span class="learn-deck-card-eyebrow">{{ item.ordinal_label }} · {{ item.label | upper }}</span>
       <span class="learn-deck-card-title">{{ item.title }}</span>

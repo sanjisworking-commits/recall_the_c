@@ -514,7 +514,7 @@ def test_postgres_consume_locks_period_row():
 def test_alembic_head_and_rls():
     cfg = Config(str(ROOT / "alembic.ini"))
     heads = ScriptDirectory.from_config(cfg).get_heads()
-    assert heads == ["20260924_0025"]
+    assert heads == ["20260925_0026"]
     text = (
         ROOT / "alembic" / "versions" / "20260917_0024_playground_roster.py"
     ).read_text(encoding="utf-8")

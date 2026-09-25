@@ -35,10 +35,13 @@ def quiz_seed(
     cycle: int,
     *,
     source_hash: str = "",
+    rung_days: int | None = None,
 ) -> int:
-    digest = sha256(
-        f"{law_id}:{source_locator}:{int(cycle)}:{source_hash}".encode()
-    ).digest()
+    if rung_days:
+        payload = f"{law_id}:{source_locator}:{int(cycle)}:{int(rung_days)}:{source_hash}"
+    else:
+        payload = f"{law_id}:{source_locator}:{int(cycle)}:{source_hash}"
+    digest = sha256(payload.encode()).digest()
     return int.from_bytes(digest[:8], "big")
 
 
@@ -171,13 +174,20 @@ def build_section_quiz(
     cycle: int,
     source_hash: str = "",
     count: int = DEFAULT_QUESTION_COUNT,
+    rung_days: int | None = None,
 ) -> list[PlaygroundQuizQuestion]:
     body = (canonical_body or "").strip()
     keywords = keyword_candidates_for_body(body)
     if not keywords:
         return []
     rng = random.Random(
-        quiz_seed(law_id, source_locator, cycle, source_hash=source_hash)
+        quiz_seed(
+            law_id,
+            source_locator,
+            cycle,
+            source_hash=source_hash,
+            rung_days=rung_days,
+        )
     )
     needed = min(len(keywords), max(1, count))
     selected = rng.sample(keywords, needed)

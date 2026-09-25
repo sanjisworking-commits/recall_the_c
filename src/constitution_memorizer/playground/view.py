@@ -37,6 +37,10 @@ from constitution_memorizer.playground.roster.period import (
     playground_month_name,
     playground_today,
 )
+from constitution_memorizer.playground.lifecycle import (
+    format_study_date,
+    overdue_label,
+)
 from constitution_memorizer.playground.urls import (
     add_path,
     home_path,
@@ -85,19 +89,19 @@ HOW_PLAYGROUND_WORKS: tuple[tuple[str, str, str], ...] = (
     ),
 )
 
-# Law-level badges. Product Learned / Mastered transitions are M8.
-# Cloze-complete is shown as Learning, not as final Learned.
+# Law-level badges. Mastered > Due > Learned > Learning > Not started.
 STATUS_NOT_STARTED = "not_started"
 STATUS_LEARNING = "learning"
+STATUS_LEARNED = "learned"
 STATUS_DUE = "due"
 STATUS_MASTERED = "mastered"
 
 STATUS_LABELS = {
     STATUS_NOT_STARTED: "Not started",
     STATUS_LEARNING: "Learning",
+    STATUS_LEARNED: "Learned",
     STATUS_DUE: "Due",
     STATUS_MASTERED: "Mastered",
-    "learned": "Learned",
 }
 
 MEMBERSHIP_IN = "in_playground"
@@ -204,6 +208,8 @@ class LawCardView:
     membership_label: str = "In Playground"
     add_href: str = ""
     add_label: str = ""
+    learning_count: int = 0
+    mastered_count: int = 0
 
 
 @dataclass(frozen=True)
@@ -236,29 +242,43 @@ def format_plan_end(value: datetime | date | None) -> str:
     return f"{value.day} {value.strftime('%B')}"
 
 
-def display_status_for_summary(*, selected: int, learned: int, due: int) -> str:
-    """Map overlay aggregates to M6 badges without inventing M8 Learned.
+def display_status_for_summary(
+    *,
+    selected: int,
+    learned: int,
+    due: int,
+    learning: int = 0,
+    mastered: int = 0,
+) -> str:
+    """Law-card lifecycle: Mastered > Due > Learned > Learning > Not started.
 
-    Cloze-complete (``learned_count``) is Learning, not product Learned.
-    Mastered is only rendered on provision rows that already store
-    ``status = mastered``.
+    Cloze-complete is not as final Learned. Product Learned requires all six
+    initial methods (M8).
     """
 
+    if mastered > 0:
+        return STATUS_MASTERED
     if due > 0:
         return STATUS_DUE
-    if learned <= 0:
-        return STATUS_NOT_STARTED
-    return STATUS_LEARNING
+    if learned > 0:
+        return STATUS_LEARNED
+    if learning > 0:
+        return STATUS_LEARNING
+    del selected
+    return STATUS_NOT_STARTED
 
 
 def display_status_for_progress(
     progress: Any, *, as_of: date, mode_progress: Any = None
 ) -> str:
-    if progress is not None and str(getattr(progress, "status", "") or "") == "mastered":
+    status = str(getattr(progress, "status", "") or "") if progress is not None else ""
+    if status == "mastered":
         return STATUS_MASTERED
     next_rev = getattr(progress, "next_revision", None) if progress is not None else None
-    if next_rev and str(next_rev) <= as_of.isoformat():
+    if next_rev and str(next_rev)[:10] <= as_of.isoformat():
         return STATUS_DUE
+    if status in {"learned", "review"}:
+        return STATUS_LEARNED
     completed = int(getattr(mode_progress, "completed_count", 0) or 0)
     if completed > 0:
         return STATUS_LEARNING
@@ -886,6 +906,8 @@ def _card_from_summary(
         selected=summary.selected_count,
         learned=summary.learned_count,
         due=summary.due_count,
+        learning=int(getattr(summary, "learning_count", 0) or 0),
+        mastered=int(getattr(summary, "mastered_count", 0) or 0),
     )
     return LawCardView(
         law_id=summary.law_id,
@@ -907,6 +929,8 @@ def _card_from_summary(
         membership_label=membership_label,
         add_href=add_href,
         add_label=add_label,
+        learning_count=int(getattr(summary, "learning_count", 0) or 0),
+        mastered_count=int(getattr(summary, "mastered_count", 0) or 0),
     )
 
 
@@ -1127,6 +1151,7 @@ def section_row_view(
     as_of: date,
     law_id: str,
     mode_progress: Any = None,
+    revision_modes: Any = None,
 ) -> dict[str, Any]:
     status = display_status_for_progress(
         progress, as_of=as_of, mode_progress=mode_progress
@@ -1134,9 +1159,38 @@ def section_row_view(
     due = status == STATUS_DUE
     completed = int(getattr(mode_progress, "completed_count", 0) or 0)
     next_mode = getattr(mode_progress, "next_mode", None) or "read"
-    if completed >= 6:
-        cta = "Continue"
-        methods_label = "6 of 6 methods"
+    interval = int(getattr(progress, "interval_days", 0) or 0) if progress is not None else 0
+    next_rev = getattr(progress, "next_revision", None) if progress is not None else None
+    due_label = ""
+    schedule_label = ""
+    revision = False
+    href_revision = False
+    if status == STATUS_MASTERED:
+        cta = "Completed"
+        methods_label = ""
+        href_mode = "read"
+    elif status == STATUS_DUE:
+        cta = "Revise"
+        methods_label = f"Revision · Day {interval}" if interval else "Revision"
+        overdue_n = 0
+        if next_rev:
+            from constitution_memorizer.playground.lifecycle import days_overdue
+
+            overdue_n = days_overdue(str(next_rev)[:10], as_of)
+        due_label = overdue_label(overdue_n)
+        href_mode = getattr(revision_modes, "next_mode", None) or "read"
+        href_revision = True
+        revision = True
+    elif status == STATUS_LEARNED:
+        cta = "Open"
+        methods_label = ""
+        if interval:
+            when = format_study_date(next_rev) if next_rev else ""
+            schedule_label = f"First revision · Day {interval}"
+            if when:
+                schedule_label = f"{schedule_label} · Due {when}"
+            if interval != 1:
+                schedule_label = f"Day {interval} · {when}".strip(" ·")
         href_mode = "read"
     elif completed > 0:
         cta = "Continue"
@@ -1155,12 +1209,16 @@ def section_row_view(
         "title": title,
         "progress": progress,
         "mode_progress": mode_progress,
+        "revision_modes": revision_modes,
         "outdated": source_outdated,
         "status": status,
         "status_label": STATUS_LABELS[status],
         "due": due,
+        "due_label": due_label,
+        "schedule_label": schedule_label,
         "cta": cta,
         "methods_label": methods_label,
         "completed_count": completed,
-        "href": learn_path(law_id, number, href_mode),
+        "revision": revision,
+        "href": learn_path(law_id, number, href_mode, revision=href_revision),
     }

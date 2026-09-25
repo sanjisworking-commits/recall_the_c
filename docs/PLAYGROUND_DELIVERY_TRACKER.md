@@ -2,11 +2,11 @@
 
 **Scoreboard, not an audit.** Product rules live in [PLAYGROUND.md](PLAYGROUND.md), [PAYMENT_ENTITLEMENT_AUDIT.md](PAYMENT_ENTITLEMENT_AUDIT.md), [PLAYGROUND_TWO_LAW_AUDIT.md](PLAYGROUND_TWO_LAW_AUDIT.md), and [law-loading.md](law-loading.md).
 
-**Snapshot:** architecture/product definition is **locked in docs**. **Stage 1** (build) is **76.0 / 100**. Milestone 1 is `DONE`. Milestone 2 is **`DONE` — 37/37**. Milestone 3 is **`DONE` — 15/15** (M3-A Constitution inversion + M3-B Playground commercial gate). Milestone 4 is **`DONE` — 25/25** (M4-A registry + M4-B owner/admin management + M4-C replacement-churn). Milestone 5 is **`DONE` — 27/27** (M5-A period/capacity/tables/same-month and M5-B carry-forward plus later-month historical reactivation). Milestone 6 is **`DONE` — 37/37** (production UX/state integration of the locked design). Milestone 7 is **`DONE`** (six-mode law-learning engine; Type is write-it-out; no seventh Write mode; Learned → Day 1 remains M8). Proof revision rows **do not** count as milestone 8. Platforms are `web | android | ios`. Overlay is lifetime learning history; roster is current-month membership (`overlay != roster`). Previous-period laws are candidates only. Keep consumes a new-period slot. Decline consumes none. Historical progress never waives monthly capacity. Pending + current-roster law remains learnable; pending + historical overlay only is not. **Do not tick Stage 2 from Cloze or from `main`’s sitemap PRs.** This branch includes main’s Bare Act SEO and generated sitemap index; that is Milestone 0 coexistence, not Milestone 10 (`noindex`) and not Stage 2.
+**Snapshot:** architecture/product definition is **locked in docs**. **Stage 1** (build) is **84.0 / 100**. Milestone 1 is `DONE`. Milestone 2 is **`DONE` — 37/37**. Milestone 3 is **`DONE` — 15/15** (M3-A Constitution inversion + M3-B Playground commercial gate). Milestone 4 is **`DONE` — 25/25** (M4-A registry + M4-B owner/admin management + M4-C replacement-churn). Milestone 5 is **`DONE` — 27/27** (M5-A period/capacity/tables/same-month and M5-B carry-forward plus later-month historical reactivation). Milestone 6 is **`DONE` — 37/37** (production UX/state integration of the locked design). Milestone 7 is **`DONE`** (six-mode law-learning engine; Type is write-it-out; no seventh Write mode). Milestone 8 is **`DONE`** (Learned after all six methods; official ladder 1 → 3 → 7 → 15 → 30 → 60 → Mastered; overdue advances one rung). Platforms are `web | android | ios`. Overlay is lifetime learning history; roster is current-month membership (`overlay != roster`). Previous-period laws are candidates only. Keep consumes a new-period slot. Decline consumes none. Historical progress never waives monthly capacity. Pending + current-roster law remains learnable; pending + historical overlay only is not. **Do not tick Stage 2 from Cloze or from `main`’s sitemap PRs.** This branch includes main’s Bare Act SEO and generated sitemap index; that is Milestone 0 coexistence, not Milestone 10 (`noindex`) and not Stage 2.
 
 | | |
 |--|--|
-| **Stage 1 (build)** | **76.0 / 100** |
+| **Stage 1 (build)** | **84.0 / 100** |
 | Milestone 0 | `DONE` — 10/10 items × 5 = **5** |
 | Milestone 1 | `DONE` — 18/18 items × 8 = **8** |
 | Milestone 2 | `DONE` — 37/37 × 13 = **13** |
@@ -15,10 +15,11 @@
 | Milestone 5 | `DONE` — 27/27 × 12 = **12** |
 | Milestone 6 | `DONE` — 37/37 × 8 = **8** |
 | Milestone 7 | `DONE` — 15 |
-| Milestones 8–11 | `NOT STARTED` |
+| Milestone 8 | `DONE` — 20/20 × 8 = **8** |
+| Milestones 9–11 | `NOT STARTED` |
 | **Stage 2 (optimize)** | **`NOT STARTED` — start gate: Stage 1 = `DONE` (100/100)** |
 
-Do not read leftover proof Cloze/Day-1 rows as Learned → revision. Six Learn modes are production (M7). Learned → Day 1 remains Milestone 8.
+Do not read leftover proof Cloze/Day-1 rows as a reset. Six Learn modes are production (M7). Learned → Day 1 → Mastered is production (M8). M9 amendment invalidation is not started.
 
 ---
 
@@ -521,7 +522,7 @@ Every backend entitlement/roster/payment/device state has an intentional UI stat
 
 **Status: `DONE`**
 
-Playground six modes = **Read → Cloze → Letters → Type → Recite → Test**. **Type** is the write-it-out method. There is no seventh Write mode. Mode completion is production (`user_playground_mode_progress`). Learned / revision remains M8. Proof Cloze no longer starts Day 1 on the production six-mode path. Alembic head `20260924_0025`.
+Playground six modes = **Read → Cloze → Letters → Type → Recite → Test**. **Type** is the write-it-out method. There is no seventh Write mode. Mode completion is production (`user_playground_mode_progress`, Alembic `20260924_0025`). Learned / revision is M8 (`20260925_0026`). Proof Cloze no longer starts Day 1 on the production six-mode path.
 
 The production Playground supports the complete RecallC learning philosophy independently from Constitution persistence.
 
@@ -570,16 +571,28 @@ A user can take a selected law provision through the complete law-learning exper
 
 # 8. Learned → Revision → Mastery — 8 points
 
-**Status: `NOT STARTED`**
+**Status: `DONE`** (20/20 × 8 = **8**; Stage 1 **76.0 + 8 = 84.0**)
 
-Cloze completion currently starting Day 1 revision on this branch is the **overlay prototype**. It does **not** count.
+A provision becomes **Learned** only when all six `PLAYGROUND_LEARN_MODES` are complete. That writes `status=learned`, `learned_at` (Asia/Kolkata study date), `times_completed=0`, `interval_days=1`, `next_revision=learned_date+1`. Learned today is not Day 1 completed today.
+
+Official ladder after the most recently completed lifecycle event:
+
+```text
+1 → 3 → 7 → 15 → 30 → 60 → Mastered
+```
+
+Day 15 is intentional. Overdue completion advances **one** rung and re-anchors `next_revision` from the actual completion date. GET never advances. Early practice does not consume a scheduled rung. Mastered is terminal (`next_revision=NULL`).
+
+M7 `user_playground_mode_progress` rows stay lifetime evidence. Each scheduled rung has its own `user_playground_revision_mode_progress` cycle. Legacy proof `status=review` / `mastered` rows are grandfathered even when `learned_at` is NULL. `cloze_done` is compatibility-only.
+
+Today and Calendar are read projections of current-roster laws. Inactive historical ladders persist but are not actionable. Alembic head `20260925_0026`.
 
 ## Learning completion
 
-* [ ] required-mode completion rule locked
-* [ ] provision transitions to `Learned`
-* [ ] clear Section Learned UI
-* [ ] first revision begins only after Learned
+* [x] required-mode completion rule locked
+* [x] provision transitions to `Learned`
+* [x] clear Section Learned UI
+* [x] first revision begins only after Learned
 
 ## Revision ladder
 
@@ -589,34 +602,34 @@ Official ladder:
 1 → 3 → 7 → 15 → 30 → 60
 ```
 
-* [ ] Day 1
-* [ ] Day 3
-* [ ] Day 7
-* [ ] Day 15
-* [ ] Day 30
-* [ ] Day 60
-* [ ] Mastered/completed state
+* [x] Day 1
+* [x] Day 3
+* [x] Day 7
+* [x] Day 15
+* [x] Day 30
+* [x] Day 60
+* [x] Mastered/completed state
 
 ## Persistence
 
-* [ ] roster removal does not reset ladder
-* [ ] subscription expiry does not reset ladder
-* [ ] device revocation does not reset ladder
-* [ ] reactivation resumes existing revision state
-* [ ] overdue handling defined and tested
+* [x] roster removal does not reset ladder
+* [x] subscription expiry does not reset ladder
+* [x] device revocation does not reset ladder
+* [x] reactivation resumes existing revision state
+* [x] overdue handling defined and tested
 
 ## Product integration
 
-* [ ] Today integration
-* [ ] Calendar/revision schedule integration
-* [ ] progress summaries
-* [ ] due-count aggregation
+* [x] Today integration
+* [x] Calendar/revision schedule integration
+* [x] progress summaries
+* [x] due-count aggregation
 
 ### Done when
 
 The full RecallC memory cycle works for laws independently of the Constitution progress model.
 
-**Weight: 8**
+**Weight: 8** (20/20 × 8 = **8**; Stage 1 **76.0 + 8 = 84.0**)
 
 ---
 
@@ -775,11 +788,11 @@ Playground + payment can safely replace the existing commercial entitlement mode
 | 5. Monthly roster                 |     12 | `DONE` — 27/27 × 12 = 12 |
 | 6. Finished UX                    |      8 | `DONE` — 37/37 × 8 = 8 |
 | 7. Complete Learn engine          |     15 | `DONE` |
-| 8. Learned/revision/mastery       |      8 | `NOT STARTED` |
+| 8. Learned/revision/mastery       |      8 | `DONE` — 20/20 × 8 = 8 |
 | 9. Amendments/source integrity    |      5 | `NOT STARTED` |
 | 10. SEO/routing discoverability   |      4 | `NOT STARTED` |
 | 11. Production hardening/release  |      7 | `NOT STARTED` |
-| **TOTAL (Stage 1)**               |  **100** | **76.0 / 100** |
+| **TOTAL (Stage 1)**               |  **100** | **84.0 / 100** |
 | Stage 2 — Optimize                |    — | `NOT STARTED` — start gate: Stage 1 = `DONE` (100/100) |
 
 ---
@@ -799,8 +812,8 @@ Batch 3   User entitlement inversion — DONE (M3-A Constitution + M3-B Playgrou
 Batch 4   Device registry/control — DONE (M4-A+M4-B+M4-C 25/25)
 Batch 5   Monthly roster + rollover — DONE (27/27)
 Batch 6   Final Playground UI shell — DONE (37/37)
-Batch 7   Complete Learn modes — DONE (six modes; no Write; Learned remains M8)
-Batch 8   Learned + revision + Today/Calendar
+Batch 7   Complete Learn modes — DONE (six modes; no Write; M8 owns Learned)
+Batch 8   Learned + revision + Today/Calendar — DONE (20/20; Stage 1 84.0)
 Batch 9   Amendment handling
 Batch 10  SEO + sitemap (main adopted on this branch; remaining: Playground noindex)
 Batch 11  Legacy transition + production hardening

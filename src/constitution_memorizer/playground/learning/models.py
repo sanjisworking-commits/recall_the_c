@@ -25,6 +25,7 @@ class ModeProgressRow:
     completed_at: str | None
     source_version: str
     source_hash: str
+    rung_days: int | None = None
 
 
 @dataclass(frozen=True)

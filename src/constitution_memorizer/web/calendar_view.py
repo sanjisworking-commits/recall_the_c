@@ -27,6 +27,8 @@ class CalendarChip:
     unit_id: str
     label: str
     title: str
+    href: str = ""
+    category: str = ""
 
 
 @dataclass

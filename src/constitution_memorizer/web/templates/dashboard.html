@@ -404,6 +404,27 @@
   {% endif %}
   {% endif %}{# /show_first_run #}
 
+  {% if law_revisions|default([]) %}
+  <section class="dash-law-revisions" aria-label="Law revisions">
+    <header class="dash-upcoming-head">
+      <h2 class="dash-eyebrow">Law revisions</h2>
+      <span class="dash-upcoming-all">{{ law_revision_count }} due</span>
+    </header>
+    <div class="dash-law-revision-list">
+      {% for item in law_revisions %}
+      <a class="dash-firstrun-item" href="{{ item.href }}">
+        <span class="dash-firstrun-item-copy">
+          <span class="dash-firstrun-item-title">{{ item.short_title }} · Section {{ item.number }}</span>
+          <span class="dash-firstrun-item-sub">Revision · Day {{ item.rung_days }} · {{ item.due_label }}</span>
+        </span>
+        <span class="dash-firstrun-item-note">Revise</span>
+        <span class="dash-firstrun-chev" aria-hidden="true">›</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
   {# Design 4c · the phone opens Plan my day as a sheet over Today. Desktop and
      no-JS phones follow the anchor's href to /learning/plan-my-day instead —
      same copy, same four posts. #}

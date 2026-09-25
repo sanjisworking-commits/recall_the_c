@@ -95,6 +95,7 @@ def quiz_for_attempt(
     canonical_body: str,
     cycle: int,
     source_hash: str,
+    rung_days: int | None = None,
 ):
     return build_section_quiz(
         law_id=law_id,
@@ -102,6 +103,7 @@ def quiz_for_attempt(
         canonical_body=canonical_body,
         cycle=cycle,
         source_hash=source_hash,
+        rung_days=rung_days,
     )
 
 

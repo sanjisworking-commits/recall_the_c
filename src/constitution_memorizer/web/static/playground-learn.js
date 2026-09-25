@@ -21,8 +21,29 @@
     return word.replace(/[^A-Za-z]/g, "").length;
   }
 
+  const revision = root.getAttribute("data-pg-revision") || "";
+  const rung = root.getAttribute("data-pg-rung") || "";
+
+  function revisionFields() {
+    const extra = {};
+    if (revision) {
+      extra.revision = 1;
+      if (rung) {
+        extra.rung_days = Number(rung);
+      }
+    }
+    return extra;
+  }
+
+  function withRevisionHref(href) {
+    if (!revision || !href) {
+      return href;
+    }
+    return href + (href.indexOf("?") >= 0 ? "&" : "?") + "revision=1";
+  }
+
   function postJson(url, payload) {
-    const body = Object.assign({ csrf_token: csrf }, payload || {});
+    const body = Object.assign({ csrf_token: csrf }, revisionFields(), payload || {});
     return fetch(url, {
       method: "POST",
       credentials: "same-origin",
@@ -52,23 +73,30 @@
   function showDone(payload) {
     const allDone = payload && payload.all_methods_complete;
     const nextMode = payload && payload.next_mode;
+    const completeLabel =
+      (payload && payload.methods_complete_label) ||
+      (allDone ? "6 of 6 methods complete" : "Done.");
     if (statusEl) {
       statusEl.hidden = false;
-      statusEl.textContent = allDone ? "6 of 6 methods complete" : "Done.";
+      statusEl.textContent = completeLabel;
     }
     if (feedback) {
       feedback.hidden = false;
       if (feedbackMsg) {
-        feedbackMsg.textContent = allDone ? "6 of 6 methods complete" : "Done";
+        feedbackMsg.textContent = completeLabel;
       }
       if (feedbackSub) {
         feedbackSub.textContent = allDone
-          ? "Every method on this provision is complete."
+          ? (payload && payload.revision
+              ? "This revision rung is complete."
+              : "Every method on this provision is complete.")
           : "Continue to the next method when you are ready.";
       }
       if (feedbackGo) {
         if (nextMode) {
-          const href = completeUrl.replace(/\/learn\/[^/]+\/complete$/, "/learn/" + nextMode);
+          const href = withRevisionHref(
+            completeUrl.replace(/\/learn\/[^/]+\/complete$/, "/learn/" + nextMode)
+          );
           feedbackGo.setAttribute("href", href);
           feedbackGo.textContent = "Next method";
         } else {
@@ -83,6 +111,20 @@
       return Promise.resolve();
     }
     return postJson(completeUrl, extra || {}).then(function (out) {
+      if (out.status === 409 && out.payload && out.payload.error === "stale_revision") {
+        if (statusEl) {
+          statusEl.hidden = false;
+          statusEl.textContent = "This revision already moved on. Refresh to continue.";
+        }
+        return out;
+      }
+      if (out.status === 409 && out.payload && out.payload.error === "not_due") {
+        if (statusEl) {
+          statusEl.hidden = false;
+          statusEl.textContent = "This revision is not due yet.";
+        }
+        return out;
+      }
       if (out.ok && out.payload && out.payload.ok) {
         showDone(out.payload);
       } else if (statusEl) {
@@ -467,6 +509,13 @@
       }
       const cycle = Number(root.getAttribute("data-pg-cycle") || "0");
       postJson(quizUrl, { cycle: cycle, answers: answers }).then(function (out) {
+        if (out.status === 409 && out.payload && out.payload.error === "stale_revision") {
+          if (statusEl) {
+            statusEl.hidden = false;
+            statusEl.textContent = "This revision already moved on. Refresh to continue.";
+          }
+          return;
+        }
         if (out.status === 409) {
           if (statusEl) {
             statusEl.hidden = false;
