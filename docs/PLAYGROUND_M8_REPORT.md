@@ -268,4 +268,17 @@ Alembic head after this batch: `20260925_0026`.
 
 ## Git
 
-Implementation, tracker, and this report land on `cursor/playground-220d` after M7 `0859f9d`. See the PR for SHAs of this batch.
+| SHA | What |
+|-----|------|
+| [`a9e6c18`](https://github.com/sanjisworking-commits/recall_the_c/commit/a9e6c18a660702261f581f2e8160d92395490b0f) | Ship Playground Learned-to-Mastered revision lifecycle (`0026`, engine, Today/Calendar, tracker 84.0) |
+
+HEAD at report time: `a9e6c18a660702261f581f2e8160d92395490b0f`. Parent is M7 close-out `0859f9d247758473c2bafc47ab9155b1c767cd15`.
+
+---
+
+## What this batch is not
+
+- Not M9: source hash/version is stored on revision-mode rows; statute change does not invalidate Learned or demote Mastered.
+- Not M10: private Playground/Today/Calendar stay off the public SEO scoreboard.
+- Not a second learning engine: revision reuses `PLAYGROUND_LEARN_MODES` and the existing learn route family.
+- Not a Constitution calendar rewrite: law chips are an additive projection with category `Law revision`.
