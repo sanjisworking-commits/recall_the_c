@@ -266,7 +266,7 @@ Full suite command:
 python3 -m pytest -m "not integration" -q --tb=line
 ```
 
-Result: **2274 passed**, 9 skipped, 1 deselected, **0 failed** (was 2242 passed before this batch).
+Result: **2274 passed**, 9 skipped, 1 deselected, **0 failed** (was 2242 passed before this batch). Re-confirmed after the overdue Due-today badge fix.
 
 Alembic head after this batch: `20260925_0026`.
 
@@ -278,8 +278,10 @@ Alembic head after this batch: `20260925_0026`.
 |-----|------|
 | [`a9e6c18`](https://github.com/sanjisworking-commits/recall_the_c/commit/a9e6c18a660702261f581f2e8160d92395490b0f) | Ship Playground Learned-to-Mastered revision lifecycle (`0026`, engine, Today/Calendar, tracker 84.0) |
 | [`73833db`](https://github.com/sanjisworking-commits/recall_the_c/commit/73833db8fa66c767d53421abd64c94dd8d1c4bfa) | Record the Milestone 8 implementation SHA in the close-out report |
+| [`2ac33be`](https://github.com/sanjisworking-commits/recall_the_c/commit/2ac33be077a7c32316c558e31a4fc9688102792a) | Add Milestone 8 suite counts and report SHAs |
+| [`706f11f`](https://github.com/sanjisworking-commits/recall_the_c/commit/706f11fce8cf418bbbca57d513ebddc20d3c32e5) | Stop labeling overdue Playground sections as Due today |
 
-Implementation SHA: `a9e6c18a660702261f581f2e8160d92395490b0f`. Parent is M7 close-out `0859f9d247758473c2bafc47ab9155b1c767cd15`.
+HEAD at report time: `706f11fce8cf418bbbca57d513ebddc20d3c32e5`. Parent of the engine commit is M7 close-out `0859f9d247758473c2bafc47ab9155b1c767cd15`.
 
 ---
 
