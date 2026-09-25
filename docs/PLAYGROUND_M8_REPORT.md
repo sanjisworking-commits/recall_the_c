@@ -256,11 +256,17 @@ Coverage includes 0/6 and 5/6 not Learned, 6/6 Learned + Day 1 tomorrow, every r
 
 M7’s 44 focused tests remain green. M3–M6, Today, Calendar, and Constitution calendar projection tests remain green.
 
+Focused M8: **32** tests in `tests/test_playground_m8.py`.
+
+M7 regression: `tests/test_playground_m7.py` remains green (44 focused cases including parametrized mode coverage).
+
 Full suite command:
 
 ```bash
 python3 -m pytest -m "not integration" -q --tb=line
 ```
+
+Result: **2274 passed**, 9 skipped, 1 deselected, **0 failed** (was 2242 passed before this batch).
 
 Alembic head after this batch: `20260925_0026`.
 
@@ -271,8 +277,9 @@ Alembic head after this batch: `20260925_0026`.
 | SHA | What |
 |-----|------|
 | [`a9e6c18`](https://github.com/sanjisworking-commits/recall_the_c/commit/a9e6c18a660702261f581f2e8160d92395490b0f) | Ship Playground Learned-to-Mastered revision lifecycle (`0026`, engine, Today/Calendar, tracker 84.0) |
+| [`73833db`](https://github.com/sanjisworking-commits/recall_the_c/commit/73833db8fa66c767d53421abd64c94dd8d1c4bfa) | Record the Milestone 8 implementation SHA in the close-out report |
 
-HEAD at report time: `a9e6c18a660702261f581f2e8160d92395490b0f`. Parent is M7 close-out `0859f9d247758473c2bafc47ab9155b1c767cd15`.
+Implementation SHA: `a9e6c18a660702261f581f2e8160d92395490b0f`. Parent is M7 close-out `0859f9d247758473c2bafc47ab9155b1c767cd15`.
 
 ---
 
