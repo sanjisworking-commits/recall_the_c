@@ -171,6 +171,23 @@ BARE_ACTS: dict[str, BareActSpec] = {
         # v3, archived as mtp_canonical_v3.json.
         source_version="1",
     ),
+    "mva": BareActSpec(
+        slug="mva",
+        filename="mva_runtime_v1.json",
+        short_name="The Motor Vehicles Act, 1988",
+        back_label="← The Motor Vehicles Act, 1988",
+        short_title="MVA",
+        # Ten node types. Six are the BNS set; `omission` is NDPS's asterisk
+        # run and renders through the profile-agnostic is_omission branch;
+        # `item`/`subitem` are the fourth and fifth nesting levels the Act
+        # prints — "(A)" under "(i)" under "(a)" — and draw as ordinary rows
+        # at their depth; `formula` is s.105(5)'s displayed fraction, kept as
+        # one row of text. Checked kind by kind against ProvisionRow.
+        render_profile="bns",
+        # First runtime release of the parser v2 export, archived as
+        # mva_canonical_v2.json.
+        source_version="1",
+    ),
 }
 
 
@@ -559,6 +576,11 @@ class Schedule:
     # Fourth Schedule's span closes in one, since it prints no rows at all.
     source_residuals: tuple[str, ...] = ()
     unsupported_reason: str = ""
+    # What a reader should know about an unrenderable schedule, in the
+    # canonical's own words: the Motor Vehicles First Schedule is 52 pages of
+    # road-sign diagrams with no text layer. `unsupported_reason` says why the
+    # renderer declines; this says what the source holds. Shown only when set.
+    reader_note: str = ""
     source_pages: tuple[int, ...] = ()
     raw_payload: dict[str, Any] | None = field(default=None, repr=False)
 
@@ -1335,6 +1357,7 @@ def _parse_schedule(raw: dict[str, Any]) -> Schedule:
             "no table representation for this schedule's content: "
             + ", ".join(unsupported)
         ),
+        reader_note=str(raw.get("reader_note") or ""),
         source_pages=_pages(raw),
         raw_payload=raw,
     )
