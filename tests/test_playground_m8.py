@@ -630,6 +630,17 @@ def test_workspace_learned_and_revise_copy(tmp_path: Path, monkeypatch: pytest.M
     assert "Due" in due.text
     assert "Revise" in due.text
     assert "Day 7" in due.text
+    assert "Due today" in due.text
+    assert "overdue" not in due.text.lower()
+    _seed_progress(
+        repo, LOCAL_USER_ID, "ndps", loc, status="review", interval_days=7,
+        next_revision=(TODAY - timedelta(days=4)).isoformat(), times_completed=3,
+        learned_at=TODAY.isoformat(),
+    )
+    overdue = client.get(law_path("ndps"))
+    assert "4 days overdue" in overdue.text
+    assert "Due today" not in overdue.text
+    assert "Revise" in overdue.text
 
 
 def test_revision_route_uses_server_rung(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
