@@ -355,6 +355,7 @@ def create_app(
     calendar_store=None,
     gcal_transport=None,
     speech_provider=None,
+    study_materials_dir: Path | str | None = None,
 ) -> FastAPI:
     """Create the learning UI app bound to concrete unit/progress paths."""
     root = Path.cwd()
@@ -1019,6 +1020,15 @@ def create_app(
 
     app.include_router(gcal_router)
     app.include_router(speech_router)
+    if not multiuser_on:
+        from constitution_memorizer.web.study_archive import install_study_archive
+
+        install_study_archive(
+            app,
+            Path(study_materials_dir)
+            if study_materials_dir
+            else resolved_db.parent / "study-materials",
+        )
 
     def _engine() -> ReminderEngine:
         bound = bound_engine.get()
@@ -2798,10 +2808,14 @@ def create_app(
                 logger.exception("learning plan pace lookup failed")
         record_request_timing("calendar_build", started)
         started = time.perf_counter()
+        study_context = {}
+        if not multiuser_on and request.url.hostname in {"localhost", "127.0.0.1", "::1"}:
+            study_context = app.state.study_archive.calendar_context()
+            study_context["study_token"] = app.state.study_token
         response = templates.TemplateResponse(
             request,
             "calendar.html",
-            {"calendar": view, "revisions": revisions, "pace_label": pace},
+            {"calendar": view, "revisions": revisions, "pace_label": pace, **study_context},
         )
         record_request_timing("template", started)
         return response

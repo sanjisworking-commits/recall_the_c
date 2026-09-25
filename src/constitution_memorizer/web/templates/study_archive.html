@@ -1,0 +1,31 @@
+<link rel="stylesheet" href="/static/study-archive.css?v=1">
+<div id="study-archive" data-token="{{ study_token }}">
+  <div class="study-toolbar">
+    <div><strong>Your study archive</strong><p>PDFs, photos and links · revise on days 3 → 7 → 15 → 30 → 60</p></div>
+    <button type="button" class="btn" data-study-add>Add study material +</button>
+  </div>
+  {% if study_overdue %}
+  <details class="study-overdue"><summary>{{ study_overdue|length }} overdue study revision{{ 's' if study_overdue|length != 1 }}</summary>
+    {% for item in study_overdue %}<button type="button" class="study-chip" data-study-id="{{ item.id }}">{{ item.title }} <small>{{ item.label }} · due {{ item.due_on }}</small></button>{% endfor %}
+  </details>
+  {% endif %}
+  <p id="study-page-error" role="alert" hidden></p>
+  <dialog id="study-editor" class="study-dialog" aria-labelledby="study-editor-title">
+    <div class="study-dialog-head"><h2 id="study-editor-title">Add study material</h2><button type="button" data-study-close aria-label="Close">×</button></div>
+    <form id="study-form">
+      <label>Heading<input name="title" required maxlength="200" placeholder="e.g. Monsoon mechanisms — class notes"></label>
+      <div class="study-fields"><label>Study date<input type="date" name="studied_on" required></label><label>Activity<select name="activity"><option>Studied</option><option>Revised</option></select></label></div>
+      <label>Notes<textarea name="notes" rows="3" maxlength="20000" placeholder="What did you cover?"></textarea></label>
+      <label>Add PDFs or photos<input type="file" name="files" multiple accept="application/pdf,image/jpeg,image/png,image/gif,image/webp"></label>
+      <small>25 MB per file · 100 MB per upload · PDF, JPEG, PNG, GIF, WebP</small>
+      <label>Add web links<textarea name="links" rows="3" placeholder="https://example.com/article (one link per line)"></textarea></label>
+      <p id="study-schedule-hint"></p><p id="study-form-error" role="alert" hidden></p>
+      <button type="submit" class="btn">Save material & schedule</button>
+    </form>
+  </dialog>
+  <dialog id="study-viewer" class="study-dialog study-viewer" aria-labelledby="study-view-title">
+    <div class="study-dialog-head"><div><h2 id="study-view-title"></h2><p id="study-view-meta"></p></div><button type="button" data-study-close aria-label="Close preview">×</button></div>
+    <div class="study-view-layout"><aside><p id="study-notes"></p><div id="study-assets"></div><h3>Revision dates</h3><div id="study-reviews"></div><button type="button" id="study-edit">Edit / add attachments</button><p id="study-view-error" role="alert" hidden></p></aside><div id="study-preview" aria-live="polite"></div></div>
+  </dialog>
+</div>
+<script src="/static/study-archive.js?v=1" defer></script>
