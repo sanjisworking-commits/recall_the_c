@@ -53,6 +53,7 @@ constitution_memorizer = [
     "web/pota_runtime_v1.json",
     "web/uapa_runtime_v1.json",
     "web/pss_runtime_v1.json",
+    "web/mtp_runtime_v1.json",
     "web/sitemap.xml",
     "web/robots.txt",
 ]

@@ -26,6 +26,11 @@
       "id": "financial",
       "label": "Financial",
       "display_order": 50
+    },
+    {
+      "id": "health",
+      "label": "Health",
+      "display_order": 60
     }
   ],
   "laws": [
@@ -212,6 +217,37 @@
       "content": {
         "full_act": {
           "ref": "pss"
+        },
+        "key_provisions": null
+      }
+    },
+    {
+      "id": "mtp",
+      "title": "The Medical Termination of Pregnancy Act, 1971",
+      "short_title": "MTP Act",
+      "year": 1971,
+      "aliases": [
+        "MTP",
+        "MTP Act",
+        "Medical Termination of Pregnancy Act",
+        "Medical Termination of Pregnancy Act 1971",
+        "termination of pregnancy",
+        "abortion"
+      ],
+      "subjects": [
+        "health"
+      ],
+      "primary_subject": "health",
+      "display_order": 27,
+      "scope_label": "Sections 1–8",
+      "act_info": {
+        "in_force": "01-04-1972",
+        "jurisdiction": "Central"
+      },
+      "primary_content": "full_act",
+      "content": {
+        "full_act": {
+          "ref": "mtp"
         },
         "key_provisions": null
       }

@@ -153,6 +153,24 @@ BARE_ACTS: dict[str, BareActSpec] = {
         # pss_canonical_v3.json, and this is its first runtime release.
         source_version="1",
     ),
+    "mtp": BareActSpec(
+        slug="mtp",
+        filename="mtp_runtime_v1.json",
+        short_name="The MTP Act, 1971",
+        back_label="← The MTP Act, 1971",
+        short_title="MTP",
+        # Five node types — subsection, clause, paragraph, proviso,
+        # explanation — a strict subset of the nine BNS renders. Verified by
+        # loading the canonical through this module before the entry existed.
+        render_profile="bns",
+        # The first Act with no chapters at all: nine sections at the top
+        # level of the source, which the parser stores under `sections`
+        # beside an empty `chapters`. Nothing about the reader changes per
+        # Act; the loader reads either shape.
+        # Identity of the runtime artifact. The canonical export is parser
+        # v3, archived as mtp_canonical_v3.json.
+        source_version="1",
+    ),
 }
 
 
@@ -647,10 +665,28 @@ class ActSection:
     starts_division: bool = False
     # Nine UAPA sections are printed as whole amendment spans (``2[17. ...``).
     leading_brackets: int = 0
+    # A footnote whose superscript is printed before the section number
+    # ("2[4. Place where ...") hangs on the title. NDPS records 27 of these
+    # and MTP two; the anchor is the whole title, as the canonical stores it.
+    title_annotations: tuple[dict[str, Any], ...] = ()
 
     @property
     def bracket_prefix(self) -> str:
         return "[" * self.leading_brackets if self.leading_brackets > 0 else ""
+
+    @property
+    def title_note_id(self) -> str | None:
+        """The note hung on the section heading, if the source printed one."""
+        return _first_footnote_id(self.title_annotations)
+
+    @property
+    def has_chapter(self) -> bool:
+        """False for a section of an Act that prints no chapters (MTP).
+
+        The chapter fields are then "" rather than an invented "Chapter I":
+        the statute never groups its sections, so the reader must not either.
+        """
+        return bool(self.chapter_number)
 
     @property
     def is_omitted(self) -> bool:
@@ -702,6 +738,8 @@ class ActSection:
     def note_ids(self) -> tuple[str, ...]:
         """Every footnote this section cites, once each, in reading order."""
         seen: list[str] = []
+        if self.title_note_id:
+            seen.append(self.title_note_id)
         for row in self.rows:
             for note_id in row.note_ids:
                 if note_id not in seen:
@@ -778,18 +816,25 @@ class BareAct:
         # Chapter, then its own sections: a chapter-level span opens before its
         # first section and closes inside one of them, so the walk has to
         # interleave rather than list every chapter and then every section.
+        def walk_section(section: ActSection) -> None:
+            where = f"s{section.number}"
+            stream.extend((c, f"{where} heading") for c in section.bracket_prefix)
+            stream.extend((c, f"{where} title") for c in section.title if c in "[]")
+            for row in section.rows:
+                label = row.label or row.kind
+                stream.extend((c, f"{where} {label}") for c in row.bracket_prefix)
+                stream.extend((c, f"{where} {label}") for c in row.text if c in "[]")
+
         for chapter in self.chapters:
             where = f"chapter {chapter.number}"
             stream.extend((c, f"{where} heading") for c in chapter.bracket_prefix)
             stream.extend((c, f"{where} title") for c in chapter.title if c in "[]")
             for section in chapter.sections:
-                where = f"s{section.number}"
-                stream.extend((c, f"{where} heading") for c in section.bracket_prefix)
-                stream.extend((c, f"{where} title") for c in section.title if c in "[]")
-                for row in section.rows:
-                    label = row.label or row.kind
-                    stream.extend((c, f"{where} {label}") for c in row.bracket_prefix)
-                    stream.extend((c, f"{where} {label}") for c in row.text if c in "[]")
+                walk_section(section)
+        # An Act with no chapters keeps its sections at the top level; they are
+        # part of the same document stream and get the same examination.
+        for section in self.unchaptered_sections:
+            walk_section(section)
         # Schedules are part of the same document stream: UAPA opens a span at
         # "[THE SECOND SCHEDULE" and closes it on an entry, so leaving them out
         # would let an orphaned bracket through the validator unseen.
@@ -871,6 +916,16 @@ class BareAct:
         return len(self.chapters)
 
     @property
+    def unchaptered_sections(self) -> tuple[ActSection, ...]:
+        """Sections the source prints under no chapter, in the Act's order.
+
+        Every section of MTP; none of any other Act. A source that mixed the
+        two shapes would list these after its chapters, which is where the
+        loader appends them.
+        """
+        return tuple(s for s in self.section_order if not s.has_chapter)
+
+    @property
     def section_range(self) -> str:
         if not self.section_order:
             return ""
@@ -881,7 +936,14 @@ class BareAct:
 
     @property
     def meta_label(self) -> str:
-        """"8 Chapters · Sections 1–83" — derived, never typed into a template."""
+        """"8 Chapters · Sections 1–83" — derived, never typed into a template.
+
+        An Act that prints no chapters is described by its sections alone:
+        "Sections 1–8", never "0 Chapters · Sections 1–8", which would report a
+        structure the statute does not have as if it were a count of zero.
+        """
+        if not self.chapters:
+            return f"Sections {self.section_range}"
         return (
             f"{self.chapter_count} Chapters · "
             f"Sections {self.section_range}"
@@ -1399,16 +1461,17 @@ def _parse(
     document = data.get("document") or {}
     chapters: list[ActChapter] = []
     order: list[ActSection] = []
-    for raw_chapter in data.get("chapters") or []:
-        chapter_number = str(raw_chapter.get("number") or "")
-        chapter_title = title_case_chapter(raw_chapter.get("title") or "")
+
+    def parse_sections(
+        raw_sections, chapter_number: str, chapter_title: str
+    ) -> tuple[ActSection, ...]:
         sections: list[ActSection] = []
         # Reset per chapter: a division belongs to one chapter, and the first
         # section of each division is where its heading is drawn. Sections
         # before a chapter's first division carry no id and stay ungrouped —
         # Chapters III, XVIII and XIX all open that way.
         previous_division: str | None = None
-        for raw_section in raw_chapter.get("sections") or []:
+        for raw_section in raw_sections or []:
             division_id = raw_section.get("division_id") or None
             section = ActSection(
                 # Never an int: 7A, 25A, 68-I, 68-O and 68Z are all real.
@@ -1418,6 +1481,7 @@ def _parse(
                 former_title=raw_section.get("former_title"),
                 omission_note=raw_section.get("omission_note"),
                 leading_brackets=int(raw_section.get("leading_brackets") or 0),
+                title_annotations=tuple(raw_section.get("title_annotations") or ()),
                 chapter_number=chapter_number,
                 chapter_title=chapter_title,
                 body=tuple(raw_section.get("body") or []),
@@ -1431,14 +1495,26 @@ def _parse(
             previous_division = division_id
             sections.append(section)
             order.append(section)
+        return tuple(sections)
+
+    for raw_chapter in data.get("chapters") or []:
+        chapter_number = str(raw_chapter.get("number") or "")
+        chapter_title = title_case_chapter(raw_chapter.get("title") or "")
         chapters.append(
             ActChapter(
                 number=chapter_number,
                 title=chapter_title,
-                sections=tuple(sections),
+                sections=parse_sections(
+                    raw_chapter.get("sections"), chapter_number, chapter_title
+                ),
                 leading_brackets=int(raw_chapter.get("leading_brackets") or 0),
             )
         )
+    # An Act with no chapters — MTP is nine sections and nothing above them —
+    # keeps its sections at the top level of the export. They are read with
+    # empty chapter fields rather than under a chapter the statute never
+    # printed; ActSection.has_chapter is how the templates tell the two apart.
+    parse_sections(data.get("sections"), "", "")
     schedules = [_parse_schedule(s) for s in data.get("schedules") or []]
     for patch in patches:
         schedules.extend(_parse_schedule(s) for s in patch.get("schedules") or [])
