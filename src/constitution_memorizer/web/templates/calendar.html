@@ -3,6 +3,7 @@
 {% block mobile_screen %}revisions{% endblock %}
 {% block content %}
 <section class="panel calendar">
+  {% if study_token is defined %}{% include "study_archive.html" %}{% endif %}
   {# Design 19: the desktop month grid does not survive 390 px, so the phone
      gets its own grid over the same calendar.days. Rendered for EVERY month —
      gating this on `revisions` (which is today-only) made the nav arrows lead
@@ -31,9 +32,9 @@
         <button type="button"
               class="cal-m-cell{% if day.is_today %} is-today{% endif %}{% if day.is_past %} is-past{% endif %}"
               role="gridcell" data-date="{{ day.iso }}"
-              aria-label="{{ day.long_label }}{% if day.chips %} — {{ day.chips|length }} unit{{ 's' if day.chips|length != 1 }}{% endif %}">
+              aria-label="{{ day.long_label }}{% if day.chips %} — {{ day.chips|length }} unit{{ 's' if day.chips|length != 1 }}{% endif %}{% if study_by_day is defined and study_by_day.get(day.iso) %} · {{ study_by_day.get(day.iso)|length }} study entries{% endif %}">
           <span class="cal-m-num">{{ day.day }}</span>
-          <span class="cal-m-mark{% if day.dominant_kind %} is-{{ day.dominant_kind }}{% endif %}" aria-hidden="true"></span>
+          <span class="cal-m-mark{% if day.dominant_kind %} is-{{ day.dominant_kind }}{% elif study_by_day is defined and study_by_day.get(day.iso) %} is-scheduled{% endif %}" aria-hidden="true"></span>
         </button>
         {% endif %}
       {% endfor %}
@@ -49,9 +50,16 @@
 
     {% set row_state = {'due': 'due', 'scheduled': 'scheduled', 'review_done': 'done', 'memorized': 'done', 'new_planned': 'new', 'review_capacity': 'due'} %}
     {% for day in calendar.days %}
-      {% if not day.is_blank and day.chips %}
+      {% if not day.is_blank and (day.chips or study_token is defined) %}
       <div class="cal-m-daylist" data-day-list="{{ day.iso }}" hidden>
-        <p class="revisions-eyebrow">{{ day.long_label }} · {{ day.chips|length }} unit{{ 's' if day.chips|length != 1 }}</p>
+        <p class="revisions-eyebrow">{{ day.long_label }} · {{ day.chips|length }} unit{{ 's' if day.chips|length != 1 }}{% if study_by_day is defined and study_by_day.get(day.iso) %} · {{ study_by_day.get(day.iso)|length }} study entries{% endif %}</p>
+        {% if study_by_day is defined %}
+        {% for item in study_by_day.get(day.iso, []) %}
+        <button type="button" class="study-chip" data-study-id="{{ item.id }}">{{ item.title }} <small>{{ item.label }}{% if item.done %} ✓{% endif %}</small></button>
+        {% endfor %}
+        <button type="button" class="study-add-day" data-study-date="{{ day.iso }}">+ Add study material</button>
+        {% endif %}
+        {% if not day.chips and (study_by_day is not defined or not study_by_day.get(day.iso)) %}<p>No revision falls on this day.</p>{% endif %}
         {% for chip in day.chips %}
         {% if chip.href %}
         <a class="revisions-row is-{{ row_state.get(chip.kind, 'scheduled') }}" href="{{ chip.href }}">
@@ -148,7 +156,12 @@
         role="gridcell"
         data-date="{{ day.iso }}"
       >
-        <div class="calendar-daynum">{{ day.day }}</div>
+        <div class="calendar-daynum">{{ day.day }}{% if study_token is defined %}<button type="button" class="study-add-day" data-study-date="{{ day.iso }}" aria-label="Add study material for {{ day.iso }}">+</button>{% endif %}</div>
+        {% if study_by_day is defined %}
+        {% for item in study_by_day.get(day.iso, []) %}
+        <button type="button" class="study-chip" data-study-id="{{ item.id }}">{{ item.title }} <small>{{ item.label }}{% if item.done %} ✓{% endif %}</small></button>
+        {% endfor %}
+        {% endif %}
         {% for chip in day.chips %}
         {% if chip.href %}
         <a
