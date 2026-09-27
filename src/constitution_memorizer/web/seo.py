@@ -69,8 +69,8 @@ def build_laws_hub_seo() -> tuple[str, str]:
     return (
         "Laws of India | Recall the C",
         (
-            "Browse Indian Bare Acts on Recall the C. Read registered statutes "
-            "in full, including sections and supported schedules."
+            "Browse Indian statutes on Recall the C. Read registered full Acts, "
+            "including sections and supported public schedules."
         ),
     )
 

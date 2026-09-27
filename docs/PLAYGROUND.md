@@ -56,16 +56,19 @@ Product model is unchanged. These rules keep Playground survivable at 30 active 
 
 The public Bare Act reader is the search-indexable law surface.
 
+**Public statutory content is indexable. Personal learning and account state is never indexable.**
+
 **Indexable:**
 
+- `/` (marketing), `/browse/article/{n}`, `/pricing` (when enabled), `/terms`, `/privacy`, `/grievance`
 - `/laws`
 - `/laws/{law_id}` for full Bare Acts
 - `/laws/{law_id}/section/{number}`
-- public schedule pages
+- public schedule pages (`/laws/{law_id}/schedule/{slug}`)
 
-`/laws` has a unique title, unique description, and canonical `https://recall-the-c.in/laws`. Filter/search variants (`/laws?q=bail`, `/laws?subject=criminal`) canonicalize to `/laws` unless a future subject page is deliberately created as an indexable landing page. Bare Act landing, section, and schedule pages get their own canonical/title/description.
+`/laws` has a unique title, unique description, and canonical `https://recall-the-c.in/laws`. Filter/search variants (`/laws?q=bail`, `/laws?subject=criminal`) canonicalize to `/laws` unless a future subject page is deliberately created as an indexable landing page. Bare Act landing, section, and schedule pages get their own canonical/title/description from `law_canonical_url()`, `provision_canonical_url()`, and `schedule_canonical_url()`. Section numbers stay strings (`27A`, `68-I`).
 
-Reuse [`web/seo.py`](../src/constitution_memorizer/web/seo.py) (`build_provision_seo` and related helpers). That module is law-generic and does no corpus I/O. **Do not** create a Playground SEO engine.
+Reuse [`web/seo.py`](../src/constitution_memorizer/web/seo.py) (`build_laws_hub_seo`, `build_law_seo`, `build_provision_seo`, `build_schedule_seo`, `build_article_seo`). That module is law-generic and does no corpus I/O. **Do not** create a Playground SEO engine.
 
 **Private / personalized — never in any sitemap:**
 
@@ -75,13 +78,17 @@ Reuse [`web/seo.py`](../src/constitution_memorizer/web/seo.py) (`build_provision
 - device management (`/profile/security/devices`)
 - account / subscription lifecycle surfaces
 
-HTML private pages:
+HTML private pages go through one context flag (`robots_noindex` from `is_noindex_path()` in [`web/seo.py`](../src/constitution_memorizer/web/seo.py)). `base.html` emits:
 
 ```html
 <meta name="robots" content="noindex, nofollow">
 ```
 
-Any future **non-HTML** private resource (export, download, JSON, PDF) must send `X-Robots-Tag` rather than relying on HTML metadata.
+Standalone `login.html` carries the same robots content. Do not copy `<meta name="robots">` into dozens of templates.
+
+Private **non-HTML** responses (JSON, PDF, CSV, octet-stream) send `X-Robots-Tag: noindex, nofollow` from `apply_private_robots_headers()` middleware. HTML does not also get that header.
+
+Sitemap request paths use the committed build manifest only. See [law-loading.md](law-loading.md).
 
 ### Playground eligibility
 
@@ -186,7 +193,7 @@ Entire-Act selection and monthly roster rollover must use batched writes inside 
 
 One authoritative timezone for Playground month boundaries: configured RecallC timezone **`Asia/Kolkata`**. Not UTC. Not per-account `user_timezone` unless account-local timezone is deliberately introduced later. Billing-period timezone and Playground-period timezone are independent (see [PAYMENT_ENTITLEMENT_AUDIT.md](PAYMENT_ENTITLEMENT_AUDIT.md) §14).
 
-### Performance / SEO tests (document now; pytest in later batches)
+### Performance / SEO tests
 
 - `GET /playground` performs **zero** Bare Act hydrations.
 - `GET /playground/roster` performs **zero** Bare Act hydrations.

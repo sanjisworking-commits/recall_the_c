@@ -77,25 +77,30 @@ Index search uses `search_blob` on this seed. It must not parse every Act.
 Current public layout (generic Bare Act SEO/sitemap from production `main`):
 
 ```text
-/sitemap.xml              generated sitemap index
-/sitemap-core.xml         static Constitution + marketing urlset
-/sitemap-laws.xml         the /laws hub
-/sitemap-laws-{slug}.xml  one urlset per registered full Bare Act
+/sitemap.xml                     generated sitemap index
+/sitemap-core.xml                static Constitution + marketing urlset
+/sitemap-laws.xml                the /laws hub
+/sitemap-laws-{slug}.xml         one urlset per small registered full Bare Act
+/sitemap-laws-{slug}-{n}.xml     extra chunks when a law exceeds SITEMAP_URL_CHUNK_SIZE
 ```
 
-The index and per-law urlsets are built from the lightweight `BARE_ACTS` registry (`BareActSpec`) plus the committed manifest [`data/reference/law_sitemap_manifest.json`](../data/reference/law_sitemap_manifest.json). Request handlers MUST NOT call `get_bare_act()` / `list_bare_acts()` or open runtime/canonical statute JSON. Rebuild the manifest during ingestion/build (`scripts/build_law_sitemap_manifest.py`), never during a web request.
+The index and per-law urlsets are built from the lightweight `BARE_ACTS` registry (`BareActSpec`) plus the committed manifest [`src/constitution_memorizer/web/law_sitemap_manifest.json`](../src/constitution_memorizer/web/law_sitemap_manifest.json). Request handlers MUST NOT call `get_bare_act()` / `list_bare_acts()` or open runtime/canonical statute JSON. Rebuild the manifest during ingestion/build (`scripts/build_law_sitemap_manifest.py`), never during a web request or FastAPI startup.
 
-Manifest fields:
+Manifest fields (schema version 2):
 
 ```text
 slug
 source_version
+runtime_identity
+sources (filename + sha256)
 section identifiers
 public schedule slugs
-optional trustworthy last_modified
+optional last_modified (only a trustworthy build-time value; not invented)
 ```
 
-Playground, roster, Learn, device, account, and other personalized URLs **never** enter a sitemap. See [PLAYGROUND.md](PLAYGROUND.md). Public `/laws*` remains the indexable surface. Do not add a second SEO engine. Playground `noindex` / `X-Robots-Tag` is a later Stage 1 batch.
+`slug` and `source_version` are first-class. Request paths must not parse them back out of `runtime_identity`. Intra-law chunking is configurable (`SITEMAP_URL_CHUNK_SIZE`, protocol max 50,000 URLs / 50 MB). A 701st law is registry + manifest regeneration, not a new sitemap route.
+
+Playground, roster, Learn, device, account, and other personalized URLs **never** enter a sitemap. See [PLAYGROUND.md](PLAYGROUND.md). Public `/laws*` remains the indexable surface. Do not add a second SEO engine. HTML private pages emit `<meta name="robots" content="noindex, nofollow">` through `is_noindex_path()` + `base.html`. Private non-HTML responses get `X-Robots-Tag: noindex, nofollow` from `apply_private_robots_headers()`.
 
 ## Later stages (not this batch)
 
