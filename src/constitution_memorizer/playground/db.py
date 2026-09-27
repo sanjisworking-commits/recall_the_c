@@ -93,6 +93,61 @@ CREATE INDEX IF NOT EXISTS user_playground_revision_mode_progress_user_law
     ON user_playground_revision_mode_progress (
         user_id, law_id, source_locator, rung_days
     );
+
+CREATE TABLE IF NOT EXISTS user_playground_source_change (
+    user_id TEXT NOT NULL,
+    law_id TEXT NOT NULL,
+    source_locator TEXT NOT NULL,
+    detected_source_version TEXT NOT NULL,
+    detected_law_source_hash TEXT NOT NULL,
+    previous_source_version TEXT NOT NULL,
+    previous_section_hash TEXT NOT NULL,
+    current_source_version TEXT NOT NULL,
+    current_law_source_hash TEXT NOT NULL,
+    current_section_hash TEXT NOT NULL DEFAULT '',
+    change_kind TEXT NOT NULL,
+    status TEXT NOT NULL,
+    had_learning INTEGER NOT NULL DEFAULT 0,
+    had_selection INTEGER NOT NULL DEFAULT 0,
+    detected_at TEXT NOT NULL,
+    reviewed_at TEXT,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    PRIMARY KEY (
+        user_id,
+        law_id,
+        source_locator,
+        current_source_version,
+        current_law_source_hash
+    ),
+    CHECK (change_kind IN ('changed', 'missing', 'omitted')),
+    CHECK (status IN ('pending', 'reviewed'))
+);
+
+CREATE INDEX IF NOT EXISTS user_playground_source_change_user_law
+    ON user_playground_source_change (user_id, law_id, status);
+
+CREATE TABLE IF NOT EXISTS user_playground_source_scan (
+    user_id TEXT NOT NULL,
+    law_id TEXT NOT NULL,
+    scanned_source_version TEXT NOT NULL,
+    scanned_law_source_hash TEXT NOT NULL,
+    scanned_at TEXT NOT NULL,
+    affected_total INTEGER NOT NULL DEFAULT 0,
+    affected_learned_count INTEGER NOT NULL DEFAULT 0,
+    affected_selected_only_count INTEGER NOT NULL DEFAULT 0,
+    unchanged_user_relevant_count INTEGER NOT NULL DEFAULT 0,
+    missing_count INTEGER NOT NULL DEFAULT 0,
+    PRIMARY KEY (
+        user_id,
+        law_id,
+        scanned_source_version,
+        scanned_law_source_hash
+    )
+);
+
+CREATE INDEX IF NOT EXISTS user_playground_source_scan_user_law
+    ON user_playground_source_scan (user_id, law_id);
 """
 
 BACKFILL_CLOZE_SQL = """

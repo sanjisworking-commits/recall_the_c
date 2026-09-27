@@ -947,3 +947,10 @@ html[data-theme="dark"] {
   width: 100%;
   font: inherit;
 }
+
+.pg-update-panel {
+  margin: 16px 0 24px;
+  padding: 16px;
+  border: 1px solid var(--pg-hairline);
+  background: var(--pg-subtle);
+}

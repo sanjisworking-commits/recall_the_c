@@ -11,6 +11,29 @@
     <a class="pg-btn pg-btn--quiet" href="/playground/laws/{{ act.slug }}/sections">Manage sections</a>
   </p>
   {{ trust_mark("Bare Act wording, never rewritten.") }}
+  {% if provenance %}
+  <p class="pg-lede">{% for line in provenance %}{{ line }}{% if not loop.last %} · {% endif %}{% endfor %}</p>
+  {% endif %}
+  {% if source_state and source_state.status == 'review_required' %}
+  <div class="pg-update-panel" role="status">
+    <p>{{ status_badge('updated', 'Law updated') }}</p>
+    {% if learned_changed == 1 %}
+    <p class="pg-lede">1 learned provision changed since your recorded learning source.</p>
+    {% elif learned_changed > 1 %}
+    <p class="pg-lede">{{ learned_changed }} learned provisions changed since your recorded learning source.</p>
+    {% else %}
+    <p class="pg-lede">Review affected provisions.</p>
+    {% endif %}
+    <p class="pg-actions"><a class="pg-btn" href="{{ source_review_href }}">Review affected provisions</a></p>
+  </div>
+  {% elif source_state and source_state.status == 'reviewed' and source_state.registry_outdated %}
+  <p class="pg-note">Source updated. Your learned provisions are unchanged.</p>
+  {% elif source_state and source_state.status == 'update_detected' %}
+  <div class="pg-update-panel" role="status">
+    <p>{{ status_badge('updated', 'Law updated') }}</p>
+    <p class="pg-actions"><a class="pg-btn" href="{{ source_review_href }}">Review affected provisions</a></p>
+  </div>
+  {% endif %}
   {% if not rows %}
   <p class="pg-lede">No sections selected yet.</p>
   <p class="pg-actions"><a class="pg-btn" href="/playground/laws/{{ act.slug }}/sections">Manage sections</a></p>
@@ -45,9 +68,15 @@
         {% if row.methods_label %}<span class="pg-methods-count">{{ row.methods_label }}</span>{% endif %}
         {% if row.due_label %}<span class="pg-methods-count">{{ row.due_label }}</span>{% endif %}
         {% if row.outdated %}{{ status_badge('updated', 'Law updated') }}{% endif %}
+        {% if row.source_change_status == 'reviewed' %}<span class="pg-methods-count">Update reviewed</span>{% endif %}
       </p>
     </div>
-    <a class="pg-btn pg-btn--ghost" href="{{ row.href }}">{{ row.cta }}</a>
+    <div class="pg-card-actions">
+      {% if row.review_href and row.outdated %}
+      <a class="pg-btn pg-btn--quiet" href="{{ row.review_href }}">Review</a>
+      {% endif %}
+      <a class="pg-btn pg-btn--ghost" href="{{ row.href }}">{{ row.cta }}</a>
+    </div>
   </div>
   {% endfor %}
   {% endif %}

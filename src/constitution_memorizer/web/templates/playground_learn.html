@@ -27,6 +27,9 @@
   {% if source_outdated %}
   <p class="pg-note">Law updated. Revealed text is the live Bare Act wording.</p>
   {% endif %}
+  {% if provenance %}
+  <p class="pg-lede">{% for line in provenance %}{{ line }}{% if not loop.last %} · {% endif %}{% endfor %}</p>
+  {% endif %}
 
   <div class="pg-mode-bar">
     <a class="pg-mode-exit" href="/playground/laws/{{ act.slug }}" aria-label="Exit learning">✕</a>

@@ -49,7 +49,7 @@ from tests.test_roster_m5a import (
 )
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED_HEAD = "20260925_0026"
+EXPECTED_HEAD = "20260927_0027"
 MODES = PLAYGROUND_LEARN_MODES
 TODAY = date(2026, 9, 25)
 
@@ -133,7 +133,7 @@ def test_alembic_0026_parent_one_head_rls_and_sqlite_parity():
     cfg = Config(str(ROOT / "alembic.ini"))
     script = ScriptDirectory.from_config(cfg)
     assert script.get_heads() == [EXPECTED_HEAD]
-    rev = script.get_revision(EXPECTED_HEAD)
+    rev = script.get_revision("20260925_0026")
     assert rev.down_revision == "20260924_0025"
     path = ROOT / "alembic" / "versions" / "20260925_0026_playground_revision_lifecycle.py"
     text = path.read_text(encoding="utf-8")

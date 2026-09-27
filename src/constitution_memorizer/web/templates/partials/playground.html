@@ -85,8 +85,10 @@
     <span>{{ card.selected_count }} section{% if card.selected_count != 1 %}s{% endif %} selected</span>
     <span>{{ card.learned_count }} learned</span>
   </p>
-  {% if card.outdated %}
-  <p class="pg-note">Review affected provisions</p>
+  {% if card.outdated and card.home_note %}
+  <p class="pg-note">{% if card.review_href %}<a href="{{ card.review_href }}">{{ card.home_note }}</a>{% else %}{{ card.home_note }}{% endif %}</p>
+  {% elif card.outdated %}
+  <p class="pg-note">{% if card.review_href %}<a href="{{ card.review_href }}">Review affected provisions</a>{% else %}Review affected provisions{% endif %}</p>
   {% endif %}
   <div class="pg-card-actions">
     {% if card.is_next %}

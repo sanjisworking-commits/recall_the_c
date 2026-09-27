@@ -33,6 +33,14 @@ from constitution_memorizer.playground.revision import (
     next_revision_date,
 )
 from constitution_memorizer.playground.roster.period import playground_today
+from constitution_memorizer.playground.source_review import (
+    CHANGE_KINDS,
+    STATUS_PENDING,
+    STATUS_REVIEWED,
+    SourceChangeRecord,
+    SourceScanRecord,
+    StaleSourceReviewError,
+)
 
 
 def _utc_now_iso() -> str:
@@ -1307,6 +1315,338 @@ class SqlitePlaygroundRepository:
             WHERE user_id = ? AND law_id = ?
             """,
             (now, uid, law_id),
+        )
+
+    def get_source_scan(
+        self,
+        user_id: UUID | str,
+        law_id: str,
+        source_version: str,
+        law_source_hash: str,
+    ) -> SourceScanRecord | None:
+        row = self.conn.execute(
+            """
+            SELECT law_id, scanned_source_version, scanned_law_source_hash,
+                   scanned_at, affected_total, affected_learned_count,
+                   affected_selected_only_count, unchanged_user_relevant_count,
+                   missing_count
+            FROM user_playground_source_scan
+            WHERE user_id = ? AND law_id = ?
+              AND scanned_source_version = ? AND scanned_law_source_hash = ?
+            """,
+            (as_user_id(user_id), law_id, source_version, law_source_hash),
+        ).fetchone()
+        if row is None:
+            return None
+        return self._scan_from_row(row)
+
+    def list_source_scans(
+        self, user_id: UUID | str, law_ids: list[str] | tuple[str, ...]
+    ) -> list[SourceScanRecord]:
+        ids = list(law_ids)
+        if not ids:
+            return []
+        placeholders = ", ".join("?" for _ in ids)
+        rows = self.conn.execute(
+            f"""
+            SELECT law_id, scanned_source_version, scanned_law_source_hash,
+                   scanned_at, affected_total, affected_learned_count,
+                   affected_selected_only_count, unchanged_user_relevant_count,
+                   missing_count
+            FROM user_playground_source_scan
+            WHERE user_id = ? AND law_id IN ({placeholders})
+            """,
+            (as_user_id(user_id), *ids),
+        ).fetchall()
+        return [self._scan_from_row(row) for row in rows]
+
+    def upsert_source_scan(
+        self,
+        user_id: UUID | str,
+        law_id: str,
+        *,
+        scanned_source_version: str,
+        scanned_law_source_hash: str,
+        affected_total: int,
+        affected_learned_count: int,
+        affected_selected_only_count: int,
+        unchanged_user_relevant_count: int,
+        missing_count: int,
+    ) -> SourceScanRecord:
+        uid = as_user_id(user_id)
+        now = _utc_now_iso()
+        self.conn.execute(
+            """
+            INSERT INTO user_playground_source_scan (
+                user_id, law_id, scanned_source_version, scanned_law_source_hash,
+                scanned_at, affected_total, affected_learned_count,
+                affected_selected_only_count, unchanged_user_relevant_count,
+                missing_count
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ON CONFLICT (
+                user_id, law_id, scanned_source_version, scanned_law_source_hash
+            ) DO UPDATE SET
+                scanned_at = excluded.scanned_at,
+                affected_total = excluded.affected_total,
+                affected_learned_count = excluded.affected_learned_count,
+                affected_selected_only_count = excluded.affected_selected_only_count,
+                unchanged_user_relevant_count = excluded.unchanged_user_relevant_count,
+                missing_count = excluded.missing_count
+            """,
+            (
+                uid,
+                law_id,
+                scanned_source_version,
+                scanned_law_source_hash,
+                now,
+                affected_total,
+                affected_learned_count,
+                affected_selected_only_count,
+                unchanged_user_relevant_count,
+                missing_count,
+            ),
+        )
+        self.conn.commit()
+        row = self.get_source_scan(
+            user_id, law_id, scanned_source_version, scanned_law_source_hash
+        )
+        assert row is not None
+        return row
+
+    def list_source_changes(
+        self,
+        user_id: UUID | str,
+        law_id: str | None = None,
+        *,
+        law_ids: list[str] | tuple[str, ...] | None = None,
+        status: str | None = None,
+    ) -> list[SourceChangeRecord]:
+        uid = as_user_id(user_id)
+        sql = """
+            SELECT law_id, source_locator, detected_source_version,
+                   detected_law_source_hash, previous_source_version,
+                   previous_section_hash, current_source_version,
+                   current_law_source_hash, current_section_hash, change_kind,
+                   status, had_learning, had_selection, detected_at, reviewed_at
+            FROM user_playground_source_change
+            WHERE user_id = ?
+        """
+        params: list = [uid]
+        if law_id:
+            sql += " AND law_id = ?"
+            params.append(law_id)
+        elif law_ids is not None:
+            ids = list(law_ids)
+            if not ids:
+                return []
+            sql += " AND law_id IN (" + ", ".join("?" for _ in ids) + ")"
+            params.extend(ids)
+        if status:
+            sql += " AND status = ?"
+            params.append(status)
+        sql += " ORDER BY law_id, source_locator"
+        rows = self.conn.execute(sql, params).fetchall()
+        return [self._change_from_row(row) for row in rows]
+
+    def get_source_change(
+        self,
+        user_id: UUID | str,
+        law_id: str,
+        source_locator: str,
+        *,
+        current_source_version: str,
+        current_law_source_hash: str,
+    ) -> SourceChangeRecord | None:
+        row = self.conn.execute(
+            """
+            SELECT law_id, source_locator, detected_source_version,
+                   detected_law_source_hash, previous_source_version,
+                   previous_section_hash, current_source_version,
+                   current_law_source_hash, current_section_hash, change_kind,
+                   status, had_learning, had_selection, detected_at, reviewed_at
+            FROM user_playground_source_change
+            WHERE user_id = ? AND law_id = ? AND source_locator = ?
+              AND current_source_version = ? AND current_law_source_hash = ?
+            """,
+            (
+                as_user_id(user_id),
+                law_id,
+                source_locator,
+                current_source_version,
+                current_law_source_hash,
+            ),
+        ).fetchone()
+        if row is None:
+            return None
+        return self._change_from_row(row)
+
+    def upsert_source_change(
+        self,
+        user_id: UUID | str,
+        law_id: str,
+        source_locator: str,
+        *,
+        detected_source_version: str,
+        detected_law_source_hash: str,
+        previous_source_version: str,
+        previous_section_hash: str,
+        current_source_version: str,
+        current_law_source_hash: str,
+        current_section_hash: str,
+        change_kind: str,
+        had_learning: bool,
+        had_selection: bool,
+    ) -> SourceChangeRecord:
+        if change_kind not in CHANGE_KINDS:
+            raise ValueError(f"unknown change_kind: {change_kind}")
+        uid = as_user_id(user_id)
+        now = _utc_now_iso()
+        self.conn.execute(
+            """
+            INSERT INTO user_playground_source_change (
+                user_id, law_id, source_locator, detected_source_version,
+                detected_law_source_hash, previous_source_version,
+                previous_section_hash, current_source_version,
+                current_law_source_hash, current_section_hash, change_kind,
+                status, had_learning, had_selection, detected_at, reviewed_at,
+                created_at, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, ?, ?)
+            ON CONFLICT (
+                user_id, law_id, source_locator,
+                current_source_version, current_law_source_hash
+            ) DO UPDATE SET
+                previous_source_version = excluded.previous_source_version,
+                previous_section_hash = excluded.previous_section_hash,
+                current_section_hash = excluded.current_section_hash,
+                change_kind = excluded.change_kind,
+                had_learning = excluded.had_learning,
+                had_selection = excluded.had_selection,
+                status = CASE
+                    WHEN user_playground_source_change.status = 'reviewed'
+                    THEN 'reviewed'
+                    ELSE 'pending'
+                END,
+                updated_at = excluded.updated_at
+            """,
+            (
+                uid,
+                law_id,
+                source_locator,
+                detected_source_version,
+                detected_law_source_hash,
+                previous_source_version,
+                previous_section_hash,
+                current_source_version,
+                current_law_source_hash,
+                current_section_hash,
+                change_kind,
+                STATUS_PENDING,
+                1 if had_learning else 0,
+                1 if had_selection else 0,
+                now,
+                now,
+                now,
+            ),
+        )
+        self.conn.commit()
+        row = self.get_source_change(
+            user_id,
+            law_id,
+            source_locator,
+            current_source_version=current_source_version,
+            current_law_source_hash=current_law_source_hash,
+        )
+        assert row is not None
+        return row
+
+    def mark_source_change_reviewed(
+        self,
+        user_id: UUID | str,
+        law_id: str,
+        source_locator: str,
+        *,
+        detected_source_version: str,
+        detected_law_source_hash: str,
+    ) -> SourceChangeRecord:
+        uid = as_user_id(user_id)
+        now = _utc_now_iso()
+        cur = self.conn.execute(
+            """
+            UPDATE user_playground_source_change
+            SET status = ?, reviewed_at = COALESCE(reviewed_at, ?), updated_at = ?
+            WHERE user_id = ? AND law_id = ? AND source_locator = ?
+              AND detected_source_version = ? AND detected_law_source_hash = ?
+              AND current_source_version = ? AND current_law_source_hash = ?
+            """,
+            (
+                STATUS_REVIEWED,
+                now,
+                now,
+                uid,
+                law_id,
+                source_locator,
+                detected_source_version,
+                detected_law_source_hash,
+                detected_source_version,
+                detected_law_source_hash,
+            ),
+        )
+        if cur.rowcount == 0:
+            existing = self.conn.execute(
+                """
+                SELECT current_source_version, current_law_source_hash
+                FROM user_playground_source_change
+                WHERE user_id = ? AND law_id = ? AND source_locator = ?
+                ORDER BY detected_at DESC
+                """,
+                (uid, law_id, source_locator),
+            ).fetchone()
+            self.conn.rollback()
+            if existing is not None:
+                raise StaleSourceReviewError("stale_source_review")
+            raise LookupError("source_change_not_found")
+        self.conn.commit()
+        row = self.get_source_change(
+            user_id,
+            law_id,
+            source_locator,
+            current_source_version=detected_source_version,
+            current_law_source_hash=detected_law_source_hash,
+        )
+        assert row is not None
+        return row
+
+    def _scan_from_row(self, row) -> SourceScanRecord:
+        return SourceScanRecord(
+            law_id=row["law_id"],
+            scanned_source_version=row["scanned_source_version"],
+            scanned_law_source_hash=row["scanned_law_source_hash"],
+            scanned_at=str(row["scanned_at"]),
+            affected_total=int(row["affected_total"] or 0),
+            affected_learned_count=int(row["affected_learned_count"] or 0),
+            affected_selected_only_count=int(row["affected_selected_only_count"] or 0),
+            unchanged_user_relevant_count=int(row["unchanged_user_relevant_count"] or 0),
+            missing_count=int(row["missing_count"] or 0),
+        )
+
+    def _change_from_row(self, row) -> SourceChangeRecord:
+        reviewed = row["reviewed_at"]
+        return SourceChangeRecord(
+            law_id=row["law_id"],
+            source_locator=row["source_locator"],
+            detected_source_version=row["detected_source_version"],
+            detected_law_source_hash=row["detected_law_source_hash"],
+            previous_source_version=row["previous_source_version"],
+            previous_section_hash=row["previous_section_hash"],
+            current_source_version=row["current_source_version"],
+            current_law_source_hash=row["current_law_source_hash"],
+            current_section_hash=row["current_section_hash"] or "",
+            change_kind=row["change_kind"],
+            status=row["status"],
+            had_learning=bool(row["had_learning"]),
+            had_selection=bool(row["had_selection"]),
+            detected_at=str(row["detected_at"]),
+            reviewed_at=None if reviewed is None else str(reviewed),
         )
 
     def _progress_from_row(self, row) -> PlaygroundProgress:

@@ -25,6 +25,7 @@ from constitution_memorizer.playground.source import (
     resolve_section,
     source_hash,
 )
+from constitution_memorizer.playground.source_review import is_law_registry_outdated
 from constitution_memorizer.web import bare_acts as bare_act_registry
 
 
@@ -58,10 +59,7 @@ def playground_home_cards(summaries: list[PlaygroundSummary]) -> list[dict]:
         if catalog is None:
             continue
         identity = playground_law_source_identity(row.law_id)
-        outdated = (
-            row.source_version != identity.source_version
-            or row.law_source_hash != identity.identity_token
-        )
+        outdated = is_law_registry_outdated(row, identity)
         cards.append(
             {
                 "law_id": row.law_id,

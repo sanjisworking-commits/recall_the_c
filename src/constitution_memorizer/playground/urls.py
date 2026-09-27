@@ -60,3 +60,15 @@ def learn_start_path(law_id: str, number: str, mode: str) -> str:
 
 def learn_quiz_path(law_id: str, number: str) -> str:
     return f"{learn_path(law_id, number, 'test')}/quiz"
+
+
+def source_review_path(law_id: str) -> str:
+    return f"{PREFIX}/laws/{law_id}/source-review"
+
+
+def source_review_section_path(law_id: str, number: str) -> str:
+    return f"{source_review_path(law_id)}/sections/{number}"
+
+
+def source_review_reviewed_path(law_id: str, number: str) -> str:
+    return f"{source_review_section_path(law_id, number)}/reviewed"

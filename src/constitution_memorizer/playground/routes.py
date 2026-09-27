@@ -15,9 +15,23 @@ from constitution_memorizer.playground.access import (
     require_law_active_this_period,
     require_playground_open,
 )
+from constitution_memorizer.playground.source_review import (
+    CHANGE_KIND_MISSING,
+    STATUS_PENDING,
+    STATUS_REVIEWED,
+    StaleSourceReviewError,
+    affected_provision_view,
+    change_copy,
+    detect_source_changes,
+    is_law_registry_outdated,
+    law_source_state,
+    mark_source_change_reviewed,
+    provenance_lines,
+)
 from constitution_memorizer.playground.eligibility import (
     PlaygroundLawError,
     playground_catalogue_law,
+    playground_law_source_identity,
 )
 from constitution_memorizer.playground.http import (
     require_playground_repo,
@@ -80,6 +94,9 @@ from constitution_memorizer.playground.urls import (
     roster_next_path,
     roster_path,
     sections_path,
+    source_review_path,
+    source_review_reviewed_path,
+    source_review_section_path,
 )
 from constitution_memorizer.playground.view import (
     add_confirm_copy,
@@ -663,6 +680,21 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             act = require_playground_law(law_id)
         except PlaygroundLawError:
             raise HTTPException(status_code=404, detail="Law not found") from None
+        identity = playground_law_source_identity(law_id)
+        source_summary = None
+        if is_law_registry_outdated(item, identity):
+            source_summary = detect_source_changes(
+                overlay, access.user_id, law_id, hydrate=lambda _lid: act
+            )
+        source_state = law_source_state(overlay, access.user_id, law_id)
+        change_by = {
+            row.source_locator: row
+            for row in overlay.list_source_changes(
+                access.user_id, law_id, status=STATUS_PENDING
+            )
+            if row.current_source_version == identity.source_version
+            and row.current_law_source_hash == identity.identity_token
+        }
         selections = overlay.list_selection(access.user_id, law_id)
         progress_map = {
             row.source_locator: mark_outdated(
@@ -700,8 +732,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             if loc is None:
                 continue
             section = act.section(loc.number)
-            if section is None:
-                continue
+            missing = section is None
             progress = progress_map.get(sel.source_locator)
             interval = int(getattr(progress, "interval_days", 0) or 0) if progress else 0
             rev_modes = None
@@ -712,39 +743,56 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                     revision_by_key.get((sel.source_locator, interval), ()),
                     live_hash=live_hashes.get(sel.source_locator, ""),
                 )
+            change = change_by.get(sel.source_locator)
+            pending_change = bool(change and change.status == STATUS_PENDING)
             rows.append(
                 section_row_view(
                     number=loc.number,
-                    title=section.list_title,
+                    title=(
+                        section.list_title
+                        if section is not None
+                        else f"Section {loc.number}"
+                    ),
                     locator=sel.source_locator,
                     progress=progress,
-                    outdated=bool(
-                        (progress and progress.source_outdated)
-                        or live_hashes.get(sel.source_locator) != sel.source_hash
-                    ),
+                    outdated=pending_change,
                     as_of=as_of,
                     law_id=law_id,
                     mode_progress=mode_summaries.get(sel.source_locator),
                     revision_modes=rev_modes,
+                    source_change=change,
+                    missing=missing or (
+                        change is not None and change.change_kind == CHANGE_KIND_MISSING
+                    ),
                 )
             )
         launch = None
         for row in rows:
-            if row["due"]:
+            if row["due"] and not row.get("missing") and row.get("source_change_kind") != CHANGE_KIND_MISSING:
                 launch = row
                 break
         if launch is None:
             for row in rows:
-                if int(row.get("completed_count") or 0) < 6:
+                if int(row.get("completed_count") or 0) < 6 and not row.get("source_change_kind"):
                     launch = row
                     break
         if launch is None and rows:
-            launch = rows[0]
+            launch = next(
+                (
+                    row
+                    for row in rows
+                    if row.get("source_change_kind") != CHANGE_KIND_MISSING
+                ),
+                None,
+            )
         launch_verbatim = ""
         if launch is not None:
             section = act.section(launch["number"])
             if section is not None:
                 launch_verbatim = canonical_body_text(section)
+        learned_changed = (
+            source_state.pending_learned_count if source_state.registry_outdated else 0
+        )
         return templates.TemplateResponse(
             request,
             "playground_law.html",
@@ -755,6 +803,11 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                 "month_name": month,
                 "launch": launch,
                 "launch_verbatim": launch_verbatim,
+                "source_state": source_state,
+                "source_summary": source_summary,
+                "provenance": provenance_lines(law_id),
+                "source_review_href": source_review_path(law_id),
+                "learned_changed": learned_changed,
             },
         )
 
@@ -775,6 +828,12 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             act = require_playground_law(law_id)
         except PlaygroundLawError:
             raise HTTPException(status_code=404, detail="Law not found") from None
+        item = overlay.get_item(access.user_id, law_id)
+        identity = playground_law_source_identity(law_id)
+        if is_law_registry_outdated(item, identity):
+            detect_source_changes(
+                overlay, access.user_id, law_id, hydrate=lambda _lid: act
+            )
         selected = selected_locator_set(overlay.list_selection(access.user_id, law_id))
         learnable = {loc.value for loc in locators_for_act(law_id, act=act)}
         sections = []
@@ -827,6 +886,161 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         overlay.replace_selection(opened.user_id, law_id, rows)
         return RedirectResponse(url=law_path(law_id), status_code=303)
 
+    def _open_source_review(request: Request, law_id: str, *, json_mode: bool = False):
+        overlay = require_playground_repo(request)
+        access = require_law_active_this_period(
+            request,
+            templates,
+            overlay,
+            law_id,
+            next_url=source_review_path(law_id),
+            json_mode=json_mode,
+        )
+        blocked = _denied(access)
+        if blocked is not None:
+            return blocked, None, None, None, None
+        try:
+            act = require_playground_law(law_id)
+        except PlaygroundLawError:
+            raise HTTPException(status_code=404, detail="Law not found") from None
+        summary = detect_source_changes(
+            overlay, access.user_id, law_id, hydrate=lambda _lid: act
+        )
+        return None, overlay, access, act, summary
+
+    @router.get("/laws/{law_id}/source-review", response_class=HTMLResponse)
+    async def playground_source_review(request: Request, law_id: str) -> HTMLResponse:
+        opened = _open_source_review(request, law_id)
+        blocked = opened[0]
+        if blocked is not None:
+            return blocked  # type: ignore[return-value]
+        _none, overlay, access, act, summary = opened
+        progress_by = {
+            row.source_locator: row
+            for row in overlay.list_progress(access.user_id, law_id)
+        }
+        current = [
+            row
+            for row in summary.changes
+            if row.current_source_version == summary.current_source_version
+            and row.current_law_source_hash == summary.current_identity_token
+        ]
+        pending = [row for row in current if row.status == STATUS_PENDING]
+        provisions = [
+            affected_provision_view(
+                row, progress=progress_by.get(row.source_locator), act=act
+            )
+            for row in current
+        ]
+        catalog = playground_catalogue_law(law_id)
+        title = catalog.title if catalog is not None else law_id
+        all_reviewed = bool(current) and not pending
+        zero_affected = summary.affected_total == 0
+        return templates.TemplateResponse(
+            request,
+            "playground_source_review.html",
+            {
+                "act": act,
+                "title": title,
+                "summary": summary,
+                "provisions": provisions,
+                "pending_count": len(pending),
+                "all_reviewed": all_reviewed,
+                "zero_affected": zero_affected,
+                "provenance": provenance_lines(law_id),
+                "change_copy": change_copy,
+                "workspace_href": law_path(law_id),
+                "read_href": f"/laws/{law_id}",
+            },
+        )
+
+    @router.get(
+        "/laws/{law_id}/source-review/sections/{number}",
+        response_class=HTMLResponse,
+    )
+    async def playground_source_review_section(
+        request: Request, law_id: str, number: str
+    ) -> HTMLResponse:
+        opened = _open_source_review(request, law_id)
+        blocked = opened[0]
+        if blocked is not None:
+            return blocked  # type: ignore[return-value]
+        _none, overlay, access, act, summary = opened
+        locator = f"{law_id}:section:{number}"
+        record = next(
+            (row for row in summary.changes if row.source_locator == locator),
+            None,
+        )
+        if record is None:
+            record = overlay.get_source_change(
+                access.user_id,
+                law_id,
+                locator,
+                current_source_version=summary.current_source_version,
+                current_law_source_hash=summary.current_identity_token,
+            )
+        if record is None:
+            raise HTTPException(status_code=404, detail="Source change not found")
+        progress = overlay.get_progress(access.user_id, law_id, locator)
+        provision = affected_provision_view(record, progress=progress, act=act)
+        return templates.TemplateResponse(
+            request,
+            "playground_source_review_section.html",
+            {
+                "act": act,
+                "provision": provision,
+                "record": record,
+                "summary": summary,
+                "provenance": provenance_lines(law_id),
+                "change_copy": change_copy(record.change_kind),
+                "reviewed": record.status == STATUS_REVIEWED,
+                "workspace_href": law_path(law_id),
+                "list_href": source_review_path(law_id),
+                "read_href": f"/laws/{law_id}",
+                "reviewed_href": source_review_reviewed_path(law_id, number),
+            },
+        )
+
+    @router.post("/laws/{law_id}/source-review/sections/{number}/reviewed")
+    async def playground_source_review_mark(
+        request: Request,
+        law_id: str,
+        number: str,
+        csrf_token: str = Form(""),
+        detected_source_version: str = Form(""),
+        detected_law_source_hash: str = Form(""),
+    ) -> Response:
+        overlay = require_playground_repo(request)
+        access = require_law_active_this_period(
+            request,
+            templates,
+            overlay,
+            law_id,
+            next_url=source_review_section_path(law_id, number),
+        )
+        blocked = _denied(access)
+        if blocked is not None:
+            return blocked  # type: ignore[return-value]
+        _require_csrf(request, csrf_token)
+        locator = f"{law_id}:section:{number}"
+        try:
+            mark_source_change_reviewed(
+                overlay,
+                access.user_id,
+                law_id,
+                locator,
+                detected_source_version=detected_source_version,
+                detected_law_source_hash=detected_law_source_hash,
+            )
+        except StaleSourceReviewError:
+            raise HTTPException(status_code=409, detail="stale_source_review") from None
+        except LookupError:
+            raise HTTPException(status_code=404, detail="Source change not found") from None
+        return RedirectResponse(
+            url=source_review_path(law_id),
+            status_code=303,
+        )
+
     def _gate_learn(
         request: Request,
         law_id: str,
@@ -854,8 +1068,27 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             loc, act, section, body, live_hash, source_version = load_learn_provision(
                 law_id, number, act=act
             )
-        except (PlaygroundLawError, LocatorError, LearnProvisionError):
-            raise HTTPException(status_code=404, detail="Section not found") from None
+        except (PlaygroundLawError, LocatorError, LearnProvisionError) as exc:
+            loc_try = parse_selected_locator(f"{law_id}:section:{number}", law_id)
+            selected = selected_locator_set(overlay.list_selection(access.user_id, law_id))
+            has_history = bool(
+                loc_try
+                and (
+                    loc_try.value in selected
+                    or overlay.get_progress(access.user_id, law_id, loc_try.value)
+                )
+            )
+            if has_history:
+                if json_mode:
+                    return JSONResponse(
+                        {"ok": False, "error": "source_missing"},
+                        status_code=404,
+                    )
+                return RedirectResponse(
+                    url=source_review_section_path(law_id, number),
+                    status_code=303,
+                )
+            raise HTTPException(status_code=404, detail="Section not found") from exc
         selected = selected_locator_set(overlay.list_selection(access.user_id, law_id))
         if loc.value not in selected:
             if json_mode:
@@ -984,6 +1217,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                 "progress": progress,
                 "source_outdated": source_outdated,
                 "source_version": opened["source_version"],
+                "provenance": provenance_lines(law_id),
                 "complete_url": learn_complete_path(law_id, number, mode),
                 "start_url": learn_start_path(law_id, number, mode),
                 "quiz_url": learn_quiz_path(law_id, number),

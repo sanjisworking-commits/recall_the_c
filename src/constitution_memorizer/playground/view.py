@@ -6,7 +6,7 @@ not change monthly capacity, device, or payment semantics.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import date, datetime
 from typing import Any
 
@@ -41,6 +41,10 @@ from constitution_memorizer.playground.lifecycle import (
     format_study_date,
     overdue_label,
 )
+from constitution_memorizer.playground.source_review import (
+    batch_source_presentations,
+    is_law_registry_outdated,
+)
 from constitution_memorizer.playground.urls import (
     add_path,
     home_path,
@@ -49,6 +53,7 @@ from constitution_memorizer.playground.urls import (
     roster_next_path,
     roster_path,
     sections_path,
+    source_review_section_path,
 )
 from constitution_memorizer.subscriptions.catalog import (
     TIER_RANK,
@@ -210,6 +215,10 @@ class LawCardView:
     add_label: str = ""
     learning_count: int = 0
     mastered_count: int = 0
+    affected_learned_count: int = 0
+    source_status: str = "unchanged"
+    review_href: str = ""
+    home_note: str = ""
 
 
 @dataclass(frozen=True)
@@ -898,10 +907,7 @@ def _card_from_summary(
         return None
     title, short = catalog_titles(summary.law_id)
     identity = playground_law_source_identity(summary.law_id)
-    outdated = (
-        summary.source_version != identity.source_version
-        or summary.law_source_hash != identity.identity_token
-    )
+    outdated = is_law_registry_outdated(summary, identity)
     status = display_status_for_summary(
         selected=summary.selected_count,
         learned=summary.learned_count,
@@ -931,6 +937,23 @@ def _card_from_summary(
         add_label=add_label,
         learning_count=int(getattr(summary, "learning_count", 0) or 0),
         mastered_count=int(getattr(summary, "mastered_count", 0) or 0),
+    )
+
+
+def _with_source_state(card: LawCardView, presentations: dict[str, Any]) -> LawCardView:
+    state = presentations.get(card.law_id)
+    if state is None:
+        return card
+    active = card.membership == MEMBERSHIP_IN
+    return replace(
+        card,
+        outdated=state.outdated_badge,
+        affected_learned_count=state.pending_learned_count,
+        source_status=state.status,
+        review_href=state.review_href if active else "",
+        home_note=state.home_note if active else (
+            "Law updated" if state.outdated_badge else ""
+        ),
     )
 
 
@@ -1081,9 +1104,24 @@ def build_home_view(
                     add_href=href,
                     add_label=label,
                 )
-            if card is not None:
-                saved_cards.append(card)
+        if card is not None:
+            saved_cards.append(card)
         del month
+
+    presentations = batch_source_presentations(
+        overlay,
+        access.user_id,
+        [card.law_id for card in (*active_cards, *removed_cards, *saved_cards)],
+    )
+    active_cards = [
+        _with_source_state(card, presentations) for card in active_cards
+    ]
+    removed_cards = [
+        _with_source_state(card, presentations) for card in removed_cards
+    ]
+    saved_cards = [
+        _with_source_state(card, presentations) for card in saved_cards
+    ]
 
     due_today = sum(card.due_count for card in active_cards)
     sections_learned = sum(card.learned_count for card in active_cards)
@@ -1152,6 +1190,8 @@ def section_row_view(
     law_id: str,
     mode_progress: Any = None,
     revision_modes: Any = None,
+    source_change: Any = None,
+    missing: bool = False,
 ) -> dict[str, Any]:
     status = display_status_for_progress(
         progress, as_of=as_of, mode_progress=mode_progress
@@ -1200,9 +1240,24 @@ def section_row_view(
         cta = "Start learning"
         methods_label = ""
         href_mode = "read"
+    if missing:
+        cta = "Review"
+        href_revision = False
+        revision = False
     source_outdated = bool(
-        outdated or getattr(mode_progress, "source_outdated", False)
+        outdated
+        or getattr(mode_progress, "source_outdated", False)
+        or (
+            source_change is not None
+            and getattr(source_change, "status", "") == "pending"
+        )
     )
+    change_kind = getattr(source_change, "change_kind", "") if source_change else ""
+    change_status = getattr(source_change, "status", "") if source_change else ""
+    if missing or change_kind in {"missing", "omitted"}:
+        href = source_review_section_path(law_id, number)
+    else:
+        href = learn_path(law_id, number, href_mode, revision=href_revision)
     return {
         "locator": locator,
         "number": number,
@@ -1220,5 +1275,8 @@ def section_row_view(
         "methods_label": methods_label,
         "completed_count": completed,
         "revision": revision,
-        "href": learn_path(law_id, number, href_mode, revision=href_revision),
+        "href": href,
+        "source_change_kind": change_kind,
+        "source_change_status": change_status,
+        "review_href": source_review_section_path(law_id, number) if source_change else "",
     }
