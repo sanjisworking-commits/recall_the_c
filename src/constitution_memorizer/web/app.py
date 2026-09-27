@@ -199,9 +199,11 @@ from constitution_memorizer.web.seo import (
     DEFAULT_SEO_TITLE,
     TWITTER_HANDLE,
     article_canonical_url,
+    apply_private_robots_headers,
     build_article_seo,
     build_breadcrumb_schema,
     build_law_seo,
+    build_laws_hub_seo,
     build_provision_seo,
     build_schedule_seo,
     is_noindex_path,
@@ -215,6 +217,7 @@ from constitution_memorizer.web.sitemaps import (
     build_law_sitemap,
     build_laws_hub_sitemap,
     build_sitemap_index,
+    parse_law_sitemap_ref,
 )
 from constitution_memorizer.web.service import (
     LEARN_MODE_LABELS,
@@ -993,6 +996,12 @@ def create_app(
             if token is not None:
                 reset_request_timings(token)
 
+    @app.middleware("http")
+    async def private_robots_headers(request: Request, call_next):
+        """X-Robots-Tag on private non-HTML responses. HTML uses the meta tag."""
+        response = await call_next(request)
+        return apply_private_robots_headers(request.url.path, response)
+
     app.include_router(create_auth_router(templates))
     from constitution_memorizer.devices.routes import (  # noqa: PLC0415
         create_device_router,
@@ -1110,8 +1119,12 @@ def create_app(
 
     @app.get("/sitemap-laws-{slug}.xml")
     async def sitemap_law_xml(slug: str) -> Response:
-        """One registered Bare Act's urlset, built from the manifest only."""
-        xml = build_law_sitemap(slug)
+        """One registered Bare Act urlset (or one chunk), from the manifest only."""
+        parsed = parse_law_sitemap_ref(slug)
+        if parsed is None:
+            raise HTTPException(status_code=404, detail="Sitemap not found")
+        law_slug, chunk = parsed
+        xml = build_law_sitemap(law_slug, chunk=chunk)
         if xml is None:
             raise HTTPException(status_code=404, detail="Sitemap not found")
         return Response(xml, media_type="application/xml")
@@ -2919,6 +2932,7 @@ def create_app(
             list_playground_eligible_laws,
         )
 
+        seo_title, seo_description = build_laws_hub_seo()
         context = {
             "catalog": catalog,
             "laws": catalog.laws,
@@ -2927,6 +2941,8 @@ def create_app(
             "initial_subject": request.query_params.get("subject") or "",
             # Query variants (?q=, ?subject=) are filtered views of the same hub,
             # so they all declare the bare /laws URL as canonical.
+            "seo_title": seo_title,
+            "seo_description": seo_description,
             "canonical_url": laws_hub_canonical_url(),
             "playground_states": public_law_states(
                 request, list_playground_eligible_laws()

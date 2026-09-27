@@ -1,5 +1,6 @@
 {% extends "base.html" %}
-{% block title %}Laws · {{ app_name|default('Recall the C') }}{% endblock %}
+{% block title %}{{ seo_title }}{% endblock %}
+{% block meta_description %}{{ seo_description }}{% endblock %}
 {% block mobile_screen %}laws{% endblock %}
 {% block content %}
 {% set known_subjects = subjects | map(attribute='id') | list %}

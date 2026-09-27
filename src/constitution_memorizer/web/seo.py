@@ -60,6 +60,21 @@ def laws_hub_canonical_url() -> str:
     return f"{CANONICAL_ORIGIN}/laws"
 
 
+def build_laws_hub_seo() -> tuple[str, str]:
+    """Unique ``(seo_title, seo_description)`` for the public ``/laws`` hub.
+
+    Query/filter variants reuse this pair and still canonicalize to
+    :func:`laws_hub_canonical_url`.
+    """
+    return (
+        "Laws of India | Recall the C",
+        (
+            "Browse Indian Bare Acts on Recall the C. Read registered statutes "
+            "in full, including sections and supported schedules."
+        ),
+    )
+
+
 # Personalized, account, application, and admin surfaces that must never enter a
 # search index. Public marketing, the Constitution Browse pages, and the Bare
 # Act pages are deliberately ABSENT so they stay indexable. A page is no-indexed
@@ -106,6 +121,34 @@ def is_noindex_path(path: str) -> bool:
         normalized == prefix or normalized.startswith(prefix + "/")
         for prefix in NOINDEX_PATH_PREFIXES
     )
+
+
+ROBOTS_NOINDEX_FOLLOW = "noindex, nofollow"
+_HTML_MEDIA_TYPES = frozenset({"text/html", "application/xhtml+xml"})
+_REDIRECT_STATUSES = frozenset({301, 302, 303, 307, 308})
+
+
+def apply_private_robots_headers(path: str, response: object) -> object:
+    """Set ``X-Robots-Tag`` on private non-HTML responses.
+
+    HTML private pages already emit ``<meta name="robots">`` from ``base.html``.
+    This helper is for JSON/PDF/CSV/octet-stream (and similar) under
+    :data:`NOINDEX_PATH_PREFIXES`. Public paths are untouched. Redirects are
+    left alone — the rendered destination carries the robots policy.
+    """
+    if not is_noindex_path(path):
+        return response
+    status = int(getattr(response, "status_code", 0) or 0)
+    if status in _REDIRECT_STATUSES:
+        return response
+    headers = getattr(response, "headers", None)
+    if headers is None:
+        return response
+    media = (headers.get("content-type") or "").split(";", 1)[0].strip().lower()
+    if not media or media in _HTML_MEDIA_TYPES:
+        return response
+    headers["X-Robots-Tag"] = ROBOTS_NOINDEX_FOLLOW
+    return response
 
 
 def law_canonical_url(law_slug: str) -> str:
