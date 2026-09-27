@@ -184,6 +184,8 @@ Result: **2331 passed**, 9 skipped, 1 deselected, **0 failed** (incoming baselin
 
 Alembic head after this batch: `20260927_0027`.
 
+GitHub CI on `cursor/playground-220d`: **success** for implementation `3cfd7fa` / `91a7515` and HEAD `4ae4382`.
+
 ---
 
 ## Git
@@ -193,8 +195,9 @@ Alembic head after this batch: `20260927_0027`.
 | [`3cfd7fa`](https://github.com/sanjisworking-commits/recall_the_c/commit/3cfd7faeb639604ab5a6d85704f97bac5572b043) | Harden public/private SEO, X-Robots-Tag, manifest slug/source_version, intra-law chunking |
 | [`91a7515`](https://github.com/sanjisworking-commits/recall_the_c/commit/91a75154d6543cc13e1eec343a74943fdac536e8) | Unique `/laws` copy without restoring catalog “Bare Acts” grouping |
 | [`006d079`](https://github.com/sanjisworking-commits/recall_the_c/commit/006d07984a91ae23b20c32083b634143181fd6f3) | Score Milestone 10 as DONE at Stage 1 93.0 |
+| [`4ae4382`](https://github.com/sanjisworking-commits/recall_the_c/commit/4ae438204cf715afbbd2e3025e24e6584a33becd) | Record the Milestone 10 tracker SHA in the close-out report |
 
-Implementation SHA: `3cfd7faeb639604ab5a6d85704f97bac5572b043`. Tracker SHA: `006d07984a91ae23b20c32083b634143181fd6f3`.
+Implementation SHA: `3cfd7faeb639604ab5a6d85704f97bac5572b043`. Tracker SHA: `006d07984a91ae23b20c32083b634143181fd6f3`. CI-green HEAD at this write: `4ae438204cf715afbbd2e3025e24e6584a33becd`.
 
 PR [#188](https://github.com/sanjisworking-commits/recall_the_c/pull/188) is open on this branch.
 
