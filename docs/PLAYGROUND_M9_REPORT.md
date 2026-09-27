@@ -217,6 +217,8 @@ Result: **2295 passed**, 9 skipped, 1 deselected, **0 failed** (incoming baselin
 
 Alembic head after this batch: `20260927_0027`.
 
+GitHub CI on `cursor/playground-220d`: **success** for implementation `6d2b74c` and HEAD `3fea1de`.
+
 ---
 
 ## Git
@@ -225,8 +227,9 @@ Alembic head after this batch: `20260927_0027`.
 |-----|------|
 | [`6d2b74c`](https://github.com/sanjisworking-commits/recall_the_c/commit/6d2b74c06042444f28972fe95884d882db46af68) | Ship Playground source-integrity review (`0027`, detector, review UX, M9 tests) |
 | [`6a60099`](https://github.com/sanjisworking-commits/recall_the_c/commit/6a600990946464f411dbdb88a3c65ac80473066d) | Score Milestone 9 as DONE at Stage 1 89.0 |
+| [`3fea1de`](https://github.com/sanjisworking-commits/recall_the_c/commit/3fea1dee3efb58193c0f0b32e20a48737e8711f3) | Record the Milestone 9 tracker SHA in the close-out report |
 
-Implementation SHA: `6d2b74c06042444f28972fe95884d882db46af68`. Tracker/report SHA: `6a600990946464f411dbdb88a3c65ac80473066d`.
+Implementation SHA: `6d2b74c06042444f28972fe95884d882db46af68`. Tracker SHA: `6a600990946464f411dbdb88a3c65ac80473066d`. CI-green HEAD at this write: `3fea1dee3efb58193c0f0b32e20a48737e8711f3`.
 
 PR [#188](https://github.com/sanjisworking-commits/recall_the_c/pull/188) is open on this branch.
 
