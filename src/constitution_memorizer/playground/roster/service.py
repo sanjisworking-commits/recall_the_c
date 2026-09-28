@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Sequence
-from datetime import datetime
+from datetime import date, datetime
 from typing import Any
 from uuid import UUID
 
@@ -81,6 +81,27 @@ class RosterService:
     ) -> list[RosterItem]:
         start, _end = playground_month_bounds(now)
         return self._repo.list_items(user_id, start)
+
+    def peek_period(
+        self,
+        user_id: UUID | str,
+        period_start: date | None = None,
+        *,
+        now: datetime | None = None,
+    ) -> PlaygroundPeriod | None:
+        """Read an existing period. Never creates one."""
+
+        if period_start is None:
+            return self.get_current_period(user_id, now=now)
+        return self._repo.get_period(user_id, period_start)
+
+    def list_periods(self, user_id: UUID | str) -> list[PlaygroundPeriod]:
+        return list(self._repo.list_periods(user_id))
+
+    def list_items_for_period(
+        self, user_id: UUID | str, period_start: date
+    ) -> list[RosterItem]:
+        return self._repo.list_items(user_id, period_start)
 
     def active_roster_items(
         self,

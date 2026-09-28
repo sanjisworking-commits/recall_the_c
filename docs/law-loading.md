@@ -102,6 +102,8 @@ optional last_modified (only a trustworthy build-time value; not invented)
 
 Playground, roster, Learn, device, account, and other personalized URLs **never** enter a sitemap. See [PLAYGROUND.md](PLAYGROUND.md). Public `/laws*` remains the indexable surface. Do not add a second SEO engine. HTML private pages emit `<meta name="robots" content="noindex, nofollow">` through `is_noindex_path()` + `base.html`. Private non-HTML responses get `X-Robots-Tag: noindex, nofollow` from `apply_private_robots_headers()`.
 
+**M11:** Admin account diagnostics, Playground home/roster, Today/Calendar, and sitemap handlers still hydrate **zero** Acts. A blocked Playground request hydrates zero Acts. `PLAYGROUND_ENABLED=false` does not load statutes. Operator migration proof is `scripts/verify_postgres_migrations.py` (no Act I/O).
+
 ## Later stages (not this batch)
 
 | Stage | When |

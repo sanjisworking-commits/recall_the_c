@@ -92,23 +92,23 @@
     {% if subscription.state == 'active' %}
     <p class="lifecycle-title">Recall active · {{ subscription.plan_days }} days</p>
     <p class="lifecycle-body">{% if subscription.recurring and subscription.renews_on %}Renews {{ subscription.renews_on }} at ₹{{ subscription.plan_price_inr }}.{% else %}Access until {{ subscription.ends_on }}.{% endif %} Every Article is open and everything you learn is saved.</p>
-    <div class="lifecycle-actions"><a class="btn btn-ghost" href="/pricing">Extend Recall</a><span class="lifecycle-aside">Your 3 Free Articles stay yours whatever happens to this pass.</span></div>
+    <div class="lifecycle-actions">{% if pricing_enabled|default(false) %}<a class="btn btn-ghost" href="/pricing">Extend Recall</a>{% endif %}<span class="lifecycle-aside">Your 3 Free Articles stay yours whatever happens to this pass.</span></div>
     {% elif subscription.state == 'expiring' %}
     <p class="lifecycle-title">{{ subscription.ends_on }} — your Recall pass ends soon</p>
     <p class="lifecycle-body">It does not renew on its own. Your 3 Free Articles and all saved progress stay after it ends.</p>
-    <div class="lifecycle-actions"><a class="btn btn-accent" href="/pricing">Extend Recall →</a><span class="lifecycle-aside">Shown in the final 7 days only.</span></div>
+    <div class="lifecycle-actions">{% if pricing_enabled|default(false) %}<a class="btn btn-accent" href="/pricing">Extend Recall →</a>{% endif %}<span class="lifecycle-aside">Shown in the final 7 days only.</span></div>
     {% elif subscription.state == 'renewal_failed' %}
     <p class="lifecycle-title">We couldn't take this renewal</p>
     <p class="lifecycle-body">The payment was declined. Recall stays open until {{ subscription.grace_until }} while you sort it out; nothing is paused before then.</p>
-    <div class="lifecycle-actions"><a class="btn btn-accent" href="/pricing">Update payment</a><span class="lifecycle-aside">Grace period: 7 days.</span></div>
+    <div class="lifecycle-actions">{% if pricing_enabled|default(false) %}<a class="btn btn-accent" href="/pricing">Update payment</a>{% endif %}<span class="lifecycle-aside">Grace period: 7 days.</span></div>
     {% elif subscription.state == 'cancelled' %}
     <p class="lifecycle-title">Cancelled — active until {{ subscription.ends_on }}</p>
     <p class="lifecycle-body">Nothing changes until then. On that date you return to Free with your saved Articles intact and the rest paused.</p>
-    <div class="lifecycle-actions"><a class="btn btn-ghost" href="/pricing">Resume renewal</a><span class="lifecycle-aside">No further charges.</span></div>
+    <div class="lifecycle-actions">{% if pricing_enabled|default(false) %}<a class="btn btn-ghost" href="/pricing">Resume renewal</a>{% endif %}<span class="lifecycle-aside">No further charges.</span></div>
     {% else %}
     <p class="lifecycle-title">Back on Free · {{ access.claimed_count }} of 3 Articles</p>
     <p class="lifecycle-body">Your saved Articles keep every clause, mode history and scheduled revision. Everything else is paused and waiting.</p>
-    <div class="lifecycle-actions"><a class="btn btn-accent" href="/pricing">Resume Recall →</a><span class="lifecycle-aside">Nothing was deleted.</span></div>
+    <div class="lifecycle-actions">{% if pricing_enabled|default(false) %}<a class="btn btn-accent" href="/pricing">Resume Recall →</a>{% endif %}<span class="lifecycle-aside">Nothing was deleted.</span></div>
     {% endif %}
   </div>
   {% endif %}

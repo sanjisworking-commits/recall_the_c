@@ -547,6 +547,9 @@ def create_app(
                 "memory_log_enabled": memory_log_enabled,
                 "relevant_laws_enabled": relevant_laws_enabled,
                 "pricing_enabled": bool(settings.pricing_enabled),
+                "playground_enabled": bool(
+                    getattr(settings, "playground_enabled", True)
+                ),
                 # Cosmetic nav hint only (~60s TTL cache); /admin itself
                 # re-checks the authoritative role store on every request.
                 "is_admin_hint": admin_hint(request),
@@ -603,6 +606,12 @@ def create_app(
     app.state.relevant_laws_enabled = relevant_laws_enabled
     app.state.article_entitlements_enabled = bool(settings.article_entitlements_enabled)
     app.state.pricing_enabled = bool(settings.pricing_enabled)
+    app.state.playground_enabled = bool(getattr(settings, "playground_enabled", True))
+    from constitution_memorizer.admin.playground_diagnostics import (  # noqa: PLC0415
+        log_commercial_startup_status,
+    )
+
+    log_commercial_startup_status(settings, logger)
     # Razorpay Standard Checkout. The secret stays on app.state for
     # server-side order creation + HMAC verification only — no template or
     # JSON payload ever reads it.
@@ -925,7 +934,7 @@ def create_app(
 
     @app.middleware("http")
     async def feature_flag_gate(request: Request, call_next):
-        """404 disabled Memory/Laws prefixes before auth can redirect guests."""
+        """404 disabled Memory/Laws/Playground prefixes before auth can redirect guests."""
         path = request.url.path
         if not app.state.memory_log_enabled and (
             path == "/memory" or path.startswith("/memory/")
@@ -933,6 +942,10 @@ def create_app(
             return HTMLResponse("Not Found", status_code=404)
         if not app.state.relevant_laws_enabled and (
             path == "/laws" or path.startswith("/laws/")
+        ):
+            return HTMLResponse("Not Found", status_code=404)
+        if not getattr(app.state, "playground_enabled", True) and (
+            path == "/playground" or path.startswith("/playground/")
         ):
             return HTMLResponse("Not Found", status_code=404)
         return await call_next(request)

@@ -8,9 +8,11 @@ import time
 from datetime import date
 from urllib.parse import urlencode
 
-from fastapi import APIRouter, Form, Request
+from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
+
+from constitution_memorizer.auth.dependencies import require_csrf
 
 from constitution_memorizer.auth.exceptions import (
     InvalidCredentialsError,
@@ -324,7 +326,7 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
             return RedirectResponse(url=f"/login?{qs}", status_code=303)
         return _establish_session(request, auth_session, next_url=_safe_next(next))
 
-    @router.post("/logout")
+    @router.post("/logout", dependencies=[Depends(require_csrf)])
     async def logout(request: Request) -> RedirectResponse:
         settings = request.app.state.multiuser_settings
         session_id = request.cookies.get(SESSION_COOKIE_NAME)

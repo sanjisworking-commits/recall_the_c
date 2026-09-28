@@ -28,10 +28,20 @@ def require_subscription_service(request: Request):
 
 
 def require_csrf_token(request: Request, submitted: str = "") -> None:
+    """Same-origin CSRF for hosted subscription mutations.
+
+    Local single-user mode may have no CSRF cookie. A hosted session
+    without a matching token is rejected even when the cookie is missing.
+    """
+
     expected = request.cookies.get(CSRF_COOKIE_NAME) or ""
-    if not expected:
-        return
     header = request.headers.get("X-CSRF-Token") or ""
+    session = getattr(request.state, "auth_session", None)
+    multiuser = bool(getattr(request.app.state, "multiuser_enabled", False))
+    if not expected:
+        if multiuser and session is not None:
+            raise HTTPException(status_code=403, detail="csrf")
+        return
     if submitted != expected and header != expected:
         raise HTTPException(status_code=403, detail="csrf")
 

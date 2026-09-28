@@ -81,6 +81,30 @@ class PostgresWebhookEventRepository:
                 rows = cur.fetchall()
         return [webhook_event_from_mapping(row) for row in rows]
 
+    def list_events_for_provider_subscription(
+        self,
+        provider_subscription_id: str,
+        *,
+        limit: int = 50,
+    ) -> list[WebhookEvent]:
+        cleaned = str(provider_subscription_id or "").strip()
+        if not cleaned:
+            return []
+        capped = max(1, min(int(limit), 200))
+        with self._pool.connection() as conn:
+            with conn.cursor(row_factory=self._dict_row) as cur:
+                cur.execute(
+                    _SELECT
+                    + """
+                    WHERE provider_subscription_id = %s
+                    ORDER BY received_at DESC
+                    LIMIT %s
+                    """,
+                    (cleaned, capped),
+                )
+                rows = cur.fetchall()
+        return [webhook_event_from_mapping(row) for row in rows]
+
     def reserve_event(
         self,
         *,

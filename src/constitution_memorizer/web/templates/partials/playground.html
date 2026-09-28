@@ -105,7 +105,7 @@
 {% endmacro %}
 
 {% macro playground_cta(state) %}
-{% if state and state.eligible %}
+{% if playground_enabled|default(true) and state and state.eligible %}
 <div class="LawPlaygroundCta" data-law-id="{{ state.law_id }}" data-membership="{{ state.badge }}">
   {{ status_badge(state.badge, state.badge_label) }}
   {% if state.secondary_copy %}<p class="pg-lede">{{ state.secondary_copy }}</p>{% endif %}

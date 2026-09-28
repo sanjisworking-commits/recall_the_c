@@ -2,11 +2,11 @@
 
 **Scoreboard, not an audit.** Product rules live in [PLAYGROUND.md](PLAYGROUND.md), [PAYMENT_ENTITLEMENT_AUDIT.md](PAYMENT_ENTITLEMENT_AUDIT.md), [PLAYGROUND_TWO_LAW_AUDIT.md](PLAYGROUND_TWO_LAW_AUDIT.md), and [law-loading.md](law-loading.md).
 
-**Snapshot:** architecture/product definition is **locked in docs**. **Stage 1** (build) is **93.0 / 100**. Milestone 1 is `DONE`. Milestone 2 is **`DONE` — 37/37**. Milestone 3 is **`DONE` — 15/15** (M3-A Constitution inversion + M3-B Playground commercial gate). Milestone 4 is **`DONE` — 25/25** (M4-A registry + M4-B owner/admin management + M4-C replacement-churn). Milestone 5 is **`DONE` — 27/27** (M5-A period/capacity/tables/same-month and M5-B carry-forward plus later-month historical reactivation). Milestone 6 is **`DONE` — 37/37** (production UX/state integration of the locked design). Milestone 7 is **`DONE`** (six-mode law-learning engine; Type is write-it-out; no seventh Write mode). Milestone 8 is **`DONE`** (Learned after all six methods; official ladder 1 → 3 → 7 → 15 → 30 → 60 → Mastered; overdue advances one rung). Milestone 9 is **`DONE` — 15/15** (cheap registry identity → targeted one-Act comparison of user-relevant section hashes → source-review facts; learning history is never rewritten). Milestone 10 is **`DONE` — 16/16** (public statutory SEO vs private learning/account `noindex`; manifest-backed sitemap index with intra-law chunking). Platforms are `web | android | ios`. Overlay is lifetime learning history; roster is current-month membership (`overlay != roster`). Previous-period laws are candidates only. Keep consumes a new-period slot. Decline consumes none. Historical progress never waives monthly capacity. Pending + current-roster law remains learnable; pending + historical overlay only is not. **Do not tick Stage 2 from Cloze or from `main`’s sitemap PRs.** Public Bare Act SEO on this branch is Milestone 10 verification, not Stage 2.
+**Snapshot:** architecture/product definition is **locked in docs**. **Stage 1** (build) is **100.0 / 100** and **`DONE`**. Milestone 1 is `DONE`. Milestone 2 is **`DONE` — 37/37**. Milestone 3 is **`DONE` — 15/15** (M3-A Constitution inversion + M3-B Playground commercial gate). Milestone 4 is **`DONE` — 25/25** (M4-A registry + M4-B owner/admin management + M4-C replacement-churn). Milestone 5 is **`DONE` — 27/27** (M5-A period/capacity/tables/same-month and M5-B carry-forward plus later-month historical reactivation). Milestone 6 is **`DONE` — 37/37** (production UX/state integration of the locked design). Milestone 7 is **`DONE`** (six-mode law-learning engine; Type is write-it-out; no seventh Write mode). Milestone 8 is **`DONE`** (Learned after all six methods; official ladder 1 → 3 → 7 → 15 → 30 → 60 → Mastered; overdue advances one rung). Milestone 9 is **`DONE` — 15/15** (cheap registry identity → targeted one-Act comparison of user-relevant section hashes → source-review facts; learning history is never rewritten). Milestone 10 is **`DONE` — 16/16** (public statutory SEO vs private learning/account `noindex`; manifest-backed sitemap index with intra-law chunking). Milestone 11 is **`DONE` — weight 7** (production hardening, legacy commercial freeze, diagnostics, rollout/rollback). Platforms are `web | android | ios`. Overlay is lifetime learning history; roster is current-month membership (`overlay != roster`). Previous-period laws are candidates only. Keep consumes a new-period slot. Decline consumes none. Historical progress never waives monthly capacity. Pending + current-roster law remains learnable; pending + historical overlay only is not. **Do not tick Stage 2 from Cloze or from `main`’s sitemap PRs.** Public Bare Act SEO on this branch is Milestone 10 verification, not Stage 2.
 
 | | |
 |--|--|
-| **Stage 1 (build)** | **93.0 / 100** |
+| **Stage 1 (build)** | **DONE — 100.0 / 100** |
 | Milestone 0 | `DONE` — 10/10 items × 5 = **5** |
 | Milestone 1 | `DONE` — 18/18 items × 8 = **8** |
 | Milestone 2 | `DONE` — 37/37 × 13 = **13** |
@@ -18,8 +18,8 @@
 | Milestone 8 | `DONE` — 20/20 × 8 = **8** |
 | Milestone 9 | `DONE` — 15/15 × 5 = **5** |
 | Milestone 10 | `DONE` — 16/16 × 4 = **4** |
-| Milestone 11 | `NOT STARTED` |
-| **Stage 2 (optimize)** | **`NOT STARTED` — start gate: Stage 1 = `DONE` (100/100)** |
+| Milestone 11 | `DONE` — weight **7** |
+| **Stage 2 (optimize)** | **`NOT STARTED` — Stage 2 may begin only after the Stage 1 release checklist is complete and production-ready state is proven.** |
 
 Do not read leftover proof Cloze/Day-1 rows as a reset. Six Learn modes are production (M7). Learned → Day 1 → Mastered is production (M8). M9 source-integrity review is production: an amendment creates a source-review fact, not a rewritten learning history. A provision may be Mastered and still `Law updated`. M10 keeps public statutory pages indexable and personal Playground/account state out of the index and out of sitemaps.
 
@@ -719,62 +719,69 @@ Google can discover public statutory content efficiently while never indexing pe
 
 # 11. Production hardening, legacy transition & release — 7 points
 
-**Status: `NOT STARTED`**
+**Status: `DONE` — weight 7** (35/35). Close-out: [PLAYGROUND_M11_REPORT.md](PLAYGROUND_M11_REPORT.md). Rollout: [PLAYGROUND_PRODUCTION_ROLLOUT.md](PLAYGROUND_PRODUCTION_ROLLOUT.md). Legacy freeze: [LEGACY_COMMERCIAL_TRANSITION.md](LEGACY_COMMERCIAL_TRANSITION.md).
 
 ## Security
 
-* [ ] authorization guards centralized
-* [ ] payment → device → roster → law access ordering
-* [ ] no client-only paywalls
-* [ ] CSRF/state-changing route protections
-* [ ] concurrency tests
-* [ ] user isolation tests
-* [ ] admin override explicitly audited
+* [x] authorization guards centralized
+* [x] payment → device → roster → law access ordering
+* [x] no client-only paywalls
+* [x] CSRF/state-changing route protections
+* [x] concurrency tests
+* [x] user isolation tests
+* [x] admin override explicitly audited
 
 ## Performance
 
-* [ ] no N+1 Playground home
-* [ ] zero Act hydration on home/roster
-* [ ] one Act maximum per law workspace request
-* [ ] sitemap zero hydration
-* [ ] batched selection writes
-* [ ] batched rollover writes
+* [x] no N+1 Playground home
+* [x] zero Act hydration on home/roster
+* [x] one Act maximum per law workspace request
+* [x] sitemap zero hydration
+* [x] batched selection writes
+* [x] batched rollover writes
 
 ## Legacy transition
 
-* [ ] old article entitlement checks inactive
-* [ ] legacy data retained safely
-* [ ] old N-day purchase UI retired/frozen
-* [ ] historical buyers handled correctly
-* [ ] obsolete code identified
-* [ ] delete only after proven unused
+* [x] old article entitlement checks inactive
+* [x] legacy data retained safely
+* [x] old N-day purchase UI retired/frozen
+* [x] historical buyers handled correctly
+* [x] obsolete code identified
+* [x] delete only after proven unused
 
 ## Operational tooling
 
-* [ ] subscription/admin diagnostics
-* [ ] device reset
-* [ ] roster diagnostics
-* [ ] webhook diagnostics/reconciliation
-* [ ] audit logging where appropriate
+* [x] subscription/admin diagnostics
+* [x] device reset
+* [x] roster diagnostics
+* [x] webhook diagnostics/reconciliation
+* [x] audit logging where appropriate
 
 ## Final regression
 
-* [ ] Constitution Learn unchanged except deliberate entitlement removal
-* [ ] existing Constitution progress intact
-* [ ] public Bare Act reader intact
-* [ ] admin intact
-* [ ] Android/API auth intact
-* [ ] full test suite green
-* [ ] migrations tested PostgreSQL
-* [ ] SQLite/dev parity where required
-* [ ] production rollout checklist
-* [ ] rollback path
+* [x] Constitution Learn unchanged except deliberate entitlement removal
+* [x] existing Constitution progress intact
+* [x] public Bare Act reader intact
+* [x] admin intact
+* [x] Android/API auth intact
+* [x] full test suite green
+* [x] migrations tested PostgreSQL
+* [x] SQLite/dev parity where required
+* [x] production rollout checklist
+* [x] rollback path
 
 ### Done when
 
 Playground + payment can safely replace the existing commercial entitlement model in production.
 
-**Weight: 7**
+**Weight: 7** (35/35 × 7 = **7**; Stage 1 **93.0 + 7 = 100.0**)
+
+```text
+Milestone 11 = DONE
+Stage 1 = DONE — 100.0 / 100
+Stage 2 = NOT STARTED
+Stage 2 may begin only after the Stage 1 release checklist is complete and production-ready state is proven.
+```
 
 ---
 
@@ -793,9 +800,9 @@ Playground + payment can safely replace the existing commercial entitlement mode
 | 8. Learned/revision/mastery       |      8 | `DONE` — 20/20 × 8 = 8 |
 | 9. Amendments/source integrity    |      5 | `DONE` — 15/15 × 5 = 5 |
 | 10. SEO/routing discoverability   |      4 | `DONE` — 16/16 × 4 = 4 |
-| 11. Production hardening/release  |      7 | `NOT STARTED` |
-| **TOTAL (Stage 1)**               |  **100** | **93.0 / 100** |
-| Stage 2 — Optimize                |    — | `NOT STARTED` — start gate: Stage 1 = `DONE` (100/100) |
+| 11. Production hardening/release  |      7 | `DONE` — weight 7 |
+| **TOTAL (Stage 1)**               |  **100** | **DONE — 100.0 / 100** |
+| Stage 2 — Optimize                |    — | `NOT STARTED` — Stage 2 may begin only after the Stage 1 release checklist is complete and production-ready state is proven. |
 
 ---
 
@@ -818,7 +825,7 @@ Batch 7   Complete Learn modes — DONE (six modes; no Write; M8 owns Learned)
 Batch 8   Learned + revision + Today/Calendar — DONE (20/20; Stage 1 84.0)
 Batch 9   Amendment handling — DONE (15/15; Stage 1 89.0)
 Batch 10  SEO + sitemap — DONE (16/16; Stage 1 93.0; public indexable, private never indexed)
-Batch 11  Legacy transition + production hardening
+Batch 11  Legacy transition + production hardening — DONE (35/35; Stage 1 100.0)
 ```
 
 Small non-blocking rectifications should be folded into the next substantial batch.

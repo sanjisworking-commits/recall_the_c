@@ -226,6 +226,20 @@ class SubscriptionService:
     def fetch_provider_dispute(self, dispute_id: str):
         return self._client.fetch_dispute(dispute_id)
 
+    def reconcile_current(self, user_id: UUID | str) -> UserSubscription:
+        """Support-triggered provider GET. Uses the existing persist machine.
+
+        Provider errors propagate without writing. Missing local rows or a
+        missing provider subscription id raise SubscriptionStateError —
+        callers must not invent entitlement truth from the failure.
+        """
+
+        current = self._require_provider_backed(user_id)
+        provider = self.fetch_provider_subscription(
+            current.provider_subscription_id or ""
+        )
+        return self.reconcile_fetched_subscription(current, provider)
+
     def reconcile_fetched_subscription(
         self,
         row: UserSubscription,

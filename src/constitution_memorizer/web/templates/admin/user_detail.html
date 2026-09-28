@@ -30,9 +30,147 @@
   </div>
 
   <div class="admin-block">
+    <span class="admin-label">Playground commercial</span>
+    <div class="admin-access-line">
+      <span class="admin-access-headline is-{{ access_color }}">
+        {% if playground.subscription.admin_override %}Admin override
+        {% elif playground.subscription.present %}{{ playground.subscription.tier or '—' }} · {{ playground.subscription.status or '—' }}
+        {% else %}No current user_subscription{% endif %}
+      </span>
+      <span class="admin-mono admin-access-facts">
+        is_subscribed={{ playground.subscription.is_subscribed }} · can_open={{ playground.subscription.can_open_playground }} · new_law={{ playground.subscription.can_consume_new_law }}
+      </span>
+    </div>
+    <p class="admin-access-note">{{ playground.subscription.note }}</p>
+    <div class="admin-identity-grid">
+      <div><span class="admin-label">Disposition</span><p class="admin-mono">{{ playground.subscription.disposition }}</p></div>
+      <div><span class="admin-label">Billing window</span><p class="admin-mono">{{ playground.subscription.current_period_start or '—' }} → {{ playground.subscription.current_period_end or '—' }}</p></div>
+      <div><span class="admin-label">cancel_at_period_end</span><p class="admin-mono">{{ playground.subscription.cancel_at_period_end }}</p></div>
+      <div><span class="admin-label">Provider subscription</span><p class="admin-mono">{{ playground.subscription.provider_subscription_id_masked or '—' }}</p></div>
+      <div><span class="admin-label">Roster permission</span><p>{{ playground.subscription.roster_permission }}</p></div>
+      <div><span class="admin-label">Legacy duration status</span><p class="admin-mono">{{ playground.subscription.legacy_status or 'inactive' }}</p></div>
+    </div>
+    <form method="post" action="/admin/users/{{ target.user_id }}/subscription/reconcile" class="admin-grant-form" style="margin-top:1rem">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <span class="admin-label">Reconcile subscription — required reason</span>
+      <textarea name="reason" rows="2" required placeholder="Provider GET because dashboard and local status disagree"></textarea>
+      <div class="admin-grant-actions">
+        <button type="submit" class="admin-btn is-primary">Reconcile from provider</button>
+      </div>
+      <p class="admin-footnote">
+        Fetches the current Razorpay subscription and applies the existing
+        <span class="admin-mono">SubscriptionService</span> state machine.
+        Writes <span class="admin-mono">reconcile_subscription</span> on success.
+        Provider outage keeps last known local data.
+      </p>
+    </form>
+  </div>
+
+  <div class="admin-block">
+    <span class="admin-label">Devices</span>
+    <p class="admin-mono admin-meta">
+      registered={{ playground.devices.registered_count }} ·
+      active={{ playground.devices.active_count }} ·
+      revoked={{ playground.devices.revoked_count }} ·
+      replacements {{ playground.devices.replacement_count_30d }}/{{ playground.devices.replacement_limit }}
+      in {{ playground.devices.replacement_window_days }}d
+      {% if playground.devices.at_replacement_limit %} · replacement lock{% endif %}
+    </p>
+    {% if playground.devices.rows %}
+    <div class="admin-table" style="--cols: 1.2fr 0.7fr 0.7fr 1.1fr 1.1fr;">
+      <div class="admin-thead">
+        <span>Id</span><span>Platform</span><span>Status</span><span>Registered</span><span>Last seen</span>
+      </div>
+      {% for d in playground.devices.rows %}
+      <div class="admin-row">
+        <span class="admin-mono">{{ d.id[:8] }}…</span>
+        <span class="admin-mono">{{ d.platform }}</span>
+        <span>{{ d.status_label }}</span>
+        <span class="admin-mono">{{ d.first_registered_at }}</span>
+        <span class="admin-mono">{{ d.last_seen_at }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="admin-muted">No registered Playground devices.</p>
+    {% endif %}
+    <p class="admin-footnote">Raw rtc_device tokens, HMAC secrets, and session bearers are never shown.</p>
+  </div>
+
+  <div class="admin-block">
+    <span class="admin-label">Playground roster</span>
+    {% if playground.roster.historical_starts %}
+    <form method="get" action="/admin/users/{{ target.user_id }}" class="admin-ends-row" style="margin:0.5rem 0 1rem">
+      <span class="admin-label">Period (read-only)</span>
+      <select name="period">
+        {% for start in playground.roster.historical_starts %}
+        <option value="{{ start }}"{% if start == playground.roster.period_start %} selected{% endif %}>{{ start }}</option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="admin-btn">View period</button>
+    </form>
+    {% endif %}
+    <p class="admin-mono admin-meta">
+      {{ playground.roster.period_start or '—' }} → {{ playground.roster.period_end or '—' }} ·
+      tier={{ playground.roster.tier_snapshot or '—' }} ·
+      limit={{ playground.roster.law_limit or '—' }} ·
+      used={{ playground.roster.used }} ·
+      remaining={{ playground.roster.remaining or '—' }} ·
+      status={{ playground.roster.status or '—' }}
+      {% if playground.roster.viewing_historical %} · historical{% endif %}
+    </p>
+    {% if playground.roster.rows %}
+    <div class="admin-table" style="--cols: 1fr 0.8fr 1.1fr 1.1fr 1.1fr 0.6fr;">
+      <div class="admin-thead">
+        <span>Law</span><span>Origin</span><span>Consumed</span><span>Removed</span><span>Declined</span><span>Active</span>
+      </div>
+      {% for r in playground.roster.rows %}
+      <div class="admin-row">
+        <span class="admin-mono">{{ r.law_id }}</span>
+        <span class="admin-mono">{{ r.origin }}</span>
+        <span class="admin-mono">{{ r.consumed_at or '—' }}</span>
+        <span class="admin-mono">{{ r.removed_at or '—' }}</span>
+        <span class="admin-mono">{{ r.declined_at or '—' }}</span>
+        <span>{{ 'yes' if r.active else 'no' }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    {% elif playground.roster.exists %}
+    <p class="admin-muted">No roster rows in this period.</p>
+    {% else %}
+    <p class="admin-muted">No Playground period has been created. Diagnostics never create one.</p>
+    {% endif %}
+  </div>
+
+  <div class="admin-block">
+    <span class="admin-label">Subscription webhooks</span>
+    {% if playground.webhooks %}
+    <div class="admin-table" style="--cols: 1.1fr 1.2fr 1.1fr 1.1fr 0.8fr 0.9fr 0.8fr;">
+      <div class="admin-thead">
+        <span>Event id</span><span>Type</span><span>Received</span><span>Processed</span><span>Status</span><span>Idempotent</span><span>Error</span>
+      </div>
+      {% for e in playground.webhooks %}
+      <div class="admin-row">
+        <span class="admin-mono">{{ e.provider_event_id }}</span>
+        <span class="admin-mono">{{ e.event_name }}</span>
+        <span class="admin-mono">{{ e.received_at }}</span>
+        <span class="admin-mono">{{ e.processed_at or '—' }}</span>
+        <span class="admin-mono">{{ e.status }}</span>
+        <span>{{ e.duplicate_or_idempotent }}</span>
+        <span class="admin-mono">{{ e.error_code or '—' }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="admin-muted">No webhook events for the current provider subscription.</p>
+    {% endif %}
+    <p class="admin-footnote">Webhook secrets, auth headers, and payment-card data are never shown.</p>
+  </div>
+
+  <div class="admin-block">
     <div class="admin-block-head">
-      <span class="admin-label">Free Articles claimed</span>
-      <span class="admin-mono admin-meta">{{ claimed|length }} of 3 slots used</span>
+      <span class="admin-label">Legacy Free Articles (historical)</span>
+      <span class="admin-mono admin-meta">{{ claimed|length }} claim row(s) — inactive for access</span>
     </div>
     {% if claimed %}
     <div class="admin-claim-chips">
@@ -44,8 +182,8 @@
     <p class="admin-muted">No Articles claimed.</p>
     {% endif %}
     <p class="admin-footnote">
-      Claims are permanent and are never consumed or returned by a grant.
-      Read-only here — the console does not edit progress.
+      Claims are retained as historical data. They do not gate signed-in
+      Constitution Learn or Playground subscription. Read-only here.
     </p>
   </div>
 
@@ -129,9 +267,10 @@
         </div>
       </form>
       <p class="admin-footnote">
-        Grants become visible to the user only while
-        <span class="admin-mono">ARTICLE_ENTITLEMENTS_ENABLED</span> is on.
-        With entitlements off, everyone already has full access.
+        Grants remain stored for history. They do not control current
+        Constitution access or Playground commercial entitlement.
+        <span class="admin-mono">ARTICLE_ENTITLEMENTS_ENABLED</span> is
+        compatibility-only for guest explore surfaces.
       </p>
     </div>
     <div class="admin-grant-consequences">

@@ -77,6 +77,27 @@ class SqliteWebhookEventRepository:
         ).fetchall()
         return [webhook_event_from_mapping(row) for row in rows]
 
+    def list_events_for_provider_subscription(
+        self,
+        provider_subscription_id: str,
+        *,
+        limit: int = 50,
+    ) -> list[WebhookEvent]:
+        cleaned = str(provider_subscription_id or "").strip()
+        if not cleaned:
+            return []
+        capped = max(1, min(int(limit), 200))
+        rows = self.conn.execute(
+            _SELECT
+            + """
+            WHERE provider_subscription_id = ?
+            ORDER BY received_at DESC
+            LIMIT ?
+            """,
+            (cleaned, capped),
+        ).fetchall()
+        return [webhook_event_from_mapping(row) for row in rows]
+
     def reserve_event(
         self,
         *,

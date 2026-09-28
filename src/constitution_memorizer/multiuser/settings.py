@@ -73,8 +73,10 @@ class MultiUserSettings(BaseSettings):
 
     database_url: str = Field(default="", alias="DATABASE_URL")
     supabase_url: str = Field(default="", alias="SUPABASE_URL")
-    supabase_anon_key: str = Field(default="", alias="SUPABASE_ANON_KEY")
-    session_secret: str = Field(default="", alias="SESSION_SECRET")
+    supabase_anon_key: str = Field(
+        default="", alias="SUPABASE_ANON_KEY", repr=False
+    )
+    session_secret: str = Field(default="", alias="SESSION_SECRET", repr=False)
 
     auth_google_enabled: bool = Field(default=True, alias="AUTH_GOOGLE_ENABLED")
     # Phone OTP is paused until SMS provider registration completes. The login
@@ -126,6 +128,12 @@ class MultiUserSettings(BaseSettings):
     # working purchase flow.
     pricing_enabled: bool = Field(default=False, alias="PRICING_ENABLED")
 
+    # Operational Playground availability. False 404s /playground* and hides
+    # entry UI. Does not cancel subscriptions, revoke devices, alter roster,
+    # or reset progress. Constitution Learn and public Bare Acts stay up.
+    # Admin/support diagnostics remain on /admin.
+    playground_enabled: bool = Field(default=True, alias="PLAYGROUND_ENABLED")
+
     # Admin console (/admin/*) and the Admin nav link. Gates the console
     # ONLY: an admin identity's full Recall entitlement follows its
     # user_roles row and is unaffected by this flag — removing the role
@@ -138,7 +146,9 @@ class MultiUserSettings(BaseSettings):
     # "opens soon" placeholder. The key secret never reaches a template or
     # client payload — it is used only server-side (order create + HMAC verify).
     razorpay_key_id: str = Field(default="", alias="RAZORPAY_KEY_ID")
-    razorpay_key_secret: str = Field(default="", alias="RAZORPAY_KEY_SECRET")
+    razorpay_key_secret: str = Field(
+        default="", alias="RAZORPAY_KEY_SECRET", repr=False
+    )
     # Externally created Razorpay Subscription Plan IDs. Empty in tests/dev
     # does not block app startup. Required only when creating a subscription
     # for that tier. Same KEY_ID/KEY_SECRET as legacy Orders.
@@ -251,6 +261,7 @@ class MultiUserSettings(BaseSettings):
         "relevant_laws_enabled",
         "article_entitlements_enabled",
         "pricing_enabled",
+        "playground_enabled",
         "admin_enabled",
         mode="before",
     )

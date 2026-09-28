@@ -126,8 +126,21 @@ def _denied(result: object) -> Response | None:
 
 
 def _require_csrf(request: Request, csrf_token: str) -> None:
+    """Fail closed for signed-in multi-user mutations.
+
+    Local single-user mode may have no CSRF cookie; that path is not a
+    hosted session. A hosted session without a matching token is rejected
+    even when the cookie is missing.
+    """
+
     expected = request.cookies.get("rtc_csrf") or ""
-    if expected and csrf_token != expected:
+    session = getattr(request.state, "auth_session", None)
+    multiuser = bool(getattr(request.app.state, "multiuser_enabled", False))
+    if not expected:
+        if multiuser and session is not None:
+            raise HTTPException(status_code=403, detail="csrf")
+        return
+    if csrf_token != expected:
         raise HTTPException(status_code=403, detail="csrf")
 
 

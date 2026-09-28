@@ -230,7 +230,9 @@
         <a href="#arithmetic" style="padding:8px 11px;font-size:14px;font-weight:600;color:rgba(244,241,234,0.6)">Arithmetic</a>
         <a href="#method" style="padding:8px 11px;font-size:14px;font-weight:600;color:rgba(244,241,234,0.6)">Recall</a>
         <a href="#learn" style="padding:8px 11px;font-size:14px;font-weight:600;color:rgba(244,241,234,0.6)">Modes</a>
+        {% if pricing_enabled|default(false) %}
         <a href="/pricing" style="padding:8px 11px;font-size:14px;font-weight:600;color:rgba(244,241,234,0.6)">Pricing</a>
+        {% endif %}
       </nav>
       <a href="/browse" style="border:1px solid rgba(244,241,234,0.3);padding:9px 16px;font-size:14px;font-weight:600" class="j-ghost"><span data-lbl-full="1">Explore as guest</span><span data-lbl-short="1">Explore</span></a>
       <a href="/login" style="background:#f4f1ea;color:#0b0b0b;border:1px solid #f4f1ea;padding:10px 18px;font-size:14px;font-weight:700" class="j-ink"><span data-lbl-full="1">Start learning</span><span data-lbl-short="1">Learn</span></a>
@@ -476,7 +478,9 @@
       <a href="/terms" style="color:rgba(244,241,234,0.6)">Terms</a>
       <a href="/privacy" style="color:rgba(244,241,234,0.6)">Privacy</a>
       <a href="/grievance" style="color:rgba(244,241,234,0.6)">Grievance</a>
+      {% if pricing_enabled|default(false) %}
       <a href="/pricing" style="color:rgba(244,241,234,0.6)">Pricing</a>
+      {% endif %}
     </nav>
     <p style="margin:0;font-size:13px;color:rgba(244,241,234,0.38);max-width:420px">A study aid, not an official legal source. Verify against an authoritative publication where it counts.</p>
   </div>

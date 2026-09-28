@@ -262,6 +262,8 @@ def test_webhook_secrets_are_optional_at_startup_and_redacted():
     settings.validate_for_startup()
     assert settings.razorpay_webhook_secret == "whsec_current_test"
     assert "whsec_current_test" not in repr(settings)
+    secret_settings = _settings(RAZORPAY_KEY_SECRET="rzp_secret_never_print")
+    assert "rzp_secret_never_print" not in repr(secret_settings)
     empty = _settings()
     empty.validate_for_startup()
     assert empty.razorpay_webhook_secret == ""
@@ -306,6 +308,7 @@ def test_env_example_documents_shared_keys_and_monthly_plan_ids():
     assert "RAZORPAY_PLAN_ID_ANNUAL" not in text
     assert "RAZORPAY_WEBHOOK_SECRET=" in text
     assert "RAZORPAY_WEBHOOK_SECRET_PREVIOUS=" in text
+    assert "PLAYGROUND_ENABLED=" in text
     assert text.count("RAZORPAY_WEBHOOK_SECRET=") == 1
     assert text.count("RAZORPAY_WEBHOOK_SECRET_PREVIOUS=") == 1
     assert text.count("RAZORPAY_KEY_ID=") == 1

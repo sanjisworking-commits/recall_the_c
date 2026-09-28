@@ -380,7 +380,11 @@ def test_logout_signed_out_page(tmp_path: Path):
     start = client.get("/auth/google/start", follow_redirects=False)
     state = start.cookies.get("rtc_oauth_state")
     client.get(f"/auth/callback?code=fake-google-code&state={state}", follow_redirects=False)
-    out = client.post("/logout", follow_redirects=False)
+    out = client.post(
+        "/logout",
+        data={"csrf_token": client.cookies.get("rtc_csrf") or ""},
+        follow_redirects=False,
+    )
     assert out.status_code == 303
     assert out.headers["location"] == "/signed-out"
     page = client.get("/signed-out")

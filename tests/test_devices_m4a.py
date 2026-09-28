@@ -296,7 +296,8 @@ def test_logout_does_not_delete_rtc_device(tmp_path: Path):
     client, _repo = _authed_client(tmp_path)
     token = client.cookies.get(DEVICE_COOKIE_NAME)
     assert token
-    out = client.post("/logout", follow_redirects=False)
+    csrf = client.cookies.get("rtc_csrf") or ""
+    out = client.post("/logout", data={"csrf_token": csrf}, follow_redirects=False)
     assert out.status_code == 303
     for header in _set_cookie_headers(out):
         if header.lower().startswith(f"{DEVICE_COOKIE_NAME}="):
@@ -603,7 +604,11 @@ def test_logout_login_reuses_same_device_row(tmp_path: Path):
     )
     assert sessions_before
     first_session_id = sessions_before[0].auth_session_id
-    client.post("/logout", follow_redirects=False)
+    client.post(
+        "/logout",
+        data={"csrf_token": client.cookies.get("rtc_csrf") or ""},
+        follow_redirects=False,
+    )
     _login(client)
     assert client.get("/playground").status_code == 200
     again = _active_devices(client)

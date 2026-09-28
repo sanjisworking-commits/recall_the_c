@@ -267,7 +267,11 @@ def test_non_events_do_not_increment_replacement_count(tmp_path: Path):
     first_sub = _add_subscription(client)
     assert client.get("/playground").status_code == 200
     assert _count(service) == 0
-    client.post("/logout", follow_redirects=False)
+    client.post(
+        "/logout",
+        data={"csrf_token": client.cookies.get("rtc_csrf") or ""},
+        follow_redirects=False,
+    )
     _login(client)
     assert client.get("/playground").status_code == 200
     assert _count(service) == 0
