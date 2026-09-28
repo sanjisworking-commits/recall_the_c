@@ -100,7 +100,14 @@ Public law remains verbatim/readable. Historical Constitution progress is not mi
 - `tests/test_playground_m11.py`
 - Prior milestone files remain the concurrency/lifecycle corpus.
 - Full suite: `python3 -m pytest -m "not integration" -q --tb=line`
+- Local result on implementation HEAD `b93a140`: **2354 passed**, 9 skipped, 1 deselected, 0 failed.
 
 ## Git
 
-Implementation and tracker SHAs are recorded after the close-out commits on `cursor/playground-220d` / PR `#188`.
+| SHA | What |
+|-----|------|
+| [`b93a140`](https://github.com/sanjisworking-commits/recall_the_c/commit/b93a1407f6fa0789351e0d350093d236c8abc5e5) | Harden Playground production release, freeze legacy commerce, score Milestone 11 / Stage 1 100.0 |
+
+Implementation SHA: `b93a1407f6fa0789351e0d350093d236c8abc5e5`. Tracker/head SHA: same commit. GitHub CI SHA is recorded after CI is green on this branch.
+
+PR [#188](https://github.com/sanjisworking-commits/recall_the_c/pull/188) is open on `cursor/playground-220d`.
