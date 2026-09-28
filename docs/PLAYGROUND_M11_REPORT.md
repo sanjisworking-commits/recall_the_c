@@ -101,6 +101,7 @@ Public law remains verbatim/readable. Historical Constitution progress is not mi
 - Prior milestone files remain the concurrency/lifecycle corpus.
 - Full suite: `python3 -m pytest -m "not integration" -q --tb=line`
 - Local result on implementation HEAD `b93a140`: **2354 passed**, 9 skipped, 1 deselected, 0 failed.
+- GitHub CI on `cursor/playground-220d`: **success** for HEAD `0e9e0f4` (2 checks).
 
 ## Git
 
@@ -108,7 +109,8 @@ Public law remains verbatim/readable. Historical Constitution progress is not mi
 |-----|------|
 | [`b93a140`](https://github.com/sanjisworking-commits/recall_the_c/commit/b93a1407f6fa0789351e0d350093d236c8abc5e5) | Harden Playground production release, freeze legacy commerce, score Milestone 11 / Stage 1 100.0 |
 | [`0b187d5`](https://github.com/sanjisworking-commits/recall_the_c/commit/0b187d5b2f336bf12a36e2f8b2b8c5f8e149f321) | Record the Milestone 11 tracker SHA in the close-out report |
+| [`0e9e0f4`](https://github.com/sanjisworking-commits/recall_the_c/commit/0e9e0f484345e5c1da1ef1bdc950d5d9e43f31a3) | Record disposable PostgreSQL migration proof |
 
-Implementation SHA: `b93a1407f6fa0789351e0d350093d236c8abc5e5`. Tracker SHA: `0b187d5b2f336bf12a36e2f8b2b8c5f8e149f321`. GitHub CI SHA is recorded after CI is green on this branch.
+Implementation SHA: `b93a1407f6fa0789351e0d350093d236c8abc5e5`. Tracker SHA: `0b187d5b2f336bf12a36e2f8b2b8c5f8e149f321`. CI-green HEAD at this write: `0e9e0f484345e5c1da1ef1bdc950d5d9e43f31a3`.
 
 PR [#188](https://github.com/sanjisworking-commits/recall_the_c/pull/188) is open on `cursor/playground-220d`.
