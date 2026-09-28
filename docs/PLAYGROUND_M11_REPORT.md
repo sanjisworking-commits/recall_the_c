@@ -91,7 +91,7 @@ Public law remains verbatim/readable. Historical Constitution progress is not mi
 
 - Alembic **one head**: `20260927_0027`. No M11 schema migration.
 - CI: parse + one-head (`tests/test_migrations.py`).
-- Operator live Postgres: `scripts/verify_postgres_migrations.py`.
+- Live disposable Postgres (this batch): `DATABASE_URL=postgresql:///m11_migrate python3 scripts/verify_postgres_migrations.py` ran **base → `20260927_0027`**, printed one head, and confirmed `user_free_articles` / `access_grants` / `billing_orders` still exist. CI does not start Postgres; that operator path is the live proof.
 - SQLite/dev parity unchanged.
 - No `DROP` of `user_free_articles` / `access_grants` / `billing_orders`.
 
@@ -107,7 +107,8 @@ Public law remains verbatim/readable. Historical Constitution progress is not mi
 | SHA | What |
 |-----|------|
 | [`b93a140`](https://github.com/sanjisworking-commits/recall_the_c/commit/b93a1407f6fa0789351e0d350093d236c8abc5e5) | Harden Playground production release, freeze legacy commerce, score Milestone 11 / Stage 1 100.0 |
+| [`0b187d5`](https://github.com/sanjisworking-commits/recall_the_c/commit/0b187d5b2f336bf12a36e2f8b2b8c5f8e149f321) | Record the Milestone 11 tracker SHA in the close-out report |
 
-Implementation SHA: `b93a1407f6fa0789351e0d350093d236c8abc5e5`. Tracker/head SHA: same commit. GitHub CI SHA is recorded after CI is green on this branch.
+Implementation SHA: `b93a1407f6fa0789351e0d350093d236c8abc5e5`. Tracker SHA: `0b187d5b2f336bf12a36e2f8b2b8c5f8e149f321`. GitHub CI SHA is recorded after CI is green on this branch.
 
 PR [#188](https://github.com/sanjisworking-commits/recall_the_c/pull/188) is open on `cursor/playground-220d`.
