@@ -71,6 +71,7 @@ MUST_NOT_SHIP = (
     ("X6", "Study archive"),
     ("X6", "Streak chip"),
     ("X8", "36% learned"),
+    ("X8", "geodesic-dome"),
 )
 
 CLASS_C_NAMED = {
@@ -129,7 +130,7 @@ def test_t41_every_active_template_is_classified():
 
 def test_t33_r1_asset_versions_are_pinned():
     html = BASE.read_text()
-    assert "styles.css?v=main72" in html
+    assert "styles.css?v=main73" in html
     assert "mobile.css?v=mob94" in html
     assert "playground.css?v=pg8" in html
     assert "playground.js?v=pg6" in html
@@ -302,16 +303,23 @@ def test_d18_d20_desktop_and_phone_shell_markup():
     assert "nav-icon" in html
     assert "account-menu-btn-copy" in html
     assert "account-menu-logout" in html
+    primary = html.split('aria-label="Primary"', 1)[1].split("</nav>", 1)[0]
+    assert "account-menu" not in primary
+    assert 'data-account-menu' in html
     tabbar = html.split(
         'class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom"', 1
     )[1].split("</nav>", 1)[0]
     for label in ("Today", "Browse", "Playground", "Calendar", "Profile"):
         assert label in tabbar
     styles = (STATIC / "styles.css").read_text()
+    shell = styles.split("/* R1 desktop shell", 1)[1]
     assert ".PrimaryTabs--top .nav-icon" in styles
     assert "height: 60px" in styles
     assert "border-radius: 9px" in styles
     assert "account-menu-btn-copy" in styles
+    assert "grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr)" in shell
+    assert "position: absolute" not in shell
+    assert "left: 50%" not in shell
 
 
 def test_d21_playground_learn_hides_tabbar_without_touching_constitution(tmp_path: Path):

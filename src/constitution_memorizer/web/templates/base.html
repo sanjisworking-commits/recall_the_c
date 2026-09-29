@@ -69,7 +69,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/styles.css?v=main72">
+  <link rel="stylesheet" href="/static/styles.css?v=main73">
   <link rel="stylesheet" href="/static/visual-explainer.css?v=ve1">
   <link rel="stylesheet" href="/static/mobile.css?v=mob94">
   <link rel="stylesheet" href="/static/playground.css?v=pg8">
@@ -120,60 +120,6 @@
           {% if pricing_enabled|default(false) %}
           <a href="/pricing" class="nav-link{% if path.startswith('/pricing') %} is-active{% endif %}">Pricing</a>
           {% endif %}
-          <div class="account-menu" data-account-menu>
-            {% set label = current_user.display_name or current_user.email or current_user.phone or 'Account' %}
-            {% set initials = (label[:1])|upper %}
-            <button
-              type="button"
-              class="account-menu-btn"
-              data-account-toggle
-              aria-expanded="false"
-              aria-haspopup="menu"
-              aria-label="Account menu"
-            >
-              {% if current_user.avatar_url %}
-              <img class="account-avatar" src="{{ current_user.avatar_url }}" alt="" width="28" height="28">
-              {% else %}
-              <span class="account-avatar account-avatar-fallback" aria-hidden="true">{{ initials }}</span>
-              {% endif %}
-              <span class="account-menu-btn-copy">
-                <span class="account-menu-btn-name">{{ label }}</span>
-              </span>
-            </button>
-            <div class="account-menu-panel" role="menu" hidden data-account-panel>
-              <div class="account-menu-identity">
-                <div class="account-menu-identity-main">
-                  <p class="account-menu-name">{{ label }}</p>
-                  {% if current_user.email or current_user.phone %}
-                  <p class="account-menu-contact">{{ current_user.email or current_user.phone }}</p>
-                  {% endif %}
-                </div>
-                {% if current_user.provider == 'google' %}
-                <span class="account-provider-badge is-google" title="Signed in with Google" aria-label="Signed in with Google">G</span>
-                {% else %}
-                <span class="account-provider-badge is-phone" title="Signed in with phone" aria-label="Signed in with phone">☎</span>
-                {% endif %}
-              </div>
-              <a role="menuitem" href="/profile">Profile</a>
-              <a role="menuitem" href="/settings">Settings</a>
-              <a role="menuitem" href="/learn">Learn</a>
-              <a role="menuitem" href="/progress">Progress</a>
-              <a role="menuitem" href="/calendar">Calendar</a>
-              {% if memory_log_enabled|default(false) %}
-              <a role="menuitem" href="/memory">Memory log</a>
-              {% endif %}
-              {% if is_admin_hint|default(false) %}
-              <a role="menuitem" href="/admin" class="account-menu-admin">
-                Admin console
-                <span class="account-menu-admin-tag" aria-hidden="true">/admin</span>
-              </a>
-              {% endif %}
-              <form method="post" action="/logout">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-                <button type="submit" role="menuitem" class="account-menu-logout">Sign out</button>
-              </form>
-            </div>
-          </div>
           {% elif multiuser_enabled|default(false) %}
           <a href="/" class="nav-link{% if path == '/' %} is-active{% endif %}">Home</a>
           <a href="/browse" class="nav-link{% if path.startswith('/browse') %} is-active{% endif %}">Browse</a>
@@ -199,6 +145,62 @@
           <a href="/search" class="nav-link{% if path.startswith('/search') %} is-active{% endif %}">Search</a>
           {% endif %}
         </nav>
+        {% if multiuser_enabled|default(false) and current_user and not auth_surface %}
+        <div class="account-menu" data-account-menu>
+          {% set label = current_user.display_name or current_user.email or current_user.phone or 'Account' %}
+          {% set initials = (label[:1])|upper %}
+          <button
+            type="button"
+            class="account-menu-btn"
+            data-account-toggle
+            aria-expanded="false"
+            aria-haspopup="menu"
+            aria-label="Account menu"
+          >
+            {% if current_user.avatar_url %}
+            <img class="account-avatar" src="{{ current_user.avatar_url }}" alt="" width="28" height="28">
+            {% else %}
+            <span class="account-avatar account-avatar-fallback" aria-hidden="true">{{ initials }}</span>
+            {% endif %}
+            <span class="account-menu-btn-copy">
+              <span class="account-menu-btn-name">{{ label }}</span>
+            </span>
+          </button>
+          <div class="account-menu-panel" role="menu" hidden data-account-panel>
+            <div class="account-menu-identity">
+              <div class="account-menu-identity-main">
+                <p class="account-menu-name">{{ label }}</p>
+                {% if current_user.email or current_user.phone %}
+                <p class="account-menu-contact">{{ current_user.email or current_user.phone }}</p>
+                {% endif %}
+              </div>
+              {% if current_user.provider == 'google' %}
+              <span class="account-provider-badge is-google" title="Signed in with Google" aria-label="Signed in with Google">G</span>
+              {% else %}
+              <span class="account-provider-badge is-phone" title="Signed in with phone" aria-label="Signed in with phone">☎</span>
+              {% endif %}
+            </div>
+            <a role="menuitem" href="/profile">Profile</a>
+            <a role="menuitem" href="/settings">Settings</a>
+            <a role="menuitem" href="/learn">Learn</a>
+            <a role="menuitem" href="/progress">Progress</a>
+            <a role="menuitem" href="/calendar">Calendar</a>
+            {% if memory_log_enabled|default(false) %}
+            <a role="menuitem" href="/memory">Memory log</a>
+            {% endif %}
+            {% if is_admin_hint|default(false) %}
+            <a role="menuitem" href="/admin" class="account-menu-admin">
+              Admin console
+              <span class="account-menu-admin-tag" aria-hidden="true">/admin</span>
+            </a>
+            {% endif %}
+            <form method="post" action="/logout">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+              <button type="submit" role="menuitem" class="account-menu-logout">Sign out</button>
+            </form>
+          </div>
+        </div>
+        {% endif %}
       </header>
       <main class="main">
         {% block content %}{% endblock %}

@@ -10008,11 +10008,11 @@ body.is-admin-previewing { padding-top: 40px; }
 
 @media (min-width: 561px) {
   .site-header {
-    position: relative;
-    flex-wrap: nowrap;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
     align-items: center;
     height: 60px;
-    gap: 22px;
+    gap: 16px;
     padding: 0 max(28px, calc((100% - 1180px) / 2));
     border-bottom-color: var(--hairline);
     background: var(--paper);
@@ -10023,7 +10023,7 @@ body.is-admin-previewing { padding-top: 40px; }
     font-size: 17px;
     font-weight: 500;
     flex: none;
-    z-index: 1;
+    justify-self: start;
   }
 
   .brand-mark {
@@ -10034,8 +10034,13 @@ body.is-admin-previewing { padding-top: 40px; }
 
   .nav.PrimaryTabs--top {
     align-items: center;
+    flex-wrap: nowrap;
+    justify-content: center;
+    justify-self: center;
     gap: 2px;
-    z-index: 1;
+    min-width: 0;
+    max-width: 100%;
+    overflow-x: auto;
   }
 
   .PrimaryTabs--top .nav-link {
@@ -10057,9 +10062,8 @@ body.is-admin-previewing { padding-top: 40px; }
   }
 
   .account-menu {
-    margin-left: auto;
+    justify-self: end;
     z-index: 2;
-    flex: none;
   }
 
   .account-menu-btn {
@@ -10116,14 +10120,6 @@ body.is-admin-previewing { padding-top: 40px; }
     padding: 0 16px;
   }
 
-  .nav.PrimaryTabs--top {
-    position: static;
-    transform: none;
-    flex: 1 1 auto;
-    justify-content: flex-end;
-    overflow-x: auto;
-  }
-
   .PrimaryTabs--top .nav-link {
     padding: 0 10px;
     font-size: 13px;
@@ -10131,14 +10127,6 @@ body.is-admin-previewing { padding-top: 40px; }
 }
 
 @media (min-width: 900px) {
-  .nav.PrimaryTabs--top {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    justify-content: center;
-  }
-
   .account-menu-btn-copy {
     display: block;
   }
@@ -10147,11 +10135,6 @@ body.is-admin-previewing { padding-top: 40px; }
 @media (min-width: 1280px) {
   .site-header {
     padding: 0 40px;
-  }
-
-  .main > .PlaygroundShell,
-  body.playground-app .main {
-    max-width: none;
   }
 }
 
