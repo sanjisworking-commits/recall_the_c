@@ -5,29 +5,76 @@ Programme inventory for `docs/PLAYGROUND_UI_REDESIGN_PLAN.md` §16.1–§16.2 an
 **Not a Stage 1 document.** Stage 1 remains frozen at **DONE — 100.0 / 100**.
 
 ```text
-Inventory SHA: 5035ce2e9d6e2ac14a01367d25e41dc12565257f  (after main merge)
-Pre-merge:     a5edca57d06f2a516fb2111be6e2e6f5db507f67
-Branch:        cursor/playground-220d
-main:          0c0a8d555748cb5fa63a5fbe0a43998ee5c1d942
-Alembic head:  20260927_0027
+Prototype commit: 58a1a264be4a337d06eee3358ad758bf615815cd
+Pre-merge:        a5edca57d06f2a516fb2111be6e2e6f5db507f67
+Branch:           cursor/playground-220d
+main:             0c0a8d555748cb5fa63a5fbe0a43998ee5c1d942
+Alembic head:     20260927_0027
 ```
 
 ---
 
 ## 1. Authoritative prototype files
 
-The programme names two Claude Design exports (updated 2026-09-28):
+Landed on `58a1a26`. Contents were not rewritten. They are reference artifacts, not runtime templates. `src/` does not reference them. Both load `docs/design/support.js` via relative `./support.js`.
 
-| Expected path | Viewport | Expected size | Status on this SHA |
+| Path | Viewport | Lines | SHA-256 |
 |---|---|---|---|
-| `docs/design/Recall the C - Playground Desktop.dc.html` | 1280px | 2,902 lines | **ABSENT** |
-| `docs/design/Recall the C - Playground.dc.html` | 390×844 | 1,829 lines | **ABSENT** |
+| `docs/design/Recall the C - Playground Desktop.dc.html` | 1280×860 | 2,902 | `61d8d01a099e8d6776d9dcb925fc6f37a625c98add11554d00fee1049d28c976` |
+| `docs/design/Recall the C - Playground.dc.html` | 390×844 | 1,829 | `361b7e25087f3c8e26a89156518bc2654594502dc1211a20884a6eed499c0af5` |
 
-They are not in this repository, not in this VM, and not under `/opt/cursor` or `/tmp`. The plan’s source note (`~/Downloads/Playground-Mobile.zip` / `Playground-Desktop.zip`) is an author-machine path.
+Line counts match the plan. **§16.1 prototype-screen count: 31 labeled surfaces** (17 desktop including the chrome frame; 14 phone including the chrome frame). Overlays without their own `data-screen-label` are listed under the parent screen.
 
-**§16.1 prototype-screen count from the named files: 0.**
+### 1.0 Phone (`Recall the C - Playground.dc.html`)
 
-Until those files are committed (T36 / R7, also required before U1), Layer 1 cannot be inventoried screen-by-screen against the prototypes. Production surfaces below are still classified A–E so no active page remains unclassified.
+Chrome: `Prototype phone` 390×844. Tab bar hidden on focused screens (picker, learn, settings, completion). Add sheet is a bottom sheet; calendar day and GCal reminder are sheets.
+
+| Screen (`data-screen-label`) | Route / surface | Major components | Visible states / actions | Dialogs / sheets | Batch / IDs |
+|---|---|---|---|---|---|
+| Bare Act head | `GET /laws/{slug}` | Title, provenance, CTA, chapter list | Not added / already in Playground (Sections + Continue); NDPS vs BNS | Add sheet (see overlays) | R0, R3 · D26–D30, D27–D28 |
+| Section picker | `GET /playground/laws/{id}/sections` | Chapter bands, section rows, clause expand, sticky footer | Entire Act / clauses; omitted disabled | — | R2 · D41–D50, D42, T5 |
+| Playground | `GET /playground` | Month, capacity, law cards, empty lede | Activated laws; empty; paused (`pgPaused`) | — | R3 · D51–D63, T19 |
+| Act progress | `GET /playground/laws/{id}` | Ring, waffle, Next up, section rows | Not started / learning / learned / due / mastered | — | R4 · D64–D74 |
+| Today | `GET /dashboard` | Queue; Playground nodes in the day | Playground due + unlearned (delta C) | — | R6 · D115–D121, T28 |
+| Calendar | `GET /calendar` | Month grid; saved recall | Day empty / day has rows | Day sheet; GCal reminder | R6 · D122–D124, T29 phone=month |
+| Learn mode | `GET .../learn/{mode}` | Step bar, six modes, VERBATIM chip | Read / Cloze / Letters / Type / Recite / Test | — | R4 · D75–D93, T25 |
+| Playground gate | guest / unsubscribed `/playground*` | How it works, sign-in, plans | Guest vs tiers | — | R3 · D101–D106, T20 |
+| October roster | `GET /playground/roster/next` | Keep / drop next month | Rollover | — | R5 · D94–D100 |
+| Settings | `GET /settings` | Learning preferences, Reminders | GCal on/off; cadence modal | GCal reminder sheet | R5 · D111–D114, T27 |
+| Profile | `GET /profile` | Identity, subscription chip | Guest / has plan | — | R5 · D107–D110, T26 |
+| Milestone | completion | Dark surface, section learned | After 6 methods | — | R4 · D80, T34 |
+| Recall complete | completion | Dark surface, mastered | After ladder | — | R4 · D81, T34 |
+
+**Phone overlays (no own `data-screen-label`):** Add sheet — confirm, Entire Act vs Choose sections, sign-in, subscribe, roster-full/limit (`sheetConfirm`, `sheetOptions`, `sheetSignIn`, `sheetSubscribe`, `sheetLimit`). Calendar day sheet. Settings GCal reminder (`stCadenceModal`).
+
+### 1.0b Desktop (`Recall the C - Playground Desktop.dc.html`)
+
+Chrome: `Desktop app` 1280×860. Left/header nav (Today, Browse, Playground, Calendar, Profile) plus account menu. Sheets become centred dialogs. Long screens use two columns.
+
+| Screen (`data-screen-label`) | Route / surface | Notes vs phone | Batch / IDs |
+|---|---|---|---|
+| Browse index | `GET /browse` | Constitution parts; A verify-only | R1 · V23 |
+| Laws index | `GET /laws` | Catalogue + Playground CTA | R0, R3 · D27, T4 |
+| Settings | `GET /settings` | Two-column; Learning preferences | R5 · D111–D114 |
+| Bare Act head | `GET /laws/{slug}` | Title left, 380px CTA column | R3 · D26–D30, D29 |
+| Section picker | `GET .../sections` | Persistent SELECTION aside | R2 · D41–D50, D49 |
+| Playground | `GET /playground` | Summary tiles, capacity aside, removed/saved | R3 · D51–D63 |
+| Act progress | `GET /playground/laws/{id}` | Side/deck | R4 · D64–D74 |
+| Today | `GET /dashboard` | Playground in the queue | R6 · D115–D121 |
+| Calendar | `GET /calendar` | Month **and** Week (`calIsWeek`) | R6 · D122–D124, T29 |
+| Roster manager | `GET /playground/roster` | Current month Keep/Remove | R5 · D94–D99 |
+| October roster | `GET /playground/roster/next` | Next month | R5 · D94–D100 |
+| Playground gate | guest / plans | Sign in / Unlock all | R3 · D101–D106 |
+| Profile | `GET /profile` | SUBSCRIPTION card | R5 · D107–D110 |
+| Learn mode | `GET .../learn/{mode}` | Side/deck kept | R4 · D75–D93 |
+| Section learned | completion | Dark; `jump.complete` | R4 · D80 |
+| Mastered | completion | Dark; `jump.mastered` | R4 · D81 |
+
+**Desktop overlays:** Add **dialog** (same variants as the phone sheet). Account menu (`acctMenuOpen`). Calendar day dialog. GCal reminder dialog. Payment banners: pending, quiet, upgrade, welcome (`bnPending`, `bnQuiet`, `bnUpgrade`, `bnWelcome`). Viewer tweaks cover guest / free / Plus-Pro-Max.
+
+**Desktop-only chrome:** geodesic-dome Playground tab icon via prototype path `design_handoff_playground_220d/uploads/noun_GeodesicDome_11999.svg` (T36 licence check before production use).
+
+R1 has **not** started. This catalog is the §16.1 source for later batches.
 
 ### 1.1 File present in `docs/design/` that is **not** the programme source
 

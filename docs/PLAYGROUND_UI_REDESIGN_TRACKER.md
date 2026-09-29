@@ -4,7 +4,7 @@
 
 ```text
 Stage 1               = DONE — 100.0 / 100   (frozen)
-UI Redesign Programme = 4.5 / 100
+UI Redesign Programme = 5.0 / 100
 Stage 2               = PARKED until the programme is DONE — 100.0 / 100
 ```
 
@@ -21,12 +21,13 @@ Authority: `docs/PLAYGROUND_UI_REDESIGN_PLAN.md`. Inventories: `docs/design/PLAY
 | Audit docs SHA | `ed1112ccc95ec32dd4a292ad9852b0834dfff768` |
 | **HEAD after human R0 merge** | **`5035ce2e9d6e2ac14a01367d25e41dc12565257f`** |
 | Merge commit | `a17134dc0fe06dfef8b79d60754b6e89d62e5521` (`main` @ `0c0a8d5` into playground) |
-| R0 remaining (this turn) | T2 snapshot, T3 footnote-title, T7 cloze cleanup, D30 tests, Act loops + MTP chapterless picker copy |
+| Prototype commit | **`58a1a264be4a337d06eee3358ad758bf615815cd`** — two `.dc.html` files only |
 | Plan’s recorded remote head | `e03253e` (**stale**) |
 | Plan audit snapshot | `c76ba92` |
 | `origin/main` | `0c0a8d555748cb5fa63a5fbe0a43998ee5c1d942` |
 | Alembic heads | **one:** `20260927_0027` |
 | T2 hash-drift | **did not fire.** Snapshot fixture pins 1136 eligible-section hashes including NDPS/BNS/BNSS 1018 and sentinels NDPS s.8 `938804c4…`, BNS s.103 `aea2c0bf…`, BNSS s.479 `2ebe577d…`. |
+| T36 prototypes | Desktop `61d8d01a…` (2,902 lines); mobile `361b7e25…` (1,829 lines). Not referenced from `src/`. |
 
 Visual columns (390 light/dark, ~768, ~1024, 1280 light/dark, reduced motion) stay `—` until the relevant batch. Technical rows mark Desktop/Mobile **N/A**. Status uses only: `NOT STARTED | IN PROGRESS | BLOCKED | IN REVIEW | DONE`.
 
@@ -36,7 +37,7 @@ Visual columns (390 light/dark, ~768, ~1024, 1280 light/dark, reduced motion) st
 
 | Milestone | Scope | Weight | Batches | Items | Proven | Score |
 |---|---|---|---|---|---|---|
-| U0 | Source reconciliation + merge safety | 5 | R0 | 10 | 9 | 4.5 |
+| U0 | Source reconciliation + merge safety | 5 | R0 | 10 | 10 | 5.0 |
 | U1 | Shared design system + shells | 12 | R1 | 28 | 0 | 0.0 |
 | U2 | Bare Act + Add + clause-level selection | 18 | R2, R3 | 39 | 0 | 0.0 |
 | U3 | Home + gates + roster lifecycle | 12 | R3, R5 | 38 | 0 | 0.0 |
@@ -45,7 +46,7 @@ Visual columns (390 light/dark, ~768, ~1024, 1280 light/dark, reduced motion) st
 | U6 | Today + Calendar + Google Calendar | 10 | R6 | 15 | 0 | 0.0 |
 | U7 | Profile + Settings + account surfaces | 7 | R5 | 12 | 0 | 0.0 |
 | U8 | Responsive, a11y, parity, regression | 10 | R7 | 25 | 0 | 0.0 |
-| **Total** | | **100** | | **207** | **9** | **4.5 / 100** |
+| **Total** | | **100** | | **207** | **10** | **5.0 / 100** |
 
 Uniqueness (script-checked from §15.2; no row in two milestones, none omitted):
 
@@ -76,7 +77,7 @@ No newly discovered B/C rows were added, so the denominator is unchanged.
 
 ## U0 — Source reconciliation + merge safety (weight 5, 10 items)
 
-R0. **Do not start R1 until §16 inventories exist and the named prototypes are readable.**
+R0. Prototypes and inventories are in place. **R1 implementation has not started.**
 
 | ID | Requirement | D/M | Status | Evidence |
 |---|---|---|---|---|
@@ -88,8 +89,8 @@ R0. **Do not start R1 until §16 inventories exist and the named prototypes are 
 | T4 | Eligibility: current Acts; slug identity; `laws.html` keyed by slug | N/A | DONE | Eligible `bns bnss ndps uapa pss mtp`. `uapa-1967` and `pota` rejected. Hub lookup `law.full_act_ref or law.id` |
 | T6 | Regenerate sitemap; `/playground*` noindex | N/A | DONE | Merge regenerated the seven-Act manifest. `/playground` remains in `NOINDEX_PATH_PREFIXES` |
 | T7 | Remove dead CSRF-less cloze path | N/A | DONE | Deleted `playground_cloze.html`; stripped `[data-playground-cloze]` POST from `playground.js` (`?v=pg5`). `complete_cloze()` kept |
-| T36 | Tracker (this file); prototypes + handoff committed | N/A | IN PROGRESS | tracker + production inventory exist. **Named prototypes still absent — blocks R1** |
-| T37 | Re-validate plan against new head | N/A | DONE | Audit at `a5edca5`; merge `a17134d`; R0 remaining closed except T36 |
+| T36 | Tracker (this file); prototypes + handoff committed | N/A | DONE | `58a1a26` committed both named `.dc.html` files. Desktop 2,902 lines SHA-256 `61d8d01a099e8d6776d9dcb925fc6f37a625c98add11554d00fee1049d28c976`. Mobile 1,829 lines SHA-256 `361b7e25087f3c8e26a89156518bc2654594502dc1211a20884a6eed499c0af5`. Not runtime assets. |
+| T37 | Re-validate plan against new head | N/A | DONE | Audit at `a5edca5`; merge `a17134d`; prototypes `58a1a26`; U0 complete |
 
 ---
 
@@ -126,7 +127,7 @@ R1. Guard: no clause view-model fields.
 | T35 | Negative grep for must-not-ship strings (X1–X8) | N/A | NOT STARTED |
 | T38 | Sheet/dialog enhancement; focus trap; fallback | N/A | NOT STARTED |
 | T39 | Tab-bar hide rules and sticky-footer offset | N/A | NOT STARTED |
-| T41 | Route/template inventory; no unclassified template | N/A | IN REVIEW | production inventory exists; prototype inventory blocked on missing `.dc.html` |
+| T41 | Route/template inventory; no unclassified template | N/A | IN REVIEW | production inventory exists (80 templates). §16.1 prototype catalog filled from the two `.dc.html` files. R1 not started |
 
 ---
 
@@ -417,7 +418,7 @@ No missing technical dependency was found that is not already a T row. Auto-merg
 
 | ID | Blocker | Blocks | Decision needed |
 |---|---|---|---|
-| B1 | Named prototype files (`Recall the C - Playground Desktop.dc.html`, `Recall the C - Playground.dc.html`) are not in the repo or this VM | Completing §16.1; U1 visual work; V15/V21/V22 | Provide the zip/HTML files so they can be committed. Do not invent screens. |
+| B1 | Named prototype files | ~~blocked R1~~ | **Resolved** on `58a1a26`. Both files present at the plan paths. |
 | B2 | T2 hash-drift is an R0 **stop condition**, not a maybe | R1+ if hashes change without a statutory change | Snapshot fixture now exists. A failing snapshot test is a stop, not a later investigation. |
 
 No new product delta (class D) was found. Deltas A–H already cover guest gate, paused home, eligibility, clause selection, Today, week view, speech, and Google.
@@ -426,4 +427,4 @@ No new product delta (class D) was found. Deltas A–H already cover guest gate,
 
 ## R0 readiness
 
-**R0 merge-and-protect is landed.** Remaining U0 item is T36 (named prototypes still absent). Do not start R1 until B1 is resolved and §16.1 is filled from the real prototypes.
+**U0 is complete (10/10).** Prototypes landed on `58a1a26`. §16.1 catalog is filled from those files. **R1 design-system implementation has not started.** U1 may begin on a later turn against the committed `.dc.html` files; do not invent screens.
