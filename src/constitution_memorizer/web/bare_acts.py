@@ -184,8 +184,9 @@ BARE_ACTS: dict[str, BareActSpec] = {
         # at their depth; `formula` is s.105(5)'s displayed fraction, kept as
         # one row of text. Checked kind by kind against ProvisionRow.
         render_profile="bns",
-        # First runtime release of the parser v2 export, archived as
-        # mva_canonical_v2.json.
+        # First runtime release. The export is parser v4 — v2 audited, v3
+        # answering that audit, v4 its follow-up — archived as
+        # mva_canonical_v4.json.
         source_version="1",
     ),
 }
