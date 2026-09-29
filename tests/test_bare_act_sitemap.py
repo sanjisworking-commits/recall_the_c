@@ -350,8 +350,10 @@ def test_builder_emits_explicit_slug_and_source_version():
         assert entry["sections"] == [section.number for section in act.section_order]
         assert entry["schedules"] == list(act.public_schedule_slugs)
         assert "last_modified" not in entry
+        # Routable means navigable, not "is a table": main added list
+        # schedules (POTA's), which have a page without having columns.
         unsupported = [
-            sched.slug for sched in act.schedules if not sched.is_table
+            sched.slug for sched in act.schedules if not sched.is_navigable
         ]
         for schedule_slug in unsupported:
             assert schedule_slug not in entry["schedules"]

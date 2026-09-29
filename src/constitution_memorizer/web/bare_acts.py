@@ -114,6 +114,63 @@ BARE_ACTS: dict[str, BareActSpec] = {
         # bnss_canonical_v3.json to keep the two generations apart.
         source_version="1",
     ),
+    "pota": BareActSpec(
+        slug="pota",
+        filename="pota_runtime_v1.json",
+        short_name="The POTA, 2002",
+        back_label="← The POTA, 2002",
+        short_title="POTA",
+        # POTA's six node types are a strict subset of the nine BNS renders,
+        # at shallower nesting and with the same null-label paragraph/proviso
+        # pattern. Checked type by type against ProvisionRow before reusing it.
+        render_profile="bns",
+        source_version="1",
+    ),
+    "uapa": BareActSpec(
+        slug="uapa",
+        filename="uapa_runtime_v1.json",
+        short_name="The UAPA, 1967",
+        back_label="← The UAPA, 1967",
+        short_title="UAPA",
+        # Six node types, a strict subset of the nine BNS renders, at shallower
+        # nesting. Checked type by type against ProvisionRow before reusing it.
+        render_profile="bns",
+        # Identity of the runtime artifact. The canonical export is schema 1.2
+        # / parser v6 and is archived as uapa_canonical_v6.json.
+        source_version="1",
+    ),
+    "pss": BareActSpec(
+        slug="pss",
+        filename="pss_runtime_v1.json",
+        short_name="The PSS Act, 2007",
+        back_label="← The PSS Act, 2007",
+        short_title="PSS",
+        # Six node types, a strict subset of the nine BNS renders. Verified by
+        # loading the canonical through this module before the entry existed.
+        render_profile="bns",
+        # Identity of the runtime artifact, not the canonical parser
+        # generation: the export is parser v3, archived as
+        # pss_canonical_v3.json, and this is its first runtime release.
+        source_version="1",
+    ),
+    "mtp": BareActSpec(
+        slug="mtp",
+        filename="mtp_runtime_v1.json",
+        short_name="The MTP Act, 1971",
+        back_label="← The MTP Act, 1971",
+        short_title="MTP",
+        # Five node types — subsection, clause, paragraph, proviso,
+        # explanation — a strict subset of the nine BNS renders. Verified by
+        # loading the canonical through this module before the entry existed.
+        render_profile="bns",
+        # The first Act with no chapters at all: nine sections at the top
+        # level of the source, which the parser stores under `sections`
+        # beside an empty `chapters`. Nothing about the reader changes per
+        # Act; the loader reads either shape.
+        # Identity of the runtime artifact. The canonical export is parser
+        # v3, archived as mtp_canonical_v3.json.
+        source_version="1",
+    ),
 }
 
 
@@ -164,6 +221,21 @@ class ProvisionRow:
     # Illustration containers hold no text of their own; the child count is
     # what decides "Illustration" against "Illustrations".
     child_count: int = 0
+    # How many editorial amendment brackets the source printed immediately
+    # before this provision's marker. An int the parser counted, never a
+    # general "has metadata" signal: only a positive count renders a bracket.
+    leading_brackets: int = 0
+
+    @property
+    def bracket_prefix(self) -> str:
+        """The "[" run that belongs before the marker, or "".
+
+        The source prints an amended provision as ``3[(ea) ... ;]`` — footnote
+        anchor, opening bracket, then the marker. The closing bracket already
+        lives in the text, wherever the span ends, so emitting this keeps the
+        pair balanced and in source order without moving any text.
+        """
+        return "[" * self.leading_brackets if self.leading_brackets > 0 else ""
 
     @property
     def is_table(self) -> bool:
@@ -301,6 +373,66 @@ class ProvisionRow:
 
 
 @dataclass(frozen=True)
+class ReferenceSegment:
+    """One run of a reference string, carrying a link target when it has one."""
+
+    text: str
+    href: str = ""
+
+    @property
+    def is_link(self) -> bool:
+        return bool(self.href)
+
+
+# A section citation inside a reference: the number, plus any parenthesised
+# parts printed immediately after it. "35(1)" and "2(1) (m)" are one citation
+# each; the trailing groups stay inside the anchor text because that is what
+# the statute prints, even though the route resolves to the bare section.
+_CITATION = re.compile(r"(\d+[A-Z]*)((?:\s*\([0-9a-zA-Z]+\))*)")
+# Citations are only recognised after the word "section"/"sections", and then
+# through the separators a list of them uses. Anchoring on the keyword is what
+# keeps "clause (b)" and "Explanation" from being mistaken for one.
+_SECTION_KEYWORD = re.compile(r"\bsections?\b", re.IGNORECASE)
+_SEPARATOR = re.compile(r"\s*(?:,|and|&)?\s*", re.IGNORECASE)
+
+
+def _reference_segments(text: str, known: frozenset[str], slug: str):
+    """Split a reference into plain runs and section links.
+
+    The text is preserved byte for byte: every character of the input appears
+    in exactly one segment, in order, unaltered. Nothing is reworded, no
+    punctuation is normalised, "See" is never dropped, and a citation to a
+    section this Act does not have stays plain text rather than becoming a
+    link to a 404.
+    """
+    segments: list[ReferenceSegment] = []
+    plain_from = 0
+    cursor = 0
+
+    def flush(upto: int) -> None:
+        if upto > plain_from:
+            segments.append(ReferenceSegment(text[plain_from:upto]))
+
+    while (keyword := _SECTION_KEYWORD.search(text, cursor)) is not None:
+        cursor = keyword.end()
+        # Walk the run of citations that follows, stopping at the first thing
+        # that is not one.
+        while True:
+            gap = _SEPARATOR.match(text, cursor)
+            citation = _CITATION.match(text, gap.end())
+            if citation is None or citation.group(1) not in known:
+                break
+            flush(citation.start())
+            number = citation.group(1)
+            segments.append(
+                ReferenceSegment(citation.group(0), f"/laws/{slug}/section/{number}")
+            )
+            cursor = plain_from = citation.end()
+    flush(len(text))
+    return tuple(segments)
+
+
+@dataclass(frozen=True)
 class ScheduleColumn:
     """A column's stable key and its printed heading."""
 
@@ -344,19 +476,66 @@ class SchedulePart:
 
 
 @dataclass(frozen=True)
-class ScheduleNote:
-    """An explanatory note printed under a schedule's tables."""
+class ScheduleListEntry:
+    """One item of a statutory list.
 
-    number: str
+    POTA's Schedule is 32 terrorist organisations numbered 1-32. That is not a
+    table: it has one column of prose and its own marker, and forcing it into
+    the parts/columns/rows model would mean inventing headings the statute
+    never printed.
+
+    A list marker is not always a serial. UAPA's First Schedule numbers its
+    entries 1-33, but its Second Schedule labels them (i)-(x) and its Third
+    (a)-(c). `marker` is what the statute prints and what the reader shows;
+    `serial_number` and `label` are kept as the source supplied them, so a
+    caller can still ask which of the two it was.
+    """
+
+    marker: str
     text: str
     source_pages: tuple[int, ...] = ()
+    serial_number: str = ""
+    label: str = ""
+    # Editorial amendment brackets printed before this entry's marker, same
+    # contract as ProvisionRow: a count the parser measured, nothing else.
+    leading_brackets: int = 0
+
+    @property
+    def bracket_prefix(self) -> str:
+        return "[" * self.leading_brackets if self.leading_brackets > 0 else ""
+
+    @property
+    def is_numbered(self) -> bool:
+        """A plain integer serial, which an <ol> can number natively."""
+        return self.marker.isdigit()
+
+
+@dataclass(frozen=True)
+class ScheduleNote:
+    """An explanatory note printed under a schedule's entries or tables.
+
+    Numbered in BNSS ("1.", "2."), labelled in POTA ("Explanation."). The
+    marker is derived from whichever the source supplies so the template never
+    punctuates one itself.
+    """
+
+    number: str = ""
+    label: str = ""
+    text: str = ""
+    source_pages: tuple[int, ...] = ()
+
+    @property
+    def marker(self) -> str:
+        raw = self.number or self.label
+        return f"{raw.rstrip('.')}." if raw else ""
 
 
 @dataclass(frozen=True)
 class Schedule:
     """A schedule, generic across Acts.
 
-    `kind` is "table" when the content fits the parts/columns/rows model above.
+    `kind` is "table" when the content fits the parts/columns/rows model above,
+    and "list" when it is a numbered list of entries (POTA's 32 organisations).
     Anything else — BNSS's Second Schedule is 58 positioned-text forms — is kept
     whole on `raw_payload` with a reason, and is neither routed nor rendered.
     That escape hatch is the difference between deferring a structure and
@@ -368,16 +547,41 @@ class Schedule:
     reference: str
     heading: str
     parts: tuple[SchedulePart, ...] = ()
+    entries: tuple[ScheduleListEntry, ...] = ()
     notes: tuple[ScheduleNote, ...] = ()
     number: str = ""
     kind: str = "table"
+    # Editorial amendment brackets printed before this schedule's title. The
+    # source opens "[THE SECOND SCHEDULE" and closes at the end of the THIRD,
+    # and opens "[THE FOURTH SCHEDULE" closing in its own residual line.
+    leading_brackets: int = 0
+    # Source fragments the schedule printed but that belong to no row — the
+    # Fourth Schedule's span closes in one, since it prints no rows at all.
+    source_residuals: tuple[str, ...] = ()
     unsupported_reason: str = ""
     source_pages: tuple[int, ...] = ()
     raw_payload: dict[str, Any] | None = field(default=None, repr=False)
 
     @property
+    def bracket_prefix(self) -> str:
+        return "[" * self.leading_brackets if self.leading_brackets > 0 else ""
+
+    @property
     def is_table(self) -> bool:
         return self.kind == "table"
+
+    @property
+    def is_list(self) -> bool:
+        return self.kind == "list"
+
+    @property
+    def is_navigable(self) -> bool:
+        """Has a page we can actually draw.
+
+        Distinct from `is_table`: a list schedule is rendered and routed but
+        has no columns. Only an unsupported schedule is unreachable.
+        """
+        return self.kind in {"table", "list"}
 
     @property
     def label(self) -> str:
@@ -407,7 +611,7 @@ class Schedule:
         groups plus 3 Part II rows, not a count of printed rows. Do not
         reinterpret this number as source-document geometry.
         """
-        return sum(len(part.rows) for part in self.parts)
+        return sum(len(part.rows) for part in self.parts) + len(self.entries)
 
     @property
     def range_label(self) -> str:
@@ -419,9 +623,12 @@ class Schedule:
         numbers in a lookup column, and a span there would read as a range of
         this Act's own sections.
         """
-        if len(self.parts) != 1 or not self.parts[0].rows:
+        if self.entries:
+            keys = [entry.marker for entry in self.entries]
+        elif len(self.parts) != 1 or not self.parts[0].rows:
             return f"{self.row_count} entries" if self.row_count else ""
-        keys = [row.cells[0] for row in self.parts[0].rows if row.cells]
+        else:
+            keys = [row.cells[0] for row in self.parts[0].rows if row.cells]
         if not keys or len(set(keys)) != len(keys):
             return f"{self.row_count} entries"
         first, last = keys[0], keys[-1]
@@ -456,6 +663,30 @@ class ActSection:
     division_id: str | None = None
     division_title: str | None = None
     starts_division: bool = False
+    # Nine UAPA sections are printed as whole amendment spans (``2[17. ...``).
+    leading_brackets: int = 0
+    # A footnote whose superscript is printed before the section number
+    # ("2[4. Place where ...") hangs on the title. NDPS records 27 of these
+    # and MTP two; the anchor is the whole title, as the canonical stores it.
+    title_annotations: tuple[dict[str, Any], ...] = ()
+
+    @property
+    def bracket_prefix(self) -> str:
+        return "[" * self.leading_brackets if self.leading_brackets > 0 else ""
+
+    @property
+    def title_note_id(self) -> str | None:
+        """The note hung on the section heading, if the source printed one."""
+        return _first_footnote_id(self.title_annotations)
+
+    @property
+    def has_chapter(self) -> bool:
+        """False for a section of an Act that prints no chapters (MTP).
+
+        The chapter fields are then "" rather than an invented "Chapter I":
+        the statute never groups its sections, so the reader must not either.
+        """
+        return bool(self.chapter_number)
 
     @property
     def is_omitted(self) -> bool:
@@ -471,6 +702,18 @@ class ActSection:
         if self.is_omitted:
             return "Omitted"
         return self.title
+
+    @property
+    def omission_heading(self) -> str:
+        """What the provision was, for an omitted section's own page.
+
+        NDPS supplies `former_title` beside a "[Omitted]" title. UAPA's section
+        16A supplies neither: its whole statement — the former heading and the
+        amending Act that removed it — is the canonical `title`. Falling back
+        to that keeps the text the source preserved rather than replacing it
+        with the word "Omitted".
+        """
+        return self.former_title or self.title
 
     @property
     def rows(self) -> tuple[ProvisionRow, ...]:
@@ -495,6 +738,8 @@ class ActSection:
     def note_ids(self) -> tuple[str, ...]:
         """Every footnote this section cites, once each, in reading order."""
         seen: list[str] = []
+        if self.title_note_id:
+            seen.append(self.title_note_id)
         for row in self.rows:
             for note_id in row.note_ids:
                 if note_id not in seen:
@@ -507,6 +752,15 @@ class ActChapter:
     number: str
     title: str
     sections: tuple[ActSection, ...]
+    # An amendment span can cover a whole chapter: PSS prints "2[CHAPTER II"
+    # and closes at the end of its only section. Same contract as sections,
+    # rows, schedules and list entries — a count the parser measured, and only
+    # a positive one renders a bracket.
+    leading_brackets: int = 0
+
+    @property
+    def bracket_prefix(self) -> str:
+        return "[" * self.leading_brackets if self.leading_brackets > 0 else ""
 
     @property
     def range_label(self) -> str:
@@ -528,6 +782,10 @@ class BareAct:
     back_label: str
     act_number: str
     render_profile: str
+    # Statutory front matter. Read for the Act-info card and the bracket
+    # stream; never edited, never written back.
+    long_title: str
+    enactment_date: str
     chapters: tuple[ActChapter, ...]
     section_order: tuple[ActSection, ...]
     footnotes: dict[str, Footnote] = field(default_factory=dict)
@@ -540,18 +798,112 @@ class BareAct:
                 return sched
         return None
 
+    def bracket_stream(self) -> tuple[tuple[str, str], ...]:
+        """Every editorial bracket in the Act, in canonical document order.
+
+        Each item is ``(character, where)``. Balance is an Act-wide property,
+        never a per-node or per-section one: the source opens a span at s.18A
+        and closes it at the end of s.18B, and opens at a clause and closes on
+        a descendant. Checking any smaller unit would demand manufacturing a
+        close/open pair at the boundary, which would be inventing source text.
+        """
+        stream: list[tuple[str, str]] = []
+        # Front matter first, because it is first in the document. UAPA's long
+        # title carries "[, and for dealing with terrorist activities,]" — a
+        # real amendment span that the card now puts on screen, so leaving it
+        # out would mean rendering a bracket the validator never examines.
+        stream.extend((c, "long title") for c in self.long_title if c in "[]")
+        # Chapter, then its own sections: a chapter-level span opens before its
+        # first section and closes inside one of them, so the walk has to
+        # interleave rather than list every chapter and then every section.
+        def walk_section(section: ActSection) -> None:
+            where = f"s{section.number}"
+            stream.extend((c, f"{where} heading") for c in section.bracket_prefix)
+            stream.extend((c, f"{where} title") for c in section.title if c in "[]")
+            for row in section.rows:
+                label = row.label or row.kind
+                stream.extend((c, f"{where} {label}") for c in row.bracket_prefix)
+                stream.extend((c, f"{where} {label}") for c in row.text if c in "[]")
+
+        for chapter in self.chapters:
+            where = f"chapter {chapter.number}"
+            stream.extend((c, f"{where} heading") for c in chapter.bracket_prefix)
+            stream.extend((c, f"{where} title") for c in chapter.title if c in "[]")
+            for section in chapter.sections:
+                walk_section(section)
+        # An Act with no chapters keeps its sections at the top level; they are
+        # part of the same document stream and get the same examination.
+        for section in self.unchaptered_sections:
+            walk_section(section)
+        # Schedules are part of the same document stream: UAPA opens a span at
+        # "[THE SECOND SCHEDULE" and closes it on an entry, so leaving them out
+        # would let an orphaned bracket through the validator unseen.
+        for schedule in self.schedules:
+            where = schedule.slug
+            stream.extend((c, f"{where} heading") for c in schedule.bracket_prefix)
+            stream.extend((c, f"{where} title") for c in schedule.title if c in "[]")
+            stream.extend((c, f"{where} reference") for c in schedule.reference if c in "[]")
+            stream.extend((c, f"{where} heading") for c in schedule.heading if c in "[]")
+            for entry in schedule.entries:
+                stream.extend((c, f"{where} {entry.marker}") for c in entry.bracket_prefix)
+                stream.extend((c, f"{where} {entry.marker}") for c in entry.text if c in "[]")
+            for part in schedule.parts:
+                for row in part.rows:
+                    for cell in row.cells:
+                        stream.extend((c, f"{where} row") for c in cell if c in "[]")
+            # The Fourth Schedule's span closes in a residual line rather than
+            # in a row, because the source prints no rows at all.
+            for residual in schedule.source_residuals:
+                stream.extend((c, f"{where} residual") for c in residual if c in "[]")
+        return tuple(stream)
+
+    def unbalanced_brackets(self) -> tuple[tuple[str, str], ...]:
+        """Brackets with no partner, as ``(kind, where)``. Empty when sound.
+
+        `kind` is "unmatched-close" for a closer whose opening was lost — the
+        exact failure that marker extraction used to cause — or "unclosed-open"
+        for the reverse.
+
+        Counting only. The stack here detects orphans; it does not claim which
+        closer belongs to which opener. Nothing in the source establishes that
+        pairing from character order alone — amendment spans run in sequence
+        rather than nesting, and s.2(1)(eb) prints a doubled ``[[`` — so any
+        inferred opener-to-closer attribution is diagnostic, never canonical.
+        """
+        stack: list[str] = []
+        problems: list[tuple[str, str]] = []
+        for char, where in self.bracket_stream():
+            if char == "[":
+                stack.append(where)
+            elif stack:
+                stack.pop()
+            else:
+                problems.append(("unmatched-close", where))
+        problems.extend(("unclosed-open", where) for where in stack)
+        return tuple(problems)
+
+    def reference_segments(self, text: str) -> tuple[ReferenceSegment, ...]:
+        """A schedule's reference, split so section citations can be links.
+
+        Presentation only: the canonical string is unchanged, and the segments
+        reassemble to it exactly.
+        """
+        return _reference_segments(
+            str(text or ""), frozenset(self._by_number), self.slug
+        )
+
     @property
     def public_schedule_slugs(self) -> tuple[str, ...]:
         """Schedule slugs that have a supported public reader route.
 
         The single filter point for sitemap/discovery inventory. It mirrors the
-        route contract exactly: ``bare_act_schedule_page`` 404s any schedule
-        without a table representation, so a schedule is public iff it renders
-        as a table. This deliberately excludes parsed-but-unrenderable schedules
-        (e.g. BNSS's deferred Second-Schedule forms) so a sitemap never
-        advertises an unroutable URL.
+        route contract exactly: ``bare_act_schedule_page`` 404s any schedule it
+        has no representation for, so a schedule is public iff it is navigable
+        — a table (NDPS, BNSS's First) or a list (POTA's). This deliberately
+        excludes parsed-but-unrenderable schedules (e.g. BNSS's deferred
+        Second-Schedule forms) so a sitemap never advertises an unroutable URL.
         """
-        return tuple(sched.slug for sched in self.schedules if sched.is_table)
+        return tuple(sched.slug for sched in self.schedules if sched.is_navigable)
 
     def notes(self, note_ids) -> tuple[Footnote, ...]:
         """Resolve ids to notes, skipping any the data does not carry."""
@@ -564,6 +916,16 @@ class BareAct:
         return len(self.chapters)
 
     @property
+    def unchaptered_sections(self) -> tuple[ActSection, ...]:
+        """Sections the source prints under no chapter, in the Act's order.
+
+        Every section of MTP; none of any other Act. A source that mixed the
+        two shapes would list these after its chapters, which is where the
+        loader appends them.
+        """
+        return tuple(s for s in self.section_order if not s.has_chapter)
+
+    @property
     def section_range(self) -> str:
         if not self.section_order:
             return ""
@@ -574,7 +936,14 @@ class BareAct:
 
     @property
     def meta_label(self) -> str:
-        """"8 Chapters · Sections 1–83" — derived, never typed into a template."""
+        """"8 Chapters · Sections 1–83" — derived, never typed into a template.
+
+        An Act that prints no chapters is described by its sections alone:
+        "Sections 1–8", never "0 Chapters · Sections 1–8", which would report a
+        structure the statute does not have as if it were a count of zero.
+        """
+        if not self.chapters:
+            return f"Sections {self.section_range}"
         return (
             f"{self.chapter_count} Chapters · "
             f"Sections {self.section_range}"
@@ -790,29 +1159,150 @@ def _parse_entry_schedule(raw: dict[str, Any], slug: str) -> Schedule:
     )
 
 
-def _parse_schedule(raw: dict[str, Any]) -> Schedule:
-    """Dispatch on the shape the source actually has.
+def _residual_texts(raw: dict[str, Any]) -> tuple[str, ...]:
+    return tuple(
+        str(item.get("text") or "")
+        for item in raw.get("source_residuals") or []
+        if isinstance(item, dict)
+    )
 
-    Three shapes so far: `entries[]` (NDPS), `parts[]` of column tables (BNSS's
-    First Schedule), and anything else. The last is kept whole rather than
-    coerced — see Schedule.raw_payload.
+
+def _parse_list_schedule(raw: dict[str, Any], slug: str) -> Schedule:
+    """A schedule declared `"type": "list"` — numbered entries, no columns.
+
+    Raises rather than degrading: a declared list whose entries are malformed
+    is a broken export, and rendering it half-empty would look like the statute
+    saying nothing.
+    """
+    raw_entries = raw.get("entries")
+    if not isinstance(raw_entries, list) or not raw_entries:
+        raise ValueError(f"schedule {slug!r} declares type 'list' but has no entries")
+    entries = []
+    for i, entry in enumerate(raw_entries):
+        if not isinstance(entry, dict):
+            raise ValueError(f"schedule {slug!r} entry {i} is not an object")
+        text = str(entry.get("text") or "").strip()
+        if not text:
+            raise ValueError(f"schedule {slug!r} entry {i} has no text")
+        serial = str(entry.get("serial_number") or "").strip()
+        label = str(entry.get("label") or "").strip()
+        marker = serial or label
+        if not marker:
+            raise ValueError(f"schedule {slug!r} entry {i} has no serial_number or label")
+        entries.append(
+            ScheduleListEntry(
+                marker=marker,
+                text=text,
+                source_pages=_pages(entry),
+                serial_number=serial,
+                label=label,
+                leading_brackets=int(entry.get("leading_brackets") or 0),
+            )
+        )
+    return Schedule(
+        slug=slug,
+        title=str(raw.get("title") or "The Schedule"),
+        reference=str(raw.get("reference") or ""),
+        heading=str(raw.get("heading") or raw.get("title") or ""),
+        entries=tuple(entries),
+        notes=_parse_schedule_notes(raw),
+        number=str(raw.get("number") or ""),
+        leading_brackets=int(raw.get("leading_brackets") or 0),
+        kind="list",
+        source_pages=_pages(raw),
+    )
+
+
+def _parse_schedule_notes(raw: dict[str, Any]) -> tuple[ScheduleNote, ...]:
+    """Notes under a schedule, from either shape the sources use.
+
+    BNSS ships `explanatory_notes[]` numbered "1"/"2". POTA ships a single
+    `explanation` object labelled "Explanation" — legally material, since it
+    is what section 1(6) leans on when it carves out serial numbers 24 and 25.
+    Both land on ScheduleNote; neither canonical file is rewritten to match
+    the other.
+    """
+    notes = [
+        ScheduleNote(
+            number=str(note.get("number") or ""),
+            label=str(note.get("label") or ""),
+            text=str(note.get("text") or ""),
+            source_pages=_pages(note),
+        )
+        for note in raw.get("explanatory_notes") or []
+    ]
+    explanation = raw.get("explanation")
+    if isinstance(explanation, dict):
+        notes.append(
+            ScheduleNote(
+                number=str(explanation.get("number") or ""),
+                label=str(explanation.get("label") or "Explanation"),
+                text=str(explanation.get("text") or ""),
+                source_pages=_pages(explanation),
+            )
+        )
+    return tuple(notes)
+
+
+def _is_ndps_entry_schedule(raw: dict[str, Any]) -> bool:
+    """The complete NDPS signature, not a family resemblance.
+
+    `entries[]` is a generic container name that two unrelated shapes use, so
+    matching on it alone routed POTA's 32 organisations into the drug adapter
+    and rendered them as four empty columns. Every required field must be
+    present on every entry; a schedule that only half-matches is unfamiliar,
+    and unfamiliar means preserved, never guessed.
+    """
+    entries = raw.get("entries")
+    if not isinstance(entries, list) or not entries:
+        return False
+    required = [source for _, source in _NDPS_ENTRY_FIELDS]
+    return all(
+        isinstance(entry, dict) and all(field in entry for field in required)
+        for entry in entries
+    )
+
+
+def _parse_schedule(raw: dict[str, Any]) -> Schedule:
+    """Dispatch on what the source declares, then on complete signatures.
+
+    Deterministic and ordered. A declared `type` wins outright; otherwise a
+    shape must match in full to claim a parser. Anything left over is kept
+    whole rather than coerced — see Schedule.raw_payload.
     """
     slug = _schedule_slug(str(raw.get("id") or ""))
-    if raw.get("entries") is not None:
-        return _parse_entry_schedule(raw, slug)
+    declared = str(raw.get("type") or "")
+    if declared == "list":
+        return _parse_list_schedule(raw, slug)
+
+    if declared == "table":
+        # Two canonical table shapes, both explicit. UAPA declares a single
+        # grid under `table: {columns, rows}`; BNSS supplies `parts[]`. A
+        # declared table with neither is a shape we do not know, and it falls
+        # through to the unsupported path rather than being guessed at.
+        table = raw.get("table")
+        if isinstance(table, dict) and "columns" in table:
+            part = _parse_table_part(
+                {"id": "table", "columns": table.get("columns"), "rows": table.get("rows")},
+                "table",
+            )
+            return Schedule(
+                slug=slug,
+                title=str(raw.get("title") or "The Schedule"),
+                reference=str(raw.get("reference") or ""),
+                heading=str(raw.get("heading") or raw.get("title") or ""),
+                parts=(part,),
+                notes=_parse_schedule_notes(raw),
+                number=str(raw.get("number") or ""),
+                leading_brackets=int(raw.get("leading_brackets") or 0),
+                source_residuals=_residual_texts(raw),
+                source_pages=_pages(raw),
+            )
 
     if raw.get("parts") is not None:
         parts = tuple(
             _parse_table_part(part, f"part_{i + 1}")
             for i, part in enumerate(raw.get("parts") or [])
-        )
-        notes = tuple(
-            ScheduleNote(
-                number=str(note.get("number") or ""),
-                text=str(note.get("text") or ""),
-                source_pages=_pages(note),
-            )
-            for note in raw.get("explanatory_notes") or []
         )
         return Schedule(
             slug=slug,
@@ -820,10 +1310,14 @@ def _parse_schedule(raw: dict[str, Any]) -> Schedule:
             reference=str(raw.get("reference") or ""),
             heading=str(raw.get("heading") or raw.get("title") or ""),
             parts=parts,
-            notes=notes,
+            notes=_parse_schedule_notes(raw),
             number=str(raw.get("number") or ""),
+            leading_brackets=int(raw.get("leading_brackets") or 0),
             source_pages=_pages(raw),
         )
+
+    if _is_ndps_entry_schedule(raw):
+        return _parse_entry_schedule(raw, slug)
 
     # Unknown shape — BNSS's Second Schedule is 58 positioned-text forms. Keep
     # every byte, name why it is not rendered, and stay out of the table path.
@@ -940,6 +1434,7 @@ def flatten_body(nodes, depth: int = 0, *, profile: str = "ndps") -> tuple[Provi
             label_annotations=tuple(node.get("label_annotations") or ()),
             profile=profile,
             child_count=len(children),
+            leading_brackets=int(node.get("leading_brackets") or 0),
         )
         if text or label or row.is_illustration_heading or row.is_table:
             rows.append(row)
@@ -966,16 +1461,17 @@ def _parse(
     document = data.get("document") or {}
     chapters: list[ActChapter] = []
     order: list[ActSection] = []
-    for raw_chapter in data.get("chapters") or []:
-        chapter_number = str(raw_chapter.get("number") or "")
-        chapter_title = title_case_chapter(raw_chapter.get("title") or "")
+
+    def parse_sections(
+        raw_sections, chapter_number: str, chapter_title: str
+    ) -> tuple[ActSection, ...]:
         sections: list[ActSection] = []
         # Reset per chapter: a division belongs to one chapter, and the first
         # section of each division is where its heading is drawn. Sections
         # before a chapter's first division carry no id and stay ungrouped —
         # Chapters III, XVIII and XIX all open that way.
         previous_division: str | None = None
-        for raw_section in raw_chapter.get("sections") or []:
+        for raw_section in raw_sections or []:
             division_id = raw_section.get("division_id") or None
             section = ActSection(
                 # Never an int: 7A, 25A, 68-I, 68-O and 68Z are all real.
@@ -984,6 +1480,8 @@ def _parse(
                 status=str(raw_section.get("status") or "active"),
                 former_title=raw_section.get("former_title"),
                 omission_note=raw_section.get("omission_note"),
+                leading_brackets=int(raw_section.get("leading_brackets") or 0),
+                title_annotations=tuple(raw_section.get("title_annotations") or ()),
                 chapter_number=chapter_number,
                 chapter_title=chapter_title,
                 body=tuple(raw_section.get("body") or []),
@@ -997,13 +1495,26 @@ def _parse(
             previous_division = division_id
             sections.append(section)
             order.append(section)
+        return tuple(sections)
+
+    for raw_chapter in data.get("chapters") or []:
+        chapter_number = str(raw_chapter.get("number") or "")
+        chapter_title = title_case_chapter(raw_chapter.get("title") or "")
         chapters.append(
             ActChapter(
                 number=chapter_number,
                 title=chapter_title,
-                sections=tuple(sections),
+                sections=parse_sections(
+                    raw_chapter.get("sections"), chapter_number, chapter_title
+                ),
+                leading_brackets=int(raw_chapter.get("leading_brackets") or 0),
             )
         )
+    # An Act with no chapters — MTP is nine sections and nothing above them —
+    # keeps its sections at the top level of the export. They are read with
+    # empty chapter fields rather than under a chapter the statute never
+    # printed; ActSection.has_chapter is how the templates tell the two apart.
+    parse_sections(data.get("sections"), "", "")
     schedules = [_parse_schedule(s) for s in data.get("schedules") or []]
     for patch in patches:
         schedules.extend(_parse_schedule(s) for s in patch.get("schedules") or [])
@@ -1022,6 +1533,12 @@ def _parse(
         back_label=spec.back_label,
         act_number=str(document.get("act_number") or ""),
         render_profile=spec.render_profile,
+        long_title=str(data.get("long_title") or ""),
+        # NDPS, BNS and BNSS print `enactment_date`; UAPA and PSS print
+        # `date`. POTA's source carries neither, and no date is invented for it.
+        enactment_date=str(
+            document.get("enactment_date") or document.get("date") or ""
+        ),
         chapters=tuple(chapters),
         # One ordered list of every section in the Act, in the Act's own order.
         section_order=tuple(order),

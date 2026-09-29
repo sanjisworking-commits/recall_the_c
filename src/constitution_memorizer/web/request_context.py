@@ -29,6 +29,7 @@ _request_notes: ContextVar[dict[str, str] | None] = ContextVar(
 TIMING_STAGES: tuple[str, ...] = (
     "auth_session",
     "request_bootstrap",
+    "learn_mutation_preload",
     "profile",
     "progress_preload",
     "split_prefs",

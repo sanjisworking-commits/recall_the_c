@@ -70,6 +70,8 @@ class CalendarStore(Protocol):
 
     def mark_sync_pending(self, user_id: UUID | str) -> None: ...
 
+    def mark_sync_pending_if_active(self, user_id: UUID | str) -> bool: ...
+
     def mark_sync_result(
         self, user_id: UUID | str, *, ok: bool, error: str | None = None
     ) -> None: ...
@@ -215,6 +217,18 @@ class SqliteCalendarStore:
             (now, now, as_user_id(user_id)),
         )
         self._conn.commit()
+
+    def mark_sync_pending_if_active(self, user_id: UUID | str) -> bool:
+        now = _utcnow().isoformat()
+        cur = self._conn.execute(
+            "UPDATE google_calendar_connections SET sync_pending = 1, "
+            "sync_requested_at = ?, updated_at = ? "
+            "WHERE user_id = ? AND sync_status != ? "
+            "AND refresh_token_sealed IS NOT NULL",
+            (now, now, as_user_id(user_id), SYNC_DISCONNECTED),
+        )
+        self._conn.commit()
+        return cur.rowcount > 0
 
     def mark_sync_result(
         self, user_id: UUID | str, *, ok: bool, error: str | None = None
@@ -431,6 +445,21 @@ class PostgresCalendarStore:
                 )
             ]
         )
+
+    def mark_sync_pending_if_active(self, user_id: UUID | str) -> bool:
+        now = _utcnow()
+        with self._pool.connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "UPDATE google_calendar_connections SET sync_pending = TRUE, "
+                    "sync_requested_at = %s, updated_at = %s "
+                    "WHERE user_id = %s AND sync_status <> %s "
+                    "AND refresh_token_sealed IS NOT NULL",
+                    (now, now, as_user_id(user_id), SYNC_DISCONNECTED),
+                )
+                changed = cur.rowcount > 0
+            conn.commit()
+        return changed
 
     def mark_sync_result(
         self, user_id: UUID | str, *, ok: bool, error: str | None = None

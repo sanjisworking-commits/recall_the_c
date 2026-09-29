@@ -110,15 +110,19 @@ def schedule_sync(request: Request, user_id) -> None:
     store = request.app.state.calendar_store
     started = perf_counter()
     try:
-        connection = store.get_connection(user_id)
-        if connection is None or not connection.is_active:
-            return
-        store.mark_sync_pending(user_id)
+        # One atomic round trip: flag sync_pending only when an active
+        # connection exists, and tell us whether it did. This replaces the
+        # get_connection + mark_sync_pending pair (~460 ms of sequential RTT in
+        # production) while preserving the durable pending guarantee and the
+        # "no active connection → no task" behavior.
+        active = store.mark_sync_pending_if_active(user_id)
     except Exception:  # noqa: BLE001 — never break the request path
         logger.exception("calendar sync flagging failed")
         return
     finally:
         _record_timing("calendar_sync_schedule", started)
+    if not active:
+        return
     engine = request.app.state.engine.for_user(user_id)
     settings = request.app.state.multiuser_settings
     factory = make_client_factory(request)

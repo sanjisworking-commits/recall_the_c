@@ -6,10 +6,13 @@ import sqlite3
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta, timezone
 from collections.abc import Callable, Sequence
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 from uuid import UUID
 
 from constitution_memorizer.progress.user_ids import as_user_id
+
+if TYPE_CHECKING:
+    from constitution_memorizer.admin.store import AccessOverride
 
 SplitMode = Literal["whole", "letters"]
 ProgressStatus = Literal["new", "review", "mastered"]
@@ -235,6 +238,42 @@ class AutoPlanDay:
     items: tuple[AutoPlanItem, ...] = ()
     created_at: str | None = None
     updated_at: str | None = None
+
+
+# Setting key for the one-time grandfather backfill marker. Shared so the
+# account preload and the engine agree on the flag name.
+FREE_ARTICLES_BACKFILLED_KEY = "free_articles_backfilled"
+
+
+@dataclass(frozen=True)
+class AccountPreload:
+    """Minimal account read for mutation routes (/seen, /quiz).
+
+    Just the grandfather-backfill flag and the claimed-Article set — the two
+    reads ``preload_account_claims`` needs — so they can be fetched in one
+    pipelined round trip instead of two sequential ones.
+    """
+
+    backfilled: bool
+    claimed_articles: frozenset[str]
+
+
+@dataclass(frozen=True)
+class LearnMutationPreload:
+    """Everything a persisted /seen or /quiz needs, in ONE pipelined read.
+
+    Bundles the full app_settings (for user_timezone + the backfill flag), the
+    complete progress set (for early-revision/stale-cycle checks and the write),
+    the claimed Articles, and the authoritative per-request AccessOverride —
+    all independent SELECTs queued on one connection so Postgres pays a single
+    network round trip. Seeding the engine caches + request.state.access_override
+    from this leaves only the mutation write as the second round trip.
+    """
+
+    settings: dict[str, str]
+    progress: tuple[ProgressRecord, ...]
+    claimed_articles: frozenset[str]
+    access_override: "AccessOverride"
 
 
 @dataclass(frozen=True)
@@ -812,6 +851,68 @@ class ProgressRepository:
             (as_user_id(user_id),),
         ).fetchall()
         return {str(r["article_number"]) for r in rows}
+
+    def load_account_preload(self, user_id: UUID | str) -> AccountPreload:
+        uid = as_user_id(user_id)
+        flag_row = self._conn.execute(
+            "SELECT value FROM app_settings WHERE user_id = ? AND key = ?",
+            (uid, FREE_ARTICLES_BACKFILLED_KEY),
+        ).fetchone()
+        claim_rows = self._conn.execute(
+            "SELECT article_number FROM user_free_articles WHERE user_id = ?",
+            (uid,),
+        ).fetchall()
+        return AccountPreload(
+            backfilled=flag_row is not None and str(flag_row["value"]) == "1",
+            claimed_articles=frozenset(
+                str(r["article_number"]) for r in claim_rows
+            ),
+        )
+
+    def load_learn_mutation_preload(
+        self, user_id: UUID | str, *, now: datetime
+    ) -> LearnMutationPreload:
+        from constitution_memorizer.admin.store import (
+            AccessOverride,
+            _SQLITE_OVERRIDE_SQL,
+            _row_override,
+        )
+
+        uid = as_user_id(user_id)
+        settings = {
+            str(r["key"]): str(r["value"])
+            for r in self._conn.execute(
+                "SELECT key, value FROM app_settings WHERE user_id = ?", (uid,)
+            ).fetchall()
+        }
+        progress = tuple(
+            _row_to_progress(r)
+            for r in self._conn.execute(
+                "SELECT * FROM learning_unit_progress WHERE user_id = ?", (uid,)
+            ).fetchall()
+        )
+        claimed = frozenset(
+            str(r["article_number"])
+            for r in self._conn.execute(
+                "SELECT article_number FROM user_free_articles WHERE user_id = ?",
+                (uid,),
+            ).fetchall()
+        )
+        override_row = self._conn.execute(
+            _SQLITE_OVERRIDE_SQL,
+            {"uid": uid, "now": now.replace(microsecond=0).isoformat()},
+        ).fetchone()
+        override = (
+            _row_override(override_row)
+            if override_row is not None
+            else AccessOverride()
+        )
+        return LearnMutationPreload(
+            settings=settings,
+            progress=progress,
+            claimed_articles=claimed,
+            access_override=override,
+        )
 
     def claimed_articles_with_dates(self, user_id: UUID | str) -> dict[str, str]:
         """Claimed parent Articles mapped to their claimed_at ISO timestamp."""

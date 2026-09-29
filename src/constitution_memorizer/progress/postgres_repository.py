@@ -16,17 +16,20 @@ from constitution_memorizer.progress.repository import (
     NEWS_ARTICLES_KEY,
     NOTIFICATION_FREQUENCY_KEY,
     NOTIFICATION_LAST_SLOT_KEY,
+    FREE_ARTICLES_BACKFILLED_KEY,
     THEME_KEY,
     VALID_DAILY_TARGETS,
     VALID_NOTIFICATION_FREQUENCIES,
     VALID_THEMES,
     AccountBootstrap,
+    AccountPreload,
     AutoPlanDay,
     AutoPlanItem,
     AutoPlanSnapshot,
     BillingOrder,
     CompletionProgress,
     CompletionState,
+    LearnMutationPreload,
     LearningPlanMode,
     PlannerReadBundle,
     UserLearningPlan,
@@ -127,6 +130,26 @@ def _pg_delete_auto_plan_after(cur: Any, uid: Any, horizon: date) -> None:
     )
 
 
+# Postgres caps a statement at 65535 bound parameters. Both auto-plan tables
+# bind 5 columns per row, so this keeps every bulk INSERT to a single round
+# trip for any realistic roadmap (a full horizon is a few hundred rows) while
+# never overflowing the parameter limit.
+_BULK_INSERT_MAX_ROWS = 5000
+
+
+def _pg_bulk_insert(cur: Any, prefix: str, rows: list[tuple], ncols: int) -> None:
+    """Insert ``rows`` with one multi-row ``VALUES`` statement (chunked only if
+    the parameter limit would be exceeded)."""
+    if not rows:
+        return
+    group = "(" + ", ".join(["%s"] * ncols) + ")"
+    for start in range(0, len(rows), _BULK_INSERT_MAX_ROWS):
+        chunk = rows[start : start + _BULK_INSERT_MAX_ROWS]
+        placeholders = ", ".join([group] * len(chunk))
+        flat = [value for row in chunk for value in row]
+        cur.execute(f"{prefix} VALUES {placeholders}", flat)
+
+
 def _pg_replace_auto_plan_window(
     cur: Any,
     uid: Any,
@@ -137,71 +160,110 @@ def _pg_replace_auto_plan_window(
     for day in days:
         if day.plan_date < as_of:
             raise ValueError("cannot write auto_plan_date before as_of")
+    now = _utc_now()
+    # 1 + 2: clear every future row (>= as_of) for both tables. This subsumes
+    # the old window-delete-plus-tail-delete: their union is exactly >= as_of.
     cur.execute(
-        """
-        DELETE FROM auto_plan_item
-        WHERE user_id = %s AND plan_date >= %s AND plan_date <= %s
-        """,
-        (uid, as_of, horizon),
+        "DELETE FROM auto_plan_item WHERE user_id = %s AND plan_date >= %s",
+        (uid, as_of),
     )
     cur.execute(
-        """
-        DELETE FROM auto_plan_day
-        WHERE user_id = %s AND plan_date >= %s AND plan_date <= %s
-        """,
-        (uid, as_of, horizon),
+        "DELETE FROM auto_plan_day WHERE user_id = %s AND plan_date >= %s",
+        (uid, as_of),
     )
-    _pg_delete_auto_plan_after(cur, uid, horizon)
-    _pg_write_auto_plan_days(cur, uid, days, now=_utc_now())
+    if not days:
+        return
+    # 3: bulk-insert all day rows in one statement. The future window was just
+    # cleared, so no ON CONFLICT handling is needed.
+    _pg_bulk_insert(
+        cur,
+        "INSERT INTO auto_plan_day "
+        "(user_id, plan_date, daily_target, created_at, updated_at)",
+        [(uid, d.plan_date, int(d.daily_target), now, now) for d in days],
+        ncols=5,
+    )
+    # 4: bulk-insert all item rows in one statement.
+    _pg_bulk_insert(
+        cur,
+        "INSERT INTO auto_plan_item "
+        "(user_id, plan_date, learning_unit_id, position, created_at)",
+        [
+            (uid, d.plan_date, item.learning_unit_id, int(item.position), now)
+            for d in days
+            for item in d.items
+        ],
+        ncols=5,
+    )
 
 
-def _pg_load_auto_plan_snapshot(cur: Any, uid: Any, plan_row: Any) -> AutoPlanSnapshot:
-    cur.execute(
-        "SELECT * FROM learning_unit_progress WHERE user_id = %s",
-        (uid,),
-    )
-    progress_rows = cur.fetchall()
-    cur.execute(
-        "SELECT parent_clause_id, mode FROM split_preference WHERE user_id = %s",
-        (uid,),
-    )
-    split_rows = cur.fetchall()
-    cur.execute(
-        f"""
-        SELECT {_STUDY_SESSION_COLUMNS}
-        FROM study_session s
-        LEFT JOIN study_session_item i ON i.session_id = s.id
-        WHERE s.user_id = %s
-        ORDER BY s.plan_date ASC, s.kind ASC, s.created_at ASC, i.position ASC
-        """,
-        (uid,),
-    )
-    session_rows = cur.fetchall()
-    cur.execute(
-        """
-        SELECT user_id, plan_date, daily_target, created_at, updated_at
-        FROM auto_plan_day
-        WHERE user_id = %s
-        ORDER BY plan_date
-        """,
-        (uid,),
-    )
-    day_rows = cur.fetchall()
-    cur.execute(
-        """
-        SELECT user_id, plan_date, learning_unit_id, position, created_at
-        FROM auto_plan_item
-        WHERE user_id = %s
-        ORDER BY plan_date, position
-        """,
-        (uid,),
-    )
-    item_rows = cur.fetchall()
-    cur.execute(
-        "SELECT article_number FROM user_free_articles WHERE user_id = %s",
-        (uid,),
-    )
-    claimed_rows = cur.fetchall()
+_RECONCILE_PROGRESS_SQL = "SELECT * FROM learning_unit_progress WHERE user_id = %s"
+_RECONCILE_SPLIT_SQL = (
+    "SELECT parent_clause_id, mode FROM split_preference WHERE user_id = %s"
+)
+_RECONCILE_SESSIONS_SQL = f"""
+SELECT {_STUDY_SESSION_COLUMNS}
+FROM study_session s
+LEFT JOIN study_session_item i ON i.session_id = s.id
+WHERE s.user_id = %s
+ORDER BY s.plan_date ASC, s.kind ASC, s.created_at ASC, i.position ASC
+"""
+_RECONCILE_DAY_SQL = """
+SELECT user_id, plan_date, daily_target, created_at, updated_at
+FROM auto_plan_day
+WHERE user_id = %s
+ORDER BY plan_date
+"""
+_RECONCILE_ITEM_SQL = """
+SELECT user_id, plan_date, learning_unit_id, position, created_at
+FROM auto_plan_item
+WHERE user_id = %s
+ORDER BY plan_date, position
+"""
+_RECONCILE_CLAIMS_SQL = (
+    "SELECT article_number FROM user_free_articles WHERE user_id = %s"
+)
+
+
+def _pg_load_auto_plan_snapshot(
+    conn: Any, uid: Any, plan_row: Any, *, dict_row: Any
+) -> AutoPlanSnapshot:
+    """Load the reconciler's snapshot in ONE pipelined batch.
+
+    The six reads are independent, so they are queued on their own cursors and
+    flushed together (one network round trip on a build with psycopg pipeline
+    support, falling back to sequential executes otherwise). They run on the
+    same connection that already holds the ``user_learning_plan`` FOR UPDATE
+    lock, so serialization is unchanged.
+    """
+    with ExitStack() as stack:
+        progress_cur = stack.enter_context(conn.cursor(row_factory=dict_row))
+        split_cur = stack.enter_context(conn.cursor(row_factory=dict_row))
+        session_cur = stack.enter_context(conn.cursor(row_factory=dict_row))
+        day_cur = stack.enter_context(conn.cursor(row_factory=dict_row))
+        item_cur = stack.enter_context(conn.cursor(row_factory=dict_row))
+        claims_cur = stack.enter_context(conn.cursor(row_factory=dict_row))
+
+        def _queue() -> None:
+            progress_cur.execute(_RECONCILE_PROGRESS_SQL, (uid,))
+            split_cur.execute(_RECONCILE_SPLIT_SQL, (uid,))
+            session_cur.execute(_RECONCILE_SESSIONS_SQL, (uid,))
+            day_cur.execute(_RECONCILE_DAY_SQL, (uid,))
+            item_cur.execute(_RECONCILE_ITEM_SQL, (uid,))
+            claims_cur.execute(_RECONCILE_CLAIMS_SQL, (uid,))
+
+        if _pipeline_supported():
+            with conn.pipeline():
+                _queue()
+        else:
+            _queue()
+
+        progress_rows = progress_cur.fetchall()
+        split_rows = split_cur.fetchall()
+        session_rows = session_cur.fetchall()
+        day_rows = day_cur.fetchall()
+        item_rows = item_cur.fetchall()
+        claimed_rows = claims_cur.fetchall()
+
     return AutoPlanSnapshot(
         user_id=str(uid),
         plan=_row_to_learning_plan(plan_row),
@@ -650,6 +712,119 @@ class PostgresProgressRepository:
             )
             rows = cur.fetchall()
         return {str(row["article_number"]) for row in rows}
+
+    def load_account_preload(self, user_id: UUID | str) -> AccountPreload:
+        """Backfill flag + claimed Articles in one pipelined round trip."""
+        uid = as_user_id(user_id)
+        with self._pool.connection() as conn:
+            with ExitStack() as stack:
+                flag_cur = stack.enter_context(
+                    conn.cursor(row_factory=self._dict_row)
+                )
+                claims_cur = stack.enter_context(
+                    conn.cursor(row_factory=self._dict_row)
+                )
+
+                def _queue() -> None:
+                    flag_cur.execute(
+                        "SELECT value FROM app_settings "
+                        "WHERE user_id = %s AND key = %s",
+                        (uid, FREE_ARTICLES_BACKFILLED_KEY),
+                    )
+                    claims_cur.execute(
+                        "SELECT article_number FROM user_free_articles "
+                        "WHERE user_id = %s",
+                        (uid,),
+                    )
+
+                if _pipeline_supported():
+                    with conn.pipeline():
+                        _queue()
+                else:
+                    _queue()
+
+                flag_row = flag_cur.fetchone()
+                claim_rows = claims_cur.fetchall()
+        return AccountPreload(
+            backfilled=flag_row is not None and str(flag_row["value"]) == "1",
+            claimed_articles=frozenset(
+                str(row["article_number"]) for row in claim_rows
+            ),
+        )
+
+    def load_learn_mutation_preload(
+        self, user_id: UUID | str, *, now: datetime
+    ) -> LearnMutationPreload:
+        """Settings + progress + claims + access-override in one pipelined read.
+
+        All four SELECTs (including the role/grant override, which lives in the
+        same database) are queued on their own cursors on one connection, so
+        Postgres pays a single network round trip. The route then seeds the
+        engine caches and request.state.access_override, leaving only the
+        mutation write.
+        """
+        from constitution_memorizer.admin.store import (
+            AccessOverride,
+            _PG_OVERRIDE_SQL,
+            _row_override,
+        )
+
+        uid = as_user_id(user_id)
+        with self._pool.connection() as conn:
+            with ExitStack() as stack:
+                settings_cur = stack.enter_context(
+                    conn.cursor(row_factory=self._dict_row)
+                )
+                progress_cur = stack.enter_context(
+                    conn.cursor(row_factory=self._dict_row)
+                )
+                claims_cur = stack.enter_context(
+                    conn.cursor(row_factory=self._dict_row)
+                )
+                override_cur = stack.enter_context(
+                    conn.cursor(row_factory=self._dict_row)
+                )
+
+                def _queue() -> None:
+                    settings_cur.execute(
+                        "SELECT key, value FROM app_settings WHERE user_id = %s",
+                        (uid,),
+                    )
+                    progress_cur.execute(
+                        "SELECT * FROM learning_unit_progress WHERE user_id = %s",
+                        (uid,),
+                    )
+                    claims_cur.execute(
+                        "SELECT article_number FROM user_free_articles "
+                        "WHERE user_id = %s",
+                        (uid,),
+                    )
+                    override_cur.execute(_PG_OVERRIDE_SQL, {"uid": uid, "now": now})
+
+                if _pipeline_supported():
+                    with conn.pipeline():
+                        _queue()
+                else:
+                    _queue()
+
+                settings_rows = settings_cur.fetchall()
+                progress_rows = progress_cur.fetchall()
+                claim_rows = claims_cur.fetchall()
+                override_row = override_cur.fetchone()
+
+        override = (
+            _row_override(override_row)
+            if override_row is not None
+            else AccessOverride()
+        )
+        return LearnMutationPreload(
+            settings={str(r["key"]): str(r["value"]) for r in settings_rows},
+            progress=tuple(_row_progress(r) for r in progress_rows),
+            claimed_articles=frozenset(
+                str(r["article_number"]) for r in claim_rows
+            ),
+            access_override=override,
+        )
 
     def claimed_articles_with_dates(self, user_id: UUID | str) -> dict[str, str]:
         """Claimed parent Articles mapped to their claimed_at ISO timestamp."""
@@ -1286,7 +1461,9 @@ class PostgresProgressRepository:
                         (uid,),
                     )
                     plan_row = cur.fetchone()
-                    snapshot = _pg_load_auto_plan_snapshot(cur, uid, plan_row)
+                    snapshot = _pg_load_auto_plan_snapshot(
+                        conn, uid, plan_row, dict_row=self._dict_row
+                    )
                     days = builder(snapshot)
                     if days is None:
                         _pg_clear_auto_plan_from(cur, uid, as_of)

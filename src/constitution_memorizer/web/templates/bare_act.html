@@ -7,32 +7,91 @@
     <div class="mobile-topbar">
       <a class="mobile-back" href="/laws">← Laws</a>
     </div>
-    <p class="bareact-tag">Bare Act</p>
+    <p class="bareact-tag">Bare Act{% if catalog_law and catalog_law.status_label %}<span class="bareact-status">{{ catalog_law.status_label }}</span>{% endif %}</p>
     <h1 class="bareact-title">{{ act.title }}</h1>
+    {# Editorial, not statutory: this sentence is nowhere in the Act's own
+       text, and must never be written into its canonical JSON. #}
+    {% if catalog_law and catalog_law.status_note %}
+    <p class="bareact-status-note">{{ catalog_law.status_note }}</p>
+    {% endif %}
+
+    {# Playground entry point. Sits with the Act's identity, above the
+       About card and the tabs, so it is the first action under the title. #}
     {% from "partials/playground.html" import playground_cta %}
     {% if playground_state %}
     {{ playground_cta(playground_state) }}
     {% endif %}
+
+    {# Statutory rows read off the Act, editorial rows off the catalogue, the
+       span derived. A row we do not hold is absent, not blank — POTA prints
+       no enactment date anywhere, so it simply has no Enacted line. #}
+    {% if act_info and act_info.has_content %}
+    <button
+      type="button"
+      class="bareact-info-toggle"
+      data-bareact-info-toggle
+      aria-expanded="false"
+      aria-controls="bareact-info"
+    >About this act</button>
+    <div class="bareact-info" id="bareact-info" data-bareact-info hidden>
+      {% if act_info.meta %}<p class="bareact-info-meta">{{ act_info.meta }}</p>{% endif %}
+      {% if act_info.rows %}
+      <dl class="bareact-info-grid">
+        {% for row in act_info.rows %}
+        <dt>{{ row.key }}</dt>
+        <dd>{{ row.value }}</dd>
+        {% endfor %}
+      </dl>
+      {% endif %}
+      {# The long title verbatim, brackets included. UAPA's carries a real
+         amendment span, so it reads as the statute prints it. #}
+      {% if act_info.long_title %}
+      <p class="bareact-info-body">{{ act_info.long_title }}</p>
+      {% endif %}
+    </div>
+    {% endif %}
+
+    {# Hidden until the controller claims it. Without JS both panels stay
+       open and the page is exactly what it was before the tabs existed —
+       chapters, then schedules — rather than a tab row that does nothing. #}
+    <div class="bareact-tabs" role="tablist" aria-label="Act contents" data-bareact-tabs hidden>
+      <button
+        type="button"
+        class="bareact-tab is-active"
+        role="tab"
+        id="bareact-tab-chapters"
+        aria-selected="true"
+        aria-controls="bareact-panel-chapters"
+        data-bareact-tab="chapters"
+      >{# The panel key stays "chapters" for the controller; only the word the
+         reader sees changes. An Act with no chapters lists its sections flat,
+         so a tab called "Chapters" would name a thing that is not there. #}{% if act.chapters %}Chapters{% else %}Sections{% endif %}</button>
+      <button
+        type="button"
+        class="bareact-tab"
+        role="tab"
+        id="bareact-tab-schedules"
+        aria-selected="false"
+        aria-controls="bareact-panel-schedules"
+        data-bareact-tab="schedules"
+      >Schedules</button>
+    </div>
   </div>
 
-  <div class="bareact-chapters" data-bareact-accordion>
-    {% for chapter in act.chapters %}
-    <details class="bareact-chapter"{% if loop.first %} open{% endif %}>
-      <summary class="bareact-chapter-row">
-        <span class="bareact-chapter-tag">Chapter {{ chapter.number }}</span>
-        <span class="bareact-chapter-name">{{ chapter.title }}</span>
-        <span class="bareact-chapter-range">{{ chapter.range_label }}</span>
-        <span class="bareact-chapter-caret" aria-hidden="true"></span>
-      </summary>
+  <div
+    class="bareact-panel"
+    id="bareact-panel-chapters"
+    role="tabpanel"
+    aria-labelledby="bareact-tab-chapters"
+    data-bareact-panel="chapters"
+  >
+    <div class="bareact-chapters" data-bareact-accordion>
+      {# An Act that prints no chapters (MTP) gets its sections as one flat
+         list in the chapter rows' own clothes: no accordion, no invented
+         "Chapter I" over sections the statute never grouped. #}
+      {% if not act.chapters %}
       <div class="bareact-section-list">
-        {% for section in chapter.sections %}
-        {# Divisions sit between chapter and section in some Acts. The heading
-           is drawn above the first section carrying a new division id, so the
-           sections a chapter opens with before its first division stay
-           ungrouped. #}
-        {% if section.starts_division %}
-        <p class="bareact-division">{{ section.division_title }}</p>
-        {% endif %}
+        {% for section in act.unchaptered_sections %}
         <a class="bareact-section-row" href="/laws/{{ act.slug }}/section/{{ section.number }}">
           <span class="bareact-section-node" aria-hidden="true"></span>
           <span class="bareact-section-copy">
@@ -43,25 +102,94 @@
         </a>
         {% endfor %}
       </div>
-    </details>
-    {% endfor %}
+      {% endif %}
+      {% for chapter in act.chapters %}
+      <details class="bareact-chapter"{% if loop.first %} open{% endif %}>
+        <summary class="bareact-chapter-row">
+          {# A whole chapter can be an amendment span: PSS prints "2[CHAPTER II"
+             and closes inside its only section. Reuses the same bracket span as
+             sections and provisions, so no new styling. #}
+          <span class="bareact-chapter-tag">{% if chapter.bracket_prefix %}<span class="bareact-amendment-open">{{ chapter.bracket_prefix }}</span>{% endif %}Chapter {{ chapter.number }}</span>
+          <span class="bareact-chapter-name">{{ chapter.title }}</span>
+          <span class="bareact-chapter-range">{{ chapter.range_label }}</span>
+          <span class="bareact-chapter-caret" aria-hidden="true"></span>
+        </summary>
+        <div class="bareact-section-list">
+          {% for section in chapter.sections %}
+          {# Divisions sit between chapter and section in some Acts. The heading
+             is drawn above the first section carrying a new division id, so the
+             sections a chapter opens with before its first division stay
+             ungrouped. #}
+          {% if section.starts_division %}
+          <p class="bareact-division">{{ section.division_title }}</p>
+          {% endif %}
+          <a class="bareact-section-row" href="/laws/{{ act.slug }}/section/{{ section.number }}">
+            <span class="bareact-section-node" aria-hidden="true"></span>
+            <span class="bareact-section-copy">
+              <span class="bareact-section-tag">Section {{ section.number }}</span>
+              <span class="bareact-section-name{% if section.is_omitted %} is-omitted{% endif %}">{{ section.list_title }}</span>
+            </span>
+            <span class="bareact-section-chevron" aria-hidden="true">›</span>
+          </a>
+          {% endfor %}
+        </div>
+      </details>
+      {% endfor %}
+    </div>
+  </div>
 
-    {# Schedules sit below the chapters, in the chapter row's own clothes:
-       they are part of the Act, not an appendix to it. #}
-    {# Only schedules the table model can represent are navigable. An
-       unsupported one (BNSS's 58 positioned-text forms) is loaded and
-       preserved, but linking it would promise a page we cannot draw. #}
-    {% for schedule in act.schedules if schedule.is_table %}
-    <a class="bareact-schedule-row" href="/laws/{{ act.slug }}/schedule/{{ schedule.slug }}">
-      <span class="bareact-chapter-tag">{{ schedule.label }}</span>
-      <span class="bareact-schedule-copy">
-        <span class="bareact-schedule-name">{{ schedule.display_heading }}</span>
-        <span class="bareact-schedule-ref">{{ schedule.reference }}</span>
-      </span>
-      <span class="bareact-chapter-range">{{ schedule.range_label }}</span>
-      <span class="bareact-section-chevron" aria-hidden="true">›</span>
-    </a>
-    {% endfor %}
+  {# Schedules are part of the Act, not an appendix to it — so they keep the
+     chapter row's own clothes, and only move out of the chapter list. #}
+  <div
+    class="bareact-panel"
+    id="bareact-panel-schedules"
+    role="tabpanel"
+    aria-labelledby="bareact-tab-schedules"
+    data-bareact-panel="schedules"
+  >
+    <div class="bareact-chapters">
+      {# Every schedule the Act prints is listed, including one we cannot draw.
+         BNSS s.522 sends the reader to the Second Schedule by name, and that
+         Schedule cross-references s.522 back — so omitting it would put the app
+         in contradiction with the statute, and read as missing data rather than
+         as a renderer limit. Listed, but not linked: no href, no overlay anchor
+         and no chevron, so it cannot promise a page that does not exist. #}
+      {% for schedule in act.schedules %}
+      <div class="bareact-schedule-row{% if not schedule.is_navigable %} is-unavailable{% endif %}">
+        {% if schedule.is_navigable %}
+        {# A div, not an anchor: the reference carries its own section links, and
+           an anchor cannot legally contain another. Nesting them made the parser
+           truncate the row at the first inner link. The row-wide tap target is an
+           overlay anchor instead, so the whole row still navigates. #}
+        <a
+          class="bareact-schedule-row-link"
+          href="/laws/{{ act.slug }}/schedule/{{ schedule.slug }}"
+          aria-label="{{ schedule.label }} — {{ schedule.display_heading }}"
+        ></a>
+        {% endif %}
+        <span class="bareact-chapter-tag">{% if schedule.bracket_prefix %}<span class="bareact-amendment-open">{{ schedule.bracket_prefix }}</span>{% endif %}{{ schedule.label }}</span>
+        <span class="bareact-schedule-copy">
+          <span class="bareact-schedule-name">{{ schedule.display_heading }}</span>
+          <span class="bareact-schedule-ref">{% for segment in act.reference_segments(schedule.reference) %}{% if segment.is_link %}<a class="bareact-reference-link" href="{{ segment.href }}">{{ segment.text }}</a>{% else %}{{ segment.text }}{% endif %}{% endfor %}</span>
+          {% if not schedule.is_navigable %}
+          {# Our limitation, stated as ours — the Act is complete, the renderer is
+             not. `unsupported_reason` is developer copy and stays out of the UI. #}
+          <span class="bareact-schedule-unavailable">Not yet browsable in the app</span>
+          {% endif %}
+        </span>
+        <span class="bareact-chapter-range">{{ schedule.range_label }}</span>
+        {% if schedule.is_navigable %}
+        <span class="bareact-section-chevron" aria-hidden="true">›</span>
+        {% endif %}
+      </div>
+      {% endfor %}
+      {# Keyed off every schedule the Act prints, not the drawable subset: an
+         Act whose only schedules were undrawable would otherwise print "no
+         Schedules" directly above a row listing one. #}
+      {% if not act.schedules %}
+      <p class="bareact-schedules-empty">This Act has no Schedules.</p>
+      {% endif %}
+    </div>
   </div>
 </section>
 {% endblock %}

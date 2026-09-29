@@ -769,6 +769,70 @@
     });
   }
 
+  /* ── Act info card + Chapters/Schedules tabs ───────────────────────────
+     Both are progressive: the card ships collapsed and the tab row ships
+     hidden, so a page without JS is the page as it was before either
+     existed — chapters, then schedules, all of it readable and every
+     schedule link still in the document for a crawler to follow. */
+
+  function initActInfo() {
+    var toggle = document.querySelector("[data-bareact-info-toggle]");
+    var card = document.querySelector("[data-bareact-info]");
+    if (!toggle || !card) return;
+    toggle.addEventListener("click", function () {
+      var open = toggle.getAttribute("aria-expanded") === "true";
+      toggle.setAttribute("aria-expanded", open ? "false" : "true");
+      toggle.textContent = open ? "About this act" : "Hide act info";
+      card.hidden = open;
+    });
+  }
+
+  function initActTabs() {
+    var row = document.querySelector("[data-bareact-tabs]");
+    if (!row) return;
+    var tabs = Array.prototype.slice.call(
+      row.querySelectorAll("[data-bareact-tab]")
+    );
+    var panels = Array.prototype.slice.call(
+      document.querySelectorAll("[data-bareact-panel]")
+    );
+    if (tabs.length < 2 || panels.length < 2) return;
+
+    function select(name) {
+      tabs.forEach(function (tab) {
+        var on = tab.getAttribute("data-bareact-tab") === name;
+        tab.classList.toggle("is-active", on);
+        tab.setAttribute("aria-selected", on ? "true" : "false");
+        // Only the selected tab is in the tab sequence; the arrow keys move
+        // between them, which is what a tablist is supposed to do.
+        tab.setAttribute("tabindex", on ? "0" : "-1");
+      });
+      panels.forEach(function (panel) {
+        panel.hidden = panel.getAttribute("data-bareact-panel") !== name;
+      });
+    }
+
+    tabs.forEach(function (tab, index) {
+      tab.addEventListener("click", function () {
+        select(tab.getAttribute("data-bareact-tab"));
+      });
+      tab.addEventListener("keydown", function (event) {
+        var step =
+          event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0;
+        if (!step) return;
+        event.preventDefault();
+        var next = tabs[(index + step + tabs.length) % tabs.length];
+        select(next.getAttribute("data-bareact-tab"));
+        next.focus();
+      });
+    });
+
+    // Claim the row only once the handlers are attached, so it is never on
+    // screen as an inert control.
+    row.hidden = false;
+    select("chapters");
+  }
+
   /* ── Mode status lines (designs 06, 08–12) ─────────────────────────────
      Every mode screen opens with one grey line saying where you are. In the
      desktop markup those lines sit in each mode's control row — which the
@@ -1086,7 +1150,9 @@
     if (!root) return;
 
     var cards = Array.prototype.slice.call(root.querySelectorAll("[data-law-id]"));
-    var chips = Array.prototype.slice.call(root.querySelectorAll("[data-laws-chip]"));
+    var chips = Array.prototype.slice.call(
+      root.querySelectorAll("[data-laws-chip], [data-laws-status]")
+    );
     var empty = root.querySelector("[data-laws-empty]");
     var toggle = root.querySelector("[data-laws-search-toggle]");
     var searchWrap = root.querySelector("[data-laws-search]");
@@ -1099,6 +1165,8 @@
 
     var subject = root.getAttribute("data-initial-subject") || "";
     if (subject && !knownSubjects[subject]) subject = "";
+    var status = root.getAttribute("data-initial-status") || "";
+    if (status) subject = "";
     var query = root.getAttribute("data-initial-q") || "";
 
     function setExpanded(open) {
@@ -1116,6 +1184,8 @@
       var url = new URL(window.location.href);
       if (subject) url.searchParams.set("subject", subject);
       else url.searchParams.delete("subject");
+      if (status) url.searchParams.set("status", status);
+      else url.searchParams.delete("status");
       var q = normalizeLawsQuery(query);
       if (q) url.searchParams.set("q", query.trim());
       else url.searchParams.delete("q");
@@ -1132,9 +1202,14 @@
       cards.forEach(function (card) {
         var subjects = (card.getAttribute("data-subjects") || "").split(/\s+/);
         var blob = normalizeLawsQuery(card.getAttribute("data-search") || "");
+        var repealed = (card.getAttribute("data-status") || "") !== "current";
         var subjectOk = !subject || subjects.indexOf(subject) !== -1;
         var queryOk = !q || blob.indexOf(q) !== -1;
-        var show = subjectOk && queryOk;
+        // Repealed law has its own chip and is kept out of All and the
+        // subject tabs — but a search still reaches it from anywhere. Out of
+        // the way is not the same as unfindable.
+        var statusOk = status === "repealed" ? repealed : !repealed || !!q;
+        var show = subjectOk && queryOk && statusOk;
         card.classList.toggle("is-filtered-out", !show);
         if (show) visible += 1;
       });
@@ -1143,15 +1218,39 @@
         else empty.removeAttribute("hidden");
       }
       chips.forEach(function (chip) {
-        var id = chip.getAttribute("data-laws-chip") || "";
-        chip.setAttribute("aria-pressed", id === subject ? "true" : "false");
+        var chipStatus = chip.getAttribute("data-laws-status") || "";
+        var pressed = chipStatus
+          ? chipStatus === status
+          : !status && (chip.getAttribute("data-laws-chip") || "") === subject;
+        chip.setAttribute("aria-pressed", pressed ? "true" : "false");
       });
       syncUrl();
     }
 
+    function revealPressedChip() {
+      // The strip scrolls, and the newest chips sit at its end. Landing on a
+      // shared ?status= URL with the active chip off-screen reads as no
+      // filter at all. Only ever nudges the strip, never the page.
+      var strip = root.querySelector(".laws-chip-strip");
+      if (!strip) return;
+      var pressed = null;
+      chips.forEach(function (chip) {
+        if (chip.getAttribute("aria-pressed") === "true") pressed = chip;
+      });
+      if (!pressed) return;
+      var right = pressed.offsetLeft + pressed.offsetWidth;
+      if (right > strip.scrollLeft + strip.clientWidth) {
+        strip.scrollLeft = right - strip.clientWidth + 12;
+      } else if (pressed.offsetLeft < strip.scrollLeft) {
+        strip.scrollLeft = Math.max(0, pressed.offsetLeft - 12);
+      }
+    }
+
     chips.forEach(function (chip) {
       chip.addEventListener("click", function () {
-        subject = chip.getAttribute("data-laws-chip") || "";
+        // One strip, two axes: picking either clears the other.
+        status = chip.getAttribute("data-laws-status") || "";
+        subject = status ? "" : chip.getAttribute("data-laws-chip") || "";
         applyFilter();
       });
     });
@@ -1178,6 +1277,7 @@
 
     if (normalizeLawsQuery(query)) setExpanded(true);
     applyFilter();
+    revealPressedChip();
   }
 
   function boot() {
@@ -1185,6 +1285,8 @@
     initMarkFilter();
     initBareAct();
     initActAccordion();
+    initActInfo();
+    initActTabs();
     // Must precede initLearnDeck: the deck moves each mode's control row into
     // the action bar, and the status lines have to be lifted out of those rows
     // first or they travel along and get hidden.

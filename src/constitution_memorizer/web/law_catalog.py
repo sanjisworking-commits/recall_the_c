@@ -21,6 +21,16 @@ DEFAULT_CATALOG_PATH = Path.cwd() / "data" / "reference" / "law_catalog.seed.jso
 PRIMARY_CONTENT_KINDS = frozenset({"full_act", "key_provisions"})
 KIND_LABELS = {"full_act": "FULL ACT", "key_provisions": "KEY PROVISIONS"}
 
+# An Act's lifecycle, as editorial metadata — never in the statutory JSON.
+# The label is derived from the status rather than stored beside it, so a law
+# cannot be marked current and badged "Repealed" at the same time. "current"
+# maps to no label: a badge on every law says nothing.
+STATUS_LABELS = {
+    "current": "",
+    "repealed": "Repealed / Historical",
+    "historical": "Historical",
+}
+
 
 class CatalogError(ValueError):
     """The catalogue seed is invalid or a capability ref is unregistered."""
@@ -31,6 +41,28 @@ class LawSubject:
     id: str
     label: str
     display_order: int
+
+
+# The half of the "About this act" card that is nowhere in the statute.
+# Commencement, ministry, department and jurisdiction are administrative facts
+# about an Act; `last_modified` is the source register's own record date, which
+# is not the date the Act was last amended and is never labelled as one.
+ACT_INFO_FIELDS = (
+    "in_force",
+    "ministry",
+    "department",
+    "jurisdiction",
+    "last_modified",
+)
+
+
+@dataclass(frozen=True)
+class ActInfoSource:
+    in_force: str = ""
+    ministry: str = ""
+    department: str = ""
+    jurisdiction: str = ""
+    last_modified: str = ""
 
 
 @dataclass(frozen=True)
@@ -50,6 +82,18 @@ class CatalogLaw:
     tag_line: str
     href: str
     search_blob: str
+    status: str = "current"
+    status_note: str = ""
+    act_info: ActInfoSource | None = None
+
+    @property
+    def status_label(self) -> str:
+        """"Repealed / Historical", or "" for a law still in force."""
+        return STATUS_LABELS[self.status]
+
+    @property
+    def is_current(self) -> bool:
+        return self.status == "current"
 
 
 @dataclass(frozen=True)
@@ -57,10 +101,40 @@ class LawCatalog:
     subjects: tuple[LawSubject, ...]
     laws: tuple[CatalogLaw, ...]
 
+    def by_full_act(self, ref: str) -> CatalogLaw | None:
+        """The catalogue entry for a Bare Act slug, or None.
+
+        Lets the Act reader show editorial metadata (lifecycle, notes) without
+        that metadata being copied onto the statutory model.
+        """
+        for law in self.laws:
+            if law.full_act_ref == ref:
+                return law
+        return None
+
     @property
     def visible_subjects(self) -> tuple[LawSubject, ...]:
-        used = {sid for law in self.laws for sid in law.subjects}
+        """Subjects with at least one law a subject chip would actually show.
+
+        Repealed laws live behind their own chip and are excluded from the
+        subject tabs, so they cannot be what keeps a subject visible — that
+        would be a chip opening onto an empty list.
+        """
+        used = {sid for law in self.laws if law.is_current for sid in law.subjects}
         return tuple(s for s in self.subjects if s.id in used)
+
+    @property
+    def current_laws(self) -> tuple[CatalogLaw, ...]:
+        return tuple(law for law in self.laws if law.is_current)
+
+    @property
+    def repealed_laws(self) -> tuple[CatalogLaw, ...]:
+        """Laws no longer in force, in catalogue order.
+
+        Kept out of All and the subject tabs, reachable by their own chip and
+        still findable by search. Out of the way, not out of the app.
+        """
+        return tuple(law for law in self.laws if not law.is_current)
 
 
 def normalize_search(*parts: object) -> str:
@@ -110,6 +184,25 @@ def _parse_subjects(raw: Any) -> tuple[LawSubject, ...]:
         subjects.append(LawSubject(id=sid, label=label, display_order=order))
     subjects.sort(key=lambda s: (s.display_order, s.id))
     return tuple(subjects)
+
+
+def _parse_act_info(law_id: str, raw: Any) -> ActInfoSource | None:
+    """Optional. Unknown keys are an error, not a shrug.
+
+    A typo here would silently drop a row from the card, and a missing row and
+    a misspelt one look identical on screen.
+    """
+    if raw is None:
+        return None
+    if not isinstance(raw, dict):
+        raise CatalogError(f"{law_id}: act_info must be an object")
+    unknown = sorted(set(raw) - set(ACT_INFO_FIELDS))
+    if unknown:
+        raise CatalogError(f"{law_id}: unknown act_info field(s): {', '.join(unknown)}")
+    values = {key: str(raw.get(key) or "").strip() for key in ACT_INFO_FIELDS}
+    if not any(values.values()):
+        raise CatalogError(f"{law_id}: act_info is present but empty")
+    return ActInfoSource(**values)
 
 
 def _parse_law(
@@ -164,14 +257,33 @@ def _parse_law(
             f"{law_id}: key_provisions ref {key_provisions_ref} is not in MAPPED_LAW_IDS"
         )
 
+    status = str(raw.get("status") or "current").strip()
+    if status not in STATUS_LABELS:
+        raise CatalogError(
+            f"{law_id}: unknown status {status!r}; "
+            f"expected one of {sorted(STATUS_LABELS)}"
+        )
+    act_info = _parse_act_info(law_id, raw.get("act_info"))
+    status_note = str(raw.get("status_note") or "").strip()
+    if status_note and status == "current":
+        raise CatalogError(f"{law_id}: a current law cannot carry a status_note")
+
     href_ref = full_act_ref if primary_content == "full_act" else key_provisions_ref
     aliases = tuple(str(a).strip() for a in (raw.get("aliases") or []) if str(a).strip())
     primary_label = subject_by_id[primary_subject].label
     kind_label = KIND_LABELS[primary_content]
     tag_line = f"{primary_label.upper()} · {kind_label}"
     subject_labels = tuple(subject_by_id[sid].label for sid in subject_ids)
+    # The status label joins the search text so "repealed" finds POTA. It is
+    # a way in, never a way to hide a law from the index.
     search_blob = normalize_search(
-        title, short_title, aliases, year, subject_ids, subject_labels
+        title,
+        short_title,
+        aliases,
+        year,
+        subject_ids,
+        subject_labels,
+        STATUS_LABELS[status],
     )
     return CatalogLaw(
         id=law_id,
@@ -189,6 +301,9 @@ def _parse_law(
         tag_line=tag_line,
         href=f"/laws/{href_ref}",
         search_blob=search_blob,
+        status=status,
+        status_note=status_note,
+        act_info=act_info,
     )
 
 

@@ -169,7 +169,14 @@ def test_eligibility_covers_full_acts_not_key_provisions():
     assert is_playground_eligible_law("uapa-1967") is False
     assert is_playground_eligible_law("unknown") is False
     assert is_playground_eligible_law("") is False
-    assert list_playground_eligible_laws() == ("bns", "bnss", "ndps")
+    # Current full Acts, in catalogue order. main added UAPA, PSS and MTP.
+    assert list_playground_eligible_laws() == (
+        "bns", "bnss", "ndps", "uapa", "pss", "mtp",
+    )
+    # A repealed Act stays readable but cannot be added.
+    assert is_playground_eligible_law("pota") is False
+    # The Bare Act slug is the only identity; the catalogue id is no alias.
+    assert is_playground_eligible_law("uapa") is True
 
 
 def test_eligibility_and_locator_parse_do_not_hydrate(

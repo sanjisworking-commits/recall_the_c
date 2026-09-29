@@ -80,6 +80,41 @@ ARTIFACTS: tuple[tuple[Path, Path, str], ...] = (
         ROOT / "src" / "constitution_memorizer" / "web" / "bnss_runtime_v1.json",
         "bnss",
     ),
+    # POTA needs no path-aware mode: it has no forms, no `*_lines` and no
+    # `source_line_inventory`, and its Schedule is a numbered list whose order
+    # comes from `serial_number` rather than from geometry. `source_x` is
+    # debris everywhere in it, so the flat strip is exactly right.
+    (
+        ROOT / "data" / "reference" / "pota_canonical_v1.json",
+        ROOT / "src" / "constitution_memorizer" / "web" / "pota_runtime_v1.json",
+        "flat",
+    ),
+    # Archival name carries the parser generation (schema 1.2 / parser v6);
+    # the runtime name carries this application's first release of it.
+    (
+        ROOT / "data" / "reference" / "uapa_canonical_v6.json",
+        ROOT / "src" / "constitution_memorizer" / "web" / "uapa_runtime_v1.json",
+        "uapa",
+    ),
+    # PSS needs no path-aware mode: it has no schedules, no forms and no
+    # archival-only bulk — its largest non-operative block is 4 KB. `source_x`
+    # is debris throughout, so the flat strip is exactly right.
+    (
+        ROOT / "data" / "reference" / "pss_canonical_v3.json",
+        ROOT / "src" / "constitution_memorizer" / "web" / "pss_runtime_v1.json",
+        "flat",
+    ),
+    # MTP: flat, plus one archival-only array. `source_lines` is the parser's
+    # line-by-line record of all eight pages — every row's coordinates, raw
+    # text and superscript markers — the same kind of audit trail BNSS keeps
+    # as `source_line_inventory`, and it is two thirds of the file. Nothing
+    # at runtime reads it; the footnotes, annotations and provenance that
+    # point into it by line id are kept.
+    (
+        ROOT / "data" / "reference" / "mtp_canonical_v3.json",
+        ROOT / "src" / "constitution_memorizer" / "web" / "mtp_runtime_v1.json",
+        "mtp",
+    ),
 )
 
 
@@ -145,9 +180,55 @@ def _strip_schedule(schedule: dict) -> dict:
     return out
 
 
+def strip_uapa(document: Any) -> Any:
+    """Flat strip, plus the one archival-only block the reader cannot use.
+
+    UAPA's source PDF is a 102-page compilation: the printed Act, then 35 pages
+    of Gazette notifications inserting individuals into the Fourth Schedule,
+    then an exact duplicate of those 35 pages. ``source_annexes.pages`` is the
+    raw text of all of it — 186 KB, over half the file — and nothing in the
+    reader reads it.
+
+    Dropped from the runtime copy only; the archival file keeps every page.
+    What stays is the small provenance around it: which pages duplicate which,
+    the 18 explicit insertions and their serials, the two Tribunal pages, and
+    the parser's own note. ``_validation`` already carries the counts, so no
+    runtime-only summary is invented here. The archival file remains the
+    complete record; this is a derived artifact.
+    """
+    out = strip_debug_keys(document)
+    annexes = out.get("source_annexes")
+    if isinstance(annexes, dict):
+        out["source_annexes"] = {k: v for k, v in annexes.items() if k != "pages"}
+    return out
+
+
+def strip_mtp(document: Any) -> Any:
+    """Flat strip, minus the parse's line-by-line record.
+
+    ``source_lines`` is every printed line of the source PDF with its page,
+    coordinates, raw text and superscript markers: the material the parser's
+    reconstruction check ran over, and what ``source_line_ids`` on every node,
+    footnote and annotation index into. It is audit data for the export, never
+    read by the reader, and 65 KB of a 100 KB file. The archival copy keeps
+    it; the ids that reference it stay on the runtime nodes as provenance.
+    """
+    out = strip_debug_keys(document)
+    out.pop("source_lines", None)
+    return out
+
+
+_MODES = {
+    "bnss": strip_bnss,
+    "uapa": strip_uapa,
+    "mtp": strip_mtp,
+    "flat": strip_debug_keys,
+}
+
+
 def build(source: Path, target: Path, mode: str) -> tuple[int, int]:
     archival = json.loads(source.read_text(encoding="utf-8"))
-    stripped = strip_bnss(archival) if mode == "bnss" else strip_debug_keys(archival)
+    stripped = _MODES[mode](archival)
     payload = json.dumps(stripped, ensure_ascii=False, indent=1) + "\n"
     target.write_text(payload, encoding="utf-8")
     return source.stat().st_size, target.stat().st_size

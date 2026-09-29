@@ -557,7 +557,10 @@ def test_the_chapter_list_ends_with_the_schedule(tmp_path: Path):
     html = client.get("/laws/ndps").text
     assert 'href="/laws/ndps/schedule/psychotropic-substances"' in html
     assert "List of Psychotropic Substances" in html
-    assert "[See clause (xxiii) of Section 2]" in html
+    # The reference is reproduced exactly, but its section citation is now a
+    # link, so the string is no longer contiguous in the markup.
+    assert "[See clause (xxiii) of Section " in html
+    assert '<a class="bareact-reference-link" href="/laws/ndps/section/2">2</a>]' in html
     assert "1–110ZT" in html
     # A schedule is a link, not a ninth chapter.
     assert html.count("<details") == 8

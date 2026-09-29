@@ -4184,6 +4184,105 @@ code {
   line-height: 1.25;
 }
 
+/* About this act — a text link, never a boxed control: a button here would
+   compete with the chapter rows below it for the eye. */
+
+.bareact-info-toggle {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 2px 0;
+  border: 0;
+  border-bottom: 1px solid var(--teal);
+  background: none;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--teal);
+  cursor: pointer;
+}
+
+.bareact-info {
+  margin: 10px 0 2px;
+  padding: 12px 14px;
+  background: var(--paper);
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+}
+
+.bareact-info-meta {
+  margin: 0 0 8px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--mid);
+}
+
+/* auto/1fr, so the key column is exactly as wide as its longest key and the
+   values all start on one edge however many rows an Act happens to have. */
+.bareact-info-grid {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 5px 12px;
+  margin: 0 0 10px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.bareact-info-grid dt {
+  color: var(--mid);
+}
+
+.bareact-info-grid dd {
+  margin: 0;
+  color: var(--ink);
+}
+
+.bareact-info-body {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+/* The active underline sits on the header's own bottom border, so the two
+   read as one edge: 8px of padding pulled back over the head's 14px. */
+.bareact-tabs {
+  display: flex;
+  gap: 22px;
+  margin-top: 12px;
+  margin-bottom: -14px;
+}
+
+.bareact-tab {
+  padding: 0 0 8px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: none;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--mid);
+  cursor: pointer;
+}
+
+.bareact-tab.is-active {
+  font-weight: 600;
+  color: var(--ink);
+  border-bottom-color: var(--teal);
+}
+
+.bareact-schedules-empty {
+  margin: 0;
+  padding: 20px 0;
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--mid);
+}
+
 .bareact-chapter-row {
   display: flex;
   align-items: center;
@@ -4589,6 +4688,7 @@ code {
 /* The Schedule */
 
 .bareact-schedule-row {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -4600,8 +4700,39 @@ code {
   color: inherit;
 }
 
+/* Covers the row so the whole thing stays tappable, while the reference's
+   own section links sit above it and win their own hits. */
+.bareact-schedule-row-link {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.bareact-schedule-row .bareact-reference-link {
+  position: relative;
+  z-index: 1;
+}
+
 .bareact-schedule-row:hover {
   background: var(--hover);
+}
+
+/* A schedule the source prints but this renderer cannot draw. Listed so the
+   Act's own cross-references resolve; inert so it promises nothing. */
+.bareact-schedule-row.is-unavailable {
+  cursor: default;
+}
+
+.bareact-schedule-row.is-unavailable:hover {
+  background: var(--wash);
+}
+
+/* Italic, because this is the app's voice and the line above it is the
+   statute's. Same size, so it reads as a note rather than a second heading. */
+.bareact-schedule-unavailable {
+  font-size: 11.5px;
+  font-style: italic;
+  color: var(--faint);
 }
 
 .bareact-schedule-copy {
@@ -4689,6 +4820,113 @@ code {
   font-weight: 600;
   margin-right: 5px;
   color: var(--ink);
+}
+
+/* A numbered statutory list — POTA's 32 organisations. Deliberately shares
+   nothing with the table rules above: it has no columns to size, and reusing
+   them would couple two schedule shapes that only look alike. The serials come
+   from each <li value>, so they read the statute's numbering even if an entry
+   is ever filtered or the list is split. */
+.bareact-schedule-list {
+  margin: 0 0 8px;
+  padding: 4px 0 4px 30px;
+  border: 1px solid var(--hairline);
+  border-radius: 14px;
+  list-style-position: outside;
+}
+
+.bareact-schedule-list-item {
+  padding: 7px 12px 7px 4px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--ink);
+}
+
+.bareact-schedule-list-item::marker {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--mid);
+}
+
+.bareact-schedule-list-item + .bareact-schedule-list-item {
+  border-top: 1px solid var(--page);
+}
+
+/* The marker is printed from the data, so the list itself shows none: a CSS
+   counter would renumber (i)-(x) and (a)-(c) as 1, 2, 3. */
+.bareact-schedule-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.bareact-schedule-list-item {
+  display: flex;
+  gap: 9px;
+}
+
+.bareact-schedule-marker {
+  flex: none;
+  min-width: 26px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--mid);
+  padding-top: 1px;
+}
+
+/* Interface copy about the source document, not statutory text. Set apart
+   from the law so it cannot be mistaken for it. */
+.bareact-schedule-empty {
+  margin: 0 0 8px;
+  padding: 14px 12px;
+  border: 1px dashed var(--hairline);
+  border-radius: 14px;
+  font-size: 12.5px;
+  font-style: italic;
+  color: var(--faint);
+  text-align: center;
+}
+
+/* An editorial amendment bracket the source printed before a marker. Same
+   ink as the provision: it is source text, not an annotation. */
+.bareact-amendment-open {
+  color: inherit;
+}
+
+.bareact-reference-link {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: var(--hairline);
+}
+
+.bareact-reference-link:hover {
+  text-decoration-color: currentColor;
+}
+
+/* Lifecycle badges. Editorial metadata from the catalogue, never statutory
+   text — a law still in force gets no label at all, so the badge means
+   something wherever it appears. */
+.laws-index-status,
+.bareact-status {
+  margin-left: 8px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--wash);
+  border: 1px solid var(--hairline);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mid);
+  white-space: nowrap;
+}
+
+.bareact-status-note {
+  margin: 6px 0 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--muted);
+  text-wrap: pretty;
 }
 
 .bareact-schedule-table th {

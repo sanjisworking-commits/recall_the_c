@@ -102,10 +102,35 @@ def test_the_chapter_list(tmp_path: Path):
     assert html.count("<details") == 39
     assert 'class="bareact-page is-bns"' in html or "bareact-page is-bns" in html
     assert html.count('class="bareact-division"') == 24
-    # One schedule row: the First. The Second has no table representation.
-    assert html.count('class="bareact-schedule-row"') == 1
+    # Both schedules are listed; only the First is linked. Anchored to the row
+    # element: the unavailable row appends a modifier class, so an exact-string
+    # count stops seeing it, and a bare prefix also catches the overlay link.
+    assert html.count('<div class="bareact-schedule-row') == 2
     assert 'href="/laws/bnss/schedule/first-schedule"' in html
-    assert "second-schedule" not in html
+    assert "/schedule/second-schedule" not in html
+
+
+def test_the_second_schedule_is_listed_but_not_linked(tmp_path: Path):
+    """s.522 sends the reader there by name, so the list must not deny it.
+
+    The Schedule cross-references s.522 back. Omitting it would read as a gap
+    in our data rather than a limit of the renderer, which is the opposite of
+    the truth: all 58 forms are loaded, with their coordinates.
+    """
+    client, _ = _client(tmp_path)
+    html = client.get("/laws/bnss").text
+    row = html.split('class="bareact-schedule-row is-unavailable"')[1]
+    row = row.split("</div>")[0]
+    assert "SECOND SCHEDULE" in row
+    assert "Forms" in row
+    # Promises nothing: no overlay anchor, no chevron.
+    assert "bareact-schedule-row-link" not in row
+    assert "bareact-section-chevron" not in row
+    # The statute's own cross-reference still resolves.
+    assert 'href="/laws/bnss/section/522"' in row
+    # Developer copy never reaches the reader.
+    assert "no table representation" not in html
+    assert "Not yet browsable in the app" in row
 
 
 def test_bnss_is_on_the_catalogue(tmp_path: Path):

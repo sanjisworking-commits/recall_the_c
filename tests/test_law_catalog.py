@@ -20,8 +20,11 @@ MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
 PRODUCTION_LAW_IDS = (
     "bns",
     "bnss",
+    "pota",
     "ndps",
     "uapa-1967",
+    "pss",
+    "mtp",
     "citizenship-1955",
     "pcr-1955",
     "rte-2009",
@@ -76,7 +79,7 @@ def test_production_catalogue_lists_both_bare_acts():
     bnss = catalog.laws[1]
     assert bnss.tag_line == "CRIMINAL · FULL ACT"
     assert bnss.href == "/laws/bnss"
-    ndps = catalog.laws[2]
+    ndps = next(law for law in catalog.laws if law.id == "ndps")
     assert ndps.tag_line == "CRIMINAL · FULL ACT"
     assert ndps.href == "/laws/ndps"
     rti = next(law for law in catalog.laws if law.id == "rti-2005")
@@ -87,6 +90,8 @@ def test_production_catalogue_lists_both_bare_acts():
         "constitutional",
         "administrative",
         "environmental",
+        "financial",
+        "health",
     }
 
 
@@ -252,10 +257,13 @@ def test_index_html_always_contains_every_production_law(tmp_path: Path):
     assert "data-laws-index" in html
     assert 'data-initial-q="ndps"' in html
     assert 'data-initial-subject="criminal"' in html
+    # A card links to whatever its primary capability resolves to, which is
+    # not always its id: UAPA is catalogued as uapa-1967 and now leads with
+    # the full Act at /laws/uapa.
+    hrefs = {law.id: law.href for law in load_catalog().laws}
     for law_id in PRODUCTION_LAW_IDS:
         assert f'data-law-id="{law_id}"' in html
-        href_id = "ndps" if law_id == "ndps" else law_id
-        assert f'href="/laws/{href_id}"' in html
+        assert f'href="{hrefs[law_id]}"' in html
     assert "Not started" not in html
     assert "Coming soon" not in html
     assert "law-practice-note" not in html

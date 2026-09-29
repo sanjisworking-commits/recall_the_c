@@ -44,21 +44,27 @@ def _normalize_law_id(law_id: str) -> str:
 
 
 def _catalogue_full_act_ref(law_id: str) -> str | None:
-    """Return the Bare Act slug if this catalogue law is a full Act.
+    """Return the Bare Act slug if *law_id* names a current full Act.
 
-    Matches the Playground/Bare Act slug (``full_act_ref``) or the catalogue
-    id. Does not consult ``get_bare_act`` / ``list_bare_acts``.
+    Only the Bare Act slug (``full_act_ref``) is accepted. The catalogue id
+    is not an alias: UAPA is ``uapa-1967`` in the catalogue and ``uapa`` as a
+    Bare Act, and accepting both would let one law sit on a roster twice and
+    consume two spaces. The slug is the monthly commercial identity.
+
+    Only a current Act qualifies. A repealed Act (POTA) stays readable, but
+    it is not something to commit to memory as law in force, so it cannot be
+    added.
+
+    Does not consult ``get_bare_act`` / ``list_bare_acts``.
     """
     slug = _normalize_law_id(law_id)
     if not slug or _LAW_SLUG_RE.fullmatch(slug) is None:
         return None
     for law in load_catalog().laws:
-        if law.primary_content != "full_act":
+        if law.primary_content != "full_act" or not law.is_current:
             continue
         ref = law.full_act_ref
-        if not ref:
-            continue
-        if slug != law.id and slug != ref:
+        if not ref or slug != ref:
             continue
         return ref
     return None
@@ -105,10 +111,13 @@ def playground_catalogue_law(law_id: str) -> CatalogLaw | None:
 
 
 def list_playground_eligible_laws() -> tuple[str, ...]:
-    """Bare Act slugs that are Playground-eligible, in catalogue order."""
+    """Bare Act slugs that are Playground-eligible, in catalogue order.
+
+    Current Acts only; see ``_catalogue_full_act_ref``.
+    """
     seen: list[str] = []
     for law in load_catalog().laws:
-        if law.primary_content != "full_act":
+        if law.primary_content != "full_act" or not law.is_current:
             continue
         ref = law.full_act_ref
         if not ref or ref not in BARE_ACTS:
