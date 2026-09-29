@@ -25,6 +25,7 @@ from constitution_memorizer.playground.db import ensure_sqlite_schema
 from constitution_memorizer.playground.eligibility import (
     is_playground_eligible_law,
     list_playground_eligible_laws,
+    playground_catalogue_law,
     playground_law_source_identity,
 )
 from constitution_memorizer.playground.postgres import PostgresPlaygroundRepository
@@ -57,6 +58,7 @@ from constitution_memorizer.web.bare_acts import BARE_ACTS, clear_bare_act_cache
 
 MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
 USER_ID = UUID("11111111-1111-4111-8111-111111111111")
+ELIGIBLE_LAWS = list_playground_eligible_laws()
 
 
 @pytest.fixture(autouse=True)
@@ -199,7 +201,14 @@ def test_eligibility_and_locator_parse_do_not_hydrate(
 
 
 def test_locator_round_trip_from_json():
-    samples = (("ndps", "8"), ("bns", "103"), ("bnss", "479"))
+    samples = (
+        ("ndps", "8"),
+        ("bns", "103"),
+        ("bnss", "479"),
+        ("uapa", "1"),
+        ("pss", "1"),
+        ("mtp", "4"),
+    )
     for law_id, number in samples:
         loc = section_locator(law_id, number)
         parsed = parse_locator(loc.value)
@@ -226,7 +235,7 @@ def test_locator_rejects_unknown_and_malformed():
 
 
 def test_canonical_body_and_hash_are_deterministic():
-    for law_id in ("ndps", "bns", "bnss"):
+    for law_id in ELIGIBLE_LAWS:
         act = get_bare_act(law_id)
         assert act is not None
         section = act.section("1")
@@ -270,19 +279,54 @@ def test_add_to_playground_is_idempotent(tmp_path: Path):
 
 def test_bare_act_head_has_add_button_for_eligible_laws(tmp_path: Path):
     client = _client(tmp_path)
-    for law_id in ("ndps", "bns", "bnss"):
+    for law_id in ELIGIBLE_LAWS:
         page = client.get(f"/laws/{law_id}")
         assert page.status_code == 200
         assert "Add to Playground" in page.text
         assert add_path(law_id) in page.text
-    key_provisions = client.get("/laws/uapa-1967")
-    assert key_provisions.status_code == 200
-    assert "Add to Playground" not in key_provisions.text
+        assert "LawPlaygroundCta" in page.text
+    for ineligible in ("pota", "uapa-1967"):
+        page = client.get(f"/laws/{ineligible}")
+        assert page.status_code == 200
+        assert "Add to Playground" not in page.text
+        assert "LawPlaygroundCta" not in page.text
+
+
+def test_laws_hub_cta_matches_eligibility(tmp_path: Path):
+    page = _client(tmp_path).get("/laws")
+    assert page.status_code == 200
+    html = page.text
+    for law_id in ELIGIBLE_LAWS:
+        catalog = playground_catalogue_law(law_id)
+        assert catalog is not None
+        card = html.split(f'data-law-id="{catalog.id}"', 1)[1]
+        assert "Add to Playground" in card.split("</article>", 1)[0]
+    pota = html.split('data-law-id="pota"', 1)[1]
+    assert "Add to Playground" not in pota.split("</a>", 1)[0]
+
+
+def test_mtp_picker_workspace_invent_no_chapters(tmp_path: Path):
+    client = _client(tmp_path)
+    _add_and_select(client, "mtp", "1")
+    picker = client.get(sections_path("mtp"))
+    assert picker.status_code == 200
+    assert "data-chapterless" in picker.text
+    assert "Chapter" not in picker.text
+    workspace = client.get(law_path("mtp"))
+    assert workspace.status_code == 200
+    assert "Chapter" not in workspace.text
+    learn = client.get(learn_path("mtp", "1"))
+    assert learn.status_code == 200
+    assert "Chapter" not in learn.text
+    _add_and_select(client, "ndps", "1")
+    ndps = client.get(sections_path("ndps"))
+    assert "Chapter selection is not in this batch" in ndps.text
+    assert "data-chapterless" not in ndps.text
 
 
 def test_cloze_integrity_ndps_bns_bnss_section_1(tmp_path: Path):
     client = _client(tmp_path)
-    for law_id in ("ndps", "bns", "bnss"):
+    for law_id in ELIGIBLE_LAWS:
         act = get_bare_act(law_id)
         assert act is not None
         section = act.section("1")
@@ -386,7 +430,7 @@ def test_unknown_playground_law_404(tmp_path: Path):
 def test_final_namespace_and_retired_proof_urls(tmp_path: Path):
     client = _client(tmp_path)
     assert client.get("/playground").status_code == 200
-    for law_id in ("ndps", "bns", "bnss"):
+    for law_id in ELIGIBLE_LAWS:
         added = _add_law(client, law_id)
         assert added.status_code == 303
         assert added.headers["location"] == sections_path(law_id)
@@ -651,7 +695,7 @@ def test_populated_home_and_summaries_hydrate_zero_acts(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ):
     client = _client(tmp_path)
-    for law_id in ("ndps", "bns", "bnss"):
+    for law_id in ELIGIBLE_LAWS:
         added = _add_law(client, law_id)
         assert added.status_code == 303
     repo = client.app.state.playground
@@ -680,7 +724,7 @@ def test_populated_home_and_summaries_hydrate_zero_acts(
     monkeypatch.setattr(bare_acts, "list_bare_acts", boom_list)
     summaries = repo.list_playground_summaries(LOCAL_USER_ID, as_of=date.today())
     cards = playground_home_cards(summaries)
-    assert {card["law_id"] for card in cards} == {"ndps", "bns", "bnss"}
+    assert {card["law_id"] for card in cards} == set(ELIGIBLE_LAWS)
     assert "act" not in cards[0]
     ndps_card = next(card for card in cards if card["law_id"] == "ndps")
     assert ndps_card["title"] == (
@@ -692,9 +736,10 @@ def test_populated_home_and_summaries_hydrate_zero_acts(
     assert ndps_card["to_learn"] == 1
     page = client.get("/playground")
     assert page.status_code == 200
-    assert "The Narcotic Drugs and Psychotropic Substances Act, 1985" in page.text
-    assert "The Bharatiya Nyaya Sanhita, 2023" in page.text
-    assert "The Bharatiya Nagarik Suraksha Sanhita, 2023" in page.text
+    for law_id in ELIGIBLE_LAWS:
+        catalog = playground_catalogue_law(law_id)
+        assert catalog is not None
+        assert catalog.title in page.text
     assert "Progress" in page.text
     assert hydrated == []
 
@@ -715,20 +760,13 @@ def test_home_outdated_flag_is_law_level_registry_identity(
     assert hydrated == []
 
 
-@pytest.mark.parametrize(
-    ("law_id", "others"),
-    [
-        ("ndps", ("bns", "bnss")),
-        ("bns", ("ndps", "bnss")),
-        ("bnss", ("ndps", "bns")),
-    ],
-)
+@pytest.mark.parametrize("law_id", list(ELIGIBLE_LAWS))
 def test_one_law_routes_hydrate_only_that_act(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
     law_id: str,
-    others: tuple[str, ...],
 ):
+    others = tuple(other for other in ELIGIBLE_LAWS if other != law_id)
     clear_bare_act_cache()
     hydrated = _hydrate_spy(monkeypatch)
     client = _client(tmp_path)

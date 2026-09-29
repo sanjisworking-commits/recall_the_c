@@ -55,9 +55,9 @@ Those seven screens do **not** include Learn modes, clause picker, Today Playgro
 
 ---
 
-## 2. Production template inventory (81 files)
+## 2. Production template inventory (80 active files)
 
-Count matches the plan’s first-pass “81 templates” at `c76ba92`. Delta `c76ba92..a5edca5` is documentation/screenshots only; **no template was added or removed**.
+Count matched the plan’s first-pass “81 templates” at `c76ba92`. T7 deleted obsolete `playground_cloze.html`, leaving **80**.
 
 ### 2.1 Classification totals
 
@@ -67,8 +67,9 @@ Count matches the plan’s first-pass “81 templates” at `c76ba92`. Delta `c7
 | B | Another design family; restyle non-conforming elements | 45 |
 | C | Missing from prototype; designed extension | 4 templates + listed states |
 | D | Explicitly out of scope (§21.4) | 11 |
-| E | Obsolete; candidate for removal after proof | 1 |
+| E | Obsolete; removed after T7 proof | **0** (`playground_cloze.html` deleted) |
 | **Unclassified templates** | | **0** |
+| **Active templates** | | **80** (was 81 before T7) |
 
 ### 2.2 Class A — Playground / shell / matched product surfaces (18)
 
@@ -187,13 +188,13 @@ Each already has a Layer 1 `D` row. No new denominator items added in this audit
 
 Also excluded by §21.4 (not templates): Calendar → Study archive (lives on another branch); Settings control restyle (intentional deviation D113); clause picking inside the reader.
 
-### 2.7 Class E — obsolete (1)
+### 2.7 Class E — obsolete (0 remaining)
 
 | Template | Proof | Tracker |
 |---|---|---|
-| `playground_cloze.html` | **No `src/` reference.** HTTP Learn no longer calls `complete_cloze` (`test_playground_m7.py`, `test_playground_m8.py`). JS still binds `[data-playground-cloze]` without CSRF. | T7 |
+| `playground_cloze.html` | **Deleted.** `playground.js` no longer binds `[data-playground-cloze]`. HTTP Learn never called `complete_cloze`. | T7 DONE |
 
-Repository `complete_cloze()` remains as a grandfathered test/helper API (`tests/test_playground.py`, M3/M5 fixtures). T7 must not delete that method unless a later proof shows it unused.
+Repository `complete_cloze()` remains as a grandfathered test/helper API (`tests/test_playground.py`, M3/M5 fixtures).
 
 ---
 
@@ -310,7 +311,7 @@ Unchanged from the plan. Every listed production state already has D rows. No st
 
 ## 6. Current-branch eligibility vs programme (delta F)
 
-On SHA `5035ce2` (after `a17134d` merge), eligible slugs are **`bns`, `bnss`, `ndps`, `uapa`, `pss`, `mtp`**. `uapa-1967` and `pota` are not eligible. `laws.html` looks up playground state by `law.full_act_ref or law.id`. Bare Act page keys by `bare.slug`. T4 is in review, not closed (no snapshot-test DONE; chapterless MTP picker is T5 / R2).
+On this SHA, eligible slugs are **`bns`, `bnss`, `ndps`, `uapa`, `pss`, `mtp`**. `uapa-1967` and `pota` are not eligible. `laws.html` looks up playground state by `law.full_act_ref or law.id`. Bare Act page keys by `bare.slug`. T4 is DONE. MTP picker is chapterless (`data-chapterless`); D42 chapter bands remain R2 (T5).
 
 ---
 
@@ -319,7 +320,7 @@ On SHA `5035ce2` (after `a17134d` merge), eligible slugs are **`bns`, `bnss`, `n
 | Finding | Class | Action |
 |---|---|---|
 | Named 2026-09-28 `.dc.html` files absent | **A** (T36) + **blocker** | Do not invent screens. Obtain files before U1. |
-| `playground_cloze.html` unused in `src/` | **A** (T7) | Remove only with grep proof. Keep `complete_cloze()` until separately unused. |
+| `playground_cloze.html` unused in `src/` | **A** (T7) | **Removed.** `complete_cloze()` kept. |
 | Auto-merged main files beyond the 5 conflicts | **A** (T1) | Review `admin/routes.py`, `progress/*`, sitemap, `mobile.css`, `styles.css`, `laws.html` during R0 merge. |
 | D23 batch R2+R5 vs milestone U2 (R2+R3) | **A** (assignment unique) | Document; do not split denominator. U2 closeout must not forget R5 sticky footer. |
 | Stage 2 label NOT STARTED vs PARKED | **A** | Redesign tracker uses PARKED. Do not edit Stage 1 tracker. |

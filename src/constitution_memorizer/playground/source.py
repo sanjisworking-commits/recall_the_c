@@ -35,6 +35,13 @@ def canonical_body_text(section: ActSection) -> str:
 
 
 def hash_payload(section: ActSection) -> str:
+    """Canonical hash input: section number, title string, and body text.
+
+    Footnote title anchors (``title_annotations``) are display-only. Changing
+    them must not change this payload, or every learner's Act would show as
+    "Law updated". The printed title string is hashed; the annotation list is
+    not.
+    """
     return f"{section.number}\n{section.title}\n{canonical_body_text(section)}"
 
 

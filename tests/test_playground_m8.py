@@ -444,7 +444,9 @@ def test_progress_summary_lifecycle_counts(tmp_path: Path):
 def test_due_query_filters_inactive_laws(tmp_path: Path):
     repo = _sqlite_repo(tmp_path)
     uid = LOCAL_USER_ID
-    for law_id in ("ndps", "bns", "bnss"):
+    from tests.test_playground import ELIGIBLE_LAWS
+
+    for law_id in ELIGIBLE_LAWS:
         repo.add_item(uid, law_id, source_version="v", law_source_hash="t")
         loc = f"{law_id}:section:1"
         _seed_progress(
@@ -686,7 +688,9 @@ def test_today_queue_current_roster_only(
     )
     client = _authed_client(tmp_path)
     _subscribe(client)
-    for law_id in ("ndps", "bns", "bnss"):
+    from tests.test_playground import ELIGIBLE_LAWS
+
+    for law_id in ELIGIBLE_LAWS:
         assert _confirm_add(client, law_id).status_code == 303
         client.post(
             f"/playground/laws/{law_id}/sections",

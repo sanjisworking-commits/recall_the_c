@@ -366,7 +366,9 @@ def test_http_cloze_does_not_schedule_day_1(tmp_path: Path):
 
 def test_six_modes_generic_across_ndps_bns_bnss(tmp_path: Path):
     client = _client(tmp_path)
-    for law_id in ("ndps", "bns", "bnss"):
+    from tests.test_playground import ELIGIBLE_LAWS
+
+    for law_id in ELIGIBLE_LAWS:
         _add_and_select(client, law_id, "1")
         act = get_bare_act(law_id)
         section = act.section("1")
