@@ -395,11 +395,11 @@ Every T1–T41 row was read against current `a5edca5` production code. **Accepte
 | T | Review |
 |---|---|
 | T1 | **Landed on `a17134d`.** Five content conflicts unchanged in identity. Extra files auto-merged. `/seen` took main’s pipelined preload. |
-| T2 | Stop condition. Snapshot on this SHA before merge. |
+| T2 | Stop condition **did not fire** on merge. Snapshot test still to add. |
 | T3 | Main’s MTP footnote-title work is in the 29-commit main delta. |
-| T4 | Current eligible set is ndps/bns/bnss. UAPA alias bug cannot reproduce until merge. `laws.html:51` already keys by `law.id`. |
-| T5 | MTP not on this branch until merge. |
-| T6 | Manifest exists; regenerate after new Acts. |
+| T4 | **Landed with the merge.** Eligible six current slugs; `pota` and `uapa-1967` rejected. Hub keyed by slug. |
+| T5 | MTP is on this SHA after merge. Chapterless picker layout remains R2. |
+| T6 | Merge regenerated the sitemap over seven Acts. Noindex contract unchanged. |
 | T7 | Template dead; JS CSRF-less; `complete_cloze()` still used in tests. |
 | T8–T16 | `units.py` absent. Locator greedy `.+` confirmed. No clause routes. |
 | T17–T21 | Add is confirm-only (no scope step). Guest 303. Paused = hard gate. |
