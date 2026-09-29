@@ -104,13 +104,48 @@
 
   function enhanceSheets() {
     var dialog = document.querySelector("dialog.pg-sheet");
+    var lastOpener = null;
     if (!dialog) {
       dialog = document.createElement("dialog");
       dialog.className = "pg-sheet";
       dialog.setAttribute("aria-modal", "true");
+      dialog.setAttribute("role", "dialog");
       document.body.appendChild(dialog);
+    } else {
+      dialog.setAttribute("aria-modal", "true");
+      dialog.setAttribute("role", "dialog");
     }
+
+    function ensureCloseButton(panel) {
+      if (panel.querySelector("[data-pg-sheet-close]")) {
+        return;
+      }
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "pg-sheet-close";
+      btn.setAttribute("data-pg-sheet-close", "");
+      btn.setAttribute("aria-label", "Close");
+      btn.textContent = "\u2715";
+      panel.insertBefore(btn, panel.firstChild);
+    }
+
+    function labelledBy(panel) {
+      var heading = panel.querySelector("h1, h2, [id]");
+      if (heading) {
+        if (!heading.id) {
+          heading.id = "pg-sheet-title";
+        }
+        dialog.setAttribute("aria-labelledby", heading.id);
+      }
+    }
+
     document.addEventListener("click", function (event) {
+      var closeBtn = event.target.closest("[data-pg-sheet-close]");
+      if (closeBtn && dialog.contains(closeBtn)) {
+        event.preventDefault();
+        dialog.close();
+        return;
+      }
       var link = event.target.closest("[data-pg-sheet]");
       if (!link || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
         return;
@@ -120,6 +155,7 @@
       }
       event.preventDefault();
       var href = link.getAttribute("href");
+      lastOpener = link;
       fetch(href, { credentials: "same-origin", headers: { Accept: "text/html" } })
         .then(function (response) {
           return response.text().then(function (html) {
@@ -138,6 +174,8 @@
             window.location.href = href;
             return;
           }
+          ensureCloseButton(panel);
+          labelledBy(panel);
           dialog.replaceChildren(panel);
           if (typeof dialog.showModal === "function") {
             dialog.showModal();
@@ -179,6 +217,13 @@
       if (event.target === dialog) {
         dialog.close();
       }
+    });
+    dialog.addEventListener("close", function () {
+      dialog.removeAttribute("aria-labelledby");
+      if (lastOpener && typeof lastOpener.focus === "function") {
+        lastOpener.focus();
+      }
+      lastOpener = null;
     });
   }
 

@@ -557,6 +557,8 @@ def test_semantic_classes_and_reduced_motion_contract():
         "EntitlementGate",
         "TrustMark",
         "--pg-ink",
+        "--pg-teal",
+        "--pg-amber",
     ):
         assert name in css
     assert "prefers-reduced-motion" in css

@@ -5526,7 +5526,8 @@
   .rtc-affirmation-sub,
   .article-phone-meta,
   .methods-tracker,
-  .learn-meta {
+  .learn-meta,
+  .pg-phone-only {
     display: none;
   }
 
@@ -5534,4 +5535,74 @@
     display: contents;
   }
 
+}
+
+/* R1 — Playground phone shell. Constitution pages are not restyled here. */
+@media (max-width: 560px) {
+  body[data-mscreen="playground"] .page-wrap,
+  body[data-mscreen="playground"] .sheet {
+    background: var(--pg-page, var(--page));
+  }
+
+  body[data-mscreen="playground"] .PlaygroundShell {
+    padding: 12px var(--m-gutter, 18px) calc(var(--m-tabbar, 60px) + 28px + env(safe-area-inset-bottom, 0px));
+    max-width: none;
+  }
+
+  body[data-mscreen="playground"] .LawCard,
+  body[data-mscreen="playground"] .pg-card,
+  body[data-mscreen="playground"] .PaymentStateBanner,
+  body[data-mscreen="playground"] .ProgressSummary,
+  body[data-mscreen="playground"] .pg-aside,
+  body[data-mscreen="playground"] .pg-plan-row {
+    border-radius: var(--pg-radius-card, 16px);
+  }
+
+  body[data-mscreen="playground"] .mobile-tab.is-active {
+    color: var(--pg-teal, var(--rc-teal));
+  }
+
+  body[data-mscreen="playground"] .pg-home-grid,
+  body[data-mscreen="playground"] .pg-law-grid,
+  body[data-mscreen="playground"] .pg-columns {
+    display: block;
+  }
+
+  body[data-mscreen="playground"] .pg-sticky-cta {
+    position: sticky;
+    bottom: 0;
+    z-index: 20;
+    padding: 12px var(--m-gutter, 18px) calc(12px + var(--m-tabbar, 60px) + env(safe-area-inset-bottom, 0px));
+    margin-left: calc(-1 * var(--m-gutter, 18px));
+    margin-right: calc(-1 * var(--m-gutter, 18px));
+    background: var(--pg-paper, var(--paper));
+  }
+
+  body[data-mscreen="playground"]:has(.pg-learn) .mobile-tabbar,
+  body[data-mscreen="playground"]:has(.pg-complete) .mobile-tabbar,
+  body[data-mscreen="playground"]:has(.pg-surface--fixed-dark) .mobile-tabbar {
+    display: none;
+  }
+
+  body[data-mscreen="playground"]:has(.pg-learn) .PlaygroundShell,
+  body[data-mscreen="playground"]:has(.pg-complete) .PlaygroundShell,
+  body[data-mscreen="playground"]:has(.pg-surface--fixed-dark) .PlaygroundShell {
+    padding-bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+  }
+
+  body[data-mscreen="playground"]:has(.pg-learn) .pg-sticky-cta,
+  body[data-mscreen="playground"]:has(.pg-complete) .pg-sticky-cta,
+  body[data-mscreen="playground"]:has(.pg-surface--fixed-dark) .pg-sticky-cta {
+    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  }
+
+  body[data-mscreen="playground"] .pg-btn,
+  body[data-mscreen="playground"] .pg-back,
+  body[data-mscreen="playground"] .mobile-tab {
+    min-height: var(--pg-tap, 44px);
+  }
+
+  body[data-mscreen="playground"] .pg-learn {
+    padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  }
 }

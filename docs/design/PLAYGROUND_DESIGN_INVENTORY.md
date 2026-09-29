@@ -104,7 +104,7 @@ Those seven screens do **not** include Learn modes, clause picker, Today Playgro
 
 ## 2. Production template inventory (80 active files)
 
-Count matched the plan’s first-pass “81 templates” at `c76ba92`. T7 deleted obsolete `playground_cloze.html`, leaving **80**.
+R1 T41 re-check (this file): **80 active templates, 0 unclassified.** The four class-C templates are named in §2.5. `playground_cloze.html` remains deleted (class E).
 
 ### 2.1 Classification totals
 
@@ -204,12 +204,12 @@ Restyle every non-conforming element against U1 tokens/components (V23). Closest
 
 Each already has a Layer 1 `D` row. No new denominator items added in this audit.
 
-| Surface | Route | Closest design | Tracker |
-|---|---|---|---|
-| Source review list | `GET /playground/laws/{id}/source-review` | Law workspace / “Law updated” | D133 |
-| Source review section | `GET /playground/laws/{id}/source-review/sections/{n}` | Learn / verbatim panel | D134 |
-| Devices | `GET /profile/security/devices` | Profile account list | D137 |
-| Subscription checkout | `GET /billing/subscriptions/checkout` | Plans stage | D138 |
+| Surface | Template | Route | Closest design | Tracker |
+|---|---|---|---|---|
+| Source review list | `playground_source_review.html` | `GET /playground/laws/{id}/source-review` | Law workspace / “Law updated” | D133 |
+| Source review section | `playground_source_review_section.html` | `GET /playground/laws/{id}/source-review/sections/{n}` | Learn / verbatim panel | D134 |
+| Devices | `devices.html` | `GET /profile/security/devices` | Profile account list | D137 |
+| Subscription checkout | `subscription_checkout.html` | `GET /billing/subscriptions/checkout` | Plans stage | D138 |
 | Gate reasons with no drawn state | `playground_gate.html` variants | Gate family | D102 |
 | Learn failure states | `playground_learn.html` | Learn chrome | D139 |
 | Service / HTML errors, kill-switch 404 | FastAPI defaults + feature gate | Gate / empty | D140, D142 |

@@ -47,7 +47,7 @@
     </div>
     {% if launch_verbatim %}
     <div class="VerbatimText" data-verbatim data-open="true">
-      <p class="VerbatimText-kicker">VERBATIM TEXT</p>
+    <p class="VerbatimText-kicker pg-chip pg-chip--verbatim">VERBATIM TEXT</p>
       <p>Section {{ launch.number }} — {{ launch.title }}</p>
       <blockquote>{{ launch_verbatim }}</blockquote>
       <p class="pg-actions">
@@ -80,6 +80,6 @@
   </div>
   {% endfor %}
   {% endif %}
-  <p class="pg-actions"><a class="pg-btn pg-btn--quiet" href="/playground">← My Playground</a></p>
+  <p class="pg-actions"><a class="pg-back" href="/playground">← My Playground</a></p>
 </section>
 {% endblock %}

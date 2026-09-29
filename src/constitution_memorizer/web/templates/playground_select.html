@@ -2,7 +2,7 @@
 {% block title %}Select · {{ act.short_name }} · Playground{% endblock %}
 {% block playground %}
 <section class="playground-select"{% if not act.chapters %} data-chapterless{% endif %}>
-  <p><a href="/playground">← My Playground</a></p>
+  <p><a class="pg-back" href="/playground">← Playground</a></p>
   <h1>{{ act.title }}</h1>
   {# Chaptered Acts still note that chapter-level picking is later work.
      A chapterless Act (MTP) must not invent chapters or mention them. #}

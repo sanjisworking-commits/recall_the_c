@@ -9986,3 +9986,173 @@ body.is-admin-previewing { padding-top: 40px; }
   border-bottom: 1px solid var(--line, #e6e0d4);
 }
 
+/* R1 desktop shell — logo tile, centred tabs, account menu, density.
+   Phone layouts stay in mobile.css; these rules apply from 561px up. */
+.nav-icon {
+  display: none;
+}
+
+.account-menu-btn-copy {
+  display: none;
+  min-width: 0;
+  text-align: left;
+}
+
+.account-menu-btn-name {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--ink);
+}
+
+@media (min-width: 561px) {
+  .site-header {
+    position: relative;
+    flex-wrap: nowrap;
+    align-items: center;
+    height: 60px;
+    gap: 22px;
+    padding: 0 max(28px, calc((100% - 1180px) / 2));
+    border-bottom-color: var(--hairline);
+    background: var(--paper);
+  }
+
+  .brand {
+    gap: 10px;
+    font-size: 17px;
+    font-weight: 500;
+    flex: none;
+    z-index: 1;
+  }
+
+  .brand-mark {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+  }
+
+  .nav.PrimaryTabs--top {
+    align-items: center;
+    gap: 2px;
+    z-index: 1;
+  }
+
+  .PrimaryTabs--top .nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 38px;
+    padding: 0 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .PrimaryTabs--top .nav-icon {
+    display: block;
+    width: 18px;
+    height: 18px;
+    flex: none;
+  }
+
+  .account-menu {
+    margin-left: auto;
+    z-index: 2;
+    flex: none;
+  }
+
+  .account-menu-btn {
+    gap: 10px;
+    padding: 6px 8px;
+    border-radius: 10px;
+  }
+
+  .account-menu-btn:hover {
+    background: var(--wash);
+  }
+
+  .account-menu-panel {
+    width: 240px;
+    padding: 6px;
+    border-color: var(--hairline);
+    border-radius: 12px;
+    box-shadow: var(--pg-shadow-menu, 0 14px 34px rgba(20, 20, 20, 0.14));
+  }
+
+  html[data-theme="dark"] .account-menu-panel {
+    box-shadow: var(--pg-shadow-menu);
+  }
+
+  .account-menu-identity {
+    padding: 10px 12px;
+    margin-bottom: 4px;
+    border-bottom-color: var(--page);
+  }
+
+  .account-menu-panel a,
+  .account-menu-logout {
+    padding: 9px 12px;
+    border-radius: 8px;
+    font-size: 13.5px;
+  }
+
+  .account-menu-logout {
+    margin-top: 4px;
+    color: var(--destructive);
+  }
+
+  .account-menu-logout:hover {
+    background: var(--pg-destructive-tint, #fbf1ef);
+  }
+
+  html[data-theme="dark"] .account-menu-logout:hover {
+    background: var(--pg-destructive-tint);
+  }
+}
+
+@media (min-width: 561px) and (max-width: 899px) {
+  .site-header {
+    padding: 0 16px;
+  }
+
+  .nav.PrimaryTabs--top {
+    position: static;
+    transform: none;
+    flex: 1 1 auto;
+    justify-content: flex-end;
+    overflow-x: auto;
+  }
+
+  .PrimaryTabs--top .nav-link {
+    padding: 0 10px;
+    font-size: 13px;
+  }
+}
+
+@media (min-width: 900px) {
+  .nav.PrimaryTabs--top {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    justify-content: center;
+  }
+
+  .account-menu-btn-copy {
+    display: block;
+  }
+}
+
+@media (min-width: 1280px) {
+  .site-header {
+    padding: 0 40px;
+  }
+
+  .main > .PlaygroundShell,
+  body.playground-app .main {
+    max-width: none;
+  }
+}
+
+

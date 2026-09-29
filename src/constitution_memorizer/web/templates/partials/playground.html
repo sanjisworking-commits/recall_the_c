@@ -16,13 +16,13 @@
 
 {% macro due_badge(count, overdue=0) %}
 {% if overdue == 1 %}
-<span class="DueBadge"><span class="DueBadge-mark" aria-hidden="true"></span>1 overdue</span>
+<span class="DueBadge" data-due="overdue"><span class="DueBadge-mark" aria-hidden="true"></span>1 overdue</span>
 {% elif overdue and overdue > 1 %}
-<span class="DueBadge"><span class="DueBadge-mark" aria-hidden="true"></span>{{ overdue }} overdue</span>
+<span class="DueBadge" data-due="overdue"><span class="DueBadge-mark" aria-hidden="true"></span>{{ overdue }} overdue</span>
 {% elif count == 1 %}
-<span class="DueBadge"><span class="DueBadge-mark" aria-hidden="true"></span>Due today</span>
+<span class="DueBadge" data-due="today"><span class="DueBadge-mark" aria-hidden="true"></span>Due today</span>
 {% elif count and count > 1 %}
-<span class="DueBadge"><span class="DueBadge-mark" aria-hidden="true"></span>{{ count }} due today</span>
+<span class="DueBadge" data-due="today"><span class="DueBadge-mark" aria-hidden="true"></span>{{ count }} due today</span>
 {% endif %}
 {% endmacro %}
 
@@ -70,7 +70,7 @@
 {% endmacro %}
 
 {% macro law_card(card) %}
-<article class="LawCard{% if card.membership != 'in_playground' %} LawCard--compact{% endif %}" data-law-id="{{ card.law_id }}" data-membership="{{ card.membership }}">
+<article class="LawCard{% if card.is_next %} LawCard--emphasised{% endif %}{% if card.membership != 'in_playground' %} LawCard--compact LawCard--saved{% endif %}" data-law-id="{{ card.law_id }}" data-membership="{{ card.membership }}">
   {% if card.is_next %}<p class="LawCard-kicker">Up next</p>{% endif %}
   <h2 class="LawCard-title">{{ card.short_title }}</h2>
   <p class="LawCard-full">{{ card.title }}</p>
