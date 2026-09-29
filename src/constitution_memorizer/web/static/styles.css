@@ -10117,7 +10117,18 @@ body.is-admin-previewing { padding-top: 40px; }
 
 @media (min-width: 561px) and (max-width: 899px) {
   .site-header {
+    display: flex;
+    grid-template-columns: none;
     padding: 0 16px;
+  }
+
+  .brand {
+    white-space: nowrap;
+  }
+
+  .nav.PrimaryTabs--top {
+    flex: 1 1 auto;
+    justify-self: stretch;
   }
 
   .PrimaryTabs--top .nav-link {
