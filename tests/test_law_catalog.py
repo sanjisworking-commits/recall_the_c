@@ -30,6 +30,7 @@ PRODUCTION_LAW_IDS = (
     "rte-2009",
     "rpa-1951",
     "rti-2005",
+    "mva",
     "epa-1986",
 )
 

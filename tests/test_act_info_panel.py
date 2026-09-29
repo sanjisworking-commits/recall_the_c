@@ -266,7 +266,7 @@ def test_no_act_gains_a_bracket_orphan_from_its_long_title():
     # NDPS's one orphan is entry 105E's chemical name "[4,3,-a) (1,4}", a
     # typo in the source register, pinned as a known exception.
     assert {s: len(o) for s, o in orphans.items()} == {
-        "ndps": 1, "bns": 0, "bnss": 0, "pota": 0, "uapa": 0, "pss": 0, "mtp": 0
+        "ndps": 1, "bns": 0, "bnss": 0, "pota": 0, "uapa": 0, "pss": 0, "mtp": 0, "mva": 0
     }
 
 
