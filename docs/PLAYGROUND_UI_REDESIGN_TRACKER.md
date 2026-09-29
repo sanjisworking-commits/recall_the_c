@@ -4,7 +4,7 @@
 
 ```text
 Stage 1               = DONE — 100.0 / 100   (frozen)
-UI Redesign Programme = 5.0 / 100
+UI Redesign Programme = 17.0 / 100
 Stage 2               = PARKED until the programme is DONE — 100.0 / 100
 ```
 
@@ -28,6 +28,7 @@ Authority: `docs/PLAYGROUND_UI_REDESIGN_PLAN.md`. Inventories: `docs/design/PLAY
 | Alembic heads | **one:** `20260927_0027` |
 | T2 hash-drift | **did not fire.** Snapshot fixture pins 1136 eligible-section hashes including NDPS/BNS/BNSS 1018 and sentinels NDPS s.8 `938804c4…`, BNS s.103 `aea2c0bf…`, BNSS s.479 `2ebe577d…`. |
 | T36 prototypes | Desktop `61d8d01a…` (2,902 lines); mobile `361b7e25…` (1,829 lines). Not referenced from `src/`. |
+| **R1 closeout HEAD** | **`cd1c4c6`** — U1 28/28. Do not start R2. |
 
 Visual columns (390 light/dark, ~768, ~1024, 1280 light/dark, reduced motion) stay `—` until the relevant batch. Technical rows mark Desktop/Mobile **N/A**. Status uses only: `NOT STARTED | IN PROGRESS | BLOCKED | IN REVIEW | DONE`.
 
@@ -38,7 +39,7 @@ Visual columns (390 light/dark, ~768, ~1024, 1280 light/dark, reduced motion) st
 | Milestone | Scope | Weight | Batches | Items | Proven | Score |
 |---|---|---|---|---|---|---|
 | U0 | Source reconciliation + merge safety | 5 | R0 | 10 | 10 | 5.0 |
-| U1 | Shared design system + shells | 12 | R1 | 28 | 0 | 0.0 |
+| U1 | Shared design system + shells | 12 | R1 | 28 | 28 | 12.0 |
 | U2 | Bare Act + Add + clause-level selection | 18 | R2, R3 | 39 | 0 | 0.0 |
 | U3 | Home + gates + roster lifecycle | 12 | R3, R5 | 38 | 0 | 0.0 |
 | U4 | Act progress + six-mode Learn + speech | 18 | R4 | 28 | 0 | 0.0 |
@@ -46,7 +47,7 @@ Visual columns (390 light/dark, ~768, ~1024, 1280 light/dark, reduced motion) st
 | U6 | Today + Calendar + Google Calendar | 10 | R6 | 15 | 0 | 0.0 |
 | U7 | Profile + Settings + account surfaces | 7 | R5 | 12 | 0 | 0.0 |
 | U8 | Responsive, a11y, parity, regression | 10 | R7 | 25 | 0 | 0.0 |
-| **Total** | | **100** | | **207** | **10** | **5.0 / 100** |
+| **Total** | | **100** | | **207** | **38** | **17.0 / 100** |
 
 Uniqueness (script-checked from §15.2; no row in two milestones, none omitted):
 
@@ -77,7 +78,7 @@ No newly discovered B/C rows were added, so the denominator is unchanged.
 
 ## U0 — Source reconciliation + merge safety (weight 5, 10 items)
 
-R0. Prototypes and inventories are in place. **R1 implementation has not started.**
+R0. Prototypes and inventories are in place. **R1 (U1) is closed on `cd1c4c6`.**
 
 | ID | Requirement | D/M | Status | Evidence |
 |---|---|---|---|---|
@@ -96,38 +97,38 @@ R0. Prototypes and inventories are in place. **R1 implementation has not started
 
 ## U1 — Shared design system + shells (weight 12, 28 items)
 
-R1. Guard: no clause view-model fields.
+R1 closed on `cd1c4c6`. Guard held: no `UnitLocator`, clause fields, `unit_count`, new clause routes, new Today/week/speech APIs, or placeholder clause UI.
 
-| ID | Requirement | D/M | Status |
-|---|---|---|---|
-| D1 | Colour tokens: ink, paper, page, hairlines, muted/faint | both | NOT STARTED |
-| D2 | Teal family | both | NOT STARTED |
-| D3 | Amber/overdue and destructive families | both | NOT STARTED |
-| D4 | Dark-theme value for every new token | both | NOT STARTED |
-| D5 | Type: Fraunces / Source Sans 3; caps label | both | NOT STARTED |
-| D6 | Radii scale | both | NOT STARTED |
-| D7 | Shadows | both | NOT STARTED |
-| D8 | Buttons: primary, outline, teal, disabled, destructive | both | NOT STARTED |
-| D9 | Cards, emphasised card, dashed saved card | both | NOT STARTED |
-| D10 | Chips and badges | both | NOT STARTED |
-| D12 | Bottom sheet (grabber, scrim, rise) | phone | NOT STARTED |
-| D13 | Centred dialog (460px) | desktop | NOT STARTED |
-| D14 | Form fields and 2px focus ring | both | NOT STARTED |
-| D15 | Progress visuals: ring, bar, waffle, rungs, capacity | both | NOT STARTED |
-| D16 | Motion; all collapse under reduced motion | both | NOT STARTED |
-| D17 | Tap targets ≥44px; safe-area insets | phone | NOT STARTED |
-| D18 | Header: logo tile, centred tabs | desktop | NOT STARTED |
-| D19 | Account button and menu | desktop | NOT STARTED |
-| D20 | 5-tab bottom bar | phone | NOT STARTED |
-| D21 | Tab bar hidden on focused screens | phone | NOT STARTED |
-| D24 | Back links | both | NOT STARTED |
-| D25 | Page widths at 390 / 561–899 / 900–1039 / 1040+ / 1280 | both | NOT STARTED |
-| T33 | Asset version bumps and test pins | N/A | NOT STARTED |
-| T34 | Dark values; fixed-dark completion surface | N/A | NOT STARTED |
-| T35 | Negative grep for must-not-ship strings (X1–X8) | N/A | NOT STARTED |
-| T38 | Sheet/dialog enhancement; focus trap; fallback | N/A | NOT STARTED |
-| T39 | Tab-bar hide rules and sticky-footer offset | N/A | NOT STARTED |
-| T41 | Route/template inventory; no unclassified template | N/A | IN REVIEW | production inventory exists (80 templates). §16.1 prototype catalog filled from the two `.dc.html` files. R1 not started |
+| ID | Requirement | D/M | Status | Evidence |
+|---|---|---|---|---|
+| D1 | Colour tokens: ink, paper, page, hairlines, muted/faint | both | DONE | `--pg-ink/paper/page/hairline/muted/faint` in light+dark blocks. `test_d1_d16_design_system_primitives_in_css` |
+| D2 | Teal family | both | DONE | `--pg-teal` family + `.pg-btn--teal`. 390 teal active tab. `test_d1_d16` |
+| D3 | Amber/overdue and destructive families | both | DONE | `--pg-amber*`, `--pg-destructive*`. `DueBadge[data-due]`. Sign out uses destructive |
+| D4 | Dark-theme value for every new token | both | DONE | `test_t34_light_and_dark_tokens_and_fixed_dark_surface`. 390/1280 dark shells |
+| D5 | Type: Fraunces / Source Sans 3; caps label | both | DONE | Google fonts in `base.html`. `--pg-font-display/ui`, `--pg-label-size: 10.5px` |
+| D6 | Radii scale | both | DONE | sheet 22 / card 16 / row 14 / button 12 / chip 999. Logo tile radius 9 |
+| D7 | Shadows | both | DONE | `--pg-shadow-press/sheet/dialog/menu` |
+| D8 | Buttons: primary, outline, teal, disabled, destructive | both | DONE | `.pg-btn`, `--outline/--teal/--destructive`, `:disabled` |
+| D9 | Cards, emphasised card, dashed saved card | both | DONE | `.LawCard--emphasised`, `.pg-card--saved`. NDPS “Up next” card in shells |
+| D10 | Chips and badges | both | DONE | `.pg-chip`, `--verbatim/--teal`. Law page VERBATIM chip |
+| D12 | Bottom sheet (grabber, scrim, rise) | phone | DONE | `.pg-sheet-panel::before`, `pg-sheet-rise`. `r1_sheet_390_light.png` |
+| D13 | Centred dialog (460px) | desktop | DONE | `max-width: 460px`, `.pg-sheet::backdrop`. `r1_dialog_1280_light.png` |
+| D14 | Form fields and 2px focus ring | both | DONE | `.pg-field`, `--pg-focus-ring: 2px solid` |
+| D15 | Progress visuals: ring, bar, waffle, rungs, capacity | both | DONE | `.pg-progress-ring/bar`, `.pg-waffle`, `.pg-rung`, `.RosterCapacity` on home |
+| D16 | Motion; all collapse under reduced motion | both | DONE | `@keyframes pg-*`; `prefers-reduced-motion` + `html:not(.rtc-anim)`. 390 reduced byte-identical to light on this static page |
+| D17 | Tap targets ≥44px; safe-area insets | phone | DONE | `--pg-tap: 44px`; `env(safe-area-inset-bottom)` on shell and sticky CTA |
+| D18 | Header: logo tile, centred tabs | desktop | DONE | 30×30 radius-9 tile; 3-column grid from 900px; flex below 900. `r1_shell_768/1024/1280_light.png` |
+| D19 | Account button and menu | desktop | DONE | Account sibling of Primary nav. `r1_shell_1280_account.png` (Profile, Settings, Calendar, Sign out) |
+| D20 | 5-tab bottom bar | phone | DONE | Today/Browse/Playground/Calendar/Profile. Teal active only under `data-mscreen="playground"` |
+| D21 | Tab bar hidden on focused screens | phone | DONE | `body[data-mscreen="playground"]:has(.pg-learn/.pg-complete/.pg-surface--fixed-dark)`. `test_t39`, `test_d21`. Learn-screen visual is R4 |
+| D24 | Back links | both | DONE | `.pg-back` “← Playground” on select; “← My Playground” on law (`D132` copy stays until R4) |
+| D25 | Page widths at 390 / 561–899 / 900–1039 / 1040+ / 1280 | both | DONE | Queries 561/900/1040/1280. Shells at 390, 768, 900, 1024, 1040, 1280. Aside from 900 |
+| T33 | Asset version bumps and test pins | N/A | DONE | `styles.css?v=main74`, `mobile.css?v=mob94`, `playground.css?v=pg8`, `playground.js?v=pg6`. Pins in `test_playground_r1`, `test_settings_phone`, `test_web_sprint30` |
+| T34 | Dark values; fixed-dark completion surface | N/A | DONE | Every listed token in both theme blocks + `.pg-surface--fixed-dark` |
+| T35 | Negative grep for must-not-ship strings (X1–X8) | N/A | DONE | `test_t35_must_not_ship_strings_absent_from_runtime_assets` on templates/static only (docs/prototypes excluded) |
+| T38 | Sheet/dialog enhancement; focus trap; fallback | N/A | DONE | `enhanceSheets`: `lastOpener`, Escape, Tab trap, `showModal`, `role=dialog`, no-JS `window.location.href` fallback |
+| T39 | Tab-bar hide rules and sticky-footer offset | N/A | DONE | Hide scoped to playground mscreen. `.pg-sticky-cta` offset uses `--m-tabbar` |
+| T41 | Route/template inventory; no unclassified template | N/A | DONE | **80 active templates, 0 unclassified.** `test_t41_every_active_template_is_classified`. Inventory §2.5 names class-C in backticks |
 
 ---
 
@@ -379,14 +380,14 @@ Not extra score rows.
 
 | ID | Item | Status |
 |---|---|---|
-| X1 | Core/Deep/Infinite; ₹149/₹299/₹499; fixed prototype dates | NOT STARTED |
-| X2 | “offical”; unsupported Gazette provenance | NOT STARTED |
-| X3 | Plural bugs | NOT STARTED |
-| X4 | Unreachable gcal states; contradictory demo data | NOT STARTED |
-| X5 | “Devices 2 of 3”; free-tier copy contradictions | NOT STARTED |
-| X6 | Streak chip; Study archive; filled Settings badges | NOT STARTED |
-| X7 | Prototype gating holes | NOT STARTED |
-| X8 | Hard-coded scope labels, names, dates, percentages | NOT STARTED |
+| X1 | Core/Deep/Infinite; ₹149/₹299/₹499; fixed prototype dates | DONE (T35 runtime grep) |
+| X2 | “offical”; unsupported Gazette provenance | DONE (T35 `offical`) |
+| X3 | Plural bugs | DONE (T35 `1 spaces remaining`) |
+| X4 | Unreachable gcal states; contradictory demo data | DONE for greppable demo copy; gcal state machine remains R6 (T31/T32) |
+| X5 | “Devices 2 of 3”; free-tier copy contradictions | DONE (T35) |
+| X6 | Streak chip; Study archive; filled Settings badges | DONE (T35) |
+| X7 | Prototype gating holes | DONE for prototype runtime (`DCLogic`/`sc-if`/`support.js` banned in templates); entitlement holes remain T18/T20 |
+| X8 | Hard-coded scope labels, names, dates, percentages | DONE (T35 `36% learned`, `geodesic-dome`) |
 
 ---
 
@@ -408,7 +409,7 @@ Every T1–T41 row was read against current `a5edca5` production code. **Accepte
 | T22–T25 | No completion screens. Speech is Constitution-scoped. `SpeechClient` vs `RecallSpeech` confirmed. |
 | T26–T27 | Profile has no SUBSCRIPTION card from entitlement snapshot as specified. |
 | T28–T32 | No week view. Today is Constitution-path. |
-| T33–T41 | `playground.css` has no teal and no phone rules. `mobile.css` has no `body[data-mscreen="playground"]`. T36/T37/T41 advanced by this audit only. |
+| T33–T41 | `playground.css` tokens + phone rules exist. T33 pins `main74` / `mob94` / `pg8` / `pg6`. T35 greps runtime only. T41 **80/0**. |
 
 No missing technical dependency was found that is not already a T row. Auto-merge review is folded into T1, not a new T42.
 
@@ -425,6 +426,18 @@ No new product delta (class D) was found. Deltas A–H already cover guest gate,
 
 ---
 
+## R1 closeout
+
+**U1 is complete (28/28).** Shared design system and shells shipped. No R2 work.
+
+Starting SHA `343b090`. Implementation commits: `24b2729`, `5f4a63c`, `d81d36f`, `cd1c4c6`, plus this tracker commit.
+
+Local `pytest -m "not integration"`: **2742 passed, 9 skipped, 1 deselected**.
+
+Focused: `tests/test_playground_r1.py`, `tests/test_mobile_screens.py`, `tests/test_settings_phone.py`, `tests/test_web_sprint30.py`, `tests/test_playground_m6.py`, `tests/test_playground_m7.py`, `tests/test_guest_first_ux.py` — 223 passed before the full suite.
+
+No new B/C denominator rows. No class-D product-scope stop. Do not start R2.
+
 ## R0 readiness
 
-**U0 is complete (10/10).** Prototypes landed on `58a1a26`. §16.1 catalog is filled from those files. **R1 design-system implementation has not started.** U1 may begin on a later turn against the committed `.dc.html` files; do not invent screens.
+**U0 is complete (10/10).** **U1 is complete (28/28).** Stage 2 remains PARKED. Do not start R2.
