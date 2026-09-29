@@ -324,9 +324,13 @@ def test_read_complete_control_not_constitution_desktop_hidden():
     assert "learn-panel-recite" not in html
     assert "learn-panel-test" not in html
     assert ".pg-learn-actions" in css
-    before_desktop = css.split("@media (min-width: 1040px)")[0]
-    deck = before_desktop.split(".pg-learn-deck")[1][:160]
+    # R1 added a shell-width `@media (min-width: 1040px)` before the Learn
+    # deck query. The old split on the first 1040px block no longer isolates
+    # `.pg-learn-deck`. Intent unchanged: the deck stays `display: none`
+    # until the 1040px Learn grid.
+    deck = css.split(".pg-learn-deck {", 1)[1].split("}", 1)[0]
     assert "display: none" in deck
+    assert "@media (min-width: 1040px)" in css
 
 
 @pytest.mark.parametrize("mode", ("read", "cloze", "letters", "type", "recite"))
