@@ -28,7 +28,7 @@ Authority: `docs/PLAYGROUND_UI_REDESIGN_PLAN.md`. Inventories: `docs/design/PLAY
 | Alembic heads | **one:** `20260927_0027` |
 | T2 hash-drift | **did not fire.** Snapshot fixture pins 1136 eligible-section hashes including NDPS/BNS/BNSS 1018 and sentinels NDPS s.8 `938804c4…`, BNS s.103 `aea2c0bf…`, BNSS s.479 `2ebe577d…`. |
 | T36 prototypes | Desktop `61d8d01a…` (2,902 lines); mobile `361b7e25…` (1,829 lines). Not referenced from `src/`. |
-| **R1 closeout HEAD** | **`cd1c4c6`** — U1 28/28. Do not start R2. |
+| **R1 closeout HEAD** | **`cf41baf`** (tracker) · last code **`cd1c4c6`**. U1 28/28. Do not start R2. |
 
 Visual columns (390 light/dark, ~768, ~1024, 1280 light/dark, reduced motion) stay `—` until the relevant batch. Technical rows mark Desktop/Mobile **N/A**. Status uses only: `NOT STARTED | IN PROGRESS | BLOCKED | IN REVIEW | DONE`.
 
@@ -78,7 +78,7 @@ No newly discovered B/C rows were added, so the denominator is unchanged.
 
 ## U0 — Source reconciliation + merge safety (weight 5, 10 items)
 
-R0. Prototypes and inventories are in place. **R1 (U1) is closed on `cd1c4c6`.**
+R0. Prototypes and inventories are in place. **R1 (U1) is closed on `cf41baf`.**
 
 | ID | Requirement | D/M | Status | Evidence |
 |---|---|---|---|---|
@@ -97,7 +97,7 @@ R0. Prototypes and inventories are in place. **R1 (U1) is closed on `cd1c4c6`.**
 
 ## U1 — Shared design system + shells (weight 12, 28 items)
 
-R1 closed on `cd1c4c6`. Guard held: no `UnitLocator`, clause fields, `unit_count`, new clause routes, new Today/week/speech APIs, or placeholder clause UI.
+R1 closed on `cf41baf`. Guard held: no `UnitLocator`, clause fields, `unit_count`, new clause routes, new Today/week/speech APIs, or placeholder clause UI.
 
 | ID | Requirement | D/M | Status | Evidence |
 |---|---|---|---|---|
@@ -430,7 +430,7 @@ No new product delta (class D) was found. Deltas A–H already cover guest gate,
 
 **U1 is complete (28/28).** Shared design system and shells shipped. No R2 work.
 
-Starting SHA `343b090`. Implementation commits: `24b2729`, `5f4a63c`, `d81d36f`, `cd1c4c6`, plus this tracker commit.
+Starting SHA `343b090`. Implementation commits: `24b2729`, `5f4a63c`, `d81d36f`, `cd1c4c6`. Tracker closeout: `cf41baf`.
 
 Local `pytest -m "not integration"`: **2742 passed, 9 skipped, 1 deselected**.
 
