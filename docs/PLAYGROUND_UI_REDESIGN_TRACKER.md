@@ -1,0 +1,432 @@
+# Playground UI Redesign + Product Delta — Tracker
+
+**Not the Stage 1 scoreboard.** Do not edit `docs/PLAYGROUND_DELIVERY_TRACKER.md`.
+
+```text
+Stage 1               = DONE — 100.0 / 100   (frozen)
+UI Redesign Programme = 0.0 / 100
+Stage 2               = PARKED until the programme is DONE — 100.0 / 100
+```
+
+Authority: `docs/PLAYGROUND_UI_REDESIGN_PLAN.md`. Inventories: `docs/design/PLAYGROUND_DESIGN_INVENTORY.md`.
+
+---
+
+## Repository state (audit initialisation)
+
+| Field | Value |
+|---|---|
+| Branch | `cursor/playground-220d` |
+| Programme SHA (pre-merge, this audit) | `a5edca57d06f2a516fb2111be6e2e6f5db507f67` |
+| Plan’s recorded remote head | `e03253e` (**stale**; two commits after `c76ba92`) |
+| Plan audit snapshot | `c76ba92` |
+| `origin/main` | `0c0a8d555748cb5fa63a5fbe0a43998ee5c1d942` |
+| Merge-base with main | `188aa4c86c3358b6c037810b48ff8c41cf2adcf9` |
+| Commits on main not in this branch | 29 |
+| Alembic heads | **one:** `20260927_0027` |
+| Git status at audit start | clean; fast-forwarded to `a5edca5` |
+| Production code in `c76ba92..HEAD` | **none** (plan markdown + current-UI PNG pack only) |
+
+Visual columns (390 light/dark, ~768, ~1024, 1280 light/dark, reduced motion) stay `—` until the relevant batch. Technical rows mark Desktop/Mobile **N/A**. Status uses only: `NOT STARTED | IN PROGRESS | BLOCKED | IN REVIEW | DONE`.
+
+---
+
+## Scoreboard
+
+| Milestone | Scope | Weight | Batches | Items | Proven | Score |
+|---|---|---|---|---|---|---|
+| U0 | Source reconciliation + merge safety | 5 | R0 | 10 | 0 | 0.0 |
+| U1 | Shared design system + shells | 12 | R1 | 28 | 0 | 0.0 |
+| U2 | Bare Act + Add + clause-level selection | 18 | R2, R3 | 39 | 0 | 0.0 |
+| U3 | Home + gates + roster lifecycle | 12 | R3, R5 | 38 | 0 | 0.0 |
+| U4 | Act progress + six-mode Learn + speech | 18 | R4 | 28 | 0 | 0.0 |
+| U5 | Learned / mastery / amendment states | 8 | R4 | 12 | 0 | 0.0 |
+| U6 | Today + Calendar + Google Calendar | 10 | R6 | 15 | 0 | 0.0 |
+| U7 | Profile + Settings + account surfaces | 7 | R5 | 12 | 0 | 0.0 |
+| U8 | Responsive, a11y, parity, regression | 10 | R7 | 25 | 0 | 0.0 |
+| **Total** | | **100** | | **207** | **0** | **0.0 / 100** |
+
+Uniqueness (script-checked from §15.2; no row in two milestones, none omitted):
+
+- D1–D142: 142
+- T1–T41: 41
+- V1–V24: 24
+- **207**
+- X1–X8 are enforced by **T35**, not extra denominator rows.
+
+No newly discovered B/C rows were added, so the denominator is unchanged.
+
+---
+
+## Product deltas A–H
+
+| Id | Delta | Layer 2 | Status |
+|---|---|---|---|
+| A | Clause-level selection | T8–T16, T30 | NOT STARTED |
+| B | Playground pending rung → Google Calendar | T31 | NOT STARTED |
+| C | Selected unlearned work in Today | T28 | NOT STARTED |
+| D | Desktop Calendar Week | T29 | NOT STARTED |
+| E | Real speech on Letters/Recite | T25 | NOT STARTED |
+| F | Eligible Acts NDPS, BNS, BNSS, UAPA, PSS, MTP; POTA readable; slug identity | T4, T5 | NOT STARTED |
+| G | Paused/expired read-only home | T19 | NOT STARTED |
+| H | Guest HTML GET renders gate; JSON 401 | T20 | NOT STARTED |
+
+---
+
+## U0 — Source reconciliation + merge safety (weight 5, 10 items)
+
+R0. **Do not start R1 until §16 inventories exist and the named prototypes are readable.**
+
+| ID | Requirement | D/M | Status | Evidence |
+|---|---|---|---|---|
+| D26 | CTA placed in main’s new Act head | both | NOT STARTED | |
+| D30 | No CTA on repealed Acts; CTA on MTP chapterless page | both | NOT STARTED | needs main merge |
+| T1 | Merge `main` @ `0c0a8d5`; resolve 5 content conflicts; re-place CTA | N/A | NOT STARTED | conflicts still: `web/app.py`, `bare_act.html`, `base.html`, `test_learn_request_breakdown.py`, `test_settings_phone.py`. Also **review auto-merges**: `admin/routes.py`, `progress/{postgres_repository,protocols,repository}.py`, `law_sitemap_manifest.json`, `mobile.css`, `styles.css`, `laws.html` |
+| T2 | Hash-drift guard (stop condition) | N/A | NOT STARTED | snapshot NDPS s.8, BNS s.103, BNSS s.479 **before and after** merge |
+| T3 | Footnote-title guard | N/A | NOT STARTED | |
+| T4 | Eligibility: current Acts; slug identity; `laws.html` keyed by slug | N/A | NOT STARTED | today: ndps/bns/bnss only; hub uses `law.id` |
+| T6 | Regenerate sitemap; `/playground*` noindex | N/A | NOT STARTED | |
+| T7 | Remove dead CSRF-less cloze path | N/A | NOT STARTED | `playground_cloze.html` unused in `src/`; JS POST has no CSRF. Keep `complete_cloze()` until unused |
+| T36 | Tracker (this file); prototypes + handoff committed | N/A | IN PROGRESS | tracker + production inventory created this audit. **Named prototypes still absent** |
+| T37 | Re-validate plan against new head | N/A | IN REVIEW | this audit. Plan SHA `e03253e` stale → `a5edca5`. Line refs in §7 still hold |
+
+---
+
+## U1 — Shared design system + shells (weight 12, 28 items)
+
+R1. Guard: no clause view-model fields.
+
+| ID | Requirement | D/M | Status |
+|---|---|---|---|
+| D1 | Colour tokens: ink, paper, page, hairlines, muted/faint | both | NOT STARTED |
+| D2 | Teal family | both | NOT STARTED |
+| D3 | Amber/overdue and destructive families | both | NOT STARTED |
+| D4 | Dark-theme value for every new token | both | NOT STARTED |
+| D5 | Type: Fraunces / Source Sans 3; caps label | both | NOT STARTED |
+| D6 | Radii scale | both | NOT STARTED |
+| D7 | Shadows | both | NOT STARTED |
+| D8 | Buttons: primary, outline, teal, disabled, destructive | both | NOT STARTED |
+| D9 | Cards, emphasised card, dashed saved card | both | NOT STARTED |
+| D10 | Chips and badges | both | NOT STARTED |
+| D12 | Bottom sheet (grabber, scrim, rise) | phone | NOT STARTED |
+| D13 | Centred dialog (460px) | desktop | NOT STARTED |
+| D14 | Form fields and 2px focus ring | both | NOT STARTED |
+| D15 | Progress visuals: ring, bar, waffle, rungs, capacity | both | NOT STARTED |
+| D16 | Motion; all collapse under reduced motion | both | NOT STARTED |
+| D17 | Tap targets ≥44px; safe-area insets | phone | NOT STARTED |
+| D18 | Header: logo tile, centred tabs | desktop | NOT STARTED |
+| D19 | Account button and menu | desktop | NOT STARTED |
+| D20 | 5-tab bottom bar | phone | NOT STARTED |
+| D21 | Tab bar hidden on focused screens | phone | NOT STARTED |
+| D24 | Back links | both | NOT STARTED |
+| D25 | Page widths at 390 / 561–899 / 900–1039 / 1040+ / 1280 | both | NOT STARTED |
+| T33 | Asset version bumps and test pins | N/A | NOT STARTED |
+| T34 | Dark values; fixed-dark completion surface | N/A | NOT STARTED |
+| T35 | Negative grep for must-not-ship strings (X1–X8) | N/A | NOT STARTED |
+| T38 | Sheet/dialog enhancement; focus trap; fallback | N/A | NOT STARTED |
+| T39 | Tab-bar hide rules and sticky-footer offset | N/A | NOT STARTED |
+| T41 | Route/template inventory; no unclassified template | N/A | IN REVIEW | production inventory exists; prototype inventory blocked on missing `.dc.html` |
+
+---
+
+## U2 — Bare Act + Add + clause-level selection (weight 18, 39 items)
+
+R2 + R3. Clause UI must not ship in R1.
+
+| ID | Requirement | D/M | Status |
+|---|---|---|---|
+| D11 | Checkbox: none / all / some | both | NOT STARTED |
+| D23 | Sticky footers sit above the tab bar | phone | NOT STARTED |
+| D27 | CTA labels: guest, free, expired/paused, add, full, pending | both | NOT STARTED |
+| D28 | “Already in Playground” banner | both | NOT STARTED |
+| D29 | Desktop head: title left, 380px CTA column | desktop | NOT STARTED |
+| D31 | Add container: sheet / dialog | both | NOT STARTED |
+| D32 | Confirm step: space use, remaining, plurals | both | NOT STARTED |
+| D33 | Max skips confirm | both | NOT STARTED |
+| D34 | Scope step: Entire Act / Choose sections | both | NOT STARTED |
+| D35 | Guest add variant | both | NOT STARTED |
+| D36 | Subscribe / resume variant with catalogue “from ₹” | both | NOT STARTED |
+| D37 | Roster-full variant with upgrade buttons | both | NOT STARTED |
+| D38 | Pending-payment variant | both | NOT STARTED |
+| D39 | Re-add variant (“No extra space used”) | both | NOT STARTED |
+| D40 | Focus trap, Escape, scrim, no-JS fallback | both | NOT STARTED |
+| D41 | Picker header copy | both | NOT STARTED |
+| D42 | Chapter bands; none for chapterless Acts | both | NOT STARTED |
+| D43 | Section row: checkbox, SECTION n, title | both | NOT STARTED |
+| D44 | Status line, five states | both | NOT STARTED |
+| D45 | Caret expands clause rows | both | NOT STARTED |
+| D46 | Tri-state section checkbox | both | NOT STARTED |
+| D47 | Omitted / unlearnable rows disabled | both | NOT STARTED |
+| D48 | Sticky footer count / “clauses partial” | phone | NOT STARTED |
+| D49 | Sticky SELECTION aside | desktop | NOT STARTED |
+| D50 | Disabled at zero selection | both | NOT STARTED |
+| D128 | Picker lede copy replacement | both | NOT STARTED |
+| D129 | Picker button copy replacement | both | NOT STARTED |
+| T5 | Chapterless Acts in picker, workspace, progress | N/A | NOT STARTED |
+| T8 | Locator grammar; `SectionLocator` / `UnitLocator`; explicit `ordinal` | N/A | NOT STARTED |
+| T9 | `playground/units.py` | N/A | NOT STARTED |
+| T10 | Unit hash and unit-level source review | N/A | NOT STARTED |
+| T11 | Exclusivity, promotion, dormant progress | N/A | NOT STARTED |
+| T12 | Due/schedule join current selection | N/A | NOT STARTED |
+| T13 | Computed `unit_count`; “provisions” wording | N/A | NOT STARTED |
+| T14 | Clause learn routes; `learn_path_for_locator` | N/A | NOT STARTED |
+| T15 | Picker POST `section=` / `unit=`; no-JS | N/A | NOT STARTED |
+| T16 | Per-section status line view model | N/A | NOT STARTED |
+| T17 | Scope step after confirm; Max skips confirm | N/A | NOT STARTED |
+| T18 | Act-head / add-sheet state model | N/A | NOT STARTED |
+
+`_LOCATOR_RE` still uses greedy `.+` for section number (`locators.py:19`). `parse_locator` returns only `SectionLocator`. Confirmed T8 defect.
+
+---
+
+## U3 — Home + gates + roster lifecycle (weight 12, 38 items)
+
+R3 + R5.
+
+| ID | Requirement | D/M | Status |
+|---|---|---|---|
+| D22 | Primary tabs hidden on hard-gate pages | both | NOT STARTED |
+| D51 | Home header copy (phone/desktop) | both | NOT STARTED |
+| D52 | Month strip; Manage; Add a law | phone | NOT STARTED |
+| D53 | Law card: segmented bar, single CTA | phone | NOT STARTED |
+| D54 | Law card: Up next, chips, three buttons | desktop | NOT STARTED |
+| D55 | “Law updated” chip | both | NOT STARTED |
+| D56 | Summary tiles | desktop | NOT STARTED |
+| D57 | Removed this month / Saved progress | both | NOT STARTED |
+| D58 | Capacity aside | desktop | NOT STARTED |
+| D59 | Plan next month card | both | NOT STARTED |
+| D60 | Empty state | both | NOT STARTED |
+| D61 | Paused banner; Resume CTAs | both | NOT STARTED |
+| D62 | Banners: pending, cancel, upgrade, downgrade, welcome | both | NOT STARTED |
+| D63 | Verbatim trust mark | both | NOT STARTED |
+| D93 | Roster manager chrome | both | NOT STARTED |
+| D94 | Active / removed rows | both | NOT STARTED |
+| D95 | Remove dialog/sheet | both | NOT STARTED |
+| D96 | Add-law dialog with meter | both | NOT STARTED |
+| D97 | Rollover title, lede, key | both | NOT STARTED |
+| D98 | Rollover rows / radiogroup | both | NOT STARTED |
+| D99 | Rollover aside / sticky footer | both | NOT STARTED |
+| D100 | Downgrade and blocked banners | both | NOT STARTED |
+| D101 | Guest sign-in gate | both | NOT STARTED |
+| D102 | Gate per reason | both | NOT STARTED |
+| D103 | Saved-progress tiles on hard gates | both | NOT STARTED |
+| D104 | Plans stage | both | NOT STARTED |
+| D105 | Plan footnotes | both | NOT STARTED |
+| D106 | “Included with your account” card | both | NOT STARTED |
+| D125 | Home H1 copy | both | NOT STARTED |
+| D126 | Home lede removed | both | NOT STARTED |
+| D127 | Card links → single Learn CTA (phone) | phone | NOT STARTED |
+| D130 | Rollover button copy | both | NOT STARTED |
+| D131 | Not-subscribed gate title | both | NOT STARTED |
+| D140 | Playground unavailable / service error | both | NOT STARTED |
+| D142 | HTML 404/403/500 / kill-switch 404 | both | NOT STARTED |
+| T19 | Paused/expired read-only home; learn blocked | N/A | NOT STARTED |
+| T20 | Guest HTML GET → gate; JSON 401 | N/A | NOT STARTED |
+| T21 | Plans stage from catalogue | N/A | NOT STARTED |
+
+Production today: guest 303 (`test_playground_m6.py:115` and `:422`). Paused is EntitlementGate (`:420` family), not read-only home.
+
+---
+
+## U4 — Act progress + Learn + speech (weight 18, 28 items)
+
+R4.
+
+| ID | Requirement | D/M | Status |
+|---|---|---|---|
+| D64 | Act progress head | both | NOT STARTED |
+| D65 | Progress ring | both | NOT STARTED |
+| D66 | “Next” chip | both | NOT STARTED |
+| D67 | Waffle of selected provisions | both | NOT STARTED |
+| D68 | Ladder histogram | both | NOT STARTED |
+| D69 | Primary Learn CTA; Manage sections | both | NOT STARTED |
+| D70 | Up next learning prompt | desktop | NOT STARTED |
+| D71 | Verbatim box show/hide | desktop | NOT STARTED |
+| D72 | Sections list | desktop | NOT STARTED |
+| D74 | Empty: no sections selected | both | NOT STARTED |
+| D75 | Learn top bar / step bar | both | NOT STARTED |
+| D76 | Eyebrow; VERBATIM BARE ACT chip | both | NOT STARTED |
+| D77 | Per-mode task heading | both | NOT STARTED |
+| D78 | Advance labels; methods left; Mark it Done | both | NOT STARTED |
+| D79 | Read | both | NOT STARTED |
+| D80 | Cloze | both | NOT STARTED |
+| D81 | Letters + speech controls | both | NOT STARTED |
+| D82 | Type | both | NOT STARTED |
+| D83 | Recite | both | NOT STARTED |
+| D84 | Test | both | NOT STARTED |
+| D85 | Clause unit: lead-in as context | both | NOT STARTED |
+| D87 | Focused column / deck+panel | both | NOT STARTED |
+| D132 | Law page back copy | both | NOT STARTED |
+| D139 | Learn failure states | both | NOT STARTED |
+| D141 | Speech unavailable → typed path | both | NOT STARTED |
+| T22 | Aggregates: rungs, next-up, scope | N/A | NOT STARTED |
+| T23 | Modes-seen drives step bar | N/A | NOT STARTED |
+| T25 | Playground speech route; `window.RecallSpeech` | N/A | NOT STARTED |
+
+Production: `playground-learn.js` reads `window.SpeechClient` (never global). Constitution client uses `window.RecallSpeech` (`speech_client.js`). Speech HTTP is `POST /learn/{unit_id}/speech/transcribe` (Constitution `unit_id`). Confirmed T25.
+
+---
+
+## U5 — Learned, revision, mastery, amendments (weight 8, 12 items)
+
+R4.
+
+| ID | Requirement | D/M | Status |
+|---|---|---|---|
+| D73 | Source-update panel (three variants) | both | NOT STARTED |
+| D86 | Revision variant + source-outdated line | both | NOT STARTED |
+| D88 | “Section learned.” screen | both | NOT STARTED |
+| D89 | Learned count line | both | NOT STARTED |
+| D90 | “Mastered, verbatim.” | both | NOT STARTED |
+| D91 | “The whole Act. By heart.” | both | NOT STARTED |
+| D92 | Fixed dark surface both themes | both | NOT STARTED |
+| D133 | Source review list | both | NOT STARTED |
+| D134 | Section review page | both | NOT STARTED |
+| D135 | Missing / omitted variants | both | NOT STARTED |
+| D136 | Mastered or Learned **and** Law updated | both | NOT STARTED |
+| T24 | Completion routes; real aggregates only | N/A | NOT STARTED |
+
+---
+
+## U6 — Today + Calendar + Google (weight 10, 15 items)
+
+R6.
+
+| ID | Requirement | D/M | Status |
+|---|---|---|---|
+| D115 | Today: Playground nodes in the path | both | NOT STARTED |
+| D116 | Today: current-node card | both | NOT STARTED |
+| D117 | Today: “New” Playground node | both | NOT STARTED |
+| D118 | Today: gear opens Settings | phone | NOT STARTED |
+| D119 | Today: two-column recall + path | desktop | NOT STARTED |
+| D120 | Calendar cites clauses; “· Playground” | both | NOT STARTED |
+| D121 | Calendar footnote about Google | phone | NOT STARTED |
+| D122 | Month / Week switch | desktop | NOT STARTED |
+| D123 | Week grid, six card states with text | desktop | NOT STARTED |
+| D124 | Week: empty day, today ring, tap-through | desktop | NOT STARTED |
+| T28 | Today path merge; New rule; `due_count` excludes New | N/A | NOT STARTED |
+| T29 | Week view model and route | N/A | NOT STARTED |
+| T30 | Clause citations in calendar | N/A | NOT STARTED |
+| T31 | Google projection pending Playground rung | N/A | NOT STARTED |
+| T32 | Narrow missing-schema guards | N/A | NOT STARTED |
+
+`/calendar?view=week` does not exist on this SHA.
+
+---
+
+## U7 — Profile + Settings + account (weight 7, 12 items)
+
+R5.
+
+| ID | Requirement | D/M | Status |
+|---|---|---|---|
+| D107 | Identity card | both | NOT STARTED |
+| D108 | SUBSCRIPTION card | both | NOT STARTED |
+| D109 | Devices n of limit; Learning preferences | both | NOT STARTED |
+| D110 | Guest profile card | both | NOT STARTED |
+| D111 | Settings phone layout | phone | NOT STARTED |
+| D112 | Settings phone Reminders row | phone | NOT STARTED |
+| D113 | Settings controls keep shipped styling | both | NOT STARTED |
+| D114 | First-connect reminder sheet/dialog | both | NOT STARTED |
+| D137 | Devices page | both | NOT STARTED |
+| D138 | Subscription checkout page | both | NOT STARTED |
+| T26 | Subscription card + device count view models | N/A | NOT STARTED |
+| T27 | Reminders row posts `reminder_cadence` | N/A | NOT STARTED |
+
+---
+
+## U8 — Closeout (weight 10, 25 items)
+
+R7.
+
+| ID | Requirement | D/M | Status |
+|---|---|---|---|
+| T40 | Planned test rewrites with reasons | N/A | NOT STARTED |
+| V1 | Every screen/state at 390×844 | both | NOT STARTED |
+| V2 | ~768 | both | NOT STARTED |
+| V3 | ~1024 | both | NOT STARTED |
+| V4 | 1280+ | both | NOT STARTED |
+| V5 | Light theme | both | NOT STARTED |
+| V6 | Dark theme | both | NOT STARTED |
+| V7 | Reduced motion | both | NOT STARTED |
+| V8 | Keyboard traversal | both | NOT STARTED |
+| V9 | Visible focus | both | NOT STARTED |
+| V10 | ARIA dialog / radiogroup / tri-state | both | NOT STARTED |
+| V11 | 44px targets and safe areas | phone | NOT STARTED |
+| V12 | Status never colour alone | both | NOT STARTED |
+| V13 | Contrast light and dark | both | NOT STARTED |
+| V14 | Semantic link vs button | both | NOT STARTED |
+| V15 | Every D row matched / deviation / n/a | both | NOT STARTED |
+| V16 | Regression: subscriptions, devices, roster | N/A | NOT STARTED |
+| V17 | Regression: six modes, ladder, source review | N/A | NOT STARTED |
+| V18 | Regression: SEO, public laws, Constitution, admin | N/A | NOT STARTED |
+| V19 | Full suite green | N/A | NOT STARTED |
+| V20 | CI green | N/A | NOT STARTED |
+| V21 | Desktop visual sign-off | desktop | NOT STARTED |
+| V22 | Mobile visual sign-off | phone | NOT STARTED |
+| V23 | Every class-B surface vs design system | both | NOT STARTED |
+| V24 | Zero unclassified routes; exclusions documented | N/A | NOT STARTED |
+
+Known rewrites (T40 seed; not yet executed): `test_playground_m6.py:115,422` guest 303 → gate; `:420` paused gate → read-only home; `test_playground_m8.py` “Law revisions” → path nodes; Act loops gain `uapa`, `pss`, `mtp`.
+
+---
+
+## Must not ship (T35 / X1–X8)
+
+Not extra score rows.
+
+| ID | Item | Status |
+|---|---|---|
+| X1 | Core/Deep/Infinite; ₹149/₹299/₹499; fixed prototype dates | NOT STARTED |
+| X2 | “offical”; unsupported Gazette provenance | NOT STARTED |
+| X3 | Plural bugs | NOT STARTED |
+| X4 | Unreachable gcal states; contradictory demo data | NOT STARTED |
+| X5 | “Devices 2 of 3”; free-tier copy contradictions | NOT STARTED |
+| X6 | Streak chip; Study archive; filled Settings badges | NOT STARTED |
+| X7 | Prototype gating holes | NOT STARTED |
+| X8 | Hard-coded scope labels, names, dates, percentages | NOT STARTED |
+
+---
+
+## Layer 2 review (before R0)
+
+Every T1–T41 row was read against current `a5edca5` production code. **Accepted to start R0 merge/safety work.** Notes:
+
+| T | Review |
+|---|---|
+| T1 | Five content conflicts **unchanged**. Extra files auto-merge; review them. Plan worktree path `.claude/worktrees/jovial-darwin-e1fd02` is not this environment. |
+| T2 | Stop condition. Snapshot on this SHA before merge. |
+| T3 | Main’s MTP footnote-title work is in the 29-commit main delta. |
+| T4 | Current eligible set is ndps/bns/bnss. UAPA alias bug cannot reproduce until merge. `laws.html:51` already keys by `law.id`. |
+| T5 | MTP not on this branch until merge. |
+| T6 | Manifest exists; regenerate after new Acts. |
+| T7 | Template dead; JS CSRF-less; `complete_cloze()` still used in tests. |
+| T8–T16 | `units.py` absent. Locator greedy `.+` confirmed. No clause routes. |
+| T17–T21 | Add is confirm-only (no scope step). Guest 303. Paused = hard gate. |
+| T22–T25 | No completion screens. Speech is Constitution-scoped. `SpeechClient` vs `RecallSpeech` confirmed. |
+| T26–T27 | Profile has no SUBSCRIPTION card from entitlement snapshot as specified. |
+| T28–T32 | No week view. Today is Constitution-path. |
+| T33–T41 | `playground.css` has no teal and no phone rules. `mobile.css` has no `body[data-mscreen="playground"]`. T36/T37/T41 advanced by this audit only. |
+
+No missing technical dependency was found that is not already a T row. Auto-merge review is folded into T1, not a new T42.
+
+---
+
+## Blockers (product / source)
+
+| ID | Blocker | Blocks | Decision needed |
+|---|---|---|---|
+| B1 | Named prototype files (`Recall the C - Playground Desktop.dc.html`, `Recall the C - Playground.dc.html`) are not in the repo or this VM | Completing §16.1; U1 visual work; V15/V21/V22 | Provide the zip/HTML files so they can be committed. Do not invent screens. |
+| B2 | T2 hash-drift is an R0 **stop condition**, not a maybe | R1+ if hashes change without a statutory change | None yet — execute the snapshot during R0 |
+
+No new product delta (class D) was found. Deltas A–H already cover guest gate, paused home, eligibility, clause selection, Today, week view, speech, and Google.
+
+---
+
+## R0 readiness
+
+**R0 merge-and-protect may begin.** Layer 2 has been reviewed. Conflict list still matches the plan. Pre-merge SHA to record: `a5edca5`.
+
+**R1 must not begin** until B1 is resolved and §16.1 is filled from the real prototypes.
+
+Do not merge/implement in this audit commit. This file and the inventory are documentation only.
