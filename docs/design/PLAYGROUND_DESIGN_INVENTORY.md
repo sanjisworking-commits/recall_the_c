@@ -5,7 +5,8 @@ Programme inventory for `docs/PLAYGROUND_UI_REDESIGN_PLAN.md` §16.1–§16.2 an
 **Not a Stage 1 document.** Stage 1 remains frozen at **DONE — 100.0 / 100**.
 
 ```text
-Inventory SHA: a5edca57d06f2a516fb2111be6e2e6f5db507f67
+Inventory SHA: 5035ce2e9d6e2ac14a01367d25e41dc12565257f  (after main merge)
+Pre-merge:     a5edca57d06f2a516fb2111be6e2e6f5db507f67
 Branch:        cursor/playground-220d
 main:          0c0a8d555748cb5fa63a5fbe0a43998ee5c1d942
 Alembic head:  20260927_0027
@@ -309,9 +310,7 @@ Unchanged from the plan. Every listed production state already has D rows. No st
 
 ## 6. Current-branch eligibility vs programme (delta F)
 
-On SHA `a5edca5`, `BARE_ACTS` is **ndps, bns, bnss only**. Catalogue `full_act` rows are those three. `uapa-1967` is `key_provisions` (not eligible). POTA / PSS / MTP / UAPA full Acts arrive with `main` @ `0c0a8d5` (R0 / T1 / T4).
-
-`laws.html` keys playground state by `law.id`. Bare Act page keys by `bare.slug`. After merge this is the UAPA identity bug T4 describes.
+On SHA `5035ce2` (after `a17134d` merge), eligible slugs are **`bns`, `bnss`, `ndps`, `uapa`, `pss`, `mtp`**. `uapa-1967` and `pota` are not eligible. `laws.html` looks up playground state by `law.full_act_ref or law.id`. Bare Act page keys by `bare.slug`. T4 is in review, not closed (no snapshot-test DONE; chapterless MTP picker is T5 / R2).
 
 ---
 

@@ -12,20 +12,20 @@ Authority: `docs/PLAYGROUND_UI_REDESIGN_PLAN.md`. Inventories: `docs/design/PLAY
 
 ---
 
-## Repository state (audit initialisation)
+## Repository state
 
 | Field | Value |
 |---|---|
 | Branch | `cursor/playground-220d` |
-| Programme SHA (pre-merge, this audit) | `a5edca57d06f2a516fb2111be6e2e6f5db507f67` |
-| Plan’s recorded remote head | `e03253e` (**stale**; two commits after `c76ba92`) |
+| Pre-merge SHA (audit / T1 base) | `a5edca57d06f2a516fb2111be6e2e6f5db507f67` |
+| Audit docs SHA | `ed1112ccc95ec32dd4a292ad9852b0834dfff768` |
+| **HEAD after human R0 merge** | **`5035ce2e9d6e2ac14a01367d25e41dc12565257f`** |
+| Merge commit | `a17134dc0fe06dfef8b79d60754b6e89d62e5521` (`main` @ `0c0a8d5` into playground) |
+| Plan’s recorded remote head | `e03253e` (**stale**) |
 | Plan audit snapshot | `c76ba92` |
 | `origin/main` | `0c0a8d555748cb5fa63a5fbe0a43998ee5c1d942` |
-| Merge-base with main | `188aa4c86c3358b6c037810b48ff8c41cf2adcf9` |
-| Commits on main not in this branch | 29 |
 | Alembic heads | **one:** `20260927_0027` |
-| Git status at audit start | clean; fast-forwarded to `a5edca5` |
-| Production code in `c76ba92..HEAD` | **none** (plan markdown + current-UI PNG pack only) |
+| T2 hash-drift | **did not fire.** NDPS s.8, BNS s.103, BNSS s.479 hashes identical pre/post merge. Merge message: all 1018 NDPS/BNS/BNSS section hashes+titles+bodies identical. |
 
 Visual columns (390 light/dark, ~768, ~1024, 1280 light/dark, reduced motion) stay `—` until the relevant batch. Technical rows mark Desktop/Mobile **N/A**. Status uses only: `NOT STARTED | IN PROGRESS | BLOCKED | IN REVIEW | DONE`.
 
@@ -67,7 +67,7 @@ No newly discovered B/C rows were added, so the denominator is unchanged.
 | C | Selected unlearned work in Today | T28 | NOT STARTED |
 | D | Desktop Calendar Week | T29 | NOT STARTED |
 | E | Real speech on Letters/Recite | T25 | NOT STARTED |
-| F | Eligible Acts NDPS, BNS, BNSS, UAPA, PSS, MTP; POTA readable; slug identity | T4, T5 | NOT STARTED |
+| F | Eligible Acts NDPS, BNS, BNSS, UAPA, PSS, MTP; POTA readable; slug identity | T4, T5 | IN REVIEW |
 | G | Paused/expired read-only home | T19 | NOT STARTED |
 | H | Guest HTML GET renders gate; JSON 401 | T20 | NOT STARTED |
 
@@ -79,16 +79,16 @@ R0. **Do not start R1 until §16 inventories exist and the named prototypes are 
 
 | ID | Requirement | D/M | Status | Evidence |
 |---|---|---|---|---|
-| D26 | CTA placed in main’s new Act head | both | NOT STARTED | |
-| D30 | No CTA on repealed Acts; CTA on MTP chapterless page | both | NOT STARTED | needs main merge |
-| T1 | Merge `main` @ `0c0a8d5`; resolve 5 content conflicts; re-place CTA | N/A | NOT STARTED | conflicts still: `web/app.py`, `bare_act.html`, `base.html`, `test_learn_request_breakdown.py`, `test_settings_phone.py`. Also **review auto-merges**: `admin/routes.py`, `progress/{postgres_repository,protocols,repository}.py`, `law_sitemap_manifest.json`, `mobile.css`, `styles.css`, `laws.html` |
-| T2 | Hash-drift guard (stop condition) | N/A | NOT STARTED | snapshot NDPS s.8, BNS s.103, BNSS s.479 **before and after** merge |
+| D26 | CTA placed in main’s new Act head | both | IN REVIEW | `bare_act.html`: CTA after status note, before About toggle. Visual matrix not yet run |
+| D30 | No CTA on repealed Acts; CTA on MTP chapterless page | both | IN REVIEW | POTA not eligible → no `playground_state`. MTP eligible. Visual not yet run |
+| T1 | Merge `main` @ `0c0a8d5`; resolve 5 content conflicts; re-place CTA | N/A | IN REVIEW | `a17134d`. Five conflicts resolved per plan. Merge message: suite 2719 passed / 9 skipped. Stage 1 tracker untouched. Snapshot test still missing so not DONE |
+| T2 | Hash-drift guard (stop condition) | N/A | IN REVIEW | Stop condition **did not fire**. Confirmed NDPS s.8 `938804c4…`, BNS s.103 `aea2c0bf…`, BNSS s.479 `2ebe577d…` identical vs `ed1112c`. Automated snapshot test not yet added |
 | T3 | Footnote-title guard | N/A | NOT STARTED | |
-| T4 | Eligibility: current Acts; slug identity; `laws.html` keyed by slug | N/A | NOT STARTED | today: ndps/bns/bnss only; hub uses `law.id` |
-| T6 | Regenerate sitemap; `/playground*` noindex | N/A | NOT STARTED | |
+| T4 | Eligibility: current Acts; slug identity; `laws.html` keyed by slug | N/A | IN REVIEW | Eligible `bns bnss ndps uapa pss mtp`. `uapa-1967` and `pota` rejected. Hub lookup `law.full_act_ref or law.id`. Tests in `test_playground.py` |
+| T6 | Regenerate sitemap; `/playground*` noindex | N/A | IN REVIEW | Merge message: manifest regenerated over seven Acts |
 | T7 | Remove dead CSRF-less cloze path | N/A | NOT STARTED | `playground_cloze.html` unused in `src/`; JS POST has no CSRF. Keep `complete_cloze()` until unused |
-| T36 | Tracker (this file); prototypes + handoff committed | N/A | IN PROGRESS | tracker + production inventory created this audit. **Named prototypes still absent** |
-| T37 | Re-validate plan against new head | N/A | IN REVIEW | this audit. Plan SHA `e03253e` stale → `a5edca5`. Line refs in §7 still hold |
+| T36 | Tracker (this file); prototypes + handoff committed | N/A | IN PROGRESS | tracker + production inventory exist. **Named prototypes still absent** |
+| T37 | Re-validate plan against new head | N/A | IN REVIEW | Audit at `a5edca5`; merge landed `5035ce2` |
 
 ---
 
@@ -394,7 +394,7 @@ Every T1–T41 row was read against current `a5edca5` production code. **Accepte
 
 | T | Review |
 |---|---|
-| T1 | Five content conflicts **unchanged**. Extra files auto-merge; review them. Plan worktree path `.claude/worktrees/jovial-darwin-e1fd02` is not this environment. |
+| T1 | **Landed on `a17134d`.** Five content conflicts unchanged in identity. Extra files auto-merged. `/seen` took main’s pipelined preload. |
 | T2 | Stop condition. Snapshot on this SHA before merge. |
 | T3 | Main’s MTP footnote-title work is in the 29-commit main delta. |
 | T4 | Current eligible set is ndps/bns/bnss. UAPA alias bug cannot reproduce until merge. `laws.html:51` already keys by `law.id`. |
