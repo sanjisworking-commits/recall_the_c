@@ -22,7 +22,6 @@ from typing import Any
 from constitution_memorizer.playground.locators import (
     LocatorError,
     PlaygroundLocator,
-    SectionLocator,
     UnitLocator,
     UNIT_KINDS,
     parse_locator,
@@ -33,6 +32,39 @@ from constitution_memorizer.web import bare_acts as bare_act_registry
 
 _PREVIEW_CHARS = 88
 _UNLABELLED_DESCENT_TYPES = frozenset({"paragraph", "text", ""})
+
+
+@dataclass(frozen=True)
+class UnitIdentity:
+    """Internal selectable-unit identity. Not a locator and has no wire form."""
+
+    section_number: str
+    kind: str
+    label: str
+    ordinal: int = 1
+
+
+@dataclass(frozen=True)
+class MappedUnit:
+    """A selectable unit before a law id is bound into a ``UnitLocator``."""
+
+    identity: UnitIdentity
+    display_label: str
+    canonical_text: str
+    lead_in: str
+    preview: str
+
+    @property
+    def kind(self) -> str:
+        return self.identity.kind
+
+    @property
+    def label(self) -> str:
+        return self.identity.label
+
+    @property
+    def ordinal(self) -> int:
+        return self.identity.ordinal
 
 
 @dataclass(frozen=True)
@@ -47,10 +79,20 @@ class SelectableUnit:
     preview: str
 
     @property
+    def identity(self) -> UnitIdentity:
+        return UnitIdentity(
+            section_number=self.locator.section_number,
+            kind=self.kind,
+            label=self.label,
+            ordinal=self.ordinal,
+        )
+
+    @property
     def hash_payload(self) -> str:
+        ident = self.identity
         return (
-            f"{self.locator.section_number}\n"
-            f"{self.kind}:{self.label}\n"
+            f"{ident.section_number}\n"
+            f"{ident.kind}:{ident.label}\n"
             f"{self.lead_in}\n"
             f"{self.canonical_text}"
         )
@@ -59,7 +101,7 @@ class SelectableUnit:
 @dataclass(frozen=True)
 class SectionUnitMap:
     section_number: str
-    units: tuple[SelectableUnit, ...]
+    units: tuple[MappedUnit, ...]
     lead_in: str
     tail: str
 
@@ -67,7 +109,7 @@ class SectionUnitMap:
     def section_only(self) -> bool:
         return len(self.units) < 2
 
-    def unit_for(self, locator: UnitLocator) -> SelectableUnit | None:
+    def unit_for(self, locator: UnitLocator) -> MappedUnit | None:
         for unit in self.units:
             if (
                 unit.kind == locator.kind
@@ -172,7 +214,7 @@ def section_unit_map(section: ActSection) -> SectionUnitMap:
     lead_in = canonical_nodes_text(lead_nodes, profile=section.profile)
     tail = canonical_nodes_text(tail_nodes, profile=section.profile)
     seen: dict[tuple[str, str], int] = {}
-    units: list[SelectableUnit] = []
+    units: list[MappedUnit] = []
     last_index = len(selectable_indexes) - 1
     for ordinal_i, index in enumerate(selectable_indexes):
         node = peers[index]
@@ -189,19 +231,14 @@ def section_unit_map(section: ActSection) -> SectionUnitMap:
                 if not is_selectable_node(peers[j])
             ]
         canonical = canonical_nodes_text([node, *following], profile=section.profile)
-        loc = UnitLocator(
-            law_id="",
-            section_number=section.number,
-            kind=kind,
-            label=label,
-            ordinal=ordinal,
-        )
         units.append(
-            SelectableUnit(
-                locator=loc,
-                kind=kind,
-                label=label,
-                ordinal=ordinal,
+            MappedUnit(
+                identity=UnitIdentity(
+                    section_number=section.number,
+                    kind=kind,
+                    label=label,
+                    ordinal=ordinal,
+                ),
                 display_label=display_printed_label(label),
                 canonical_text=canonical,
                 lead_in=lead_in,
@@ -217,25 +254,23 @@ def section_unit_map(section: ActSection) -> SectionUnitMap:
 
 
 def enumerate_selectable_units(
-    section: ActSection, *, law_id: str = ""
+    section: ActSection, *, law_id: str
 ) -> tuple[SelectableUnit, ...]:
     mapped = section_unit_map(section)
     if mapped.section_only:
         return ()
-    if not law_id:
-        return mapped.units
     return tuple(
         SelectableUnit(
             locator=unit_locator(
                 law_id,
-                section.number,
-                unit.kind,
-                unit.label,
-                unit.ordinal,
+                unit.identity.section_number,
+                unit.identity.kind,
+                unit.identity.label,
+                unit.identity.ordinal,
             ),
-            kind=unit.kind,
-            label=unit.label,
-            ordinal=unit.ordinal,
+            kind=unit.identity.kind,
+            label=unit.identity.label,
+            ordinal=unit.identity.ordinal,
             display_label=unit.display_label,
             canonical_text=unit.canonical_text,
             lead_in=unit.lead_in,
@@ -282,22 +317,8 @@ def unit_hash(unit: SelectableUnit) -> str:
     return sha256(unit.hash_payload.encode("utf-8")).hexdigest()
 
 
-def unit_hash_for_locator(
-    locator: UnitLocator, section: ActSection, *, law_id: str = ""
-) -> str:
-    resolved = resolve_unit(
-        locator
-        if locator.law_id
-        else unit_locator(
-            law_id or locator.law_id,
-            locator.section_number,
-            locator.kind,
-            locator.label,
-            locator.ordinal,
-        ),
-        section=section,
-    )
-    return unit_hash(resolved)
+def unit_hash_for_locator(locator: UnitLocator, section: ActSection) -> str:
+    return unit_hash(resolve_unit(locator, section=section))
 
 
 def source_hash_for_locator(
@@ -308,7 +329,7 @@ def source_hash_for_locator(
 ) -> str:
     """Hash the active learning target. ``section_hash`` is the whole-section digest."""
     if isinstance(locator, UnitLocator):
-        return unit_hash_for_locator(locator, section, law_id=locator.law_id)
+        return unit_hash_for_locator(locator, section)
     return section_hash(section)
 
 

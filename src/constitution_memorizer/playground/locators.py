@@ -72,9 +72,19 @@ class UnitLocator:
         object.__setattr__(self, "label", str(self.label or "").strip())
         ordinal = int(self.ordinal or 1)
         object.__setattr__(self, "ordinal", ordinal)
-        if self.kind not in UNIT_KINDS or not self.label or ordinal < 1:
+        law = str(self.law_id or "")
+        num = str(self.section_number or "")
+        if (
+            not num
+            or ":" in num
+            or not is_playground_eligible_law(law)
+            or self.kind not in UNIT_KINDS
+            or not self.label
+            or ordinal < 1
+        ):
             raise LocatorError(
-                f"invalid unit locator parts: {self.kind!r} {self.label!r} {ordinal!r}"
+                f"invalid unit locator parts: {law!r} {num!r} "
+                f"{self.kind!r} {self.label!r} {ordinal!r}"
             )
 
     @property

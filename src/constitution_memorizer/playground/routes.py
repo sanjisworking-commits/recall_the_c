@@ -75,6 +75,7 @@ from constitution_memorizer.playground.lifecycle import (
     revision_is_due,
 )
 from constitution_memorizer.playground.service import (
+    SelectionRejected,
     activate_law,
     mark_outdated,
     parse_selected_locator,
@@ -923,15 +924,18 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             act = require_playground_law(law_id)
         except PlaygroundLawError:
             raise HTTPException(status_code=404, detail="Law not found") from None
-        if overlay.get_item(opened.user_id, law_id) is None:
-            activate_law(overlay, opened.user_id, law_id)
         entire_raw = form.get("entire")
         entire_act = str(entire_raw or "") in {"1", "on", "true", "yes"}
         numbers = [str(value) for value in form.getlist("section")]
         units = [str(value) for value in form.getlist("unit")]
-        rows = selection_rows(
-            law_id, numbers, entire=entire_act, act=act, units=units
-        )
+        try:
+            rows = selection_rows(
+                law_id, numbers, entire=entire_act, act=act, units=units
+            )
+        except SelectionRejected:
+            raise HTTPException(status_code=400, detail="invalid_selection") from None
+        if overlay.get_item(opened.user_id, law_id) is None:
+            activate_law(overlay, opened.user_id, law_id)
         overlay.replace_selection(opened.user_id, law_id, rows)
         return RedirectResponse(url=law_path(law_id), status_code=303)
 

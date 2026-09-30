@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import date
+from typing import NoReturn
 from uuid import UUID
 
 from constitution_memorizer.playground.cloze import has_cloze_blanks
@@ -90,6 +91,54 @@ def _learnable_section(section) -> bool:
     return section is not None and not section.is_omitted and bool(canonical_body_text(section))
 
 
+class SelectionRejected(ValueError):
+    """Submitted selection transaction cannot be safely applied."""
+
+
+def _present_form_values(values: list[str] | None) -> list[str]:
+    present: list[str] = []
+    for value in values or []:
+        text = str(value)
+        if not text.strip():
+            continue
+        present.append(text)
+    return present
+
+
+def _reject_selection() -> NoReturn:
+    raise SelectionRejected("invalid_selection")
+
+
+def _require_submitted_section(law_id: str, number: str, act) -> SectionLocator:
+    try:
+        loc = section_locator(law_id, number)
+    except LocatorError as exc:
+        raise SelectionRejected("invalid_selection") from exc
+    if number != loc.section_number:
+        _reject_selection()
+    section = act.section(loc.section_number)
+    if not _learnable_section(section):
+        _reject_selection()
+    return loc
+
+
+def _require_submitted_unit(law_id: str, raw: str, act) -> UnitLocator:
+    try:
+        loc = parse_locator(raw)
+    except LocatorError as exc:
+        raise SelectionRejected("invalid_selection") from exc
+    if not isinstance(loc, UnitLocator) or loc.law_id != law_id or raw != loc.value:
+        _reject_selection()
+    section = act.section(loc.section_number)
+    if not _learnable_section(section):
+        _reject_selection()
+    try:
+        resolve_unit(loc, act=act, section=section)
+    except LocatorError as exc:
+        raise SelectionRejected("invalid_selection") from exc
+    return loc
+
+
 def normalize_selection_locators(
     law_id: str,
     numbers: list[str] | None,
@@ -103,39 +152,31 @@ def normalize_selection_locators(
     Ticking every selectable unit stores the whole-section locator (promotion).
     Learning every unit still does **not** mark the section learned — this
     function only normalizes the selection layer.
+
+    Every present ``section=`` / ``unit=`` value is validated before promotion,
+    XOR, entire-Act expansion, or persistence. Whitespace-only values are
+    absent. ``entire=True`` still validates extras, then ignores valid extras.
     """
     if act is None:
         act = require_playground_law(law_id)
+    submitted_sections = [
+        _require_submitted_section(law_id, number, act)
+        for number in _present_form_values(numbers)
+    ]
+    submitted_units = [
+        _require_submitted_unit(law_id, raw, act)
+        for raw in _present_form_values(units)
+    ]
     if entire:
         return list(locators_for_act(law_id, act=act))
 
     whole: dict[str, SectionLocator] = {}
-    for number in numbers or []:
-        try:
-            loc = section_locator(law_id, number)
-        except LocatorError:
-            continue
-        section = act.section(loc.section_number)
-        if not _learnable_section(section):
-            continue
+    for loc in submitted_sections:
         whole[loc.section_number] = loc
 
     by_section: dict[str, list[UnitLocator]] = {}
-    for raw in units or []:
-        try:
-            loc = parse_locator(raw)
-        except LocatorError:
-            continue
-        if not isinstance(loc, UnitLocator) or loc.law_id != law_id:
-            continue
+    for loc in submitted_units:
         if loc.section_number in whole:
-            continue
-        section = act.section(loc.section_number)
-        if not _learnable_section(section):
-            continue
-        try:
-            resolve_unit(loc, act=act, section=section)
-        except LocatorError:
             continue
         bucket = by_section.setdefault(loc.section_number, [])
         if loc not in bucket:
@@ -146,7 +187,7 @@ def normalize_selection_locators(
         section = act.section(number)
         selectable = enumerate_selectable_units(section, law_id=law_id)
         if not selectable:
-            continue
+            _reject_selection()
         chosen_keys = {(item.kind, item.label, item.ordinal) for item in chosen}
         all_keys = {(item.kind, item.label, item.ordinal) for item in selectable}
         if chosen_keys == all_keys:

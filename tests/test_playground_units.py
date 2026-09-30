@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+from dataclasses import replace
 from datetime import date, timedelta
+from pathlib import Path
 
 import pytest
 
@@ -16,12 +18,14 @@ from constitution_memorizer.playground.locators import (
 )
 from constitution_memorizer.playground.learning.modes import PLAYGROUND_LEARN_MODES
 from constitution_memorizer.playground.service import (
+    SelectionRejected,
     normalize_selection_locators,
     require_playground_law,
     selection_rows,
 )
-from constitution_memorizer.playground.source import source_hash
+from constitution_memorizer.playground.source import locators_for_act, source_hash
 from constitution_memorizer.playground.units import (
+    UnitIdentity,
     citation_label,
     enumerate_selectable_units,
     section_unit_map,
@@ -32,7 +36,7 @@ from constitution_memorizer.playground.urls import learn_path, learn_path_for_lo
 from constitution_memorizer.playground.view import picker_cta_copy, picker_status_line, provisions_label
 from constitution_memorizer.playground.roster.period import playground_today
 from constitution_memorizer.progress.user_ids import LOCAL_USER_ID
-from constitution_memorizer.web.bare_acts import clear_bare_act_cache, get_bare_act
+from constitution_memorizer.web.bare_acts import ActSection, clear_bare_act_cache, get_bare_act
 from tests.test_playground import (
     _add_and_select,
     _add_law,
@@ -51,6 +55,32 @@ def _ndps_section(number: str):
     section = act.section(number)
     assert section is not None
     return act, section
+
+
+def _selection_snapshot(repo, law_id: str):
+    return tuple(
+        (row.source_locator, row.source_version, row.source_hash, row.selected_at)
+        for row in repo.list_selection(LOCAL_USER_ID, law_id)
+    )
+
+
+def _item_snapshot(repo, law_id: str):
+    return repo.get_item(LOCAL_USER_ID, law_id)
+
+
+def _assert_picker_rejected(client, *, law_id: str, data: dict) -> None:
+    repo = client.app.state.playground
+    before_selection = _selection_snapshot(repo, law_id)
+    before_item = _item_snapshot(repo, law_id)
+    rejected = client.post(
+        sections_path(law_id),
+        data=data,
+        follow_redirects=False,
+    )
+    assert rejected.status_code == 400
+    assert rejected.json() == {"detail": "invalid_selection"}
+    assert _selection_snapshot(repo, law_id) == before_selection
+    assert _item_snapshot(repo, law_id) == before_item
 
 
 def _pss_38():
@@ -345,15 +375,13 @@ def test_nojs_section_and_unit_post_and_omitted_rejection(tmp_path: Path):
     assert units.status_code == 303
     selected = {row.source_locator for row in repo.list_selection(LOCAL_USER_ID, "ndps")}
     assert selected == {"ndps:section:8:clause:a", "ndps:section:8:clause:b"}
-    rejected = client.post(
-        sections_path("ndps"),
+    _assert_picker_rejected(
+        client,
+        law_id="ndps",
         data={"section": "65", "unit": "ndps:section:8:not-a-unit:1"},
-        follow_redirects=False,
     )
-    assert rejected.status_code == 303
     selected = {row.source_locator for row in repo.list_selection(LOCAL_USER_ID, "ndps")}
-    assert "ndps:section:65" not in selected
-    assert not any("not-a-unit" in item for item in selected)
+    assert selected == {"ndps:section:8:clause:a", "ndps:section:8:clause:b"}
 
 
 def test_picker_markup_tri_state_chapterless_and_copy(tmp_path: Path):
@@ -509,3 +537,180 @@ def test_requested_law_only_hydration_on_picker(
     )
     assert "ndps" in hydrated
     assert "bns" not in hydrated
+
+
+def test_unit_locator_cannot_exist_unbound():
+    with pytest.raises(LocatorError):
+        UnitLocator(law_id="", section_number="8", kind="clause", label="a")
+    with pytest.raises(LocatorError):
+        unit_locator("", "8", "clause", "a")
+    _act, section = _ndps_section("8")
+    mapped = section_unit_map(section)
+    assert mapped.units
+    for unit in mapped.units:
+        assert isinstance(unit.identity, UnitIdentity)
+        assert not hasattr(unit, "locator")
+        assert not hasattr(unit.identity, "value")
+        assert unit.identity.section_number == "8"
+    bound = enumerate_selectable_units(section, law_id="ndps")
+    assert bound
+    for unit in bound:
+        assert unit.locator.law_id == "ndps"
+        assert parse_locator(unit.locator.value) == unit.locator
+
+
+def test_normalize_entire_validates_extras_then_ignores_valid_ones():
+    act = require_playground_law("ndps")
+    entire = locators_for_act("ndps", act=act)
+    with pytest.raises(SelectionRejected):
+        normalize_selection_locators(
+            "ndps",
+            ["65"],
+            entire=True,
+            units=["ndps:section:8:clause:a"],
+            act=act,
+        )
+    with pytest.raises(SelectionRejected):
+        normalize_selection_locators(
+            "ndps",
+            ["8"],
+            entire=True,
+            units=["ndps:section:8:not-a-unit:1"],
+            act=act,
+        )
+    accepted = normalize_selection_locators(
+        "ndps",
+        ["8"],
+        entire=True,
+        units=["ndps:section:8:clause:a"],
+        act=act,
+    )
+    assert [item.value for item in accepted] == [item.value for item in entire]
+    assert not any(isinstance(item, UnitLocator) for item in accepted)
+
+
+def test_unlearnable_non_omitted_rejected_with_synthetic_section():
+    act = require_playground_law("ndps")
+    synthetic = ActSection(
+        number="99Z",
+        title="Synthetic empty body",
+        status="active",
+        former_title=None,
+        omission_note=None,
+        chapter_number="",
+        chapter_title="",
+        body=(),
+        profile="ndps",
+    )
+    fake = replace(act, section_order=act.section_order + (synthetic,))
+    assert fake.section("99Z") is not None
+    assert act.section("99Z") is None
+    with pytest.raises(SelectionRejected):
+        normalize_selection_locators("ndps", ["99Z"], entire=False, act=fake)
+
+
+def test_picker_post_rejects_invalid_payloads_without_mutation(tmp_path: Path):
+    client = _client(tmp_path)
+    _add_and_select(client, "ndps", "8")
+    payloads = (
+        {"unit": "ndps:section:8:not-a-unit:1"},
+        {"unit": "bns:section:103:clause:a"},
+        {"section": "99999"},
+        {"section": "65"},
+        {"unit": "ndps:section:8:clause:zzz"},
+        {"unit": "ndps:section:8:clause:a~9"},
+        {"unit": "pss:section:38:subsection:2~9"},
+        {"section": " 8 "},
+        {"unit": " ndps:section:8:clause:a "},
+        {"unit": "ndps:section:8:clause:a~1"},
+    )
+    for data in payloads:
+        _assert_picker_rejected(client, law_id="ndps", data=data)
+
+
+def test_picker_post_valid_plus_invalid_applies_neither(tmp_path: Path):
+    client = _client(tmp_path)
+    _add_and_select(client, "ndps", "9")
+    _assert_picker_rejected(
+        client,
+        law_id="ndps",
+        data={
+            "unit": [
+                "ndps:section:8:clause:a",
+                "ndps:section:8:not-a-unit:1",
+            ]
+        },
+    )
+    selected = {
+        row.source_locator
+        for row in client.app.state.playground.list_selection(LOCAL_USER_ID, "ndps")
+    }
+    assert selected == {"ndps:section:9"}
+    assert "ndps:section:8:clause:a" not in selected
+
+
+def test_picker_post_entire_act_valid_and_invalid_extras(tmp_path: Path):
+    client = _client(tmp_path)
+    _add_and_select(client, "ndps", "8")
+    _assert_picker_rejected(
+        client,
+        law_id="ndps",
+        data={"entire": "1", "section": "65"},
+    )
+    selected = {
+        row.source_locator
+        for row in client.app.state.playground.list_selection(LOCAL_USER_ID, "ndps")
+    }
+    assert selected == {"ndps:section:8"}
+    saved = client.post(
+        sections_path("ndps"),
+        data={
+            "entire": "1",
+            "section": "8",
+            "unit": "ndps:section:8:clause:a",
+        },
+        follow_redirects=False,
+    )
+    assert saved.status_code == 303
+    expected = {item.value for item in locators_for_act("ndps")}
+    got = {
+        row.source_locator
+        for row in client.app.state.playground.list_selection(LOCAL_USER_ID, "ndps")
+    }
+    assert got == expected
+    assert "ndps:section:8:clause:a" not in got
+
+
+def test_picker_post_whitespace_absent_and_empty_clears(tmp_path: Path):
+    client = _client(tmp_path)
+    _add_and_select(client, "ndps", "9")
+    mixed = client.post(
+        sections_path("ndps"),
+        data={"section": ["8", "   ", "\t"], "unit": ["", "  "]},
+        follow_redirects=False,
+    )
+    assert mixed.status_code == 303
+    selected = {
+        row.source_locator
+        for row in client.app.state.playground.list_selection(LOCAL_USER_ID, "ndps")
+    }
+    assert selected == {"ndps:section:8"}
+    cleared = client.post(
+        sections_path("ndps"),
+        data={},
+        follow_redirects=False,
+    )
+    assert cleared.status_code == 303
+    assert client.app.state.playground.list_selection(LOCAL_USER_ID, "ndps") == []
+    client.post(
+        sections_path("ndps"),
+        data={"section": "9"},
+        follow_redirects=False,
+    )
+    whitespace_only = client.post(
+        sections_path("ndps"),
+        data={"section": "   ", "unit": "\n"},
+        follow_redirects=False,
+    )
+    assert whitespace_only.status_code == 303
+    assert client.app.state.playground.list_selection(LOCAL_USER_ID, "ndps") == []
