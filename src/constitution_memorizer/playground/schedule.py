@@ -16,9 +16,10 @@ from constitution_memorizer.playground.lifecycle import (
     overdue_label,
     parse_iso_date,
 )
-from constitution_memorizer.playground.locators import LocatorError, parse_locator
+from constitution_memorizer.playground.locators import LocatorError, locator_section_number, parse_locator
 from constitution_memorizer.playground.roster.period import playground_today
-from constitution_memorizer.playground.urls import law_path, learn_path
+from constitution_memorizer.playground.urls import law_path, learn_path_for_locator
+from constitution_memorizer.playground.units import citation_label
 from constitution_memorizer.playground.view import catalog_titles
 from constitution_memorizer.web.calendar_view import CalendarChip
 
@@ -44,16 +45,39 @@ def _active_law_ids(roster, user_id) -> list[str]:
 
 def _section_number(locator: str) -> str:
     try:
-        return parse_locator(locator).number
+        return locator_section_number(locator)
     except LocatorError:
-        if ":section:" in locator:
-            return locator.split(":section:", 1)[1]
         return locator
 
 
 def _revise_href(law_id: str, locator: str, next_mode: str | None) -> str:
-    number = _section_number(locator)
-    return learn_path(law_id, number, next_mode or "read", revision=True)
+    try:
+        loc = parse_locator(locator)
+    except LocatorError:
+        return learn_path_for_locator(
+            f"{law_id}:section:{_section_number(locator)}",
+            next_mode or "read",
+            revision=True,
+        )
+    return learn_path_for_locator(loc, next_mode or "read", revision=True)
+
+
+def _chip_number_label(locator: str) -> str:
+    try:
+        loc = parse_locator(locator)
+        cited = citation_label(loc)
+        if cited.startswith("Section "):
+            return cited[len("Section ") :]
+        return cited
+    except LocatorError:
+        return _section_number(locator)
+
+
+def _chip_title_provision(locator: str) -> str:
+    try:
+        return citation_label(locator)
+    except LocatorError:
+        return f"Section {_section_number(locator)}"
 
 
 def law_revision_today_items(
@@ -142,9 +166,9 @@ def playground_calendar_chips(
             continue
         catalog = playground_catalogue_law(fact.law_id)
         short = catalog.short_title if catalog is not None else fact.law_id
-        number = _section_number(fact.source_locator)
+        number = _chip_number_label(fact.source_locator)
         label = f"{short} · §{number}"
-        title = f"{short} · Section {number} — Day {fact.interval_days} revision"
+        title = f"{short} · {_chip_title_provision(fact.source_locator)} — Day {fact.interval_days} revision"
         due = nxt <= today
         if due:
             rows = overlay.list_revision_mode_progress(

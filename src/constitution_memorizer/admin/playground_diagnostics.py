@@ -206,11 +206,19 @@ class WebhookEventDiagnostic:
 
 
 @dataclass(frozen=True)
+class OverlaySelectionDiagnostic:
+    law_id: str
+    selected_count: int
+    unit_count: int
+
+
+@dataclass(frozen=True)
 class PlaygroundAccountDiagnostic:
     subscription: SubscriptionDiagnostic
     devices: DeviceDiagnostic
     roster: RosterDiagnostic
     webhooks: tuple[WebhookEventDiagnostic, ...]
+    overlay: tuple[OverlaySelectionDiagnostic, ...] = ()
 
 
 def collect_playground_diagnostics(
@@ -226,11 +234,28 @@ def collect_playground_diagnostics(
     devices = _device_diag(request, user_id)
     roster = _roster_diag(request, user_id, period_start=period_start)
     webhooks = _webhook_diag(request, user_id)
+    overlay = _overlay_diag(request, user_id)
     return PlaygroundAccountDiagnostic(
         subscription=subscription,
         devices=devices,
         roster=roster,
         webhooks=webhooks,
+        overlay=overlay,
+    )
+
+
+def _overlay_diag(request: Any, user_id: UUID | str) -> tuple[OverlaySelectionDiagnostic, ...]:
+    repo = getattr(request.app.state, "playground", None)
+    if repo is None or not hasattr(repo, "list_playground_summaries"):
+        return ()
+    rows = repo.list_playground_summaries(user_id, as_of=date.today())
+    return tuple(
+        OverlaySelectionDiagnostic(
+            law_id=row.law_id,
+            selected_count=int(row.selected_count or 0),
+            unit_count=int(getattr(row, "unit_count", row.selected_count) or 0),
+        )
+        for row in rows
     )
 
 

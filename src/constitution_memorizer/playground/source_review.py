@@ -17,9 +17,19 @@ from constitution_memorizer.playground.eligibility import (
     playground_law_source_identity,
 )
 from constitution_memorizer.playground.lifecycle import LIFECYCLE_ACTIVE
-from constitution_memorizer.playground.locators import LocatorError, parse_locator
+from constitution_memorizer.playground.locators import (
+    LocatorError,
+    UnitLocator,
+    locator_section_number,
+    parse_locator,
+)
 from constitution_memorizer.playground.learning.models import MODE_STATUS_COMPLETED
 from constitution_memorizer.playground.source import source_hash
+from constitution_memorizer.playground.units import (
+    citation_label,
+    resolve_unit,
+    source_hash_for_locator,
+)
 from constitution_memorizer.playground.urls import (
     source_review_path,
     source_review_section_path,
@@ -201,11 +211,32 @@ def historical_section_identity(
 
 def _locator_number(locator: str) -> str:
     try:
-        return parse_locator(locator).number
+        return locator_section_number(locator)
     except LocatorError:
-        if ":section:" in locator:
-            return locator.split(":section:", 1)[1]
         return locator
+
+
+def _classify_locator(act: Any, locator: str, stored_hash: str) -> tuple[str, str] | None:
+    try:
+        loc = parse_locator(locator)
+    except LocatorError:
+        return CHANGE_KIND_MISSING, ""
+    section = act.section(loc.section_number)
+    if section is None:
+        return CHANGE_KIND_MISSING, ""
+    if section.is_omitted:
+        live = source_hash(section)
+        return CHANGE_KIND_OMITTED, live
+    if isinstance(loc, UnitLocator):
+        try:
+            live = source_hash_for_locator(loc, section, section_hash=source_hash)
+        except LocatorError:
+            return CHANGE_KIND_MISSING, ""
+    else:
+        live = source_hash(section)
+    if live != stored_hash:
+        return CHANGE_KIND_CHANGED, live
+    return None
 
 
 def _had_learning(
@@ -281,12 +312,17 @@ def _candidates_for_locator(
 
 
 def _classify_section(act: Any, number: str, stored_hash: str) -> tuple[str, str] | None:
+    """Whole-section classification. Unit locators use ``_classify_locator``."""
     section = act.section(number)
     if section is None:
         return CHANGE_KIND_MISSING, ""
     if section.is_omitted:
         live = source_hash(section)
         return CHANGE_KIND_OMITTED, live
+    live = source_hash(section)
+    if live != stored_hash:
+        return CHANGE_KIND_CHANGED, live
+    return None
     live = source_hash(section)
     if live != stored_hash:
         return CHANGE_KIND_CHANGED, live
@@ -540,7 +576,6 @@ def detect_source_changes(
     omitted = 0
     records: list[SourceChangeRecord] = []
     for locator in locators:
-        number = _locator_number(locator)
         baseline = historical_section_identity(
             _candidates_for_locator(
                 locator=locator,
@@ -552,7 +587,7 @@ def detect_source_changes(
         )
         if baseline is None:
             continue
-        classified = _classify_section(act, number, baseline.source_hash)
+        classified = _classify_locator(act, locator, baseline.source_hash)
         if classified is None:
             unchanged += 1
             continue
@@ -677,13 +712,23 @@ def affected_provision_view(
     number = _locator_number(record.source_locator)
     title = ""
     body = ""
-    if act is not None and record.change_kind != CHANGE_KIND_MISSING:
-        section = act.section(number)
+    try:
+        loc = parse_locator(record.source_locator)
+    except LocatorError:
+        loc = None
+    if act is not None and record.change_kind != CHANGE_KIND_MISSING and loc is not None:
+        section = act.section(loc.section_number)
         if section is not None:
-            from constitution_memorizer.playground.source import canonical_body_text
+            title = citation_label(loc)
+            if isinstance(loc, UnitLocator):
+                try:
+                    body = resolve_unit(loc, section=section).canonical_text
+                except LocatorError:
+                    body = ""
+            else:
+                from constitution_memorizer.playground.source import canonical_body_text
 
-            title = section.list_title
-            if record.change_kind != CHANGE_KIND_MISSING:
+                title = section.list_title
                 body = canonical_body_text(section)
     return AffectedProvision(
         source_locator=record.source_locator,

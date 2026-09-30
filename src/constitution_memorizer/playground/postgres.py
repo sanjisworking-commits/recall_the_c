@@ -14,6 +14,7 @@ from constitution_memorizer.playground.repository import (
     PROGRESS_COLUMNS,
     REVISION_MODE_COLUMNS,
     playground_summary_sql,
+    progress_in_current_selection_sql,
     summary_from_row,
     _require_learn_mode,
 )
@@ -822,19 +823,19 @@ class PostgresPlaygroundRepository:
             return []
         uid = as_user_id(user_id)
         sql = """
-            SELECT law_id, source_locator, status, interval_days,
-                   next_revision, times_completed, learned_at
-            FROM user_playground_progress
-            WHERE user_id = %s
-              AND status != 'mastered'
-              AND next_revision IS NOT NULL
-              AND next_revision <= %s
-            """
+            SELECT p.law_id, p.source_locator, p.status, p.interval_days,
+                   p.next_revision, p.times_completed, p.learned_at
+            FROM user_playground_progress AS p
+            WHERE p.user_id = %s
+              AND p.status != 'mastered'
+              AND p.next_revision IS NOT NULL
+              AND p.next_revision <= %s
+            """ + progress_in_current_selection_sql("p")
         params: list[Any] = [uid, as_of]
         if active_law_ids is not None:
-            sql += " AND law_id IN (" + ", ".join("%s" for _ in active_law_ids) + ")"
+            sql += " AND p.law_id IN (" + ", ".join("%s" for _ in active_law_ids) + ")"
             params.extend(active_law_ids)
-        sql += " ORDER BY next_revision ASC, law_id ASC, source_locator ASC"
+        sql += " ORDER BY p.next_revision ASC, p.law_id ASC, p.source_locator ASC"
         with self._pool.connection() as conn:
             with conn.cursor(row_factory=self._dict_row) as cur:
                 cur.execute(sql, tuple(params))
@@ -863,18 +864,18 @@ class PostgresPlaygroundRepository:
             return []
         uid = as_user_id(user_id)
         sql = """
-            SELECT law_id, source_locator, status, interval_days, next_revision
-            FROM user_playground_progress
-            WHERE user_id = %s
-              AND next_revision IS NOT NULL
-              AND next_revision >= %s
-              AND next_revision <= %s
-            """
+            SELECT p.law_id, p.source_locator, p.status, p.interval_days, p.next_revision
+            FROM user_playground_progress AS p
+            WHERE p.user_id = %s
+              AND p.next_revision IS NOT NULL
+              AND p.next_revision >= %s
+              AND p.next_revision <= %s
+            """ + progress_in_current_selection_sql("p")
         params: list[Any] = [uid, start_date, end_date]
         if active_law_ids is not None:
-            sql += " AND law_id IN (" + ", ".join("%s" for _ in active_law_ids) + ")"
+            sql += " AND p.law_id IN (" + ", ".join("%s" for _ in active_law_ids) + ")"
             params.extend(active_law_ids)
-        sql += " ORDER BY next_revision ASC, law_id ASC, source_locator ASC"
+        sql += " ORDER BY p.next_revision ASC, p.law_id ASC, p.source_locator ASC"
         with self._pool.connection() as conn:
             with conn.cursor(row_factory=self._dict_row) as cur:
                 cur.execute(sql, tuple(params))

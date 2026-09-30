@@ -132,9 +132,10 @@ def test_t33_r1_asset_versions_are_pinned():
     html = BASE.read_text()
     assert "styles.css?v=main74" in html
     assert "mobile.css?v=mob94" in html
-    assert "playground.css?v=pg8" in html
+    assert "playground.css?v=pg9" in html
     assert "playground.js?v=pg6" in html
-    assert "playground.css?v=pg7" not in html
+    assert "playground-select.js?v=pg1" in html
+    assert "playground.css?v=pg8" not in html
     assert "mobile.css?v=mob93" not in html
 
 
@@ -331,7 +332,7 @@ def test_d21_playground_learn_hides_tabbar_without_touching_constitution(tmp_pat
     assert 'data-mscreen="playground"' in home.text
     assert "PlaygroundShell" in home.text
     assert "class=\"pg-learn\"" not in home.text
-    css = client.get("/static/playground.css?v=pg8").text
+    css = client.get("/static/playground.css?v=pg9").text
     assert "--pg-teal:" in css
     mobile = client.get("/static/mobile.css?v=mob94").text
     assert 'body[data-mscreen="playground"] .mobile-tab.is-active' in mobile
@@ -341,7 +342,7 @@ def test_d24_back_link_primitive_on_existing_pages():
     select = (TEMPLATES / "playground_select.html").read_text()
     law = (TEMPLATES / "playground_law.html").read_text()
     assert 'class="pg-back"' in select
-    assert "← Playground" in select
+    assert "← {{ act.short_name }}" in select
     assert 'class="pg-back"' in law
     assert "← My Playground" in law
     css = _css()

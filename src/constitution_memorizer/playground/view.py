@@ -7,7 +7,7 @@ not change monthly capacity, device, or payment semantics.
 from __future__ import annotations
 
 from dataclasses import dataclass, replace
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from typing import Any
 
 from constitution_memorizer.entitlements.models import (
@@ -50,6 +50,7 @@ from constitution_memorizer.playground.urls import (
     home_path,
     law_path,
     learn_path,
+    learn_path_for_locator,
     roster_next_path,
     roster_path,
     sections_path,
@@ -1257,10 +1258,27 @@ def section_row_view(
     if missing or change_kind in {"missing", "omitted"}:
         href = source_review_section_path(law_id, number)
     else:
-        href = learn_path(law_id, number, href_mode, revision=href_revision)
+        try:
+            href = learn_path_for_locator(locator, href_mode, revision=href_revision)
+        except Exception:
+            href = learn_path(law_id, number, href_mode, revision=href_revision)
+    from constitution_memorizer.playground.units import citation_label
+    from constitution_memorizer.playground.locators import LocatorError, parse_locator, UnitLocator
+
+    citation = f"Section {number}"
+    unit_display = ""
+    try:
+        parsed = parse_locator(locator)
+        citation = citation_label(parsed)
+        if isinstance(parsed, UnitLocator):
+            unit_display = parsed.display_label
+    except LocatorError:
+        pass
     return {
         "locator": locator,
         "number": number,
+        "citation": citation,
+        "unit_display": unit_display,
         "title": title,
         "progress": progress,
         "mode_progress": mode_progress,
@@ -1280,3 +1298,247 @@ def section_row_view(
         "source_change_status": change_status,
         "review_href": source_review_section_path(law_id, number) if source_change else "",
     }
+
+
+def provisions_label(count: int) -> str:
+    n = int(count or 0)
+    return "1 provision" if n == 1 else f"{n} provisions"
+
+
+def picker_cta_copy(*, section_count: int, partial_unit_count: int) -> str:
+    if section_count <= 0:
+        return "Select sections to add"
+    noun = "section" if section_count == 1 else "sections"
+    label = f"Add {section_count} {noun} →"
+    if partial_unit_count:
+        unit_noun = "clause" if partial_unit_count == 1 else "clauses"
+        label = f"Add {section_count} {noun} ({partial_unit_count} {unit_noun} partial) →"
+    return label
+
+
+def picker_status_line(
+    status: str,
+    *,
+    completed: int = 0,
+    interval: int = 0,
+    next_revision: str | None = None,
+    as_of: date | None = None,
+) -> str:
+    if status == STATUS_LEARNING:
+        return f"Learning · {int(completed or 0)} of 6 modes"
+    if status == STATUS_DUE:
+        return f"Due · Day {interval}" if interval else "Due"
+    if status == STATUS_MASTERED:
+        return "Mastered"
+    if status == STATUS_LEARNED:
+        if next_revision and as_of is not None:
+            try:
+                nxt = date.fromisoformat(str(next_revision)[:10])
+            except ValueError:
+                nxt = None
+            if nxt == as_of + timedelta(days=1):
+                return "Learned · first revision tomorrow"
+            when = format_study_date(next_revision)
+            if when:
+                return f"Learned · first revision {when}"
+        return "Learned"
+    return "Not started"
+
+
+def _aggregate_picker_status(
+    locators: list[str],
+    *,
+    progress_map: dict[str, Any],
+    mode_summaries: dict[str, Any],
+    as_of: date,
+) -> tuple[str, int, int, str | None]:
+    if not locators:
+        return STATUS_NOT_STARTED, 0, 0, None
+    statuses = []
+    completed_total = 0
+    interval = 0
+    next_rev = None
+    for loc in locators:
+        progress = progress_map.get(loc)
+        modes = mode_summaries.get(loc)
+        status = display_status_for_progress(progress, as_of=as_of, mode_progress=modes)
+        statuses.append(status)
+        completed_total = max(completed_total, int(getattr(modes, "completed_count", 0) or 0))
+        if progress is not None:
+            interval = max(interval, int(getattr(progress, "interval_days", 0) or 0))
+            nxt = getattr(progress, "next_revision", None)
+            if nxt and (next_rev is None or str(nxt) < str(next_rev)):
+                next_rev = str(nxt)[:10]
+    if STATUS_MASTERED in statuses and all(s == STATUS_MASTERED for s in statuses):
+        return STATUS_MASTERED, completed_total, interval, next_rev
+    if STATUS_DUE in statuses:
+        return STATUS_DUE, completed_total, interval, next_rev
+    if all(s == STATUS_LEARNED for s in statuses):
+        return STATUS_LEARNED, completed_total, interval, next_rev
+    if any(s == STATUS_LEARNING for s in statuses) or completed_total > 0:
+        return STATUS_LEARNING, completed_total, interval, next_rev
+    if any(s == STATUS_LEARNED for s in statuses):
+        return STATUS_LEARNED, completed_total, interval, next_rev
+    return STATUS_NOT_STARTED, completed_total, interval, next_rev
+
+
+def picker_page_view(
+    *,
+    act: Any,
+    law_id: str,
+    selected: set[str],
+    progress_map: dict[str, Any],
+    mode_summaries: dict[str, Any],
+    as_of: date,
+    learnable: set[str],
+) -> dict[str, Any]:
+    from constitution_memorizer.playground.locators import (
+        LocatorError,
+        SectionLocator,
+        UnitLocator,
+        parse_locator,
+        section_locator,
+    )
+    from constitution_memorizer.playground.units import enumerate_selectable_units
+
+    selected_by_section: dict[str, list[Any]] = {}
+    for raw in selected:
+        try:
+            loc = parse_locator(raw)
+        except LocatorError:
+            continue
+        if loc.law_id != law_id:
+            continue
+        selected_by_section.setdefault(loc.section_number, []).append(loc)
+
+    chapterless = not bool(getattr(act, "chapters", ()))
+    if chapterless:
+        bands_src = [{"number": "", "title": "", "sections": list(act.section_order)}]
+    else:
+        bands_src = [
+            {"number": ch.number, "title": ch.title, "sections": list(ch.sections)}
+            for ch in act.chapters
+        ]
+        extra = list(getattr(act, "unchaptered_sections", ()) or ())
+        if extra:
+            bands_src.append({"number": "", "title": "", "sections": extra})
+
+    bands = []
+    section_count = 0
+    partial_unit_count = 0
+    provision_count = 0
+    aside_items = []
+    for band in bands_src:
+        rows = []
+        for section in band["sections"]:
+            section_loc = section_locator(law_id, section.number)
+            learnable_row = section_loc.value in learnable
+            omitted = bool(section.is_omitted)
+            disabled = omitted or not learnable_row
+            units = ()
+            if learnable_row and not omitted:
+                units = enumerate_selectable_units(section, law_id=law_id)
+            chosen = selected_by_section.get(section.number, [])
+            whole = any(isinstance(item, SectionLocator) for item in chosen)
+            unit_locs = [item for item in chosen if isinstance(item, UnitLocator)]
+            if whole:
+                check_state = "all"
+                aria_checked = "true"
+                status_locs = [section_loc.value]
+                section_count += 1
+                provision_count += 1
+                aside_items.append(
+                    {
+                        "locator": section_loc.value,
+                        "citation": f"Section {section.number}",
+                        "title": section.list_title,
+                    }
+                )
+            elif unit_locs:
+                check_state = "some"
+                aria_checked = "mixed"
+                status_locs = [item.value for item in unit_locs]
+                section_count += 1
+                partial_unit_count += len(unit_locs)
+                provision_count += len(unit_locs)
+                for item in unit_locs:
+                    aside_items.append(
+                        {
+                            "locator": item.value,
+                            "citation": f"Section {section.number}{item.display_label}",
+                            "title": section.list_title,
+                        }
+                    )
+            else:
+                check_state = "none"
+                aria_checked = "false"
+                status_locs = []
+            status, completed, interval, next_rev = _aggregate_picker_status(
+                status_locs,
+                progress_map=progress_map,
+                mode_summaries=mode_summaries,
+                as_of=as_of,
+            )
+            unit_rows = []
+            checked_unit_values = {item.value for item in unit_locs}
+            for unit in units:
+                unit_rows.append(
+                    {
+                        "locator": unit.locator.value,
+                        "kind": unit.kind,
+                        "label": unit.label,
+                        "ordinal": unit.ordinal,
+                        "display_label": unit.display_label,
+                        "preview": unit.preview,
+                        "checked": unit.locator.value in checked_unit_values,
+                    }
+                )
+            rows.append(
+                {
+                    "number": section.number,
+                    "title": section.list_title,
+                    "omitted": omitted,
+                    "learnable": learnable_row,
+                    "disabled": disabled,
+                    "checked": check_state == "all",
+                    "check_state": check_state,
+                    "aria_checked": aria_checked,
+                    "expandable": bool(unit_rows),
+                    "units": unit_rows,
+                    "status": status,
+                    "status_label": picker_status_line(
+                        status,
+                        completed=completed,
+                        interval=interval,
+                        next_revision=next_rev,
+                        as_of=as_of,
+                    ),
+                    "locator": section_loc.value,
+                }
+            )
+        bands.append(
+            {
+                "chapter_number": band["number"],
+                "chapter_title": band["title"],
+                "has_chapter": bool(band["number"]),
+                "sections": rows,
+            }
+        )
+    cta = picker_cta_copy(
+        section_count=section_count, partial_unit_count=partial_unit_count
+    )
+    aside_noun = "section selected" if section_count == 1 else "sections selected"
+    return {
+        "chapterless": chapterless,
+        "bands": bands,
+        "section_count": section_count,
+        "partial_unit_count": partial_unit_count,
+        "provision_count": provision_count,
+        "provision_label": provisions_label(provision_count),
+        "cta_label": cta,
+        "zero_selection": section_count == 0,
+        "aside_count": section_count,
+        "aside_count_label": aside_noun,
+        "aside_items": aside_items,
+    }
+

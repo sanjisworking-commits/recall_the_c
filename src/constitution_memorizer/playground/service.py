@@ -14,7 +14,9 @@ from constitution_memorizer.playground.eligibility import (
 )
 from constitution_memorizer.playground.locators import (
     LocatorError,
+    PlaygroundLocator,
     SectionLocator,
+    UnitLocator,
     parse_locator,
     section_locator,
 )
@@ -26,6 +28,11 @@ from constitution_memorizer.playground.source import (
     source_hash,
 )
 from constitution_memorizer.playground.source_review import is_law_registry_outdated
+from constitution_memorizer.playground.units import (
+    enumerate_selectable_units,
+    resolve_unit,
+    source_hash_for_locator,
+)
 from constitution_memorizer.web import bare_acts as bare_act_registry
 
 
@@ -75,35 +82,100 @@ def playground_home_cards(summaries: list[PlaygroundSummary]) -> list[dict]:
     return cards
 
 
+def _locator_hash(loc: PlaygroundLocator, section) -> str:
+    return source_hash_for_locator(loc, section, section_hash=source_hash)
+
+
+def _learnable_section(section) -> bool:
+    return section is not None and not section.is_omitted and bool(canonical_body_text(section))
+
+
+def normalize_selection_locators(
+    law_id: str,
+    numbers: list[str] | None,
+    *,
+    entire: bool,
+    units: list[str] | None = None,
+    act=None,
+) -> list[PlaygroundLocator]:
+    """Server-authoritative selection. Whole section XOR units per section.
+
+    Ticking every selectable unit stores the whole-section locator (promotion).
+    Learning every unit still does **not** mark the section learned — this
+    function only normalizes the selection layer.
+    """
+    if act is None:
+        act = require_playground_law(law_id)
+    if entire:
+        return list(locators_for_act(law_id, act=act))
+
+    whole: dict[str, SectionLocator] = {}
+    for number in numbers or []:
+        try:
+            loc = section_locator(law_id, number)
+        except LocatorError:
+            continue
+        section = act.section(loc.section_number)
+        if not _learnable_section(section):
+            continue
+        whole[loc.section_number] = loc
+
+    by_section: dict[str, list[UnitLocator]] = {}
+    for raw in units or []:
+        try:
+            loc = parse_locator(raw)
+        except LocatorError:
+            continue
+        if not isinstance(loc, UnitLocator) or loc.law_id != law_id:
+            continue
+        if loc.section_number in whole:
+            continue
+        section = act.section(loc.section_number)
+        if not _learnable_section(section):
+            continue
+        try:
+            resolve_unit(loc, act=act, section=section)
+        except LocatorError:
+            continue
+        bucket = by_section.setdefault(loc.section_number, [])
+        if loc not in bucket:
+            bucket.append(loc)
+
+    out: list[PlaygroundLocator] = list(whole.values())
+    for number, chosen in by_section.items():
+        section = act.section(number)
+        selectable = enumerate_selectable_units(section, law_id=law_id)
+        if not selectable:
+            continue
+        chosen_keys = {(item.kind, item.label, item.ordinal) for item in chosen}
+        all_keys = {(item.kind, item.label, item.ordinal) for item in selectable}
+        if chosen_keys == all_keys:
+            out.append(section_locator(law_id, number))
+            continue
+        out.extend(chosen)
+    return out
+
+
 def selection_rows(
     law_id: str,
     numbers: list[str] | None,
     *,
     entire: bool,
     act=None,
+    units: list[str] | None = None,
 ) -> list[tuple[str, str, str]]:
     if act is None:
         act = require_playground_law(law_id)
     version = playground_law_source_identity(law_id).source_version
-    if entire:
-        locators = locators_for_act(law_id, act=act)
-    else:
-        locators = []
-        for number in numbers or []:
-            try:
-                loc = section_locator(law_id, number)
-            except LocatorError:
-                continue
-            section = act.section(loc.number)
-            if section is None or section.is_omitted or not canonical_body_text(section):
-                continue
-            locators.append(loc)
+    locators = normalize_selection_locators(
+        law_id, numbers, entire=entire, units=units, act=act
+    )
     rows: list[tuple[str, str, str]] = []
     for loc in locators:
-        section = act.section(loc.number)
+        section = act.section(loc.section_number)
         if section is None:
             continue
-        rows.append((loc.value, version, source_hash(section)))
+        rows.append((loc.value, version, _locator_hash(loc, section)))
     return rows
 
 
@@ -114,7 +186,7 @@ def provision_for_learn(
     if act is None:
         act, section = resolve_section(loc)
     else:
-        section = act.section(loc.number)
+        section = act.section(loc.section_number)
         if section is None:
             raise LocatorError(f"unknown section: {loc.value}")
     body = canonical_body_text(section)
@@ -152,10 +224,10 @@ def live_source_hash(law_id: str, locator: str) -> str:
         _, section = resolve_section(loc)
     except LocatorError:
         return ""
-    return source_hash(section)
+    return _locator_hash(loc, section)
 
 
-def parse_selected_locator(raw: str, law_id: str) -> SectionLocator | None:
+def parse_selected_locator(raw: str, law_id: str) -> PlaygroundLocator | None:
     try:
         loc = parse_locator(raw)
     except LocatorError:

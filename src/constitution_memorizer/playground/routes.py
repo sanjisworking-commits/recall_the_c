@@ -82,15 +82,21 @@ from constitution_memorizer.playground.service import (
     selected_locator_set,
     selection_rows,
 )
-from constitution_memorizer.playground.source import canonical_body_text, locators_for_act, source_hash
+from constitution_memorizer.playground.source import locators_for_act, source_hash
+from constitution_memorizer.playground.units import (
+    canonical_text_for_locator,
+    citation_label,
+    source_hash_for_locator,
+)
 from constitution_memorizer.playground.urls import (
     add_path,
     home_path,
     law_path,
-    learn_complete_path,
+    learn_complete_path_for_locator,
     learn_path,
-    learn_quiz_path,
-    learn_start_path,
+    learn_path_for_locator,
+    learn_quiz_path_for_locator,
+    learn_start_path_for_locator,
     roster_next_path,
     roster_path,
     sections_path,
@@ -103,6 +109,7 @@ from constitution_memorizer.playground.view import (
     build_home_view,
     capacity_view,
     catalog_titles,
+    picker_page_view,
     section_row_view,
 )
 
@@ -113,10 +120,10 @@ def _section_source_hash(act, locator: str, law_id: str) -> str:
     loc = parse_selected_locator(locator, law_id)
     if loc is None:
         return ""
-    section = act.section(loc.number)
+    section = act.section(loc.section_number)
     if section is None:
         return ""
-    return source_hash(section)
+    return source_hash_for_locator(loc, section, section_hash=source_hash)
 
 
 def _denied(result: object) -> Response | None:
@@ -744,7 +751,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             loc = parse_selected_locator(sel.source_locator, law_id)
             if loc is None:
                 continue
-            section = act.section(loc.number)
+            section = act.section(loc.section_number)
             missing = section is None
             progress = progress_map.get(sel.source_locator)
             interval = int(getattr(progress, "interval_days", 0) or 0) if progress else 0
@@ -760,11 +767,11 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             pending_change = bool(change and change.status == STATUS_PENDING)
             rows.append(
                 section_row_view(
-                    number=loc.number,
+                    number=loc.section_number,
                     title=(
                         section.list_title
                         if section is not None
-                        else f"Section {loc.number}"
+                        else f"Section {loc.section_number}"
                     ),
                     locator=sel.source_locator,
                     progress=progress,
@@ -800,9 +807,10 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             )
         launch_verbatim = ""
         if launch is not None:
+            loc = parse_selected_locator(launch["locator"], law_id)
             section = act.section(launch["number"])
-            if section is not None:
-                launch_verbatim = canonical_body_text(section)
+            if section is not None and loc is not None:
+                launch_verbatim = canonical_text_for_locator(loc, section)
         learned_changed = (
             source_state.pending_learned_count if source_state.registry_outdated else 0
         )
@@ -849,25 +857,42 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             )
         selected = selected_locator_set(overlay.list_selection(access.user_id, law_id))
         learnable = {loc.value for loc in locators_for_act(law_id, act=act)}
-        sections = []
-        for section in act.section_order:
-            loc = f"{law_id}:section:{section.number}"
-            sections.append(
-                {
-                    "number": section.number,
-                    "title": section.list_title,
-                    "omitted": section.is_omitted,
-                    "learnable": loc in learnable,
-                    "checked": loc in selected,
-                }
-            )
+        progress_map = {
+            row.source_locator: row
+            for row in overlay.list_progress(access.user_id, law_id)
+        }
+        mode_summaries = summaries_for_locators(
+            overlay.list_mode_progress(access.user_id, law_id),
+            list(selected),
+            live_hashes={
+                loc: _section_source_hash(act, loc, law_id) for loc in selected
+            },
+        )
+        picker = picker_page_view(
+            act=act,
+            law_id=law_id,
+            selected=selected,
+            progress_map=progress_map,
+            mode_summaries=mode_summaries,
+            as_of=playground_today(),
+            learnable=learnable,
+        )
         return templates.TemplateResponse(
             request,
             "playground_select.html",
             {
                 "act": act,
-                "sections": sections,
-                "entire_checked": bool(selected) and selected == learnable,
+                "picker": picker,
+                "bands": picker["bands"],
+                "chapterless": picker["chapterless"],
+                "cta_label": picker["cta_label"],
+                "zero_selection": picker["zero_selection"],
+                "provision_label": picker["provision_label"],
+                "aside_items": picker["aside_items"],
+                "aside_count": picker["aside_count"],
+                "aside_count_label": picker["aside_count_label"],
+                "section_count": picker["section_count"],
+                "partial_unit_count": picker["partial_unit_count"],
             },
         )
 
@@ -895,7 +920,10 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         entire_raw = form.get("entire")
         entire_act = str(entire_raw or "") in {"1", "on", "true", "yes"}
         numbers = [str(value) for value in form.getlist("section")]
-        rows = selection_rows(law_id, numbers, entire=entire_act, act=act)
+        units = [str(value) for value in form.getlist("unit")]
+        rows = selection_rows(
+            law_id, numbers, entire=entire_act, act=act, units=units
+        )
         overlay.replace_selection(opened.user_id, law_id, rows)
         return RedirectResponse(url=law_path(law_id), status_code=303)
 
@@ -1061,16 +1089,30 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         mode: str,
         *,
         json_mode: bool,
+        unit: str | None = None,
     ):
         if not is_playground_learn_mode(mode):
             raise HTTPException(status_code=404, detail="Learn mode not found")
         overlay = require_playground_repo(request)
+        try:
+            next_loc = (
+                parse_selected_locator(f"{law_id}:section:{number}:{unit}", law_id)
+                if unit
+                else parse_selected_locator(f"{law_id}:section:{number}", law_id)
+            )
+        except Exception:
+            next_loc = None
+        next_url = (
+            learn_path_for_locator(next_loc, mode)
+            if next_loc is not None
+            else learn_path(law_id, number, mode)
+        )
         access = require_law_active_this_period(
             request,
             templates,
             overlay,
             law_id,
-            next_url=learn_path(law_id, number, mode),
+            next_url=next_url,
             json_mode=json_mode,
         )
         blocked = _denied(access)
@@ -1079,10 +1121,13 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         try:
             act = require_playground_law(law_id)
             loc, act, section, body, live_hash, source_version = load_learn_provision(
-                law_id, number, act=act
+                law_id, number, act=act, unit=unit
             )
         except (PlaygroundLawError, LocatorError, LearnProvisionError) as exc:
-            loc_try = parse_selected_locator(f"{law_id}:section:{number}", law_id)
+            loc_try = parse_selected_locator(
+                f"{law_id}:section:{number}:{unit}" if unit else f"{law_id}:section:{number}",
+                law_id,
+            )
             selected = selected_locator_set(overlay.list_selection(access.user_id, law_id))
             has_history = bool(
                 loc_try
@@ -1146,7 +1191,28 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
     async def playground_learn(
         request: Request, law_id: str, number: str, mode: str
     ) -> HTMLResponse:
-        opened = _gate_learn(request, law_id, number, mode, json_mode=False)
+        return _render_learn(request, law_id, number, mode, unit=None)
+
+    @router.get(
+        "/laws/{law_id}/sections/{number}/u/{unit}/learn/{mode}",
+        response_class=HTMLResponse,
+    )
+    async def playground_learn_unit(
+        request: Request, law_id: str, number: str, unit: str, mode: str
+    ) -> HTMLResponse:
+        return _render_learn(request, law_id, number, mode, unit=unit)
+
+    def _render_learn(
+        request: Request,
+        law_id: str,
+        number: str,
+        mode: str,
+        *,
+        unit: str | None,
+    ):
+        opened = _gate_learn(
+            request, law_id, number, mode, json_mode=False, unit=unit
+        )
         blocked = _denied(opened)
         if blocked is not None:
             return blocked  # type: ignore[return-value]
@@ -1231,9 +1297,14 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                 "source_outdated": source_outdated,
                 "source_version": opened["source_version"],
                 "provenance": provenance_lines(law_id),
-                "complete_url": learn_complete_path(law_id, number, mode),
-                "start_url": learn_start_path(law_id, number, mode),
-                "quiz_url": learn_quiz_path(law_id, number),
+                "citation": citation_label(loc),
+                "learn_links": {
+                    item["id"]: learn_path_for_locator(loc, item["id"])
+                    for item in definitions
+                },
+                "complete_url": learn_complete_path_for_locator(loc, mode),
+                "start_url": learn_start_path_for_locator(loc, mode),
+                "quiz_url": learn_quiz_path_for_locator(loc),
                 "quiz_cycle": cycle,
                 "quiz_questions": quiz_questions,
                 "cloze_fallback": cloze_needs_fallback(body),
@@ -1247,8 +1318,21 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
     async def playground_learn_start(
         request: Request, law_id: str, number: str, mode: str
     ) -> JSONResponse:
+        return await _learn_start(request, law_id, number, mode, unit=None)
+
+    @router.post("/laws/{law_id}/sections/{number}/u/{unit}/learn/{mode}/start")
+    async def playground_learn_start_unit(
+        request: Request, law_id: str, number: str, unit: str, mode: str
+    ) -> JSONResponse:
+        return await _learn_start(request, law_id, number, mode, unit=unit)
+
+    async def _learn_start(
+        request: Request, law_id: str, number: str, mode: str, *, unit: str | None
+    ) -> JSONResponse:
         data = await _mutation_payload(request)
-        opened = _gate_learn(request, law_id, number, mode, json_mode=True)
+        opened = _gate_learn(
+            request, law_id, number, mode, json_mode=True, unit=unit
+        )
         blocked = _denied(opened)
         if blocked is not None:
             return blocked  # type: ignore[return-value]
@@ -1305,10 +1389,23 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
     async def playground_learn_complete(
         request: Request, law_id: str, number: str, mode: str
     ) -> JSONResponse:
+        return await _learn_complete(request, law_id, number, mode, unit=None)
+
+    @router.post("/laws/{law_id}/sections/{number}/u/{unit}/learn/{mode}/complete")
+    async def playground_learn_complete_unit(
+        request: Request, law_id: str, number: str, unit: str, mode: str
+    ) -> JSONResponse:
+        return await _learn_complete(request, law_id, number, mode, unit=unit)
+
+    async def _learn_complete(
+        request: Request, law_id: str, number: str, mode: str, *, unit: str | None
+    ) -> JSONResponse:
         if mode == "test":
             raise HTTPException(status_code=404, detail="Learn mode not found")
         data = await _mutation_payload(request)
-        opened = _gate_learn(request, law_id, number, mode, json_mode=True)
+        opened = _gate_learn(
+            request, law_id, number, mode, json_mode=True, unit=unit
+        )
         blocked = _denied(opened)
         if blocked is not None:
             return blocked  # type: ignore[return-value]
@@ -1375,8 +1472,21 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
     async def playground_learn_quiz(
         request: Request, law_id: str, number: str
     ) -> JSONResponse:
+        return await _learn_quiz(request, law_id, number, unit=None)
+
+    @router.post("/laws/{law_id}/sections/{number}/u/{unit}/learn/test/quiz")
+    async def playground_learn_quiz_unit(
+        request: Request, law_id: str, number: str, unit: str
+    ) -> JSONResponse:
+        return await _learn_quiz(request, law_id, number, unit=unit)
+
+    async def _learn_quiz(
+        request: Request, law_id: str, number: str, *, unit: str | None
+    ) -> JSONResponse:
         data = await _mutation_payload(request)
-        opened = _gate_learn(request, law_id, number, "test", json_mode=True)
+        opened = _gate_learn(
+            request, law_id, number, "test", json_mode=True, unit=unit
+        )
         blocked = _denied(opened)
         if blocked is not None:
             return blocked  # type: ignore[return-value]

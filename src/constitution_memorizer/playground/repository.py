@@ -135,6 +135,7 @@ class PlaygroundSummary:
     to_learn_count: int
     due_count: int
     mastered_count: int
+    unit_count: int = 0
 
 
 def playground_summary_sql(
@@ -156,6 +157,7 @@ def playground_summary_sql(
                 i.law_id, i.status, i.added_at, i.last_activity_at,
                 i.source_version, i.law_source_hash,
                 COALESCE(sel.selected_count, 0) AS selected_count,
+                COALESCE(sel.selected_count, 0) AS unit_count,
                 COALESCE(prog.learning_count, 0) AS learning_count,
                 COALESCE(prog.learned_count, 0) AS learned_count,
                 COALESCE(prog.due_count, 0) AS due_count,
@@ -207,6 +209,19 @@ def playground_summary_sql(
             """
 
 
+def progress_in_current_selection_sql(progress_alias: str = "p") -> str:
+    """Due/schedule work is only the currently selected locators (T12)."""
+    return f"""
+              AND EXISTS (
+                SELECT 1
+                FROM user_playground_selection AS s
+                WHERE s.user_id = {progress_alias}.user_id
+                  AND s.law_id = {progress_alias}.law_id
+                  AND s.source_locator = {progress_alias}.source_locator
+              )
+    """
+
+
 def summary_from_row(row, *, added_at: str, last_activity_at: str) -> PlaygroundSummary:
     selected = int(row["selected_count"] or 0)
     learning = int(row["learning_count"] or 0) if "learning_count" in row.keys() else 0
@@ -226,6 +241,7 @@ def summary_from_row(row, *, added_at: str, last_activity_at: str) -> Playground
         to_learn_count=max(0, selected - learned - mastered),
         due_count=due,
         mastered_count=mastered,
+        unit_count=int(row["unit_count"] or selected) if "unit_count" in row.keys() else selected,
     )
 
 
@@ -935,19 +951,19 @@ class SqlitePlaygroundRepository:
             return []
         uid = as_user_id(user_id)
         sql = """
-            SELECT law_id, source_locator, status, interval_days,
-                   next_revision, times_completed, learned_at
-            FROM user_playground_progress
-            WHERE user_id = ?
-              AND status != 'mastered'
-              AND next_revision IS NOT NULL
-              AND next_revision <= ?
-            """
+            SELECT p.law_id, p.source_locator, p.status, p.interval_days,
+                   p.next_revision, p.times_completed, p.learned_at
+            FROM user_playground_progress AS p
+            WHERE p.user_id = ?
+              AND p.status != 'mastered'
+              AND p.next_revision IS NOT NULL
+              AND p.next_revision <= ?
+            """ + progress_in_current_selection_sql("p")
         params: list = [uid, as_of.isoformat()]
         if active_law_ids is not None:
-            sql += " AND law_id IN (" + ", ".join("?" for _ in active_law_ids) + ")"
+            sql += " AND p.law_id IN (" + ", ".join("?" for _ in active_law_ids) + ")"
             params.extend(active_law_ids)
-        sql += " ORDER BY next_revision ASC, law_id ASC, source_locator ASC"
+        sql += " ORDER BY p.next_revision ASC, p.law_id ASC, p.source_locator ASC"
         rows = self.conn.execute(sql, tuple(params)).fetchall()
         return [
             DueRevisionFact(
@@ -973,18 +989,18 @@ class SqlitePlaygroundRepository:
             return []
         uid = as_user_id(user_id)
         sql = """
-            SELECT law_id, source_locator, status, interval_days, next_revision
-            FROM user_playground_progress
-            WHERE user_id = ?
-              AND next_revision IS NOT NULL
-              AND next_revision >= ?
-              AND next_revision <= ?
-            """
+            SELECT p.law_id, p.source_locator, p.status, p.interval_days, p.next_revision
+            FROM user_playground_progress AS p
+            WHERE p.user_id = ?
+              AND p.next_revision IS NOT NULL
+              AND p.next_revision >= ?
+              AND p.next_revision <= ?
+            """ + progress_in_current_selection_sql("p")
         params: list = [uid, start_date.isoformat(), end_date.isoformat()]
         if active_law_ids is not None:
-            sql += " AND law_id IN (" + ", ".join("?" for _ in active_law_ids) + ")"
+            sql += " AND p.law_id IN (" + ", ".join("?" for _ in active_law_ids) + ")"
             params.extend(active_law_ids)
-        sql += " ORDER BY next_revision ASC, law_id ASC, source_locator ASC"
+        sql += " ORDER BY p.next_revision ASC, p.law_id ASC, p.source_locator ASC"
         rows = self.conn.execute(sql, tuple(params)).fetchall()
         return [
             ScheduledRevisionFact(

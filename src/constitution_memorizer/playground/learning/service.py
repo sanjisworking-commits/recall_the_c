@@ -24,8 +24,14 @@ from constitution_memorizer.playground.learning.test import (
     grade_section_quiz,
     has_section_quiz,
 )
-from constitution_memorizer.playground.locators import LocatorError, section_locator
+from constitution_memorizer.playground.locators import (
+    LocatorError,
+    UnitLocator,
+    parse_locator,
+    section_locator,
+)
 from constitution_memorizer.playground.source import canonical_body_text, resolve_section, source_hash
+from constitution_memorizer.playground.units import resolve_unit, source_hash_for_locator
 
 
 class LearnProvisionError(ValueError):
@@ -52,21 +58,34 @@ def mode_definitions() -> list[dict[str, object]]:
     return out
 
 
-def load_learn_provision(law_id: str, number: str, *, act=None):
-    loc = section_locator(law_id, number)
+def load_learn_provision(law_id: str, number: str, *, act=None, unit: str | None = None):
+    if unit:
+        loc = parse_locator(f"{law_id}:section:{number}:{unit}")
+        if not isinstance(loc, UnitLocator) or loc.law_id != law_id:
+            raise LocatorError(f"invalid playground locator: {law_id}:section:{number}:{unit}")
+    else:
+        loc = section_locator(law_id, number)
     if act is None:
         act, section = resolve_section(loc)
     else:
-        section = act.section(loc.number)
+        section = act.section(loc.section_number)
         if section is None:
             raise LocatorError(f"unknown section: {loc.value}")
     if section.is_omitted:
         raise LearnProvisionError(f"omitted section: {loc.value}")
-    body = canonical_body_text(section)
+    if unit:
+        try:
+            resolved = resolve_unit(loc, act=act, section=section)
+        except LocatorError as exc:
+            raise LearnProvisionError(f"unknown unit: {loc.value}") from exc
+        body = resolved.canonical_text
+        live = source_hash_for_locator(loc, section, section_hash=source_hash)
+    else:
+        body = canonical_body_text(section)
+        live = source_hash(section)
     if not body:
         raise LearnProvisionError(f"empty section: {loc.value}")
     version = playground_law_source_identity(law_id).source_version
-    live = source_hash(section)
     return loc, act, section, body, live, version
 
 

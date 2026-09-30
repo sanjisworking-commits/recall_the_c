@@ -433,7 +433,7 @@ def test_entire_act_opens_modes_at_several_points(tmp_path: Path):
     assert len({item.value for item in picks}) == 3
     for loc in picks:
         for mode in MODES:
-            page = client.get(learn_path("ndps", loc.number, mode))
+            page = client.get(learn_path("ndps", loc.section_number, mode))
             assert page.status_code == 200
 
 

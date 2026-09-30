@@ -449,6 +449,7 @@ def test_due_query_filters_inactive_laws(tmp_path: Path):
     for law_id in ELIGIBLE_LAWS:
         repo.add_item(uid, law_id, source_version="v", law_source_hash="t")
         loc = f"{law_id}:section:1"
+        repo.replace_selection(uid, law_id, [(loc, "v", "h")])
         _seed_progress(
             repo, uid, law_id, loc, status="review", interval_days=3,
             next_revision=(TODAY - timedelta(days=2)).isoformat(), times_completed=2,
@@ -464,6 +465,9 @@ def test_schedule_query_skips_mastered_and_inactive(tmp_path: Path):
     repo.add_item(uid, "ndps", source_version="v", law_source_hash="t")
     repo.add_item(uid, "bns", source_version="v", law_source_hash="t")
     repo.add_item(uid, "bnss", source_version="v", law_source_hash="t")
+    repo.replace_selection(uid, "ndps", [("ndps:section:1", "v", "h")])
+    repo.replace_selection(uid, "bns", [("bns:section:1", "v", "h")])
+    repo.replace_selection(uid, "bnss", [("bnss:section:1", "v", "h")])
     _seed_progress(
         repo, uid, "ndps", "ndps:section:1", status="learned", interval_days=1,
         next_revision=(TODAY + timedelta(days=3)).isoformat(),

@@ -1,6 +1,6 @@
 {% extends "playground_base.html" %}
 {% from "partials/playground.html" import trust_mark, status_badge %}
-{% block title %}{{ mode_label }} · Section {{ section.number }} · Playground{% endblock %}
+{% block title %}{{ mode_label }} · {{ citation | default('Section ' ~ section.number) }} · Playground{% endblock %}
 {% block playground %}
 {% set completed = summary.completed_modes %}
 <section
@@ -19,7 +19,7 @@
 >
   <p class="pg-eyebrow">
     <a href="/playground/laws/{{ act.slug }}">{{ act.short_name }}</a>
-    · Section {{ section.number }}
+    · {{ citation | default('Section ' ~ section.number) }}
     {% if is_revision %}· Revision · Day {{ revision_rung }}{% endif %}
   </p>
   <h1>{% if is_revision %}Revision · {{ mode_label }}{% else %}{{ mode_label }}{% endif %}</h1>
@@ -49,7 +49,7 @@
       <span aria-hidden="true">·</span>{% endif %}
       <span>{{ mode_label }}</span>
       <span aria-hidden="true">·</span>
-      <span>Section {{ section.number }}</span>
+      <span>{{ citation | default('Section ' ~ section.number) }}</span>
       <span aria-hidden="true">·</span>
       <span>Step {{ step_n }} of 6</span>
     </p>
@@ -65,7 +65,7 @@
       role="tab"
       aria-selected="{{ 'true' if item.id == learn_mode else 'false' }}"
       {% if item.id == learn_mode %}aria-current="page"{% endif %}
-      href="/playground/laws/{{ act.slug }}/sections/{{ section.number }}/learn/{{ item.id }}{{ revision_qs }}"
+      href="{{ learn_links[item.id] }}{{ revision_qs }}"
     >{{ item.label }}{% if item.id in completed %} ✓{% endif %}</a>
     {% endfor %}
   </div>
@@ -85,7 +85,7 @@
     {% set state = 'Done' if item.id in completed else ('In progress' if item.id in summary.in_progress_modes else 'Not started') %}
     <a
       class="learn-deck-card pg-learn-card{% if item.id in completed %} is-done{% endif %}{% if item.id == learn_mode %} is-current{% endif %}"
-      href="/playground/laws/{{ act.slug }}/sections/{{ section.number }}/learn/{{ item.id }}{{ revision_qs }}"
+      href="{{ learn_links[item.id] }}{{ revision_qs }}"
     >
       <span class="learn-deck-card-eyebrow">{{ item.ordinal_label }} · {{ item.label | upper }}</span>
       <span class="learn-deck-card-title">{{ item.title }}</span>
@@ -256,7 +256,7 @@
 
   <div class="VerbatimText" data-verbatim data-open="false">
     <p class="VerbatimText-kicker pg-chip pg-chip--verbatim">VERBATIM TEXT</p>
-    <p>Section {{ section.number }} — {{ section.title }}</p>
+    <p>{{ citation | default('Section ' ~ section.number) }} — {{ section.title }}</p>
     <blockquote hidden>{{ canonical_body }}</blockquote>
     <p class="pg-actions">
       <button type="button" class="pg-btn pg-btn--quiet" data-verbatim-toggle aria-expanded="false">Show verbatim text</button>

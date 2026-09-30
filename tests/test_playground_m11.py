@@ -114,6 +114,18 @@ MUTATION_ALLOWLIST: dict[tuple[str, str], str] = {
         "POST",
         "/playground/laws/{law_id}/sections/{number}/learn/test/quiz",
     ): "rtc_csrf fail-closed when session",
+    (
+        "POST",
+        "/playground/laws/{law_id}/sections/{number}/u/{unit}/learn/{mode}/start",
+    ): "rtc_csrf fail-closed when session",
+    (
+        "POST",
+        "/playground/laws/{law_id}/sections/{number}/u/{unit}/learn/{mode}/complete",
+    ): "rtc_csrf fail-closed when session",
+    (
+        "POST",
+        "/playground/laws/{law_id}/sections/{number}/u/{unit}/learn/test/quiz",
+    ): "rtc_csrf fail-closed when session",
     ("POST", "/admin/users/{user_id}/grants"): "require_admin + require_csrf",
     ("POST", "/admin/grants/{grant_id}/revoke"): "require_admin + require_csrf",
     ("POST", "/admin/users/{user_id}/devices/reset"): "require_admin + require_csrf",

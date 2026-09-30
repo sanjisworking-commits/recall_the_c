@@ -175,7 +175,7 @@ def test_alembic_0027_parent_one_head_rls_and_sqlite_parity():
 def test_identity_layers_locator_version_token_and_section_hash():
     loc = section_locator("ndps", "8")
     assert loc.value == "ndps:section:8"
-    assert parse_locator(loc.value).number == "8"
+    assert parse_locator(loc.value).section_number == "8"
     identity = playground_law_source_identity("ndps")
     spec = BARE_ACTS["ndps"]
     assert identity.source_version == spec.source_version

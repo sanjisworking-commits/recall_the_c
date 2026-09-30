@@ -195,7 +195,7 @@ def test_eligibility_and_locator_parse_do_not_hydrate(
     assert is_playground_eligible_law("ndps") is True
     assert is_playground_eligible_law("bnss") is True
     assert is_playground_eligible_law("uapa-1967") is False
-    assert parse_locator("ndps:section:8").number == "8"
+    assert parse_locator("ndps:section:8").section_number == "8"
     assert parse_locator("bnss:section:479").law_id == "bnss"
     assert hydrated == []
 
@@ -213,9 +213,9 @@ def test_locator_round_trip_from_json():
         loc = section_locator(law_id, number)
         parsed = parse_locator(loc.value)
         assert parsed.law_id == law_id
-        assert parsed.number == number
-        assert isinstance(parsed.number, str)
-        assert parsed.number != int(number)
+        assert parsed.section_number == number
+        assert isinstance(parsed.section_number, str)
+        assert parsed.section_number != int(number)
         again, resolved = resolve_section(parsed)
         assert again.slug == law_id
         assert resolved.number == number
@@ -320,8 +320,10 @@ def test_mtp_picker_workspace_invent_no_chapters(tmp_path: Path):
     assert "Chapter" not in learn.text
     _add_and_select(client, "ndps", "1")
     ndps = client.get(sections_path("ndps"))
-    assert "Chapter selection is not in this batch" in ndps.text
+    assert "Whole sections, or open one and pick clauses." in ndps.text
+    assert "Chapter selection is not in this batch" not in ndps.text
     assert "data-chapterless" not in ndps.text
+    assert "CHAPTER" in ndps.text
 
 
 def test_cloze_integrity_ndps_bns_bnss_section_1(tmp_path: Path):

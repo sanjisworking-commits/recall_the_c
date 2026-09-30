@@ -18,7 +18,7 @@ from constitution_memorizer.web.bare_acts import (
 )
 from constitution_memorizer.playground.eligibility import is_playground_eligible_law
 from constitution_memorizer.playground.locators import (
-    SectionLocator,
+    PlaygroundLocator,
     LocatorError,
     section_locator,
 )
@@ -49,11 +49,11 @@ def source_hash(section: ActSection) -> str:
     return sha256(hash_payload(section).encode("utf-8")).hexdigest()
 
 
-def resolve_section(locator: SectionLocator) -> tuple[BareAct, ActSection]:
+def resolve_section(locator: PlaygroundLocator) -> tuple[BareAct, ActSection]:
     act = bare_act_registry.get_bare_act(locator.law_id)
     if act is None:
         raise LocatorError(f"unknown law: {locator.law_id}")
-    section = act.section(locator.number)
+    section = act.section(locator.section_number)
     if section is None:
         raise LocatorError(f"unknown section: {locator.value}")
     return act, section
