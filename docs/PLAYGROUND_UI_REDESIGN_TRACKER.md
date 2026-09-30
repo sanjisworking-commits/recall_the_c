@@ -30,6 +30,7 @@ Authority: `docs/PLAYGROUND_UI_REDESIGN_PLAN.md`. Inventories: `docs/design/PLAY
 | T36 prototypes | Desktop `61d8d01a…` (2,902 lines); mobile `361b7e25…` (1,829 lines). Not referenced from `src/`. |
 | **R1 closeout HEAD** | **`cf41baf`** (tracker) · last code **`cd1c4c6`**. U1 28/28. Frozen. |
 | **R2 closeout HEAD** | **`d8a1c38`** (tracker) · last code **`1cc00b6`**. U2 24/39. Do not start R3. |
+| **R2 correction** | **`f62bd63`** (code). Fail-closed picker POST + bound `UnitLocator`. Programme still **28.1 / 100**. Do not start R3. |
 
 Visual columns (390 light/dark, ~768, ~1024, 1280 light/dark, reduced motion) stay `—` until the relevant batch. Technical rows mark Desktop/Mobile **N/A**. Status uses only: `NOT STARTED | IN PROGRESS | BLOCKED | IN REVIEW | DONE`.
 
@@ -160,21 +161,21 @@ R2 (clause model + picker) is closed on `1cc00b6`. R3 (Add sheet/dialog) is not 
 | D44 | Status line, five states | both | DONE | `picker_status_line` + dormant progress. Learning / Due / Learned / Mastered / Not started. `test_picker_status_line_uses_real_progress_including_dormant`. `r2_picker_1024_aside.png` |
 | D45 | Caret expands clause rows | both | DONE | `<details>` + `aria-expanded`. Only when `enumerate_selectable_units` ≥ 2. `r2_picker_390_mixed.png` |
 | D46 | Tri-state section checkbox | both | DONE | none/some/all; mixed uses dash + `aria-checked="mixed"`, not colour alone. JS `indeterminate`. |
-| D47 | Omitted / unlearnable rows disabled | both | DONE | `disabled` + POST reject. `test_nojs_section_and_unit_post_and_omitted_rejection`. `r2_picker_390_omitted.webp` |
+| D47 | Omitted / unlearnable rows disabled | both | DONE | `disabled` + POST HTTP 400 (no skip/wipe). `test_nojs_section_and_unit_post_and_omitted_rejection`. Unlearnable-but-non-omitted: no eligible-corpus example; synthetic service fixture. `r2_picker_390_omitted.webp` |
 | D48 | Sticky footer count / “clauses partial” | phone | DONE | `provisions_label` + `picker_cta_copy`. Hidden ≥900px. `r2_picker_390_light.png` |
 | D49 | Sticky SELECTION aside | desktop | DONE | Shown ≥900px from real selection. `r2_picker_1024_aside.png` `r2_picker_1280_light.png` |
 | D50 | Disabled at zero selection | both | DONE | JS disables CTA (`Select sections to add`). No-JS submit still server-authoritative so empty HTML is not `disabled` (would brick no-JS ticks). `r2_picker_390_zero_selection.webp` |
 | D128 | Picker lede copy replacement | both | DONE | “Whole sections, or open one and pick clauses.” Stage 1 lede gone. `test_picker_markup` |
 | D129 | Picker button copy replacement | both | DONE | `Add N section(s) →` / `(N clause(s) partial)` / `Select sections to add`. `test_provisions_copy_and_cta_grammar` |
 | T5 | Chapterless Acts in picker, workspace, progress | N/A | DONE | Generic `chapters == none`. MTP picker/workspace. `test_picker_markup_tri_state_chapterless_and_copy` |
-| T8 | Locator grammar; `SectionLocator` / `UnitLocator`; explicit `ordinal` | N/A | DONE | `playground/locators.py`. Bounded `[^:]+`. Malformed units rejected. `tests/test_playground_units.py` |
+| T8 | Locator grammar; `SectionLocator` / `UnitLocator`; explicit `ordinal` | N/A | DONE | `playground/locators.py`. Bounded `[^:]+`. Malformed units rejected. `UnitLocator` requires eligible `law_id`. `section_unit_map` uses `UnitIdentity`. `test_unit_locator_cannot_exist_unbound` |
 | T9 | `playground/units.py` | N/A | DONE | Single authority: enumerate, resolve, lead-in/tail, ordinals, citation, hashes |
 | T10 | Unit hash and unit-level source review | N/A | DONE | SHA-256 of section number, `kind:label`, lead-in, unit text. `source_hash_for_locator` in `source_review._classify_locator` |
 | T11 | Exclusivity, promotion, dormant progress | N/A | DONE | `normalize_selection_locators`. All units → section locator. Progress rows kept. `test_whole_section_unit_exclusivity_and_all_unit_promotion` `test_switch_preserves_dormant_progress_and_due_excludes_deselected` `test_all_unit_learning_is_not_whole_section_mastery` |
 | T12 | Due/schedule join current selection | N/A | DONE | `progress_in_current_selection_sql` EXISTS join. `test_switch_preserves_dormant_progress_and_due_excludes_deselected` |
 | T13 | Computed `unit_count`; “provisions” wording | N/A | DONE | SQL alias of `selected_count`. `provisions_label`. No migration |
 | T14 | Clause learn routes; `learn_path_for_locator` | N/A | DONE | Parallel `/u/{unit}/learn/{mode}`. Existing section routes kept. `test_learn_path_for_locator_parallel_routes` `test_unit_learn_route_resolves` |
-| T15 | Picker POST `section=` / `unit=`; no-JS | N/A | DONE | Server-normalised. `test_nojs_section_and_unit_post_and_omitted_rejection` |
+| T15 | Picker POST `section=` / `unit=`; no-JS | N/A | DONE | Fail-closed atomic POST. Invalid values → `SelectionRejected` / HTTP 400 `invalid_selection`; `before_selection == after_selection`. Empty POST still 303-clears. `entire=1` validates extras. `test_nojs_section_and_unit_post_and_omitted_rejection` `test_picker_post_rejects_invalid_payloads_without_mutation` `test_picker_post_valid_plus_invalid_applies_neither` `test_picker_post_entire_act_valid_and_invalid_extras` `test_picker_post_whitespace_absent_and_empty_clears`. Correction `f62bd63` |
 | T16 | Per-section status line view model | N/A | DONE | `picker_page_view` / `picker_status_line`. Progress including dormant locators. `1cc00b6` |
 | T17 | Scope step after confirm; Max skips confirm | N/A | NOT STARTED | R3 |
 | T18 | Act-head / add-sheet state model | N/A | NOT STARTED | R3 |
@@ -442,6 +443,14 @@ No law-specific picker/parser/`UnitLocator`/JS/routes. PSS duplicate labels are 
 Local `pytest -m "not integration"` on `1cc00b6`: **2760 passed, 9 skipped, 1 deselected** (one new T16 dormant-status test vs `0f9842b`). Focused after `1cc00b6`: `tests/test_playground_units.py` + r1/m8/m11 **85 passed**. CI on `1cc00b6`: workflow runs `36734662452` (push) and `36734670642` (PR) **success**.
 
 No new B/C denominator rows. No class-D product-scope stop. Do not start R3.
+
+## R2 correction
+
+Correction report: [`docs/PLAYGROUND_UI_REDESIGN_R2_CORRECTION_REPORT.md`](PLAYGROUND_UI_REDESIGN_R2_CORRECTION_REPORT.md).
+
+Isolated fixes on the closed R2 picker: invalid POST is HTTP 400 with zero mutation; `UnitLocator` cannot exist unbound. Programme remains **28.1 / 100**. U2 remains **24 / 39**. R3 is not started.
+
+Code `f62bd63`. Local `pytest -m "not integration"`: **2767 passed, 9 skipped, 1 deselected**. Focused: `tests/test_playground_units.py` + m8/m9/m11/`test_playground.py` **136 passed**. CI on `f62bd63`: workflow runs `36751875399` (push) and `36751885785` (PR) **success**.
 
 ## R1 closeout
 

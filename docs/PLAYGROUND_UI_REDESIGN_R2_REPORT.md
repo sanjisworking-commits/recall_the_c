@@ -2,7 +2,7 @@
 
 Clause backend + section/clause picker. Product delta A becomes technically real. R3 Add-flow is **not** started. Stage 1 remains frozen. Stage 2 remains parked.
 
-This file is the batch closeout. Later batches should add `docs/PLAYGROUND_UI_REDESIGN_R{n}_REPORT.md` the same way.
+This file is the batch closeout. Later batches should add `docs/PLAYGROUND_UI_REDESIGN_R{n}_REPORT.md` the same way. Isolated R2 defect fixes are in [PLAYGROUND_UI_REDESIGN_R2_CORRECTION_REPORT.md](PLAYGROUND_UI_REDESIGN_R2_CORRECTION_REPORT.md); the programme score stayed 28.1 / 100.
 
 Authoritative docs:
 
