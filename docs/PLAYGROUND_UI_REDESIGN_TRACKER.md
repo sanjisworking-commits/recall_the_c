@@ -427,6 +427,8 @@ No new product delta (class D) was found. Deltas A–H already cover guest gate,
 
 ## R2 closeout
 
+Batch report: [`docs/PLAYGROUND_UI_REDESIGN_R2_REPORT.md`](PLAYGROUND_UI_REDESIGN_R2_REPORT.md).
+
 **R2 is complete for its targeted rows (24 of U2’s 39).** Clause locators, unit authority, and the redesigned picker shipped. R3 Add-dialog work is not started. Stage 1 remains frozen. Stage 2 remains PARKED.
 
 Starting SHA `a49d7b8`. Implementation `0f9842b`. T16 dormant-status follow-up `1cc00b6`.
