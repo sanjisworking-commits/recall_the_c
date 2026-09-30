@@ -4,7 +4,7 @@
 
 ```text
 Stage 1               = DONE — 100.0 / 100   (frozen)
-UI Redesign Programme = 17.0 / 100
+UI Redesign Programme = 28.1 / 100
 Stage 2               = PARKED until the programme is DONE — 100.0 / 100
 ```
 
@@ -28,7 +28,8 @@ Authority: `docs/PLAYGROUND_UI_REDESIGN_PLAN.md`. Inventories: `docs/design/PLAY
 | Alembic heads | **one:** `20260927_0027` |
 | T2 hash-drift | **did not fire.** Snapshot fixture pins 1136 eligible-section hashes including NDPS/BNS/BNSS 1018 and sentinels NDPS s.8 `938804c4…`, BNS s.103 `aea2c0bf…`, BNSS s.479 `2ebe577d…`. |
 | T36 prototypes | Desktop `61d8d01a…` (2,902 lines); mobile `361b7e25…` (1,829 lines). Not referenced from `src/`. |
-| **R1 closeout HEAD** | **`cf41baf`** (tracker) · last code **`cd1c4c6`**. U1 28/28. Do not start R2. |
+| **R1 closeout HEAD** | **`cf41baf`** (tracker) · last code **`cd1c4c6`**. U1 28/28. Frozen. |
+| **R2 closeout HEAD** | code **`1cc00b6`**. Tracker commit follows. U2 24/39. Do not start R3. |
 
 Visual columns (390 light/dark, ~768, ~1024, 1280 light/dark, reduced motion) stay `—` until the relevant batch. Technical rows mark Desktop/Mobile **N/A**. Status uses only: `NOT STARTED | IN PROGRESS | BLOCKED | IN REVIEW | DONE`.
 
@@ -40,14 +41,14 @@ Visual columns (390 light/dark, ~768, ~1024, 1280 light/dark, reduced motion) st
 |---|---|---|---|---|---|---|
 | U0 | Source reconciliation + merge safety | 5 | R0 | 10 | 10 | 5.0 |
 | U1 | Shared design system + shells | 12 | R1 | 28 | 28 | 12.0 |
-| U2 | Bare Act + Add + clause-level selection | 18 | R2, R3 | 39 | 0 | 0.0 |
+| U2 | Bare Act + Add + clause-level selection | 18 | R2, R3 | 39 | 24 | 11.1 |
 | U3 | Home + gates + roster lifecycle | 12 | R3, R5 | 38 | 0 | 0.0 |
 | U4 | Act progress + six-mode Learn + speech | 18 | R4 | 28 | 0 | 0.0 |
 | U5 | Learned / mastery / amendment states | 8 | R4 | 12 | 0 | 0.0 |
 | U6 | Today + Calendar + Google Calendar | 10 | R6 | 15 | 0 | 0.0 |
 | U7 | Profile + Settings + account surfaces | 7 | R5 | 12 | 0 | 0.0 |
 | U8 | Responsive, a11y, parity, regression | 10 | R7 | 25 | 0 | 0.0 |
-| **Total** | | **100** | | **207** | **38** | **17.0 / 100** |
+| **Total** | | **100** | | **207** | **62** | **28.1 / 100** |
 
 Uniqueness (script-checked from §15.2; no row in two milestones, none omitted):
 
@@ -65,12 +66,12 @@ No newly discovered B/C rows were added, so the denominator is unchanged.
 
 | Id | Delta | Layer 2 | Status |
 |---|---|---|---|
-| A | Clause-level selection | T8–T16, T30 | NOT STARTED |
+| A | Clause-level selection | T8–T16, T30 | IN PROGRESS — T8–T16 DONE (R2); T30 remains R4/later |
 | B | Playground pending rung → Google Calendar | T31 | NOT STARTED |
 | C | Selected unlearned work in Today | T28 | NOT STARTED |
 | D | Desktop Calendar Week | T29 | NOT STARTED |
 | E | Real speech on Letters/Recite | T25 | NOT STARTED |
-| F | Eligible Acts NDPS, BNS, BNSS, UAPA, PSS, MTP; POTA readable; slug identity | T4, T5 | IN REVIEW |
+| F | Eligible Acts NDPS, BNS, BNSS, UAPA, PSS, MTP; POTA readable; slug identity | T4, T5 | DONE |
 | G | Paused/expired read-only home | T19 | NOT STARTED |
 | H | Guest HTML GET renders gate; JSON 401 | T20 | NOT STARTED |
 
@@ -134,51 +135,49 @@ R1 closed on `cf41baf`. Guard held: no `UnitLocator`, clause fields, `unit_count
 
 ## U2 — Bare Act + Add + clause-level selection (weight 18, 39 items)
 
-R2 + R3. Clause UI must not ship in R1.
+R2 (clause model + picker) is closed on `1cc00b6`. R3 (Add sheet/dialog) is not started. U2 is **24 / 39**. Do not award the remaining 15 rows or the leftover U2 weight.
 
-| ID | Requirement | D/M | Status |
-|---|---|---|---|
-| D11 | Checkbox: none / all / some | both | NOT STARTED |
-| D23 | Sticky footers sit above the tab bar | phone | NOT STARTED |
-| D27 | CTA labels: guest, free, expired/paused, add, full, pending | both | NOT STARTED |
-| D28 | “Already in Playground” banner | both | NOT STARTED |
-| D29 | Desktop head: title left, 380px CTA column | desktop | NOT STARTED |
-| D31 | Add container: sheet / dialog | both | NOT STARTED |
-| D32 | Confirm step: space use, remaining, plurals | both | NOT STARTED |
-| D33 | Max skips confirm | both | NOT STARTED |
-| D34 | Scope step: Entire Act / Choose sections | both | NOT STARTED |
-| D35 | Guest add variant | both | NOT STARTED |
-| D36 | Subscribe / resume variant with catalogue “from ₹” | both | NOT STARTED |
-| D37 | Roster-full variant with upgrade buttons | both | NOT STARTED |
-| D38 | Pending-payment variant | both | NOT STARTED |
-| D39 | Re-add variant (“No extra space used”) | both | NOT STARTED |
-| D40 | Focus trap, Escape, scrim, no-JS fallback | both | NOT STARTED |
-| D41 | Picker header copy | both | NOT STARTED |
-| D42 | Chapter bands; none for chapterless Acts | both | NOT STARTED |
-| D43 | Section row: checkbox, SECTION n, title | both | NOT STARTED |
-| D44 | Status line, five states | both | NOT STARTED |
-| D45 | Caret expands clause rows | both | NOT STARTED |
-| D46 | Tri-state section checkbox | both | NOT STARTED |
-| D47 | Omitted / unlearnable rows disabled | both | NOT STARTED |
-| D48 | Sticky footer count / “clauses partial” | phone | NOT STARTED |
-| D49 | Sticky SELECTION aside | desktop | NOT STARTED |
-| D50 | Disabled at zero selection | both | NOT STARTED |
-| D128 | Picker lede copy replacement | both | NOT STARTED |
-| D129 | Picker button copy replacement | both | NOT STARTED |
-| T5 | Chapterless Acts in picker, workspace, progress | N/A | IN PROGRESS |
-| T8 | Locator grammar; `SectionLocator` / `UnitLocator`; explicit `ordinal` | N/A | NOT STARTED |
-| T9 | `playground/units.py` | N/A | NOT STARTED |
-| T10 | Unit hash and unit-level source review | N/A | NOT STARTED |
-| T11 | Exclusivity, promotion, dormant progress | N/A | NOT STARTED |
-| T12 | Due/schedule join current selection | N/A | NOT STARTED |
-| T13 | Computed `unit_count`; “provisions” wording | N/A | NOT STARTED |
-| T14 | Clause learn routes; `learn_path_for_locator` | N/A | NOT STARTED |
-| T15 | Picker POST `section=` / `unit=`; no-JS | N/A | NOT STARTED |
-| T16 | Per-section status line view model | N/A | NOT STARTED |
-| T17 | Scope step after confirm; Max skips confirm | N/A | NOT STARTED |
-| T18 | Act-head / add-sheet state model | N/A | NOT STARTED |
-
-`_LOCATOR_RE` still uses greedy `.+` for section number (`locators.py:19`). `parse_locator` returns only `SectionLocator`. Confirmed T8 defect.
+| ID | Requirement | D/M | Status | Evidence |
+|---|---|---|---|---|
+| D11 | Checkbox: none / all / some | both | DONE | `.pg-pick-check` + `aria-checked` true/false/mixed; dash mark for mixed. `test_picker_markup_tri_state_chapterless_and_copy`. `r2_picker_390_mixed.png` |
+| D23 | Sticky footers sit above the tab bar | phone | DONE | Picker footer is `.pg-sticky-cta.pg-pick-footer`. R1 `mobile.css` offsets `body[data-mscreen="playground"] .pg-sticky-cta` by `--m-tabbar` + safe-area. Five-tab HTML remains signed-in multiuser (R1 D20). `r2_picker_390_light.png` |
+| D27 | CTA labels: guest, free, expired/paused, add, full, pending | both | NOT STARTED | R3 Add |
+| D28 | “Already in Playground” banner | both | NOT STARTED | R3 |
+| D29 | Desktop head: title left, 380px CTA column | desktop | NOT STARTED | R3 |
+| D31 | Add container: sheet / dialog | both | NOT STARTED | R3 |
+| D32 | Confirm step: space use, remaining, plurals | both | NOT STARTED | R3 |
+| D33 | Max skips confirm | both | NOT STARTED | R3 |
+| D34 | Scope step: Entire Act / Choose sections | both | NOT STARTED | R3 |
+| D35 | Guest add variant | both | NOT STARTED | R3 |
+| D36 | Subscribe / resume variant with catalogue “from ₹” | both | NOT STARTED | R3 |
+| D37 | Roster-full variant with upgrade buttons | both | NOT STARTED | R3 |
+| D38 | Pending-payment variant | both | NOT STARTED | R3 |
+| D39 | Re-add variant (“No extra space used”) | both | NOT STARTED | R3 |
+| D40 | Focus trap, Escape, scrim, no-JS fallback | both | NOT STARTED | R3 |
+| D41 | Picker header copy | both | DONE | Back `← {{ act.short_name }}`, h1 “Choose what to learn”. `r2_picker_390_light.png` |
+| D42 | Chapter bands; none for chapterless Acts | both | DONE | `picker_page_view` `chapterless = not act.chapters`. MTP `data-chapterless`, no CHAPTER. `r2_picker_mtp_390_chapterless.png` |
+| D43 | Section row: checkbox, SECTION n, title | both | DONE | `list_title` (omitted → “Omitted”, no `[` markers). `test_picker_markup` |
+| D44 | Status line, five states | both | DONE | `picker_status_line` + dormant progress. Learning / Due / Learned / Mastered / Not started. `test_picker_status_line_uses_real_progress_including_dormant`. `r2_picker_1024_aside.png` |
+| D45 | Caret expands clause rows | both | DONE | `<details>` + `aria-expanded`. Only when `enumerate_selectable_units` ≥ 2. `r2_picker_390_mixed.png` |
+| D46 | Tri-state section checkbox | both | DONE | none/some/all; mixed uses dash + `aria-checked="mixed"`, not colour alone. JS `indeterminate`. |
+| D47 | Omitted / unlearnable rows disabled | both | DONE | `disabled` + POST reject. `test_nojs_section_and_unit_post_and_omitted_rejection`. `r2_picker_390_omitted.webp` |
+| D48 | Sticky footer count / “clauses partial” | phone | DONE | `provisions_label` + `picker_cta_copy`. Hidden ≥900px. `r2_picker_390_light.png` |
+| D49 | Sticky SELECTION aside | desktop | DONE | Shown ≥900px from real selection. `r2_picker_1024_aside.png` `r2_picker_1280_light.png` |
+| D50 | Disabled at zero selection | both | DONE | JS disables CTA (`Select sections to add`). No-JS submit still server-authoritative so empty HTML is not `disabled` (would brick no-JS ticks). `r2_picker_390_zero_selection.webp` |
+| D128 | Picker lede copy replacement | both | DONE | “Whole sections, or open one and pick clauses.” Stage 1 lede gone. `test_picker_markup` |
+| D129 | Picker button copy replacement | both | DONE | `Add N section(s) →` / `(N clause(s) partial)` / `Select sections to add`. `test_provisions_copy_and_cta_grammar` |
+| T5 | Chapterless Acts in picker, workspace, progress | N/A | DONE | Generic `chapters == none`. MTP picker/workspace. `test_picker_markup_tri_state_chapterless_and_copy` |
+| T8 | Locator grammar; `SectionLocator` / `UnitLocator`; explicit `ordinal` | N/A | DONE | `playground/locators.py`. Bounded `[^:]+`. Malformed units rejected. `tests/test_playground_units.py` |
+| T9 | `playground/units.py` | N/A | DONE | Single authority: enumerate, resolve, lead-in/tail, ordinals, citation, hashes |
+| T10 | Unit hash and unit-level source review | N/A | DONE | SHA-256 of section number, `kind:label`, lead-in, unit text. `source_hash_for_locator` in `source_review._classify_locator` |
+| T11 | Exclusivity, promotion, dormant progress | N/A | DONE | `normalize_selection_locators`. All units → section locator. Progress rows kept. `test_whole_section_unit_exclusivity_and_all_unit_promotion` `test_switch_preserves_dormant_progress_and_due_excludes_deselected` `test_all_unit_learning_is_not_whole_section_mastery` |
+| T12 | Due/schedule join current selection | N/A | DONE | `progress_in_current_selection_sql` EXISTS join. `test_switch_preserves_dormant_progress_and_due_excludes_deselected` |
+| T13 | Computed `unit_count`; “provisions” wording | N/A | DONE | SQL alias of `selected_count`. `provisions_label`. No migration |
+| T14 | Clause learn routes; `learn_path_for_locator` | N/A | DONE | Parallel `/u/{unit}/learn/{mode}`. Existing section routes kept. `test_learn_path_for_locator_parallel_routes` `test_unit_learn_route_resolves` |
+| T15 | Picker POST `section=` / `unit=`; no-JS | N/A | DONE | Server-normalised. `test_nojs_section_and_unit_post_and_omitted_rejection` |
+| T16 | Per-section status line view model | N/A | DONE | `picker_page_view` / `picker_status_line`. Progress including dormant locators. `1cc00b6` |
+| T17 | Scope step after confirm; Max skips confirm | N/A | NOT STARTED | R3 |
+| T18 | Act-head / add-sheet state model | N/A | NOT STARTED | R3 |
 
 ---
 
@@ -401,10 +400,10 @@ Every T1–T41 row was read against current `a5edca5` production code. **Accepte
 | T2 | Stop condition **did not fire** on merge. Snapshot fixture + tests now pin hashes. |
 | T3 | Title-annotation mutation does not change `source_hash`. Picker/cards use plain titles. |
 | T4 | **Landed with the merge.** Eligible six current slugs; `pota` and `uapa-1967` rejected. Hub keyed by slug. |
-| T5 | MTP picker is chapterless (`data-chapterless`). Full D42 chapter-band picker remains R2. |
+| T5 | **Closed in R2.** Generic `chapters == none`. MTP picker is chapterless; other Acts keep canonical bands. |
 | T6 | Merge regenerated the sitemap over seven Acts. Noindex contract unchanged. |
 | T7 | Template deleted; CSRF-less cloze binder removed; `complete_cloze()` kept. |
-| T8–T16 | `units.py` absent. Locator greedy `.+` confirmed. No clause routes. |
+| T8–T16 | **Closed in R2** on `1cc00b6`. Discriminated locators, `units.py`, picker POST, due join, unit hash. |
 | T17–T21 | Add is confirm-only (no scope step). Guest 303. Paused = hard gate. |
 | T22–T25 | No completion screens. Speech is Constitution-scoped. `SpeechClient` vs `RecallSpeech` confirmed. |
 | T26–T27 | Profile has no SUBSCRIPTION card from entitlement snapshot as specified. |
@@ -426,6 +425,22 @@ No new product delta (class D) was found. Deltas A–H already cover guest gate,
 
 ---
 
+## R2 closeout
+
+**R2 is complete for its targeted rows (24 of U2’s 39).** Clause locators, unit authority, and the redesigned picker shipped. R3 Add-dialog work is not started. Stage 1 remains frozen. Stage 2 remains PARKED.
+
+Starting SHA `a49d7b8`. Implementation `0f9842b`. T16 dormant-status follow-up `1cc00b6`.
+
+U2 proven this batch: D11, D23, D41–D50, D128–D129, T5, T8–T16 = **24 / 39**. Weighted U2 = 18 × 24/39 = **11.1**. Programme **28.1 / 100**.
+
+Alembic head remains **`20260927_0027`**. No migration.
+
+No law-specific picker/parser/`UnitLocator`/JS/routes. PSS duplicate labels are generic ordinals. MTP chapterless is generic `chapters == none`.
+
+Local `pytest -m "not integration"` on `1cc00b6`: **2760 passed, 9 skipped, 1 deselected** (one new T16 dormant-status test vs `0f9842b`). Focused after `1cc00b6`: `tests/test_playground_units.py` + r1/m8/m11 **85 passed**. CI on `1cc00b6`: workflow runs `36734662452` (push) and `36734670642` (PR) **success**.
+
+No new B/C denominator rows. No class-D product-scope stop. Do not start R3.
+
 ## R1 closeout
 
 **U1 is complete (28/28).** Shared design system and shells shipped. No R2 work.
@@ -440,4 +455,4 @@ No new B/C denominator rows. No class-D product-scope stop. Do not start R2.
 
 ## R0 readiness
 
-**U0 is complete (10/10).** **U1 is complete (28/28).** Stage 2 remains PARKED. Do not start R2.
+**U0 is complete (10/10).** **U1 is complete (28/28).** **R2 is complete (U2 24/39).** Stage 2 remains PARKED. Do not start R3.
