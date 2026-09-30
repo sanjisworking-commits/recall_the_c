@@ -14,11 +14,13 @@ from constitution_memorizer.playground.locators import (
     section_locator,
     unit_locator,
 )
+from constitution_memorizer.playground.learning.modes import PLAYGROUND_LEARN_MODES
 from constitution_memorizer.playground.service import (
     normalize_selection_locators,
     require_playground_law,
     selection_rows,
 )
+from constitution_memorizer.playground.source import source_hash
 from constitution_memorizer.playground.units import (
     citation_label,
     enumerate_selectable_units,
@@ -28,6 +30,7 @@ from constitution_memorizer.playground.units import (
 )
 from constitution_memorizer.playground.urls import learn_path, learn_path_for_locator, sections_path
 from constitution_memorizer.playground.view import picker_cta_copy, picker_status_line, provisions_label
+from constitution_memorizer.playground.roster.period import playground_today
 from constitution_memorizer.progress.user_ids import LOCAL_USER_ID
 from constitution_memorizer.web.bare_acts import clear_bare_act_cache, get_bare_act
 from tests.test_playground import (
@@ -394,6 +397,74 @@ def test_picker_markup_tri_state_chapterless_and_copy(tmp_path: Path):
     assert "data-chapterless" in mtp_page.text
     assert "Chapter" not in mtp_page.text
     assert "CHAPTER" not in mtp_page.text
+
+
+def test_picker_status_line_uses_real_progress_including_dormant(tmp_path: Path):
+    client = _client(tmp_path)
+    _add_and_select(client, "ndps", "8")
+    repo = client.app.state.playground
+    as_of = playground_today()
+    digest = source_hash(_ndps_section("8")[1])
+    for mode in PLAYGROUND_LEARN_MODES[:4]:
+        repo.complete_mode(
+            LOCAL_USER_ID,
+            "ndps",
+            "ndps:section:8",
+            mode,
+            source_version="v",
+            source_hash=digest,
+            as_of=as_of,
+        )
+    _seed_progress(
+        repo,
+        LOCAL_USER_ID,
+        "ndps",
+        "ndps:section:1",
+        status="mastered",
+        interval_days=60,
+        next_revision=None,
+        times_completed=6,
+        learned_at="2026-01-01",
+        last_completed="2026-09-01",
+    )
+    _seed_progress(
+        repo,
+        LOCAL_USER_ID,
+        "ndps",
+        "ndps:section:2",
+        status="review",
+        interval_days=3,
+        next_revision=(as_of - timedelta(days=1)).isoformat(),
+        times_completed=1,
+        learned_at="2026-09-01",
+        last_completed="2026-09-17",
+    )
+    _seed_progress(
+        repo,
+        LOCAL_USER_ID,
+        "ndps",
+        "ndps:section:4",
+        status="learned",
+        interval_days=1,
+        next_revision=(as_of + timedelta(days=1)).isoformat(),
+        learned_at=as_of.isoformat(),
+    )
+    learning = client.get(sections_path("ndps"))
+    html = learning.text
+    assert "Learning · 4 of 6 modes" in html
+    assert "Mastered" in html
+    assert "Due · Day 3" in html
+    assert "Learned · first revision tomorrow" in html
+    assert "Not started" in html
+    switched = client.post(
+        sections_path("ndps"),
+        data={"section": "9"},
+        follow_redirects=False,
+    )
+    assert switched.status_code == 303
+    dormant = client.get(sections_path("ndps"))
+    assert "Learning · 4 of 6 modes" in dormant.text
+    assert "Mastered" in dormant.text
 
 
 def test_unit_learn_route_resolves(tmp_path: Path):

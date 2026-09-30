@@ -1411,6 +1411,16 @@ def picker_page_view(
             continue
         selected_by_section.setdefault(loc.section_number, []).append(loc)
 
+    status_by_section: dict[str, list[str]] = {}
+    for raw in set(progress_map) | set(mode_summaries):
+        try:
+            loc = parse_locator(raw)
+        except LocatorError:
+            continue
+        if loc.law_id != law_id:
+            continue
+        status_by_section.setdefault(loc.section_number, []).append(raw)
+
     chapterless = not bool(getattr(act, "chapters", ()))
     if chapterless:
         bands_src = [{"number": "", "title": "", "sections": list(act.section_order)}]
@@ -1444,7 +1454,6 @@ def picker_page_view(
             if whole:
                 check_state = "all"
                 aria_checked = "true"
-                status_locs = [section_loc.value]
                 section_count += 1
                 provision_count += 1
                 aside_items.append(
@@ -1457,7 +1466,6 @@ def picker_page_view(
             elif unit_locs:
                 check_state = "some"
                 aria_checked = "mixed"
-                status_locs = [item.value for item in unit_locs]
                 section_count += 1
                 partial_unit_count += len(unit_locs)
                 provision_count += len(unit_locs)
@@ -1472,7 +1480,7 @@ def picker_page_view(
             else:
                 check_state = "none"
                 aria_checked = "false"
-                status_locs = []
+            status_locs = status_by_section.get(section.number, [])
             status, completed, interval, next_rev = _aggregate_picker_status(
                 status_locs,
                 progress_map=progress_map,

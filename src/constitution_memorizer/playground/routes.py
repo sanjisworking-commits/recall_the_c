@@ -861,11 +861,19 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             row.source_locator: row
             for row in overlay.list_progress(access.user_id, law_id)
         }
+        mode_rows = overlay.list_mode_progress(access.user_id, law_id)
+        status_locators = list(
+            {
+                *selected,
+                *progress_map,
+                *(row.source_locator for row in mode_rows),
+            }
+        )
         mode_summaries = summaries_for_locators(
-            overlay.list_mode_progress(access.user_id, law_id),
-            list(selected),
+            mode_rows,
+            status_locators,
             live_hashes={
-                loc: _section_source_hash(act, loc, law_id) for loc in selected
+                loc: _section_source_hash(act, loc, law_id) for loc in status_locators
             },
         )
         picker = picker_page_view(
