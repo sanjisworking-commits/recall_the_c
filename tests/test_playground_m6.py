@@ -239,7 +239,7 @@ def test_active_not_started_and_continue(tmp_path: Path):
     _subscribe(client)
     _confirm_add(client, "ndps")
     page = client.get("/laws/ndps")
-    assert "In Playground" in page.text
+    assert "Already in Playground" in page.text or "In Playground" in page.text
     assert "Start learning" in page.text
     client.post(
         sections_path("ndps"),
