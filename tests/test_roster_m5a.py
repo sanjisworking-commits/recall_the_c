@@ -185,10 +185,13 @@ def _subscribe(
 def _confirm_add(client: TestClient, law_id: str):
     payload = dict(_csrf(client))
     payload["confirm"] = "add"
+    payload["scope"] = "sections"
     preview = client.post(add_path(law_id), data=_csrf(client), follow_redirects=False)
     if preview.status_code == 303 and "/playground/roster" in (
         preview.headers.get("location") or ""
     ):
+        return client.post(add_path(law_id), data=payload, follow_redirects=False)
+    if preview.status_code == 200:
         return client.post(add_path(law_id), data=payload, follow_redirects=False)
     return preview
 
@@ -690,7 +693,7 @@ def test_pending_current_roster_vs_historical(tmp_path: Path):
     assert client.app.state.roster.is_law_active_this_period(USER, "ndps") is True
     new_law = client.post(
         add_path("bnss"),
-        data={**_csrf(client), "confirm": "add"},
+        data={**_csrf(client), "confirm": "add", "scope": "sections"},
         follow_redirects=False,
     )
     assert new_law.status_code == 303
@@ -774,7 +777,7 @@ def test_local_owner_uses_roster_not_overlay_alone(tmp_path: Path):
     assert "/playground/roster" in (preview.headers.get("location") or "")
     assert client.app.state.playground.get_item(LOCAL_USER_ID, "ndps") is None
     confirmed = client.post(
-        add_path("ndps"), data={"confirm": "add"}, follow_redirects=False
+        add_path("ndps"), data={"confirm": "add", "scope": "sections"}, follow_redirects=False
     )
     assert confirmed.status_code == 303
     assert client.app.state.roster.is_law_active_this_period(LOCAL_USER_ID, "ndps")

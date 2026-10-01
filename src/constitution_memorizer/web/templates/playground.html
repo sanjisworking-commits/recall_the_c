@@ -4,23 +4,37 @@
 {% block playground %}
 {% set home = home_view %}
 {{ banner(home.banner) }}
-<div class="pg-home-grid">
+<div class="pg-home-grid{% if home.read_only %} is-readonly{% endif %}">
   <div>
-    <p class="pg-eyebrow">My Playground</p>
-    <h1>{{ home.capacity.month_name }}</h1>
+    <p class="pg-eyebrow pg-home-kicker">{{ home.kicker }}</p>
+    <h1 class="pg-home-title">{{ home.heading }}</h1>
+    <p class="pg-home-month">{{ home.month_count_label or home.capacity.month_name }}</p>
     {{ banner(home.quiet) }}
+    <div class="pg-month-strip">
+      {% if not home.read_only %}
+      <a href="{{ home.manage_href }}">{{ home.manage_label }}</a>
+      <a href="{{ home.add_law_href }}">{{ home.add_law_label }}</a>
+      <a href="{{ home.plan_next_href }}">Manage {{ home.next_month_name }} ›</a>
+      {% else %}
+      <a href="{{ home.resume_href }}">{{ home.resume_label }}</a>
+      {% endif %}
+    </div>
     {{ capacity_block(home.capacity) }}
-    {% if home.empty %}
+    {% if home.empty and not home.read_only %}
     <p class="pg-lede">Your {{ home.capacity.month_name }} Playground is empty</p>
     <p class="pg-lede">Add laws you want to learn this month. Your saved progress stays with you even when a law leaves Playground.</p>
     {% endif %}
     <p class="pg-actions">
+      {% if home.read_only %}
+      <a class="pg-btn" href="{{ home.resume_href }}">{{ home.resume_label }}</a>
+      {% else %}
       <a class="pg-btn" href="{{ home.browse_href }}">Browse laws</a>
       <a class="pg-btn pg-btn--ghost" href="{{ home.manage_href }}">{{ home.manage_label }}</a>
+      {% endif %}
     </p>
     {{ trust_mark() }}
     {% if home.active or home.removed %}
-    <div class="ProgressSummary" aria-label="This month’s progress">
+    <div class="ProgressSummary pg-home-tiles" aria-label="This month’s progress">
       <div class="ProgressSummary-cell">
         <div class="ProgressSummary-value">{{ home.due_today }}</div>
         <div class="ProgressSummary-label">Due today</div>
@@ -62,6 +76,7 @@
     {% endfor %}
     {% endif %}
 
+    {% if not home.read_only %}
     <div class="pg-plan-row">
       <div>
         <p class="pg-eyebrow">Plan next month</p>
@@ -69,9 +84,10 @@
       </div>
       <a class="pg-btn pg-btn--ghost" href="{{ home.plan_next_href }}">Plan next month</a>
     </div>
+    {% endif %}
   </div>
   <aside class="pg-aside" aria-label="{{ home.capacity.month_name }} capacity">
-    <p class="pg-eyebrow">My Playground</p>
+    <p class="pg-eyebrow">{{ home.kicker }}</p>
     <p><strong>{{ home.capacity.month_name }}</strong></p>
     {{ capacity_block(home.capacity) }}
     <p class="pg-actions">

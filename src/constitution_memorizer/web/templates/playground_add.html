@@ -1,34 +1,121 @@
 {% extends "playground_base.html" %}
 {% block title %}{{ title }} · Playground{% endblock %}
 {% block playground %}
-<section class="pg-sheet-panel" data-roster-confirm="{{ law_id }}" role="dialog" aria-modal="true" aria-labelledby="pg-add-title">
+<section
+  class="pg-sheet-panel"
+  data-pg-add
+  data-pg-kind="{{ kind }}"
+  data-step="{{ step }}"
+  data-skip-confirm="{{ 'true' if skip_confirm else 'false' }}"
+  data-roster-confirm="{{ law_id }}"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="pg-add-title"
+>
   <p class="pg-eyebrow">{{ month_name }}</p>
+
+  {% if kind == "guest" %}
+  <h1 id="pg-add-title">Sign in to use Playground</h1>
+  <p class="pg-lede">Playground needs an account. Reading {{ short_title }} stays free — sign in and you’ll come right back here.</p>
+  <p class="pg-actions">
+    <a class="pg-btn" href="{{ login_href }}">Sign in</a>
+    <a class="pg-btn pg-btn--ghost" href="{{ cancel_href }}">Cancel</a>
+  </p>
+
+  {% elif kind == "subscribe" %}
+  <h1 id="pg-add-title">Unlock Playground</h1>
+  <p class="pg-lede">Turning {{ short_title }} into a learning experience needs a plan. Reading it stays free.</p>
+  <p class="pg-actions">
+    <a class="pg-btn" href="/billing/subscriptions">Unlock Playground</a>
+    <a class="pg-btn pg-btn--ghost" href="{{ cancel_href }}">Cancel</a>
+  </p>
+  {% if from_price %}<p class="pg-note">{{ from_price }} / month. Constitution learning stays included with your account.</p>{% endif %}
+
+  {% elif kind == "resume" %}
+  <h1 id="pg-add-title">Resume Playground</h1>
+  <p class="pg-lede">Your laws and learning progress are saved. Resume a plan to add {{ short_title }}.</p>
+  <p class="pg-actions">
+    <a class="pg-btn" href="/billing/subscriptions">Resume Playground</a>
+    <a class="pg-btn pg-btn--ghost" href="{{ cancel_href }}">Cancel</a>
+  </p>
+
+  {% elif kind == "device_blocked" %}
   <h1 id="pg-add-title">{{ title }}</h1>
   {% for line in lines %}
   <p class="pg-lede">{{ line }}</p>
   {% endfor %}
-  {% if blocked_pending %}
+  <p class="pg-actions">
+    <a class="pg-btn" href="{{ state.primary_href }}">{{ state.primary_label }}</a>
+    <a class="pg-btn pg-btn--ghost" href="{{ cancel_href }}">Cancel</a>
+  </p>
+
+  {% elif blocked_pending or kind == "pending" %}
+  <h1 id="pg-add-title">Adding new laws is temporarily unavailable</h1>
   <p class="pg-note" data-playground-gate="new_law_temporarily_unavailable">Adding new laws is temporarily unavailable</p>
+  <p class="pg-lede">You can continue your current Playground.</p>
   <p class="pg-actions">
     <a class="pg-btn" href="/billing/subscriptions">Manage subscription</a>
     <a class="pg-btn pg-btn--ghost" href="/playground">Cancel</a>
   </p>
-  {% elif blocked_full %}
+
+  {% elif blocked_full or kind == "roster_full" %}
+  <h1 id="pg-add-title">Playground full this month</h1>
   <p class="pg-note" data-playground-gate="roster_full">Playground full this month</p>
   <p class="pg-lede">Existing laws remain fully usable. Removing a law does not free a space this month.</p>
+  {% if catalogue_plans %}
+  <div class="pg-plan-list">
+    {% for plan in catalogue_plans %}
+    <a class="pg-btn" href="{{ plan.href }}">{{ plan.cta_label }} · {{ plan.price_label }}</a>
+    {% endfor %}
+  </div>
+  {% endif %}
   <p class="pg-actions">
-    <a class="pg-btn" href="/playground/roster/next">Plan next month</a>
+    <a class="pg-btn pg-btn--ghost" href="/playground/roster/next">Plan next month</a>
     <a class="pg-btn pg-btn--ghost" href="/playground">Back to Playground</a>
   </p>
+
   {% else %}
-  <form method="post" action="/playground/laws/{{ law_id }}/add">
-    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-    <input type="hidden" name="confirm" value="{{ confirm_value }}">
+  <div data-add-step="confirm" {% if step == "scope" or skip_confirm %}hidden{% endif %}>
+    <h1 id="pg-add-title">{{ title }}</h1>
+    {% for line in lines %}
+    <p class="pg-lede">{{ line }}</p>
+    {% endfor %}
+    <form method="post" action="/playground/laws/{{ law_id }}/add" data-pg-add-confirm>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <input type="hidden" name="confirm" value="{{ confirm_value }}">
+      <p class="pg-actions">
+        <button type="submit" class="pg-btn">{{ action_label }}</button>
+        <a class="pg-btn pg-btn--ghost" href="{{ cancel_href }}">Cancel</a>
+      </p>
+    </form>
+  </div>
+
+  <div data-add-step="scope" {% if step != "scope" and not skip_confirm %}hidden{% endif %}>
+    <h1 id="pg-add-scope-title">Add {{ short_title }}</h1>
+    <p class="pg-lede">Choose how much of {{ short_title }} enters your recall schedule.</p>
+    <form method="post" action="/playground/laws/{{ law_id }}/add">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <input type="hidden" name="confirm" value="{{ confirm_value }}">
+      <button type="submit" class="pg-add-choice" name="scope" value="entire">
+        <span>
+          <strong>Entire Act</strong>
+          {% if entire_meta %}<span class="pg-lede">{{ entire_meta }}</span>{% endif %}
+        </span>
+        <span aria-hidden="true">›</span>
+      </button>
+      <button type="submit" class="pg-add-choice" name="scope" value="sections">
+        <span>
+          <strong>Choose sections</strong>
+          <span class="pg-lede">Pick sections — or open one and pick single clauses</span>
+        </span>
+        <span aria-hidden="true">›</span>
+      </button>
+    </form>
+    <p class="pg-note">Nothing is scheduled yet — provisions activate the first time you learn them.</p>
     <p class="pg-actions">
-      <button type="submit" class="pg-btn">{{ action_label }}</button>
       <a class="pg-btn pg-btn--ghost" href="{{ cancel_href }}">Cancel</a>
     </p>
-  </form>
+  </div>
   {% endif %}
 </section>
 {% endblock %}

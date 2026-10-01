@@ -81,8 +81,11 @@
     {{ due_badge(card.due_count, card.overdue_count) }}
     {% if card.outdated %}{{ status_badge('updated', 'Law updated') }}{% endif %}
   </p>
+  <div class="pg-progress-bar LawCard-bar" aria-hidden="true">
+    <span class="pg-progress-bar-fill" style="width: {{ card.learned_pct }}%"></span>
+  </div>
   <p class="LawCard-meta">
-    <span>{{ card.selected_count }} section{% if card.selected_count != 1 %}s{% endif %} selected</span>
+    <span>{{ card.provisions_copy or (card.selected_count ~ ' provisions') }}</span>
     <span>{{ card.learned_count }} learned</span>
   </p>
   {% if card.outdated and card.home_note %}
@@ -90,7 +93,10 @@
   {% elif card.outdated %}
   <p class="pg-note">{% if card.review_href %}<a href="{{ card.review_href }}">Review affected provisions</a>{% else %}Review affected provisions{% endif %}</p>
   {% endif %}
-  <div class="pg-card-actions">
+  <div class="pg-card-actions pg-card-actions--phone">
+    <a class="pg-btn" href="{{ card.primary_href }}"{% if card.membership != 'in_playground' %} data-pg-sheet{% endif %}>{{ card.primary_label }}</a>
+  </div>
+  <div class="pg-card-actions pg-card-actions--desktop">
     {% if card.is_next %}
     <a class="pg-btn" href="{{ card.primary_href }}"{% if card.membership != 'in_playground' %} data-pg-sheet{% endif %}>{{ card.primary_label }}</a>
     {% else %}
@@ -105,12 +111,27 @@
 {% endmacro %}
 
 {% macro playground_cta(state) %}
-{% if playground_enabled|default(true) and state and state.eligible %}
-<div class="LawPlaygroundCta" data-law-id="{{ state.law_id }}" data-membership="{{ state.badge }}">
+{% if playground_enabled|default(true) and state and state.eligible and state.kind != 'unavailable' %}
+<div class="LawPlaygroundCta" data-law-id="{{ state.law_id }}" data-pg-kind="{{ state.kind }}" data-membership="{{ state.badge }}">
+  {% if state.kind == 'already_active' %}
+  {{ status_badge(state.badge, state.badge_label) }}
+  <p class="pg-actions">
+    {% if state.secondary_href and state.secondary_label %}
+    <a class="pg-btn pg-btn--ghost" href="{{ state.secondary_href }}">{{ state.secondary_label }}</a>
+    {% endif %}
+    {% if state.primary_href and state.primary_label %}
+    <a class="pg-btn" href="{{ state.primary_href }}">{{ state.primary_label }}</a>
+    {% endif %}
+  </p>
+  {% else %}
   {{ status_badge(state.badge, state.badge_label) }}
   {% if state.secondary_copy %}<p class="pg-lede">{{ state.secondary_copy }}</p>{% endif %}
   {% if state.primary_href and state.primary_label %}
-  <a class="pg-btn{% if state.badge == 'in_playground' %} pg-btn--ghost{% endif %}" href="{{ state.primary_href }}"{% if state.opens_sheet %} data-pg-sheet{% endif %}>{{ state.primary_label }}</a>
+  <a class="pg-btn{% if state.kind == 'roster_full' %} pg-btn--ghost{% endif %}" href="{{ state.primary_href }}"{% if state.opens_sheet %} data-pg-sheet{% endif %}>{{ state.primary_label }}</a>
+  {% endif %}
+  {% if state.secondary_href and state.secondary_label %}
+  <a class="pg-btn pg-btn--ghost" href="{{ state.secondary_href }}">{{ state.secondary_label }}</a>
+  {% endif %}
   {% endif %}
 </div>
 {% endif %}

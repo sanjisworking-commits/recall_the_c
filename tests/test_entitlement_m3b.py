@@ -153,7 +153,9 @@ def _add_law(client: TestClient, law_id: str):
     preview = _mutate(client, add_path(law_id))
     location = preview.headers.get("location") or ""
     if preview.status_code == 303 and "/playground/roster" in location:
-        return _mutate(client, add_path(law_id), confirm="add")
+        return _mutate(client, add_path(law_id), confirm="add", scope="sections")
+    if preview.status_code == 200 and "Choose sections" in (preview.text or ""):
+        return _mutate(client, add_path(law_id), confirm="add", scope="sections")
     return preview
 
 
@@ -269,12 +271,14 @@ def _hydrate_spy(monkeypatch: pytest.MonkeyPatch) -> list[str]:
 def _assert_subscribe_gate(response) -> None:
     assert response.status_code == 200
     assert 'data-playground-gate="not_subscribed"' in response.text
-    assert "Your RecallC account already includes the complete Constitution." in response.text
+    assert "Unlock Playground" in response.text
+    assert "Included with your account" in response.text
+    assert "complete Constitution" in response.text
+    assert "Six learning methods" in response.text
     assert "Playground adds structured learning for laws." in response.text
-    assert "View Playground plans" in response.text
     assert PLAYGROUND_BILLING_PATH in response.text
-    assert "Subscribe to use Playground" not in response.text
     assert "Sign in to use Playground" not in response.text
+    assert 'data-hard-gate="true"' in response.text
 
 
 def _assert_constitution_open(client: TestClient) -> None:
@@ -296,12 +300,21 @@ def _assert_laws_open(client: TestClient) -> None:
 # --------------------------------------------------------------------------- #
 @pytest.mark.parametrize("path", DEEP_LINKS)
 def test_guest_playground_gets_redirect_to_login(tmp_path: Path, path: str):
+    """R3 / T20 / Delta H: HTML GET /playground* is a 200 sign-in gate, not 303.
+
+    JSON stays 401. Guest POST still fail-closed (see mutations test).
+    """
+
     client = _guest_client(tmp_path)
     response = client.get(path, follow_redirects=False)
-    assert response.status_code == 303
-    assert response.headers["location"] == f"/login?next={path}"
-    assert "/billing/subscriptions" not in response.headers["location"]
-    assert "Subscribe" not in (response.text or "")
+    assert response.status_code == 200
+    assert "Sign in to use Playground" in response.text
+    assert f"/login?next={path}" in response.text
+    assert "/billing/subscriptions" not in response.text.split("EntitlementGate", 1)[-1][:1200]
+    assert 'data-hard-gate="true"' in response.text
+    json_get = client.get(path, headers={"Accept": "application/json"}, follow_redirects=False)
+    assert json_get.status_code == 401
+    assert json_get.json()["error"] == "auth_required"
 
 
 def test_guest_playground_mutations_go_to_login(tmp_path: Path):
@@ -467,7 +480,7 @@ def test_pending_opens_current_roster_and_blocks_historical_overlay(tmp_path: Pa
     assert "new_law_temporarily_unavailable" in historical.text or (
         "temporarily unavailable" in historical.text.lower()
     )
-    added = _mutate(client, add_path("bns"), confirm="add")
+    added = _mutate(client, add_path("bns"), confirm="add", scope="sections")
     assert added.status_code == 303
     assert client.app.state.roster.is_law_active_this_period(USER, "bns") is False
     snap = client.app.state.entitlement_service.resolve(USER, now=NOW)
@@ -490,30 +503,44 @@ def test_pending_section_save_bypass_hydrates_zero_acts(
 
 
 def test_halted_blocks_playground_with_payment_copy(tmp_path: Path):
+    """R3 / T19 / Delta G: halted GET /playground is read-only home, not a hard gate.
+
+    Learn and mutations stay blocked. can_open_playground remains False.
+    """
+
     client, _repo = _authed_client(tmp_path)
     _add_subscription(client, tier="max", status="halted")
     home = client.get("/playground")
     assert home.status_code == 200
-    assert 'data-playground-gate="payment_halted"' in home.text
     assert "Payment retries have stopped" in home.text
-    assert "Manage subscription" in home.text
+    assert "Resume Playground" in home.text
     assert "Subscribe to use Playground" not in home.text
     assert PLAYGROUND_BILLING_PATH in home.text
+    assert 'data-hard-gate="true"' not in home.text
     snap = client.app.state.entitlement_service.resolve(USER, now=NOW)
     assert snap.playground_block_reason == BLOCK_PAYMENT_HALTED
+    assert snap.can_open_playground is False
+    learn = client.get(learn_path("ndps", "8"), follow_redirects=False)
+    assert learn.status_code == 200
+    assert "Payment retries have stopped" in learn.text or "data-playground-gate" in learn.text
     _assert_constitution_open(client)
     _assert_laws_open(client)
 
 
 def test_paused_blocks_playground_with_paused_copy(tmp_path: Path):
+    """R3 / T19: paused GET /playground is read-only home. Learn stays blocked."""
+
     client, _repo = _authed_client(tmp_path)
     _add_subscription(client, tier="pro", status="paused")
     home = client.get("/playground")
-    assert 'data-playground-gate="subscription_paused"' in home.text
+    assert home.status_code == 200
     assert "Playground subscription paused" in home.text
+    assert "Resume Playground" in home.text
     assert "Subscribe to use Playground" not in home.text
+    assert 'data-hard-gate="true"' not in home.text
     snap = client.app.state.entitlement_service.resolve(USER, now=NOW)
     assert snap.playground_block_reason == BLOCK_SUBSCRIPTION_PAUSED
+    assert snap.can_open_playground is False
     _assert_constitution_open(client)
 
 
@@ -530,8 +557,10 @@ def test_paid_period_ended_blocks_all_playground_surfaces(tmp_path: Path):
     )
     assert charge.access_effect == "period_ended"
     home = client.get("/playground")
-    assert 'data-playground-gate="paid_period_ended"' in home.text
+    assert home.status_code == 200
     assert "Your Playground is paused" in home.text
+    assert "Resume Playground" in home.text
+    assert 'data-hard-gate="true"' not in home.text
     learn = client.get(learn_path("ndps", "1"), follow_redirects=False)
     assert 'data-playground-gate="paid_period_ended"' in learn.text
     done = client.post(learn_complete_path("ndps", "1"), data=_csrf(client))

@@ -8,11 +8,19 @@ from fastapi.templating import Jinja2Templates
 from starlette.responses import Response
 
 from constitution_memorizer.playground.access import (
+    SCOPE_ENTIRE,
+    SCOPE_SECTIONS,
+    add_scope_value,
     consume_blocked_response,
     is_add_confirmed,
+    is_add_scope,
     new_law_home_notice,
+    playground_access,
+    playground_view_access,
     require_eligible_law,
     require_law_active_this_period,
+    require_playground_home,
+    require_playground_new_law,
     require_playground_open,
 )
 from constitution_memorizer.playground.source_review import (
@@ -34,6 +42,9 @@ from constitution_memorizer.playground.eligibility import (
     playground_law_source_identity,
 )
 from constitution_memorizer.playground.http import (
+    local_next_path,
+    playground_login_href,
+    playground_user_id,
     require_playground_repo,
     require_roster_service,
 )
@@ -79,6 +90,7 @@ from constitution_memorizer.playground.service import (
     activate_law,
     mark_outdated,
     parse_selected_locator,
+    persist_entire_act_selection,
     require_playground_law,
     selected_locator_set,
     selection_rows,
@@ -110,8 +122,13 @@ from constitution_memorizer.playground.view import (
     build_home_view,
     capacity_view,
     catalog_titles,
+    catalogue_from_price,
+    catalogue_plan_views,
+    entire_act_meta,
+    law_membership,
     picker_page_view,
     section_row_view,
+    skips_add_confirm,
 )
 
 from constitution_memorizer.playground.learning.modes import PLAYGROUND_MODE_LABELS
@@ -217,6 +234,102 @@ def _after_active_redirect(overlay, user_id, law_id: str) -> RedirectResponse:
     return RedirectResponse(url=sections_path(law_id), status_code=303)
 
 
+def _add_page_context(
+    *,
+    request: Request,
+    law_id: str,
+    access,
+    overlay,
+    roster,
+    step: str = "",
+    hydrate_scope: bool = False,
+) -> dict:
+    state = law_membership(
+        law_id=law_id, access=access, roster=roster, overlay=overlay
+    )
+    _long, short = catalog_titles(law_id)
+    del _long
+    month = "this month"
+    remaining_after = None
+    law_limit = None
+    preview = None
+    historical = False
+    if access.user_id is not None and roster is not None:
+        capacity = roster.capacity(
+            access.user_id, access.snapshot, local_owner=access.local_owner
+        )
+        month = playground_month_name(capacity.period_start)
+        remaining_after = capacity.remaining
+        law_limit = capacity.law_limit
+        preview = roster.preview_add_law(
+            access.user_id,
+            law_id,
+            access.snapshot,
+            local_owner=access.local_owner,
+            can_consume_new_law=access.can_consume_new_law,
+        )
+        if preview.status == RESULT_NEEDS_CONFIRM and remaining_after is not None:
+            remaining_after = max(0, remaining_after - 1)
+    if access.user_id is not None and overlay is not None:
+        historical = overlay.get_item(access.user_id, law_id) is not None
+    re_add = state.kind == "re_add" or (
+        preview is not None and preview.status == RESULT_RE_ADD_CONFIRM
+    )
+    skip = skips_add_confirm(access) or state.skip_confirm
+    show_scope = step == "scope" or skip
+    if state.kind not in {"eligible_to_add", "re_add"}:
+        show_scope = False
+        skip = False
+    confirm_title, confirm_lines = add_confirm_copy(
+        short_title=short,
+        month_name=month,
+        law_limit=law_limit,
+        remaining_after=remaining_after,
+        historical=historical and not re_add,
+        re_add=re_add,
+    )
+    entire_meta = ""
+    if hydrate_scope and show_scope and state.kind in {"eligible_to_add", "re_add"}:
+        try:
+            act = require_playground_law(law_id)
+            entire_meta = entire_act_meta(law_id, act=act)
+        except Exception:
+            entire_meta = ""
+    kind = state.kind
+    login_href = playground_login_href(
+        local_next_path(str(request.url.path), add_path(law_id))
+    )
+    plans = catalogue_plan_views(
+        current_tier=getattr(access.snapshot, "tier", None) if access.snapshot else None
+    )
+    return {
+        "law_id": law_id,
+        "kind": kind,
+        "state": state,
+        "title": confirm_title,
+        "lines": confirm_lines,
+        "month_name": month,
+        "short_title": short,
+        "action_label": "Add back" if re_add else "Add to Playground",
+        "confirm_value": ROSTER_ADD_CONFIRM,
+        "cancel_href": f"/laws/{law_id}",
+        "blocked_pending": kind == "pending" or (
+            preview is not None and preview.status == RESULT_NEW_BLOCKED
+        ),
+        "blocked_full": kind == "roster_full" or (
+            preview is not None and preview.status == RESULT_ROSTER_FULL
+        ),
+        "step": "scope" if show_scope else "confirm",
+        "skip_confirm": skip,
+        "re_add": re_add,
+        "entire_meta": entire_meta,
+        "login_href": login_href,
+        "from_price": catalogue_from_price(),
+        "catalogue_plans": plans,
+        "hard_gate": kind in {"guest", "subscribe", "device_blocked", "unavailable"},
+    }
+
+
 def _rollover_ids(form) -> tuple[list[str], list[str]]:
     keep_ids = [str(value) for value in form.getlist("keep_ids") if str(value)]
     decline_ids = [str(value) for value in form.getlist("decline_ids") if str(value)]
@@ -250,7 +363,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
     @router.get("", response_class=HTMLResponse)
     @router.get("/", response_class=HTMLResponse)
     async def playground_home(request: Request) -> HTMLResponse:
-        access = require_playground_open(
+        access = require_playground_home(
             request, templates, next_url=home_path()
         )
         blocked = _denied(access)
@@ -284,6 +397,8 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                 ],
                 "new_law_notice": new_law_home_notice(request, access),
                 "roster_path": roster_path(),
+                "hard_gate": False,
+                "read_only": bool(getattr(access, "can_view_home", False) and not access.can_open),
             },
         )
 
@@ -500,76 +615,35 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
 
     @router.get("/laws/{law_id}/add", response_class=HTMLResponse)
     async def playground_add_confirm(request: Request, law_id: str) -> Response:
-        opened = require_playground_open(
-            request, templates, next_url=add_path(law_id)
-        )
-        blocked = _denied(opened)
-        if blocked is not None:
-            return blocked
         require_eligible_law(law_id)
-        overlay = require_playground_repo(request)
-        roster = require_roster_service(request)
-        preview = roster.preview_add_law(
-            opened.user_id,
-            law_id,
-            opened.snapshot,
-            local_owner=opened.local_owner,
-            can_consume_new_law=opened.can_consume_new_law,
-        )
-        if preview.status == RESULT_INELIGIBLE:
-            raise HTTPException(status_code=404, detail="Law not found")
-        if preview.status == RESULT_ALREADY_ACTIVE:
-            return _after_active_redirect(overlay, opened.user_id, law_id)
-        capacity = roster.capacity(
-            opened.user_id,
-            opened.snapshot,
-            local_owner=opened.local_owner,
-        )
-        month = playground_month_name(capacity.period_start)
-        _long, short = catalog_titles(law_id)
-        del _long
-        historical = overlay.get_item(opened.user_id, law_id) is not None
-        re_add = preview.status == RESULT_RE_ADD_CONFIRM
-        remaining_after = capacity.remaining
-        if preview.status == RESULT_NEEDS_CONFIRM and remaining_after is not None:
-            remaining_after = max(0, remaining_after - 1)
-        confirm_title, confirm_lines = add_confirm_copy(
-            short_title=short,
-            month_name=month,
-            law_limit=capacity.law_limit,
-            remaining_after=remaining_after,
-            historical=historical and not re_add,
-            re_add=re_add,
-        )
-        blocked_pending = preview.status == RESULT_NEW_BLOCKED
-        blocked_full = preview.status == RESULT_ROSTER_FULL
-        if blocked_pending:
-            confirm_title = "Adding new laws is temporarily unavailable"
-            confirm_lines = (
-                "You can continue your current Playground.",
-                "Adding new laws is temporarily unavailable.",
+        uid = playground_user_id(request)
+        access = playground_access(request) if uid is not None else playground_view_access(request)
+        overlay = getattr(request.app.state, "playground", None)
+        roster = getattr(request.app.state, "roster", None)
+        if access.user_id is not None:
+            overlay = require_playground_repo(request)
+            roster = require_roster_service(request)
+        if access.can_open and overlay is not None and roster is not None:
+            preview = roster.preview_add_law(
+                access.user_id,
+                law_id,
+                access.snapshot,
+                local_owner=access.local_owner,
+                can_consume_new_law=access.can_consume_new_law,
             )
-        if blocked_full:
-            confirm_title = "Playground full this month"
-            confirm_lines = (
-                "Existing laws remain fully usable.",
-                "Removing a law does not free a space this month.",
-            )
-        return templates.TemplateResponse(
-            request,
-            "playground_add.html",
-            {
-                "law_id": law_id,
-                "title": confirm_title,
-                "lines": confirm_lines,
-                "month_name": month,
-                "action_label": "Add back" if re_add else "Add to Playground",
-                "confirm_value": ROSTER_ADD_CONFIRM,
-                "cancel_href": home_path(),
-                "blocked_pending": blocked_pending,
-                "blocked_full": blocked_full,
-            },
+            if preview.status == RESULT_ALREADY_ACTIVE:
+                return _after_active_redirect(overlay, access.user_id, law_id)
+        step = str(request.query_params.get("step") or "")
+        ctx = _add_page_context(
+            request=request,
+            law_id=law_id,
+            access=access,
+            overlay=overlay,
+            roster=roster,
+            step=step,
+            hydrate_scope=True,
         )
+        return templates.TemplateResponse(request, "playground_add.html", ctx)
 
     @router.post("/laws/{law_id}/add")
     async def playground_add(
@@ -577,14 +651,15 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         law_id: str,
         csrf_token: str = Form(""),
         confirm: str = Form(""),
-    ) -> RedirectResponse:
+        scope: str = Form(""),
+    ) -> Response:
         next_reader = f"/laws/{law_id}"
         opened = require_playground_open(
             request, templates, next_url=next_reader
         )
         blocked = _denied(opened)
         if blocked is not None:
-            return blocked  # type: ignore[return-value]
+            return blocked
         _require_csrf(request, csrf_token)
         require_eligible_law(law_id)
         overlay = require_playground_repo(request)
@@ -598,15 +673,87 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         )
         if preview.status == RESULT_INELIGIBLE:
             raise HTTPException(status_code=404, detail="Law not found")
+        scope_value = add_scope_value(scope)
+        re_add = preview.status == RESULT_RE_ADD_CONFIRM
+        skip = skips_add_confirm(opened)
+        confirmed = is_add_confirmed(confirm) or skip
+
         if preview.status == RESULT_ALREADY_ACTIVE:
+            if scope_value == SCOPE_ENTIRE:
+                try:
+                    persist_entire_act_selection(overlay, opened.user_id, law_id)
+                except SelectionRejected:
+                    raise HTTPException(status_code=400, detail="invalid_selection")
+                except Exception:
+                    raise
             return _after_active_redirect(overlay, opened.user_id, law_id)
-        if not is_add_confirmed(confirm):
+
+        if not re_add:
+            gated = require_playground_new_law(
+                request, templates, next_url=next_reader
+            )
+            denied_new = _denied(gated)
+            if denied_new is not None:
+                return denied_new
+            opened = gated  # type: ignore[assignment]
+
+        if not confirmed:
             if preview.status == RESULT_NEW_BLOCKED:
                 denied = consume_blocked_response(
                     request, templates, opened, RESULT_NEW_BLOCKED
                 )
-                return denied  # type: ignore[return-value]
+                return denied
             return RedirectResponse(url=roster_path(add=law_id), status_code=303)
+
+        if not is_add_scope(scope_value):
+            ctx = _add_page_context(
+                request=request,
+                law_id=law_id,
+                access=opened,
+                overlay=overlay,
+                roster=roster,
+                step="scope",
+                hydrate_scope=True,
+            )
+            return templates.TemplateResponse(request, "playground_add.html", ctx)
+
+        if scope_value == SCOPE_ENTIRE:
+            try:
+                act = require_playground_law(law_id)
+                rows = selection_rows(law_id, None, entire=True, act=act)
+                if not rows:
+                    raise SelectionRejected("invalid_selection")
+            except SelectionRejected:
+                raise HTTPException(status_code=400, detail="invalid_selection")
+            except Exception:
+                raise HTTPException(status_code=400, detail="invalid_selection")
+            result = roster.confirm_add_law(
+                opened.user_id,
+                law_id,
+                opened.snapshot,
+                local_owner=opened.local_owner,
+                can_consume_new_law=opened.can_consume_new_law,
+                has_historical_overlay=overlay.get_item(opened.user_id, law_id) is not None,
+            )
+            if result.status == RESULT_INELIGIBLE:
+                raise HTTPException(status_code=404, detail="Law not found")
+            if not result.ok:
+                denied = consume_blocked_response(
+                    request, templates, opened, result.status
+                )
+                return denied
+            persist_entire_act_selection(
+                overlay, opened.user_id, law_id, act=act
+            )
+            if result.status == RESULT_RE_ADDED:
+                return RedirectResponse(
+                    url=f"{roster_path()}?notice=readded&add={law_id}",
+                    status_code=303,
+                )
+            return RedirectResponse(url=law_path(law_id), status_code=303)
+
+        if scope_value != SCOPE_SECTIONS:
+            raise HTTPException(status_code=400, detail="invalid_selection")
         result = roster.confirm_add_law(
             opened.user_id,
             law_id,
@@ -621,7 +768,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             denied = consume_blocked_response(
                 request, templates, opened, result.status
             )
-            return denied  # type: ignore[return-value]
+            return denied
         activate_law(overlay, opened.user_id, law_id)
         if result.status == RESULT_RE_ADDED:
             return RedirectResponse(

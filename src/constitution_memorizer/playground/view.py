@@ -60,6 +60,7 @@ from constitution_memorizer.subscriptions.catalog import (
     TIER_RANK,
     UnknownSubscriptionTier,
     get_subscription_product,
+    list_subscription_products,
 )
 
 PLAYGROUND_BILLING_PATH = "/billing/subscriptions"
@@ -115,6 +116,48 @@ MEMBERSHIP_SAVED = "progress_saved"
 MEMBERSHIP_REMOVED = "removed_this_month"
 MEMBERSHIP_FULL = "playground_full"
 
+KIND_UNAVAILABLE = "unavailable"
+KIND_GUEST = "guest"
+KIND_SUBSCRIBE = "subscribe"
+KIND_RESUME = "resume"
+KIND_DEVICE_BLOCKED = "device_blocked"
+KIND_PENDING = "pending"
+KIND_ROSTER_FULL = "roster_full"
+KIND_ALREADY_ACTIVE = "already_active"
+KIND_RE_ADD = "re_add"
+KIND_ELIGIBLE_TO_ADD = "eligible_to_add"
+
+ACT_HEAD_KINDS = frozenset(
+    {
+        KIND_UNAVAILABLE,
+        KIND_GUEST,
+        KIND_SUBSCRIBE,
+        KIND_RESUME,
+        KIND_DEVICE_BLOCKED,
+        KIND_PENDING,
+        KIND_ROSTER_FULL,
+        KIND_ALREADY_ACTIVE,
+        KIND_RE_ADD,
+        KIND_ELIGIBLE_TO_ADD,
+    }
+)
+
+_DEVICE_BLOCK_REASONS = frozenset(
+    {
+        BLOCK_DEVICE_LIMIT,
+        BLOCK_DEVICE_REVOKED,
+        BLOCK_DEVICE_CONFIG_ERROR,
+        BLOCK_DEVICE_REPLACEMENT_LIMIT,
+    }
+)
+_RESUME_REASONS = frozenset(
+    {
+        BLOCK_SUBSCRIPTION_PAUSED,
+        BLOCK_PAYMENT_HALTED,
+        BLOCK_PAID_PERIOD_ENDED,
+    }
+)
+
 
 @dataclass(frozen=True)
 class MembershipIndex:
@@ -138,6 +181,17 @@ class PaymentBannerView:
 
 
 @dataclass(frozen=True)
+class CataloguePlanView:
+    tier: str
+    display_name: str
+    price_inr: int
+    price_label: str
+    limit_label: str
+    cta_label: str
+    href: str
+
+
+@dataclass(frozen=True)
 class PlaygroundGateView:
     reason: str
     eyebrow: str
@@ -150,13 +204,23 @@ class PlaygroundGateView:
     show_how: bool = False
     show_saved: bool = False
     consume_blocked: bool = False
+    show_plans: bool = False
+    show_included: bool = False
+    plans: tuple[CataloguePlanView, ...] = ()
+    from_price: str = ""
+    hard_gate: bool = True
 
 
 @dataclass(frozen=True)
 class LawPlaygroundState:
-    """CTA/badge for one eligible law. Not a DB row."""
+    """CTA/badge for one eligible law. Not a DB row.
+
+    ``kind`` is the discriminated Act-head / Add state. Templates switch on
+    kind only — never on raw tier strings.
+    """
 
     law_id: str
+    kind: str
     eligible: bool
     active_this_period: bool
     removed_this_period: bool
@@ -170,8 +234,11 @@ class LawPlaygroundState:
     badge: str
     badge_label: str
     secondary_copy: str = ""
+    secondary_label: str = ""
+    secondary_href: str = ""
     method: str = "get"
     opens_sheet: bool = False
+    skip_confirm: bool = False
 
 
 @dataclass(frozen=True)
@@ -220,6 +287,8 @@ class LawCardView:
     source_status: str = "unchanged"
     review_href: str = ""
     home_note: str = ""
+    provisions_copy: str = ""
+    learned_pct: int = 0
 
 
 @dataclass(frozen=True)
@@ -241,6 +310,14 @@ class PlaygroundHomeView:
     saved: tuple[LawCardView, ...]
     banner: PaymentBannerView | None
     quiet: PaymentBannerView | None
+    read_only: bool = False
+    resume_label: str = ""
+    resume_href: str = ""
+    heading: str = "Playground"
+    kicker: str = "My Playground"
+    month_count_label: str = ""
+    add_law_href: str = BROWSE_LAWS_PATH
+    add_law_label: str = "Add a law"
 
 
 def format_plan_end(value: datetime | date | None) -> str:
@@ -401,6 +478,73 @@ def add_confirm_copy(
     return title, tuple(lines)
 
 
+def catalogue_from_price() -> str:
+    products = list_subscription_products()
+    if not products:
+        return ""
+    lowest = min(int(row.price_inr) for row in products)
+    return f"from ₹{lowest}"
+
+
+def catalogue_limit_label(limit: int | None) -> str:
+    if limit is None:
+        return "Unlimited laws / month"
+    noun = "law" if limit == 1 else "laws"
+    return f"{limit} {noun} / month"
+
+
+def catalogue_plan_views(
+    *,
+    current_tier: str | None = None,
+    href: str = PLAYGROUND_BILLING_PATH,
+) -> tuple[CataloguePlanView, ...]:
+    current_rank = TIER_RANK.get(str(current_tier or ""), 0)
+    plans: list[CataloguePlanView] = []
+    for product in list_subscription_products():
+        rank = TIER_RANK.get(product.tier, 0)
+        if current_rank and rank <= current_rank:
+            continue
+        cta = (
+            f"Upgrade to {product.display_name}"
+            if current_rank
+            else f"Subscribe to {product.display_name}"
+        )
+        plans.append(
+            CataloguePlanView(
+                tier=product.tier,
+                display_name=product.display_name,
+                price_inr=product.price_inr,
+                price_label=f"₹{product.price_inr}",
+                limit_label=catalogue_limit_label(product.playground_law_limit),
+                cta_label=cta,
+                href=href,
+            )
+        )
+    return tuple(plans)
+
+
+def skips_add_confirm(access: Any) -> bool:
+    """Max (unlimited) and local/admin skip the numeric confirm step."""
+
+    if getattr(access, "local_owner", False):
+        return True
+    snapshot = getattr(access, "snapshot", None)
+    if snapshot is None:
+        return False
+    if getattr(snapshot, "admin_override", False):
+        return True
+    return snapshot.playground_law_limit is None
+
+
+def entire_act_meta(law_id: str, *, act: Any = None) -> str:
+    from constitution_memorizer.playground.source import locators_for_act
+
+    locators = locators_for_act(law_id, act=act)
+    n = len(locators)
+    noun = "section" if n == 1 else "sections"
+    return f"{n} learnable {noun}"
+
+
 def remove_confirm_copy(short_title: str, month_name: str) -> tuple[str, tuple[str, ...]]:
     return (
         f"Remove from {month_name}",
@@ -437,6 +581,26 @@ def load_membership_index(access: Any, roster: Any, overlay: Any) -> MembershipI
     )
 
 
+def _commercial_kind(access: Any) -> str | None:
+    """Hard-gate / resume kinds from commercial + device, before roster."""
+
+    if access.user_id is None:
+        return KIND_GUEST
+    if access.local_owner or bool(getattr(access, "can_open", False)):
+        return None
+    snapshot = access.snapshot
+    reason = (
+        snapshot.playground_block_reason
+        if snapshot is not None
+        else BLOCK_NOT_SUBSCRIBED
+    )
+    if reason in _DEVICE_BLOCK_REASONS:
+        return KIND_DEVICE_BLOCKED
+    if reason in _RESUME_REASONS:
+        return KIND_RESUME
+    return KIND_SUBSCRIBE
+
+
 def law_membership(
     *,
     law_id: str,
@@ -454,51 +618,98 @@ def law_membership(
         access.local_owner
         or (snapshot is not None and (snapshot.is_subscribed or snapshot.admin_override))
     )
-    can_open = bool(access.can_open)
     can_consume = bool(access.can_consume_new_law or access.local_owner)
-    login = f"/login?next=/laws/{law_id}"
-    if guest:
+    skip = skips_add_confirm(access)
+
+    def _state(
+        kind: str,
+        *,
+        active: bool = False,
+        removed: bool = False,
+        historical: bool = False,
+        roster_full: bool = False,
+        primary_label: str = "",
+        primary_href: str = "",
+        badge: str = "",
+        badge_label: str = "",
+        secondary_copy: str = "",
+        secondary_label: str = "",
+        secondary_href: str = "",
+        opens_sheet: bool = False,
+        consume: bool | None = None,
+    ) -> LawPlaygroundState:
         return LawPlaygroundState(
             law_id=law_id,
+            kind=kind,
             eligible=eligible,
-            active_this_period=False,
-            removed_this_period=False,
-            historical_overlay=False,
-            can_consume_new=False,
-            roster_full=False,
-            guest=True,
-            subscribed=False,
-            primary_label="Sign in",
-            primary_href=login,
-            badge="",
-            badge_label="",
-            secondary_copy="Sign in to add this law to Playground.",
+            active_this_period=active,
+            removed_this_period=removed,
+            historical_overlay=historical,
+            can_consume_new=can_consume if consume is None else consume,
+            roster_full=roster_full,
+            guest=guest,
+            subscribed=subscribed,
+            primary_label=primary_label,
+            primary_href=primary_href,
+            badge=badge,
+            badge_label=badge_label,
+            secondary_copy=secondary_copy,
+            secondary_label=secondary_label,
+            secondary_href=secondary_href,
+            opens_sheet=opens_sheet,
+            skip_confirm=skip,
         )
-    if not can_open:
+
+    if not eligible:
+        return _state(KIND_UNAVAILABLE)
+
+    blocked = _commercial_kind(access)
+    if blocked == KIND_GUEST:
+        return _state(
+            KIND_GUEST,
+            primary_label="Sign in to use Playground",
+            primary_href=add_path(law_id),
+            secondary_copy="Sign in to add this law to Playground.",
+            opens_sheet=True,
+        )
+    if blocked == KIND_SUBSCRIBE:
+        return _state(
+            KIND_SUBSCRIBE,
+            primary_label="Subscribe to use Playground",
+            primary_href=add_path(law_id),
+            secondary_copy=f"Unlock Playground · {catalogue_from_price()} / month.",
+            opens_sheet=True,
+        )
+    if blocked == KIND_RESUME:
         reason = (
             snapshot.playground_block_reason
             if snapshot is not None
-            else BLOCK_NOT_SUBSCRIBED
+            else BLOCK_SUBSCRIPTION_PAUSED
         )
-        gate = gate_view(reason=reason or BLOCK_NOT_SUBSCRIBED)
-        return LawPlaygroundState(
-            law_id=law_id,
-            eligible=eligible,
-            active_this_period=False,
-            removed_this_period=False,
-            historical_overlay=False,
-            can_consume_new=False,
-            roster_full=False,
-            guest=False,
-            subscribed=subscribed,
+        gate = gate_view(reason=reason or BLOCK_SUBSCRIPTION_PAUSED)
+        return _state(
+            KIND_RESUME,
+            subscribed=True,
+            primary_label="Resume Playground",
+            primary_href=gate.cta_href or PLAYGROUND_BILLING_PATH,
+            secondary_copy=" ".join(part for part in (gate.title,) + gate.lines if part),
+            opens_sheet=True,
+        )
+    if blocked == KIND_DEVICE_BLOCKED:
+        reason = (
+            snapshot.playground_block_reason
+            if snapshot is not None
+            else BLOCK_DEVICE_LIMIT
+        )
+        gate = gate_view(reason=reason or BLOCK_DEVICE_LIMIT)
+        return _state(
+            KIND_DEVICE_BLOCKED,
+            subscribed=True,
             primary_label=gate.cta_label,
             primary_href=gate.cta_href,
-            badge="",
-            badge_label="",
-            secondary_copy=" ".join(
-                part for part in (gate.title,) + gate.lines if part
-            ),
+            secondary_copy=" ".join(part for part in (gate.title,) + gate.lines if part),
         )
+
     if index is not None:
         active = law_id in index.active_ids
         removed = law_id in index.removed_ids
@@ -532,91 +743,66 @@ def law_membership(
     if active:
         href = law_path(law_id)
         label = "Continue"
-        badge = MEMBERSHIP_IN
-        badge_label = "In Playground"
+        sections_href = sections_path(law_id)
         if overlay is not None and access.user_id is not None:
             item = overlay.get_item(access.user_id, law_id)
             selection = overlay.list_selection(access.user_id, law_id) if item else []
             if not selection:
-                href = sections_path(law_id)
+                href = sections_href
                 label = "Start learning"
-        return LawPlaygroundState(
-            law_id=law_id,
-            eligible=eligible,
-            active_this_period=True,
-            removed_this_period=False,
-            historical_overlay=historical,
-            can_consume_new=can_consume,
-            roster_full=False,
-            guest=False,
-            subscribed=True,
+        return _state(
+            KIND_ALREADY_ACTIVE,
+            active=True,
+            historical=historical,
             primary_label=label,
             primary_href=href,
-            badge=badge,
-            badge_label=badge_label,
+            badge=MEMBERSHIP_IN,
+            badge_label="Already in Playground",
+            secondary_label="Sections",
+            secondary_href=sections_href,
         )
     if removed:
-        return LawPlaygroundState(
-            law_id=law_id,
-            eligible=eligible,
-            active_this_period=False,
-            removed_this_period=True,
-            historical_overlay=True,
-            can_consume_new=can_consume,
-            roster_full=False,
-            guest=False,
-            subscribed=True,
+        return _state(
+            KIND_RE_ADD,
+            removed=True,
+            historical=True,
             primary_label="Add back",
             primary_href=add_path(law_id),
             badge=MEMBERSHIP_REMOVED,
             badge_label="Removed this month",
-            secondary_copy="Progress saved",
+            secondary_copy="No extra space used.",
             opens_sheet=True,
         )
     if roster_full:
-        return LawPlaygroundState(
-            law_id=law_id,
-            eligible=eligible,
-            active_this_period=False,
-            removed_this_period=False,
-            historical_overlay=historical,
-            can_consume_new=can_consume,
+        return _state(
+            KIND_ROSTER_FULL,
+            historical=historical,
             roster_full=True,
-            guest=False,
-            subscribed=True,
-            primary_label="Plan next month",
-            primary_href=roster_next_path(),
+            primary_label="Playground full this month",
+            primary_href=add_path(law_id),
             badge=MEMBERSHIP_FULL,
             badge_label="Playground full this month",
+            secondary_copy="Plan next month",
+            secondary_label="Plan next month",
+            secondary_href=roster_next_path(),
+            opens_sheet=True,
         )
     if historical:
         if not can_consume:
-            return LawPlaygroundState(
-                law_id=law_id,
-                eligible=eligible,
-                active_this_period=False,
-                removed_this_period=False,
-                historical_overlay=True,
-                can_consume_new=False,
-                roster_full=False,
-                guest=False,
-                subscribed=True,
+            return _state(
+                KIND_PENDING,
+                historical=True,
+                consume=False,
                 primary_label="Manage subscription",
                 primary_href=PLAYGROUND_BILLING_PATH,
                 badge=MEMBERSHIP_SAVED,
                 badge_label="Progress saved",
                 secondary_copy="Adding new laws is temporarily unavailable",
             )
-        return LawPlaygroundState(
-            law_id=law_id,
-            eligible=eligible,
-            active_this_period=False,
-            removed_this_period=False,
-            historical_overlay=True,
-            can_consume_new=True,
-            roster_full=False,
-            guest=False,
-            subscribed=True,
+        return _state(
+            KIND_ELIGIBLE_TO_ADD,
+            historical=True,
+            consume=True,
             primary_label="Add to this month",
             primary_href=add_path(law_id),
             badge=MEMBERSHIP_SAVED,
@@ -628,37 +814,18 @@ def law_membership(
             ),
         )
     if not can_consume:
-        return LawPlaygroundState(
-            law_id=law_id,
-            eligible=eligible,
-            active_this_period=False,
-            removed_this_period=False,
-            historical_overlay=False,
-            can_consume_new=False,
-            roster_full=False,
-            guest=False,
-            subscribed=True,
+        return _state(
+            KIND_PENDING,
+            consume=False,
             primary_label="Manage subscription",
             primary_href=PLAYGROUND_BILLING_PATH,
-            badge="",
-            badge_label="",
             secondary_copy="Adding new laws is temporarily unavailable",
         )
-    return LawPlaygroundState(
-        law_id=law_id,
-        eligible=eligible,
-        active_this_period=False,
-        removed_this_period=False,
-        historical_overlay=False,
-        can_consume_new=can_consume,
-        roster_full=False,
-        guest=False,
-        subscribed=subscribed,
-        primary_label="Add to Playground",
+    return _state(
+        KIND_ELIGIBLE_TO_ADD,
+        primary_label="+ Add to Playground",
         opens_sheet=True,
         primary_href=add_path(law_id),
-        badge="",
-        badge_label="",
     )
 
 
@@ -687,21 +854,29 @@ def gate_view(
         return PlaygroundGateView(
             reason=reason,
             eyebrow="Playground",
-            title="Sign in to build your law-learning Playground.",
-            lines=(),
+            title="Sign in to use Playground",
+            lines=(
+                "Turns any Act into a learning experience. Sign in to view plans.",
+            ),
             cta_label="Sign in",
             cta_href=cta_href or f"/login?next={home_path()}",
             show_how=True,
+            hard_gate=True,
         )
     if reason == BLOCK_NOT_SUBSCRIBED:
         return PlaygroundGateView(
             reason=reason,
             eyebrow="Playground",
-            title="Your RecallC account already includes the complete Constitution.",
+            title="Unlock Playground",
             lines=("Playground adds structured learning for laws.",),
             cta_label="View Playground plans",
             cta_href=cta_href or PLAYGROUND_BILLING_PATH,
             show_how=True,
+            show_included=True,
+            show_plans=True,
+            plans=catalogue_plan_views(),
+            from_price=catalogue_from_price(),
+            hard_gate=True,
         )
     if reason == BLOCK_DEVICE_LIMIT:
         return PlaygroundGateView(
@@ -798,6 +973,7 @@ def gate_view(
             cta_href=roster_next_path(),
             secondary_label="Back to Playground",
             secondary_href=home_path(),
+            hard_gate=False,
         )
     if reason == BLOCK_PROGRESS_SAVED:
         return PlaygroundGateView(
@@ -812,6 +988,7 @@ def gate_view(
             cta_href=cta_href,
             secondary_label="Back to Playground",
             secondary_href=home_path(),
+            hard_gate=False,
         )
     return PlaygroundGateView(
         reason=reason,
@@ -834,10 +1011,40 @@ def payment_banners(
     """Return (shell banner, quiet hero line). Uses snapshot only."""
 
     snapshot = access.snapshot
-    if snapshot is None or not access.can_open:
+    if snapshot is None:
+        return None, None
+    read_only = bool(getattr(access, "can_view_home", False) and not access.can_open)
+    if not access.can_open and not read_only:
         return None, None
     banner: PaymentBannerView | None = None
     quiet: PaymentBannerView | None = None
+    if read_only:
+        reason = snapshot.playground_block_reason or BLOCK_SUBSCRIPTION_PAUSED
+        if reason == BLOCK_PAYMENT_HALTED:
+            banner = PaymentBannerView(
+                kind="halted",
+                title="Payment retries have stopped",
+                body="Playground learning is paused. Your progress is saved.",
+                cta_label="Resume Playground",
+                cta_href=PLAYGROUND_BILLING_PATH,
+            )
+        elif reason == BLOCK_PAID_PERIOD_ENDED:
+            banner = PaymentBannerView(
+                kind="expired",
+                title="Your Playground is paused",
+                body="Your roster and progress are still here. Resume a Playground plan to continue learning.",
+                cta_label="Resume Playground",
+                cta_href=PLAYGROUND_BILLING_PATH,
+            )
+        else:
+            banner = PaymentBannerView(
+                kind="paused",
+                title="Playground subscription paused",
+                body="Your laws and learning progress are saved.",
+                cta_label="Resume Playground",
+                cta_href=PLAYGROUND_BILLING_PATH,
+            )
+        return banner, None
     status = snapshot.subscription_status
     if status == "pending" and not access.can_consume_new_law:
         banner = PaymentBannerView(
@@ -916,6 +1123,9 @@ def _card_from_summary(
         learning=int(getattr(summary, "learning_count", 0) or 0),
         mastered=int(getattr(summary, "mastered_count", 0) or 0),
     )
+    selected = int(summary.selected_count or 0)
+    learned = int(summary.learned_count or 0)
+    pct = int(round((learned / selected) * 100)) if selected else 0
     return LawCardView(
         law_id=summary.law_id,
         title=title,
@@ -938,6 +1148,8 @@ def _card_from_summary(
         add_label=add_label,
         learning_count=int(getattr(summary, "learning_count", 0) or 0),
         mastered_count=int(getattr(summary, "mastered_count", 0) or 0),
+        provisions_copy=provisions_label(selected),
+        learned_pct=pct,
     )
 
 
@@ -1105,8 +1317,8 @@ def build_home_view(
                     add_href=href,
                     add_label=label,
                 )
-        if card is not None:
-            saved_cards.append(card)
+            if card is not None:
+                saved_cards.append(card)
         del month
 
     presentations = batch_source_presentations(
@@ -1123,6 +1335,29 @@ def build_home_view(
     saved_cards = [
         _with_source_state(card, presentations) for card in saved_cards
     ]
+
+    read_only = bool(getattr(access, "can_view_home", False) and not access.can_open)
+    if read_only:
+        active_cards = [
+            replace(
+                card,
+                primary_label="Resume Playground",
+                primary_href=PLAYGROUND_BILLING_PATH,
+                add_href="",
+                add_label="",
+            )
+            for card in active_cards
+        ]
+        removed_cards = [
+            replace(
+                card,
+                primary_label="Resume Playground",
+                primary_href=PLAYGROUND_BILLING_PATH,
+                add_href="",
+                add_label="",
+            )
+            for card in removed_cards
+        ]
 
     due_today = sum(card.due_count for card in active_cards)
     sections_learned = sum(card.learned_count for card in active_cards)
@@ -1145,6 +1380,12 @@ def build_home_view(
         current_used=cap.used,
         month_name=capacity.month_name,
     )
+    used_n = len(active_cards)
+    month_count = (
+        f"{used_n} of {capacity.law_limit} · {capacity.month_name}"
+        if capacity.law_limit is not None
+        else f"{used_n} {'law' if used_n == 1 else 'laws'} · {capacity.month_name}"
+    )
     return PlaygroundHomeView(
         capacity=capacity,
         browse_href=BROWSE_LAWS_PATH,
@@ -1163,6 +1404,14 @@ def build_home_view(
         saved=tuple(saved_cards),
         banner=banner,
         quiet=quiet,
+        read_only=read_only,
+        resume_label="Resume Playground" if read_only else "",
+        resume_href=PLAYGROUND_BILLING_PATH if read_only else "",
+        heading="Playground",
+        kicker="My Playground",
+        month_count_label=month_count,
+        add_law_href=BROWSE_LAWS_PATH,
+        add_law_label="Add a law",
     )
 
 

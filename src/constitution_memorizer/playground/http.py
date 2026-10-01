@@ -17,6 +17,21 @@ def playground_user_id(request: Request):
     return LOCAL_USER_ID
 
 
+def local_next_path(next_url: str, fallback: str = "/playground") -> str:
+    """Accept only a same-origin path. Never an off-site next."""
+
+    text = str(next_url or "").strip() or fallback
+    if not text.startswith("/") or text.startswith("//"):
+        return fallback
+    if "://" in text.split("?", 1)[0]:
+        return fallback
+    return text
+
+
+def playground_login_href(next_url: str) -> str:
+    return f"/login?next={local_next_path(next_url)}"
+
+
 def require_playground_repo(request: Request):
     repo = getattr(request.app.state, "playground", None)
     if repo is None:
@@ -32,4 +47,4 @@ def require_roster_service(request: Request):
 
 
 def playground_login_redirect(next_url: str) -> RedirectResponse:
-    return RedirectResponse(url=f"/login?next={next_url}", status_code=303)
+    return RedirectResponse(url=playground_login_href(next_url), status_code=303)

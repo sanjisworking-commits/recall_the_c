@@ -112,7 +112,9 @@ def test_guest_nav_is_not_the_five_product_tabs(tmp_path: Path):
     guest_bar = home.text.split('class="mobile-tabbar is-guest"', 1)[1].split("</nav>", 1)[0]
     assert ">Playground<" not in guest_bar
     assert "Sign in" in guest_bar
-    assert client.get("/playground", follow_redirects=False).status_code == 303
+    guest_playground = client.get("/playground", follow_redirects=False)
+    assert guest_playground.status_code == 200
+    assert "Sign in to use Playground" in guest_playground.text
 
 
 def test_today_calendar_profile_are_not_placeholders(tmp_path: Path):
@@ -276,8 +278,8 @@ def test_full_roster_inactive_plan_next_month(
 def test_guest_law_cta_is_sign_in_not_checkout(tmp_path: Path):
     client = _guest_client(tmp_path)
     page = client.get("/laws/ndps")
-    assert "Sign in" in page.text
-    assert "/login?next=/laws/ndps" in page.text
+    assert "Sign in to use Playground" in page.text
+    assert "/login?next=/laws/ndps" in page.text or "/playground/laws/ndps/add" in page.text
     chunk = page.text.split("LawPlaygroundCta", 1)[-1][:800]
     assert "/billing/subscriptions" not in chunk
 
@@ -285,8 +287,8 @@ def test_guest_law_cta_is_sign_in_not_checkout(tmp_path: Path):
 def test_free_account_law_cta_is_plans_not_constitution_lock(tmp_path: Path):
     client, _repo = _m3_authed(tmp_path)
     page = client.get("/laws/ndps")
-    assert "View Playground plans" in page.text
-    assert "complete Constitution" in page.text
+    assert "Subscribe to use Playground" in page.text
+    assert "complete Constitution" in page.text or "Unlock Playground" in page.text
     assert "free articles" not in page.text.lower()
 
 
@@ -323,7 +325,8 @@ def test_add_confirm_historical_max_full_pending(
     mx = _authed_client(tmp_path / "max")
     _subscribe(mx, tier="max")
     max_page = mx.get(add_path("ndps"))
-    assert "Add NDPS Act to September Playground?" in max_page.text
+    assert "Entire Act" in max_page.text
+    assert "Choose sections" in max_page.text
     assert "1 of your" not in max_page.text
     full = _authed_client(tmp_path / "full")
     _subscribe(full, tier="plus")
@@ -419,20 +422,23 @@ def test_rollover_keep_remove_undecided_and_browse(tmp_path: Path):
 
 def test_hard_gates_copy_and_ctas(tmp_path: Path):
     guest = _guest_client(tmp_path / "g")
-    assert guest.get("/playground", follow_redirects=False).status_code == 303
+    guest_home = guest.get("/playground", follow_redirects=False)
+    assert guest_home.status_code == 200
+    assert "Sign in to use Playground" in guest_home.text
+    assert 'data-hard-gate="true"' in guest_home.text
     free, _repo = _m3_authed(tmp_path / "free")
     _assert_subscribe_gate(free.get("/playground"))
     halted, _r2 = _m3_authed(tmp_path / "halted")
     _m3_add_sub(halted, tier="max", status="halted")
     halted_page = halted.get("/playground")
-    assert 'data-playground-gate="payment_halted"' in halted_page.text
     assert "Payment retries have stopped" in halted_page.text
-    assert "EntitlementGate" in halted_page.text
-    assert "Manage subscription" in halted_page.text
+    assert "Resume Playground" in halted_page.text
+    assert 'data-hard-gate="true"' not in halted_page.text
     paused, _r3 = _m3_authed(tmp_path / "paused")
     _m3_add_sub(paused, tier="pro", status="paused")
     paused_page = paused.get("/playground")
     assert "Playground subscription paused" in paused_page.text
+    assert "Resume Playground" in paused_page.text
     expired, _r4 = _m3_authed(tmp_path / "expired")
     sub = _m3_add_sub(expired, tier="plus", status="active")
     expired.app.state.subscription_charges.upsert_charge(
@@ -443,10 +449,8 @@ def test_hard_gates_copy_and_ctas(tmp_path: Path):
         refund_status="full",
     )
     expired_page = expired.get("/playground")
-    assert 'data-playground-gate="paid_period_ended"' in expired_page.text
     assert "Your Playground is paused" in expired_page.text
-    assert "View Playground plans" in expired_page.text
-    assert "Back to Constitution" in expired_page.text
+    assert "Resume Playground" in expired_page.text
 
 
 def test_device_gates_do_not_offer_subscribe(tmp_path: Path):

@@ -608,6 +608,7 @@ def create_app(
     app.state.article_entitlements_enabled = bool(settings.article_entitlements_enabled)
     app.state.pricing_enabled = bool(settings.pricing_enabled)
     app.state.playground_enabled = bool(getattr(settings, "playground_enabled", True))
+    app.state.templates = templates
     from constitution_memorizer.admin.playground_diagnostics import (  # noqa: PLC0415
         log_commercial_startup_status,
     )
@@ -948,8 +949,20 @@ def create_app(
         if not getattr(app.state, "playground_enabled", True) and (
             path == "/playground" or path.startswith("/playground/")
         ):
-            return HTMLResponse("Not Found", status_code=404)
+            from constitution_memorizer.playground.errors import (  # noqa: PLC0415
+                playground_error_response,
+            )
+
+            return playground_error_response(request, 404, unavailable=True)
         return await call_next(request)
+
+    @app.middleware("http")
+    async def playground_html_errors(request: Request, call_next):
+        from constitution_memorizer.playground.errors import (  # noqa: PLC0415
+            playground_error_middleware,
+        )
+
+        return await playground_error_middleware(request, call_next)
 
     @app.middleware("http")
     async def request_timing(request: Request, call_next):

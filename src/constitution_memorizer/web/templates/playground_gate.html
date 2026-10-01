@@ -8,6 +8,13 @@
   {% for line in gate.lines %}
   <p class="pg-lede">{{ line }}</p>
   {% endfor %}
+  {% if gate.show_included or show_included %}
+  <div class="pg-included-card" data-pg-included>
+    <p class="pg-eyebrow">Included with your account</p>
+    <p><strong>The complete Constitution</strong></p>
+    <p class="pg-lede">Six learning methods. Constitution Learn stays available independent of Playground plans.</p>
+  </div>
+  {% endif %}
   {% if gate.show_saved %}
   <div class="ProgressSummary" aria-label="Your saved progress">
     <div class="ProgressSummary-cell">
@@ -18,6 +25,20 @@
       <div class="ProgressSummary-value">{{ saved_learned }}</div>
       <div class="ProgressSummary-label">Sections learned</div>
     </div>
+  </div>
+  {% endif %}
+  {% if gate.show_plans and gate.plans %}
+  <div class="pg-plan-stage" data-pg-plans>
+    <p class="pg-eyebrow">Playground plans</p>
+    {% for plan in gate.plans %}
+    <article class="pg-plan-card" data-tier="{{ plan.tier }}">
+      <p class="pg-plan-name">{{ plan.display_name }}</p>
+      <p class="pg-plan-price">{{ plan.price_label }} <span>/ month</span></p>
+      <p class="pg-lede">{{ plan.limit_label }}</p>
+      <p class="pg-actions"><a class="pg-btn" href="{{ plan.href }}">{{ plan.cta_label }}</a></p>
+    </article>
+    {% endfor %}
+    {% if gate.from_price %}<p class="pg-note">Monthly. GST included. {{ gate.from_price }}.</p>{% endif %}
   </div>
   {% endif %}
   <p class="pg-actions">

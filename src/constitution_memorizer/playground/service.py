@@ -57,6 +57,24 @@ def activate_law(repo, user_id: UUID | str, law_id: str):
     )
 
 
+def persist_entire_act_selection(repo, user_id: UUID | str, law_id: str, *, act=None):
+    """Idempotent overlay + Entire Act selection. Does not consume a roster slot.
+
+    ``activate_law`` is a no-op on an existing overlay row. ``replace_selection``
+    overwrites locators and does not reset progress/history rows. Safe to retry
+    after a failed write that followed a successful roster consume.
+    """
+
+    if act is None:
+        act = require_playground_law(law_id)
+    rows = selection_rows(law_id, None, entire=True, act=act)
+    if not rows:
+        raise SelectionRejected("invalid_selection")
+    activate_law(repo, user_id, law_id)
+    repo.replace_selection(user_id, law_id, rows)
+    return rows
+
+
 def playground_home_cards(summaries: list[PlaygroundSummary]) -> list[dict]:
     """Card view-models from DB summaries + catalogue/registry metadata."""
     cards: list[dict] = []

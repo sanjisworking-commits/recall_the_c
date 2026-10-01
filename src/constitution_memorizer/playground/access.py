@@ -1,8 +1,17 @@
 """Playground commercial + device + current-period roster HTTP gate.
 
-Locked authorization chain for sensitive law routes:
+Locked authorization chain (do not skip a layer):
 
-    commercial entitlement → allowed device → active current-period law
+    PLAYGROUND_ENABLED / service availability
+    → authentication
+    → commercial entitlement
+    → device authorization
+    → current-period roster/capacity
+    → law membership/state
+
+``can_view_home`` is a GET-home-only exception at the commercial layer for
+paused / halted / paid-period-ended. It does not replace ``can_open`` on
+Learn, revision, Add, Remove, selection, or roster mutation.
 
 Overlay rows (``user_playground_item`` / selection / progress) are lifetime
 learning history, not the roster. Pending subscribers may continue laws that
@@ -47,7 +56,10 @@ from constitution_memorizer.playground.eligibility import (
     PlaygroundLawError,
     is_playground_eligible_law,
 )
+from constitution_memorizer.playground.errors import playground_wants_json
 from constitution_memorizer.playground.http import (
+    local_next_path,
+    playground_login_href,
     playground_login_redirect,
     playground_user_id,
     require_roster_service,
@@ -93,6 +105,18 @@ _DEVICE_OPEN_REASONS = frozenset(
     }
 )
 
+_HOME_VIEW_REASONS = frozenset(
+    {
+        BLOCK_SUBSCRIPTION_PAUSED,
+        BLOCK_PAYMENT_HALTED,
+        BLOCK_PAID_PERIOD_ENDED,
+    }
+)
+
+SCOPE_ENTIRE = "entire"
+SCOPE_SECTIONS = "sections"
+ADD_SCOPES = frozenset({SCOPE_ENTIRE, SCOPE_SECTIONS})
+
 
 @dataclass(frozen=True)
 class PlaygroundAccess:
@@ -103,6 +127,56 @@ class PlaygroundAccess:
     can_open: bool
     can_consume_new_law: bool
     local_owner: bool
+    can_view_home: bool
+
+
+def _can_view_playground_home(
+    *,
+    can_open: bool,
+    user_id: Any,
+    snapshot: EntitlementSnapshot | None,
+    local_owner: bool,
+) -> bool:
+    """GET ``/playground`` home only. Never authorizes Learn or writes."""
+
+    if local_owner or can_open:
+        return True
+    if user_id is None or snapshot is None:
+        return False
+    if snapshot.admin_override:
+        return True
+    return snapshot.playground_block_reason in _HOME_VIEW_REASONS
+
+
+def _make_access(
+    *,
+    user_id: Any,
+    snapshot: EntitlementSnapshot | None,
+    can_open: bool,
+    can_consume_new_law: bool,
+    local_owner: bool,
+) -> PlaygroundAccess:
+    return PlaygroundAccess(
+        user_id=user_id,
+        snapshot=snapshot,
+        can_open=can_open,
+        can_consume_new_law=can_consume_new_law,
+        local_owner=local_owner,
+        can_view_home=_can_view_playground_home(
+            can_open=can_open,
+            user_id=user_id,
+            snapshot=snapshot,
+            local_owner=local_owner,
+        ),
+    )
+
+
+def is_add_scope(value: str) -> bool:
+    return str(value or "").strip().lower() in ADD_SCOPES
+
+
+def add_scope_value(value: str) -> str:
+    return str(value or "").strip().lower()
 
 
 def playground_access(request: Request) -> PlaygroundAccess:
@@ -114,7 +188,7 @@ def playground_access(request: Request) -> PlaygroundAccess:
 
     uid = playground_user_id(request)
     if not getattr(request.app.state, "multiuser_enabled", False):
-        return PlaygroundAccess(
+        return _make_access(
             user_id=uid,
             snapshot=None,
             can_open=True,
@@ -123,7 +197,7 @@ def playground_access(request: Request) -> PlaygroundAccess:
         )
     snapshot = get_entitlement_snapshot(request)
     if snapshot.admin_override:
-        return PlaygroundAccess(
+        return _make_access(
             user_id=uid,
             snapshot=snapshot,
             can_open=True,
@@ -132,7 +206,7 @@ def playground_access(request: Request) -> PlaygroundAccess:
         )
     if snapshot.is_subscribed:
         snapshot = _ensure_device_and_refresh(request, snapshot)
-    return PlaygroundAccess(
+    return _make_access(
         user_id=uid,
         snapshot=snapshot,
         can_open=snapshot.can_open_playground,
@@ -146,7 +220,7 @@ def playground_view_access(request: Request) -> PlaygroundAccess:
 
     uid = playground_user_id(request)
     if not getattr(request.app.state, "multiuser_enabled", False):
-        return PlaygroundAccess(
+        return _make_access(
             user_id=uid,
             snapshot=None,
             can_open=True,
@@ -154,7 +228,7 @@ def playground_view_access(request: Request) -> PlaygroundAccess:
             local_owner=True,
         )
     snapshot = get_entitlement_snapshot(request)
-    return PlaygroundAccess(
+    return _make_access(
         user_id=uid,
         snapshot=snapshot,
         can_open=snapshot.can_open_playground,
@@ -195,6 +269,32 @@ def require_playground_open(
 
     access = playground_access(request)
     if access.can_open:
+        return _attach_current_period(request, access)
+    return _deny_open(
+        request,
+        templates,
+        access,
+        next_url=next_url,
+        json_mode=json_mode,
+    )
+
+
+def require_playground_home(
+    request: Request,
+    templates: Jinja2Templates,
+    *,
+    next_url: str,
+    json_mode: bool = False,
+) -> PlaygroundAccess | Response:
+    """GET ``/playground`` home only. Does not authorize Learn or writes.
+
+    Paused / halted / paid-period-ended may view a read-only home.
+    Device-limit, unsubscribed, and guests still hard-gate (guest HTML GET
+    renders the sign-in gate; JSON is 401).
+    """
+
+    access = playground_access(request)
+    if access.can_view_home:
         return _attach_current_period(request, access)
     return _deny_open(
         request,
@@ -286,7 +386,7 @@ def _attach_current_period(request: Request, access: PlaygroundAccess) -> Playgr
         return access
     refreshed = apply_roster_capacity(access.snapshot, capacity)
     request.state.entitlement_snapshot = refreshed
-    return PlaygroundAccess(
+    return _make_access(
         user_id=access.user_id,
         snapshot=refreshed,
         can_open=access.can_open,
@@ -345,15 +445,30 @@ def _deny_open(
         if snapshot is not None
         else BLOCK_SIGN_IN_REQUIRED
     )
+    json_out = playground_wants_json(request, json_mode)
     if reason == BLOCK_SIGN_IN_REQUIRED or access.user_id is None:
-        if json_mode:
+        if json_out:
             return JSONResponse({"ok": False, "error": "auth_required"}, status_code=401)
-        return playground_login_redirect(next_url)
-    if json_mode:
+        if request.method.upper() != "GET":
+            return playground_login_redirect(next_url)
+        return _gate_page(
+            request,
+            templates,
+            reason=BLOCK_SIGN_IN_REQUIRED,
+            consume_blocked=False,
+            next_url=next_url,
+        )
+    if json_out:
         return JSONResponse({"ok": False, "error": reason}, status_code=403)
     if request.method.upper() != "GET":
         return RedirectResponse(url=home_path(), status_code=303)
-    return _gate_page(request, templates, reason=reason, consume_blocked=False)
+    return _gate_page(
+        request,
+        templates,
+        reason=reason,
+        consume_blocked=False,
+        next_url=next_url,
+    )
 
 
 def _deny_new_law(
@@ -432,6 +547,7 @@ def _render_gate(
     context = {
         "gate": gate,
         "playground_gate": gate.reason,
+        "hard_gate": True,
         "title": gate.title,
         "lede": gate.lines[0] if gate.lines else "",
         "body": gate.lines[1] if len(gate.lines) > 1 else "",
@@ -443,6 +559,9 @@ def _render_gate(
         "consume_blocked": gate.consume_blocked,
         "saved_laws": saved[0] if saved else 0,
         "saved_learned": saved[1] if saved else 0,
+        "catalogue_plans": gate.plans,
+        "from_price": gate.from_price,
+        "show_included": gate.show_included,
     }
     return templates.TemplateResponse(request, "playground_gate.html", context)
 
@@ -511,6 +630,7 @@ def _gate_page(
     reason: str,
     consume_blocked: bool,
     snapshot: EntitlementSnapshot | None = None,
+    next_url: str = "",
 ) -> Response:
     del snapshot  # Copy is keyed by reason, never raw provider status.
     cta_href = ""
@@ -521,7 +641,7 @@ def _gate_page(
     elif reason in _DEVICE_OPEN_REASONS:
         cta_href = MANAGE_DEVICES_PATH
     elif reason == BLOCK_SIGN_IN_REQUIRED:
-        cta_href = f"/login?next={home_path()}"
+        cta_href = playground_login_href(local_next_path(next_url, home_path()))
     elif reason in {BLOCK_NOT_SUBSCRIBED, BLOCK_PAID_PERIOD_ENDED}:
         cta_href = PLAYGROUND_BILLING_PATH
     elif reason in {BLOCK_PAYMENT_HALTED, BLOCK_SUBSCRIPTION_PAUSED}:

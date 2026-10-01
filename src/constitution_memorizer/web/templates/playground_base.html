@@ -2,7 +2,7 @@
 {% block body_class %} playground-app{% endblock %}
 {% block mobile_screen %}playground{% endblock %}
 {% block content %}
-<div class="PlaygroundShell"{% if playground_gate %} data-playground-gate="{{ playground_gate }}"{% endif %}>
+<div class="PlaygroundShell"{% if playground_gate %} data-playground-gate="{{ playground_gate }}"{% endif %}{% if hard_gate %} data-hard-gate="true"{% endif %}>
   {% block playground %}{% endblock %}
 </div>
 {% endblock %}

@@ -227,6 +227,37 @@
     });
   }
 
+  function enhanceAddFlow() {
+    document.querySelectorAll("[data-pg-add]").forEach(function (root) {
+      root.classList.add("is-enhanced");
+    });
+    document.addEventListener("submit", function (event) {
+      var form = event.target.closest("[data-pg-add-confirm]");
+      if (!form) {
+        return;
+      }
+      var root = form.closest("[data-pg-add]");
+      if (!root || root.getAttribute("data-skip-confirm") === "true") {
+        return;
+      }
+      event.preventDefault();
+      root.setAttribute("data-step", "scope");
+      var confirmStep = root.querySelector("[data-add-step='confirm']");
+      var scopeStep = root.querySelector("[data-add-step='scope']");
+      if (confirmStep) {
+        confirmStep.hidden = true;
+      }
+      if (scopeStep) {
+        scopeStep.hidden = false;
+        var focus = scopeStep.querySelector("button, [href]");
+        if (focus) {
+          focus.focus();
+        }
+      }
+    });
+  }
+
   enhanceSheets();
+  enhanceAddFlow();
 })();
 

@@ -1780,6 +1780,175 @@ html:not(.rtc-anim) .PlaygroundShell * {
   }
 }
 
+/* R3 — Act-head, Add, home, gates */
+body:has(.PlaygroundShell[data-hard-gate="true"]) .PrimaryTabs--top,
+body:has(.PlaygroundShell[data-hard-gate="true"]) .mobile-tabbar {
+  display: none;
+}
+
+.pg-home-kicker {
+  display: none;
+}
+
+.pg-month-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  margin: 8px 0 16px;
+  font-size: 13.5px;
+}
+
+.pg-month-strip a {
+  color: inherit;
+}
+
+.pg-home-title {
+  font-family: var(--pg-font-display, inherit);
+  font-weight: 500;
+  margin: 0;
+}
+
+.pg-home-month {
+  margin: 4px 0 0;
+  color: var(--pg-muted);
+}
+
+.pg-card-actions--desktop {
+  display: none;
+}
+
+.pg-card-actions--phone {
+  display: flex;
+}
+
+.LawCard-bar {
+  margin: 8px 0;
+}
+
+.pg-add-choice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  margin: 0 0 9px;
+  padding: 13px 14px;
+  border: 1px solid var(--pg-hairline);
+  border-radius: var(--pg-radius-row);
+  background: var(--pg-paper);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.pg-add-choice:first-of-type {
+  border-color: var(--pg-ink);
+}
+
+.pg-included-card,
+.pg-plan-card {
+  border: 1px solid var(--pg-hairline);
+  border-radius: var(--pg-radius-card);
+  padding: 16px;
+  margin: 12px 0;
+  background: var(--pg-paper);
+}
+
+.pg-plan-name {
+  margin: 0;
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.pg-plan-price {
+  margin: 4px 0 0;
+  font-family: var(--pg-font-display, inherit);
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.pg-plan-price span {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--pg-muted);
+}
+
+.pg-error {
+  max-width: 36rem;
+}
+
+@media (min-width: 900px) {
+  .pg-home-kicker {
+    display: block;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-size: 10.5px;
+  }
+
+  .pg-home-title {
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .pg-home-month {
+    font-family: var(--pg-font-display, inherit);
+    font-size: 32px;
+    font-weight: 500;
+    color: var(--pg-ink);
+  }
+
+  .pg-month-strip {
+    display: none;
+  }
+
+  .pg-card-actions--phone {
+    display: none;
+  }
+
+  .pg-card-actions--desktop {
+    display: flex;
+  }
+
+  .pg-home-tiles {
+    display: flex;
+  }
+}
+
+@media (max-width: 899px) {
+  .pg-home-grid > div > .RosterCapacity,
+  .pg-home-tiles {
+    display: none;
+  }
+
+  .pg-home-grid .pg-aside {
+    display: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .bareact-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 380px;
+    column-gap: 32px;
+    align-items: start;
+  }
+
+  .bareact-head .LawPlaygroundCta {
+    grid-column: 2;
+    grid-row: 1 / span 8;
+    width: 380px;
+    max-width: 100%;
+    margin-top: 0;
+    padding: 16px;
+    border: 1px solid var(--pg-hairline);
+    border-radius: var(--pg-radius-card);
+    background: var(--pg-paper);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .pg-pick-caret-mark {
     transform: none !important;

@@ -120,7 +120,7 @@ def _cloze_attr(page: str) -> str:
 
 
 def _confirm_payload(client: TestClient, extra: dict | None = None) -> dict[str, str]:
-    data = {"confirm": "add"}
+    data = {"confirm": "add", "scope": "sections"}
     token = client.cookies.get("rtc_csrf") or ""
     if token:
         data["csrf_token"] = token
@@ -134,6 +134,10 @@ def _add_law(client: TestClient, law_id: str):
     if preview.status_code == 303 and "/playground/roster" in (
         preview.headers.get("location") or ""
     ):
+        return client.post(
+            add_path(law_id), data=_confirm_payload(client), follow_redirects=False
+        )
+    if preview.status_code == 200:
         return client.post(
             add_path(law_id), data=_confirm_payload(client), follow_redirects=False
         )

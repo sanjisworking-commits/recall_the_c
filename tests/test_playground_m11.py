@@ -353,7 +353,9 @@ def test_guest_and_free_blocked_playground_hydrates_zero_acts(
     hydrated = _hydrate_spy(monkeypatch)
     app, provider = _mu_app(tmp_path)
     guest = TestClient(app)
-    assert guest.get("/playground", follow_redirects=False).status_code == 303
+    page = guest.get("/playground", follow_redirects=False)
+    assert page.status_code == 200
+    assert "Sign in to use Playground" in page.text
     assert hydrated == []
     _sign_in(guest, provider, USER_A, "a@example.com")
     blocked = guest.get("/playground")
@@ -415,7 +417,7 @@ def test_historical_duration_buyer_is_not_auto_subscribed(tmp_path: Path):
     assert client.app.state.subscriptions.get_current_subscription(USER_A) is None
     add = client.post(
         add_path("ndps"),
-        data={**_csrf(client), "confirm": "add"},
+        data={**_csrf(client), "confirm": "add", "scope": "sections"},
         follow_redirects=False,
     )
     assert add.status_code in {200, 303, 403}
@@ -521,7 +523,7 @@ def test_cross_user_playground_isolation(
     assert preview.status_code in {200, 303}
     added = client_a.post(
         add_path("ndps"),
-        data={**_csrf(client_a), "confirm": "add"},
+        data={**_csrf(client_a), "confirm": "add", "scope": "sections"},
         follow_redirects=False,
     )
     assert added.status_code == 303

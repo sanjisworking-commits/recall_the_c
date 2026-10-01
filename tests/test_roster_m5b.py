@@ -692,12 +692,12 @@ def test_http_prepare_promote_and_zero_hydration(tmp_path: Path, monkeypatch):
     token = _csrf(client)
     client.post(
         "/playground/laws/ndps/add",
-        data={**token, "confirm": "add"},
+        data={**token, "confirm": "add", "scope": "sections"},
         follow_redirects=False,
     )
     client.post(
         "/playground/laws/bns/add",
-        data={**token, "confirm": "add"},
+        data={**token, "confirm": "add", "scope": "sections"},
         follow_redirects=False,
     )
     client.post(
