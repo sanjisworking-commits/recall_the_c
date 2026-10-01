@@ -56,6 +56,7 @@ Three invariants are **not optional**. Partial D142 scores zero.
 | M6 Act-head copy | [`27d3418`](https://github.com/sanjisworking-commits/recall_the_c/commit/27d34183916527eca4016a8cb97450d35d32aedf) |
 | T20 guest GET supersession | [`3a8dcd0`](https://github.com/sanjisworking-commits/recall_the_c/commit/3a8dcd0f3901fcb741dc1f280c9520929727ed06) |
 | Tracker closeout | [`02a27b8`](https://github.com/sanjisworking-commits/recall_the_c/commit/02a27b84c8d22d64684ebb917b11e4d9f69d6e5e) |
+| Award after CI | [`54b5af9`](https://github.com/sanjisworking-commits/recall_the_c/commit/54b5af9d0fa960e320dcdbf98bec9e0d84d12522) |
 
 | SHA | What |
 |-----|------|
