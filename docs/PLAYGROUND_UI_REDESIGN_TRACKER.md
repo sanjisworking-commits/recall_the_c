@@ -4,7 +4,7 @@
 
 ```text
 Stage 1               = DONE — 100.0 / 100   (frozen)
-UI Redesign Programme = 28.1 / 100   (frozen until R3 local + CI green)
+UI Redesign Programme = 44.2 / 100
 Stage 2               = PARKED until the programme is DONE — 100.0 / 100
 ```
 
@@ -31,9 +31,9 @@ Authority: `docs/PLAYGROUND_UI_REDESIGN_PLAN.md`. Inventories: `docs/design/PLAY
 | **R1 closeout HEAD** | **`cf41baf`** (tracker) · last code **`cd1c4c6`**. U1 28/28. Frozen. |
 | **R2 closeout HEAD** | **`d8a1c38`** (tracker) · last code **`1cc00b6`**. U2 24/39. Closed. |
 | **R2 correction** | **`f62bd63`** (code). Fail-closed picker POST + bound `UnitLocator`. Programme still **28.1 / 100**. |
-| **R3 IN REVIEW HEAD** | **`02a27b8`** (tracker) · last tests **`3a8dcd0`** · last product **`27d3418`**. Score stays **28.1 / 100** until CI green. Do not start R4 or R5. |
+| **R3 closeout HEAD** | **`4cbb443`** (CI-green pin) · last tests **`3a8dcd0`** · last product **`27d3418`**. U2 **39/39**, U3 **29/38**, programme **44.2 / 100**. Do not start R4 or R5. |
 
-Visual columns (390 light/dark, ~768, ~1024, 1280 light/dark, reduced motion) stay `—` until the relevant batch. Technical rows mark Desktop/Mobile **N/A**. Status uses only: `NOT STARTED | IN PROGRESS | BLOCKED | IN REVIEW | DONE`.
+Visual columns (390 light/dark, ~768, ~1024, 1280 light/dark, reduced motion) stay `—` until the relevant batch. Technical rows mark Desktop/Mobile **N/A**. Status uses only: `NOT STARTED | IN PROGRESS | BLOCKED | DONE | DONE`.
 
 ---
 
@@ -43,14 +43,14 @@ Visual columns (390 light/dark, ~768, ~1024, 1280 light/dark, reduced motion) st
 |---|---|---|---|---|---|---|
 | U0 | Source reconciliation + merge safety | 5 | R0 | 10 | 10 | 5.0 |
 | U1 | Shared design system + shells | 12 | R1 | 28 | 28 | 12.0 |
-| U2 | Bare Act + Add + clause-level selection | 18 | R2, R3 | 39 | 24 | 11.1 |
-| U3 | Home + gates + roster lifecycle | 12 | R3, R5 | 38 | 0 | 0.0 |
+| U2 | Bare Act + Add + clause-level selection | 18 | R2, R3 | 39 | 39 | 18.0 |
+| U3 | Home + gates + roster lifecycle | 12 | R3, R5 | 38 | 29 | 9.2 |
 | U4 | Act progress + six-mode Learn + speech | 18 | R4 | 28 | 0 | 0.0 |
 | U5 | Learned / mastery / amendment states | 8 | R4 | 12 | 0 | 0.0 |
 | U6 | Today + Calendar + Google Calendar | 10 | R6 | 15 | 0 | 0.0 |
 | U7 | Profile + Settings + account surfaces | 7 | R5 | 12 | 0 | 0.0 |
 | U8 | Responsive, a11y, parity, regression | 10 | R7 | 25 | 0 | 0.0 |
-| **Total** | | **100** | | **207** | **62** | **28.1 / 100** |
+| **Total** | | **100** | | **207** | **106** | **44.2 / 100** |
 
 Uniqueness (script-checked from §15.2; no row in two milestones, none omitted):
 
@@ -74,8 +74,8 @@ No newly discovered B/C rows were added, so the denominator is unchanged.
 | D | Desktop Calendar Week | T29 | NOT STARTED |
 | E | Real speech on Letters/Recite | T25 | NOT STARTED |
 | F | Eligible Acts NDPS, BNS, BNSS, UAPA, PSS, MTP; POTA readable; slug identity | T4, T5 | DONE |
-| G | Paused/expired read-only home | T19 | IN REVIEW — R3; award after CI |
-| H | Guest HTML GET renders gate; JSON 401 | T20 | IN REVIEW — R3; award after CI |
+| G | Paused/expired read-only home | T19 | DONE |
+| H | Guest HTML GET renders gate; JSON 401 | T20 | DONE |
 
 ---
 
@@ -137,25 +137,25 @@ R1 closed on `cf41baf`. Guard held: no `UnitLocator`, clause fields, `unit_count
 
 ## U2 — Bare Act + Add + clause-level selection (weight 18, 39 items)
 
-R2 (clause model + picker) is closed on `1cc00b6`. R3 (Add sheet/dialog) is **IN REVIEW** on `3a8dcd0`. U2 recorded score stays **24 / 39** until local + CI green. Do not start R4 or R5.
+R2 (clause model + picker) is closed on `1cc00b6`. R3 (Add sheet/dialog) is closed on `3a8dcd0` / CI `4cbb443`. U2 is **39 / 39**. Do not start R4 or R5.
 
 | ID | Requirement | D/M | Status | Evidence |
 |---|---|---|---|---|
 | D11 | Checkbox: none / all / some | both | DONE | `.pg-pick-check` + `aria-checked` true/false/mixed; dash mark for mixed. `test_picker_markup_tri_state_chapterless_and_copy`. `r2_picker_390_mixed.png` |
 | D23 | Sticky footers sit above the tab bar | phone | DONE | Picker footer is `.pg-sticky-cta.pg-pick-footer`. R1 `mobile.css` offsets `body[data-mscreen="playground"] .pg-sticky-cta` by `--m-tabbar` + safe-area. Five-tab HTML remains signed-in multiuser (R1 D20). `r2_picker_390_light.png` |
-| D27 | CTA labels: guest, free, expired/paused, add, full, pending | both | IN REVIEW | T18 `data-pg-kind`. `test_t18_act_head_kinds`. Score after CI |
-| D28 | “Already in Playground” banner | both | IN REVIEW | Badge + Sections / Start learning or Continue. `test_t18_act_head_kinds`. `r3_act_head_already_in_playground_390.webp` |
-| D29 | Desktop head: title left, 380px CTA column | desktop | IN REVIEW | `.bareact-head` `minmax(0, 1fr) 380px` from 1024px. `test_d22_d29_d40_assets` |
-| D31 | Add container: sheet / dialog | both | IN REVIEW | `playground_add.html` `role="dialog"` + R1 sheet/dialog. `test_d22_d29_d40_assets` |
-| D32 | Confirm step: space use, remaining, plurals | both | IN REVIEW | `add_confirm_copy`. Confirm POST without scope does not consume. `test_t17_confirm_without_scope_shows_scope_and_does_not_consume` |
-| D33 | Max skips confirm | both | IN REVIEW | `skips_add_confirm` when `playground_law_limit is None` (Max / local / admin). `test_t17_max_skips_confirm_and_opens_on_scope` |
-| D34 | Scope step: Entire Act / Choose sections | both | IN REVIEW | `scope=entire` / `scope=sections`. `r3_add_scope_entire_or_sections.webp` |
-| D35 | Guest add variant | both | IN REVIEW | Kind `guest`, `next` preserved. `test_d35_guest_add_sheet_preserves_next` |
-| D36 | Subscribe / resume variant with catalogue “from ₹” | both | IN REVIEW | Kind `subscribe` / `resume`. `catalogue_from_price`. `test_t18_act_head_kinds` `test_t21_subscribe_gate_plans_come_from_catalogue` |
-| D37 | Roster-full variant with upgrade buttons | both | IN REVIEW | Kind `roster_full`. Catalogue upgrade CTAs + Plan next month. `test_t18_act_head_kinds` |
-| D38 | Pending-payment variant | both | IN REVIEW | Kind `pending`. `test_t18_act_head_kinds` |
-| D39 | Re-add variant (“No extra space used”) | both | IN REVIEW | Kind `re_add`. `test_re_add_uses_no_extra_space` |
-| D40 | Focus trap, Escape, scrim, no-JS fallback | both | IN REVIEW | `enhanceAddFlow` + R1 `enhanceSheets`. No-JS forms POST confirm then scope |
+| D27 | CTA labels: guest, free, expired/paused, add, full, pending | both | DONE | T18 `data-pg-kind`. `test_t18_act_head_kinds` |
+| D28 | “Already in Playground” banner | both | DONE | Badge + Sections / Start learning or Continue. `test_t18_act_head_kinds`. `r3_act_head_already_in_playground_390.webp` |
+| D29 | Desktop head: title left, 380px CTA column | desktop | DONE | `.bareact-head` `minmax(0, 1fr) 380px` from 1024px. `test_d22_d29_d40_assets` |
+| D31 | Add container: sheet / dialog | both | DONE | `playground_add.html` `role="dialog"` + R1 sheet/dialog. `test_d22_d29_d40_assets` |
+| D32 | Confirm step: space use, remaining, plurals | both | DONE | `add_confirm_copy`. Confirm POST without scope does not consume. `test_t17_confirm_without_scope_shows_scope_and_does_not_consume` |
+| D33 | Max skips confirm | both | DONE | `skips_add_confirm` when `playground_law_limit is None` (Max / local / admin). `test_t17_max_skips_confirm_and_opens_on_scope` |
+| D34 | Scope step: Entire Act / Choose sections | both | DONE | `scope=entire` / `scope=sections`. `r3_add_scope_entire_or_sections.webp` |
+| D35 | Guest add variant | both | DONE | Kind `guest`, `next` preserved. `test_d35_guest_add_sheet_preserves_next` |
+| D36 | Subscribe / resume variant with catalogue “from ₹” | both | DONE | Kind `subscribe` / `resume`. `catalogue_from_price`. `test_t18_act_head_kinds` `test_t21_subscribe_gate_plans_come_from_catalogue` |
+| D37 | Roster-full variant with upgrade buttons | both | DONE | Kind `roster_full`. Catalogue upgrade CTAs + Plan next month. `test_t18_act_head_kinds` |
+| D38 | Pending-payment variant | both | DONE | Kind `pending`. `test_t18_act_head_kinds` |
+| D39 | Re-add variant (“No extra space used”) | both | DONE | Kind `re_add`. `test_re_add_uses_no_extra_space` |
+| D40 | Focus trap, Escape, scrim, no-JS fallback | both | DONE | `enhanceAddFlow` + R1 `enhanceSheets`. No-JS forms POST confirm then scope |
 | D41 | Picker header copy | both | DONE | Back `← {{ act.short_name }}`, h1 “Choose what to learn”. `r2_picker_390_light.png` |
 | D42 | Chapter bands; none for chapterless Acts | both | DONE | `picker_page_view` `chapterless = not act.chapters`. MTP `data-chapterless`, no CHAPTER. `r2_picker_mtp_390_chapterless.png` |
 | D43 | Section row: checkbox, SECTION n, title | both | DONE | `list_title` (omitted → “Omitted”, no `[` markers). `test_picker_markup` |
@@ -178,31 +178,31 @@ R2 (clause model + picker) is closed on `1cc00b6`. R3 (Add sheet/dialog) is **IN
 | T14 | Clause learn routes; `learn_path_for_locator` | N/A | DONE | Parallel `/u/{unit}/learn/{mode}`. Existing section routes kept. `test_learn_path_for_locator_parallel_routes` `test_unit_learn_route_resolves` |
 | T15 | Picker POST `section=` / `unit=`; no-JS | N/A | DONE | Fail-closed atomic POST. Invalid values → `SelectionRejected` / HTTP 400 `invalid_selection`; `before_selection == after_selection`. Empty POST still 303-clears. `entire=1` validates extras. `test_nojs_section_and_unit_post_and_omitted_rejection` `test_picker_post_rejects_invalid_payloads_without_mutation` `test_picker_post_valid_plus_invalid_applies_neither` `test_picker_post_entire_act_valid_and_invalid_extras` `test_picker_post_whitespace_absent_and_empty_clears`. Correction `f62bd63` |
 | T16 | Per-section status line view model | N/A | DONE | `picker_page_view` / `picker_status_line`. Progress including dormant locators. `1cc00b6` |
-| T17 | Scope step after confirm; Max skips confirm | N/A | IN REVIEW | Confirm without scope → 200 scope, no consume. Max `data-skip-confirm`. Entire Act recovery `persist_entire_act_selection`. `tests/test_playground_r3.py` |
-| T18 | Act-head / add-sheet state model | N/A | IN REVIEW | Ten kinds. `view.py` KIND_*. `test_t18_act_head_kinds` |
+| T17 | Scope step after confirm; Max skips confirm | N/A | DONE | Confirm without scope → 200 scope, no consume. Max `data-skip-confirm`. Entire Act recovery `persist_entire_act_selection`. `tests/test_playground_r3.py` |
+| T18 | Act-head / add-sheet state model | N/A | DONE | Ten kinds. `view.py` KIND_*. `test_t18_act_head_kinds` |
 
 ---
 
 ## U3 — Home + gates + roster lifecycle (weight 12, 38 items)
 
-R3 (home + gates) is **IN REVIEW** on `3a8dcd0`. R5 (roster/rollover restyle) is not started. Recorded U3 stays **0 / 38** until local + CI green.
+R3 (home + gates) is closed. R5 (roster/rollover restyle) is not started. U3 is **29 / 38**.
 
 | ID | Requirement | D/M | Status |
 |---|---|---|---|
-| D22 | Primary tabs hidden on hard-gate pages | both | IN REVIEW — `data-hard-gate="true"` hides `.PrimaryTabs--top` and `.mobile-tabbar`. Paused home does not set it. `test_d22_d29_d40_assets` |
-| D51 | Home header copy (phone/desktop) | both | IN REVIEW — kicker “My Playground”, H1 “Playground”. `test_home_copy_provisions_and_empty_state` |
-| D52 | Month strip; Manage; Add a law | phone | IN REVIEW — `.pg-month-strip`. `r3_home_phone_390.webp` |
-| D53 | Law card: segmented bar, single CTA | phone | IN REVIEW — `law_card` phone actions. `r3_home_phone_390.webp` |
-| D54 | Law card: Up next, chips, three buttons | desktop | IN REVIEW — emphasised next card; Continue / Read Bare Act / Manage. `r3_home_ndps_card_1280.webp` |
-| D55 | “Law updated” chip | both | IN REVIEW — `status_badge('updated', 'Law updated')` when `card.outdated` |
-| D56 | Summary tiles | desktop | IN REVIEW — Due today / To learn / Learned |
-| D57 | Removed this month / Saved progress | both | IN REVIEW — home sections from roster + overlay |
-| D58 | Capacity aside | desktop | IN REVIEW — `.pg-aside` capacity |
-| D59 | Plan next month card | both | IN REVIEW — `.pg-plan-row` |
-| D60 | Empty state | both | IN REVIEW — “Your September Playground is empty”. `test_home_copy_provisions_and_empty_state` |
-| D61 | Paused banner; Resume CTAs | both | IN REVIEW — read-only home. `test_can_view_home_does_not_leak_learn_or_mutations` |
-| D62 | Banners: pending, cancel, upgrade, downgrade, welcome | both | IN REVIEW — `payment_banners` |
-| D63 | Verbatim trust mark | both | IN REVIEW — `trust_mark()` “Verbatim, always.” |
+| D22 | Primary tabs hidden on hard-gate pages | both | DONE — `data-hard-gate="true"` hides `.PrimaryTabs--top` and `.mobile-tabbar`. Paused home does not set it. `test_d22_d29_d40_assets` |
+| D51 | Home header copy (phone/desktop) | both | DONE — kicker “My Playground”, H1 “Playground”. `test_home_copy_provisions_and_empty_state` |
+| D52 | Month strip; Manage; Add a law | phone | DONE — `.pg-month-strip`. `r3_home_phone_390.webp` |
+| D53 | Law card: segmented bar, single CTA | phone | DONE — `law_card` phone actions. `r3_home_phone_390.webp` |
+| D54 | Law card: Up next, chips, three buttons | desktop | DONE — emphasised next card; Continue / Read Bare Act / Manage. `r3_home_ndps_card_1280.webp` |
+| D55 | “Law updated” chip | both | DONE — `status_badge('updated', 'Law updated')` when `card.outdated` |
+| D56 | Summary tiles | desktop | DONE — Due today / To learn / Learned |
+| D57 | Removed this month / Saved progress | both | DONE — home sections from roster + overlay |
+| D58 | Capacity aside | desktop | DONE — `.pg-aside` capacity |
+| D59 | Plan next month card | both | DONE — `.pg-plan-row` |
+| D60 | Empty state | both | DONE — “Your September Playground is empty”. `test_home_copy_provisions_and_empty_state` |
+| D61 | Paused banner; Resume CTAs | both | DONE — read-only home. `test_can_view_home_does_not_leak_learn_or_mutations` |
+| D62 | Banners: pending, cancel, upgrade, downgrade, welcome | both | DONE — `payment_banners` |
+| D63 | Verbatim trust mark | both | DONE — `trust_mark()` “Verbatim, always.” |
 | D93 | Roster manager chrome | both | NOT STARTED |
 | D94 | Active / removed rows | both | NOT STARTED |
 | D95 | Remove dialog/sheet | both | NOT STARTED |
@@ -211,22 +211,22 @@ R3 (home + gates) is **IN REVIEW** on `3a8dcd0`. R5 (roster/rollover restyle) is
 | D98 | Rollover rows / radiogroup | both | NOT STARTED |
 | D99 | Rollover aside / sticky footer | both | NOT STARTED |
 | D100 | Downgrade and blocked banners | both | NOT STARTED |
-| D101 | Guest sign-in gate | both | IN REVIEW — HTML 200 “Sign in to use Playground”. `test_d35_guest_add_sheet_preserves_next` T20 |
-| D102 | Gate per reason | both | IN REVIEW — `gate_view` per block reason. Halted/paused/expired also have read-only home (T19); Learn still gates |
-| D103 | Saved-progress tiles on hard gates | both | IN REVIEW — `show_saved` on paused/halted/expired gates; home Saved progress when `can_view_home` |
-| D104 | Plans stage | both | IN REVIEW — `.pg-plan-stage` from catalogue. `test_t21_subscribe_gate_plans_come_from_catalogue` |
-| D105 | Plan footnotes | both | IN REVIEW — “Monthly. GST included.” + `from_price` |
-| D106 | “Included with your account” card | both | IN REVIEW — `.pg-included-card` on unsubscribed gate |
-| D125 | Home H1 copy | both | IN REVIEW — “Playground” |
-| D126 | Home lede removed | both | IN REVIEW — no billing lede under H1. `test_home_copy_provisions_and_empty_state` |
-| D127 | Card links → single Learn CTA (phone) | phone | IN REVIEW — `.pg-card-actions--phone` one button |
+| D101 | Guest sign-in gate | both | DONE — HTML 200 “Sign in to use Playground”. `test_d35_guest_add_sheet_preserves_next` T20 |
+| D102 | Gate per reason | both | DONE — `gate_view` per block reason. Halted/paused/expired also have read-only home (T19); Learn still gates |
+| D103 | Saved-progress tiles on hard gates | both | DONE — `show_saved` on paused/halted/expired gates; home Saved progress when `can_view_home` |
+| D104 | Plans stage | both | DONE — `.pg-plan-stage` from catalogue. `test_t21_subscribe_gate_plans_come_from_catalogue` |
+| D105 | Plan footnotes | both | DONE — “Monthly. GST included.” + `from_price` |
+| D106 | “Included with your account” card | both | DONE — `.pg-included-card` on unsubscribed gate |
+| D125 | Home H1 copy | both | DONE — “Playground” |
+| D126 | Home lede removed | both | DONE — no billing lede under H1. `test_home_copy_provisions_and_empty_state` |
+| D127 | Card links → single Learn CTA (phone) | phone | DONE — `.pg-card-actions--phone` one button |
 | D130 | Rollover button copy | both | NOT STARTED |
-| D131 | Not-subscribed gate title | both | IN REVIEW — Act-head “Subscribe to use Playground”; gate “Unlock Playground” |
-| D140 | Playground unavailable / service error | both | IN REVIEW — styled 503. Kill-switch styled 404. `test_d140_playground_service_error_is_styled_503` |
-| D142 | HTML 404/403/500 / kill-switch 404 | both | IN REVIEW — atomic. Path middleware only. `test_d142_playground_html_404_403_500_without_global_handlers` |
-| T19 | Paused/expired read-only home; learn blocked | N/A | IN REVIEW — `can_view_home` GET-home-only. Leak tests in `test_playground_r3.py` |
-| T20 | Guest HTML GET → gate; JSON 401 | N/A | IN REVIEW — 200 HTML; JSON 401; POST fail-closed |
-| T21 | Plans stage from catalogue | N/A | IN REVIEW — Plus/Pro/Max ₹199/₹399/₹1199 |
+| D131 | Not-subscribed gate title | both | DONE — Act-head “Subscribe to use Playground”; gate “Unlock Playground” |
+| D140 | Playground unavailable / service error | both | DONE — styled 503. Kill-switch styled 404. `test_d140_playground_service_error_is_styled_503` |
+| D142 | HTML 404/403/500 / kill-switch 404 | both | DONE — atomic. Path middleware only. `test_d142_playground_html_404_403_500_without_global_handlers` |
+| T19 | Paused/expired read-only home; learn blocked | N/A | DONE — `can_view_home` GET-home-only. Leak tests in `test_playground_r3.py` |
+| T20 | Guest HTML GET → gate; JSON 401 | N/A | DONE — 200 HTML; JSON 401; POST fail-closed |
+| T21 | Plans stage from catalogue | N/A | DONE — Plus/Pro/Max ₹199/₹399/₹1199 |
 
 Paused/halted/expired GET `/playground` is read-only home (T19). Guest HTML GET is the sign-in gate (T20). Learn/Add/Remove stay blocked when `can_open` is false.
 
@@ -387,7 +387,7 @@ Not extra score rows.
 | X4 | Unreachable gcal states; contradictory demo data | DONE for greppable demo copy; gcal state machine remains R6 (T31/T32) |
 | X5 | “Devices 2 of 3”; free-tier copy contradictions | DONE (T35) |
 | X6 | Streak chip; Study archive; filled Settings badges | DONE (T35) |
-| X7 | Prototype gating holes | DONE for prototype runtime (`DCLogic`/`sc-if`/`support.js` banned in templates); T18/T20 guest+kind model IN REVIEW |
+| X7 | Prototype gating holes | DONE for prototype runtime (`DCLogic`/`sc-if`/`support.js` banned in templates); T18/T20 guest+kind model DONE |
 | X8 | Hard-coded scope labels, names, dates, percentages | DONE (T35 `36% learned`, `geodesic-dome`) |
 
 ---
@@ -406,7 +406,7 @@ Every T1–T41 row was read against current `a5edca5` production code. **Accepte
 | T6 | Merge regenerated the sitemap over seven Acts. Noindex contract unchanged. |
 | T7 | Template deleted; CSRF-less cloze binder removed; `complete_cloze()` kept. |
 | T8–T16 | **Closed in R2** on `1cc00b6`. Discriminated locators, `units.py`, picker POST, due join, unit hash. |
-| T17–T21 | **R3 IN REVIEW** on `3a8dcd0`. Confirm→scope, T18 kinds, paused read-only home, guest HTML 200 / JSON 401, catalogue plans. |
+| T17–T21 | **Closed in R3** on `3a8dcd0`. Confirm→scope, T18 kinds, paused read-only home, guest HTML 200 / JSON 401, catalogue plans. |
 | T22–T25 | No completion screens. Speech is Constitution-scoped. `SpeechClient` vs `RecallSpeech` confirmed. |
 | T26–T27 | Profile has no SUBSCRIPTION card from entitlement snapshot as specified. |
 | T28–T32 | No week view. Today is Constitution-path. |
@@ -431,9 +431,9 @@ No new product delta (class D) was found. Deltas A–H already cover guest gate,
 
 Batch report: [`docs/PLAYGROUND_UI_REDESIGN_R3_REPORT.md`](PLAYGROUND_UI_REDESIGN_R3_REPORT.md).
 
-**R3 is IN REVIEW.** Confirm→scope, Act-head kinds, read-only paused home, guest HTML gates, and Playground-scoped HTML 404/403/500 shipped. Programme score stays **28.1 / 100** until local + CI green. R4 and R5 are not started. Stage 1 remains frozen except required T20/T17 supersessions. Stage 2 remains PARKED.
+**R3 is complete.** Confirm→scope, Act-head kinds, read-only paused home, guest HTML gates, and Playground-scoped HTML 404/403/500 shipped. Programme **44.2 / 100**. R4 and R5 are not started. Stage 1 remains frozen except required T20/T17 supersessions. Stage 2 remains PARKED.
 
-Starting SHA `e82088b`. Implementation `d4525b1`. Invariant follow-up `596add2`. Middleware `0a16c48`. M6 copy `27d3418`. T20 guest GET `3a8dcd0`. Tracker `02a27b8`.
+Starting SHA `e82088b`. Implementation `d4525b1`. Invariant follow-up `596add2`. Middleware `0a16c48`. M6 copy `27d3418`. T20 guest GET `3a8dcd0`. Tracker `02a27b8`. CI-green pin `4cbb443`.
 
 Three non-optional invariants:
 
@@ -441,11 +441,21 @@ Three non-optional invariants:
 2. `can_view_home` is GET `/playground` only. Learn/Add/Remove/selection/roster writes stay on `can_open`.
 3. D142 is atomic: Playground-scoped HTML 404+403+500 without global exception handlers. Kill-switch 404. Repo/roster 503. `{ok, error}` JSON kept.
 
-U2 leftover this batch (unawarded): D27–D29, D31–D40, T17–T18 = 15. U3 R3 (unawarded): D22, D51–D63, D101–D106, D125–D127, D131, D140, D142, T19–T21 = 29.
+U2 leftover this batch: D27–D29, D31–D40, T17–T18 = 15. U2 **39 / 39**. Weighted U2 = 18.0.
+U3 R3: D22, D51–D63, D101–D106, D125–D127, D131, D140, D142, T19–T21 = 29. U3 **29 / 38**. Weighted U3 = 12 × 29/38 = **9.2**. Programme **44.2 / 100**.
 
 Alembic head remains **`20260927_0027`**. No migration.
 
 Local `pytest -m "not integration"`: **2786 passed, 9 skipped, 1 deselected**. Focused R3 + leftover T20: **21 passed**. Broader r1/m6/m7/m10/m11/m3b/m5a/`test_playground.py`/units: **277 passed**.
+
+CI:
+
+| Commit | Runs | Result |
+|---|---|---|
+| `3a8dcd0` | [36814133666](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/36814133666) (push), [36814136870](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/36814136870) (PR) | success |
+| `4cbb443` | [36815267937](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/36815267937) (push), [36815272810](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/36815272810) (PR) | success |
+
+`27d3418` Unit tests failed on leftover T20 guest-303 assertions; `3a8dcd0` superseded those tests and is green.
 
 Do not start R4 or R5.
 
@@ -489,4 +499,4 @@ No new B/C denominator rows. No class-D product-scope stop. Do not start R2.
 
 ## R0 readiness
 
-**U0 is complete (10/10).** **U1 is complete (28/28).** **R2 is complete (U2 24/39 recorded).** **R3 is IN REVIEW.** Stage 2 remains PARKED. Do not start R4 or R5. Programme **28.1 / 100** until R3 CI green.
+**U0 is complete (10/10).** **U1 is complete (28/28).** **R2 is complete.** **R3 is complete (U2 39/39, U3 29/38).** Stage 2 remains PARKED. Do not start R4 or R5. Programme **44.2 / 100**.

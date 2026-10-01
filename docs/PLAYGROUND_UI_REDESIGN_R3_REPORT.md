@@ -13,13 +13,13 @@ Authoritative docs:
 
 ```text
 Stage 1               = DONE — 100.0 / 100, frozen
-UI Redesign Programme = 28.1 / 100   (frozen until local + CI green)
+UI Redesign Programme = 44.2 / 100
 U0                     = 10 / 10
 U1                     = 28 / 28
-U2                     = 24 / 39 recorded; 15 leftover rows IN REVIEW
-U3                     = 0 / 38 recorded; R3 rows IN REVIEW
+U2                     = 39 / 39
+U3                     = 29 / 38  (R3 closed; R5 leftover D93–D100, D130)
 R2                     = DONE
-R3                     = IN REVIEW
+R3                     = DONE
 R4                     = not started
 R5                     = not started
 Stage 2                = PARKED
@@ -36,9 +36,9 @@ Stage 2                = PARKED
 |---|---|
 | Targeted | Confirm → scope; Act-head kinds; read-only paused home; guest HTML gate; Playground-scoped HTML errors. Three non-optional invariants below. |
 | Completed | Implementation, invariant proofs, Stage 1 supersessions required by T20/T17, visual check of add/home/404. |
-| Remaining | CI green, then award U2 39/39 and U3 R3 rows. R4 and R5 stay unstarted. |
+| Remaining | R4 Learn/speech and R5 roster/Profile. Do not start them from this report. |
 | Programme score before | 28.1 / 100 |
-| Programme score after | **28.1 / 100** until local + CI green |
+| Programme score after | **44.2 / 100** |
 | Alembic | one head: `20260927_0027`. No R3 migration. |
 
 Three invariants are **not optional**. Partial D142 scores zero.
@@ -64,7 +64,8 @@ Three invariants are **not optional**. Partial D142 scores zero.
 | `0a16c48` | Materialize streaming error bodies without `MutableHeaders.pop` |
 | `27d3418` | Stage 1 M6 accepts “Already in Playground” |
 | `3a8dcd0` | Guest HTML GET `/playground` and Learn are 200 gates (T20) |
-| `02a27b8` | R3 report + tracker IN REVIEW; score 28.1 |
+| `02a27b8` | R3 report + tracker while CI pending; score 28.1 |
+| `4cbb443` | SHA pin. Push [36815267937](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/36815267937) and PR [36815272810](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/36815272810) success |
 
 Nothing from R0/R1/R2 was reopened except the Stage 1 assertions listed under Tests.
 
@@ -215,7 +216,14 @@ Stage 1 assertions superseded on purpose (record, do not weaken silently):
 | R3 + r1/m6/m7/m10/m11/m3b/m5a/`test_playground.py`/units | **277 passed** |
 | `pytest -m "not integration"` | **2786 passed**, 9 skipped, 1 deselected |
 
-CI: pending this closeout push. Do not raise the programme score until that run is green.
+CI:
+
+| Commit | Runs | Result |
+|---|---|---|
+| `3a8dcd0` | [36814133666](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/36814133666) (push), [36814136870](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/36814136870) (PR) | success |
+| `4cbb443` | [36815267937](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/36815267937) (push), [36815272810](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/36815272810) (PR) | success |
+
+`27d3418` Unit tests failed on leftover T20 guest-303 assertions; `3a8dcd0` superseded those tests and is green.
 
 ---
 
@@ -224,22 +232,18 @@ CI: pending this closeout push. Do not raise the programme score until that run 
 | | |
 |---|---|
 | Before | 28.1 / 100 |
-| Newly implemented (unawarded until CI) | U2 leftover 15 + U3 R3 29 |
-| After this write | **28.1 / 100** |
+| Newly proven | U2 leftover 15 + U3 R3 29 |
+| U2 | 39 / 39 → **18.0** |
+| U3 | 29 / 38 → 12 × 29/38 = **9.2** |
+| After | **44.2 / 100** |
 
-Expected after local + CI green (not applied here):
-
-```text
-U2 39/39 → 18.0
-U3 29/38 → 12 × 29/38 = 9.2
-Programme = 5.0 + 12.0 + 18.0 + 9.2 = 44.2 / 100
-```
+R5 leftover U3 rows (D93–D100, D130) stay unawarded.
 
 ---
 
 ## Remaining / R4 handoff
 
-R3-targeted rows: **IN REVIEW** pending CI. Do not start R4 or R5 from this report.
+R3-targeted rows: **DONE**. Do not start R4 or R5 from this report.
 
 R4 starts at Act progress, six-mode Learn chrome, Playground speech, completion screens (U4/U5).
 

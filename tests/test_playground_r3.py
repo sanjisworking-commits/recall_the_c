@@ -11,7 +11,7 @@ Three non-optional invariants:
 3. D142 is one atomic row: Playground-scoped HTML 404 + 403 + 500, without
    hijacking global exception handlers. Partial implementation scores zero.
 
-Does not start R4 or R5. Programme score stays 28.1 until local + CI green.
+Does not start R4 or R5. Programme score is 44.2 after local + CI green.
 """
 
 from __future__ import annotations
