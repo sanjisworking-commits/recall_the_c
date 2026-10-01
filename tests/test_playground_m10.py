@@ -313,8 +313,10 @@ def test_guest_playground_redirect_is_not_required_to_carry_canonical(
     try:
         client = TestClient(app)
         resp = client.get("/playground", follow_redirects=False)
-        assert resp.status_code in {302, 303}
-        assert "/login" in resp.headers.get("location", "")
+        assert resp.status_code == 200
+        assert "Sign in to use Playground" in resp.text
+        assert _has_noindex(resp.text)
+        assert "nofollow" in (_robots(resp.text) or "").lower()
         login = client.get("/login")
         assert _has_noindex(login.text)
         assert "nofollow" in (_robots(login.text) or "").lower()

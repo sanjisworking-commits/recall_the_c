@@ -688,8 +688,14 @@ def test_guest_and_free_still_gated(tmp_path: Path):
 
     guest = _guest_client(tmp_path)
     login = guest.get(learn_path("ndps", "1", "type"), follow_redirects=False)
-    assert login.status_code == 303
-    assert "/login" in login.headers["location"]
+    assert login.status_code == 200
+    assert "Sign in to use Playground" in login.text
+    denied = guest.get(
+        learn_path("ndps", "1", "type"),
+        headers={"Accept": "application/json"},
+        follow_redirects=False,
+    )
+    assert denied.status_code == 401
     free, _repo = _authed_client(tmp_path)
     gated = free.get(learn_path("ndps", "1", "type"), follow_redirects=False)
     _assert_subscribe_gate(gated)
