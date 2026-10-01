@@ -67,6 +67,7 @@ Three invariants are **not optional**. Partial D142 scores zero.
 | `3a8dcd0` | Guest HTML GET `/playground` and Learn are 200 gates (T20) |
 | `02a27b8` | R3 report + tracker while CI pending; score 28.1 |
 | `4cbb443` | SHA pin. Push [36815267937](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/36815267937) and PR [36815272810](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/36815272810) success |
+| `54b5af9` | Award R3: U2 39/39, U3 29/38, programme 44.2 |
 
 Nothing from R0/R1/R2 was reopened except the Stage 1 assertions listed under Tests.
 
