@@ -774,7 +774,9 @@ def test_max_confirm_copy_has_no_denominator(tmp_path: Path):
 def test_local_owner_uses_roster_not_overlay_alone(tmp_path: Path):
     client = TestClient(create_app(units_path=MINI_UNITS, db_path=tmp_path / "p.db"))
     preview = client.post(add_path("ndps"), follow_redirects=False)
-    assert "/playground/roster" in (preview.headers.get("location") or "")
+    assert preview.status_code == 200
+    assert "Entire Act" in preview.text
+    assert "Choose sections" in preview.text
     assert client.app.state.playground.get_item(LOCAL_USER_ID, "ndps") is None
     confirmed = client.post(
         add_path("ndps"), data={"confirm": "add", "scope": "sections"}, follow_redirects=False

@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from fastapi import Request
 from fastapi.responses import HTMLResponse, JSONResponse
+from starlette.datastructures import MutableHeaders
 from starlette.responses import Response
 
 from constitution_memorizer.web.completion import wants_json
@@ -60,20 +61,20 @@ def _error_html(
 ) -> str:
     gate_flag = "true" if hard_gate else "false"
     return (
-        "<!DOCTYPE html><html lang='en'><head><meta charset='utf-8'>"
-        "<meta name='viewport' content='width=device-width, initial-scale=1'>"
-        "<meta name='robots' content='noindex, nofollow'>"
+        '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">'
+        '<meta name="viewport" content="width=device-width, initial-scale=1">'
+        '<meta name="robots" content="noindex, nofollow">'
         f"<title>{title} · Playground</title>"
-        "<link rel='stylesheet' href='/static/playground.css?v=pg10'>"
-        "</head><body data-mscreen='playground' class='playground-app'>"
-        f"<div class='PlaygroundShell' data-hard-gate='{gate_flag}' "
-        f"data-playground-error='{status}' data-playground-gate='{reason}'>"
-        "<section class='EntitlementGate pg-error'>"
-        "<p class='pg-eyebrow'>Playground</p>"
+        '<link rel="stylesheet" href="/static/playground.css?v=pg10">'
+        "</head><body data-mscreen=\"playground\" class=\"playground-app\">"
+        f'<div class="PlaygroundShell" data-hard-gate="{gate_flag}" '
+        f'data-playground-error="{status}" data-playground-gate="{reason}">'
+        '<section class="EntitlementGate pg-error">'
+        '<p class="pg-eyebrow">Playground</p>'
         f"<h1>{title}</h1>"
-        f"<p class='pg-lede'>{body}</p>"
-        "<p class='pg-actions'>"
-        "<a class='pg-btn' href='/dashboard'>Back to Constitution</a>"
+        f'<p class="pg-lede">{body}</p>'
+        '<p class="pg-actions">'
+        '<a class="pg-btn" href="/dashboard">Back to Constitution</a>'
         "</p></section></div></body></html>"
     )
 
@@ -93,6 +94,7 @@ def playground_error_response(
     if unavailable or status == 503:
         title, body = _UNAVAILABLE if unavailable else _COPY[503]
         reason = "unavailable"
+        # Kill-switch is a styled 404. Repo/roster outages stay 503.
         code = 404 if unavailable else 503
         html = _error_html(status=code, title=title, body=body, reason=reason)
         response = HTMLResponse(html, status_code=code)
@@ -108,17 +110,41 @@ def playground_error_response(
     return response
 
 
-def _body_bytes(response: Response) -> bytes:
+async def _materialize_body(response: Response) -> tuple[Response, bytes]:
+    """Read middleware streaming bodies so ``{ok, error}`` JSON can be kept."""
+
     body = getattr(response, "body", None)
     if isinstance(body, (bytes, bytearray)):
-        return bytes(body)
-    return b""
+        return response, bytes(body)
+    iterator = getattr(response, "body_iterator", None)
+    if iterator is None:
+        return response, b""
+    chunks: list[bytes] = []
+    async for chunk in iterator:
+        if isinstance(chunk, bytes):
+            chunks.append(chunk)
+        elif isinstance(chunk, bytearray):
+            chunks.append(bytes(chunk))
+        elif isinstance(chunk, memoryview):
+            chunks.append(chunk.tobytes())
+        else:
+            chunks.append(str(chunk).encode("utf-8"))
+    data = b"".join(chunks)
+    headers = MutableHeaders(response.headers)
+    headers.pop("content-length", None)
+    rebuilt = Response(
+        content=data,
+        status_code=response.status_code,
+        headers=dict(headers),
+        media_type=response.media_type,
+        background=getattr(response, "background", None),
+    )
+    return rebuilt, data
 
 
-def _keep_playground_json_api(response: Response) -> bool:
+def _keep_playground_json_api(body: bytes) -> bool:
     """Leave structured Playground JSON (``ok`` / ``error``) untouched."""
 
-    body = _body_bytes(response)
     return b'"ok"' in body and b'"error"' in body
 
 
@@ -127,6 +153,8 @@ async def playground_error_middleware(request: Request, call_next):
 
     Does not replace application-wide exception handlers. Non-Playground
     routes pass through unchanged. ``{ok, error}`` JSON stays JSON.
+    FastAPI ``{detail}`` JSON 403/404/500/503 on Playground paths becomes
+    the styled HTML page for HTML clients.
     """
 
     path = request.url.path
@@ -145,15 +173,12 @@ async def playground_error_middleware(request: Request, call_next):
         return response
     if playground_wants_json(request):
         return response
-    if _keep_playground_json_api(response):
-        return response
     ctype = (response.headers.get("content-type") or "").lower()
     if "text/html" in ctype and status != 500:
         # Already-rendered gates and pages. Short kill-switch HTML is handled
         # in the feature-flag middleware before this runs.
         return response
-    if status in {403, 404, 500, 503}:
-        return playground_error_response(
-            request, status, unavailable=status == 503
-        )
-    return response
+    response, body = await _materialize_body(response)
+    if _keep_playground_json_api(body):
+        return response
+    return playground_error_response(request, status)

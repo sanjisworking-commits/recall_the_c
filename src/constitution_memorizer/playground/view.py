@@ -689,7 +689,6 @@ def law_membership(
         gate = gate_view(reason=reason or BLOCK_SUBSCRIPTION_PAUSED)
         return _state(
             KIND_RESUME,
-            subscribed=True,
             primary_label="Resume Playground",
             primary_href=gate.cta_href or PLAYGROUND_BILLING_PATH,
             secondary_copy=" ".join(part for part in (gate.title,) + gate.lines if part),
@@ -704,7 +703,6 @@ def law_membership(
         gate = gate_view(reason=reason or BLOCK_DEVICE_LIMIT)
         return _state(
             KIND_DEVICE_BLOCKED,
-            subscribed=True,
             primary_label=gate.cta_label,
             primary_href=gate.cta_href,
             secondary_copy=" ".join(part for part in (gate.title,) + gate.lines if part),

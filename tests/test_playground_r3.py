@@ -69,10 +69,15 @@ def _used(client: TestClient) -> int:
 
 def _progress_fingerprint(client: TestClient, law_id: str = "ndps") -> tuple:
     playground = client.app.state.playground
-    return tuple(
+    lifecycle = tuple(
         (row.source_locator, row.times_completed, row.source_hash, row.status)
         for row in playground.list_progress(USER, law_id)
     )
+    modes = tuple(
+        (row.source_locator, row.mode, row.status, row.attempt_count)
+        for row in playground.list_mode_progress(USER, law_id)
+    )
+    return lifecycle, modes
 
 
 def test_t17_confirm_without_scope_shows_scope_and_does_not_consume(tmp_path: Path):
@@ -149,7 +154,7 @@ def test_entire_act_persist_recovers_after_overlay_failure_without_second_slot(
     assert done.status_code == 200
     assert done.json()["ok"] is True
     before_progress = _progress_fingerprint(client)
-    assert before_progress
+    assert before_progress[0] or before_progress[1]
     used_before = _used(client)
     assert used_before == 1
     before_selection = [

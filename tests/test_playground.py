@@ -262,8 +262,9 @@ def test_guest_cannot_persist_playground(tmp_path: Path):
     assert response.status_code == 303
     assert response.headers["location"] == "/login?next=/laws/ndps"
     listed = client.get("/playground", follow_redirects=False)
-    assert listed.status_code == 303
-    assert "/login?next=/playground" in listed.headers["location"]
+    assert listed.status_code == 200
+    assert "Sign in to use Playground" in listed.text
+    assert "/login?next=/playground" in listed.text
 
 
 def test_add_to_playground_is_idempotent(tmp_path: Path):
@@ -462,11 +463,10 @@ def test_opening_bnss_playground_does_not_hydrate_ndps_or_bns(
     client.get("/playground")
     assert hydrated == empty_home
     preview = client.post(add_path("bnss"), follow_redirects=False)
-    assert preview.status_code == 303
-    assert "/playground/roster" in preview.headers["location"]
-    client.get(roster_path(add="bnss"))
+    assert preview.status_code == 200
+    assert "Entire Act" in preview.text
+    assert client.app.state.playground.get_item(LOCAL_USER_ID, "bnss") is None
     _add_law(client, "bnss")
-    assert "bnss" not in hydrated
     client.get(law_path("bnss"))
     assert "bnss" in hydrated
     assert "ndps" not in hydrated
@@ -929,7 +929,9 @@ def test_entire_act_selection_hydrates_only_that_law(
     hydrated = _hydrate_spy(monkeypatch)
     client = _client(tmp_path)
     preview = client.post(add_path("ndps"), follow_redirects=False)
-    assert preview.status_code == 303
+    assert preview.status_code == 200
+    assert "Entire Act" in preview.text
+    assert client.app.state.playground.get_item(LOCAL_USER_ID, "ndps") is None
     assert _add_law(client, "ndps").status_code == 303
     hydrated.clear()
     clear_bare_act_cache()

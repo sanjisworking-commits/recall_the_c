@@ -814,7 +814,14 @@ def test_access_chain_comment_is_the_only_model():
     access = (ROOT / "src/constitution_memorizer/playground/access.py").read_text(
         encoding="utf-8"
     )
-    assert "commercial entitlement → allowed device → active current-period law" in access
+    assert "PLAYGROUND_ENABLED / service availability" in access
+    assert "→ authentication" in access
+    assert "→ commercial entitlement" in access
+    assert "→ device authorization" in access
+    assert "→ current-period roster/capacity" in access
+    assert "→ law membership/state" in access
+    assert "can_view_home" in access
+    assert "GET-home-only" in access
     assert "Never calls a payment provider" in access
 
 
