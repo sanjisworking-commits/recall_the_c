@@ -1879,6 +1879,19 @@ body:has(.PlaygroundShell[data-hard-gate="true"]) .mobile-tabbar {
   max-width: 36rem;
 }
 
+body.playground-app:has(.PlaygroundShell[data-playground-error]) {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--pg-page);
+  color: var(--pg-ink);
+  font-family: var(--pg-font-ui);
+}
+
+.PlaygroundShell[data-playground-error] {
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
 @media (min-width: 900px) {
   .pg-home-kicker {
     display: block;

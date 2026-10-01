@@ -50,6 +50,19 @@ def playground_wants_json(request: Request, json_mode: bool = False) -> bool:
     return wants_json(request)
 
 
+_THEME_BOOT = (
+    "<script>(function(){var KEY='cm-theme';var pref='auto';"
+    "try{var s=localStorage.getItem(KEY);"
+    "if(s==='auto'||s==='dark'||s==='light')pref=s;}catch(e){}"
+    "function systemDark(){return window.matchMedia&&"
+    "window.matchMedia('(prefers-color-scheme: dark)').matches;}"
+    "var resolved=pref==='dark'||(pref!=='light'&&systemDark())?'dark':'light';"
+    "document.documentElement.setAttribute('data-theme',resolved);"
+    "document.documentElement.style.colorScheme=resolved;"
+    "})();</script>"
+)
+
+
 def _error_html(
     *,
     status: int,
@@ -62,9 +75,11 @@ def _error_html(
     return (
         '<!DOCTYPE html><html lang="en"><head><meta charset="utf-8">'
         '<meta name="viewport" content="width=device-width, initial-scale=1">'
+        '<meta name="color-scheme" content="light dark">'
         '<meta name="robots" content="noindex, nofollow">'
         f"<title>{title} · Playground</title>"
-        '<link rel="stylesheet" href="/static/playground.css?v=pg10">'
+        f"{_THEME_BOOT}"
+        '<link rel="stylesheet" href="/static/playground.css?v=pg11">'
         "</head><body data-mscreen=\"playground\" class=\"playground-app\">"
         f'<div class="PlaygroundShell" data-hard-gate="{gate_flag}" '
         f'data-playground-error="{status}" data-playground-gate="{reason}">'

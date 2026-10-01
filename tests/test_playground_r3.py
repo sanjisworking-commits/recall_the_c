@@ -588,6 +588,7 @@ def test_t19_halted_and_expired_home_are_read_only(tmp_path: Path):
 def test_d22_d29_d40_assets(tmp_path: Path):
     css = PLAYGROUND_CSS.read_text()
     assert 'body:has(.PlaygroundShell[data-hard-gate="true"])' in css
+    assert "body.playground-app:has(.PlaygroundShell[data-playground-error])" in css
     assert "minmax(0, 1fr) 380px" in css
     assert "@media (min-width: 1024px)" in css
     js = PLAYGROUND_JS.read_text()
@@ -806,4 +807,26 @@ def test_entire_act_selection_rejected_is_400_without_consume(
     assert rejected.json()["detail"] == "invalid_selection"
     assert _roster_consume_state(client) == before
     assert overlay.get_item(USER, "ndps") is None
+
+
+def test_d142_error_html_resolves_theme_and_page_wash(tmp_path: Path):
+    """Standalone D142 pages must use Playground tokens, including dark."""
+
+    errors_src = ERRORS_PY.read_text()
+    assert "cm-theme" in errors_src
+    assert "data-theme" in errors_src
+    assert "color-scheme" in errors_src
+    css = PLAYGROUND_CSS.read_text()
+    block = css.split(
+        "body.playground-app:has(.PlaygroundShell[data-playground-error])", 1
+    )[1][:400]
+    assert "background: var(--pg-page)" in block
+
+    client = _authed_client(tmp_path)
+    _subscribe(client)
+    page = client.get("/playground/this-page-does-not-exist")
+    assert page.status_code == 404
+    assert "cm-theme" in page.text
+    assert 'data-playground-error="404"' in page.text
+    assert "playground.css?v=pg11" in page.text
 
