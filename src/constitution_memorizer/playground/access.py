@@ -294,6 +294,10 @@ def require_playground_home(
     """
 
     access = playground_access(request)
+    if access.can_view_home and not access.can_open:
+        # Read-only paused/halted/expired home. Do not ensure or reconcile
+        # a roster period merely to render GET /playground.
+        return access
     if access.can_view_home:
         return _attach_current_period(request, access)
     return _deny_open(

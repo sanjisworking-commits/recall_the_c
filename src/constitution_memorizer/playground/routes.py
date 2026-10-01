@@ -255,7 +255,7 @@ def _add_page_context(
     preview = None
     historical = False
     if access.user_id is not None and roster is not None:
-        capacity = roster.capacity(
+        capacity = roster.peek_capacity(
             access.user_id, access.snapshot, local_owner=access.local_owner
         )
         month = playground_month_name(capacity.period_start)
@@ -725,7 +725,9 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                     raise SelectionRejected("invalid_selection")
             except SelectionRejected:
                 raise HTTPException(status_code=400, detail="invalid_selection")
-            except Exception:
+            except PlaygroundLawError:
+                raise HTTPException(status_code=404, detail="Law not found")
+            except LocatorError:
                 raise HTTPException(status_code=400, detail="invalid_selection")
             result = roster.confirm_add_law(
                 opened.user_id,

@@ -556,7 +556,7 @@ def remove_confirm_copy(short_title: str, month_name: str) -> tuple[str, tuple[s
 
 
 def load_membership_index(access: Any, roster: Any, overlay: Any) -> MembershipIndex:
-    """Three list queries plus capacity. Never N+1 per law."""
+    """Three list queries plus peek_capacity. Never N+1. Never writes a period."""
 
     if access.user_id is None or roster is None:
         return MembershipIndex(frozenset(), frozenset(), frozenset(), None)
@@ -569,7 +569,7 @@ def load_membership_index(access: Any, roster: Any, overlay: Any) -> MembershipI
     overlay_ids = frozenset()
     if overlay is not None:
         overlay_ids = frozenset(item.law_id for item in overlay.list_items(access.user_id))
-    cap = roster.capacity(
+    cap = roster.peek_capacity(
         access.user_id, access.snapshot, local_owner=access.local_owner
     )
     return MembershipIndex(
@@ -727,7 +727,7 @@ def law_membership(
             if snapshot is not None and snapshot.playground_laws_remaining is not None:
                 remaining = snapshot.playground_laws_remaining
             else:
-                cap = roster.capacity(
+                cap = roster.peek_capacity(
                     access.user_id, snapshot, local_owner=access.local_owner
                 )
                 remaining = cap.remaining
@@ -1197,9 +1197,15 @@ def build_home_view(
     overlay: Any,
     notice: str = "",
 ) -> PlaygroundHomeView:
-    cap = roster.capacity(
-        access.user_id, access.snapshot, local_owner=access.local_owner
-    )
+    read_only = bool(getattr(access, "can_view_home", False) and not access.can_open)
+    if read_only:
+        cap = roster.peek_capacity(
+            access.user_id, access.snapshot, local_owner=access.local_owner
+        )
+    else:
+        cap = roster.capacity(
+            access.user_id, access.snapshot, local_owner=access.local_owner
+        )
     active_items = roster.active_roster_items(access.user_id)
     removed_items = roster.removed_roster_items(access.user_id)
     active_ids = [item.law_id for item in active_items]
@@ -1334,7 +1340,6 @@ def build_home_view(
         _with_source_state(card, presentations) for card in saved_cards
     ]
 
-    read_only = bool(getattr(access, "can_view_home", False) and not access.can_open)
     if read_only:
         active_cards = [
             replace(

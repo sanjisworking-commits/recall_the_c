@@ -153,6 +153,43 @@ class RosterService:
         item = self._current_item(user_id, law_id, now=now)
         return bool(item is not None and item.is_consumed)
 
+    def peek_capacity(
+        self,
+        user_id: UUID | str,
+        snapshot: Any | None,
+        *,
+        now: datetime | None = None,
+        local_owner: bool = False,
+    ) -> RosterCapacity:
+        """Display capacity. Never inserts, updates, or reconciles a period.
+
+        Missing current period → used 0 and the snapshot/catalogue limit.
+        Existing period → stored limit and consumed count, unchanged.
+        """
+
+        start, end = playground_month_bounds(now)
+        period = self._repo.get_period(user_id, start)
+        if period is None:
+            tier, limit = _period_commercial(snapshot, local_owner=local_owner)
+            used = 0
+            return RosterCapacity(
+                period_start=start,
+                period_end=end,
+                law_limit=limit,
+                used=used,
+                remaining=remaining_capacity(limit, used),
+                tier_snapshot=tier,
+            )
+        used = self._repo.count_consumed(user_id, period.period_start)
+        return RosterCapacity(
+            period_start=period.period_start,
+            period_end=period.period_end,
+            law_limit=period.law_limit,
+            used=used,
+            remaining=remaining_capacity(period.law_limit, used),
+            tier_snapshot=period.tier_snapshot,
+        )
+
     def capacity(
         self,
         user_id: UUID | str,
@@ -161,6 +198,12 @@ class RosterService:
         now: datetime | None = None,
         local_owner: bool = False,
     ) -> RosterCapacity:
+        """Mutating: ensures and reconciles the current period.
+
+        Read-only surfaces (paused home, public Act CTAs) must use
+        :meth:`peek_capacity` instead.
+        """
+
         period = self.ensure_current_period(
             user_id, snapshot, now=now, local_owner=local_owner
         )

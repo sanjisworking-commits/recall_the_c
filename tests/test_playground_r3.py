@@ -11,7 +11,9 @@ Three non-optional invariants:
 3. D142 is one atomic row: Playground-scoped HTML 404 + 403 + 500, without
    hijacking global exception handlers. Partial implementation scores zero.
 
-Does not start R4 or R5. Programme score is 44.2 after local + CI green.
+Does not start R4 or R5. Programme score stays provisional until the
+post-closeout read-only persistence and unexpected-failure corrections
+pass locally and in CI.
 """
 
 from __future__ import annotations
@@ -40,6 +42,7 @@ from tests.test_entitlement_m3b import (
     _authed_client as _m3_authed,
     _guest_client,
     _seed_ndps_overlay,
+    USER as M3_USER,
 )
 from tests.test_playground_m11 import USER_A, _mu_app, _sign_in, _subscribe as _m11_subscribe
 from tests.test_playground_m6 import _fill_used
@@ -64,7 +67,66 @@ ERRORS_PY = ROOT / "src/constitution_memorizer/playground/errors.py"
 
 def _used(client: TestClient) -> int:
     snap = client.app.state.entitlement_service.resolve(USER, now=NOW)
-    return client.app.state.roster.capacity(USER, snap, now=NOW).used
+    return client.app.state.roster.peek_capacity(USER, snap, now=NOW).used
+
+
+def _roster_consume_state(client: TestClient, user_id=USER) -> tuple:
+    """Consumed membership only. Period ensure is allowed on can_open POSTs."""
+
+    roster = client.app.state.roster
+    items = []
+    for period in roster.list_periods(user_id):
+        for item in roster.list_items_for_period(user_id, period.period_start):
+            items.append(
+                (
+                    item.law_id,
+                    item.origin,
+                    item.consumed_at is not None,
+                    item.removed_at is not None,
+                )
+            )
+    used = roster.peek_capacity(user_id, None, now=NOW).used
+    return tuple(items), used
+
+
+def _roster_persistence(client: TestClient, user_id=USER) -> tuple:
+    """Byte-stable roster rows. Includes updated_at so silent UPDATEs fail."""
+
+    roster = client.app.state.roster
+    periods = tuple(
+        (
+            row.id,
+            row.period_start,
+            row.period_end,
+            row.status,
+            row.tier_snapshot,
+            row.law_limit,
+            row.confirmed_at,
+            row.created_at,
+            row.updated_at,
+        )
+        for row in roster.list_periods(user_id)
+    )
+    items = []
+    for period in roster.list_periods(user_id):
+        for item in roster.list_items_for_period(user_id, period.period_start):
+            items.append(
+                (
+                    item.id,
+                    item.period_start,
+                    item.law_id,
+                    item.origin,
+                    item.consumed_at,
+                    item.removed_at,
+                    item.created_at,
+                    item.updated_at,
+                )
+            )
+    current = roster.get_current_period(user_id, now=NOW)
+    used = (
+        roster.peek_capacity(user_id, None, now=NOW).used if current is not None else 0
+    )
+    return periods, tuple(items), used
 
 
 def _progress_fingerprint(client: TestClient, law_id: str = "ndps") -> tuple:
@@ -588,6 +650,160 @@ def test_access_chain_comment_names_can_view_home_as_home_only():
     assert "can_view_home" in src
     assert "GET-home-only" in src or "GET ``/playground`` home only" in src
     assert "require_playground_home" in src
+    assert "not access.can_open" in src
     routes = ROUTES_PY.read_text()
     assert "require_playground_open" in routes
     assert "persist_entire_act_selection" in routes
+    assert (
+        'except Exception:\n                raise HTTPException(status_code=400, detail="invalid_selection")'
+        not in routes
+    )
+    view = (ROOT / "src/constitution_memorizer/playground/view.py").read_text()
+    assert "peek_capacity" in view
+    service = (
+        ROOT / "src/constitution_memorizer/playground/roster/service.py"
+    ).read_text()
+    assert "def peek_capacity" in service
+
+
+def test_paused_home_get_does_not_create_or_update_roster_period(tmp_path: Path):
+    """Invariant 2: paused GET /playground is persistence-read-only.
+
+    Covers missing current period and an already-created period.
+    """
+
+    missing = _authed_client(tmp_path / "missing")
+    _subscribe(missing, status="paused")
+    assert missing.app.state.roster.get_current_period(USER, now=NOW) is None
+    before = _roster_persistence(missing)
+    home = missing.get("/playground")
+    assert home.status_code == 200
+    assert "Resume Playground" in home.text
+    assert _roster_persistence(missing) == before
+    assert missing.app.state.roster.get_current_period(USER, now=NOW) is None
+
+    existing = _authed_client(tmp_path / "existing")
+    sub = _subscribe(existing)
+    added = _confirm_add(existing, "ndps")
+    assert added.status_code == 303
+    existing.app.state.subscriptions.update_subscription_state(
+        USER, sub.id, status="paused"
+    )
+    before_existing = _roster_persistence(existing)
+    assert before_existing[0]
+    paused_home = existing.get("/playground")
+    assert paused_home.status_code == 200
+    assert "Playground subscription paused" in paused_home.text
+    assert _roster_persistence(existing) == before_existing
+
+
+def test_halted_and_expired_home_get_do_not_write_roster(tmp_path: Path):
+    halted, _h = _m3_authed(tmp_path / "halted")
+    _add_subscription(halted, tier="max", status="halted")
+    before_halted = _roster_persistence(halted, M3_USER)
+    halted_home = halted.get("/playground")
+    assert halted_home.status_code == 200
+    assert "Payment retries have stopped" in halted_home.text
+    assert _roster_persistence(halted, M3_USER) == before_halted
+    assert halted.app.state.roster.get_current_period(M3_USER, now=NOW) is None
+
+    expired, _e = _m3_authed(tmp_path / "expired")
+    _seed_ndps_overlay(expired)
+    sub = _add_subscription(expired, tier="plus", status="active")
+    expired.app.state.subscription_charges.upsert_charge(
+        provider_payment_id="pay_r3_readonly",
+        user_subscription_id=sub.id,
+        billing_period_start=PERIOD_START,
+        billing_period_end=PERIOD_END,
+        refund_status="full",
+    )
+    before_expired = _roster_persistence(expired, M3_USER)
+    expired_home = expired.get("/playground")
+    assert "Your Playground is paused" in expired_home.text
+    assert _roster_persistence(expired, M3_USER) == before_expired
+
+
+def test_unsubscribed_public_law_get_does_not_write_roster(tmp_path: Path):
+    client, _repo = _m3_authed(tmp_path)
+    assert client.app.state.roster.get_current_period(M3_USER, now=NOW) is None
+    before = _roster_persistence(client, M3_USER)
+    page = client.get("/laws/ndps")
+    assert page.status_code == 200
+    assert 'data-pg-kind="subscribe"' in page.text
+    assert _roster_persistence(client, M3_USER) == before
+    assert client.app.state.roster.get_current_period(M3_USER, now=NOW) is None
+    assert client.app.state.roster.list_periods(M3_USER) == []
+
+
+def test_peek_capacity_does_not_call_ensure(tmp_path: Path):
+    client = _authed_client(tmp_path)
+    _subscribe(client)
+    roster = client.app.state.roster
+    calls = {"n": 0}
+    real = roster.ensure_current_period
+
+    def boom(*args, **kwargs):
+        calls["n"] += 1
+        raise AssertionError("peek_capacity must not ensure_current_period")
+
+    roster.ensure_current_period = boom
+    try:
+        cap = roster.peek_capacity(USER, None, now=NOW)
+    finally:
+        roster.ensure_current_period = real
+    assert calls["n"] == 0
+    assert cap.used == 0
+    assert roster.get_current_period(USER, now=NOW) is None
+
+
+def test_entire_act_unexpected_error_is_playground_500_without_consume(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    client = _authed_client(tmp_path)
+    _subscribe(client)
+    import constitution_memorizer.playground.routes as pg_routes
+
+    def boom(*_a, **_k):
+        raise RuntimeError("forced entire-act prep failure")
+
+    monkeypatch.setattr(pg_routes, "require_playground_law", boom)
+    overlay = client.app.state.playground
+    before = _roster_consume_state(client)
+    client.raise_server_exceptions = False
+    try:
+        failed = client.post(
+            add_path("ndps"),
+            data={**_csrf(client), "confirm": "add", "scope": "entire"},
+            follow_redirects=False,
+        )
+    finally:
+        client.raise_server_exceptions = True
+    assert failed.status_code == 500
+    assert "Playground hit a problem" in failed.text
+    assert 'data-playground-error="500"' in failed.text
+    assert _roster_consume_state(client) == before
+    assert overlay.get_item(USER, "ndps") is None
+    assert overlay.list_selection(USER, "ndps") == []
+    assert client.app.state.roster.is_law_active_this_period(USER, "ndps") is False
+
+
+def test_entire_act_selection_rejected_is_400_without_consume(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    client = _authed_client(tmp_path)
+    _subscribe(client)
+    import constitution_memorizer.playground.routes as pg_routes
+
+    monkeypatch.setattr(pg_routes, "selection_rows", lambda *_a, **_k: [])
+    overlay = client.app.state.playground
+    before = _roster_consume_state(client)
+    rejected = client.post(
+        add_path("ndps"),
+        data={**_csrf(client), "confirm": "add", "scope": "entire"},
+        follow_redirects=False,
+    )
+    assert rejected.status_code == 400
+    assert rejected.json()["detail"] == "invalid_selection"
+    assert _roster_consume_state(client) == before
+    assert overlay.get_item(USER, "ndps") is None
+
