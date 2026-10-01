@@ -55,6 +55,7 @@ Three invariants are **not optional**. Partial D142 scores zero.
 | Middleware body rebuild | [`0a16c48`](https://github.com/sanjisworking-commits/recall_the_c/commit/0a16c4849dcad6c77fe4ee1b205e071ff69e4f65) |
 | M6 Act-head copy | [`27d3418`](https://github.com/sanjisworking-commits/recall_the_c/commit/27d34183916527eca4016a8cb97450d35d32aedf) |
 | T20 guest GET supersession | [`3a8dcd0`](https://github.com/sanjisworking-commits/recall_the_c/commit/3a8dcd0f3901fcb741dc1f280c9520929727ed06) |
+| Tracker closeout | [`02a27b8`](https://github.com/sanjisworking-commits/recall_the_c/commit/02a27b84c8d22d64684ebb917b11e4d9f69d6e5e) |
 
 | SHA | What |
 |-----|------|
@@ -63,6 +64,7 @@ Three invariants are **not optional**. Partial D142 scores zero.
 | `0a16c48` | Materialize streaming error bodies without `MutableHeaders.pop` |
 | `27d3418` | Stage 1 M6 accepts “Already in Playground” |
 | `3a8dcd0` | Guest HTML GET `/playground` and Learn are 200 gates (T20) |
+| `02a27b8` | R3 report + tracker IN REVIEW; score 28.1 |
 
 Nothing from R0/R1/R2 was reopened except the Stage 1 assertions listed under Tests.
 

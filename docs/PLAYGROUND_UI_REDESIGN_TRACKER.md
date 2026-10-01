@@ -31,7 +31,7 @@ Authority: `docs/PLAYGROUND_UI_REDESIGN_PLAN.md`. Inventories: `docs/design/PLAY
 | **R1 closeout HEAD** | **`cf41baf`** (tracker) · last code **`cd1c4c6`**. U1 28/28. Frozen. |
 | **R2 closeout HEAD** | **`d8a1c38`** (tracker) · last code **`1cc00b6`**. U2 24/39. Closed. |
 | **R2 correction** | **`f62bd63`** (code). Fail-closed picker POST + bound `UnitLocator`. Programme still **28.1 / 100**. |
-| **R3 IN REVIEW HEAD** | **`3a8dcd0`**. Add flow, read-only home, Playground-scoped errors. Score stays **28.1 / 100** until local + CI green. Do not start R4 or R5. |
+| **R3 IN REVIEW HEAD** | **`02a27b8`** (tracker) · last tests **`3a8dcd0`** · last product **`27d3418`**. Score stays **28.1 / 100** until CI green. Do not start R4 or R5. |
 
 Visual columns (390 light/dark, ~768, ~1024, 1280 light/dark, reduced motion) stay `—` until the relevant batch. Technical rows mark Desktop/Mobile **N/A**. Status uses only: `NOT STARTED | IN PROGRESS | BLOCKED | IN REVIEW | DONE`.
 
@@ -433,7 +433,7 @@ Batch report: [`docs/PLAYGROUND_UI_REDESIGN_R3_REPORT.md`](PLAYGROUND_UI_REDESIG
 
 **R3 is IN REVIEW.** Confirm→scope, Act-head kinds, read-only paused home, guest HTML gates, and Playground-scoped HTML 404/403/500 shipped. Programme score stays **28.1 / 100** until local + CI green. R4 and R5 are not started. Stage 1 remains frozen except required T20/T17 supersessions. Stage 2 remains PARKED.
 
-Starting SHA `e82088b`. Implementation `d4525b1`. Invariant follow-up `596add2`. Middleware `0a16c48`. M6 copy `27d3418`. T20 guest GET `3a8dcd0`.
+Starting SHA `e82088b`. Implementation `d4525b1`. Invariant follow-up `596add2`. Middleware `0a16c48`. M6 copy `27d3418`. T20 guest GET `3a8dcd0`. Tracker `02a27b8`.
 
 Three non-optional invariants:
 
