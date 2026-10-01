@@ -9,7 +9,6 @@ from __future__ import annotations
 
 from fastapi import Request
 from fastapi.responses import HTMLResponse, JSONResponse
-from starlette.datastructures import MutableHeaders
 from starlette.responses import Response
 
 from constitution_memorizer.web.completion import wants_json
@@ -130,12 +129,15 @@ async def _materialize_body(response: Response) -> tuple[Response, bytes]:
         else:
             chunks.append(str(chunk).encode("utf-8"))
     data = b"".join(chunks)
-    headers = MutableHeaders(response.headers)
-    headers.pop("content-length", None)
+    headers = {
+        key: value
+        for key, value in response.headers.items()
+        if key.lower() != "content-length"
+    }
     rebuilt = Response(
         content=data,
         status_code=response.status_code,
-        headers=dict(headers),
+        headers=headers,
         media_type=response.media_type,
         background=getattr(response, "background", None),
     )
