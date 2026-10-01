@@ -31,7 +31,8 @@ Authority: `docs/PLAYGROUND_UI_REDESIGN_PLAN.md`. Inventories: `docs/design/PLAY
 | **R1 closeout HEAD** | **`cf41baf`** (tracker) · last code **`cd1c4c6`**. U1 28/28. Frozen. |
 | **R2 closeout HEAD** | **`d8a1c38`** (tracker) · last code **`1cc00b6`**. U2 24/39. Closed. |
 | **R2 correction** | **`f62bd63`** (code). Fail-closed picker POST + bound `UnitLocator`. Programme still **28.1 / 100**. |
-| **R3 closeout HEAD** | **`54b5af9`** (award) · CI-green **`4cbb443`** · last tests **`3a8dcd0`** · last product **`27d3418`**. U2 **39/39**, U3 **29/38**, programme **44.2 / 100**. Do not start R4 or R5. |
+| **R3 closeout HEAD** | **`54b5af9`** (award) · CI-green **`4cbb443`**. Score was **provisional**. |
+| **R3 post-closeout correction** | Review `86d8e56`. Code `5c3f003` (peek_capacity) + `6194e5b` (D142 theme). U2 **39/39**, U3 **29/38**, programme **44.2 / 100** restored after local+CI. Do not start R4 or R5. |
 
 Visual columns (390 light/dark, ~768, ~1024, 1280 light/dark, reduced motion) stay `—` until the relevant batch. Technical rows mark Desktop/Mobile **N/A**. Status uses only: `NOT STARTED | IN PROGRESS | BLOCKED | DONE | DONE`.
 
@@ -223,8 +224,8 @@ R3 (home + gates) is closed. R5 (roster/rollover restyle) is not started. U3 is 
 | D130 | Rollover button copy | both | NOT STARTED |
 | D131 | Not-subscribed gate title | both | DONE — Act-head “Subscribe to use Playground”; gate “Unlock Playground” |
 | D140 | Playground unavailable / service error | both | DONE — styled 503. Kill-switch styled 404. `test_d140_playground_service_error_is_styled_503` |
-| D142 | HTML 404/403/500 / kill-switch 404 | both | DONE — atomic. Path middleware only. `test_d142_playground_html_404_403_500_without_global_handlers` |
-| T19 | Paused/expired read-only home; learn blocked | N/A | DONE — `can_view_home` GET-home-only. Leak tests in `test_playground_r3.py` |
+| D142 | HTML 404/403/500 / kill-switch 404 | both | DONE — atomic. Path middleware only. Theme boot + `--pg-page` on error shells (`pg11`). `test_d142_playground_html_404_403_500_without_global_handlers` `test_d142_error_html_resolves_theme_and_page_wash` |
+| T19 | Paused/expired read-only home; learn blocked | N/A | DONE — `can_view_home` GET-home-only. `peek_capacity` / no `_attach_current_period` when `!can_open`. Persistence before/after in `test_paused_home_get_does_not_create_or_update_roster_period` |
 | T20 | Guest HTML GET → gate; JSON 401 | N/A | DONE — 200 HTML; JSON 401; POST fail-closed |
 | T21 | Plans stage from catalogue | N/A | DONE — Plus/Pro/Max ₹199/₹399/₹1199 |
 
@@ -431,9 +432,9 @@ No new product delta (class D) was found. Deltas A–H already cover guest gate,
 
 Batch report: [`docs/PLAYGROUND_UI_REDESIGN_R3_REPORT.md`](PLAYGROUND_UI_REDESIGN_R3_REPORT.md).
 
-**R3 is complete.** Confirm→scope, Act-head kinds, read-only paused home, guest HTML gates, and Playground-scoped HTML 404/403/500 shipped. Programme **44.2 / 100**. R4 and R5 are not started. Stage 1 remains frozen except required T20/T17 supersessions. Stage 2 remains PARKED.
+**R3 is complete**, including the post-closeout correction. Confirm→scope, Act-head kinds, read-only paused home with **zero roster writes**, guest HTML gates, and Playground-scoped HTML 404/403/500 (themed) shipped. Programme **44.2 / 100**. R4 and R5 are not started. Stage 1 remains frozen except required T20/T17 supersessions. Stage 2 remains PARKED.
 
-Starting SHA `e82088b`. Implementation `d4525b1`. Invariant follow-up `596add2`. Middleware `0a16c48`. M6 copy `27d3418`. T20 guest GET `3a8dcd0`. Tracker `02a27b8`. CI-green pin `4cbb443`. Award `54b5af9`.
+Starting SHA `e82088b`. Implementation `d4525b1`. Award `54b5af9` was **provisional**. Correction review head `86d8e56`. `peek_capacity` + Add-500 `5c3f003`. D142 theme `6194e5b`.
 
 Three non-optional invariants:
 
@@ -458,6 +459,24 @@ CI:
 `27d3418` Unit tests failed on leftover T20 guest-303 assertions; `3a8dcd0` superseded those tests and is green.
 
 Do not start R4 or R5.
+
+## R3 post-closeout correction
+
+The original 44.2 award on `54b5af9` was **provisional**. Review on `86d8e56` found:
+
+1. Paused/halted/expired GET `/playground` still called `roster.capacity()` → `ensure_current_period()` (INSERT/UPDATE). Public Act-head `load_membership_index()` did the same.
+2. Entire Act Add mapped unexpected exceptions to HTTP 400 `invalid_selection`.
+3. Visual evidence was six artifacts, not the R3 matrix.
+
+Fixes:
+
+- `peek_capacity()` for read-only home and public Act-head. `require_playground_home()` skips `_attach_current_period()` when `can_view_home && !can_open`. Proofs: `test_paused_home_get_does_not_create_or_update_roster_period`, `test_halted_and_expired_home_get_do_not_write_roster`, `test_unsubscribed_public_law_get_does_not_write_roster`.
+- Entire Act catches only `SelectionRejected` / `LocatorError` / `PlaygroundLawError`. Unexpected → D142 500. Proofs: `test_entire_act_unexpected_error_is_playground_500_without_consume`, `test_entire_act_selection_rejected_is_400_without_consume`.
+- Visual matrix at 390/768/1024/1280 light/dark and reduced motion. One visual defect fixed: D142 error pages now boot `cm-theme` and use `--pg-page` (`pg11`).
+
+Code: `5c3f003`, `6194e5b`. Local `pytest -m "not integration"`: **2793 passed**, 9 skipped, 1 deselected. CI: `5c3f003` [36874411970](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/36874411970) / [36874420199](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/36874420199); `6194e5b` [36876407403](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/36876407403) / [36876417171](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/36876417171) **success**.
+
+U2 **39 / 39**. U3 **29 / 38**. Programme **44.2 / 100** restored. R4 and R5 not started.
 
 ## R2 closeout
 

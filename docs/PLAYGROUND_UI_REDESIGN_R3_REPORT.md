@@ -19,7 +19,7 @@ U1                     = 28 / 28
 U2                     = 39 / 39
 U3                     = 29 / 38  (R3 closed; R5 leftover D93–D100, D130)
 R2                     = DONE
-R3                     = DONE
+R3                     = DONE (post-closeout correction frozen)
 R4                     = not started
 R5                     = not started
 Stage 2                = PARKED
@@ -27,6 +27,8 @@ Stage 2                = PARKED
 
 **Branch:** `cursor/playground-220d`  
 **PR:** [#188](https://github.com/sanjisworking-commits/recall_the_c/pull/188)
+
+The 44.2 programme score from the original closeout was **provisional**. It is restored below only after the post-closeout correction: read-only persistence, unexpected Add failures as 500, the R3 visual matrix, local `pytest -m "not integration"`, and CI green.
 
 ---
 
@@ -181,16 +183,9 @@ R4 (not started): U4/U5 Learn, speech, completion.
 
 ## Visual verification
 
-Local owner UI at `http://127.0.0.1:8011` (do not use the stale :8001 JSON 404).
+Original closeout captured only six artifacts. **Superseded** by the post-closeout correction matrix (390/768/1024/1280, light/dark, reduced motion, and the product states listed there).
 
-| Viewport / state | Artifact |
-|---|---|
-| 1280 home NDPS card | `r3_home_ndps_card_1280.webp` |
-| Add scope Entire Act / Choose sections | `r3_add_scope_entire_or_sections.webp` |
-| Empty picker after Choose sections | `r3_empty_picker_after_choose_sections.webp` |
-| Styled Playground HTML 404 | `r3_playground_html_404.webp` |
-| 390 Act-head Already in Playground | `r3_act_head_already_in_playground_390.webp` |
-| 390 home | `r3_home_phone_390.webp` |
+Local owner UI at `http://127.0.0.1:8011` (do not use the stale :8001 JSON 404).
 
 Do not claim R4 Learn-mode parity or R5 roster/rollover restyle.
 
@@ -252,3 +247,124 @@ R4 starts at Act progress, six-mode Learn chrome, Playground speech, completion 
 R5 starts at roster/rollover restyle (D93–D100, D130) and Profile/Settings (U7).
 
 Do not reopen R0/R1/R2. Do not change Alembic. Do not reintroduce Constitution gating or historical duration products.
+
+---
+
+## Post-closeout correction
+
+Isolated batch. Do **not** start R4 or R5. Stage 1 remains frozen. Stage 2 remains parked.
+
+Review head (do not freeze 44.2 on this SHA):
+
+```text
+86d8e567fd3f1c45aeeb7046298eeb7efc339c11
+```
+
+The original closeout claimed the three invariants were fully proven, including GET-home-only paused access with no mutation leakage, and awarded 44.2 from a thin visual set (1280 home, scope, picker, 404, 390 Act-head, 390 home). Post-closeout review found two correctness defects and that visual gap.
+
+| | SHA |
+|---|---|
+| Review / starting head | [`86d8e56`](https://github.com/sanjisworking-commits/recall_the_c/commit/86d8e567fd3f1c45aeeb7046298eeb7efc339c11) |
+| Correction 1–2 (read-only peek + Add 500) | [`5c3f003`](https://github.com/sanjisworking-commits/recall_the_c/commit/5c3f003353d7fafacebabcbdd5b1e6c9aecc19a3) |
+| Correction 3 visual + D142 theme | [`6194e5b`](https://github.com/sanjisworking-commits/recall_the_c/commit/6194e5b8a5bf91882e89a977ae2a9b6671287315) |
+
+### Correction 1 — paused read-only home performs zero roster mutation
+
+`RosterService.capacity()` still mutates via `ensure_current_period()` (INSERT if missing; UPDATE `updated_at` / tier / limit / status when present). That path is correct for `can_open` writes.
+
+Read-only surfaces now use `peek_capacity()`:
+
+- existing current period → stored limit + consumed count, unchanged
+- missing current period → used 0 + snapshot/catalogue limit, **no INSERT**
+
+When `access.can_view_home and not access.can_open`, `require_playground_home()` does not call `_attach_current_period()`. `build_home_view()` uses `peek_capacity()`. `load_membership_index()` / public Act-head CTAs also peek, so a signed-in unsubscribed GET `/laws/{slug}` cannot create a Playground period merely to render Sign in / Subscribe / Add.
+
+Proof:
+
+- `test_paused_home_get_does_not_create_or_update_roster_period` — missing period and existing period; period rows, roster items, consumed count, and `updated_at` unchanged
+- `test_halted_and_expired_home_get_do_not_write_roster`
+- `test_unsubscribed_public_law_get_does_not_write_roster`
+- `test_peek_capacity_does_not_call_ensure`
+
+Add / roster mutation paths still call `capacity()` / `ensure_current_period()` after `require_playground_open`.
+
+### Correction 2 — unexpected Entire Act failures are Playground 500
+
+Removed:
+
+```python
+except Exception:
+    raise HTTPException(status_code=400, detail="invalid_selection")
+```
+
+Entire Act pre-consume now catches only `SelectionRejected`, `LocatorError` → 400 `invalid_selection`, and `PlaygroundLawError` → 404. Unexpected exceptions propagate to the R3 Playground-scoped 500 middleware.
+
+Proof:
+
+- `test_entire_act_unexpected_error_is_playground_500_without_consume` — fault-injected `RuntimeError` during `require_playground_law` → HTTP 500 styled Playground error; slot not consumed; overlay not activated; selection unchanged
+- `test_entire_act_selection_rejected_is_400_without_consume` — empty locators → 400 `invalid_selection`; zero consume
+
+### Correction 3 — R3 visual acceptance matrix
+
+Verified the current implementation first. Did not change UI merely to manufacture screenshots.
+
+The matrix found one R3 visual defect: standalone D142 HTML (403/404/500/503/kill-switch) ignored `html[data-theme]` and painted on white instead of `--pg-page`. Fixed in this batch (`cm-theme` boot + `body.playground-app:has(.PlaygroundShell[data-playground-error])`). `playground.css` cache-bust `pg10` → `pg11` (T33 pin follows the asset; R1 is not reopened).
+
+| State | Evidence | Shared primitive |
+|---|---|---|
+| Guest home / Act / Add | `r3_guest_home_390_light.png`, 390/1280 dark, `r3_guest_act_390_light.png` | Hard-gate hides Primary tabs |
+| Subscribe + catalogue Plus/Pro/Max ₹199/399/1199 | `r3_subscribe_catalogue_1280_light.png`, 390/768/1280 dark | Hard-gate; Constitution included card |
+| Bare Act eligible Add | `r3_act_head_eligible_390_viewport.png`, 1280 Act-head | T18 `eligible_to_add` |
+| Already in Playground | `r3_act_head_already_in_playground_390.png` light/dark | Badge + Sections / Start learning |
+| Add confirm Plus | `r3_add_confirm_plus_390_light.png` sheet; 768; `r3_add_confirm_plus_1280_focus.png` dialog | 900px sheet→dialog |
+| Add confirm Pro | `r3_add_confirm_pro_1280.png` | Same confirm step as Plus |
+| Max direct scope | `r3_max_direct_scope_1280.png`, 390 | Skip confirm; Entire Act / Choose sections |
+| Scope Entire Act / Choose sections | `r3_add_scope_entire_or_sections.png` 390/1024/1280 dark | Confirm-only POST does not consume |
+| Empty picker after Choose sections | `r3_empty_picker_390_viewport.png`, `r3_empty_picker_1024_viewport.png` | R2 picker at zero selection; desktop SELECTION aside |
+| Roster full | `r3_roster_full_act_390.png`, add 390/1280 | T18 `roster_full` |
+| Pending | `r3_pending_act_390.png`, `r3_pending_add_390.png` | Isolated pending (not also roster-full) |
+| Re-add | `r3_re_add_390.png`, 1280 | “No extra space used.” |
+| Device blocked | `r3_device_blocked_390.png` | Hard-gate; same EntitlementGate family |
+| Paused read-only home | `r3_paused_home_1280_light.png` 390/768/1280 dark | Normal shell; Resume; **no** `data-hard-gate` |
+| Halted / expired | `r3_halted_home_1280_light.png` | Same `can_view_home` shell as paused |
+| Empty paid home | `r3_empty_home_1280_light.png` 390/768/1024/1280 dark | “Your September Playground is empty” |
+| Populated paid home | `r3_home_ndps_card_1280.png`, `r3_home_phone_390.png` 390/768/1024 dark | Desktop three buttons + aside; phone single CTA |
+| Removed / saved progress | `r3_matrix/r3_removed_home_390_light.png` | Progress saved + Add back |
+| Law updated | `r3_law_updated_home_1280.png` | Text badge, not colour-only |
+| Styled 404/403/500/503 | `r3_playground_html_404_390_light.png` / `_390_dark.png` / `_1280_dark.png`, 403/500/503 counterparts | After theme fix |
+| Kill-switch 404 | `r3_playground_kill_switch_404_390_dark.png` | Unavailable copy; status 404 |
+| Reduced motion | `r3_add_confirm_plus_390_reduced.png` | `prefers-reduced-motion: reduce` |
+| Focus | `r3_add_confirm_plus_1280_focus.png` | `:focus-visible` ring on Add |
+
+Checks recorded by probe + inspection: dark tokens on home/add/errors; no header collision on Playground shells; sheet handle ≤560px vs centred dialog ≥900px; tab suppression only on hard gates; paused home keeps Today/Browse/Playground/Calendar/Profile; 44px `--pg-tap` on `.pg-btn`; status badges include text labels; reduced-motion disables sheet animation.
+
+Full-page Bare Act screenshots overlay the fixed tabbar on mid-list rows; live `body[data-mscreen] .panel` already pads `calc(var(--m-tabbar) + 28px)`. Viewport Act-head shots are the representative evidence.
+
+### Tests and CI
+
+Retained R3 proofs: Entire Act retry idempotence, Choose sections empty-selection, T18 kinds, guest HTML 200 / JSON 401, paused Learn/write block, D140, atomic D142 403/404/500, kill switch, catalogue plans, re-add, R2 fail-closed picker.
+
+| Run | Result |
+|---|---|
+| `tests/test_playground_r3.py` + `tests/test_playground_r1.py` | **38 passed** |
+| `pytest -m "not integration"` | **2793 passed**, 9 skipped, 1 deselected |
+
+CI:
+
+| Commit | Runs | Result |
+|---|---|---|
+| `5c3f003` | [36874411970](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/36874411970) (push), [36874420199](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/36874420199) (PR) | success |
+| `6194e5b` | [36876407403](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/36876407403) (push), [36876417171](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/36876417171) (PR) | success |
+
+### Score
+
+All R3-targeted rows remain proven after the correction. No new points.
+
+| | |
+|---|---|
+| U2 | **39 / 39** |
+| U3 | **29 / 38** |
+| Programme | **44.2 / 100** |
+
+R4 and R5 were not started. Core R3 architecture (discriminated Act state, guest 200/JSON 401, Entire-Act retry, catalogue plans, scoped error middleware, same-period re-add, strict Learn/write blocking) is unchanged; this batch only closed the read-only persistence leak, the Add 400-masking, and the visual/D142 theme gap.
+
