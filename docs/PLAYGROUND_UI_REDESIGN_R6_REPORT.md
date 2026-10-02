@@ -61,11 +61,13 @@ No new Class-D product decision. No newly discovered B/C rows.
 | Starting (R5 frozen HEAD) | [`ffe374d`](https://github.com/sanjisworking-commits/recall_the_c/commit/ffe374d) |
 | Implementation | [`0011124`](https://github.com/sanjisworking-commits/recall_the_c/commit/0011124) |
 | extra_loader spy / UUID pin | [`1860dab`](https://github.com/sanjisworking-commits/recall_the_c/commit/1860dab) |
+| Tracker closeout | [`34db64f`](https://github.com/sanjisworking-commits/recall_the_c/commit/34db64f) |
 
 | SHA | What |
 |-----|------|
 | `0011124` | Today path merge; week model/route; Playground chips; Google `extra=`; T32 optional tables; T33 `main75`/`mob96` |
 | `1860dab` | Keep Constitution sync on the three-arg prepare path; restore UUID import in `test_playground_r6.py` |
+| `34db64f` | Tracker + R6 report: U6 15/15, programme 90.0 |
 
 Nothing from R0–R5 was reopened except the T33 asset pin and the planned T40
 rewrites (`TodayUnit` fields, `/calendar?view=week`, m8 path nodes).
