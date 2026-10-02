@@ -49,7 +49,7 @@ from constitution_memorizer.speech.limits import MAX_AUDIO_BYTES, SpeechRateLimi
 from constitution_memorizer.speech.provider import SpeechUnavailable
 from constitution_memorizer.web.app import create_app
 from constitution_memorizer.web.bare_acts import get_bare_act
-from tests.test_entitlement_m3b import PERIOD_END, PERIOD_START, _guest_client
+from tests.test_entitlement_m3b import _guest_client
 from tests.test_playground import MINI_UNITS, _add_and_select, _add_law, _client
 from tests.test_playground_m7 import _complete, _json_post
 from tests.test_playground_m8 import TODAY, _complete_six, _seed_progress
@@ -508,8 +508,8 @@ def test_d141_typed_fallback_keeps_access_gates(tmp_path: Path):
     expired.app.state.subscription_charges.upsert_charge(
         provider_payment_id="pay_d141_refund",
         user_subscription_id=sub.id,
-        billing_period_start=PERIOD_START,
-        billing_period_end=PERIOD_END,
+        billing_period_start=sub.billing_period_start,
+        billing_period_end=sub.billing_period_end,
         refund_status="full",
     )
     expired_denied = _post_typed(expired, letters)
