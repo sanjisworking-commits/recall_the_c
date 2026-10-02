@@ -582,6 +582,21 @@ body.playground-app .sheet {
   border-top: 1px solid var(--pg-hairline);
 }
 
+a.pg-plan-row {
+  align-items: center;
+  margin-top: 26px;
+  padding: 16px 20px;
+  background: var(--pg-paper);
+  border: 1px solid var(--pg-hairline);
+  border-radius: var(--pg-radius-card);
+  text-decoration: none;
+  color: inherit;
+}
+
+a.pg-plan-row:hover {
+  background: var(--pg-subtle);
+}
+
 .EntitlementGate {
   padding: 8px 0 28px;
 }
@@ -862,9 +877,10 @@ body.playground-app .sheet {
 .pg-profile-identity,
 .pg-sub-card,
 .pg-account-list {
-  background: var(--pg-paper);
-  border: 1px solid var(--pg-hairline);
+  background: var(--paper, var(--pg-paper));
+  border: 1px solid var(--hairline, var(--pg-hairline));
   border-radius: 14px;
+  color: var(--ink, var(--pg-ink));
 }
 
 .pg-profile-identity {
@@ -883,7 +899,7 @@ body.playground-app .sheet {
 .pg-profile-identity-copy p {
   margin: 1px 0 0;
   font-size: 12.5px;
-  color: var(--pg-faint);
+  color: var(--muted, var(--pg-faint));
 }
 
 .pg-sub-card {
@@ -966,7 +982,7 @@ body.playground-app .sheet {
 .pg-account-list .pg-account-meta {
   margin-left: auto;
   font-size: 12.5px;
-  color: var(--pg-faint);
+  color: var(--muted, var(--pg-faint));
 }
 
 .pg-devices-lede {
@@ -1718,6 +1734,12 @@ html:not(.rtc-anim) .PlaygroundShell * {
   gap: 8px;
   padding: 12px 0 calc(12px + env(safe-area-inset-bottom, 0px));
   background: var(--pg-paper);
+}
+
+@media (min-width: 900px) {
+  .RolloverPlanner .pg-sticky-cta {
+    display: none;
+  }
 }
 
 .pg-surface--fixed-dark,

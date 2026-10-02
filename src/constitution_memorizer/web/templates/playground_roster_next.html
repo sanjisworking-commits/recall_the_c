@@ -72,10 +72,19 @@
           {% endif %}
         </article>
         {% endfor %}
+        {% if remaining is none or remaining > 0 %}
+        <div class="pg-plan-row RolloverNewLaws">
+          <div>
+            <p class="pg-eyebrow">New laws</p>
+            <p>{% if remaining is none %}Unlimited spaces{% else %}{{ remaining }} space{% if remaining != 1 %}s{% endif %} available{% endif %} for new laws</p>
+            <p class="pg-lede">Add new laws whenever you’re ready. Spaces don’t need to be filled now.</p>
+          </div>
+          <a class="pg-btn pg-btn--ghost" href="/laws">Browse laws</a>
+        </div>
+        {% endif %}
         <div class="pg-sticky-cta RolloverPlanner-footer">
           <p class="RolloverPlanner-planned">{{ capacity.used_label }}</p>
           <button type="submit" class="pg-btn RolloverPlanner-continue">{{ submit_continue }}</button>
-          <button type="submit" class="pg-btn pg-btn--ghost RolloverPlanner-done">{{ submit_done }}</button>
         </div>
       </form>
       {% endif %}
@@ -93,8 +102,7 @@
       {% endif %}
     </aside>
   </div>
-
-  {% if remaining is none or remaining > 0 %}
+  {% if not candidates and (remaining is none or remaining > 0) %}
   <div class="pg-plan-row RolloverNewLaws">
     <div>
       <p class="pg-eyebrow">New laws</p>
