@@ -61,6 +61,7 @@ Amendments A–G from the approved R4 plan are binding. No new Class-D product d
 | Pin | [`b57a551`](https://github.com/sanjisworking-commits/recall_the_c/commit/b57a551) |
 | D141 limiter (audio-only) | [`5c98d83`](https://github.com/sanjisworking-commits/recall_the_c/commit/5c98d83) |
 | D141 expired-fixture match | [`ceaa0bb`](https://github.com/sanjisworking-commits/recall_the_c/commit/ceaa0bb) |
+| D141 closeout docs | [`286c98c`](https://github.com/sanjisworking-commits/recall_the_c/commit/286c98c) |
 
 | SHA | What |
 |-----|------|
@@ -70,6 +71,7 @@ Amendments A–G from the approved R4 plan are binding. No new Class-D product d
 | `b57a551` | Pin closeout SHAs |
 | `5c98d83` | Speech-provider limiter on audio only; typed fallback proofs |
 | `ceaa0bb` | Expired D141 fixture uses subscription billing-period bounds |
+| `286c98c` | Tracker SpeechClient cleanup; D141 DONE; programme 70.2 restored |
 
 Nothing from R0/R1/R2/R3 was reopened except the Stage 1 assertions listed under Tests.
 
@@ -184,6 +186,7 @@ No new UI. Letters and Recite already map `unavailable` / `rate_limited` to type
 | Starting correction | [`b57a551`](https://github.com/sanjisworking-commits/recall_the_c/commit/b57a551) |
 | Limiter on audio only | [`5c98d83`](https://github.com/sanjisworking-commits/recall_the_c/commit/5c98d83) |
 | Expired-fixture period match | [`ceaa0bb`](https://github.com/sanjisworking-commits/recall_the_c/commit/ceaa0bb) |
+| Closeout docs | [`286c98c`](https://github.com/sanjisworking-commits/recall_the_c/commit/286c98c) |
 
 ### Limiter ordering
 
