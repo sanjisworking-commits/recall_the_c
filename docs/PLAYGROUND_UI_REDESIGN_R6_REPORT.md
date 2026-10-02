@@ -187,10 +187,12 @@ stayed closed. R7 was not started. Alembic head remains `20260927_0027`.
 |---|---|
 | Starting | [`495d5ee`](https://github.com/sanjisworking-commits/recall_the_c/commit/495d5ee) |
 | Implementation | [`46f7a9d`](https://github.com/sanjisworking-commits/recall_the_c/commit/46f7a9d) |
+| Closeout docs | [`35d4dd1`](https://github.com/sanjisworking-commits/recall_the_c/commit/35d4dd1) |
 
 | SHA | What |
 |-----|------|
 | `46f7a9d` | `apply_merged_today_hero`; Playground current CTA; `CalendarWeek.event_count` / `summary` after chip attach |
+| `35d4dd1` | Tracker + R6 report: T28/D122 restored, U6 15/15, programme 90.0 |
 
 ### T28 before / after
 

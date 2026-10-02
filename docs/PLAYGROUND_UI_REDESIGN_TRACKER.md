@@ -37,7 +37,7 @@ Authority: `docs/PLAYGROUND_UI_REDESIGN_PLAN.md`. Inventories: `docs/design/PLAY
 | **R5 closeout HEAD** | Implementation `b17d6ab`. Cycle `68d5c2d`. Rollover Done `d034024`. Paint/pg16 `a894a36`. D110 noindex `c35f7d5`. Tracker `b4ac8d1`. Pin `d9039a3`. |
 | **R5 post-closeout correction** | Review `d9039a3`. Code `ec32195`. D130 CTA pin `d13c80c`. Tracker `cd78e25`. U3 **38/38**, U7 **12/12**, programme **80.0 / 100** restored after local+CI. R6 not started. |
 | **R6 closeout HEAD** | Implementation `0011124`. extra_loader pin `1860dab`. Tracker `34db64f`. Pin `495d5ee`. |
-| **R6 post-closeout correction** | Starting SHA `495d5ee`. Code `46f7a9d`. T28 + D122 **DONE** again. U6 **15/15**, programme **90.0 / 100** after local+CI. R7 not started. |
+| **R6 post-closeout correction** | Starting SHA `495d5ee`. Code `46f7a9d`. Closeout docs `35d4dd1`. T28 + D122 **DONE** again. U6 **15/15**, programme **90.0 / 100** after local+CI. R7 not started. |
 
 Visual columns (390 light/dark, ~768, ~1024, 1280 light/dark, reduced motion) stay `—` until the relevant batch. Technical rows mark Desktop/Mobile **N/A**. Status uses only: `NOT STARTED | IN PROGRESS | BLOCKED | DONE | DONE`.
 
@@ -462,7 +462,8 @@ Temporary score until code, tests, visual proof, and CI: U6 **13/15**, programme
 |---|---|
 | Starting | `495d5ee` |
 | Implementation | `46f7a9d` |
-| Commits | `46f7a9d` Align Today hero and week summary with Playground merge |
+| Closeout docs | `35d4dd1` |
+| Commits | `46f7a9d` Align Today hero and week summary with Playground merge. `35d4dd1` Record R6 T28/D122 correction. |
 
 **T28 before:** Today's Recall said Nothing to review today / Plan my day while Today's path showed Section 8(a) NDPS Act Due today / Start revision. Hero was Constitution-only; merge added Playground `due_count` without flipping `today_mode`.
 
