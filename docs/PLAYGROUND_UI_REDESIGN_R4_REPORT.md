@@ -57,11 +57,13 @@ Amendments A–G from the approved R4 plan are binding. No new Class-D product d
 | Starting (R3 frozen HEAD) | [`8610aa1`](https://github.com/sanjisworking-commits/recall_the_c/commit/8610aa1) |
 | Implementation | [`951c349`](https://github.com/sanjisworking-commits/recall_the_c/commit/951c349) |
 | Hidden-complete + D92 wash | [`4d70c9e`](https://github.com/sanjisworking-commits/recall_the_c/commit/4d70c9e) |
+| Tracker closeout | [`78240b2`](https://github.com/sanjisworking-commits/recall_the_c/commit/78240b2) |
 
 | SHA | What |
 |-----|------|
 | `951c349` | ActProgress, Learn restyle, speech POST, completion GET, T42 twins |
 | `4d70c9e` | `[hidden]` beats `.pg-btn` display; D92 html/body/sheet wash; Cloze advance label; U4/U5 chrome pins; T33 `pg14`; m3b entitlement-status grep |
+| `78240b2` | R4 report + tracker: U4 28/28, U5 13/13, programme 70.2 |
 
 Nothing from R0/R1/R2/R3 was reopened except the Stage 1 assertions listed under Tests.
 
