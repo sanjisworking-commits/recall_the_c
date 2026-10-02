@@ -40,10 +40,6 @@ from constitution_memorizer.progress.repository import ONBOARDING_KEY
 from constitution_memorizer.web.completion import build_completion, caught_up_quote
 from constitution_memorizer.devices.token import request_device_token
 from constitution_memorizer.entitlements.dependencies import get_entitlement_snapshot
-from constitution_memorizer.playground.view import (
-    device_count_copy,
-    playground_subscription_card,
-)
 from constitution_memorizer.web.entitlements import (
     access_summary,
     can_use_auto_plan,
@@ -544,6 +540,11 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
 
     @router.get("/profile", response_class=HTMLResponse)
     async def profile_get(request: Request) -> HTMLResponse:
+        from constitution_memorizer.playground.view import (
+            device_count_copy,
+            playground_subscription_card,
+        )
+
         user = getattr(request.state, "current_user", None)
         snapshot = get_entitlement_snapshot(request)
         playground_card = playground_subscription_card(snapshot)

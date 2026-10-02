@@ -69,6 +69,12 @@ def test_alembic_head_unchanged():
     assert script.get_heads() == [EXPECTED_HEAD]
 
 
+def test_create_app_import_does_not_cycle():
+    from constitution_memorizer.web.app import create_app
+
+    assert callable(create_app)
+
+
 def test_t26_subscription_card_chips_and_device_copy():
     active = playground_subscription_card(_snapshot())
     assert active.show is True
