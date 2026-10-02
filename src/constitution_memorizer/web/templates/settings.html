@@ -429,7 +429,7 @@
 
   {# ── ACCOUNT ───────────────────────────────────────────────────────── #}
   {% if multiuser_enabled|default(false) %}
-  <div class="settings-group" data-settings-group="account">
+  <div class="settings-group settings-phone-only" data-settings-group="account">
     <p class="settings-group-eyebrow">Account</p>
     <div class="settings-card">
       {% if current_user %}

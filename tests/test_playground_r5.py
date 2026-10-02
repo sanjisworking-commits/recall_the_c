@@ -206,6 +206,9 @@ def test_d97_d100_d130_rollover_key_states_and_copy(tmp_path: Path):
 
 
 def test_d100_downgrade_banner(tmp_path: Path):
+    next_src = (TEMPLATES / "playground_roster_next.html").read_text(encoding="utf-8")
+    assert 'data-playground-gate="rollover_adjustment_required"' in next_src
+    assert 'data-state="scheduled_downgrade"' in next_src
     client = _authed_client(tmp_path)
     _subscribe(client)
     _confirm_add(client, "ndps")
@@ -268,11 +271,17 @@ def test_d110_guest_profile_card(tmp_path: Path):
 
 
 def test_d111_d113_settings_phone_groups_keep_controls(tmp_path: Path):
+    settings_src = (TEMPLATES / "settings.html").read_text(encoding="utf-8")
+    assert 'data-settings-group="calendar"' in settings_src
+    assert "settings-account-row" in settings_src
+    assert 'class="settings-group settings-phone-only" data-settings-group="account"' in settings_src
     client = _authed_client(tmp_path)
     html = client.get("/settings").text
     assert 'data-settings-group="study"' in html
     assert 'data-settings-group="app"' in html
     assert 'data-settings-group="account"' in html
+    assert "settings-phone-only" in html
+    assert "settings-account-row" in html
     assert "settings-verbatim" in html
     assert "data-theme-set" in html
     assert "segmented-btn" in html
@@ -317,17 +326,32 @@ def test_d137_d138_devices_and_checkout_markup():
 
 
 def test_r5_assets_and_no_r6_routes():
+    from constitution_memorizer.web.dashboard import TodayUnit
+
     base = (TEMPLATES / "base.html").read_text(encoding="utf-8")
     css = (STATIC / "playground.css").read_text(encoding="utf-8")
     mobile = (STATIC / "mobile.css").read_text(encoding="utf-8")
-    assert "playground.css?v=pg15" in base
+    assert "playground.css?v=pg16" in base
     assert "mobile.css?v=mob95" in base
     assert ".RosterRow" in css
     assert ".RolloverPlanner-aside" in css
+    assert ".RolloverPlanner .pg-sticky-cta" in css
     assert ".pg-sub-chip" in css
+    assert ".panel.profile-panel" in css
     assert "RolloverPlanner" in mobile
     roster_js = (STATIC / "playground.js").read_text(encoding="utf-8")
     assert "data-rollover-form" in roster_js
     assert "value=\"keep\"" in (TEMPLATES / "playground_roster_next.html").read_text(
         encoding="utf-8"
     )
+    fields = set(TodayUnit.__dataclass_fields__)
+    assert "source" not in fields
+    assert "eyebrow" not in fields
+    assert "cta_label" not in fields
+    calendar = (TEMPLATES / "calendar.html").read_text(encoding="utf-8")
+    assert "view=week" not in calendar
+    calendar_page = (
+        ROOT / "src/constitution_memorizer/web/app.py"
+    ).read_text(encoding="utf-8")
+    assert "view: str | None = Query" not in calendar_page
+    assert 'Query(default="week")' not in calendar_page

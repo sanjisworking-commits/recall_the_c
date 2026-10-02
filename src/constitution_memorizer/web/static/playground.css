@@ -645,9 +645,9 @@ a.pg-plan-row:hover {
 }
 
 .RosterManager-notice {
-  border-color: var(--pg-teal-border, #bcd8d2);
-  background: var(--pg-teal-tint, #e7f1ef);
-  color: var(--pg-teal-dark, #0e5b52);
+  border-color: var(--pg-teal-border);
+  background: var(--pg-teal-tint);
+  color: var(--pg-teal-dark);
   font-weight: 600;
 }
 
@@ -874,6 +874,15 @@ a.pg-plan-row:hover {
   display: none;
 }
 
+/* Desktop Profile / Settings / checkout use .panel rise (fill-mode both).
+   Phone already sets animation:none. Skip the enter fade so these R5
+   surfaces paint at full opacity immediately. */
+.panel.profile-panel,
+.panel.settings,
+.panel.purchase {
+  animation: none;
+}
+
 .pg-profile-identity,
 .pg-sub-card,
 .pg-account-list {
@@ -933,8 +942,8 @@ a.pg-plan-row:hover {
 }
 
 .pg-sub-chip[data-chip="active"] {
-  background: var(--pg-teal-tint, #e7f1ef);
-  color: var(--pg-teal-dark, #0e5b52);
+  background: var(--pg-teal-tint);
+  color: var(--pg-teal-dark);
 }
 
 .pg-sub-chip[data-chip="paused"],
@@ -954,7 +963,7 @@ a.pg-plan-row:hover {
   font-family: var(--pg-font-display, Fraunces, Georgia, serif);
   font-size: 24px;
   font-weight: 600;
-  color: var(--pg-teal-dark, #0e5b52);
+  color: var(--pg-teal-dark);
 }
 
 .pg-account-list {
