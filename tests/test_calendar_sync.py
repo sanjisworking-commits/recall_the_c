@@ -438,9 +438,9 @@ def test_sync_store_and_prepare_run_off_event_loop_thread(
     prepare_threads: list[int] = []
     real_prepare = _prepare_reconciliation
 
-    def _spy_prepare(engine_arg, store_arg, today):
+    def _spy_prepare(engine_arg, store_arg, today, extra_loader=None):
         prepare_threads.append(threading.get_ident())
-        return real_prepare(engine_arg, store_arg, today)
+        return real_prepare(engine_arg, store_arg, today, extra_loader)
 
     monkeypatch.setattr(
         "constitution_memorizer.calendar_sync.sync._prepare_reconciliation",

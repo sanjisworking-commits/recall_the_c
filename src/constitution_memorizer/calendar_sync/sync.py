@@ -146,9 +146,14 @@ async def reconcile_user_calendar(
     extra_loader: Callable | None = None,
 ) -> dict[str, int]:
     """Run one full bounded reconciliation. Returns per-op counts."""
-    snapshot = await asyncio.to_thread(
-        _prepare_reconciliation, engine, store, today, extra_loader
-    )
+    if extra_loader is None:
+        snapshot = await asyncio.to_thread(
+            _prepare_reconciliation, engine, store, today
+        )
+    else:
+        snapshot = await asyncio.to_thread(
+            _prepare_reconciliation, engine, store, today, extra_loader
+        )
     prefs = snapshot.prefs
     tz = prefs["timezone"] or "UTC"
     reminders = reminder_minutes_for(
