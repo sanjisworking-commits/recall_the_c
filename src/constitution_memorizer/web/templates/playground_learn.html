@@ -134,6 +134,9 @@
       <button type="button" class="learn-cloze-btn" data-cloze-action="toggle-all">Reveal all</button>
       <span class="learn-cloze-status" data-cloze-status>0 of 0 revealed — tap a blank</span>
     </div>
+    <p class="pg-learn-actions">
+      <button type="button" class="pg-btn" data-pg-complete>{{ advance_label }}</button>
+    </p>
     {% endif %}
   </div>
   {% elif learn_mode == 'letters' %}

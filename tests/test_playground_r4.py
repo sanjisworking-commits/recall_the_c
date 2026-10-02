@@ -16,7 +16,11 @@ from fastapi.testclient import TestClient
 from alembic.config import Config
 from alembic.script import ScriptDirectory
 
-from constitution_memorizer.playground.learning.modes import PLAYGROUND_LEARN_MODES
+from constitution_memorizer.playground.learning.modes import (
+    PLAYGROUND_LEARN_MODES,
+    PLAYGROUND_MODE_ADVANCE,
+    PLAYGROUND_MODE_TASKS,
+)
 from constitution_memorizer.playground.lifecycle import LIFECYCLE_LEARNED, LIFECYCLE_MASTERED, LIFECYCLE_REVIEW
 from constitution_memorizer.playground.locators import parse_locator, section_locator
 from constitution_memorizer.playground.progress import (
@@ -800,7 +804,7 @@ def test_r4_assets_and_no_duplicate_engines():
     base = (TEMPLATES / "base.html").read_text(encoding="utf-8")
     assert "playground-learn.js?v=pg3" in base
     assert "speech_client.js?v=speech3" in base
-    assert "playground.css?v=pg13" in base
+    assert "playground.css?v=pg14" in base
     assert "options.url" in speech
     assert "csrf_token" in speech
     assert "RecallSpeech" in js
@@ -813,3 +817,112 @@ def test_r4_assets_and_no_duplicate_engines():
     assert "def _playground_speech" in routes
     assert "recite_alignment" in routes
     assert "/learn/{unit_id}/speech/transcribe" not in routes
+    assert ".PlaygroundShell [hidden]" in css
+    assert "display: none !important" in css
+    assert "html:has(.pg-complete.pg-surface--fixed-dark) .site-header" in css
+
+
+def test_d75_d84_six_mode_chrome_and_advance_labels(tmp_path: Path):
+    client = _client(tmp_path)
+    _add_and_select(client, "ndps", "1")
+    for mode in MODES:
+        page = client.get(learn_path("ndps", "1", mode))
+        assert page.status_code == 200, mode
+        assert PLAYGROUND_MODE_TASKS[mode] in page.text
+        assert PLAYGROUND_MODE_ADVANCE[mode] in page.text
+        assert "Step " in page.text and "of 6" in page.text
+        assert "VERBATIM BARE ACT" in page.text
+        assert "pg-mode-stepper" in page.text
+        assert f'data-pg-learn-panel="{mode}"' in page.text
+    read = client.get(learn_path("ndps", "1", "read")).text
+    assert "First, read it once." in read
+    cloze = client.get(learn_path("ndps", "1", "cloze")).text
+    assert "Fill the gaps from memory." in cloze
+    assert "data-cloze-density" in cloze
+    letters = client.get(learn_path("ndps", "1", "letters")).text
+    assert "Speak it" in letters
+    assert "data-letters-manual" in letters
+    typed = client.get(learn_path("ndps", "1", "type")).text
+    assert 'data-pg-complete hidden' in typed
+    assert "Start typing" in typed
+    recite = client.get(learn_path("ndps", "1", "recite")).text
+    assert "Hold to peek" in recite
+    assert 'data-pg-complete hidden' in recite
+    assert "data-recite-manual" in recite
+    quiz = client.get(learn_path("ndps", "1", "test")).text
+    assert "A short checkpoint." in quiz
+    assert "data-pg-quiz-form" in quiz
+    denied = _complete(client, "ndps", "1", "test")
+    assert denied.status_code == 404
+
+
+def test_d87_desktop_deck_panel_layout_is_1040():
+    css = (STATIC / "playground.css").read_text(encoding="utf-8")
+    assert "minmax(220px, 280px)" not in css
+    needle = "@media (min-width: 1040px)"
+    found = False
+    start = 0
+    while True:
+        idx = css.find(needle, start)
+        if idx == -1:
+            break
+        block = css[idx : idx + 1400]
+        if ".pg-learn-deck" in block and "minmax(280px, 360px)" in block:
+            found = True
+            assert "display: grid" in block
+            assert ".pg-learn-panel" in block
+            break
+        start = idx + len(needle)
+    assert found
+
+
+def test_d88_d92_completion_copy_and_fixed_dark(tmp_path: Path):
+    client = _client(tmp_path)
+    _add_and_select(client, "ndps", "1")
+    loc = section_locator("ndps", "1")
+    repo = client.app.state.playground
+    _complete_six(repo, LOCAL_USER_ID, "ndps", loc.value, as_of=TODAY)
+    learned = client.get(learned_path_for_locator(loc))
+    assert learned.status_code == 200
+    assert "Section learned." in learned.text
+    assert "First revision · Day 1" in learned.text
+    assert "pg-surface--fixed-dark" in learned.text
+    assert "pg-complete-chip" in learned.text
+    assert "Ambedkar" not in learned.text
+    assert "36%" not in learned.text
+    css = (STATIC / "playground.css").read_text(encoding="utf-8")
+    assert "html:has(.pg-surface--fixed-dark)" in css
+    assert "html:has(.pg-complete.pg-surface--fixed-dark) .site-header" in css
+
+
+def test_d133_d134_source_review_list_and_section(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    client = _client(tmp_path)
+    _add_and_select(client, "ndps", "1")
+    loc = section_locator("ndps", "1")
+    repo = client.app.state.playground
+    _complete_six(repo, LOCAL_USER_ID, "ndps", loc.value, as_of=TODAY)
+    _stale_registry(monkeypatch)
+    listing = client.get(source_review_path("ndps"))
+    assert listing.status_code == 200
+    assert "Source review" in listing.text
+    assert "Law updated" in listing.text
+    assert source_review_path_for_locator(loc) in listing.text
+    detail = client.get(source_review_path_for_locator(loc))
+    assert detail.status_code == 200
+    assert "Mark reviewed" in detail.text
+    assert "This provision has changed since your recorded learning source." in detail.text
+    assert "VERBATIM TEXT" in detail.text or "verbatim" in detail.text.lower()
+
+
+def test_d141_typed_speech_fallback_is_present():
+    html = (TEMPLATES / "playground_learn.html").read_text(encoding="utf-8")
+    js = (STATIC / "playground-learn.js").read_text(encoding="utf-8")
+    assert "data-letters-manual" in html
+    assert "data-recite-manual" in html
+    assert "Microphone unavailable. Use the typed path." in js
+    assert "Speech recognition may be unavailable. Type the next words" in html
+    assert "Speech may be unavailable. Type what you recited" in html
+    assert "data-letters-check-text" in html
+    assert "data-recite-check" in html

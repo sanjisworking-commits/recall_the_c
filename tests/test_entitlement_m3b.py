@@ -768,8 +768,13 @@ def test_playground_modules_do_not_call_provider_or_rederive_status():
         assert "fetch_subscription" not in source
         assert "get_current_subscription" not in source
         assert "FROM user_subscription" not in source
-        assert "if status ==" not in source
+        assert "if snapshot.status" not in source
         assert 'if tier ==' not in source
+        # Entitlement status is not re-derived here. Playground HTTP may
+        # branch on lifecycle status (learned / review / mastered).
+        for entitlement_status in ("active", "paused", "halted", "expired"):
+            assert f'if status == "{entitlement_status}"' not in source
+            assert f"if status == '{entitlement_status}'" not in source
     service_src = inspect.getsource(EntitlementService)
     assert "RazorpaySubscriptionsClient" not in service_src
 

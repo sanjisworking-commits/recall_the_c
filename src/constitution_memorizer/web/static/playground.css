@@ -257,6 +257,11 @@ body.playground-app .sheet {
   pointer-events: none;
 }
 
+/* Author `display` on .pg-btn beats the UA [hidden] rule. */
+.PlaygroundShell [hidden] {
+  display: none !important;
+}
+
 .PaymentStateBanner {
   display: flex;
   gap: 12px;
@@ -1393,7 +1398,11 @@ html:not(.rtc-anim) .PlaygroundShell * {
   background: var(--pg-paper);
 }
 
-.pg-surface--fixed-dark {
+.pg-surface--fixed-dark,
+html:has(.pg-surface--fixed-dark),
+html:has(.pg-surface--fixed-dark) body,
+html:has(.pg-surface--fixed-dark) .page-wrap,
+html:has(.pg-surface--fixed-dark) .sheet {
   color-scheme: dark;
   background: #141414;
   color: #f2f2f0;
@@ -2131,9 +2140,17 @@ body.playground-app:has(.PlaygroundShell[data-playground-error]) {
   color: var(--pg-muted);
 }
 .pg-complete.pg-surface--fixed-dark {
-  min-height: calc(100vh - 96px);
+  min-height: 100vh;
   margin: 0 calc(-1 * var(--pg-gutter, 18px));
   padding: 28px var(--pg-gutter, 18px) 48px;
+}
+html:has(.pg-complete.pg-surface--fixed-dark) .site-header,
+html:has(.pg-complete.pg-surface--fixed-dark) .sheet-footnote,
+html:has(.pg-complete.pg-surface--fixed-dark) .mobile-tabbar {
+  display: none;
+}
+html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
+  padding-bottom: 0;
 }
 .pg-learn-help {
   position: relative;
@@ -2179,24 +2196,6 @@ body.playground-app:has(.PlaygroundShell[data-playground-error]) {
   .pg-act-desktop-prompt,
   .pg-act-section-list {
     display: block;
-  }
-  .pg-learn {
-    display: grid;
-    grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
-    gap: 24px;
-    align-items: start;
-  }
-  .pg-mode-bar,
-  .pg-mode-head,
-  .pg-learn-deck {
-    grid-column: 1;
-  }
-  .pg-learn-panel,
-  .pg-learn-feedback,
-  .pg-learn-actions,
-  .pg-methods-tracker,
-  .VerbatimText {
-    grid-column: 2;
   }
 }
 
