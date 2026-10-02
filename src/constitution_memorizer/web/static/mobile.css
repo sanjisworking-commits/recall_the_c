@@ -2406,7 +2406,10 @@
   body[data-mscreen="revisions"] .calendar-header,
   body[data-mscreen="revisions"] .calendar-summary,
   body[data-mscreen="revisions"] .calendar-legend,
-  body[data-mscreen="revisions"] .calendar-grid {
+  body[data-mscreen="revisions"] .calendar-grid,
+  body[data-mscreen="revisions"] .calendar-week,
+  body[data-mscreen="revisions"] .calendar-week-legend,
+  body[data-mscreen="revisions"] .calendar-view-switch {
     display: none;
   }
 

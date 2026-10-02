@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import logging
+
 from fastapi import APIRouter, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
@@ -156,6 +158,21 @@ def _section_source_hash(act, locator: str, law_id: str) -> str:
     if section is None:
         return ""
     return source_hash_for_locator(loc, section, section_hash=source_hash)
+
+
+logger = logging.getLogger(__name__)
+
+
+def _schedule_playground_calendar_sync(request: Request, user_id) -> None:
+    """Re-sync Google Calendar after Learned, revision, selection, roster change."""
+    if user_id is None:
+        return
+    try:
+        from constitution_memorizer.calendar_sync.routes import schedule_sync
+
+        schedule_sync(request, user_id)
+    except Exception:  # noqa: BLE001 — projection must never break Playground writes
+        logger.exception("playground calendar sync scheduling failed")
 
 
 def _denied(result: object) -> Response | None:
@@ -732,6 +749,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             if scope_value == SCOPE_ENTIRE:
                 try:
                     persist_entire_act_selection(overlay, opened.user_id, law_id)
+                    _schedule_playground_calendar_sync(request, opened.user_id)
                 except SelectionRejected:
                     raise HTTPException(status_code=400, detail="invalid_selection")
                 except Exception:
@@ -797,6 +815,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             persist_entire_act_selection(
                 overlay, opened.user_id, law_id, act=act
             )
+            _schedule_playground_calendar_sync(request, opened.user_id)
             if result.status == RESULT_RE_ADDED:
                 return RedirectResponse(
                     url=f"{roster_path()}?notice=readded&add={law_id}",
@@ -822,6 +841,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             )
             return denied
         activate_law(overlay, opened.user_id, law_id)
+        _schedule_playground_calendar_sync(request, opened.user_id)
         if result.status == RESULT_RE_ADDED:
             return RedirectResponse(
                 url=f"{roster_path()}?notice=readded&add={law_id}",
@@ -880,6 +900,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             opened.snapshot,
             local_owner=opened.local_owner,
         )
+        _schedule_playground_calendar_sync(request, opened.user_id)
         return RedirectResponse(url=roster_path(), status_code=303)
 
     @router.get("/laws/{law_id}", response_class=HTMLResponse)
@@ -1120,6 +1141,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         if overlay.get_item(opened.user_id, law_id) is None:
             activate_law(overlay, opened.user_id, law_id)
         overlay.replace_selection(opened.user_id, law_id, rows)
+        _schedule_playground_calendar_sync(request, opened.user_id)
         return RedirectResponse(url=law_path(law_id), status_code=303)
 
     def _open_source_review(request: Request, law_id: str, *, json_mode: bool = False):
@@ -1617,6 +1639,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                 revision=True,
                 rung=rung,
             )
+            _schedule_playground_calendar_sync(request, access.user_id)
             return JSONResponse(payload)
         row = overlay.complete_mode(
             access.user_id,
@@ -1646,6 +1669,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             loc,
             revision=False,
         )
+        _schedule_playground_calendar_sync(request, access.user_id)
         return JSONResponse(payload)
 
     @router.post("/laws/{law_id}/sections/{number}/learn/test/quiz")
@@ -1744,6 +1768,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                 revision=True,
                 rung=rung,
             )
+            _schedule_playground_calendar_sync(request, access.user_id)
             return JSONResponse(payload)
         stored = overlay.get_mode_progress(
             access.user_id, law_id, loc.value, "test"
@@ -1797,6 +1822,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             loc,
             revision=False,
         )
+        _schedule_playground_calendar_sync(request, access.user_id)
         return JSONResponse(payload)
 
     async def _playground_speech(

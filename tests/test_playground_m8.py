@@ -726,12 +726,13 @@ def test_today_queue_current_roster_only(
     hydrated.clear()
     page = client.get("/dashboard")
     assert page.status_code == 200
-    assert "Law revisions" in page.text
-    block = page.text.split("Law revisions")[-1]
-    assert "BNS" in block
-    assert "NDPS" in block
-    assert "BNSS" not in block
-    assert block.find("BNS") < block.find("NDPS")
+    assert "Law revisions" not in page.text
+    assert "data-today-source=\"playground\"" in page.text
+    assert "BNS" in page.text
+    assert "NDPS" in page.text
+    assert "BNSS" not in page.text
+    assert "Playground" in page.text
+    assert page.text.find("BNS") < page.text.find("NDPS")
     assert "ndps" not in hydrated
     assert "bns" not in hydrated
     assert "bnss" not in hydrated
@@ -769,7 +770,7 @@ def test_calendar_law_revision_chips(tmp_path: Path, monkeypatch: pytest.MonkeyP
     hydrated.clear()
     page = client.get(f"/calendar?year={future.year}&month={future.month}")
     assert page.status_code == 200
-    assert "Law revision" in page.text or "Day 7 revision" in page.text
+    assert "Playground" in page.text
     assert "§8" in page.text or "Section 8" in page.text
     assert "ndps" not in hydrated
 

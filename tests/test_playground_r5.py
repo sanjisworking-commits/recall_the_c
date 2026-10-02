@@ -557,7 +557,7 @@ def test_d137_d138_devices_and_checkout_markup():
     assert "GST included" in checkout
 
 
-def test_r5_assets_and_no_r6_routes():
+def test_r5_assets_and_r6_today_calendar_fields():
     from constitution_memorizer.web.dashboard import TodayUnit
 
     base = (TEMPLATES / "base.html").read_text(encoding="utf-8")
@@ -565,7 +565,7 @@ def test_r5_assets_and_no_r6_routes():
     mobile = (STATIC / "mobile.css").read_text(encoding="utf-8")
     assert "playground.css?v=pg17" in base
     assert "playground.js?v=pg8" in base
-    assert "mobile.css?v=mob95" in base
+    assert "mobile.css?v=mob96" in base
     assert ".RosterRow" in css
     assert ".RolloverPlanner-aside" in css
     assert ".RolloverPlanner .pg-sticky-cta" in css
@@ -583,13 +583,8 @@ def test_r5_assets_and_no_r6_routes():
         encoding="utf-8"
     )
     fields = set(TodayUnit.__dataclass_fields__)
-    assert "source" not in fields
-    assert "eyebrow" not in fields
-    assert "cta_label" not in fields
+    assert "source" in fields
+    assert "eyebrow" in fields
+    assert "cta_label" in fields
     calendar = (TEMPLATES / "calendar.html").read_text(encoding="utf-8")
-    assert "view=week" not in calendar
-    calendar_page = (
-        ROOT / "src/constitution_memorizer/web/app.py"
-    ).read_text(encoding="utf-8")
-    assert "view: str | None = Query" not in calendar_page
-    assert 'Query(default="week")' not in calendar_page
+    assert "view=week" in calendar

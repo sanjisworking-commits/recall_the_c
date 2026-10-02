@@ -70,6 +70,10 @@ class CalendarDay:
             return "done"
         return None
 
+    @property
+    def week_events(self) -> list[WeekEvent]:
+        return week_event_cards(self)
+
 
 @dataclass(frozen=True)
 class CalendarMonth:
@@ -459,11 +463,158 @@ def build_calendar_month(
     )
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Mobile "Revisions" screen (design 19). Same data as the month grid, folded
-# into a week strip + today's list + the interval ladder, which is what fits
-# a 390 px phone without hiding anything the grid shows.
-# ─────────────────────────────────────────────────────────────────────────────
+@dataclass(frozen=True)
+class WeekEvent:
+    """One week-grid card. State is always named in text, never colour alone."""
+
+    state: str
+    state_label: str
+    title: str
+    meta: str
+    href: str
+
+
+WEEK_STATE_LABELS = {
+    "memorized": "Memorized",
+    "review_done": "Review done",
+    "due": "Review due",
+    "overdue": "Overdue",
+    "scheduled": "Scheduled",
+    "new": "New",
+}
+
+
+def sunday_week_bounds(anchor: date) -> tuple[date, date]:
+    """Sunday–Saturday week containing ``anchor`` (matches the month grid)."""
+    start = anchor - timedelta(days=(anchor.weekday() + 1) % 7)
+    return start, start + timedelta(days=6)
+
+
+def week_event_cards(day: CalendarDay) -> list[WeekEvent]:
+    """Map month chips onto the six named week-card states."""
+    out: list[WeekEvent] = []
+    for chip in day.chips:
+        if not chip.unit_id and not chip.href and chip.kind in {
+            "new_planned",
+            "review_capacity",
+        }:
+            continue
+        if chip.kind == "memorized":
+            state = "memorized"
+        elif chip.kind == "review_done":
+            state = "review_done"
+        elif chip.kind == "due":
+            state = "overdue" if day.is_past else "due"
+        elif chip.kind == "new_planned":
+            state = "new"
+        elif chip.kind in {"scheduled", "review_capacity"}:
+            state = "scheduled"
+        else:
+            state = "scheduled"
+        label = WEEK_STATE_LABELS[state]
+        playground = chip.category == "Playground" or "Playground" in (chip.label or "")
+        meta = f"{label} · Playground" if playground else label
+        href = chip.href or (f"/learn/{chip.unit_id}" if chip.unit_id else "")
+        out.append(
+            WeekEvent(
+                state=state,
+                state_label=label,
+                title=chip.label,
+                meta=meta,
+                href=href,
+            )
+        )
+    return out
+
+
+@dataclass(frozen=True)
+class CalendarWeek:
+    start: date
+    end: date
+    title: str
+    today: date
+    prev_date: date
+    next_date: date
+    weekdays: tuple[str, ...]
+    days: list[CalendarDay]
+
+    @property
+    def month_year(self) -> int:
+        return self.start.year
+
+    @property
+    def month_number(self) -> int:
+        return self.start.month
+
+
+def build_calendar_week(
+    engine: ReminderEngine,
+    *,
+    week_of: date,
+    today: date | None = None,
+    auto_entitled: bool = True,
+) -> CalendarWeek:
+    """Seven-column desktop week. Month grids are built separately and sliced."""
+    today = today or date.today()
+    start, end = sunday_week_bounds(week_of)
+    months: dict[tuple[int, int], CalendarMonth] = {}
+    for cursor in (start, end):
+        key = (cursor.year, cursor.month)
+        if key not in months:
+            months[key] = build_calendar_month(
+                engine,
+                year=cursor.year,
+                month=cursor.month,
+                today=today,
+                auto_entitled=auto_entitled,
+            )
+    by_iso: dict[str, CalendarDay] = {}
+    for month in months.values():
+        for day in month.days:
+            if day.iso:
+                by_iso[day.iso] = day
+    days: list[CalendarDay] = []
+    cursor = start
+    while cursor <= end:
+        existing = by_iso.get(cursor.isoformat())
+        if existing is not None:
+            days.append(
+                CalendarDay(
+                    day=existing.day,
+                    iso=existing.iso,
+                    is_today=existing.is_today,
+                    is_past=existing.is_past,
+                    is_blank=existing.is_blank,
+                    chips=list(existing.chips),
+                )
+            )
+        else:
+            days.append(
+                CalendarDay(
+                    day=cursor.day,
+                    iso=cursor.isoformat(),
+                    is_today=cursor == today,
+                    is_past=cursor < today,
+                    chips=[],
+                )
+            )
+        cursor += timedelta(days=1)
+    if start.month == end.month:
+        title = f"{start.day}–{end.day} {start.strftime('%B %Y')}"
+    else:
+        title = (
+            f"{start.strftime('%-d %B')} – {end.strftime('%-d %B %Y')}"
+        )
+    return CalendarWeek(
+        start=start,
+        end=end,
+        title=title,
+        today=today,
+        prev_date=start - timedelta(days=7),
+        next_date=start + timedelta(days=7),
+        weekdays=WEEKDAYS,
+        days=days,
+    )
 
 
 @dataclass(frozen=True)

@@ -294,7 +294,7 @@ Paused/expired `GET /playground` today renders **EntitlementGate**, not a read-o
 | GET | `/learn` `/learn/{unit_id}` | `learn.html` | B |
 | GET | `/dashboard` | `dashboard.html` | A |
 | GET | `/calendar` | `calendar.html` | A |
-| GET | `/calendar?view=week` | **does not exist** | A (T29 / D122) |
+| GET | `/calendar?view=week` | `calendar.html` | A (T29 / D122) |
 | GET | `/profile` | `profile.html` | A |
 | GET | `/settings` | `settings.html` | A |
 | GET | `/profile/security/devices` | `devices.html` | C |

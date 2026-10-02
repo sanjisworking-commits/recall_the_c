@@ -130,8 +130,8 @@ def test_t41_every_active_template_is_classified():
 
 def test_t33_r1_asset_versions_are_pinned():
     html = BASE.read_text()
-    assert "styles.css?v=main74" in html
-    assert "mobile.css?v=mob95" in html
+    assert "styles.css?v=main75" in html
+    assert "mobile.css?v=mob96" in html
     assert "playground.css?v=pg17" in html
     assert "playground.js?v=pg8" in html
     assert "playground-select.js?v=pg1" in html
@@ -141,6 +141,7 @@ def test_t33_r1_asset_versions_are_pinned():
     assert "playground.css?v=pg13" not in html
     assert "playground.js?v=pg7" not in html
     assert "mobile.css?v=mob94" not in html
+    assert "mobile.css?v=mob95" not in html
 
 
 def test_t34_light_and_dark_tokens_and_fixed_dark_surface():
@@ -339,7 +340,7 @@ def test_d21_playground_learn_hides_tabbar_without_touching_constitution(tmp_pat
     assert "class=\"pg-learn\"" not in home.text
     css = client.get("/static/playground.css?v=pg17").text
     assert "--pg-teal:" in css
-    mobile = client.get("/static/mobile.css?v=mob95").text
+    mobile = client.get("/static/mobile.css?v=mob96").text
     assert 'body[data-mscreen="playground"] .mobile-tab.is-active' in mobile
 
 

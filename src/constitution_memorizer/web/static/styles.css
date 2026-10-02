@@ -336,6 +336,44 @@ html[data-theme="dark"] .theme-toggle {
 .calendar-nav {
   display: flex;
   gap: 8px;
+  align-items: center;
+}
+
+.calendar-view-switch {
+  display: none;
+  height: 40px;
+  margin-right: 8px;
+  border: 1px solid var(--control-border, var(--hairline));
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.calendar-view-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0 14px;
+  font-size: 13.5px;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--ink);
+  background: var(--paper);
+}
+
+.calendar-view-btn + .calendar-view-btn {
+  border-left: 1px solid var(--control-border, var(--hairline));
+}
+
+.calendar-view-btn.is-on {
+  background: var(--ink);
+  color: var(--on-accent);
+}
+
+@media (min-width: 900px) {
+  .calendar-view-switch {
+    display: inline-flex;
+  }
 }
 
 .calendar-nav-btn,
@@ -426,6 +464,11 @@ html[data-theme="dark"] .theme-toggle {
 .calendar-swatch.is-review-capacity {
   background: var(--paper);
   border: 1px solid var(--accent);
+}
+
+.calendar-swatch.is-overdue {
+  background: var(--paper);
+  border: 2px solid var(--amber, #b45309);
 }
 
 .calendar-grid {
@@ -543,6 +586,158 @@ html[data-theme="dark"] .theme-toggle {
 
 .calendar-chip.is-law-revision {
   border-style: dotted;
+}
+
+.calendar-week,
+.calendar-week-legend {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .calendar.is-week .calendar-grid,
+  .calendar.is-week .calendar-legend {
+    display: none;
+  }
+
+  .calendar.is-week .calendar-week,
+  .calendar.is-week .calendar-week-legend {
+    display: block;
+  }
+
+  .calendar-week {
+    margin-top: 22px;
+    border: 1px solid var(--hairline);
+  }
+
+  .calendar-week-head,
+  .calendar-week-body {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+
+  .calendar-week-head {
+    background: var(--wash);
+    border-bottom: 2px solid var(--ink);
+  }
+
+  .calendar-week-dow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 12px 14px;
+    border-right: 1px solid var(--hairline);
+  }
+
+  .calendar-week-dow-name {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .calendar-week-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 26px;
+    height: 26px;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  .calendar-week-dow.is-today .calendar-week-num {
+    background: var(--ink);
+    color: var(--on-accent);
+  }
+
+  .calendar-week-col {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-height: 360px;
+    padding: 12px 10px;
+    border-right: 1px solid var(--hairline);
+    background: var(--paper);
+  }
+
+  .calendar-week-col.is-today {
+    box-shadow: inset 0 0 0 2px var(--ink);
+  }
+
+  .calendar-week-card {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    box-sizing: border-box;
+    width: 100%;
+    padding: 7px 10px;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .calendar-week-card-title {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  .calendar-week-card-meta {
+    display: block;
+    font-size: 10.5px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+  }
+
+  .calendar-week-card.is-memorized {
+    background: var(--ink);
+    color: var(--on-accent);
+  }
+
+  .calendar-week-card.is-review_done,
+  .calendar-week-card.is-review-done {
+    background: var(--mid);
+    color: var(--on-accent);
+  }
+
+  .calendar-week-card.is-due {
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    color: var(--ink);
+  }
+
+  .calendar-week-card.is-overdue {
+    background: var(--paper);
+    border: 2px solid var(--amber, #b45309);
+    color: var(--amber, #b45309);
+  }
+
+  .calendar-week-card.is-new {
+    background: var(--paper);
+    border: 1px solid var(--teal, #0e7569);
+    color: var(--teal, #0e7569);
+  }
+
+  .calendar-week-card.is-scheduled {
+    background: var(--paper);
+    border: 1px dashed var(--faint);
+    color: var(--muted);
+  }
+
+  .calendar-week-empty {
+    font-size: 12.5px;
+    color: var(--faint);
+  }
+
+  .calendar-week-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 22px;
+    margin: 16px 0 0;
+  }
 }
 
 .calendar-chip.is-memorized:hover,
@@ -5908,10 +6103,150 @@ html[data-theme="dark"] .nav-signin {
   align-items: start;
 }
 
-/* Today shows revision OR learning, never both, so the hero row is a single
-   column — the two-column split above is for .dash-bottom. */
+/* Today shows revision OR learning in the hero; R6 places the path beside it. */
 .dash-top {
   grid-template-columns: 1fr;
+}
+
+.dash-path-card {
+  min-width: 0;
+}
+
+@media (min-width: 900px) {
+  .dash-top {
+    grid-template-columns: minmax(280px, 380px) minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+  }
+
+  .dash-path-card {
+    padding: 20px 22px;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: 16px;
+  }
+
+  .dash-path-card .rc-path-head {
+    margin: 0 0 10px;
+  }
+
+  .rc-path {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .rc-path-node {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 0 14px;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .rc-path-node:last-child {
+    border-bottom: none;
+  }
+
+  .rc-path-mark {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 1px solid var(--hairline);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    background: var(--paper);
+    color: transparent;
+  }
+
+  .rc-path-node.is-done .rc-path-mark {
+    background: var(--browse-due);
+    border-color: var(--browse-due);
+    color: var(--on-accent, #fff);
+  }
+
+  .rc-path-node.is-current .rc-path-mark {
+    border: 1.5px solid var(--ink);
+    color: var(--ink);
+  }
+
+  .rc-path-node.is-current {
+    align-items: start;
+    padding: 6px 0 12px;
+  }
+
+  .rc-path-node.is-current .rc-path-copy {
+    padding: 16px 18px;
+    background: var(--wash, var(--page));
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+  }
+
+  .rc-path-eyebrow {
+    display: block;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--browse-due);
+  }
+
+  .rc-path-node.is-current .rc-path-title {
+    display: block;
+    margin-top: 3px;
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  .rc-path-line {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  .rc-path-title {
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  .rc-path-meta {
+    margin-left: auto;
+    flex: none;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .rc-path-sub {
+    display: block;
+    margin: 2px 0 0;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .rc-path-node.is-current .rc-path-copy {
+    display: block;
+  }
+
+  .rc-path-node.is-current .rc-path-cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 42px;
+    margin-top: 12px;
+    padding: 0 22px;
+    border-radius: 11px;
+    background: var(--ink);
+    color: var(--on-accent);
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.28);
+  }
 }
 
 .dash-revision-form {

@@ -32,6 +32,7 @@ from constitution_memorizer.web.service import (
 )
 
 TodayKind = Literal["new", "review"]
+TodaySource = Literal["constitution", "playground"]
 TodayStatus = Literal["done", "current", "upcoming", "deferred"]
 
 
@@ -51,6 +52,9 @@ class TodayUnit:
     # the ladder ("Day 3 revision" / "New Article") set against them.
     subtitle: str = ""
     day_label: str = ""
+    source: TodaySource = "constitution"
+    eyebrow: str = ""
+    cta_label: str = ""
 
 MODE_LABELS = {
     "read": "Read",
@@ -174,6 +178,12 @@ def _unit_subtitle(unit: LearningUnit) -> str:
     return (unit.title or "").strip()
 
 
+def _constitution_cta_label(kind: TodayKind, title: str) -> str:
+    if kind == "review":
+        return "Start revision →"
+    return f"Learn {title} →"
+
+
 def _day_label(engine: ReminderEngine, unit_id: str, kind: TodayKind) -> str:
     """Where this sits on the ladder — "Day 3 revision", or a new Article.
 
@@ -227,6 +237,7 @@ def _today_units_from_session(
             session_id=session.id,
             mode=session_entry_mode(session.kind),
         )
+        day_label = _day_label(engine, unit.id, kind)
         out.append(
             TodayUnit(
                 unit_id=unit.id,
@@ -237,7 +248,10 @@ def _today_units_from_session(
                 href=href,
                 position=item.position + 1,
                 subtitle=_unit_subtitle(unit),
-                day_label=_day_label(engine, unit.id, kind),
+                day_label=day_label,
+                source="constitution",
+                eyebrow=day_label if status == "current" else "",
+                cta_label=_constitution_cta_label(kind, unit.display_title),
             )
         )
     return out
@@ -258,17 +272,22 @@ def _today_units_from_preview(
             multiuser=multiuser,
             mode=session_entry_mode("revision" if kind == "review" else "auto_learning"),
         )
+        status: TodayStatus = "current" if index == 1 else "upcoming"
+        day_label = _day_label(engine, unit.id, kind)
         out.append(
             TodayUnit(
                 unit_id=unit.id,
                 title=unit.display_title,
                 article_label=_article_label(unit),
                 kind=kind,
-                status="current" if index == 1 else "upcoming",
+                status=status,
                 href=href,
                 position=index,
                 subtitle=_unit_subtitle(unit),
-                day_label=_day_label(engine, unit.id, kind),
+                day_label=day_label,
+                source="constitution",
+                eyebrow=day_label if status == "current" else "",
+                cta_label=_constitution_cta_label(kind, unit.display_title),
             )
         )
     return out

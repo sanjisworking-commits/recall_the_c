@@ -323,21 +323,22 @@
     {% endif %}
     {% if today_units|default([]) %}
     {# The design labels the path, the way it labels the starter list. #}
+    <div class="dash-path-card" data-today-path-card>
     <p class="dash-eyebrow rc-path-head">Today’s path</p>
     <ol class="rc-path" data-today-path>
       {% for item in today_units %}
-      <li class="rc-path-node is-{{ item.status }}" data-today-unit="{{ item.unit_id }}" data-today-kind="{{ item.kind }}">
+      <li class="rc-path-node is-{{ item.status }}" data-today-unit="{{ item.unit_id }}" data-today-kind="{{ item.kind }}" data-today-source="{{ item.source|default('constitution') }}">
         <span class="rc-path-mark" aria-hidden="true">{% if item.status == 'done' %}✓{% elif item.status == 'current' %}•{% endif %}</span>
         <span class="rc-path-copy">
           {# The current node leads with where it sits on the ladder; the rows
              below set the same label against their title instead. #}
-          {% if item.status == 'current' and item.day_label %}
-          <span class="rc-path-eyebrow">{{ item.day_label }}</span>
+          {% if item.status == 'current' and (item.eyebrow or item.day_label) %}
+          <span class="rc-path-eyebrow">{{ item.eyebrow or item.day_label }}</span>
           {% endif %}
           <span class="rc-path-line">
             <span class="rc-path-title">{{ item.title }}</span>
-            {% if item.status != 'current' and item.day_label %}
-            <span class="rc-path-meta">{{ item.day_label }}{% if item.status == 'deferred' %} · skipped{% endif %}</span>
+            {% if item.status != 'current' and (item.eyebrow or item.day_label) %}
+            <span class="rc-path-meta">{{ item.eyebrow or item.day_label }}{% if item.status == 'deferred' %} · skipped{% endif %}</span>
             {% elif item.status == 'deferred' %}
             <span class="rc-path-meta">skipped</span>
             {% endif %}
@@ -348,14 +349,13 @@
           {% if item.status == 'current' %}
           {# diff.md item 7 · the node's action names what it will open, rather
              than reading "Start →" beside a title it does not repeat. #}
-          <a class="rc-path-cta" href="{{ item.href }}">
-            {%- if item.kind == 'review' -%}Start revision →{%- else -%}Learn {{ item.title }} →{%- endif -%}
-          </a>
+          <a class="rc-path-cta" href="{{ item.href }}">{{ item.cta_label or ('Start revision →' if item.kind == 'review' else 'Learn ' ~ item.title ~ ' →') }}</a>
           {% endif %}
         </span>
       </li>
       {% endfor %}
     </ol>
+    </div>
     {# The ladder line under Today's path is gone from the design: the path
        already shows what today holds, and the schedule is Recall's business. #}
     {% endif %}
@@ -403,27 +403,6 @@
   {% endif %}
   {% endif %}
   {% endif %}{# /show_first_run #}
-
-  {% if law_revisions|default([]) %}
-  <section class="dash-law-revisions" aria-label="Law revisions">
-    <header class="dash-upcoming-head">
-      <h2 class="dash-eyebrow">Law revisions</h2>
-      <span class="dash-upcoming-all">{{ law_revision_count }} due</span>
-    </header>
-    <div class="dash-law-revision-list">
-      {% for item in law_revisions %}
-      <a class="dash-firstrun-item" href="{{ item.href }}">
-        <span class="dash-firstrun-item-copy">
-          <span class="dash-firstrun-item-title">{{ item.short_title }} · Section {{ item.number }}</span>
-          <span class="dash-firstrun-item-sub">Revision · Day {{ item.rung_days }} · {{ item.due_label }}</span>
-        </span>
-        <span class="dash-firstrun-item-note">Revise</span>
-        <span class="dash-firstrun-chev" aria-hidden="true">›</span>
-      </a>
-      {% endfor %}
-    </div>
-  </section>
-  {% endif %}
 
   {# Design 4c · the phone opens Plan my day as a sheet over Today. Desktop and
      no-JS phones follow the anchor's href to /learning/plan-my-day instead —

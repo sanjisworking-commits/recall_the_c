@@ -138,6 +138,7 @@ from constitution_memorizer.web.progress_stats import (
 )
 from constitution_memorizer.web.calendar_view import (
     build_calendar_month,
+    build_calendar_week,
     build_revisions_view,
 )
 from constitution_memorizer.web.completion import (
@@ -2776,6 +2777,8 @@ def create_app(
         request: Request,
         year: int | None = Query(default=None),
         month: int | None = Query(default=None),
+        view: str | None = Query(default=None),
+        week_date: str | None = Query(default=None, alias="date"),
     ) -> HTMLResponse:
         eng = _engine()
         is_guest = bool(
@@ -2785,8 +2788,24 @@ def create_app(
         if not is_guest:
             eng.bootstrap_request(include_account=entitlements_active(request))
         today = user_today(eng)
-        y = year if year is not None else today.year
-        m = month if month is not None else today.month
+        calendar_view = "week" if (view or "").strip().lower() == "week" else "month"
+        week_anchor = today
+        if calendar_view == "week":
+            raw = (week_date or "").strip()
+            if raw:
+                try:
+                    week_anchor = date.fromisoformat(raw)
+                except ValueError as exc:
+                    raise HTTPException(
+                        status_code=400, detail="Invalid date"
+                    ) from exc
+                if week_anchor.year < 1 or week_anchor.year > 9999:
+                    raise HTTPException(status_code=400, detail="Invalid date")
+            y = week_anchor.year
+            m = week_anchor.month
+        else:
+            y = year if year is not None else today.year
+            m = month if month is not None else today.month
         if m < 1 or m > 12 or y < 1 or y > 9999:
             raise HTTPException(status_code=400, detail="Invalid year or month")
         if not is_guest:
@@ -2814,15 +2833,24 @@ def create_app(
                 )
             _sync_auto_roadmap(request, eng, force=False)
         started = time.perf_counter()
-        view = build_calendar_month(
+        view_model = build_calendar_month(
             eng,
             year=y,
             month=m,
             today=today,
             auto_entitled=can_use_auto_plan(request),
         )
+        week_model = None
+        if calendar_view == "week":
+            week_model = build_calendar_week(
+                eng,
+                week_of=week_anchor,
+                today=today,
+                auto_entitled=can_use_auto_plan(request),
+            )
         if not is_guest:
             try:
+                from constitution_memorizer.playground.access import playground_view_access
                 from constitution_memorizer.playground.schedule import (
                     attach_playground_calendar_chips,
                     playground_calendar_chips,
@@ -2835,24 +2863,37 @@ def create_app(
                 overlay = getattr(app.state, "playground", None)
                 roster = getattr(app.state, "roster", None)
                 uid = playground_user_id(request)
-                if overlay is not None and roster is not None and uid is not None:
-                    month_start = date(y, m, 1)
-                    month_end = (
-                        date(y + 1, 1, 1) - timedelta(days=1)
-                        if m == 12
-                        else date(y, m + 1, 1) - timedelta(days=1)
-                    )
+                access = playground_view_access(request)
+                if (
+                    overlay is not None
+                    and roster is not None
+                    and uid is not None
+                    and access.can_open
+                ):
+                    if week_model is not None:
+                        chip_start, chip_end = week_model.start, week_model.end
+                    else:
+                        chip_start = date(y, m, 1)
+                        chip_end = (
+                            date(y + 1, 1, 1) - timedelta(days=1)
+                            if m == 12
+                            else date(y, m + 1, 1) - timedelta(days=1)
+                        )
                     extra = playground_calendar_chips(
                         overlay,
                         roster,
                         uid,
-                        month_start=month_start,
-                        month_end=month_end,
+                        month_start=chip_start,
+                        month_end=chip_end,
                         today=playground_study_today(),
                     )
-                    attach_playground_calendar_chips(view, extra)
-            except Exception:  # noqa: BLE001 — Constitution calendar must still render
-                logger.exception("playground calendar chips failed")
+                    attach_playground_calendar_chips(view_model, extra)
+                    if week_model is not None:
+                        attach_playground_calendar_chips(week_model, extra)
+            except Exception as error:  # noqa: BLE001 — T32 missing-schema only
+                if not _is_missing_optional_schema(error):
+                    raise
+                logger.warning("playground calendar chips skipped; schema missing")
         # The phone shows this month's data as a week strip + today + ladder
         # (design 19); only meaningful for the current month.
         revisions = (
@@ -2876,7 +2917,13 @@ def create_app(
         response = templates.TemplateResponse(
             request,
             "calendar.html",
-            {"calendar": view, "revisions": revisions, "pace_label": pace},
+            {
+                "calendar": view_model,
+                "week": week_model,
+                "calendar_view": calendar_view,
+                "revisions": revisions,
+                "pace_label": pace,
+            },
         )
         record_request_timing("template", started)
         return response

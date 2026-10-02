@@ -17,6 +17,7 @@ from __future__ import annotations
 import asyncio
 import logging
 from collections import defaultdict
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import date
 from uuid import UUID
@@ -114,10 +115,17 @@ class ReconciliationSnapshot:
     mappings: list[EventMapping]
 
 
-def _prepare_reconciliation(engine, store, today) -> ReconciliationSnapshot:
+def _prepare_reconciliation(engine, store, today, extra_loader=None) -> ReconciliationSnapshot:
     prefs = calendar_prefs(engine)
     anchor = today or user_local_today(engine)
-    projection = build_projection(engine, today=anchor)
+    extra = {}
+    if extra_loader is not None:
+        try:
+            extra = extra_loader(engine, anchor) or {}
+        except Exception:  # noqa: BLE001 — T31: Playground must not fail Constitution
+            logger.exception("playground calendar extra failed; Constitution sync continues")
+            extra = {}
+    projection = build_projection(engine, today=anchor, extra=extra)
     mappings = store.list_event_mappings(engine.user_id)
     return ReconciliationSnapshot(
         prefs=prefs,
@@ -135,9 +143,12 @@ async def reconcile_user_calendar(
     calendar_id: str,
     dashboard_url: str,
     today: date | None = None,
+    extra_loader: Callable | None = None,
 ) -> dict[str, int]:
     """Run one full bounded reconciliation. Returns per-op counts."""
-    snapshot = await asyncio.to_thread(_prepare_reconciliation, engine, store, today)
+    snapshot = await asyncio.to_thread(
+        _prepare_reconciliation, engine, store, today, extra_loader
+    )
     prefs = snapshot.prefs
     tz = prefs["timezone"] or "UTC"
     reminders = reminder_minutes_for(
@@ -217,6 +228,7 @@ async def sync_user_calendar(
     store: CalendarStore,
     client_factory,
     dashboard_url: str,
+    extra_loader: Callable | None = None,
 ) -> bool:
     """Locked, error-contained sync driver used by every trigger.
 
@@ -244,6 +256,7 @@ async def sync_user_calendar(
                 client=client,
                 calendar_id=connection.google_calendar_id,
                 dashboard_url=dashboard_url,
+                extra_loader=extra_loader,
             )
         except GoogleAuthRevoked:
             await asyncio.to_thread(
