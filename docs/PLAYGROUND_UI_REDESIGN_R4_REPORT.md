@@ -187,6 +187,7 @@ No new UI. Letters and Recite already map `unavailable` / `rate_limited` to type
 | Limiter on audio only | [`5c98d83`](https://github.com/sanjisworking-commits/recall_the_c/commit/5c98d83) |
 | Expired-fixture period match | [`ceaa0bb`](https://github.com/sanjisworking-commits/recall_the_c/commit/ceaa0bb) |
 | Closeout docs | [`286c98c`](https://github.com/sanjisworking-commits/recall_the_c/commit/286c98c) |
+| Ending correction | [`42c0cd3`](https://github.com/sanjisworking-commits/recall_the_c/commit/42c0cd3) |
 
 ### Limiter ordering
 

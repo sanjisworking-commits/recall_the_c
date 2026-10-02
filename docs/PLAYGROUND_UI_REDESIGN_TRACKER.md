@@ -33,7 +33,7 @@ Authority: `docs/PLAYGROUND_UI_REDESIGN_PLAN.md`. Inventories: `docs/design/PLAY
 | **R2 correction** | **`f62bd63`** (code). Fail-closed picker POST + bound `UnitLocator`. Programme still **28.1 / 100**. |
 | **R3 closeout HEAD** | **`54b5af9`** (award) · CI-green **`4cbb443`**. Score was **provisional**. |
 | **R3 post-closeout correction** | Review `86d8e56`. Code `5c3f003` (peek_capacity) + `6194e5b` (D142 theme). U2 **39/39**, U3 **29/38**, programme **44.2 / 100** restored after local+CI. |
-| **R4 closeout HEAD** | Implementation `951c349`. Hidden/D92 `4d70c9e`. Tracker `78240b2`. Pin `b57a551`. D141 `5c98d83` / `ceaa0bb` / `286c98c`. U4 **28/28**, U5 **13/13**, programme **70.2 / 100**. R5/R6 not started. |
+| **R4 closeout HEAD** | Implementation `951c349`. Hidden/D92 `4d70c9e`. Tracker `78240b2`. Pin `b57a551`. D141 `5c98d83` / `ceaa0bb` / `286c98c`. Correction pin `42c0cd3`. U4 **28/28**, U5 **13/13**, programme **70.2 / 100**. R5/R6 not started. |
 
 Visual columns (390 light/dark, ~768, ~1024, 1280 light/dark, reduced motion) stay `—` until the relevant batch. Technical rows mark Desktop/Mobile **N/A**. Status uses only: `NOT STARTED | IN PROGRESS | BLOCKED | DONE | DONE`.
 
@@ -438,7 +438,7 @@ Batch report: [`docs/PLAYGROUND_UI_REDESIGN_R4_REPORT.md`](PLAYGROUND_UI_REDESIG
 
 **R4 is complete**, including the D141 typed-fallback correction. Act progress, six-mode Learn, Playground speech, completion, and locator-aware source review shipped. Programme **70.2 / 100**. T22–T25 and T42 were not reopened. R5 and R6 are not started. Stage 1 remains frozen except the m3b / T33 supersessions this batch required. Stage 2 remains PARKED.
 
-Starting SHA `8610aa1`. Implementation `951c349`. Hidden-complete + D92 wash `4d70c9e`. Tracker `78240b2`. Pin `b57a551`. D141 limiter `5c98d83`. Expired-fixture `ceaa0bb`. Closeout docs `286c98c`.
+Starting SHA `8610aa1`. Implementation `951c349`. Hidden-complete + D92 wash `4d70c9e`. Tracker `78240b2`. Pin `b57a551`. D141 limiter `5c98d83`. Expired-fixture `ceaa0bb`. Closeout docs `286c98c`. Correction pin `42c0cd3`.
 
 U4 **28 / 28** → 18.0. U5 **13 / 13** (T42 included) → 8.0. Alembic head remains **`20260927_0027`**. No migration.
 
