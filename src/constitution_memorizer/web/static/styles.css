@@ -140,7 +140,7 @@ a {
 }
 
 a:hover {
-  color: #0e7569;
+  color: var(--browse-due);
 }
 
 .page-wrap {
@@ -284,7 +284,7 @@ html[data-theme="dark"] .brand-mark {
 }
 
 html[data-theme="dark"] .theme-toggle {
-  border-color: #555553;
+  border-color: var(--hairline);
 }
 
 .theme-toggle:hover {
@@ -10482,6 +10482,82 @@ body.is-admin-previewing { padding-top: 40px; }
   .site-header {
     padding: 0 40px;
   }
+}
+
+/* R7 closeout — reconciliation only. No IA change. D14, D16, D17, D25. */
+.page-wrap,
+.sheet,
+.main,
+.panel {
+  overflow-x: hidden;
+}
+
+a:focus-visible,
+button:focus-visible,
+[href]:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible,
+[role="button"]:focus-visible,
+[role="tab"]:focus-visible,
+[role="radio"]:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+@media (max-width: 899px) {
+  .segmented-btn,
+  .settings-theme-btn,
+  .calendar-nav-btn,
+  .calendar-nav-today,
+  .calendar-view-btn,
+  .theme-toggle {
+    min-height: 44px;
+    min-width: 44px;
+    box-sizing: border-box;
+  }
+
+  .segmented-btn {
+    height: auto;
+  }
+}
+
+@media (min-width: 900px) and (max-width: 1039px) {
+  .site-header,
+  .nav.PrimaryTabs--top,
+  .calendar-week,
+  .calendar-week-col {
+    min-width: 0;
+  }
+
+  .calendar-week-dow {
+    padding: 10px 6px;
+    gap: 4px;
+  }
+
+  .calendar-week-col {
+    padding: 8px 6px;
+    min-height: 280px;
+  }
+
+  .calendar-week-card-title {
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel,
+  .continue-card {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+html:not(.rtc-anim) .panel,
+html:not(.rtc-anim) .continue-card {
+  animation: none !important;
+  transition: none !important;
 }
 
 

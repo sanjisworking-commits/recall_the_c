@@ -2965,7 +2965,7 @@
   body[data-mscreen="settings"] .segmented-btn,
   body[data-mscreen="settings"] .settings-theme-btn {
     min-height: 44px;
-    height: 30px;
+    height: auto;
     padding: 0 12px;
     border-radius: 7px;
     font-size: 12.5px;
@@ -2992,7 +2992,7 @@
 
   body[data-mscreen="settings"] .settings-row.is-stacked .segmented-btn {
     flex: 1 1 0;
-    height: 30px;
+    height: auto;
     min-height: 44px;
     padding: 0 8px;
   }
@@ -3567,7 +3567,9 @@
   }
 
   body[data-mscreen="learn"] .learn-letters-viewswitch .segmented-btn {
-    height: 32px;
+    height: auto;
+    min-height: 44px;
+    min-width: 44px;
     padding: 0 16px;
     font-size: 12.5px;
   }
@@ -5612,3 +5614,5 @@
     padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
   }
 }
+
+/* R7 closeout — D17 Constitution Learn hit area (not a rebuild). */

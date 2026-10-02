@@ -727,7 +727,14 @@ def test_today_queue_current_roster_only(
     page = client.get("/dashboard")
     assert page.status_code == 200
     assert "Law revisions" not in page.text
-    assert "data-today-source=\"playground\"" in page.text
+    assert "data-today-path-card" in page.text
+    assert "data-today-path" in page.text
+    assert "rc-path-node" in page.text
+    assert 'data-today-source="playground"' in page.text
+    assert page.text.count('data-today-kind="review"') >= 2
+    assert "Day 3 → 7 · Playground" in page.text
+    assert "Day 1 → 3 · Playground" in page.text
+    assert "Start revision →" in page.text
     assert "BNS" in page.text
     assert "NDPS" in page.text
     assert "BNSS" not in page.text

@@ -275,9 +275,9 @@ Class follows the template that renders the page.
 | GET | `/playground/laws/{law_id}/mastered` | `playground_learned.html` | A |
 | GET | `/playground/laws/{law_id}/source-review/sections/{number}/u/{unit}` | `playground_source_review_section.html` | C |
 
-Guest `GET /playground*` today **303s to login** (`access.py:_deny_open`). Delta H (T20) will render `playground_gate.html` instead.
+Guest `GET /playground*` renders HTML **200** sign-in gate (`playground_gate.html`, T20). JSON stays 401.
 
-Paused/expired `GET /playground` today renders **EntitlementGate**, not a read-only home. Delta G (T19).
+Paused / halted / expired `GET /playground` renders **read-only home** with banner (T19). Learn and mutations stay gated.
 
 ### 3.2 Public laws / Constitution / account (selected)
 

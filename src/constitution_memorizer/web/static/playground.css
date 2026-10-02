@@ -2609,4 +2609,32 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   }
 }
 
+/* R7 closeout — D17 / D25. No IA change. */
+.PlaygroundShell {
+  overflow-x: hidden;
+}
+
+@media (max-width: 899px) {
+  .pg-learn .learn-letters-view-btn,
+  .pg-learn .segmented-btn {
+    min-height: 44px;
+    min-width: 44px;
+    height: auto;
+  }
+}
+
+@media (min-width: 900px) and (max-width: 1039px) {
+  .pg-home-grid,
+  .pg-select-layout,
+  .RolloverLayout,
+  .bareact-head {
+    min-width: 0;
+  }
+
+  .bareact-head .LawPlaygroundCta {
+    width: auto;
+    max-width: 100%;
+  }
+}
+
 
