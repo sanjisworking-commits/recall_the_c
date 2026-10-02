@@ -466,6 +466,7 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
             # may appear outside Profile. Dormant while billing returns None.
             ctx["subscription"] = subscription_status(request, eng)
             from constitution_memorizer.playground.schedule import (
+                apply_merged_today_hero,
                 playground_today_context,
                 merge_today_path,
             )
@@ -480,23 +481,7 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
                 playground_dues,
                 playground_new,
             )
-            playground_due_n = int(law_ctx.get("playground_due_count") or 0)
-            ctx["due_count"] = int(ctx.get("due_count") or 0) + playground_due_n
-            if ctx.get("today_mode") == "revision" and playground_due_n:
-                ctx["revision_count"] = int(ctx.get("revision_count") or 0) + playground_due_n
-            path_for_goal = [
-                unit
-                for unit in ctx["today_units"]
-                if unit.status != "deferred"
-                and not (unit.source == "playground" and unit.kind == "new")
-            ]
-            ctx["goal_done"] = sum(1 for unit in path_for_goal if unit.status == "done")
-            ctx["goal_total"] = len(path_for_goal)
-            ctx["goal_pct"] = (
-                int(round(100 * ctx["goal_done"] / ctx["goal_total"]))
-                if ctx["goal_total"]
-                else 0
-            )
+            apply_merged_today_hero(ctx)
             if ctx["today_units"]:
                 ctx["show_first_run"] = False
             done_id = request.query_params.get("done")

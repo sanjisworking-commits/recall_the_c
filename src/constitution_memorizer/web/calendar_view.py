@@ -546,6 +546,17 @@ class CalendarWeek:
     def month_number(self) -> int:
         return self.start.month
 
+    @property
+    def event_count(self) -> int:
+        """Visible week cards after chip attach, including Playground."""
+        return sum(len(day.week_events) for day in self.days)
+
+    @property
+    def summary(self) -> str:
+        n = self.event_count
+        unit_word = "unit" if n == 1 else "units"
+        return f"{n} {unit_word} this week"
+
 
 def build_calendar_week(
     engine: ReminderEngine,

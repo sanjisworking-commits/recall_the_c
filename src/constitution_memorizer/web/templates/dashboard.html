@@ -219,9 +219,11 @@
         </ul>
         {% endif %}
         <div class="actions">
-          {# A POST because it snapshots the due list into a durable queue.
-             Idempotent: a second tap resumes rather than re-snapshotting.
-             A div, not a p: a form is block content and would close a p. #}
+          {# Playground current work opens the path node's href. Constitution
+             revision still snapshots into the durable queue via POST. #}
+          {% if hero_cta_kind|default('constitution_revision') == 'playground_review' %}
+          <a class="btn dash-btn-full" href="{{ hero_cta_href }}" data-today-hero-cta>{{ hero_cta_label }}</a>
+          {% else %}
           <form class="dash-revision-form" method="post" action="/revision/start">
             <button type="submit" class="btn dash-btn-full" data-revision-start>
               {%- if revision_remaining|default(0) > 0 -%}
@@ -231,6 +233,7 @@
               {%- endif -%}
             </button>
           </form>
+          {% endif %}
         </div>
       </div>
     </article>

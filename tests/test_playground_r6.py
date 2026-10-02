@@ -6,7 +6,9 @@ Does not start R7 or reopen R5.
 
 from __future__ import annotations
 
+import re
 from datetime import date, timedelta
+from html import unescape
 from pathlib import Path
 from uuid import UUID
 
@@ -23,6 +25,7 @@ from constitution_memorizer.calendar_sync.projection import (
 )
 from constitution_memorizer.calendar_sync.sync import _prepare_reconciliation
 from constitution_memorizer.playground.schedule import (
+    apply_merged_today_hero,
     merge_today_path,
     playground_projection_extra,
 )
@@ -55,6 +58,83 @@ def _unit(**overrides) -> TodayUnit:
     )
     base.update(overrides)
     return TodayUnit(**base)
+
+
+def _pin_playground_today(monkeypatch: pytest.MonkeyPatch, day: date) -> None:
+    monkeypatch.setattr(
+        "constitution_memorizer.playground.roster.period.playground_today",
+        lambda now=None: day,
+    )
+    monkeypatch.setattr(
+        "constitution_memorizer.playground.schedule.playground_today",
+        lambda now=None: day,
+    )
+
+
+def _seed_ndps_due(
+    client,
+    *,
+    locator: str = "ndps:section:8:clause:a",
+    next_revision: date,
+    extra_sections: list[str] | None = None,
+) -> None:
+    assert _confirm_add(client, "ndps").status_code == 303
+    units = [locator, *(extra_sections or ())]
+    payload: dict[str, object] = {**_csrf(client)}
+    if len(units) == 1:
+        payload["unit"] = units[0]
+    else:
+        payload["unit"] = units
+    client.post(
+        "/playground/laws/ndps/sections",
+        data=payload,
+        follow_redirects=False,
+    )
+    _seed_progress(
+        client.app.state.playground,
+        USER,
+        "ndps",
+        locator,
+        status="review",
+        interval_days=1,
+        next_revision=next_revision.isoformat(),
+        times_completed=1,
+        learned_at=next_revision.isoformat(),
+    )
+
+
+def _seed_constitution_due(client, *, as_of: date) -> None:
+    engine = client.app.state.engine.for_user(USER)
+    engine.mark_all_modes_seen("clause-1")
+    engine.mark_done("clause-1", as_of=as_of)
+
+
+def _path_current_href(html: str) -> str:
+    match = re.search(
+        r'<li class="rc-path-node is-current"[^>]*>.*?'
+        r'<a class="rc-path-cta" href="([^"]+)"',
+        html,
+        re.S,
+    )
+    assert match, "no current path CTA"
+    return unescape(match.group(1))
+
+
+def _path_current_source(html: str) -> str:
+    match = re.search(
+        r'<li class="rc-path-node is-current"[^>]*data-today-source="([^"]+)"',
+        html,
+    )
+    assert match, "no current path source"
+    return match.group(1)
+
+
+def _hero_cta_href(html: str) -> str:
+    match = re.search(r'href="([^"]+)"[^>]*data-today-hero-cta', html)
+    if match is None:
+        match = re.search(r'data-today-hero-cta[^>]*href="([^"]+)"', html)
+    assert match, "no playground hero CTA"
+    return unescape(match.group(1))
 
 
 def test_r6_alembic_head_unchanged() -> None:
@@ -109,6 +189,104 @@ def test_t28_merge_dues_then_one_new_excludes_new_from_goal() -> None:
     assert len(goal) == 3
 
 
+def test_t28_due_count_playground_only_excludes_new() -> None:
+    due = _unit(
+        unit_id="ndps:section:8:clause:a",
+        source="playground",
+        kind="review",
+        status="current",
+        href="/playground/laws/ndps/sections/8/u/ndps:section:8:clause:a/learn/read?revision=1",
+        cta_label="Start revision →",
+    )
+    new = _unit(
+        unit_id="ndps:section:1",
+        source="playground",
+        kind="new",
+        status="upcoming",
+        href="/playground/laws/ndps/sections/1/learn/read",
+        cta_label="Learn →",
+    )
+    ctx = {
+        "due_count": 0,
+        "playground_due_count": 1,
+        "today_mode": "learning",
+        "revision_count": 0,
+        "show_plan_prompt": True,
+        "plan_my_day_available": True,
+        "today_units": [due, new],
+    }
+    apply_merged_today_hero(ctx)
+    assert ctx["due_count"] == 1
+    assert ctx["revision_count"] == 1
+    assert ctx["today_mode"] == "revision"
+    assert ctx["show_plan_prompt"] is False
+    assert ctx["plan_my_day_available"] is False
+    assert ctx["hero_cta_kind"] == "playground_review"
+    assert ctx["hero_cta_href"] == due.href
+    assert ctx["goal_total"] == 1
+
+
+def test_t28_due_count_mixed_constitution_and_playground() -> None:
+    playground = _unit(
+        unit_id="ndps:section:8:clause:a",
+        source="playground",
+        kind="review",
+        status="current",
+        href="/playground/ndps-8a",
+        cta_label="Start revision →",
+    )
+    constitution = _unit(
+        unit_id="clause-1",
+        source="constitution",
+        kind="review",
+        status="upcoming",
+        href="/learn/clause-1",
+    )
+    ctx = {
+        "due_count": 1,
+        "playground_due_count": 1,
+        "today_mode": "revision",
+        "revision_count": 1,
+        "show_plan_prompt": False,
+        "plan_my_day_available": False,
+        "today_units": [playground, constitution],
+    }
+    apply_merged_today_hero(ctx)
+    assert ctx["due_count"] == 2
+    assert ctx["revision_count"] == 2
+    assert ctx["hero_cta_kind"] == "playground_review"
+    assert ctx["hero_cta_href"] == playground.href
+    assert ctx["goal_total"] == 2
+
+
+def test_t28_new_only_does_not_count_as_due() -> None:
+    new = _unit(
+        unit_id="ndps:section:1",
+        source="playground",
+        kind="new",
+        status="current",
+        href="/playground/new",
+        cta_label="Learn →",
+    )
+    ctx = {
+        "due_count": 0,
+        "playground_due_count": 0,
+        "today_mode": "learning",
+        "revision_count": 0,
+        "show_plan_prompt": True,
+        "plan_my_day_available": True,
+        "today_units": [new],
+    }
+    apply_merged_today_hero(ctx)
+    assert ctx["due_count"] == 0
+    assert ctx["revision_count"] == 0
+    assert ctx["today_mode"] == "learning"
+    assert ctx["show_plan_prompt"] is True
+    assert ctx["plan_my_day_available"] is True
+    assert ctx["hero_cta_kind"] == "constitution_revision"
+    assert ctx["goal_total"] == 0
+
+
 def test_t28_d115_d117_http_path_merge_and_due_count(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -155,6 +333,97 @@ def test_t28_d115_d117_http_path_merge_and_due_count(
     new_nodes = html.count("data-today-kind=\"new\"")
     assert due_nodes >= 1
     assert new_nodes == 1
+    assert 'data-today-mode="revision"' in html
+    assert "Nothing to review today" not in html
+    assert "Plan my day" not in html
+    assert "Not today" not in html
+    assert _hero_cta_href(html) == _path_current_href(html)
+    assert 'action="/revision/start"' not in html
+
+
+def test_t28_playground_only_due_hero_matches_path(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    day = date.today()
+    _pin_playground_today(monkeypatch, day)
+    client = _authed_client(tmp_path)
+    _subscribe(client)
+    _seed_ndps_due(client, next_revision=day)
+    page = client.get("/dashboard")
+    assert page.status_code == 200
+    html = page.text
+    assert "revision due" in html
+    assert 'data-today-mode="revision"' in html
+    assert _path_current_source(html) == "playground"
+    assert "Section 8(a)" in html
+    assert "NDPS Act" in html
+    assert _hero_cta_href(html) == _path_current_href(html)
+    assert "/playground/" in _hero_cta_href(html)
+    assert 'action="/revision/start"' not in html
+    assert "Nothing to review today" not in html
+    assert "Want Recall to plan today's learning?" not in html
+    assert "Plan my day" not in html
+    assert "Not today" not in html
+
+
+def test_t28_mixed_due_playground_current_then_constitution(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    day = date.today()
+    _pin_playground_today(monkeypatch, day)
+    client = _authed_client(tmp_path)
+    _subscribe(client)
+    _seed_ndps_due(client, next_revision=day)
+    _seed_constitution_due(client, as_of=day - timedelta(days=1))
+    page = client.get("/dashboard")
+    assert page.status_code == 200
+    html = page.text
+    assert "revisions due" in html
+    assert _path_current_source(html) == "playground"
+    hero = _hero_cta_href(html)
+    assert hero == _path_current_href(html)
+    assert "/playground/" in hero
+    assert 'action="/revision/start"' not in html
+    _seed_progress(
+        client.app.state.playground,
+        USER,
+        "ndps",
+        "ndps:section:8:clause:a",
+        status="review",
+        interval_days=3,
+        next_revision=(day + timedelta(days=30)).isoformat(),
+        times_completed=2,
+    )
+    after = client.get("/dashboard").text
+    assert _path_current_source(after) == "constitution"
+    assert 'action="/revision/start"' in after
+    assert "data-today-hero-cta" not in after
+    assert "revision due" in after
+
+
+def test_t28_new_only_playground_http(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    day = date.today()
+    _pin_playground_today(monkeypatch, day)
+    client = _authed_client(tmp_path)
+    _subscribe(client)
+    assert _confirm_add(client, "ndps").status_code == 303
+    client.post(
+        "/playground/laws/ndps/sections",
+        data={**_csrf(client), "section": "1"},
+        follow_redirects=False,
+    )
+    page = client.get("/dashboard")
+    assert page.status_code == 200
+    html = page.text
+    assert "New · Playground" in html
+    assert 'data-today-kind="new"' in html
+    assert "revision due" not in html
+    assert "data-today-hero-cta" not in html
+    ring = re.search(r'class="rc-goal-frac">(\d+)/(\d+)</span>', html)
+    if ring:
+        assert int(ring.group(2)) == 0 or 'data-today-kind="review"' in html
 
 
 def test_t28_paused_lists_nothing_playground(
@@ -412,6 +681,7 @@ def test_t33_r6_asset_pins() -> None:
     dash = (TEMPLATES / "dashboard.html").read_text(encoding="utf-8")
     assert "data-today-source" in dash
     assert "dash-path-card" in dash
+    assert "data-today-hero-cta" in dash
     assert "Law revisions" not in dash
     styles = (STATIC / "styles.css").read_text(encoding="utf-8")
     assert "minmax(280px, 380px)" in styles

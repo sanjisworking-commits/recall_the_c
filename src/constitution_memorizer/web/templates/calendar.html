@@ -152,7 +152,7 @@
     </div>
   </div>
 
-  <p class="calendar-summary">{{ calendar.summary }}</p>
+  <p class="calendar-summary">{% if calendar_view|default('month') == 'week' and week %}{{ week.summary }}{% else %}{{ calendar.summary }}{% endif %}</p>
 
   <div class="calendar-legend" aria-label="Legend">
     <span class="calendar-legend-item"><span class="calendar-swatch is-memorized" aria-hidden="true"></span>Memorized</span>
