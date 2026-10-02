@@ -29,8 +29,8 @@
   {% for item in provisions %}
   <div class="pg-workspace-row">
     <div>
-      <strong>§ {{ item.number }}</strong>
-      <span>{{ item.current_title or ('Section ' + item.number) }}</span>
+      <strong>{{ item.citation or ('§ ' ~ item.number) }}</strong>
+      <span>{{ item.current_title or item.citation or ('Section ' + item.number) }}</span>
       <p>
         {% if item.lifecycle_status == 'mastered' %}{{ status_badge('mastered', 'Mastered') }}
         {% elif item.lifecycle_status == 'learned' %}{{ status_badge('learned', 'Learned') }}

@@ -13,6 +13,7 @@ from constitution_memorizer.playground.learning.models import (
 )
 from constitution_memorizer.playground.learning.modes import (
     PLAYGROUND_LEARN_MODES,
+    PLAYGROUND_MODE_ADVANCE,
     PLAYGROUND_MODE_DECK,
     PLAYGROUND_MODE_LABELS,
     PLAYGROUND_MODE_TASKS,
@@ -53,6 +54,7 @@ def mode_definitions() -> list[dict[str, object]]:
                 "lede": lede,
                 "ordinal": index,
                 "ordinal_label": f"{index:02d}",
+                "advance": PLAYGROUND_MODE_ADVANCE[mode],
             }
         )
     return out
@@ -73,12 +75,14 @@ def load_learn_provision(law_id: str, number: str, *, act=None, unit: str | None
             raise LocatorError(f"unknown section: {loc.value}")
     if section.is_omitted:
         raise LearnProvisionError(f"omitted section: {loc.value}")
+    lead_in = ""
     if unit:
         try:
             resolved = resolve_unit(loc, act=act, section=section)
         except LocatorError as exc:
             raise LearnProvisionError(f"unknown unit: {loc.value}") from exc
         body = resolved.canonical_text
+        lead_in = str(resolved.lead_in or "")
         live = source_hash_for_locator(loc, section, section_hash=source_hash)
     else:
         body = canonical_body_text(section)
@@ -86,7 +90,7 @@ def load_learn_provision(law_id: str, number: str, *, act=None, unit: str | None
     if not body:
         raise LearnProvisionError(f"empty section: {loc.value}")
     version = playground_law_source_identity(law_id).source_version
-    return loc, act, section, body, live, version
+    return loc, act, section, body, live, version, lead_in
 
 
 def provision_mode_view(

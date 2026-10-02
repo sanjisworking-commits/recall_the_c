@@ -9,6 +9,10 @@
   const completeUrl = root.getAttribute("data-pg-complete-url") || "";
   const startUrl = root.getAttribute("data-pg-start-url") || "";
   const quizUrl = root.getAttribute("data-pg-quiz-url") || "";
+  const speechUrl = root.getAttribute("data-pg-speech-url") || "";
+  const learnedUrl = root.getAttribute("data-pg-learned-url") || "";
+  const masteredUrl = root.getAttribute("data-pg-mastered-url") || "";
+  const workspaceUrl = root.getAttribute("data-pg-workspace") || "";
   const mode = root.getAttribute("data-pg-mode") || "";
   const statusEl = root.querySelector("[data-pg-complete-status]");
   const feedback = root.querySelector("[data-pg-feedback]");
@@ -70,12 +74,22 @@
     });
   }
 
+  function showFail(message) {
+    if (statusEl) {
+      statusEl.hidden = false;
+      statusEl.textContent = message;
+    }
+  }
+
   function showDone(payload) {
     const allDone = payload && payload.all_methods_complete;
     const nextMode = payload && payload.next_mode;
     const completeLabel =
       (payload && payload.methods_complete_label) ||
       (allDone ? "6 of 6 methods complete" : "Done.");
+    const completionHref = (payload && payload.completion_href) || "";
+    const mastered = payload && payload.mastered;
+    const isRevision = payload && payload.revision;
     if (statusEl) {
       statusEl.hidden = false;
       statusEl.textContent = completeLabel;
@@ -86,13 +100,33 @@
         feedbackMsg.textContent = completeLabel;
       }
       if (feedbackSub) {
-        feedbackSub.textContent = allDone
-          ? (payload && payload.revision
-              ? "This revision rung is complete."
-              : "Every method on this provision is complete.")
-          : "Continue to the next method when you are ready.";
+        if (isRevision && payload.revision_next_line) {
+          feedbackSub.textContent = payload.revision_next_line;
+        } else if (allDone) {
+          feedbackSub.textContent = isRevision
+            ? "This revision rung is complete."
+            : "Every method on this provision is complete.";
+        } else {
+          feedbackSub.textContent = "Continue to the next method when you are ready.";
+        }
       }
       if (feedbackGo) {
+        if (allDone && (!isRevision || mastered)) {
+          const href =
+            completionHref ||
+            (mastered ? masteredUrl : learnedUrl);
+          if (href) {
+            feedbackGo.setAttribute("href", href);
+            feedbackGo.textContent = mastered ? "Mastered, verbatim." : "Continue";
+            window.location.assign(href);
+            return;
+          }
+        }
+        if (isRevision && allDone) {
+          feedbackGo.setAttribute("href", workspaceUrl || feedbackGo.getAttribute("href"));
+          feedbackGo.textContent = "Back to Act";
+          return;
+        }
         if (nextMode) {
           const href = withRevisionHref(
             completeUrl.replace(/\/learn\/[^/]+\/complete$/, "/learn/" + nextMode)
@@ -112,32 +146,47 @@
     }
     return postJson(completeUrl, extra || {}).then(function (out) {
       if (out.status === 409 && out.payload && out.payload.error === "stale_revision") {
-        if (statusEl) {
-          statusEl.hidden = false;
-          statusEl.textContent = "This revision already moved on. Refresh to continue.";
-        }
+        showFail("This revision already moved on. Refresh to continue.");
         return out;
       }
       if (out.status === 409 && out.payload && out.payload.error === "not_due") {
-        if (statusEl) {
-          statusEl.hidden = false;
-          statusEl.textContent = "This revision is not due yet.";
-        }
+        showFail("This revision is not due yet.");
+        return out;
+      }
+      if (out.status === 400 && out.payload && out.payload.error === "not_selected") {
+        showFail("This provision is not in your selection.");
         return out;
       }
       if (out.ok && out.payload && out.payload.ok) {
         showDone(out.payload);
-      } else if (statusEl) {
-        statusEl.hidden = false;
-        statusEl.textContent = "Could not save this method yet.";
+      } else {
+        showFail("Could not save this method yet.");
       }
       return out;
     }).catch(function () {
-      if (statusEl) {
-        statusEl.hidden = false;
-        statusEl.textContent = "Could not save this method yet.";
-      }
+      showFail("Could not save this method yet.");
     });
+  }
+
+  function speechClient() {
+    return window.RecallSpeech || null;
+  }
+
+  function transcribeSpeech(opts) {
+    const Speech = speechClient();
+    if (!Speech || !Speech.transcribe || !speechUrl) {
+      return Promise.reject(Object.assign(new Error("speech-failed"), { code: "unavailable" }));
+    }
+    return Speech.transcribe(
+      Object.assign(
+        {
+          url: speechUrl,
+          csrf: csrf,
+          mode: mode,
+        },
+        opts || {}
+      )
+    );
   }
 
   root.querySelectorAll("[data-pg-complete]").forEach(function (button) {
@@ -283,7 +332,9 @@
     const toggle = panel.querySelector("[data-letters-toggle]");
     const fallback = panel.querySelector("[data-letters-fallback]");
     const speakBtn = panel.querySelector("[data-letters-speak]");
+    const status = panel.querySelector("[data-letters-status]");
     let full = false;
+    let recorder = null;
     function render() {
       if (!display) {
         return;
@@ -315,34 +366,70 @@
         }
       });
     });
-    function showFallback() {
-      if (fallback) {
-        fallback.hidden = false;
+    function setStatus(text) {
+      if (status) {
+        status.hidden = false;
+        status.textContent = text;
       }
     }
     if (speakBtn) {
       speakBtn.addEventListener("click", function () {
         markStarted();
-        const Speech = window.SpeechClient;
-        if (!Speech || !Speech.isSupported || !Speech.isSupported()) {
-          showFallback();
+        const Speech = speechClient();
+        if (!Speech || !Speech.isSupported || !Speech.isSupported() || !speechUrl) {
+          setStatus("Microphone unavailable. Use the typed path.");
           return;
         }
-        showFallback();
+        if (recorder) {
+          const handle = recorder;
+          recorder = null;
+          speakBtn.textContent = "▸ Speak it";
+          handle.stop().then(function (blob) {
+            return transcribeSpeech({ blob: blob, mode: "letters", fromIndex: 0 });
+          }).then(function (payload) {
+            const hits = (payload.alignment || []).filter(function (row) {
+              return row.status === "match";
+            }).length;
+            setStatus("Matched " + hits + " word" + (hits === 1 ? "" : "s") + ".");
+          }).catch(function (err) {
+            const code = err && err.code ? err.code : "";
+            if (code === "unavailable" || code === "rate_limited" || code === "provider_error") {
+              setStatus("Speech recognition is unavailable. Type the words instead.");
+            } else {
+              setStatus("I didn't catch that. Type the words instead.");
+            }
+          });
+          return;
+        }
+        Speech.startRecording().then(function (handle) {
+          recorder = handle;
+          speakBtn.textContent = "Stop";
+          setStatus("Listening… tap Stop when you finish.");
+        }).catch(function () {
+          setStatus("Microphone unavailable. Use the typed path.");
+        });
       });
     }
     const check = panel.querySelector("[data-letters-check-text]");
     if (check) {
       check.addEventListener("click", function () {
         markStarted();
-        const status = panel.querySelector("[data-letters-status]");
-        if (status) {
-          status.hidden = false;
-          status.textContent = "Checked against first letters.";
-        }
+        const manual = panel.querySelector("[data-letters-manual]");
+        const typed = manual ? manual.value : "";
+        transcribeSpeech({ text: typed, mode: "letters", fromIndex: 0 }).then(function (payload) {
+          const hits = (payload.alignment || []).filter(function (row) {
+            return row.status === "match";
+          }).length;
+          setStatus("Matched " + hits + " word" + (hits === 1 ? "" : "s") + ".");
+        }).catch(function () {
+          setStatus("Could not check those words yet.");
+        });
       });
     }
     render();
+    if (fallback) {
+      fallback.hidden = false;
+    }
   }
 
   function initType(panel) {
@@ -384,65 +471,97 @@
     }
   }
 
-  function initRecite(panel) {
-    const source = panel.getAttribute("data-recite-text") || "";
+  function renderReciteMap(panel, alignment) {
     const map = panel.querySelector("[data-recite-map]");
     const stats = panel.querySelector("[data-recite-stats]");
     const completeBtn = panel.querySelector("[data-pg-complete]");
+    const sourceWords = alignment.source_words || [];
+    const hitSet = {};
+    (alignment.hit_indices || []).forEach(function (index) {
+      hitSet[index] = true;
+    });
+    if (stats) {
+      stats.hidden = false;
+      stats.textContent = alignment.stats_label || (alignment.percent + "%");
+    }
+    if (map) {
+      map.hidden = false;
+      map.replaceChildren();
+      sourceWords.forEach(function (word, index) {
+        const span = document.createElement("span");
+        span.textContent = word + " ";
+        span.className = hitSet[index] ? "is-hit" : "is-miss";
+        map.appendChild(span);
+      });
+    }
+    if (completeBtn) {
+      completeBtn.hidden = false;
+    }
+  }
+
+  function initRecite(panel) {
     const toggle = panel.querySelector("[data-recite-toggle]");
     const peek = panel.querySelector("[data-recite-peek]");
     const blur = panel.querySelector("[data-recite-blur]");
     const check = panel.querySelector("[data-recite-check]");
     const manual = panel.querySelector("[data-recite-manual]");
-    const align = window.RecallAlign && window.RecallAlign.alignText;
+    const status = panel.querySelector("[data-recite-status]");
+    let recorder = null;
 
-    function showMap(spoken) {
-      if (!align) {
-        if (completeBtn) {
-          completeBtn.hidden = false;
-        }
-        return;
-      }
-      const result = align(source, spoken || "");
-      if (stats) {
-        stats.hidden = false;
-        stats.textContent = result.statsLabel || result.percent + "%";
-      }
-      if (map) {
-        map.hidden = false;
-        map.replaceChildren();
-        result.sourceWords.forEach(function (word, index) {
-          const span = document.createElement("span");
-          span.textContent = word + " ";
-          span.className = result.hitIndices.has(index) ? "is-hit" : "is-miss";
-          map.appendChild(span);
-        });
-      }
-      if (completeBtn) {
-        completeBtn.hidden = false;
+    function setStatus(text) {
+      if (status) {
+        status.hidden = false;
+        status.textContent = text;
       }
     }
 
     if (toggle) {
       toggle.addEventListener("click", function () {
         markStarted();
-        const Speech = window.SpeechClient;
-        if (!Speech || !Speech.isSupported || !Speech.isSupported()) {
-          const status = panel.querySelector("[data-recite-status]");
-          if (status) {
-            status.hidden = false;
-            status.textContent = "Microphone unavailable. Use the typed fallback.";
-          }
+        const Speech = speechClient();
+        if (!Speech || !Speech.isSupported || !Speech.isSupported() || !speechUrl) {
+          setStatus("Microphone unavailable. Use the typed fallback.");
           if (manual) {
             manual.focus();
           }
           return;
         }
-        const status = panel.querySelector("[data-recite-status]");
-        if (status) {
-          status.hidden = false;
-          status.textContent = "Listening… use the typed fallback if speech is blocked.";
+        if (recorder) {
+          const handle = recorder;
+          recorder = null;
+          toggle.textContent = "▸ Start reciting";
+          handle.stop().then(function (blob) {
+            return transcribeSpeech({ blob: blob, mode: "recite" });
+          }).then(function (payload) {
+            if (payload.alignment && !Array.isArray(payload.alignment)) {
+              renderReciteMap(panel, payload.alignment);
+            } else {
+              setStatus("Recited. Mark Recite done when you are ready.");
+              const completeBtn = panel.querySelector("[data-pg-complete]");
+              if (completeBtn) {
+                completeBtn.hidden = false;
+              }
+            }
+          }).catch(function (err) {
+            const code = err && err.code ? err.code : "";
+            if (code === "unavailable" || code === "rate_limited" || code === "provider_error") {
+              setStatus("Speech recognition is unavailable. Type what you recited.");
+            } else {
+              setStatus("I didn't catch that. Type what you recited.");
+            }
+          });
+          return;
         }
+        Speech.startRecording().then(function (handle) {
+          recorder = handle;
+          toggle.textContent = "Stop";
+          setStatus("Listening… tap Stop for your accuracy map.");
+        }).catch(function () {
+          setStatus("Microphone unavailable. Use the typed fallback.");
+          if (manual) {
+            manual.focus();
+          }
+        });
       });
     }
     if (peek && blur) {
@@ -466,7 +585,14 @@
     if (check) {
       check.addEventListener("click", function () {
         markStarted();
-        showMap(manual ? manual.value : "");
+        const spoken = manual ? manual.value : "";
+        transcribeSpeech({ text: spoken, mode: "recite" }).then(function (payload) {
+          if (payload.alignment && !Array.isArray(payload.alignment)) {
+            renderReciteMap(panel, payload.alignment);
+          }
+        }).catch(function () {
+          setStatus("Could not score that recitation yet.");
+        });
       });
     }
   }
@@ -501,44 +627,29 @@
         }
       });
       if (!complete) {
-        if (statusEl) {
-          statusEl.hidden = false;
-          statusEl.textContent = "Answer every question to finish Test.";
-        }
+        showFail("Answer every question to finish Test.");
         return;
       }
       const cycle = Number(root.getAttribute("data-pg-cycle") || "0");
       postJson(quizUrl, { cycle: cycle, answers: answers }).then(function (out) {
         if (out.status === 409 && out.payload && out.payload.error === "stale_revision") {
-          if (statusEl) {
-            statusEl.hidden = false;
-            statusEl.textContent = "This revision already moved on. Refresh to continue.";
-          }
+          showFail("This revision already moved on. Refresh to continue.");
           return;
         }
         if (out.status === 409) {
-          if (statusEl) {
-            statusEl.hidden = false;
-            statusEl.textContent = "This quiz expired. Refresh for a new checkpoint.";
-          }
+          showFail("This quiz expired. Refresh for a new checkpoint.");
           return;
         }
         if (out.ok && out.payload && out.payload.ok) {
           showDone(out.payload);
-          if (statusEl && out.payload.total) {
-            statusEl.hidden = false;
-            statusEl.textContent =
-              "Score " + out.payload.correct + " of " + out.payload.total + ".";
+          if (out.payload.total) {
+            showFail("Score " + out.payload.correct + " of " + out.payload.total + ".");
           }
-        } else if (statusEl) {
-          statusEl.hidden = false;
-          statusEl.textContent = "Could not grade this Test yet.";
+        } else {
+          showFail("Could not grade this Test yet.");
         }
       }).catch(function () {
-        if (statusEl) {
-          statusEl.hidden = false;
-          statusEl.textContent = "Could not grade this Test yet.";
-        }
+        showFail("Could not grade this Test yet.");
       });
     });
   }

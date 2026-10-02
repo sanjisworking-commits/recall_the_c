@@ -42,6 +42,15 @@ PLAYGROUND_MODE_DECK: dict[str, tuple[str, str]] = {
     "test": ("Quick check", "A short checkpoint on this provision."),
 }
 
+PLAYGROUND_MODE_ADVANCE: dict[str, str] = {
+    "read": "Mark as read",
+    "cloze": "Mark Cloze done",
+    "letters": "Mark Letters done",
+    "type": "Mark Type done",
+    "recite": "Mark Recite done",
+    "test": "Check answers",
+}
+
 TOTAL_PLAYGROUND_MODES = len(PLAYGROUND_LEARN_MODES)
 
 

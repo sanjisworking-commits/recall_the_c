@@ -317,7 +317,10 @@ def test_read_complete_control_not_constitution_desktop_hidden():
     ).read_text(encoding="utf-8")
     assert "learn-read-controls" not in html
     assert "pg-learn-actions" in html
-    assert "Mark as read" in html
+    assert "{{ advance_label }}" in html
+    assert "Mark as read" in (
+        ROOT / "src/constitution_memorizer/playground/learning/modes.py"
+    ).read_text(encoding="utf-8")
     assert "learn-panel-cloze" not in html
     assert "learn-panel-letters" not in html
     assert "learn-panel-type" not in html
@@ -570,7 +573,7 @@ def test_test_mode_no_answer_leak_and_stale_cycle(tmp_path: Path):
     assert page.status_code == 200
     assert "answer_index" not in page.text
     assert "answer_text" not in page.text
-    loc, _act, section, body, live, _version = load_learn_provision("ndps", "1")
+    loc, _act, section, body, live, _version, _lead = load_learn_provision("ndps", "1")
     questions = build_section_quiz(
         law_id="ndps",
         source_locator=loc.value,
@@ -627,7 +630,7 @@ def test_workspace_shows_method_progress_not_learned(tmp_path: Path):
     assert "Start learning" in page.text or "Continue" in page.text
     assert "Learn (Cloze)" not in page.text
     _complete(client, "ndps", "1", "recite")
-    loc, _act, section, body, live, _v = load_learn_provision("ndps", "1")
+    loc, _act, section, body, live, _v, _lead = load_learn_provision("ndps", "1")
     questions = build_section_quiz(
         law_id="ndps",
         source_locator=loc.value,

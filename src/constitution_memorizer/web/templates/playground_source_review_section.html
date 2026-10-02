@@ -5,9 +5,9 @@
 <section class="pg-workspace">
   <p class="pg-eyebrow">
     <a href="{{ list_href }}">Source review</a>
-    · Section {{ provision.number }}
+    · {{ provision.citation or ('Section ' ~ provision.number) }}
   </p>
-  <h1>Section {{ provision.number }}</h1>
+  <h1>{{ provision.citation or ('Section ' ~ provision.number) }}</h1>
   {% if provision.current_title %}<p class="pg-lede">{{ provision.current_title }}</p>{% endif %}
   {{ status_badge('updated', change_copy) }}
   {% if provision.lifecycle_status == 'mastered' %}{{ status_badge('mastered', 'Mastered') }}
@@ -31,7 +31,7 @@
   <div class="CanonicalText">
     <div class="VerbatimText" data-verbatim data-open="true">
       <p class="VerbatimText-kicker">VERBATIM TEXT</p>
-      <p>Section {{ provision.number }}{% if provision.current_title %} — {{ provision.current_title }}{% endif %}</p>
+      <p>{{ provision.citation or ('Section ' ~ provision.number) }}{% if provision.current_title %} — {{ provision.current_title }}{% endif %}</p>
       <blockquote>{{ provision.current_body }}</blockquote>
     </div>
   </div>

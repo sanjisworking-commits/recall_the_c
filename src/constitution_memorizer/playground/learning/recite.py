@@ -1,7 +1,9 @@
-"""Recite mode — speak the clause; accuracy map is client-side.
+"""Recite mode — speak the clause; accuracy map is server-owned.
 
-No audio retention. No persistent transcript. Speech failure must not
-make the mode unusable: the same manual/read fallback as Constitution.
+``recite_alignment`` is the only Recite scorer. The Learn client renders
+the returned map; it must not call ``RecallAlign`` itself. No audio
+retention. No persistent transcript. Speech failure must not make the
+mode unusable: typed fallback uses the same Playground speech route.
 """
 
 from __future__ import annotations

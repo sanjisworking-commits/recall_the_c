@@ -54,6 +54,7 @@ from constitution_memorizer.playground.urls import (
     roster_next_path,
     roster_path,
     sections_path,
+    source_review_path_for_locator,
     source_review_section_path,
 )
 from constitution_memorizer.subscriptions.catalog import (
@@ -1508,7 +1509,10 @@ def section_row_view(
     change_kind = getattr(source_change, "change_kind", "") if source_change else ""
     change_status = getattr(source_change, "status", "") if source_change else ""
     if missing or change_kind in {"missing", "omitted"}:
-        href = source_review_section_path(law_id, number)
+        try:
+            href = source_review_path_for_locator(locator)
+        except Exception:
+            href = source_review_section_path(law_id, number)
     else:
         try:
             href = learn_path_for_locator(locator, href_mode, revision=href_revision)
@@ -1526,6 +1530,12 @@ def section_row_view(
             unit_display = parsed.display_label
     except LocatorError:
         pass
+    review_href = ""
+    if source_change:
+        try:
+            review_href = source_review_path_for_locator(locator)
+        except Exception:
+            review_href = source_review_section_path(law_id, number)
     return {
         "locator": locator,
         "number": number,
@@ -1548,7 +1558,8 @@ def section_row_view(
         "href": href,
         "source_change_kind": change_kind,
         "source_change_status": change_status,
-        "review_href": source_review_section_path(law_id, number) if source_change else "",
+        "review_href": review_href,
+        "missing": missing,
     }
 
 

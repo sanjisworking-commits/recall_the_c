@@ -25,6 +25,7 @@ from constitution_memorizer.playground.access import (
 )
 from constitution_memorizer.playground.source_review import (
     CHANGE_KIND_MISSING,
+    CHANGE_KIND_OMITTED,
     STATUS_PENDING,
     STATUS_REVIEWED,
     StaleSourceReviewError,
@@ -48,7 +49,7 @@ from constitution_memorizer.playground.http import (
     require_playground_repo,
     require_roster_service,
 )
-from constitution_memorizer.playground.locators import LocatorError
+from constitution_memorizer.playground.locators import LocatorError, UnitLocator, parse_locator
 from constitution_memorizer.playground.roster.models import (
     RESULT_ALREADY_ACTIVE,
     RESULT_INVALID_CANDIDATE,
@@ -78,11 +79,13 @@ from constitution_memorizer.playground.learning.service import (
     quiz_for_attempt,
     summaries_for_locators,
 )
+from constitution_memorizer.playground.learning.recite import recite_alignment
 from constitution_memorizer.playground.lifecycle import (
     REVISION_RUNGS_SET,
     RevisionNotDueError,
     StaleRevisionError,
     build_revision_mode_progress,
+    format_study_date,
     revision_is_due,
 )
 from constitution_memorizer.playground.service import (
@@ -102,6 +105,7 @@ from constitution_memorizer.playground.units import (
     source_hash_for_locator,
 )
 from constitution_memorizer.playground.urls import (
+    act_mastered_path,
     add_path,
     home_path,
     law_path,
@@ -109,13 +113,21 @@ from constitution_memorizer.playground.urls import (
     learn_path,
     learn_path_for_locator,
     learn_quiz_path_for_locator,
+    learn_speech_path_for_locator,
     learn_start_path_for_locator,
+    learned_path_for_locator,
+    mastered_path_for_locator,
     roster_next_path,
     roster_path,
     sections_path,
     source_review_path,
-    source_review_reviewed_path,
+    source_review_path_for_locator,
+    source_review_reviewed_path_for_locator,
     source_review_section_path,
+)
+from constitution_memorizer.playground.progress import (
+    build_act_progress,
+    choose_next_workspace_row,
 )
 from constitution_memorizer.playground.view import (
     add_confirm_copy,
@@ -224,6 +236,51 @@ def _revision_error(exc: BaseException) -> JSONResponse:
     if isinstance(exc, RevisionNotDueError):
         return JSONResponse({"ok": False, "error": "not_due"}, status_code=409)
     raise exc
+
+
+def _after_six_payload(
+    payload: dict,
+    overlay,
+    user_id,
+    law_id: str,
+    loc,
+    *,
+    revision: bool,
+    rung: int | None = None,
+) -> dict:
+    if not payload.get("all_methods_complete"):
+        return payload
+    progress = overlay.get_progress(user_id, law_id, loc.value)
+    status = str(getattr(progress, "status", "") or "")
+    next_rev = getattr(progress, "next_revision", None) if progress is not None else None
+    interval = int(getattr(progress, "interval_days", 0) or 0) if progress is not None else 0
+    payload["lifecycle_status"] = status
+    payload["next_revision"] = next_rev
+    payload["interval_days"] = interval
+    payload["completion_href"] = ""
+    payload["mastered"] = status == "mastered"
+    if revision:
+        if status == "mastered":
+            payload["completion_href"] = mastered_path_for_locator(loc)
+            payload["methods_complete_label"] = "Mastered, verbatim."
+        else:
+            when = format_study_date(next_rev) if next_rev else ""
+            day = int(rung or interval or 0)
+            payload["methods_complete_label"] = f"Day {day} complete"
+            nxt = f"Next · Day {interval}" if interval else "Next revision scheduled"
+            if when:
+                nxt = f"{nxt} · {when}"
+            payload["revision_next_line"] = nxt
+        return payload
+    if status in {"learned", "review", "mastered"}:
+        payload["learned"] = True
+        payload["methods_complete_label"] = "Learned"
+        payload["completion_href"] = (
+            mastered_path_for_locator(loc)
+            if status == "mastered"
+            else learned_path_for_locator(loc)
+        )
+    return payload
 
 
 def _after_active_redirect(overlay, user_id, law_id: str) -> RedirectResponse:
@@ -936,25 +993,8 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                     ),
                 )
             )
-        launch = None
-        for row in rows:
-            if row["due"] and not row.get("missing") and row.get("source_change_kind") != CHANGE_KIND_MISSING:
-                launch = row
-                break
-        if launch is None:
-            for row in rows:
-                if int(row.get("completed_count") or 0) < 6 and not row.get("source_change_kind"):
-                    launch = row
-                    break
-        if launch is None and rows:
-            launch = next(
-                (
-                    row
-                    for row in rows
-                    if row.get("source_change_kind") != CHANGE_KIND_MISSING
-                ),
-                None,
-            )
+        launch = choose_next_workspace_row(rows)
+        progress = build_act_progress(rows, law_id=law_id, act=act)
         launch_verbatim = ""
         if launch is not None:
             loc = parse_selected_locator(launch["locator"], law_id)
@@ -974,6 +1014,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                 "month_name": month,
                 "launch": launch,
                 "launch_verbatim": launch_verbatim,
+                "progress": progress,
                 "source_state": source_state,
                 "source_summary": source_summary,
                 "provenance": provenance_lines(law_id),
@@ -1163,45 +1204,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
     async def playground_source_review_section(
         request: Request, law_id: str, number: str
     ) -> HTMLResponse:
-        opened = _open_source_review(request, law_id)
-        blocked = opened[0]
-        if blocked is not None:
-            return blocked  # type: ignore[return-value]
-        _none, overlay, access, act, summary = opened
-        locator = f"{law_id}:section:{number}"
-        record = next(
-            (row for row in summary.changes if row.source_locator == locator),
-            None,
-        )
-        if record is None:
-            record = overlay.get_source_change(
-                access.user_id,
-                law_id,
-                locator,
-                current_source_version=summary.current_source_version,
-                current_law_source_hash=summary.current_identity_token,
-            )
-        if record is None:
-            raise HTTPException(status_code=404, detail="Source change not found")
-        progress = overlay.get_progress(access.user_id, law_id, locator)
-        provision = affected_provision_view(record, progress=progress, act=act)
-        return templates.TemplateResponse(
-            request,
-            "playground_source_review_section.html",
-            {
-                "act": act,
-                "provision": provision,
-                "record": record,
-                "summary": summary,
-                "provenance": provenance_lines(law_id),
-                "change_copy": change_copy(record.change_kind),
-                "reviewed": record.status == STATUS_REVIEWED,
-                "workspace_href": law_path(law_id),
-                "list_href": source_review_path(law_id),
-                "read_href": f"/laws/{law_id}",
-                "reviewed_href": source_review_reviewed_path(law_id, number),
-            },
-        )
+        return await _source_review_detail(request, law_id, number, unit=None)
 
     @router.post("/laws/{law_id}/source-review/sections/{number}/reviewed")
     async def playground_source_review_mark(
@@ -1212,35 +1215,14 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         detected_source_version: str = Form(""),
         detected_law_source_hash: str = Form(""),
     ) -> Response:
-        overlay = require_playground_repo(request)
-        access = require_law_active_this_period(
+        return await _source_review_mark(
             request,
-            templates,
-            overlay,
             law_id,
-            next_url=source_review_section_path(law_id, number),
-        )
-        blocked = _denied(access)
-        if blocked is not None:
-            return blocked  # type: ignore[return-value]
-        _require_csrf(request, csrf_token)
-        locator = f"{law_id}:section:{number}"
-        try:
-            mark_source_change_reviewed(
-                overlay,
-                access.user_id,
-                law_id,
-                locator,
-                detected_source_version=detected_source_version,
-                detected_law_source_hash=detected_law_source_hash,
-            )
-        except StaleSourceReviewError:
-            raise HTTPException(status_code=409, detail="stale_source_review") from None
-        except LookupError:
-            raise HTTPException(status_code=404, detail="Source change not found") from None
-        return RedirectResponse(
-            url=source_review_path(law_id),
-            status_code=303,
+            number,
+            unit=None,
+            csrf_token=csrf_token,
+            detected_source_version=detected_source_version,
+            detected_law_source_hash=detected_law_source_hash,
         )
 
     def _gate_learn(
@@ -1281,7 +1263,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             return blocked
         try:
             act = require_playground_law(law_id)
-            loc, act, section, body, live_hash, source_version = load_learn_provision(
+            loc, act, section, body, live_hash, source_version, lead_in = load_learn_provision(
                 law_id, number, act=act, unit=unit
             )
         except (PlaygroundLawError, LocatorError, LearnProvisionError) as exc:
@@ -1303,8 +1285,13 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                         {"ok": False, "error": "source_missing"},
                         status_code=404,
                     )
+                review_url = (
+                    source_review_path_for_locator(loc_try)
+                    if loc_try is not None
+                    else source_review_section_path(law_id, number)
+                )
                 return RedirectResponse(
-                    url=source_review_section_path(law_id, number),
+                    url=review_url,
                     status_code=303,
                 )
             raise HTTPException(status_code=404, detail="Section not found") from exc
@@ -1322,6 +1309,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             "body": body,
             "live_hash": live_hash,
             "source_version": source_version,
+            "lead_in": lead_in,
         }
 
     def _mode_payload(summary, row, *, body: str, live_hash: str) -> dict:
@@ -1440,6 +1428,21 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             (item["ordinal"] for item in definitions if item["id"] == mode),
             1,
         )
+        remaining = max(0, summary.total_modes - summary.completed_count)
+        if remaining <= 0:
+            methods_left = "Mark it Done"
+        elif remaining == 1:
+            methods_left = "1 method left"
+        else:
+            methods_left = f"{remaining} methods left"
+        advance = next(
+            (item.get("advance") for item in definitions if item["id"] == mode),
+            "Mark as done",
+        )
+        lead_in = opened.get("lead_in") or ""
+        speech_url = ""
+        if mode in {"letters", "recite"}:
+            speech_url = learn_speech_path_for_locator(loc, mode)
         return templates.TemplateResponse(
             request,
             "playground_learn.html",
@@ -1448,11 +1451,14 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                 "section": opened["section"],
                 "locator": loc.value,
                 "canonical_body": body,
+                "lead_in": lead_in,
                 "learn_mode": mode,
                 "learn_modes": definitions,
                 "mode_label": PLAYGROUND_MODE_LABELS[mode],
                 "step_n": step_n,
                 "summary": summary,
+                "methods_left": methods_left,
+                "advance_label": advance,
                 "current_status": current_status,
                 "progress": progress,
                 "source_outdated": source_outdated,
@@ -1466,6 +1472,9 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                 "complete_url": learn_complete_path_for_locator(loc, mode),
                 "start_url": learn_start_path_for_locator(loc, mode),
                 "quiz_url": learn_quiz_path_for_locator(loc),
+                "speech_url": speech_url,
+                "learned_url": learned_path_for_locator(loc),
+                "mastered_url": mastered_path_for_locator(loc),
                 "quiz_cycle": cycle,
                 "quiz_questions": quiz_questions,
                 "cloze_fallback": cloze_needs_fallback(body),
@@ -1606,6 +1615,15 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                 payload["methods_complete_label"] = (
                     f"Day {row.rung_days} complete"
                 )
+            payload = _after_six_payload(
+                payload,
+                overlay,
+                access.user_id,
+                law_id,
+                loc,
+                revision=True,
+                rung=rung,
+            )
             return JSONResponse(payload)
         row = overlay.complete_mode(
             access.user_id,
@@ -1627,6 +1645,14 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         if summary.all_methods_complete:
             payload["methods_complete_label"] = "Learned"
             payload["learned"] = True
+        payload = _after_six_payload(
+            payload,
+            overlay,
+            access.user_id,
+            law_id,
+            loc,
+            revision=False,
+        )
         return JSONResponse(payload)
 
     @router.post("/laws/{law_id}/sections/{number}/learn/test/quiz")
@@ -1716,6 +1742,15 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             payload["revision"] = True
             if summary.all_methods_complete:
                 payload["methods_complete_label"] = f"Day {rung} complete"
+            payload = _after_six_payload(
+                payload,
+                overlay,
+                access.user_id,
+                law_id,
+                loc,
+                revision=True,
+                rung=rung,
+            )
             return JSONResponse(payload)
         stored = overlay.get_mode_progress(
             access.user_id, law_id, loc.value, "test"
@@ -1761,6 +1796,477 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         if summary.all_methods_complete:
             payload["methods_complete_label"] = "Learned"
             payload["learned"] = True
+        payload = _after_six_payload(
+            payload,
+            overlay,
+            access.user_id,
+            law_id,
+            loc,
+            revision=False,
+        )
         return JSONResponse(payload)
+
+    async def _playground_speech(
+        request: Request,
+        law_id: str,
+        number: str,
+        mode: str,
+        *,
+        unit: str | None,
+    ) -> JSONResponse:
+        from constitution_memorizer.speech.align import align_text as letters_align
+        from constitution_memorizer.speech.align import tokenize
+        from constitution_memorizer.speech.limits import (
+            SpeechTooLarge,
+            mime_allowed,
+            read_upload_limited,
+        )
+        from constitution_memorizer.speech.provider import (
+            SpeechError,
+            SpeechUnavailable,
+            Transcript,
+        )
+
+        header = request.headers.get("X-CSRF-Token") or ""
+        form = await request.form()
+        token = header or str(form.get("csrf_token") or "")
+        _require_csrf(request, token)
+        opened = _gate_learn(
+            request, law_id, number, mode, json_mode=True, unit=unit
+        )
+        blocked = _denied(opened)
+        if blocked is not None:
+            return blocked  # type: ignore[return-value]
+        if mode not in {"letters", "recite"}:
+            return JSONResponse({"ok": False, "error": "invalid_mode"}, status_code=400)
+        expected = str(form.get("expected") or "")
+        del expected
+        typed = str(form.get("text") or "").strip()
+        limiter = request.app.state.speech_rate_limiter
+        user = getattr(request.state, "current_user", None)
+        if user is not None:
+            rate_key = f"user:{user.id}"
+        elif request.client is not None:
+            rate_key = f"ip:{request.client.host}"
+        else:
+            rate_key = "ip:unknown"
+        if not limiter.allow(rate_key):
+            return JSONResponse({"ok": False, "error": "rate_limited"}, status_code=429)
+        body = opened["body"]
+        transcript_text = typed
+        words_payload: list[dict] = []
+        if not typed:
+            audio = form.get("audio")
+            if audio is None or not hasattr(audio, "read"):
+                return JSONResponse({"ok": False, "error": "empty"}, status_code=400)
+            content_type = getattr(audio, "content_type", None) or ""
+            if not mime_allowed(content_type):
+                return JSONResponse({"ok": False, "error": "unsupported_type"}, status_code=400)
+            try:
+                audio_bytes = await read_upload_limited(audio)
+            except SpeechTooLarge:
+                return JSONResponse({"ok": False, "error": "too_large"}, status_code=413)
+            if not audio_bytes:
+                return JSONResponse({"ok": False, "error": "empty"}, status_code=400)
+            provider = request.app.state.speech_provider
+            try:
+                result: Transcript = await provider.transcribe(
+                    audio_bytes,
+                    mime_type=content_type.split(";")[0].strip() or "audio/webm",
+                    keyterms=(),
+                )
+            except SpeechUnavailable:
+                return JSONResponse({"ok": False, "error": "unavailable"}, status_code=503)
+            except SpeechError as exc:
+                return JSONResponse(
+                    {"ok": False, "error": getattr(exc, "error_code", "provider_error")},
+                    status_code=502,
+                )
+            transcript_text = result.text.strip()
+            words_payload = [
+                {"word": item.word, "confidence": item.confidence}
+                for item in result.words
+            ]
+            if not transcript_text:
+                return JSONResponse({"ok": False, "error": "empty"}, status_code=400)
+        payload: dict[str, object] = {
+            "ok": True,
+            "transcript": transcript_text,
+            "words": words_payload,
+        }
+        if mode == "letters":
+            raw_start = form.get("from_index") or 0
+            try:
+                start = max(0, int(raw_start))
+            except (TypeError, ValueError):
+                start = 0
+            if start > len(tokenize(body)):
+                start = 0
+            hits = letters_align(body, transcript_text, from_index=start)
+            payload["alignment"] = [
+                {"index": hit.index, "status": hit.status} for hit in hits
+            ]
+        else:
+            mapped = recite_alignment(body, transcript_text)
+            payload["alignment"] = {
+                "source_words": list(mapped.source_words),
+                "hit_indices": sorted(mapped.hit_indices),
+                "hits": mapped.hits,
+                "total": mapped.total,
+                "percent": mapped.percent,
+                "stats_label": mapped.stats_label(),
+            }
+        return JSONResponse(payload)
+
+    @router.post("/laws/{law_id}/sections/{number}/learn/{mode}/speech")
+    async def playground_learn_speech(
+        request: Request, law_id: str, number: str, mode: str
+    ) -> JSONResponse:
+        return await _playground_speech(request, law_id, number, mode, unit=None)
+
+    @router.post("/laws/{law_id}/sections/{number}/u/{unit}/learn/{mode}/speech")
+    async def playground_learn_speech_unit(
+        request: Request, law_id: str, number: str, unit: str, mode: str
+    ) -> JSONResponse:
+        return await _playground_speech(request, law_id, number, mode, unit=unit)
+
+    def _workspace_progress_rows(overlay, user_id, law_id: str, act):
+        selections = overlay.list_selection(user_id, law_id)
+        progress_map = {
+            row.source_locator: row
+            for row in overlay.list_progress(user_id, law_id)
+        }
+        pending = overlay.list_source_changes(
+            user_id, law_id, status=STATUS_PENDING
+        )
+        kind_by = {row.source_locator: row.change_kind for row in pending}
+        rows = []
+        for sel in selections:
+            loc = parse_selected_locator(sel.source_locator, law_id)
+            section = act.section(loc.section_number) if loc is not None else None
+            change_kind = str(kind_by.get(sel.source_locator) or "")
+            missing = (
+                section is None
+                or bool(getattr(section, "is_omitted", False))
+                or change_kind in {CHANGE_KIND_MISSING, CHANGE_KIND_OMITTED}
+            )
+            rows.append(
+                {
+                    "locator": sel.source_locator,
+                    "missing": missing,
+                    "source_change_kind": change_kind,
+                    "progress": progress_map.get(sel.source_locator),
+                    "completed_count": 0,
+                    "status": str(
+                        getattr(progress_map.get(sel.source_locator), "status", "") or ""
+                    ),
+                    "citation": citation_label(sel.source_locator),
+                    "href": "",
+                    "cta": "",
+                    "due_label": "",
+                }
+            )
+        return rows, bool(pending)
+
+    def _whole_act_mastered(overlay, user_id, law_id: str, act):
+        rows, source_pending = _workspace_progress_rows(
+            overlay, user_id, law_id, act
+        )
+        facts = build_act_progress(rows, law_id=law_id, act=act)
+        effective = [
+            row
+            for row in rows
+            if not row["missing"]
+            and row["source_change_kind"] not in {CHANGE_KIND_MISSING, CHANGE_KIND_OMITTED}
+        ]
+        ok = (
+            facts.entire_act
+            and bool(effective)
+            and all(
+                str(getattr(row["progress"], "status", "") or "") == "mastered"
+                for row in effective
+            )
+        )
+        return ok, facts, source_pending
+
+    def _render_completion(
+        request: Request,
+        law_id: str,
+        number: str,
+        *,
+        unit: str | None,
+        want: str,
+    ):
+        from constitution_memorizer.playground.locators import SectionLocator
+
+        opened = _gate_learn(
+            request, law_id, number, "read", json_mode=False, unit=unit
+        )
+        blocked = _denied(opened)
+        if blocked is not None:
+            return blocked
+        overlay = opened["overlay"]
+        access = opened["access"]
+        loc = opened["locator"]
+        act = opened["act"]
+        progress = overlay.get_progress(access.user_id, law_id, loc.value)
+        status = str(getattr(progress, "status", "") or "")
+        if status == "review":
+            return RedirectResponse(url=law_path(law_id), status_code=303)
+        rows, source_pending = _workspace_progress_rows(
+            overlay, access.user_id, law_id, act
+        )
+        facts = build_act_progress(rows, law_id=law_id, act=act)
+        if want == "learned":
+            if status == "mastered":
+                return RedirectResponse(
+                    url=mastered_path_for_locator(loc), status_code=303
+                )
+            if status != "learned":
+                return RedirectResponse(
+                    url=learn_path_for_locator(loc, "read"), status_code=303
+                )
+            variant = "learned"
+        else:
+            if status != "mastered":
+                return RedirectResponse(url=law_path(law_id), status_code=303)
+            whole, facts, source_pending = _whole_act_mastered(
+                overlay, access.user_id, law_id, act
+            )
+            variant = "whole" if whole else "mastered"
+        if variant == "whole":
+            title = "The whole Act. By heart."
+            kicker = act.short_name
+            note = (
+                "Completed all six review rungs through Day 60 on "
+                f"{facts.completed_scope_count} of {facts.selected_count} provisions."
+            )
+        elif variant == "mastered":
+            title = "Mastered, verbatim."
+            kicker = citation_label(loc)
+            note = "Completed all six review rungs through Day 60."
+        else:
+            title = (
+                "Section learned."
+                if isinstance(loc, SectionLocator)
+                else f"{citation_label(loc)} learned."
+            )
+            kicker = citation_label(loc)
+            when = ""
+            if progress is not None and progress.next_revision:
+                when = format_study_date(progress.next_revision)
+            note = "First revision · Day 1"
+            if when:
+                note = f"{note} · {when}"
+        return templates.TemplateResponse(
+            request,
+            "playground_learned.html",
+            {
+                "act": act,
+                "locator": loc,
+                "citation": citation_label(loc),
+                "variant": variant,
+                "title": title,
+                "kicker": kicker,
+                "note": note,
+                "progress": facts,
+                "lifecycle": progress,
+                "source_pending": source_pending,
+                "workspace_href": law_path(law_id),
+                "rungs": (1, 3, 7, 15, 30, 60),
+            },
+        )
+
+    @router.get("/laws/{law_id}/sections/{number}/learned", response_class=HTMLResponse)
+    async def playground_learned(
+        request: Request, law_id: str, number: str
+    ) -> HTMLResponse:
+        return _render_completion(request, law_id, number, unit=None, want="learned")
+
+    @router.get(
+        "/laws/{law_id}/sections/{number}/u/{unit}/learned",
+        response_class=HTMLResponse,
+    )
+    async def playground_learned_unit(
+        request: Request, law_id: str, number: str, unit: str
+    ) -> HTMLResponse:
+        return _render_completion(request, law_id, number, unit=unit, want="learned")
+
+    @router.get("/laws/{law_id}/sections/{number}/mastered", response_class=HTMLResponse)
+    async def playground_mastered(
+        request: Request, law_id: str, number: str
+    ) -> HTMLResponse:
+        return _render_completion(request, law_id, number, unit=None, want="mastered")
+
+    @router.get(
+        "/laws/{law_id}/sections/{number}/u/{unit}/mastered",
+        response_class=HTMLResponse,
+    )
+    async def playground_mastered_unit(
+        request: Request, law_id: str, number: str, unit: str
+    ) -> HTMLResponse:
+        return _render_completion(request, law_id, number, unit=unit, want="mastered")
+
+    @router.get("/laws/{law_id}/mastered", response_class=HTMLResponse)
+    async def playground_act_mastered(request: Request, law_id: str) -> HTMLResponse:
+        overlay = require_playground_repo(request)
+        access = require_law_active_this_period(
+            request, templates, overlay, law_id, next_url=act_mastered_path(law_id)
+        )
+        blocked = _denied(access)
+        if blocked is not None:
+            return blocked
+        try:
+            act = require_playground_law(law_id)
+        except PlaygroundLawError:
+            raise HTTPException(status_code=404, detail="Law not found") from None
+        ok, facts, source_pending = _whole_act_mastered(
+            overlay, access.user_id, law_id, act
+        )
+        if not ok:
+            return RedirectResponse(url=law_path(law_id), status_code=303)
+        return templates.TemplateResponse(
+            request,
+            "playground_learned.html",
+            {
+                "act": act,
+                "locator": None,
+                "citation": act.short_name,
+                "variant": "whole",
+                "title": "The whole Act. By heart.",
+                "kicker": act.short_name,
+                "note": (
+                    "Completed all six review rungs through Day 60 on "
+                    f"{facts.completed_scope_count} of {facts.selected_count} provisions."
+                ),
+                "progress": facts,
+                "lifecycle": None,
+                "source_pending": source_pending,
+                "workspace_href": law_path(law_id),
+                "rungs": (1, 3, 7, 15, 30, 60),
+            },
+        )
+
+    def _source_review_locator(law_id: str, number: str, unit: str | None):
+        if unit:
+            return parse_locator(f"{law_id}:section:{number}:{unit}")
+        return parse_locator(f"{law_id}:section:{number}")
+
+    async def _source_review_detail(
+        request: Request, law_id: str, number: str, *, unit: str | None
+    ):
+        opened = _open_source_review(request, law_id)
+        blocked = opened[0]
+        if blocked is not None:
+            return blocked
+        _none, overlay, access, act, summary = opened
+        try:
+            loc = _source_review_locator(law_id, number, unit)
+        except LocatorError:
+            raise HTTPException(status_code=404, detail="Source change not found") from None
+        locator = loc.value
+        record = next(
+            (row for row in summary.changes if row.source_locator == locator),
+            None,
+        )
+        if record is None:
+            record = overlay.get_source_change(
+                access.user_id,
+                law_id,
+                locator,
+                current_source_version=summary.current_source_version,
+                current_law_source_hash=summary.current_identity_token,
+            )
+        if record is None:
+            raise HTTPException(status_code=404, detail="Source change not found")
+        progress = overlay.get_progress(access.user_id, law_id, locator)
+        provision = affected_provision_view(record, progress=progress, act=act)
+        return templates.TemplateResponse(
+            request,
+            "playground_source_review_section.html",
+            {
+                "act": act,
+                "provision": provision,
+                "record": record,
+                "summary": summary,
+                "provenance": provenance_lines(law_id),
+                "change_copy": change_copy(record.change_kind),
+                "reviewed": record.status == STATUS_REVIEWED,
+                "workspace_href": law_path(law_id),
+                "list_href": source_review_path(law_id),
+                "read_href": f"/laws/{law_id}",
+                "reviewed_href": source_review_reviewed_path_for_locator(loc),
+            },
+        )
+
+    async def _source_review_mark(
+        request: Request,
+        law_id: str,
+        number: str,
+        *,
+        unit: str | None,
+        csrf_token: str,
+        detected_source_version: str,
+        detected_law_source_hash: str,
+    ):
+        overlay = require_playground_repo(request)
+        try:
+            loc = _source_review_locator(law_id, number, unit)
+        except LocatorError:
+            raise HTTPException(status_code=404, detail="Source change not found") from None
+        access = require_law_active_this_period(
+            request,
+            templates,
+            overlay,
+            law_id,
+            next_url=source_review_path_for_locator(loc),
+        )
+        blocked = _denied(access)
+        if blocked is not None:
+            return blocked
+        _require_csrf(request, csrf_token)
+        try:
+            mark_source_change_reviewed(
+                overlay,
+                access.user_id,
+                law_id,
+                loc.value,
+                detected_source_version=detected_source_version,
+                detected_law_source_hash=detected_law_source_hash,
+            )
+        except StaleSourceReviewError:
+            raise HTTPException(status_code=409, detail="stale_source_review") from None
+        except LookupError:
+            raise HTTPException(status_code=404, detail="Source change not found") from None
+        return RedirectResponse(url=source_review_path(law_id), status_code=303)
+
+    @router.get(
+        "/laws/{law_id}/source-review/sections/{number}/u/{unit}",
+        response_class=HTMLResponse,
+    )
+    async def playground_source_review_unit(
+        request: Request, law_id: str, number: str, unit: str
+    ) -> HTMLResponse:
+        return await _source_review_detail(request, law_id, number, unit=unit)
+
+    @router.post("/laws/{law_id}/source-review/sections/{number}/u/{unit}/reviewed")
+    async def playground_source_review_mark_unit(
+        request: Request,
+        law_id: str,
+        number: str,
+        unit: str,
+        csrf_token: str = Form(""),
+        detected_source_version: str = Form(""),
+        detected_law_source_hash: str = Form(""),
+    ) -> Response:
+        return await _source_review_mark(
+            request,
+            law_id,
+            number,
+            unit=unit,
+            csrf_token=csrf_token,
+            detected_source_version=detected_source_version,
+            detected_law_source_hash=detected_law_source_hash,
+        )
 
     return router

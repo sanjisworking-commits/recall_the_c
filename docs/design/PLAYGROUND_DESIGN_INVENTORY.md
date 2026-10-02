@@ -102,23 +102,23 @@ Those seven screens do **not** include Learn modes, clause picker, Today Playgro
 
 ---
 
-## 2. Production template inventory (80 active files)
+## 2. Production template inventory (81 active files)
 
-R1 T41 re-check (this file): **80 active templates, 0 unclassified.** The four class-C templates are named in §2.5. `playground_cloze.html` remains deleted (class E).
+R1 T41 re-check (this file): **81 active templates, 0 unclassified.** The four class-C templates are named in §2.5. `playground_cloze.html` remains deleted (class E).
 
 ### 2.1 Classification totals
 
 | Class | Meaning | Count |
 |---|---|---|
-| A | Direct prototype match (or A, verify-only) | 20 |
+| A | Direct prototype match (or A, verify-only) | 21 |
 | B | Another design family; restyle non-conforming elements | 45 |
 | C | Missing from prototype; designed extension | 4 templates + listed states |
 | D | Explicitly out of scope (§21.4) | 11 |
 | E | Obsolete; removed after T7 proof | **0** (`playground_cloze.html` deleted) |
 | **Unclassified templates** | | **0** |
-| **Active templates** | | **80** (was 81 before T7) |
+| **Active templates** | | **81** (was 80 before R4 `playground_learned.html`) |
 
-### 2.2 Class A — Playground / shell / matched product surfaces (18)
+### 2.2 Class A — Playground / shell / matched product surfaces (19)
 
 | Template | Route / surface | Batch | Tracker IDs |
 |---|---|---|---|
@@ -130,6 +130,7 @@ R1 T41 re-check (this file): **80 active templates, 0 unclassified.** The four c
 | `playground_select.html` | `GET /playground/laws/{id}/sections` | R2 | D41–D50, D128–D129 |
 | `playground_law.html` | `GET /playground/laws/{id}` | R4 | D64–D74, D132 |
 | `playground_learn.html` | `GET /playground/laws/{id}/sections/{n}/learn/{mode}` | R4 | D75–D87, D139, D141 |
+| `playground_learned.html` | `GET .../learned` · `.../mastered` · `GET /playground/laws/{id}/mastered` | R4 | D88–D92 |
 | `playground_remove.html` | `GET /playground/roster/{id}/remove` | R5 | D95 |
 | `playground_roster.html` | `GET /playground/roster` | R5 | D93–D94, D96 |
 | `playground_roster_next.html` | `GET /playground/roster/next` | R5 | D97–D100, D130 |
@@ -263,10 +264,16 @@ Class follows the template that renders the page.
 | GET | `/playground/laws/{law_id}/source-review` | `playground_source_review.html` | C |
 | GET | `/playground/laws/{law_id}/source-review/sections/{number}` | `playground_source_review_section.html` | C |
 | POST | `/playground/laws/{law_id}/source-review/sections/{number}/reviewed` | redirect | C (same family) |
+| POST | `.../source-review/sections/{number}/u/{unit}/reviewed` | redirect | C (T42 locator twin) |
 | GET | `/playground/laws/{law_id}/sections/{number}/learn/{mode}` | `playground_learn.html` | A |
+| GET | `/playground/laws/{law_id}/sections/{number}/u/{unit}/learn/{mode}` | `playground_learn.html` | A |
 | POST | `.../learn/{mode}/start` | JSON/redirect | A (no extra page) |
 | POST | `.../learn/{mode}/complete` | JSON/redirect | A |
 | POST | `.../learn/test/quiz` | JSON | A |
+| POST | `.../learn/{mode}/speech` | JSON | A |
+| GET | `.../learned` · `.../mastered` | `playground_learned.html` | A |
+| GET | `/playground/laws/{law_id}/mastered` | `playground_learned.html` | A |
+| GET | `/playground/laws/{law_id}/source-review/sections/{number}/u/{unit}` | `playground_source_review_section.html` | C |
 
 Guest `GET /playground*` today **303s to login** (`access.py:_deny_open`). Delta H (T20) will render `playground_gate.html` instead.
 

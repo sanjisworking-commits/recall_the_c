@@ -32,6 +32,7 @@ from constitution_memorizer.playground.units import (
 )
 from constitution_memorizer.playground.urls import (
     source_review_path,
+    source_review_path_for_locator,
     source_review_section_path,
 )
 
@@ -125,6 +126,7 @@ class LawSourceState:
 class AffectedProvision:
     source_locator: str
     number: str
+    citation: str
     change_kind: str
     status: str
     previous_source_version: str
@@ -712,8 +714,10 @@ def affected_provision_view(
     number = _locator_number(record.source_locator)
     title = ""
     body = ""
+    citation = f"Section {number}"
     try:
         loc = parse_locator(record.source_locator)
+        citation = citation_label(loc)
     except LocatorError:
         loc = None
     if act is not None and record.change_kind != CHANGE_KIND_MISSING and loc is not None:
@@ -733,6 +737,7 @@ def affected_provision_view(
     return AffectedProvision(
         source_locator=record.source_locator,
         number=number,
+        citation=citation,
         change_kind=record.change_kind,
         status=record.status,
         previous_source_version=record.previous_source_version,
@@ -745,7 +750,7 @@ def affected_provision_view(
         had_selection=record.had_selection,
         current_title=title,
         current_body=body,
-        href=source_review_section_path(record.law_id, number),
+        href=source_review_path_for_locator(record.source_locator),
     )
 
 

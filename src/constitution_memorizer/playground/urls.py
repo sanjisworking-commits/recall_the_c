@@ -116,3 +116,47 @@ def source_review_section_path(law_id: str, number: str) -> str:
 
 def source_review_reviewed_path(law_id: str, number: str) -> str:
     return f"{source_review_section_path(law_id, number)}/reviewed"
+
+
+def source_review_path_for_locator(locator: PlaygroundLocator | str) -> str:
+    loc = parse_locator(locator) if isinstance(locator, str) else locator
+    if isinstance(loc, UnitLocator):
+        return (
+            f"{source_review_path(loc.law_id)}/sections/{loc.section_number}"
+            f"/u/{_unit_path_key(loc)}"
+        )
+    return source_review_section_path(loc.law_id, loc.section_number)
+
+
+def source_review_reviewed_path_for_locator(locator: PlaygroundLocator | str) -> str:
+    return f"{source_review_path_for_locator(locator)}/reviewed"
+
+
+def learn_speech_path_for_locator(
+    locator: PlaygroundLocator | str, mode: str
+) -> str:
+    return f"{learn_path_for_locator(locator, mode)}/speech"
+
+
+def learned_path_for_locator(locator: PlaygroundLocator | str) -> str:
+    loc = parse_locator(locator) if isinstance(locator, str) else locator
+    if isinstance(loc, UnitLocator):
+        return (
+            f"{PREFIX}/laws/{loc.law_id}/sections/{loc.section_number}"
+            f"/u/{_unit_path_key(loc)}/learned"
+        )
+    return f"{PREFIX}/laws/{loc.law_id}/sections/{loc.section_number}/learned"
+
+
+def mastered_path_for_locator(locator: PlaygroundLocator | str) -> str:
+    loc = parse_locator(locator) if isinstance(locator, str) else locator
+    if isinstance(loc, UnitLocator):
+        return (
+            f"{PREFIX}/laws/{loc.law_id}/sections/{loc.section_number}"
+            f"/u/{_unit_path_key(loc)}/mastered"
+        )
+    return f"{PREFIX}/laws/{loc.law_id}/sections/{loc.section_number}/mastered"
+
+
+def act_mastered_path(law_id: str) -> str:
+    return f"{PREFIX}/laws/{law_id}/mastered"

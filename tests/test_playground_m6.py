@@ -543,7 +543,7 @@ def test_canonical_reveal_matches_source_and_has_no_ai_copy(tmp_path: Path):
     assert section is not None
     assert canonical_body_text(section) in workspace.text
     learn = client.get(learn_path("ndps", "1"))
-    assert "VERBATIM TEXT" in learn.text
+    assert "VERBATIM BARE ACT" in learn.text
     for phrase in FORBIDDEN_AI:
         assert phrase.lower() not in workspace.text.lower()
         assert phrase.lower() not in learn.text.lower()

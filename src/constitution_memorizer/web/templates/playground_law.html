@@ -2,13 +2,69 @@
 {% from "partials/playground.html" import trust_mark, status_badge %}
 {% block title %}{{ act.short_name }} · Playground{% endblock %}
 {% block playground %}
-<section class="pg-workspace">
-  <p class="pg-eyebrow">In {{ month_name }} Playground</p>
-  <h1>{{ act.short_name }}</h1>
-  <p>{{ status_badge('in_playground', 'In ' + month_name + ' Playground') }}</p>
+<section class="pg-workspace pg-act-progress">
+  <header class="pg-act-head">
+    <a class="pg-back" href="/playground">← Playground</a>
+    <p class="pg-eyebrow">Playground · {{ progress.scope_label }}</p>
+    <h1>{{ act.short_name }}</h1>
+    <p>{{ status_badge('in_playground', 'In ' + month_name + ' Playground') }}</p>
+  </header>
+
+  {% if progress.selected_count %}
+  <div class="pg-act-ring-row">
+    <span
+      class="pg-progress-ring pg-progress-ring--act"
+      style="--pg-ring-pct: {{ progress.ring_pct }};"
+      role="img"
+      aria-label="{{ progress.fraction_label }} provisions learned"
+    >
+      <span class="pg-progress-ring-label">{{ progress.fraction_label }}</span>
+    </span>
+    <span class="pg-act-ring-copy">
+      <span class="pg-act-headline">{{ progress.headline }}</span>
+      {% if progress.subhead %}<span class="pg-act-subhead">{{ progress.subhead }}</span>{% endif %}
+    </span>
+  </div>
+  {% if progress.next_citation %}
+  <p class="pg-act-next-row">
+    <span class="pg-chip pg-chip--next" title="{{ progress.next_citation }}">Next · {{ progress.next_citation }}</span>
+  </p>
+  {% endif %}
+  <p class="pg-eyebrow">{{ progress.scope_label }}</p>
+  <div class="pg-waffle" role="list" aria-label="Selected provisions">
+    {% for cell in progress.waffle %}
+    <span
+      class="pg-waffle-cell is-{{ cell.status }}"
+      role="listitem"
+      title="{{ cell.title }}"
+    ><span class="visually-hidden">{{ cell.title }}</span></span>
+    {% endfor %}
+  </div>
+  <p class="pg-eyebrow">On the ladder</p>
+  <div class="pg-rung-bar pg-rung-bar--act" role="img" aria-label="Revision ladder">
+    {% for rung in progress.rungs %}
+    <span class="pg-rung-col">
+      <span class="pg-rung-count">{{ rung.count }}</span>
+      <span class="pg-rung pg-grow" style="--pg-rung-h: {{ rung.height_pct }}%;"></span>
+      <span class="pg-rung-label">{{ rung.label }}</span>
+    </span>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="pg-act-empty">
+    <p class="pg-act-headline">{{ progress.headline }}</p>
+    <p class="pg-lede">{{ progress.subhead }}</p>
+  </div>
+  {% endif %}
+
+  <p class="pg-actions pg-act-cta">
+    {% if progress.selected_count and progress.next_href %}
+    <a class="pg-btn" href="{{ progress.next_href }}">{{ progress.next_cta }}</a>
+    {% endif %}
+    <a class="pg-btn {% if progress.selected_count %}pg-btn--ghost{% endif %}" href="/playground/laws/{{ act.slug }}/sections">Manage sections</a>
+  </p>
   <p class="pg-actions">
     <a class="pg-btn pg-btn--ghost" href="/laws/{{ act.slug }}">Read Bare Act</a>
-    <a class="pg-btn pg-btn--quiet" href="/playground/laws/{{ act.slug }}/sections">Manage sections</a>
   </p>
   {{ trust_mark("Bare Act wording, never rewritten.") }}
   {% if provenance %}
@@ -36,10 +92,9 @@
   {% endif %}
   {% if not rows %}
   <p class="pg-lede">No provisions selected yet.</p>
-  <p class="pg-actions"><a class="pg-btn" href="/playground/laws/{{ act.slug }}/sections">Manage sections</a></p>
   {% else %}
   {% if launch %}
-  <div class="CanonicalText">
+  <div class="CanonicalText pg-act-desktop-prompt">
     <div class="LearningPrompt">
       <p class="pg-eyebrow">Up next · Learning prompt</p>
       <p class="pg-lede">Practice {{ launch.citation }} — {{ launch.title }}</p>
@@ -48,7 +103,7 @@
     {% if launch_verbatim %}
     <div class="VerbatimText" data-verbatim data-open="true">
     <p class="VerbatimText-kicker pg-chip pg-chip--verbatim">VERBATIM TEXT</p>
-      <p>Section {{ launch.number }} — {{ launch.title }}</p>
+      <p>{{ launch.citation }} — {{ launch.title }}</p>
       <blockquote>{{ launch_verbatim }}</blockquote>
       <p class="pg-actions">
         <button type="button" class="pg-btn pg-btn--quiet" data-verbatim-toggle aria-expanded="true">Hide verbatim text</button>
@@ -57,6 +112,7 @@
     {% endif %}
   </div>
   {% endif %}
+  <div class="pg-act-section-list">
   {% for row in rows %}
   <div class="pg-workspace-row">
     <div>
@@ -79,7 +135,8 @@
     </div>
   </div>
   {% endfor %}
+  </div>
   {% endif %}
-  <p class="pg-actions"><a class="pg-back" href="/playground">← My Playground</a></p>
+  <p class="pg-actions"><a class="pg-back" href="/playground">← Playground</a></p>
 </section>
 {% endblock %}
