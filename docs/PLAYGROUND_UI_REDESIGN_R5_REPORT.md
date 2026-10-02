@@ -62,6 +62,7 @@ No new Class-D product decision. No newly discovered B/C rows.
 | Rollover Done / plan-next card | [`d034024`](https://github.com/sanjisworking-commits/recall_the_c/commit/d034024) |
 | Paint/pg16 | [`a894a36`](https://github.com/sanjisworking-commits/recall_the_c/commit/a894a36) |
 | D110 noindex rewrite | [`c35f7d5`](https://github.com/sanjisworking-commits/recall_the_c/commit/c35f7d5) |
+| Tracker closeout | [`b4ac8d1`](https://github.com/sanjisworking-commits/recall_the_c/commit/b4ac8d1) |
 
 | SHA | What |
 |-----|------|
@@ -70,6 +71,7 @@ No new Class-D product decision. No newly discovered B/C rows.
 | `d034024` | Desktop rollover sticky Done hidden; phone footer is Continue only; Plan next month is a card |
 | `a894a36` | Disable `.panel` rise on Profile/Settings/checkout; phone Account group `settings-phone-only`; token-only chip colors; T33 `pg16` |
 | `c35f7d5` | Guest GET `/profile` stays noindexed; drop `/profile` from 303-gated private pages |
+| `b4ac8d1` | R5 report + tracker: U3 38/38, U7 12/12, programme 80.0 |
 
 Nothing from R0–R4 was reopened except the T33 asset pin.
 

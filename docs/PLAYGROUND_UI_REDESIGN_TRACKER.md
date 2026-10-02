@@ -34,7 +34,7 @@ Authority: `docs/PLAYGROUND_UI_REDESIGN_PLAN.md`. Inventories: `docs/design/PLAY
 | **R3 closeout HEAD** | **`54b5af9`** (award) · CI-green **`4cbb443`**. Score was **provisional**. |
 | **R3 post-closeout correction** | Review `86d8e56`. Code `5c3f003` (peek_capacity) + `6194e5b` (D142 theme). U2 **39/39**, U3 **29/38**, programme **44.2 / 100** restored after local+CI. |
 | **R4 closeout HEAD** | Implementation `951c349`. Hidden/D92 `4d70c9e`. Tracker `78240b2`. Pin `b57a551`. D141 `5c98d83` / `ceaa0bb` / `286c98c`. Correction pin `42c0cd3`. U4 **28/28**, U5 **13/13**, programme **70.2 / 100**. Frozen. |
-| **R5 closeout HEAD** | Implementation `b17d6ab`. Cycle `68d5c2d`. Rollover Done `d034024`. Paint/pg16 `a894a36`. D110 noindex `c35f7d5`. U3 **38/38**, U7 **12/12**, programme **80.0 / 100**. R6 not started. |
+| **R5 closeout HEAD** | Implementation `b17d6ab`. Cycle `68d5c2d`. Rollover Done `d034024`. Paint/pg16 `a894a36`. D110 noindex `c35f7d5`. Tracker `b4ac8d1`. U3 **38/38**, U7 **12/12**, programme **80.0 / 100**. R6 not started. |
 
 Visual columns (390 light/dark, ~768, ~1024, 1280 light/dark, reduced motion) stay `—` until the relevant batch. Technical rows mark Desktop/Mobile **N/A**. Status uses only: `NOT STARTED | IN PROGRESS | BLOCKED | DONE | DONE`.
 
@@ -439,7 +439,7 @@ Batch report: [`docs/PLAYGROUND_UI_REDESIGN_R5_REPORT.md`](PLAYGROUND_UI_REDESIG
 
 **R5 is complete.** Roster/rollover restyle, Profile SUBSCRIPTION/devices view models, Settings phone Reminders, and account surfaces shipped. Programme **80.0 / 100**. R4 (T22–T25, T42) was not reopened. R6 is not started. Stage 1 remains frozen except the T33 pin (`playground.css?v=pg16`, `mobile.css?v=mob95`). Stage 2 remains PARKED.
 
-Starting SHA `e0c038f`. Implementation `b17d6ab`. Cycle fix `68d5c2d`. Rollover Done `d034024`. Paint/pg16 `a894a36`. D110 noindex `c35f7d5`.
+Starting SHA `e0c038f`. Implementation `b17d6ab`. Cycle fix `68d5c2d`. Rollover Done `d034024`. Paint/pg16 `a894a36`. D110 noindex `c35f7d5`. Tracker `b4ac8d1`.
 
 U3 leftover this batch: D93–D100, D130 = 9. U3 **38 / 38**. Weighted U3 = 12.0.
 U7: D107–D114, D137–D138, T26–T27 = 12. U7 **12 / 12**. Weighted U7 = 7.0. Programme **80.0 / 100**.
