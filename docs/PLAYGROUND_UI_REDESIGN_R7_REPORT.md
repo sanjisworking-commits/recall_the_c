@@ -68,6 +68,7 @@ Stop log empty.
 |---|---|
 | Starting (R6 frozen HEAD) | [`56065c2`](https://github.com/sanjisworking-commits/recall_the_c/commit/56065c2) |
 | Implementation | [`fc0ca67`](https://github.com/sanjisworking-commits/recall_the_c/commit/fc0ca67) |
+| Closeout docs | [`a2fdde7`](https://github.com/sanjisworking-commits/recall_the_c/commit/a2fdde7) |
 
 | SHA | What |
 |-----|------|

@@ -39,7 +39,7 @@ Authority: `docs/PLAYGROUND_UI_REDESIGN_PLAN.md`. Inventories: `docs/design/PLAY
 | **R6 closeout HEAD** | Implementation `0011124`. extra_loader pin `1860dab`. Tracker `34db64f`. Pin `495d5ee`. |
 | **R6 post-closeout correction** | Starting SHA `495d5ee`. Code `46f7a9d`. Closeout docs `35d4dd1`. Pin `81548eb`. |
 | **R6 T28 minutes correction** | Starting SHA `81548eb`. Code `14179a1`. Closeout docs `c445dad`. T28 **DONE** again. D122 stayed DONE. U6 **15/15**, programme **90.0 / 100** after local+CI. R7 not started. |
-| **R7 closeout HEAD** | Starting SHA `56065c2`. Implementation `fc0ca67`. Closeout docs in this file's R7 section. U8 **25/25**, programme **100.0 / 100** after local+CI+Railway. PR 188 stays draft. Stage 2 stays PARKED. |
+| **R7 closeout HEAD** | Starting SHA `56065c2`. Implementation `fc0ca67`. Closeout docs `a2fdde7`. U8 **25/25**, programme **100.0 / 100** after local+CI+Railway. PR 188 stays draft. Stage 2 stays PARKED. |
 
 Visual columns (390 light/dark, ~768, ~1024, 1280 light/dark, reduced motion) stay `—` until the relevant batch. Technical rows mark Desktop/Mobile **N/A**. Status uses only: `NOT STARTED | IN PROGRESS | BLOCKED | DONE | DONE`.
 
@@ -446,7 +446,7 @@ Batch report: [`docs/PLAYGROUND_UI_REDESIGN_R7_REPORT.md`](PLAYGROUND_UI_REDESIG
 
 **R7 is complete.** Responsive / a11y / parity closeout shipped. Programme **100.0 / 100** by `90 + 10 × 25 / 25`. That is not a forced 100. Stage 1 / R5 / R6 remain frozen. Stage 2 remains PARKED. PR 188 stays draft. Do not merge.
 
-Starting SHA `56065c2`. Implementation `fc0ca67`. T33 `styles.css?v=main76`, `mobile.css?v=mob97`, `playground.css?v=pg18`, `playground.js?v=pg8`.
+Starting SHA `56065c2`. Implementation `fc0ca67`. Closeout docs `a2fdde7`. T33 `styles.css?v=main76`, `mobile.css?v=mob97`, `playground.css?v=pg18`, `playground.js?v=pg8`.
 
 U8 **25 / 25** → 10.0. Alembic head remains **`20260927_0027`**. No migration. No new B/C denominator rows. Stop log empty.
 
