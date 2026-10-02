@@ -171,12 +171,12 @@ Do not rewrite tests until Phase 10. Do not weaken an assertion merely to pass.
 | T40-1 | `tests/test_entitlement_m3b.py`, `test_playground_m6.py`, `test_playground_r3.py`, `test_playground_m10.py`, `test_playground_m11.py` | Guest `/playground` 303 to login | Delta H | HTML 200 sign-in gate; JSON 401 | T20 | **Already executed (R3)** |
 | T40-2 | `tests/test_private_noindex.py`, `test_playground_r5.py` | Guest GET `/profile` 303 | D110 guest profile card | HTML 200, noindex | D110 | **Already executed (R5)** |
 | T40-3 | `tests/test_entitlement_m3b.py`, `test_playground_r3.py`, `test_playground_m6.py` | Paused/expired hard gate page | Delta G | Read-only home; Learn still gated; `data-hard-gate` absent on home | T19 | **Already executed (R3)** |
-| T40-4 | `tests/test_playground_m8.py` `test_today_queue_current_roster_only` | `"Law revisions"` heading / weak `data-today-source` only | T28 merged Today path | Keep `"Law revisions" not in page`; pin `data-today-path-card`, `data-today-kind="review"`, eyebrows `Day 3 → 7 · Playground` (BNS) and `Day 1 → 3 · Playground` (NDPS), current CTA `Start revision →`, BNSS absent, BNS before NDPS | T28 / D115–D117 | **Pending Phase 10** |
-| T40-5 | Act-enumerating loops | `("ndps", "bns", "bnss")` only | Delta F | Eligible six: `bns bnss ndps uapa pss mtp` | T4 | Playground loops **done**. Leftover: `tests/test_pota_reader.py` `test_current_acts_show_no_badge` **pending Phase 10** |
+| T40-4 | `tests/test_playground_m8.py` `test_today_queue_current_roster_only` | `"Law revisions"` heading / weak `data-today-source` only | T28 merged Today path | Keep `"Law revisions" not in page`; pin `data-today-path-card`, `data-today-kind="review"`, eyebrows `Day 3 → 7 · Playground` (BNS) and `Day 1 → 3 · Playground` (NDPS), current CTA `Start revision →`, BNSS absent, BNS before NDPS | T28 / D115–D117 | **Executed Phase 10** |
+| T40-5 | Act-enumerating loops | `("ndps", "bns", "bnss")` only | Delta F | Eligible six: `bns bnss ndps uapa pss mtp`. `test_pota_reader.py` `test_current_acts_show_no_badge` now iterates `list_playground_eligible_laws()` | T4 | **Executed Phase 10** |
 
 Cosmetic names (`test_six_modes_generic_across_ndps_bns_bnss`, `test_cloze_integrity_ndps_bns_bnss_section_1`) already iterate `ELIGIBLE_LAWS`. Not rewrites.
 
-T40 is DONE only when T40-4 and T40-5 are executed, no obsolete expectations remain, and no test was weakened merely to pass.
+T40 is **DONE**. T40-4 and T40-5 executed. No assertion was weakened merely to pass. V16/V17/V18 ran after this execution.
 
 ---
 
@@ -222,6 +222,51 @@ V15 does not close V11.
 
 T33: bump CSS asset pins when those files change. `playground.js` stays `pg8` unless JS changes.
 
+Shipped: `styles.css?v=main76`, `mobile.css?v=mob97`, `playground.css?v=pg18`, `playground.js?v=pg8`.
+
+## Phase 4–14 outcomes
+
+| Step | Result |
+|---|---|
+| 4 Responsive | Overflow-x hidden on shell/main. 900–1039 `min-width: 0` on week grid, header, home grid, Act-head CTA. ~768 remains 561–899 flex header (no tab bar). Week stays `min-width: 900px`. |
+| 5 Theme / contrast | Token hover `a:hover → var(--browse-due)`; dark theme-toggle `var(--hairline)`. No token failed contrast. B-landing / B-auth keep their shipped palettes (known at freeze; restyle would be a new D row — not added). |
+| 6 Reduced motion | Remaining `.panel` / `.continue-card` motion collapsed under `prefers-reduced-motion` and `html:not(.rtc-anim)`. |
+| 7 Keyboard / focus | Global `:focus-visible` 2px `var(--ink)` ring. Settings Self-paced ring photographed. |
+| 8 Semantics | Existing dialog / radiogroup / tri-state. Calendar week legend remains text + mark. D102 titles remain distinct. |
+| 9 V11 | Settings segmented `height: auto` with `min-height: 44px` (D113 styling kept). Constitution Learn letters switch `min-height/min-width: 44px` (not a rebuild). Safe-area padding unchanged. No approved deviation used to close V11. |
+| 10 T40 execution | T40-4 and T40-5 only. See Phase 2. |
+| 11 V16 / V17 / V18 | Frozen-domain suite on the authorized contracts. Semantic failure would have been STOP. None fired. |
+| 12 Tests | Focused `tests/test_playground_r7.py`. Full `pytest -m "not integration"`: **2888 passed**, 9 skipped, 1 deselected (`fc0ca67`). |
+| 13 Visual / CI / Railway | Representative screenshots below. CI push [37022804844](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/37022804844) and PR [37022809702](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/37022809702) succeeded on `fc0ca67`. Railway `trustworthy-embrace / recall_the_c-pr-188` success. |
+| 14 Handoff | `docs/design/PLAYGROUND-FINISH-HANDOFF.md`. Tracker U8 25/25. Do not merge. Stage 2 stays PARKED. |
+
+### Visual matrix (representative screenshots; every family inspected)
+
+Playwright `channel="chrome"`. New filenames only. First Act-head 1024 shot was mid-rise animation; recapture under reduced motion is the collision proof.
+
+| Family / state | Evidence |
+|---|---|
+| A-playground-home 390/768/1024/1280 light+dark+reduced | `r7_home_390_light.png`, `r7_home_390_dark.png`, `r7_home_390_reduced.png`, `r7_home_768_light.png`, `r7_home_1024_light.png`, `r7_home_1280_light.png`, `r7_home_1280_dark.png` |
+| A-today | `r7_today_390_light_settled.png`, `r7_today_1280_light.png` — New excluded from due_count (frozen T28) |
+| A-calendar-month phone | `r7_calendar_month_390_light.png` |
+| A-calendar-week desktop | `r7_calendar_week_1024_light.png`, `r7_calendar_week_1280_light.png` |
+| A-account | `r7_settings_390_light.png`, `r7_settings_focus_390_light.png`, `r7_profile_390_light.png` |
+| A-act-head 1024 | `r7_act_head_1024_reduced.png` — CTA column fits; no collision |
+| A-law / picker | `r7_law_390_light.png`, `r7_picker_390_light.png` |
+| A-gate guest | `r7_gate_guest_390_light.png` |
+| A-verify browse | `r7_browse_390_light.png` |
+| B-learn Constitution | `r7_const_learn_390_light.png` |
+| B-search | `r7_search_390_light.png` |
+| B-legal | `r7_legal_terms_390_dark_view.png`, `r7_legal_privacy_390_dark.png` |
+| B-auth | `r7_auth_login_390_light_view.png` |
+| B-landing | `r7_landing_390_light.png` — shipped splash palette, not restyled |
+| C-devices | `r7_devices_390_light.png`, `r7_devices_1280_light.png` — `1 of 2` |
+| C-errors D142 | `r7_d142_404_390_light.png` |
+| D102 not-subscribed | HTTP 200 `Unlock Playground` + `data-hard-gate`. Six `gate_view` titles remain distinct |
+| T19 paused/halted | HTTP 200 Playground home; `data-hard-gate` absent |
+
+HTTP inspect: 58/58 expected routes. Guest `/playground` HTML 200 sign-in gate. Paused/halted home has no hard-gate. `/memory` is feature-flag 404 when `MEMORY_LOG_ENABLED` is false (documented exclusion). Admin GET 404 for a non-admin (Class D, V18 only).
+
 ## Stop log
 
-Empty at freeze. Populate if a stop condition fires.
+Empty at closeout. No new product decision, unknown Stage 1 defect, R5/R6 semantic regression, schema change, or new D/T row. No newly discovered Class-B mismatch that required a **new** D row. V11 closed on padding / min-size, not via `APPROVED DEVIATION`.

@@ -4,8 +4,8 @@
 
 ```text
 Stage 1               = DONE — 100.0 / 100   (frozen)
-UI Redesign Programme = 90.0 / 100
-Stage 2               = PARKED until the programme is DONE — 100.0 / 100
+UI Redesign Programme = 100.0 / 100
+Stage 2               = PARKED until a later instruction starts S2-0
 ```
 
 Authority: `docs/PLAYGROUND_UI_REDESIGN_PLAN.md`. Inventories: `docs/design/PLAYGROUND_DESIGN_INVENTORY.md`.
@@ -39,6 +39,7 @@ Authority: `docs/PLAYGROUND_UI_REDESIGN_PLAN.md`. Inventories: `docs/design/PLAY
 | **R6 closeout HEAD** | Implementation `0011124`. extra_loader pin `1860dab`. Tracker `34db64f`. Pin `495d5ee`. |
 | **R6 post-closeout correction** | Starting SHA `495d5ee`. Code `46f7a9d`. Closeout docs `35d4dd1`. Pin `81548eb`. |
 | **R6 T28 minutes correction** | Starting SHA `81548eb`. Code `14179a1`. Closeout docs `c445dad`. T28 **DONE** again. D122 stayed DONE. U6 **15/15**, programme **90.0 / 100** after local+CI. R7 not started. |
+| **R7 closeout HEAD** | Starting SHA `56065c2`. Implementation `fc0ca67`. Closeout docs in this file's R7 section. U8 **25/25**, programme **100.0 / 100** after local+CI+Railway. PR 188 stays draft. Stage 2 stays PARKED. |
 
 Visual columns (390 light/dark, ~768, ~1024, 1280 light/dark, reduced motion) stay `—` until the relevant batch. Technical rows mark Desktop/Mobile **N/A**. Status uses only: `NOT STARTED | IN PROGRESS | BLOCKED | DONE | DONE`.
 
@@ -56,8 +57,8 @@ Visual columns (390 light/dark, ~768, ~1024, 1280 light/dark, reduced motion) st
 | U5 | Learned / mastery / amendment states | 8 | R4 | 13 | 13 | 8.0 |
 | U6 | Today + Calendar + Google Calendar | 10 | R6 | 15 | 15 | 10.0 |
 | U7 | Profile + Settings + account surfaces | 7 | R5 | 12 | 12 | 7.0 |
-| U8 | Responsive, a11y, parity, regression | 10 | R7 | 25 | 0 | 0.0 |
-| **Total** | | **100** | | **208** | **183** | **90.0 / 100** |
+| U8 | Responsive, a11y, parity, regression | 10 | R7 | 25 | 25 | 10.0 |
+| **Total** | | **100** | | **208** | **208** | **100.0 / 100** |
 
 Uniqueness (script-checked from §15.2; no row in two milestones, none omitted):
 
@@ -351,37 +352,39 @@ R5. **12 / 12.** Report: [`PLAYGROUND_UI_REDESIGN_R5_REPORT.md`](PLAYGROUND_UI_R
 
 ## U8 — Closeout (weight 10, 25 items)
 
-R7.
+R7. Batch report: [`docs/PLAYGROUND_UI_REDESIGN_R7_REPORT.md`](PLAYGROUND_UI_REDESIGN_R7_REPORT.md). Ledger: [`docs/PLAYGROUND_UI_REDESIGN_R7_LEDGER.md`](PLAYGROUND_UI_REDESIGN_R7_LEDGER.md). Finish handoff: [`docs/design/PLAYGROUND-FINISH-HANDOFF.md`](design/PLAYGROUND-FINISH-HANDOFF.md).
+
+Score: `90 + 10 × proven_U8 / 25`. U8 25/25 → **10.0**. Programme **100.0 / 100** by that formula, not forced.
 
 | ID | Requirement | D/M | Status |
 |---|---|---|---|
-| T40 | Planned test rewrites with reasons | N/A | NOT STARTED |
-| V1 | Every screen/state at 390×844 | both | NOT STARTED |
-| V2 | ~768 | both | NOT STARTED |
-| V3 | ~1024 | both | NOT STARTED |
-| V4 | 1280+ | both | NOT STARTED |
-| V5 | Light theme | both | NOT STARTED |
-| V6 | Dark theme | both | NOT STARTED |
-| V7 | Reduced motion | both | NOT STARTED |
-| V8 | Keyboard traversal | both | NOT STARTED |
-| V9 | Visible focus | both | NOT STARTED |
-| V10 | ARIA dialog / radiogroup / tri-state | both | NOT STARTED |
-| V11 | 44px targets and safe areas | phone | NOT STARTED |
-| V12 | Status never colour alone | both | NOT STARTED |
-| V13 | Contrast light and dark | both | NOT STARTED |
-| V14 | Semantic link vs button | both | NOT STARTED |
-| V15 | Every D row matched / deviation / n/a | both | NOT STARTED |
-| V16 | Regression: subscriptions, devices, roster | N/A | NOT STARTED |
-| V17 | Regression: six modes, ladder, source review | N/A | NOT STARTED |
-| V18 | Regression: SEO, public laws, Constitution, admin | N/A | NOT STARTED |
-| V19 | Full suite green | N/A | NOT STARTED |
-| V20 | CI green | N/A | NOT STARTED |
-| V21 | Desktop visual sign-off | desktop | NOT STARTED |
-| V22 | Mobile visual sign-off | phone | NOT STARTED |
-| V23 | Every class-B surface vs design system | both | NOT STARTED |
-| V24 | Zero unclassified routes; exclusions documented | N/A | NOT STARTED |
+| T40 | Planned test rewrites with reasons | N/A | DONE — ledger T40-1..3 already in R3/R5; T40-4 `test_playground_m8.py` Today path; T40-5 `test_pota_reader.py` eligible six. No assertion weakened merely to pass. Ran **before** V16/V17/V18 |
+| V1 | Every screen/state at 390×844 | both | DONE — phone family matrix + HTTP inspect. Tab bar ≤560 |
+| V2 | ~768 | both | DONE — 561–899 flex header, no tab bar, no week view. `r7_home_768_light.png` |
+| V3 | ~1024 | both | DONE — 900–1039 collision pass. Week 7 columns + Act-head CTA. `r7_calendar_week_1024_light.png`, `r7_act_head_1024_reduced.png` |
+| V4 | 1280+ | both | DONE — `r7_home_1280_light.png`, `r7_calendar_week_1280_light.png`, `r7_today_1280_light.png` |
+| V5 | Light theme | both | DONE — 390/1024/1280 light shots |
+| V6 | Dark theme | both | DONE — `r7_home_390_dark.png`, `r7_home_1280_dark.png`, `r7_legal_privacy_390_dark.png` |
+| V7 | Reduced motion | both | DONE — `.panel` collapsed. `r7_home_390_reduced.png`, `r7_act_head_1024_reduced.png` |
+| V8 | Keyboard traversal | both | DONE — tab through Settings; existing dialog/radiogroup contracts |
+| V9 | Visible focus | both | DONE — global `:focus-visible` 2px `var(--ink)`. `r7_settings_focus_390_light.png` |
+| V10 | ARIA dialog / radiogroup / tri-state | both | DONE — calendar + rollover radiogroup; picker `aria-checked`; existing dialogs |
+| V11 | 44px targets and safe areas | phone | DONE — Settings `height: auto` + min 44 (D113 styling kept). Learn letters min 44. Not closed via `APPROVED DEVIATION` |
+| V12 | Status never colour alone | both | DONE — week legend text + mark; LawStatusBadge text; D102 distinct titles |
+| V13 | Contrast light and dark | both | DONE — no token failed contrast. Landing/auth keep shipped palettes |
+| V14 | Semantic link vs button | both | DONE — no R7 IA change; existing href vs button usage held |
+| V15 | Every D row matched / deviation / n/a | both | DONE — ledger. `APPROVED DEVIATION` is V15 only |
+| V16 | Regression: subscriptions, devices, roster | N/A | DONE — after T40. Devices `1 of 2`. Roster HTTP 200 |
+| V17 | Regression: six modes, ladder, source review | N/A | DONE — after T40-4. Source-review HTTP 200. M8 path contract current |
+| V18 | Regression: SEO, public laws, Constitution, admin | N/A | DONE — guest 200 gate; `/learn/clause-1` 200; admin 404 for non-admin |
+| V19 | Full suite green | N/A | DONE — `pytest -m "not integration"` on `fc0ca67`: **2888 passed**, 9 skipped, 1 deselected |
+| V20 | CI green | N/A | DONE — CI push [37022804844](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/37022804844), PR [37022809702](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/37022809702), Railway success on `fc0ca67` |
+| V21 | Desktop visual sign-off | desktop | DONE — 1024/1280 matrix. Week desktop-only |
+| V22 | Mobile visual sign-off | phone | DONE — 390 + ~768. Tab bar only ≤560 |
+| V23 | Every class-B surface vs design system | both | DONE — 45 templates inspected. D1–D17 reconciliation only. No new D row. B-landing/B-auth shipped palettes known at freeze |
+| V24 | Zero unclassified routes; exclusions documented | N/A | DONE — 81 templates, 0 unclassified. Walk via `_IncludedRouter.original_router`. `/memory` flag-off 404 documented |
 
-Known rewrites (T40 seed; T20 guest 303 → gate executed in R3; D110 guest GET `/profile` 303 → HTML 200 executed in R5 in `test_private_noindex.py`; remaining not yet executed): `test_playground_m8.py` “Law revisions” → path nodes; Act loops gain `uapa`, `pss`, `mtp`. Paused hard-gate tests superseded by T19 read-only home.
+Known rewrites (executed): `test_playground_m8.py` “Law revisions” → path nodes; Act loops use `list_playground_eligible_laws()`. Paused hard-gate tests superseded by T19 read-only home (R3). Guest `/playground` 303 superseded by T20 (R3). Guest `/profile` 303 superseded by D110 (R5).
 
 ---
 
@@ -434,6 +437,24 @@ No missing technical dependency was found that is not already a T row. Auto-merg
 | B2 | T2 hash-drift is an R0 **stop condition**, not a maybe | R1+ if hashes change without a statutory change | Snapshot fixture now exists. A failing snapshot test is a stop, not a later investigation. |
 
 No new product delta (class D) was found. Deltas A–H already cover guest gate, paused home, eligibility, clause selection, Today, week view, speech, and Google.
+
+---
+
+## R7 closeout
+
+Batch report: [`docs/PLAYGROUND_UI_REDESIGN_R7_REPORT.md`](PLAYGROUND_UI_REDESIGN_R7_REPORT.md). Ledger: [`docs/PLAYGROUND_UI_REDESIGN_R7_LEDGER.md`](PLAYGROUND_UI_REDESIGN_R7_LEDGER.md).
+
+**R7 is complete.** Responsive / a11y / parity closeout shipped. Programme **100.0 / 100** by `90 + 10 × 25 / 25`. That is not a forced 100. Stage 1 / R5 / R6 remain frozen. Stage 2 remains PARKED. PR 188 stays draft. Do not merge.
+
+Starting SHA `56065c2`. Implementation `fc0ca67`. T33 `styles.css?v=main76`, `mobile.css?v=mob97`, `playground.css?v=pg18`, `playground.js?v=pg8`.
+
+U8 **25 / 25** → 10.0. Alembic head remains **`20260927_0027`**. No migration. No new B/C denominator rows. Stop log empty.
+
+Approved order held: T40 execution before V16/V17/V18. `test_today_queue_current_roster_only` pins the T28 Today-path contract instead of `"Law revisions"`.
+
+Local `pytest -m "not integration"` on `fc0ca67`: **2888 passed**, 9 skipped, 1 deselected. CI on `fc0ca67`: push [37022804844](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/37022804844) and PR [37022809702](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/37022809702) succeeded. Railway `trustworthy-embrace / recall_the_c-pr-188` success.
+
+Do not start Stage 2 from this closeout.
 
 ---
 
@@ -647,4 +668,4 @@ No new B/C denominator rows. No class-D product-scope stop. Do not start R2.
 
 ## R0 readiness
 
-**U0 is complete (10/10).** **U1 is complete (28/28).** **R2 is complete.** **R3 is complete (U2 39/39).** **R4 is complete (U4 28/28, U5 13/13), including the D141 typed-fallback correction.** **R5 is complete (U3 38/38, U7 12/12).** **R6 is complete (U6 15/15), including the T28 minutes-line correction.** Stage 2 remains PARKED. Do not start R7. Programme **90.0 / 100**.
+**U0 is complete (10/10).** **U1 is complete (28/28).** **R2 is complete.** **R3 is complete (U2 39/39).** **R4 is complete (U4 28/28, U5 13/13), including the D141 typed-fallback correction.** **R5 is complete (U3 38/38, U7 12/12).** **R6 is complete (U6 15/15), including the T28 minutes-line correction.** **R7 is complete (U8 25/25).** Stage 2 remains PARKED. Do not merge PR 188. Programme **100.0 / 100**.

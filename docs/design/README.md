@@ -7,6 +7,7 @@ Source of truth for Sprints 6–20 UI work. Open the App file in a browser (need
 | [Constitution Memorizer App.dc.html](Constitution%20Memorizer%20App.dc.html) | Approved interactive prototype (Home, Learn modes, Choose, Calendar, Progress, Browse) |
 | [Constitution Memorizer.dc.html](Constitution%20Memorizer.dc.html) | Mobile layout + ARTICLE / CLAUSE / SUBCLAUSE card anatomy |
 | [HANDOFF.md](HANDOFF.md) | Tokens, screens, and behavior rules |
+| [PLAYGROUND-FINISH-HANDOFF.md](PLAYGROUND-FINISH-HANDOFF.md) | Production closeout after R7 (U0–U8). Not a prototype. Stage 2 stays parked |
 | [Playground.dc.html](Playground.dc.html) | Playground UX state demonstrator (scenarios × screens, mobile/desktop, light/dark) — design only, 0 Stage 1 points; see [PLAYGROUND-HANDOFF.md](PLAYGROUND-HANDOFF.md) |
 | [support.js](support.js) | Prototype runtime (required to open the `.dc.html` files) |
 
