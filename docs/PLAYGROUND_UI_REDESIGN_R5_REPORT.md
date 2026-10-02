@@ -97,6 +97,9 @@ R5 is chrome and read-models over Stage 1. It does not duplicate roster capacity
 - paused → **PAUSED**
 - halted → **ON HOLD**
 - paid period ended → **PAUSED**
+- `subscription_status=pending` → **PENDING** (existing Playground yes, new laws no)
+- active + `cancel_at_period_end` → **ACTIVE** plus cancel-at-end sentence
+- active + `scheduled_tier` → **ACTIVE** plus “Changes to {tier}…” (current access unchanged)
 - not subscribed → Subscribe CTA, no chip
 - otherwise subscribed → **ACTIVE** plus limit stat
 
@@ -128,7 +131,7 @@ Captured with Playwright + system Chrome, device metrics. Multiuser seed, so the
 
 Stage 1 assertions superseded on purpose (record, do not weaken silently):
 
-- T33: `playground.css?v=pg16` (not pg15 / pg14). `mobile.css?v=mob95`.
+- T33: `playground.css?v=pg16` (not pg15 / pg14). `mobile.css?v=mob95`. Correction later: `playground.css?v=pg17`, `playground.js?v=pg8`.
 - Guest GET `/profile` is HTML 200 (D110), not a sign-in 303.
 
 | Run | Result |
@@ -166,3 +169,71 @@ R5-targeted rows: **DONE**. Do not start R6 from this report.
 R6 starts at Today / Calendar / Google (U6, T28–T32, T30). `/calendar?view=week` still does not exist.
 
 Do not reopen R0–R4. Do not change Alembic. Do not reintroduce Constitution gating or historical duration products. Do not add a second roster, billing, or device engine.
+
+---
+
+## Post-closeout correction (D95, D130, D108, T26)
+
+Review reopened only those four rows. Provisional score until this correction: U3 **36/38**, U7 **10/12**, programme **78.2 / 100**. R6 was not started. No other R5 row was reopened.
+
+**Starting correction SHA:** [`d9039a3`](https://github.com/sanjisworking-commits/recall_the_c/commit/d9039a3)  
+**Implementation:** [`ec32195`](https://github.com/sanjisworking-commits/recall_the_c/commit/ec32195)  
+**D130 CTA pin:** [`d13c80c`](https://github.com/sanjisworking-commits/recall_the_c/commit/d13c80c)  
+Alembic remains **`20260927_0027`**.
+
+### D130 before / after
+
+Before: `playground_roster_next.html` always rendered phone **Continue with these** and desktop aside **Done** whenever candidates existed. A candidate could be Undecided while the aside said Done.
+
+After: `rollover_submit_label(candidates, adjustment_required=…)` is the only action truth. Phone footer and desktop aside both render `{{ submit_label }}` on `[data-rollover-submit]`. JS `syncRolloverAction` uses the same Keep/Remove vs unresolved rule.
+
+| State | Label | Done CTA |
+|---|---|---|
+| 1 candidate Undecided | Continue with these | none |
+| Mixed Keep + Undecided | Continue with these | none |
+| All Keep/Remove resolved | Done | Done |
+| No candidates | existing plan exit (Browse / back) | none |
+
+Evidence: `r5corr_rollover_undecided_1280_light.png` (aside **Continue with these**, both rows Undecided), `r5corr_rollover_resolved_1280_light.png` (aside **Done**), `r5corr_rollover_undecided_390_light.png` (sticky **Continue with these**).
+
+### D108 / T26 card matrix
+
+`playground_subscription_card()` reads `snapshot.subscription_status`, `cancel_at_period_end`, and `scheduled_tier`. Pending is not inferred from the client. Stage 1 access is unchanged: pending = existing Playground yes, new law no.
+
+| Snapshot | Chip | Body (truth) | Access |
+|---|---|---|---|
+| `subscription_status=pending`, `playground_block_reason=None`, `is_subscribed=True` | **PENDING** | Payment retry. Existing Playground stays available. New laws temporarily unavailable. | existing yes, new no |
+| `active` + `cancel_at_period_end=True` | **ACTIVE** | ACTIVE. Cancels at the end of the current paid period. | current plan remains |
+| `active` + `scheduled_tier=plus` (from Pro) | **ACTIVE** | ACTIVE. Changes to Plus at the end of the current paid period. | current Pro remains |
+| `active` + `scheduled_tier=max` (from Plus) | **ACTIVE** | ACTIVE. Changes to Max at the end of the current paid period. | current Plus remains |
+
+Evidence: `r5corr_profile_pending_390_light.png`, `r5corr_profile_cancel_390_light.png`, `r5corr_profile_scheduled_390_light.png`.
+
+### Legacy Profile blocks removed
+
+Removed from active Profile rendering: duration-pass lifecycle (`subscription.plan_days`, Recall pass, Back on Free, 3 Free Articles) and the Free Articles commercial section. `profile_get` no longer supplies `subscription_status()` or `free_slots`. Historical billing rows and migrations stay. Reset dialog copy is **Your account and subscription** (reset POST still 303 `/dashboard`). Playground SUBSCRIPTION card is the commercial surface.
+
+Guards: `test_d108_legacy_commercial_profile_ui_absent` (template + GET `/profile` with a paid duration order). Evidence: `r5corr_profile_no_legacy_1280_light.png`.
+
+### D95 phone bottom sheet
+
+Progressive architecture unchanged: Remove `data-pg-sheet` → fetch no-JS page → extract `.pg-sheet-panel` → `dialog.pg-sheet`. Direct `/playground/roster/{id}/remove` still works without JavaScript.
+
+Phone (≤560px): `dialog.pg-sheet[open]` `--pg-sheet-anchor: bottom`, width `100% - 2×shell-pad`, radius sheet/sheet/0/0, grabber `::before` 36px, `safe-area-inset-bottom`. Measured 390 light: viewport 390×844, dialog `x=16 y=531.375 w=358 h=312.625 bottom=844`. Escape closed the dialog. Desktop 1280: centred, width 460px, grabber hidden, Cancel close affordance.
+
+Required shots, all opened from the roster **Remove** link (not the direct URL): `r5corr_remove_sheet_390_light.png`, `r5corr_remove_sheet_390_dark.png`, `r5corr_remove_sheet_1280_light.png`.
+
+T33: `playground.css?v=pg17`, `playground.js?v=pg8`.
+
+### Tests and CI
+
+| Run | Result |
+|---|---|
+| `tests/test_playground_r5.py` | **23 passed** |
+| Focused R5 + billing + m3b + m6 + r1 + settings_phone + guest_first + learning_plan + entitlements | **225 passed** |
+| `pytest -m "not integration"` on `d13c80c` | **2848 passed**, 9 skipped, 1 deselected |
+| CI on `d13c80c` | push [36990837323](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/36990837323) succeeded. PR [36990842589](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/36990842589) succeeded. |
+
+### Score restore
+
+U3 **38 / 38**, U7 **12 / 12**, programme **80.0 / 100**. D95, D130, D108, T26 are DONE. Do not start R6.

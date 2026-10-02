@@ -34,7 +34,8 @@ Authority: `docs/PLAYGROUND_UI_REDESIGN_PLAN.md`. Inventories: `docs/design/PLAY
 | **R3 closeout HEAD** | **`54b5af9`** (award) · CI-green **`4cbb443`**. Score was **provisional**. |
 | **R3 post-closeout correction** | Review `86d8e56`. Code `5c3f003` (peek_capacity) + `6194e5b` (D142 theme). U2 **39/39**, U3 **29/38**, programme **44.2 / 100** restored after local+CI. |
 | **R4 closeout HEAD** | Implementation `951c349`. Hidden/D92 `4d70c9e`. Tracker `78240b2`. Pin `b57a551`. D141 `5c98d83` / `ceaa0bb` / `286c98c`. Correction pin `42c0cd3`. U4 **28/28**, U5 **13/13**, programme **70.2 / 100**. Frozen. |
-| **R5 closeout HEAD** | Implementation `b17d6ab`. Cycle `68d5c2d`. Rollover Done `d034024`. Paint/pg16 `a894a36`. D110 noindex `c35f7d5`. Tracker `b4ac8d1`. U3 **38/38**, U7 **12/12**, programme **80.0 / 100**. R6 not started. |
+| **R5 closeout HEAD** | Implementation `b17d6ab`. Cycle `68d5c2d`. Rollover Done `d034024`. Paint/pg16 `a894a36`. D110 noindex `c35f7d5`. Tracker `b4ac8d1`. Pin `d9039a3`. |
+| **R5 post-closeout correction** | Review `d9039a3`. Code `ec32195`. D130 CTA pin `d13c80c`. U3 **38/38**, U7 **12/12**, programme **80.0 / 100** restored after local+CI. R6 not started. |
 
 Visual columns (390 light/dark, ~768, ~1024, 1280 light/dark, reduced motion) stay `—` until the relevant batch. Technical rows mark Desktop/Mobile **N/A**. Status uses only: `NOT STARTED | IN PROGRESS | BLOCKED | DONE | DONE`.
 
@@ -208,11 +209,11 @@ R3 (home + gates) is closed. R5 (roster/rollover restyle) is closed. U3 is **38 
 | D63 | Verbatim trust mark | both | DONE — `trust_mark()` “Verbatim, always.” |
 | D93 | Roster manager chrome | both | DONE — `RosterManager-head`, used/remaining, rules card. `test_d93_d94_roster_manager_chrome_and_rows`. `r5_roster_390_light.png` |
 | D94 | Active / removed rows | both | DONE — Continue/Read/Remove; Add back + Progress saved. `test_d93_d94` `test_d95_remove_dialog_is_sheet` |
-| D95 | Remove dialog/sheet | both | DONE — `playground_remove.html` `role="dialog"`. `test_d95_remove_dialog_is_sheet`. `r5_remove_390_light.png` |
+| D95 | Remove dialog/sheet | both | DONE — JS `dialog.pg-sheet` launched from roster Remove (`data-pg-sheet`). Phone `--pg-sheet-anchor: bottom` (390 dialog bottom = viewport). Desktop centred, max-width 460px. Direct URL still no-JS. `test_d95_remove_dialog_is_sheet` `test_d95_sheet_responsive_class_contract`. `r5corr_remove_sheet_390_light.png` |
 | D96 | Add-law dialog with meter | both | DONE — RosterCapacity + “No extra space used.” `test_d96_add_law_dialog_has_meter_and_saved_line`. `r5_roster_add_1280_light.png` |
 | D97 | Rollover title, lede, key | both | DONE — “Your {month} Playground”; Keep/Remove/Undecided key. `test_d97_d100_d130_rollover_key_states_and_copy` |
 | D98 | Rollover rows / radiogroup | both | DONE — `role="radiogroup"` keep/decline/undecided. Stage 1 POST names unchanged |
-| D99 | Rollover aside / sticky footer | both | DONE — phone Continue; desktop Done in aside; `.RolloverPlanner .pg-sticky-cta` hidden ≥900px. T39 hide tab bar |
+| D99 | Rollover aside / sticky footer | both | DONE — phone sticky footer and desktop aside share D130’s single label. `.RolloverPlanner .pg-sticky-cta` hidden ≥900px. T39 hide tab bar |
 | D100 | Downgrade and blocked banners | both | DONE — `rollover_adjustment_required`; `roster_full` / `active_slot_locked`. `test_d100_downgrade_banner` |
 | D101 | Guest sign-in gate | both | DONE — HTML 200 “Sign in to use Playground”. `test_d35_guest_add_sheet_preserves_next` T20 |
 | D102 | Gate per reason | both | DONE — `gate_view` per block reason. Halted/paused/expired also have read-only home (T19); Learn still gates |
@@ -223,7 +224,7 @@ R3 (home + gates) is closed. R5 (roster/rollover restyle) is closed. U3 is **38 
 | D125 | Home H1 copy | both | DONE — “Playground” |
 | D126 | Home lede removed | both | DONE — no billing lede under H1. `test_home_copy_provisions_and_empty_state` |
 | D127 | Card links → single Learn CTA (phone) | phone | DONE — `.pg-card-actions--phone` one button |
-| D130 | Rollover button copy | both | DONE — “Continue with these” / “Done”. `test_d97_d100_d130_rollover_key_states_and_copy` |
+| D130 | Rollover button copy | both | DONE — one server-derived label. Any unresolved → “Continue with these”, no Done CTA. All Keep/Remove resolved → “Done”. `rollover_submit_label`. `test_d130_*`. `r5corr_rollover_undecided_1280_light.png` |
 | D131 | Not-subscribed gate title | both | DONE — Act-head “Subscribe to use Playground”; gate “Unlock Playground” |
 | D140 | Playground unavailable / service error | both | DONE — styled 503. Kill-switch styled 404. `test_d140_playground_service_error_is_styled_503` |
 | D142 | HTML 404/403/500 / kill-switch 404 | both | DONE — atomic. Path middleware only. Theme boot + `--pg-page` on error shells (`pg11`). `test_d142_playground_html_404_403_500_without_global_handlers` `test_d142_error_html_resolves_theme_and_page_wash` |
@@ -331,7 +332,7 @@ R5. **12 / 12.** Report: [`PLAYGROUND_UI_REDESIGN_R5_REPORT.md`](PLAYGROUND_UI_R
 | ID | Requirement | D/M | Status |
 |---|---|---|---|
 | D107 | Identity card | both | DONE — `data-profile-identity`; Guest / Google / phone meta. `test_d107_d109_profile_subscription_and_devices` |
-| D108 | SUBSCRIPTION card | both | DONE — ACTIVE / PAUSED / ON HOLD from snapshot. `test_t26_subscription_card_chips_and_device_copy` `test_d108_paused_and_hold_chips` |
+| D108 | SUBSCRIPTION card | both | DONE — ACTIVE / PAUSED / ON HOLD / PENDING from `snapshot.subscription_status`. Cancel-at-end and scheduled-tier sentences while access stays current. Legacy duration-pass + Free Articles removed from active Profile. `test_d108_*` |
 | D109 | Devices n of limit; Learning preferences | both | DONE — `device_count_copy`; “2 of 3” absent. `test_d107_d109_profile_subscription_and_devices` |
 | D110 | Guest profile card | both | DONE — GET `/profile` HTML 200. `test_d110_guest_profile_card`. `r5_profile_guest_390_light.png` |
 | D111 | Settings phone layout | phone | DONE — account card, STUDY / CALENDAR / APP / ACCOUNT. ACCOUNT is `settings-phone-only`. `test_d111_d113_settings_phone_groups_keep_controls` |
@@ -340,7 +341,7 @@ R5. **12 / 12.** Report: [`PLAYGROUND_UI_REDESIGN_R5_REPORT.md`](PLAYGROUND_UI_R
 | D114 | First-connect reminder sheet/dialog | both | DONE — existing `data-gcal-reminder-modal` `role="dialog"` (`=`). `test_t27_d112_d114` |
 | D137 | Devices page | both | DONE — count of limit, confirm, revoked list. `test_d137_d138_devices_and_checkout_markup` |
 | D138 | Subscription checkout page | both | DONE — `pg-checkout-card`; Razorpay script only. No Razorpay at render. `test_d137_d138` |
-| T26 | Subscription card + device count view models | N/A | DONE — snapshot chips; `DeviceService` counts; no device ids on Profile. `test_t26_subscription_card_chips_and_device_copy` |
+| T26 | Subscription card + device count view models | N/A | DONE — snapshot chips including pending/cancel/scheduled; `DeviceService` counts; no device ids on Profile. `test_t26_subscription_card_chips_and_device_copy` `test_d108_t26_pending_profile_card` |
 | T27 | Reminders row posts `reminder_cadence` | N/A | DONE — phone form → `/calendar/google/preferences`. `test_t27_d112_d114_reminders_row_and_first_connect_sheet` |
 
 ---
@@ -414,7 +415,7 @@ Every T1–T41 row was read against current `a5edca5` production code. **Accepte
 | T8–T16 | **Closed in R2** on `1cc00b6`. Discriminated locators, `units.py`, picker POST, due join, unit hash. |
 | T17–T21 | **Closed in R3** on `3a8dcd0`. Confirm→scope, T18 kinds, paused read-only home, guest HTML 200 / JSON 401, catalogue plans. |
 | T22–T25 | No completion screens. Speech is Constitution-scoped. `SpeechClient` vs `RecallSpeech` confirmed. |
-| T26–T27 | **Closed in R5** on `a894a36`. SUBSCRIPTION card from entitlement snapshot; device “n of limit” from the device service; phone Reminders posts `reminder_cadence`. |
+| T26–T27 | **Closed in R5** (correction `d13c80c`). SUBSCRIPTION card from entitlement snapshot including PENDING / cancel-at-end / scheduled tier; device “n of limit” from the device service; phone Reminders posts `reminder_cadence`. |
 | T28–T32 | No week view. Today is Constitution-path. |
 | T33–T41 | `playground.css` tokens + phone rules exist. T33 pins `main74` / `mob94` / `pg8` / `pg6`. T35 greps runtime only. T41 **80/0**. |
 
@@ -437,16 +438,18 @@ No new product delta (class D) was found. Deltas A–H already cover guest gate,
 
 Batch report: [`docs/PLAYGROUND_UI_REDESIGN_R5_REPORT.md`](PLAYGROUND_UI_REDESIGN_R5_REPORT.md).
 
-**R5 is complete.** Roster/rollover restyle, Profile SUBSCRIPTION/devices view models, Settings phone Reminders, and account surfaces shipped. Programme **80.0 / 100**. R4 (T22–T25, T42) was not reopened. R6 is not started. Stage 1 remains frozen except the T33 pin (`playground.css?v=pg16`, `mobile.css?v=mob95`). Stage 2 remains PARKED.
+**R5 is complete**, including the post-closeout correction for D95, D130, D108, and T26. Roster/rollover restyle, Profile SUBSCRIPTION/devices view models, Settings phone Reminders, and account surfaces shipped. Programme **80.0 / 100**. R4 (T22–T25, T42) was not reopened. R6 is not started. Stage 1 remains frozen except the T33 pin (`playground.css?v=pg17`, `playground.js?v=pg8`, `mobile.css?v=mob95`). Stage 2 remains PARKED.
 
-Starting SHA `e0c038f`. Implementation `b17d6ab`. Cycle fix `68d5c2d`. Rollover Done `d034024`. Paint/pg16 `a894a36`. D110 noindex `c35f7d5`. Tracker `b4ac8d1`.
+Original closeout pin `d9039a3`. Correction starting SHA `d9039a3`. Implementation `ec32195`. D130 CTA pin `d13c80c`.
 
 U3 leftover this batch: D93–D100, D130 = 9. U3 **38 / 38**. Weighted U3 = 12.0.
 U7: D107–D114, D137–D138, T26–T27 = 12. U7 **12 / 12**. Weighted U7 = 7.0. Programme **80.0 / 100**.
 
+Review had reopened D95, D130, D108, T26 (provisional U3 36/38, U7 10/12, programme 78.2). Those four are DONE again after code, tests, visual proof, and CI.
+
 Alembic head remains **`20260927_0027`**. No migration. Keep / Remove / Undecided and slot consumption stay Stage 1. No Razorpay at render.
 
-Local `pytest -m "not integration"` on `c35f7d5`: **2840 passed**, 9 skipped, 1 deselected. Focused: `tests/test_playground_r5.py` **15 passed**. Related r1/settings/r4-pin/m5a/m5b/devices_m4a/calendar_routes **158 passed**. CI on `c35f7d5`: [PR 36985302956](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/36985302956) success.
+Local `pytest -m "not integration"` on `d13c80c`: **2848 passed**, 9 skipped, 1 deselected. Focused R5 + billing/entitlement/r1/settings/guest/learn-plan: **225 passed**. `tests/test_playground_r5.py` **23 passed**. CI on `d13c80c`: push [36990837323](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/36990837323) and PR [36990842589](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/36990842589) succeeded.
 
 Do not start R6 from this closeout.
 
