@@ -4,7 +4,7 @@
 
 ```text
 Stage 1               = DONE — 100.0 / 100   (frozen)
-UI Redesign Programme = 44.2 / 100
+UI Redesign Programme = 70.2 / 100
 Stage 2               = PARKED until the programme is DONE — 100.0 / 100
 ```
 
@@ -32,7 +32,8 @@ Authority: `docs/PLAYGROUND_UI_REDESIGN_PLAN.md`. Inventories: `docs/design/PLAY
 | **R2 closeout HEAD** | **`d8a1c38`** (tracker) · last code **`1cc00b6`**. U2 24/39. Closed. |
 | **R2 correction** | **`f62bd63`** (code). Fail-closed picker POST + bound `UnitLocator`. Programme still **28.1 / 100**. |
 | **R3 closeout HEAD** | **`54b5af9`** (award) · CI-green **`4cbb443`**. Score was **provisional**. |
-| **R3 post-closeout correction** | Review `86d8e56`. Code `5c3f003` (peek_capacity) + `6194e5b` (D142 theme). U2 **39/39**, U3 **29/38**, programme **44.2 / 100** restored after local+CI. Do not start R4 or R5. |
+| **R3 post-closeout correction** | Review `86d8e56`. Code `5c3f003` (peek_capacity) + `6194e5b` (D142 theme). U2 **39/39**, U3 **29/38**, programme **44.2 / 100** restored after local+CI. |
+| **R4 closeout HEAD** | Implementation `951c349`. Hidden/D92 `4d70c9e`. Report SHA recorded after full suite. U4 **28/28**, U5 **13/13**, programme **70.2 / 100**. R5/R6 not started. |
 
 Visual columns (390 light/dark, ~768, ~1024, 1280 light/dark, reduced motion) stay `—` until the relevant batch. Technical rows mark Desktop/Mobile **N/A**. Status uses only: `NOT STARTED | IN PROGRESS | BLOCKED | DONE | DONE`.
 
@@ -46,22 +47,22 @@ Visual columns (390 light/dark, ~768, ~1024, 1280 light/dark, reduced motion) st
 | U1 | Shared design system + shells | 12 | R1 | 28 | 28 | 12.0 |
 | U2 | Bare Act + Add + clause-level selection | 18 | R2, R3 | 39 | 39 | 18.0 |
 | U3 | Home + gates + roster lifecycle | 12 | R3, R5 | 38 | 29 | 9.2 |
-| U4 | Act progress + six-mode Learn + speech | 18 | R4 | 28 | 0 | 0.0 |
-| U5 | Learned / mastery / amendment states | 8 | R4 | 12 | 0 | 0.0 |
+| U4 | Act progress + six-mode Learn + speech | 18 | R4 | 28 | 28 | 18.0 |
+| U5 | Learned / mastery / amendment states | 8 | R4 | 13 | 13 | 8.0 |
 | U6 | Today + Calendar + Google Calendar | 10 | R6 | 15 | 0 | 0.0 |
 | U7 | Profile + Settings + account surfaces | 7 | R5 | 12 | 0 | 0.0 |
 | U8 | Responsive, a11y, parity, regression | 10 | R7 | 25 | 0 | 0.0 |
-| **Total** | | **100** | | **207** | **106** | **44.2 / 100** |
+| **Total** | | **100** | | **208** | **147** | **70.2 / 100** |
 
 Uniqueness (script-checked from §15.2; no row in two milestones, none omitted):
 
 - D1–D142: 142
-- T1–T41: 41
+- T1–T42: 42
 - V1–V24: 24
-- **207**
+- **208**
 - X1–X8 are enforced by **T35**, not extra denominator rows.
 
-No newly discovered B/C rows were added, so the denominator is unchanged.
+T42 is the approved R4 locator-aware source-review twin (U5). It is not the rejected auto-merge T42 from the R0 notes. No other B/C rows were added during R4.
 
 ---
 
@@ -69,11 +70,11 @@ No newly discovered B/C rows were added, so the denominator is unchanged.
 
 | Id | Delta | Layer 2 | Status |
 |---|---|---|---|
-| A | Clause-level selection | T8–T16, T30 | IN PROGRESS — T8–T16 DONE (R2); T30 remains R4/later |
+| A | Clause-level selection | T8–T16, T30 | IN PROGRESS — T8–T16 DONE (R2); T30 remains R6 |
 | B | Playground pending rung → Google Calendar | T31 | NOT STARTED |
 | C | Selected unlearned work in Today | T28 | NOT STARTED |
 | D | Desktop Calendar Week | T29 | NOT STARTED |
-| E | Real speech on Letters/Recite | T25 | NOT STARTED |
+| E | Real speech on Letters/Recite | T25 | DONE |
 | F | Eligible Acts NDPS, BNS, BNSS, UAPA, PSS, MTP; POTA readable; slug identity | T4, T5 | DONE |
 | G | Paused/expired read-only home | T19 | DONE |
 | H | Guest HTML GET renders gate; JSON 401 | T20 | DONE |
@@ -235,61 +236,62 @@ Paused/halted/expired GET `/playground` is read-only home (T19). Guest HTML GET 
 
 ## U4 — Act progress + Learn + speech (weight 18, 28 items)
 
-R4.
+R4. **28 / 28.** Report: [`PLAYGROUND_UI_REDESIGN_R4_REPORT.md`](PLAYGROUND_UI_REDESIGN_R4_REPORT.md).
 
 | ID | Requirement | D/M | Status |
 |---|---|---|---|
-| D64 | Act progress head | both | NOT STARTED |
-| D65 | Progress ring | both | NOT STARTED |
-| D66 | “Next” chip | both | NOT STARTED |
-| D67 | Waffle of selected provisions | both | NOT STARTED |
-| D68 | Ladder histogram | both | NOT STARTED |
-| D69 | Primary Learn CTA; Manage sections | both | NOT STARTED |
-| D70 | Up next learning prompt | desktop | NOT STARTED |
-| D71 | Verbatim box show/hide | desktop | NOT STARTED |
-| D72 | Sections list | desktop | NOT STARTED |
-| D74 | Empty: no sections selected | both | NOT STARTED |
-| D75 | Learn top bar / step bar | both | NOT STARTED |
-| D76 | Eyebrow; VERBATIM BARE ACT chip | both | NOT STARTED |
-| D77 | Per-mode task heading | both | NOT STARTED |
-| D78 | Advance labels; methods left; Mark it Done | both | NOT STARTED |
-| D79 | Read | both | NOT STARTED |
-| D80 | Cloze | both | NOT STARTED |
-| D81 | Letters + speech controls | both | NOT STARTED |
-| D82 | Type | both | NOT STARTED |
-| D83 | Recite | both | NOT STARTED |
-| D84 | Test | both | NOT STARTED |
-| D85 | Clause unit: lead-in as context | both | NOT STARTED |
-| D87 | Focused column / deck+panel | both | NOT STARTED |
-| D132 | Law page back copy | both | NOT STARTED |
-| D139 | Learn failure states | both | NOT STARTED |
-| D141 | Speech unavailable → typed path | both | NOT STARTED |
-| T22 | Aggregates: rungs, next-up, scope | N/A | NOT STARTED |
-| T23 | Modes-seen drives step bar | N/A | NOT STARTED |
-| T25 | Playground speech route; `window.RecallSpeech` | N/A | NOT STARTED |
+| D64 | Act progress head | both | DONE |
+| D65 | Progress ring | both | DONE |
+| D66 | “Next” chip | both | DONE |
+| D67 | Waffle of selected provisions | both | DONE |
+| D68 | Ladder histogram | both | DONE |
+| D69 | Primary Learn CTA; Manage sections | both | DONE |
+| D70 | Up next learning prompt | desktop | DONE |
+| D71 | Verbatim box show/hide | desktop | DONE |
+| D72 | Sections list | desktop | DONE |
+| D74 | Empty: no sections selected | both | DONE |
+| D75 | Learn top bar / step bar | both | DONE |
+| D76 | Eyebrow; VERBATIM BARE ACT chip | both | DONE |
+| D77 | Per-mode task heading | both | DONE |
+| D78 | Advance labels; methods left; Mark it Done | both | DONE |
+| D79 | Read | both | DONE |
+| D80 | Cloze | both | DONE |
+| D81 | Letters + speech controls | both | DONE |
+| D82 | Type | both | DONE |
+| D83 | Recite | both | DONE |
+| D84 | Test | both | DONE |
+| D85 | Clause unit: lead-in as context | both | DONE |
+| D87 | Focused column / deck+panel | both | DONE |
+| D132 | Law page back copy | both | DONE |
+| D139 | Learn failure states | both | DONE |
+| D141 | Speech unavailable → typed path | both | DONE |
+| T22 | Aggregates: rungs, next-up, scope | N/A | DONE — monotonic completed_scope_count; Next identity matches Stage 1 |
+| T23 | Modes-seen drives step bar | N/A | DONE — out-of-order complete preserved |
+| T25 | Playground speech route; `window.RecallSpeech` | N/A | DONE — Playground POST twins; Recite map server-owned |
 
 Production: `playground-learn.js` reads `window.SpeechClient` (never global). Constitution client uses `window.RecallSpeech` (`speech_client.js`). Speech HTTP is `POST /learn/{unit_id}/speech/transcribe` (Constitution `unit_id`). Confirmed T25.
 
 ---
 
-## U5 — Learned, revision, mastery, amendments (weight 8, 12 items)
+## U5 — Learned, revision, mastery, amendments (weight 8, 13 items)
 
-R4.
+R4. **13 / 13.** T42 is the thirteenth item (locator-aware source-review GET/POST twins).
 
 | ID | Requirement | D/M | Status |
 |---|---|---|---|
-| D73 | Source-update panel (three variants) | both | NOT STARTED |
-| D86 | Revision variant + source-outdated line | both | NOT STARTED |
-| D88 | “Section learned.” screen | both | NOT STARTED |
-| D89 | Learned count line | both | NOT STARTED |
-| D90 | “Mastered, verbatim.” | both | NOT STARTED |
-| D91 | “The whole Act. By heart.” | both | NOT STARTED |
-| D92 | Fixed dark surface both themes | both | NOT STARTED |
-| D133 | Source review list | both | NOT STARTED |
-| D134 | Section review page | both | NOT STARTED |
-| D135 | Missing / omitted variants | both | NOT STARTED |
-| D136 | Mastered or Learned **and** Law updated | both | NOT STARTED |
-| T24 | Completion routes; real aggregates only | N/A | NOT STARTED |
+| D73 | Source-update panel (three variants) | both | DONE |
+| D86 | Revision variant + source-outdated line | both | DONE |
+| D88 | “Section learned.” screen | both | DONE |
+| D89 | Learned count line | both | DONE |
+| D90 | “Mastered, verbatim.” | both | DONE |
+| D91 | “The whole Act. By heart.” | both | DONE |
+| D92 | Fixed dark surface both themes | both | DONE |
+| D133 | Source review list | both | DONE |
+| D134 | Section review page | both | DONE |
+| D135 | Missing / omitted variants | both | DONE |
+| D136 | Mastered or Learned **and** Law updated | both | DONE |
+| T24 | Completion routes; real aggregates only | N/A | DONE — learned GET after initial 6/6; Day 1–30 stay Learn; Day 60 mastered GET; review stray → workspace |
+| T42 | Locator-aware source-review GET/POST twins | N/A | DONE — PSS §38 (2) vs (2)~2 independent; missing-unit Learn redirects to unit review |
 
 ---
 
@@ -428,6 +430,22 @@ No new product delta (class D) was found. Deltas A–H already cover guest gate,
 
 ---
 
+## R4 closeout
+
+Batch report: [`docs/PLAYGROUND_UI_REDESIGN_R4_REPORT.md`](PLAYGROUND_UI_REDESIGN_R4_REPORT.md).
+
+**R4 is complete.** Act progress, six-mode Learn, Playground speech, completion, and locator-aware source review shipped. Programme **70.2 / 100**. R5 and R6 are not started. Stage 1 remains frozen except the m3b / T33 supersessions this batch required. Stage 2 remains PARKED.
+
+Starting SHA `8610aa1`. Implementation `951c349`. Hidden-complete + D92 wash `4d70c9e`.
+
+U4 **28 / 28** → 18.0. U5 **13 / 13** (T42 included) → 8.0. Alembic head remains **`20260927_0027`**. No migration.
+
+Local `tests/test_playground_r4.py` + r1 + m3b entitlement grep: **42 passed**. Full `pytest -m "not integration"`: **2822 passed**, 9 skipped, 1 deselected.
+
+Do not start R5 or R6 from this closeout.
+
+---
+
 ## R3 closeout
 
 Batch report: [`docs/PLAYGROUND_UI_REDESIGN_R3_REPORT.md`](PLAYGROUND_UI_REDESIGN_R3_REPORT.md).
@@ -518,4 +536,4 @@ No new B/C denominator rows. No class-D product-scope stop. Do not start R2.
 
 ## R0 readiness
 
-**U0 is complete (10/10).** **U1 is complete (28/28).** **R2 is complete.** **R3 is complete (U2 39/39, U3 29/38).** Stage 2 remains PARKED. Do not start R4 or R5. Programme **44.2 / 100**.
+**U0 is complete (10/10).** **U1 is complete (28/28).** **R2 is complete.** **R3 is complete (U2 39/39, U3 29/38).** **R4 is complete (U4 28/28, U5 13/13).** Stage 2 remains PARKED. Do not start R5 or R6. Programme **70.2 / 100**.
