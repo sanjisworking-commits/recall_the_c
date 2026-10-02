@@ -22,7 +22,7 @@ U4                     = 28 / 28
 U5                     = 13 / 13  (includes T42)
 R2                     = DONE
 R3                     = DONE (post-closeout correction frozen)
-R4                     = DONE
+R4                     = DONE (D141 typed-fallback correction)
 R5                     = not started
 R6                     = not started
 Stage 2                = PARKED
@@ -58,12 +58,18 @@ Amendments A–G from the approved R4 plan are binding. No new Class-D product d
 | Implementation | [`951c349`](https://github.com/sanjisworking-commits/recall_the_c/commit/951c349) |
 | Hidden-complete + D92 wash | [`4d70c9e`](https://github.com/sanjisworking-commits/recall_the_c/commit/4d70c9e) |
 | Tracker closeout | [`78240b2`](https://github.com/sanjisworking-commits/recall_the_c/commit/78240b2) |
+| Pin | [`b57a551`](https://github.com/sanjisworking-commits/recall_the_c/commit/b57a551) |
+| D141 limiter (audio-only) | [`5c98d83`](https://github.com/sanjisworking-commits/recall_the_c/commit/5c98d83) |
+| D141 expired-fixture match | [`ceaa0bb`](https://github.com/sanjisworking-commits/recall_the_c/commit/ceaa0bb) |
 
 | SHA | What |
 |-----|------|
 | `951c349` | ActProgress, Learn restyle, speech POST, completion GET, T42 twins |
 | `4d70c9e` | `[hidden]` beats `.pg-btn` display; D92 html/body/sheet wash; Cloze advance label; U4/U5 chrome pins; T33 `pg14`; m3b entitlement-status grep |
 | `78240b2` | R4 report + tracker: U4 28/28, U5 13/13, programme 70.2 |
+| `b57a551` | Pin closeout SHAs |
+| `5c98d83` | Speech-provider limiter on audio only; typed fallback proofs |
+| `ceaa0bb` | Expired D141 fixture uses subscription billing-period bounds |
 
 Nothing from R0/R1/R2/R3 was reopened except the Stage 1 assertions listed under Tests.
 
@@ -79,7 +85,7 @@ R4 is a read-model and chrome layer over Stage 1. It does not duplicate lifecycl
 | Mode complete, including out-of-order and Test-via-quiz | Stage 1 `complete_mode` / `complete_revision_mode_and_advance_if_ready`; HTTP `/complete` still **404s Test** |
 | Next identity | Stage 1 workspace loop, now `choose_next_workspace_row` |
 | Recite alignment | Server `recite_alignment`; client renders the map, does not own it |
-| Letters typed path | `align_text`; `expected=` ignored; `text=` skips the provider |
+| Letters typed path | `align_text`; `expected=` ignored; `text=` skips the provider **and** the speech-provider limiter |
 | Statutory text | Hydrated Bare Act; never client-authored |
 | Mastery / completion GET | Server status gate; stray review GET → workspace |
 | Source review | Existing detect/review engine; T42 adds unit locator GET/POST twins |
@@ -143,10 +149,11 @@ Stage 1 assertions superseded on purpose (record, do not weaken silently):
 
 | Run | Result |
 |---|---|
-| `tests/test_playground_r4.py` + r1 + m3b entitlement grep | **42 passed** |
-| `pytest -m "not integration"` | **2822 passed**, 9 skipped, 1 deselected |
+| `tests/test_playground_r4.py` + r1 + m3b entitlement grep on `b57a551` | **42 passed** |
+| `pytest -m "not integration"` on `b57a551` | **2822 passed**, 9 skipped, 1 deselected |
+| CI on `b57a551` | [run 36966722295](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/36966722295) succeeded |
 
-CI is recorded when push/PR workflows finish. Local non-integration suite is green.
+See **Post-closeout correction (D141)** for the later limiter fix and the 2825-passed suite.
 
 ---
 
@@ -161,6 +168,81 @@ CI is recorded when push/PR workflows finish. Local non-integration suite is gre
 | After | **70.2 / 100** |
 
 U5 denominator is 13 because T42 is an approved U5 technical row. Weighted U5 is still 8. Remaining U3 rows (D93–D100, D130) stay unawarded for R5.
+
+---
+
+## Post-closeout correction (D141)
+
+Acceptance review of `b57a551` found one real D141 contract failure: `_playground_speech()` ran `speech_rate_limiter.allow()` **before** the typed/audio split, so typed Check after an audio 429 received another 429. T25 stayed DONE. T22–T24 and T42 were not reopened. 70.2/100 was provisional; the proven score until this fix was U4 27/28 → **69.6 / 100**.
+
+No new UI. Letters and Recite already map `unavailable` / `rate_limited` to typed-path copy via `window.RecallSpeech`. Constitution `/learn/{unit_id}/speech/transcribe` is unchanged.
+
+### SHAs
+
+| | SHA |
+|---|---|
+| Starting correction | [`b57a551`](https://github.com/sanjisworking-commits/recall_the_c/commit/b57a551) |
+| Limiter on audio only | [`5c98d83`](https://github.com/sanjisworking-commits/recall_the_c/commit/5c98d83) |
+| Expired-fixture period match | [`ceaa0bb`](https://github.com/sanjisworking-commits/recall_the_c/commit/ceaa0bb) |
+
+### Limiter ordering
+
+Old:
+
+```text
+CSRF → _gate_learn → speech_rate_limiter.allow(...) → typed or audio
+```
+
+New:
+
+```text
+CSRF
+→ Playground Learn access chain
+→ validate mode
+→ if typed text: canonical server comparison; no limiter; no provider
+→ if audio: speech-provider rate limit → MIME → 2 MB → provider → server alignment
+```
+
+Typed fallback still requires Playground enabled, authenticated/allowed account, commercial Learn access, device, current-law roster membership, active selected locator, CSRF, valid Letters/Recite mode, and server-owned canonical text. `expected=` remains non-authoritative.
+
+### Proofs
+
+| Case | Test | Result |
+|---|---|---|
+| Letters audio #1 succeeds, audio #2 429, typed fallback 200, provider count unchanged | `test_d141_letters_rate_limit_then_typed_fallback` | green |
+| Recite same invariant; `recite_alignment` map returned | `test_d141_recite_rate_limit_then_typed_fallback` | green |
+| Audio 503 unavailable then typed 200; provider unused for typed | `test_d141_unavailable_then_typed_fallback` | green |
+| Guest / free / paused / halted / expired / device revoked / inactive law / unselected / dormant locator / bad CSRF / invalid mode; no provider call | `test_d141_typed_fallback_keeps_access_gates` | green |
+
+Client copy already present in `playground-learn.js`:
+
+- Letters 429/503 → “Speech recognition is unavailable. Type the words instead.”
+- Recite 429/503 → “Speech recognition is unavailable. Type what you recited.”
+- Check posts `text=` through `window.RecallSpeech` (no new endpoint)
+
+### Runs
+
+| Run | Result |
+|---|---|
+| `tests/test_playground_r4.py` | **32 passed** |
+| r1 + m3b entitlement grep | **13 passed** |
+| `pytest -m "not integration"` | **2825 passed**, 9 skipped, 1 deselected |
+| CI on `b57a551` (pre-correction) | [run 36966722295](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/36966722295) succeeded |
+| CI on correction head | recorded when the workflows for this head finish |
+
+Alembic head remains **`20260927_0027`**. No R5/R6 work.
+
+### Score restoration
+
+After D141 functional tests, full non-integration regression, and (pending) correction-head CI:
+
+```text
+U4 = 28 / 28
+U5 = 13 / 13
+Programme = 70.2 / 100
+```
+
+No new points.
 
 ---
 
