@@ -187,7 +187,7 @@ No new UI. Letters and Recite already map `unavailable` / `rate_limited` to type
 | Limiter on audio only | [`5c98d83`](https://github.com/sanjisworking-commits/recall_the_c/commit/5c98d83) |
 | Expired-fixture period match | [`ceaa0bb`](https://github.com/sanjisworking-commits/recall_the_c/commit/ceaa0bb) |
 | Closeout docs | [`286c98c`](https://github.com/sanjisworking-commits/recall_the_c/commit/286c98c) |
-| Ending correction | [`42c0cd3`](https://github.com/sanjisworking-commits/recall_the_c/commit/42c0cd3) |
+| Ending correction (CI-green) | [`5867351`](https://github.com/sanjisworking-commits/recall_the_c/commit/5867351) |
 
 ### Limiter ordering
 
@@ -232,13 +232,13 @@ Client copy already present in `playground-learn.js`:
 | r1 + m3b entitlement grep | **13 passed** |
 | `pytest -m "not integration"` | **2825 passed**, 9 skipped, 1 deselected |
 | CI on `b57a551` (pre-correction) | [run 36966722295](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/36966722295) succeeded |
-| CI on correction head | recorded when the workflows for this head finish |
+| CI on correction head `5867351` | [push 36979217456](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/36979217456) and [PR 36979221146](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/36979221146) succeeded |
 
 Alembic head remains **`20260927_0027`**. No R5/R6 work.
 
 ### Score restoration
 
-After D141 functional tests, full non-integration regression, and (pending) correction-head CI:
+After D141 functional tests, full non-integration regression, and correction-head CI:
 
 ```text
 U4 = 28 / 28

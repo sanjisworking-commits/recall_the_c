@@ -444,7 +444,7 @@ U4 **28 / 28** → 18.0. U5 **13 / 13** (T42 included) → 8.0. Alembic head rem
 
 Playground Learn uses `window.RecallSpeech`. Playground locator-aware speech POST is server-authoritative. Constitution default speech URL remains unchanged.
 
-Local after D141: `tests/test_playground_r4.py` **32 passed**; r1 + m3b entitlement grep **13 passed**; `pytest -m "not integration"` **2825 passed**, 9 skipped, 1 deselected. Pre-correction CI run `36966722295` on `b57a551` is green.
+Local after D141: `tests/test_playground_r4.py` **32 passed**; r1 + m3b entitlement grep **13 passed**; `pytest -m "not integration"` **2825 passed**, 9 skipped, 1 deselected. Pre-correction CI run `36966722295` on `b57a551` is green. Correction-head CI on `5867351`: push `36979217456` and PR `36979221146` succeeded.
 
 Do not start R5 or R6 from this closeout.
 
