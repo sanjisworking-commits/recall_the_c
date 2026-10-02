@@ -4,7 +4,7 @@
 
 ```text
 Stage 1               = DONE — 100.0 / 100   (frozen)
-UI Redesign Programme = 70.2 / 100
+UI Redesign Programme = 69.6 / 100  (provisional; D141 typed fallback correction)
 Stage 2               = PARKED until the programme is DONE — 100.0 / 100
 ```
 
@@ -33,7 +33,7 @@ Authority: `docs/PLAYGROUND_UI_REDESIGN_PLAN.md`. Inventories: `docs/design/PLAY
 | **R2 correction** | **`f62bd63`** (code). Fail-closed picker POST + bound `UnitLocator`. Programme still **28.1 / 100**. |
 | **R3 closeout HEAD** | **`54b5af9`** (award) · CI-green **`4cbb443`**. Score was **provisional**. |
 | **R3 post-closeout correction** | Review `86d8e56`. Code `5c3f003` (peek_capacity) + `6194e5b` (D142 theme). U2 **39/39**, U3 **29/38**, programme **44.2 / 100** restored after local+CI. |
-| **R4 closeout HEAD** | Implementation `951c349`. Hidden/D92 `4d70c9e`. Tracker `78240b2`. U4 **28/28**, U5 **13/13**, programme **70.2 / 100**. R5/R6 not started. |
+| **R4 closeout HEAD** | Implementation `951c349`. Hidden/D92 `4d70c9e`. Tracker `78240b2`. Pin `b57a551`. D141 typed-fallback correction in progress. U4 **27/28**, U5 **13/13**, programme **69.6 / 100**. R5/R6 not started. |
 
 Visual columns (390 light/dark, ~768, ~1024, 1280 light/dark, reduced motion) stay `—` until the relevant batch. Technical rows mark Desktop/Mobile **N/A**. Status uses only: `NOT STARTED | IN PROGRESS | BLOCKED | DONE | DONE`.
 
@@ -47,12 +47,12 @@ Visual columns (390 light/dark, ~768, ~1024, 1280 light/dark, reduced motion) st
 | U1 | Shared design system + shells | 12 | R1 | 28 | 28 | 12.0 |
 | U2 | Bare Act + Add + clause-level selection | 18 | R2, R3 | 39 | 39 | 18.0 |
 | U3 | Home + gates + roster lifecycle | 12 | R3, R5 | 38 | 29 | 9.2 |
-| U4 | Act progress + six-mode Learn + speech | 18 | R4 | 28 | 28 | 18.0 |
+| U4 | Act progress + six-mode Learn + speech | 18 | R4 | 28 | 27 | 17.4 |
 | U5 | Learned / mastery / amendment states | 8 | R4 | 13 | 13 | 8.0 |
 | U6 | Today + Calendar + Google Calendar | 10 | R6 | 15 | 0 | 0.0 |
 | U7 | Profile + Settings + account surfaces | 7 | R5 | 12 | 0 | 0.0 |
 | U8 | Responsive, a11y, parity, regression | 10 | R7 | 25 | 0 | 0.0 |
-| **Total** | | **100** | | **208** | **147** | **70.2 / 100** |
+| **Total** | | **100** | | **208** | **146** | **69.6 / 100** |
 
 Uniqueness (script-checked from §15.2; no row in two milestones, none omitted):
 
@@ -236,7 +236,7 @@ Paused/halted/expired GET `/playground` is read-only home (T19). Guest HTML GET 
 
 ## U4 — Act progress + Learn + speech (weight 18, 28 items)
 
-R4. **28 / 28.** Report: [`PLAYGROUND_UI_REDESIGN_R4_REPORT.md`](PLAYGROUND_UI_REDESIGN_R4_REPORT.md).
+R4. **27 / 28** until D141 typed fallback is proven. Report: [`PLAYGROUND_UI_REDESIGN_R4_REPORT.md`](PLAYGROUND_UI_REDESIGN_R4_REPORT.md).
 
 | ID | Requirement | D/M | Status |
 |---|---|---|---|
@@ -264,12 +264,14 @@ R4. **28 / 28.** Report: [`PLAYGROUND_UI_REDESIGN_R4_REPORT.md`](PLAYGROUND_UI_R
 | D87 | Focused column / deck+panel | both | DONE |
 | D132 | Law page back copy | both | DONE |
 | D139 | Learn failure states | both | DONE |
-| D141 | Speech unavailable → typed path | both | DONE |
+| D141 | Speech unavailable → typed path | both | IN PROGRESS — limiter must not block typed fallback |
 | T22 | Aggregates: rungs, next-up, scope | N/A | DONE — monotonic completed_scope_count; Next identity matches Stage 1 |
 | T23 | Modes-seen drives step bar | N/A | DONE — out-of-order complete preserved |
 | T25 | Playground speech route; `window.RecallSpeech` | N/A | DONE — Playground POST twins; Recite map server-owned |
 
-Production: `playground-learn.js` reads `window.SpeechClient` (never global). Constitution client uses `window.RecallSpeech` (`speech_client.js`). Speech HTTP is `POST /learn/{unit_id}/speech/transcribe` (Constitution `unit_id`). Confirmed T25.
+Playground Learn uses window.RecallSpeech.
+Playground locator-aware speech POST is server-authoritative.
+Constitution default speech URL remains unchanged.
 
 ---
 
@@ -434,13 +436,13 @@ No new product delta (class D) was found. Deltas A–H already cover guest gate,
 
 Batch report: [`docs/PLAYGROUND_UI_REDESIGN_R4_REPORT.md`](PLAYGROUND_UI_REDESIGN_R4_REPORT.md).
 
-**R4 is complete.** Act progress, six-mode Learn, Playground speech, completion, and locator-aware source review shipped. Programme **70.2 / 100**. R5 and R6 are not started. Stage 1 remains frozen except the m3b / T33 supersessions this batch required. Stage 2 remains PARKED.
+**R4 is not frozen.** Act progress, six-mode Learn, Playground speech, completion, and locator-aware source review shipped on `b57a551`, but D141 is reopened: the speech-provider limiter must not block typed fallback. T22–T25 and T42 stay DONE. Programme provisionally **69.6 / 100** (U4 27/28). R5 and R6 are not started.
 
-Starting SHA `8610aa1`. Implementation `951c349`. Hidden-complete + D92 wash `4d70c9e`. Tracker `78240b2`.
+Starting SHA `8610aa1`. Implementation `951c349`. Hidden-complete + D92 wash `4d70c9e`. Tracker `78240b2`. Pin `b57a551`. Correction starts at `b57a551`.
 
-U4 **28 / 28** → 18.0. U5 **13 / 13** (T42 included) → 8.0. Alembic head remains **`20260927_0027`**. No migration.
+U4 **27 / 28** → 17.357… ≈ 17.4. U5 **13 / 13** (T42 included) → 8.0. Alembic head remains **`20260927_0027`**. No migration.
 
-Local `tests/test_playground_r4.py` + r1 + m3b entitlement grep: **42 passed**. Full `pytest -m "not integration"`: **2822 passed**, 9 skipped, 1 deselected.
+Local `tests/test_playground_r4.py` + r1 + m3b entitlement grep: **42 passed** on `b57a551`. Full `pytest -m "not integration"` on that head: **2822 passed**, 9 skipped, 1 deselected. CI run `36966722295` on `b57a551` is green.
 
 Do not start R5 or R6 from this closeout.
 
@@ -536,4 +538,4 @@ No new B/C denominator rows. No class-D product-scope stop. Do not start R2.
 
 ## R0 readiness
 
-**U0 is complete (10/10).** **U1 is complete (28/28).** **R2 is complete.** **R3 is complete (U2 39/39, U3 29/38).** **R4 is complete (U4 28/28, U5 13/13).** Stage 2 remains PARKED. Do not start R5 or R6. Programme **70.2 / 100**.
+**U0 is complete (10/10).** **U1 is complete (28/28).** **R2 is complete.** **R3 is complete (U2 39/39, U3 29/38).** **R4 is not frozen** (U4 27/28, U5 13/13; D141 typed fallback correction). Stage 2 remains PARKED. Do not start R5 or R6. Programme **69.6 / 100**.

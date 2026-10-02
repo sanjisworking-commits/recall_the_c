@@ -1842,20 +1842,20 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         expected = str(form.get("expected") or "")
         del expected
         typed = str(form.get("text") or "").strip()
-        limiter = request.app.state.speech_rate_limiter
-        user = getattr(request.state, "current_user", None)
-        if user is not None:
-            rate_key = f"user:{user.id}"
-        elif request.client is not None:
-            rate_key = f"ip:{request.client.host}"
-        else:
-            rate_key = "ip:unknown"
-        if not limiter.allow(rate_key):
-            return JSONResponse({"ok": False, "error": "rate_limited"}, status_code=429)
         body = opened["body"]
         transcript_text = typed
         words_payload: list[dict] = []
         if not typed:
+            limiter = request.app.state.speech_rate_limiter
+            user = getattr(request.state, "current_user", None)
+            if user is not None:
+                rate_key = f"user:{user.id}"
+            elif request.client is not None:
+                rate_key = f"ip:{request.client.host}"
+            else:
+                rate_key = "ip:unknown"
+            if not limiter.allow(rate_key):
+                return JSONResponse({"ok": False, "error": "rate_limited"}, status_code=429)
             audio = form.get("audio")
             if audio is None or not hasattr(audio, "read"):
                 return JSONResponse({"ok": False, "error": "empty"}, status_code=400)

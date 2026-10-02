@@ -37,6 +37,7 @@ from constitution_memorizer.playground.urls import (
     learn_speech_path_for_locator,
     learned_path_for_locator,
     mastered_path_for_locator,
+    remove_path,
     sections_path,
     source_review_path,
     source_review_path_for_locator,
@@ -48,11 +49,12 @@ from constitution_memorizer.speech.limits import MAX_AUDIO_BYTES, SpeechRateLimi
 from constitution_memorizer.speech.provider import SpeechUnavailable
 from constitution_memorizer.web.app import create_app
 from constitution_memorizer.web.bare_acts import get_bare_act
+from tests.test_entitlement_m3b import PERIOD_END, PERIOD_START, _guest_client
 from tests.test_playground import MINI_UNITS, _add_and_select, _add_law, _client
 from tests.test_playground_m7 import _complete, _json_post
 from tests.test_playground_m8 import TODAY, _complete_six, _seed_progress
 from tests.test_playground_m9 import _patch_act, _stale_registry
-from tests.test_roster_m5a import _authed_client, _confirm_add, _csrf, _subscribe
+from tests.test_roster_m5a import USER, _authed_client, _confirm_add, _csrf, _subscribe
 from tests.test_speech_routes import FakeSpeechProvider
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -108,6 +110,55 @@ def _speech_client(tmp_path: Path, provider=None) -> TestClient:
             speech_provider=provider or FakeSpeechProvider(),
         )
     )
+
+
+def _audio_file():
+    return {"audio": ("utt.webm", BytesIO(b"fake-audio"), "audio/webm")}
+
+
+def _speech_headers(client: TestClient) -> dict[str, str]:
+    token = client.cookies.get("rtc_csrf") or ""
+    return {"X-CSRF-Token": token} if token else {}
+
+
+def _speech_csrf(client: TestClient) -> dict[str, str]:
+    return _csrf(client)
+
+
+def _post_audio(client: TestClient, url: str):
+    return client.post(
+        url,
+        data=_speech_csrf(client),
+        files=_audio_file(),
+        headers=_speech_headers(client),
+    )
+
+
+def _post_typed(
+    client: TestClient,
+    url: str,
+    text: str = "This Act may be called",
+    **extra,
+):
+    data = {"text": text, "expected": "client text must not win"}
+    data.update(_speech_csrf(client))
+    data.update(extra)
+    return client.post(url, data=data, headers=_speech_headers(client))
+
+
+def _ready_subscribed(tmp_path: Path, provider=None) -> tuple[TestClient, object]:
+    provider = provider or FakeSpeechProvider()
+    client = _authed_client(tmp_path)
+    client.app.state.speech_provider = provider
+    _subscribe(client)
+    assert _confirm_add(client, "ndps").status_code == 303
+    saved = client.post(
+        sections_path("ndps"),
+        data={**_csrf(client), "section": "1"},
+        follow_redirects=False,
+    )
+    assert saved.status_code == 303
+    return client, provider
 
 
 def test_alembic_head_unchanged():
@@ -333,27 +384,213 @@ def test_t25_rejects_without_provider(tmp_path: Path):
     assert invalid.json()["error"] == "invalid_mode"
 
 
-def test_t25_unavailable_and_rate_limit(tmp_path: Path):
+def test_d141_letters_rate_limit_then_typed_fallback(tmp_path: Path):
+    provider = FakeSpeechProvider()
+    client = _speech_client(tmp_path, provider)
+    _add_and_select(client, "ndps", "1")
+    url = learn_speech_path_for_locator(section_locator("ndps", "1"), "letters")
+    client.app.state.speech_rate_limiter = SpeechRateLimiter(
+        window_seconds=60, max_hits=1
+    )
+    first = _post_audio(client, url)
+    assert first.status_code == 200
+    assert first.json()["ok"] is True
+    assert len(provider.calls) == 1
+    second = _post_audio(client, url)
+    assert second.status_code == 429
+    assert second.json()["error"] == "rate_limited"
+    assert len(provider.calls) == 1
+    typed = _post_typed(client, url)
+    assert typed.status_code == 200
+    payload = typed.json()
+    assert payload["ok"] is True
+    assert payload["transcript"] == "This Act may be called"
+    assert "expected" not in payload
+    assert payload["alignment"]
+    assert len(provider.calls) == 1
+
+
+def test_d141_recite_rate_limit_then_typed_fallback(tmp_path: Path):
+    provider = FakeSpeechProvider()
+    client = _speech_client(tmp_path, provider)
+    _add_and_select(client, "ndps", "1")
+    url = learn_speech_path_for_locator(section_locator("ndps", "1"), "recite")
+    client.app.state.speech_rate_limiter = SpeechRateLimiter(
+        window_seconds=60, max_hits=1
+    )
+    first = _post_audio(client, url)
+    assert first.status_code == 200
+    assert len(provider.calls) == 1
+    second = _post_audio(client, url)
+    assert second.status_code == 429
+    assert second.json()["error"] == "rate_limited"
+    assert len(provider.calls) == 1
+    typed = _post_typed(client, url, text="This Act may be called the Narcotic Drugs")
+    assert typed.status_code == 200
+    payload = typed.json()
+    assert payload["ok"] is True
+    alignment = payload["alignment"]
+    assert isinstance(alignment, dict)
+    assert alignment["source_words"]
+    assert "hit_indices" in alignment
+    assert "percent" in alignment
+    assert "stats_label" in alignment
+    assert len(provider.calls) == 1
+
+
+def test_d141_unavailable_then_typed_fallback(tmp_path: Path):
     class Boom:
+        def __init__(self) -> None:
+            self.calls: list[dict] = []
+
         async def transcribe(self, audio, *, mime_type, keyterms=()):
+            self.calls.append(
+                {"nbytes": len(audio), "mime_type": mime_type, "keyterms": list(keyterms)}
+            )
             raise SpeechUnavailable("no key")
 
-    client = _speech_client(tmp_path, Boom())
+    provider = Boom()
+    client = _speech_client(tmp_path, provider)
     _add_and_select(client, "ndps", "1")
-    loc = section_locator("ndps", "1")
-    url = learn_speech_path_for_locator(loc, "letters")
-    down = client.post(
-        url,
-        files={"audio": ("utt.webm", BytesIO(b"fake"), "audio/webm")},
-    )
+    url = learn_speech_path_for_locator(section_locator("ndps", "1"), "letters")
+    down = _post_audio(client, url)
     assert down.status_code == 503
-    limited = _speech_client(tmp_path, FakeSpeechProvider())
-    _add_and_select(limited, "ndps", "1")
-    limited.app.state.speech_rate_limiter = SpeechRateLimiter(window_seconds=60, max_hits=1)
-    first = limited.post(url, data={"text": "This"})
-    assert first.status_code == 200
-    second = limited.post(url, data={"text": "Act"})
-    assert second.status_code == 429
+    assert down.json()["error"] == "unavailable"
+    assert len(provider.calls) == 1
+    typed = _post_typed(client, url)
+    assert typed.status_code == 200
+    payload = typed.json()
+    assert payload["ok"] is True
+    assert payload["transcript"] == "This Act may be called"
+    assert payload["alignment"]
+    assert len(provider.calls) == 1
+
+
+def test_d141_typed_fallback_keeps_access_gates(tmp_path: Path):
+    loc = section_locator("ndps", "1")
+    letters = learn_speech_path_for_locator(loc, "letters")
+    read_url = learn_speech_path_for_locator(loc, "read")
+
+    guest_provider = FakeSpeechProvider()
+    guest = _guest_client(tmp_path / "guest")
+    guest.app.state.speech_provider = guest_provider
+    guest_denied = _post_typed(guest, letters)
+    assert guest_denied.status_code == 401
+    assert guest_denied.json()["error"] == "auth_required"
+    assert guest_provider.calls == []
+
+    free_provider = FakeSpeechProvider()
+    free = _authed_client(tmp_path / "free")
+    free.app.state.speech_provider = free_provider
+    free_denied = _post_typed(free, letters)
+    assert free_denied.status_code == 403
+    assert free_denied.json()["error"] == "not_subscribed"
+    assert free_provider.calls == []
+
+    for status, folder, error in (
+        ("paused", "paused", "subscription_paused"),
+        ("halted", "halted", "payment_halted"),
+    ):
+        provider = FakeSpeechProvider()
+        client, _ = _ready_subscribed(tmp_path / folder, provider)
+        sub = client.app.state.subscriptions.get_current_subscription(USER)
+        client.app.state.subscriptions.update_subscription_state(
+            USER, sub.id, status=status
+        )
+        denied = _post_typed(client, letters)
+        assert denied.status_code == 403, status
+        assert denied.json()["error"] == error
+        assert provider.calls == []
+
+    expired_provider = FakeSpeechProvider()
+    expired, _ = _ready_subscribed(tmp_path / "expired", expired_provider)
+    sub = expired.app.state.subscriptions.get_current_subscription(USER)
+    expired.app.state.subscription_charges.upsert_charge(
+        provider_payment_id="pay_d141_refund",
+        user_subscription_id=sub.id,
+        billing_period_start=PERIOD_START,
+        billing_period_end=PERIOD_END,
+        refund_status="full",
+    )
+    expired_denied = _post_typed(expired, letters)
+    assert expired_denied.status_code == 403
+    assert expired_denied.json()["error"] == "paid_period_ended"
+    assert expired_provider.calls == []
+
+    device_provider = FakeSpeechProvider()
+    device, _ = _ready_subscribed(tmp_path / "device", device_provider)
+    assert device.get("/playground").status_code == 200
+    devices = device.app.state.device_service.list_devices(USER)
+    active = [row for row in devices if not row.is_revoked]
+    assert active
+    device.app.state.device_service.revoke_device(USER, active[0].id)
+    device_denied = _post_typed(device, letters)
+    assert device_denied.status_code == 403
+    assert device_denied.json()["error"] == "device_revoked"
+    assert device_provider.calls == []
+
+    inactive_provider = FakeSpeechProvider()
+    inactive, _ = _ready_subscribed(tmp_path / "inactive", inactive_provider)
+    removed = inactive.post(
+        remove_path("ndps"),
+        data=_csrf(inactive),
+        follow_redirects=False,
+    )
+    assert removed.status_code in {200, 303}
+    inactive_denied = _post_typed(inactive, letters)
+    assert inactive_denied.status_code == 403
+    assert inactive_denied.json()["error"] == "not_active_this_period"
+    assert inactive_provider.calls == []
+
+    unselected_provider = FakeSpeechProvider()
+    unselected = _authed_client(tmp_path / "unselected")
+    unselected.app.state.speech_provider = unselected_provider
+    _subscribe(unselected)
+    assert _confirm_add(unselected, "ndps").status_code == 303
+    unselected_denied = _post_typed(unselected, letters)
+    assert unselected_denied.status_code == 400
+    assert unselected_denied.json()["error"] == "not_selected"
+    assert unselected_provider.calls == []
+
+    from constitution_memorizer.playground.units import enumerate_selectable_units
+
+    dormant_provider = FakeSpeechProvider()
+    dormant = _authed_client(tmp_path / "dormant")
+    dormant.app.state.speech_provider = dormant_provider
+    _subscribe(dormant)
+    assert _confirm_add(dormant, "ndps").status_code == 303
+    act = get_bare_act("ndps")
+    assert act is not None
+    units = enumerate_selectable_units(act.section("8"), law_id="ndps")
+    assert units
+    saved_unit = dormant.post(
+        sections_path("ndps"),
+        data={**_csrf(dormant), "unit": units[0].locator.value},
+        follow_redirects=False,
+    )
+    assert saved_unit.status_code == 303
+    dormant_url = learn_speech_path_for_locator(section_locator("ndps", "8"), "letters")
+    dormant_denied = _post_typed(dormant, dormant_url)
+    assert dormant_denied.status_code == 400
+    assert dormant_denied.json()["error"] == "not_selected"
+    assert dormant_provider.calls == []
+
+    csrf_provider = FakeSpeechProvider()
+    csrf_client, _ = _ready_subscribed(tmp_path / "csrf", csrf_provider)
+    bad_csrf = csrf_client.post(
+        letters,
+        data={"text": "This Act", "csrf_token": "nope"},
+        headers={"X-CSRF-Token": "nope"},
+    )
+    assert bad_csrf.status_code == 403
+    assert csrf_provider.calls == []
+
+    mode_provider = FakeSpeechProvider()
+    mode_client, _ = _ready_subscribed(tmp_path / "mode", mode_provider)
+    invalid = _post_typed(mode_client, read_url)
+    assert invalid.status_code == 400
+    assert invalid.json()["error"] == "invalid_mode"
+    assert mode_provider.calls == []
 
 
 def test_t25_csrf_required_when_session_present(tmp_path: Path):
@@ -809,6 +1046,9 @@ def test_r4_assets_and_no_duplicate_engines():
     assert "csrf_token" in speech
     assert "RecallSpeech" in js
     assert "SpeechClient" not in js
+    assert "Speech recognition is unavailable. Type the words instead." in js
+    assert "Speech recognition is unavailable. Type what you recited." in js
+    assert 'code === "unavailable" || code === "rate_limited"' in js
     assert "--pg-ring-size: 84px" in css
     assert "--pg-ring-size: 104px" in css
     routes = (
@@ -817,6 +1057,10 @@ def test_r4_assets_and_no_duplicate_engines():
     assert "def _playground_speech" in routes
     assert "recite_alignment" in routes
     assert "/learn/{unit_id}/speech/transcribe" not in routes
+    speech_fn = routes.split("async def _playground_speech", 1)[1].split("@router.post", 1)[0]
+    typed_at = speech_fn.find("if not typed:")
+    limiter_at = speech_fn.find("limiter.allow(")
+    assert 0 <= typed_at < limiter_at
     assert ".PlaygroundShell [hidden]" in css
     assert "display: none !important" in css
     assert "html:has(.pg-complete.pg-surface--fixed-dark) .site-header" in css
