@@ -16,17 +16,17 @@ Authoritative docs:
 
 ```text
 Stage 1               = DONE — 100.0 / 100, frozen
-UI Redesign Programme = 89.3 / 100
+UI Redesign Programme = 90.0 / 100
 U0                     = 10 / 10
 U1                     = 28 / 28
 U2                     = 39 / 39
 U3                     = 38 / 38
 U4                     = 28 / 28
 U5                     = 13 / 13  (includes T42)
-U6                     = 14 / 15
+U6                     = 15 / 15
 U7                     = 12 / 12
 R5                     = DONE (frozen)
-R6                     = T28 IN PROGRESS (minutes line); D122 DONE
+R6                     = DONE (T28 minutes line restored; D122 unchanged)
 R7                     = not started
 Stage 2                = PARKED
 ```
@@ -34,8 +34,8 @@ Stage 2                = PARKED
 **Branch:** `cursor/playground-220d`  
 **PR:** [#188](https://github.com/sanjisworking-commits/recall_the_c/pull/188) (draft)
 
-The 90.0 programme score is restored only after the T28 minutes-line
-correction is proven. Temporary score: U6 14/15, programme **89.3 / 100**.
+The 90.0 programme score is calculated from proven tracker rows (U6 15/15),
+not forced.
 
 ---
 
@@ -262,6 +262,55 @@ On `46f7a9d`:
 - Push [37002096012](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/37002096012) succeeded
 - PR [37002099960](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/37002099960) succeeded
 - Deployment status `trustworthy-embrace - recall-th-c`: **success** (`recallthec-pr-188.up.railway.app`)
+
+PR [#188](https://github.com/sanjisworking-commits/recall_the_c/pull/188) remains a **draft**. Do not start R7.
+
+---
+
+## T28 minutes-line correction
+
+Review of `81548eb` found the merged hero still printed Constitution-only
+`revision_minutes`. Playground has no duration in the product, so a
+Playground-only due read **1 revision due / About 0 minutes of review**, and
+a mixed due presented the Constitution estimate as the total.
+
+Temporary score until this section: **U6 14/15**, programme **89.3 / 100**.
+D122 stayed DONE. No other row was reopened. R7 was not started.
+Alembic head remains `20260927_0027`.
+
+| | SHA |
+|---|---|
+| Starting | [`81548eb`](https://github.com/sanjisworking-commits/recall_the_c/commit/81548eb) |
+| Implementation | [`14179a1`](https://github.com/sanjisworking-commits/recall_the_c/commit/14179a1) |
+
+### What changed
+
+`apply_merged_today_hero` sets `show_revision_minutes = (playground_due_count == 0)`.
+The revision hero prints `About N minutes of review` only when that flag is
+true. Constitution-only revision days are unchanged. No Playground duration
+was invented.
+
+### Proof
+
+| Case | Result |
+|---|---|
+| Playground-only due | 1 revision due. No "About 0 minutes". No minutes line. `r6_t28_hero_minutes_today_390_light.png`, `r6_t28_hero_minutes_today_1280_light.png` |
+| Mixed due | Minutes line absent so a Constitution-only estimate is not the total. After Playground is no longer due, Constitution current restores the existing estimate |
+| Constitution-only due | Existing `About N minute(s) of review` still renders |
+
+### Tests
+
+Focused `tests/test_playground_r6.py` + `tests/test_calendar_week.py`: **30 passed**.
+R5 + m8 + calendar + dashboard: **215 passed**.
+`pytest -m "not integration"` on `14179a1`: **2878 passed**, 9 skipped, 1 deselected.
+
+### CI
+
+On `14179a1`:
+
+- Push [37013370205](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/37013370205) succeeded
+- PR [37013373523](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/37013373523) succeeded
+- Deployment status `trustworthy-embrace - recall-th-c`: **success**
 
 PR [#188](https://github.com/sanjisworking-commits/recall_the_c/pull/188) remains a **draft**. Do not start R7.
 
