@@ -38,7 +38,7 @@ Authority: `docs/PLAYGROUND_UI_REDESIGN_PLAN.md`. Inventories: `docs/design/PLAY
 | **R5 post-closeout correction** | Review `d9039a3`. Code `ec32195`. D130 CTA pin `d13c80c`. Tracker `cd78e25`. U3 **38/38**, U7 **12/12**, programme **80.0 / 100** restored after local+CI. R6 not started. |
 | **R6 closeout HEAD** | Implementation `0011124`. extra_loader pin `1860dab`. Tracker `34db64f`. Pin `495d5ee`. |
 | **R6 post-closeout correction** | Starting SHA `495d5ee`. Code `46f7a9d`. Closeout docs `35d4dd1`. Pin `81548eb`. |
-| **R6 T28 minutes correction** | Starting SHA `81548eb`. Code `14179a1`. T28 **DONE** again. D122 stayed DONE. U6 **15/15**, programme **90.0 / 100** after local+CI. R7 not started. |
+| **R6 T28 minutes correction** | Starting SHA `81548eb`. Code `14179a1`. Closeout docs `c445dad`. T28 **DONE** again. D122 stayed DONE. U6 **15/15**, programme **90.0 / 100** after local+CI. R7 not started. |
 
 Visual columns (390 light/dark, ~768, ~1024, 1280 light/dark, reduced motion) stay `—` until the relevant batch. Technical rows mark Desktop/Mobile **N/A**. Status uses only: `NOT STARTED | IN PROGRESS | BLOCKED | DONE | DONE`.
 
@@ -500,6 +500,7 @@ ChatGPT review of `81548eb` reopened **T28 only**. D122 stayed DONE. Temporary U
 |---|---|
 | Starting | `81548eb` |
 | Implementation | `14179a1` |
+| Closeout docs | `c445dad` |
 
 There is no Playground duration in the product. `show_revision_minutes` is false whenever `playground_due_count > 0`. Constitution-only revision days still print the existing estimate.
 

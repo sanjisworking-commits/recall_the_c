@@ -282,6 +282,7 @@ Alembic head remains `20260927_0027`.
 |---|---|
 | Starting | [`81548eb`](https://github.com/sanjisworking-commits/recall_the_c/commit/81548eb) |
 | Implementation | [`14179a1`](https://github.com/sanjisworking-commits/recall_the_c/commit/14179a1) |
+| Closeout docs | [`c445dad`](https://github.com/sanjisworking-commits/recall_the_c/commit/c445dad) |
 
 ### What changed
 
