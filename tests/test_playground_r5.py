@@ -266,6 +266,7 @@ def test_d110_guest_profile_card(tmp_path: Path):
     assert "Guest · Reading only" in page.text
     assert "Sign in" in page.text
     assert "Browse the Bare Acts" in page.text
+    assert 'name="robots" content="noindex, nofollow"' in page.text
     posted = client.post("/profile", follow_redirects=False)
     assert posted.status_code in {303, 401, 403}
 

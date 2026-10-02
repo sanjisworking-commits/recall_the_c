@@ -37,7 +37,7 @@ GUEST_PUBLIC_PREFIXES = (
     "/terms",
     "/privacy",
     "/grievance",
-    "/profile",  # GET redirects to login in handler; POST requires auth
+    "/profile",  # GET is the D110 guest card; POST requires auth
 )
 
 # Personal surfaces — unauthenticated users see a gate or redirect to sign-in.
