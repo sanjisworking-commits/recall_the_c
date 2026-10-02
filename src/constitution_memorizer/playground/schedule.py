@@ -409,9 +409,12 @@ def apply_merged_today_hero(ctx: dict[str, Any]) -> dict[str, Any]:
     ``due_count`` on entry is Constitution-only. Playground New never enters
     ``due_count``, ``revision_count``, or the goal denominator. A Playground
     review CTA is the current node's href — not ``POST /revision/start``.
+    There is no Playground duration in the product, so the Constitution
+    ``revision_minutes`` line is hidden whenever a Playground revision is due.
     """
     playground_due_n = int(ctx.get("playground_due_count") or 0)
     ctx["due_count"] = int(ctx.get("due_count") or 0) + playground_due_n
+    ctx["show_revision_minutes"] = playground_due_n == 0
     if ctx["due_count"] > 0:
         was_revision = ctx.get("today_mode") == "revision"
         ctx["today_mode"] = "revision"

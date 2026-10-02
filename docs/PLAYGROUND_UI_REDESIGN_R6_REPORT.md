@@ -16,17 +16,17 @@ Authoritative docs:
 
 ```text
 Stage 1               = DONE — 100.0 / 100, frozen
-UI Redesign Programme = 90.0 / 100
+UI Redesign Programme = 89.3 / 100
 U0                     = 10 / 10
 U1                     = 28 / 28
 U2                     = 39 / 39
 U3                     = 38 / 38
 U4                     = 28 / 28
 U5                     = 13 / 13  (includes T42)
-U6                     = 15 / 15
+U6                     = 14 / 15
 U7                     = 12 / 12
 R5                     = DONE (frozen)
-R6                     = DONE (post-closeout correction restored T28 + D122)
+R6                     = T28 IN PROGRESS (minutes line); D122 DONE
 R7                     = not started
 Stage 2                = PARKED
 ```
@@ -34,8 +34,8 @@ Stage 2                = PARKED
 **Branch:** `cursor/playground-220d`  
 **PR:** [#188](https://github.com/sanjisworking-commits/recall_the_c/pull/188) (draft)
 
-The 90.0 programme score is calculated from proven tracker rows (U6 15/15),
-not forced.
+The 90.0 programme score is restored only after the T28 minutes-line
+correction is proven. Temporary score: U6 14/15, programme **89.3 / 100**.
 
 ---
 

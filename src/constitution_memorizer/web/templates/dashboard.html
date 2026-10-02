@@ -207,7 +207,9 @@
           </p>
         </div>
         <p class="dash-load">Keep what you've learned strong.</p>
-        <p class="dash-load">About {{ revision_minutes }} minute{% if revision_minutes != 1 %}s{% endif %} of review.</p>
+        {% if show_revision_minutes|default(true) %}
+        <p class="dash-load" data-revision-minutes>About {{ revision_minutes }} minute{% if revision_minutes != 1 %}s{% endif %} of review.</p>
+        {% endif %}
         {% if revision_chips %}
         <ul class="dash-chips" aria-label="Due articles">
           {% for chip in revision_chips %}

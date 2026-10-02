@@ -137,6 +137,11 @@ def _hero_cta_href(html: str) -> str:
     return unescape(match.group(1))
 
 
+def _hero_minutes_line(html: str) -> str | None:
+    match = re.search(r'data-revision-minutes[^>]*>([^<]+)', html)
+    return match.group(1).strip() if match else None
+
+
 def test_r6_alembic_head_unchanged() -> None:
     script = ScriptDirectory.from_config(Config(str(ROOT / "alembic.ini")))
     assert set(script.get_heads()) == {EXPECTED_HEAD}
@@ -224,6 +229,7 @@ def test_t28_due_count_playground_only_excludes_new() -> None:
     assert ctx["hero_cta_kind"] == "playground_review"
     assert ctx["hero_cta_href"] == due.href
     assert ctx["goal_total"] == 1
+    assert ctx["show_revision_minutes"] is False
 
 
 def test_t28_due_count_mixed_constitution_and_playground() -> None:
@@ -257,6 +263,7 @@ def test_t28_due_count_mixed_constitution_and_playground() -> None:
     assert ctx["hero_cta_kind"] == "playground_review"
     assert ctx["hero_cta_href"] == playground.href
     assert ctx["goal_total"] == 2
+    assert ctx["show_revision_minutes"] is False
 
 
 def test_t28_new_only_does_not_count_as_due() -> None:
@@ -285,6 +292,33 @@ def test_t28_new_only_does_not_count_as_due() -> None:
     assert ctx["plan_my_day_available"] is True
     assert ctx["hero_cta_kind"] == "constitution_revision"
     assert ctx["goal_total"] == 0
+    assert ctx["show_revision_minutes"] is True
+
+
+def test_t28_constitution_only_keeps_revision_minutes() -> None:
+    constitution = _unit(
+        unit_id="clause-1",
+        source="constitution",
+        kind="review",
+        status="current",
+        href="/learn/clause-1",
+    )
+    ctx = {
+        "due_count": 1,
+        "playground_due_count": 0,
+        "today_mode": "revision",
+        "revision_count": 1,
+        "revision_minutes": 2,
+        "show_plan_prompt": False,
+        "plan_my_day_available": False,
+        "today_units": [constitution],
+    }
+    apply_merged_today_hero(ctx)
+    assert ctx["due_count"] == 1
+    assert ctx["today_mode"] == "revision"
+    assert ctx["show_revision_minutes"] is True
+    assert ctx["revision_minutes"] == 2
+    assert ctx["hero_cta_kind"] == "constitution_revision"
 
 
 def test_t28_d115_d117_http_path_merge_and_due_count(
@@ -339,6 +373,8 @@ def test_t28_d115_d117_http_path_merge_and_due_count(
     assert "Not today" not in html
     assert _hero_cta_href(html) == _path_current_href(html)
     assert 'action="/revision/start"' not in html
+    assert _hero_minutes_line(html) is None
+    assert "minute of review" not in html
 
 
 def test_t28_playground_only_due_hero_matches_path(
@@ -364,6 +400,10 @@ def test_t28_playground_only_due_hero_matches_path(
     assert "Want Recall to plan today's learning?" not in html
     assert "Plan my day" not in html
     assert "Not today" not in html
+    assert _hero_minutes_line(html) is None
+    assert "About 0 minutes" not in html
+    assert "minute of review" not in html
+    assert "minutes of review" not in html
 
 
 def test_t28_mixed_due_playground_current_then_constitution(
@@ -384,6 +424,9 @@ def test_t28_mixed_due_playground_current_then_constitution(
     assert hero == _path_current_href(html)
     assert "/playground/" in hero
     assert 'action="/revision/start"' not in html
+    assert _hero_minutes_line(html) is None
+    assert "minute of review" not in html
+    assert "minutes of review" not in html
     _seed_progress(
         client.app.state.playground,
         USER,
@@ -399,6 +442,33 @@ def test_t28_mixed_due_playground_current_then_constitution(
     assert 'action="/revision/start"' in after
     assert "data-today-hero-cta" not in after
     assert "revision due" in after
+    minutes = _hero_minutes_line(after)
+    assert minutes is not None
+    assert minutes.startswith("About ")
+    assert "minute" in minutes
+    assert "0 minute" not in minutes
+
+
+def test_t28_constitution_only_http_keeps_minutes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    day = date.today()
+    _pin_playground_today(monkeypatch, day)
+    client = _authed_client(tmp_path)
+    _subscribe(client)
+    _seed_constitution_due(client, as_of=day - timedelta(days=1))
+    page = client.get("/dashboard")
+    assert page.status_code == 200
+    html = page.text
+    assert 'data-today-mode="revision"' in html
+    assert _path_current_source(html) == "constitution"
+    assert 'action="/revision/start"' in html
+    minutes = _hero_minutes_line(html)
+    assert minutes is not None
+    assert minutes.startswith("About ")
+    assert "minute" in minutes
+    assert "0 minute" not in minutes
+    assert "data-today-source=\"playground\"" not in html
 
 
 def test_t28_new_only_playground_http(
@@ -682,6 +752,8 @@ def test_t33_r6_asset_pins() -> None:
     assert "data-today-source" in dash
     assert "dash-path-card" in dash
     assert "data-today-hero-cta" in dash
+    assert "data-revision-minutes" in dash
+    assert "show_revision_minutes" in dash
     assert "Law revisions" not in dash
     styles = (STATIC / "styles.css").read_text(encoding="utf-8")
     assert "minmax(280px, 380px)" in styles
