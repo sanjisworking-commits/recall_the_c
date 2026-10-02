@@ -67,11 +67,12 @@ Stop log: V23 landing/auth-family palette. Do not add the D row. Do not restyle.
 | Starting (R6 frozen HEAD) | [`56065c2`](https://github.com/sanjisworking-commits/recall_the_c/commit/56065c2) |
 | Implementation | [`fc0ca67`](https://github.com/sanjisworking-commits/recall_the_c/commit/fc0ca67) |
 | Rejected 100.0 docs | [`a2fdde7`](https://github.com/sanjisworking-commits/recall_the_c/commit/a2fdde7) / pin [`20e02be`](https://github.com/sanjisworking-commits/recall_the_c/commit/20e02be) |
+| V11/V23 correction | [`d69f441`](https://github.com/sanjisworking-commits/recall_the_c/commit/d69f441) |
 
 | SHA | What |
 |-----|------|
 | `fc0ca67` | Ledgers; overflow / focus / first 44px pass / reduced-motion / ~1024 collision; T40-4 Today path; T40-5 eligible Act loop |
-| this correction | V11 min-size remasure + CSS; V23 STOP recorded; T33 `main77` / `mob98` / `pg19` (`pg8` unchanged) |
+| `d69f441` | V11 min-size remasure + CSS; V23 STOP recorded; T33 `main77` / `mob98` / `pg19` (`pg8` unchanged) |
 
 Nothing from Stage 1, R5, or R6 was reopened except the T33 asset pin and
 the two T40 rewrites the ledger authorized.
