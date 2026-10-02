@@ -20,7 +20,7 @@ Authoritative docs:
 
 ```text
 Stage 1               = DONE — 100.0 / 100, frozen
-UI Redesign Programme = 100.0 / 100
+UI Redesign Programme = 99.6 / 100
 U0                     = 10 / 10
 U1                     = 28 / 28
 U2                     = 39 / 39
@@ -29,20 +29,18 @@ U4                     = 28 / 28
 U5                     = 13 / 13  (includes T42)
 U6                     = 15 / 15
 U7                     = 12 / 12
-U8                     = 25 / 25
+U8                     = 24 / 25
 R5                     = DONE (frozen)
 R6                     = DONE (frozen)
-R7                     = DONE
+R7                     = OPEN (V23 STOP)
 Stage 2                = PARKED
 ```
 
 **Branch:** `cursor/playground-220d`  
 **PR:** [#188](https://github.com/sanjisworking-commits/recall_the_c/pull/188) (draft)
 
-Programme score is `90 + 10 × proven_U8 / 25`. U8 is 25/25, so the
-programme is **100.0 / 100** by the formula. That is not a forced 100:
-rows without evidence stay open, and none were marked DONE to chase the
-ceiling.
+Programme score is `90 + 10 × proven_U8 / 25`. U8 is 24/25, so the
+programme is **99.6 / 100**. That is not a forced 100. V23 is open.
 
 ---
 
@@ -51,14 +49,14 @@ ceiling.
 | | |
 |---|---|
 | Targeted | U8 T40, V1–V24. |
-| Completed | Ledgers, a11y/responsive reconciliation against existing D rows, authorized T40 rewrites, frozen-domain regression, visual matrix, CI, Railway, handoff. |
-| Remaining | Merge is not this batch. Stage 2 stays PARKED. |
+| Completed | Ledgers, a11y/responsive reconciliation against existing D rows, authorized T40 rewrites, frozen-domain regression, V11 390×844 remasure. |
+| Remaining | **V23 STOP** (landing/auth palette). Merge is not this batch. Stage 2 stays PARKED. |
 | Programme score before | 90.0 / 100 |
-| Programme score after | **100.0 / 100** |
+| Programme score after | **99.6 / 100** |
 | Alembic | one head: `20260927_0027`. No R7 migration. |
 
 No new Class-D product decision. No newly discovered B/C denominator rows.
-Stop log empty.
+Stop log: V23 landing/auth-family palette. Do not add the D row. Do not restyle. Do not claim V23 DONE.
 
 ---
 
@@ -68,11 +66,12 @@ Stop log empty.
 |---|---|
 | Starting (R6 frozen HEAD) | [`56065c2`](https://github.com/sanjisworking-commits/recall_the_c/commit/56065c2) |
 | Implementation | [`fc0ca67`](https://github.com/sanjisworking-commits/recall_the_c/commit/fc0ca67) |
-| Closeout docs | [`a2fdde7`](https://github.com/sanjisworking-commits/recall_the_c/commit/a2fdde7) |
+| Rejected 100.0 docs | [`a2fdde7`](https://github.com/sanjisworking-commits/recall_the_c/commit/a2fdde7) / pin [`20e02be`](https://github.com/sanjisworking-commits/recall_the_c/commit/20e02be) |
 
 | SHA | What |
 |-----|------|
-| `fc0ca67` | Ledgers; overflow / focus / 44px / reduced-motion / ~1024 collision; T40-4 Today path; T40-5 eligible Act loop; T33 `main76` / `mob97` / `pg18` (`pg8` unchanged) |
+| `fc0ca67` | Ledgers; overflow / focus / first 44px pass / reduced-motion / ~1024 collision; T40-4 Today path; T40-5 eligible Act loop |
+| this correction | V11 min-size remasure + CSS; V23 STOP recorded; T33 `main77` / `mob98` / `pg19` (`pg8` unchanged) |
 
 Nothing from Stage 1, R5, or R6 was reopened except the T33 asset pin and
 the two T40 rewrites the ledger authorized.
@@ -162,17 +161,17 @@ V19/V20 closed only after those greens.
 | | |
 |---|---|
 | Before | 90.0 / 100 |
-| Newly proven | U8 25 |
-| U8 | 25 / 25 → **10.0** |
-| After | **100.0 / 100** |
+| Newly proven | U8 24 (V23 unclaimed) |
+| U8 | 24 / 25 → **9.6** |
+| After | **99.6 / 100** |
 
-Rows closed this batch: T40, V1–V24.
+Rows closed this batch: T40, V1–V22, V24. **V23 STOP.**
 
 ---
 
 ## Remaining
 
-R7-targeted rows: **DONE**. Do not merge PR 188 from this report.
+R7-targeted rows: **24 / 25**. V23 remains STOP. Do not merge PR 188 from this report.
 
 Stage 2 stays PARKED. Do not start S2-0 from this closeout.
 

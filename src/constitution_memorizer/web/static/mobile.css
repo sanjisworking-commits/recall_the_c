@@ -203,6 +203,7 @@
     display: inline-flex;
     align-items: center;
     min-height: 44px;
+    min-width: 44px;
     padding: 0;
     border: 0;
     background: none;
@@ -712,6 +713,11 @@
 
   body[data-mscreen="today"] .dash-avatar-link {
     flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
     line-height: 0;
   }
 
@@ -1151,8 +1157,10 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
     margin-left: auto;
     border: 0;
     border-radius: 9px;
@@ -1399,7 +1407,8 @@
     align-items: center;
     justify-content: center;
     width: 100%;
-    height: 42px;
+    min-height: 44px;
+    height: auto;
     margin-top: 12px;
     border-radius: 10px;
     background: var(--rc-ink);
@@ -2323,7 +2332,8 @@
   body[data-mscreen="search"] .search-form input {
     flex: 1;
     min-width: 0;
-    height: 40px;
+    height: 44px;
+    min-height: 44px;
     padding: 0 13px 0 0;
     border: 0;
     background: var(--wash);
@@ -2341,7 +2351,8 @@
   }
 
   body[data-mscreen="search"] .search-form-icon {
-    height: 40px;
+    height: 44px;
+    min-height: 44px;
     align-items: center;
     padding-left: 13px;
     border-radius: 12px 0 0 12px;
@@ -2356,7 +2367,12 @@
   }
 
   .search-cancel {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     flex: 0 0 auto;
+    min-height: 44px;
+    min-width: 44px;
     font-size: 13.5px;
     color: var(--rc-teal);
     text-decoration: none;
@@ -2384,7 +2400,8 @@
   .search-recent-chip {
     display: inline-flex;
     align-items: center;
-    height: 32px;
+    height: auto;
+    min-height: 44px;
     padding: 0 13px;
     border: 1px solid var(--rc-hairline);
     border-radius: 16px;
@@ -2452,8 +2469,10 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 30px;
-    height: 30px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
     flex: 0 0 auto;
     border: 1px solid var(--hairline);
     background: var(--paper);
@@ -2482,6 +2501,7 @@
     flex-direction: column;
     align-items: center;
     gap: 3px;
+    min-height: 44px;
     padding: 6px 0 5px;
     background: var(--paper);
     border: 1px solid var(--page);
@@ -3030,19 +3050,39 @@
     font-size: 13.5px;
   }
 
+  /* D113: painted track stays 46×28. Hit area grows to 44px tall. */
   .settings-toggle {
     position: relative;
     flex: 0 0 auto;
     width: 46px;
-    height: 28px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
     padding: 0;
     border: 0;
-    border-radius: 14px;
-    background: var(--hairline);
+    border-radius: 0;
+    background: transparent;
     cursor: pointer;
   }
 
+  .settings-toggle::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 46px;
+    height: 28px;
+    margin-top: -14px;
+    border-radius: 14px;
+    background: var(--hairline);
+    pointer-events: none;
+  }
+
   .settings-toggle[aria-checked="true"] {
+    background: transparent;
+  }
+
+  .settings-toggle[aria-checked="true"]::before {
     background: var(--browse-due);
   }
 
@@ -3053,10 +3093,12 @@
 
   .settings-toggle-knob {
     position: absolute;
-    top: 3px;
+    top: 50%;
     left: 3px;
+    z-index: 1;
     width: 22px;
     height: 22px;
+    margin-top: -11px;
     border-radius: 50%;
     background: #fff;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
@@ -4078,8 +4120,10 @@
   }
 
   .learn-mode-bar .mobile-icon-btn[data-mode-help] {
-    width: 30px;
-    height: 30px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
     border: 1px solid var(--rc-hairline);
     border-radius: 50%;
     font-size: 13px;
@@ -5147,7 +5191,8 @@
   }
 
   body[data-mscreen="planintro"] .plan-intro-target .segmented-btn {
-    height: 32px;
+    height: auto;
+    min-height: 44px;
     font-size: 12.5px;
   }
 
@@ -5615,4 +5660,23 @@
   }
 }
 
-/* R7 closeout — D17 Constitution Learn hit area (not a rebuild). */
+/* R7 closeout — D17 phone hit areas. Padding / min-size only. D113 track paint unchanged. */
+@media (max-width: 560px) {
+  .mobile-back {
+    min-width: 44px;
+  }
+
+  body[data-mscreen="today"] .dash-plan-day-btn,
+  body[data-mscreen="today"] .dash-avatar-link,
+  body[data-mscreen="today"] .rc-path-node.is-current .rc-path-cta,
+  .cal-m-nav-btn,
+  .cal-m-cell:not(.is-blank),
+  .search-cancel,
+  body[data-mscreen="search"] .search-form input,
+  .learn-mode-bar .mobile-icon-btn,
+  .settings-toggle {
+    min-height: 44px;
+    min-width: 44px;
+    box-sizing: border-box;
+  }
+}

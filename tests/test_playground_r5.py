@@ -563,9 +563,9 @@ def test_r5_assets_and_r6_today_calendar_fields():
     base = (TEMPLATES / "base.html").read_text(encoding="utf-8")
     css = (STATIC / "playground.css").read_text(encoding="utf-8")
     mobile = (STATIC / "mobile.css").read_text(encoding="utf-8")
-    assert "playground.css?v=pg18" in base
+    assert "playground.css?v=pg19" in base
     assert "playground.js?v=pg8" in base
-    assert "mobile.css?v=mob97" in base
+    assert "mobile.css?v=mob98" in base
     assert ".RosterRow" in css
     assert ".RolloverPlanner-aside" in css
     assert ".RolloverPlanner .pg-sticky-cta" in css

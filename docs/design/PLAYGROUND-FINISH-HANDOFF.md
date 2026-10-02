@@ -10,7 +10,7 @@ artifacts. Runtime is FastAPI + Jinja + `styles.css` / `mobile.css` /
 
 ```text
 Stage 1               = DONE — 100.0 / 100, frozen
-UI Redesign Programme = 100.0 / 100
+UI Redesign Programme = 99.6 / 100
 Stage 2               = PARKED
 PR 188                = draft — do not merge from R7
 Alembic               = 20260927_0027 (one head)
@@ -39,10 +39,14 @@ Shared system (`--ink`, `--page`, `--paper`, `--hairline`, `--muted`,
 `--faint`, `--browse-due`, `--pg-*`). Dark values exist (D4 / T34).
 Fixed-dark completion screens stay fixed-dark (D92).
 
-Landing (`landing.html` / `landing_light.html`) and standalone auth
-(`login.html` and the auth family) keep the **shipped** palettes they
-already had at freeze. Restyling them onto Playground tokens would be a
-new product D row. R7 did not add that row.
+Landing (`landing.html` / `landing_light.html`) and standalone login
+(`login.html`) keep the **shipped** palettes they already had at freeze.
+Those palettes are **not** D1–D17. Restyling them onto Playground tokens
+would be a new Layer 1 D row under §21.3. R7 did not add that row and
+does not claim V23 done. Other auth-family templates that already use
+`base.html` tokens (`signed_out.html`, `session_expired.html`,
+`auth_transition.html`, `auth_callback.html`, `partials/auth_shell.html`)
+are MATCHED.
 
 ## Frozen product rules (do not reopen)
 
@@ -73,7 +77,7 @@ not add the row, do not fix it, do not claim V23 done.
 
 ## Asset pins (T33)
 
-`styles.css?v=main76` · `mobile.css?v=mob97` · `playground.css?v=pg18` ·
+`styles.css?v=main77` · `mobile.css?v=mob98` · `playground.css?v=pg19` ·
 `playground.js?v=pg8`
 
 Bump the CSS pin when that file changes. Leave `pg8` unless JS changes.

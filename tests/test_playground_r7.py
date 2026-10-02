@@ -94,13 +94,13 @@ CLASS_C_STATES = (
 
 def test_t33_r7_asset_pins() -> None:
     html = BASE.read_text(encoding="utf-8")
-    assert "styles.css?v=main76" in html
-    assert "mobile.css?v=mob97" in html
-    assert "playground.css?v=pg18" in html
+    assert "styles.css?v=main77" in html
+    assert "mobile.css?v=mob98" in html
+    assert "playground.css?v=pg19" in html
     assert "playground.js?v=pg8" in html
-    assert "styles.css?v=main75" not in html
-    assert "mobile.css?v=mob96" not in html
-    assert "playground.css?v=pg17" not in html
+    assert "styles.css?v=main76" not in html
+    assert "mobile.css?v=mob97" not in html
+    assert "playground.css?v=pg18" not in html
 
 
 def test_r7_ledger_inventory_and_class_b() -> None:
@@ -115,6 +115,11 @@ def test_r7_ledger_inventory_and_class_b() -> None:
     assert "Not screenshotted must not mean not inspected" in ledger
     assert "Calendar week is desktop-only" in ledger
     assert "Legal stays Class B" in ledger
+    stop = ledger.split("## Stop log", 1)[1]
+    assert "V23" in stop
+    assert "landing.html" in stop
+    assert "login.html" in stop
+    assert "new" in stop.lower() and "D row" in stop
     assert len(CLASS_B) == 45
     for name in CLASS_B:
         assert f"`{name}`" in ledger, name
@@ -282,6 +287,10 @@ def test_v11_settings_styling_frozen_hit_area_corrected() -> None:
     settings_css = mobile.split('body[data-mscreen="settings"] .segmented-btn', 1)[1][:500]
     assert "min-height: 44px" in settings_css
     assert "height: 30px" not in settings_css.split("}", 1)[0]
+    toggle = mobile.split(".settings-toggle {", 1)[1][:700]
+    assert "min-height: 44px" in toggle
+    assert "height: 28px" in mobile
+    assert "settings-toggle::before" in mobile
 
 
 def test_r7_shell_still_has_phone_and_desktop_breakpoints(tmp_path: Path) -> None:
@@ -290,9 +299,9 @@ def test_r7_shell_still_has_phone_and_desktop_breakpoints(tmp_path: Path) -> Non
     home = client.get("/playground")
     assert home.status_code == 200
     assert "PlaygroundShell" in home.text
-    css = client.get("/static/playground.css?v=pg18").text
+    css = client.get("/static/playground.css?v=pg19").text
     assert "--pg-tap: 44px" in css or "--pg-tap:" in css
-    styles = client.get("/static/styles.css?v=main76").text
+    styles = client.get("/static/styles.css?v=main77").text
     assert "R7 closeout" in styles
     week = client.get("/calendar?view=week")
     assert week.status_code == 200

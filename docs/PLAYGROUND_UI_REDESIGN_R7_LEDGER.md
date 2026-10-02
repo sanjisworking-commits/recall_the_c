@@ -222,23 +222,23 @@ V15 does not close V11.
 
 T33: bump CSS asset pins when those files change. `playground.js` stays `pg8` unless JS changes.
 
-Shipped: `styles.css?v=main76`, `mobile.css?v=mob97`, `playground.css?v=pg18`, `playground.js?v=pg8`.
+Shipped: `styles.css?v=main77`, `mobile.css?v=mob98`, `playground.css?v=pg19`, `playground.js?v=pg8`.
 
 ## Phase 4–14 outcomes
 
 | Step | Result |
 |---|---|
 | 4 Responsive | Overflow-x hidden on shell/main. 900–1039 `min-width: 0` on week grid, header, home grid, Act-head CTA. ~768 remains 561–899 flex header (no tab bar). Week stays `min-width: 900px`. |
-| 5 Theme / contrast | Token hover `a:hover → var(--browse-due)`; dark theme-toggle `var(--hairline)`. No token failed contrast. B-landing / B-auth keep their shipped palettes (known at freeze; restyle would be a new D row — not added). |
+| 5 Theme / contrast | Token hover `a:hover → var(--browse-due)`; dark theme-toggle `var(--hairline)`. No token failed contrast. |
 | 6 Reduced motion | Remaining `.panel` / `.continue-card` motion collapsed under `prefers-reduced-motion` and `html:not(.rtc-anim)`. |
 | 7 Keyboard / focus | Global `:focus-visible` 2px `var(--ink)` ring. Settings Self-paced ring photographed. |
 | 8 Semantics | Existing dialog / radiogroup / tri-state. Calendar week legend remains text + mark. D102 titles remain distinct. |
-| 9 V11 | Settings segmented `height: auto` with `min-height: 44px` (D113 styling kept). Constitution Learn letters switch `min-height/min-width: 44px` (not a rebuild). Safe-area padding unchanged. No approved deviation used to close V11. |
+| 9 V11 | Playwright 390×844, `channel="chrome"`. Applicable phone controls now `min-height` / `min-width` 44px (month-strip, calendar nav/cells, Today ··· and avatar wrapper, path CTA, search field/cancel, Learn `?` help, Act-head tab/toggle as text links, legal-switch/toc, login brand/guest/legal-nav, sheet close, plan-intro segments). Settings toggle **hit** is 44px; **painted track** stays 46×28 via `::before` (D113). Constitution Learn not rebuilt. Inline prose links, hidden radios, and text labels are not chrome. No approved deviation used to close V11. |
 | 10 T40 execution | T40-4 and T40-5 only. See Phase 2. |
 | 11 V16 / V17 / V18 | Frozen-domain suite on the authorized contracts. Semantic failure would have been STOP. None fired. |
-| 12 Tests | Focused `tests/test_playground_r7.py`. Full `pytest -m "not integration"`: **2888 passed**, 9 skipped, 1 deselected (`fc0ca67`). |
-| 13 Visual / CI / Railway | Representative screenshots below. CI push [37022804844](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/37022804844) and PR [37022809702](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/37022809702) succeeded on `fc0ca67`. Railway `trustworthy-embrace / recall_the_c-pr-188` success. |
-| 14 Handoff | `docs/design/PLAYGROUND-FINISH-HANDOFF.md`. Tracker U8 25/25. Do not merge. Stage 2 stays PARKED. |
+| 12 Tests | Focused `tests/test_playground_r7.py`. Full `pytest -m "not integration"` on `fc0ca67`: **2888 passed**, 9 skipped, 1 deselected. This V11/V23 correction re-runs focused pins before closeout. |
+| 13 Visual / CI / Railway | Representative screenshots from `fc0ca67`. CI/Railway green on that SHA. This correction does not reopen those rows. |
+| 14 Handoff | `docs/design/PLAYGROUND-FINISH-HANDOFF.md`. U8 **24/25**. V23 STOP. Do not merge. Stage 2 stays PARKED. |
 
 ### Visual matrix (representative screenshots; every family inspected)
 
@@ -269,4 +269,16 @@ HTTP inspect: 58/58 expected routes. Guest `/playground` HTML 200 sign-in gate. 
 
 ## Stop log
 
-Empty at closeout. No new product decision, unknown Stage 1 defect, R5/R6 semantic regression, schema change, or new D/T row. No newly discovered Class-B mismatch that required a **new** D row. V11 closed on padding / min-size, not via `APPROVED DEVIATION`.
+**V23 STOP.** Class-B landing/auth-family palettes do not use D1–D17 tokens.
+
+| Template | Finding | Rule |
+|---|---|---|
+| `landing.html` | Splash indigo/cream (`#6E82C8`, `#f4f1ea`, `#4C5C9E`, `#0b0b0b`) | Not D1–D17. Restyle would be a landing rebuild and needs a **new** Layer 1 D row under §21.3. Row not added. Not restyled. |
+| `landing_light.html` | Alternate splash raw hex (`#fdfcfa`, `#141414`, `#0E7569`) | Same. Not D1–D17 CSS tokens. |
+| `login.html` | Standalone indigo/cream (same family as `landing.html`) | Same. Hit-area padding on brand / `.j-guest` / legal nav only. Palette untouched. |
+
+Do not claim V23 DONE. Do not add the D row. Do not fix the palette inside R7.
+
+Other Class-B templates on this pass: **MATCHED** to D1–D17 tokens, or tap-size mismatches **reconciled** under existing D17 (legal-switch, legal-toc). `signed_out.html`, `session_expired.html`, `auth_transition.html`, `auth_callback.html`, and `partials/auth_shell.html` use `base.html` tokens — MATCHED.
+
+V11 is not in this stop log. 390×844 measure after the min-size pass: no applicable chrome control under 44px. Remaining sub-44 hits are hidden radios, `sr-only` labels, text `<label>`s, and inline prose links (WCAG).

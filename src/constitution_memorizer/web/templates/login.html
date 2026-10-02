@@ -77,6 +77,25 @@
     [data-auth-grid] { grid-template-columns: 1fr !important; }
     [data-auth-grid] > aside { order: 0 !important; min-height: 62vh; }
   }
+
+  @media (max-width: 899px) {
+    .j-guest,
+    .link-btn,
+    a[href^="/login"] {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+    }
+    [data-auth-grid] aside > a {
+      min-height: 44px;
+    }
+    nav[aria-label="Legal"] a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+      min-width: 44px;
+    }
+  }
 </style>
 </head>
 <body>

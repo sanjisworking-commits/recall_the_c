@@ -1138,8 +1138,10 @@ dialog.pg-sheet::backdrop {
   display: none;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
   padding: 0;
   border: 0;
   border-radius: 50%;
@@ -2620,6 +2622,14 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     min-height: 44px;
     min-width: 44px;
     height: auto;
+  }
+
+  .pg-month-strip a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    min-width: 44px;
+    box-sizing: border-box;
   }
 }
 

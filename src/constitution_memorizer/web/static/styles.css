@@ -4146,6 +4146,7 @@ code {
   display: inline-flex;
   align-items: center;
   min-height: 44px;
+  min-width: 44px;
   padding: 0;
   border: 0;
   background: none;
@@ -10512,13 +10513,36 @@ summary:focus-visible,
   .calendar-nav-btn,
   .calendar-nav-today,
   .calendar-view-btn,
-  .theme-toggle {
+  .theme-toggle,
+  .link-btn,
+  .profile-settings-link a,
+  .legal-switch a,
+  .legal-toc a,
+  .bareact-info-toggle,
+  .bareact-tab,
+  .mobile-back,
+  .sibling-chip {
     min-height: 44px;
     min-width: 44px;
     box-sizing: border-box;
   }
 
   .segmented-btn {
+    height: auto;
+  }
+
+  .link-btn,
+  .profile-settings-link a,
+  .legal-switch a,
+  .legal-toc a,
+  .bareact-info-toggle,
+  .bareact-tab {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .sibling-chip {
+    width: auto;
     height: auto;
   }
 }
