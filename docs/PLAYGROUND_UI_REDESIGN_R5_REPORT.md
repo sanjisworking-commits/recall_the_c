@@ -179,6 +179,7 @@ Review reopened only those four rows. Provisional score until this correction: U
 **Starting correction SHA:** [`d9039a3`](https://github.com/sanjisworking-commits/recall_the_c/commit/d9039a3)  
 **Implementation:** [`ec32195`](https://github.com/sanjisworking-commits/recall_the_c/commit/ec32195)  
 **D130 CTA pin:** [`d13c80c`](https://github.com/sanjisworking-commits/recall_the_c/commit/d13c80c)  
+**Closeout docs:** [`cd78e25`](https://github.com/sanjisworking-commits/recall_the_c/commit/cd78e25)  
 Alembic remains **`20260927_0027`**.
 
 ### D130 before / after
