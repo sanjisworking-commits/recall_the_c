@@ -84,7 +84,7 @@
         {% endif %}
         <div class="pg-sticky-cta RolloverPlanner-footer">
           <p class="RolloverPlanner-planned">{{ capacity.used_label }}</p>
-          <button type="submit" class="pg-btn RolloverPlanner-continue">{{ submit_continue }}</button>
+          <button type="submit" class="pg-btn RolloverPlanner-continue" data-rollover-submit>{{ submit_label }}</button>
         </div>
       </form>
       {% endif %}
@@ -98,7 +98,7 @@
       <a class="pg-btn" href="/laws">Browse laws</a>
       {% endif %}
       {% if candidates %}
-      <button type="submit" class="pg-btn pg-btn--ghost RolloverPlanner-done" form="rollover-form">{{ submit_done }}</button>
+      <button type="submit" class="pg-btn pg-btn--ghost RolloverPlanner-done" form="rollover-form" data-rollover-submit>{{ submit_label }}</button>
       {% endif %}
     </aside>
   </div>

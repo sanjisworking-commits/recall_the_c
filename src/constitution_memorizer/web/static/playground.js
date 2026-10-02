@@ -41,6 +41,33 @@
     }
   }
 
+  function rolloverActionLabel(form) {
+    var unresolved = false;
+    var seen = false;
+    form.querySelectorAll("[data-rollover-candidate]").forEach(function (article) {
+      seen = true;
+      var checked = article.querySelector('input[type="radio"]:checked');
+      var value = checked
+        ? checked.value
+        : (article.getAttribute("data-rollover-decision") || "undecided");
+      if (value !== "keep" && value !== "decline") {
+        unresolved = true;
+      }
+    });
+    if (!seen) {
+      return "Done";
+    }
+    return unresolved ? "Continue with these" : "Done";
+  }
+
+  function syncRolloverAction(form) {
+    var root = form.closest(".RolloverPlanner") || document;
+    var label = rolloverActionLabel(form);
+    root.querySelectorAll("[data-rollover-submit]").forEach(function (btn) {
+      btn.textContent = label;
+    });
+  }
+
   function updateKeepAvailability(form) {
     var limitAttr = form.getAttribute("data-limit");
     if (limitAttr === "" || limitAttr === null) {
@@ -88,8 +115,10 @@
       group.addEventListener("change", function () {
         syncGroup(group);
         updateKeepAvailability(form);
+        syncRolloverAction(form);
       });
     });
+    syncRolloverAction(form);
   });
 
   function focusables(root) {
@@ -108,10 +137,12 @@
     if (!dialog) {
       dialog = document.createElement("dialog");
       dialog.className = "pg-sheet";
+      dialog.setAttribute("data-pg-sheet-host", "");
       dialog.setAttribute("aria-modal", "true");
       dialog.setAttribute("role", "dialog");
       document.body.appendChild(dialog);
     } else {
+      dialog.setAttribute("data-pg-sheet-host", "");
       dialog.setAttribute("aria-modal", "true");
       dialog.setAttribute("role", "dialog");
     }

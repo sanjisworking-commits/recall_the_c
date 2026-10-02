@@ -504,6 +504,50 @@ def device_count_copy(active_count: int, device_limit: int | None) -> str:
     return f"{count} of {int(device_limit)}"
 
 
+ROLLOVER_SUBMIT_CONTINUE = "Continue with these"
+ROLLOVER_SUBMIT_DONE = "Done"
+_RESOLVED_ROLLOVER = frozenset({"keep", "decline"})
+
+
+def _rollover_decision(row: Any) -> str:
+    if isinstance(row, dict):
+        value = row.get("target_decision")
+    else:
+        value = getattr(row, "target_decision", None)
+    return str(value or "").strip()
+
+
+def rollover_candidates_resolved(candidates: Any) -> bool:
+    """True when every candidate is Keep or Remove, or there are none."""
+
+    rows = list(candidates or ())
+    if not rows:
+        return True
+    return all(_rollover_decision(row) in _RESOLVED_ROLLOVER for row in rows)
+
+
+def rollover_submit_label(
+    candidates: Any,
+    *,
+    adjustment_required: bool = False,
+) -> str:
+    """Single server-derived CTA. Unresolved candidates never yield Done."""
+
+    if adjustment_required or not rollover_candidates_resolved(candidates):
+        return ROLLOVER_SUBMIT_CONTINUE
+    return ROLLOVER_SUBMIT_DONE
+
+
+def _scheduled_tier_display(tier: str) -> str:
+    key = str(tier or "").strip()
+    if not key:
+        return ""
+    try:
+        return get_subscription_product(key).display_name
+    except UnknownSubscriptionTier:
+        return key.title()
+
+
 def playground_subscription_card(snapshot: Any | None) -> PlaygroundSubscriptionCard:
     """T26: chip and stats from the entitlement snapshot only."""
 
@@ -559,6 +603,21 @@ def playground_subscription_card(snapshot: Any | None) -> PlaygroundSubscription
             cta_label="Resume Playground",
             cta_href=PLAYGROUND_BILLING_PATH,
         )
+    status = str(getattr(snapshot, "subscription_status", None) or "")
+    if status == "pending":
+        return PlaygroundSubscriptionCard(
+            title=title or "Playground",
+            chip="PENDING",
+            chip_kind="pending",
+            body=(
+                "Payment retry in progress. Existing Playground stays available. "
+                "New laws are temporarily unavailable."
+            ),
+            stat_big="",
+            stat_label=limit_line,
+            cta_label="Manage subscription",
+            cta_href=PLAYGROUND_BILLING_PATH,
+        )
     if not getattr(snapshot, "is_subscribed", False) and reason in {
         BLOCK_NOT_SUBSCRIBED,
         "",
@@ -587,11 +646,20 @@ def playground_subscription_card(snapshot: Any | None) -> PlaygroundSubscription
         )
     renew = f" Current paid period ends {period}." if period else ""
     stat_big = "∞" if limit is None else str(limit)
+    cancel_at_end = bool(getattr(snapshot, "cancel_at_period_end", False))
+    scheduled = str(getattr(snapshot, "scheduled_tier", None) or "").strip()
+    if cancel_at_end:
+        body = "ACTIVE. Cancels at the end of the current paid period."
+    elif scheduled:
+        next_name = _scheduled_tier_display(scheduled)
+        body = f"ACTIVE. Changes to {next_name} at the end of the current paid period."
+    else:
+        body = f"This month’s Playground is open.{renew}"
     return PlaygroundSubscriptionCard(
         title=title or "Playground",
         chip="ACTIVE",
         chip_kind="active",
-        body=f"This month’s Playground is open.{renew}",
+        body=body,
         stat_big=stat_big,
         stat_label=limit_line,
         cta_label="Manage plan",

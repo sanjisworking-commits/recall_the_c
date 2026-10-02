@@ -130,7 +130,7 @@ def test_guest_text_size_api_does_not_write(tmp_path: Path):
 
 
 def test_settings_assets_and_hooks(tmp_path: Path):
-    # T33: R5 bumped playground.css pg14→pg16, mobile.css mob94→mob95.
+    # T33: R5 correction bumped playground.css pg16→pg17. mobile.css stays mob95.
     client = _client(tmp_path)
     html = client.get("/browse").text
     assert "styles.css?v=main74" in html

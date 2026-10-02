@@ -140,6 +140,7 @@ from constitution_memorizer.playground.view import (
     law_membership,
     picker_page_view,
     roster_law_cards,
+    rollover_submit_label,
     section_row_view,
     skips_add_confirm,
 )
@@ -625,8 +626,9 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                 "blocked": notice,
                 "manages_current": plan.manages_current_period,
                 "planned_count": plan.used,
-                "submit_continue": "Continue with these",
-                "submit_done": "Done",
+                "submit_label": rollover_submit_label(
+                    cards, adjustment_required=plan.adjustment_required
+                ),
             },
         )
 

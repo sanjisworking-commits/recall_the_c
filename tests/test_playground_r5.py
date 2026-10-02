@@ -12,12 +12,12 @@ Does not start R6, reopen R4, or touch T22–T25 / T42.
 
 from __future__ import annotations
 
+from datetime import timedelta
 from pathlib import Path
 from types import SimpleNamespace
 
 from alembic.config import Config
 from alembic.script import ScriptDirectory
-from fastapi.testclient import TestClient
 
 from constitution_memorizer.entitlements.models import (
     BLOCK_NOT_SUBSCRIBED,
@@ -33,13 +33,27 @@ from constitution_memorizer.playground.urls import (
 from constitution_memorizer.playground.view import (
     device_count_copy,
     playground_subscription_card,
+    rollover_submit_label,
 )
 from tests.test_calendar_routes import USER as GCAL_USER
 from tests.test_calendar_routes import _client as _gcal_client
 from tests.test_calendar_routes import _connect as _gcal_connect
+from tests.test_entitlement_m3b import NOW as M3_NOW
+from tests.test_entitlement_m3b import USER as M3_USER
 from tests.test_entitlement_m3b import _add_subscription, _authed_client as _m3_authed
+from tests.test_entitlement_m3b import _consume_on_roster
 from tests.test_entitlement_m3b import _guest_client
-from tests.test_roster_m5a import USER, _authed_client, _confirm_add, _csrf, _subscribe
+from tests.test_entitlement_m3b import _mutate, _seed_legacy, _set_status
+from tests.test_roster_m5a import _authed_client, _confirm_add, _csrf, _subscribe
+
+LEGACY_PROFILE_PHRASES = (
+    "3 Free Articles",
+    "Back on Free",
+    "Unlock every Article",
+    "Recall pass",
+    "subscription.plan_days",
+    "Free Articles you have claimed",
+)
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPECTED_HEAD = "20260927_0027"
@@ -58,6 +72,9 @@ def _snapshot(**overrides) -> SimpleNamespace:
         billing_period_end=None,
         registered_device_count=1,
         device_limit=2,
+        subscription_status="active",
+        cancel_at_period_end=False,
+        scheduled_tier=None,
     )
     base.update(overrides)
     return SimpleNamespace(**base)
@@ -114,6 +131,41 @@ def test_t26_subscription_card_chips_and_device_copy():
         _snapshot(is_authenticated=False, is_subscribed=False)
     )
     assert guest.show is False
+    pending = playground_subscription_card(
+        _snapshot(
+            subscription_status="pending",
+            playground_block_reason=None,
+            is_subscribed=True,
+        )
+    )
+    assert pending.chip == "PENDING"
+    assert pending.chip != "ACTIVE"
+    assert pending.chip_kind == "pending"
+    assert "temporarily unavailable" in pending.body.lower()
+    assert "existing playground" in pending.body.lower()
+    cancel = playground_subscription_card(
+        _snapshot(subscription_status="active", cancel_at_period_end=True)
+    )
+    assert cancel.chip == "ACTIVE"
+    assert "Cancels at the end of the current paid period" in cancel.body
+    down = playground_subscription_card(
+        _snapshot(
+            tier="pro",
+            subscription_status="active",
+            scheduled_tier="plus",
+        )
+    )
+    assert down.chip == "ACTIVE"
+    assert "Changes to Plus at the end of the current paid period" in down.body
+    up = playground_subscription_card(
+        _snapshot(
+            tier="plus",
+            subscription_status="active",
+            scheduled_tier="max",
+        )
+    )
+    assert up.chip == "ACTIVE"
+    assert "Changes to Max at the end of the current paid period" in up.body
     assert device_count_copy(1, 2) == "1 of 2"
     assert device_count_copy(0, 2) == "0 of 2"
     assert "2 of 3" not in device_count_copy(2, 2)
@@ -168,6 +220,25 @@ def test_d95_remove_dialog_is_sheet(tmp_path: Path):
     assert "Progress saved" in roster.text
 
 
+def test_d95_sheet_responsive_class_contract():
+    css = (STATIC / "playground.css").read_text(encoding="utf-8")
+    js = (STATIC / "playground.js").read_text(encoding="utf-8")
+    roster = (TEMPLATES / "playground_roster.html").read_text(encoding="utf-8")
+    remove = (TEMPLATES / "playground_remove.html").read_text(encoding="utf-8")
+    assert "--pg-sheet-anchor: bottom" in css
+    assert "max-width: 460px" in css
+    assert "safe-area-inset-bottom" in css
+    assert "dialog.pg-sheet" in css
+    assert "data-pg-sheet" in roster
+    assert 'href="/playground/roster/{{ law.law_id }}/remove" data-pg-sheet' in roster
+    assert "pg-sheet-panel" in remove
+    assert "data-pg-sheet" in js
+    assert ".pg-sheet-panel" in js
+    assert "showModal" in js
+    assert "data-pg-sheet-host" in js
+    assert "data-pg-sheet-close" in js
+
+
 def test_d96_add_law_dialog_has_meter_and_saved_line(tmp_path: Path):
     client = _authed_client(tmp_path)
     _subscribe(client)
@@ -198,7 +269,7 @@ def test_d97_d100_d130_rollover_key_states_and_copy(tmp_path: Path):
     assert 'role="radiogroup"' in html
     assert 'value="undecided"' in html
     assert "Continue with these" in html
-    assert ">Done<" in html
+    assert ">Done<" not in html
     assert "Browse laws" in html
     assert "RolloverPlanner-aside" in html
     assert "pg-sticky-cta" in html
@@ -219,6 +290,83 @@ def test_d100_downgrade_banner(tmp_path: Path):
     assert 'data-playground-gate="roster_full"' in blocked.text
     locked = client.get(roster_next_path(blocked="active_slot_locked"))
     assert 'data-playground-gate="active_slot_locked"' in locked.text
+
+
+def test_d130_submit_label_helper():
+    assert rollover_submit_label([]) == "Done"
+    assert rollover_submit_label([{"target_decision": None}]) == "Continue with these"
+    assert rollover_submit_label([{"target_decision": "undecided"}]) == "Continue with these"
+    assert (
+        rollover_submit_label(
+            [{"target_decision": "keep"}, {"target_decision": None}]
+        )
+        == "Continue with these"
+    )
+    assert (
+        rollover_submit_label(
+            [{"target_decision": "keep"}, {"target_decision": "decline"}]
+        )
+        == "Done"
+    )
+    assert (
+        rollover_submit_label(
+            [{"target_decision": "keep"}],
+            adjustment_required=True,
+        )
+        == "Continue with these"
+    )
+
+
+def test_d130_unresolved_has_continue_not_done(tmp_path: Path):
+    client = _authed_client(tmp_path)
+    _subscribe(client)
+    empty = client.get(roster_next_path())
+    assert empty.status_code == 200
+    assert "No carry-forward candidates" in empty.text
+    assert ">Continue with these<" not in empty.text
+    assert ">Done<" not in empty.text
+    assert "← Playground" in empty.text
+    _confirm_add(client, "ndps")
+    page = client.get(roster_next_path())
+    html = page.text
+    assert "Continue with these" in html
+    assert ">Done<" not in html
+    assert html.count("data-rollover-submit") >= 1
+    assert 'value="undecided"' in html
+
+
+def test_d130_mixed_keep_undecided_has_continue_not_done(tmp_path: Path):
+    client = _authed_client(tmp_path)
+    _subscribe(client)
+    _confirm_add(client, "ndps")
+    _confirm_add(client, "bns")
+    posted = client.post(
+        roster_next_path(),
+        data={**_csrf(client), "choice_ndps": "keep", "choice_bns": "undecided"},
+        follow_redirects=False,
+    )
+    assert posted.status_code == 303
+    html = client.get(roster_next_path()).text
+    assert "Continue with these" in html
+    assert ">Done<" not in html
+    assert 'data-rollover-candidate="ndps"' in html
+    assert 'data-rollover-candidate="bns"' in html
+
+
+def test_d130_all_resolved_is_done(tmp_path: Path):
+    client = _authed_client(tmp_path)
+    _subscribe(client)
+    _confirm_add(client, "ndps")
+    _confirm_add(client, "bns")
+    posted = client.post(
+        roster_next_path(),
+        data={**_csrf(client), "choice_ndps": "keep", "choice_bns": "decline"},
+        follow_redirects=False,
+    )
+    assert posted.status_code == 303
+    html = client.get(roster_next_path()).text
+    assert ">Done<" in html
+    assert ">Continue with these<" not in html
 
 
 def test_d107_d109_profile_subscription_and_devices(tmp_path: Path):
@@ -256,6 +404,79 @@ def test_d108_paused_and_hold_chips(tmp_path: Path):
     hold = halted.get("/profile").text
     assert 'data-chip="hold"' in hold
     assert ">ON HOLD<" in hold
+
+
+def test_d108_t26_pending_profile_card(tmp_path: Path):
+    client, _repo = _m3_authed(tmp_path / "pending")
+    _add_subscription(client, tier="plus", status="active")
+    _consume_on_roster(client, "ndps")
+    sub = client.app.state.subscriptions.get_current_subscription(M3_USER)
+    _set_status(client, sub.id, "pending")
+    page = client.get("/profile")
+    html = page.text
+    assert page.status_code == 200
+    assert ">ACTIVE<" not in html
+    assert 'data-chip="pending"' in html
+    assert ">PENDING<" in html
+    assert "temporarily unavailable" in html.lower()
+    assert "/billing/subscriptions" in html
+    home = client.get("/playground")
+    assert home.status_code == 200
+    assert "Playground" in home.text
+    _mutate(client, add_path("bns"), confirm="add", scope="sections")
+    assert client.app.state.playground.get_item(M3_USER, "bns") is None
+    snap = client.app.state.entitlement_service.resolve(M3_USER, now=M3_NOW)
+    assert snap.can_open_playground is True
+    assert snap.can_consume_new_playground_law is False
+    assert snap.playground_block_reason is None
+
+
+def test_d108_t26_cancel_and_scheduled_profile_cards(tmp_path: Path):
+    cancel_c, _ = _m3_authed(tmp_path / "cancel")
+    _add_subscription(cancel_c, tier="plus", status="active", cancel_at_period_end=True)
+    cancel_html = cancel_c.get("/profile").text
+    assert ">ACTIVE<" in cancel_html
+    assert "Cancels at the end of the current paid period" in cancel_html
+
+    down_c, _ = _m3_authed(tmp_path / "down")
+    down_sub = _add_subscription(down_c, tier="pro", status="active")
+    down_c.app.state.subscriptions.update_subscription_state(
+        M3_USER, down_sub.id, provider_metadata={"scheduled_tier": "plus"}
+    )
+    down_html = down_c.get("/profile").text
+    assert ">ACTIVE<" in down_html
+    assert "Changes to Plus at the end of the current paid period" in down_html
+    assert "RecallC Pro" in down_html
+
+    up_c, _ = _m3_authed(tmp_path / "up")
+    up_sub = _add_subscription(up_c, tier="plus", status="active")
+    up_c.app.state.subscriptions.update_subscription_state(
+        M3_USER, up_sub.id, provider_metadata={"scheduled_tier": "max"}
+    )
+    up_html = up_c.get("/profile").text
+    assert ">ACTIVE<" in up_html
+    assert "Changes to Max at the end of the current paid period" in up_html
+    assert "RecallC Plus" in up_html
+
+
+def test_d108_legacy_commercial_profile_ui_absent(tmp_path: Path):
+    profile_src = (TEMPLATES / "profile.html").read_text(encoding="utf-8")
+    for phrase in LEGACY_PROFILE_PHRASES:
+        assert phrase not in profile_src, phrase
+    routes = (ROOT / "src/constitution_memorizer/auth/routes.py").read_text(
+        encoding="utf-8"
+    )
+    assert '"subscription": subscription_status(request, eng)' not in routes
+    assert "free_article_slots" not in routes
+    client, repo = _m3_authed(tmp_path / "legacy")
+    _add_subscription(client, tier="plus", status="active")
+    _seed_legacy(repo, ends_at=M3_NOW + timedelta(days=30))
+    html = client.get("/profile").text
+    for phrase in LEGACY_PROFILE_PHRASES:
+        assert phrase not in html, phrase
+    assert "data-profile-subscription" in html
+    assert "Your account and subscription" in html
+    assert "Your Recall access, and the Free Articles you have claimed" not in html
 
 
 def test_d110_guest_profile_card(tmp_path: Path):
@@ -332,16 +553,22 @@ def test_r5_assets_and_no_r6_routes():
     base = (TEMPLATES / "base.html").read_text(encoding="utf-8")
     css = (STATIC / "playground.css").read_text(encoding="utf-8")
     mobile = (STATIC / "mobile.css").read_text(encoding="utf-8")
-    assert "playground.css?v=pg16" in base
+    assert "playground.css?v=pg17" in base
+    assert "playground.js?v=pg8" in base
     assert "mobile.css?v=mob95" in base
     assert ".RosterRow" in css
     assert ".RolloverPlanner-aside" in css
     assert ".RolloverPlanner .pg-sticky-cta" in css
     assert ".pg-sub-chip" in css
+    assert "--pg-sheet-anchor: bottom" in css
     assert ".panel.profile-panel" in css
     assert "RolloverPlanner" in mobile
     roster_js = (STATIC / "playground.js").read_text(encoding="utf-8")
     assert "data-rollover-form" in roster_js
+    assert "syncRolloverAction" in roster_js
+    assert "data-rollover-submit" in (
+        TEMPLATES / "playground_roster_next.html"
+    ).read_text(encoding="utf-8")
     assert "value=\"keep\"" in (TEMPLATES / "playground_roster_next.html").read_text(
         encoding="utf-8"
     )

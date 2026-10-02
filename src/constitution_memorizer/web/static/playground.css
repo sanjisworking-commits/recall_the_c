@@ -946,6 +946,12 @@ a.pg-plan-row:hover {
   color: var(--pg-teal-dark);
 }
 
+.pg-sub-chip[data-chip="pending"] {
+  border: 1px solid var(--pg-amber);
+  color: var(--pg-amber-deep);
+  background: var(--pg-amber-tint);
+}
+
 .pg-sub-chip[data-chip="paused"],
 .pg-sub-chip[data-chip="hold"] {
   border: 1px solid var(--pg-ink);
@@ -1089,17 +1095,25 @@ a.pg-plan-row:hover {
   display: none;
 }
 
-.pg-sheet {
+.pg-sheet,
+dialog.pg-sheet {
   border: 0;
   padding: 0;
   max-width: 460px;
   width: calc(100% - 24px);
   background: transparent;
   color: var(--pg-ink);
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  height: fit-content;
+  max-height: min(90vh, calc(100% - 32px));
 }
 
-.pg-sheet::backdrop {
+.pg-sheet::backdrop,
+dialog.pg-sheet::backdrop {
   background: var(--pg-scrim);
+  inset: 0;
 }
 
 .pg-sheet-panel {
@@ -1176,6 +1190,10 @@ a.pg-plan-row:hover {
   :root {
     --pg-shell-pad: 24px;
   }
+
+  .pg-sheet-close {
+    display: inline-flex;
+  }
 }
 
 @media (min-width: 900px) {
@@ -1208,10 +1226,6 @@ a.pg-plan-row:hover {
 
   .pg-law-grid .LawCard + .LawCard {
     margin-top: 0;
-  }
-
-  .pg-sheet-close {
-    display: inline-flex;
   }
 }
 
@@ -1302,16 +1316,24 @@ html:not(.rtc-anim) .PlaygroundShell * {
   font-size: 14px;
 }
 
-.pg-sheet[open] {
+.pg-sheet[open],
+dialog.pg-sheet[open] {
   border: 0;
   padding: 0;
   max-width: 460px;
   width: calc(100% - 24px);
   background: transparent;
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  height: fit-content;
+  max-height: min(90vh, calc(100% - 32px));
 }
 
-.pg-sheet[open]::backdrop {
+.pg-sheet[open]::backdrop,
+dialog.pg-sheet[open]::backdrop {
   background: var(--pg-scrim);
+  inset: 0;
 }
 
 .pg-learn {
@@ -1803,11 +1825,23 @@ html:has(.pg-surface--fixed-dark) .sheet {
 
 @media (max-width: 560px) {
   .pg-sheet,
-  .pg-sheet[open] {
-    width: 100%;
+  .pg-sheet[open],
+  dialog.pg-sheet,
+  dialog.pg-sheet[open] {
+    --pg-sheet-anchor: bottom;
+    position: fixed;
+    top: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    inset: auto 0 0 0;
+    width: calc(100% - (2 * var(--pg-shell-pad)));
     max-width: none;
-    margin: auto 0 0;
+    margin: 0 auto 0;
+    height: fit-content;
+    max-height: min(92dvh, 100%);
     border-radius: var(--pg-radius-sheet) var(--pg-radius-sheet) 0 0;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
   .pg-sheet-panel {
@@ -1815,6 +1849,7 @@ html:has(.pg-surface--fixed-dark) .sheet {
     border-radius: var(--pg-radius-sheet) var(--pg-radius-sheet) 0 0;
     box-shadow: var(--pg-shadow-sheet);
     padding-top: 12px;
+    padding-bottom: calc(22px + env(safe-area-inset-bottom, 0px));
     animation: pg-sheet-rise 0.28s ease both;
   }
 

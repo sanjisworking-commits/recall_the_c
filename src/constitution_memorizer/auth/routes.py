@@ -557,8 +557,6 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
                     "user": None,
                     "profile": {},
                     "access": None,
-                    "free_slots": [],
-                    "subscription": None,
                     "display_label": "Guest",
                     "csrf_token": request.cookies.get(CSRF_COOKIE_NAME) or "",
                     "saved": False,
@@ -569,14 +567,9 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
                     "identity_meta": "Guest · Reading only",
                 },
             )
-        from constitution_memorizer.web.service import free_article_slots
-
         eng = request.app.state.engine.for_user(user.id)
         profile = eng.repo.get_profile(user.id) or {}
         access = access_summary(request, eng)
-        slots = (
-            free_article_slots(eng) if access.enabled and access.is_free else []
-        )
         service = getattr(request.app.state, "device_service", None)
         if service is not None:
             summaries = service.list_device_summaries(
@@ -601,8 +594,6 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
                 "user": user,
                 "profile": profile,
                 "access": access,
-                "free_slots": slots,
-                "subscription": subscription_status(request, eng),
                 "display_label": profile.get("display_name")
                 or user.display_name
                 or (mask_phone(user.phone) if user.phone else user.email or "Learner"),
