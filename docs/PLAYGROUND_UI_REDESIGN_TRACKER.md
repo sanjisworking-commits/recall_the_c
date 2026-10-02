@@ -4,7 +4,7 @@
 
 ```text
 Stage 1               = DONE — 100.0 / 100   (frozen)
-UI Redesign Programme = 88.7 / 100
+UI Redesign Programme = 90.0 / 100
 Stage 2               = PARKED until the programme is DONE — 100.0 / 100
 ```
 
@@ -37,7 +37,7 @@ Authority: `docs/PLAYGROUND_UI_REDESIGN_PLAN.md`. Inventories: `docs/design/PLAY
 | **R5 closeout HEAD** | Implementation `b17d6ab`. Cycle `68d5c2d`. Rollover Done `d034024`. Paint/pg16 `a894a36`. D110 noindex `c35f7d5`. Tracker `b4ac8d1`. Pin `d9039a3`. |
 | **R5 post-closeout correction** | Review `d9039a3`. Code `ec32195`. D130 CTA pin `d13c80c`. Tracker `cd78e25`. U3 **38/38**, U7 **12/12**, programme **80.0 / 100** restored after local+CI. R6 not started. |
 | **R6 closeout HEAD** | Implementation `0011124`. extra_loader pin `1860dab`. Tracker `34db64f`. Pin `495d5ee`. |
-| **R6 post-closeout correction** | Starting SHA `495d5ee`. T28 + D122 **IN PROGRESS**. Temporary U6 **13/15**, programme **88.7 / 100**. Restore 15/15 and 90.0 only after code, tests, visual proof, and CI. R7 not started. |
+| **R6 post-closeout correction** | Starting SHA `495d5ee`. Code `46f7a9d`. T28 + D122 **DONE** again. U6 **15/15**, programme **90.0 / 100** after local+CI. R7 not started. |
 
 Visual columns (390 light/dark, ~768, ~1024, 1280 light/dark, reduced motion) stay `—` until the relevant batch. Technical rows mark Desktop/Mobile **N/A**. Status uses only: `NOT STARTED | IN PROGRESS | BLOCKED | DONE | DONE`.
 
@@ -53,10 +53,10 @@ Visual columns (390 light/dark, ~768, ~1024, 1280 light/dark, reduced motion) st
 | U3 | Home + gates + roster lifecycle | 12 | R3, R5 | 38 | 38 | 12.0 |
 | U4 | Act progress + six-mode Learn + speech | 18 | R4 | 28 | 28 | 18.0 |
 | U5 | Learned / mastery / amendment states | 8 | R4 | 13 | 13 | 8.0 |
-| U6 | Today + Calendar + Google Calendar | 10 | R6 | 15 | 13 | 8.7 |
+| U6 | Today + Calendar + Google Calendar | 10 | R6 | 15 | 15 | 10.0 |
 | U7 | Profile + Settings + account surfaces | 7 | R5 | 12 | 12 | 7.0 |
 | U8 | Responsive, a11y, parity, regression | 10 | R7 | 25 | 0 | 0.0 |
-| **Total** | | **100** | | **208** | **181** | **88.7 / 100** |
+| **Total** | | **100** | | **208** | **183** | **90.0 / 100** |
 
 Uniqueness (script-checked from §15.2; no row in two milestones, none omitted):
 
@@ -76,7 +76,7 @@ T42 is the approved R4 locator-aware source-review twin (U5). It is not the reje
 |---|---|---|---|
 | A | Clause-level selection | T8–T16, T30 | DONE — T8–T16 (R2); T30 (R6) |
 | B | Playground pending rung → Google Calendar | T31 | DONE |
-| C | Selected unlearned work in Today | T28 | IN PROGRESS — post-closeout correction |
+| C | Selected unlearned work in Today | T28 | DONE |
 | D | Desktop Calendar Week | T29 | DONE |
 | E | Real speech on Letters/Recite | T25 | DONE |
 | F | Eligible Acts NDPS, BNS, BNSS, UAPA, PSS, MTP; POTA readable; slug identity | T4, T5 | DONE |
@@ -303,7 +303,7 @@ R4. **13 / 13.** T42 is the thirteenth item (locator-aware source-review GET/POS
 
 ## U6 — Today + Calendar + Google (weight 10, 15 items)
 
-R6 closed on `1860dab`. Report: [`PLAYGROUND_UI_REDESIGN_R6_REPORT.md`](PLAYGROUND_UI_REDESIGN_R6_REPORT.md). Post-closeout correction from `495d5ee` reopened **T28** and **D122** only.
+R6 closed on `1860dab`. Report: [`PLAYGROUND_UI_REDESIGN_R6_REPORT.md`](PLAYGROUND_UI_REDESIGN_R6_REPORT.md). Post-closeout correction from `495d5ee` restored **T28** and **D122**.
 
 | ID | Requirement | D/M | Status |
 |---|---|---|---|
@@ -314,10 +314,10 @@ R6 closed on `1860dab`. Report: [`PLAYGROUND_UI_REDESIGN_R6_REPORT.md`](PLAYGROU
 | D119 | Today: two-column recall + path | desktop | DONE |
 | D120 | Calendar cites clauses; “· Playground” | both | DONE |
 | D121 | Calendar footnote about Google | phone | DONE |
-| D122 | Month / Week switch | desktop | IN PROGRESS — week header must not show month statistics |
+| D122 | Month / Week switch | desktop | DONE — week header uses `week.summary` after Playground chips; month keeps `calendar.summary` |
 | D123 | Week grid, six card states with text | desktop | DONE |
 | D124 | Week: empty day, today ring, tap-through | desktop | DONE |
-| T28 | Today path merge; New rule; `due_count` excludes New | N/A | IN PROGRESS — hero must follow merged path |
+| T28 | Today path merge; New rule; `due_count` excludes New | N/A | DONE — hero follows merged path; Playground current CTA is `current.href` |
 | T29 | Week view model and route | N/A | DONE |
 | T30 | Clause citations in calendar | N/A | DONE |
 | T31 | Google projection pending Playground rung | N/A | DONE |
@@ -418,7 +418,7 @@ Every T1–T41 row was read against current `a5edca5` production code. **Accepte
 | T17–T21 | **Closed in R3** on `3a8dcd0`. Confirm→scope, T18 kinds, paused read-only home, guest HTML 200 / JSON 401, catalogue plans. |
 | T22–T25 | No completion screens. Speech is Constitution-scoped. `SpeechClient` vs `RecallSpeech` confirmed. |
 | T26–T27 | **Closed in R5** (correction `d13c80c`). SUBSCRIPTION card from entitlement snapshot including PENDING / cancel-at-end / scheduled tier; device “n of limit” from the device service; phone Reminders posts `reminder_cadence`. |
-| T28–T32 | **Closed in R6** on `1860dab`. Path merge + New rule; week view; clause chips; Google pending rung; T32 guards. **T28 reopened** in the post-closeout correction from `495d5ee`. |
+| T28–T32 | **Closed in R6** on `1860dab`. Path merge + New rule; week view; clause chips; Google pending rung; T32 guards. **T28 restored** after the post-closeout correction from `495d5ee` (`46f7a9d`). |
 | T33–T41 | `playground.css` tokens + phone rules exist. T33 pins `main74` / `mob94` / `pg8` / `pg6`. T35 greps runtime only. T41 **80/0**. |
 
 No missing technical dependency was found that is not already a T row. Auto-merge review is folded into T1, not a new T42.
@@ -440,15 +440,51 @@ No new product delta (class D) was found. Deltas A–H already cover guest gate,
 
 Batch report: [`docs/PLAYGROUND_UI_REDESIGN_R6_REPORT.md`](PLAYGROUND_UI_REDESIGN_R6_REPORT.md).
 
-**R6 is complete, except T28 and D122 which are in a post-closeout correction from `495d5ee`.** Temporary programme **88.7 / 100** (U6 13/15). Restore 90.0 only after code, tests, visual proof, and CI. R5 was not reopened. R7 is not started.
+**R6 is complete**, including the post-closeout correction for T28 and D122. Today path merge, desktop Calendar week, clause-level chips, and Google Calendar pending-rung extra shipped. Programme **90.0 / 100**. R5 (U3 leftover + U7) was not reopened. R7 is not started. Stage 1 remains frozen except the T33 pin (`styles.css?v=main75`, `mobile.css?v=mob96`, `playground.css?v=pg17`, `playground.js?v=pg8`). Stage 2 remains PARKED.
 
-Starting SHA `ffe374d`. Implementation `0011124`. extra_loader / UUID pin `1860dab`. Tracker `34db64f`.
+Starting SHA `ffe374d`. Implementation `0011124`. extra_loader / UUID pin `1860dab`. Tracker `34db64f`. Pin `495d5ee`. Correction starting SHA `495d5ee`. Correction code `46f7a9d`.
 
-U6 **13 / 15** (temporary during T28/D122 correction) → 8.7. Restore 15/15 after CI. Alembic head remains **`20260927_0027`**. No migration.
+U6 **15 / 15** → 10.0. Deltas A (T30), B (T31), C (T28), D (T29) **DONE**. Alembic head remains **`20260927_0027`**. No migration.
 
-Local `pytest -m "not integration"` on `1860dab`: **2866 passed**, 9 skipped, 1 deselected. Focused `tests/test_playground_r6.py` + `tests/test_calendar_week.py`: **18 passed**. Broader R6 + m8/r5/r1/calendar/dashboard: **175 passed**. CI on `1860dab`: push [36997823976](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/36997823976) and PR [36997827761](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/36997827761) succeeded.
+Local `pytest -m "not integration"` on `46f7a9d`: **2876 passed**, 9 skipped, 1 deselected. Focused `tests/test_playground_r6.py` + `tests/test_calendar_week.py`: **28 passed**. Broader R6 + m8/r5/calendar/dashboard: **213 passed**. CI on `46f7a9d`: push [37002096012](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/37002096012) and PR [37002099960](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/37002099960) succeeded. Deployment status succeeded.
 
 Do not start R7 from this closeout.
+
+---
+
+## R6 post-closeout correction
+
+Full write-up: [`PLAYGROUND_UI_REDESIGN_R6_REPORT.md`](PLAYGROUND_UI_REDESIGN_R6_REPORT.md) § Post-closeout correction.
+
+Temporary score until code, tests, visual proof, and CI: U6 **13/15**, programme **88.7 / 100**. Restored U6 **15/15**, programme **90.0 / 100** after that. Only T28 and D122 were reopened. Alembic stayed `20260927_0027`. PR 188 stayed draft. R7 was not started.
+
+| | SHA |
+|---|---|
+| Starting | `495d5ee` |
+| Implementation | `46f7a9d` |
+| Commits | `46f7a9d` Align Today hero and week summary with Playground merge |
+
+**T28 before:** Today's Recall said Nothing to review today / Plan my day while Today's path showed Section 8(a) NDPS Act Due today / Start revision. Hero was Constitution-only; merge added Playground `due_count` without flipping `today_mode`.
+
+**T28 after:** `apply_merged_today_hero` after `merge_today_path`. `due_count` = Constitution actionable + Playground actionable. Playground New excluded from `due_count` and the goal denominator. If `due_count > 0`: `today_mode=revision`, `show_plan_prompt=False`, `plan_my_day_available=False`. Playground current review CTA = `current.href` (not `POST /revision/start`). Constitution current keeps `/revision/start`.
+
+**Playground-only due proof:** 1 revision due; hero CTA matches NDPS 8(a) path current href. No Nothing to review today / Plan my day / Not today. `r6_correction_today_playground_due_390_light.png`, `r6_correction_today_playground_due_1280_light.png`.
+
+**Mixed due proof:** due_count 2; path current = Playground; hero CTA = Playground href. After Playground is no longer due, Constitution becomes current and may use `/revision/start`. No combined session.
+
+**New-only proof:** due_count 0. New excluded from goal. Does not trigger the Plan my day suppression.
+
+**D122 before:** week title still showed month-derived `calendar.summary` ("0 units memorized this month, 0 reviews completed, 0 reviews scheduled").
+
+**D122 after:** `CalendarWeek.event_count` / `summary` = sum of `week_events` after Playground chips. Week copy is "N unit(s) this week". Month keeps `calendar.summary`. Phone Calendar stays month-only.
+
+**Week aggregate proof:** Playground-only → 1 unit this week (`r6_correction_calendar_week_1280_light.png`). Constitution + Playground chips → 2. Empty week → 0 units this week. No month-stat fallback.
+
+**Focused tests:** `tests/test_playground_r6.py` + `tests/test_calendar_week.py` **28 passed**.
+
+**Full regression:** R5 + m8 + calendar projection/sync/routes + dashboard **213 passed**. `pytest -m "not integration"` **2876 passed**, 9 skipped, 1 deselected.
+
+**CI** on `46f7a9d`: push [37002096012](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/37002096012), PR [37002099960](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/37002099960), Railway deployment status success.
 
 ---
 
@@ -581,4 +617,4 @@ No new B/C denominator rows. No class-D product-scope stop. Do not start R2.
 
 ## R0 readiness
 
-**U0 is complete (10/10).** **U1 is complete (28/28).** **R2 is complete.** **R3 is complete (U2 39/39).** **R4 is complete (U4 28/28, U5 13/13), including the D141 typed-fallback correction.** **R5 is complete (U3 38/38, U7 12/12).** **R6 post-closeout correction in progress (U6 13/15).** Stage 2 remains PARKED. Do not start R7. Programme **88.7 / 100**.
+**U0 is complete (10/10).** **U1 is complete (28/28).** **R2 is complete.** **R3 is complete (U2 39/39).** **R4 is complete (U4 28/28, U5 13/13), including the D141 typed-fallback correction.** **R5 is complete (U3 38/38, U7 12/12).** **R6 is complete (U6 15/15), including the T28/D122 post-closeout correction.** Stage 2 remains PARKED. Do not start R7. Programme **90.0 / 100**.

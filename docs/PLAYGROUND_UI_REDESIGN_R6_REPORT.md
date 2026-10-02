@@ -26,7 +26,7 @@ U5                     = 13 / 13  (includes T42)
 U6                     = 15 / 15
 U7                     = 12 / 12
 R5                     = DONE (frozen)
-R6                     = DONE
+R6                     = DONE (post-closeout correction restored T28 + D122)
 R7                     = not started
 Stage 2                = PARKED
 ```
@@ -96,6 +96,10 @@ Constitution learning hero stays in learning mode when the only dues are
 Playground — the path current-node card is the Playground revision surface
 (D116), so the hero is not flipped to an empty Start revision.
 
+**Superseded by the post-closeout correction:** a Playground revision due
+flips Today's Recall to the revision hero, with the current node's href as
+the primary action. `POST /revision/start` remains Constitution-only.
+
 ---
 
 ## Visual matrix
@@ -117,6 +121,13 @@ Phone `data-mscreen="revisions"` hides week, switch, and desktop month grid.
 | Phone calendar | `r6_calendar_phone_390_light.png`, `r6_calendar_phone_390_dark.png` | Month grid; GCal footnote “pending rung only” |
 | Month desktop | `r6_calendar_month_1280_light.png` | Dotted Playground chip `NDPS Act · §8(a) · Playground` |
 | Walkthrough | `r6_today_path_and_calendar_week.webm` | Today path → month → week → month |
+
+The original Today 390/1280 light and week 1280 light shots showed a stale
+hero / month-stat leak. Replaced only those three by
+`r6_correction_today_playground_due_390_light.png`,
+`r6_correction_today_playground_due_1280_light.png`, and
+`r6_correction_calendar_week_1280_light.png`. Other R6 screenshots were not
+redone.
 
 ---
 
@@ -163,3 +174,92 @@ tracker closeout (U8, V1–V24). Stage 2 stays PARKED until the programme is
 100.0 / 100.
 
 Alembic head remains **`20260927_0027`**.
+
+---
+
+## Post-closeout correction (T28 + D122)
+
+Review after the 90.0 closeout found two stale-view bugs. Temporary score
+until this section: **U6 13/15**, programme **88.7 / 100**. Other R6 rows
+stayed closed. R7 was not started. Alembic head remains `20260927_0027`.
+
+| | SHA |
+|---|---|
+| Starting | [`495d5ee`](https://github.com/sanjisworking-commits/recall_the_c/commit/495d5ee) |
+| Implementation | [`46f7a9d`](https://github.com/sanjisworking-commits/recall_the_c/commit/46f7a9d) |
+
+| SHA | What |
+|-----|------|
+| `46f7a9d` | `apply_merged_today_hero`; Playground current CTA; `CalendarWeek.event_count` / `summary` after chip attach |
+
+### T28 before / after
+
+| | Before (`495d5ee`) | After (`46f7a9d`) |
+|---|---|---|
+| Hero | Constitution-only `today_mode` / `learning_cta` / plan prompt | After merge, `due_count > 0` forces revision mode and suppresses Plan my day |
+| Observed | Today's Recall: Nothing to review today / Plan my day. Path: Section 8(a) NDPS Act Due today / Start revision | Both surfaces describe the same current Playground revision |
+| CTA | Revision hero always `POST /revision/start` | Playground current review uses `current.href` / `cta_label` (`data-today-hero-cta`). Constitution current keeps `/revision/start` |
+| New | Already excluded from `due_count` and the goal denominator | Unchanged. New-only does not flip the hero to revision |
+
+### Playground-only due proof
+
+Seed: NDPS section 8(a), Day 1, due today. No Constitution due.
+
+- `due_count` = 1. Hero: **1 revision due**. Path current = Section 8(a) — NDPS Act. Hero primary CTA = that node's href. No `POST /revision/start`.
+- HTML: no "Nothing to review today", no "Want Recall to plan today's learning?", no "Plan my day", no "Not today".
+- Evidence: `r6_correction_today_playground_due_390_light.png`, `r6_correction_today_playground_due_1280_light.png`.
+
+### Mixed due proof
+
+Seed: 1 Playground revision due + 1 Constitution revision due.
+
+- `due_count` = 2. Path current = Playground provision. Hero CTA = Playground current href, not `/revision/start`.
+- After the Playground `next_revision` moves forward and Today reloads: Playground is no longer due, Constitution is current, hero may `POST /revision/start`. No combined durable session.
+
+### New-only proof
+
+Seed: no Constitution due, no Playground due, one selected unlearned Playground provision.
+
+- `due_count` = 0. New may appear. New is excluded from `due_count`, `revision_count`, and the goal denominator. Plan my day is not suppressed by New alone.
+
+### D122 before / after
+
+| | Before | After |
+|---|---|---|
+| Week header | `calendar.summary` (month-derived: "0 units memorized this month, 0 reviews completed, 0 reviews scheduled") | `week.summary` = `sum(len(day.week_events) for day in week.days)` **after** Playground chips attach |
+| Copy | "this month" under the week title | "N unit(s) this week". Empty week: "0 units this week". Seven columns still "Nothing due" |
+| Month | `calendar.summary` | Unchanged |
+| Phone | Month-only; week CSS-hidden | Unchanged. `/calendar?view=week` may still render the month mobile surface |
+
+### Week aggregate proof
+
+- Playground-only NDPS 8(a) in the displayed week: summary **1 unit this week**. Grid shows NDPS Act · §8(a) · Playground. Does not say 0 reviews scheduled. Evidence: `r6_correction_calendar_week_1280_light.png`.
+- 1 Constitution chip + 1 Playground chip: `week.event_count` = 2. View count, not a persistence aggregate.
+- Empty week: "0 units this week". Does not fall back to the month summary.
+
+### Focused tests
+
+`tests/test_playground_r6.py` + `tests/test_calendar_week.py`: **28 passed**.
+
+T28: Playground-only due; mixed Constitution + Playground then Constitution after Playground is no longer due; New-only excluded from goal; unit `due_count` 0+1 / 1+1 / New→0.
+
+D122: Playground-only week summary 1; Constitution + Playground → 2; empty week → 0; month view keeps `memorized this month`.
+
+### Full regression
+
+| Run | Result |
+|---|---|
+| Focused r6 + week | **28 passed** |
+| R5 + m8 + calendar projection/sync/routes + dashboard + learning/study sessions + r6/week | **213 passed** |
+| `pytest -m "not integration"` on `46f7a9d` | **2876 passed**, 9 skipped, 1 deselected |
+
+### CI
+
+On `46f7a9d`:
+
+- Push [37002096012](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/37002096012) succeeded
+- PR [37002099960](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/37002099960) succeeded
+- Deployment status `trustworthy-embrace - recall-th-c`: **success** (`recallthec-pr-188.up.railway.app`)
+
+PR [#188](https://github.com/sanjisworking-commits/recall_the_c/pull/188) remains a **draft**. Do not start R7.
+
