@@ -14,6 +14,7 @@ from __future__ import annotations
 
 from datetime import timedelta
 from pathlib import Path
+from re import findall
 from types import SimpleNamespace
 
 from alembic.config import Config
@@ -54,6 +55,10 @@ LEGACY_PROFILE_PHRASES = (
     "subscription.plan_days",
     "Free Articles you have claimed",
 )
+
+
+def _rollover_cta_labels(html: str) -> list[str]:
+    return findall(r"data-rollover-submit[^>]*>([^<]+)<", html)
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPECTED_HEAD = "20260927_0027"
@@ -269,7 +274,7 @@ def test_d97_d100_d130_rollover_key_states_and_copy(tmp_path: Path):
     assert 'role="radiogroup"' in html
     assert 'value="undecided"' in html
     assert "Continue with these" in html
-    assert ">Done<" not in html
+    assert _rollover_cta_labels(html) == ["Continue with these", "Continue with these"]
     assert "Browse laws" in html
     assert "RolloverPlanner-aside" in html
     assert "pg-sticky-cta" in html
@@ -323,14 +328,15 @@ def test_d130_unresolved_has_continue_not_done(tmp_path: Path):
     empty = client.get(roster_next_path())
     assert empty.status_code == 200
     assert "No carry-forward candidates" in empty.text
-    assert ">Continue with these<" not in empty.text
-    assert ">Done<" not in empty.text
+    assert _rollover_cta_labels(empty.text) == []
     assert "← Playground" in empty.text
     _confirm_add(client, "ndps")
     page = client.get(roster_next_path())
     html = page.text
-    assert "Continue with these" in html
-    assert ">Done<" not in html
+    labels = _rollover_cta_labels(html)
+    assert labels
+    assert set(labels) == {"Continue with these"}
+    assert "Done" not in labels
     assert html.count("data-rollover-submit") >= 1
     assert 'value="undecided"' in html
 
@@ -347,8 +353,10 @@ def test_d130_mixed_keep_undecided_has_continue_not_done(tmp_path: Path):
     )
     assert posted.status_code == 303
     html = client.get(roster_next_path()).text
-    assert "Continue with these" in html
-    assert ">Done<" not in html
+    labels = _rollover_cta_labels(html)
+    assert labels
+    assert set(labels) == {"Continue with these"}
+    assert "Done" not in labels
     assert 'data-rollover-candidate="ndps"' in html
     assert 'data-rollover-candidate="bns"' in html
 
@@ -365,8 +373,10 @@ def test_d130_all_resolved_is_done(tmp_path: Path):
     )
     assert posted.status_code == 303
     html = client.get(roster_next_path()).text
-    assert ">Done<" in html
-    assert ">Continue with these<" not in html
+    labels = _rollover_cta_labels(html)
+    assert labels
+    assert set(labels) == {"Done"}
+    assert "Continue with these" not in labels
 
 
 def test_d107_d109_profile_subscription_and_devices(tmp_path: Path):
