@@ -8,7 +8,9 @@
   </div>
   <p class="eyebrow">Account</p>
   <h1 class="display">Profile</h1>
+  {% if not is_guest_profile|default(false) %}
   <p class="lede">Your account identity and sign-in method. Learning preferences live in Settings.</p>
+  {% endif %}
 
   {% if saved %}
   <div class="auth-banner is-ok" role="status">
@@ -17,24 +19,71 @@
   </div>
   {% endif %}
 
-  <article class="profile-card">
+  <div class="pg-profile-grid">
+  <div>
+  <article class="profile-card pg-profile-identity" data-profile-identity>
     {% set initials = (display_label[:1] if display_label else 'L')|upper %}
-    {% if user.avatar_url %}
+    {% if user and user.avatar_url %}
     <img class="dash-avatar" src="{{ user.avatar_url }}" alt="" width="56" height="56">
     {% else %}
     <span class="dash-avatar dash-avatar-fallback" aria-hidden="true">{{ initials }}</span>
     {% endif %}
-    <div>
+    <div class="pg-profile-identity-copy">
       <h2 class="profile-name">{{ display_label }}</h2>
-      <p class="muted">
-        {% if user.provider == 'google' %}Signed in with Google{% elif user.phone %}Signed in with phone{% else %}Signed in{% endif %}
-      </p>
-      {% if not edit_name %}
+      <p class="muted">{{ identity_meta|default('Signed in') }}</p>
+      {% if user and not edit_name %}
       <p><a class="link-btn" href="/profile?edit=name">Edit name</a></p>
       {% endif %}
     </div>
+    {% if is_guest_profile|default(false) %}
+    <a class="pg-btn" href="/login?next=/profile">Sign in</a>
+    {% endif %}
   </article>
+  {% if is_guest_profile|default(false) %}
+  <article class="pg-sub-card" data-guest-profile>
+    <p class="pg-lede">Sign in to save progress and unlock the Constitution learning experience.</p>
+    <p class="pg-actions"><a class="pg-btn pg-btn--ghost" href="/laws">Browse the Bare Acts →</a></p>
+  </article>
+  {% endif %}
 
+  {% if not is_guest_profile|default(false) %}
+  <p class="pg-eyebrow">Account</p>
+  <div class="pg-account-list" data-profile-account>
+    <a href="/profile">Profile<span class="pg-account-meta">{{ display_label }}</span></a>
+    <a href="/profile/security/devices">Devices<span class="pg-account-meta">{{ device_count_label }} ›</span></a>
+    <a href="/settings">Learning preferences<span class="pg-account-meta">Settings ›</span></a>
+  </div>
+  {% endif %}
+  </div>
+
+  {% if playground_subscription and playground_subscription.show %}
+  <div data-profile-subscription>
+    <p class="pg-eyebrow">Subscription</p>
+    <article class="pg-sub-card">
+      <div class="pg-sub-card-head">
+        <h2>{{ playground_subscription.title }}</h2>
+        {% if playground_subscription.chip %}
+        <span class="pg-sub-chip" data-chip="{{ playground_subscription.chip_kind }}">{{ playground_subscription.chip }}</span>
+        {% endif %}
+      </div>
+      {% if playground_subscription.body %}
+      <p class="pg-lede">{{ playground_subscription.body }}</p>
+      {% endif %}
+      {% if playground_subscription.stat_big %}
+      <p class="pg-sub-stat">
+        <span class="pg-sub-stat-big">{{ playground_subscription.stat_big }}</span>
+        <span>{{ playground_subscription.stat_label }}</span>
+      </p>
+      {% endif %}
+      {% if playground_subscription.cta_label %}
+      <a class="pg-btn pg-btn--ghost" href="{{ playground_subscription.cta_href }}">{{ playground_subscription.cta_label }}</a>
+      {% endif %}
+    </article>
+  </div>
+  {% endif %}
+  </div>
+
+  {% if user %}
   <form method="post" action="/profile" class="profile-form">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
     <input type="hidden" name="action" value="save">
@@ -229,8 +278,10 @@
       </button>
     </li>
   </ul>
+  {% endif %}
 </section>
 
+{% if user %}
 <dialog class="guest-modal" id="signout-modal" aria-labelledby="signout-title">
   <form method="post" action="/logout" class="guest-modal-card">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
@@ -300,4 +351,5 @@
     </div>
   </form>
 </dialog>
+{% endif %}
 {% endblock %}

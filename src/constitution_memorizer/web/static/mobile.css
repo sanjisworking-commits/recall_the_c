@@ -5580,19 +5580,22 @@
 
   body[data-mscreen="playground"]:has(.pg-learn) .mobile-tabbar,
   body[data-mscreen="playground"]:has(.pg-complete) .mobile-tabbar,
-  body[data-mscreen="playground"]:has(.pg-surface--fixed-dark) .mobile-tabbar {
+  body[data-mscreen="playground"]:has(.pg-surface--fixed-dark) .mobile-tabbar,
+  body[data-mscreen="playground"]:has(.RolloverPlanner) .mobile-tabbar {
     display: none;
   }
 
   body[data-mscreen="playground"]:has(.pg-learn) .PlaygroundShell,
   body[data-mscreen="playground"]:has(.pg-complete) .PlaygroundShell,
-  body[data-mscreen="playground"]:has(.pg-surface--fixed-dark) .PlaygroundShell {
+  body[data-mscreen="playground"]:has(.pg-surface--fixed-dark) .PlaygroundShell,
+  body[data-mscreen="playground"]:has(.RolloverPlanner) .PlaygroundShell {
     padding-bottom: calc(28px + env(safe-area-inset-bottom, 0px));
   }
 
   body[data-mscreen="playground"]:has(.pg-learn) .pg-sticky-cta,
   body[data-mscreen="playground"]:has(.pg-complete) .pg-sticky-cta,
-  body[data-mscreen="playground"]:has(.pg-surface--fixed-dark) .pg-sticky-cta {
+  body[data-mscreen="playground"]:has(.pg-surface--fixed-dark) .pg-sticky-cta,
+  body[data-mscreen="playground"]:has(.RolloverPlanner) .pg-sticky-cta {
     padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
   }
 

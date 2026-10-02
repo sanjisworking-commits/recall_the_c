@@ -8,7 +8,7 @@
   </div>
   <p class="eyebrow">Security</p>
   <h1 class="display">Your devices</h1>
-  <p class="lede">{{ active_count }} of {{ device_limit }} devices</p>
+  <p class="lede pg-devices-lede" data-device-count>{{ active_count }} of {{ device_limit }} devices</p>
 
   {% if removed %}
   <div class="auth-banner is-ok" role="status">
@@ -18,8 +18,8 @@
   {% endif %}
 
   {% if confirm_current %}
-  <article class="device-confirm">
-    <h2>Remove this device?</h2>
+  <article class="device-confirm pg-sheet-panel" data-device-confirm role="dialog" aria-modal="true" aria-labelledby="device-remove-title">
+    <h2 id="device-remove-title">Remove this device?</h2>
     <p>You’ll be signed out on this device. Your learning progress and subscription will not be deleted.</p>
     <form method="post" action="/profile/security/devices/{{ confirm_current.id }}/remove" class="device-confirm-form">
       <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
@@ -67,6 +67,7 @@
 
   {% if revoked_devices %}
   <h2 class="section-title">Removed devices</h2>
+  <div class="pg-account-list" data-device-revoked>
   {% for device in revoked_devices %}
   <article class="device-row is-removed{% if device.is_current %} is-current{% endif %}">
     <div class="device-main">
@@ -85,6 +86,7 @@
     </div>
   </article>
   {% endfor %}
+  </div>
   {% endif %}
 </section>
 {% endblock %}

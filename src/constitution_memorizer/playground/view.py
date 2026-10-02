@@ -293,6 +293,21 @@ class LawCardView:
 
 
 @dataclass(frozen=True)
+class PlaygroundSubscriptionCard:
+    """Profile SUBSCRIPTION card. Snapshot is the authority; no device ids."""
+
+    title: str
+    chip: str
+    chip_kind: str
+    body: str
+    stat_big: str
+    stat_label: str
+    cta_label: str
+    cta_href: str
+    show: bool = True
+
+
+@dataclass(frozen=True)
 class PlaygroundHomeView:
     capacity: RosterCapacityView
     browse_href: str
@@ -477,6 +492,178 @@ def add_confirm_copy(
     if historical:
         lines.append("Your saved progress comes with it.")
     return title, tuple(lines)
+
+
+def device_count_copy(active_count: int, device_limit: int | None) -> str:
+    """T26: 'n of limit' from the device service. Never a hard-coded 2 of 3."""
+
+    count = max(0, int(active_count or 0))
+    if device_limit is None:
+        noun = "device" if count == 1 else "devices"
+        return f"{count} {noun}"
+    return f"{count} of {int(device_limit)}"
+
+
+def playground_subscription_card(snapshot: Any | None) -> PlaygroundSubscriptionCard:
+    """T26: chip and stats from the entitlement snapshot only."""
+
+    hidden = PlaygroundSubscriptionCard(
+        title="",
+        chip="",
+        chip_kind="none",
+        body="",
+        stat_big="",
+        stat_label="",
+        cta_label="",
+        cta_href=PLAYGROUND_BILLING_PATH,
+        show=False,
+    )
+    if snapshot is None or not getattr(snapshot, "is_authenticated", False):
+        return hidden
+    reason = str(getattr(snapshot, "playground_block_reason", None) or "")
+    tier = str(getattr(snapshot, "tier", None) or "").strip()
+    title = f"RecallC {tier.title()}" if tier else "Playground"
+    limit = getattr(snapshot, "playground_law_limit", None)
+    limit_line = catalogue_limit_label(limit)
+    period = format_plan_end(getattr(snapshot, "billing_period_end", None))
+    if reason == BLOCK_SUBSCRIPTION_PAUSED:
+        return PlaygroundSubscriptionCard(
+            title=title,
+            chip="PAUSED",
+            chip_kind="paused",
+            body="Playground is paused. Resume to keep learning this month’s laws.",
+            stat_big="",
+            stat_label=limit_line,
+            cta_label="Resume Playground",
+            cta_href=PLAYGROUND_BILLING_PATH,
+        )
+    if reason == BLOCK_PAYMENT_HALTED:
+        return PlaygroundSubscriptionCard(
+            title=title,
+            chip="ON HOLD",
+            chip_kind="hold",
+            body="Payment retries have stopped. Resume Playground when you are ready.",
+            stat_big="",
+            stat_label=limit_line,
+            cta_label="Resume Playground",
+            cta_href=PLAYGROUND_BILLING_PATH,
+        )
+    if reason == BLOCK_PAID_PERIOD_ENDED:
+        return PlaygroundSubscriptionCard(
+            title=title,
+            chip="PAUSED",
+            chip_kind="paused",
+            body="This paid period has ended. Playground stays saved until you resume.",
+            stat_big="",
+            stat_label=limit_line,
+            cta_label="Resume Playground",
+            cta_href=PLAYGROUND_BILLING_PATH,
+        )
+    if not getattr(snapshot, "is_subscribed", False) and reason in {
+        BLOCK_NOT_SUBSCRIBED,
+        "",
+        None,
+    }:
+        if getattr(snapshot, "admin_override", False):
+            return PlaygroundSubscriptionCard(
+                title="Playground",
+                chip="",
+                chip_kind="none",
+                body="Admin access. No billing attached.",
+                stat_big="",
+                stat_label="",
+                cta_label="Manage Playground",
+                cta_href=home_path(),
+            )
+        return PlaygroundSubscriptionCard(
+            title="Playground",
+            chip="",
+            chip_kind="none",
+            body="Subscribe to add Bare Acts to a monthly Playground.",
+            stat_big="",
+            stat_label="",
+            cta_label="Subscribe",
+            cta_href=PLAYGROUND_BILLING_PATH,
+        )
+    renew = f" Current paid period ends {period}." if period else ""
+    stat_big = "∞" if limit is None else str(limit)
+    return PlaygroundSubscriptionCard(
+        title=title or "Playground",
+        chip="ACTIVE",
+        chip_kind="active",
+        body=f"This month’s Playground is open.{renew}",
+        stat_big=stat_big,
+        stat_label=limit_line,
+        cta_label="Manage plan",
+        cta_href=PLAYGROUND_BILLING_PATH,
+    )
+
+
+def roster_law_cards(
+    *,
+    overlay: Any,
+    roster: Any,
+    user_id: Any,
+) -> tuple[tuple[LawCardView, ...], tuple[LawCardView, ...]]:
+    """Active / removed roster rows from Stage 1 summaries. Restyle only."""
+
+    active_items = roster.active_roster_items(user_id)
+    removed_items = roster.removed_roster_items(user_id)
+    ids = [item.law_id for item in active_items] + [
+        item.law_id for item in removed_items
+    ]
+    summaries = overlay.list_playground_summaries(
+        user_id, as_of=playground_today(), law_ids=ids
+    )
+    by_id = {row.law_id: row for row in summaries}
+    active: list[LawCardView] = []
+    for item in active_items:
+        row = by_id.get(item.law_id)
+        href = law_path(item.law_id)
+        label = "Continue"
+        if row is None or row.selected_count == 0:
+            href = sections_path(item.law_id)
+            label = "Start learning"
+        if row is None:
+            card = _stub_card(
+                item.law_id,
+                membership=MEMBERSHIP_IN,
+                membership_label="In Playground",
+                primary_label=label,
+                primary_href=href,
+            )
+        else:
+            card = _card_from_summary(
+                row,
+                membership=MEMBERSHIP_IN,
+                membership_label="In Playground",
+                primary_label=label,
+                primary_href=href,
+            )
+        if card is not None:
+            active.append(card)
+    removed: list[LawCardView] = []
+    for item in removed_items:
+        row = by_id.get(item.law_id)
+        if row is None:
+            card = _stub_card(
+                item.law_id,
+                membership=MEMBERSHIP_REMOVED,
+                membership_label="Removed this month",
+                primary_label="Add back",
+                primary_href=add_path(item.law_id),
+            )
+        else:
+            card = _card_from_summary(
+                row,
+                membership=MEMBERSHIP_REMOVED,
+                membership_label="Removed this month",
+                primary_label="Add back",
+                primary_href=add_path(item.law_id),
+            )
+        if card is not None:
+            removed.append(card)
+    return tuple(active), tuple(removed)
 
 
 def catalogue_from_price() -> str:

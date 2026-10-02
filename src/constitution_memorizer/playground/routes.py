@@ -139,6 +139,7 @@ from constitution_memorizer.playground.view import (
     entire_act_meta,
     law_membership,
     picker_page_view,
+    roster_law_cards,
     section_row_view,
     skips_add_confirm,
 )
@@ -401,19 +402,6 @@ def _rollover_ids(form) -> tuple[list[str], list[str]]:
     return keep_ids, decline_ids
 
 
-def _roster_law_card(item) -> dict:
-    catalog = playground_catalogue_law(item.law_id)
-    title = catalog.title if catalog is not None else item.law_id
-    short = catalog.short_title if catalog is not None else item.law_id
-    return {
-        "law_id": item.law_id,
-        "title": title,
-        "short_title": short,
-        "origin": item.origin,
-        "removed": item.removed_at is not None,
-    }
-
-
 def create_playground_router(templates: Jinja2Templates) -> APIRouter:
     router = APIRouter(prefix="/playground")
 
@@ -494,12 +482,12 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             local_owner=access.local_owner,
         )
         month = playground_month_name(capacity.period_start)
-        active_cards = [
-            _roster_law_card(item) for item in roster.active_roster_items(access.user_id)
-        ]
-        removed_cards = [
-            _roster_law_card(item) for item in roster.removed_roster_items(access.user_id)
-        ]
+        overlay = require_playground_repo(request)
+        active_cards, removed_cards = roster_law_cards(
+            overlay=overlay,
+            roster=roster,
+            user_id=access.user_id,
+        )
         add_catalog = playground_catalogue_law(add_id) if add_id else None
         show_confirm = preview is not None and preview.status in {
             RESULT_NEEDS_CONFIRM,
@@ -510,7 +498,6 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         add_short = add_catalog.short_title if add_catalog is not None else add_id
         historical = False
         if add_id:
-            overlay = require_playground_repo(request)
             historical = overlay.get_item(access.user_id, add_id) is not None
         remaining_after = capacity.remaining
         re_add = preview is not None and preview.status == RESULT_RE_ADD_CONFIRM
@@ -557,6 +544,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                 "removed_laws": removed_cards,
                 "add_law_id": add_id or None,
                 "add_title": add_title,
+                "add_short": add_short,
                 "confirm_title": confirm_title,
                 "confirm_lines": confirm_lines,
                 "confirm_action": confirm_action,
@@ -636,6 +624,9 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                 "target_status": plan.target_status or "",
                 "blocked": notice,
                 "manages_current": plan.manages_current_period,
+                "planned_count": plan.used,
+                "submit_continue": "Continue with these",
+                "submit_done": "Done",
             },
         )
 

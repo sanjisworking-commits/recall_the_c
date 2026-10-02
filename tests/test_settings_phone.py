@@ -130,13 +130,13 @@ def test_guest_text_size_api_does_not_write(tmp_path: Path):
 
 
 def test_settings_assets_and_hooks(tmp_path: Path):
-    # T33: R1 bumped styles.css main71→main74, mobile.css mob93→mob94.
+    # T33: R5 bumped playground.css pg14→pg15, mobile.css mob94→mob95.
     client = _client(tmp_path)
     html = client.get("/browse").text
     assert "styles.css?v=main74" in html
-    assert "mobile.css?v=mob94" in html
+    assert "mobile.css?v=mob95" in html
     assert "app.js?v=main62" in html
-    css = client.get("/static/mobile.css?v=mob94").text
+    css = client.get("/static/mobile.css?v=mob95").text
     assert 'body[data-mscreen="settings"] .mobile-tabbar' in css
     assert 'body[data-mscreen="settings"] .settings-desk-copy' in css
     assert ".settings-toggle" in css

@@ -1,7 +1,7 @@
 {% extends "playground_base.html" %}
 {% block title %}Remove from {{ month_name }} · Playground{% endblock %}
 {% block playground %}
-<section class="pg-sheet-panel" data-roster-remove="{{ law_id }}" role="dialog" aria-modal="true" aria-labelledby="pg-remove-title">
+<section class="pg-sheet-panel RosterRemoveDialog" data-roster-remove="{{ law_id }}" role="dialog" aria-modal="true" aria-labelledby="pg-remove-title">
   <p class="pg-eyebrow">{{ short_title }}</p>
   <h1 id="pg-remove-title">Remove from {{ month_name }}</h1>
   <p class="pg-lede">Your progress will be saved.</p>
@@ -10,7 +10,7 @@
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
     <p class="pg-actions">
       <button type="submit" class="pg-btn">Remove from {{ month_name }}</button>
-      <a class="pg-btn pg-btn--ghost" href="/playground/roster">Cancel</a>
+      <a class="pg-btn pg-btn--ghost" href="/playground/roster" data-pg-sheet-close>Cancel</a>
     </p>
   </form>
 </section>

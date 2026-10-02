@@ -611,25 +611,150 @@ body.playground-app .sheet {
 
 .RosterManager-rules {
   margin: 0 0 20px;
-  padding: 12px 14px;
+  padding: 12px 16px;
   border: 1px solid var(--pg-hairline);
-  font-size: 14.5px;
+  border-radius: var(--pg-radius-card);
+  background: var(--pg-paper);
+  font-size: 13.5px;
   line-height: 1.5;
   color: var(--pg-muted);
 }
 
-.RolloverKey {
-  display: grid;
-  gap: 8px;
+.RosterManager-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px 24px;
   margin: 0 0 18px;
-  font-size: 14px;
+}
+
+.RosterManager-notice {
+  border-color: var(--pg-teal-border, #bcd8d2);
+  background: var(--pg-teal-tint, #e7f1ef);
+  color: var(--pg-teal-dark, #0e5b52);
+  font-weight: 600;
+}
+
+.RosterManager-section {
+  margin: 0 0 22px;
+}
+
+.RosterManager-sectionHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 10px;
+}
+
+.RosterManager-sectionHead h2 {
+  margin: 0;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--pg-faint);
+}
+
+.RosterManager-sectionHead span {
+  font-size: 13px;
+  color: var(--pg-muted);
+}
+
+.RosterList {
+  background: var(--pg-paper);
+  border: 1px solid var(--pg-hairline);
+  border-radius: var(--pg-radius-card);
+  overflow: hidden;
+}
+
+.RosterRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 14px;
+  min-height: 60px;
+  padding: 12px 18px;
+  border-top: 1px solid var(--pg-hairline);
+}
+
+.RosterList .RosterRow:first-child {
+  border-top: 0;
+}
+
+.RosterRow-copy {
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+
+.RosterRow-copy h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.RosterRow-progress {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--pg-muted);
+}
+
+.RosterRow-actions {
+  flex: none;
+}
+
+.RosterAddDialog,
+.RosterRemoveDialog {
+  margin-bottom: 20px;
+}
+
+.RolloverLayout {
+  display: grid;
+  gap: 24px;
+}
+
+.RolloverKey {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  margin: 0 0 14px;
+  font-size: 12.5px;
   line-height: 1.45;
+  color: var(--pg-muted);
+}
+
+.RolloverKey p {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.RolloverKey-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  flex: none;
+  background: var(--pg-ink);
+}
+
+.RolloverKey [data-key="remove"] .RolloverKey-swatch {
+  background: var(--pg-subtle);
+  border: 1px solid var(--pg-muted);
+}
+
+.RolloverKey [data-key="undecided"] .RolloverKey-swatch {
+  background: transparent;
+  border: 1px dashed var(--pg-muted);
 }
 
 .RolloverCandidate {
   border: 1px solid var(--pg-ink);
   padding: 16px;
   margin: 0 0 12px;
+  border-radius: var(--pg-radius-card);
+  background: var(--pg-paper);
 }
 
 .RolloverCandidate[data-rollover-decision="undecided"] {
@@ -640,10 +765,24 @@ body.playground-app .sheet {
   background: var(--pg-subtle);
 }
 
+.RolloverCandidate-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.RolloverCandidate-head h2 {
+  margin: 0;
+  font-size: 15px;
+}
+
 .RolloverCandidate-controls {
   display: flex;
   margin-top: 12px;
   border: 1px solid var(--pg-ink);
+  border-radius: 9px;
+  overflow: hidden;
 }
 
 .RolloverCandidate-controls label {
@@ -686,17 +825,200 @@ body.playground-app .sheet {
 
 .RolloverCandidate-controls label[data-choice="undecided"]:has(input:checked),
 .RolloverCandidate-controls label[data-choice="undecided"].is-selected {
-  background: transparent;
-  color: var(--pg-ink);
+  background: var(--pg-paper);
+  color: var(--pg-muted);
 }
 
 .RolloverCandidate-controls label:has(input:focus-visible) {
   outline: 2px solid var(--pg-ink);
-  outline-offset: 2px;
+  outline-offset: -2px;
 }
 
 .RolloverCandidate.is-locked .RolloverCandidate-controls {
-  opacity: 0.55;
+  opacity: 0.92;
+}
+
+.RolloverPlanner-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.RolloverPlanner-planned {
+  margin: 0;
+  text-align: center;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.RolloverPlanner-aside {
+  display: none;
+}
+
+.RolloverPlanner-done {
+  display: none;
+}
+
+.pg-profile-identity,
+.pg-sub-card,
+.pg-account-list {
+  background: var(--pg-paper);
+  border: 1px solid var(--pg-hairline);
+  border-radius: 14px;
+}
+
+.pg-profile-identity {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  margin: 0 0 20px;
+}
+
+.pg-profile-identity-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.pg-profile-identity-copy p {
+  margin: 1px 0 0;
+  font-size: 12.5px;
+  color: var(--pg-faint);
+}
+
+.pg-sub-card {
+  padding: 20px;
+  margin: 0 0 20px;
+}
+
+.pg-sub-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 8px;
+}
+
+.pg-sub-card-head h2 {
+  margin: 0;
+  font-family: var(--pg-font-display, Fraunces, Georgia, serif);
+  font-size: 19px;
+  font-weight: 500;
+}
+
+.pg-sub-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.pg-sub-chip[data-chip="active"] {
+  background: var(--pg-teal-tint, #e7f1ef);
+  color: var(--pg-teal-dark, #0e5b52);
+}
+
+.pg-sub-chip[data-chip="paused"],
+.pg-sub-chip[data-chip="hold"] {
+  border: 1px solid var(--pg-ink);
+  color: var(--pg-ink);
+}
+
+.pg-sub-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 8px 0 16px;
+}
+
+.pg-sub-stat-big {
+  font-family: var(--pg-font-display, Fraunces, Georgia, serif);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--pg-teal-dark, #0e5b52);
+}
+
+.pg-account-list {
+  overflow: hidden;
+  margin: 0 0 20px;
+}
+
+.pg-account-list a,
+.pg-account-list .pg-account-row {
+  display: flex;
+  align-items: center;
+  min-height: 52px;
+  padding: 0 18px;
+  border-top: 1px solid var(--pg-hairline);
+  font-size: 14.5px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.pg-account-list a:first-child,
+.pg-account-list .pg-account-row:first-child {
+  border-top: 0;
+}
+
+.pg-account-list .pg-account-meta {
+  margin-left: auto;
+  font-size: 12.5px;
+  color: var(--pg-faint);
+}
+
+.pg-devices-lede {
+  font-size: 15px;
+  color: var(--pg-muted);
+}
+
+.pg-checkout-card {
+  max-width: 460px;
+}
+
+@media (min-width: 900px) {
+  .RolloverLayout {
+    grid-template-columns: minmax(0, 1fr) 320px;
+    align-items: start;
+    gap: 32px;
+  }
+
+  .RolloverPlanner-aside {
+    display: block;
+    position: sticky;
+    top: 0;
+    padding: 20px;
+    background: var(--pg-paper);
+    border: 1px solid var(--pg-hairline);
+    border-radius: var(--pg-radius-card);
+  }
+
+  .RolloverPlanner-footer .RolloverPlanner-continue,
+  .RolloverPlanner-footer .RolloverPlanner-planned,
+  .RolloverNewLaws {
+    display: none;
+  }
+
+  .RolloverPlanner-aside .RolloverPlanner-done,
+  .RolloverPlanner-footer .RolloverPlanner-done {
+    display: inline-flex;
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  .RolloverPlanner-footer {
+    display: none;
+  }
+
+  .pg-profile-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+    max-width: 960px;
+  }
 }
 
 .pg-workspace-row {

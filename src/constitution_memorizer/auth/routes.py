@@ -38,6 +38,12 @@ from constitution_memorizer.auth.sessions import (
 )
 from constitution_memorizer.progress.repository import ONBOARDING_KEY
 from constitution_memorizer.web.completion import build_completion, caught_up_quote
+from constitution_memorizer.devices.token import request_device_token
+from constitution_memorizer.entitlements.dependencies import get_entitlement_snapshot
+from constitution_memorizer.playground.view import (
+    device_count_copy,
+    playground_subscription_card,
+)
 from constitution_memorizer.web.entitlements import (
     access_summary,
     can_use_auto_plan,
@@ -539,8 +545,29 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
     @router.get("/profile", response_class=HTMLResponse)
     async def profile_get(request: Request) -> HTMLResponse:
         user = getattr(request.state, "current_user", None)
+        snapshot = get_entitlement_snapshot(request)
+        playground_card = playground_subscription_card(snapshot)
+        device_label = ""
         if user is None:
-            return signin_redirect(next_url="/profile", reason="default")
+            return templates.TemplateResponse(
+                request,
+                "profile.html",
+                {
+                    "user": None,
+                    "profile": {},
+                    "access": None,
+                    "free_slots": [],
+                    "subscription": None,
+                    "display_label": "Guest",
+                    "csrf_token": request.cookies.get(CSRF_COOKIE_NAME) or "",
+                    "saved": False,
+                    "edit_name": False,
+                    "is_guest_profile": True,
+                    "playground_subscription": playground_card,
+                    "device_count_label": "",
+                    "identity_meta": "Guest · Reading only",
+                },
+            )
         from constitution_memorizer.web.service import free_article_slots
 
         eng = request.app.state.engine.for_user(user.id)
@@ -549,6 +576,23 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
         slots = (
             free_article_slots(eng) if access.enabled and access.is_free else []
         )
+        service = getattr(request.app.state, "device_service", None)
+        if service is not None:
+            summaries = service.list_device_summaries(
+                user.id, request_device_token(request)
+            )
+            active_n = sum(1 for row in summaries if row.is_active)
+            device_label = device_count_copy(active_n, service.device_limit)
+        else:
+            device_label = device_count_copy(
+                snapshot.registered_device_count, snapshot.device_limit
+            )
+        if user.provider == "google":
+            identity_meta = "Signed in with Google"
+        elif user.phone:
+            identity_meta = "Signed in with phone"
+        else:
+            identity_meta = "Signed in"
         return templates.TemplateResponse(
             request,
             "profile.html",
@@ -564,6 +608,10 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
                 "csrf_token": request.cookies.get(CSRF_COOKIE_NAME) or "",
                 "saved": request.query_params.get("saved") == "1",
                 "edit_name": request.query_params.get("edit") == "name",
+                "is_guest_profile": False,
+                "playground_subscription": playground_card,
+                "device_count_label": device_label,
+                "identity_meta": identity_meta,
             },
         )
 

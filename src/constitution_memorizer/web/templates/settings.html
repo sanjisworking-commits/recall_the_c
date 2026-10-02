@@ -266,7 +266,7 @@
           <input type="text" name="user_timezone" class="gcal-tz-input" value="{{ gcal.prefs.timezone }}"
                  placeholder="Asia/Kolkata" spellcheck="false" data-gcal-timezone>
         </label>
-        <label class="gcal-pref">
+        <label class="gcal-pref settings-desk-copy">
           <span class="gcal-pref-label">Reminders</span>
           <select name="reminder_cadence">
             <option value="once"{% if gcal.prefs.reminder_cadence == 'once' %} selected{% endif %}>Once — 10 min before</option>
@@ -281,6 +281,21 @@
         <a class="btn btn-ghost" href="https://calendar.google.com/" target="_blank" rel="noopener">Open Google Calendar</a>
         <button type="submit" class="gcal-disconnect settings-desk-copy" form="gcal-disconnect-form">Disconnect</button>
       </div>
+    </form>
+    <form method="post" action="/calendar/google/preferences" class="settings-phone-only settings-card" data-settings-reminders>
+      <input type="hidden" name="csrf_token" value="{{ gcal.csrf_token }}">
+      <div class="settings-row is-stacked">
+        <div class="settings-row-copy">
+          <p class="settings-row-label">Reminders</p>
+          <p class="settings-row-desc">How often each revision day should remind you.</p>
+        </div>
+        <select name="reminder_cadence" data-reminder-cadence>
+          <option value="once"{% if gcal.prefs.reminder_cadence == 'once' %} selected{% endif %}>Once — 10 min before</option>
+          <option value="twice"{% if gcal.prefs.reminder_cadence == 'twice' %} selected{% endif %}>Twice — morning + 10 min before</option>
+          <option value="thrice"{% if gcal.prefs.reminder_cadence == 'thrice' %} selected{% endif %}>Thrice — 8 h, 4 h, 10 min before</option>
+        </select>
+      </div>
+      <p class="actions"><button type="submit" class="btn btn-accent">Save reminders</button></p>
     </form>
     <form method="post" action="/calendar/google/disconnect" id="gcal-disconnect-form"
           class="gcal-hidden-form"
@@ -310,7 +325,7 @@
     {% endif %}
 
     {% if gcal and gcal.status_param in ('connected', 'syncing') and not gcal.prefs.cadence_chosen %}
-    <dialog class="guest-modal gcal-reminder-modal" open aria-labelledby="gcal-reminder-title" data-gcal-reminder-modal>
+    <dialog class="guest-modal gcal-reminder-modal pg-sheet-panel" open aria-labelledby="gcal-reminder-title" data-gcal-reminder-modal role="dialog">
       <div class="guest-modal-card">
         <h2 class="guest-modal-title" id="gcal-reminder-title">Never miss a revision</h2>
         <p class="guest-modal-body">

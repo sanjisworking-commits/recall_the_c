@@ -1,11 +1,16 @@
 {% extends "playground_base.html" %}
-{% from "partials/playground.html" import capacity_block, status_badge %}
+{% from "partials/playground.html" import capacity_block, status_badge, due_badge %}
 {% block title %}{{ month_name }} Playground · {{ app_name|default('Recall the C') }}{% endblock %}
 {% block playground %}
 <section class="RosterManager" data-playground-roster="current">
-  <p class="pg-eyebrow">{{ month_name }} Playground</p>
-  <h1>{{ month_name }} Playground</h1>
-  {{ capacity_block(capacity) }}
+  <a class="pg-back" href="/playground">← Playground</a>
+  <header class="RosterManager-head">
+    <div>
+      <p class="pg-eyebrow">My Playground</p>
+      <h1>{{ month_name }} Playground</h1>
+    </div>
+    {{ capacity_block(capacity) }}
+  </header>
   <p class="RosterManager-rules">
     Removing a law saves its progress.
     It doesn’t free a space this month,
@@ -15,64 +20,95 @@
   <p class="pg-note" data-playground-gate="roster_full">{{ full_copy }}</p>
   {% endif %}
   {% if notice %}
-  <p class="pg-note" role="status">{{ notice }}</p>
+  <p class="pg-note RosterManager-notice" role="status">{{ notice }}</p>
   {% endif %}
 
   {% if show_confirm and add_law_id %}
-  <article class="LawCard" data-roster-confirm="{{ add_law_id }}">
-    <h2>{{ confirm_title }}</h2>
+  <article class="pg-sheet-panel RosterAddDialog" data-roster-confirm="{{ add_law_id }}" role="dialog" aria-modal="true" aria-labelledby="pg-roster-add-title">
+    <p class="pg-eyebrow">{{ add_short or add_title }}</p>
+    <h2 id="pg-roster-add-title">{{ confirm_title }}</h2>
+    {{ capacity_block(capacity) }}
     {% for line in confirm_lines %}
     <p class="pg-lede">{{ line }}</p>
     {% endfor %}
+    {% if confirm_action == 'Add back' %}
+    <p class="pg-lede" data-saved-progress>Your saved progress comes with it. No extra space used.</p>
+    {% endif %}
     <form method="post" action="/playground/laws/{{ add_law_id }}/add">
       <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
       <input type="hidden" name="confirm" value="{{ confirm_value }}">
       <p class="pg-actions">
         <button type="submit" class="pg-btn">{{ confirm_action }}</button>
-        <a class="pg-btn pg-btn--ghost" href="/playground/roster">Cancel</a>
+        <a class="pg-btn pg-btn--ghost" href="/playground/roster" data-pg-sheet-close>Cancel</a>
       </p>
     </form>
   </article>
   {% endif %}
 
-  <h2>Active this month</h2>
-  {% if not active_laws %}
-  <p class="pg-lede">No laws on this month’s roster yet.</p>
-  {% else %}
-  {% for law in active_laws %}
-  <article class="LawCard" data-roster-active="{{ law.law_id }}">
-    <h2>{{ law.short_title }}</h2>
-    <p class="LawCard-full">{{ law.title }}</p>
-    <div class="pg-card-actions">
-      <a class="pg-btn pg-btn--ghost" href="/playground/laws/{{ law.law_id }}">Continue</a>
-      <a class="pg-btn pg-btn--quiet" href="/laws/{{ law.law_id }}">Read</a>
-      <a class="pg-btn pg-btn--quiet" href="/playground/roster/{{ law.law_id }}/remove" data-pg-sheet>Remove</a>
+  <div class="RosterManager-section">
+    <div class="RosterManager-sectionHead">
+      <h2>Active this month</h2>
+      <span>{{ active_laws|length }}</span>
     </div>
-  </article>
-  {% endfor %}
-  {% endif %}
+    {% if not active_laws %}
+    <p class="pg-lede">No laws in {{ month_name }} yet.</p>
+    {% else %}
+    <div class="RosterList">
+      {% for law in active_laws %}
+      <article class="RosterRow" data-roster-active="{{ law.law_id }}">
+        <div class="RosterRow-copy">
+          <h2>{{ law.short_title }}</h2>
+          <p class="LawCard-full">{{ law.title }}</p>
+          <p>
+            {{ status_badge(law.status, law.status_label) }}
+            {{ due_badge(law.due_count, law.overdue_count) }}
+            {% if law.outdated %}{{ status_badge('updated', 'Law updated') }}{% endif %}
+          </p>
+          <p class="RosterRow-progress">{{ law.provisions_copy or (law.selected_count ~ ' provisions') }} · {{ law.learned_count }} learned</p>
+        </div>
+        <div class="pg-card-actions RosterRow-actions">
+          <a class="pg-btn pg-btn--ghost" href="{{ law.primary_href }}">{{ law.primary_label }}</a>
+          <a class="pg-btn pg-btn--quiet" href="{{ law.read_href }}">Read</a>
+          <a class="pg-btn pg-btn--quiet" href="/playground/roster/{{ law.law_id }}/remove" data-pg-sheet>Remove</a>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
 
-  {% if removed_laws %}
-  <h2>Removed this month</h2>
-  {% for law in removed_laws %}
-  <article class="LawCard LawCard--compact" data-roster-removed="{{ law.law_id }}">
-    <h2>{{ law.short_title }}</h2>
-    <p>
-      {{ status_badge('removed_this_month', 'Removed this month') }}
-      {{ status_badge('progress_saved', 'Progress saved') }}
-    </p>
-    <a class="pg-btn pg-btn--ghost" href="/playground/laws/{{ law.law_id }}/add" data-pg-sheet>Add back</a>
-  </article>
-  {% endfor %}
-  {% endif %}
+  <div class="RosterManager-section">
+    <div class="RosterManager-sectionHead">
+      <h2>Removed this month</h2>
+      <span>{{ removed_laws|length }}</span>
+    </div>
+    {% if removed_laws %}
+    <div class="RosterList">
+      {% for law in removed_laws %}
+      <article class="RosterRow RosterRow--removed" data-roster-removed="{{ law.law_id }}">
+        <div class="RosterRow-copy">
+          <h2>{{ law.short_title }}</h2>
+          <p class="LawCard-full">{{ law.title }}</p>
+          <p>
+            {{ status_badge('removed_this_month', 'Removed this month') }}
+            {{ status_badge('progress_saved', 'Progress saved') }}
+          </p>
+        </div>
+        <a class="pg-btn pg-btn--ghost" href="{{ law.primary_href }}" data-pg-sheet>Add back</a>
+      </article>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="pg-lede">Nothing removed this month.</p>
+    {% endif %}
+  </div>
 
-  <div class="pg-plan-row">
+  <a class="pg-plan-row" href="/playground/roster/next">
     <div>
       <p class="pg-eyebrow">Plan next month</p>
       <p>Manage {{ next_month_name }} — choose what continues.</p>
     </div>
-    <a class="pg-btn pg-btn--ghost" href="/playground/roster/next">Plan next month</a>
-  </div>
-  <p class="pg-actions"><a class="pg-btn pg-btn--quiet" href="/playground">Back to Playground</a></p>
+    <span aria-hidden="true">›</span>
+  </a>
 </section>
 {% endblock %}
