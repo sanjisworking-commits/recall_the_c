@@ -18,7 +18,7 @@
 @media (max-width: 560px) {
   :root {
     --m-gutter: 18px;
-    --m-tabbar: 56px;
+    --m-tabbar: 60px;
     --m-actionbar: 76px;
     /* Redesign semantic tokens. Light values follow the prototype; dark maps
        onto the existing theme so tints stay readable. Do not hardcode #fff
@@ -125,7 +125,7 @@
      stays text-only (prototype never redesigned it). */
   body[data-mscreen] .mobile-tabbar {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(5, 1fr);
     position: fixed;
     left: 0;
     right: 0;
@@ -135,6 +135,10 @@
     backdrop-filter: saturate(1.1) blur(16px);
     border-top: 1px solid var(--rc-hairline);
     padding-bottom: env(safe-area-inset-bottom, 0);
+  }
+
+  body[data-mscreen] .mobile-tabbar.is-guest {
+    grid-template-columns: repeat(4, 1fr);
   }
 
   body[data-mscreen] .mobile-tab {
@@ -199,6 +203,7 @@
     display: inline-flex;
     align-items: center;
     min-height: 44px;
+    min-width: 44px;
     padding: 0;
     border: 0;
     background: none;
@@ -708,6 +713,11 @@
 
   body[data-mscreen="today"] .dash-avatar-link {
     flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
     line-height: 0;
   }
 
@@ -1147,8 +1157,10 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
     margin-left: auto;
     border: 0;
     border-radius: 9px;
@@ -1395,7 +1407,8 @@
     align-items: center;
     justify-content: center;
     width: 100%;
-    height: 42px;
+    min-height: 44px;
+    height: auto;
     margin-top: 12px;
     border-radius: 10px;
     background: var(--rc-ink);
@@ -2319,7 +2332,8 @@
   body[data-mscreen="search"] .search-form input {
     flex: 1;
     min-width: 0;
-    height: 40px;
+    height: 44px;
+    min-height: 44px;
     padding: 0 13px 0 0;
     border: 0;
     background: var(--wash);
@@ -2337,7 +2351,8 @@
   }
 
   body[data-mscreen="search"] .search-form-icon {
-    height: 40px;
+    height: 44px;
+    min-height: 44px;
     align-items: center;
     padding-left: 13px;
     border-radius: 12px 0 0 12px;
@@ -2352,7 +2367,12 @@
   }
 
   .search-cancel {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     flex: 0 0 auto;
+    min-height: 44px;
+    min-width: 44px;
     font-size: 13.5px;
     color: var(--rc-teal);
     text-decoration: none;
@@ -2380,7 +2400,8 @@
   .search-recent-chip {
     display: inline-flex;
     align-items: center;
-    height: 32px;
+    height: auto;
+    min-height: 44px;
     padding: 0 13px;
     border: 1px solid var(--rc-hairline);
     border-radius: 16px;
@@ -2402,7 +2423,10 @@
   body[data-mscreen="revisions"] .calendar-header,
   body[data-mscreen="revisions"] .calendar-summary,
   body[data-mscreen="revisions"] .calendar-legend,
-  body[data-mscreen="revisions"] .calendar-grid {
+  body[data-mscreen="revisions"] .calendar-grid,
+  body[data-mscreen="revisions"] .calendar-week,
+  body[data-mscreen="revisions"] .calendar-week-legend,
+  body[data-mscreen="revisions"] .calendar-view-switch {
     display: none;
   }
 
@@ -2445,8 +2469,10 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 30px;
-    height: 30px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
     flex: 0 0 auto;
     border: 1px solid var(--hairline);
     background: var(--paper);
@@ -2475,6 +2501,7 @@
     flex-direction: column;
     align-items: center;
     gap: 3px;
+    min-height: 44px;
     padding: 6px 0 5px;
     background: var(--paper);
     border: 1px solid var(--page);
@@ -2958,7 +2985,7 @@
   body[data-mscreen="settings"] .segmented-btn,
   body[data-mscreen="settings"] .settings-theme-btn {
     min-height: 44px;
-    height: 30px;
+    height: auto;
     padding: 0 12px;
     border-radius: 7px;
     font-size: 12.5px;
@@ -2985,7 +3012,7 @@
 
   body[data-mscreen="settings"] .settings-row.is-stacked .segmented-btn {
     flex: 1 1 0;
-    height: 30px;
+    height: auto;
     min-height: 44px;
     padding: 0 8px;
   }
@@ -3023,19 +3050,39 @@
     font-size: 13.5px;
   }
 
+  /* D113: painted track stays 46×28. Hit area grows to 44px tall. */
   .settings-toggle {
     position: relative;
     flex: 0 0 auto;
     width: 46px;
-    height: 28px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
     padding: 0;
     border: 0;
-    border-radius: 14px;
-    background: var(--hairline);
+    border-radius: 0;
+    background: transparent;
     cursor: pointer;
   }
 
+  .settings-toggle::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 46px;
+    height: 28px;
+    margin-top: -14px;
+    border-radius: 14px;
+    background: var(--hairline);
+    pointer-events: none;
+  }
+
   .settings-toggle[aria-checked="true"] {
+    background: transparent;
+  }
+
+  .settings-toggle[aria-checked="true"]::before {
     background: var(--browse-due);
   }
 
@@ -3046,10 +3093,12 @@
 
   .settings-toggle-knob {
     position: absolute;
-    top: 3px;
+    top: 50%;
     left: 3px;
+    z-index: 1;
     width: 22px;
     height: 22px;
+    margin-top: -11px;
     border-radius: 50%;
     background: #fff;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
@@ -3560,7 +3609,9 @@
   }
 
   body[data-mscreen="learn"] .learn-letters-viewswitch .segmented-btn {
-    height: 32px;
+    height: auto;
+    min-height: 44px;
+    min-width: 44px;
     padding: 0 16px;
     font-size: 12.5px;
   }
@@ -4069,8 +4120,10 @@
   }
 
   .learn-mode-bar .mobile-icon-btn[data-mode-help] {
-    width: 30px;
-    height: 30px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
     border: 1px solid var(--rc-hairline);
     border-radius: 50%;
     font-size: 13px;
@@ -5138,7 +5191,8 @@
   }
 
   body[data-mscreen="planintro"] .plan-intro-target .segmented-btn {
-    height: 32px;
+    height: auto;
+    min-height: 44px;
     font-size: 12.5px;
   }
 
@@ -5522,7 +5576,8 @@
   .rtc-affirmation-sub,
   .article-phone-meta,
   .methods-tracker,
-  .learn-meta {
+  .learn-meta,
+  .pg-phone-only {
     display: none;
   }
 
@@ -5530,4 +5585,98 @@
     display: contents;
   }
 
+}
+
+/* R1 — Playground phone shell. Constitution pages are not restyled here. */
+@media (max-width: 560px) {
+  body[data-mscreen="playground"] .page-wrap,
+  body[data-mscreen="playground"] .sheet {
+    background: var(--pg-page, var(--page));
+  }
+
+  body[data-mscreen="playground"] .PlaygroundShell {
+    padding: 12px var(--m-gutter, 18px) calc(var(--m-tabbar, 60px) + 28px + env(safe-area-inset-bottom, 0px));
+    max-width: none;
+  }
+
+  body[data-mscreen="playground"] .LawCard,
+  body[data-mscreen="playground"] .pg-card,
+  body[data-mscreen="playground"] .PaymentStateBanner,
+  body[data-mscreen="playground"] .ProgressSummary,
+  body[data-mscreen="playground"] .pg-aside,
+  body[data-mscreen="playground"] .pg-plan-row {
+    border-radius: var(--pg-radius-card, 16px);
+  }
+
+  body[data-mscreen="playground"] .mobile-tab.is-active {
+    color: var(--pg-teal, var(--rc-teal));
+  }
+
+  body[data-mscreen="playground"] .pg-home-grid,
+  body[data-mscreen="playground"] .pg-law-grid,
+  body[data-mscreen="playground"] .pg-columns {
+    display: block;
+  }
+
+  body[data-mscreen="playground"] .pg-sticky-cta {
+    position: sticky;
+    bottom: 0;
+    z-index: 20;
+    padding: 12px var(--m-gutter, 18px) calc(12px + var(--m-tabbar, 60px) + env(safe-area-inset-bottom, 0px));
+    margin-left: calc(-1 * var(--m-gutter, 18px));
+    margin-right: calc(-1 * var(--m-gutter, 18px));
+    background: var(--pg-paper, var(--paper));
+  }
+
+  body[data-mscreen="playground"]:has(.pg-learn) .mobile-tabbar,
+  body[data-mscreen="playground"]:has(.pg-complete) .mobile-tabbar,
+  body[data-mscreen="playground"]:has(.pg-surface--fixed-dark) .mobile-tabbar,
+  body[data-mscreen="playground"]:has(.RolloverPlanner) .mobile-tabbar {
+    display: none;
+  }
+
+  body[data-mscreen="playground"]:has(.pg-learn) .PlaygroundShell,
+  body[data-mscreen="playground"]:has(.pg-complete) .PlaygroundShell,
+  body[data-mscreen="playground"]:has(.pg-surface--fixed-dark) .PlaygroundShell,
+  body[data-mscreen="playground"]:has(.RolloverPlanner) .PlaygroundShell {
+    padding-bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+  }
+
+  body[data-mscreen="playground"]:has(.pg-learn) .pg-sticky-cta,
+  body[data-mscreen="playground"]:has(.pg-complete) .pg-sticky-cta,
+  body[data-mscreen="playground"]:has(.pg-surface--fixed-dark) .pg-sticky-cta,
+  body[data-mscreen="playground"]:has(.RolloverPlanner) .pg-sticky-cta {
+    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  }
+
+  body[data-mscreen="playground"] .pg-btn,
+  body[data-mscreen="playground"] .pg-back,
+  body[data-mscreen="playground"] .mobile-tab {
+    min-height: var(--pg-tap, 44px);
+  }
+
+  body[data-mscreen="playground"] .pg-learn {
+    padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* R7 closeout — D17 phone hit areas. Padding / min-size only. D113 track paint unchanged. */
+@media (max-width: 560px) {
+  .mobile-back {
+    min-width: 44px;
+  }
+
+  body[data-mscreen="today"] .dash-plan-day-btn,
+  body[data-mscreen="today"] .dash-avatar-link,
+  body[data-mscreen="today"] .rc-path-node.is-current .rc-path-cta,
+  .cal-m-nav-btn,
+  .cal-m-cell:not(.is-blank),
+  .search-cancel,
+  body[data-mscreen="search"] .search-form input,
+  .learn-mode-bar .mobile-icon-btn,
+  .settings-toggle {
+    min-height: 44px;
+    min-width: 44px;
+    box-sizing: border-box;
+  }
 }

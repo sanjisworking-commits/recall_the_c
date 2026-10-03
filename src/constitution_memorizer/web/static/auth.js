@@ -185,6 +185,10 @@
     var toggle = qs("[data-account-toggle]", root);
     var panel = qs("[data-account-panel]", root);
     if (!toggle || !panel) return;
+    function closeMenu() {
+      toggle.setAttribute("aria-expanded", "false");
+      panel.hidden = true;
+    }
     toggle.addEventListener("click", function () {
       var open = toggle.getAttribute("aria-expanded") === "true";
       toggle.setAttribute("aria-expanded", open ? "false" : "true");
@@ -192,9 +196,14 @@
     });
     document.addEventListener("click", function (ev) {
       if (!root.contains(ev.target)) {
-        toggle.setAttribute("aria-expanded", "false");
-        panel.hidden = true;
+        closeMenu();
       }
+    });
+    qsa("[data-account-close]", root).forEach(function (btn) {
+      btn.addEventListener("click", function (ev) {
+        ev.preventDefault();
+        closeMenu();
+      });
     });
   }
 

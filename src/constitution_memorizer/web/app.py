@@ -138,6 +138,7 @@ from constitution_memorizer.web.progress_stats import (
 )
 from constitution_memorizer.web.calendar_view import (
     build_calendar_month,
+    build_calendar_week,
     build_revisions_view,
 )
 from constitution_memorizer.web.completion import (
@@ -191,6 +192,8 @@ from constitution_memorizer.web.judicial_evolution import (
 from constitution_memorizer.web.act_info import build_act_info
 from constitution_memorizer.web.bare_acts import get_bare_act
 from constitution_memorizer.web.law_catalog import load_catalog
+from constitution_memorizer.web.guest_bareact_head import ndps_guest_head
+from constitution_memorizer.web.guest_laws_index import GUEST_LAWS_CARDS, GUEST_LAWS_CHIPS
 from constitution_memorizer.web.laws_data import get_law
 from constitution_memorizer.web.memory_calendar import build_memory_month, schedule_chip_states
 from constitution_memorizer.web.progress_stats import progress_dashboard
@@ -200,9 +203,11 @@ from constitution_memorizer.web.seo import (
     DEFAULT_SEO_TITLE,
     TWITTER_HANDLE,
     article_canonical_url,
+    apply_private_robots_headers,
     build_article_seo,
     build_breadcrumb_schema,
     build_law_seo,
+    build_laws_hub_seo,
     build_provision_seo,
     build_schedule_seo,
     is_noindex_path,
@@ -216,6 +221,7 @@ from constitution_memorizer.web.sitemaps import (
     build_law_sitemap,
     build_laws_hub_sitemap,
     build_sitemap_index,
+    parse_law_sitemap_ref,
 )
 from constitution_memorizer.web.service import (
     LEARN_MODE_LABELS,
@@ -545,6 +551,9 @@ def create_app(
                 "memory_log_enabled": memory_log_enabled,
                 "relevant_laws_enabled": relevant_laws_enabled,
                 "pricing_enabled": bool(settings.pricing_enabled),
+                "playground_enabled": bool(
+                    getattr(settings, "playground_enabled", True)
+                ),
                 # Cosmetic nav hint only (~60s TTL cache); /admin itself
                 # re-checks the authoritative role store on every request.
                 "is_admin_hint": admin_hint(request),
@@ -601,11 +610,26 @@ def create_app(
     app.state.relevant_laws_enabled = relevant_laws_enabled
     app.state.article_entitlements_enabled = bool(settings.article_entitlements_enabled)
     app.state.pricing_enabled = bool(settings.pricing_enabled)
+    app.state.playground_enabled = bool(getattr(settings, "playground_enabled", True))
+    app.state.templates = templates
+    from constitution_memorizer.admin.playground_diagnostics import (  # noqa: PLC0415
+        log_commercial_startup_status,
+    )
+
+    log_commercial_startup_status(settings, logger)
     # Razorpay Standard Checkout. The secret stays on app.state for
     # server-side order creation + HMAC verification only — no template or
     # JSON payload ever reads it.
     app.state.razorpay_key_id = str(settings.razorpay_key_id or "")
     app.state.razorpay_key_secret = str(settings.razorpay_key_secret or "")
+    from constitution_memorizer.subscriptions.webhook_signature import (  # noqa: PLC0415
+        WebhookSecrets,
+    )
+
+    app.state.webhook_secrets = WebhookSecrets(
+        current=str(settings.razorpay_webhook_secret or ""),
+        previous=str(settings.razorpay_webhook_secret_previous or ""),
+    )
     app.state.use_postgres_progress = use_postgres
     app.state.oauth_states = {}
     app.state.otp_limiter = OtpRateLimiter()
@@ -731,6 +755,183 @@ def create_app(
     app.state.admin_enabled = bool(settings.admin_enabled)
     app.state.admin_hint_cache = AdminHintCache()
 
+    # Playground overlay shares the pool other stores already opened. Do not
+    # call _ensure_pool() here: tests inject every Postgres repo so that
+    # create_app leaves db_pool None.
+    if db_pool is not None:
+        from constitution_memorizer.playground.postgres import (  # noqa: PLC0415
+            PostgresPlaygroundRepository,
+        )
+
+        app.state.playground = PostgresPlaygroundRepository(db_pool)
+        from constitution_memorizer.playground.roster.postgres import (  # noqa: PLC0415
+            PostgresRosterRepository,
+        )
+        from constitution_memorizer.playground.roster.service import (  # noqa: PLC0415
+            RosterService,
+        )
+
+        app.state.roster = RosterService(PostgresRosterRepository(db_pool))
+    else:
+        from constitution_memorizer.playground.db import (  # noqa: PLC0415
+            ensure_sqlite_schema,
+        )
+        from constitution_memorizer.playground.repository import (  # noqa: PLC0415
+            SqlitePlaygroundRepository,
+        )
+
+        from constitution_memorizer.playground.roster.db import (  # noqa: PLC0415
+            ensure_sqlite_schema as ensure_roster_sqlite_schema,
+        )
+        from constitution_memorizer.playground.roster.repository import (  # noqa: PLC0415
+            SqliteRosterRepository,
+        )
+        from constitution_memorizer.playground.roster.service import (  # noqa: PLC0415
+            RosterService,
+        )
+
+        conn = getattr(engine.repo, "conn", None)
+        if conn is not None and not use_postgres:
+            ensure_sqlite_schema(conn)
+            ensure_roster_sqlite_schema(conn)
+            app.state.playground = SqlitePlaygroundRepository(conn)
+            app.state.roster = RosterService(SqliteRosterRepository(conn))
+        else:
+            app.state.playground = None
+            app.state.roster = None
+
+    if db_pool is not None:
+        from constitution_memorizer.subscriptions.postgres import (  # noqa: PLC0415
+            PostgresSubscriptionRepository,
+        )
+
+        app.state.subscriptions = PostgresSubscriptionRepository(db_pool)
+    else:
+        from constitution_memorizer.subscriptions.db import (  # noqa: PLC0415
+            ensure_sqlite_schema as ensure_subscription_sqlite_schema,
+        )
+        from constitution_memorizer.subscriptions.repository import (  # noqa: PLC0415
+            SqliteSubscriptionRepository,
+        )
+
+        conn = getattr(engine.repo, "conn", None)
+        if conn is not None and not use_postgres:
+            ensure_subscription_sqlite_schema(conn)
+            app.state.subscriptions = SqliteSubscriptionRepository(conn)
+        else:
+            app.state.subscriptions = None
+
+    app.state.subscription_service = None
+    if app.state.subscriptions is not None:
+        from constitution_memorizer.subscriptions.config import (  # noqa: PLC0415
+            plan_ids_from_settings,
+        )
+        from constitution_memorizer.subscriptions.razorpay import (  # noqa: PLC0415
+            RazorpaySubscriptionsClient,
+        )
+        from constitution_memorizer.subscriptions.service import (  # noqa: PLC0415
+            SubscriptionService,
+        )
+
+        app.state.subscription_service = SubscriptionService(
+            app.state.subscriptions,
+            RazorpaySubscriptionsClient(
+                app.state.razorpay_key_id,
+                app.state.razorpay_key_secret,
+            ),
+            plan_ids_from_settings(settings),
+            public_key_id=app.state.razorpay_key_id,
+        )
+
+    app.state.webhook_events = None
+    app.state.webhook_processor = None
+    app.state.subscription_charges = None
+    if db_pool is not None:
+        from constitution_memorizer.subscriptions.charge_postgres import (  # noqa: PLC0415
+            PostgresChargeRepository,
+        )
+        from constitution_memorizer.subscriptions.webhook_postgres import (  # noqa: PLC0415
+            PostgresWebhookEventRepository,
+        )
+
+        app.state.webhook_events = PostgresWebhookEventRepository(db_pool)
+        app.state.subscription_charges = PostgresChargeRepository(db_pool)
+    else:
+        from constitution_memorizer.subscriptions.charge_repository import (  # noqa: PLC0415
+            SqliteChargeRepository,
+        )
+        from constitution_memorizer.subscriptions.webhook_repository import (  # noqa: PLC0415
+            SqliteWebhookEventRepository,
+        )
+
+        conn = getattr(engine.repo, "conn", None)
+        if conn is not None and not use_postgres and app.state.subscriptions is not None:
+            app.state.webhook_events = SqliteWebhookEventRepository(conn)
+            app.state.subscription_charges = SqliteChargeRepository(conn)
+
+    if (
+        app.state.webhook_events is not None
+        and app.state.subscription_service is not None
+    ):
+        from constitution_memorizer.subscriptions.webhooks import (  # noqa: PLC0415
+            WebhookProcessor,
+        )
+
+        app.state.webhook_processor = WebhookProcessor(
+            events=app.state.webhook_events,
+            subscriptions=app.state.subscriptions,
+            service=app.state.subscription_service,
+            secrets=app.state.webhook_secrets,
+            charges=app.state.subscription_charges,
+        )
+
+    from constitution_memorizer.entitlements.service import (  # noqa: PLC0415
+        EntitlementService,
+    )
+
+    legacy_store = engine.repo if hasattr(engine.repo, "list_payment_access_grants") else None
+    app.state.entitlement_service = EntitlementService(
+        subscriptions=getattr(app.state, "subscriptions", None),
+        charges=getattr(app.state, "subscription_charges", None),
+        access_store=getattr(app.state, "access_store", None),
+        legacy_store=legacy_store,
+    )
+
+    device_repo = None
+    if db_pool is not None:
+        from constitution_memorizer.devices.postgres import (  # noqa: PLC0415
+            PostgresDeviceRepository,
+        )
+
+        device_repo = PostgresDeviceRepository(db_pool)
+    else:
+        from constitution_memorizer.devices.db import (  # noqa: PLC0415
+            ensure_sqlite_schema as ensure_device_sqlite_schema,
+        )
+        from constitution_memorizer.devices.repository import (  # noqa: PLC0415
+            SqliteDeviceRepository,
+        )
+
+        conn = getattr(engine.repo, "conn", None)
+        if conn is not None and not use_postgres:
+            ensure_device_sqlite_schema(conn)
+            device_repo = SqliteDeviceRepository(conn)
+
+    app.state.device_service = None
+    if device_repo is not None:
+        from constitution_memorizer.devices.service import (  # noqa: PLC0415
+            DeviceService,
+        )
+        from constitution_memorizer.devices.token import (  # noqa: PLC0415
+            resolve_hmac_secret,
+        )
+
+        app.state.device_service = DeviceService(
+            device_repo,
+            hmac_secret=resolve_hmac_secret(settings),
+            device_limit=getattr(settings, "playground_device_limit", 2),
+        )
+
     app.state.db_pool = db_pool
 
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
@@ -738,7 +939,7 @@ def create_app(
 
     @app.middleware("http")
     async def feature_flag_gate(request: Request, call_next):
-        """404 disabled Memory/Laws prefixes before auth can redirect guests."""
+        """404 disabled Memory/Laws/Playground prefixes before auth can redirect guests."""
         path = request.url.path
         if not app.state.memory_log_enabled and (
             path == "/memory" or path.startswith("/memory/")
@@ -748,7 +949,23 @@ def create_app(
             path == "/laws" or path.startswith("/laws/")
         ):
             return HTMLResponse("Not Found", status_code=404)
+        if not getattr(app.state, "playground_enabled", True) and (
+            path == "/playground" or path.startswith("/playground/")
+        ):
+            from constitution_memorizer.playground.errors import (  # noqa: PLC0415
+                playground_error_response,
+            )
+
+            return playground_error_response(request, 404, unavailable=True)
         return await call_next(request)
+
+    @app.middleware("http")
+    async def playground_html_errors(request: Request, call_next):
+        from constitution_memorizer.playground.errors import (  # noqa: PLC0415
+            playground_error_middleware,
+        )
+
+        return await playground_error_middleware(request, call_next)
 
     @app.middleware("http")
     async def request_timing(request: Request, call_next):
@@ -809,11 +1026,35 @@ def create_app(
             if token is not None:
                 reset_request_timings(token)
 
+    @app.middleware("http")
+    async def private_robots_headers(request: Request, call_next):
+        """X-Robots-Tag on private non-HTML responses. HTML uses the meta tag."""
+        response = await call_next(request)
+        return apply_private_robots_headers(request.url.path, response)
+
     app.include_router(create_auth_router(templates))
+    from constitution_memorizer.devices.routes import (  # noqa: PLC0415
+        create_device_router,
+    )
+
+    app.include_router(create_device_router(templates))
     app.include_router(create_admin_router(templates))
 
     from constitution_memorizer.calendar_sync.routes import router as gcal_router
+    from constitution_memorizer.playground.routes import (  # noqa: PLC0415
+        create_playground_router,
+    )
     from constitution_memorizer.speech.routes import router as speech_router
+    from constitution_memorizer.subscriptions.routes import (  # noqa: PLC0415
+        create_subscription_router,
+    )
+    from constitution_memorizer.subscriptions.webhook_routes import (  # noqa: PLC0415
+        create_webhook_router,
+    )
+
+    app.include_router(create_playground_router(templates))
+    app.include_router(create_subscription_router(templates))
+    app.include_router(create_webhook_router())
 
     app.include_router(gcal_router)
     app.include_router(speech_router)
@@ -908,8 +1149,12 @@ def create_app(
 
     @app.get("/sitemap-laws-{slug}.xml")
     async def sitemap_law_xml(slug: str) -> Response:
-        """One registered Bare Act's urlset, built from the manifest only."""
-        xml = build_law_sitemap(slug)
+        """One registered Bare Act urlset (or one chunk), from the manifest only."""
+        parsed = parse_law_sitemap_ref(slug)
+        if parsed is None:
+            raise HTTPException(status_code=404, detail="Sitemap not found")
+        law_slug, chunk = parsed
+        xml = build_law_sitemap(law_slug, chunk=chunk)
         if xml is None:
             raise HTTPException(status_code=404, detail="Sitemap not found")
         return Response(xml, media_type="application/xml")
@@ -1065,7 +1310,7 @@ def create_app(
             # roundtrip per sibling.
             eng.bootstrap_request(
                 include_modes=True,
-                include_account=entitlements_active(request),
+                include_account=False,
             )
 
         # Every hop inside a session has to keep carrying it, so redirects
@@ -2534,6 +2779,8 @@ def create_app(
         request: Request,
         year: int | None = Query(default=None),
         month: int | None = Query(default=None),
+        view: str | None = Query(default=None),
+        week_date: str | None = Query(default=None, alias="date"),
     ) -> HTMLResponse:
         eng = _engine()
         is_guest = bool(
@@ -2543,8 +2790,24 @@ def create_app(
         if not is_guest:
             eng.bootstrap_request(include_account=entitlements_active(request))
         today = user_today(eng)
-        y = year if year is not None else today.year
-        m = month if month is not None else today.month
+        calendar_view = "week" if (view or "").strip().lower() == "week" else "month"
+        week_anchor = today
+        if calendar_view == "week":
+            raw = (week_date or "").strip()
+            if raw:
+                try:
+                    week_anchor = date.fromisoformat(raw)
+                except ValueError as exc:
+                    raise HTTPException(
+                        status_code=400, detail="Invalid date"
+                    ) from exc
+                if week_anchor.year < 1 or week_anchor.year > 9999:
+                    raise HTTPException(status_code=400, detail="Invalid date")
+            y = week_anchor.year
+            m = week_anchor.month
+        else:
+            y = year if year is not None else today.year
+            m = month if month is not None else today.month
         if m < 1 or m > 12 or y < 1 or y > 9999:
             raise HTTPException(status_code=400, detail="Invalid year or month")
         if not is_guest:
@@ -2572,13 +2835,67 @@ def create_app(
                 )
             _sync_auto_roadmap(request, eng, force=False)
         started = time.perf_counter()
-        view = build_calendar_month(
+        view_model = build_calendar_month(
             eng,
             year=y,
             month=m,
             today=today,
             auto_entitled=can_use_auto_plan(request),
         )
+        week_model = None
+        if calendar_view == "week":
+            week_model = build_calendar_week(
+                eng,
+                week_of=week_anchor,
+                today=today,
+                auto_entitled=can_use_auto_plan(request),
+            )
+        if not is_guest:
+            try:
+                from constitution_memorizer.playground.access import playground_view_access
+                from constitution_memorizer.playground.schedule import (
+                    attach_playground_calendar_chips,
+                    playground_calendar_chips,
+                )
+                from constitution_memorizer.playground.http import playground_user_id
+                from constitution_memorizer.playground.roster.period import (
+                    playground_today as playground_study_today,
+                )
+
+                overlay = getattr(app.state, "playground", None)
+                roster = getattr(app.state, "roster", None)
+                uid = playground_user_id(request)
+                access = playground_view_access(request)
+                if (
+                    overlay is not None
+                    and roster is not None
+                    and uid is not None
+                    and access.can_open
+                ):
+                    if week_model is not None:
+                        chip_start, chip_end = week_model.start, week_model.end
+                    else:
+                        chip_start = date(y, m, 1)
+                        chip_end = (
+                            date(y + 1, 1, 1) - timedelta(days=1)
+                            if m == 12
+                            else date(y, m + 1, 1) - timedelta(days=1)
+                        )
+                    extra = playground_calendar_chips(
+                        overlay,
+                        roster,
+                        uid,
+                        month_start=chip_start,
+                        month_end=chip_end,
+                        today=playground_study_today(),
+                    )
+                    attach_playground_calendar_chips(view_model, extra)
+                    if week_model is not None:
+                        attach_playground_calendar_chips(week_model, extra)
+            except Exception as error:  # noqa: BLE001 — T32 missing-schema only
+                if not _is_missing_optional_schema(error):
+                    raise
+                logger.warning("playground calendar chips skipped; schema missing")
         # The phone shows this month's data as a week strip + today + ladder
         # (design 19); only meaningful for the current month.
         revisions = (
@@ -2602,7 +2919,13 @@ def create_app(
         response = templates.TemplateResponse(
             request,
             "calendar.html",
-            {"calendar": view, "revisions": revisions, "pace_label": pace},
+            {
+                "calendar": view_model,
+                "week": week_model,
+                "calendar_view": calendar_view,
+                "revisions": revisions,
+                "pace_label": pace,
+            },
         )
         record_request_timing("template", started)
         return response
@@ -2713,6 +3036,14 @@ def create_app(
     )
     async def laws_page(request: Request) -> HTMLResponse:
         catalog = load_catalog()
+        from constitution_memorizer.playground.access import (  # noqa: PLC0415
+            public_law_states,
+        )
+        from constitution_memorizer.playground.eligibility import (  # noqa: PLC0415
+            list_playground_eligible_laws,
+        )
+
+        seo_title, seo_description = build_laws_hub_seo()
         context = {
             "catalog": catalog,
             "laws": catalog.laws,
@@ -2721,9 +3052,16 @@ def create_app(
             "initial_subject": request.query_params.get("subject") or "",
             # Query variants (?q=, ?subject=) are filtered views of the same hub,
             # so they all declare the bare /laws URL as canonical.
+            "seo_title": seo_title,
+            "seo_description": seo_description,
             "canonical_url": laws_hub_canonical_url(),
+            "playground_states": public_law_states(
+                request, list_playground_eligible_laws()
+            ),
             "initial_status": request.query_params.get("status") or "",
             "has_repealed": bool(catalog.repealed_laws),
+            "guest_screen3_laws": GUEST_LAWS_CARDS,
+            "guest_screen3_chips": GUEST_LAWS_CHIPS,
         }
         started = time.perf_counter()
         response = templates.TemplateResponse(request, "laws.html", context)
@@ -2739,6 +3077,16 @@ def create_app(
         # Articles, so it keeps the page it has always had.
         bare = get_bare_act(law_id)
         if bare is not None:
+            from constitution_memorizer.playground.access import (  # noqa: PLC0415
+                public_law_states,
+            )
+            from constitution_memorizer.playground.eligibility import (  # noqa: PLC0415
+                is_playground_eligible_law,
+            )
+
+            playground_state = None
+            if is_playground_eligible_law(bare.slug):
+                playground_state = public_law_states(request, (bare.slug,)).get(bare.slug)
             started = time.perf_counter()
             seo_title, seo_description = build_law_seo(
                 law_name=bare.title, meta_label=bare.meta_label
@@ -2767,6 +3115,14 @@ def create_app(
                     "seo_description": seo_description,
                     "canonical_url": law_canonical_url(bare.slug),
                     "structured_data_json": serialize_structured_data(breadcrumb),
+                    "playground_eligible": is_playground_eligible_law(bare.slug),
+                    "playground_state": playground_state,
+                    "in_playground": bool(
+                        playground_state and playground_state.active_this_period
+                    ),
+                    "guest_screen4": (
+                        ndps_guest_head() if bare.slug == "ndps" else None
+                    ),
                 },
             )
             record_request_timing("template", started)
@@ -2901,6 +3257,7 @@ def create_app(
         )
         record_request_timing("template", started)
         return response
+
 
     @app.get("/memory", response_class=HTMLResponse)
     async def memory_page(

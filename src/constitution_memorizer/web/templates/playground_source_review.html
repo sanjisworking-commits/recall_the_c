@@ -1,0 +1,60 @@
+{% extends "playground_base.html" %}
+{% from "partials/playground.html" import trust_mark, status_badge %}
+{% block title %}Source update · {{ title }}{% endblock %}
+{% block playground %}
+<section class="pg-workspace">
+  <p class="pg-eyebrow">Source review</p>
+  <h1>{{ title }}</h1>
+  {{ status_badge('updated', 'Law updated') }}
+  {{ trust_mark("Current Bare Act wording. Historical learning is not rewritten.") }}
+  {% if provenance %}
+  <p class="pg-lede">{% for line in provenance %}{{ line }}{% if not loop.last %} · {% endif %}{% endfor %}</p>
+  {% endif %}
+
+  {% if zero_affected %}
+  <p class="pg-lede">Source updated. Your learned provisions are unchanged.</p>
+  {% elif summary.affected_learned_count == 1 %}
+  <p class="pg-lede">1 learned provision changed since your recorded learning source.</p>
+  {% elif summary.affected_learned_count > 1 %}
+  <p class="pg-lede">{{ summary.affected_learned_count }} learned provisions changed since your recorded learning source.</p>
+  {% elif summary.affected_total %}
+  <p class="pg-lede">Selected provisions changed since your recorded learning source.</p>
+  {% endif %}
+
+  {% if all_reviewed %}
+  <p class="pg-note">All updates reviewed</p>
+  {% endif %}
+
+  {% if provisions %}
+  {% for item in provisions %}
+  <div class="pg-workspace-row">
+    <div>
+      <strong>{{ item.citation or ('§ ' ~ item.number) }}</strong>
+      <span>{{ item.current_title or item.citation or ('Section ' + item.number) }}</span>
+      <p>
+        {% if item.lifecycle_status == 'mastered' %}{{ status_badge('mastered', 'Mastered') }}
+        {% elif item.lifecycle_status == 'learned' %}{{ status_badge('learned', 'Learned') }}
+        {% elif item.lifecycle_status == 'review' %}{{ status_badge('learned', 'Learned') }}
+        {% endif %}
+        {% if item.interval_days %}
+        <span class="pg-methods-count">Day {{ item.interval_days }}</span>
+        {% endif %}
+        {{ status_badge('updated', change_copy(item.change_kind)) }}
+        {% if item.status == 'reviewed' %}
+        <span class="pg-methods-count">Update reviewed</span>
+        {% endif %}
+      </p>
+    </div>
+    <a class="pg-btn pg-btn--ghost" href="{{ item.href }}">
+      {% if item.status == 'reviewed' %}Open{% else %}Review{% endif %}
+    </a>
+  </div>
+  {% endfor %}
+  {% endif %}
+
+  <p class="pg-actions">
+    <a class="pg-btn pg-btn--quiet" href="{{ workspace_href }}">← Law workspace</a>
+    <a class="pg-btn pg-btn--quiet" href="{{ read_href }}">Read current Act</a>
+  </p>
+</section>
+{% endblock %}

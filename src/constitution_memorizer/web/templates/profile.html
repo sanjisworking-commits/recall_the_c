@@ -8,7 +8,9 @@
   </div>
   <p class="eyebrow">Account</p>
   <h1 class="display">Profile</h1>
+  {% if not is_guest_profile|default(false) %}
   <p class="lede">Your account identity and sign-in method. Learning preferences live in Settings.</p>
+  {% endif %}
 
   {% if saved %}
   <div class="auth-banner is-ok" role="status">
@@ -17,24 +19,71 @@
   </div>
   {% endif %}
 
-  <article class="profile-card">
+  <div class="pg-profile-grid">
+  <div>
+  <article class="profile-card pg-profile-identity" data-profile-identity>
     {% set initials = (display_label[:1] if display_label else 'L')|upper %}
-    {% if user.avatar_url %}
+    {% if user and user.avatar_url %}
     <img class="dash-avatar" src="{{ user.avatar_url }}" alt="" width="56" height="56">
     {% else %}
     <span class="dash-avatar dash-avatar-fallback" aria-hidden="true">{{ initials }}</span>
     {% endif %}
-    <div>
+    <div class="pg-profile-identity-copy">
       <h2 class="profile-name">{{ display_label }}</h2>
-      <p class="muted">
-        {% if user.provider == 'google' %}Signed in with Google{% elif user.phone %}Signed in with phone{% else %}Signed in{% endif %}
-      </p>
-      {% if not edit_name %}
+      <p class="muted">{{ identity_meta|default('Signed in') }}</p>
+      {% if user and not edit_name %}
       <p><a class="link-btn" href="/profile?edit=name">Edit name</a></p>
       {% endif %}
     </div>
+    {% if is_guest_profile|default(false) %}
+    <a class="pg-btn" href="/login?next=/profile">Sign in</a>
+    {% endif %}
   </article>
+  {% if is_guest_profile|default(false) %}
+  <article class="pg-sub-card" data-guest-profile>
+    <p class="pg-lede">Sign in to save progress and unlock the Constitution learning experience.</p>
+    <p class="pg-actions"><a class="pg-btn pg-btn--ghost" href="/laws">Browse the Bare Acts →</a></p>
+  </article>
+  {% endif %}
 
+  {% if not is_guest_profile|default(false) %}
+  <p class="pg-eyebrow">Account</p>
+  <div class="pg-account-list" data-profile-account>
+    <a href="/profile">Profile<span class="pg-account-meta">{{ display_label }}</span></a>
+    <a href="/profile/security/devices">Devices<span class="pg-account-meta">{{ device_count_label }} ›</span></a>
+    <a href="/settings">Learning preferences<span class="pg-account-meta">Settings ›</span></a>
+  </div>
+  {% endif %}
+  </div>
+
+  {% if playground_subscription and playground_subscription.show %}
+  <div data-profile-subscription>
+    <p class="pg-eyebrow">Subscription</p>
+    <article class="pg-sub-card">
+      <div class="pg-sub-card-head">
+        <h2>{{ playground_subscription.title }}</h2>
+        {% if playground_subscription.chip %}
+        <span class="pg-sub-chip" data-chip="{{ playground_subscription.chip_kind }}">{{ playground_subscription.chip }}</span>
+        {% endif %}
+      </div>
+      {% if playground_subscription.body %}
+      <p class="pg-lede">{{ playground_subscription.body }}</p>
+      {% endif %}
+      {% if playground_subscription.stat_big %}
+      <p class="pg-sub-stat">
+        <span class="pg-sub-stat-big">{{ playground_subscription.stat_big }}</span>
+        <span>{{ playground_subscription.stat_label }}</span>
+      </p>
+      {% endif %}
+      {% if playground_subscription.cta_label %}
+      <a class="pg-btn pg-btn--ghost" href="{{ playground_subscription.cta_href }}">{{ playground_subscription.cta_label }}</a>
+      {% endif %}
+    </article>
+  </div>
+  {% endif %}
+  </div>
+
+  {% if user %}
   <form method="post" action="/profile" class="profile-form">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
     <input type="hidden" name="action" value="save">
@@ -76,43 +125,6 @@
     </div>
   </form>
 
-  {% if subscription %}
-  {# Subscription lifecycle (design 04) — dormant until billing exists. #}
-  <h2 class="section-title">Recall access</h2>
-  <div class="lifecycle-card is-{{ 'active' if subscription.state == 'active' else 'expiring' if subscription.state == 'expiring' else 'failed' if subscription.state == 'renewal_failed' else 'plain' }}">
-    <div class="lifecycle-head">
-      <p class="lifecycle-tag">
-        {%- if subscription.state == 'active' %}Active
-        {%- elif subscription.state == 'expiring' %}Expiring soon
-        {%- elif subscription.state == 'renewal_failed' %}Renewal failed
-        {%- elif subscription.state == 'cancelled' %}Cancelled
-        {%- else %}Lapsed{% endif -%}
-      </p>
-    </div>
-    {% if subscription.state == 'active' %}
-    <p class="lifecycle-title">Recall active · {{ subscription.plan_days }} days</p>
-    <p class="lifecycle-body">{% if subscription.recurring and subscription.renews_on %}Renews {{ subscription.renews_on }} at ₹{{ subscription.plan_price_inr }}.{% else %}Access until {{ subscription.ends_on }}.{% endif %} Every Article is open and everything you learn is saved.</p>
-    <div class="lifecycle-actions"><a class="btn btn-ghost" href="/pricing">Extend Recall</a><span class="lifecycle-aside">Your 3 Free Articles stay yours whatever happens to this pass.</span></div>
-    {% elif subscription.state == 'expiring' %}
-    <p class="lifecycle-title">{{ subscription.ends_on }} — your Recall pass ends soon</p>
-    <p class="lifecycle-body">It does not renew on its own. Your 3 Free Articles and all saved progress stay after it ends.</p>
-    <div class="lifecycle-actions"><a class="btn btn-accent" href="/pricing">Extend Recall →</a><span class="lifecycle-aside">Shown in the final 7 days only.</span></div>
-    {% elif subscription.state == 'renewal_failed' %}
-    <p class="lifecycle-title">We couldn't take this renewal</p>
-    <p class="lifecycle-body">The payment was declined. Recall stays open until {{ subscription.grace_until }} while you sort it out; nothing is paused before then.</p>
-    <div class="lifecycle-actions"><a class="btn btn-accent" href="/pricing">Update payment</a><span class="lifecycle-aside">Grace period: 7 days.</span></div>
-    {% elif subscription.state == 'cancelled' %}
-    <p class="lifecycle-title">Cancelled — active until {{ subscription.ends_on }}</p>
-    <p class="lifecycle-body">Nothing changes until then. On that date you return to Free with your saved Articles intact and the rest paused.</p>
-    <div class="lifecycle-actions"><a class="btn btn-ghost" href="/pricing">Resume renewal</a><span class="lifecycle-aside">No further charges.</span></div>
-    {% else %}
-    <p class="lifecycle-title">Back on Free · {{ access.claimed_count }} of 3 Articles</p>
-    <p class="lifecycle-body">Your saved Articles keep every clause, mode history and scheduled revision. Everything else is paused and waiting.</p>
-    <div class="lifecycle-actions"><a class="btn btn-accent" href="/pricing">Resume Recall →</a><span class="lifecycle-aside">Nothing was deleted.</span></div>
-    {% endif %}
-  </div>
-  {% endif %}
-
   {% if access and access.enabled and access.access_source in ('admin', 'admin_grant', 'promotion') %}
   {# Admin/grant access line (Admin Foundation design 10): real capability,
      no purchase — never worded as a subscription. Indefinite grants print
@@ -132,60 +144,15 @@
   </div>
   {% endif %}
 
-  {% if access and access.enabled and (access.is_free or (access.access_source in ('admin_grant', 'promotion') and access.claimed_count > 0)) %}
-  {# Free Articles — numbered slot rows (design 05): the empty slot is a row,
-     not an absence, so the remaining allowance is visible without arithmetic.
-     Grant holders keep seeing their claims: those survive the grant ending. #}
-  <div class="slots-head">
-    <h2 class="slots-title">Free Articles</h2>
-    {% if access.legacy_over_cap %}
-    <p class="slots-count">{{ access.claimed_count }} saved Articles · Legacy access</p>
-    {% else %}
-    <p class="slots-count">{{ access.claimed_count }} of 3 used</p>
-    {% endif %}
-  </div>
-
-  {% for slot in free_slots %}
-  <div class="slot-row">
-    <span class="slot-index">{{ '%02d' % loop.index }}</span>
-    <div class="slot-main">
-      <p class="slot-title"><a href="/browse/article/{{ slot.article }}">{{ slot.title }}</a></p>
-      {% if slot.meta %}<p class="slot-meta">{{ slot.meta }}</p>{% endif %}
-    </div>
-    <span class="slot-right">Permanent</span>
-  </div>
-  {% endfor %}
-  {% if access.is_free and not access.legacy_over_cap %}
-  {% for _ in range(access.free_slots_remaining) %}
-  <div class="slot-row is-empty">
-    <span class="slot-index">{{ '%02d' % (free_slots|length + loop.index) }}</span>
-    <div class="slot-main">
-      <p class="slot-title">Empty slot</p>
-      <p class="slot-meta">The next Article you finish and confirm takes this slot.</p>
-    </div>
-    <span class="slot-right">Available</span>
-  </div>
-  {% endfor %}
-  {% endif %}
-
-  <button type="button" class="slots-why" data-slots-why aria-expanded="false">Why can't I swap an Article? +</button>
-  <p class="slots-why-body" data-slots-why-body hidden>
-    A Free Article is permanent, not a rental. Its clauses, your mode history and
-    every scheduled revision are stored against it — swapping it out would mean
-    deleting that record. So a slot is spent when you press Done and confirm, and
-    it stays spent. Recall opens every Article without touching these three.
-  </p>
-
-  {% if pricing_enabled|default(false) and access.is_free and not access.legacy_over_cap %}
-  <div class="slots-foot">
-    <a class="btn btn-accent" href="/pricing">Unlock every Article →</a>
-    <span class="slots-foot-aside">Your three stay yours either way.</span>
-  </div>
-  {% endif %}
-  {% endif %}
-
   <p class="profile-settings-link">
     <a href="/settings">Learning preferences → Settings</a>
+  </p>
+
+  <h2 class="section-title">Security</h2>
+  <p class="slots-title">Your devices</p>
+  <p class="muted">Manage devices that can use Playground.</p>
+  <p class="profile-settings-link">
+    <a href="/profile/security/devices">Your devices</a>
   </p>
 
   <h2 class="section-title">Legal</h2>
@@ -222,8 +189,10 @@
       </button>
     </li>
   </ul>
+  {% endif %}
 </section>
 
+{% if user %}
 <dialog class="guest-modal" id="signout-modal" aria-labelledby="signout-title">
   <form method="post" action="/logout" class="guest-modal-card">
     <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
@@ -261,12 +230,7 @@
       <p class="rc-confirm-panel-head">Kept:</p>
       <ul class="rc-confirm-list">
         <li>Your account and sign-in</li>
-        {# Only true where the entitlement boundary is on. With it off there is
-           no access tier and nothing has been claimed, so the line would be
-           describing something the account does not have. #}
-        {% if access and access.enabled %}
-        <li>Your Recall access, and the Free Articles you have claimed</li>
-        {% endif %}
+        <li>Your account and subscription</li>
         <li>Your settings and your memory log</li>
       </ul>
     </div>
@@ -293,4 +257,5 @@
     </div>
   </form>
 </dialog>
+{% endif %}
 {% endblock %}

@@ -479,7 +479,7 @@ def _entitled_client(
     return client, repo, user_id
 
 
-def test_free_mix_respects_zero_remaining_slots_over_html(tmp_path: Path):
+def test_authenticated_mix_is_not_limited_to_claimed_articles(tmp_path: Path):
     units_path = _articles_catalog(tmp_path)
     client, repo, user_id = _entitled_client(tmp_path, units_path)
     for article in ("14", "15", "16"):
@@ -496,7 +496,8 @@ def test_free_mix_respects_zero_remaining_slots_over_html(tmp_path: Path):
         for item in session.items
         if eng.get_unit(item.learning_unit_id) is not None
     }
-    assert articles <= {"14", "15", "16"}
+    assert len(articles) == 5
+    assert articles - {"14", "15", "16"}
 
 
 def test_admin_mix_bypasses_free_article_slot_cap(tmp_path: Path):
@@ -519,7 +520,7 @@ def test_admin_mix_bypasses_free_article_slot_cap(tmp_path: Path):
     assert articles - {"14", "15", "16"}
 
 
-def test_free_cap_without_claimed_unseen_hides_plan_my_day(tmp_path: Path):
+def test_historical_claims_do_not_hide_plan_my_day(tmp_path: Path):
     units_path = _articles_catalog(tmp_path)
     client, repo, user_id = _entitled_client(tmp_path, units_path)
     for article in ("14", "15", "16"):
@@ -539,12 +540,18 @@ def test_free_cap_without_claimed_unseen_hides_plan_my_day(tmp_path: Path):
     eng._invalidate_progress_cache()
     page = client.get("/dashboard")
     assert page.status_code == 200
-    assert "Plan my day" not in page.text
     posted = client.post(
         "/learning/plan-my-day", data={"target": "3"}, follow_redirects=False
     )
     assert posted.status_code == 303
-    assert eng.study_session_for_day(kind="day_plan", plan_date=today) is None
+    session = eng.study_session_for_day(kind="day_plan", plan_date=today)
+    assert session is not None
+    articles = {
+        eng.get_unit(item.learning_unit_id).article_number
+        for item in session.items
+        if eng.get_unit(item.learning_unit_id) is not None
+    }
+    assert articles - {"14", "15", "16"}
 
 
 def test_admin_auto_start_spans_beyond_free_article_cap(tmp_path: Path):

@@ -1,15 +1,87 @@
 {% extends "base.html" %}
-{% block title %}Laws · {{ app_name|default('Recall the C') }}{% endblock %}
+{% block title %}{{ seo_title }}{% endblock %}
+{% block meta_description %}{{ seo_description }}{% endblock %}
 {% block mobile_screen %}laws{% endblock %}
 {% block content %}
+{% set path = request.url.path %}
+{% set guest_laws_index = multiuser_enabled|default(false) and not current_user and path == '/laws' %}
 {% set known_subjects = subjects | map(attribute='id') | list %}
 {% set active_status = 'repealed' if has_repealed and initial_status == 'repealed' else '' %}
 {# The strip is one row of mutually exclusive chips, so a status chip clears
    the subject and vice versa. #}
 {% set active_subject = '' if active_status else (initial_subject if initial_subject in known_subjects else '') %}
+{% if guest_laws_index %}
+{% set guest_chip_ids = guest_screen3_chips | map(attribute='id') | list %}
+{% set guest_active_status = 'repealed' if initial_status == 'repealed' else '' %}
+{% set guest_active_subject = '' if guest_active_status else (initial_subject if initial_subject in guest_chip_ids else '') %}
 <section
   class="panel laws"
   data-laws-index
+  data-guest-laws-desktop
+  data-initial-q="{{ initial_q|e }}"
+  data-initial-subject="{{ '' if guest_active_status else guest_active_subject|e }}"
+  data-initial-status="{{ guest_active_status|e }}"
+>
+  <a class="laws-back-link" href="/browse"><svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M12.2 4.2 6.4 10l5.8 5.8"></path></svg>Browse</a>
+  <div class="laws-index-hero">
+    <div class="laws-index-copy">
+      <p class="laws-index-kicker">Browse</p>
+      <h1 class="display laws-index-title">Laws</h1>
+      <p class="laws-index-lede">Bare Acts and statutes. Open a law, then add it or its sections to your Playground.</p>
+    </div>
+    <div class="laws-search" data-laws-search>
+      <label class="visually-hidden" for="laws-q-guest">Search laws</label>
+      <span class="laws-search-icon" aria-hidden="true">
+        <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8.5" cy="8.5" r="5.5"></circle><path d="M12.6 12.6 17 17"></path></svg>
+      </span>
+      <input
+        id="laws-q-guest"
+        class="laws-search-input"
+        type="search"
+        name="q"
+        value="{{ initial_q|e }}"
+        placeholder="Search laws"
+        autocomplete="off"
+        enterkeyhint="search"
+      >
+    </div>
+  </div>
+  <div class="laws-chip-strip" role="group" aria-label="Filter laws">
+    {% for chip in guest_screen3_chips %}
+    {% if chip.status %}
+    <button type="button" class="laws-chip is-status" data-laws-status="{{ chip.status }}" aria-pressed="{{ 'true' if guest_active_status == chip.status else 'false' }}">{{ chip.label }}</button>
+    {% else %}
+    <button type="button" class="laws-chip" data-laws-chip="{{ chip.id }}" aria-pressed="{{ 'true' if not guest_active_status and guest_active_subject == chip.id else 'false' }}">{{ chip.label }}</button>
+    {% endif %}
+    {% endfor %}
+  </div>
+  <div class="laws-catalog" data-laws-catalog role="list">
+    {% for law in guest_screen3_laws %}
+    <a
+      class="laws-index-card"
+      href="{{ law.href }}"
+      role="listitem"
+      data-law-id="{{ law.id }}"
+      data-subjects="{{ law.subjects | join(' ') }}"
+      data-status="{{ law.status }}"
+      data-search="{{ law.search_blob }}"
+    >
+      <span class="laws-index-head-row">
+        <span class="laws-index-tag">{{ law.tag_line }}</span>
+        <span class="laws-index-chevron" aria-hidden="true">›</span>
+      </span>
+      <span class="laws-index-name">{{ law.title }}</span>
+      <span class="laws-index-meta">{{ law.scope_label }}</span>
+    </a>
+    {% endfor %}
+  </div>
+  <p class="laws-empty" data-laws-empty hidden>No laws found</p>
+</section>
+{% endif %}
+<section
+  class="panel laws"
+  data-laws-index
+  {% if guest_laws_index %}data-laws-phone{% endif %}
   data-initial-q="{{ initial_q|e }}"
   {# Echoed raw, as before, and validated in JS; a status chip clears it. #}
   data-initial-subject="{{ '' if active_status else initial_subject|e }}"
@@ -56,7 +128,31 @@
   </div>
 
   <div class="laws-catalog" data-laws-catalog role="list">
+    {% from "partials/playground.html" import playground_cta %}
     {% for law in laws %}
+    {# Playground states are keyed by the Bare Act slug, not the catalogue id:
+       UAPA is "uapa-1967" here and "uapa" there. #}
+    {% set pg_state = playground_states.get(law.full_act_ref or law.id) if playground_states is defined else none %}
+    {% if pg_state %}
+    <article
+      class="laws-index-card"
+      role="listitem"
+      data-law-id="{{ law.id }}"
+      data-subjects="{{ law.subjects | join(' ') }}"
+      data-status="{{ law.status }}"
+      data-search="{{ law.search_blob }}"
+    >
+      <a class="laws-index-card-link" href="{{ law.href }}">
+        <span class="laws-index-head-row">
+          <span class="laws-index-tag">{{ law.tag_line }}{% if law.status_label %}<span class="laws-index-status">{{ law.status_label }}</span>{% endif %}</span>
+          <span class="laws-index-chevron" aria-hidden="true">›</span>
+        </span>
+        <span class="laws-index-name">{{ law.title }}</span>
+        <span class="laws-index-meta">{{ law.scope_label }}</span>
+      </a>
+      {{ playground_cta(pg_state) }}
+    </article>
+    {% else %}
     <a
       class="laws-index-card"
       href="{{ law.href }}"
@@ -73,6 +169,7 @@
       <span class="laws-index-name">{{ law.title }}</span>
       <span class="laws-index-meta">{{ law.scope_label }}</span>
     </a>
+    {% endif %}
     {% endfor %}
   </div>
   <p class="laws-empty" data-laws-empty hidden>No laws found</p>

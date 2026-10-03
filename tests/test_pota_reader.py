@@ -413,8 +413,10 @@ def test_the_status_shows_on_the_catalogue_and_the_act_page(tmp_path: Path):
 
 
 def test_current_acts_show_no_badge(tmp_path: Path):
+    from constitution_memorizer.playground.eligibility import list_playground_eligible_laws
+
     client, _ = _client(tmp_path)
-    for slug in ("ndps", "bns", "bnss"):
+    for slug in list_playground_eligible_laws():
         html = client.get(f"/laws/{slug}").text
         assert 'class="bareact-status"' not in html, slug
         assert "Repealed" not in html, slug

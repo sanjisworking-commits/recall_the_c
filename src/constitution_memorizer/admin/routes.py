@@ -30,7 +30,15 @@ from constitution_memorizer.admin.service import (
     moves_for,
 )
 from constitution_memorizer.admin.audit import AuditEntry
+from constitution_memorizer.admin.playground_diagnostics import (
+    collect_playground_diagnostics,
+    subscription_audit_states,
+)
 from constitution_memorizer.auth.dependencies import require_csrf
+from constitution_memorizer.subscriptions.errors import (
+    SubscriptionProviderError,
+    SubscriptionStateError,
+)
 from constitution_memorizer.web.entitlements import (
     PREVIEW_COOKIE,
     PREVIEW_STATES,
@@ -163,9 +171,9 @@ def _access_facts(user_row) -> tuple[str, str, str]:
             + user_row.grant_source,
         )
     return (
-        f"Free · {user_row.claimed_count}/3 claimed",
+        f"Signed-in · {user_row.claimed_count} historical claim rows",
         "muted",
-        "level=free · is_subscribed=false · access_source=free",
+        "constitution=full · playground=unsubscribed · access_source=account",
     )
 
 
@@ -333,20 +341,25 @@ def create_admin_router(templates: Jinja2Templates) -> APIRouter:
             if grant.ends_at is not None:
                 ends = f"{grant.ends_at.day} {grant.ends_at:%B %Y}"
                 note = (
-                    f"Manual grant, no payment record. Access ends on {ends}; "
-                    "claimed Free Articles survive it."
+                    f"Historical access_grants row, no Playground purchase. "
+                    f"Visible until {ends}. Does not set Plus/Pro/Max, roster "
+                    "capacity, or device allowance. Signed-in Constitution "
+                    "Learn is already full."
                 )
             else:
                 note = (
-                    "Manual grant, no payment record. Access ends only when "
-                    "revoked; claimed Free Articles survive it."
+                    "Historical access_grants row, no Playground purchase. "
+                    "Does not set Plus/Pro/Max, roster capacity, or device "
+                    "allowance. Signed-in Constitution Learn is already full."
                 )
         else:
-            headline, color = "Free", "muted"
+            headline, color = "Signed-in · no Playground subscription", "muted"
             facts = "level=free · is_subscribed=false · access_source=free"
             note = (
-                "Normal Free rules: three permanent Articles, Type and Recite "
-                "locked on unclaimed Articles once the cap is reached."
+                "Signed-in Constitution Learn is full (all Articles, all six "
+                "modes) regardless of claims or ARTICLE_ENTITLEMENTS_ENABLED. "
+                "Playground requires a current Plus/Pro/Max user_subscription. "
+                "Historical grants and N-day purchases do not set a Playground tier."
             )
 
         # Claimed Free Articles + progress figures (read-only).
@@ -406,6 +419,16 @@ def create_admin_router(templates: Jinja2Templates) -> APIRouter:
             )
 
         audit = _audit_display(repo.list_audit(uid, limit=50))
+        period_start = None
+        raw_period = (request.query_params.get("period") or "").strip()
+        if raw_period:
+            try:
+                period_start = date.fromisoformat(raw_period)
+            except ValueError:
+                period_start = None
+        playground = collect_playground_diagnostics(
+            request, uid, period_start=period_start
+        )
         return templates.TemplateResponse(
             request,
             "admin/user_detail.html",
@@ -427,6 +450,7 @@ def create_admin_router(templates: Jinja2Templates) -> APIRouter:
                 grants=grant_rows,
                 audit=audit,
                 grant_sources=GRANT_SOURCES,
+                playground=playground,
             ),
         )
 
@@ -506,6 +530,153 @@ def create_admin_router(templates: Jinja2Templates) -> APIRouter:
         )
         return RedirectResponse(
             url=f"/admin/users/{grant.user_id}?notice={notice}", status_code=303
+        )
+
+    @router.post(
+        "/users/{user_id}/devices/reset",
+        dependencies=[Depends(require_csrf)],
+    )
+    async def admin_reset_devices(
+        request: Request,
+        user_id: str,
+        reason: str = Form(default=""),
+    ) -> RedirectResponse:
+        repo = _repo(request)
+        try:
+            uid = UUID(user_id)
+        except ValueError:
+            raise HTTPException(status_code=404, detail="Not Found")
+        if repo.get_user_overview(uid) is None:
+            raise HTTPException(status_code=404, detail="Not Found")
+        reason = reason.strip()
+        if not reason:
+            raise HTTPException(status_code=400, detail="Reason is required")
+        devices = getattr(request.app.state, "device_service", None)
+        if devices is None:
+            raise HTTPException(status_code=503, detail="Device registry unavailable")
+        admin_user = request.state.current_user
+        devices.reset_devices_audited(
+            uid,
+            admin_user_id=admin_user.id,
+            reason=reason,
+        )
+        notice = (
+            "Device registry reset · audit row reset_devices written in the "
+            "same transaction. Playground must re-register; Constitution "
+            "account sessions were not terminated."
+        )
+        return RedirectResponse(
+            url=f"/admin/users/{user_id}?notice={notice}", status_code=303
+        )
+
+    @router.post(
+        "/users/{user_id}/devices/clear-replacement-limit",
+        dependencies=[Depends(require_csrf)],
+    )
+    async def admin_clear_device_replacement_limit(
+        request: Request,
+        user_id: str,
+        reason: str = Form(default=""),
+    ) -> RedirectResponse:
+        repo = _repo(request)
+        try:
+            uid = UUID(user_id)
+        except ValueError:
+            raise HTTPException(status_code=404, detail="Not Found")
+        if repo.get_user_overview(uid) is None:
+            raise HTTPException(status_code=404, detail="Not Found")
+        reason = reason.strip()
+        if not reason:
+            raise HTTPException(status_code=400, detail="Reason is required")
+        devices = getattr(request.app.state, "device_service", None)
+        if devices is None:
+            raise HTTPException(status_code=503, detail="Device registry unavailable")
+        admin_user = request.state.current_user
+        devices.clear_device_replacement_limit_audited(
+            uid,
+            admin_user_id=admin_user.id,
+            reason=reason,
+        )
+        notice = (
+            "Device replacement lock cleared · audit row "
+            "clear_device_replacement_limit written in the same transaction. "
+            "Registered devices were not changed."
+        )
+        return RedirectResponse(
+            url=f"/admin/users/{user_id}?notice={notice}", status_code=303
+        )
+
+    @router.post(
+        "/users/{user_id}/subscription/reconcile",
+        dependencies=[Depends(require_csrf)],
+    )
+    async def admin_reconcile_subscription(
+        request: Request,
+        user_id: str,
+        reason: str = Form(default=""),
+    ) -> RedirectResponse:
+        repo = _repo(request)
+        try:
+            uid = UUID(user_id)
+        except ValueError:
+            raise HTTPException(status_code=404, detail="Not Found")
+        if repo.get_user_overview(uid) is None:
+            raise HTTPException(status_code=404, detail="Not Found")
+        reason = reason.strip()
+        if not reason:
+            raise HTTPException(status_code=400, detail="Reason is required")
+        service = getattr(request.app.state, "subscription_service", None)
+        if service is None:
+            raise HTTPException(
+                status_code=503, detail="Subscription service unavailable"
+            )
+        current = service.get_current(uid)
+        if current is None:
+            notice = (
+                "No current Playground subscription to reconcile. Local state "
+                "was not changed."
+            )
+            return RedirectResponse(
+                url=f"/admin/users/{user_id}?notice={notice}", status_code=303
+            )
+        before = subscription_audit_states(current)
+        try:
+            stored = service.reconcile_current(uid)
+        except SubscriptionProviderError:
+            notice = (
+                "Provider unavailable. Last known subscription data was kept. "
+                "No destructive downgrade."
+            )
+            return RedirectResponse(
+                url=f"/admin/users/{user_id}?notice={notice}", status_code=303
+            )
+        except SubscriptionStateError:
+            notice = (
+                "Cannot reconcile this subscription (missing provider id or "
+                "unmapped provider status). Local state was not changed."
+            )
+            return RedirectResponse(
+                url=f"/admin/users/{user_id}?notice={notice}", status_code=303
+            )
+        admin_user = request.state.current_user
+        repo.write_audit(
+            AuditEntry(
+                admin_user_id=str(admin_user.id),
+                action="reconcile_subscription",
+                target_user_id=str(uid),
+                target_type="user_subscription",
+                target_id=stored.id,
+                before_state=before,
+                after_state=subscription_audit_states(stored),
+                reason=reason,
+            )
+        )
+        notice = (
+            "Subscription reconciled from provider GET · audit row "
+            "reconcile_subscription written."
+        )
+        return RedirectResponse(
+            url=f"/admin/users/{user_id}?notice={notice}", status_code=303
         )
 
     # ------------------------------------------------------------------ #

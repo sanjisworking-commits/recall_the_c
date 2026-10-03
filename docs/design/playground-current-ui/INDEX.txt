@@ -1,0 +1,38 @@
+Playground current-UI screenshot pack
+=====================================
+Local SQLite demo (September 2026). NDPS Act used for the add / learn / roster walk.
+Use these as the as-is reference when redesigning Playground.
+
+Walk screens (desktop, page-only unless noted)
+----------------------------------------------
+00_home_empty.png            /playground — 0 laws this month (empty September)
+01_home_with_law.png         /playground — NDPS in this month (1 law, Continue)
+02_laws_catalogue.png        /laws — catalogue with Add to Playground / In Playground
+03_public_law_ndps.png       /laws/ndps — public Bare Act while IN Playground
+04_add_confirm_modal.png     /laws/ndps — first-add confirm sheet ("Add NDPS Act to September Playground?")
+05_section_selection.png     /playground/laws/ndps — Entire Act / section checkboxes
+06_law_workspace.png         /playground/laws/ndps — workspace after Section 1 selected
+07_learn_read.png            Learn · Read (six-mode strip + cards)
+08_learn_cloze.png           Learn · Cloze
+09_learn_letters.png         Learn · Letters
+10_learn_type.png            Learn · Type
+11_learn_recite.png          Learn · Recite
+12_learn_test.png            Learn · Test
+13_roster_manage.png         /playground/roster — Manage this month
+14_plan_next_month.png       /playground/roster/next — Keep / Remove / Undecided
+
+Extra states captured after the walk
+------------------------------------
+15_home_removed.png          /playground after Remove — "Removed this month" + Add back
+16_public_law_removed.png    /laws/ndps after Remove — REMOVED THIS MONTH + Add back
+17_add_back_modal.png        Add-back confirm sheet on the public law page
+18_remove_confirm.png        /playground/roster/ndps/remove — Remove from September
+19_add_back_page.png         /playground/laws/ndps/add — full-page add-back (no-JS sheet)
+
+Notes
+-----
+- 00 and 04 are cropped from the live walk (those states cannot be replayed after NDPS
+  was added). Other walk screens are clean 1440px page screenshots.
+- 15–19 are additional design states (remove / add-back) captured from the same local
+  server after the walk.
+- Same files are copied to Cursor artifacts as playground_ui_*.png for download.

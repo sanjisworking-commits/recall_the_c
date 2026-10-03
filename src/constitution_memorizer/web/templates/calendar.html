@@ -2,7 +2,7 @@
 {% block title %}{{ calendar.title }} · Calendar{% endblock %}
 {% block mobile_screen %}revisions{% endblock %}
 {% block content %}
-<section class="panel calendar">
+<section class="panel calendar{% if calendar_view|default('month') == 'week' %} is-week{% endif %}">
   {# Design 19: the desktop month grid does not survive 390 px, so the phone
      gets its own grid over the same calendar.days. Rendered for EVERY month —
      gating this on `revisions` (which is today-only) made the nav arrows lead
@@ -53,7 +53,9 @@
       <div class="cal-m-daylist" data-day-list="{{ day.iso }}" hidden>
         <p class="revisions-eyebrow">{{ day.long_label }} · {{ day.chips|length }} unit{{ 's' if day.chips|length != 1 }}</p>
         {% for chip in day.chips %}
-        {% if chip.unit_id %}
+        {% if chip.href %}
+        <a class="revisions-row is-{{ row_state.get(chip.kind, 'scheduled') }}" href="{{ chip.href }}">
+        {% elif chip.unit_id %}
         <a class="revisions-row is-{{ row_state.get(chip.kind, 'scheduled') }}" href="/learn/{{ chip.unit_id }}">
         {% else %}
         <div class="revisions-row is-{{ row_state.get(chip.kind, 'scheduled') }}">
@@ -67,11 +69,11 @@
             {% if chip.kind == 'new_planned' and chip.unit_id %}
             <span class="revisions-row-meta">New{% if pace_label %} · {{ pace_label }} plan{% endif %}</span>
             {% else %}
-            <span class="revisions-row-meta">{{ chip.title }}</span>
+            <span class="revisions-row-meta">{% if chip.category %}{{ chip.category }} · {% endif %}{{ chip.title }}</span>
             {% endif %}
           </span>
-          <span class="revisions-row-mark" aria-hidden="true">{% if chip.unit_id %}›{% endif %}</span>
-        {% if chip.unit_id %}</a>{% else %}</div>{% endif %}
+          <span class="revisions-row-mark" aria-hidden="true">{% if chip.href or chip.unit_id %}›{% endif %}</span>
+        {% if chip.href or chip.unit_id %}</a>{% else %}</div>{% endif %}
         {% endfor %}
       </div>
       {% endif %}
@@ -102,12 +104,39 @@
     </div>
     {% endif %}
 
-    <p class="revisions-note">Recall schedules revision for you — 1 → 3 → 7 → 15 → 30 → 60 days. With Google Calendar on in Settings, these land in your calendar too.</p>
+    <p class="revisions-note" data-calendar-gcal-footnote>Recall schedules revision for you — 1 → 3 → 7 → 15 → 30 → 60 days. With Google Calendar on in Settings, these land in your calendar too — Playground due work as the pending rung only.</p>
   </div>
 
   <div class="calendar-header">
-    <h1 class="display calendar-title">{{ calendar.title }}</h1>
-    <div class="calendar-nav" aria-label="Month navigation">
+    <h1 class="display calendar-title">{% if calendar_view|default('month') == 'week' and week %}{{ week.title }}{% else %}{{ calendar.title }}{% endif %}</h1>
+    <div class="calendar-nav" aria-label="Calendar navigation">
+      <div class="calendar-view-switch" role="radiogroup" aria-label="View">
+        <a
+          class="calendar-view-btn{% if calendar_view|default('month') != 'week' %} is-on{% endif %}"
+          role="radio"
+          aria-checked="{{ 'true' if calendar_view|default('month') != 'week' else 'false' }}"
+          href="/calendar?year={{ calendar.year }}&amp;month={{ calendar.month }}"
+        >Month</a>
+        <a
+          class="calendar-view-btn{% if calendar_view|default('month') == 'week' %} is-on{% endif %}"
+          role="radio"
+          aria-checked="{{ 'true' if calendar_view|default('month') == 'week' else 'false' }}"
+          href="/calendar?view=week&amp;date={{ (week.start if week else calendar.today).isoformat() }}"
+        >Week</a>
+      </div>
+      {% if calendar_view|default('month') == 'week' and week %}
+      <a
+        class="calendar-nav-btn"
+        href="/calendar?view=week&amp;date={{ week.prev_date.isoformat() }}"
+        aria-label="Previous week"
+      >←</a>
+      <a class="calendar-nav-today" href="/calendar?view=week&amp;date={{ calendar.today.isoformat() }}">Today</a>
+      <a
+        class="calendar-nav-btn"
+        href="/calendar?view=week&amp;date={{ week.next_date.isoformat() }}"
+        aria-label="Next week"
+      >→</a>
+      {% else %}
       <a
         class="calendar-nav-btn"
         href="/calendar?year={{ calendar.prev_year }}&amp;month={{ calendar.prev_month }}"
@@ -119,10 +148,11 @@
         href="/calendar?year={{ calendar.next_year }}&amp;month={{ calendar.next_month }}"
         aria-label="Next month"
       >→</a>
+      {% endif %}
     </div>
   </div>
 
-  <p class="calendar-summary">{{ calendar.summary }}</p>
+  <p class="calendar-summary">{% if calendar_view|default('month') == 'week' and week %}{{ week.summary }}{% else %}{{ calendar.summary }}{% endif %}</p>
 
   <div class="calendar-legend" aria-label="Legend">
     <span class="calendar-legend-item"><span class="calendar-swatch is-memorized" aria-hidden="true"></span>Memorized</span>
@@ -148,7 +178,13 @@
       >
         <div class="calendar-daynum">{{ day.day }}</div>
         {% for chip in day.chips %}
-        {% if chip.unit_id %}
+        {% if chip.href %}
+        <a
+          class="calendar-chip is-{{ chip.kind | replace('_', '-') }}{% if chip.category %} is-law-revision{% endif %}"
+          href="{{ chip.href }}"
+          title="{{ chip.title }}"
+        >{{ chip.label }}</a>
+        {% elif chip.unit_id %}
         <a
           class="calendar-chip is-{{ chip.kind | replace('_', '-') }}"
           href="/learn/{{ chip.unit_id }}"
@@ -165,5 +201,49 @@
       {% endif %}
     {% endfor %}
   </div>
+
+  {% if week %}
+  <div class="calendar-week" data-calendar-week role="grid" aria-label="{{ week.title }}">
+    <div class="calendar-week-head" role="row">
+      {% for day in week.days %}
+      <div class="calendar-week-dow{% if day.is_today %} is-today{% endif %}" role="columnheader">
+        <span class="calendar-week-dow-name">{{ week.weekdays[loop.index0] }}</span>
+        <span class="calendar-week-num">{{ day.day }}</span>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="calendar-week-body">
+      {% for day in week.days %}
+      <div
+        class="calendar-week-col{% if day.is_today %} is-today{% endif %}{% if day.is_past %} is-past{% endif %}{% if not day.week_events %} is-empty{% endif %}"
+        role="gridcell"
+        data-date="{{ day.iso }}"
+        aria-label="{{ day.long_label }}"
+      >
+        {% for card in day.week_events %}
+        {% if card.href %}
+        <a class="calendar-week-card is-{{ card.state }}" href="{{ card.href }}" data-week-state="{{ card.state }}">
+        {% else %}
+        <div class="calendar-week-card is-{{ card.state }}" data-week-state="{{ card.state }}">
+        {% endif %}
+          <span class="calendar-week-card-title">{{ card.title }}</span>
+          <span class="calendar-week-card-meta">{{ card.meta }}</span>
+        {% if card.href %}</a>{% else %}</div>{% endif %}
+        {% else %}
+        <span class="calendar-week-empty">Nothing due</span>
+        {% endfor %}
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  <div class="calendar-week-legend" aria-label="Week legend">
+    <span class="calendar-legend-item"><span class="calendar-swatch is-memorized" aria-hidden="true"></span>Memorized</span>
+    <span class="calendar-legend-item"><span class="calendar-swatch is-review-done" aria-hidden="true"></span>Review done</span>
+    <span class="calendar-legend-item"><span class="calendar-swatch is-due" aria-hidden="true"></span>Review due</span>
+    <span class="calendar-legend-item"><span class="calendar-swatch is-scheduled" aria-hidden="true"></span>Scheduled</span>
+    <span class="calendar-legend-item"><span class="calendar-swatch is-new-planned" aria-hidden="true"></span>New</span>
+    <span class="calendar-legend-item"><span class="calendar-swatch is-overdue" aria-hidden="true"></span>Overdue</span>
+  </div>
+  {% endif %}
 </section>
 {% endblock %}

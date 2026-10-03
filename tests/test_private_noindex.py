@@ -294,7 +294,7 @@ def guest_client(tmp_path: Path) -> TestClient:
         clear_settings_cache()
 
 
-@pytest.mark.parametrize("path", ["/calendar", "/admin", "/profile"])
+@pytest.mark.parametrize("path", ["/calendar", "/admin"])
 def test_guest_gated_pages_still_redirect_to_login(guest_client: TestClient, path: str):
     # Auth gating is unchanged by the noindex work: these still bounce to login.
     resp = guest_client.get(path, follow_redirects=False)
@@ -302,12 +302,13 @@ def test_guest_gated_pages_still_redirect_to_login(guest_client: TestClient, pat
     assert "/login" in resp.headers.get("location", "")
 
 
-@pytest.mark.parametrize("path", ["/dashboard", "/progress", "/settings"])
+@pytest.mark.parametrize("path", ["/dashboard", "/progress", "/settings", "/profile"])
 def test_guest_gate_pages_are_still_served_and_noindexed(
     guest_client: TestClient, path: str
 ):
     # These serve an inline guest gate (200) rather than redirecting; that
     # unchanged behavior must still be kept out of the index.
+    # D110: GET /profile is HTML 200 (guest card), not a login redirect.
     resp = guest_client.get(path, follow_redirects=False)
     assert resp.status_code == 200
     assert _has_noindex(resp.text), f"guest {path} gate missing noindex meta"

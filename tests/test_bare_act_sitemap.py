@@ -165,6 +165,8 @@ def test_manifest_urls_equal_canonical_helpers(client: TestClient):
             "/laws/ndps/schedule/psychotropic-substances",
             "https://recall-the-c.in/laws/ndps/schedule/psychotropic-substances",
         ),
+        ("/laws", "https://recall-the-c.in/laws"),
+        ("/laws/ndps", "https://recall-the-c.in/laws/ndps"),
     ],
 )
 def test_page_canonical_matches_sitemap_loc(
@@ -221,6 +223,9 @@ def test_manifest_is_fresh_against_source_bytes():
     for slug, spec in BARE_ACTS.items():
         entry = manifest[slug]
         assert entry["runtime_identity"] == runtime_cache_identity(spec)
+        assert entry["slug"] == slug
+        assert entry["source_version"] == spec.source_version
+        assert "last_modified" not in entry
         recorded = {s["filename"]: s["sha256"] for s in entry["sources"]}
         assert list(recorded) == [spec.filename, *spec.patch_filenames]
         for filename, digest in recorded.items():
@@ -262,3 +267,104 @@ def test_robots_declares_sitemap_and_allows_laws(client: TestClient):
     body = client.get("/robots.txt").text
     assert "Sitemap: https://recall-the-c.in/sitemap.xml" in body
     assert "Disallow: /laws" not in body
+
+
+def test_intra_law_chunking_splits_without_loss_or_dupes(monkeypatch):
+    load_law_sitemap_manifest.cache_clear()
+    monkeypatch.setattr(sitemaps, "SITEMAP_URL_CHUNK_SIZE", 2)
+    docs = sitemaps.law_sitemap_documents("ndps")
+    assert docs is not None
+    assert len(docs) > 1
+    combined: list[str] = []
+    for name, locs in docs:
+        assert name.startswith("sitemap-laws-ndps-")
+        assert name.endswith(".xml")
+        assert 1 <= len(locs) <= 2
+        combined.extend(locs)
+    expected = sitemaps.law_url_locs("ndps")
+    assert combined == expected
+    assert len(combined) == len(set(combined))
+    index = sitemaps.build_sitemap_index()
+    for name, _chunk_locs in docs:
+        assert f"{CANONICAL_ORIGIN}/{name}" in index
+    assert f"{CANONICAL_ORIGIN}/sitemap-laws-ndps.xml" not in index
+    assert sitemaps.build_law_sitemap("ndps") is None
+    assert sitemaps.parse_law_sitemap_ref("ndps") is None
+    assert sitemaps.parse_law_sitemap_ref("ndps-1") == ("ndps", 1)
+    assert sitemaps.parse_law_sitemap_ref("ndps-99999") is None
+    assert sitemaps.parse_law_sitemap_ref("../ndps") is None
+    first = sitemaps.build_law_sitemap("ndps", chunk=1)
+    assert first is not None
+    assert len(_locs(first)) <= 2
+    load_law_sitemap_manifest.cache_clear()
+
+
+def test_chunked_sitemap_http_roundtrip(client: TestClient, monkeypatch):
+    monkeypatch.setattr(sitemaps, "SITEMAP_URL_CHUNK_SIZE", 2)
+    load_law_sitemap_manifest.cache_clear()
+    index = client.get("/sitemap.xml")
+    assert index.status_code == 200
+    assert f"{CANONICAL_ORIGIN}/sitemap-laws-ndps-1.xml" in index.text
+    assert f"{CANONICAL_ORIGIN}/sitemap-laws-ndps.xml" not in index.text
+    first = client.get("/sitemap-laws-ndps-1.xml")
+    assert first.status_code == 200
+    assert len(_locs(first.text)) <= 2
+    missing = client.get("/sitemap-laws-ndps.xml")
+    assert missing.status_code == 404
+    load_law_sitemap_manifest.cache_clear()
+
+
+def test_unchunked_law_rejects_numbered_child(client: TestClient):
+    assert sitemaps.parse_law_sitemap_ref("ndps") == ("ndps", None)
+    resp = client.get("/sitemap-laws-ndps-1.xml")
+    assert resp.status_code == 404
+    unknown = client.get("/sitemap-laws-not-a-registered-law.xml")
+    assert unknown.status_code == 404
+
+
+def _builder_module():
+    import importlib.util
+
+    path = Path(__file__).resolve().parents[1] / "scripts" / "build_law_sitemap_manifest.py"
+    spec = importlib.util.spec_from_file_location("build_law_sitemap_manifest", path)
+    assert spec is not None and spec.loader is not None
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def test_builder_emits_explicit_slug_and_source_version():
+    """Offline builder is the only regenerator. Test-time hydration is allowed."""
+    from constitution_memorizer.web.bare_acts import get_bare_act
+
+    builder = _builder_module()
+    manifest = builder.build_manifest()
+    assert manifest["schema_version"] == builder.SCHEMA_VERSION == 2
+    assert set(manifest["laws"]) == set(BARE_ACTS)
+    for slug, spec in BARE_ACTS.items():
+        entry = manifest["laws"][slug]
+        act = get_bare_act(slug)
+        assert entry["slug"] == slug
+        assert entry["source_version"] == spec.source_version
+        assert entry["runtime_identity"] == runtime_cache_identity(spec)
+        assert entry["sections"] == [section.number for section in act.section_order]
+        assert entry["schedules"] == list(act.public_schedule_slugs)
+        assert "last_modified" not in entry
+        # Routable means navigable, not "is a table": main added list
+        # schedules (POTA's), which have a page without having columns.
+        unsupported = [
+            sched.slug for sched in act.schedules if not sched.is_navigable
+        ]
+        for schedule_slug in unsupported:
+            assert schedule_slug not in entry["schedules"]
+
+
+def test_committed_manifest_matches_builder_output():
+    builder = _builder_module()
+    assert builder._serialize(builder.build_manifest()) == (
+        Path(__file__).resolve().parents[1]
+        / "src"
+        / "constitution_memorizer"
+        / "web"
+        / "law_sitemap_manifest.json"
+    ).read_text(encoding="utf-8")

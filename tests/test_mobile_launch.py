@@ -77,16 +77,16 @@ def test_the_launch_screen_belongs_to_the_phone(tmp_path: Path):
     assert ".rc-launch{display:block" in phone
 
 
-def test_the_desktop_landing_is_untouched(tmp_path: Path):
+def test_the_desktop_landing_is_screen1(tmp_path: Path):
     html = _guest_client(tmp_path).get("/").text
-    assert 'class="rc-landing-full"' in html
-    # Its corridor, canvas and CTAs are all still there.
-    assert 'data-brain="1"' in html
-    assert 'id="arithmetic"' in html
-    assert 'data-stage="1"' in html
-    assert 'href="/browse"' in html
-    assert 'href="/login"' in html
-    assert "</footer>" in html
+    assert 'data-guest-landing="desktop"' in html
+    assert 'class="rc-desk"' in html
+    assert 'href="/browse">Explore the Constitution' in html
+    assert 'href="/laws">Explore Laws' in html
+    assert 'href="/login"' not in html
+    assert "<header" not in html
+    assert 'data-brain="1"' not in html
+    assert 'id="arithmetic"' not in html
 
 
 def test_the_launch_screen_is_not_a_first_run_state(tmp_path: Path):
@@ -113,4 +113,4 @@ def test_the_desktop_landing_still_boots_after_crossing_the_breakpoint(
 def test_landing_assets_are_cache_busted(tmp_path: Path):
     html = _guest_client(tmp_path).get("/").text
     assert "/static/landing.js?v=" in html
-    assert "/static/brain-path.js?v=" in html
+    assert "/static/styles.css?v=" in html

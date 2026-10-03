@@ -115,11 +115,10 @@
     The Constitution, Part by Part. Open an Article, then learn any clause from inside it.
   </p>
 
-  {% if access and access.enabled and is_guest|default(false) %}
+  {% if is_guest|default(false) %}
   <div class="guest-strip" data-guest-strip>
     <p>Reading as a guest. Sign in to save 3 Articles to Recall for free — progress, streaks and revision scheduling come with it.</p>
-    <a class="guest-strip-signin" href="/login?next=/browse">Sign in</a>
-    <button type="button" class="guest-strip-dismiss" data-guest-strip-dismiss aria-label="Dismiss">✕</button>
+    <a class="guest-strip-signin" href="/login" data-guest-gate>Sign in</a>
   </div>
   {% elif access and access.enabled and access.is_free %}
   {# diff.md item 4: one line of state and a bordered Unlock all, rather than
@@ -169,7 +168,7 @@
             data-browse-filter="{{ spec.key }}"
             aria-pressed="false">
       {{ mark_icon(spec.key, 15) }}
-      <span>{{ spec.legend_label }}</span>
+      <span>{{ 'News' if spec.key == 'news' else spec.legend_label }}</span>
       <span class="browse-legend-clear" aria-hidden="true">✕</span>
     </button>
     {% endfor %}
@@ -210,7 +209,7 @@
 
   {% for section in sections %}
   <section class="browse-part" aria-label="Part {{ section.part_number }}">
-    <div class="browse-part-header">
+    <div class="browse-part-header" data-browse-part-heading>
       <span class="browse-part-roman">Part {{ section.part_number }}</span>
       <span class="browse-part-name">{{ section.part_title }}</span>
       <span class="browse-part-range">Articles {{ section.article_range }}</span>

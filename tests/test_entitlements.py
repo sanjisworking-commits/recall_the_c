@@ -213,14 +213,21 @@ class _Req:
         self.state = type("RS", (), {"current_user": user})()
 
 
-def test_resolve_learn_access_free_claimed_vs_unclaimed() -> None:
+def test_resolve_learn_access_authenticated_ignores_claim_store() -> None:
     req = _Req(multiuser=True, user=object())
-    eng = _EngineWithClaims({"14", "19"})
-    claimed = ent.resolve_learn_access(req, eng, 14)
-    assert claimed.article_claimed is True and claimed.allowed_modes == ent.ALL_MODES
-    unclaimed = ent.resolve_learn_access(req, eng, 32)
-    assert unclaimed.article_claimed is False
-    assert unclaimed.should_prompt_claim is True  # slot still free (2 claimed)
+
+    class _ExplodingEngine:
+        def claimed_articles(self):  # pragma: no cover - must never be called
+            raise AssertionError("authenticated Learn must not read claims")
+
+    for article in (14, 32):
+        access = ent.resolve_learn_access(req, _ExplodingEngine(), article)
+        assert access.allowed_modes == ent.ALL_MODES
+        assert access.locked_modes == ()
+        assert access.can_persist_modes_seen is True
+        assert access.can_persist_done is True
+        assert access.should_prompt_claim is False
+        assert access.cap_reached is False
 
 
 def test_resolve_learn_access_guest_ignores_store() -> None:
@@ -232,15 +239,19 @@ def test_resolve_learn_access_guest_ignores_store() -> None:
 def test_access_summary_from_request_and_engine() -> None:
     req = _Req(multiuser=True, user=object())
     s = ent.access_summary(req, _EngineWithClaims({"21", "14"}))
-    assert s.level == ent.FREE
-    assert s.claimed_articles == ("14", "21")  # numeric sort
+    assert s.level == ent.SUBSCRIBED
+    assert s.is_subscribed is False
+    assert s.cap_reached is False
+    assert s.claimed_articles == ("14", "21")  # numeric sort, historical only
     assert s.claimed_count == 2
 
 
 def test_access_summary_engine_without_store_is_safe() -> None:
     req = _Req(multiuser=True, user=object())
     s = ent.access_summary(req, object())  # engine has no claimed_articles()
-    assert s.level == ent.FREE and s.claimed_count == 0
+    assert s.level == ent.SUBSCRIBED and s.claimed_count == 0
+    assert s.is_subscribed is False
+    assert s.cap_reached is False
 
 
 # --------------------------------------------------------------------------- #
@@ -380,28 +391,26 @@ def _authed_client(
     return client, repo
 
 
-def test_free_status_renders_on_dashboard_settings_profile(tmp_path: Path) -> None:
+def test_signed_in_status_does_not_show_three_article_cap(tmp_path: Path) -> None:
     client, repo = _authed_client(tmp_path)
     repo.claim_article(USER, "20")
 
     dash = client.get("/dashboard")
     assert dash.status_code == 200
-    assert "Free · 1/3 Articles" in dash.text
+    assert "Free · 1/3 Articles" not in dash.text
+    assert "Unlock every Article" not in dash.text
 
     settings = client.get("/settings")
     assert settings.status_code == 200
-    assert "Free · 1 of 3 Articles" in settings.text
-    assert "Manage in Profile" in settings.text
+    assert "Free · 1 of 3 Articles" not in settings.text
+    assert "Manage in Profile" not in settings.text
 
-    # Profile renders the numbered Free-Article slots (design 05): the empty
-    # slot is a row, not an absence, so the allowance is visible at a glance.
     profile = client.get("/profile")
     assert profile.status_code == 200
-    assert "Free Articles" in profile.text
-    assert "1 of 3 used" in profile.text
-    assert "/browse/article/20" in profile.text
-    assert profile.text.count("Empty slot") == 2
-    assert "Why can't I swap an Article?" in profile.text
+    assert "1 of 3 used" not in profile.text
+    assert "Why can't I swap an Article?" not in profile.text
+    # Historical claim rows remain; they are not an access privilege.
+    assert repo.claimed_articles(USER) == {"20"}
 
 
 def test_guest_sees_no_access_status(tmp_path: Path) -> None:
@@ -437,68 +446,45 @@ JSON_HEADERS = {"Accept": "application/json", "X-Requested-With": "XMLHttpReques
 ALL_MODES_FIELD = {"modes": ",".join(LEARN_MODES)}
 
 
-def test_unclaimed_article_mode_visits_stay_provisional(tmp_path: Path) -> None:
-    """R2·3: GET/`/seen` on a claimable Article persist nothing server-side."""
+def test_unclaimed_article_mode_visits_persist_for_signed_in_account(tmp_path: Path) -> None:
+    """Authenticated Learn persists modes_seen without an Article claim."""
     client, repo = _authed_client(tmp_path)
     _see_all_modes(client, "clause-1")
     seen_resp = client.post(
         "/learn/clause-1/seen", data={"mode": "cloze"}, headers=JSON_HEADERS
     )
     assert seen_resp.status_code == 200
-    assert seen_resp.json()["persisted"] is False
-    assert repo.modes_seen(USER, "clause-1") == set()
+    assert seen_resp.json()["persisted"] is True
+    assert repo.modes_seen(USER, "clause-1") == set(LEARN_MODES)
 
     page = client.get("/learn/clause-1")
-    assert 'data-seen-provisional="true"' in page.text
+    assert 'data-seen-provisional="true"' not in page.text
+    assert 'data-locked-modes=""' in page.text
 
 
-def test_done_on_unclaimed_article_prompts_claim(tmp_path: Path) -> None:
+def test_done_on_unclaimed_article_persists_without_claim(tmp_path: Path) -> None:
     client, repo = _authed_client(tmp_path)
+    _see_all_modes(client, "clause-1")
 
-    # JSON with the client's provisional mode list: claim_required, nothing
-    # persisted yet.
-    resp = client.post(
-        "/learn/clause-1/done", data=ALL_MODES_FIELD, headers=JSON_HEADERS
-    )
-    assert resp.status_code == 409
-    body = resp.json()
-    assert body["error"] == "claim_required"
-    assert body["article_number"] == "20"
-    assert body["slots_remaining"] == 3
-    assert repo.get_progress(USER, "clause-1") is None
-    assert repo.claimed_articles(USER) == set()
-
-    # HTML: redirect to the claim panel, which renders server-side.
-    resp = client.post(
-        "/learn/clause-1/done", data=ALL_MODES_FIELD, follow_redirects=False
-    )
-    assert resp.status_code == 303
-    assert resp.headers["location"] == "/learn/clause-1?claim=1"
-    panel = client.get("/learn/clause-1?claim=1")
-    assert "Add Article 20 to your Free Articles?" in panel.text
-    assert 'name="claim_article"' in panel.text
-
-    # Confirming claims + persists Done + schedules in one request.
-    resp = client.post(
-        "/learn/clause-1/done",
-        data={"claim_article": "1", **ALL_MODES_FIELD},
-        headers=JSON_HEADERS,
-    )
+    resp = client.post("/learn/clause-1/done", headers=JSON_HEADERS)
     assert resp.status_code == 200
     assert resp.json()["ok"] is True
-    assert repo.claimed_articles(USER) == {"20"}
+    assert repo.claimed_articles(USER) == set()
     progress = repo.get_progress(USER, "clause-1")
     assert progress is not None and progress.times_completed == 1
     assert progress.next_revision is not None
+    assert "claim_required" not in resp.text
+    page = client.get("/learn/clause-1?claim=1")
+    assert "Add Article 20 to your Free Articles?" not in page.text
 
 
-def test_decline_claim_persists_nothing(tmp_path: Path) -> None:
+def test_done_without_complete_modes_does_not_write_claim(tmp_path: Path) -> None:
     client, repo = _authed_client(tmp_path)
     resp = client.post(
         "/learn/clause-1/done", data=ALL_MODES_FIELD, headers=JSON_HEADERS
     )
     assert resp.status_code == 409
-    # "Not now" = simply not confirming; state is untouched.
+    assert resp.json()["error"] == "modes_incomplete"
     assert repo.claimed_articles(USER) == set()
     assert repo.get_progress(USER, "clause-1") is None
     assert repo.modes_seen(USER, "clause-1") == set()
@@ -515,78 +501,66 @@ def test_done_on_claimed_article_never_asks_again(tmp_path: Path) -> None:
     assert repo.claimed_articles(USER) == {"20"}  # still one slot
 
 
-def test_claim_prompt_requires_complete_modes(tmp_path: Path) -> None:
+def test_authenticated_type_and_recite_are_not_premium(tmp_path: Path) -> None:
     client, repo = _authed_client(tmp_path)
-    # Partial provisional list -> the claim prompt is never offered.
-    resp = client.post(
-        "/learn/clause-1/done", data={"modes": "read,cloze"}, headers=JSON_HEADERS
-    )
-    assert resp.status_code == 409
-    assert resp.json()["error"] == "modes_incomplete"
     assert repo.claimed_articles(USER) == set()
-
-    # Forged mode names never count.
-    resp = client.post(
-        "/learn/clause-1/done",
-        data={"modes": "read,cloze,letters,type,recite,test,bogus"},
-        headers=JSON_HEADERS,
+    page = client.get("/learn/clause-1?mode=type")
+    assert page.status_code == 200
+    assert 'data-locked-modes=""' in page.text
+    assert "Type 🔒" not in page.text
+    type_seen = client.post(
+        "/learn/clause-1/seen", data={"mode": "type"}, headers=JSON_HEADERS
     )
-    assert resp.status_code == 409
-    assert resp.json()["error"] == "claim_required"
+    assert type_seen.status_code == 200
+    assert type_seen.json()["persisted"] is True
+    recite_seen = client.post(
+        "/learn/clause-1/seen", data={"mode": "recite"}, headers=JSON_HEADERS
+    )
+    assert recite_seen.status_code == 200
+    assert recite_seen.json()["persisted"] is True
+    assert {"type", "recite"} <= repo.modes_seen(USER, "clause-1")
 
 
-def test_cap_reached_done_gates_and_persists_nothing(tmp_path: Path) -> None:
+def test_claim_count_does_not_gate_authenticated_done(tmp_path: Path) -> None:
     client, repo = _authed_client(tmp_path)
     for n in ("101", "102", "103"):
         repo.claim_article(USER, n)
-    _see_all_modes(client, "clause-1")  # Article 20 would be the 4th
+    historical = set(repo.claimed_articles(USER))
+    _see_all_modes(client, "clause-1")
 
     resp = client.post("/learn/clause-1/done", headers=JSON_HEADERS)
-    assert resp.status_code == 402
-    assert resp.json()["error"] == "subscription_required"
-    assert repo.get_progress(USER, "clause-1") is None
-    assert repo.claimed_articles(USER) == {"101", "102", "103"}
-
-    # Even an explicit claim_article=1 cannot bypass the cap.
-    resp = client.post(
-        "/learn/clause-1/done", data={"claim_article": "1"}, headers=JSON_HEADERS
-    )
-    assert resp.status_code == 402
-    assert repo.claimed_articles(USER) == {"101", "102", "103"}
-
-    # HTML path renders the gate panel.
-    resp = client.post("/learn/clause-1/done", follow_redirects=False)
-    assert resp.status_code == 303
-    assert resp.headers["location"] == "/learn/clause-1?gate=subscription"
+    assert resp.status_code == 200
+    assert resp.json()["ok"] is True
+    assert repo.get_progress(USER, "clause-1") is not None
+    assert repo.claimed_articles(USER) == historical
+    assert "subscription_required" not in resp.text
     panel = client.get("/learn/clause-1?gate=subscription")
-    assert "Your 3 Free Articles are in use" in panel.text
+    assert "Your 3 Free Articles are in use" not in panel.text
 
 
 # --------------------------------------------------------------------------- #
 # Step 3 · Article-aware Learn locks                                           #
 # --------------------------------------------------------------------------- #
-def test_cap_reached_locks_type_recite_in_learn(tmp_path: Path) -> None:
+def test_historical_claims_do_not_lock_type_recite_in_learn(tmp_path: Path) -> None:
     client, repo = _authed_client(tmp_path)
     for n in ("101", "102", "103"):
         repo.claim_article(USER, n)
 
-    page = client.get("/learn/clause-1")  # Article 20 -> unclaimed, cap reached
-    assert 'data-locked-modes="type,recite"' in page.text
-    assert "Type 🔒" in page.text and "Recite 🔒" in page.text
-    assert "Part of full Recall access" in page.text
-    assert "See your Free Articles" in page.text
+    page = client.get("/learn/clause-1")  # Article 20 historically unclaimed
+    assert 'data-locked-modes=""' in page.text
+    assert "Type 🔒" not in page.text and "Recite 🔒" not in page.text
+    assert "Part of full Recall access" not in page.text
 
-    # Opening a locked mode never records it seen.
     client.get("/learn/clause-1?mode=type")
-    assert repo.modes_seen(USER, "clause-1") == set()
+    client.post("/learn/clause-1/seen", data={"mode": "type"}, headers=JSON_HEADERS)
+    assert "type" in repo.modes_seen(USER, "clause-1")
 
-    # The /seen endpoint refuses locked modes outright.
     resp = client.post(
         "/learn/clause-1/seen", data={"mode": "recite"}, headers=JSON_HEADERS
     )
-    assert resp.status_code == 403
-    assert resp.json()["error"] == "mode_locked"
-    assert repo.modes_seen(USER, "clause-1") == set()
+    assert resp.status_code == 200
+    assert resp.json().get("error") != "mode_locked"
+    assert "recite" in repo.modes_seen(USER, "clause-1")
 
 
 def test_claimed_article_shows_all_six_unlocked(tmp_path: Path) -> None:
@@ -705,13 +679,20 @@ def test_mark_done_with_claim_updates_cache_and_store(tmp_path: Path) -> None:
     assert eng.is_article_claimed("20") is True
 
 
-def test_cap_article_done_affordance_requires_four(tmp_path: Path) -> None:
-    """Guest/cap Articles need only the four open modes to reach the Done CTA."""
+def test_authenticated_done_affordance_requires_all_six(tmp_path: Path) -> None:
+    """Signed-in accounts need all six modes, including Type and Recite."""
+    import re
+
     client, repo = _authed_client(tmp_path)
     for n in ("101", "102", "103"):
         repo.claim_article(USER, n)
-    page = client.get("/learn/clause-1")  # cap-reached Article 20
-    assert 'data-required-modes="read,cloze,letters,test"' in page.text
+    page = client.get("/learn/clause-1")
+    match = re.search(r'data-required-modes="([^"]*)"', page.text)
+    assert match is not None
+    required = match.group(1).split(",")
+    assert "type" in required and "recite" in required
+    assert "read" in required
+    assert repo.claimed_articles(USER) == {"101", "102", "103"}
 
 
 def test_entitlement_aware_done_button_state() -> None:
@@ -769,30 +750,33 @@ def test_guest_done_never_claims(tmp_path: Path) -> None:
     assert repo.get_progress(USER, "clause-1") is None
 
 
-def test_learn_access_resolves_from_real_store(tmp_path: Path) -> None:
+def test_learn_access_resolves_without_claim_store(tmp_path: Path) -> None:
     eng = _make_engine(tmp_path)
     req = _Req(multiuser=True, user=object())
     eng.claim_article("20")
 
     claimed = ent.resolve_learn_access(req, eng, "20")
-    assert claimed.article_claimed is True
     assert claimed.allowed_modes == ent.ALL_MODES
+    assert claimed.should_prompt_claim is False
+    assert claimed.can_persist_done is True
 
-    claimable = ent.resolve_learn_access(req, eng, "21")
-    assert claimable.should_prompt_claim is True
-    assert claimable.free_slots_remaining == 2
+    unclaimed = ent.resolve_learn_access(req, eng, "21")
+    assert unclaimed.should_prompt_claim is False
+    assert unclaimed.locked_modes == ()
+    assert unclaimed.can_persist_done is True
 
     eng.claim_article("21")
     eng.claim_article("22")
-    capped = ent.resolve_learn_access(req, eng, "32")
-    assert capped.cap_reached is True
-    assert capped.locked_modes == ent.SUBSCRIBER_ONLY_MODES
-    assert capped.can_persist_done is False
+    over_historical_cap = ent.resolve_learn_access(req, eng, "32")
+    assert over_historical_cap.cap_reached is False
+    assert over_historical_cap.locked_modes == ()
+    assert over_historical_cap.can_persist_done is True
 
     summary = ent.access_summary(req, eng)
     assert summary.claimed_count == 3
-    assert summary.cap_reached is True
-    assert summary.status_line == "Free · 3 of 3 Articles"
+    assert summary.cap_reached is False
+    assert summary.level == ent.SUBSCRIBED
+    assert summary.is_subscribed is False
 
 
 # --------------------------------------------------------------------------- #
