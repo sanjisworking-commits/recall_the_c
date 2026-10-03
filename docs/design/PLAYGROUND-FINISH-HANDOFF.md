@@ -10,7 +10,7 @@ artifacts. Runtime is FastAPI + Jinja + `styles.css` / `mobile.css` /
 
 ```text
 Stage 1               = DONE — 100.0 / 100, frozen
-UI Redesign Programme = 99.6 / 100
+UI Redesign Programme = 100.0 / 100
 Stage 2               = PARKED
 PR 188                = draft — do not merge from R7
 Alembic               = 20260927_0027 (one head)
@@ -40,13 +40,11 @@ Shared system (`--ink`, `--page`, `--paper`, `--hairline`, `--muted`,
 Fixed-dark completion screens stay fixed-dark (D92).
 
 Landing (`landing.html` / `landing_light.html`) and standalone login
-(`login.html`) keep the **shipped** palettes they already had at freeze.
-Those palettes are **not** D1–D17. Restyling them onto Playground tokens
-would be a new Layer 1 D row under §21.3. R7 did not add that row and
-does not claim V23 done. Other auth-family templates that already use
-`base.html` tokens (`signed_out.html`, `session_expired.html`,
-`auth_transition.html`, `auth_callback.html`, `partials/auth_shell.html`)
-are MATCHED.
+(`login.html`) now use existing U1 role tokens (D143). Light landing
+route stays disabled. Login keeps Google plus phone/OTP and is not on
+`auth_shell`. Other auth-family templates that already use `base.html`
+tokens (`signed_out.html`, `session_expired.html`, `auth_transition.html`,
+`auth_callback.html`, `partials/auth_shell.html`) remain MATCHED.
 
 ## Frozen product rules (do not reopen)
 

@@ -4,7 +4,7 @@
 
 ```text
 Stage 1               = DONE — 100.0 / 100   (frozen)
-UI Redesign Programme = 99.6 / 100
+UI Redesign Programme = 100.0 / 100
 Stage 2               = PARKED until a later instruction starts S2-0
 ```
 
@@ -39,7 +39,7 @@ Authority: `docs/PLAYGROUND_UI_REDESIGN_PLAN.md`. Inventories: `docs/design/PLAY
 | **R6 closeout HEAD** | Implementation `0011124`. extra_loader pin `1860dab`. Tracker `34db64f`. Pin `495d5ee`. |
 | **R6 post-closeout correction** | Starting SHA `495d5ee`. Code `46f7a9d`. Closeout docs `35d4dd1`. Pin `81548eb`. |
 | **R6 T28 minutes correction** | Starting SHA `81548eb`. Code `14179a1`. Closeout docs `c445dad`. T28 **DONE** again. D122 stayed DONE. U6 **15/15**, programme **90.0 / 100** after local+CI. R7 not started. |
-| **R7 closeout HEAD** | Starting SHA `56065c2`. Implementation `fc0ca67`. First closeout docs `a2fdde7` claimed 100.0 — **rejected**. V11/V23 correction **`d69f441`**. U8 **24/25**, programme **99.6 / 100**. V23 STOP (landing/auth palette needs a new D row — not added). PR 188 stays draft. Stage 2 stays PARKED. |
+| **R7 closeout HEAD** | Starting SHA `56065c2`. Implementation `fc0ca67`. First closeout docs `a2fdde7` claimed 100.0 — **rejected**. V11/V23 correction **`d69f441`**. D143 tracker `063a60f`. D143 code `1d27ca6`. U8 **25/25**, programme **100.0 / 100** after D143/V23 proof. PR 188 stays draft. Stage 2 stays PARKED. |
 
 Visual columns (390 light/dark, ~768, ~1024, 1280 light/dark, reduced motion) stay `—` until the relevant batch. Technical rows mark Desktop/Mobile **N/A**. Status uses only: `NOT STARTED | IN PROGRESS | BLOCKED | DONE | DONE`.
 
@@ -57,8 +57,8 @@ Visual columns (390 light/dark, ~768, ~1024, 1280 light/dark, reduced motion) st
 | U5 | Learned / mastery / amendment states | 8 | R4 | 13 | 13 | 8.0 |
 | U6 | Today + Calendar + Google Calendar | 10 | R6 | 15 | 15 | 10.0 |
 | U7 | Profile + Settings + account surfaces | 7 | R5 | 12 | 12 | 7.0 |
-| U8 | Responsive, a11y, parity, regression | 10 | R7 | 25 | 24 | 9.6 |
-| **Total** | | **100** | | **208** | **207** | **99.6 / 100** |
+| U8 | Responsive, a11y, parity, regression | 10 | R7 | 25 | 25 | 10.0 |
+| **Total** | | **100** | | **208** | **208** | **100.0 / 100** |
 
 Uniqueness (script-checked from §15.2; no row in two milestones, none omitted):
 
@@ -355,7 +355,7 @@ R5. **12 / 12.** Report: [`PLAYGROUND_UI_REDESIGN_R5_REPORT.md`](PLAYGROUND_UI_R
 
 R7. Batch report: [`docs/PLAYGROUND_UI_REDESIGN_R7_REPORT.md`](PLAYGROUND_UI_REDESIGN_R7_REPORT.md). Ledger: [`docs/PLAYGROUND_UI_REDESIGN_R7_LEDGER.md`](PLAYGROUND_UI_REDESIGN_R7_LEDGER.md). Finish handoff: [`docs/design/PLAYGROUND-FINISH-HANDOFF.md`](design/PLAYGROUND-FINISH-HANDOFF.md).
 
-Score: `90 + 10 × proven_U8 / 25`. U8 24/25 → **9.6**. Programme **99.6 / 100**. Do not force 100.
+Score: `90 + 10 × proven_U8 / 25`. U8 25/25 → **10.0**. Programme **100.0 / 100**. Proven, not forced.
 
 | ID | Requirement | D/M | Status |
 |---|---|---|---|
@@ -382,7 +382,7 @@ Score: `90 + 10 × proven_U8 / 25`. U8 24/25 → **9.6**. Programme **99.6 / 100
 | V20 | CI green | N/A | DONE — CI push [37022804844](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/37022804844), PR [37022809702](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/37022809702), Railway success on `fc0ca67` |
 | V21 | Desktop visual sign-off | desktop | DONE — 1024/1280 matrix. Week desktop-only |
 | V22 | Mobile visual sign-off | phone | DONE — 390 + ~768. Tab bar only ≤560 |
-| V23 | Every class-B surface vs design system | both | STOP — `landing.html` / `landing_light.html` / `login.html` palettes are not D1–D17. Restyle needs a new §21.3 D row. Row not added. Not restyled. Not claimed DONE. Other Class-B MATCHED or D17-reconciled |
+| V23 | Every class-B surface vs design system | both | DONE — D143 restyled `landing.html` / `landing_light.html` / `login.html` (+ `landing.js`) onto existing U1 role tokens. Playwright: computed body/CTA/rail match `--page`/`--ink`/`--accent`/`--on-accent`; splash indigo/cream gone; `--browse-due` does not paint those pages; login phone stays underline; ink/page contrast 16.15 dark / 15.57 light. Other Class-B MATCHED or D17-reconciled |
 | V24 | Zero unclassified routes; exclusions documented | N/A | DONE — 81 templates, 0 unclassified. Walk via `_IncludedRouter.original_router`. `/memory` flag-off 404 documented |
 
 Known rewrites (executed): `test_playground_m8.py` “Law revisions” → path nodes; Act loops use `list_playground_eligible_laws()`. Paused hard-gate tests superseded by T19 read-only home (R3). Guest `/playground` 303 superseded by T20 (R3). Guest `/profile` 303 superseded by D110 (R5).
@@ -445,11 +445,11 @@ No new product delta (class D) was found. Deltas A–H already cover guest gate,
 
 Batch report: [`docs/PLAYGROUND_UI_REDESIGN_R7_REPORT.md`](PLAYGROUND_UI_REDESIGN_R7_REPORT.md). Ledger: [`docs/PLAYGROUND_UI_REDESIGN_R7_LEDGER.md`](PLAYGROUND_UI_REDESIGN_R7_LEDGER.md).
 
-**R7 is not 100.0.** ChatGPT rejected the 25/25 closeout. V11 is now measured DONE. V23 stays STOP until D143 is proven. D143 is authorized and **NOT STARTED**. Programme **99.6 / 100** by `90 + 10 × 24 / 25`. That is not a forced 100. Stage 1 / R5 / R6 remain frozen. Stage 2 remains PARKED. PR 188 stays draft. Do not merge.
+**R7 is 100.0 after D143/V23 proof.** ChatGPT rejected the first 25/25 closeout (`a2fdde7`) because V11 was unmeasured and V23 was unproven. V11 was remasured DONE on `d69f441`. D143 was authorized, tracker-first on `063a60f`, implemented on `1d27ca6`. V23 is now proven. Programme **100.0 / 100** by `90 + 10 × 25 / 25`. That is not a forced 100. Stage 1 / R5 / R6 remain frozen. Stage 2 remains PARKED. PR 188 stays draft. Do not merge.
 
-Starting SHA `56065c2`. Implementation `fc0ca67`. Rejected closeout `a2fdde7` / pin `20e02be`. Correction **`d69f441`**. T33 now `styles.css?v=main77`, `mobile.css?v=mob98`, `playground.css?v=pg19`, `playground.js?v=pg8`.
+Starting SHA `56065c2`. Implementation `fc0ca67`. Rejected closeout `a2fdde7` / pin `20e02be`. Correction **`d69f441`**. T33 now `styles.css?v=main77`, `mobile.css?v=mob98`, `playground.css?v=pg19`, `playground.js?v=pg8`. D143 pin `landing.js?v=landing2`.
 
-U8 **24 / 25** → 9.6. Alembic head remains **`20260927_0027`**. No migration. Stop log: V23 landing/auth palette until D143 is proven.
+U8 **25 / 25** → 10.0. Alembic head remains **`20260927_0027`**. No migration. Stop log: V23 closed via D143.
 
 ### D143 — Splash/auth palette reconciliation (authorized)
 
@@ -457,13 +457,13 @@ Not folded into frozen U1 (28/28). Not a 26th U8 row. V23 remains the scored pro
 
 | ID | Requirement | D/M | Status | Evidence |
 |---|---|---|---|---|
-| D143 | Splash/auth palette uses existing U1 role tokens only (`--page`, `--paper`, `--wash`, `--ink`, `--muted`, `--faint`, `--hairline`, `--control-border`, `--hover`, `--accent`, `--accent-hover`, `--on-accent`, `--destructive`, `--shadow`, `--font-display`, `--font-body`). Surfaces: `landing.html`, `landing_light.html`, `login.html` (+ `landing.js` colour companion). No new colours. No `--browse-due` / `--pg-*` / `--letters-correct` on those pages. No IA/copy/routing/auth change. Light landing route stays disabled. | both | NOT STARTED | ChatGPT authorized this Layer 1 row. Implement from HEAD `a6c9971`. V23 stays STOP until proven. |
+| D143 | Splash/auth palette uses existing U1 role tokens only (`--page`, `--paper`, `--wash`, `--ink`, `--muted`, `--faint`, `--hairline`, `--control-border`, `--hover`, `--accent`, `--accent-hover`, `--on-accent`, `--destructive`, `--shadow`, `--font-display`, `--font-body`). Surfaces: `landing.html`, `landing_light.html`, `login.html` (+ `landing.js` colour companion). No new colours. No `--browse-due` / `--pg-*` / `--letters-correct` on those pages. No IA/copy/routing/auth change. Light landing route stays disabled. | both | DONE | Implemented from `a6c9971` after tracker-first `063a60f`. Code `1d27ca6`. Playwright proof: tokens resolve; splash hex gone; `--browse-due` does not paint; login Google+phone/OTP kept; light landing unrouted. V23 proven. |
 
 Do not start Stage 2 from this closeout.
 
 Approved order held: T40 execution before V16/V17/V18. `test_today_queue_current_roster_only` pins the T28 Today-path contract instead of `"Law revisions"`.
 
-Local `pytest -m "not integration"` on `fc0ca67`: **2888 passed**, 9 skipped, 1 deselected. CI on `fc0ca67`: push [37022804844](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/37022804844) and PR [37022809702](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/37022809702) succeeded. Railway `trustworthy-embrace / recall_the_c-pr-188` success.
+Local `pytest -m "not integration"` on D143 `1d27ca6`: **2891 passed**, 9 skipped, 1 deselected (2888 prior + 3 D143 tests). CI on `fc0ca67`: push [37022804844](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/37022804844) and PR [37022809702](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/37022809702) succeeded. D143 CI is the push after `1d27ca6`. Railway `trustworthy-embrace / recall_the_c-pr-188` success on `fc0ca67`.
 
 ---
 
@@ -677,4 +677,4 @@ No new B/C denominator rows. No class-D product-scope stop. Do not start R2.
 
 ## R0 readiness
 
-**U0 is complete (10/10).** **U1 is complete (28/28).** **R2 is complete.** **R3 is complete (U2 39/39).** **R4 is complete (U4 28/28, U5 13/13), including the D141 typed-fallback correction.** **R5 is complete (U3 38/38, U7 12/12).** **R6 is complete (U6 15/15), including the T28 minutes-line correction.** **R7 is open (U8 24/25).** V23 STOP. Stage 2 remains PARKED. Do not merge PR 188. Programme **99.6 / 100**.
+**U0 is complete (10/10).** **U1 is complete (28/28).** **R2 is complete.** **R3 is complete (U2 39/39).** **R4 is complete (U4 28/28, U5 13/13), including the D141 typed-fallback correction.** **R5 is complete (U3 38/38, U7 12/12).** **R6 is complete (U6 15/15), including the T28 minutes-line correction.** **R7 is complete (U8 25/25).** V23 DONE via D143. Stage 2 remains PARKED. Do not merge PR 188. Programme **100.0 / 100**.

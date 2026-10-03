@@ -236,9 +236,9 @@ Shipped: `styles.css?v=main77`, `mobile.css?v=mob98`, `playground.css?v=pg19`, `
 | 9 V11 | Playwright 390×844, `channel="chrome"`. Applicable phone controls now `min-height` / `min-width` 44px (month-strip, calendar nav/cells, Today ··· and avatar wrapper, path CTA, search field/cancel, Learn `?` help, Act-head tab/toggle as text links, legal-switch/toc, login brand/guest/legal-nav, sheet close, plan-intro segments). Settings toggle **hit** is 44px; **painted track** stays 46×28 via `::before` (D113). Constitution Learn not rebuilt. Inline prose links, hidden radios, and text labels are not chrome. No approved deviation used to close V11. |
 | 10 T40 execution | T40-4 and T40-5 only. See Phase 2. |
 | 11 V16 / V17 / V18 | Frozen-domain suite on the authorized contracts. Semantic failure would have been STOP. None fired. |
-| 12 Tests | Focused `tests/test_playground_r7.py`. Full `pytest -m "not integration"` on `fc0ca67`: **2888 passed**, 9 skipped, 1 deselected. This V11/V23 correction re-runs focused pins before closeout. |
+| 12 Tests | Focused `tests/test_playground_r7.py` including D143 hex/token/IA pins. Full `pytest -m "not integration"` on D143 `1d27ca6`: **2891 passed**, 9 skipped, 1 deselected. |
 | 13 Visual / CI / Railway | Representative screenshots from `fc0ca67`. CI/Railway green on that SHA. This correction does not reopen those rows. |
-| 14 Handoff | `docs/design/PLAYGROUND-FINISH-HANDOFF.md`. U8 **24/25**. V23 STOP. Do not merge. Stage 2 stays PARKED. |
+| 14 Handoff | `docs/design/PLAYGROUND-FINISH-HANDOFF.md`. U8 **25/25**. V23 DONE via D143. Do not merge. Stage 2 stays PARKED. |
 
 ### Visual matrix (representative screenshots; every family inspected)
 
@@ -259,7 +259,7 @@ Playwright `channel="chrome"`. New filenames only. First Act-head 1024 shot was 
 | B-search | `r7_search_390_light.png` |
 | B-legal | `r7_legal_terms_390_dark_view.png`, `r7_legal_privacy_390_dark.png` |
 | B-auth | `r7_auth_login_390_light_view.png` |
-| B-landing | `r7_landing_390_light.png` — shipped splash palette, not restyled |
+| B-landing | `r7_landing_390_light.png` plus D143 `step1_landing_desktop_1280_final.png` / `step6_landing_mobile_390x844.png` — U1 tokens |
 | C-devices | `r7_devices_390_light.png`, `r7_devices_1280_light.png` — `1 of 2` |
 | C-errors D142 | `r7_d142_404_390_light.png` |
 | D102 not-subscribed | HTTP 200 `Unlock Playground` + `data-hard-gate`. Six `gate_view` titles remain distinct |
@@ -269,15 +269,15 @@ HTTP inspect: 58/58 expected routes. Guest `/playground` HTML 200 sign-in gate. 
 
 ## Stop log
 
-**V23 STOP.** Class-B landing/auth-family palettes do not use D1–D17 tokens.
+**V23 closed via D143.** Class-B landing/auth-family palettes now use existing U1 role tokens (`landing.html`, `landing_light.html`, `login.html`, plus `landing.js`). A new Layer 1 D row under §21.3 was required; ChatGPT authorized D143; the row was added before any template edit; restyle proven.
 
 | Template | Finding | Rule |
 |---|---|---|
-| `landing.html` | Splash indigo/cream (`#6E82C8`, `#f4f1ea`, `#4C5C9E`, `#0b0b0b`) | Not D1–D17. Restyle would be a landing rebuild and needs a **new** Layer 1 D row under §21.3. Row not added. Not restyled. |
-| `landing_light.html` | Alternate splash raw hex (`#fdfcfa`, `#141414`, `#0E7569`) | Same. Not D1–D17 CSS tokens. |
-| `login.html` | Standalone indigo/cream (same family as `landing.html`) | Same. Hit-area padding on brand / `.j-guest` / legal nav only. Palette untouched. |
+| `landing.html` | Was splash indigo/cream. Now `data-theme="dark"` + `styles.css?v=main77` + U1 `var()` / `color-mix`. `landing.js?v=landing2` reads tokens via `getComputedStyle`. | D143 DONE. Playwright: body `--page`/`--ink`, CTA `--accent`/`--on-accent`, accent span no longer `#6E82C8`, ghost hover is not `--browse-due`. |
+| `landing_light.html` | Was alternate splash hex. Now `data-theme="light"` + same U1 tokens. Route stays disabled. | D143 DONE. Not served. |
+| `login.html` | Was standalone indigo/cream. Now `data-theme="light"`; rail `--ink`/`--on-accent`; form `--page`; error `--destructive` on `--wash`. Google + phone/OTP markup kept. `.phone-input` stays underline (styles.css boxed collision neutralized without HTML change). | D143 DONE. Playwright: rail contrast 18.42; guest hover not `--browse-due`; 390 guest hit 44px. |
 
-Do not claim V23 DONE. Do not add the D row. Do not fix the palette inside R7.
+Do not reopen this closed V23 palette stop as if the D row were still missing. Do not start Stage 2. Do not merge PR 188.
 
 Other Class-B templates on this pass: **MATCHED** to D1–D17 tokens, or tap-size mismatches **reconciled** under existing D17 (legal-switch, legal-toc). `signed_out.html`, `session_expired.html`, `auth_transition.html`, `auth_callback.html`, and `partials/auth_shell.html` use `base.html` tokens — MATCHED.
 

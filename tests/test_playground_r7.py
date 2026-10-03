@@ -122,6 +122,7 @@ def test_r7_ledger_inventory_and_class_b() -> None:
     assert "landing.html" in stop
     assert "login.html" in stop
     assert "new" in stop.lower() and "D row" in stop
+    assert "V23 closed via D143" in stop
     assert len(CLASS_B) == 45
     for name in CLASS_B:
         assert f"`{name}`" in ledger, name
@@ -356,7 +357,7 @@ def test_d143_tracker_row_is_not_folded_into_u1() -> None:
     assert "### D143 — Splash/auth palette reconciliation" in tracker
     assert "| D143 |" in tracker
     assert "not in frozen U1 28" in tracker or "Not folded into frozen U1" in tracker
-    assert "U8 24 / 25" in tracker or "U8 **24 / 25**" in tracker or "24/25" in tracker
+    assert "U8 25 / 25" in tracker or "U8 **25 / 25**" in tracker or "25/25" in tracker
     assert "208 scored" in tracker
 
 
