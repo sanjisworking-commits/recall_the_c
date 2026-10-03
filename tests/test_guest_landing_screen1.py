@@ -81,6 +81,19 @@ def test_screen1_destinations_are_browse_and_laws_indexes(tmp_path: Path) -> Non
     assert 'data-laws-index' in laws.text or "laws-index-title" in laws.text
 
 
+def test_screen1_legal_links_are_not_in_the_visible_stack(tmp_path: Path) -> None:
+    html = _guest_client(tmp_path).get("/").text
+    desk = html.split('data-guest-landing="desktop"', 1)[1].split("</section>", 1)[0]
+    launch = html.split('<section class="rc-launch">', 1)[1].split("</section>", 1)[0]
+    hidden = html.split('class="visually-hidden"', 1)[1].split("</p>", 1)[0]
+    assert "/terms" not in desk
+    assert "/privacy" not in desk
+    assert "/terms" not in launch
+    assert "/privacy" not in launch
+    assert 'href="/terms"' in hidden
+    assert 'href="/privacy"' in hidden
+
+
 def test_screen1_has_no_header_or_signin_control(tmp_path: Path) -> None:
     html = _guest_client(tmp_path).get("/").text
     assert "<header" not in html

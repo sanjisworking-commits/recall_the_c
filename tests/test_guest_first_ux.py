@@ -141,8 +141,8 @@ def test_landing_product_name_and_purpose_are_crawlable(tmp_path: Path):
     )
     assert "Constitution of India" in html
     assert "The Constitution, remembered." in html
-    assert 'href="/privacy"' not in html
-    assert 'href="/terms"' not in html
+    assert 'href="/privacy"' in html
+    assert 'href="/terms"' in html
     assert 'href="/grievance"' not in html
 
 
