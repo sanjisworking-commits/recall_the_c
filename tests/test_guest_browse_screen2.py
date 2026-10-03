@@ -152,7 +152,7 @@ def test_screen2_legend_filters_marks_and_keeps_pressed_state(tmp_path: Path) ->
     legend = html.split('class="browse-legend"', 1)[1].split(
         "browse-constitution-label", 1
     )[0]
-    assert ">news<" in legend
+    assert ">News<" in legend
     assert "Visualise" in legend
     assert 'aria-pressed="false"' in legend
     js = (
