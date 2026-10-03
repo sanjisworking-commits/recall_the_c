@@ -63,9 +63,10 @@ Visual columns (390 light/dark, ~768, ~1024, 1280 light/dark, reduced motion) st
 Uniqueness (script-checked from §15.2; no row in two milestones, none omitted):
 
 - D1–D142: 142
+- D143: authorized R7 Layer 1 splash/auth palette row (not in frozen U1 28; not a 26th U8 item)
 - T1–T42: 42
 - V1–V24: 24
-- **208**
+- **208 scored** (U0–U8). D143 does not expand U1 or U8.
 - X1–X8 are enforced by **T35**, not extra denominator rows.
 
 T42 is the approved R4 locator-aware source-review twin (U5). It is not the rejected auto-merge T42 from the R0 notes. No other B/C rows were added during R4.
@@ -444,17 +445,25 @@ No new product delta (class D) was found. Deltas A–H already cover guest gate,
 
 Batch report: [`docs/PLAYGROUND_UI_REDESIGN_R7_REPORT.md`](PLAYGROUND_UI_REDESIGN_R7_REPORT.md). Ledger: [`docs/PLAYGROUND_UI_REDESIGN_R7_LEDGER.md`](PLAYGROUND_UI_REDESIGN_R7_LEDGER.md).
 
-**R7 is not 100.0.** ChatGPT rejected the 25/25 closeout. V11 is now measured DONE. V23 stays STOP on the landing/auth-family palette (new D row required; not added; not restyled). Programme **99.6 / 100** by `90 + 10 × 24 / 25`. That is not a forced 100. Stage 1 / R5 / R6 remain frozen. Stage 2 remains PARKED. PR 188 stays draft. Do not merge.
+**R7 is not 100.0.** ChatGPT rejected the 25/25 closeout. V11 is now measured DONE. V23 stays STOP until D143 is proven. D143 is authorized and **NOT STARTED**. Programme **99.6 / 100** by `90 + 10 × 24 / 25`. That is not a forced 100. Stage 1 / R5 / R6 remain frozen. Stage 2 remains PARKED. PR 188 stays draft. Do not merge.
 
 Starting SHA `56065c2`. Implementation `fc0ca67`. Rejected closeout `a2fdde7` / pin `20e02be`. Correction **`d69f441`**. T33 now `styles.css?v=main77`, `mobile.css?v=mob98`, `playground.css?v=pg19`, `playground.js?v=pg8`.
 
-U8 **24 / 25** → 9.6. Alembic head remains **`20260927_0027`**. No migration. No new B/C denominator rows. Stop log: V23 landing/auth palette.
+U8 **24 / 25** → 9.6. Alembic head remains **`20260927_0027`**. No migration. Stop log: V23 landing/auth palette until D143 is proven.
+
+### D143 — Splash/auth palette reconciliation (authorized)
+
+Not folded into frozen U1 (28/28). Not a 26th U8 row. V23 remains the scored proof row.
+
+| ID | Requirement | D/M | Status | Evidence |
+|---|---|---|---|---|
+| D143 | Splash/auth palette uses existing U1 role tokens only (`--page`, `--paper`, `--wash`, `--ink`, `--muted`, `--faint`, `--hairline`, `--control-border`, `--hover`, `--accent`, `--accent-hover`, `--on-accent`, `--destructive`, `--shadow`, `--font-display`, `--font-body`). Surfaces: `landing.html`, `landing_light.html`, `login.html` (+ `landing.js` colour companion). No new colours. No `--browse-due` / `--pg-*` / `--letters-correct` on those pages. No IA/copy/routing/auth change. Light landing route stays disabled. | both | NOT STARTED | ChatGPT authorized this Layer 1 row. Implement from HEAD `a6c9971`. V23 stays STOP until proven. |
+
+Do not start Stage 2 from this closeout.
 
 Approved order held: T40 execution before V16/V17/V18. `test_today_queue_current_roster_only` pins the T28 Today-path contract instead of `"Law revisions"`.
 
 Local `pytest -m "not integration"` on `fc0ca67`: **2888 passed**, 9 skipped, 1 deselected. CI on `fc0ca67`: push [37022804844](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/37022804844) and PR [37022809702](https://github.com/sanjisworking-commits/recall_the_c/actions/runs/37022809702) succeeded. Railway `trustworthy-embrace / recall_the_c-pr-188` success.
-
-Do not start Stage 2 from this closeout.
 
 ---
 
