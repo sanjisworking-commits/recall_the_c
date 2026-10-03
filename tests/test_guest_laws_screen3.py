@@ -154,7 +154,7 @@ def test_screen3_visible_cards_match_the_prototype(tmp_path: Path) -> None:
     for chunk in desk.split("data-law-id=\"")[1:]:
         ids.append(chunk.split("\"", 1)[0])
     assert ids == [law.id for law in GUEST_LAWS_CARDS]
-    assert "The Bharatiya Nyaya Sanhita, 2025" in desk
+    assert "The Bharatiya Nyaya Sanhita, 2023" in desk
     assert "20 Chapters · Sections 1–358" in desk
     assert "The Bharatiya Nagarik Suraksha Sanhita, 2023" in desk
     assert "The Narcotic Drugs and Psychotropic Substances Act, 1985" in desk
@@ -169,7 +169,7 @@ def test_screen3_visible_cards_match_the_prototype(tmp_path: Path) -> None:
     assert "CRIMINAL · FULL ACT" in desk
     assert "FINANCIAL · FULL ACT" in desk
     assert "COMMERCIAL · FULL ACT" in desk
-    assert "The Bharatiya Nyaya Sanhita, 2023" not in desk
+    assert "The Bharatiya Nyaya Sanhita, 2025" not in desk
     assert "8 Chapters · Sections 1–83<" not in desk
 
 
@@ -433,7 +433,7 @@ def test_screen3_1280_filters_search_and_matches_prototype(tmp_path: Path) -> No
         "ca",
     ]
     assert "pota" not in geo["visibleIds"]
-    assert geo["firstTitle"] == "The Bharatiya Nyaya Sanhita, 2025"
+    assert geo["firstTitle"] == "The Bharatiya Nyaya Sanhita, 2023"
     assert geo["cols"] == 2
     assert geo["twoCol"] is True
     assert geo["navLabels"] == [

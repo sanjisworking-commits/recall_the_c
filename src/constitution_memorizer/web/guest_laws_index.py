@@ -72,7 +72,7 @@ GUEST_LAWS_CARDS: tuple[GuestLawCard, ...] = (
     _card(
         "bns",
         "CRIMINAL · FULL ACT",
-        "The Bharatiya Nyaya Sanhita, 2025",
+        "The Bharatiya Nyaya Sanhita, 2023",
         "20 Chapters · Sections 1–358",
         "criminal",
         "current",
