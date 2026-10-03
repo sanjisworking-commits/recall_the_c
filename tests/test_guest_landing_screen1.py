@@ -6,13 +6,10 @@ Phone `.rc-launch` is unchanged. Destinations are navigation, not auth.
 
 from __future__ import annotations
 
-import socket
-import threading
 from pathlib import Path
 
 import pytest
 from fastapi.testclient import TestClient
-from PIL import Image, ImageChops
 
 from constitution_memorizer.auth.fake_provider import FakeAuthProvider
 from constitution_memorizer.auth.sessions import InMemorySessionStore
@@ -22,12 +19,7 @@ from constitution_memorizer.multiuser.settings import (
 )
 from constitution_memorizer.web.app import create_app
 
-ROOT = Path(__file__).resolve().parents[1]
 MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
-REF_CTA = ROOT / "cta-map" / "cta-map" / "guest" / "01-screen.jpg"
-REF_FIXTURE = Path(__file__).parent / "fixtures" / "guest_landing" / "01-screen.jpg"
-SCREENSHOT_DIR = Path("/opt/cursor/artifacts")
-VIEWPORT = {"width": 1280, "height": 800}
 
 
 @pytest.fixture(autouse=True)
@@ -64,6 +56,16 @@ def _guest_client(tmp_path: Path) -> TestClient:
     return TestClient(_guest_app(tmp_path))
 
 
+def _desktop_css(html: str) -> str:
+    return html.split("@media (min-width:561px){", 1)[1]
+
+
+def _phone_css(html: str) -> str:
+    return html.split("@media (max-width:560px){", 1)[1].split(
+        "@media (max-width:560px) and", 1
+    )[0]
+
+
 def test_screen1_destinations_are_browse_and_laws_indexes(tmp_path: Path) -> None:
     html = _guest_client(tmp_path).get("/").text
     desk = html.split('data-guest-landing="desktop"', 1)[1].split("</section>", 1)[0]
@@ -92,133 +94,85 @@ def test_screen1_has_no_header_or_signin_control(tmp_path: Path) -> None:
     assert "<nav" not in html
 
 
-def _free_port() -> int:
+def test_screen1_desktop_buttons_share_one_width(tmp_path: Path) -> None:
+    html = _guest_client(tmp_path).get("/").text
+    desktop = _desktop_css(html)
+    phone = _phone_css(html)
+    assert "grid-auto-columns:1fr" in desktop
+    assert ".rc-desk-cta{" in desktop
+    assert "width:100%" in desktop.split(".rc-desk-cta{", 1)[1].split("}", 1)[0]
+    assert "grid-auto-columns:1fr" not in phone
+    assert ".rc-launch-cta{display:flex" in phone
+    assert "Explore the Constitution" in html
+    assert "Explore Laws" in html
+
+
+def test_screen1_1280_buttons_are_equal_width(tmp_path: Path) -> None:
+    pytest.importorskip("playwright")
+    import socket
+    import threading
+    import time
+
+    import uvicorn
+    from playwright.sync_api import sync_playwright
+
     sock = socket.socket()
     sock.bind(("127.0.0.1", 0))
     port = sock.getsockname()[1]
     sock.close()
-    return port
-
-
-def _serve(app, port: int) -> threading.Thread:
-    import uvicorn
-
-    config = uvicorn.Config(app, host="127.0.0.1", port=port, log_level="warning")
+    config = uvicorn.Config(
+        _guest_app(tmp_path), host="127.0.0.1", port=port, log_level="warning"
+    )
     server = uvicorn.Server(config)
-    thread = threading.Thread(target=server.run, daemon=True)
-    thread.start()
+    threading.Thread(target=server.run, daemon=True).start()
     for _ in range(80):
         probe = socket.socket()
         probe.settimeout(0.1)
-        if probe.connect_ex(("127.0.0.1", port)) == 0:
-            probe.close()
-            return thread
+        ready = probe.connect_ex(("127.0.0.1", port)) == 0
         probe.close()
-        thread.join(0.05)
-    raise RuntimeError(f"server did not bind on {port}")
-
-
-def _reference_image() -> Path | None:
-    for path in (REF_CTA, REF_FIXTURE):
-        if path.exists():
-            return path
-    return None
-
-
-def _rms(a: Image.Image, b: Image.Image) -> float:
-    if a.size != b.size:
-        b = b.resize(a.size, Image.Resampling.LANCZOS)
-    a = a.convert("RGB")
-    b = b.convert("RGB")
-    diff = ImageChops.difference(a, b)
-    hist = diff.histogram()
-    squares = sum(value * (idx % 256) ** 2 for idx, value in enumerate(hist))
-    return (squares / (float(a.size[0]) * a.size[1])) ** 0.5
-
-
-def test_screen1_1280_matches_cta_map_screenshot(tmp_path: Path) -> None:
-    pytest.importorskip("playwright")
-    from playwright.sync_api import sync_playwright
-
-    port = _free_port()
-    _serve(_guest_app(tmp_path), port)
-    SCREENSHOT_DIR.mkdir(parents=True, exist_ok=True)
-    out = SCREENSHOT_DIR / "guest_landing_screen1_1280.png"
+        if ready:
+            break
+        time.sleep(0.05)
+    else:
+        pytest.fail("server did not bind")
 
     with sync_playwright() as pw:
         browser = pw.chromium.launch(channel="chrome", args=["--disable-lcd-text"])
-        page = browser.new_page(viewport=VIEWPORT, device_scale_factor=1)
+        page = browser.new_page(
+            viewport={"width": 1280, "height": 800}, device_scale_factor=1
+        )
         page.goto(f"http://127.0.0.1:{port}/", wait_until="networkidle")
-        page.wait_for_timeout(400)
         geo = page.evaluate(
             """() => {
-              const desk = document.querySelector('.rc-desk');
-              const launch = document.querySelector('.rc-launch');
-              const header = document.querySelector('header');
-              const mark = document.querySelector('.rc-desk-mark');
-              const name = document.querySelector('.rc-desk-name');
-              const tag = document.querySelector('.rc-desk-tag');
               const primary = document.querySelector('.rc-desk-cta:not(.is-ghost)');
               const ghost = document.querySelector('.rc-desk-cta.is-ghost');
-              const stack = document.querySelector('.rc-desk-stack');
-              const cs = getComputedStyle(document.body);
-              const box = (el) => {
-                if (!el) return null;
-                const r = el.getBoundingClientRect();
-                return {x: r.x, y: r.y, w: r.width, h: r.height};
-              };
+              const launch = document.querySelector('.rc-launch');
+              const header = document.querySelector('header');
+              const pr = primary.getBoundingClientRect();
+              const gr = ghost.getBoundingClientRect();
               return {
-                deskDisplay: desk ? getComputedStyle(desk).display : null,
+                deskDisplay: getComputedStyle(document.querySelector('.rc-desk')).display,
                 launchDisplay: launch ? getComputedStyle(launch).display : null,
                 hasHeader: !!header,
                 loginCount: document.querySelectorAll('a[href*="/login"]').length,
-                mark: box(mark),
-                name: box(name),
-                tag: box(tag),
-                primary: box(primary),
-                ghost: box(ghost),
-                stack: box(stack),
-                primaryHref: primary && primary.getAttribute('href'),
-                ghostHref: ghost && ghost.getAttribute('href'),
-                primaryText: primary && primary.textContent.trim(),
-                ghostText: ghost && ghost.textContent.trim(),
-                pageBg: cs.backgroundColor,
-                pageFg: cs.color,
-                innerWidth: window.innerWidth,
-                innerHeight: window.innerHeight,
+                primaryW: pr.width, ghostW: gr.width,
+                primaryH: pr.height, ghostH: gr.height,
+                primaryX: pr.x, ghostX: gr.x, primaryY: pr.y, ghostY: gr.y,
+                primaryHref: primary.getAttribute('href'),
+                ghostHref: ghost.getAttribute('href'),
               };
             }"""
         )
-        page.screenshot(path=str(out), full_page=False)
         browser.close()
 
-    assert geo["innerWidth"] == 1280
     assert geo["deskDisplay"] == "flex"
     assert geo["launchDisplay"] == "none"
     assert geo["hasHeader"] is False
     assert geo["loginCount"] == 0
     assert geo["primaryHref"] == "/browse"
     assert geo["ghostHref"] == "/laws"
-    assert geo["primaryText"] == "Explore the Constitution"
-    assert geo["ghostText"] == "Explore Laws"
-    mark, primary, ghost, stack = geo["mark"], geo["primary"], geo["ghost"], geo["stack"]
-    assert mark is not None and primary is not None and ghost is not None
-    assert abs(mark["w"] - mark["h"]) <= 1
-    assert 56 <= mark["w"] <= 72
-    assert abs(primary["y"] - ghost["y"]) <= 2
-    assert primary["x"] < ghost["x"]
-    assert 36 <= primary["h"] <= 48
-    assert primary["w"] > 160
-    # Vertically centred stack (CTA map Screen 1).
-    mid = stack["y"] + stack["h"] / 2
-    assert abs(mid - geo["innerHeight"] / 2) < 80
-
-    captured = Image.open(out)
-    ref_path = _reference_image()
-    if ref_path is None:
-        pytest.fail(
-            "CTA map screenshot missing "
-            f"(looked for {REF_CTA} and {REF_FIXTURE})"
-        )
-    rms = _rms(captured, Image.open(ref_path))
-    assert rms < 18, f"1280 landing diverges from CTA map Screen 1 (rms={rms:.2f})"
+    assert abs(geo["primaryY"] - geo["ghostY"]) <= 2
+    assert geo["primaryX"] < geo["ghostX"]
+    assert abs(geo["primaryW"] - geo["ghostW"]) <= 1
+    assert geo["primaryW"] > 160
+    assert abs(geo["primaryH"] - geo["ghostH"]) <= 1

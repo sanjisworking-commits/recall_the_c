@@ -67,11 +67,11 @@
       margin:22px 0 8px;font-family:Fraunces,Georgia,serif;font-size:28px;font-weight:500;line-height:1.15
     }
     .rc-desk-tag{margin:0 0 28px;font-size:14px;color:var(--muted);font-weight:400}
-    .rc-desk-actions{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:12px}
+    .rc-desk-actions{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:12px;align-items:center;justify-content:center}
     .rc-desk-cta{
-      display:inline-flex;align-items:center;justify-content:center;
+      display:flex;align-items:center;justify-content:center;width:100%;box-sizing:border-box;
       height:40px;padding:0 22px;border-radius:999px;border:1px solid var(--accent);
-      background:var(--accent);color:var(--on-accent);font-size:14px;font-weight:600;line-height:1
+      background:var(--accent);color:var(--on-accent);font-size:14px;font-weight:600;line-height:1;white-space:nowrap
     }
     .rc-desk-cta:hover,.rc-desk-cta:active{color:var(--on-accent);background:var(--accent-hover);border-color:var(--accent-hover)}
     .rc-desk-cta.is-ghost{
