@@ -2,7 +2,28 @@
 {% from "partials/playground.html" import how_it_works %}
 {% block title %}{{ gate.title }} · Playground · {{ app_name|default('Recall the C') }}{% endblock %}
 {% block playground %}
-<section class="EntitlementGate" data-playground-gate="{{ gate.reason }}" aria-labelledby="pg-gate-title">
+{% set guest_pg_intro = multiuser_enabled|default(false) and not current_user and gate.reason == 'sign_in_required' %}
+{% if guest_pg_intro %}
+<section class="guest-pg-intro" data-guest-pg-intro>
+  <div class="guest-pg-copy">
+    <p class="guest-pg-kicker">Playground</p>
+    <h1 class="guest-pg-title">Sign in to build your law-learning Playground.</h1>
+    <p class="guest-pg-lede">Turns any Act into a learning experience. Reading the Bare Acts stays free for everyone.</p>
+    <p class="guest-pg-how">How Playground works</p>
+    <ol class="guest-pg-steps">
+      <li><span class="guest-pg-step-n" aria-hidden="true">1</span><span class="guest-pg-step-t">Add laws to your month — up to your plan’s spaces.</span></li>
+      <li><span class="guest-pg-step-n" aria-hidden="true">2</span><span class="guest-pg-step-t">Learn each section verbatim through six recall modes.</span></li>
+      <li><span class="guest-pg-step-n" aria-hidden="true">3</span><span class="guest-pg-step-t">Revise on the ladder: day 1, 3, 7, 15, 30 and 60.</span></li>
+      <li><span class="guest-pg-step-n" aria-hidden="true">4</span><span class="guest-pg-step-t">Progress stays saved, in or out of Playground.</span></li>
+    </ol>
+  </div>
+  <aside class="guest-pg-card">
+    <a class="guest-pg-signin" href="{{ gate.cta_href }}">Sign in</a>
+    <p class="guest-pg-note">You'll come straight back to this page. Signing in also unlocks the full Constitution learning experience, free. Reading the Bare Acts stays free for everyone.</p>
+  </aside>
+</section>
+{% endif %}
+<section class="EntitlementGate" data-playground-gate="{{ gate.reason }}" aria-labelledby="pg-gate-title"{% if guest_pg_intro %} data-pg-gate-phone{% endif %}>
   <p class="pg-eyebrow">{{ gate.eyebrow }}</p>
   <h1 id="pg-gate-title">{{ gate.title }}</h1>
   {% for line in gate.lines %}

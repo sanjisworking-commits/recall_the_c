@@ -2751,4 +2751,155 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   }
 }
 
+/* Guest desktop Playground intro (CTA map guest/06-screen). Phone guest
+   /playground keeps the production entitlement Gate. */
+@media (max-width: 560px) {
+  [data-guest-pg-intro] {
+    display: none !important;
+  }
+}
+
+@media (min-width: 561px) {
+  [data-pg-gate-phone] {
+    display: none !important;
+  }
+
+  body.is-guest[data-mscreen="playground"]:has([data-guest-pg-intro]) .PlaygroundShell {
+    max-width: none;
+    padding: 48px 40px 60px;
+  }
+
+  .guest-pg-intro {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 380px;
+    gap: 64px;
+    max-width: 960px;
+    align-items: start;
+  }
+
+  .guest-pg-kicker {
+    margin: 0 0 8px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--pg-teal);
+  }
+
+  .guest-pg-title {
+    margin: 0 0 10px;
+    font-family: var(--pg-font-display);
+    font-size: 34px;
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: 0;
+    color: var(--pg-ink);
+    text-wrap: balance;
+  }
+
+  .PlaygroundShell .guest-pg-title {
+    font-size: 34px;
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: 0;
+    margin: 0 0 10px;
+  }
+
+  .guest-pg-lede {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--pg-muted);
+  }
+
+  .guest-pg-how {
+    margin: 26px 0 10px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--pg-mid);
+  }
+
+  .guest-pg-steps {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .guest-pg-steps li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .guest-pg-step-n {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border: 1px solid var(--pg-ink);
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 700;
+    flex: none;
+  }
+
+  .guest-pg-step-t {
+    font-size: 14.5px;
+    line-height: 1.5;
+    padding-top: 2px;
+    color: var(--pg-ink);
+  }
+
+  .guest-pg-card {
+    padding: 24px;
+    background: var(--pg-subtle);
+    border: 1px solid var(--pg-hairline);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  .guest-pg-signin {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 50px;
+    border: none;
+    border-radius: 12px;
+    background: var(--pg-ink);
+    color: var(--pg-paper);
+    font: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: var(--pg-shadow-press);
+    box-sizing: border-box;
+  }
+
+  .PlaygroundShell .guest-pg-signin {
+    color: var(--pg-paper);
+  }
+
+  .guest-pg-signin:active {
+    transform: translateY(1px);
+    box-shadow: var(--pg-shadow-press-active);
+  }
+
+  .guest-pg-note {
+    margin: 6px 0 0;
+    font-size: 12px;
+    line-height: 1.55;
+    color: var(--pg-faint);
+  }
+}
+
 
