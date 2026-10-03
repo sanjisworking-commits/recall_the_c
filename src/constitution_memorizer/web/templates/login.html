@@ -11,7 +11,7 @@
 {% if otp_sent and state == 'default' %}{% set state = 'otp' %}{% endif %}
 {% set both_disabled = not google_enabled and not phone_enabled %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
@@ -22,34 +22,35 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/styles.css?v=main77">
 <style>
-  html, body { margin: 0; padding: 0; background: #f4f1ea; }
+  html, body { margin: 0; padding: 0; background: var(--page); }
   * { box-sizing: border-box; }
-  a { color: #4C5C9E; }
-  a:hover { color: #0b0b0b; }
-  input::placeholder { color: #b0aa9c; }
-  input:focus-visible { outline: 2px solid #6E82C8; outline-offset: 2px; }
-  button:focus-visible, a:focus-visible { outline: 2px solid #6E82C8; outline-offset: 3px; }
+  a { color: var(--accent); }
+  a:hover { color: var(--ink); }
+  input::placeholder { color: var(--faint); }
+  input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
   /* style-hover → CSS (from the design's style-hover attributes) */
-  .j-google:hover { background: #0b0b0b; color: #f4f1ea; }
-  .j-send:hover { background: #6E82C8; border-color: #6E82C8; }
-  .j-guest:hover { color: #0b0b0b; }
+  .j-google:hover { background: var(--ink); color: var(--on-accent); }
+  .j-send:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+  .j-guest:hover { color: var(--ink); }
   .j-google.is-loading, .j-send.is-loading { opacity: 0.6; pointer-events: none; }
 
   /* Banners (errors / resend confirmation), tuned to the cream palette. */
   .auth-banner { display: flex; align-items: flex-start; gap: 10px; margin: 0 0 20px; padding: 12px 14px; border: 1px solid; font-size: 14px; line-height: 1.5; }
   .auth-banner p { margin: 0; }
-  .auth-banner-icon { flex: none; width: 18px; height: 18px; display: grid; place-items: center; border-radius: 50%; font-size: 12px; font-weight: 700; color: #f4f1ea; margin-top: 1px; }
-  .auth-banner.is-error { background: #fbeae7; border-color: #e6b9ae; color: #8a2c17; }
-  .auth-banner.is-error .auth-banner-icon { background: #c0492c; }
-  .auth-banner.is-warn { background: #f7efdc; border-color: #dcc48a; color: #7a5a12; }
-  .auth-banner.is-warn .auth-banner-icon { background: #b4892a; }
-  .auth-banner.is-ok { background: #e7f0e8; border-color: #a9c8ad; color: #2f5a34; }
-  .auth-banner.is-ok .auth-banner-icon { background: #4b8452; }
+  .auth-banner-icon { flex: none; width: 18px; height: 18px; display: grid; place-items: center; border-radius: 50%; font-size: 12px; font-weight: 700; color: var(--on-accent); margin-top: 1px; }
+  .auth-banner.is-error { background: var(--wash); border-color: var(--hairline); color: var(--destructive); }
+  .auth-banner.is-error .auth-banner-icon { background: var(--destructive); }
+  .auth-banner.is-warn { background: var(--wash); border-color: var(--hairline); color: var(--muted); }
+  .auth-banner.is-warn .auth-banner-icon { background: var(--muted); }
+  .auth-banner.is-ok { background: var(--wash); border-color: var(--hairline); color: var(--ink); }
+  .auth-banner.is-ok .auth-banner-icon { background: var(--ink); }
 
-  .phone-input.is-invalid { border-bottom-color: #c0492c; }
-  .field-error { display: flex; align-items: baseline; gap: 8px; margin: 8px 0 0; font-size: 13px; color: #c0492c; }
+  .phone-input.is-invalid { border-bottom-color: var(--destructive); }
+  .field-error { display: flex; align-items: baseline; gap: 8px; margin: 8px 0 0; font-size: 13px; color: var(--destructive); }
   .j-send:disabled, .j-send[aria-disabled="true"] { opacity: 0.45; cursor: not-allowed; pointer-events: none; }
   .auth-unavailable-tag {
     flex: none;
@@ -57,8 +58,8 @@
     font-weight: 700;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: #8a8478;
-    border: 1px solid #d9d3c6;
+    color: var(--faint);
+    border: 1px solid var(--hairline);
     padding: 4px 8px;
     white-space: nowrap;
   }
@@ -68,10 +69,49 @@
      otherwise let the flex row of cells overflow the 400px panel. */
   .otp-fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
   .otp-cells { display: flex; gap: 10px; }
-  .otp-cell { flex: 1; min-width: 0; height: 58px; border: 1.5px solid #cbc4b4; background: #fff; color: #0b0b0b; font-family: 'Fraunces', Georgia, serif; font-size: 24px; font-weight: 600; text-align: center; }
-  .otp-cell:focus-visible { outline: 2px solid #6E82C8; outline-offset: 2px; border-color: #6E82C8; }
-  .link-btn { border: 0; background: none; padding: 0; font: inherit; font-weight: 600; color: #4C5C9E; cursor: pointer; }
-  .link-btn:hover { color: #0b0b0b; }
+  .otp-cell { flex: 1; min-width: 0; height: 58px; border: 1.5px solid var(--control-border); background: var(--paper); color: var(--ink); font-family: 'Fraunces', Georgia, serif; font-size: 24px; font-weight: 600; text-align: center; }
+  .otp-cell:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-color: var(--accent); }
+  .link-btn { border: 0; background: none; padding: 0; font: inherit; font-weight: 600; color: var(--accent); cursor: pointer; }
+  .link-btn:hover { color: var(--ink); }
+
+
+  /* D143: keep this page's existing layout if styles.css class names collide. */
+  .phone-input {
+    max-width: none;
+    border: 0;
+    background: transparent;
+  }
+  .phone-input.is-invalid {
+    border-color: transparent;
+    border-bottom-color: var(--destructive);
+  }
+  .otp-fieldset { min-width: 0; }
+  .otp-cells { gap: 10px; margin-top: 0; }
+  .otp-cell {
+    width: auto;
+    flex: 1;
+    min-width: 0;
+    height: 58px;
+    font-weight: 600;
+    font-size: 24px;
+  }
+  .otp-cell:focus,
+  .otp-cell:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-color: var(--accent);
+  }
+  .link-btn { color: var(--accent); text-decoration: none; font-weight: 600; }
+  .link-btn:hover { color: var(--ink); }
+  .auth-legal { max-width: none; }
+  .auth-legal a { text-decoration: none; }
+  .auth-banner {
+    background: var(--wash);
+    border: 1px solid var(--hairline);
+    color: var(--ink);
+    margin: 0 0 20px;
+  }
+  .field-error { color: var(--destructive); }
 
   @media (max-width: 860px) {
     [data-auth-grid] { grid-template-columns: 1fr !important; }
@@ -99,10 +139,10 @@
 </style>
 </head>
 <body>
-<div data-auth-grid style="min-height:100vh; display:grid; grid-template-columns:1.08fr 1fr; background:#f4f1ea; color:#0b0b0b; font-family:'Source Sans 3',system-ui,sans-serif; -webkit-font-smoothing:antialiased">
+<div data-auth-grid style="min-height:100vh; display:grid; grid-template-columns:1.08fr 1fr; background:var(--page); color:var(--ink); font-family:'Source Sans 3',system-ui,sans-serif; -webkit-font-smoothing:antialiased">
 
-  <aside style="order:0; display:flex; flex-direction:column; padding:clamp(32px,4.4vw,72px) clamp(28px,4.4vw,76px) clamp(32px,3.6vw,56px); background:#0b0b0b; color:#f4f1ea; position:relative; overflow:hidden">
-    <a href="/browse" style="display:inline-flex; align-items:center; gap:11px; text-decoration:none; color:#f4f1ea; margin-bottom:auto; width:fit-content">
+  <aside style="order:0; display:flex; flex-direction:column; padding:clamp(32px,4.4vw,72px) clamp(28px,4.4vw,76px) clamp(32px,3.6vw,56px); background:var(--ink); color:var(--on-accent); position:relative; overflow:hidden">
+    <a href="/browse" style="display:inline-flex; align-items:center; gap:11px; text-decoration:none; color:var(--on-accent); margin-bottom:auto; width:fit-content">
       <img src="/static/main_logo.png" width="26" height="26" alt="" style="display:block; width:26px; height:26px" />
       <span style="font-family:'Fraunces',Georgia,serif; font-weight:700; font-size:17px; letter-spacing:-0.01em">{{ app_name|default('Recall the C') }}</span>
     </a>
@@ -112,17 +152,17 @@
     </div>
 
     <ul style="list-style:none; margin:clamp(28px,4vh,48px) 0 0; padding:0; display:grid; gap:0; max-width:340px">
-      <li style="display:flex; gap:16px; align-items:baseline; padding:13px 0; border-top:1px solid rgba(244,241,234,0.14); font-size:14.5px; color:rgba(244,241,234,0.62)"><span style="font-size:11px; font-weight:700; letter-spacing:0.16em; color:rgba(244,241,234,0.38); min-width:18px">01</span>Progress that follows you between devices</li>
-      <li style="display:flex; gap:16px; align-items:baseline; padding:13px 0; border-top:1px solid rgba(244,241,234,0.14); font-size:14.5px; color:rgba(244,241,234,0.62)"><span style="font-size:11px; font-weight:700; letter-spacing:0.16em; color:rgba(244,241,234,0.38); min-width:18px">02</span>Revisions scheduled the day they come due</li>
-      <li style="display:flex; gap:16px; align-items:baseline; padding:13px 0; border-top:1px solid rgba(244,241,234,0.14); border-bottom:1px solid rgba(244,241,234,0.14); font-size:14.5px; color:rgba(244,241,234,0.62)"><span style="font-size:11px; font-weight:700; letter-spacing:0.16em; color:rgba(244,241,234,0.38); min-width:18px">03</span>Notes held against the Article they belong to</li>
+      <li style="display:flex; gap:16px; align-items:baseline; padding:13px 0; border-top:1px solid color-mix(in srgb, var(--on-accent) 14%, transparent); font-size:14.5px; color:color-mix(in srgb, var(--on-accent) 62%, transparent)"><span style="font-size:11px; font-weight:700; letter-spacing:0.16em; color:color-mix(in srgb, var(--on-accent) 38%, transparent); min-width:18px">01</span>Progress that follows you between devices</li>
+      <li style="display:flex; gap:16px; align-items:baseline; padding:13px 0; border-top:1px solid color-mix(in srgb, var(--on-accent) 14%, transparent); font-size:14.5px; color:color-mix(in srgb, var(--on-accent) 62%, transparent)"><span style="font-size:11px; font-weight:700; letter-spacing:0.16em; color:color-mix(in srgb, var(--on-accent) 38%, transparent); min-width:18px">02</span>Revisions scheduled the day they come due</li>
+      <li style="display:flex; gap:16px; align-items:baseline; padding:13px 0; border-top:1px solid color-mix(in srgb, var(--on-accent) 14%, transparent); border-bottom:1px solid color-mix(in srgb, var(--on-accent) 14%, transparent); font-size:14.5px; color:color-mix(in srgb, var(--on-accent) 62%, transparent)"><span style="font-size:11px; font-weight:700; letter-spacing:0.16em; color:color-mix(in srgb, var(--on-accent) 38%, transparent); min-width:18px">03</span>Notes held against the Article they belong to</li>
     </ul>
   </aside>
 
-  <main style="display:flex; flex-direction:column; justify-content:center; padding:clamp(32px,4vw,72px) clamp(28px,5vw,88px); background:#f4f1ea">
+  <main style="display:flex; flex-direction:column; justify-content:center; padding:clamp(32px,4vw,72px) clamp(28px,5vw,88px); background:var(--page)">
     <div style="width:100%; max-width:400px; margin:0 auto">
       {% if otp_sent %}
       <h2 style="font-family:'Fraunces',Georgia,serif; font-weight:700; font-size:clamp(30px,3vw,40px); line-height:1.02; letter-spacing:-0.03em; margin:0 0 12px">Enter the code</h2>
-      <p style="margin:0 0 clamp(24px,3.4vh,34px); font-size:15px; color:#615c50">We sent a 6-digit code{% if phone_value %} to <strong style="color:#0b0b0b">+91 {{ phone_value }}</strong>{% endif %}.</p>
+      <p style="margin:0 0 clamp(24px,3.4vh,34px); font-size:15px; color:var(--muted)">We sent a 6-digit code{% if phone_value %} to <strong style="color:var(--ink)">+91 {{ phone_value }}</strong>{% endif %}.</p>
       {% else %}
       <h2 style="font-family:'Fraunces',Georgia,serif; font-weight:700; font-size:clamp(30px,3vw,40px); line-height:1.02; letter-spacing:-0.03em; margin:0 0 clamp(28px,4vh,40px)">Sign in</h2>
       {% endif %}
@@ -166,7 +206,7 @@
       {% endif %}
 
       {% if both_disabled %}
-      <p style="margin:0; font-size:15px; color:#615c50">Sign-in is temporarily unavailable.</p>
+      <p style="margin:0; font-size:15px; color:var(--muted)">Sign-in is temporarily unavailable.</p>
       {% else %}
 
       {% if google_enabled and not otp_sent %}
@@ -175,12 +215,12 @@
         class="j-google"
         id="google-signin"
         data-google-signin
-        style="display:flex; align-items:center; justify-content:center; gap:10px; min-height:52px; padding:0 20px; border:1px solid #0b0b0b; background:transparent; color:#0b0b0b; text-decoration:none; font-size:15.5px; font-weight:600; transition:background .18s ease, color .18s ease">
+        style="display:flex; align-items:center; justify-content:center; gap:10px; min-height:52px; padding:0 20px; border:1px solid var(--ink); background:transparent; color:var(--ink); text-decoration:none; font-size:15.5px; font-weight:600; transition:background .18s ease, color .18s ease">
         <span aria-hidden="true" style="font-weight:700; font-size:16px">G</span>
         <span data-google-label>Continue with Google</span>
       </a>
-      <p style="display:flex; align-items:center; gap:14px; margin:24px 0; font-size:11px; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; color:#615c50">
-        <span style="flex:1; height:1px; background:#d9d3c6"></span>or<span style="flex:1; height:1px; background:#d9d3c6"></span>
+      <p style="display:flex; align-items:center; gap:14px; margin:24px 0; font-size:11px; font-weight:700; letter-spacing:0.2em; text-transform:uppercase; color:var(--muted)">
+        <span style="flex:1; height:1px; background:var(--hairline)"></span>or<span style="flex:1; height:1px; background:var(--hairline)"></span>
       </p>
       {% endif %}
 
@@ -189,33 +229,33 @@
         <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
         <input type="hidden" name="next" value="{{ next_url|default('/dashboard') }}">
         <input type="hidden" name="country_code" value="+91">
-        <label for="national_number" style="font-size:11.5px; font-weight:700; letter-spacing:0.16em; text-transform:uppercase; color:#615c50">Mobile number</label>
-        <div class="phone-input{% if state == 'invalid-phone' %} is-invalid{% endif %}" style="display:flex; align-items:stretch; border-bottom:1.5px solid #0b0b0b">
-          <span aria-hidden="true" style="display:flex; align-items:center; padding-right:12px; font-size:17px; color:#615c50">+91</span>
+        <label for="national_number" style="font-size:11.5px; font-weight:700; letter-spacing:0.16em; text-transform:uppercase; color:var(--muted)">Mobile number</label>
+        <div class="phone-input{% if state == 'invalid-phone' %} is-invalid{% endif %}" style="display:flex; align-items:stretch; border-bottom:1.5px solid var(--ink)">
+          <span aria-hidden="true" style="display:flex; align-items:center; padding-right:12px; font-size:17px; color:var(--muted)">+91</span>
           <input id="national_number" name="national_number" type="tel" inputmode="numeric" autocomplete="tel-national" maxlength="10" pattern="[6-9][0-9]{9}" placeholder="98765 43210" value="{{ phone_value }}" required
             aria-invalid="{{ 'true' if state == 'invalid-phone' else 'false' }}"
             {% if state == 'invalid-phone' %}aria-describedby="phone-error"{% endif %}
-            style="flex:1; min-height:44px; border:0; background:transparent; color:#0b0b0b; font:inherit; font-size:17px; letter-spacing:0.02em; padding:8px 0" />
+            style="flex:1; min-height:44px; border:0; background:transparent; color:var(--ink); font:inherit; font-size:17px; letter-spacing:0.02em; padding:8px 0" />
         </div>
         {% if state == 'invalid-phone' %}
         <p class="field-error" id="phone-error"><span aria-hidden="true">!</span>Enter a valid 10-digit Indian mobile number starting with 6–9.</p>
         {% endif %}
-        <button type="submit" class="j-send" data-send-otp style="min-height:52px; margin-top:6px; border:1px solid #0b0b0b; background:#0b0b0b; color:#f4f1ea; font:inherit; font-size:15.5px; font-weight:600; cursor:pointer; transition:background .18s ease, border-color .18s ease">
+        <button type="submit" class="j-send" data-send-otp style="min-height:52px; margin-top:6px; border:1px solid var(--ink); background:var(--ink); color:var(--on-accent); font:inherit; font-size:15.5px; font-weight:600; cursor:pointer; transition:background .18s ease, border-color .18s ease">
           <span data-send-label>Send code</span>
         </button>
       </form>
       {% elif not phone_enabled and not otp_sent %}
       <div data-phone-unavailable aria-disabled="true" style="display:grid; gap:14px">
         <div style="display:flex; align-items:center; justify-content:space-between; gap:12px">
-          <span style="font-size:11.5px; font-weight:700; letter-spacing:0.16em; text-transform:uppercase; color:#615c50">Mobile number</span>
+          <span style="font-size:11.5px; font-weight:700; letter-spacing:0.16em; text-transform:uppercase; color:var(--muted)">Mobile number</span>
           <span class="auth-unavailable-tag">not currently available</span>
         </div>
-        <div class="phone-input" style="display:flex; align-items:stretch; border-bottom:1.5px solid #d9d3c6; opacity:0.55">
-          <span aria-hidden="true" style="display:flex; align-items:center; padding-right:12px; font-size:17px; color:#615c50">+91</span>
+        <div class="phone-input" style="display:flex; align-items:stretch; border-bottom:1.5px solid var(--hairline); opacity:0.55">
+          <span aria-hidden="true" style="display:flex; align-items:center; padding-right:12px; font-size:17px; color:var(--muted)">+91</span>
           <input id="national_number" type="tel" inputmode="numeric" maxlength="10" placeholder="98765 43210" disabled
-            style="flex:1; min-height:44px; border:0; background:transparent; color:#0b0b0b; font:inherit; font-size:17px; letter-spacing:0.02em; padding:8px 0" />
+            style="flex:1; min-height:44px; border:0; background:transparent; color:var(--ink); font:inherit; font-size:17px; letter-spacing:0.02em; padding:8px 0" />
         </div>
-        <button type="button" class="j-send" disabled aria-disabled="true" style="min-height:52px; margin-top:6px; border:1px solid #0b0b0b; background:#0b0b0b; color:#f4f1ea; font:inherit; font-size:15.5px; font-weight:600">
+        <button type="button" class="j-send" disabled aria-disabled="true" style="min-height:52px; margin-top:6px; border:1px solid var(--ink); background:var(--ink); color:var(--on-accent); font:inherit; font-size:15.5px; font-weight:600">
           Send code
         </button>
       </div>
@@ -228,34 +268,34 @@
         <input type="hidden" name="phone" value="{{ phone_e164 or ('+91' ~ phone_value) }}">
         <input type="hidden" name="otp" id="otp-combined" value="">
         <fieldset class="otp-fieldset">
-          <legend style="font-size:11.5px; font-weight:700; letter-spacing:0.16em; text-transform:uppercase; color:#615c50; margin-bottom:12px">One-time code</legend>
+          <legend style="font-size:11.5px; font-weight:700; letter-spacing:0.16em; text-transform:uppercase; color:var(--muted); margin-bottom:12px">One-time code</legend>
           <div class="otp-cells" data-otp-cells>
             {% for i in range(6) %}
             <input class="otp-cell" name="otp{{ i }}" type="text" inputmode="numeric" autocomplete="{{ 'one-time-code' if i == 0 else 'off' }}" maxlength="1" pattern="[0-9]" aria-label="Digit {{ i + 1 }}" data-otp-index="{{ i }}" required>
             {% endfor %}
           </div>
         </fieldset>
-        <button type="submit" class="j-send" data-verify-otp disabled style="min-height:52px; border:1px solid #0b0b0b; background:#0b0b0b; color:#f4f1ea; font:inherit; font-size:15.5px; font-weight:600; cursor:pointer; transition:background .18s ease, border-color .18s ease">Verify and continue</button>
-        <p style="margin:2px 0 0; font-size:13.5px; color:#615c50" data-resend-wrap>
+        <button type="submit" class="j-send" data-verify-otp disabled style="min-height:52px; border:1px solid var(--ink); background:var(--ink); color:var(--on-accent); font:inherit; font-size:15.5px; font-weight:600; cursor:pointer; transition:background .18s ease, border-color .18s ease">Verify and continue</button>
+        <p style="margin:2px 0 0; font-size:13.5px; color:var(--muted)" data-resend-wrap>
           <span data-resend-timer>Resend available in <strong data-resend-count>30</strong>s</span>
           <button type="submit" formaction="/auth/phone/send" formmethod="post" class="link-btn" name="resend" value="1" data-resend-btn hidden>Resend code</button>
           <input type="hidden" name="national_number" value="{{ phone_value }}">
           <input type="hidden" name="country_code" value="+91">
         </p>
-        <p style="margin:0; font-size:14px"><a href="/login?next={{ next_url|urlencode }}" style="color:#4C5C9E; text-decoration:none; font-weight:600">Use a different number</a></p>
+        <p style="margin:0; font-size:14px"><a href="/login?next={{ next_url|urlencode }}" style="color:var(--accent); text-decoration:none; font-weight:600">Use a different number</a></p>
       </form>
       {% endif %}
 
       {% endif %}
 
       {% if not otp_sent %}
-      <p class="auth-legal" style="margin:clamp(34px,5vh,52px) 0 0; padding-top:20px; border-top:1px solid #ded8cb; font-size:13px; line-height:1.6; color:#615c50">By continuing, you agree to the <a href="/terms" style="color:#615c50">Terms</a> and acknowledge the <a href="/privacy" style="color:#615c50">Privacy Policy</a>.</p>
+      <p class="auth-legal" style="margin:clamp(34px,5vh,52px) 0 0; padding-top:20px; border-top:1px solid var(--hairline); font-size:13px; line-height:1.6; color:var(--muted)">By continuing, you agree to the <a href="/terms" style="color:var(--muted)">Terms</a> and acknowledge the <a href="/privacy" style="color:var(--muted)">Privacy Policy</a>.</p>
       {% endif %}
-      <p style="margin:12px 0 0; font-size:14px"><a href="/browse" class="j-guest" style="color:#4C5C9E; text-decoration:none; font-weight:600; transition:color .18s ease">Continue as guest →</a></p>
+      <p style="margin:12px 0 0; font-size:14px"><a href="/browse" class="j-guest" style="color:var(--accent); text-decoration:none; font-weight:600; transition:color .18s ease">Continue as guest →</a></p>
       <nav class="j-legal-nav" aria-label="Legal" style="display:flex; flex-wrap:wrap; gap:6px 18px; margin:clamp(26px,4vh,44px) 0 0; font-size:13px; font-weight:600">
-        <a href="/terms" style="color:#615c50; text-decoration:none">Terms</a>
-        <a href="/privacy" style="color:#615c50; text-decoration:none">Privacy</a>
-        <a href="/grievance" style="color:#615c50; text-decoration:none">Grievance</a>
+        <a href="/terms" style="color:var(--muted); text-decoration:none">Terms</a>
+        <a href="/privacy" style="color:var(--muted); text-decoration:none">Privacy</a>
+        <a href="/grievance" style="color:var(--muted); text-decoration:none">Grievance</a>
       </nav>
     </div>
   </main>

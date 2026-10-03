@@ -7,7 +7,10 @@ Does not reopen Stage 1, R5, or R6 semantics. T40 rewrites live in
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
+
+from fastapi.testclient import TestClient
 
 from constitution_memorizer.entitlements.models import (
     BLOCK_DEVICE_CONFIG_ERROR,
@@ -306,3 +309,111 @@ def test_r7_shell_still_has_phone_and_desktop_breakpoints(tmp_path: Path) -> Non
     week = client.get("/calendar?view=week")
     assert week.status_code == 200
     assert "calendar-week" in week.text or "calendar.is-week" in week.text or "is-week" in week.text
+
+
+D143_SURFACES = (
+    TEMPLATES / "landing.html",
+    TEMPLATES / "landing_light.html",
+    TEMPLATES / "login.html",
+    STATIC / "landing.js",
+)
+D143_TOKENS = {
+    "--page",
+    "--paper",
+    "--wash",
+    "--ink",
+    "--muted",
+    "--faint",
+    "--hairline",
+    "--control-border",
+    "--hover",
+    "--accent",
+    "--accent-hover",
+    "--on-accent",
+    "--destructive",
+    "--shadow",
+    "--font-display",
+    "--font-body",
+}
+_HEX = re.compile(r"(?<!&)#(?:[0-9A-Fa-f]{3}|[0-9A-Fa-f]{4}|[0-9A-Fa-f]{6}|[0-9A-Fa-f]{8})\b")
+_RGB = re.compile(
+    r"rgba?\(\s*(?:110\s*,\s*130\s*,\s*200|244\s*,\s*241\s*,\s*234)\b",
+    re.I,
+)
+_VAR = re.compile(r"var\(\s*(--[A-Za-z0-9-]+)")
+_SPLASH = (
+    "6E82C8",
+    "0E7569",
+    "f4f1ea",
+    "fdfcfa",
+    "4C5C9E",
+    "F59022",
+)
+_FORBIDDEN = ("--browse-due", "--pg-", "--letters-correct")
+
+
+def test_d143_tracker_row_is_not_folded_into_u1() -> None:
+    tracker = (ROOT / "docs/PLAYGROUND_UI_REDESIGN_TRACKER.md").read_text(encoding="utf-8")
+    assert "### D143 — Splash/auth palette reconciliation" in tracker
+    assert "| D143 |" in tracker
+    assert "not in frozen U1 28" in tracker or "Not folded into frozen U1" in tracker
+    assert "U8 24 / 25" in tracker or "U8 **24 / 25**" in tracker or "24/25" in tracker
+    assert "208 scored" in tracker
+
+
+def test_d143_surfaces_use_u1_tokens_only() -> None:
+    for path in D143_SURFACES:
+        text = path.read_text(encoding="utf-8")
+        hexes = _HEX.findall(text)
+        assert hexes == [], f"{path.name} still has hex: {hexes}"
+        assert _RGB.search(text) is None, f"{path.name} still has splash rgb"
+        lowered = text.lower()
+        for splash in _SPLASH:
+            assert splash.lower() not in lowered, f"{path.name} still mentions {splash}"
+        for token in _FORBIDDEN:
+            assert token not in text, f"{path.name} uses forbidden {token}"
+        unknown = sorted({name for name in _VAR.findall(text) if name not in D143_TOKENS})
+        assert unknown == [], f"{path.name} uses tokens outside D143: {unknown}"
+    landing = (TEMPLATES / "landing.html").read_text(encoding="utf-8")
+    light = (TEMPLATES / "landing_light.html").read_text(encoding="utf-8")
+    login = (TEMPLATES / "login.html").read_text(encoding="utf-8")
+    js = (STATIC / "landing.js").read_text(encoding="utf-8")
+    for html in (landing, light, login):
+        assert "styles.css?v=main77" in html
+        assert html.find("styles.css?v=main77") < html.find("<style>")
+        assert "a:hover" in html
+    assert 'data-theme="dark"' in landing
+    assert 'data-theme="light"' in light
+    assert 'data-theme="light"' in login
+    assert "landing.js?v=landing2" in landing
+    assert "tokenRgb" in js
+    assert "getComputedStyle" in js
+    assert "lerpToken" in js
+
+
+def test_d143_does_not_change_ia_auth_or_light_route(tmp_path: Path) -> None:
+    login = (TEMPLATES / "login.html").read_text(encoding="utf-8")
+    assert "Continue with Google" in login
+    assert "data-phone-form" in login
+    assert "data-otp-form" in login
+    assert "j-legal-nav" in login
+    assert "auth_shell" not in login
+    app_src = (ROOT / "src/constitution_memorizer/web/app.py").read_text(encoding="utf-8")
+    assert '"landing.html"' in app_src
+    landing_serve = app_src.split("landing_light.html", 1)[1][:400]
+    assert '"landing.html"' in landing_serve
+    client = TestClient(
+        create_app(
+            units_path=ROOT / "tests/fixtures/learning/mini_units.json",
+            db_path=tmp_path / "progress.db",
+        )
+    )
+    home = client.get("/", follow_redirects=False)
+    assert home.status_code == 200
+    assert "rc-launch" in home.text
+    assert "landing.js?v=landing2" in home.text
+    assert "landing-light.js" not in home.text
+    signin = client.get("/login")
+    assert signin.status_code == 200
+    assert "Continue with Google" in signin.text or "data-google-signin" in signin.text
+    assert "j-legal-nav" in signin.text

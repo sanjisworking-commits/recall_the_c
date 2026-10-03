@@ -34,6 +34,34 @@
 
   var clamp = function (v) { return v < 0 ? 0 : v > 1 ? 1 : v; };
 
+  var _rgbCache = {};
+  function token(name) {
+    return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+  }
+  function tokenRgb(name) {
+    if (_rgbCache[name]) return _rgbCache[name];
+    var probe = document.createElement('span');
+    probe.style.cssText = 'position:absolute;left:-9999px;color:var(' + name + ')';
+    document.documentElement.appendChild(probe);
+    var cs = getComputedStyle(probe).color;
+    document.documentElement.removeChild(probe);
+    var m = cs.match(/(\d+)[^\d]+(\d+)[^\d]+(\d+)/);
+    var rgb = m ? [+m[1], +m[2], +m[3]] : [0, 0, 0];
+    _rgbCache[name] = rgb;
+    return rgb;
+  }
+  function tokenRgba(name, a) {
+    var rgb = tokenRgb(name);
+    return 'rgba(' + rgb[0] + ',' + rgb[1] + ',' + rgb[2] + ',' + a + ')';
+  }
+  function lerpToken(aName, bName, t, alpha) {
+    var a = tokenRgb(aName), b = tokenRgb(bName);
+    var r = Math.round(a[0] + (b[0] - a[0]) * t);
+    var g = Math.round(a[1] + (b[1] - a[1]) * t);
+    var bl = Math.round(a[2] + (b[2] - a[2]) * t);
+    return 'rgba(' + r + ',' + g + ',' + bl + ',' + alpha + ')';
+  }
+
   // ── Letter field → sphere → brain ─────────────────────────────
   function setupField() {
     if (parts) return;
@@ -206,7 +234,7 @@
     }
 
     // Lines take over from the letters as the brain resolves. Accent contours
-    // are indigo (#6E82C8 → rgb(110,130,200)) to match the page.
+    // use --accent to match the page.
     if (morph > 0.86) {
       var la = clamp((morph - 0.86) / 0.14);
       ctx.lineJoin = 'round';
@@ -214,9 +242,9 @@
       for (var gi = 0; gi < groups.length; gi++) {
         var grp = groups[gi];
         ctx.lineWidth = gi === 0 ? 1.5 : grp.major ? 1.2 : 0.9;
-        ctx.strokeStyle = gi === 0 ? 'rgba(110,130,200,' + la.toFixed(3) + ')'
-          : grp.major ? 'rgba(110,130,200,' + (la * 0.8).toFixed(3) + ')'
-          : 'rgba(244,241,234,' + (la * 0.72).toFixed(3) + ')';
+        ctx.strokeStyle = gi === 0 ? tokenRgba('--accent', la)
+          : grp.major ? tokenRgba('--accent', la * 0.8)
+          : tokenRgba('--ink', la * 0.72);
         ctx.beginPath();
         var ix = grp.idx;
         for (var k2 = 0; k2 < ix.length; k2++) {
@@ -240,8 +268,8 @@
         var f = Math.max(3, Math.round(p.size * gScale * (0.75 + p.depth * 0.4))) + 'px "Source Sans 3", system-ui, sans-serif';
         if (f !== lastFont) { ctx.font = f; lastFont = f; }
         ctx.fillStyle = p.accent
-          ? 'rgba(110,130,200,' + Math.min(1, a * 1.2).toFixed(3) + ')'
-          : 'rgba(244,241,234,' + a.toFixed(3) + ')';
+          ? tokenRgba('--accent', Math.min(1, a * 1.2))
+          : tokenRgba('--ink', a);
         ctx.fillText(p.ch, p.x, p.y);
       }
     }
@@ -424,8 +452,8 @@
           el.style.marginTop = i > 2 ? gml : '';
         }
         var on = pc * 6.4 > i + 0.15;
-        el.style.color = on ? '#f4f1ea' : 'rgba(244,241,234,0.62)';
-        el.style.borderColor = on ? 'rgba(244,241,234,0.34)' : 'rgba(244,241,234,0.14)';
+        el.style.color = on ? token('--ink') : tokenRgba('--ink', 0.62);
+        el.style.borderColor = on ? tokenRgba('--ink', 0.34) : tokenRgba('--ink', 0.14);
       });
     }
 
@@ -445,8 +473,8 @@
         var on = reduced || (pinned && i < lit);
         var boxed = el.hasAttribute('data-lbox');
         el.style.color = on
-          ? ((!boxed && i === spans.length - 1 && lit >= spans.length) ? '#6E82C8' : '#ffffff')
-          : 'rgba(244,241,234,0.26)';
+          ? ((!boxed && i === spans.length - 1 && lit >= spans.length) ? token('--accent') : token('--accent-hover'))
+          : tokenRgba('--ink', 0.26);
       });
     }
 
@@ -611,7 +639,7 @@
         'left:' + (50 + Math.cos(ang) * rad * 100).toFixed(1) + '%;' +
         'top:' + (50 + Math.sin(ang) * rad * 100).toFixed(1) + '%;' +
         'font-size:' + (8 + Math.random() * 6).toFixed(1) + 'px;' +
-        'color:' + (Math.random() < 0.12 ? '#6E82C8' : '#f4f1ea') + ';';
+        'color:' + (Math.random() < 0.12 ? token('--accent') : token('--ink')) + ';';
       field.appendChild(s);
       bits.push({ el: s, ox: Math.cos(ang), oy: Math.sin(ang), o: 0.06 + Math.random() * 0.16, d: Math.random() * 0.3 });
     }
@@ -633,7 +661,7 @@
           'translate(' + (s.ox + r * Math.cos(th)).toFixed(2) + 'px,' + (s.oy + r * Math.sin(th)).toFixed(2) + 'px)' +
           ' scale(' + (1 + SCALE * back).toFixed(3) + ')';
         var lp = Math.max(0, Math.min(1, (sp - 0.45) / 0.4));
-        s.el.style.borderColor = 'rgba(' + (110 + 134 * lp).toFixed(0) + ',' + (130 + 111 * lp).toFixed(0) + ',' + (200 + 34 * lp).toFixed(0) + ',' + (0.4 - 0.26 * lp).toFixed(3) + ')';
+        s.el.style.borderColor = lerpToken('--accent', '--ink', lp, 0.4 - 0.26 * lp);
         if (s.label) s.label.style.opacity = ((s.lead ? 0.9 : 0.26) + (1 - (s.lead ? 0.9 : 0.26)) * lp).toFixed(3);
       });
       var fp = Math.max(0, Math.min(1, (p - 0.3) / 0.5));
