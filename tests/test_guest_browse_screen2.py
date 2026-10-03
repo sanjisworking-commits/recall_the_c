@@ -130,6 +130,15 @@ def test_screen2_laws_card_routes_to_the_laws_index(tmp_path: Path) -> None:
     assert "Schedules, Parts, writs" in row
     assert 'href="/laws"' in row
     assert 'href="/tables"' in row
+    css = (
+        ROOT / "src/constitution_memorizer/web/static/styles.css"
+    ).read_text(encoding="utf-8")
+    guest_grid = css.split(
+        'body.is-guest[data-mscreen="browse"] .browse-resource-grid {', 1
+    )[1].split("}", 1)[0]
+    assert "calc(200% / 3)" in guest_grid
+    global_grid = css.split(".browse-resource-grid {", 1)[1].split("}", 1)[0]
+    assert "1fr 1fr" in global_grid
     laws = client.get("/laws")
     assert laws.status_code == 200
     assert 'data-laws-index' in laws.text or "laws-index-title" in laws.text
@@ -288,8 +297,10 @@ def test_screen2_1280_matches_prototype_screenshot(tmp_path: Path) -> None:
               const hr = header.getBoundingClientRect();
               const br = brand.getBoundingClientRect();
               const sr = strip.getBoundingClientRect();
+              const grid = document.querySelector('.browse-resource-grid');
               const lr = laws.getBoundingClientRect();
               const tr = tables.getBoundingClientRect();
+              const gr = grid.getBoundingClientRect();
               const pageBg = getComputedStyle(document.querySelector('.sheet')).backgroundColor;
               const headerBg = getComputedStyle(header).backgroundColor;
               const signinBg = getComputedStyle(signin).backgroundColor;
@@ -317,6 +328,12 @@ def test_screen2_1280_matches_prototype_screenshot(tmp_path: Path) -> None:
                 tablesX: tr.x,
                 lawsY: lr.y,
                 tablesY: tr.y,
+                lawsW: lr.width,
+                tablesW: tr.width,
+                gridW: gr.width,
+                stripW: sr.width,
+                tablesRight: tr.right,
+                stripRight: sr.right,
                 partTag,
                 partParent,
                 partRailDisplay: partRail ? getComputedStyle(partRail).display : null,
@@ -448,6 +465,9 @@ def test_screen2_1280_matches_prototype_screenshot(tmp_path: Path) -> None:
     assert geo["tablesHref"] == "/tables"
     assert geo["lawsX"] < geo["tablesX"]
     assert abs(geo["lawsY"] - geo["tablesY"]) <= 2
+    assert abs(geo["lawsW"] - geo["tablesW"]) <= 2
+    assert geo["gridW"] / geo["stripW"] == pytest.approx(2 / 3, abs=0.03)
+    assert geo["stripRight"] - geo["tablesRight"] > geo["stripW"] * 0.25
     assert geo["partTag"] == "DIV"
     assert geo["partParent"] != "A"
     assert geo["partRailDisplay"] == "none"

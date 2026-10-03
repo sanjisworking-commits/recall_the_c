@@ -10527,6 +10527,12 @@ body.is-admin-previewing { padding-top: 40px; }
     display: none;
   }
 
+  body.is-guest[data-mscreen="browse"] .browse-resource-grid {
+    width: calc(200% / 3);
+    max-width: calc(200% / 3);
+    grid-template-columns: 1fr 1fr;
+  }
+
   [data-guest-account-menu] .account-avatar-fallback {
     background: var(--track);
     color: var(--muted);
