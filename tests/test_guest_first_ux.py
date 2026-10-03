@@ -113,10 +113,16 @@ def test_guest_landing_and_browse_learn(tmp_path: Path):
     browse = client.get("/browse")
     assert browse.status_code == 200
     assert "Browse the Constitution" in browse.text
-    assert "Learning as guest" in browse.text
+    assert "Learning as guest" not in browse.text
     assert "guest-signin-modal" in browse.text
-    assert 'href="/" class="nav-link">Home' in browse.text
-    assert 'href="/browse" class="nav-link is-active">Browse' in browse.text
+    assert 'href="/" class="nav-link">Home' not in browse.text
+    assert 'class="nav-link is-active"' in browse.text
+    assert ">Browse" in browse.text
+    assert ">Today<" in browse.text or ">Today</a>" in browse.text
+    assert "Not signed in" in browse.text
+    assert 'data-guest-account-menu' in browse.text
+    assert 'data-guest-gate' in browse.text
+    assert 'href="/login"' in browse.text
 
     learn = client.get("/learn/clause-1")
     assert learn.status_code == 200
