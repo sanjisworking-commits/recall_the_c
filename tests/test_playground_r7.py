@@ -10,8 +10,6 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from fastapi.testclient import TestClient
-
 from constitution_memorizer.entitlements.models import (
     BLOCK_DEVICE_CONFIG_ERROR,
     BLOCK_DEVICE_LIMIT,
@@ -23,6 +21,7 @@ from constitution_memorizer.entitlements.models import (
 from constitution_memorizer.playground.view import gate_view
 from constitution_memorizer.web.app import create_app
 
+from tests.test_guest_first_ux import _client as _guest_client
 from tests.test_roster_m5a import _authed_client, _subscribe
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -402,12 +401,7 @@ def test_d143_does_not_change_ia_auth_or_light_route(tmp_path: Path) -> None:
     assert '"landing.html"' in app_src
     landing_serve = app_src.split("landing_light.html", 1)[1][:400]
     assert '"landing.html"' in landing_serve
-    client = TestClient(
-        create_app(
-            units_path=ROOT / "tests/fixtures/learning/mini_units.json",
-            db_path=tmp_path / "progress.db",
-        )
-    )
+    client = _guest_client(tmp_path)
     home = client.get("/", follow_redirects=False)
     assert home.status_code == 200
     assert "rc-launch" in home.text
