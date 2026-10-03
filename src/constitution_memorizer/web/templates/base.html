@@ -95,7 +95,8 @@
   {% set auth_surface = path.startswith('/login') or path.startswith('/auth/') or path.startswith('/signed-out') or path.startswith('/session-expired') %}
   {% set guest_browse_index = multiuser_enabled|default(false) and not current_user and not auth_surface and path == '/browse' %}
   {% set guest_laws_index = multiuser_enabled|default(false) and not current_user and not auth_surface and path == '/laws' %}
-  {% set guest_chrome = guest_browse_index or guest_laws_index %}
+  {% set guest_bareact_head = multiuser_enabled|default(false) and not current_user and not auth_surface and path == '/laws/ndps' %}
+  {% set guest_chrome = guest_browse_index or guest_laws_index or guest_bareact_head %}
   <div class="page-wrap">
     <div class="sheet">
       <header class="site-header">

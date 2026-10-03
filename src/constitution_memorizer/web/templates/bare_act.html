@@ -2,7 +2,38 @@
 {% block title %}{{ seo_title|default(act.title ~ ' · ' ~ app_name|default('Recall the C'), true) }}{% endblock %}
 {% block mobile_screen %}bareact{% endblock %}
 {% block content %}
-<section class="panel bareact bareact-page is-{{ act.render_profile }}">
+{% set guest_bareact_head = multiuser_enabled|default(false) and not current_user and guest_screen4|default(none) %}
+{% if guest_bareact_head %}
+<section class="panel guest-bareact" data-guest-bareact-desktop>
+  <div class="guest-bareact-headband">
+    <a class="guest-bareact-back" href="/laws"><svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M12.2 4.2 6.4 10l5.8 5.8"></path></svg>Laws</a>
+    <div class="guest-bareact-head">
+      <div class="guest-bareact-copy">
+        <p class="guest-bareact-kicker">{{ guest_screen4.kicker }}</p>
+        <h1 class="guest-bareact-title">{{ guest_screen4.title }}</h1>
+        <p class="guest-bareact-meta">{{ guest_screen4.meta }}</p>
+      </div>
+      <a
+        class="guest-bareact-cta"
+        href="{{ guest_screen4.add_href }}"
+        data-pg-sheet
+        data-pg-kind="guest"
+      >Sign in to use Playground</a>
+    </div>
+  </div>
+  <div class="guest-bareact-rows" role="list">
+    {% for row in guest_screen4.rows %}
+    <div class="guest-bareact-row" role="listitem">
+      <span class="guest-bareact-row-tag">{{ row.tag }}</span>
+      <span class="guest-bareact-row-title">{{ row.title }}</span>
+      <span class="guest-bareact-row-range">{{ row.range_label }}</span>
+      <span class="guest-bareact-row-chevron" aria-hidden="true">›</span>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+<section class="panel bareact bareact-page is-{{ act.render_profile }}"{% if guest_bareact_head %} data-bareact-phone{% endif %}>
   <div class="bareact-head">
     <div class="mobile-topbar">
       <a class="mobile-back" href="/laws">← Laws</a>

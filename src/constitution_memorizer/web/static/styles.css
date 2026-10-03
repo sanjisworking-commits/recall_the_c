@@ -10703,6 +10703,170 @@ body.is-admin-previewing { padding-top: 40px; }
   }
 }
 
+/* Guest NDPS Bare Act head (CTA map guest/04-screen). Desktop only; phone
+   Bare Act keeps the production accordion, About card, and Playground CTA. */
+@media (max-width: 560px) {
+  [data-guest-bareact-desktop] {
+    display: none !important;
+  }
+}
+
+@media (min-width: 561px) {
+  body.is-guest[data-mscreen="bareact"]:has([data-guest-bareact-desktop]) .brand-mark {
+    filter: invert(1);
+  }
+
+  body.is-guest[data-mscreen="bareact"]:has([data-guest-bareact-desktop]) .page-wrap,
+  body.is-guest[data-mscreen="bareact"]:has([data-guest-bareact-desktop]) .sheet,
+  body.is-guest[data-mscreen="bareact"]:has([data-guest-bareact-desktop]) .main {
+    background: var(--paper);
+  }
+
+  body.is-guest[data-mscreen="bareact"] [data-bareact-phone] {
+    display: none !important;
+  }
+
+  body.is-guest[data-mscreen="bareact"]:has([data-guest-bareact-desktop]) .site-footer,
+  body.is-guest[data-mscreen="bareact"]:has([data-guest-bareact-desktop]) .sheet-footnote {
+    display: none;
+  }
+
+  body.is-guest[data-mscreen="bareact"] .panel.guest-bareact {
+    max-width: none;
+    padding: 0;
+    background: var(--paper);
+  }
+
+  .guest-bareact-headband {
+    padding: 22px 40px 22px;
+    background: var(--page);
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  .guest-bareact-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 32px;
+    margin: 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  .guest-bareact-back:hover {
+    color: var(--ink);
+  }
+
+  .guest-bareact-head {
+    display: flex;
+    align-items: flex-end;
+    gap: 32px;
+    margin-top: 6px;
+  }
+
+  .guest-bareact-copy {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .guest-bareact-kicker {
+    margin: 0 0 4px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mid);
+  }
+
+  .guest-bareact-title {
+    margin: 0 0 4px;
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  .guest-bareact-meta {
+    margin: 0;
+    font-size: 13px;
+    color: var(--mid);
+  }
+
+  .guest-bareact-cta {
+    display: flex;
+    flex: 0 0 380px;
+    align-items: center;
+    justify-content: center;
+    width: 380px;
+    max-width: 100%;
+    height: 48px;
+    padding: 0 16px;
+    border: none;
+    border-radius: 12px;
+    background: var(--ink);
+    color: var(--on-accent);
+    font-size: 14.5px;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.28);
+  }
+
+  .guest-bareact-cta:active {
+    transform: translateY(1px);
+  }
+
+  .guest-bareact-rows {
+    max-width: 960px;
+    padding: 8px 40px 60px;
+  }
+
+  .guest-bareact-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    min-height: 56px;
+    padding: 12px 16px;
+    margin: 0 -16px;
+    border-bottom: 1px solid var(--page);
+  }
+
+  .guest-bareact-row-tag {
+    flex: 0 0 110px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    color: var(--mid);
+    white-space: nowrap;
+  }
+
+  .guest-bareact-row-title {
+    flex: 1 1 auto;
+    font-size: 15.5px;
+    font-weight: 500;
+  }
+
+  .guest-bareact-row-range {
+    font-size: 12px;
+    color: var(--faint);
+    white-space: nowrap;
+  }
+
+  .guest-bareact-row-chevron {
+    font-size: 14px;
+    color: var(--control-border);
+  }
+}
+
+@media (min-width: 561px) and (max-width: 1279px) {
+  .guest-bareact-headband,
+  .guest-bareact-rows {
+    padding-left: max(28px, calc((100% - 1180px) / 2));
+    padding-right: max(28px, calc((100% - 1180px) / 2));
+  }
+}
+
 /* R7 closeout — reconciliation only. No IA change. D14, D16, D17, D25. */
 .page-wrap,
 .sheet,

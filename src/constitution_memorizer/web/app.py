@@ -192,6 +192,7 @@ from constitution_memorizer.web.judicial_evolution import (
 from constitution_memorizer.web.act_info import build_act_info
 from constitution_memorizer.web.bare_acts import get_bare_act
 from constitution_memorizer.web.law_catalog import load_catalog
+from constitution_memorizer.web.guest_bareact_head import ndps_guest_head
 from constitution_memorizer.web.guest_laws_index import GUEST_LAWS_CARDS, GUEST_LAWS_CHIPS
 from constitution_memorizer.web.laws_data import get_law
 from constitution_memorizer.web.memory_calendar import build_memory_month, schedule_chip_states
@@ -3118,6 +3119,9 @@ def create_app(
                     "playground_state": playground_state,
                     "in_playground": bool(
                         playground_state and playground_state.active_this_period
+                    ),
+                    "guest_screen4": (
+                        ndps_guest_head() if bare.slug == "ndps" else None
                     ),
                 },
             )
