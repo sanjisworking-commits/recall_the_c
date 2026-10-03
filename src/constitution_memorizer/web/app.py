@@ -192,6 +192,7 @@ from constitution_memorizer.web.judicial_evolution import (
 from constitution_memorizer.web.act_info import build_act_info
 from constitution_memorizer.web.bare_acts import get_bare_act
 from constitution_memorizer.web.law_catalog import load_catalog
+from constitution_memorizer.web.guest_laws_index import GUEST_LAWS_CARDS, GUEST_LAWS_CHIPS
 from constitution_memorizer.web.laws_data import get_law
 from constitution_memorizer.web.memory_calendar import build_memory_month, schedule_chip_states
 from constitution_memorizer.web.progress_stats import progress_dashboard
@@ -3058,6 +3059,8 @@ def create_app(
             ),
             "initial_status": request.query_params.get("status") or "",
             "has_repealed": bool(catalog.repealed_laws),
+            "guest_screen3_laws": GUEST_LAWS_CARDS,
+            "guest_screen3_chips": GUEST_LAWS_CHIPS,
         }
         started = time.perf_counter()
         response = templates.TemplateResponse(request, "laws.html", context)
