@@ -15,6 +15,8 @@ NDPS_GUEST_PATH = f"/laws/{NDPS_SLUG}"
 NDPS_GUEST_TITLE = "The Narcotic Drugs and Psychotropic Substances Act, 1985"
 NDPS_GUEST_KICKER = "BARE ACT · INDIA CODE"
 NDPS_GUEST_META = f"6 Chapters · Sections 1{EN_DASH}83 · Schedule"
+NDPS_GUEST_READING_NAME = "The NDPS Act, 1985"
+GUEST_ADD_TITLE = "Add to Playground"
 
 
 @dataclass(frozen=True)
@@ -69,3 +71,11 @@ def ndps_guest_head() -> GuestBareactHead:
 
 def is_guest_ndps_head_path(path: str) -> bool:
     return path.rstrip("/") == NDPS_GUEST_PATH
+
+
+def guest_add_reading_name(law_id: str, short_title: str = "") -> str:
+    """Act name used in the guest desktop Add dialog lede."""
+
+    if law_id == NDPS_SLUG:
+        return NDPS_GUEST_READING_NAME
+    return short_title or law_id

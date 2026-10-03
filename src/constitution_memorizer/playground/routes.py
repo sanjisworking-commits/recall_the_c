@@ -44,6 +44,7 @@ from constitution_memorizer.playground.eligibility import (
     playground_catalogue_law,
     playground_law_source_identity,
 )
+from constitution_memorizer.web.guest_bareact_head import guest_add_reading_name
 from constitution_memorizer.playground.http import (
     local_next_path,
     playground_login_href,
@@ -400,6 +401,7 @@ def _add_page_context(
         "re_add": re_add,
         "entire_meta": entire_meta,
         "login_href": login_href,
+        "reading_name": guest_add_reading_name(law_id, short),
         "from_price": catalogue_from_price(),
         "catalogue_plans": plans,
         "hard_gate": kind in {"guest", "subscribe", "device_blocked", "unavailable"},

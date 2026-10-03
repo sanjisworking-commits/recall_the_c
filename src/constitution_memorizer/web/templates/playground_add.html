@@ -15,12 +15,20 @@
   <p class="pg-eyebrow">{{ month_name }}</p>
 
   {% if kind == "guest" %}
-  <h1 id="pg-add-title">Sign in to use Playground</h1>
-  <p class="pg-lede">Playground needs an account. Reading {{ short_title }} stays free — sign in and you’ll come right back here.</p>
-  <p class="pg-actions">
-    <a class="pg-btn" href="{{ login_href }}">Sign in</a>
-    <a class="pg-btn pg-btn--ghost" href="{{ cancel_href }}">Cancel</a>
-  </p>
+  <div data-guest-add-desktop>
+    <h1 id="pg-add-title" class="guest-add-title">Add to Playground</h1>
+    <p class="guest-add-lede">Playground needs an account. Reading {{ reading_name|default(short_title) }} stays free — sign in and you’ll come right back here.</p>
+    <a class="guest-add-signin" href="{{ login_href }}" data-guest-add-gate>Sign in</a>
+    <a class="guest-add-create" href="{{ login_href }}" data-guest-add-gate>Create an account</a>
+  </div>
+  <div data-guest-add-phone>
+    <h1 id="pg-add-title-phone">Sign in to use Playground</h1>
+    <p class="pg-lede">Playground needs an account. Reading {{ short_title }} stays free — sign in and you’ll come right back here.</p>
+    <p class="pg-actions">
+      <a class="pg-btn" href="{{ login_href }}">Sign in</a>
+      <a class="pg-btn pg-btn--ghost" href="{{ cancel_href }}">Cancel</a>
+    </p>
+  </div>
 
   {% elif kind == "subscribe" %}
   <h1 id="pg-add-title">Unlock Playground</h1>

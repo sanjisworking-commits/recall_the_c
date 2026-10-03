@@ -2647,4 +2647,108 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   }
 }
 
+/* Guest desktop Add dialog (CTA map guest/05-screen). Phone guest sheet
+   keeps Sign in to use Playground + Cancel. Subscriber sheets unchanged. */
+@media (max-width: 560px) {
+  [data-guest-add-desktop] {
+    display: none !important;
+  }
+}
+
+@media (min-width: 561px) {
+  [data-guest-add-phone] {
+    display: none !important;
+  }
+
+  .pg-sheet-panel[data-pg-kind="guest"] > .pg-eyebrow {
+    display: none;
+  }
+
+  .pg-sheet-panel[data-pg-kind="guest"] {
+    padding: 26px 28px;
+  }
+
+  body.is-guest dialog.pg-sheet[open]::backdrop {
+    background: rgba(20, 20, 20, 0.35);
+  }
+
+  [data-guest-add-desktop] .guest-add-title {
+    font-family: var(--pg-font-display);
+    font-weight: 500;
+    font-size: 22px;
+    line-height: 1.25;
+    letter-spacing: 0;
+    margin: 0 0 4px;
+    color: var(--pg-ink);
+  }
+
+  [data-guest-add-desktop] .guest-add-lede {
+    margin: 0 0 18px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--pg-muted);
+    max-width: none;
+  }
+
+  [data-guest-add-desktop] .guest-add-signin,
+  [data-guest-add-desktop] .guest-add-create {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    border-radius: 12px;
+    font: inherit;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    box-sizing: border-box;
+  }
+
+  [data-guest-add-desktop] .guest-add-signin {
+    height: 50px;
+    border: none;
+    background: var(--pg-ink);
+    color: var(--pg-paper);
+    font-size: 15px;
+    box-shadow: var(--pg-shadow-press);
+  }
+
+  .PlaygroundShell [data-guest-add-desktop] .guest-add-signin {
+    color: var(--pg-paper);
+  }
+
+  [data-guest-add-desktop] .guest-add-signin:active {
+    transform: translateY(1px);
+    box-shadow: var(--pg-shadow-press-active);
+  }
+
+  [data-guest-add-desktop] .guest-add-create {
+    height: 46px;
+    margin-top: 9px;
+    border: 1px solid var(--pg-hairline);
+    background: var(--pg-paper);
+    color: var(--pg-ink);
+    font-size: 14.5px;
+  }
+
+  .PlaygroundShell [data-guest-add-desktop] .guest-add-create {
+    color: var(--pg-ink);
+  }
+
+  [data-guest-add-desktop] .guest-add-create:hover {
+    background: var(--pg-subtle);
+  }
+
+  .pg-sheet-panel[data-pg-kind="guest"] > .pg-sheet-close {
+    top: 14px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    font-size: 15px;
+    color: var(--pg-mid);
+  }
+}
+
 

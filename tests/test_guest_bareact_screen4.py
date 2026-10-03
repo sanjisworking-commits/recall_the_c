@@ -329,9 +329,11 @@ def test_screen4_1280_cta_opens_add_dialog_and_rows_are_inert(tmp_path: Path) ->
         dialog = page.evaluate(
             """() => {
               const panel = document.querySelector('[data-pg-add]');
+              const desk = panel && panel.querySelector('[data-guest-add-desktop]');
+              const titleEl = desk && desk.querySelector('.guest-add-title');
               return {
                 kind: panel && panel.getAttribute('data-pg-kind'),
-                title: panel && panel.querySelector('h1') && panel.querySelector('h1').textContent.trim(),
+                title: titleEl && titleEl.textContent.trim(),
               };
             }"""
         )
@@ -378,7 +380,7 @@ def test_screen4_1280_cta_opens_add_dialog_and_rows_are_inert(tmp_path: Path) ->
     ]
     assert geo["browseActive"] == "Browse"
     assert dialog["kind"] == "guest"
-    assert dialog["title"] == "Sign in to use Playground"
+    assert dialog["title"] == "Add to Playground"
     assert still_on_ndps is True
     assert phone_geo["deskDisplay"] == "none"
     assert phone_geo["prodDisplay"] != "none"
