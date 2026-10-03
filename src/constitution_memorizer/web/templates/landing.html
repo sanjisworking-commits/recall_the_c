@@ -12,7 +12,6 @@
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<script src="/static/brain-path.js?v=brain1"></script>
 <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,500&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/static/styles.css?v=main77">
 <style>
@@ -26,6 +25,7 @@
   @keyframes rcRise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
   @media (max-width:560px){
     .rc-landing-full{display:none}
+    .rc-desk{display:none}
     .rc-launch{display:block;position:fixed;inset:0;background:var(--page);color:var(--ink);overflow:hidden}
     .rc-launch-center{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:0 40px 60px;text-align:center}
     .rc-launch-mark{display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;border:2px solid var(--ink);font-family:"Abril Fatface",Georgia,serif;font-size:32px;font-weight:400;line-height:1;margin-bottom:22px;animation:rcPop .5s ease both}
@@ -41,454 +41,58 @@
   @media (max-width:560px) and (prefers-reduced-motion:reduce){
     .rc-launch-mark,.rc-launch-name,.rc-launch-tag,.rc-launch-actions{animation:none}
   }
-  .j-ink:hover{background:var(--accent-hover);border-color:var(--accent-hover);color:var(--on-accent)}
-  .j-ghost:hover{border-color:var(--ink);color:var(--ink)}
-  [data-cloze]:hover{border-bottom-color:var(--accent) !important}
 
-  /* No global smooth scrolling: it would silently turn every programmatic
-     scroll into a browser easing. Nav clicks ask for smooth explicitly. */
-  html{scroll-behavior:auto;overflow-x:clip}
-  /* The snap corridor (§02 → §03 → §05). The class is added by JS only while the
-     reader is inside those three screens, so the 500vh Part animation and the
-     closing block keep completely free scrolling. Browser physics own the
-     motion; nothing in JS moves the page. */
-  html.snap-active{scroll-snap-type:block mandatory}
-  body{margin:0;background:var(--page);color:var(--ink);font-family:"Source Sans 3",system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased;overflow-x:clip}
-  *,*::before,*::after{box-sizing:border-box}
+  /* After styles.css so later a/a:hover rules win on this page. */
   a{color:inherit;text-decoration:none}
   a:hover{color:var(--accent-hover)}
-  @keyframes caretBlink{0%,100%{opacity:1}50%{opacity:0}}
-  @keyframes hintDrift{0%,100%{transform:translateY(0);opacity:.5}50%{transform:translateY(7px);opacity:1}}
-  @media (max-width:820px){
-    /* Two rows of three. Overlap is set from JS on both layouts, so no
-       !important margins here — inline styles must be able to win. */
-    [data-circles]{display:grid !important;grid-template-columns:repeat(3,1fr)}
-  }
-  @media (max-width:620px){
-    [data-actmeta]{display:none !important}
-    [data-actcard]{padding:14px 16px !important;background:color-mix(in srgb, var(--paper) 72%, transparent) !important}
-  }
-  [data-reveal][data-shown="1"]{opacity:1 !important;transform:none !important}
-  [data-l]{transition:color .55s ease}
-  /* Part squares: lift the fill off the near-black page and add a hairline so
-     the blocks read (raw near-black-on-page was near-invisible). */
-  [data-pcard]{background:var(--paper) !important;border:0 !important}
-  [data-pcard]{pointer-events:auto;overflow:hidden}
-  [data-pcard] p{position:relative;z-index:1;transition:color .45s ease}
-  [data-pcard]:hover{z-index:9 !important}
-  [data-pcard]:hover [data-fill]{opacity:1}
-  [data-pcard]:hover p{color:var(--on-accent) !important}
-  [data-pcard] [data-fill]{border-radius:0}
-  /* Phone: the block crossing the viewport middle lights up. JS adds .is-lit
-     (mobile only) to the card nearest centre; it reuses the hover treatment and
-     the same transitions, so it fades in and reverts as the spotlight travels. */
-  [data-pcard].is-lit{z-index:9 !important}
-  [data-pcard].is-lit [data-fill]{opacity:1}
-  [data-pcard].is-lit p{color:var(--on-accent) !important}
-  [data-lbl-short]{display:none}
-  /* Mode circles: the hovered disc lifts to the front and a texture wipes up
-     from the bottom of the circle. */
-  [data-circ]{overflow:hidden;cursor:default}
-  [data-circ] > span:not([data-fill]){position:relative;z-index:1;transition:color .45s ease}
-  [data-fill]{position:absolute;inset:0;border-radius:50%;background-size:cover;background-position:center;opacity:0;transition:opacity .5s ease;pointer-events:none}
-  [data-circ]:hover{z-index:6 !important;border-color:color-mix(in srgb, var(--ink) 55%, transparent) !important}
-  [data-circ]:hover [data-fill]{opacity:1}
-  [data-circ]:hover > span:not([data-fill]){color:var(--on-accent) !important;font-weight:600}
-  @media (min-width:641px){
-    [data-circ]{transition:transform .45s cubic-bezier(.22,.9,.24,1),color .6s ease,border-color .6s ease !important}
-    [data-circ]:hover{transform:scale(1.06)}
-  }
-  /* Phone: the six overlapping discs become a ring — each disc sits on a
-     circle of radius 34% and keeps its own size, so the Venn overlap reads
-     vertically instead of running off the edge. */
-  /* The mobile intro's fragment layer is positioned against the wrapper box,
-     which the ≤640 rule below makes a containing block. */
-  @media (max-width:640px){
-    [data-circles] [data-circ]{z-index:1}
-    [data-mfield]{z-index:0}
-  }
-  @media (max-width:640px){
-    [data-circles]{display:block !important;position:relative;width:min(86vw,380px);aspect-ratio:1;max-width:none !important}
-    [data-circles] [data-circ]{position:absolute !important;flex:none !important;width:44% !important;margin:0 !important;transform:translate(-50%,-50%)}
-    [data-circ="0"]{top:16%;left:50%}
-    [data-circ="1"]{top:33%;left:79.4%}
-    [data-circ="2"]{top:67%;left:79.4%}
-    [data-circ="3"]{top:84%;left:50%}
-    [data-circ="4"]{top:67%;left:20.6%}
-    [data-circ="5"]{top:33%;left:20.6%}
-    [data-circles] [data-circ] span{font-size:15px !important}
-  }
-  /* One gesture carries you from Learning modes to the next section: proximity
-     snapping (so the pinned blocks keep their free scroll) with snap-stop so a
-     single flick cannot skip past §05. */
+  html{overflow-x:clip}
+  body{margin:0;background:var(--page);color:var(--ink);font-family:"Source Sans 3",system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+  *,*::before,*::after{box-sizing:border-box}
 
-  /* Desktop: §02, §03 and §05 are each exactly one screen, content centred, so
-     one scroll gesture lands on a complete, deliberately framed view. */
-  @media (min-width:901px){
-    #method,#learn,#revision,[data-stage="5"]{
-      min-height:100dvh;display:flex;flex-direction:column;justify-content:center;
-      padding-top:74px !important;padding-bottom:clamp(30px,5vh,70px) !important;
-      /* scroll-snap-stop:always is what stops one hard flick skipping a screen.
-         overflow-anchor:none keeps late reflow (font swap, heading fit) from
-         nudging the scroll position under the reader. */
-      scroll-snap-align:start;scroll-snap-stop:always;overflow-anchor:none
+  /* Desktop Screen 1 (CTA map guest/01-screen). Hidden on phone. */
+  .rc-desk{display:none}
+  @media (min-width:561px){
+    html,body{height:100%;overflow:hidden}
+    .rc-desk{
+      display:flex;align-items:center;justify-content:center;
+      position:fixed;inset:0;background:var(--page);color:var(--ink);text-align:center
     }
-    /* Legal resting places on both sides of the corridor, so mandatory snapping
-       always has somewhere outside it to land: a gate one screen above §02
-       (inside §01's pinned span) and the top of the closing block. */
-    [data-snapgate],[data-lit-src]{scroll-snap-align:start}
-  }
-  /* Compact header + hero CTAs and tighter spacing on small screens. */
-  @media (max-width:640px){
-    [data-hdrbar]{padding-top:9px !important;padding-bottom:9px !important;gap:12px !important}
-    [data-brand]{gap:8px !important}
-    [data-brand] > span:first-child{width:27px !important;height:27px !important;font-size:15px !important}
-    [data-brand] > span:last-child{font-size:16px !important}
-    [data-hdr]{gap:6px !important}
-    [data-hdr] a{padding:8px 12px !important;font-size:13px !important}
-    [data-lbl-full]{display:none}
-    [data-lbl-short]{display:inline}
-    [data-herocta] a{padding:13px 20px !important;font-size:14.5px !important}
-    /* Cut the dead space: shorten the pinned closing block, trim section padding. */
-    [data-lit-src]{height:140vh !important}
-    main > section:not(#top){padding-top:clamp(44px,7vh,72px) !important;padding-bottom:clamp(44px,7vh,72px) !important}
-    [data-lede-hide]{display:none !important}
-    [data-fit]{font-size:clamp(22px,6.2vw,30px) !important;line-height:1.14 !important;max-width:none !important}
-  }
-  @media (max-width:900px){
-    [data-navlinks]{display:none !important}
-    /* Phone: the squares stream up through the pinned frame and leave at the
-       top rather than settling. Three columns; position comes from transform. */
-    /* Two big columns. Boxes scale with the screen (44vw) so larger phones get
-       larger squares; min(340px,…) only caps portrait tablets near this edge. */
-    [data-pcard]{top:0 !important;width:min(340px,44vw) !important;height:min(340px,44vw) !important;padding:clamp(12px,3.4vw,20px) !important}
-    [data-pcard]:nth-of-type(2n+1){left:5% !important;right:auto !important}
-    [data-pcard]:nth-of-type(2n){left:51% !important;right:auto !important}
-    [data-pcard] p{font-size:clamp(10px,2.9vw,14px) !important}
-    [data-pcard] p:nth-child(2){font-size:clamp(13px,3.9vw,19px) !important}
-  }
-  @media (max-width:900px) and (prefers-reduced-motion:reduce){
-    [data-pin-src]{height:auto !important;padding-bottom:clamp(70px,11vh,150px) !important}
-    [data-pin]{position:static !important;height:auto !important}
-    [data-pgrid]{position:static !important;overflow:visible !important;left:auto !important;margin-left:0 !important;width:auto !important;display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:34px}
-    [data-pcard]{position:static !important;left:auto !important;top:auto !important;width:auto !important;height:auto !important;min-height:120px;transform:none !important;opacity:1 !important}
-  }
-  @media (prefers-reduced-motion:reduce){
-    *{animation:none !important}
-    html{scroll-behavior:auto}
-  }
-  /* Crawlable product name + purpose in the hero. Visible HTML text; no JS,
-     SVG, or reveal-on-scroll. Keep the existing visual tagline as the punch. */
-  .landing-brand{
-    font-family:Fraunces,Georgia,serif;
-    font-size:clamp(28px,3.8vw,46px);
-    line-height:1.08;
-    letter-spacing:-0.03em;
-    font-weight:700;
-    margin:0 0 16px;
-  }
-  .landing-purpose{
-    margin:0 auto clamp(14px,1.8vh,22px);
-    max-width:38em;
-    font-size:clamp(15.5px,1.3vw,18px);
-    line-height:1.55;
-    color:color-mix(in srgb, var(--ink) 72%, transparent);
-    text-wrap:pretty;
-  }
-  .landing-purpose-note{
-    margin:0 auto clamp(26px,3.4vh,44px);
-    max-width:38em;
-    font-size:13.5px;
-    line-height:1.45;
-    font-weight:600;
-    color:color-mix(in srgb, var(--ink) 50%, transparent);
+    .rc-desk-stack{display:flex;flex-direction:column;align-items:center}
+    .rc-desk-mark{
+      display:inline-flex;align-items:center;justify-content:center;
+      width:64px;height:64px;border:1px solid var(--ink);
+      font-family:"Abril Fatface",Georgia,serif;font-size:32px;font-weight:400;line-height:1
+    }
+    .rc-desk-name{
+      margin:22px 0 8px;font-family:Fraunces,Georgia,serif;font-size:28px;font-weight:500;line-height:1.15
+    }
+    .rc-desk-tag{margin:0 0 28px;font-size:14px;color:var(--muted);font-weight:400}
+    .rc-desk-actions{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:12px}
+    .rc-desk-cta{
+      display:inline-flex;align-items:center;justify-content:center;
+      height:40px;padding:0 22px;border-radius:999px;border:1px solid var(--accent);
+      background:var(--accent);color:var(--on-accent);font-size:14px;font-weight:600;line-height:1
+    }
+    .rc-desk-cta:hover,.rc-desk-cta:active{color:var(--on-accent);background:var(--accent-hover);border-color:var(--accent-hover)}
+    .rc-desk-cta.is-ghost{
+      background:transparent;color:var(--ink);border-color:var(--control-border);font-weight:400
+    }
+    .rc-desk-cta.is-ghost:hover,.rc-desk-cta.is-ghost:active{color:var(--ink);background:transparent;border-color:var(--ink)}
   }
 </style>
 </head>
 <body>
-<div class="rc-landing-full" style="width:100%;overflow-x:clip;background:var(--page);position:relative">
-
-<div data-progress-track="1" style="position:fixed;top:0;left:0;right:0;height:2px;background:color-mix(in srgb, var(--ink) 10%, transparent);z-index:80">
-  <div data-progress-bar="1" style="height:2px;width:0;background:var(--accent)"></div>
-</div>
-
-
-<div aria-hidden="true" style="position:fixed;inset:0;z-index:0;pointer-events:none">
-  <canvas data-brain="1" data-v="2" style="width:100%;height:100%;display:block"></canvas>
-</div>
-
-
-
-
-<header style="position:sticky;top:0;z-index:60;background:color-mix(in srgb, var(--page) 82%, transparent);backdrop-filter:saturate(1.2) blur(12px);border-bottom:1px solid color-mix(in srgb, var(--ink) 12%, transparent)">
-  <div data-hdrbar="1" style="max-width:1500px;margin:0 auto;padding:14px clamp(20px,3vw,44px);display:flex;align-items:center;justify-content:space-between;gap:20px">
-    <a href="#top" data-brand="1" style="display:inline-flex;align-items:center;gap:11px">
-      <span style="width:31px;height:31px;display:grid;place-items:center;border:1.5px solid var(--ink);font-family:Fraunces,Georgia,serif;font-weight:700;font-size:17px;line-height:1">C</span>
-      <span style="font-family:Fraunces,Georgia,serif;font-size:19px;font-weight:700;letter-spacing:-0.02em">Recall the C</span>
-    </a>
-    <div data-hdr="1" style="display:flex;align-items:center;gap:8px">
-      <nav data-navlinks="1" style="display:flex;align-items:center;gap:2px;margin-right:10px">
-        <a href="#arithmetic" style="padding:8px 11px;font-size:14px;font-weight:600;color:color-mix(in srgb, var(--ink) 60%, transparent)">Arithmetic</a>
-        <a href="#method" style="padding:8px 11px;font-size:14px;font-weight:600;color:color-mix(in srgb, var(--ink) 60%, transparent)">Recall</a>
-        <a href="#learn" style="padding:8px 11px;font-size:14px;font-weight:600;color:color-mix(in srgb, var(--ink) 60%, transparent)">Modes</a>
-        {% if pricing_enabled|default(false) %}
-        <a href="/pricing" style="padding:8px 11px;font-size:14px;font-weight:600;color:color-mix(in srgb, var(--ink) 60%, transparent)">Pricing</a>
-        {% endif %}
-      </nav>
-      <a href="/browse" style="border:1px solid color-mix(in srgb, var(--ink) 30%, transparent);padding:9px 16px;font-size:14px;font-weight:600" class="j-ghost"><span data-lbl-full="1">Explore as guest</span><span data-lbl-short="1">Explore</span></a>
-      <a href="/login" style="background:var(--accent);color:var(--on-accent);border:1px solid var(--accent);padding:10px 18px;font-size:14px;font-weight:700" class="j-ink"><span data-lbl-full="1">Start learning</span><span data-lbl-short="1">Learn</span></a>
-    </div>
-  </div>
-</header>
-
-<main style="position:relative;z-index:10">
-
-
-
-<!-- ══ HERO ══ -->
-<section id="top" data-stage="0" style="position:relative;min-height:calc(100vh - 60px);display:flex;flex-direction:column;justify-content:center;padding:clamp(60px,8vh,110px) clamp(20px,4vw,80px) clamp(70px,9vh,120px);max-width:1500px;margin:0 auto">
-  <div aria-hidden="true" style="position:absolute;top:0;bottom:0;left:50%;margin-left:-50vw;width:100vw;z-index:0;pointer-events:none;background:radial-gradient(ellipse 78% 74% at 50% 50%,color-mix(in srgb, var(--page) 92%, transparent) 0%,color-mix(in srgb, var(--page) 86%, transparent) 46%,color-mix(in srgb, var(--page) 40%, transparent) 74%,color-mix(in srgb, var(--page) 0%, transparent) 100%)"></div>
-  <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;text-align:center">
-  
-
-  
-  <h1 class="landing-brand">Recall the C</h1>
-  <p class="landing-visual" style="font-size:clamp(38px,7.4vw,118px);line-height:0.94;margin:0 0 clamp(22px,2.8vh,36px);text-wrap:balance;font-family:Fraunces,Georgia,serif;letter-spacing:-0.042em;font-weight:700">The whole document.<br><span style="color:var(--accent)">In your memory.</span></p>
-  <p class="landing-purpose">Recall the C is an educational platform for learning, recalling and revising the Constitution of India through structured learning methods, visual explanations, progress tracking and spaced repetition.</p>
-  <p class="landing-purpose-note">Independent educational product · Study aid only — not legal advice.</p>
-
-  
-
-  <div style="margin:0 0 clamp(28px,3.6vh,44px);display:flex;align-items:center;gap:clamp(14px,2vw,26px);width:min(560px,100%)">
-    <span style="flex:1;height:1px;background:color-mix(in srgb, var(--ink) 22%, transparent)"></span>
-    <span style="display:inline-flex;align-items:baseline;gap:10px;font-family:Fraunces,Georgia,serif;white-space:nowrap">
-      <span style="font-size:clamp(34px,3.8vw,52px);line-height:1;font-weight:700;letter-spacing:-0.03em;color:var(--accent-hover)">180</span>
-      <span style="font-size:11.5px;text-transform:uppercase;letter-spacing:0.22em;font-weight:700;font-family:'Source Sans 3',system-ui,sans-serif;color:color-mix(in srgb, var(--ink) 60%, transparent)">days</span>
-    </span>
-    <span style="flex:1;height:1px;background:color-mix(in srgb, var(--ink) 22%, transparent)"></span>
-  </div>
-  <div data-herocta="1" style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:center">
-    <a href="/browse" style="border:1px solid color-mix(in srgb, var(--ink) 30%, transparent);padding:16px 28px;font-size:15px;font-weight:600" class="j-ghost">Explore the Constitution &rarr;</a>
-  </div>
-  <p style="margin:clamp(44px,7vh,90px) 0 0;display:flex;align-items:center;justify-content:center;gap:11px;font-size:11.5px;text-transform:uppercase;letter-spacing:0.2em;font-weight:700;color:color-mix(in srgb, var(--ink) 42%, transparent)">
-    <span style="display:inline-block;animation:hintDrift 2.4s ease-in-out infinite">&darr;</span>Scroll
-  </p>
-  </div>
-</section>
-
-<!-- ══ § 01 THE ARITHMETIC ══ -->
-<section id="arithmetic" data-stage="1" data-pin-src="1" style="position:relative;padding:clamp(70px,11vh,150px) clamp(20px,4vw,80px) 0;max-width:1500px;margin:0 auto;height:600vh">
-  <div data-snapgate="1" aria-hidden="true" style="position:absolute;left:0;bottom:100vh;width:1px;height:1px;pointer-events:none"></div>
-  <div data-pin="1" style="position:sticky;top:0;height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center">
-    <div data-reveal="1" data-delay="90" style="position:relative;z-index:0;width:min(620px,72%);text-align:center;opacity:0;transform:translateY(18px);transition:opacity .8s ease,transform .8s ease">
-      <h2 style="font-family:Fraunces,Georgia,serif;font-size:clamp(28px,3.4vw,54px);line-height:1.05;letter-spacing:-0.03em;font-weight:700;margin:0 auto;max-width:16ch;text-wrap:balance">Three Articles a day.<br><span style="color:color-mix(in srgb, var(--ink) 50%, transparent)">Six months of them.</span></h2>
-    </div>
-
-    <div data-pgrid="1" style="position:absolute;top:0;bottom:0;left:50%;margin-left:-50vw;width:100vw;z-index:1;pointer-events:none;overflow:hidden">
-      <article data-pcard="1" style="position:absolute;left:0.5%;top:0;width:min(190px,12.5vw);height:min(190px,12.5vw);box-sizing:border-box;background:var(--paper);padding:clamp(10px,1.15vw,16px);display:flex;flex-direction:column;justify-content:space-between;opacity:0;transform:translate3d(0,100vh,0);transition:none">
-        <span data-fill="1" style="background-image:url(/static/grad-1.png)"></span>
-        <p style="margin:0 0 7px;font-size:clamp(8.5px,0.8vw,10.5px);font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:color-mix(in srgb, var(--ink) 42%, transparent)">Part III</p>
-        <p style="margin:0 0 5px;font-family:Fraunces,Georgia,serif;font-size:clamp(11px,1.15vw,16px);font-weight:700;line-height:1.2">Fundamental Rights</p>
-        <p style="margin:0;font-size:clamp(9.5px,0.95vw,12.5px);color:color-mix(in srgb, var(--ink) 50%, transparent)">Articles 12&ndash;35</p>
-      </article>
-      <article data-pcard="1" style="position:absolute;left:14.8%;top:62%;width:min(190px,12.5vw);height:min(190px,12.5vw);box-sizing:border-box;background:var(--paper);padding:clamp(10px,1.15vw,16px);display:flex;flex-direction:column;justify-content:space-between;opacity:0;transform:translate3d(0,100vh,0);transition:none">
-        <span data-fill="1" style="background-image:url(/static/grad-2.png)"></span>
-        <p style="margin:0 0 7px;font-size:clamp(8.5px,0.8vw,10.5px);font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:color-mix(in srgb, var(--ink) 42%, transparent)">Part IV</p>
-        <p style="margin:0 0 5px;font-family:Fraunces,Georgia,serif;font-size:clamp(11px,1.15vw,16px);font-weight:700;line-height:1.2">Directive Principles</p>
-        <p style="margin:0;font-size:clamp(9.5px,0.95vw,12.5px);color:color-mix(in srgb, var(--ink) 50%, transparent)">Articles 36&ndash;51</p>
-      </article>
-      <article data-pcard="1" style="position:absolute;left:29.1%;top:8%;width:min(190px,12.5vw);height:min(190px,12.5vw);box-sizing:border-box;background:var(--paper);padding:clamp(10px,1.15vw,16px);display:flex;flex-direction:column;justify-content:space-between;opacity:0;transform:translate3d(0,100vh,0);transition:none">
-        <span data-fill="1" style="background-image:url(/static/grad-3.png)"></span>
-        <p style="margin:0 0 7px;font-size:clamp(8.5px,0.8vw,10.5px);font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:color-mix(in srgb, var(--ink) 42%, transparent)">Part II</p>
-        <p style="margin:0 0 5px;font-family:Fraunces,Georgia,serif;font-size:clamp(11px,1.15vw,16px);font-weight:700;line-height:1.2">Citizenship</p>
-        <p style="margin:0;font-size:clamp(9.5px,0.95vw,12.5px);color:color-mix(in srgb, var(--ink) 50%, transparent)">Articles 5&ndash;11</p>
-      </article>
-      <article data-pcard="1" style="position:absolute;left:43.4%;top:66%;width:min(190px,12.5vw);height:min(190px,12.5vw);box-sizing:border-box;background:var(--paper);padding:clamp(10px,1.15vw,16px);display:flex;flex-direction:column;justify-content:space-between;opacity:0;transform:translate3d(0,100vh,0);transition:none">
-        <span data-fill="1" style="background-image:url(/static/grad-1.png)"></span>
-        <p style="margin:0 0 7px;font-size:clamp(8.5px,0.8vw,10.5px);font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:color-mix(in srgb, var(--ink) 42%, transparent)">Part V</p>
-        <p style="margin:0 0 5px;font-family:Fraunces,Georgia,serif;font-size:clamp(11px,1.15vw,16px);font-weight:700;line-height:1.2">The Union</p>
-        <p style="margin:0;font-size:clamp(9.5px,0.95vw,12.5px);color:color-mix(in srgb, var(--ink) 50%, transparent)">Articles 52&ndash;151</p>
-      </article>
-      <article data-pcard="1" style="position:absolute;left:57.7%;top:2%;width:min(190px,12.5vw);height:min(190px,12.5vw);box-sizing:border-box;background:var(--paper);padding:clamp(10px,1.15vw,16px);display:flex;flex-direction:column;justify-content:space-between;opacity:0;transform:translate3d(0,100vh,0);transition:none">
-        <span data-fill="1" style="background-image:url(/static/grad-1.png)"></span>
-        <p style="margin:0 0 7px;font-size:clamp(8.5px,0.8vw,10.5px);font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:color-mix(in srgb, var(--ink) 42%, transparent)">Part XVIII</p>
-        <p style="margin:0 0 5px;font-family:Fraunces,Georgia,serif;font-size:clamp(11px,1.15vw,16px);font-weight:700;line-height:1.2">Emergency Provisions</p>
-        <p style="margin:0;font-size:clamp(9.5px,0.95vw,12.5px);color:color-mix(in srgb, var(--ink) 50%, transparent)">Articles 352&ndash;360</p>
-      </article>
-      <article data-pcard="1" style="position:absolute;left:72%;top:64%;width:min(190px,12.5vw);height:min(190px,12.5vw);box-sizing:border-box;background:var(--paper);padding:clamp(10px,1.15vw,16px);display:flex;flex-direction:column;justify-content:space-between;opacity:0;transform:translate3d(0,100vh,0);transition:none">
-        <span data-fill="1" style="background-image:url(/static/grad-2.png)"></span>
-        <p style="margin:0 0 7px;font-size:clamp(8.5px,0.8vw,10.5px);font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:color-mix(in srgb, var(--ink) 42%, transparent)">Part XX</p>
-        <p style="margin:0 0 5px;font-family:Fraunces,Georgia,serif;font-size:clamp(11px,1.15vw,16px);font-weight:700;line-height:1.2">Amendment</p>
-        <p style="margin:0;font-size:clamp(9.5px,0.95vw,12.5px);color:color-mix(in srgb, var(--ink) 50%, transparent)">Article 368</p>
-      </article>
-      <article data-pcard="1" style="position:absolute;left:86.3%;top:14%;width:min(190px,12.5vw);height:min(190px,12.5vw);box-sizing:border-box;background:var(--paper);padding:clamp(10px,1.15vw,16px);display:flex;flex-direction:column;justify-content:space-between;opacity:0;transform:translate3d(0,100vh,0);transition:none">
-        <span data-fill="1" style="background-image:url(/static/grad-3.png)"></span>
-        <p style="margin:0 0 7px;font-size:clamp(8.5px,0.8vw,10.5px);font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:color-mix(in srgb, var(--ink) 42%, transparent)">Part I</p>
-        <p style="margin:0 0 5px;font-family:Fraunces,Georgia,serif;font-size:clamp(11px,1.15vw,16px);font-weight:700;line-height:1.2">The Union and its Territory</p>
-        <p style="margin:0;font-size:clamp(9.5px,0.95vw,12.5px);color:color-mix(in srgb, var(--ink) 50%, transparent)">Articles 1&ndash;4</p>
-      </article>
-      <article data-pcard="1" style="position:absolute;left:0.5%;top:44%;width:min(190px,12.5vw);height:min(190px,12.5vw);box-sizing:border-box;background:var(--paper);padding:clamp(10px,1.15vw,16px);display:flex;flex-direction:column;justify-content:space-between;opacity:0;transform:translate3d(0,100vh,0);transition:none">
-        <span data-fill="1" style="background-image:url(/static/grad-1.png)"></span>
-        <p style="margin:0 0 7px;font-size:clamp(8.5px,0.8vw,10.5px);font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:color-mix(in srgb, var(--ink) 42%, transparent)">Part IVA</p>
-        <p style="margin:0 0 5px;font-family:Fraunces,Georgia,serif;font-size:clamp(11px,1.15vw,16px);font-weight:700;line-height:1.2">Fundamental Duties</p>
-        <p style="margin:0;font-size:clamp(9.5px,0.95vw,12.5px);color:color-mix(in srgb, var(--ink) 50%, transparent)">Article 51A</p>
-      </article>
-      <article data-pcard="1" style="position:absolute;left:14.8%;top:22%;width:min(190px,12.5vw);height:min(190px,12.5vw);box-sizing:border-box;background:var(--paper);padding:clamp(10px,1.15vw,16px);display:flex;flex-direction:column;justify-content:space-between;opacity:0;transform:translate3d(0,100vh,0);transition:none">
-        <span data-fill="1" style="background-image:url(/static/grad-1.png)"></span>
-        <p style="margin:0 0 7px;font-size:clamp(8.5px,0.8vw,10.5px);font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:color-mix(in srgb, var(--ink) 42%, transparent)">Part VI</p>
-        <p style="margin:0 0 5px;font-family:Fraunces,Georgia,serif;font-size:clamp(11px,1.15vw,16px);font-weight:700;line-height:1.2">The States</p>
-        <p style="margin:0;font-size:clamp(9.5px,0.95vw,12.5px);color:color-mix(in srgb, var(--ink) 50%, transparent)">Articles 152&ndash;237</p>
-      </article>
-      <article data-pcard="1" style="position:absolute;left:29.1%;top:50%;width:min(190px,12.5vw);height:min(190px,12.5vw);box-sizing:border-box;background:var(--paper);padding:clamp(10px,1.15vw,16px);display:flex;flex-direction:column;justify-content:space-between;opacity:0;transform:translate3d(0,100vh,0);transition:none">
-        <span data-fill="1" style="background-image:url(/static/grad-2.png)"></span>
-        <p style="margin:0 0 7px;font-size:clamp(8.5px,0.8vw,10.5px);font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:color-mix(in srgb, var(--ink) 42%, transparent)">Part XI</p>
-        <p style="margin:0 0 5px;font-family:Fraunces,Georgia,serif;font-size:clamp(11px,1.15vw,16px);font-weight:700;line-height:1.2">Centre and State Relations</p>
-        <p style="margin:0;font-size:clamp(9.5px,0.95vw,12.5px);color:color-mix(in srgb, var(--ink) 50%, transparent)">Articles 245&ndash;263</p>
-      </article>
-      <article data-pcard="1" style="position:absolute;left:43.4%;top:28%;width:min(190px,12.5vw);height:min(190px,12.5vw);box-sizing:border-box;background:var(--paper);padding:clamp(10px,1.15vw,16px);display:flex;flex-direction:column;justify-content:space-between;opacity:0;transform:translate3d(0,100vh,0);transition:none">
-        <span data-fill="1" style="background-image:url(/static/grad-3.png)"></span>
-        <p style="margin:0 0 7px;font-size:clamp(8.5px,0.8vw,10.5px);font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:color-mix(in srgb, var(--ink) 42%, transparent)">Part IX</p>
-        <p style="margin:0 0 5px;font-family:Fraunces,Georgia,serif;font-size:clamp(11px,1.15vw,16px);font-weight:700;line-height:1.2">Panchayats</p>
-        <p style="margin:0;font-size:clamp(9.5px,0.95vw,12.5px);color:color-mix(in srgb, var(--ink) 50%, transparent)">Articles 243&ndash;243O</p>
-      </article>
-      <article data-pcard="1" style="position:absolute;left:57.7%;top:40%;width:min(190px,12.5vw);height:min(190px,12.5vw);box-sizing:border-box;background:var(--paper);padding:clamp(10px,1.15vw,16px);display:flex;flex-direction:column;justify-content:space-between;opacity:0;transform:translate3d(0,100vh,0);transition:none">
-        <span data-fill="1" style="background-image:url(/static/grad-1.png)"></span>
-        <p style="margin:0 0 7px;font-size:clamp(8.5px,0.8vw,10.5px);font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:color-mix(in srgb, var(--ink) 42%, transparent)">Part XIV</p>
-        <p style="margin:0 0 5px;font-family:Fraunces,Georgia,serif;font-size:clamp(11px,1.15vw,16px);font-weight:700;line-height:1.2">Services under the State</p>
-        <p style="margin:0;font-size:clamp(9.5px,0.95vw,12.5px);color:color-mix(in srgb, var(--ink) 50%, transparent)">Articles 308&ndash;323</p>
-      </article>
-      <article data-pcard="1" style="position:absolute;left:72%;top:26%;width:min(190px,12.5vw);height:min(190px,12.5vw);box-sizing:border-box;background:var(--paper);padding:clamp(10px,1.15vw,16px);display:flex;flex-direction:column;justify-content:space-between;opacity:0;transform:translate3d(0,100vh,0);transition:none">
-        <span data-fill="1" style="background-image:url(/static/grad-1.png)"></span>
-        <p style="margin:0 0 7px;font-size:clamp(8.5px,0.8vw,10.5px);font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:color-mix(in srgb, var(--ink) 42%, transparent)">Part VIII</p>
-        <p style="margin:0 0 5px;font-family:Fraunces,Georgia,serif;font-size:clamp(11px,1.15vw,16px);font-weight:700;line-height:1.2">Union Territories</p>
-        <p style="margin:0;font-size:clamp(9.5px,0.95vw,12.5px);color:color-mix(in srgb, var(--ink) 50%, transparent)">Articles 239&ndash;242</p>
-      </article>
+<section class="rc-desk" data-guest-landing="desktop">
+  <div class="rc-desk-stack">
+    <span class="rc-desk-mark" aria-hidden="true">C</span>
+    <h1 class="rc-desk-name">Recall the C</h1>
+    <p class="rc-desk-tag">The Constitution, remembered.</p>
+    <div class="rc-desk-actions">
+      <a class="rc-desk-cta" href="/browse">Explore the Constitution</a>
+      <a class="rc-desk-cta is-ghost" href="/laws">Explore Laws</a>
     </div>
   </div>
 </section>
-
-<!-- ══ § 02 RECALL ══ -->
-<section id="method" data-stage="2" style="position:relative;padding:clamp(70px,11vh,150px) clamp(20px,4vw,80px);max-width:1500px;margin:0 auto">
-  <div data-reveal="1" data-delay="90" style="opacity:0;transform:translateY(18px);transition:opacity .8s ease,transform .8s ease">
-    <h2 style="font-family:Fraunces,Georgia,serif;font-size:clamp(34px,6.6vw,104px);line-height:0.98;letter-spacing:-0.04em;font-weight:700;margin:0 0 clamp(30px,4vh,52px);max-width:22ch;text-wrap:balance" data-fit="1">Recognition is not <span style="font-style:italic;font-weight:300;color:var(--accent)">recall.</span></h2>
-    <div style="border:1px solid color-mix(in srgb, var(--ink) 14%, transparent);background:color-mix(in srgb, var(--paper) 90%, transparent);padding:clamp(26px,3vw,40px)">
-      <p style="margin:0 0 20px;display:flex;align-items:center;gap:10px;font-size:11.5px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.16em"><span style="width:21px;height:21px;display:grid;place-items:center;background:var(--accent);color:var(--page);border-radius:50%;font-family:Fraunces,Georgia,serif;font-size:11px">2</span>From memory</p>
-      <p style="margin:0;font-family:Fraunces,Georgia,serif;font-size:clamp(19px,1.8vw,25px);line-height:1.85;font-weight:500">No person shall be <span data-cloze="0" style="display:inline-block;min-width:88px;text-align:center;border-bottom:2px solid color-mix(in srgb, var(--ink) 30%, transparent);cursor:pointer;color:var(--accent)">&nbsp;</span> of his <span data-cloze="1" style="display:inline-block;min-width:56px;text-align:center;border-bottom:2px solid color-mix(in srgb, var(--ink) 30%, transparent);cursor:pointer;color:var(--accent)">&nbsp;</span> or personal <span data-cloze="2" style="display:inline-block;min-width:70px;text-align:center;border-bottom:2px solid color-mix(in srgb, var(--ink) 30%, transparent);cursor:pointer;color:var(--accent)">&nbsp;</span> except according to <span data-cloze="3" style="display:inline-block;min-width:92px;text-align:center;border-bottom:2px solid color-mix(in srgb, var(--ink) 30%, transparent);cursor:pointer;color:var(--accent)">&nbsp;</span> established by <span data-cloze="4" style="display:inline-block;min-width:48px;text-align:center;border-bottom:2px solid color-mix(in srgb, var(--ink) 30%, transparent);cursor:pointer;color:var(--accent)">&nbsp;</span>.</p>
-      <p style="margin:22px 0 0;font-size:13.5px;font-weight:600;color:color-mix(in srgb, var(--ink) 50%, transparent)">Tap a blank to reveal the word.</p>
-    </div>
-  </div>
-</section>
-
-<!-- ══ § 03 SIX MODES ══ -->
-<section id="learn" data-stage="3" style="position:relative;padding:clamp(70px,11vh,150px) clamp(20px,4vw,80px);max-width:1500px;margin:0 auto">
-  <div style="position:relative;z-index:1">
-  <div data-reveal="1" data-delay="90" style="opacity:0;transform:translateY(18px);transition:opacity .8s ease,transform .8s ease">
-    <h2 style="font-family:Fraunces,Georgia,serif;font-size:clamp(26px,3.2vw,48px);line-height:1.04;letter-spacing:-0.03em;font-weight:700;margin:0 auto clamp(32px,4vh,48px);max-width:15ch;text-align:center;text-wrap:balance" data-fit="1">Learning modes</h2>
-
-    <div data-circles="1" style="display:flex;align-items:center;justify-content:center;margin:0 auto;max-width:1100px">
-      <div data-circ="0" style="position:relative;flex:1 1 0;min-width:0;aspect-ratio:1;border:1px solid color-mix(in srgb, var(--ink) 14%, transparent);border-radius:50%;background:color-mix(in srgb, var(--paper) 80%, transparent);display:grid;place-items:center;color:color-mix(in srgb, var(--ink) 62%, transparent);transition:color .6s ease,border-color .6s ease;font-family:Fraunces,Georgia,serif;font-size:clamp(13px,1.5vw,21px);text-align:center">
-        <span data-fill="1" style="background-image:url(/static/mode-1.png)"></span>
-        <span>Read</span>
-      </div>
-      <div data-circ="1" style="position:relative;flex:1 1 0;min-width:0;aspect-ratio:1;margin-left:-24%;border:1px solid color-mix(in srgb, var(--ink) 14%, transparent);border-radius:50%;background:color-mix(in srgb, var(--paper) 80%, transparent);display:grid;place-items:center;color:color-mix(in srgb, var(--ink) 62%, transparent);transition:color .6s ease,border-color .6s ease;font-family:Fraunces,Georgia,serif;font-size:clamp(13px,1.5vw,21px);text-align:center">
-        <span data-fill="1" style="background-image:url(/static/mode-2.png)"></span>
-        <span style="border-bottom:1.5px solid currentColor;padding-bottom:3px">Cloze</span>
-      </div>
-      <div data-circ="2" style="position:relative;flex:1 1 0;min-width:0;aspect-ratio:1;margin-left:-24%;border:1px solid color-mix(in srgb, var(--ink) 14%, transparent);border-radius:50%;background:color-mix(in srgb, var(--paper) 80%, transparent);display:grid;place-items:center;color:color-mix(in srgb, var(--ink) 62%, transparent);transition:color .6s ease,border-color .6s ease;font-family:Fraunces,Georgia,serif;font-size:clamp(13px,1.5vw,21px);text-align:center">
-        <span data-fill="1" style="background-image:url(/static/mode-3.png)"></span>
-        <span style="letter-spacing:0.26em;padding-left:0.26em">Letters</span>
-      </div>
-      <div data-circ="3" style="position:relative;flex:1 1 0;min-width:0;aspect-ratio:1;margin-left:-24%;border:1px solid color-mix(in srgb, var(--ink) 14%, transparent);border-radius:50%;background:color-mix(in srgb, var(--paper) 80%, transparent);display:grid;place-items:center;color:color-mix(in srgb, var(--ink) 62%, transparent);transition:color .6s ease,border-color .6s ease;font-family:Fraunces,Georgia,serif;font-size:clamp(13px,1.5vw,21px);text-align:center">
-        <span data-fill="1" style="background-image:url(/static/mode-1.png)"></span>
-        <span>Type<span style="display:inline-block;width:2px;height:0.95em;background:currentColor;vertical-align:-2px;margin-left:3px;animation:caretBlink 1s step-end infinite"></span></span>
-      </div>
-      <div data-circ="4" style="position:relative;flex:1 1 0;min-width:0;aspect-ratio:1;margin-left:-24%;border:1px solid color-mix(in srgb, var(--ink) 14%, transparent);border-radius:50%;background:color-mix(in srgb, var(--paper) 80%, transparent);display:grid;place-items:center;color:color-mix(in srgb, var(--ink) 62%, transparent);transition:color .6s ease,border-color .6s ease;font-family:Fraunces,Georgia,serif;font-size:clamp(13px,1.5vw,21px);text-align:center">
-        <span data-fill="1" style="background-image:url(/static/mode-2.png)"></span>
-        <span style="font-style:italic;text-decoration:underline wavy currentColor;text-underline-offset:6px;text-decoration-thickness:1px">Recite</span>
-      </div>
-      <div data-circ="5" style="position:relative;flex:1 1 0;min-width:0;aspect-ratio:1;margin-left:-24%;border:1px solid color-mix(in srgb, var(--ink) 14%, transparent);border-radius:50%;background:color-mix(in srgb, var(--paper) 80%, transparent);display:grid;place-items:center;color:color-mix(in srgb, var(--ink) 62%, transparent);transition:color .6s ease,border-color .6s ease;font-family:Fraunces,Georgia,serif;font-size:clamp(13px,1.5vw,21px);text-align:center">
-        <span data-fill="1" style="background-image:url(/static/mode-3.png)"></span>
-        <span style="font-weight:700">Test</span>
-      </div>
-    </div>
-    <div style="display:flex;justify-content:center;margin-top:clamp(18px,2.4vh,32px)">
-      <span style="width:9px;height:9px;border-radius:50%;background:var(--accent);display:block"></span>
-    </div>
-  </div>
-  </div>
-</section>
-
-<!-- ══ § 04 THE SCHEDULE (not on the shipped page) ══ -->
-
-
-<!-- ══ § 05 RELEVANT LAWS ══ -->
-
-<section data-stage="5" style="position:relative;padding:clamp(70px,11vh,150px) clamp(20px,4vw,80px);max-width:1500px;margin:0 auto">
-  <div data-reveal="1" data-delay="90" style="opacity:0;transform:translateY(18px);transition:opacity .8s ease,transform .8s ease">
-    <h2 style="font-family:Fraunces,Georgia,serif;font-size:clamp(28px,3.6vw,58px);line-height:1.04;letter-spacing:-0.03em;font-weight:700;margin:0 auto;max-width:26ch;text-align:center;text-wrap:balance" data-fit="1">The Constitution does not act alone.</h2>
-    <p style="margin:14px auto 0;text-align:center;font-family:Fraunces,Georgia,serif;font-style:italic;font-size:16px;color:color-mix(in srgb, var(--ink) 50%, transparent)">Not yet available. The Constitution comes first.</p>
-    <div style="display:flex;flex-direction:column;align-items:flex-end;gap:12px;margin-top:clamp(40px,6vh,80px)">
-      <article data-reveal="1" data-delay="140" data-actcard="1" style="width:min(440px,100%);border:1px solid color-mix(in srgb, var(--ink) 14%, transparent);background:color-mix(in srgb, var(--paper) 90%, transparent);padding:20px 22px;display:flex;align-items:baseline;justify-content:space-between;gap:18px;opacity:0;transform:translateX(30px);transition:opacity .7s ease,transform .7s ease">
-        <span style="font-family:Fraunces,Georgia,serif;font-size:20px;font-weight:700">Indian Evidence Act</span>
-        <span data-actmeta="1" style="font-size:13px;white-space:nowrap;color:color-mix(in srgb, var(--ink) 42%, transparent)">Article 20(3)</span>
-      </article>
-      <article data-reveal="1" data-delay="320" data-actcard="1" style="width:min(440px,100%);border:1px solid color-mix(in srgb, var(--ink) 14%, transparent);background:color-mix(in srgb, var(--paper) 90%, transparent);padding:20px 22px;display:flex;align-items:baseline;justify-content:space-between;gap:18px;opacity:0;transform:translateX(30px);transition:opacity .7s ease,transform .7s ease">
-        <span style="font-family:Fraunces,Georgia,serif;font-size:20px;font-weight:700">Representation of the People Act</span>
-        <span data-actmeta="1" style="font-size:13px;white-space:nowrap;color:color-mix(in srgb, var(--ink) 42%, transparent)">Articles 324&ndash;329</span>
-      </article>
-      <article data-reveal="1" data-delay="500" data-actcard="1" style="width:min(440px,100%);border:1px solid color-mix(in srgb, var(--ink) 14%, transparent);background:color-mix(in srgb, var(--paper) 90%, transparent);padding:20px 22px;display:flex;align-items:baseline;justify-content:space-between;gap:18px;opacity:0;transform:translateX(30px);transition:opacity .7s ease,transform .7s ease">
-        <span style="font-family:Fraunces,Georgia,serif;font-size:20px;font-weight:700">Environment Protection Act</span>
-        <span data-actmeta="1" style="font-size:13px;white-space:nowrap;color:color-mix(in srgb, var(--ink) 42%, transparent)">Articles 21 &amp; 48A</span>
-      </article>
-      <p data-reveal="1" data-delay="700" style="margin:6px 26px 0 0;font-family:Fraunces,Georgia,serif;font-style:italic;font-size:17px;color:color-mix(in srgb, var(--ink) 50%, transparent);opacity:0;transform:translateX(30px);transition:opacity .7s ease,transform .7s ease">and many more</p>
-    </div>
-  </div>
-</section>
-
-
-<!-- ══ CLOSE — scrubbed statement ══ -->
-<div data-lit-src="1" data-v="3" style="height:165vh;position:relative">
-  <div data-lit="0" style="position:sticky;top:0;height:100vh;display:flex;flex-direction:column;justify-content:center;padding:0 clamp(20px,4vw,80px);max-width:1500px;margin:0 auto">
-    <p style="margin:0 0 clamp(24px,3.4vh,44px);font-size:11.5px;text-transform:uppercase;letter-spacing:0.22em;font-weight:700;color:color-mix(in srgb, var(--ink) 42%, transparent)">Day 001</p>
-    <p style="margin:0;font-family:Fraunces,Georgia,serif;font-size:clamp(32px,6.2vw,98px);line-height:1.04;letter-spacing:-0.04em;font-weight:700;text-wrap:balance">
-      <span data-l="0" style="display:block">Don&rsquo;t just learn it.</span>
-      <span data-l="1" data-lbox="1" style="display:block;width:fit-content;background:color-mix(in srgb, var(--paper) 90%, transparent);padding:0.1em 0.28em;margin-left:-0.28em">Make it impossible to forget.</span>
-    </p>
-  </div>
-</div>
-
-<section style="padding:clamp(60px,9vh,120px) clamp(20px,4vw,80px);max-width:1500px;margin:0 auto">
-  <h2 style="font-family:Fraunces,Georgia,serif;font-size:clamp(28px,3.6vw,52px);line-height:1.06;letter-spacing:-0.035em;font-weight:700;margin:0 0 24px;max-width:18ch;text-wrap:balance">Start with one Article.</h2>
-  <p style="margin:0 0 34px;font-size:clamp(16px,1.35vw,19px);line-height:1.6;color:color-mix(in srgb, var(--ink) 62%, transparent);max-width:36ch;text-wrap:pretty">The schedule takes care of the other 179 days.</p>
-  <div style="display:flex;flex-wrap:wrap;gap:12px">
-    <a href="/login" style="background:var(--accent);color:var(--on-accent);border:1px solid var(--accent);padding:16px 32px;font-size:16px;font-weight:700" class="j-ink">Start memorizing</a>
-    <a href="/browse" style="border:1px solid color-mix(in srgb, var(--ink) 30%, transparent);padding:16px 28px;font-size:15px;font-weight:600" class="j-ghost">Explore as a guest</a>
-  </div>
-</section>
-
-</main>
-
-<footer style="position:relative;z-index:10;background:var(--page)">
-  <div style="max-width:1500px;margin:0 auto;padding:26px clamp(20px,4vw,80px);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px 30px">
-    <a href="#top" style="display:inline-flex;align-items:center;gap:11px">
-      <span style="width:28px;height:28px;display:grid;place-items:center;border:1.4px solid var(--ink);font-family:Fraunces,Georgia,serif;font-weight:700;font-size:15px;line-height:1">C</span>
-      <span style="font-family:Fraunces,Georgia,serif;font-size:17px;font-weight:700;letter-spacing:-0.02em">Recall the C</span>
-    </a>
-    <p style="margin:0;font-family:Fraunces,Georgia,serif;font-style:italic;font-size:14.5px;color:color-mix(in srgb, var(--ink) 50%, transparent)">Read it. See it. Recall it. Revisit it. Remember it.</p>
-    <nav aria-label="Legal" style="display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13.5px;font-weight:600">
-      <a href="/terms" style="color:color-mix(in srgb, var(--ink) 60%, transparent)">Terms</a>
-      <a href="/privacy" style="color:color-mix(in srgb, var(--ink) 60%, transparent)">Privacy</a>
-      <a href="/grievance" style="color:color-mix(in srgb, var(--ink) 60%, transparent)">Grievance</a>
-      {% if pricing_enabled|default(false) %}
-      <a href="/pricing" style="color:color-mix(in srgb, var(--ink) 60%, transparent)">Pricing</a>
-      {% endif %}
-    </nav>
-    <p style="margin:0;font-size:13px;color:color-mix(in srgb, var(--ink) 38%, transparent);max-width:420px">A study aid, not an official legal source. Verify against an authoritative publication where it counts.</p>
-  </div>
-</footer>
-
-</div>
-
 
 <section class="rc-launch">
   <div class="rc-launch-center">

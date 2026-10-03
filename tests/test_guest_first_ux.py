@@ -87,56 +87,23 @@ def test_guest_landing_and_browse_learn(tmp_path: Path):
     assert home.status_code == 200
     html = home.text
     assert "Recall the C" in html
-    # Existing visual tagline stays; the product name is now the <h1>.
-    assert "The whole document." in html
-    assert "In your memory." in html
+    assert "The Constitution, remembered." in html
     assert "A memory system for the Bare Act" not in html
-    assert "Start learning" in html  # header CTA still present
-    assert "Start memorizing" in html  # final-CTA section (unchanged)
-    assert 'href="/login"' in html
-    assert 'href="/browse"' in html
-    assert "Explore as guest" in html
-    # §02 interactive cloze card ("From memory") + its heading
-    assert "Recognition is not" in html
-    assert "From memory" in html
-    # Signature of the brain-canvas landing: the letter-field canvas + data file
-    assert "data-brain" in html
-    assert "brain-path.js" in html
-    # §01 rebuilt to the 13 Part squares over a 600vh pin
-    assert "Three Articles a day." in html
-    assert "height:600vh" in html
-    assert 'data-pin="1"' in html
-    assert "Fundamental Rights" in html
-    # Exactly the 13 Part squares render (not 12, not 14).
-    assert html.count('data-pcard="1"') == 13
-    # §03 "Learning modes" (six hover-fill circles)
-    assert "Learning modes" in html
-    assert "data-circles" in html
-    # §05 relevant-laws section + "and many more"
-    assert "does not act alone" in html
-    assert "and many more" in html
-    # Closing scrubbed block
-    assert "Start with one Article." in html
-    # Old §01 bits removed (ruler + day blocks); §04 schedule already gone
-    assert "data-ruler" not in html
-    assert "data-daycards" not in html
-    assert 'id="revision"' not in html
-    # Running-head marker removed; light-landing switch disabled (no toggle)
-    assert "data-marker" not in html
+    assert "The whole document." not in html
+    assert "Start learning" not in html
+    assert "Start memorizing" not in html
+    assert "Explore as guest" not in html
+    assert 'href="/login"' not in html
+    assert 'href="/browse">Explore the Constitution' in html
+    assert 'href="/laws">Explore Laws' in html
+    assert 'data-guest-landing="desktop"' in html
+    assert "rc-launch" in html
+    assert "data-brain" not in html
+    assert "brain-path.js" not in html
+    assert "<header" not in html
     assert 'id="landing-theme-toggle"' not in html
     assert "landing.js" in html
     assert "family=Fraunces" in html
-    assert "@keyframes hintDrift" in html
-    # Scroll-snap corridor hooks: the JS toggles html.snap-active; the CSS snaps.
-    assert "scroll-snap-align" in html
-    # The motion script carries the corridor + reversible mobile mode-intro.
-    landing_js = (
-        Path(__file__).resolve().parents[1]
-        / "src/constitution_memorizer/web/static/landing.js"
-    ).read_text()
-    assert "snap-active" in landing_js
-    assert "setupModeIntro" in landing_js
-    assert "data-cloze" in landing_js
     # Standalone page: no app chrome from base.html
     assert "Learning as guest" not in html
     assert 'class="nav-link">Home' not in html
@@ -172,25 +139,24 @@ def test_landing_product_name_and_purpose_are_crawlable(tmp_path: Path):
         "Recall the C is an educational platform for learning, recalling and revising the Constitution of India through structured learning methods, visual explanations, progress tracking and spaced repetition."
         in html
     )
-    assert "Independent educational product · Study aid only — not legal advice." in html
     assert "Constitution of India" in html
-    assert 'href="/privacy"' in html
-    assert 'href="/terms"' in html
-    assert 'href="/grievance"' in html
-    assert 'data-reveal' not in html.split('id="top"', 1)[1].split('id="arithmetic"', 1)[0]
+    assert "The Constitution, remembered." in html
+    assert 'href="/privacy"' not in html
+    assert 'href="/terms"' not in html
+    assert 'href="/grievance"' not in html
 
 
 def test_light_theme_switch_disabled(tmp_path: Path):
     """The light landing is disabled: even a rtc_landing_theme=light cookie
-    still serves the dark brain-canvas landing (no way to reach light)."""
+    still serves the dark Screen 1 landing (no way to reach light)."""
     client = _client(tmp_path)
     client.cookies.set("rtc_landing_theme", "light")
     home = client.get("/", follow_redirects=False)
     assert home.status_code == 200
     html = home.text
     # Dark landing served regardless of the cookie.
-    assert "data-brain" in html
-    assert "brain-path.js" in html
+    assert 'data-theme="dark"' in html
+    assert 'data-guest-landing="desktop"' in html
     # Not the light split layout.
     assert "data-fig" not in html
     assert "landing-light.js" not in html
@@ -198,12 +164,13 @@ def test_light_theme_switch_disabled(tmp_path: Path):
 
 
 def test_landing_pricing_nav_when_enabled(tmp_path: Path):
-    """With pricing on, the landing links the Pricing nav to /pricing, no teaser."""
+    """Screen 1 has no header, so pricing stays off this page even when enabled."""
     client = _client(tmp_path, pricing=True)
     dark = client.get("/", follow_redirects=False).text
-    assert 'href="/pricing"' in dark
-    # The inline in-page pricing teaser was removed.
+    assert 'href="/pricing"' not in dark
     assert 'id="pricing"' not in dark
+    pricing = client.get("/pricing")
+    assert pricing.status_code == 200
 
 
 def test_landing_only_when_multiuser_guest(tmp_path: Path):
@@ -222,7 +189,7 @@ def test_landing_only_when_multiuser_guest(tmp_path: Path):
     guest = _client(tmp_path)
     guest_home = guest.get("/", follow_redirects=False)
     assert guest_home.status_code == 200
-    assert "The whole document." in guest_home.text
+    assert "The Constitution, remembered." in guest_home.text
     assert ">Today<" not in guest_home.text
 
 
