@@ -10523,6 +10523,11 @@ body.is-admin-previewing { padding-top: 40px; }
     padding: 28px 40px 64px;
   }
 
+  /* Same mark as dark chrome: invert of /static/main_logo.png, not a new glyph. */
+  body.is-guest[data-mscreen="browse"] .brand-mark {
+    filter: invert(1);
+  }
+
   body.is-guest[data-mscreen="browse"] .guest-strip-dismiss {
     display: none;
   }

@@ -184,7 +184,17 @@ def test_screen2_desktop_header_and_guest_account_menu(tmp_path: Path) -> None:
     nav = _primary_nav(html)
     assert "<span class=\"brand\"" in header
     assert 'class="brand" href=' not in header
+    assert 'src="/static/main_logo.png"' in header
     assert "Recall the C" in header
+    css = (
+        ROOT / "src/constitution_memorizer/web/static/styles.css"
+    ).read_text(encoding="utf-8")
+    guest_mark = css.split(
+        'body.is-guest[data-mscreen="browse"] .brand-mark {', 1
+    )[1].split("}", 1)[0]
+    assert "invert(1)" in guest_mark
+    global_mark = css.split(".brand-mark {", 1)[1].split("}", 1)[0]
+    assert "invert" not in global_mark
     for label in ("Today", "Browse", "Playground", "Calendar", "Profile"):
         assert label in nav
     assert 'href="/dashboard"' in nav
@@ -279,6 +289,7 @@ def test_screen2_1280_matches_prototype_screenshot(tmp_path: Path) -> None:
         geo = page.evaluate(
             """() => {
               const brand = document.querySelector('.brand');
+              const mark = document.querySelector('.brand-mark');
               const header = document.querySelector('.site-header');
               const browse = document.querySelector('.nav-link.is-active');
               const strip = document.querySelector('[data-guest-strip]');
@@ -296,6 +307,8 @@ def test_screen2_1280_matches_prototype_screenshot(tmp_path: Path) -> None:
               });
               const hr = header.getBoundingClientRect();
               const br = brand.getBoundingClientRect();
+              const mr = mark.getBoundingClientRect();
+              const markFilter = getComputedStyle(mark).filter;
               const sr = strip.getBoundingClientRect();
               const grid = document.querySelector('.browse-resource-grid');
               const lr = laws.getBoundingClientRect();
@@ -312,7 +325,11 @@ def test_screen2_1280_matches_prototype_screenshot(tmp_path: Path) -> None:
                 headerY: hr.y,
                 brandTag: brand.tagName,
                 brandHref: brand.getAttribute('href'),
+                brandSrc: mark.getAttribute('src'),
                 brandX: br.x,
+                markFilter,
+                markW: mr.width,
+                markH: mr.height,
                 browseText: browse.textContent.replace(/\\s+/g, ' ').trim(),
                 browseBg,
                 pageBg,
@@ -446,6 +463,10 @@ def test_screen2_1280_matches_prototype_screenshot(tmp_path: Path) -> None:
 
     assert geo["brandTag"] == "SPAN"
     assert geo["brandHref"] is None
+    assert geo["brandSrc"] == "/static/main_logo.png"
+    assert "invert" in geo["markFilter"]
+    assert geo["markW"] == pytest.approx(30, abs=1)
+    assert geo["markH"] == pytest.approx(30, abs=1)
     assert geo["headerH"] == pytest.approx(60, abs=2)
     assert geo["browseText"] == "Browse"
     assert geo["navLabels"] == [
