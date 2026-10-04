@@ -297,6 +297,20 @@ def test_signed_in_bareact_desktop_chrome(tmp_path: Path) -> None:
         1,
     )[1].split("}", 1)[0]
     assert "invert(1)" in guest_mark
+    headband = css.split(
+        "[data-signed-in-bareact-desktop] .guest-bareact-headband {", 1
+    )[1].split("}", 1)[0]
+    assert "12px 40px 14px" in headband
+    cta = css.split(
+        "[data-signed-in-bareact-desktop] .guest-bareact-cta {", 1
+    )[1].split("}", 1)[0]
+    assert "width: auto" in cta
+    assert "height: 40px" in cta
+    assert "380px" not in cta
+    head = css.split(
+        "[data-signed-in-bareact-desktop] .guest-bareact-head {", 1
+    )[1].split("}", 1)[0]
+    assert "align-items: center" in head
     laws_title = css.split(
         'body.is-authed[data-mscreen="laws"] .laws-index-copy .laws-index-title {',
         1,
@@ -423,6 +437,8 @@ def test_signed_in_bareact_1280_non_subscriber_cta_and_inert_rows(
               const mark = document.querySelector('.brand-mark');
               const back = desk.querySelector('.guest-bareact-back');
               const cta = desk.querySelector('.guest-bareact-cta');
+              const headband = desk.querySelector('.guest-bareact-headband');
+              const copy = desk.querySelector('.guest-bareact-copy');
               const rows = [...desk.querySelectorAll('.guest-bareact-row')];
               const rowLinks = desk.querySelectorAll(
                 'a:not(.guest-bareact-back):not(.guest-bareact-cta):not(.signed-bareact-sections):not(.signed-bareact-continue)'
@@ -463,6 +479,13 @@ def test_signed_in_bareact_1280_non_subscriber_cta_and_inert_rows(
                 ),
                 browseActive: document.querySelector('.PrimaryTabs--top .nav-link.is-active')
                   .textContent.replace(/\\s+/g, ' ').trim(),
+                headbandH: headband.getBoundingClientRect().height,
+                headbandPadTop: parseFloat(getComputedStyle(headband).paddingTop),
+                headbandPadBottom: parseFloat(getComputedStyle(headband).paddingBottom),
+                headAlign: getComputedStyle(desk.querySelector('.guest-bareact-head')).alignItems,
+                ctaW: cta.getBoundingClientRect().width,
+                ctaH: cta.getBoundingClientRect().height,
+                copyH: copy.getBoundingClientRect().height,
               };
             }"""
         )
@@ -541,6 +564,14 @@ def test_signed_in_bareact_1280_non_subscriber_cta_and_inert_rows(
         "Profile",
     ]
     assert geo["browseActive"] == "Browse"
+    assert geo["headbandPadTop"] == pytest.approx(12, abs=1)
+    assert geo["headbandPadBottom"] == pytest.approx(14, abs=1)
+    assert geo["headbandH"] < 140
+    assert geo["headAlign"] == "center"
+    assert geo["ctaH"] == pytest.approx(40, abs=2)
+    assert geo["ctaW"] < 300
+    assert geo["ctaW"] > 160
+    assert abs(geo["ctaH"] - geo["copyH"]) < 40
     assert dialog["kind"] == "subscribe"
     assert dialog["title"] == "Unlock Playground"
     assert still_on_ndps is True
