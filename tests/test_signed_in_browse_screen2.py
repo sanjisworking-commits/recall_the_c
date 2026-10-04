@@ -231,6 +231,19 @@ def test_signed_in_browse_desktop_chrome(tmp_path: Path) -> None:
     )[1].split("}", 1)[0]
     assert "30px" in display
     assert "font-weight: 600" in display
+    lede = css.split(
+        'body.is-authed[data-mscreen="browse"] .browse > .lede {', 1
+    )[1].split("}", 1)[0]
+    assert "margin: 0 0 10px" in lede
+    cards = css.split(
+        'body.is-authed[data-mscreen="browse"] .browse-article-card {', 1
+    )[1].split("}", 1)[0]
+    assert "min-height: 48px" in cards
+    assert "padding: 8px 10px 10px" in cards
+    roman = css.split(
+        'body.is-authed[data-mscreen="browse"] .browse-part-roman {', 1
+    )[1].split("}", 1)[0]
+    assert "17px" in roman
     assert (
         "body.is-authed[data-mscreen=\"browse\"] .account-avatar-fallback {\n"
         "    background: var(--ink);\n"
