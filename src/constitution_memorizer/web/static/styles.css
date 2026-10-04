@@ -10846,6 +10846,249 @@ body.is-admin-previewing { padding-top: 40px; }
   }
 }
 
+/* Signed-in Laws index (CTA map signedIn/03-screen). Desktop only; phone
+   /laws keeps the existing catalogue, chips, and expandable search. */
+@media (max-width: 560px) {
+  body.is-authed[data-mscreen="laws"] .laws-back-link,
+  body.is-authed[data-mscreen="laws"] .laws-index-copy,
+  body.is-authed[data-mscreen="laws"] .laws-search-icon {
+    display: none !important;
+  }
+
+  body.is-authed[data-mscreen="laws"] .laws-index-hero {
+    display: contents;
+  }
+}
+
+@media (min-width: 561px) {
+  body.is-authed[data-mscreen="laws"] .page-wrap,
+  body.is-authed[data-mscreen="laws"] .sheet {
+    background: var(--page);
+  }
+
+  body.is-authed[data-mscreen="laws"] .panel.laws {
+    max-width: none;
+    padding: 22px 40px 60px;
+  }
+
+  /* Same mark as dark chrome: invert of /static/main_logo.png, not a new glyph. */
+  body.is-authed[data-mscreen="laws"] .brand-mark {
+    filter: invert(1);
+  }
+
+  body.is-authed[data-mscreen="laws"] .laws-index-head {
+    display: none;
+  }
+
+  body.is-authed[data-mscreen="laws"] .site-footer,
+  body.is-authed[data-mscreen="laws"] .sheet-footnote {
+    display: none;
+  }
+
+  body.is-authed[data-mscreen="laws"] .laws-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 32px;
+    margin: 0 0 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  body.is-authed[data-mscreen="laws"] .laws-back-link:hover {
+    color: var(--ink);
+  }
+
+  body.is-authed[data-mscreen="laws"] .laws-index-hero {
+    display: flex;
+    align-items: flex-end;
+    gap: 24px;
+    margin: 0 0 16px;
+  }
+
+  body.is-authed[data-mscreen="laws"] .laws-index-copy {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  body.is-authed[data-mscreen="laws"] .laws-index-kicker {
+    margin: 0 0 4px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mid);
+  }
+
+  body.is-authed[data-mscreen="laws"] .laws-index-copy .laws-index-title {
+    margin: 0 0 4px;
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: 0;
+  }
+
+  body.is-authed[data-mscreen="laws"] .laws-index-lede {
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.45;
+    color: var(--muted);
+  }
+
+  body.is-authed[data-mscreen="laws"] .laws-search {
+    display: flex;
+    flex: 0 0 300px;
+    align-items: center;
+    align-self: flex-end;
+    width: 300px;
+    max-width: 100%;
+    height: 40px;
+    margin: 0;
+    padding: 0 12px;
+    border: 1px solid var(--hairline);
+    border-radius: 11px;
+    background: var(--paper);
+    box-sizing: border-box;
+  }
+
+  body.is-authed[data-mscreen="laws"] .laws-search[hidden] {
+    display: flex !important;
+  }
+
+  body.is-authed[data-mscreen="laws"] .laws-search-icon {
+    display: flex;
+    margin-right: 8px;
+    color: var(--muted);
+    pointer-events: none;
+  }
+
+  body.is-authed[data-mscreen="laws"] .laws-search-input {
+    width: 100%;
+    height: 40px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    font-size: 13.5px;
+  }
+
+  body.is-authed[data-mscreen="laws"] .laws-search-input::placeholder {
+    color: var(--muted);
+  }
+
+  body.is-authed[data-mscreen="laws"] .laws-chip-strip {
+    flex-wrap: wrap;
+    overflow: visible;
+    gap: 8px;
+    margin: 0 0 18px;
+  }
+
+  body.is-authed[data-mscreen="laws"] .laws-catalog {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    max-width: 1000px;
+  }
+
+  body.is-authed[data-mscreen="laws"] .laws-index-card {
+    padding: 16px 18px;
+    background: var(--paper);
+  }
+
+  body.is-authed[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-rows: auto auto auto;
+    column-gap: 8px;
+    align-items: center;
+  }
+
+  body.is-authed[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) .laws-index-card-link,
+  body.is-authed[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) .laws-index-head-row {
+    display: contents;
+  }
+
+  body.is-authed[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) .laws-index-tag {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  body.is-authed[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) .LawPlaygroundCta {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: start;
+    align-self: center;
+    margin: 0;
+  }
+
+  body.is-authed[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) .laws-index-chevron {
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  body.is-authed[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) .laws-index-name {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+
+  body.is-authed[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) .laws-index-meta {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
+
+  body.is-authed[data-mscreen="laws"] .LawPlaygroundCta .pg-lede,
+  body.is-authed[data-mscreen="laws"] .LawPlaygroundCta .pg-actions,
+  body.is-authed[data-mscreen="laws"] .LawPlaygroundCta .pg-btn {
+    display: none;
+  }
+
+  body.is-authed[data-mscreen="laws"] .LawPlaygroundCta:not(:has(.LawStatusBadge)) {
+    display: none;
+  }
+
+  body.is-authed[data-mscreen="laws"] .laws-index-card .LawStatusBadge[data-status="in_playground"] {
+    height: auto;
+    gap: 0;
+    padding: 2px 8px;
+    border: 1px solid var(--pg-teal-border);
+    border-radius: 999px;
+    background: var(--pg-teal-tint);
+    color: var(--pg-teal-dark);
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  body.is-authed[data-mscreen="laws"] .laws-index-card .LawStatusBadge[data-status="in_playground"] .LawStatusBadge-mark {
+    display: none;
+  }
+
+  body.is-authed[data-mscreen="laws"] .account-avatar,
+  body.is-authed[data-mscreen="laws"] .account-avatar-fallback {
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+  }
+
+  body.is-authed[data-mscreen="laws"] .account-avatar-fallback {
+    background: var(--ink);
+    color: var(--on-accent);
+    border-color: var(--ink);
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+  }
+}
+
+@media (min-width: 561px) and (max-width: 1279px) {
+  body.is-authed[data-mscreen="laws"] .panel.laws {
+    padding: 22px max(28px, calc((100% - 1180px) / 2)) 60px;
+  }
+}
+
 /* Guest NDPS Bare Act head (CTA map guest/04-screen). Desktop only; phone
    Bare Act keeps the production accordion, About card, and Playground CTA. */
 @media (max-width: 560px) {

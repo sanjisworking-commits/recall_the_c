@@ -82,11 +82,15 @@
   class="panel laws"
   data-laws-index
   {% if guest_laws_index %}data-laws-phone{% endif %}
+  {% if current_user %}data-signed-in-laws-desktop{% endif %}
   data-initial-q="{{ initial_q|e }}"
   {# Echoed raw, as before, and validated in JS; a status chip clears it. #}
   data-initial-subject="{{ '' if active_status else initial_subject|e }}"
   data-initial-status="{{ active_status|e }}"
 >
+  {% if current_user %}
+  <a class="laws-back-link" href="/browse"><svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M12.2 4.2 6.4 10l5.8 5.8"></path></svg>Browse</a>
+  {% endif %}
   <div class="laws-index-head">
     <a class="mobile-back" href="/browse">← Browse</a>
     <h1 class="display laws-index-title">Laws</h1>
@@ -101,18 +105,35 @@
       <svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"></circle><path d="M12.6 12.6 17 17"></path></svg>
     </button>
   </div>
+  {% if current_user %}
+  <div class="laws-index-hero">
+    <div class="laws-index-copy">
+      <p class="laws-index-kicker">Browse</p>
+      <h1 class="display laws-index-title">Laws</h1>
+      <p class="laws-index-lede">Bare Acts and statutes. Open a law, then add it or its sections to your Playground.</p>
+    </div>
+  {% endif %}
   <div class="laws-search" data-laws-search{% if not initial_q %} hidden{% endif %}>
     <label class="visually-hidden" for="laws-q">Search laws</label>
+    {% if current_user %}
+    <span class="laws-search-icon" aria-hidden="true">
+      <svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8.5" cy="8.5" r="5.5"></circle><path d="M12.6 12.6 17 17"></path></svg>
+    </span>
+    {% endif %}
     <input
       id="laws-q"
       class="laws-search-input"
       type="search"
       name="q"
       value="{{ initial_q|e }}"
+      {% if current_user %}placeholder="Search laws"{% endif %}
       autocomplete="off"
       enterkeyhint="search"
     >
   </div>
+  {% if current_user %}
+  </div>
+  {% endif %}
 
   <div class="laws-chip-strip" role="group" aria-label="Filter laws">
     <button type="button" class="laws-chip" data-laws-chip="" aria-pressed="{{ 'true' if not active_subject and not active_status else 'false' }}">All</button>
