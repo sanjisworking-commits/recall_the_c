@@ -109,13 +109,15 @@ def test_signed_in_laws_uses_production_catalogue_not_guest_cards(
     assert "data-laws-phone" not in html
     desk = _desk(html)
     catalog = load_catalog()
-    current_ids = [law.id for law in catalog.current_laws]
-    rendered_ids = [
-        chunk.split('"', 1)[0] for chunk in desk.split('data-law-id="')[1:]
-    ]
+    catalog_html = desk.split("data-laws-catalog", 1)[1].split("data-laws-empty", 1)[0]
+    rendered_ids = re.findall(
+        r'class="laws-index-card"[^>]*data-law-id="([^"]+)"',
+        catalog_html,
+        re.S,
+    )
     assert rendered_ids == [law.id for law in catalog.laws]
-    assert "bns" in current_ids
-    assert "ndps" in current_ids
+    assert "bns" in rendered_ids
+    assert "ndps" in rendered_ids
     assert "The Bharatiya Nyaya Sanhita, 2023" in desk
     assert "The Narcotic Drugs and Psychotropic Substances Act, 1985" in desk
     assert "The Companies Act, 2013" not in desk
@@ -159,7 +161,7 @@ def test_signed_in_laws_chips_and_search_are_in_place_filters(
     chips = desk.split("laws-chip-strip", 1)[1].split("laws-catalog", 1)[0]
     assert "<a " not in chips
     assert "href=" not in chips
-    search = desk.split("data-laws-search", 1)[1].split("</div>", 1)[0]
+    search = desk.split('class="laws-search"', 1)[1].split("</div>", 1)[0]
     assert "<form" not in search
     assert "action=" not in search
     assert 'id="laws-q"' in search
