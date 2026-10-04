@@ -240,6 +240,9 @@
             {% endif %}
             <span class="account-menu-btn-copy">
               <span class="account-menu-btn-name">{{ label }}</span>
+              {% if path == '/browse' %}
+              <span class="account-menu-btn-status">Free account</span>
+              {% endif %}
             </span>
           </button>
           <div class="account-menu-panel" role="menu" hidden data-account-panel>

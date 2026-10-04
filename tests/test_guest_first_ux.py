@@ -799,9 +799,12 @@ def test_browse_free_plan_banner(tmp_path: Path):
         follow_redirects=False,
     )
     html = client.get("/browse").text
-    assert "Free plan \u2014 pick any 3 Articles to learn." not in html
-    assert "All 3 slots free." not in html
+    strip = html.split("data-signed-in-browse-strip", 1)[1].split("</div>", 1)[0]
+    assert "Free plan \u2014 pick any 3 Articles to learn." in strip
+    assert "All 3 slots free." in strip
+    assert 'class="browse-access-unlock" href="/playground">Unlock all</a>' in strip
     assert "Unlock every Article \u2192" not in html
+    assert 'href="/pricing">Unlock all' not in html
 
     css = client.get("/static/mobile.css").text
     assert ".browse-access-unlock" in css

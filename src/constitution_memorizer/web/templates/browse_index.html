@@ -120,12 +120,13 @@
     <p>Reading as a guest. Sign in to save 3 Articles to Recall for free — progress, streaks and revision scheduling come with it.</p>
     <a class="guest-strip-signin" href="/login" data-guest-gate>Sign in</a>
   </div>
-  {% elif access and access.enabled and access.is_free %}
-  {# diff.md item 4: one line of state and a bordered Unlock all, rather than
-     a status block. The states are main's — they encode the actual free-tier
-     rules — and only the presentation follows the design. #}
-  <div class="browse-access-summary">
+  {% elif current_user %}
+  {# Signed-in desktop Browse (signedIn/02): existing free-plan copy + Unlock
+     all. Unlock all opens the existing Playground Gate. Phone hides this
+     strip so the part-card rail is unchanged. #}
+  <div class="browse-access-summary" data-signed-in-browse-strip>
     <p class="browse-access-status">
+      {% if access and access.enabled and access.is_free %}
       {% if access.legacy_over_cap %}
       Free plan — your {{ access.claimed_count }} saved Articles stay fully open.
       {% elif access.cap_reached %}
@@ -135,10 +136,12 @@
       Free plan — pick any 3 Articles to learn.
       {{ words.get(access.free_slots_remaining, access.free_slots_remaining|string ~ ' slots') }} free.
       {% endif %}
+      {% else %}
+      Free plan — pick any 3 Articles to learn.
+      All 3 slots free.
+      {% endif %}
     </p>
-    {% if pricing_enabled|default(false) %}
-    <a class="browse-access-unlock" href="/pricing">Unlock all</a>
-    {% endif %}
+    <a class="browse-access-unlock" href="/playground">Unlock all</a>
   </div>
   {% endif %}
 
@@ -168,7 +171,7 @@
             data-browse-filter="{{ spec.key }}"
             aria-pressed="false">
       {{ mark_icon(spec.key, 15) }}
-      <span>{{ 'News' if spec.key == 'news' else spec.legend_label }}</span>
+      <span>{% if is_guest|default(false) %}{{ 'News' if spec.key == 'news' else spec.legend_label }}{% else %}{{ spec.legend_label }}{% endif %}</span>
       <span class="browse-legend-clear" aria-hidden="true">✕</span>
     </button>
     {% endfor %}
