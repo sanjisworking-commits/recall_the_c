@@ -11253,6 +11253,175 @@ body.is-admin-previewing { padding-top: 40px; }
   }
 }
 
+/* Signed-in NDPS Bare Act head (CTA map signedIn/04-screen). Desktop only;
+   phone Bare Act keeps the production accordion, About card, and CTA. */
+@media (max-width: 560px) {
+  [data-signed-in-bareact-desktop] {
+    display: none !important;
+  }
+}
+
+@media (min-width: 561px) {
+  body.is-authed[data-mscreen="bareact"]:has([data-signed-in-bareact-desktop]) .brand-mark {
+    filter: invert(1);
+  }
+
+  body.is-authed[data-mscreen="bareact"]:has([data-signed-in-bareact-desktop]) .page-wrap,
+  body.is-authed[data-mscreen="bareact"]:has([data-signed-in-bareact-desktop]) .sheet,
+  body.is-authed[data-mscreen="bareact"]:has([data-signed-in-bareact-desktop]) .main {
+    background: var(--paper);
+  }
+
+  body.is-authed[data-mscreen="bareact"] [data-bareact-phone] {
+    display: none !important;
+  }
+
+  body.is-authed[data-mscreen="bareact"]:has([data-signed-in-bareact-desktop]) .site-footer,
+  body.is-authed[data-mscreen="bareact"]:has([data-signed-in-bareact-desktop]) .sheet-footnote {
+    display: none;
+  }
+
+  body.is-authed[data-mscreen="bareact"] .panel.guest-bareact {
+    max-width: none;
+    padding: 0;
+    background: var(--paper);
+  }
+
+  body.is-authed[data-mscreen="bareact"]:has([data-signed-in-bareact-desktop]) .account-avatar,
+  body.is-authed[data-mscreen="bareact"]:has([data-signed-in-bareact-desktop]) .account-avatar-fallback {
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+  }
+
+  body.is-authed[data-mscreen="bareact"]:has([data-signed-in-bareact-desktop]) .account-avatar-fallback {
+    background: var(--ink);
+    color: var(--on-accent);
+    border-color: var(--ink);
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  body.is-authed[data-mscreen="bareact"] [data-signed-in-bareact-desktop] .LawPlaygroundCta {
+    display: flex;
+    flex: 0 0 380px;
+    align-items: stretch;
+    justify-content: center;
+    width: 380px;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+  }
+
+  body.is-authed[data-mscreen="bareact"] [data-signed-in-bareact-desktop] .LawPlaygroundCta .LawStatusBadge,
+  body.is-authed[data-mscreen="bareact"] [data-signed-in-bareact-desktop] .LawPlaygroundCta .pg-lede,
+  body.is-authed[data-mscreen="bareact"] [data-signed-in-bareact-desktop] .LawPlaygroundCta .pg-actions,
+  body.is-authed[data-mscreen="bareact"] [data-signed-in-bareact-desktop] .LawPlaygroundCta .pg-btn--ghost {
+    display: none;
+  }
+
+  body.is-authed[data-mscreen="bareact"] [data-signed-in-bareact-desktop] .LawPlaygroundCta .pg-btn {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 48px;
+    min-height: 48px;
+    padding: 0 16px;
+    border: none;
+    border-radius: 12px;
+    background: var(--ink);
+    color: var(--on-accent);
+    font-size: 14.5px;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.28);
+  }
+
+  [data-signed-in-bareact-desktop] .signed-bareact-in-pg {
+    display: flex;
+    flex: 0 0 380px;
+    align-items: center;
+    gap: 11px;
+    width: 380px;
+    max-width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--pg-teal-border);
+    border-radius: 12px;
+    background: var(--pg-teal-tint);
+    box-sizing: border-box;
+  }
+
+  [data-signed-in-bareact-desktop] .signed-bareact-in-pg-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    flex: none;
+    border-radius: 50%;
+    background: var(--pg-teal);
+    color: var(--on-accent);
+  }
+
+  [data-signed-in-bareact-desktop] .signed-bareact-in-pg .LawStatusBadge {
+    flex: 1 1 auto;
+    height: auto;
+    gap: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--pg-teal-dark);
+    font-size: 13.5px;
+    font-weight: 600;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  [data-signed-in-bareact-desktop] .signed-bareact-in-pg .LawStatusBadge-mark {
+    display: none;
+  }
+
+  [data-signed-in-bareact-desktop] .signed-bareact-sections {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 34px;
+    padding: 0 12px;
+    border: 1px solid var(--pg-teal-border);
+    border-radius: 9px;
+    background: var(--paper);
+    color: var(--pg-teal-dark);
+    font-size: 12.5px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  [data-signed-in-bareact-desktop] .signed-bareact-continue {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 34px;
+    padding: 0 13px;
+    border: none;
+    border-radius: 9px;
+    background: var(--pg-teal);
+    color: var(--on-accent);
+    font-size: 12.5px;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.18);
+  }
+
+  [data-signed-in-bareact-desktop] .signed-bareact-continue:active {
+    transform: translateY(1px);
+  }
+}
+
 /* Guest Playground intro (CTA map guest/06-screen). Desktop only; phone
    /playground keeps the production entitlement Gate and guest tabbar. */
 @media (max-width: 560px) {

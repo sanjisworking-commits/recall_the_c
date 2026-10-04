@@ -995,6 +995,14 @@ def law_membership(
             historical = overlay.get_item(access.user_id, law_id) is not None
     roster_full = remaining == 0 and not (active or removed)
     if active:
+        if not subscribed:
+            return _state(
+                KIND_SUBSCRIBE,
+                primary_label="Subscribe to use Playground",
+                primary_href=add_path(law_id),
+                secondary_copy=f"Unlock Playground · {catalogue_from_price()} / month.",
+                opens_sheet=True,
+            )
         href = law_path(law_id)
         label = "Continue"
         sections_href = sections_path(law_id)

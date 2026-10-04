@@ -3,6 +3,11 @@
 {% block mobile_screen %}bareact{% endblock %}
 {% block content %}
 {% set guest_bareact_head = multiuser_enabled|default(false) and not current_user and guest_screen4|default(none) %}
+{% set signed_in_bareact_desktop = multiuser_enabled|default(false) and current_user and guest_screen4|default(none) %}
+{% from "partials/playground.html" import playground_cta, status_badge %}
+{% set pg = playground_state %}
+{% set pg_subscribed = pg and pg.subscribed %}
+{% set pg_in_playground = pg_subscribed and pg.kind == 'already_active' %}
 {% if guest_bareact_head %}
 <section class="panel guest-bareact" data-guest-bareact-desktop>
   <div class="guest-bareact-headband">
@@ -33,7 +38,52 @@
   </div>
 </section>
 {% endif %}
-<section class="panel bareact bareact-page is-{{ act.render_profile }}"{% if guest_bareact_head %} data-bareact-phone{% endif %}>
+{% if signed_in_bareact_desktop %}
+<section class="panel guest-bareact" data-signed-in-bareact-desktop>
+  <div class="guest-bareact-headband">
+    <a class="guest-bareact-back" href="/laws"><svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M12.2 4.2 6.4 10l5.8 5.8"></path></svg>Laws</a>
+    <div class="guest-bareact-head">
+      <div class="guest-bareact-copy">
+        <p class="guest-bareact-kicker">{{ guest_screen4.kicker }}</p>
+        <h1 class="guest-bareact-title">{{ guest_screen4.title }}</h1>
+        <p class="guest-bareact-meta">{{ guest_screen4.meta }}</p>
+      </div>
+      {% if pg_in_playground %}
+      <div class="signed-bareact-in-pg" data-pg-kind="already_active">
+        <span class="signed-bareact-in-pg-mark" aria-hidden="true">
+          <svg width="13" height="13" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6.5 4.8 9.2 10 3.2"></path></svg>
+        </span>
+        {{ status_badge(pg.badge, pg.badge_label) }}
+        {% if pg.secondary_href and pg.secondary_label %}
+        <a class="signed-bareact-sections" href="{{ pg.secondary_href }}">{{ pg.secondary_label }}</a>
+        {% endif %}
+        <a class="signed-bareact-continue" href="/playground">Continue</a>
+      </div>
+      {% elif pg_subscribed %}
+      {{ playground_cta(pg) }}
+      {% else %}
+      <a
+        class="guest-bareact-cta"
+        href="{{ pg.primary_href if pg and pg.primary_href else guest_screen4.add_href }}"
+        data-pg-sheet
+        data-pg-kind="subscribe"
+      >Subscribe to use Playground</a>
+      {% endif %}
+    </div>
+  </div>
+  <div class="guest-bareact-rows" role="list">
+    {% for row in guest_screen4.rows %}
+    <div class="guest-bareact-row" role="listitem">
+      <span class="guest-bareact-row-tag">{{ row.tag }}</span>
+      <span class="guest-bareact-row-title">{{ row.title }}</span>
+      <span class="guest-bareact-row-range">{{ row.range_label }}</span>
+      <span class="guest-bareact-row-chevron" aria-hidden="true">›</span>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+<section class="panel bareact bareact-page is-{{ act.render_profile }}"{% if guest_bareact_head or signed_in_bareact_desktop %} data-bareact-phone{% endif %}>
   <div class="bareact-head">
     <div class="mobile-topbar">
       <a class="mobile-back" href="/laws">← Laws</a>
