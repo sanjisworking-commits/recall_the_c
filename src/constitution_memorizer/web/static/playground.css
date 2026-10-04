@@ -2772,27 +2772,28 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   }
 
   .pg-sheet-panel[data-pg-kind="subscribe"] {
-    padding: 26px 28px;
+    padding: 20px 24px 18px;
+    border-radius: 14px;
   }
 
   body.is-authed dialog.pg-sheet[open]:has([data-signed-in-add-desktop])::backdrop {
-    background: rgba(20, 20, 20, 0.35);
+    background: rgba(20, 20, 20, 0.28);
   }
 
   [data-signed-in-add-desktop] .signed-add-title {
     font-family: var(--pg-font-display);
-    font-weight: 500;
-    font-size: 22px;
-    line-height: 1.25;
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 1.2;
     letter-spacing: 0;
-    margin: 0 0 4px;
+    margin: 0 0 2px;
     color: var(--pg-ink);
   }
 
   [data-signed-in-add-desktop] .signed-add-lede {
-    margin: 0 0 18px;
+    margin: 0 0 14px;
     font-size: 13.5px;
-    line-height: 1.55;
+    line-height: 1.5;
     color: var(--pg-muted);
   }
 
@@ -2801,17 +2802,17 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     align-items: center;
     justify-content: center;
     width: 100%;
-    height: 50px;
+    height: 44px;
     border: none;
     border-radius: var(--pg-radius-button);
     background: var(--pg-ink);
     color: var(--pg-paper);
     font: inherit;
-    font-size: 15px;
+    font-size: 14.5px;
     font-weight: 600;
     text-decoration: none;
     box-sizing: border-box;
-    box-shadow: var(--pg-shadow-press);
+    box-shadow: var(--pg-shadow-press-active);
   }
 
   .PlaygroundShell [data-signed-in-add-desktop] .signed-add-unlock {
@@ -2820,14 +2821,16 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
 
   [data-signed-in-add-desktop] .signed-add-unlock:active {
     transform: translateY(1px);
-    box-shadow: var(--pg-shadow-press-active);
+    box-shadow: none;
   }
 
   [data-signed-in-add-desktop] .signed-add-note {
-    margin: 12px 0 0;
+    display: block;
+    width: 100%;
+    margin: 8px 0 0;
     text-align: center;
     font-size: 12px;
-    line-height: 1.5;
+    line-height: 1.45;
     color: var(--pg-faint);
   }
 

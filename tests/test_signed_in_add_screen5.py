@@ -173,6 +173,24 @@ def test_signed_in_add_does_not_touch_accepted_screens() -> None:
     assert "12px 40px 14px" in headband
     mobile = MOBILE.read_text(encoding="utf-8")
     assert "data-signed-in-add-desktop" not in mobile
+    pg_css = (
+        ROOT / "src/constitution_memorizer/web/static/playground.css"
+    ).read_text(encoding="utf-8")
+    guest_block = pg_css.split("[data-guest-add-desktop] .guest-add-title {", 1)[1].split(
+        "[data-guest-add-desktop] .guest-add-lede {", 1
+    )[0]
+    assert "font-size: 22px" in guest_block
+    assert "font-weight: 500" in guest_block
+    guest_btn = pg_css.split("[data-guest-add-desktop] .guest-add-signin {", 1)[1].split(
+        ".PlaygroundShell [data-guest-add-desktop] .guest-add-signin {", 1
+    )[0]
+    assert "height: 50px" in guest_btn
+    signed_title = pg_css.split(
+        "[data-signed-in-add-desktop] .signed-add-title {", 1
+    )[1].split("}", 1)[0]
+    assert "font-size: 20px" in signed_title
+    assert "font-weight: 400" in signed_title
+    assert "font-size: 22px" not in signed_title
 
 
 def test_signed_in_add_does_not_change_guest_or_other_kinds(tmp_path: Path) -> None:
@@ -226,7 +244,7 @@ def test_signed_in_add_1280_gate_and_close(tmp_path: Path) -> None:
     port, _server = _serve(app)
     artifact_dir = Path("/opt/cursor/artifacts")
     artifact_dir.mkdir(parents=True, exist_ok=True)
-    shot_path = artifact_dir / "signed_in_add_screen5_1280.png"
+    shot_path = artifact_dir / "signed_in_add_screen5_density_1280.png"
     origin = f"http://127.0.0.1:{port}"
 
     with sync_playwright() as pw:
@@ -273,23 +291,40 @@ def test_signed_in_add_1280_gate_and_close(tmp_path: Path) -> None:
               const head = document.querySelector('[data-signed-in-bareact-desktop]');
               const box = panel.getBoundingClientRect();
               const note = desk.querySelector('.signed-add-note');
+              const titleEl = desk.querySelector('.signed-add-title');
+              const ledeEl = desk.querySelector('.signed-add-lede');
+              const closeStyle = closeBtn && getComputedStyle(closeBtn);
+              const panelStyle = getComputedStyle(panel);
+              const backdrop = getComputedStyle(dialog, '::backdrop');
               return {
                 open: dialog && dialog.open,
                 kind: panel.getAttribute('data-pg-kind'),
                 deskDisplay: getComputedStyle(desk).display,
                 phoneDisplay: getComputedStyle(phone).display,
                 eyebrowDisplay: getComputedStyle(panel.querySelector('.pg-eyebrow')).display,
-                title: desk.querySelector('.signed-add-title').textContent.trim(),
-                lede: desk.querySelector('.signed-add-lede').textContent.trim(),
+                title: titleEl.textContent.trim(),
+                titleSize: getComputedStyle(titleEl).fontSize,
+                titleWeight: getComputedStyle(titleEl).fontWeight,
+                lede: ledeEl.textContent.trim(),
+                ledeMarginBottom: getComputedStyle(ledeEl).marginBottom,
                 unlockText: unlock.textContent.trim(),
                 unlockHref: unlock.getAttribute('href'),
+                unlockH: unlock.getBoundingClientRect().height,
+                unlockShadow: getComputedStyle(unlock).boxShadow,
                 note: note && note.textContent.trim(),
+                noteAlign: note && getComputedStyle(note).textAlign,
+                noteMarginTop: note && getComputedStyle(note).marginTop,
                 cancelDisplay: cancel ? getComputedStyle(cancel).display : null,
                 cancelCloses: cancel && cancel.hasAttribute('data-pg-sheet-close'),
                 hasClose: Boolean(closeBtn),
                 closeLabel: closeBtn && closeBtn.getAttribute('aria-label'),
+                closeTop: closeStyle && closeStyle.top,
+                closeRight: closeStyle && closeStyle.right,
                 panelW: box.width,
-                panelRadius: getComputedStyle(panel).borderRadius,
+                panelH: box.height,
+                panelRadius: panelStyle.borderRadius,
+                panelPad: panelStyle.padding,
+                scrim: backdrop.backgroundColor,
                 guestAdd: Boolean(panel.querySelector('[data-guest-add-desktop]')),
                 leaked: {
                   already: panel.innerText.includes('Already in Playground'),
@@ -392,16 +427,28 @@ def test_signed_in_add_1280_gate_and_close(tmp_path: Path) -> None:
     assert geo["phoneDisplay"] == "none"
     assert geo["eyebrowDisplay"] == "none"
     assert geo["title"] == "Unlock Playground"
+    assert geo["titleSize"] == "20px"
+    assert geo["titleWeight"] in ("400", "normal")
     assert geo["lede"] == LEDE
+    assert geo["ledeMarginBottom"] == "14px"
     assert geo["unlockText"] == "Unlock Playground"
     assert geo["unlockHref"] == home_path()
+    assert geo["unlockH"] == pytest.approx(44, abs=2)
     assert NOTE in (geo["note"] or "")
+    assert geo["noteAlign"] == "center"
+    assert geo["noteMarginTop"] == "8px"
     assert geo["cancelDisplay"] == "none"
     assert geo["cancelCloses"] is True
     assert geo["hasClose"] is True
     assert geo["closeLabel"] == "Close"
+    assert geo["closeTop"] == "14px"
+    assert geo["closeRight"] == "14px"
     assert geo["panelW"] == pytest.approx(460, abs=8)
-    assert "16px" in geo["panelRadius"]
+    assert "14px" in geo["panelRadius"]
+    assert "16px" not in geo["panelRadius"]
+    assert "20px" in geo["panelPad"]
+    assert "24px" in geo["panelPad"]
+    assert "0.28" in (geo["scrim"] or "") or "rgba(20, 20, 20, 0.28)" in (geo["scrim"] or "")
     assert geo["guestAdd"] is False
     assert geo["leaked"]["already"] is False
     assert geo["leaked"]["resume"] is False
