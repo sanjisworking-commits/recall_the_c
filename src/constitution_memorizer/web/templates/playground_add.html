@@ -31,13 +31,22 @@
   </div>
 
   {% elif kind == "subscribe" %}
-  <h1 id="pg-add-title">Unlock Playground</h1>
-  <p class="pg-lede">Turning {{ short_title }} into a learning experience needs a plan. Reading it stays free.</p>
-  <p class="pg-actions">
-    <a class="pg-btn" href="/billing/subscriptions">Unlock Playground</a>
-    <a class="pg-btn pg-btn--ghost" href="{{ cancel_href }}">Cancel</a>
-  </p>
-  {% if from_price %}<p class="pg-note">{{ from_price }} / month. Constitution learning stays included with your account.</p>{% endif %}
+  <div data-signed-in-add-desktop>
+    <h1 id="pg-add-title" class="signed-add-title">Unlock Playground</h1>
+    <p class="signed-add-lede">Turning {{ short_title }} into a learning experience needs a plan. Reading it stays free.</p>
+    <a class="signed-add-unlock" href="/playground">Unlock Playground</a>
+    {% if from_price %}<p class="signed-add-note">{{ from_price }} / month. Constitution learning stays included with your account.</p>{% endif %}
+    <button type="button" class="signed-add-cancel" data-pg-sheet-close>Cancel</button>
+  </div>
+  <div data-signed-in-add-phone>
+    <h1 id="pg-add-title-phone">Unlock Playground</h1>
+    <p class="pg-lede">Turning {{ short_title }} into a learning experience needs a plan. Reading it stays free.</p>
+    <p class="pg-actions">
+      <a class="pg-btn" href="/billing/subscriptions">Unlock Playground</a>
+      <a class="pg-btn pg-btn--ghost" href="{{ cancel_href }}">Cancel</a>
+    </p>
+    {% if from_price %}<p class="pg-note">{{ from_price }} / month. Constitution learning stays included with your account.</p>{% endif %}
+  </div>
 
   {% elif kind == "resume" %}
   <h1 id="pg-add-title">Resume Playground</h1>
