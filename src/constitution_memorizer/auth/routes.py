@@ -909,13 +909,6 @@ def install_auth_middleware(app) -> None:
                 )
                 return signin_redirect(next_url=next_url, reason=reason)
 
-        if path == "/" and user is not None:
-            response = RedirectResponse(url="/dashboard", status_code=303)
-            from constitution_memorizer.devices.token import maybe_set_device_cookie
-
-            maybe_set_device_cookie(request, response)
-            return response
-
         token_e = bound_engine.set(request.state.bound_engine)
         token_m = bound_memory.set(request.state.bound_memory)
         try:

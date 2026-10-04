@@ -180,7 +180,7 @@ def test_landing_pricing_nav_when_enabled(tmp_path: Path):
 
 
 def test_landing_only_when_multiuser_guest(tmp_path: Path):
-    """Marketing landing is served at / only for unsigned multiuser visitors."""
+    """Marketing landing is served at / for every multiuser visitor; single-user / is Today."""
     from constitution_memorizer.web.app import create_app
 
     local = TestClient(
@@ -199,7 +199,7 @@ def test_landing_only_when_multiuser_guest(tmp_path: Path):
     assert ">Today<" not in guest_home.text
 
 
-def test_authed_logo_and_root_go_to_dashboard(tmp_path: Path):
+def test_authed_logo_goes_to_dashboard_and_root_is_landing(tmp_path: Path):
     client = _client(tmp_path)
     start = client.get("/auth/google/start", follow_redirects=False)
     state = start.cookies.get("rtc_oauth_state")
@@ -212,8 +212,13 @@ def test_authed_logo_and_root_go_to_dashboard(tmp_path: Path):
     assert 'class="brand" href="/dashboard"' in dash.text
     assert "main_logo.png" in dash.text
     root = client.get("/", follow_redirects=False)
-    assert root.status_code == 303
-    assert root.headers["location"] == "/dashboard"
+    assert root.status_code == 200
+    assert "The Constitution, remembered." in root.text
+    assert 'data-guest-landing="desktop"' in root.text
+    assert 'href="/browse">Explore the Constitution' in root.text
+    assert 'href="/laws">Explore Laws' in root.text
+    assert "<header" not in root.text
+    assert "Sign in" not in root.text
 
 
 def test_guest_post_done_redirects_to_login(tmp_path: Path):

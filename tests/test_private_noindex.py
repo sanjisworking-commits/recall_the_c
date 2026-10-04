@@ -223,12 +223,10 @@ def test_authenticated_private_pages_carry_noindex(authed_admin: TestClient, pat
     assert _has_noindex(resp.text), f"authenticated {path} missing noindex meta"
 
 
-# NB: "/" is intentionally excluded — an authenticated user hitting "/" is
-# redirected (303) to their private /dashboard, so its final page is noindexed
-# by design. The public *content* surfaces below must stay indexable regardless
-# of who is signed in.
+# "/" stays public for signed-in viewers too: multiuser GET / serves the same
+# landing as guests, not a private dashboard redirect.
 @pytest.mark.parametrize(
-    "path", ["/laws", "/laws/ndps", "/browse/article/20"]
+    "path", ["/", "/laws", "/laws/ndps", "/browse/article/20"]
 )
 def test_authenticated_public_pages_stay_indexable(authed_admin: TestClient, path: str):
     resp = authed_admin.get(path, follow_redirects=True)

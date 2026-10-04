@@ -1170,20 +1170,18 @@ def create_app(
     @app.get("/", response_class=HTMLResponse)
     async def home(request: Request) -> HTMLResponse:
         if app.state.multiuser_enabled:
-            if getattr(request.state, "current_user", None) is None:
-                # Marketing landing. The light variant is currently disabled —
-                # always serve the dark landing (a stale rtc_landing_theme
-                # cookie must not strand anyone on light). landing_light.html
-                # stays in the repo, dormant, for easy re-enable.
-                return templates.TemplateResponse(
-                    request,
-                    "landing.html",
-                    {
-                        "landing_review_days": list(INTERVAL_LADDER),
-                    },
-                )
-            # Authenticated home is the dashboard.
-            return RedirectResponse(url="/dashboard", status_code=303)
+            # Guest and signed-in viewers share this dark landing. The light
+            # variant is currently disabled — always serve the dark landing
+            # (a stale rtc_landing_theme cookie must not strand anyone on
+            # light). landing_light.html stays in the repo, dormant, for easy
+            # re-enable.
+            return templates.TemplateResponse(
+                request,
+                "landing.html",
+                {
+                    "landing_review_days": list(INTERVAL_LADDER),
+                },
+            )
         eng = _engine()
         today = date.today()
         due = due_checklist(eng, as_of=today)
