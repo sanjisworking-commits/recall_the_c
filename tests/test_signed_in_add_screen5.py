@@ -99,7 +99,7 @@ def _desk(html: str) -> str:
 
 
 def _phone(html: str) -> str:
-    return html.split("data-signed-in-add-phone", 1)[1]
+    return html.split("data-signed-in-add-phone", 1)[1].split("</div>", 1)[0]
 
 
 def test_signed_in_add_desktop_is_subscribe_only(tmp_path: Path) -> None:
@@ -323,7 +323,7 @@ def test_signed_in_add_1280_gate_and_close(tmp_path: Path) -> None:
         )
 
         open_dialog()
-        page.locator("[data-pg-sheet-close].pg-sheet-close").click()
+        page.locator(".pg-sheet-close").click()
         closed_x = page.evaluate(
             """() => {
               const dialog = document.querySelector('dialog.pg-sheet');

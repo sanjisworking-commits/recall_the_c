@@ -148,7 +148,7 @@
     }
 
     function ensureCloseButton(panel) {
-      if (panel.querySelector("[data-pg-sheet-close]")) {
+      if (panel.querySelector(".pg-sheet-close")) {
         return;
       }
       var btn = document.createElement("button");
