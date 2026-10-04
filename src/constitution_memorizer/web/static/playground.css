@@ -8,6 +8,7 @@ html[data-theme="light"] {
   --pg-muted: #6b6b6b;
   --pg-faint: #9a9a9a;
   --pg-mid: #8f8f8d;
+  --pg-guest-avatar: #e2e2e0;
   --pg-hairline: #dcdcdc;
   --pg-page: #ececea;
   --pg-paper: #fff;
@@ -64,6 +65,7 @@ html[data-theme="dark"] {
   --pg-destructive-tint: #3a1c18;
   --pg-destructive-deep: #f0a8a0;
   --pg-subtle: #232220;
+  --pg-guest-avatar: var(--pg-subtle);
   --pg-wash: #191918;
   --pg-control-border: #4a4a48;
   --pg-teal: #2a9d8f;
@@ -2945,8 +2947,8 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: #e2e2e0;
-    color: #8f8f8d;
+    background: var(--pg-guest-avatar);
+    color: var(--pg-mid);
     font-family: var(--pg-font-display, Fraunces, Georgia, serif);
     font-size: 15px;
     font-weight: 500;
