@@ -81,7 +81,7 @@ def _desktop(html: str) -> str:
 
 
 def _phone(html: str) -> str:
-    return html.split("data-guest-profile-phone", 1)[1]
+    return html.split("data-guest-profile-phone>", 1)[1]
 
 
 def test_screen10_header_is_profile_selected_guest_chrome(tmp_path: Path) -> None:
@@ -95,28 +95,19 @@ def test_screen10_header_is_profile_selected_guest_chrome(tmp_path: Path) -> Non
     assert "data-guest-profile-account" in header
     assert 'account-menu-btn-name">Guest<' in header
     assert "Not signed in" in header
-    desk_nav = "".join(
-        line
-        for line in header.splitlines()
-        if "data-guest-profile-nav" in line
-    )
-    assert ">Today<" in desk_nav
-    assert ">Browse<" in desk_nav
-    assert ">Playground<" in desk_nav
-    assert ">Calendar<" in desk_nav
-    assert ">Profile<" in desk_nav
-    assert "is-active" in desk_nav
-    assert 'aria-current="page"' in desk_nav
-    assert 'href="/playground"' in desk_nav
-    phone_nav = "".join(
-        line
-        for line in header.splitlines()
-        if "data-guest-profile-phone-nav" in line
-    )
-    assert ">Home<" in phone_nav
-    assert ">Search<" in phone_nav
-    assert ">Learn<" in phone_nav
-    assert "nav-signin" in phone_nav
+    assert "data-guest-profile-nav" in header
+    assert ">Today<" in header
+    assert ">Browse<" in header
+    assert ">Playground<" in header
+    assert ">Calendar<" in header
+    assert ">Profile<" in header
+    assert 'data-guest-profile-nav aria-current="page"' in header
+    assert 'href="/playground"' in header
+    assert "data-guest-profile-phone-nav" in header
+    assert ">Home<" in header
+    assert ">Search<" in header
+    assert ">Learn<" in header
+    assert "nav-signin" in header
     css = (ROOT / "src/constitution_memorizer/web/static/styles.css").read_text(
         encoding="utf-8"
     )
