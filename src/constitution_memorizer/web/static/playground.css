@@ -2902,4 +2902,163 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   }
 }
 
+/* Guest desktop Profile (CTA map guest/10-screen). Phone guest /profile
+   keeps the production guest card. */
+@media (min-width: 561px) {
+  .guest-profile-title {
+    margin: 0 0 16px;
+    font-family: var(--pg-font-display, Fraunces, Georgia, serif);
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 1.15;
+    color: var(--pg-ink);
+  }
+
+  .guest-profile-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+    max-width: 960px;
+  }
+
+  .guest-profile-col {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .guest-profile-identity {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+    background: var(--pg-paper);
+    border: 1px solid var(--pg-hairline);
+    border-radius: 14px;
+  }
+
+  .guest-profile-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #e2e2e0;
+    color: #8f8f8d;
+    font-family: var(--pg-font-display, Fraunces, Georgia, serif);
+    font-size: 15px;
+    font-weight: 500;
+    flex: none;
+  }
+
+  .guest-profile-identity-copy {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .guest-profile-name {
+    display: block;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--pg-ink);
+  }
+
+  .guest-profile-meta {
+    display: block;
+    margin-top: 1px;
+    font-size: 12.5px;
+    color: var(--pg-mid);
+  }
+
+  .guest-profile-signin {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 36px;
+    padding: 0 14px;
+    border: none;
+    border-radius: 10px;
+    background: var(--pg-ink);
+    color: var(--pg-paper);
+    font-size: 12.5px;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: var(--pg-shadow-press);
+    flex: none;
+  }
+
+  .guest-profile-signin:active {
+    transform: translateY(1px);
+    box-shadow: var(--pg-shadow-press-active);
+  }
+
+  .guest-profile-info {
+    padding: 16px 18px;
+    background: var(--pg-paper);
+    border: 1px solid var(--pg-hairline);
+    border-radius: 14px;
+  }
+
+  .guest-profile-lede {
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--pg-muted);
+    text-wrap: pretty;
+  }
+
+  .guest-profile-bareacts {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    margin-top: 12px;
+    padding: 0 15px;
+    border: 1px solid var(--pg-hairline);
+    border-radius: 11px;
+    background: var(--pg-paper);
+    color: var(--pg-ink);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .guest-profile-bareacts:hover {
+    background: var(--pg-subtle);
+  }
+
+  .guest-profile-kicker {
+    margin: 0 2px 8px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--pg-mid);
+  }
+
+  .guest-profile-account {
+    background: var(--pg-paper);
+    border: 1px solid var(--pg-hairline);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .guest-profile-report {
+    display: flex;
+    align-items: center;
+    min-height: 52px;
+    padding: 0 18px;
+    font-size: 14.5px;
+    color: var(--pg-ink);
+  }
+
+  .guest-profile-chevron {
+    margin-left: auto;
+    font-size: 12.5px;
+    color: var(--pg-faint);
+  }
+}
+
 

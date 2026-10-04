@@ -97,6 +97,7 @@
   {% set guest_laws_index = multiuser_enabled|default(false) and not current_user and not auth_surface and path == '/laws' %}
   {% set guest_bareact_head = multiuser_enabled|default(false) and not current_user and not auth_surface and path == '/laws/ndps' %}
   {% set guest_playground_intro = multiuser_enabled|default(false) and not current_user and not auth_surface and path.rstrip('/') == '/playground' %}
+  {% set guest_profile = multiuser_enabled|default(false) and not current_user and not auth_surface and path.rstrip('/') == '/profile' %}
   {% set guest_chrome = guest_browse_index or guest_laws_index or guest_bareact_head %}
   <div class="page-wrap">
     <div class="sheet">
@@ -112,6 +113,15 @@
           <span class="brand-wordmark">{{ app_name|default('Recall the C') }}</span>
         </span>
         <a class="brand" data-pg-gate-phone-brand href="/" aria-label="{{ app_name|default('Recall the C') }} — Home">
+          <img class="brand-mark" src="/static/main_logo.png" width="26" height="26" alt="">
+          <span class="brand-wordmark">{{ app_name|default('Recall the C') }}</span>
+        </a>
+        {% elif guest_profile %}
+        <span class="brand" data-guest-profile-brand aria-label="{{ app_name|default('Recall the C') }}">
+          <img class="brand-mark" src="/static/main_logo.png" width="26" height="26" alt="">
+          <span class="brand-wordmark">{{ app_name|default('Recall the C') }}</span>
+        </span>
+        <a class="brand" data-guest-profile-phone-brand href="/" aria-label="{{ app_name|default('Recall the C') }} — Home">
           <img class="brand-mark" src="/static/main_logo.png" width="26" height="26" alt="">
           <span class="brand-wordmark">{{ app_name|default('Recall the C') }}</span>
         </a>
@@ -164,6 +174,28 @@
             Learning as guest
           </span>
           <a href="/login" class="nav-link nav-signin">Sign in</a>
+          {% elif guest_profile %}
+          <a href="/dashboard" class="nav-link" data-guest-profile-nav><svg class="nav-icon" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M3 9.4 10 3l7 6.4V17h-4.6v-4.6H7.6V17H3V9.4Z"></path></svg>Today</a>
+          <a href="/browse" class="nav-link" data-guest-profile-nav>
+            <svg class="nav-icon" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M10 4.2C8.6 3 6.8 2.6 4.6 2.6c-.9 0-1.6.1-1.6.1v13s.7-.1 1.6-.1c2.2 0 4 .4 5.4 1.6 1.4-1.2 3.2-1.6 5.4-1.6.9 0 1.6.1 1.6.1v-13s-.7-.1-1.6-.1c-2.2 0-4 .4-5.4 1.6Zm0 0v13"></path></svg>Browse
+          </a>
+          {% if playground_enabled|default(true) %}
+          <a href="/playground" class="nav-link" data-guest-profile-nav><svg class="nav-icon" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><rect x="3.2" y="3.2" width="13.6" height="13.6"></rect><path d="M3.2 8h13.6M8 3.2v13.6"></path></svg>Playground</a>
+          {% endif %}
+          <a href="/calendar" class="nav-link" data-guest-profile-nav><svg class="nav-icon" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><rect x="2.6" y="4" width="14.8" height="13" rx="2"></rect><path d="M2.6 8.2h14.8M6.6 2.2v3M13.4 2.2v3"></path></svg>Calendar</a>
+          <a href="/profile" class="nav-link is-active" data-guest-profile-nav aria-current="page"><svg class="nav-icon" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="6.6" r="3.4"></circle><path d="M3.4 17.4c.8-3.1 3.4-4.8 6.6-4.8s5.8 1.7 6.6 4.8"></path></svg>Profile</a>
+          <a href="/" class="nav-link" data-guest-profile-phone-nav>Home</a>
+          <a href="/browse" class="nav-link" data-guest-profile-phone-nav>Browse</a>
+          <a href="/search" class="nav-link" data-guest-profile-phone-nav>Search</a>
+          <a href="/learn" class="nav-link" data-guest-profile-phone-nav>Learn</a>
+          {% if pricing_enabled|default(false) %}
+          <a href="/pricing" class="nav-link" data-guest-profile-phone-nav>Pricing</a>
+          {% endif %}
+          <span class="guest-pill" title="Learning as guest" data-guest-profile-phone-nav>
+            <span class="guest-pill-dot" aria-hidden="true"></span>
+            Learning as guest
+          </span>
+          <a href="/login" class="nav-link nav-signin" data-guest-profile-phone-nav>Sign in</a>
           {% elif multiuser_enabled|default(false) %}
           <a href="/" class="nav-link{% if path == '/' %} is-active{% endif %}">Home</a>
           <a href="/browse" class="nav-link{% if path.startswith('/browse') %} is-active{% endif %}">Browse</a>
@@ -242,6 +274,27 @@
               <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
               <button type="submit" role="menuitem" class="account-menu-logout">Sign out</button>
             </form>
+          </div>
+        </div>
+        {% elif guest_profile %}
+        <div class="account-menu" data-account-menu data-guest-account-menu data-guest-profile-account>
+          <button
+            type="button"
+            class="account-menu-btn"
+            data-account-toggle
+            aria-expanded="false"
+            aria-haspopup="menu"
+            aria-label="Account menu"
+          >
+            <span class="account-avatar account-avatar-fallback" aria-hidden="true">?</span>
+            <span class="account-menu-btn-copy">
+              <span class="account-menu-btn-name">Guest</span>
+              <span class="account-menu-btn-status">Not signed in</span>
+            </span>
+          </button>
+          <div class="account-menu-panel" role="menu" hidden data-account-panel>
+            <a role="menuitem" href="/settings">Settings</a>
+            <button type="button" role="menuitem" class="account-menu-logout" data-account-close>Sign out</button>
           </div>
         </div>
         {% elif guest_playground_intro %}

@@ -2,7 +2,34 @@
 {% block title %}Profile · {{ app_name|default('Recall the C') }}{% endblock %}
 {% block mobile_screen %}account{% endblock %}
 {% block content %}
-<section class="panel profile-panel">
+{% if is_guest_profile|default(false) %}
+<section class="panel profile-panel guest-profile-desktop" data-guest-profile-desktop>
+  <h1 class="guest-profile-title">Profile</h1>
+  <div class="guest-profile-grid">
+    <div class="guest-profile-col">
+      <article class="guest-profile-identity">
+        <span class="guest-profile-avatar" aria-hidden="true">?</span>
+        <span class="guest-profile-identity-copy">
+          <span class="guest-profile-name">Guest</span>
+          <span class="guest-profile-meta">Read mode.</span>
+        </span>
+        <a class="guest-profile-signin" href="/login?next=/profile">Sign in</a>
+      </article>
+      <article class="guest-profile-info">
+        <p class="guest-profile-lede">Sign in to save progress and unlock the Constitution learning experience.</p>
+        <a class="guest-profile-bareacts" href="/laws/ndps">Browse the Bare Acts →</a>
+      </article>
+      <div>
+        <p class="guest-profile-kicker">Account</p>
+        <div class="guest-profile-account">
+          <div class="guest-profile-report">Report an issue<span class="guest-profile-chevron" aria-hidden="true">›</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+<section class="panel profile-panel"{% if is_guest_profile|default(false) %} data-guest-profile-phone{% endif %}>
   <div class="mobile-topbar">
     <a class="mobile-back" href="/settings">← Settings</a>
   </div>

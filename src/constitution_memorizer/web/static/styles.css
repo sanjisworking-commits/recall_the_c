@@ -10909,6 +10909,53 @@ body.is-admin-previewing { padding-top: 40px; }
   }
 }
 
+/* Guest Profile (CTA map guest/10-screen). Desktop only; phone /profile
+   keeps the production guest card and guest tabbar. */
+@media (max-width: 560px) {
+  [data-guest-profile-desktop],
+  [data-guest-profile-brand],
+  [data-guest-profile-nav],
+  [data-guest-profile-account] {
+    display: none !important;
+  }
+}
+
+@media (min-width: 561px) {
+  [data-guest-profile-phone],
+  [data-guest-profile-phone-brand],
+  [data-guest-profile-phone-nav] {
+    display: none !important;
+  }
+
+  body.is-guest[data-mscreen="account"]:has([data-guest-profile-desktop]) .brand-mark {
+    filter: invert(1);
+  }
+
+  body.is-guest[data-mscreen="account"]:has([data-guest-profile-desktop]) .page-wrap,
+  body.is-guest[data-mscreen="account"]:has([data-guest-profile-desktop]) .sheet,
+  body.is-guest[data-mscreen="account"]:has([data-guest-profile-desktop]) .main {
+    background: var(--page);
+  }
+
+  body.is-guest[data-mscreen="account"]:has([data-guest-profile-desktop]) .site-footer,
+  body.is-guest[data-mscreen="account"]:has([data-guest-profile-desktop]) .sheet-footnote {
+    display: none;
+  }
+
+  body.is-guest[data-mscreen="account"]:has([data-guest-profile-desktop]) .panel.guest-profile-desktop {
+    max-width: none;
+    padding: 26px 40px 60px;
+    background: transparent;
+  }
+}
+
+@media (min-width: 561px) and (max-width: 1279px) {
+  body.is-guest[data-mscreen="account"]:has([data-guest-profile-desktop]) .panel.guest-profile-desktop {
+    padding-left: max(28px, calc((100% - 1180px) / 2));
+    padding-right: max(28px, calc((100% - 1180px) / 2));
+  }
+}
+
 /* R7 closeout — reconciliation only. No IA change. D14, D16, D17, D25. */
 .page-wrap,
 .sheet,
