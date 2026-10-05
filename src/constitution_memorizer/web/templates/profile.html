@@ -29,7 +29,7 @@
   </div>
 </section>
 {% endif %}
-<section class="panel profile-panel"{% if is_guest_profile|default(false) and multiuser_enabled|default(false) %} data-guest-profile-phone{% endif %}>
+<section class="panel profile-panel"{% if is_guest_profile|default(false) and multiuser_enabled|default(false) %} data-guest-profile-phone{% endif %}{% if user and not is_guest_profile|default(false) %} data-signed-in-profile{% endif %}>
   <div class="mobile-topbar">
     <a class="mobile-back" href="/settings">← Settings</a>
   </div>
@@ -74,11 +74,15 @@
   {% endif %}
 
   {% if not is_guest_profile|default(false) %}
+  <div class="si-profile-account">
   <p class="pg-eyebrow">Account</p>
   <div class="pg-account-list" data-profile-account>
     <a href="/profile">Profile<span class="pg-account-meta">{{ display_label }}</span></a>
     <a href="/profile/security/devices">Devices<span class="pg-account-meta">{{ device_count_label }} ›</span></a>
     <a href="/settings">Learning preferences<span class="pg-account-meta">Settings ›</span></a>
+    <button type="button" class="pg-account-row si-profile-desk-only" data-report-open data-report-section="Profile">Report an issue<span class="pg-account-meta">›</span></button>
+    <button type="button" class="pg-account-row si-profile-desk-only si-profile-account-signout" data-open-signout>Sign out</button>
+  </div>
   </div>
   {% endif %}
   </div>
@@ -134,8 +138,8 @@
     <input type="hidden" name="display_name" value="{{ profile.display_name or display_label }}">
     {% endif %}
 
-    <h2 class="section-title">Sign-in method</h2>
-    <div class="signin-method-row">
+    <h2 class="section-title si-profile-desk-hide">Sign-in method</h2>
+    <div class="signin-method-row si-profile-desk-hide">
       {% if user.provider == 'google' %}
       <span class="provider-badge is-google">G</span>
       <div>
@@ -171,35 +175,35 @@
   </div>
   {% endif %}
 
-  <p class="profile-settings-link">
+  <p class="profile-settings-link si-profile-desk-hide">
     <a href="/settings">Learning preferences → Settings</a>
   </p>
 
-  <h2 class="section-title">Security</h2>
-  <p class="slots-title">Your devices</p>
-  <p class="muted">Manage devices that can use Playground.</p>
-  <p class="profile-settings-link">
+  <h2 class="section-title si-profile-desk-hide">Security</h2>
+  <p class="slots-title si-profile-desk-hide">Your devices</p>
+  <p class="muted si-profile-desk-hide">Manage devices that can use Playground.</p>
+  <p class="profile-settings-link si-profile-desk-hide">
     <a href="/profile/security/devices">Your devices</a>
   </p>
 
-  <h2 class="section-title">Legal</h2>
-  <p class="settings-note">
+  <h2 class="section-title si-profile-desk-hide">Legal</h2>
+  <p class="settings-note si-profile-desk-hide">
     <a href="/terms">Terms &amp; Conditions</a>
     · <a href="/privacy">Privacy Policy</a>
     · <a href="/grievance">Grievance Redressal</a>
   </p>
-  <p class="settings-note">
+  <p class="settings-note si-profile-desk-hide">
     To delete this account, use Delete account below. Privacy requests can also go to
     <a href="/grievance">Grievance Redressal</a>.
   </p>
 
-  <h2 class="section-title">Account</h2>
+  <h2 class="section-title si-profile-desk-hide">Account</h2>
   {# The design's account card: three rows, dividers between them, the two
      destructive ones carrying their own weight in colour. Real buttons, not
      role="button" divs — the rows are operated, and a button is the thing
      that gets focus, Enter and Space for free. #}
-  <ul class="account-actions">
-    <li>
+  <ul class="account-actions si-profile-desk-hide">
+    <li class="si-profile-desk-hide">
       <button type="button" class="account-action" data-open-signout>
         <span class="account-action-label">Sign out</span>
       </button>

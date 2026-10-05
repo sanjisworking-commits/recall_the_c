@@ -12714,6 +12714,204 @@ body.is-admin-previewing { padding-top: 40px; }
   }
 }
 
+/* Signed-in desktop Profile (CTA map signedIn/10-screen). Desktop only.
+   Phone Profile, Gate, and screens 01–06 / 08 / 09 stay unchanged. */
+.si-profile-desk-only {
+  display: none !important;
+}
+
+@media (min-width: 561px) {
+  body.is-authed[data-mscreen="account"]:has([data-signed-in-profile]) .page-wrap,
+  body.is-authed[data-mscreen="account"]:has([data-signed-in-profile]) .sheet,
+  body.is-authed[data-mscreen="account"]:has([data-signed-in-profile]) .main {
+    background: var(--page);
+  }
+
+  body.is-authed[data-mscreen="account"]:has([data-signed-in-profile]) .brand-mark {
+    filter: invert(1);
+  }
+
+  body.is-authed[data-mscreen="account"]:has([data-signed-in-profile]) .site-footer,
+  body.is-authed[data-mscreen="account"]:has([data-signed-in-profile]) .sheet-footnote {
+    display: none;
+  }
+
+  [data-signed-in-profile].profile-panel {
+    max-width: none;
+    padding: 26px 40px 60px;
+    background: transparent;
+  }
+
+  [data-signed-in-profile] > .mobile-topbar,
+  [data-signed-in-profile] > .eyebrow,
+  [data-signed-in-profile] > .lede,
+  [data-signed-in-profile] .si-profile-desk-hide,
+  [data-signed-in-profile] .pg-profile-identity-copy p:has(.link-btn) {
+    display: none;
+  }
+
+  [data-signed-in-profile] > .display {
+    margin: 0 0 16px;
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: 0;
+  }
+
+  [data-signed-in-profile] .pg-profile-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+    max-width: 960px;
+  }
+
+  [data-signed-in-profile] .pg-profile-grid > div:first-child {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  [data-signed-in-profile] .si-profile-account {
+    min-width: 0;
+  }
+
+  [data-signed-in-profile] .pg-eyebrow {
+    margin: 0 2px 8px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mid);
+  }
+
+  [data-signed-in-profile] .pg-profile-identity {
+    gap: 14px;
+    align-items: center;
+    margin: 0;
+    padding: 16px 18px;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+  }
+
+  [data-signed-in-profile] .pg-profile-identity .dash-avatar,
+  [data-signed-in-profile] .pg-profile-identity .dash-avatar-fallback {
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--on-accent);
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  [data-signed-in-profile] .profile-name {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+
+  [data-signed-in-profile] .pg-profile-identity-copy .muted {
+    margin: 1px 0 0;
+    font-size: 12.5px;
+    color: var(--mid);
+  }
+
+  [data-signed-in-profile] .pg-account-list {
+    margin: 0;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+
+  [data-signed-in-profile] .pg-account-list a,
+  [data-signed-in-profile] .pg-account-list .pg-account-row {
+    min-height: 52px;
+    padding: 0 18px;
+    border-top-color: var(--page);
+    font-size: 14.5px;
+  }
+
+  [data-signed-in-profile] .pg-account-list a:hover,
+  [data-signed-in-profile] .pg-account-list .pg-account-row:hover {
+    background: var(--wash);
+  }
+
+  [data-signed-in-profile] .si-profile-desk-only {
+    display: flex !important;
+    width: 100%;
+    margin: 0;
+    border: 0;
+    border-top: 1px solid var(--page);
+    border-radius: 0;
+    background: transparent;
+    font: inherit;
+    font-size: 14.5px;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  [data-signed-in-profile] .pg-account-list .si-profile-account-signout {
+    color: var(--destructive);
+  }
+
+  [data-signed-in-profile] [data-profile-subscription] {
+    min-width: 0;
+  }
+
+  [data-signed-in-profile] .pg-sub-card {
+    margin: 0;
+    padding: 20px;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+  }
+
+  [data-signed-in-profile] .pg-sub-card .pg-lede {
+    margin: 0 0 14px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--muted);
+    max-width: none;
+  }
+
+  [data-signed-in-profile] .pg-sub-card .pg-btn--ghost {
+    height: 38px;
+    min-height: 38px;
+    min-width: 0;
+    padding: 0 14px;
+    border-radius: 10px;
+    border-color: var(--hairline);
+    color: var(--browse-due);
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: none;
+  }
+
+  [data-signed-in-profile] .pg-sub-card .pg-btn--ghost:hover {
+    background: var(--wash);
+    filter: none;
+  }
+}
+
+@media (min-width: 561px) and (max-width: 1279px) {
+  [data-signed-in-profile].profile-panel {
+    padding-left: max(28px, calc((100% - 1180px) / 2));
+    padding-right: max(28px, calc((100% - 1180px) / 2));
+  }
+}
+
 /* R7 closeout — reconciliation only. No IA change. D14, D16, D17, D25. */
 .page-wrap,
 .sheet,
