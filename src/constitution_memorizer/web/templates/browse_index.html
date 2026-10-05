@@ -93,7 +93,7 @@
     </div>
     {% endif %}
 {%- endmacro %}
-<section class="panel browse" data-parts-source="{{ parts_source|default('unknown') }}">
+<section class="panel browse" data-parts-source="{{ parts_source|default('unknown') }}"{% if plus_browse|default(false) %} data-plus-browse="desktop"{% endif %}>
   {# Phone header: title, search, Marks (signed-in) or Sign in (guest). #}
   <div class="mobile-screen-head">
     <h2 class="mobile-screen-title">Browse</h2>
@@ -120,10 +120,10 @@
     <p>Reading as a guest. Sign in to save 3 Articles to Recall for free — progress, streaks and revision scheduling come with it.</p>
     <a class="guest-strip-signin" href="/login" data-guest-gate>Sign in</a>
   </div>
-  {% elif current_user %}
+  {% elif current_user and not plus_browse|default(false) %}
   {# Signed-in desktop Browse (signedIn/02): existing free-plan copy + Unlock
-     all. Unlock all opens the existing Playground Gate. Phone hides this
-     strip so the part-card rail is unchanged. #}
+     all. Unlock all opens the existing Playground Gate. Active Plus omits
+     this Free allowance/upgrade strip (plus/02). Phone hides it too. #}
   <div class="browse-access-summary" data-signed-in-browse-strip>
     <p class="browse-access-status">
       {% if access and access.enabled and access.is_free %}

@@ -241,7 +241,7 @@
             <span class="account-menu-btn-copy">
               <span class="account-menu-btn-name">{{ label }}</span>
               {% if path == '/browse' or path.startswith('/laws') or path.rstrip('/') == '/playground' %}
-              <span class="account-menu-btn-status">Free account</span>
+              <span class="account-menu-btn-status">{% if plus_browse|default(false) and path == '/browse' %}RecallC Plus{% else %}Free account{% endif %}</span>
               {% endif %}
             </span>
           </button>

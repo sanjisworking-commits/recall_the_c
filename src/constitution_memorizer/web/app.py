@@ -2527,6 +2527,19 @@ def create_app(
         parts_source = "reviewed" if app.state.reviewed is not None else "units-seed"
         access = access_summary(request, eng)
         claimed = set(access.claimed_articles) if access.enabled else set()
+        plus_browse = False
+        if getattr(request.state, "current_user", None) is not None:
+            from constitution_memorizer.entitlements.dependencies import (
+                get_entitlement_snapshot,
+            )
+
+            snapshot = get_entitlement_snapshot(request)
+            plus_browse = bool(
+                snapshot.is_subscribed
+                and snapshot.tier == "plus"
+                and snapshot.can_open_playground
+                and snapshot.subscription_status == "active"
+            )
         # Phone Browse is Part-first (design 02): each Part card carries its own
         # progress and due count, and opens a Part page instead of scrolling.
         today = date.today()
@@ -2553,6 +2566,7 @@ def create_app(
                 "present_marks": present_browse_marks(sections),
                 "access": access,
                 "claimed_articles": claimed,
+                "plus_browse": plus_browse,
             },
         )
         record_request_timing("template", started)
