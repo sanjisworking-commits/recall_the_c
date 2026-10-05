@@ -96,7 +96,7 @@ CLASS_C_STATES = (
 
 def test_t33_r7_asset_pins() -> None:
     html = BASE.read_text(encoding="utf-8")
-    assert "styles.css?v=main83" in html
+    assert "styles.css?v=main84" in html
     assert "mobile.css?v=mob98" in html
     assert "playground.css?v=pg19" in html
     assert "playground.js?v=pg8" in html
@@ -304,7 +304,7 @@ def test_r7_shell_still_has_phone_and_desktop_breakpoints(tmp_path: Path) -> Non
     assert "PlaygroundShell" in home.text
     css = client.get("/static/playground.css?v=pg19").text
     assert "--pg-tap: 44px" in css or "--pg-tap:" in css
-    styles = client.get("/static/styles.css?v=main83").text
+    styles = client.get("/static/styles.css?v=main84").text
     assert "R7 closeout" in styles
     week = client.get("/calendar?view=week")
     assert week.status_code == 200
@@ -379,8 +379,8 @@ def test_d143_surfaces_use_u1_tokens_only() -> None:
     login = (TEMPLATES / "login.html").read_text(encoding="utf-8")
     js = (STATIC / "landing.js").read_text(encoding="utf-8")
     for html in (landing, light, login):
-        assert "styles.css?v=main83" in html
-        assert html.find("styles.css?v=main83") < html.find("<style>")
+        assert "styles.css?v=main84" in html
+        assert html.find("styles.css?v=main84") < html.find("<style>")
         assert "a:hover" in html
     assert 'data-theme="dark"' in landing
     assert 'data-theme="light"' in light

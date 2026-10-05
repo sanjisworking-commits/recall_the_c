@@ -13204,6 +13204,14 @@ body.is-admin-previewing { padding-top: 40px; }
     flex: none;
   }
 
+  [data-signed-in-settings] .segmented-btn.is-active,
+  [data-signed-in-settings] .segmented-input:checked + .segmented-btn {
+    background: var(--ink);
+    border-color: var(--ink);
+    box-shadow: none;
+    color: var(--on-accent);
+  }
+
   [data-signed-in-settings] .settings-theme {
     margin: 0;
   }

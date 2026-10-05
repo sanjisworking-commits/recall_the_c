@@ -246,6 +246,13 @@ def test_signed_in_settings_does_not_touch_accepted_screens() -> None:
     assert "max-width: 720px" in signed
     assert "font-size: 30px" in signed
     assert "data-signed-in-settings" in signed
+    assert (
+        "[data-signed-in-settings] .segmented-input:checked + .segmented-btn"
+        in signed
+    )
+    assert "background: var(--ink)" in signed.split(
+        "[data-signed-in-settings] .segmented-input:checked + .segmented-btn", 1
+    )[1].split("}", 1)[0]
 
 
 def _serve(app, host: str = "127.0.0.1") -> tuple[int, object]:
@@ -329,6 +336,13 @@ def test_signed_in_settings_1280_and_phone(tmp_path: Path) -> None:
               const connect = cal && cal.querySelector('[data-gcal-connect]');
               const selfPace = study && study.querySelector('#pace-self-paced');
               const autoPace = study && study.querySelector('#pace-auto');
+              const selfLabel = study && study.querySelector('label[for="pace-self-paced"]');
+              const autoLabel = study && study.querySelector('label[for="pace-auto"]');
+              const targetChecked = study && study.querySelector('input[name="daily_target"]:checked');
+              const targetLabel = targetChecked && study.querySelector('label[for="' + targetChecked.id + '"]');
+              const selfCs = selfLabel ? getComputedStyle(selfLabel) : null;
+              const autoCs = autoLabel ? getComputedStyle(autoLabel) : null;
+              const targetCs = targetLabel ? getComputedStyle(targetLabel) : null;
               const identBox = ident && ident.getBoundingClientRect();
               const studyBox = study && study.getBoundingClientRect();
               const calBox = cal && cal.getBoundingClientRect();
@@ -354,6 +368,11 @@ def test_signed_in_settings_1280_and_phone(tmp_path: Path) -> None:
                 ),
                 selfChecked: Boolean(selfPace && selfPace.checked),
                 autoDisabled: Boolean(autoPace && autoPace.disabled),
+                selfBg: selfCs && selfCs.backgroundColor,
+                selfColor: selfCs && selfCs.color,
+                autoBg: autoCs && autoCs.backgroundColor,
+                targetBg: targetCs && targetCs.backgroundColor,
+                targetColor: targetCs && targetCs.color,
                 saveText: save && (save.textContent || '').replace(/\\s+/g, ' ').trim(),
                 connectHref: connect && connect.getAttribute('href'),
                 connectText: connect && (connect.textContent || '').replace(/\\s+/g, ' ').trim(),
@@ -413,6 +432,12 @@ def test_signed_in_settings_1280_and_phone(tmp_path: Path) -> None:
     assert geo["calBelow"] is True
     assert geo["selfChecked"] is True
     assert geo["autoDisabled"] is False
+    assert geo["selfBg"] == "rgb(20, 20, 20)"
+    assert geo["selfColor"] == "rgb(255, 255, 255)"
+    assert geo["autoBg"] != "rgb(20, 20, 20)"
+    if geo["targetBg"] is not None:
+        assert geo["targetBg"] == "rgb(20, 20, 20)"
+        assert geo["targetColor"] == "rgb(255, 255, 255)"
     assert geo["saveText"] == "Save learning plan"
     assert geo["connectHref"].startswith("/calendar/google/connect")
     assert geo["connectText"] == "Connect Google Calendar"
