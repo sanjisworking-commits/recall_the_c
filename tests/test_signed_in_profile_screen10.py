@@ -243,6 +243,14 @@ def test_signed_in_profile_does_not_touch_accepted_screens() -> None:
     assert "minmax(0, 1fr) minmax(0, 1fr)" in signed
     assert "font-size: 28px" in signed
     assert "data-signed-in-profile" in signed
+    assert (
+        'body.is-authed[data-mscreen="account"]:has([data-signed-in-profile]) '
+        ".account-avatar-fallback"
+    ) in signed
+    assert "border-radius: 11px" in signed
+    chip = signed.split(".account-avatar-fallback {", 2)[2].split("}", 1)[0]
+    assert "background: var(--ink)" in chip
+    assert "border-color: var(--ink)" in chip
 
 
 def _serve(app, host: str = "127.0.0.1") -> tuple[int, object]:
@@ -340,6 +348,12 @@ def test_signed_in_profile_1280_and_phone(tmp_path: Path) -> None:
               const legal = [...(panel ? panel.querySelectorAll('.section-title') : [])].find(
                 (el) => (el.textContent || '').trim() === 'Legal'
               );
+              const chip = document.querySelector(
+                '.account-menu-btn .account-avatar-fallback, .account-menu-btn .account-avatar'
+              );
+              const chipCs = chip ? getComputedStyle(chip) : null;
+              const chipName = document.querySelector('.account-menu-btn-name');
+              const chipStatus = document.querySelector('.account-menu-btn-status');
               return {
                 present: Boolean(panel),
                 profileActive: Boolean(
@@ -368,6 +382,12 @@ def test_signed_in_profile_1280_and_phone(tmp_path: Path) -> None:
                 headingSize: heading ? getComputedStyle(heading).fontSize : null,
                 signoutColor: signoutCs && signoutCs.color,
                 legalDisplay: legal ? getComputedStyle(legal).display : null,
+                chipBg: chipCs && chipCs.backgroundColor,
+                chipColor: chipCs && chipCs.color,
+                chipRadius: chipCs && chipCs.borderRadius,
+                chipW: chip ? chip.getBoundingClientRect().width : null,
+                chipName: chipName && (chipName.textContent || '').trim(),
+                chipStatusDisplay: chipStatus ? getComputedStyle(chipStatus).display : "none",
                 mockFree: /Free account · Constitution learning included/.test(
                   panel ? panel.innerText : ''
                 ),
@@ -473,6 +493,11 @@ def test_signed_in_profile_1280_and_phone(tmp_path: Path) -> None:
     assert geo["headingSize"] == "28px"
     assert "180" in (geo["signoutColor"] or "") or "b42318" in (geo["signoutColor"] or "").lower()
     assert geo["legalDisplay"] == "none"
+    assert geo["chipW"] == pytest.approx(36, abs=2)
+    assert geo["chipRadius"] == "11px"
+    assert "20, 20, 20" in (geo["chipBg"] or "") or "rgb(20, 20, 20)" in (geo["chipBg"] or "")
+    assert geo["chipName"] == "Sanjay"
+    assert geo["chipStatusDisplay"] == "none"
     assert geo["mockFree"] is False
     assert geo["mockPlan"] is False
     assert geo["mockDevices"] is False

@@ -12736,6 +12736,26 @@ body.is-admin-previewing { padding-top: 40px; }
     display: none;
   }
 
+  body.is-authed[data-mscreen="account"]:has([data-signed-in-profile]) .account-avatar,
+  body.is-authed[data-mscreen="account"]:has([data-signed-in-profile]) .account-avatar-fallback {
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+  }
+
+  body.is-authed[data-mscreen="account"]:has([data-signed-in-profile]) .account-avatar-fallback {
+    background: var(--ink);
+    color: var(--on-accent);
+    border-color: var(--ink);
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  body.is-authed[data-mscreen="account"]:has([data-signed-in-profile]) .account-menu-btn-status {
+    display: none;
+  }
+
   [data-signed-in-profile].profile-panel {
     max-width: none;
     padding: 26px 40px 60px;
