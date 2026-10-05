@@ -39,7 +39,7 @@ def test_brand_and_how_to_use(client: TestClient):
     assert "Answer a short auto-made quiz — new questions each revision." in html
     assert "theme-toggle" in html
     # T33: R6 restyled Today two-column and Calendar week in styles.css (main74 → main75).
-    assert "styles.css?v=main77" in html
+    assert "styles.css?v=main78" in html
 
 
 def test_dashboard_surfaces_use_theme_tokens():

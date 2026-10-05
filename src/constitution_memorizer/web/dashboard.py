@@ -810,6 +810,7 @@ def build_dashboard_context(
         "first_name": name,
         "greeting": greeting,
         "subtext": subtext,
+        "today_date_label": f"{today.strftime('%A')} {today.day} {today.strftime('%B')}",
         "is_new": is_new,
         # The design's first-run zero state lives at this route, branching on
         # has_started (not is_new — see _has_started). Rows are only built when
