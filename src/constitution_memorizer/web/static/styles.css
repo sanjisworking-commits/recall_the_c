@@ -11997,6 +11997,715 @@ body.is-admin-previewing { padding-top: 40px; }
   }
 }
 
+/* Signed-in desktop Calendar (CTA map signedIn/09-screen). Desktop only.
+   Phone Calendar, Gate, and screens 01–06 / 08 stay unchanged.
+   Prototype Current/Archive switch is not shipped. */
+.cal-si-toolbar,
+.cal-si-overdue,
+.cal-si-panel,
+.cal-si-toast,
+.cal-si-cell-add {
+  display: none;
+}
+
+.cal-si-desk {
+  display: contents;
+}
+
+@media (min-width: 561px) {
+  body.is-authed[data-mscreen="revisions"]:has([data-signed-in-calendar]) .page-wrap,
+  body.is-authed[data-mscreen="revisions"]:has([data-signed-in-calendar]) .sheet,
+  body.is-authed[data-mscreen="revisions"]:has([data-signed-in-calendar]) .main {
+    background: var(--paper);
+  }
+
+  body.is-authed[data-mscreen="revisions"]:has([data-signed-in-calendar]) .brand-mark {
+    filter: invert(1);
+  }
+
+  body.is-authed[data-mscreen="revisions"]:has([data-signed-in-calendar]) .site-footer,
+  body.is-authed[data-mscreen="revisions"]:has([data-signed-in-calendar]) .sheet-footnote {
+    display: none;
+  }
+
+  body.is-authed[data-mscreen="revisions"]:has([data-signed-in-calendar]) .account-avatar,
+  body.is-authed[data-mscreen="revisions"]:has([data-signed-in-calendar]) .account-avatar-fallback {
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+  }
+
+  body.is-authed[data-mscreen="revisions"]:has([data-signed-in-calendar]) .account-avatar-fallback {
+    background: var(--ink);
+    color: var(--on-accent);
+    border-color: var(--ink);
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  body.is-authed[data-mscreen="revisions"]:has([data-signed-in-calendar]) .account-menu-btn-status {
+    display: none;
+  }
+
+  [data-signed-in-calendar].calendar {
+    max-width: none;
+    padding: 30px 40px 60px;
+    background: var(--paper);
+  }
+
+  [data-signed-in-calendar] .calendar-header {
+    align-items: flex-start;
+    margin: 0;
+  }
+
+  [data-signed-in-calendar] .calendar-title {
+    margin: 0;
+    font-size: 40px;
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+  }
+
+  [data-signed-in-calendar] .calendar-summary {
+    margin: 12px 0 0;
+    font-size: 15px;
+  }
+
+  [data-signed-in-calendar] .calendar-nav-btn,
+  [data-signed-in-calendar] .calendar-nav-today {
+    height: 40px;
+    border-radius: 4px;
+  }
+
+  [data-signed-in-calendar] .calendar-nav-btn {
+    width: 40px;
+  }
+
+  [data-signed-in-calendar] .calendar-nav-today {
+    padding: 0 16px;
+    font-size: 13.5px;
+  }
+
+  [data-signed-in-calendar]:not(.is-week) .calendar-legend {
+    display: none;
+  }
+
+  [data-signed-in-calendar]:not(.is-week) .cal-si-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 22px 0 16px;
+  }
+
+  [data-signed-in-calendar] .cal-si-filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  [data-signed-in-calendar] .cal-si-filter select {
+    height: 36px;
+    padding: 0 28px 0 12px;
+    border: 1px solid var(--control-border, var(--hairline));
+    border-radius: 8px;
+    background: var(--paper);
+    color: var(--ink);
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  [data-signed-in-calendar] .cal-si-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 16px;
+    font-size: 12.5px;
+    color: var(--ink);
+  }
+
+  [data-signed-in-calendar] .calendar-swatch.is-my-material {
+    width: 12px;
+    height: 12px;
+    border-left: 3px solid #998366;
+    background: #f4efe6;
+    box-sizing: border-box;
+  }
+
+  [data-signed-in-calendar] .calendar-swatch.is-due-today {
+    width: 12px;
+    height: 12px;
+    border-left: 3px solid var(--browse-due, #0e7569);
+    background: #e7f1ef;
+    box-sizing: border-box;
+  }
+
+  [data-signed-in-calendar] .cal-si-onlyyou {
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  [data-signed-in-calendar] .cal-si-add-task {
+    display: inline-flex;
+    align-items: center;
+    height: 40px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--browse-due, #0e7569);
+    color: #fff;
+    font: inherit;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  [data-signed-in-calendar]:not(.is-week) .cal-si-overdue {
+    display: block;
+    margin-bottom: 16px;
+    border: 1px solid #e3c9a8;
+    border-radius: 12px;
+    background: #fdf8f1;
+    overflow: hidden;
+  }
+
+  [data-signed-in-calendar] .cal-si-overdue summary {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    cursor: pointer;
+    list-style: none;
+  }
+
+  [data-signed-in-calendar] .cal-si-overdue summary::-webkit-details-marker {
+    display: none;
+  }
+
+  [data-signed-in-calendar] .cal-si-overdue-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #b45309;
+    flex: none;
+  }
+
+  [data-signed-in-calendar] .cal-si-overdue-label {
+    flex: 1;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #7a3e07;
+  }
+
+  [data-signed-in-calendar] .cal-si-overdue-hint {
+    font-size: 12.5px;
+    color: #7a3e07;
+  }
+
+  [data-signed-in-calendar] .cal-si-overdue-hide {
+    display: none;
+  }
+
+  [data-signed-in-calendar] .cal-si-overdue[open] .cal-si-overdue-show {
+    display: none;
+  }
+
+  [data-signed-in-calendar] .cal-si-overdue[open] .cal-si-overdue-hide {
+    display: inline;
+  }
+
+  [data-signed-in-calendar] .cal-si-overdue-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 16px;
+    border-top: 1px solid #f0e2cf;
+  }
+
+  [data-signed-in-calendar] .cal-si-overdue-title {
+    flex: 1;
+    min-width: 0;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink);
+    text-align: left;
+    cursor: pointer;
+    text-decoration: underline;
+    text-decoration-color: #d8cbb6;
+    text-underline-offset: 3px;
+  }
+
+  [data-signed-in-calendar] .cal-si-overdue-meta,
+  [data-signed-in-calendar] .cal-si-kind {
+    font-size: 12.5px;
+    color: #7a3e07;
+  }
+
+  [data-signed-in-calendar]:not(.is-week) .cal-si-desk {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 380px;
+    gap: 28px;
+    align-items: start;
+  }
+
+  [data-signed-in-calendar]:not(.is-week) .calendar-grid {
+    border-bottom: 1px solid var(--hairline);
+  }
+
+  [data-signed-in-calendar] .calendar-dow {
+    padding: 12px 14px;
+    font-size: 12px;
+    color: #3a3a38;
+  }
+
+  [data-signed-in-calendar] .calendar-cell {
+    min-height: 132px;
+    padding: 10px 12px 12px;
+    cursor: pointer;
+  }
+
+  [data-signed-in-calendar] .calendar-cell.is-today {
+    box-shadow: inset 0 0 0 2px var(--ink);
+  }
+
+  [data-signed-in-calendar] .calendar-cell.is-selected:not(.is-today) {
+    box-shadow: inset 0 0 0 1.5px var(--ink);
+    background: var(--wash);
+  }
+
+  [data-signed-in-calendar] .calendar-daynum {
+    width: 100%;
+    height: auto;
+    justify-content: space-between;
+    margin-bottom: 2px;
+    color: inherit;
+    background: transparent;
+  }
+
+  [data-signed-in-calendar] .calendar-cell.is-today .calendar-daynum,
+  [data-signed-in-calendar] .calendar-cell.is-past .calendar-daynum {
+    color: inherit;
+    background: transparent;
+    font-weight: 700;
+  }
+
+  [data-signed-in-calendar] .calendar-daynum-n {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 700;
+  }
+
+  [data-signed-in-calendar] .calendar-cell.is-today .calendar-daynum-n {
+    background: var(--ink);
+    color: var(--on-accent);
+    padding: 0 6px;
+  }
+
+  [data-signed-in-calendar] .calendar-cell.is-past .calendar-daynum-n {
+    color: var(--mid);
+    font-weight: 500;
+  }
+
+  [data-signed-in-calendar] .cal-si-cell-add {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--faint);
+    font: inherit;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  [data-signed-in-calendar] .cal-si-cell-add:hover {
+    border-color: var(--control-border);
+    color: var(--ink);
+    background: var(--paper);
+  }
+
+  [data-signed-in-calendar] .calendar-chip {
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 0;
+    padding: 3px 8px 3px 6px;
+    font-size: 12.5px;
+  }
+
+  [data-signed-in-calendar] .calendar-chip.is-study {
+    border: 0;
+    border-left: 3px solid #998366;
+    background: #f4efe6;
+    color: var(--ink);
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  [data-signed-in-calendar] .calendar-chip.is-study.is-overdue {
+    border-left-color: #b45309;
+    background: #fdf8f1;
+    color: #b45309;
+  }
+
+  [data-signed-in-calendar] .calendar-chip.is-study.is-due {
+    border-left-color: var(--browse-due, #0e7569);
+    background: #e7f1ef;
+  }
+
+  [data-signed-in-calendar]:not(.is-week) .cal-si-panel {
+    display: block;
+    position: sticky;
+    top: 16px;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  [data-signed-in-calendar] .cal-si-panel-label {
+    margin: 0;
+    padding: 14px 16px 8px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--mid);
+  }
+
+  [data-signed-in-calendar] .cal-si-unit-row,
+  [data-signed-in-calendar] .cal-si-study-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 6px 12px;
+    padding: 12px 16px;
+    border-top: 1px solid var(--page);
+    text-decoration: none;
+    color: inherit;
+  }
+
+  [data-signed-in-calendar] .cal-si-study-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+    column-gap: 12px;
+  }
+
+  [data-signed-in-calendar] .cal-si-unit-title,
+  [data-signed-in-calendar] .cal-si-study-title {
+    display: block;
+    width: 100%;
+    border: 0;
+    background: transparent;
+    padding: 0;
+    font-family: var(--font-display);
+    font-size: 15.5px;
+    font-weight: 500;
+    color: var(--ink);
+    text-align: left;
+    cursor: pointer;
+  }
+
+  [data-signed-in-calendar] .cal-si-study-title {
+    width: auto;
+    grid-column: 1;
+    text-decoration: underline;
+    text-decoration-color: #d8cbb6;
+    text-underline-offset: 3px;
+  }
+
+  [data-signed-in-calendar] .cal-si-unit-meta,
+  [data-signed-in-calendar] .cal-si-study-meta {
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  [data-signed-in-calendar] .cal-si-study-meta {
+    grid-column: 1;
+  }
+
+  [data-signed-in-calendar] .cal-si-empty {
+    margin: 0;
+    padding: 6px 16px 16px;
+    font-size: 13.5px;
+    color: var(--muted);
+  }
+
+  [data-signed-in-calendar] .cal-si-mark,
+  [data-signed-in-calendar] .cal-si-undo {
+    margin-left: auto;
+    height: 30px;
+    padding: 0 12px;
+    border: 1px solid var(--browse-due);
+    border-radius: 8px;
+    background: var(--paper);
+    color: var(--browse-due);
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  [data-signed-in-calendar] .cal-si-study-row .cal-si-mark,
+  [data-signed-in-calendar] .cal-si-study-row .cal-si-undo {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    margin-left: 0;
+    align-self: center;
+  }
+
+  [data-signed-in-calendar] .cal-si-undo {
+    border-color: var(--hairline);
+    color: var(--ink);
+  }
+
+  [data-signed-in-calendar] .cal-si-continue,
+  [data-signed-in-calendar] .cal-si-day-add {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 46px;
+    border: 0;
+    border-top: 1px solid var(--page);
+    background: transparent;
+    font: inherit;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink);
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .cal-si-dialog {
+    margin: auto;
+    padding: 24px 28px 26px;
+    border: 0;
+    border-radius: 16px;
+    background: var(--paper);
+    color: var(--ink);
+    width: min(640px, 94vw);
+    max-height: 90vh;
+    overflow: auto;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+  }
+
+  .cal-si-dialog::backdrop {
+    background: rgba(16, 16, 24, 0.55);
+  }
+
+  .cal-si-dialog-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+  }
+
+  .cal-si-dialog h2 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 500;
+  }
+
+  .cal-si-dialog-head button {
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--hairline);
+    border-radius: 10px;
+    background: var(--paper);
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .cal-si-dialog form {
+    display: grid;
+    gap: 14px;
+  }
+
+  .cal-si-dialog label {
+    display: grid;
+    gap: 6px;
+    font-size: 12.5px;
+    font-weight: 600;
+  }
+
+  .cal-si-dialog input,
+  .cal-si-dialog textarea,
+  .cal-si-dialog select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--control-border, var(--hairline));
+    border-radius: 10px;
+    background: var(--paper);
+    color: var(--ink);
+    font: inherit;
+    box-sizing: border-box;
+  }
+
+  .cal-si-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .cal-si-dialog-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+  }
+
+  .cal-si-cancel {
+    height: 40px;
+    padding: 0 16px;
+    border: 1px solid var(--hairline);
+    border-radius: 10px;
+    background: var(--paper);
+    font: inherit;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .cal-si-save {
+    height: 40px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--browse-due, #0e7569);
+    color: #fff;
+    font: inherit;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .cal-si-viewer {
+    width: min(1180px, 96vw);
+  }
+
+  .cal-si-view-layout {
+    display: grid;
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: 24px;
+  }
+
+  #cal-si-preview {
+    min-height: 350px;
+    overflow: auto;
+    background: var(--wash);
+    border-radius: 8px;
+    padding: 12px;
+  }
+
+  #cal-si-preview img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  #cal-si-preview iframe {
+    width: 100%;
+    height: 62vh;
+    border: 0;
+  }
+
+  .cal-si-review {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid var(--hairline);
+    padding: 10px 0;
+    font-size: 13px;
+  }
+
+  .cal-si-review small {
+    display: block;
+  }
+
+  [data-signed-in-calendar] .cal-si-toast,
+  .cal-si-toast {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: fixed;
+    right: 24px;
+    bottom: 24px;
+    z-index: 80;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--ink);
+    color: var(--on-accent);
+    font-size: 13.5px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+  }
+
+  .cal-si-toast[hidden] {
+    display: none;
+  }
+
+  .cal-si-toast button {
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  #cal-si-page-error,
+  #cal-si-form-error,
+  #cal-si-view-error {
+    color: #b42318;
+  }
+}
+
+@media (min-width: 561px) and (max-width: 1279px) {
+  [data-signed-in-calendar].calendar {
+    padding-left: max(28px, calc((100% - 1180px) / 2));
+    padding-right: max(28px, calc((100% - 1180px) / 2));
+  }
+}
+
+@media (min-width: 900px) {
+  [data-signed-in-calendar].is-week .cal-si-toolbar,
+  [data-signed-in-calendar].is-week .cal-si-overdue,
+  [data-signed-in-calendar].is-week .cal-si-panel {
+    display: none;
+  }
+
+  [data-signed-in-calendar].is-week .cal-si-desk {
+    display: contents;
+  }
+}
+
 /* R7 closeout — reconciliation only. No IA change. D14, D16, D17, D25. */
 .page-wrap,
 .sheet,

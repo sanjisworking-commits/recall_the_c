@@ -362,6 +362,7 @@ def create_app(
     calendar_store=None,
     gcal_transport=None,
     speech_provider=None,
+    study_materials_dir: Path | str | None = None,
 ) -> FastAPI:
     """Create the learning UI app bound to concrete unit/progress paths."""
     root = Path.cwd()
@@ -1058,6 +1059,18 @@ def create_app(
 
     app.include_router(gcal_router)
     app.include_router(speech_router)
+
+    from constitution_memorizer.web.study_archive import (  # noqa: PLC0415
+        calendar_study_context,
+        install_study_archive,
+    )
+
+    install_study_archive(
+        app,
+        Path(study_materials_dir)
+        if study_materials_dir
+        else resolved_db.parent / "study-materials",
+    )
 
     def _engine() -> ReminderEngine:
         bound = bound_engine.get()
@@ -2914,6 +2927,17 @@ def create_app(
                 logger.exception("learning plan pace lookup failed")
         record_request_timing("calendar_build", started)
         started = time.perf_counter()
+        study_context = calendar_study_context(request)
+        if (
+            study_context.get("study_entry_count")
+            and calendar_view != "week"
+            and view_model.summary
+        ):
+            n = int(study_context["study_entry_count"])
+            noun = "entry" if n == 1 else "entries"
+            study_context["calendar_summary_extra"] = (
+                f" · {n} study {noun} of yours"
+            )
         response = templates.TemplateResponse(
             request,
             "calendar.html",
@@ -2923,6 +2947,7 @@ def create_app(
                 "calendar_view": calendar_view,
                 "revisions": revisions,
                 "pace_label": pace,
+                **study_context,
             },
         )
         record_request_timing("template", started)

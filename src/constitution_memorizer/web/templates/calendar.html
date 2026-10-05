@@ -2,7 +2,7 @@
 {% block title %}{{ calendar.title }} · Calendar{% endblock %}
 {% block mobile_screen %}revisions{% endblock %}
 {% block content %}
-<section class="panel calendar{% if calendar_view|default('month') == 'week' %} is-week{% endif %}">
+<section class="panel calendar{% if calendar_view|default('month') == 'week' %} is-week{% endif %}"{% if current_user and not is_guest|default(false) %} data-signed-in-calendar data-cal-today="{{ calendar.today.isoformat() }}"{% if study_token|default('') %} data-study-token="{{ study_token }}"{% endif %}{% endif %}>
   {# Design 19: the desktop month grid does not survive 390 px, so the phone
      gets its own grid over the same calendar.days. Rendered for EVERY month —
      gating this on `revisions` (which is today-only) made the nav arrows lead
@@ -152,7 +152,54 @@
     </div>
   </div>
 
-  <p class="calendar-summary">{% if calendar_view|default('month') == 'week' and week %}{{ week.summary }}{% else %}{{ calendar.summary }}{% endif %}</p>
+  <p class="calendar-summary">{% if calendar_view|default('month') == 'week' and week %}{{ week.summary }}{% else %}{{ calendar.summary }}{{ calendar_summary_extra|default('') }}{% endif %}</p>
+
+  {% if current_user and not is_guest|default(false) %}
+  <div class="cal-si-toolbar">
+    <label class="cal-si-filter">Show
+      <select data-cal-filter aria-label="Filter">
+        <option value="all" selected>All</option>
+        <option value="constitution">Constitution</option>
+        <option value="playground">Playground</option>
+        <option value="my">My material</option>
+      </select>
+    </label>
+    <div class="cal-si-legend" aria-label="Legend">
+      <span class="calendar-legend-item"><span class="calendar-swatch is-my-material" aria-hidden="true"></span>My material</span>
+      <span class="calendar-legend-item"><span class="calendar-swatch is-due-today" aria-hidden="true"></span>Due today</span>
+      <span class="calendar-legend-item"><span class="calendar-swatch is-overdue" aria-hidden="true"></span>Overdue</span>
+      <span class="calendar-legend-item"><span class="calendar-swatch is-memorized" aria-hidden="true"></span>Memorized</span>
+      <span class="calendar-legend-item"><span class="calendar-swatch is-scheduled" aria-hidden="true"></span>Scheduled</span>
+    </div>
+    <span class="cal-si-onlyyou" title="Personal study material is visible only to your account.">
+      <svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="4" y="9" width="12" height="8" rx="1.5"></rect><path d="M7 9V6a3 3 0 0 1 6 0v3"></path></svg>
+      Only you
+    </span>
+    {% if study_token|default('') %}
+    <button type="button" class="cal-si-add-task" data-study-add>Add task</button>
+    {% endif %}
+  </div>
+  {% if study_overdue|default([]) %}
+  <details class="cal-si-overdue" data-cal-overdue>
+    <summary>
+      <span class="cal-si-overdue-dot" aria-hidden="true"></span>
+      <span class="cal-si-overdue-label">{{ study_overdue|length }} overdue revision{{ 's' if study_overdue|length != 1 }} of your material</span>
+      <span class="cal-si-overdue-hint"><span class="cal-si-overdue-show">Show</span><span class="cal-si-overdue-hide">Hide</span> · includes earlier months</span>
+    </summary>
+    {% for item in study_overdue %}
+    <div class="cal-si-overdue-row" data-cal-source="my">
+      <span class="cal-si-kind">{{ item.label }}</span>
+      <button type="button" class="cal-si-overdue-title" data-study-id="{{ item.id }}">{{ item.title }}</button>
+      <span class="cal-si-overdue-meta">{{ item.label }} · due {{ item.due_on }}</span>
+      {% if not item.done %}
+      <button type="button" class="cal-si-mark" data-study-mark data-study-id-mark="{{ item.id }}" data-study-offset="{{ item.offset }}">Mark revised</button>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </details>
+  {% endif %}
+  <p id="cal-si-page-error" role="alert" hidden></p>
+  {% endif %}
 
   <div class="calendar-legend" aria-label="Legend">
     <span class="calendar-legend-item"><span class="calendar-swatch is-memorized" aria-hidden="true"></span>Memorized</span>
@@ -163,6 +210,7 @@
     <span class="calendar-legend-item"><span class="calendar-swatch is-review-capacity" aria-hidden="true"></span>Review</span>
   </div>
 
+  <div class="cal-si-desk">
   <div class="calendar-grid" role="grid" aria-label="{{ calendar.title }}">
     {% for dow in calendar.weekdays %}
     <div class="calendar-dow" role="columnheader">{{ dow }}</div>
@@ -171,35 +219,98 @@
       {% if day.is_blank %}
       <div class="calendar-cell is-blank" role="gridcell"></div>
       {% else %}
+      {% set study_day = study_by_day.get(day.iso, []) if study_by_day is defined else [] %}
       <div
         class="calendar-cell{% if day.is_today %} is-today{% endif %}{% if day.is_past %} is-past{% endif %}"
         role="gridcell"
         data-date="{{ day.iso }}"
       >
-        <div class="calendar-daynum">{{ day.day }}</div>
+        <div class="calendar-daynum">
+          <span class="calendar-daynum-n">{{ day.day }}</span>
+          {% if current_user and not is_guest|default(false) and study_token|default('') and day.iso <= calendar.today.isoformat() %}
+          <button type="button" class="cal-si-cell-add" data-study-date="{{ day.iso }}" aria-label="Add study material for {{ day.iso }}">+</button>
+          {% endif %}
+        </div>
+        {% if current_user and not is_guest|default(false) %}
+        {% for item in study_day %}
+        <button
+          type="button"
+          class="calendar-chip is-study{% if item.done %} is-review-done{% elif day.is_past and not item.done and item.kind == 'review' %} is-overdue{% elif item.kind == 'review' and not item.done and day.is_today %} is-due{% endif %}"
+          data-cal-source="my"
+          data-study-id="{{ item.id }}"
+          title="{{ item.title }}"
+        >{{ item.title }}</button>
+        {% endfor %}
+        {% endif %}
         {% for chip in day.chips %}
+        {% set chip_src = 'playground' if chip.category else 'constitution' %}
         {% if chip.href %}
         <a
           class="calendar-chip is-{{ chip.kind | replace('_', '-') }}{% if chip.category %} is-law-revision{% endif %}"
           href="{{ chip.href }}"
           title="{{ chip.title }}"
+          data-cal-source="{{ chip_src }}"
         >{{ chip.label }}</a>
         {% elif chip.unit_id %}
         <a
           class="calendar-chip is-{{ chip.kind | replace('_', '-') }}"
           href="/learn/{{ chip.unit_id }}"
           title="{{ chip.title }}"
+          data-cal-source="{{ chip_src }}"
         >{{ chip.label }}</a>
         {% else %}
         <span
           class="calendar-chip is-{{ chip.kind | replace('_', '-') }}"
           title="{{ chip.title }}"
+          data-cal-source="{{ chip_src }}"
         >{{ chip.label }}</span>
         {% endif %}
         {% endfor %}
       </div>
       {% endif %}
     {% endfor %}
+  </div>
+
+  {% if current_user and not is_guest|default(false) %}
+  <aside class="cal-si-panel" data-cal-panel>
+    {% for day in calendar.days if not day.is_blank %}
+    {% set study_day = study_by_day.get(day.iso, []) if study_by_day is defined else [] %}
+    <div class="cal-si-panel-day" data-cal-panel-day="{{ day.iso }}" hidden>
+      <p class="cal-si-panel-label">{% if day.is_today %}Today · {% endif %}{{ day.long_label }} · {{ (day.chips|length) + (study_day|length) }} item{{ 's' if (day.chips|length) + (study_day|length) != 1 }}</p>
+      {% for chip in day.chips %}
+      {% set chip_src = 'playground' if chip.category else 'constitution' %}
+      {% set row_href = chip.href if chip.href else ('/learn/' + chip.unit_id if chip.unit_id else '') %}
+      {% if row_href %}
+      <a class="cal-si-unit-row" href="{{ row_href }}" data-cal-source="{{ chip_src }}">
+      {% else %}
+      <div class="cal-si-unit-row" data-cal-source="{{ chip_src }}">
+      {% endif %}
+        <span class="cal-si-unit-title">{{ chip.title or chip.label }}</span>
+        <span class="cal-si-unit-meta">{% if chip.category %}{{ chip.category }} · {% endif %}{% if chip.kind == 'due' and day.is_past %}Overdue{% elif chip.kind == 'memorized' %}Memorized{% elif chip.kind == 'review_done' %}Review done{% elif chip.kind == 'due' %}Review due{% elif chip.kind == 'new_planned' %}New{% elif chip.kind == 'review_capacity' %}Review{% else %}Scheduled{% endif %}</span>
+      {% if row_href %}</a>{% else %}</div>{% endif %}
+      {% endfor %}
+      {% for item in study_day %}
+      <div class="cal-si-study-row" data-cal-source="my">
+        <button type="button" class="cal-si-study-title" data-study-id="{{ item.id }}">{{ item.title }}</button>
+        <span class="cal-si-study-meta">{{ item.label }}</span>
+        {% if item.kind == 'review' and not item.done %}
+        <button type="button" class="cal-si-mark" data-study-mark data-study-id-mark="{{ item.id }}" data-study-offset="{{ item.offset }}">Mark revised</button>
+        {% elif item.kind == 'review' and item.done %}
+        <button type="button" class="cal-si-undo" data-study-mark data-study-id-mark="{{ item.id }}" data-study-offset="{{ item.offset }}" data-study-undo="1">Undo</button>
+        {% endif %}
+      </div>
+      {% endfor %}
+      {% if not day.chips and not study_day %}
+      <p class="cal-si-empty">Nothing falls on this day.</p>
+      {% endif %}
+    </div>
+    {% endfor %}
+    <a class="cal-si-continue" data-cal-continue-recall href="/playground">Continue today’s Recall →</a>
+    {% if study_token|default('') %}
+    <button type="button" class="cal-si-day-add" data-cal-day-add data-study-date="{{ calendar.today.isoformat() }}">+ Add study material for this day</button>
+    {% endif %}
+  </aside>
+  {% endif %}
   </div>
 
   {% if week %}
@@ -246,4 +357,55 @@
   </div>
   {% endif %}
 </section>
+{% if current_user and not is_guest|default(false) and study_token|default('') %}
+<dialog id="cal-si-editor" class="cal-si-dialog" aria-labelledby="cal-si-editor-title">
+  <div class="cal-si-dialog-head">
+    <h2 id="cal-si-editor-title">Add study material</h2>
+    <button type="button" data-study-close aria-label="Close">×</button>
+  </div>
+  <form id="cal-si-form">
+    <label>Heading<input name="title" required maxlength="200" placeholder="e.g. Monsoon mechanisms"></label>
+    <div class="cal-si-fields">
+      <label>Study date<input type="date" name="studied_on" required></label>
+      <label>Activity<select name="activity"><option>Studied</option><option>Revised</option></select></label>
+    </div>
+    <label>Notes<textarea name="notes" rows="3" maxlength="20000" placeholder="What did you cover?"></textarea></label>
+    <label>Add PDFs or photos<input type="file" name="files" multiple accept="application/pdf,image/jpeg,image/png,image/gif,image/webp"></label>
+    <small>25 MB per file · 100 MB per upload · PDF, JPEG, PNG, GIF, WebP</small>
+    <label>Add web links<textarea name="links" rows="3" placeholder="https://example.com/article (one link per line)"></textarea></label>
+    <p id="cal-si-schedule-hint"></p>
+    <p id="cal-si-form-error" role="alert" hidden></p>
+    <div class="cal-si-dialog-actions">
+      <button type="button" class="cal-si-cancel" data-study-close>Cancel</button>
+      <button type="submit" class="cal-si-save">Save &amp; schedule</button>
+    </div>
+  </form>
+</dialog>
+<dialog id="cal-si-viewer" class="cal-si-dialog cal-si-viewer" aria-labelledby="cal-si-view-title">
+  <div class="cal-si-dialog-head">
+    <div>
+      <h2 id="cal-si-view-title"></h2>
+      <p id="cal-si-view-meta"></p>
+    </div>
+    <button type="button" data-study-close aria-label="Close preview">×</button>
+  </div>
+  <div class="cal-si-view-layout">
+    <aside>
+      <p id="cal-si-notes"></p>
+      <div id="cal-si-assets"></div>
+      <h3>Revision dates</h3>
+      <div id="cal-si-reviews"></div>
+      <button type="button" id="cal-si-edit">Edit / add attachments</button>
+      <p id="cal-si-view-error" role="alert" hidden></p>
+    </aside>
+    <div id="cal-si-preview" aria-live="polite"></div>
+  </div>
+</dialog>
+<div id="cal-si-toast" class="cal-si-toast" hidden role="status">
+  <span data-cal-toast-text></span>
+  <button type="button" data-cal-toast-undo>Undo</button>
+  <button type="button" data-cal-toast-dismiss aria-label="Dismiss">×</button>
+</div>
+<script src="/static/calendar-signed.js?v=cal2" defer></script>
+{% endif %}
 {% endblock %}

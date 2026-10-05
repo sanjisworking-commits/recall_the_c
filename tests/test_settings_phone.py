@@ -133,7 +133,7 @@ def test_settings_assets_and_hooks(tmp_path: Path):
     # T33: R6 bumped styles.css main74→main75 and mobile.css mob95→mob96.
     client = _client(tmp_path)
     html = client.get("/browse").text
-    assert "styles.css?v=main78" in html
+    assert "styles.css?v=main79" in html
     assert "mobile.css?v=mob98" in html
     assert "app.js?v=main62" in html
     css = client.get("/static/mobile.css?v=mob98").text
