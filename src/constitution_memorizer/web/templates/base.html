@@ -240,7 +240,7 @@
             {% endif %}
             <span class="account-menu-btn-copy">
               <span class="account-menu-btn-name">{{ label }}</span>
-              {% if path == '/browse' or path.startswith('/laws') %}
+              {% if path == '/browse' or path.startswith('/laws') or path.rstrip('/') == '/playground' %}
               <span class="account-menu-btn-status">Free account</span>
               {% endif %}
             </span>

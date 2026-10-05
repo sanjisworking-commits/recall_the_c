@@ -3018,7 +3018,13 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   .EntitlementGate[data-signed-in-pg-gate] {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 380px;
-    gap: 64px;
+    grid-template-areas:
+      "kicker card"
+      "title card"
+      "lede card"
+      "how card";
+    column-gap: 64px;
+    row-gap: 0;
     max-width: 960px;
     align-items: start;
     padding: 0;
@@ -3030,20 +3036,15 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     display: none !important;
   }
 
-  .EntitlementGate[data-signed-in-pg-gate] > .pg-eyebrow,
-  .EntitlementGate[data-signed-in-pg-gate] > h1,
-  .EntitlementGate[data-signed-in-pg-gate] > .pg-lede,
-  .EntitlementGate[data-signed-in-pg-gate] > .HowPlaygroundWorks {
-    grid-column: 1;
-  }
-
   .EntitlementGate[data-signed-in-pg-gate] > .pg-eyebrow {
+    grid-area: kicker;
     margin: 0 0 8px;
     letter-spacing: 0.14em;
     color: var(--pg-teal);
   }
 
   .PlaygroundShell .EntitlementGate[data-signed-in-pg-gate] h1 {
+    grid-area: title;
     margin: 0 0 10px;
     font-size: 34px;
     font-weight: 500;
@@ -3053,6 +3054,7 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   }
 
   .EntitlementGate[data-signed-in-pg-gate] > .pg-lede {
+    grid-area: lede;
     margin: 0;
     font-size: 15px;
     line-height: 1.55;
@@ -3060,6 +3062,7 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   }
 
   .EntitlementGate[data-signed-in-pg-gate] > .HowPlaygroundWorks {
+    grid-area: how;
     margin-top: 26px;
     border-top: 0;
   }
@@ -3105,8 +3108,8 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   }
 
   .EntitlementGate[data-signed-in-pg-gate] > .pg-actions {
-    grid-column: 2;
-    grid-row: 1 / span 8;
+    grid-area: card;
+    align-self: start;
     display: flex;
     flex-direction: column;
     align-items: stretch;

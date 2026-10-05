@@ -11508,8 +11508,32 @@ body.is-admin-previewing { padding-top: 40px; }
     grid-template-columns: minmax(0, 1fr) auto;
   }
 
+  body.is-authed[data-mscreen="playground"]:has([data-signed-in-pg-gate]) .brand-mark {
+    filter: invert(1);
+  }
+
   body.is-authed[data-mscreen="playground"]:has([data-signed-in-pg-gate]) .PrimaryTabs--top {
     display: none !important;
+  }
+
+  body.is-authed[data-mscreen="playground"]:has([data-signed-in-pg-gate]) .account-avatar,
+  body.is-authed[data-mscreen="playground"]:has([data-signed-in-pg-gate]) .account-avatar-fallback {
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+  }
+
+  body.is-authed[data-mscreen="playground"]:has([data-signed-in-pg-gate]) .account-avatar-fallback {
+    background: var(--ink);
+    color: var(--on-accent);
+    border-color: var(--ink);
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  body.is-authed[data-mscreen="playground"]:not(:has([data-signed-in-pg-gate])) .account-menu-btn-status {
+    display: none;
   }
 
   body.is-authed[data-mscreen="playground"]:has([data-signed-in-pg-gate]) .site-footer,

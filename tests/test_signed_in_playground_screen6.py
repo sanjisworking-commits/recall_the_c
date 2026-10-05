@@ -158,6 +158,8 @@ def test_subscriber_keeps_existing_playground_home(tmp_path: Path) -> None:
     assert "Browse laws" in html
     assert ">Unlock Playground<" not in html
     assert ">View Playground plans<" not in html
+    # Header may include the Free account label in the DOM; Screen 06 CSS
+    # hides it on the subscriber home.
 
 
 def test_guest_playground_intro_is_unchanged(tmp_path: Path) -> None:
@@ -271,7 +273,8 @@ def test_signed_in_pg_gate_1280_and_phone(tmp_path: Path) -> None:
             """() => {
               const gate = document.querySelector('[data-signed-in-pg-gate]');
               const nav = document.querySelector('.PrimaryTabs--top');
-              const cta = gate && gate.querySelector('.pg-actions .pg-btn');
+              const actions = gate && gate.querySelector(':scope > .pg-actions');
+              const cta = actions && actions.querySelector('.pg-btn');
               const included = gate && gate.querySelector('.pg-included-card');
               const plans = gate && gate.querySelector('.pg-plan-stage');
               const how = gate && gate.querySelector('.HowPlaygroundWorks');
@@ -323,13 +326,19 @@ def test_signed_in_pg_gate_1280_and_phone(tmp_path: Path) -> None:
                   document.querySelector('.account-menu-btn-name').textContent.trim(),
                 status: document.querySelector('.account-menu-btn-status') &&
                   document.querySelector('.account-menu-btn-status').textContent.trim(),
+                statusDisplay: document.querySelector('.account-menu-btn-status') &&
+                  getComputedStyle(document.querySelector('.account-menu-btn-status')).display,
+                markFilter: document.querySelector('.brand-mark') &&
+                  getComputedStyle(document.querySelector('.brand-mark')).filter,
+                avatarBg: document.querySelector('.account-avatar-fallback') &&
+                  getComputedStyle(document.querySelector('.account-avatar-fallback')).backgroundColor,
               };
             }"""
         )
         page.evaluate("() => document.activeElement && document.activeElement.blur()")
         page.screenshot(path=str(shot_path), full_page=False)
 
-        page.locator("[data-signed-in-pg-gate] .pg-actions .pg-btn").click()
+        page.locator("[data-signed-in-pg-gate] > .pg-actions > .pg-btn").click()
         page.wait_for_url("**/billing/subscriptions**", timeout=8000)
         billing_path = page.evaluate("() => location.pathname")
 
@@ -340,7 +349,7 @@ def test_signed_in_pg_gate_1280_and_phone(tmp_path: Path) -> None:
               const gate = document.querySelector('[data-signed-in-pg-gate]');
               const included = gate && gate.querySelector('.pg-included-card');
               const plans = gate && gate.querySelector('.pg-plan-stage');
-              const cta = gate && gate.querySelector('.pg-actions .pg-btn');
+              const cta = gate && gate.querySelector(':scope > .pg-actions > .pg-btn');
               const navTop = document.querySelector('.PrimaryTabs--top');
               const tabbar = document.querySelector('.PrimaryTabs--bottom');
               return {
@@ -384,6 +393,8 @@ def test_signed_in_pg_gate_1280_and_phone(tmp_path: Path) -> None:
     assert geo["twoCol"] is True
     assert geo["name"] == "Sanjay"
     assert geo["status"] == "Free account"
+    assert geo["statusDisplay"] != "none"
+    assert "invert" in (geo["markFilter"] or "")
     assert billing_path == PLAYGROUND_BILLING_PATH
     assert phone_geo["title"] == "Unlock Playground"
     assert phone_geo["includedDisplay"] != "none"
