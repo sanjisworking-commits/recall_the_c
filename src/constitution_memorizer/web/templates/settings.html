@@ -8,6 +8,9 @@
   <div class="mobile-topbar">
     <a class="mobile-back" href="{% if multiuser_enabled|default(false) and current_user %}/dashboard{% else %}/{% endif %}">← {% if multiuser_enabled|default(false) and current_user %}Today{% else %}Home{% endif %}</a>
   </div>
+  {% if current_user and not is_guest %}
+  <p class="si-settings-desk-back"><a href="/dashboard">← Today</a></p>
+  {% endif %}
   <h1 class="display">Settings</h1>
 
   {% if multiuser_enabled|default(false) %}

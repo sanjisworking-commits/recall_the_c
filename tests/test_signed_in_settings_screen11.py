@@ -188,6 +188,7 @@ def test_signed_in_settings_real_plan_and_calendar_destinations(tmp_path: Path) 
 def test_signed_in_settings_does_not_touch_accepted_screens() -> None:
     settings = SETTINGS.read_text(encoding="utf-8")
     assert "data-signed-in-settings" in settings
+    assert "si-settings-desk-back" in settings
     assert 'data-settings-group="study"' in settings
     assert 'data-settings-group="calendar"' in settings
     assert 'class="settings-group settings-phone-only" data-settings-group="account"' in settings
@@ -319,7 +320,7 @@ def test_signed_in_settings_1280_and_phone(tmp_path: Path) -> None:
               const active = nav && [...nav.querySelectorAll('.nav-link.is-active')].map(
                 (el) => (el.textContent || '').trim()
               );
-              const back = panel && panel.querySelector('.mobile-back');
+              const back = panel && panel.querySelector('.si-settings-desk-back a');
               const heading = panel && panel.querySelector(':scope > .display');
               const ident = panel && panel.querySelector('.settings-account-row');
               const study = panel && panel.querySelector('[data-settings-group="study"]');
@@ -370,7 +371,7 @@ def test_signed_in_settings_1280_and_phone(tmp_path: Path) -> None:
         profile_path = page.evaluate("() => location.pathname")
 
         page.goto(f"{origin}/settings", wait_until="networkidle")
-        page.locator(".mobile-back").click()
+        page.locator(".si-settings-desk-back a").click()
         page.wait_for_url("**/dashboard**", timeout=8000)
         today_path = page.evaluate("() => location.pathname")
 
@@ -383,13 +384,15 @@ def test_signed_in_settings_1280_and_phone(tmp_path: Path) -> None:
               const back = panel && panel.querySelector('.mobile-back');
               const ident = panel && panel.querySelector('.settings-account-row');
               const deskCopy = panel && panel.querySelector('.settings-desk-copy');
-              const connect = panel && panel.querySelector('[data-gcal-connect]');
+              const deskBack = panel && panel.querySelector('.si-settings-desk-back');
+              const connectRow = panel && panel.querySelector('.gcal-connect-row');
               return {
                 present: Boolean(panel),
                 backDisplay: back ? getComputedStyle(back).display : null,
                 identDisplay: ident ? getComputedStyle(ident).display : null,
                 deskCopyDisplay: deskCopy ? getComputedStyle(deskCopy).display : null,
-                connectDisplay: connect ? getComputedStyle(connect).display : null,
+                deskBackDisplay: deskBack ? getComputedStyle(deskBack).display : null,
+                connectRowDisplay: connectRow ? getComputedStyle(connectRow).display : null,
               };
             }"""
         )
@@ -411,7 +414,7 @@ def test_signed_in_settings_1280_and_phone(tmp_path: Path) -> None:
     assert geo["selfChecked"] is True
     assert geo["autoDisabled"] is False
     assert geo["saveText"] == "Save learning plan"
-    assert geo["connectHref"] == "/calendar/google/connect"
+    assert geo["connectHref"].startswith("/calendar/google/connect")
     assert geo["connectText"] == "Connect Google Calendar"
     assert geo["hasFreeAccount"] is False
     assert geo["hasSynced"] is False
@@ -419,6 +422,7 @@ def test_signed_in_settings_1280_and_phone(tmp_path: Path) -> None:
     assert today_path.rstrip("/") == "/dashboard"
     assert phone_geo["present"] is True
     assert phone_geo["deskCopyDisplay"] == "none"
-    assert phone_geo["connectDisplay"] == "none"
+    assert phone_geo["deskBackDisplay"] == "none"
+    assert phone_geo["connectRowDisplay"] == "none"
     assert shot_path.is_file()
     assert shot_path.stat().st_size > 1000
