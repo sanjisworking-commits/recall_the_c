@@ -1183,16 +1183,31 @@ def create_app(
     @app.get("/", response_class=HTMLResponse)
     async def home(request: Request) -> HTMLResponse:
         if app.state.multiuser_enabled:
-            # Guest and signed-in viewers share this dark landing. The light
-            # variant is currently disabled — always serve the dark landing
-            # (a stale rtc_landing_theme cookie must not strand anyone on
-            # light). landing_light.html stays in the repo, dormant, for easy
-            # re-enable.
+            # Guest and signed-in viewers share this dark landing. Plus marks
+            # the accepted Screen 01 from EntitlementSnapshot only — no mock
+            # isPlus and no separate premium theme. The light variant is
+            # currently disabled (a stale rtc_landing_theme cookie must not
+            # strand anyone on light). landing_light.html stays in the repo,
+            # dormant, for easy re-enable.
+            from constitution_memorizer.entitlements.dependencies import (
+                get_entitlement_snapshot,
+            )
+
+            plus_landing = False
+            if getattr(request.state, "current_user", None) is not None:
+                snapshot = get_entitlement_snapshot(request)
+                plus_landing = bool(
+                    snapshot.is_subscribed
+                    and snapshot.tier == "plus"
+                    and snapshot.can_open_playground
+                    and snapshot.subscription_status == "active"
+                )
             return templates.TemplateResponse(
                 request,
                 "landing.html",
                 {
                     "landing_review_days": list(INTERVAL_LADDER),
+                    "plus_landing": plus_landing,
                 },
             )
         eng = _engine()
