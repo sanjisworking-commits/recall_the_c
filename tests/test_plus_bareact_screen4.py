@@ -292,8 +292,8 @@ def test_plus_bareact_header_does_not_leak_to_other_law_routes(tmp_path: Path) -
     assert "RecallC Plus" in _header(laws.text)
     assert 'data-plus-laws="desktop"' in laws.text
     playground = client.get("/playground")
-    assert "Free account" in _header(playground.text)
-    assert "RecallC Plus" not in _header(playground.text)
+    assert "RecallC Plus" in _header(playground.text)
+    assert 'data-plus-playground="desktop"' in playground.text
 
 
 def test_plus_bareact_marker_uses_shared_predicate() -> None:

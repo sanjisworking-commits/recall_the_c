@@ -486,6 +486,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                 "roster_path": roster_path(),
                 "hard_gate": False,
                 "read_only": bool(getattr(access, "can_view_home", False) and not access.can_open),
+                "plus_playground": request_is_active_plus(request),
             },
         )
 

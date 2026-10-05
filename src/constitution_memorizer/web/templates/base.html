@@ -72,7 +72,7 @@
   <link rel="stylesheet" href="/static/styles.css?v=main84">
   <link rel="stylesheet" href="/static/visual-explainer.css?v=ve1">
   <link rel="stylesheet" href="/static/mobile.css?v=mob98">
-  <link rel="stylesheet" href="/static/playground.css?v=pg20">
+  <link rel="stylesheet" href="/static/playground.css?v=pg21">
   {% if onboarding_status|default('') == 'active' %}
   <link rel="stylesheet" href="/static/onboarding.css?v=ob6">
   {% endif %}
@@ -241,7 +241,7 @@
             <span class="account-menu-btn-copy">
               <span class="account-menu-btn-name">{{ label }}</span>
               {% if path == '/browse' or path.startswith('/laws') or path.rstrip('/') == '/playground' %}
-              <span class="account-menu-btn-status">{% if (plus_browse|default(false) and path == '/browse') or (plus_laws|default(false) and path == '/laws') or (plus_bareact|default(false) and path == '/laws/ndps') %}RecallC Plus{% else %}Free account{% endif %}</span>
+              <span class="account-menu-btn-status">{% if (plus_browse|default(false) and path == '/browse') or (plus_laws|default(false) and path == '/laws') or (plus_bareact|default(false) and path == '/laws/ndps') or (plus_playground|default(false) and path.rstrip('/') == '/playground') %}RecallC Plus{% else %}Free account{% endif %}</span>
               {% endif %}
             </span>
           </button>

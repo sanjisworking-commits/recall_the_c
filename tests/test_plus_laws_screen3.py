@@ -163,7 +163,8 @@ def test_plus_laws_keeps_accepted_index_from_real_subscription(tmp_path: Path) -
     assert "Browse the Constitution" in browse.text
     playground = client.get("/playground")
     assert "data-signed-in-pg-gate" not in playground.text
-    assert "Free account" in _header(playground.text)
+    assert "RecallC Plus" in _header(playground.text)
+    assert 'data-plus-playground="desktop"' in playground.text
     bare = client.get("/laws/bns")
     assert bare.status_code == 200
     assert "Free account" in _header(bare.text)

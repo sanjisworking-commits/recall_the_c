@@ -289,6 +289,7 @@ class LawCardView:
     review_href: str = ""
     home_note: str = ""
     provisions_copy: str = ""
+    sections_copy: str = ""
     learned_pct: int = 0
 
 
@@ -318,6 +319,7 @@ class PlaygroundHomeView:
     next_month_name: str
     empty: bool
     due_today: int
+    overdue: int
     to_learn: int
     sections_learned: int
     sections_selected: int
@@ -1431,7 +1433,7 @@ def _card_from_summary(
         selected_count=summary.selected_count,
         learned_count=summary.learned_count,
         due_count=summary.due_count,
-        overdue_count=0,
+        overdue_count=int(getattr(summary, "overdue_count", 0) or 0),
         status=status,
         status_label=STATUS_LABELS[status],
         outdated=outdated,
@@ -1447,6 +1449,7 @@ def _card_from_summary(
         learning_count=int(getattr(summary, "learning_count", 0) or 0),
         mastered_count=int(getattr(summary, "mastered_count", 0) or 0),
         provisions_copy=provisions_label(selected),
+        sections_copy=sections_selected_copy(selected=selected, learned=learned),
         learned_pct=pct,
     )
 
@@ -1468,7 +1471,7 @@ def _with_source_state(card: LawCardView, presentations: dict[str, Any]) -> LawC
     )
 
 
-def _stub_card(law_id: str, *, membership: str, membership_label: str, primary_label: str, primary_href: str) -> LawCardView:
+def _stub_card(law_id: str, *, membership: str, membership_label: str, primary_label: str, primary_href: str, is_next: bool = False) -> LawCardView:
     title, short = catalog_titles(law_id)
     return LawCardView(
         law_id=law_id,
@@ -1485,8 +1488,10 @@ def _stub_card(law_id: str, *, membership: str, membership_label: str, primary_l
         primary_href=primary_href,
         read_href=f"/laws/{law_id}",
         manage_href=roster_path(),
+        is_next=is_next,
         membership=membership,
         membership_label=membership_label,
+        sections_copy=sections_selected_copy(selected=0, learned=0),
     )
 
 
@@ -1540,6 +1545,7 @@ def build_home_view(
                 membership_label="In Playground",
                 primary_label=label,
                 primary_href=href,
+                is_next=item.law_id == next_id,
             )
         else:
             card = _card_from_summary(
@@ -1663,6 +1669,7 @@ def build_home_view(
         ]
 
     due_today = sum(card.due_count for card in active_cards)
+    overdue = sum(card.overdue_count for card in active_cards)
     sections_learned = sum(card.learned_count for card in active_cards)
     sections_selected = sum(card.selected_count for card in active_cards)
     to_learn = max(0, sections_selected - sections_learned)
@@ -1699,6 +1706,7 @@ def build_home_view(
         next_month_name=next_month,
         empty=not active_cards and not removed_cards,
         due_today=due_today,
+        overdue=overdue,
         to_learn=to_learn,
         sections_learned=sections_learned,
         sections_selected=sections_selected,
@@ -1865,6 +1873,12 @@ def section_row_view(
 def provisions_label(count: int) -> str:
     n = int(count or 0)
     return "1 provision" if n == 1 else f"{n} provisions"
+
+
+def sections_selected_copy(*, selected: int, learned: int) -> str:
+    n = int(selected or 0)
+    noun = "section" if n == 1 else "sections"
+    return f"{n} {noun} selected · {int(learned or 0)} learned"
 
 
 def picker_cta_copy(*, section_count: int, partial_unit_count: int) -> str:

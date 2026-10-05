@@ -69,7 +69,7 @@
 {% endif %}
 {% endmacro %}
 
-{% macro law_card(card) %}
+{% macro law_card(card, plus=false) %}
 <article class="LawCard{% if card.is_next %} LawCard--emphasised{% endif %}{% if card.membership != 'in_playground' %} LawCard--compact LawCard--saved{% endif %}" data-law-id="{{ card.law_id }}" data-membership="{{ card.membership }}">
   {% if card.is_next %}<p class="LawCard-kicker">Up next</p>{% endif %}
   <h2 class="LawCard-title">{{ card.short_title }}</h2>
@@ -81,13 +81,21 @@
     {{ due_badge(card.due_count, card.overdue_count) }}
     {% if card.outdated %}{{ status_badge('updated', 'Law updated') }}{% endif %}
   </p>
-  <div class="pg-progress-bar LawCard-bar" aria-hidden="true">
+  <div class="pg-progress-bar LawCard-bar{% if plus %} plus-pg-desk-hide{% endif %}" aria-hidden="true">
     <span class="pg-progress-bar-fill" style="width: {{ card.learned_pct }}%"></span>
   </div>
+  {% if plus %}
+  <p class="LawCard-meta plus-pg-desk-only">{{ card.sections_copy or (card.selected_count ~ ' sections selected · ' ~ card.learned_count ~ ' learned') }}</p>
+  <p class="LawCard-meta plus-pg-desk-hide">
+    <span>{{ card.provisions_copy or (card.selected_count ~ ' provisions') }}</span>
+    <span>{{ card.learned_count }} learned</span>
+  </p>
+  {% else %}
   <p class="LawCard-meta">
     <span>{{ card.provisions_copy or (card.selected_count ~ ' provisions') }}</span>
     <span>{{ card.learned_count }} learned</span>
   </p>
+  {% endif %}
   {% if card.outdated and card.home_note %}
   <p class="pg-note">{% if card.review_href %}<a href="{{ card.review_href }}">{{ card.home_note }}</a>{% else %}{{ card.home_note }}{% endif %}</p>
   {% elif card.outdated %}
