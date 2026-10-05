@@ -23,7 +23,7 @@
   </aside>
 </section>
 {% endif %}
-<section class="EntitlementGate" data-playground-gate="{{ gate.reason }}" aria-labelledby="pg-gate-title"{% if guest_pg_intro %} data-pg-gate-phone{% endif %}>
+<section class="EntitlementGate" data-playground-gate="{{ gate.reason }}" aria-labelledby="pg-gate-title"{% if guest_pg_intro %} data-pg-gate-phone{% endif %}{% if current_user and gate.reason == 'not_subscribed' %} data-signed-in-pg-gate{% endif %}>
   <p class="pg-eyebrow">{{ gate.eyebrow }}</p>
   <h1 id="pg-gate-title">{{ gate.title }}</h1>
   {% for line in gate.lines %}

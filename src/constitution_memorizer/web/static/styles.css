@@ -11495,6 +11495,36 @@ body.is-admin-previewing { padding-top: 40px; }
   }
 }
 
+/* Signed-in desktop not-subscribed Gate (CTA map signedIn/06-screen).
+   Chrome only; phone Gate and subscriber home keep production tabs. */
+@media (min-width: 561px) {
+  body.is-authed[data-mscreen="playground"]:has([data-signed-in-pg-gate]) .page-wrap,
+  body.is-authed[data-mscreen="playground"]:has([data-signed-in-pg-gate]) .sheet,
+  body.is-authed[data-mscreen="playground"]:has([data-signed-in-pg-gate]) .main {
+    background: var(--paper);
+  }
+
+  body.is-authed[data-mscreen="playground"]:has([data-signed-in-pg-gate]) .site-header {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  body.is-authed[data-mscreen="playground"]:has([data-signed-in-pg-gate]) .PrimaryTabs--top {
+    display: none !important;
+  }
+
+  body.is-authed[data-mscreen="playground"]:has([data-signed-in-pg-gate]) .site-footer,
+  body.is-authed[data-mscreen="playground"]:has([data-signed-in-pg-gate]) .sheet-footnote {
+    display: none;
+  }
+}
+
+@media (min-width: 561px) and (max-width: 1279px) {
+  body.is-authed[data-mscreen="playground"]:has([data-signed-in-pg-gate]) .PlaygroundShell {
+    padding-left: max(28px, calc((100% - 1180px) / 2));
+    padding-right: max(28px, calc((100% - 1180px) / 2));
+  }
+}
+
 /* Guest Profile (CTA map guest/10-screen). Desktop only; phone /profile
    keeps the production guest card and guest tabbar. */
 @media (max-width: 560px) {
