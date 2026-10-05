@@ -12932,6 +12932,387 @@ body.is-admin-previewing { padding-top: 40px; }
   }
 }
 
+/* Signed-in desktop Settings (CTA map signedIn/11-screen). Desktop only.
+   Phone Settings, Gate, and screens 01–06 / 08 / 09 / 10 stay unchanged. */
+@media (min-width: 561px) {
+  body.is-authed[data-mscreen="settings"]:has([data-signed-in-settings]) .page-wrap,
+  body.is-authed[data-mscreen="settings"]:has([data-signed-in-settings]) .sheet,
+  body.is-authed[data-mscreen="settings"]:has([data-signed-in-settings]) .main {
+    background: var(--page);
+  }
+
+  body.is-authed[data-mscreen="settings"]:has([data-signed-in-settings]) .brand-mark {
+    filter: invert(1);
+  }
+
+  body.is-authed[data-mscreen="settings"]:has([data-signed-in-settings]) .site-footer,
+  body.is-authed[data-mscreen="settings"]:has([data-signed-in-settings]) .sheet-footnote {
+    display: none;
+  }
+
+  body.is-authed[data-mscreen="settings"]:has([data-signed-in-settings]) .account-avatar,
+  body.is-authed[data-mscreen="settings"]:has([data-signed-in-settings]) .account-avatar-fallback {
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+  }
+
+  body.is-authed[data-mscreen="settings"]:has([data-signed-in-settings]) .account-avatar-fallback {
+    background: var(--ink);
+    color: var(--on-accent);
+    border-color: var(--ink);
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  body.is-authed[data-mscreen="settings"]:has([data-signed-in-settings]) .account-menu-btn-status {
+    display: none;
+  }
+
+  [data-signed-in-settings].settings {
+    max-width: 720px;
+    margin: 0;
+    padding: 22px 40px 60px;
+    background: transparent;
+  }
+
+  [data-signed-in-settings] > .mobile-topbar {
+    display: flex;
+    align-items: center;
+    min-height: 32px;
+    margin: 0;
+  }
+
+  [data-signed-in-settings] > .mobile-topbar .mobile-back {
+    height: 32px;
+    min-height: 32px;
+    min-width: 0;
+    padding: 0;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  [data-signed-in-settings] > .display {
+    margin: 6px 0 14px;
+    font-family: var(--font-display);
+    font-size: 30px;
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: 0;
+  }
+
+  [data-signed-in-settings] .settings-account-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    margin: 0 0 14px;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  [data-signed-in-settings] .settings-account-row:hover {
+    background: var(--wash);
+  }
+
+  [data-signed-in-settings] .settings-account-avatar,
+  [data-signed-in-settings] .settings-account-avatar.is-fallback {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    flex: none;
+    border: 0;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--on-accent);
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  [data-signed-in-settings] .settings-account-copy {
+    flex: 1;
+    min-width: 0;
+  }
+
+  [data-signed-in-settings] .settings-account-name {
+    display: block;
+    font-size: 15.5px;
+    font-weight: 600;
+  }
+
+  [data-signed-in-settings] .settings-account-status {
+    display: block;
+    margin-top: 1px;
+    font-size: 12.5px;
+    color: var(--mid);
+  }
+
+  [data-signed-in-settings] .settings-account-chevron {
+    margin-left: auto;
+    font-size: 15px;
+    color: var(--faint);
+  }
+
+  [data-signed-in-settings] > .lede {
+    margin: -8px 0 22px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+
+  [data-signed-in-settings] .settings-saved {
+    margin: 0 0 16px;
+    padding: 0;
+    border: 0;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--browse-due);
+  }
+
+  [data-signed-in-settings] .settings-access-line {
+    margin: 0 0 18px;
+    padding: 0;
+    border: 0;
+    font-size: 13px;
+  }
+
+  [data-signed-in-settings] .settings-group {
+    margin: 0 0 22px;
+  }
+
+  [data-signed-in-settings] .settings-group-eyebrow {
+    display: block;
+    margin: 0 2px 6px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mid);
+  }
+
+  [data-signed-in-settings] .settings-desk-title,
+  [data-signed-in-settings] > .section-title {
+    margin: 0 0 4px;
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 500;
+  }
+
+  [data-signed-in-settings] .settings-desk-copy,
+  [data-signed-in-settings] .settings-note,
+  [data-signed-in-settings] .settings-footnote {
+    margin: 0 0 12px;
+    max-width: none;
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+
+  [data-signed-in-settings] .settings-footnote {
+    margin: 8px 2px 0;
+    font-size: 12px;
+    color: var(--mid);
+  }
+
+  [data-signed-in-settings] .settings-card,
+  [data-signed-in-settings] .settings-form.settings-card {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+  }
+
+  [data-signed-in-settings] .settings-row {
+    gap: 16px;
+    min-height: 0;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--page);
+  }
+
+  [data-signed-in-settings] .settings-card > .settings-row:last-child,
+  [data-signed-in-settings] .settings-form.settings-card > .settings-row:last-child {
+    border-bottom: 0;
+  }
+
+  [data-signed-in-settings] .settings-row-label {
+    font-size: 14.5px;
+    font-weight: 600;
+  }
+
+  [data-signed-in-settings] .settings-row-desc {
+    margin: 2px 0 0;
+    font-size: 12.5px;
+    color: var(--mid);
+  }
+
+  [data-signed-in-settings] .settings-plan-locked {
+    margin: 0;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--page);
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+
+  [data-signed-in-settings] .settings-plan-locked a {
+    font-weight: 600;
+    color: var(--browse-due);
+  }
+
+  [data-signed-in-settings] .settings-form.settings-card > .actions {
+    margin: 0;
+    padding: 14px 18px;
+  }
+
+  [data-signed-in-settings] .settings-form.settings-card .btn {
+    height: 38px;
+    min-height: 38px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--ink);
+    color: var(--on-accent);
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.28);
+  }
+
+  [data-signed-in-settings] .segmented {
+    margin: 0;
+    flex: none;
+  }
+
+  [data-signed-in-settings] .settings-theme {
+    margin: 0;
+  }
+
+  [data-signed-in-settings] .gcal-connect-row {
+    max-width: none;
+    margin: 0;
+    padding: 16px 18px;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+  }
+
+  [data-signed-in-settings] .gcal-connect-body {
+    margin: 0 0 8px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--ink);
+  }
+
+  [data-signed-in-settings] .gcal-permission-line {
+    margin: 0 0 4px;
+    font-family: var(--font-body);
+    font-size: 12.5px;
+    letter-spacing: 0;
+    color: var(--muted);
+  }
+
+  [data-signed-in-settings] .gcal-permission-line span {
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  [data-signed-in-settings] .gcal-connect-disclosure {
+    margin: 0 0 14px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--mid);
+  }
+
+  [data-signed-in-settings] .gcal-connect-learn {
+    margin: 0 0 14px;
+    font-size: 12px;
+  }
+
+  [data-signed-in-settings] .gcal-connect-row .btn-accent {
+    height: 38px;
+    min-height: 38px;
+    padding: 0 14px;
+    border: 0;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  [data-signed-in-settings] .gcal-connected-head,
+  [data-signed-in-settings] .gcal-prefs-form {
+    max-width: none;
+    margin: 0;
+    padding: 16px 18px;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+  }
+
+  [data-signed-in-settings] .gcal-prefs-form {
+    margin-top: 10px;
+  }
+
+  [data-signed-in-settings] [data-settings-group="account"] {
+    display: block;
+  }
+
+  [data-signed-in-settings] [data-settings-group="account"] .settings-card {
+    overflow: hidden;
+  }
+
+  [data-signed-in-settings] [data-settings-group="account"] .settings-row-link {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 52px;
+    padding: 0 18px;
+    border: 0;
+    border-bottom: 1px solid var(--page);
+    background: transparent;
+    font: inherit;
+    font-size: 14.5px;
+    color: inherit;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  [data-signed-in-settings] [data-settings-group="account"] .settings-row-link.is-danger {
+    color: var(--destructive);
+  }
+
+  [data-signed-in-settings] .settings-tour-replay {
+    margin-top: 10px;
+    padding: 12px 18px;
+    border: 1px dashed var(--control-border);
+    border-radius: 12px;
+    background: transparent;
+  }
+}
+
+@media (min-width: 561px) and (max-width: 1279px) {
+  [data-signed-in-settings].settings {
+    padding-left: max(28px, calc((100% - 1180px) / 2));
+    padding-right: max(28px, calc((100% - 1180px) / 2));
+  }
+}
+
 /* R7 closeout — reconciliation only. No IA change. D14, D16, D17, D25. */
 .page-wrap,
 .sheet,

@@ -130,7 +130,7 @@ def test_t41_every_active_template_is_classified():
 
 def test_t33_r1_asset_versions_are_pinned():
     html = BASE.read_text()
-    assert "styles.css?v=main82" in html
+    assert "styles.css?v=main83" in html
     assert "mobile.css?v=mob98" in html
     assert "playground.css?v=pg19" in html
     assert "playground.js?v=pg8" in html

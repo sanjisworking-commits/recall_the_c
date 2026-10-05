@@ -236,7 +236,7 @@ def test_signed_in_profile_does_not_touch_accepted_screens() -> None:
     )[0]
     assert "grid-template-columns: minmax(0, 1fr) 380px" in signed_cal
     signed = css.split("/* Signed-in desktop Profile", 1)[1].split(
-        "/* R7 closeout", 1
+        "/* Signed-in desktop Settings", 1
     )[0]
     assert "position: absolute" not in signed
     assert "left: 50%" not in signed
