@@ -132,6 +132,7 @@ from constitution_memorizer.playground.progress import (
     build_act_progress,
     choose_next_workspace_row,
 )
+from constitution_memorizer.entitlements.dependencies import request_is_active_plus
 from constitution_memorizer.playground.view import (
     add_confirm_copy,
     build_home_view,
@@ -142,6 +143,7 @@ from constitution_memorizer.playground.view import (
     entire_act_meta,
     law_membership,
     picker_page_view,
+    plus_add_confirm_copy,
     roster_law_cards,
     rollover_submit_label,
     section_row_view,
@@ -366,7 +368,7 @@ def _add_page_context(
         re_add=re_add,
     )
     entire_meta = ""
-    if hydrate_scope and show_scope and state.kind in {"eligible_to_add", "re_add"}:
+    if hydrate_scope and state.kind in {"eligible_to_add", "re_add"}:
         try:
             act = require_playground_law(law_id)
             entire_meta = entire_act_meta(law_id, act=act)
@@ -379,6 +381,20 @@ def _add_page_context(
     plans = catalogue_plan_views(
         current_tier=getattr(access.snapshot, "tier", None) if access.snapshot else None
     )
+    reading_name = guest_add_reading_name(law_id, short)
+    plus_add = bool(
+        law_id == "ndps"
+        and kind == "eligible_to_add"
+        and request_is_active_plus(request)
+    )
+    plus_title, plus_lede, plus_space, plus_footer = ("", "", "", "")
+    if plus_add:
+        plus_title, plus_lede, plus_space, plus_footer = plus_add_confirm_copy(
+            reading_name=reading_name,
+            month_name=month,
+            law_limit=law_limit,
+            remaining_after=remaining_after,
+        )
     return {
         "law_id": law_id,
         "kind": kind,
@@ -401,10 +417,15 @@ def _add_page_context(
         "re_add": re_add,
         "entire_meta": entire_meta,
         "login_href": login_href,
-        "reading_name": guest_add_reading_name(law_id, short),
+        "reading_name": reading_name,
         "from_price": catalogue_from_price(),
         "catalogue_plans": plans,
         "hard_gate": kind in {"guest", "subscribe", "device_blocked", "unavailable"},
+        "plus_add": plus_add,
+        "plus_add_title": plus_title,
+        "plus_add_lede": plus_lede,
+        "plus_add_space": plus_space,
+        "plus_add_footer": plus_footer,
     }
 
 

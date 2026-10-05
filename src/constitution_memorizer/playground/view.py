@@ -494,6 +494,35 @@ def add_confirm_copy(
     return title, tuple(lines)
 
 
+PLUS_ADD_TITLE = "Add to Playground"
+PLUS_ADD_REOPEN_NOTE = (
+    "Already yours this month — reopening it never uses another space."
+)
+
+
+def plus_add_confirm_copy(
+    *,
+    reading_name: str,
+    month_name: str,
+    law_limit: int | None,
+    remaining_after: int | None,
+) -> tuple[str, str, str, str]:
+    """Desktop Plus confirm copy. Capacity numbers come from the roster peek."""
+
+    lede = (
+        f"{reading_name} joins this month's Playground — learnable, verbatim. "
+        "The reader itself never changes."
+    )
+    space = ""
+    if law_limit is not None:
+        remaining = 0 if remaining_after is None else remaining_after
+        space = (
+            f"This will use 1 of your {law_limit} law spaces in {month_name}. "
+            f"{remaining} will remain."
+        )
+    return PLUS_ADD_TITLE, lede, space, PLUS_ADD_REOPEN_NOTE
+
+
 def device_count_copy(active_count: int, device_limit: int | None) -> str:
     """T26: 'n of limit' from the device service. Never a hard-coded 2 of 3."""
 

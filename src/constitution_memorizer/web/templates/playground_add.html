@@ -8,6 +8,7 @@
   data-step="{{ step }}"
   data-skip-confirm="{{ 'true' if skip_confirm else 'false' }}"
   data-roster-confirm="{{ law_id }}"
+  {% if plus_add|default(false) %}data-plus-add="desktop"{% endif %}
   role="dialog"
   aria-modal="true"
   aria-labelledby="pg-add-title"
@@ -93,18 +94,34 @@
 
   {% else %}
   <div data-add-step="confirm" {% if step == "scope" or skip_confirm %}hidden{% endif %}>
-    <h1 id="pg-add-title">{{ title }}</h1>
-    {% for line in lines %}
-    <p class="pg-lede">{{ line }}</p>
-    {% endfor %}
-    <form method="post" action="/playground/laws/{{ law_id }}/add" data-pg-add-confirm>
-      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-      <input type="hidden" name="confirm" value="{{ confirm_value }}">
-      <p class="pg-actions">
-        <button type="submit" class="pg-btn">{{ action_label }}</button>
-        <a class="pg-btn pg-btn--ghost" href="{{ cancel_href }}">Cancel</a>
-      </p>
-    </form>
+    {% if plus_add|default(false) %}
+    <div data-plus-add-desktop>
+      <h1 id="pg-add-title" class="plus-add-title">{{ plus_add_title }}</h1>
+      <p class="plus-add-lede">{{ plus_add_lede }}</p>
+      {% if plus_add_space %}<p class="plus-add-space">{{ plus_add_space }}</p>{% endif %}
+      <form method="post" action="/playground/laws/{{ law_id }}/add" data-pg-add-confirm>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <input type="hidden" name="confirm" value="{{ confirm_value }}">
+        <button type="submit" class="plus-add-submit">{{ action_label }}</button>
+      </form>
+      {% if plus_add_footer %}<p class="plus-add-footer">{{ plus_add_footer }}</p>{% endif %}
+      <button type="button" class="plus-add-cancel" data-pg-sheet-close>Cancel</button>
+    </div>
+    {% endif %}
+    {% if plus_add|default(false) %}<div data-plus-add-phone>{% endif %}
+      <h1 id="{{ 'pg-add-title-phone' if plus_add|default(false) else 'pg-add-title' }}">{{ title }}</h1>
+      {% for line in lines %}
+      <p class="pg-lede">{{ line }}</p>
+      {% endfor %}
+      <form method="post" action="/playground/laws/{{ law_id }}/add" data-pg-add-confirm>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <input type="hidden" name="confirm" value="{{ confirm_value }}">
+        <p class="pg-actions">
+          <button type="submit" class="pg-btn">{{ action_label }}</button>
+          <a class="pg-btn pg-btn--ghost" href="{{ cancel_href }}">Cancel</a>
+        </p>
+      </form>
+    {% if plus_add|default(false) %}</div>{% endif %}
   </div>
 
   <div data-add-step="scope" {% if step != "scope" and not skip_confirm %}hidden{% endif %}>

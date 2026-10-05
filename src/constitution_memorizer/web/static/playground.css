@@ -2850,6 +2850,109 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   }
 }
 
+/* Plus desktop Add dialog (CTA map plus/05-screen). Phone Plus sheet
+   keeps the production confirm + scope rows. Guest / Free subscribe
+   sheets stay on their own wrappers. */
+@media (max-width: 560px) {
+  [data-plus-add-desktop] {
+    display: none !important;
+  }
+}
+
+@media (min-width: 561px) {
+  [data-plus-add-phone] {
+    display: none !important;
+  }
+
+  .pg-sheet-panel[data-plus-add="desktop"] > .pg-eyebrow {
+    display: none;
+  }
+
+  .pg-sheet-panel[data-plus-add="desktop"] {
+    padding: 26px 28px;
+    border-radius: var(--pg-radius-dialog);
+  }
+
+  body.is-authed dialog.pg-sheet[open]:has([data-plus-add-desktop])::backdrop {
+    background: rgba(20, 20, 20, 0.35);
+  }
+
+  [data-plus-add-desktop] .plus-add-title {
+    font-family: var(--pg-font-display);
+    font-weight: 500;
+    font-size: 22px;
+    line-height: 1.25;
+    letter-spacing: 0;
+    margin: 0 0 4px;
+    color: var(--pg-ink);
+  }
+
+  [data-plus-add-desktop] .plus-add-lede {
+    margin: 0 0 6px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--pg-muted);
+  }
+
+  [data-plus-add-desktop] .plus-add-space {
+    margin: 0 0 18px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--pg-ink);
+  }
+
+  [data-plus-add-desktop] .plus-add-submit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 50px;
+    border: none;
+    border-radius: var(--pg-radius-button);
+    background: var(--pg-ink);
+    color: var(--pg-paper);
+    font: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    box-sizing: border-box;
+    box-shadow: var(--pg-shadow-press);
+  }
+
+  .PlaygroundShell [data-plus-add-desktop] .plus-add-submit {
+    color: var(--pg-paper);
+  }
+
+  [data-plus-add-desktop] .plus-add-submit:active {
+    transform: translateY(1px);
+    box-shadow: var(--pg-shadow-press-active);
+  }
+
+  [data-plus-add-desktop] .plus-add-footer {
+    margin: 12px 0 0;
+    text-align: center;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--pg-faint);
+  }
+
+  [data-plus-add-desktop] .plus-add-cancel {
+    display: none;
+  }
+
+  .pg-sheet-panel[data-plus-add="desktop"] > .pg-sheet-close {
+    top: 14px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    font-size: 15px;
+    color: var(--pg-mid);
+  }
+}
+
 /* Guest desktop Playground intro (CTA map guest/06-screen). Phone guest
    /playground keeps the production entitlement Gate. */
 @media (max-width: 560px) {
