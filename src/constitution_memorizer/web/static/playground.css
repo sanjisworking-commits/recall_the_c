@@ -3012,20 +3012,20 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
 
   body.is-authed[data-mscreen="playground"]:has([data-signed-in-pg-gate]) .PlaygroundShell {
     max-width: none;
-    padding: 48px 40px 60px;
+    padding: 28px 40px 48px;
   }
 
   .EntitlementGate[data-signed-in-pg-gate] {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) 380px;
+    grid-template-columns: minmax(0, 1fr) 300px;
     grid-template-areas:
       "kicker card"
       "title card"
       "lede card"
       "how card";
-    column-gap: 64px;
+    column-gap: 40px;
     row-gap: 0;
-    max-width: 960px;
+    max-width: 880px;
     align-items: start;
     padding: 0;
   }
@@ -3038,17 +3038,17 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
 
   .EntitlementGate[data-signed-in-pg-gate] > .pg-eyebrow {
     grid-area: kicker;
-    margin: 0 0 8px;
+    margin: 0 0 6px;
     letter-spacing: 0.14em;
     color: var(--pg-teal);
   }
 
   .PlaygroundShell .EntitlementGate[data-signed-in-pg-gate] h1 {
     grid-area: title;
-    margin: 0 0 10px;
-    font-size: 34px;
+    margin: 0 0 6px;
+    font-size: 28px;
     font-weight: 500;
-    line-height: 1.15;
+    line-height: 1.12;
     letter-spacing: 0;
     text-wrap: balance;
   }
@@ -3056,27 +3056,27 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   .EntitlementGate[data-signed-in-pg-gate] > .pg-lede {
     grid-area: lede;
     margin: 0;
-    font-size: 15px;
-    line-height: 1.55;
+    font-size: 13.5px;
+    line-height: 1.5;
     max-width: none;
   }
 
   .EntitlementGate[data-signed-in-pg-gate] > .HowPlaygroundWorks {
     grid-area: how;
-    margin-top: 26px;
+    margin-top: 16px;
     border-top: 0;
   }
 
   .EntitlementGate[data-signed-in-pg-gate] > .HowPlaygroundWorks > .pg-eyebrow {
-    margin: 0 0 10px;
+    margin: 0 0 8px;
     letter-spacing: 0.1em;
     color: var(--pg-mid);
   }
 
   .EntitlementGate[data-signed-in-pg-gate] .HowPlaygroundWorks-row {
-    gap: 12px;
+    gap: 10px;
     padding: 0;
-    margin: 0 0 12px;
+    margin: 0 0 8px;
     border-bottom: 0;
   }
 
@@ -3085,17 +3085,17 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   }
 
   .EntitlementGate[data-signed-in-pg-gate] .HowPlaygroundWorks-n {
-    width: 26px;
-    height: 26px;
+    width: 22px;
+    height: 22px;
     border-radius: 50%;
-    font-size: 12px;
+    font-size: 11px;
   }
 
   .EntitlementGate[data-signed-in-pg-gate] .HowPlaygroundWorks-row p {
     margin: 0;
-    font-size: 14.5px;
-    line-height: 1.5;
-    padding-top: 2px;
+    font-size: 13.5px;
+    line-height: 1.45;
+    padding-top: 1px;
     color: var(--pg-ink);
   }
 
@@ -3113,22 +3113,23 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     display: flex;
     flex-direction: column;
     align-items: stretch;
-    gap: 9px;
+    gap: 0;
     width: 100%;
     margin: 0;
-    padding: 24px;
+    padding: 14px 16px;
     background: var(--pg-subtle);
     border: 1px solid var(--pg-hairline);
-    border-radius: var(--pg-radius-card);
+    border-radius: var(--pg-radius-row);
     box-sizing: border-box;
   }
 
   .EntitlementGate[data-signed-in-pg-gate] > .pg-actions .pg-btn {
     width: 100%;
-    height: 50px;
-    min-height: 50px;
-    font-size: 15px;
+    height: 42px;
+    min-height: 42px;
+    font-size: 14px;
     box-sizing: border-box;
+    box-shadow: var(--pg-shadow-press-active);
   }
 }
 

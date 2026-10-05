@@ -197,6 +197,11 @@ def test_signed_in_pg_gate_does_not_touch_accepted_screens() -> None:
     assert "font-size: 20px" in signed_title
     guest_title = pg_css.split(".guest-pg-title {", 1)[1].split("}", 1)[0]
     assert "font-size: 34px" in guest_title
+    signed_gate_title = pg_css.split(
+        ".PlaygroundShell .EntitlementGate[data-signed-in-pg-gate] h1 {", 1
+    )[1].split("}", 1)[0]
+    assert "font-size: 28px" in signed_gate_title
+    assert "font-size: 34px" not in signed_gate_title
     gate_html = GATE.read_text(encoding="utf-8")
     assert "data-signed-in-pg-gate" in gate_html
     assert "how_it_works()" in gate_html
@@ -240,7 +245,7 @@ def test_signed_in_pg_gate_1280_and_phone(tmp_path: Path) -> None:
     port, _server = _serve(app)
     artifact_dir = Path("/opt/cursor/artifacts")
     artifact_dir.mkdir(parents=True, exist_ok=True)
-    shot_path = artifact_dir / "signed_in_playground_screen6_1280.png"
+    shot_path = artifact_dir / "signed_in_playground_screen6_density_1280.png"
     origin = f"http://127.0.0.1:{port}"
 
     with sync_playwright() as pw:
@@ -288,6 +293,13 @@ def test_signed_in_pg_gate_1280_and_phone(tmp_path: Path) -> None:
               const titleBox = title && title.getBoundingClientRect();
               const ctaBox = cta && cta.getBoundingClientRect();
               const howBox = how && how.getBoundingClientRect();
+              const circle = how && how.querySelector('.HowPlaygroundWorks-n');
+              const stepText = how && how.querySelector('.HowPlaygroundWorks-row p');
+              const shell = document.querySelector('.PlaygroundShell');
+              const header = document.querySelector('.site-header');
+              const gap = (actions && how)
+                ? actions.getBoundingClientRect().left - how.getBoundingClientRect().right
+                : null;
               return {
                 present: Boolean(gate),
                 reason: gate && gate.getAttribute('data-playground-gate'),
@@ -297,6 +309,15 @@ def test_signed_in_pg_gate_1280_and_phone(tmp_path: Path) -> None:
                 titleSize: title && getComputedStyle(title).fontSize,
                 titleWeight: title && getComputedStyle(title).fontWeight,
                 lede: lede && lede.textContent.trim(),
+                ledeSize: lede && getComputedStyle(lede).fontSize,
+                howMargin: how && getComputedStyle(how).marginTop,
+                circle: circle && circle.getBoundingClientRect().height,
+                stepSize: stepText && getComputedStyle(stepText).fontSize,
+                cardPad: actions && getComputedStyle(actions).padding,
+                cardW: actions && actions.getBoundingClientRect().width,
+                colGap: gap,
+                shellPad: shell && getComputedStyle(shell).paddingTop,
+                headerBottom: header && header.getBoundingClientRect().bottom,
                 ctaText: cta && cta.textContent.trim(),
                 ctaHref: cta && cta.getAttribute('href'),
                 ctaH: cta && cta.getBoundingClientRect().height,
@@ -370,12 +391,19 @@ def test_signed_in_pg_gate_1280_and_phone(tmp_path: Path) -> None:
     assert geo["reason"] == "not_subscribed"
     assert geo["kicker"] == "Playground"
     assert geo["title"] == "Unlock Playground"
-    assert geo["titleSize"] == "34px"
+    assert geo["titleSize"] == "28px"
     assert geo["titleWeight"] in ("500", "normal")
     assert geo["lede"] == LEDE
+    assert geo["ledeSize"] == "13.5px"
+    assert geo["howMargin"] == "16px"
     assert geo["ctaText"] == "View Playground plans"
     assert geo["ctaHref"] == PLAYGROUND_BILLING_PATH
-    assert geo["ctaH"] == pytest.approx(50, abs=2)
+    assert geo["ctaH"] == pytest.approx(42, abs=2)
+    assert geo["circle"] == pytest.approx(22, abs=1)
+    assert geo["stepSize"] == "13.5px"
+    assert geo["cardW"] == pytest.approx(300, abs=8)
+    assert geo["colGap"] == pytest.approx(40, abs=16)
+    assert geo["shellPad"] == "28px"
     assert geo["includedDisplay"] == "none"
     assert geo["plansDisplay"] == "none"
     assert geo["howDisplay"] != "none"
