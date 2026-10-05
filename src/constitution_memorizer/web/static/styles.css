@@ -12501,6 +12501,14 @@ body.is-admin-previewing { padding-top: 40px; }
     cursor: pointer;
   }
 
+  [data-signed-in-calendar] .cal-si-continue[hidden],
+  [data-signed-in-calendar] .cal-si-day-add[hidden],
+  [data-signed-in-calendar] [data-cal-source][hidden],
+  [data-signed-in-calendar] .cal-si-overdue[hidden],
+  [data-signed-in-calendar] .cal-si-panel-day[hidden] {
+    display: none;
+  }
+
   .cal-si-dialog {
     margin: auto;
     padding: 24px 28px 26px;

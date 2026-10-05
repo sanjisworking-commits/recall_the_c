@@ -155,8 +155,7 @@ def test_signed_in_free_calendar_marks_desktop_surface(tmp_path: Path) -> None:
     assert "Section 8" not in html
     assert "Bhagavad Gita" not in html
     phone = html.split("revisions-mobile", 1)[1].split("calendar-header", 1)[0]
-    assert 'href="/dashboard"' in phone
-    assert "Continue" in phone
+    assert "cal-m-grid" in phone
     assert "data-cal-filter" not in phone
     assert "Add task" not in phone
     gate = client.get("/playground", follow_redirects=False)
@@ -425,7 +424,11 @@ def test_signed_in_calendar_1280_and_phone(tmp_path: Path) -> None:
         panel_iso = page.evaluate(
             """() => {
               const shown = document.querySelector('[data-cal-panel-day]:not([hidden])');
-              return shown && shown.getAttribute('data-cal-panel-day');
+              const recall = document.querySelector('[data-cal-continue-recall]');
+              return {
+                iso: shown && shown.getAttribute('data-cal-panel-day'),
+                continueDisplay: recall ? getComputedStyle(recall).display : null,
+              };
             }"""
         )
         page.screenshot(path=str(panel_path), full_page=False)
@@ -433,11 +436,15 @@ def test_signed_in_calendar_1280_and_phone(tmp_path: Path) -> None:
         page.locator("[data-cal-filter]").select_option("constitution")
         filter_state = page.evaluate(
             """() => {
-              const hidden = (sel) => [...document.querySelectorAll(sel)].every((el) => el.hidden);
+              const hiddenVisually = (sel) => [...document.querySelectorAll(sel)].every(
+                (el) => getComputedStyle(el).display === 'none'
+              );
               return {
-                myHidden: hidden('[data-cal-source="my"]') || !document.querySelector('[data-cal-source="my"]'),
-                pgHidden: hidden('[data-cal-source="playground"]') || !document.querySelector('[data-cal-source="playground"]'),
-                constitutionVisible: [...document.querySelectorAll('[data-cal-source="constitution"]')].some((el) => !el.hidden),
+                myHidden: hiddenVisually('[data-cal-source="my"]') || !document.querySelector('[data-cal-source="my"]'),
+                pgHidden: hiddenVisually('[data-cal-source="playground"]') || !document.querySelector('[data-cal-source="playground"]'),
+                constitutionVisible: [...document.querySelectorAll('[data-cal-source="constitution"]')].some(
+                  (el) => getComputedStyle(el).display !== 'none'
+                ),
               };
             }"""
         )
@@ -500,7 +507,7 @@ def test_signed_in_calendar_1280_and_phone(tmp_path: Path) -> None:
             "() => Boolean(document.querySelector('[data-cal-overdue]').open)"
         )
 
-        page.locator(".cal-si-study-title", has_text="Real notes").first.click()
+        page.locator(".calendar-chip.is-study", has_text="Real notes").first.click()
         page.wait_for_selector("#cal-si-viewer", state="visible", timeout=4000)
         viewer_open = page.evaluate(
             """() => {
@@ -517,7 +524,8 @@ def test_signed_in_calendar_1280_and_phone(tmp_path: Path) -> None:
         page.locator("#cal-si-viewer [data-study-close]").first.click()
         page.wait_for_function("() => !document.getElementById('cal-si-viewer')?.open")
 
-        page.locator(".cal-si-mark").first.click()
+        page.locator("[data-cal-overdue] summary").click()
+        page.locator("[data-cal-overdue] .cal-si-mark").first.click()
         page.wait_for_selector("#cal-si-toast:not([hidden])", timeout=8000)
         toast_text = page.locator("[data-cal-toast-text]").inner_text()
         page.locator("[data-cal-toast-dismiss]").click()
@@ -565,7 +573,9 @@ def test_signed_in_calendar_1280_and_phone(tmp_path: Path) -> None:
     assert geo["designToggle"] is False
     assert geo["hasNdps"] is False
     assert geo["continueHref"] == "/playground"
-    assert panel_iso == other_iso
+    assert panel_iso["iso"] == other_iso
+    if other_iso != today_iso:
+        assert panel_iso["continueDisplay"] == "none"
     assert filter_state["myHidden"] is True
     assert filter_state["pgHidden"] is True
     assert overdue_open is True
