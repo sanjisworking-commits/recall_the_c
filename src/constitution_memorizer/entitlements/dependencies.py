@@ -54,6 +54,25 @@ def get_entitlement_snapshot(
     return snapshot
 
 
+def snapshot_is_active_plus(snapshot: EntitlementSnapshot) -> bool:
+    """True for an active Plus commercial snapshot. Not a visual mock."""
+
+    return bool(
+        snapshot.is_subscribed
+        and snapshot.tier == "plus"
+        and snapshot.can_open_playground
+        and snapshot.subscription_status == "active"
+    )
+
+
+def request_is_active_plus(request: object, *, now: datetime | None = None) -> bool:
+    """Resolve once via ``get_entitlement_snapshot``. Guests are never Plus."""
+
+    if getattr(getattr(request, "state", None), "current_user", None) is None:
+        return False
+    return snapshot_is_active_plus(get_entitlement_snapshot(request, now=now))
+
+
 def invalidate_entitlement_snapshot(request: object) -> None:
     state = getattr(request, "state", None)
     if state is not None and hasattr(state, "entitlement_snapshot"):

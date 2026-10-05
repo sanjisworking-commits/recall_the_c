@@ -1184,18 +1184,10 @@ def create_app(
     async def home(request: Request) -> HTMLResponse:
         if app.state.multiuser_enabled:
             from constitution_memorizer.entitlements.dependencies import (
-                get_entitlement_snapshot,
+                request_is_active_plus,
             )
 
-            plus_landing = False
-            if getattr(request.state, "current_user", None) is not None:
-                snapshot = get_entitlement_snapshot(request)
-                plus_landing = bool(
-                    snapshot.is_subscribed
-                    and snapshot.tier == "plus"
-                    and snapshot.can_open_playground
-                    and snapshot.subscription_status == "active"
-                )
+            plus_landing = request_is_active_plus(request)
             # Guest and signed-in viewers share this dark landing. Plus marks
             # Screen 01 from EntitlementSnapshot only. The light variant is
             # currently disabled — always serve the dark landing
@@ -2527,19 +2519,11 @@ def create_app(
         parts_source = "reviewed" if app.state.reviewed is not None else "units-seed"
         access = access_summary(request, eng)
         claimed = set(access.claimed_articles) if access.enabled else set()
-        plus_browse = False
-        if getattr(request.state, "current_user", None) is not None:
-            from constitution_memorizer.entitlements.dependencies import (
-                get_entitlement_snapshot,
-            )
+        from constitution_memorizer.entitlements.dependencies import (
+            request_is_active_plus,
+        )
 
-            snapshot = get_entitlement_snapshot(request)
-            plus_browse = bool(
-                snapshot.is_subscribed
-                and snapshot.tier == "plus"
-                and snapshot.can_open_playground
-                and snapshot.subscription_status == "active"
-            )
+        plus_browse = request_is_active_plus(request)
         # Phone Browse is Part-first (design 02): each Part card carries its own
         # progress and due count, and opens a Part page instead of scrolling.
         today = date.today()
@@ -3088,6 +3072,9 @@ def create_app(
     )
     async def laws_page(request: Request) -> HTMLResponse:
         catalog = load_catalog()
+        from constitution_memorizer.entitlements.dependencies import (  # noqa: PLC0415
+            request_is_active_plus,
+        )
         from constitution_memorizer.playground.access import (  # noqa: PLC0415
             public_law_states,
         )
@@ -3114,6 +3101,7 @@ def create_app(
             "has_repealed": bool(catalog.repealed_laws),
             "guest_screen3_laws": GUEST_LAWS_CARDS,
             "guest_screen3_chips": GUEST_LAWS_CHIPS,
+            "plus_laws": request_is_active_plus(request),
         }
         started = time.perf_counter()
         response = templates.TemplateResponse(request, "laws.html", context)

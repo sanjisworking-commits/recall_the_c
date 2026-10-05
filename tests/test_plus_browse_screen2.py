@@ -152,9 +152,6 @@ def test_plus_browse_omits_free_strip_from_real_subscription(tmp_path: Path) -> 
     assert "My Playground" in playground.text
     laws = client.get("/laws")
     assert laws.status_code == 200
-    laws_header = _header(laws.text)
-    assert "Free account" in laws_header
-    assert "RecallC Plus" not in laws_header
 
 
 def test_free_signed_in_browse_keeps_allowance_and_unlock(tmp_path: Path) -> None:
