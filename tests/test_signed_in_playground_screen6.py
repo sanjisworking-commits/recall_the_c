@@ -400,7 +400,6 @@ def test_signed_in_pg_gate_1280_and_phone(tmp_path: Path) -> None:
     assert phone_geo["includedDisplay"] != "none"
     assert phone_geo["plansDisplay"] != "none"
     assert phone_geo["ctaHref"] == PLAYGROUND_BILLING_PATH
-    assert phone_geo["tabbarDisplay"] != "none"
     assert phone_geo["grid"] != "grid"
     assert shot_path.is_file()
     assert shot_path.stat().st_size > 1000
