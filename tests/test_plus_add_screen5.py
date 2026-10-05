@@ -33,6 +33,7 @@ from constitution_memorizer.playground.urls import add_path, law_path, sections_
 from constitution_memorizer.playground.view import plus_add_confirm_copy
 from constitution_memorizer.web.app import create_app
 from constitution_memorizer.web.guest_bareact_head import NDPS_GUEST_READING_NAME
+from tests.conftest import PLAYGROUND_TEST_NOW
 
 MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
 ROOT = Path(__file__).resolve().parents[1]
@@ -45,7 +46,7 @@ ROUTES = ROOT / "src/constitution_memorizer/playground/routes.py"
 VIEW = ROOT / "src/constitution_memorizer/playground/view.py"
 PG_CSS = ROOT / "src/constitution_memorizer/web/static/playground.css"
 USER = UUID("11111111-1111-4111-8111-111111111111")
-MONTH = playground_month_name(playground_month_bounds()[0])
+MONTH = playground_month_name(playground_month_bounds(PLAYGROUND_TEST_NOW)[0])
 LEDE = (
     f"{NDPS_GUEST_READING_NAME} joins this month's Playground — learnable, verbatim. "
     "The reader itself never changes."
