@@ -394,6 +394,7 @@ def _add_page_context(
             month_name=month,
             law_limit=law_limit,
             remaining_after=remaining_after,
+            reopen=False,
         )
     return {
         "law_id": law_id,

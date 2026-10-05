@@ -29,7 +29,7 @@ from constitution_memorizer.playground.roster.period import (
     playground_month_bounds,
     playground_month_name,
 )
-from constitution_memorizer.playground.urls import add_path, law_path, sections_path
+from constitution_memorizer.playground.urls import add_path, law_path, remove_path, sections_path
 from constitution_memorizer.playground.view import plus_add_confirm_copy
 from constitution_memorizer.web.app import create_app
 from constitution_memorizer.web.guest_bareact_head import NDPS_GUEST_READING_NAME
@@ -169,7 +169,15 @@ def test_plus_add_confirm_copy_uses_roster_remaining() -> None:
     assert title == "Add to Playground"
     assert lede == LEDE
     assert space == SPACE
-    assert footer == FOOTER
+    assert footer == ""
+    _title, _lede, _space, reopen_footer = plus_add_confirm_copy(
+        reading_name=NDPS_GUEST_READING_NAME,
+        month_name=MONTH,
+        law_limit=10,
+        remaining_after=9,
+        reopen=True,
+    )
+    assert reopen_footer == FOOTER
 
 
 def test_plus_add_desktop_is_subscriber_confirm_only(tmp_path: Path) -> None:
@@ -186,7 +194,9 @@ def test_plus_add_desktop_is_subscriber_confirm_only(tmp_path: Path) -> None:
     assert desk.count("Add to Playground") == 2
     assert LEDE in desk
     assert SPACE in desk
-    assert FOOTER in desk
+    assert FOOTER not in desk
+    assert "plus-add-footer" not in desk
+    assert "reopening it never uses another space" not in desk
     assert 'name="csrf_token"' in desk
     assert 'name="confirm" value="add"' in desk
     assert 'data-pg-add-confirm' in desk
@@ -206,6 +216,33 @@ def test_plus_add_desktop_is_subscriber_confirm_only(tmp_path: Path) -> None:
         assert phrase not in desk, phrase
     assert client.app.state.roster.is_law_active_this_period(USER, "ndps") is False
     assert client.app.state.playground.get_item(USER, "ndps") is None
+
+
+def test_plus_re_add_keeps_no_extra_space_copy(tmp_path: Path) -> None:
+    client = _plus_client(tmp_path)
+    payload = dict(_csrf(client))
+    payload["confirm"] = "add"
+    payload["scope"] = "entire"
+    added = client.post(add_path("ndps"), data=payload, follow_redirects=False)
+    assert added.status_code == 303
+    assert client.app.state.roster.is_law_active_this_period(USER, "ndps") is True
+    removed = client.post(remove_path("ndps"), data=_csrf(client), follow_redirects=False)
+    assert removed.status_code == 303
+    html = unescape(client.get(add_path("ndps")).text)
+    assert 'data-pg-kind="re_add"' in html
+    assert "data-plus-add-desktop" not in html
+    assert "No extra space used." in html
+    assert "Your progress will be saved." in html
+    assert "Add back" in html
+    assert SPACE not in html
+    assert "joins this month" not in html
+    assert plus_add_confirm_copy(
+        reading_name=NDPS_GUEST_READING_NAME,
+        month_name=MONTH,
+        law_limit=10,
+        remaining_after=9,
+        reopen=True,
+    )[3] == FOOTER
 
 
 def test_plus_add_phone_keeps_existing_subscriber_confirm(tmp_path: Path) -> None:
@@ -378,6 +415,8 @@ def test_plus_add_marker_uses_shared_predicate() -> None:
     assert 'law_id == "ndps"' in routes
     view = VIEW.read_text(encoding="utf-8")
     assert "def plus_add_confirm_copy" in view
+    assert "PLUS_ADD_REOPEN_NOTE" in view
+    assert "reopen=False" in routes
     assert "def request_is_active_plus" in DEPS.read_text(encoding="utf-8")
     css = PG_CSS.read_text(encoding="utf-8")
     assert "[data-plus-add-desktop]" in css
@@ -530,6 +569,7 @@ def test_plus_add_1280_dialog_scope_and_select(tmp_path: Path) -> None:
                   pending: desk.innerText.includes('temporarily unavailable'),
                   signin: desk.innerText.includes('Create an account'),
                   unlock: desk.innerText.includes('Unlock Playground'),
+                  reopen: desk.innerText.includes('reopening it never uses another space'),
                 },
                 background: Boolean(head),
                 addCta: head && head.querySelector('[data-pg-sheet]') &&
@@ -661,7 +701,7 @@ def test_plus_add_1280_dialog_scope_and_select(tmp_path: Path) -> None:
     assert geo["titleWeight"] in ("500", "bold")
     assert geo["lede"] == LEDE
     assert geo["space"] == SPACE
-    assert geo["footer"] == FOOTER
+    assert geo["footer"] in (None, "")
     assert geo["submitText"] == "Add to Playground"
     assert geo["submitH"] == pytest.approx(50, abs=2)
     assert geo["cancelDisplay"] == "none"
@@ -685,6 +725,7 @@ def test_plus_add_1280_dialog_scope_and_select(tmp_path: Path) -> None:
     assert geo["leaked"]["pending"] is False
     assert geo["leaked"]["signin"] is False
     assert geo["leaked"]["unlock"] is False
+    assert geo["leaked"]["reopen"] is False
     assert geo["background"] is True
     assert geo["addCta"] == "+ Add to Playground"
     assert scope_geo["path"] == "/laws/ndps"

@@ -506,8 +506,14 @@ def plus_add_confirm_copy(
     month_name: str,
     law_limit: int | None,
     remaining_after: int | None,
+    reopen: bool = False,
 ) -> tuple[str, str, str, str]:
-    """Desktop Plus confirm copy. Capacity numbers come from the roster peek."""
+    """Desktop Plus confirm copy. Capacity numbers come from the roster peek.
+
+    The reopen footer is only for a genuine same-month add-back. First-add
+    (eligible_to_add, empty or unused roster slot) must not claim the law
+    is already this month's space.
+    """
 
     lede = (
         f"{reading_name} joins this month's Playground — learnable, verbatim. "
@@ -520,7 +526,8 @@ def plus_add_confirm_copy(
             f"This will use 1 of your {law_limit} law spaces in {month_name}. "
             f"{remaining} will remain."
         )
-    return PLUS_ADD_TITLE, lede, space, PLUS_ADD_REOPEN_NOTE
+    footer = PLUS_ADD_REOPEN_NOTE if reopen else ""
+    return PLUS_ADD_TITLE, lede, space, footer
 
 
 def device_count_copy(active_count: int, device_limit: int | None) -> str:
