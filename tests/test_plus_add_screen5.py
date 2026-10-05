@@ -230,7 +230,6 @@ def test_plus_add_scope_choice_is_existing_machine(tmp_path: Path) -> None:
     assert "Add NDPS Act" in scope
     assert "Choose how much of NDPS Act enters your recall schedule." in scope
     assert ">Entire Act<" in scope
-    assert "learnable" in scope
     assert ">Choose sections<" in scope
     assert "Pick sections — or open one and pick single clauses" in scope
     assert "Nothing is scheduled yet — provisions activate the first time you learn them." in scope
@@ -265,6 +264,7 @@ def test_plus_add_confirm_post_then_choose_sections(tmp_path: Path) -> None:
     assert scope_page.status_code == 200
     assert 'data-add-step="scope"' in scope_page.text
     assert ">Entire Act<" in scope_page.text
+    assert "learnable" in unescape(scope_page.text)
     assert client.app.state.roster.is_law_active_this_period(USER, "ndps") is False
 
     payload["scope"] = "sections"

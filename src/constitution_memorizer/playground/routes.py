@@ -368,7 +368,7 @@ def _add_page_context(
         re_add=re_add,
     )
     entire_meta = ""
-    if hydrate_scope and state.kind in {"eligible_to_add", "re_add"}:
+    if hydrate_scope and show_scope and state.kind in {"eligible_to_add", "re_add"}:
         try:
             act = require_playground_law(law_id)
             entire_meta = entire_act_meta(law_id, act=act)
