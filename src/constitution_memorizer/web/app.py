@@ -3117,6 +3117,9 @@ def create_app(
         # Articles, so it keeps the page it has always had.
         bare = get_bare_act(law_id)
         if bare is not None:
+            from constitution_memorizer.entitlements.dependencies import (  # noqa: PLC0415
+                request_is_active_plus,
+            )
             from constitution_memorizer.playground.access import (  # noqa: PLC0415
                 public_law_states,
             )
@@ -3163,6 +3166,7 @@ def create_app(
                     "guest_screen4": (
                         ndps_guest_head() if bare.slug == "ndps" else None
                     ),
+                    "plus_bareact": request_is_active_plus(request),
                 },
             )
             record_request_timing("template", started)
