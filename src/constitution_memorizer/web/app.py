@@ -2524,10 +2524,21 @@ def create_app(
         access = access_summary(request, eng)
         claimed = set(access.claimed_articles) if access.enabled else set()
         from constitution_memorizer.entitlements.dependencies import (
+            get_entitlement_snapshot,
             request_is_active_plus,
+            request_is_expired_subscriber,
         )
 
         plus_browse = request_is_active_plus(request)
+        expired_browse = request_is_expired_subscriber(request)
+        expired_header_status = ""
+        if expired_browse:
+            from constitution_memorizer.playground.view import gate_view
+
+            snap = get_entitlement_snapshot(request)
+            expired_header_status = gate_view(
+                reason=str(snap.playground_block_reason or "")
+            ).title
         # Phone Browse is Part-first (design 02): each Part card carries its own
         # progress and due count, and opens a Part page instead of scrolling.
         today = date.today()
@@ -2555,6 +2566,8 @@ def create_app(
                 "access": access,
                 "claimed_articles": claimed,
                 "plus_browse": plus_browse,
+                "expired_browse": expired_browse,
+                "expired_header_status": expired_header_status,
             },
         )
         record_request_timing("template", started)
