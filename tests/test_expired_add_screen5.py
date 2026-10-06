@@ -34,7 +34,7 @@ from constitution_memorizer.multiuser.settings import (
     clear_settings_cache,
 )
 from constitution_memorizer.playground.access import PlaygroundAccess
-from constitution_memorizer.playground.urls import add_path, law_path, remove_path, sections_path
+from constitution_memorizer.playground.urls import add_path, home_path, law_path, remove_path, sections_path
 from constitution_memorizer.playground.view import PLAYGROUND_BILLING_PATH, gate_view, law_membership
 from constitution_memorizer.web.app import create_app
 from constitution_memorizer.web.guest_bareact_head import NDPS_GUEST_TITLE
@@ -308,8 +308,8 @@ def test_expired_add_primary_is_live_state_not_post(tmp_path: Path) -> None:
         data={**_csrf(client), "confirm": "add", "scope": "sections"},
         follow_redirects=False,
     )
-    assert posted.status_code == 200
-    assert f'data-playground-gate="{BLOCK_PAID_PERIOD_ENDED}"' in posted.text
+    assert posted.status_code == 303
+    assert posted.headers.get("location") == home_path()
     assert client.app.state.roster.is_law_active_this_period(USER, "ndps") is True
 
 
@@ -326,7 +326,8 @@ def test_expired_add_mutation_safety_open_close_reopen(tmp_path: Path) -> None:
         data={**_csrf(client), "confirm": "add", "scope": "entire"},
         follow_redirects=False,
     )
-    assert posted.status_code == 200
+    assert posted.status_code == 303
+    assert posted.headers.get("location") == home_path()
     after_post = _facts(client)
     second = client.get(add_path("ndps"))
     assert second.status_code == 200
@@ -373,8 +374,8 @@ def test_non_retained_expired_law_cannot_add(tmp_path: Path) -> None:
         data={**_csrf(client), "confirm": "add", "scope": "sections"},
         follow_redirects=False,
     )
-    assert posted.status_code == 200
-    assert f'data-playground-gate="{BLOCK_PAID_PERIOD_ENDED}"' in posted.text
+    assert posted.status_code == 303
+    assert posted.headers.get("location") == home_path()
     assert client.app.state.roster.is_law_active_this_period(USER, "bns") is False
 
 
