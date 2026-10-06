@@ -550,7 +550,9 @@ def test_plus_profile_1280(tmp_path: Path) -> None:
               const subBox = sub && sub.getBoundingClientRect();
               const status = document.querySelector('.account-menu-btn-status');
               const navActive = document.querySelector('.PrimaryTabs--top .nav-link.is-active');
-              const edit = identity && identity.querySelector('a[href="/profile?edit=name"]');
+              const editWrap = identity && [...identity.querySelectorAll('p')].find(
+                (p) => p.querySelector('.link-btn')
+              );
               return {
                 present: Boolean(plus),
                 heading: heading && heading.textContent.trim(),
@@ -572,7 +574,7 @@ def test_plus_profile_1280(tmp_path: Path) -> None:
                 status: status && status.textContent.trim(),
                 statusDisplay: status && getComputedStyle(status).display,
                 navActive: navActive && navActive.textContent.replace(/\\s+/g, ' ').trim(),
-                editDisplay: edit ? getComputedStyle(edit).display : 'none',
+                editDisplay: editWrap ? getComputedStyle(editWrap).display : 'none',
               };
             }"""
         )
