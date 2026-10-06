@@ -8,6 +8,7 @@ current-plan, checkout, phone, and Plus Screens 01–06 stay on their own wrappe
 
 from __future__ import annotations
 
+from html import unescape
 import socket
 import threading
 import time
@@ -166,7 +167,7 @@ def _header(html: str) -> str:
 def _desk(html: str) -> str:
     marker = 'data-plus-subscription="desktop"'
     assert marker in html
-    return html.split(marker, 1)[1].split('class="panel purchase"', 1)[0]
+    return unescape(html.split(marker, 1)[1].split('class="panel purchase"', 1)[0])
 
 
 def _card(desk: str, tier: str) -> str:
