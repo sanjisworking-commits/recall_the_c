@@ -4028,4 +4028,32 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   [data-plus-calendar="desktop"]:not(.is-week) .cal-si-unit-row[data-cal-source="playground"] .cal-si-unit-meta {
     color: var(--pg-teal);
   }
+
+  /* Two-column month layout: grid is its own column; the day-detail
+     rail is a sibling 380px track. Inner Sun–Sat tracks are equal
+     minmax(0, 1fr) so long chips cannot inflate Saturday under the panel. */
+  [data-plus-calendar="desktop"]:not(.is-week) .cal-si-desk {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 380px;
+    gap: 28px;
+    align-items: start;
+    width: 100%;
+    min-width: 0;
+  }
+
+  [data-plus-calendar="desktop"]:not(.is-week) .calendar-grid {
+    min-width: 0;
+    width: 100%;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+
+  [data-plus-calendar="desktop"]:not(.is-week) .calendar-cell,
+  [data-plus-calendar="desktop"]:not(.is-week) .calendar-dow {
+    min-width: 0;
+  }
+
+  [data-plus-calendar="desktop"]:not(.is-week) .cal-si-panel {
+    min-width: 0;
+    width: 100%;
+  }
 }

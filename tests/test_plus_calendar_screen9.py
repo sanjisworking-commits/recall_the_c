@@ -368,13 +368,17 @@ def test_plus_calendar_markup_preserves_routes_and_study_gates() -> None:
     base = BASE.read_text(encoding="utf-8")
     assert "plus_calendar_chrome" in base
     assert "RecallC Plus" in base
-    assert "playground.css?v=pg25" in base
+    assert "playground.css?v=pg26" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-plus-calendar="desktop"' in css
     plus_css = css.split("plus/09-screen", 1)[-1]
     assert "var(--pg-teal)" in plus_css
     assert "#0e7569" not in plus_css
     assert "#3a3a38" not in plus_css
+    assert '[data-plus-calendar="desktop"]:not(.is-week) .cal-si-desk' in plus_css
+    assert "minmax(0, 1fr) 380px" in plus_css
+    assert '[data-plus-calendar="desktop"]:not(.is-week) .calendar-grid' in plus_css
+    assert "repeat(7, minmax(0, 1fr))" in plus_css
     js = (ROOT / "src/constitution_memorizer/web/static/calendar-signed.js").read_text(
         encoding="utf-8"
     )
@@ -512,9 +516,33 @@ def test_plus_calendar_1280(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> 
               const sources = [...document.querySelectorAll('.calendar-grid [data-cal-source]')].map(
                 (el) => el.getAttribute('data-cal-source')
               );
+              const desk = document.querySelector('.cal-si-desk');
               const gridBox = grid && grid.getBoundingClientRect();
               const panelBox = panel && panel.getBoundingClientRect();
+              const deskStyle = desk && getComputedStyle(desk);
+              const gridStyle = grid && getComputedStyle(grid);
+              const parseTracks = (value) => (value || '')
+                .split(/\\s+/)
+                .map((part) => parseFloat(part))
+                .filter((n) => Number.isFinite(n));
+              const deskTracks = parseTracks(deskStyle && deskStyle.gridTemplateColumns);
+              const gridTracks = parseTracks(gridStyle && gridStyle.gridTemplateColumns);
+              const dows = [...document.querySelectorAll('.calendar-grid .calendar-dow')];
+              const cells = [...document.querySelectorAll('.calendar-grid .calendar-cell')];
+              const satCells = cells.filter((_, i) => i % 7 === 6);
+              const satChips = satCells.flatMap((cell) => [...cell.querySelectorAll('.calendar-chip')]);
+              const satRights = [
+                dows[6] && dows[6].getBoundingClientRect().right,
+                ...satCells.map((cell) => cell.getBoundingClientRect().right),
+                ...satChips.map((chip) => chip.getBoundingClientRect().right),
+              ].filter((n) => typeof n === 'number');
+              const chipRights = [...document.querySelectorAll('.calendar-grid .calendar-chip')]
+                .map((chip) => chip.getBoundingClientRect().right);
+              const dowWidths = dows.map((el) => el.getBoundingClientRect().width);
               const navActive = document.querySelector('.PrimaryTabs--top .nav-link.is-active');
+              const panelVisible = panel && getComputedStyle(panel).display !== 'none';
+              const satMaxRight = satRights.length ? Math.max(...satRights) : 0;
+              const chipMaxRight = chipRights.length ? Math.max(...chipRights) : 0;
               return {
                 present: Boolean(plus),
                 title: title && title.textContent.trim(),
@@ -527,9 +555,22 @@ def test_plus_calendar_1280(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> 
                 selectedIso: selected && selected.getAttribute('data-date'),
                 panelIso: shown && shown.getAttribute('data-cal-panel-day'),
                 twoCol: Boolean(
-                  gridBox && panelBox && panelBox.left > gridBox.right - 8 &&
-                  getComputedStyle(panel).display !== 'none'
+                  gridBox && panelBox && panelVisible &&
+                  panelBox.left >= gridBox.right - 1
                 ),
+                deskDisplay: deskStyle && deskStyle.display,
+                deskTrackCount: deskTracks.length,
+                deskRail: deskTracks[1] || 0,
+                gridTrackCount: gridTracks.length,
+                gridTrackSpread: gridTracks.length
+                  ? Math.max(...gridTracks) - Math.min(...gridTracks)
+                  : 99,
+                dowCount: dows.length,
+                dowSpread: dowWidths.length
+                  ? Math.max(...dowWidths) - Math.min(...dowWidths)
+                  : 99,
+                satClear: Boolean(panelBox && panelVisible && satMaxRight <= panelBox.left + 1),
+                chipsClear: Boolean(panelBox && panelVisible && chipMaxRight <= panelBox.left + 1),
                 addPresent: Boolean(add) && getComputedStyle(add).display !== 'none',
                 sources,
                 status: status && status.textContent.trim(),
@@ -552,6 +593,15 @@ def test_plus_calendar_1280(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> 
         assert geo["selectedIso"] == geo["todayIso"]
         assert geo["panelIso"] == geo["todayIso"]
         assert geo["twoCol"] is True
+        assert geo["deskDisplay"] == "grid"
+        assert geo["deskTrackCount"] == 2
+        assert abs(geo["deskRail"] - 380) <= 1
+        assert geo["gridTrackCount"] == 7
+        assert geo["gridTrackSpread"] <= 2
+        assert geo["dowCount"] == 7
+        assert geo["dowSpread"] <= 2
+        assert geo["satClear"] is True
+        assert geo["chipsClear"] is True
         assert geo["addPresent"] is True
         assert "constitution" in (geo["sources"] or [])
         assert "playground" in (geo["sources"] or [])
