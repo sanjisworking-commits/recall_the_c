@@ -132,7 +132,11 @@ from constitution_memorizer.playground.progress import (
     build_act_progress,
     choose_next_workspace_row,
 )
-from constitution_memorizer.entitlements.dependencies import request_is_active_plus
+from constitution_memorizer.entitlements.dependencies import (
+    request_is_active_plus,
+    request_is_expired_subscriber,
+)
+from constitution_memorizer.entitlements.models import BLOCK_PAID_PERIOD_ENDED
 from constitution_memorizer.playground.view import (
     add_confirm_copy,
     build_home_view,
@@ -141,6 +145,7 @@ from constitution_memorizer.playground.view import (
     catalogue_from_price,
     catalogue_plan_views,
     entire_act_meta,
+    gate_view,
     law_membership,
     picker_page_view,
     plus_add_confirm_copy,
@@ -375,6 +380,9 @@ def _add_page_context(
         except Exception:
             entire_meta = ""
     kind = state.kind
+    expired_add = request_is_expired_subscriber(request)
+    if expired_add and kind == "already_active":
+        kind = "resume"
     login_href = playground_login_href(
         local_next_path(str(request.url.path), add_path(law_id))
     )
@@ -396,12 +404,22 @@ def _add_page_context(
             remaining_after=remaining_after,
             reopen=False,
         )
+    title = confirm_title
+    lines = confirm_lines
+    if expired_add and kind == "resume":
+        reason = BLOCK_PAID_PERIOD_ENDED
+        snapshot = access.snapshot
+        if snapshot is not None and snapshot.playground_block_reason:
+            reason = snapshot.playground_block_reason
+        gate = gate_view(reason=reason)
+        title = gate.title
+        lines = gate.lines
     return {
         "law_id": law_id,
         "kind": kind,
         "state": state,
-        "title": confirm_title,
-        "lines": confirm_lines,
+        "title": title,
+        "lines": lines,
         "month_name": month,
         "short_title": short,
         "action_label": "Add back" if re_add else "Add to Playground",
@@ -427,6 +445,7 @@ def _add_page_context(
         "plus_add_lede": plus_lede,
         "plus_add_space": plus_space,
         "plus_add_footer": plus_footer,
+        "expired_add": expired_add,
     }
 
 

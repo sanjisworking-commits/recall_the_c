@@ -2953,6 +2953,92 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   }
 }
 
+/* Expired desktop resume dialog (CTA map expired/05-screen). Phone resume
+   keeps Resume + Cancel. Halted / paused stay on the generic resume branch. */
+@media (max-width: 560px) {
+  [data-expired-add-desktop] {
+    display: none !important;
+  }
+}
+
+@media (min-width: 561px) {
+  [data-expired-add-phone] {
+    display: none !important;
+  }
+
+  .pg-sheet-panel[data-expired-add="desktop"] > .pg-eyebrow {
+    display: none;
+  }
+
+  .pg-sheet-panel[data-expired-add="desktop"] {
+    padding: 26px 28px;
+    border-radius: var(--pg-radius-dialog);
+  }
+
+  body.is-authed dialog.pg-sheet[open]:has([data-expired-add-desktop])::backdrop {
+    background: rgba(20, 20, 20, 0.28);
+  }
+
+  [data-expired-add-desktop] .expired-add-title {
+    font-family: var(--pg-font-display);
+    font-weight: 500;
+    font-size: 22px;
+    line-height: 1.25;
+    letter-spacing: 0;
+    margin: 0 0 4px;
+    color: var(--pg-ink);
+  }
+
+  [data-expired-add-desktop] .expired-add-lede {
+    margin: 0 0 18px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--pg-muted);
+  }
+
+  [data-expired-add-desktop] .expired-add-resume {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 50px;
+    border: none;
+    border-radius: var(--pg-radius-button);
+    background: var(--pg-ink);
+    color: var(--pg-paper);
+    font: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    box-sizing: border-box;
+    box-shadow: var(--pg-shadow-press);
+  }
+
+  .PlaygroundShell [data-expired-add-desktop] .expired-add-resume {
+    color: var(--pg-paper);
+  }
+
+  [data-expired-add-desktop] .expired-add-resume:active {
+    transform: translateY(1px);
+    box-shadow: var(--pg-shadow-press-active);
+  }
+
+  [data-expired-add-desktop] .expired-add-cancel {
+    display: none;
+  }
+
+  .pg-sheet-panel[data-expired-add="desktop"] > .pg-sheet-close {
+    top: 14px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    font-size: 15px;
+    color: var(--pg-mid);
+  }
+}
+
 /* Guest desktop Playground intro (CTA map guest/06-screen). Phone guest
    /playground keeps the production entitlement Gate. */
 @media (max-width: 560px) {

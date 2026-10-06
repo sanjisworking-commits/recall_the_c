@@ -9,6 +9,7 @@
   data-skip-confirm="{{ 'true' if skip_confirm else 'false' }}"
   data-roster-confirm="{{ law_id }}"
   {% if plus_add|default(false) %}data-plus-add="desktop"{% endif %}
+  {% if expired_add|default(false) %}data-expired-add="desktop"{% endif %}
   role="dialog"
   aria-modal="true"
   aria-labelledby="pg-add-title"
@@ -50,12 +51,33 @@
   </div>
 
   {% elif kind == "resume" %}
+  {% if expired_add|default(false) %}
+  <div data-expired-add-desktop>
+    <h1 id="pg-add-title" class="expired-add-title">{{ title }}</h1>
+    {% for line in lines %}
+    <p class="expired-add-lede">{{ line }}</p>
+    {% endfor %}
+    <a class="expired-add-resume" href="{{ state.primary_href }}">{{ state.primary_label }}</a>
+    <button type="button" class="expired-add-cancel" data-pg-sheet-close>Cancel</button>
+  </div>
+  <div data-expired-add-phone>
+    <h1 id="pg-add-title-phone">{{ title }}</h1>
+    {% for line in lines %}
+    <p class="pg-lede">{{ line }}</p>
+    {% endfor %}
+    <p class="pg-actions">
+      <a class="pg-btn" href="{{ state.primary_href }}">{{ state.primary_label }}</a>
+      <a class="pg-btn pg-btn--ghost" href="{{ cancel_href }}">Cancel</a>
+    </p>
+  </div>
+  {% else %}
   <h1 id="pg-add-title">Resume Playground</h1>
   <p class="pg-lede">Your laws and learning progress are saved. Resume a plan to add {{ short_title }}.</p>
   <p class="pg-actions">
     <a class="pg-btn" href="/billing/subscriptions">Resume Playground</a>
     <a class="pg-btn pg-btn--ghost" href="{{ cancel_href }}">Cancel</a>
   </p>
+  {% endif %}
 
   {% elif kind == "device_blocked" %}
   <h1 id="pg-add-title">{{ title }}</h1>
