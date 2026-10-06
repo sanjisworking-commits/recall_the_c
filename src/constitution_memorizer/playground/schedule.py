@@ -154,14 +154,27 @@ def playground_today_context(request, *, as_of: date | None = None) -> dict[str,
         return _empty_today_context()
     try:
         access = playground_view_access(request)
-        if not access.can_open or access.user_id is None:
+        if access.user_id is None:
             return _empty_today_context()
+        expired = False
+        if not access.can_open:
+            from constitution_memorizer.entitlements.dependencies import (
+                request_is_expired_subscriber,
+            )
+
+            expired = request_is_expired_subscriber(request)
+            if not expired:
+                return _empty_today_context()
         user_id = access.user_id
         items = law_revision_today_items(overlay, roster, user_id, as_of=as_of)
         due_units = tuple(_today_unit_from_revision(item) for item in items)
         new_unit = playground_new_today_unit(
             overlay, roster, user_id, as_of=as_of
         )
+        if expired:
+            due_units, new_unit = _bind_expired_playground_units(
+                request, due_units, new_unit
+            )
         return {
             "law_revisions": (),
             "law_revision_count": len(due_units),
@@ -454,6 +467,91 @@ def apply_merged_today_hero(ctx: dict[str, Any]) -> dict[str, Any]:
         ctx["hero_cta_kind"] = "constitution_revision"
         ctx["hero_cta_href"] = ""
         ctx["hero_cta_label"] = ""
+    return ctx
+
+
+def expired_playground_today_action(request) -> tuple[str, str]:
+    """Live paid-period-ended CTA. Never a template constant."""
+
+    from constitution_memorizer.entitlements.models import BLOCK_PAID_PERIOD_ENDED
+    from constitution_memorizer.playground.view import (
+        gate_view,
+        playground_subscription_card,
+    )
+
+    access = playground_view_access(request)
+    snapshot = access.snapshot
+    reason = BLOCK_PAID_PERIOD_ENDED
+    if snapshot is not None and snapshot.playground_block_reason:
+        reason = snapshot.playground_block_reason
+    gate = gate_view(reason=reason)
+    card = playground_subscription_card(snapshot)
+    label = (card.cta_label if card.show else "") or gate.cta_label
+    href = (card.cta_href if card.show else "") or gate.cta_href
+    return label, href
+
+
+def _bind_expired_playground_units(
+    request,
+    due_units: Sequence[TodayUnit],
+    new_unit: TodayUnit | None,
+) -> tuple[tuple[TodayUnit, ...], TodayUnit | None]:
+    label, href = expired_playground_today_action(request)
+    dues = tuple(
+        replace(unit, href=href, cta_label=label) if unit.source == "playground" else unit
+        for unit in due_units
+    )
+    if new_unit is not None and new_unit.source == "playground":
+        new_unit = replace(new_unit, href=href, cta_label=label)
+    return dues, new_unit
+
+
+def reconcile_expired_playground_today(ctx: dict[str, Any], request) -> dict[str, Any]:
+    """Rewrite Playground Today hrefs from live entitlement. Mutates ``ctx``.
+
+    Constitution units keep their live href and CTA. Callers must only invoke
+    this for ``request_is_expired_subscriber``.
+    """
+
+    label, href = expired_playground_today_action(request)
+    units: list[TodayUnit] = []
+    for unit in ctx.get("today_units") or []:
+        if getattr(unit, "source", "") == "playground":
+            units.append(replace(unit, href=href, cta_label=label))
+        else:
+            units.append(unit)
+    ctx["today_units"] = units
+    dues = tuple(ctx.get("playground_due_units") or ())
+    new_unit = ctx.get("playground_new_unit")
+    ctx["playground_due_units"], ctx["playground_new_unit"] = _bind_expired_playground_units(
+        request, dues, new_unit
+    )
+    return ctx
+
+
+def apply_expired_today_hero(ctx: dict[str, Any]) -> dict[str, Any]:
+    """Keep Constitution ``POST /revision/start`` when Constitution work remains.
+
+    Playground-derived current work otherwise uses the rewritten lifecycle CTA.
+    Mutates ``ctx``.
+    """
+
+    constitution_due = any(
+        getattr(unit, "source", "constitution") == "constitution"
+        and unit.kind == "review"
+        and unit.status not in {"done", "deferred"}
+        for unit in (ctx.get("today_units") or [])
+    )
+    if constitution_due:
+        ctx["hero_cta_kind"] = "constitution_revision"
+        ctx["hero_cta_href"] = ""
+        ctx["hero_cta_label"] = ""
+        return ctx
+    current = ctx.get("today_current")
+    if current is not None and getattr(current, "source", "") == "playground":
+        ctx["hero_cta_kind"] = "playground_review"
+        ctx["hero_cta_href"] = current.href
+        ctx["hero_cta_label"] = current.cta_label or ""
     return ctx
 
 
