@@ -165,6 +165,7 @@ def _subscribe(
     status: str = "active",
     period_start: datetime = ACTIVE_START,
     period_end: datetime = ACTIVE_END,
+    cancel_at_period_end: bool = False,
 ):
     return client.app.state.subscriptions.create_subscription_record(
         USER,
@@ -173,6 +174,7 @@ def _subscribe(
         billing_period_start=period_start,
         billing_period_end=period_end,
         is_current=True,
+        cancel_at_period_end=cancel_at_period_end,
     )
 
 
@@ -434,6 +436,28 @@ def test_guest_free_plus_halted_paused_stay_separate(tmp_path: Path) -> None:
     assert bounced.headers.get("location") == "/billing/subscriptions"
 
 
+def test_cancel_at_period_end_current_plus_is_not_expired_chooser(
+    tmp_path: Path,
+) -> None:
+    client = TestClient(_mu_app(tmp_path))
+    _sign_in(client)
+    stored = _subscribe(
+        client,
+        period_start=EXPIRED_START,
+        period_end=EXPIRED_END,
+        cancel_at_period_end=True,
+    )
+    assert stored.status == "active"
+    assert stored.is_current is True
+    snap = client.app.state.entitlement_service.resolve(USER)
+    assert snap.playground_block_reason == BLOCK_PAID_PERIOD_ENDED
+    html = unescape(client.get("/billing/subscriptions").text)
+    assert 'data-expired-subscription="desktop"' not in html
+    assert "Ends after the current paid cycle" in html
+    assert "Current plan" in html
+    assert "Change your plan" not in html
+
+
 def test_expired_subscription_uses_shared_predicate_and_existing_create() -> None:
     manage = MANAGE.read_text(encoding="utf-8")
     assert "expired_subscription" in manage
@@ -453,6 +477,7 @@ def test_expired_subscription_uses_shared_predicate_and_existing_create() -> Non
     assert "request_is_expired_subscriber" in page
     assert "request_is_active_plus" in page
     assert '"plus_subscription": request_is_active_plus(request)' in page
+    assert "TERMINAL_STATUSES" in page
     assert "ENDED_MESSAGE" in page
     assert "gate_view" in page
     assert "/resume" not in routes

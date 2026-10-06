@@ -39,6 +39,7 @@ from constitution_memorizer.subscriptions.http import (
     subscription_user_id,
 )
 from constitution_memorizer.subscriptions.models import UserSubscription
+from constitution_memorizer.subscriptions.service import TERMINAL_STATUSES
 
 LIFECYCLE_MESSAGES = {
     "pending": "Payment retry in progress",
@@ -87,7 +88,13 @@ def create_subscription_router(templates: Jinja2Templates) -> APIRouter:
         service = require_subscription_service(request)
         uid = subscription_user_id(request)
         current = service.get_current(uid) if uid is not None else None
-        expired_subscription = request_is_expired_subscriber(request)
+        # Shared paid_period_ended predicate, but only when the current row is
+        # already terminal/historical. Live current rows (active, including
+        # cancel-at-period-end) keep the existing current-plan surface.
+        expired_subscription = bool(
+            request_is_expired_subscriber(request)
+            and (current is None or current.status in TERMINAL_STATUSES)
+        )
         expired_header_status = ""
         if expired_subscription:
             expired_header_status = gate_view(reason=BLOCK_PAID_PERIOD_ENDED).title
