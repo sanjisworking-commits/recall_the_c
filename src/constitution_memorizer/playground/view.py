@@ -1032,6 +1032,40 @@ def law_membership(
             if snapshot is not None
             else BLOCK_SUBSCRIPTION_PAUSED
         )
+        if reason == BLOCK_PAID_PERIOD_ENDED:
+            if index is not None:
+                active = law_id in index.active_ids
+                historical = law_id in index.overlay_ids
+            else:
+                active = False
+                historical = False
+                if access.user_id is not None and roster is not None:
+                    active = roster.is_law_active_this_period(access.user_id, law_id)
+                if access.user_id is not None and overlay is not None:
+                    historical = overlay.get_item(access.user_id, law_id) is not None
+            if active:
+                href = law_path(law_id)
+                label = "Continue"
+                sections_href = sections_path(law_id)
+                if overlay is not None and access.user_id is not None:
+                    item = overlay.get_item(access.user_id, law_id)
+                    selection = (
+                        overlay.list_selection(access.user_id, law_id) if item else []
+                    )
+                    if not selection:
+                        href = sections_href
+                        label = "Start learning"
+                return _state(
+                    KIND_ALREADY_ACTIVE,
+                    active=True,
+                    historical=historical,
+                    primary_label=label,
+                    primary_href=href,
+                    badge=MEMBERSHIP_IN,
+                    badge_label="Already in Playground",
+                    secondary_label="Sections",
+                    secondary_href=sections_href,
+                )
         gate = gate_view(reason=reason or BLOCK_SUBSCRIPTION_PAUSED)
         return _state(
             KIND_RESUME,

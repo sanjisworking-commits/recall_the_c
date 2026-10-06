@@ -246,7 +246,7 @@
             <span class="account-menu-btn-copy">
               <span class="account-menu-btn-name">{{ label }}</span>
               {% if path == '/browse' or path.startswith('/laws') or path.rstrip('/') == '/playground' or plus_billing or plus_today_chrome or plus_calendar_chrome or plus_profile_chrome or plus_settings_chrome %}
-              <span class="account-menu-btn-status">{% if (plus_browse|default(false) and path == '/browse') or (plus_laws|default(false) and path == '/laws') or (plus_bareact|default(false) and path == '/laws/ndps') or (plus_playground|default(false) and path.rstrip('/') == '/playground') or plus_billing or plus_today_chrome or plus_calendar_chrome or plus_profile_chrome or plus_settings_chrome %}RecallC Plus{% elif expired_browse|default(false) and path == '/browse' %}{{ expired_header_status }}{% else %}Free account{% endif %}</span>
+              <span class="account-menu-btn-status">{% if (plus_browse|default(false) and path == '/browse') or (plus_laws|default(false) and path == '/laws') or (plus_bareact|default(false) and path == '/laws/ndps') or (plus_playground|default(false) and path.rstrip('/') == '/playground') or plus_billing or plus_today_chrome or plus_calendar_chrome or plus_profile_chrome or plus_settings_chrome %}RecallC Plus{% elif (expired_browse|default(false) and path == '/browse') or (expired_laws|default(false) and path == '/laws') %}{{ expired_header_status }}{% else %}Free account{% endif %}</span>
               {% endif %}
             </span>
           </button>

@@ -3096,7 +3096,9 @@ def create_app(
     async def laws_page(request: Request) -> HTMLResponse:
         catalog = load_catalog()
         from constitution_memorizer.entitlements.dependencies import (  # noqa: PLC0415
+            get_entitlement_snapshot,
             request_is_active_plus,
+            request_is_expired_subscriber,
         )
         from constitution_memorizer.playground.access import (  # noqa: PLC0415
             public_law_states,
@@ -3104,6 +3106,17 @@ def create_app(
         from constitution_memorizer.playground.eligibility import (  # noqa: PLC0415
             list_playground_eligible_laws,
         )
+
+        plus_laws = request_is_active_plus(request)
+        expired_laws = request_is_expired_subscriber(request)
+        expired_header_status = ""
+        if expired_laws:
+            from constitution_memorizer.playground.view import gate_view
+
+            snap = get_entitlement_snapshot(request)
+            expired_header_status = gate_view(
+                reason=str(snap.playground_block_reason or "")
+            ).title
 
         seo_title, seo_description = build_laws_hub_seo()
         context = {
@@ -3124,7 +3137,9 @@ def create_app(
             "has_repealed": bool(catalog.repealed_laws),
             "guest_screen3_laws": GUEST_LAWS_CARDS,
             "guest_screen3_chips": GUEST_LAWS_CHIPS,
-            "plus_laws": request_is_active_plus(request),
+            "plus_laws": plus_laws,
+            "expired_laws": expired_laws,
+            "expired_header_status": expired_header_status,
         }
         started = time.perf_counter()
         response = templates.TemplateResponse(request, "laws.html", context)
