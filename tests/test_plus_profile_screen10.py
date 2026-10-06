@@ -42,6 +42,11 @@ from constitution_memorizer.playground.roster.period import (
 from constitution_memorizer.web.app import create_app
 from tests.test_roster_m5a import _confirm_add, _csrf
 
+# Stage 1 HTTP tests freeze playground_today to 16 September 2026. Screen 10
+# Profile must follow the live current Playground month (6 October 2026 here)
+# so peek_capacity, month_name, and next_open share that October window.
+SCREEN10_NOW = datetime(2026, 10, 6, 12, 0, tzinfo=timezone.utc)
+
 MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
 ROOT = Path(__file__).resolve().parents[1]
 PROFILE = ROOT / "src/constitution_memorizer/web/templates/profile.html"
@@ -83,6 +88,24 @@ def _clear_settings():
     clear_settings_cache()
     yield
     clear_settings_cache()
+
+
+@pytest.fixture(autouse=True)
+def _playground_test_clock(monkeypatch: pytest.MonkeyPatch) -> None:
+    from constitution_memorizer.entitlements import service as entitlement_service
+    from constitution_memorizer.playground.roster import period as period_mod
+
+    real_period_utc = period_mod._as_utc
+    real_ent_utc = entitlement_service._utc
+
+    def frozen_period_utc(now):
+        return real_period_utc(now or SCREEN10_NOW)
+
+    def frozen_ent_utc(now):
+        return real_ent_utc(now or SCREEN10_NOW)
+
+    monkeypatch.setattr(period_mod, "_as_utc", frozen_period_utc)
+    monkeypatch.setattr(entitlement_service, "_utc", frozen_ent_utc)
 
 
 def _settings() -> MultiUserSettings:
@@ -176,6 +199,9 @@ def _usage_parts(*, used: int, limit: int = 10) -> tuple[str, str, str, str]:
         1,
     )
     assert end == following
+    assert start == date(SCREEN10_NOW.year, SCREEN10_NOW.month, 1)
+    assert month == "October"
+    assert nxt == "1 November"
     return f"{used}/{limit}", month, nxt, f"laws in {month} · new spaces open {nxt}"
 
 
@@ -300,6 +326,7 @@ def test_plus_profile_card_uses_live_subscription_and_roster(
     assert line in sub
     assert f"laws in {month}" in sub
     assert f"new spaces open {nxt}" in sub
+    assert "September" not in sub
     assert "8/10" not in sub
     assert "Change plan" in sub
     assert f'href="{PLAYGROUND_BILLING_PATH}"' in sub
@@ -317,6 +344,7 @@ def test_plus_profile_card_uses_live_subscription_and_roster(
     assert empty_line in empty_sub
     assert f"laws in {month}" in empty_sub
     assert f"new spaces open {nxt}" in empty_sub
+    assert "September" not in empty_sub
 
 
 def test_plus_profile_get_does_not_mutate_roster(
@@ -353,7 +381,8 @@ def test_plus_profile_get_does_not_mutate_roster(
     ]
     assert after == before == []
 
-    monkeypatch.undo()
+    monkeypatch.setattr(roster, "ensure_current_period", real_ensure)
+    monkeypatch.setattr(roster, "capacity", real_capacity)
     assert _confirm_add(client, "ndps").status_code == 303
     writes.clear()
     monkeypatch.setattr(roster, "ensure_current_period", ensure)
@@ -799,6 +828,7 @@ def test_plus_profile_1280(tmp_path: Path) -> None:
     _, month, nxt, _line = _usage_parts(used=1)
     assert f"laws in {month}" in (geo["stat"] or "")
     assert f"new spaces open {nxt}" in (geo["stat"] or "")
+    assert "September" not in (geo["stat"] or "")
     assert geo["ctaText"] == "Change plan"
     assert geo["ctaHref"] == PLAYGROUND_BILLING_PATH
     assert geo["reportDisplay"] == "flex"
