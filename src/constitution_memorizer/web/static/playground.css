@@ -4386,6 +4386,67 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   }
 }
 
+/* Expired desktop /calendar month view (CTA map expired/09-screen). Phone
+   Calendar, guest/Free/Plus/halted Calendar, and week columns keep the
+   existing panel. Visibility of retained Playground chips is a projection
+   overlay; layout matches Plus Screen 09 so the seven-column grid does not
+   regress. */
+@media (min-width: 561px) {
+  body.is-authed[data-mscreen="revisions"]:has([data-expired-calendar="desktop"]) .account-menu-btn-status {
+    display: block;
+  }
+
+  body.is-authed[data-mscreen="revisions"]:has([data-expired-calendar="desktop"]) .page-wrap,
+  body.is-authed[data-mscreen="revisions"]:has([data-expired-calendar="desktop"]) .sheet,
+  body.is-authed[data-mscreen="revisions"]:has([data-expired-calendar="desktop"]) .main {
+    background: var(--page);
+  }
+
+  [data-expired-calendar="desktop"].calendar {
+    background: transparent;
+  }
+
+  [data-expired-calendar="desktop"]:not(.is-week) .calendar-chip[data-cal-source="playground"] {
+    border-color: var(--pg-teal);
+    color: var(--pg-teal-dark);
+  }
+
+  [data-expired-calendar="desktop"]:not(.is-week) .calendar-chip[data-cal-source="playground"].is-due {
+    background: var(--pg-teal-tint);
+    border-color: var(--pg-teal);
+    color: var(--pg-teal-dark);
+  }
+
+  [data-expired-calendar="desktop"]:not(.is-week) .cal-si-unit-row[data-cal-source="playground"] .cal-si-unit-meta {
+    color: var(--pg-teal);
+  }
+
+  [data-expired-calendar="desktop"]:not(.is-week) .cal-si-desk {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 380px;
+    gap: 28px;
+    align-items: start;
+    width: 100%;
+    min-width: 0;
+  }
+
+  [data-expired-calendar="desktop"]:not(.is-week) .calendar-grid {
+    min-width: 0;
+    width: 100%;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+
+  [data-expired-calendar="desktop"]:not(.is-week) .calendar-cell,
+  [data-expired-calendar="desktop"]:not(.is-week) .calendar-dow {
+    min-width: 0;
+  }
+
+  [data-expired-calendar="desktop"]:not(.is-week) .cal-si-panel {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
 /* Plus desktop /profile (CTA map plus/10-screen). Phone Plus and
    guest/Free/Pro Profile keep the existing signed-in panel. */
 @media (min-width: 561px) {

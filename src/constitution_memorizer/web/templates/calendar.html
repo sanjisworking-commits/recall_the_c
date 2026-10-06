@@ -2,7 +2,7 @@
 {% block title %}{{ calendar.title }} · Calendar{% endblock %}
 {% block mobile_screen %}revisions{% endblock %}
 {% block content %}
-<section class="panel calendar{% if calendar_view|default('month') == 'week' %} is-week{% endif %}"{% if current_user and not is_guest|default(false) %} data-signed-in-calendar data-cal-today="{{ calendar.today.isoformat() }}"{% if study_token|default('') %} data-study-token="{{ study_token }}"{% endif %}{% endif %}{% if plus_calendar|default(false) %} data-plus-calendar="desktop"{% endif %}>
+<section class="panel calendar{% if calendar_view|default('month') == 'week' %} is-week{% endif %}"{% if current_user and not is_guest|default(false) %} data-signed-in-calendar data-cal-today="{{ calendar.today.isoformat() }}"{% if study_token|default('') %} data-study-token="{{ study_token }}"{% endif %}{% endif %}{% if plus_calendar|default(false) %} data-plus-calendar="desktop"{% endif %}{% if expired_calendar|default(false) %} data-expired-calendar="desktop"{% endif %}>
   {# Design 19: the desktop month grid does not survive 390 px, so the phone
      gets its own grid over the same calendar.days. Rendered for EVERY month —
      gating this on `revisions` (which is today-only) made the nav arrows lead

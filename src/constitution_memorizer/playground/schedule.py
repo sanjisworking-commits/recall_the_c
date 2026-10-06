@@ -245,6 +245,38 @@ def playground_calendar_chips(
         return {}
 
 
+def _playground_chip_href_is_protected(chip: CalendarChip) -> bool:
+    """Due/revision Playground chips open protected learn routes; Bare Act does not."""
+
+    if chip.category != "Playground":
+        return False
+    href = chip.href or ""
+    if chip.kind == "due":
+        return True
+    return "/learn/" in href or "revision=" in href
+
+
+def reconcile_expired_playground_calendar_chips(
+    extra: dict[str, list[CalendarChip]], request
+) -> dict[str, list[CalendarChip]]:
+    """Rewrite unsafe Playground Calendar hrefs from live entitlement.
+
+    Preserves kind, label, title, category and date. Callers must only invoke
+    this for ``request_is_expired_subscriber``. Scheduled Bare Act hrefs stay.
+    """
+
+    if not extra:
+        return extra
+    _label, href = expired_playground_today_action(request)
+    return {
+        iso: [
+            replace(chip, href=href) if _playground_chip_href_is_protected(chip) else chip
+            for chip in chips
+        ]
+        for iso, chips in extra.items()
+    }
+
+
 def attach_playground_calendar_chips(view, extra: dict[str, list[CalendarChip]]) -> None:
     if not extra:
         return

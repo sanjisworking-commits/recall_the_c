@@ -2891,12 +2891,31 @@ def create_app(
                 today=today,
                 auto_entitled=can_use_auto_plan(request),
             )
+        plus_calendar = False
+        expired_calendar = False
+        expired_header_status = ""
         if not is_guest:
+            from constitution_memorizer.entitlements.dependencies import (
+                get_entitlement_snapshot,
+                request_is_active_plus,
+                request_is_expired_subscriber,
+            )
+
+            plus_calendar = request_is_active_plus(request)
+            expired_calendar = request_is_expired_subscriber(request)
+            if expired_calendar:
+                from constitution_memorizer.playground.view import gate_view
+
+                snap = get_entitlement_snapshot(request)
+                expired_header_status = gate_view(
+                    reason=str(snap.playground_block_reason or "")
+                ).title
             try:
                 from constitution_memorizer.playground.access import playground_view_access
                 from constitution_memorizer.playground.schedule import (
                     attach_playground_calendar_chips,
                     playground_calendar_chips,
+                    reconcile_expired_playground_calendar_chips,
                 )
                 from constitution_memorizer.playground.http import playground_user_id
                 from constitution_memorizer.playground.roster.period import (
@@ -2911,7 +2930,7 @@ def create_app(
                     overlay is not None
                     and roster is not None
                     and uid is not None
-                    and access.can_open
+                    and (access.can_open or expired_calendar)
                 ):
                     if week_model is not None:
                         chip_start, chip_end = week_model.start, week_model.end
@@ -2930,6 +2949,10 @@ def create_app(
                         month_end=chip_end,
                         today=playground_study_today(),
                     )
+                    if expired_calendar:
+                        extra = reconcile_expired_playground_calendar_chips(
+                            extra, request
+                        )
                     attach_playground_calendar_chips(view_model, extra)
                     if week_model is not None:
                         attach_playground_calendar_chips(week_model, extra)
@@ -2957,11 +2980,6 @@ def create_app(
                 logger.exception("learning plan pace lookup failed")
         record_request_timing("calendar_build", started)
         started = time.perf_counter()
-        from constitution_memorizer.entitlements.dependencies import (
-            request_is_active_plus,
-        )
-
-        plus_calendar = request_is_active_plus(request)
         study_context = calendar_study_context(request)
         if (
             study_context.get("study_entry_count")
@@ -2983,6 +3001,8 @@ def create_app(
                 "revisions": revisions,
                 "pace_label": pace,
                 "plus_calendar": plus_calendar,
+                "expired_calendar": expired_calendar,
+                "expired_header_status": expired_header_status,
                 **study_context,
             },
         )
