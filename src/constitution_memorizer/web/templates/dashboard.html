@@ -4,7 +4,7 @@
 {% block content %}
 {% set state = dashboard_state|default('ok') %}
 {% set initials = '?' if is_guest|default(false) else (display_label[:1] if display_label else 'L')|upper %}
-<section class="panel dashboard-panel"{% if user and not is_guest|default(false) %} data-signed-in-today{% endif %}>
+<section class="panel dashboard-panel"{% if user and not is_guest|default(false) %} data-signed-in-today{% endif %}{% if plus_today|default(false) %} data-plus-today="desktop"{% endif %}>
   {% include "_completion_banner.html" %}
   {% if state == 'loading' %}
   <header class="dash-greeting">

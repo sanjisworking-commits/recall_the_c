@@ -444,6 +444,11 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
             or user.display_name
             or (mask_phone(user.phone) if user.phone else user.email or "Learner")
         )
+        from constitution_memorizer.entitlements.dependencies import (
+            request_is_active_plus,
+        )
+
+        plus_today = request_is_active_plus(request)
         try:
             from constitution_memorizer.web.dashboard import build_dashboard_context
 
@@ -482,6 +487,7 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
                 playground_new,
             )
             apply_merged_today_hero(ctx)
+            ctx["plus_today"] = plus_today
             if ctx["today_units"]:
                 ctx["show_first_run"] = False
             done_id = request.query_params.get("done")
@@ -542,6 +548,7 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
                     "goal_total": 0,
                     "goal_pct": 0,
                     "daily_goal_streak": 0,
+                    "plus_today": plus_today,
                 },
             )
             record_request_timing("template", started)

@@ -746,7 +746,7 @@ def test_t33_r6_asset_pins() -> None:
     base = (TEMPLATES / "base.html").read_text(encoding="utf-8")
     assert "styles.css?v=main84" in base
     assert "mobile.css?v=mob98" in base
-    assert "playground.css?v=pg23" in base
+    assert "playground.css?v=pg24" in base
     assert "playground.js?v=pg8" in base
     dash = (TEMPLATES / "dashboard.html").read_text(encoding="utf-8")
     assert "data-today-source" in dash

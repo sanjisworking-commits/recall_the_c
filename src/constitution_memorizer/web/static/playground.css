@@ -3976,4 +3976,23 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   }
 }
 
+/* Plus desktop /dashboard Today (CTA map plus/08-screen). Phone Plus and
+   guest/Free/Pro Today keep the existing dashboard panel. */
+@media (min-width: 561px) {
+  body.is-authed[data-mscreen="today"]:has([data-plus-today="desktop"]) .account-menu-btn-status {
+    display: block;
+  }
 
+  [data-plus-today="desktop"] .dash-access-chip {
+    display: none;
+  }
+
+  [data-plus-today="desktop"] .rc-path-node[data-today-source="playground"].is-current .rc-path-eyebrow {
+    color: var(--pg-teal);
+  }
+
+  [data-plus-today="desktop"] .rc-path-node[data-today-source="playground"].is-current .rc-path-copy {
+    background: var(--pg-teal-tint);
+    border-color: var(--pg-teal-border);
+  }
+}
