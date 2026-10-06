@@ -59,6 +59,32 @@ ERROR_MESSAGES = {
     "unpaid_cancel": "This checkout is not an active paid cycle, so it cannot be cancelled at period end.",
 }
 
+# Plus desktop Screen 07 display copy. Catalog has no taglines; these strings
+# are the established Desktop Playground plan copy
+# (docs/design/Recall the C - Playground Desktop.dc.html).
+PLUS_DESK_LEDE = (
+    "Upgrades take effect immediately; downgrades apply from the 1st of next "
+    "month. Laws already in your Playground keep working."
+)  # Desktop.dc.html:2662
+PLUS_DESK_GST = (
+    "GST inclusive. Renews monthly until you cancel. Your Playground progress "
+    "is never deleted."
+)  # Desktop.dc.html:1280
+PLUS_DESK_EXPLAIN = (
+    "The plan only sets how many laws can be active in your Playground each "
+    "calendar month. Subscribe on any day and this month's spaces open at once; "
+    "a new set opens on the 1st. Laws already in your Playground keep working, "
+    "and your progress is never deleted."
+)  # Desktop.dc.html:1282
+PLUS_DESK_INCLUDED = "Every Article · All six recall methods · Free."  # Desktop.dc.html:1286
+_CARD_DESCRIPTIONS = {
+    "plus": (
+        "A steady pace — enough for one exam’s syllabus of Acts."
+    ),  # Desktop.dc.html:2140
+    "pro": "Broad preparation across many Acts at once.",  # Desktop.dc.html:2141
+    "max": "The whole law library, whenever you want it.",  # Desktop.dc.html:2142
+}
+
 
 def create_subscription_router(templates: Jinja2Templates) -> APIRouter:
     router = APIRouter(prefix="/billing/subscriptions")
@@ -84,6 +110,7 @@ def create_subscription_router(templates: Jinja2Templates) -> APIRouter:
                 "price_display": f"₹{product.price_inr:,}",
                 "limit_label": _limit_label(product.playground_law_limit),
                 "card_limit_label": _card_limit_label(product.playground_law_limit),
+                "description": _card_description(product.tier),
                 "is_current": bool(current is not None and current.tier == product.tier),
                 "is_upgrade": product.tier in upgrade_tiers,
             }
@@ -111,6 +138,10 @@ def create_subscription_router(templates: Jinja2Templates) -> APIRouter:
                 "signed_in": uid is not None,
                 "error_message": ERROR_MESSAGES.get(error or "", ""),
                 "plus_subscription": request_is_active_plus(request),
+                "plus_plan_lede": PLUS_DESK_LEDE,
+                "plus_plan_gst": PLUS_DESK_GST,
+                "plus_plan_explain": PLUS_DESK_EXPLAIN,
+                "plus_included_lede": PLUS_DESK_INCLUDED,
             },
         )
 
@@ -300,6 +331,10 @@ def _card_limit_label(limit: int | None) -> str:
         return "Unlimited Playground"
     noun = "law" if limit == 1 else "laws"
     return f"{limit} {noun} active per month"
+
+
+def _card_description(tier: str) -> str:
+    return _CARD_DESCRIPTIONS.get(tier, "")
 
 
 def _public_current(row: UserSubscription) -> dict[str, object]:

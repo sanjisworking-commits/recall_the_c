@@ -2,8 +2,8 @@
 
 Authorized: ChatGPT. Authenticated multiuser GET /billing/subscriptions with a
 real active Plus EntitlementSnapshot. Catalog-backed cards, existing change
-POST, production cycle-end policy. Guest pricing, Free, Pro/Max current-plan,
-checkout, phone, and Plus Screens 01–06 stay on their own wrappers.
+POST, Desktop.dc.html lede/tags/GST/explain. Guest pricing, Free, Pro/Max
+current-plan, checkout, phone, and Plus Screens 01–06 stay on their own wrappers.
 """
 
 from __future__ import annotations
@@ -54,11 +54,27 @@ INVENTED = (
     "Free plan",
     "device limit",
     "replacement",
-    "1st of next month",
-    "A steady pace",
-    "Broad preparation",
-    "whole law library",
 )
+PLUS_LEDE = (
+    "Upgrades take effect immediately; downgrades apply from the 1st of next "
+    "month. Laws already in your Playground keep working."
+)
+PLUS_GST = (
+    "GST inclusive. Renews monthly until you cancel. Your Playground progress "
+    "is never deleted."
+)
+PLUS_EXPLAIN = (
+    "The plan only sets how many laws can be active in your Playground each "
+    "calendar month. Subscribe on any day and this month's spaces open at once; "
+    "a new set opens on the 1st. Laws already in your Playground keep working, "
+    "and your progress is never deleted."
+)
+PLUS_INCLUDED = "Every Article · All six recall methods · Free."
+PLUS_TAG = {
+    "plus": "A steady pace — enough for one exam’s syllabus of Acts.",
+    "pro": "Broad preparation across many Acts at once.",
+    "max": "The whole law library, whenever you want it.",
+}
 CHANGE_PATH = "/billing/subscriptions/change"
 
 
@@ -175,7 +191,14 @@ def test_plus_subscriptions_reaches_manage_and_change_your_plan(tmp_path: Path) 
     header = _header(html)
     assert "Change your plan" in desk
     assert "Playground · Your plan" in desk
-    assert "Upgrade applies immediately." in desk
+    assert PLUS_LEDE in desk
+    assert PLUS_GST in desk
+    assert PLUS_EXPLAIN in desk
+    assert PLUS_INCLUDED in desk
+    assert PLUS_TAG["plus"] in _card(desk, "plus")
+    assert PLUS_TAG["pro"] in _card(desk, "pro")
+    assert PLUS_TAG["max"] in _card(desk, "max")
+    assert "Upgrade applies immediately." not in desk
     assert "Downgrade takes effect" not in desk
     assert "RecallC Plus" in header
     assert "Free account" not in header
@@ -202,8 +225,9 @@ def test_plus_subscriptions_reaches_manage_and_change_your_plan(tmp_path: Path) 
     assert "Schedule " not in desk
     assert "The complete Constitution" in desk
     assert "Included with your account" in desk
-    assert "independent of Playground plans" in desk
-    assert "Monthly. GST included. Cancel at the end of the current paid cycle." in desk
+    assert "independent of Playground plans" not in desk
+    assert "Monthly. GST included. Cancel at the end of the current paid cycle." not in desk
+    assert "Monthly. GST included. Cancel at the end of the current paid cycle." in html
     assert "class=\"panel purchase\"" in html
     assert "Playground plans" in html
     assert "Upgrade to Pro" in html
@@ -325,16 +349,29 @@ def test_plus_subscription_marker_uses_shared_predicate() -> None:
     assert "request_is_active_plus" in routes
     assert '"plus_subscription": request_is_active_plus(request)' in routes
     assert "def _card_limit_label" in routes
+    assert "PLUS_DESK_LEDE" in routes
+    assert "def _card_description" in routes
+    assert PLUS_LEDE in routes
+    assert PLUS_TAG["plus"] in routes
+    assert PLUS_TAG["pro"] in routes
+    assert PLUS_TAG["max"] in routes
+    assert PLUS_GST in routes
+    assert PLUS_EXPLAIN in routes
+    assert PLUS_INCLUDED in routes
     assert "def request_is_active_plus" in DEPS.read_text(encoding="utf-8")
     assert 'snapshot.tier == "plus"' in DEPS.read_text(encoding="utf-8")
     base = BASE.read_text(encoding="utf-8")
     assert "plus_billing" in base
     assert "plus_subscription" in base
     assert "RecallC Plus" in base
-    assert "playground.css?v=pg22" in base
+    assert "playground.css?v=pg23" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-plus-subscription="desktop"' in css
     assert "plus-sub-card" in css
+    assert ".plus-sub-tag" in css
+    assert ".plus-sub-explain" in css
+    assert "var(--rc-illustration)" in css
+    assert "#3a3a38" not in css.split("[data-plus-subscription", 1)[-1]
     assert ".panel.purchase" in css
     checkout = CHECKOUT.read_text(encoding="utf-8")
     assert "data-plus-subscription" not in checkout
@@ -436,18 +473,27 @@ def test_plus_subscriptions_1280(tmp_path: Path) -> None:
               const title = document.querySelector('.plus-sub-title');
               const status = document.querySelector('.account-menu-btn-status');
               const included = document.querySelector('.plus-sub-included');
+              const gstEl = document.querySelector('.plus-sub-gst');
+              const lede = document.querySelector('.plus-sub-lede');
+              const tags = [...document.querySelectorAll('[data-plus-subscription="desktop"] .plus-sub-tag')];
               const first = cards[0] && cards[0].getBoundingClientRect();
               const third = cards[2] && cards[2].getBoundingClientRect();
+              const includedBox = included && included.getBoundingClientRect();
+              const gstBox = gstEl && gstEl.getBoundingClientRect();
               const csDesk = desk && getComputedStyle(desk);
               const csPurchase = purchase && getComputedStyle(purchase);
               const csCurrent = current && getComputedStyle(current);
               const plusCta = current && current.querySelector('.plus-sub-cta');
+              const body = desk && desk.innerText.replace(/\\s+/g, ' ');
               return {
                 present: Boolean(desk),
                 title: title && title.textContent.trim(),
+                lede: lede && lede.textContent.trim(),
+                tags: tags.map((el) => el.textContent.trim()),
                 deskDisplay: csDesk && csDesk.display,
                 purchaseDisplay: csPurchase && csPurchase.display,
                 cardCount: cards.length,
+                cardHeight: first && first.height,
                 threeCol: first && third && Math.abs(first.y - third.y) < 16 && third.x > first.x,
                 currentBorder: csCurrent && csCurrent.borderTopWidth,
                 currentText: plusCta && plusCta.textContent.trim(),
@@ -460,7 +506,9 @@ def test_plus_subscriptions_1280(tmp_path: Path) -> None:
                 navActive: document.querySelector('.PrimaryTabs--top .nav-link.is-active')
                   && document.querySelector('.PrimaryTabs--top .nav-link.is-active').textContent.replace(/\\s+/g, ' ').trim(),
                 included: included && included.innerText.replace(/\\s+/g, ' ').trim(),
-                gst: desk && desk.innerText.includes('GST included'),
+                gst: body && body.includes('GST inclusive'),
+                gstBelowCards: Boolean(first && gstBox && gstBox.top >= first.bottom - 1),
+                includedBelowGst: Boolean(gstBox && includedBox && includedBox.top >= gstBox.bottom - 1),
               };
             }"""
         )
@@ -468,10 +516,15 @@ def test_plus_subscriptions_1280(tmp_path: Path) -> None:
         page.screenshot(path=str(shot_path), full_page=False)
         assert geo["present"] is True
         assert geo["title"] == "Change your plan"
+        assert geo["lede"] == PLUS_LEDE
+        assert geo["tags"] == [PLUS_TAG["plus"], PLUS_TAG["pro"], PLUS_TAG["max"]]
         assert geo["deskDisplay"] != "none"
         assert geo["purchaseDisplay"] == "none"
         assert geo["cardCount"] == 3
         assert geo["threeCol"] is True
+        assert geo["cardHeight"] >= 240
+        assert geo["gstBelowCards"] is True
+        assert geo["includedBelowGst"] is True
         assert geo["currentText"] == "Current plan"
         assert geo["currentDisabled"] is True
         assert geo["plusForm"] is False
@@ -481,6 +534,7 @@ def test_plus_subscriptions_1280(tmp_path: Path) -> None:
         assert geo["statusDisplay"] != "none"
         assert "Playground" in (geo["navActive"] or "")
         assert "The complete Constitution" in (geo["included"] or "")
+        assert PLUS_INCLUDED in (geo["included"] or "")
         assert geo["gst"] is True
         assert shot_path.exists() and shot_path.stat().st_size > 1000
 

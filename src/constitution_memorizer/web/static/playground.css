@@ -3766,16 +3766,12 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   }
 
   .plus-sub-lede {
-    margin: 0 0 8px;
+    margin: 0 0 28px;
     max-width: 620px;
     font-size: 15px;
     line-height: 1.55;
     color: var(--pg-muted);
     text-wrap: pretty;
-  }
-
-  .plus-sub-lede:last-of-type {
-    margin-bottom: 28px;
   }
 
   .plus-sub-error {
@@ -3839,6 +3835,17 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     color: var(--pg-ink);
   }
 
+  .plus-sub-tag {
+    margin: 12px 0 0;
+    min-height: 44px;
+    font-family: var(--pg-font-display);
+    font-size: 15.5px;
+    line-height: 1.45;
+    font-weight: 500;
+    color: var(--rc-illustration);
+    text-wrap: pretty;
+  }
+
   .plus-sub-card > form,
   .plus-sub-card > button.plus-sub-cta {
     margin-top: auto;
@@ -3882,6 +3889,19 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     gap: 32px;
     margin-top: 28px;
     align-items: start;
+  }
+
+  .plus-sub-explain {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--pg-muted);
+    text-wrap: pretty;
+  }
+
+  .plus-sub-explain + .plus-sub-life-row,
+  .plus-sub-explain + .plus-sub-note {
+    margin-top: 12px;
   }
 
   .plus-sub-life-row {

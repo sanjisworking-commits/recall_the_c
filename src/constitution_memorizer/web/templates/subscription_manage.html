@@ -6,12 +6,7 @@
 <section class="plus-sub-desk" data-plus-subscription="desktop">
   <p class="pg-eyebrow plus-sub-eyebrow">Playground · Your plan</p>
   <h1 class="plus-sub-title">Change your plan</h1>
-  {% if upgrades %}
-  <p class="plus-sub-lede">Upgrade applies immediately.</p>
-  {% endif %}
-  {% if downgrades %}
-  <p class="plus-sub-lede">Downgrade takes effect at the end of the current paid cycle. Your current plan stays active until then.</p>
-  {% endif %}
+  <p class="plus-sub-lede">{{ plus_plan_lede }}</p>
   {% if error_message %}
   <p class="plus-sub-error" role="alert">{{ error_message }}</p>
   {% endif %}
@@ -26,6 +21,9 @@
       <p class="plus-sub-name">RecallC {{ product.display_name }}</p>
       <p class="plus-sub-price">{{ product.price_display }}<span> / month</span></p>
       <p class="plus-sub-limit">{{ product.card_limit_label }}</p>
+      {% if product.description %}
+      <p class="plus-sub-tag">{{ product.description }}</p>
+      {% endif %}
       {% if product.is_current %}
       <button type="button" class="plus-sub-cta is-current" disabled>Current plan</button>
       {% elif product.is_upgrade %}
@@ -38,9 +36,10 @@
     </article>
     {% endfor %}
   </div>
-  <p class="plus-sub-gst">Monthly. GST included. Cancel at the end of the current paid cycle.</p>
+  <p class="plus-sub-gst">{{ plus_plan_gst }}</p>
   <div class="plus-sub-foot">
     <div class="plus-sub-life">
+      <p class="plus-sub-explain">{{ plus_plan_explain }}</p>
       {% if current and current.billing_period_end %}
       <div class="plus-sub-life-row">
         <span>Current paid period ends</span>
@@ -75,7 +74,7 @@
     <aside class="plus-sub-included" data-pg-included>
       <p class="pg-eyebrow">Included with your account</p>
       <p class="plus-sub-included-title">The complete Constitution</p>
-      <p class="plus-sub-included-lede">Six learning methods. Constitution Learn stays available independent of Playground plans.</p>
+      <p class="plus-sub-included-lede">{{ plus_included_lede }}</p>
     </aside>
   </div>
 </section>
