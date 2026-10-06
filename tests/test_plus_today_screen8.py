@@ -372,7 +372,7 @@ def test_plus_today_marker_uses_shared_predicate() -> None:
     base = BASE.read_text(encoding="utf-8")
     assert "plus_today_chrome" in base
     assert "RecallC Plus" in base
-    assert "playground.css?v=pg26" in base
+    assert "playground.css?v=pg27" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-plus-today="desktop"' in css
     plus_css = css.split("plus/08-screen", 1)[-1]

@@ -556,14 +556,19 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
 
     @router.get("/profile", response_class=HTMLResponse)
     async def profile_get(request: Request) -> HTMLResponse:
+        from constitution_memorizer.entitlements.dependencies import (
+            request_is_active_plus,
+        )
         from constitution_memorizer.playground.view import (
             device_count_copy,
             playground_subscription_card,
+            plus_profile_subscription_card,
         )
 
         user = getattr(request.state, "current_user", None)
         snapshot = get_entitlement_snapshot(request)
         playground_card = playground_subscription_card(snapshot)
+        plus_profile = bool(user) and request_is_active_plus(request)
         device_label = ""
         if user is None:
             return templates.TemplateResponse(
@@ -603,6 +608,13 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
             identity_meta = "Signed in with phone"
         else:
             identity_meta = "Signed in"
+        if plus_profile:
+            playground_card = plus_profile_subscription_card(
+                playground_card,
+                snapshot=snapshot,
+                roster=getattr(request.app.state, "roster", None),
+                user_id=user.id,
+            )
         return templates.TemplateResponse(
             request,
             "profile.html",
@@ -620,6 +632,7 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
                 "playground_subscription": playground_card,
                 "device_count_label": device_label,
                 "identity_meta": identity_meta,
+                "plus_profile": plus_profile,
             },
         )
 

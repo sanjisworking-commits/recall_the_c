@@ -72,7 +72,7 @@
   <link rel="stylesheet" href="/static/styles.css?v=main84">
   <link rel="stylesheet" href="/static/visual-explainer.css?v=ve1">
   <link rel="stylesheet" href="/static/mobile.css?v=mob98">
-  <link rel="stylesheet" href="/static/playground.css?v=pg26">
+  <link rel="stylesheet" href="/static/playground.css?v=pg27">
   {% if onboarding_status|default('') == 'active' %}
   <link rel="stylesheet" href="/static/onboarding.css?v=ob6">
   {% endif %}
@@ -95,6 +95,7 @@
   {% set plus_billing = plus_subscription|default(false) and path.startswith('/billing/subscriptions') %}
   {% set plus_today_chrome = plus_today|default(false) and path.startswith('/dashboard') %}
   {% set plus_calendar_chrome = plus_calendar|default(false) and path.rstrip('/') == '/calendar' %}
+  {% set plus_profile_chrome = plus_profile|default(false) and path.rstrip('/') == '/profile' %}
   {% set auth_surface = path.startswith('/login') or path.startswith('/auth/') or path.startswith('/signed-out') or path.startswith('/session-expired') %}
   {% set guest_browse_index = multiuser_enabled|default(false) and not current_user and not auth_surface and path == '/browse' %}
   {% set guest_laws_index = multiuser_enabled|default(false) and not current_user and not auth_surface and path == '/laws' %}
@@ -243,8 +244,8 @@
             {% endif %}
             <span class="account-menu-btn-copy">
               <span class="account-menu-btn-name">{{ label }}</span>
-              {% if path == '/browse' or path.startswith('/laws') or path.rstrip('/') == '/playground' or plus_billing or plus_today_chrome or plus_calendar_chrome %}
-              <span class="account-menu-btn-status">{% if (plus_browse|default(false) and path == '/browse') or (plus_laws|default(false) and path == '/laws') or (plus_bareact|default(false) and path == '/laws/ndps') or (plus_playground|default(false) and path.rstrip('/') == '/playground') or plus_billing or plus_today_chrome or plus_calendar_chrome %}RecallC Plus{% else %}Free account{% endif %}</span>
+              {% if path == '/browse' or path.startswith('/laws') or path.rstrip('/') == '/playground' or plus_billing or plus_today_chrome or plus_calendar_chrome or plus_profile_chrome %}
+              <span class="account-menu-btn-status">{% if (plus_browse|default(false) and path == '/browse') or (plus_laws|default(false) and path == '/laws') or (plus_bareact|default(false) and path == '/laws/ndps') or (plus_playground|default(false) and path.rstrip('/') == '/playground') or plus_billing or plus_today_chrome or plus_calendar_chrome or plus_profile_chrome %}RecallC Plus{% else %}Free account{% endif %}</span>
               {% endif %}
             </span>
           </button>

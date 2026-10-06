@@ -34,6 +34,7 @@ from constitution_memorizer.playground.roster.models import (
 from constitution_memorizer.playground.roster.period import (
     PLAYGROUND_TZ,
     next_playground_month_bounds,
+    playground_month_bounds,
     playground_month_name,
     playground_today,
 )
@@ -702,6 +703,50 @@ def playground_subscription_card(snapshot: Any | None) -> PlaygroundSubscription
         stat_label=limit_line,
         cta_label="Manage plan",
         cta_href=PLAYGROUND_BILLING_PATH,
+    )
+
+
+def plus_profile_subscription_card(
+    card: PlaygroundSubscriptionCard,
+    *,
+    snapshot: Any,
+    roster: Any | None,
+    user_id: Any,
+) -> PlaygroundSubscriptionCard:
+    """Plus Profile: live roster usage on the existing subscription card.
+
+    Peek-only. Does not invent a quota, write a period, or replace chip/body.
+    """
+
+    if not card.show:
+        return card
+    used = 0
+    law_limit = getattr(snapshot, "playground_law_limit", None)
+    start, _end = playground_month_bounds()
+    month_name = playground_month_name(start)
+    next_start, _next_end = next_playground_month_bounds()
+    next_open = format_plan_end(next_start)
+    if roster is not None and user_id is not None:
+        cap = roster.peek_capacity(user_id, snapshot)
+        used = int(cap.used or 0)
+        if cap.law_limit is not None:
+            law_limit = cap.law_limit
+        month_name = playground_month_name(cap.period_start)
+    used_n = max(0, int(used))
+    if law_limit is None:
+        noun = "law" if used_n == 1 else "laws"
+        stat_big = str(used_n)
+        parts = [f"{noun} in {month_name}" if month_name else noun]
+    else:
+        stat_big = f"{used_n}/{int(law_limit)}"
+        parts = [f"laws in {month_name}" if month_name else "laws"]
+    if next_open:
+        parts.append(f"new spaces open {next_open}")
+    return replace(
+        card,
+        stat_big=stat_big,
+        stat_label=" · ".join(part for part in parts if part),
+        cta_label="Change plan",
     )
 
 

@@ -368,7 +368,7 @@ def test_plus_calendar_markup_preserves_routes_and_study_gates() -> None:
     base = BASE.read_text(encoding="utf-8")
     assert "plus_calendar_chrome" in base
     assert "RecallC Plus" in base
-    assert "playground.css?v=pg26" in base
+    assert "playground.css?v=pg27" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-plus-calendar="desktop"' in css
     plus_css = css.split("plus/09-screen", 1)[-1]

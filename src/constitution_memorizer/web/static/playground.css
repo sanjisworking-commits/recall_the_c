@@ -4057,3 +4057,20 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     width: 100%;
   }
 }
+
+/* Plus desktop /profile (CTA map plus/10-screen). Phone Plus and
+   guest/Free/Pro Profile keep the existing signed-in panel. */
+@media (min-width: 561px) {
+  body.is-authed[data-mscreen="account"]:has([data-plus-profile="desktop"]) .account-menu-btn-status {
+    display: block;
+  }
+
+  [data-plus-profile="desktop"] .pg-sub-stat-big {
+    color: var(--pg-teal-dark);
+  }
+
+  [data-plus-profile="desktop"] .pg-sub-card .pg-btn--ghost {
+    color: var(--pg-teal-dark);
+    border-color: var(--pg-teal-border);
+  }
+}

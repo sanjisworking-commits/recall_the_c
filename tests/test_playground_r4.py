@@ -1041,7 +1041,7 @@ def test_r4_assets_and_no_duplicate_engines():
     base = (TEMPLATES / "base.html").read_text(encoding="utf-8")
     assert "playground-learn.js?v=pg3" in base
     assert "speech_client.js?v=speech3" in base
-    assert "playground.css?v=pg26" in base
+    assert "playground.css?v=pg27" in base
     assert "options.url" in speech
     assert "csrf_token" in speech
     assert "RecallSpeech" in js
