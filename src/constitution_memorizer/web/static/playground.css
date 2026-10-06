@@ -3799,6 +3799,178 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   }
 }
 
+/* Expired desktop Playground home (CTA map expired/06-screen). Phone
+   expired keeps the production read-only home. Plus, guest, Free, and
+   halted/paused stay on their own wrappers. */
+@media (max-width: 560px) {
+  [data-expired-pg-desktop] {
+    display: none !important;
+  }
+}
+
+@media (min-width: 561px) {
+  [data-expired-pg-phone] {
+    display: none !important;
+  }
+
+  body.is-authed.playground-app:has([data-expired-playground="desktop"]) .page-wrap,
+  body.is-authed.playground-app:has([data-expired-playground="desktop"]) .sheet {
+    background: var(--pg-paper);
+  }
+
+  body.is-authed[data-mscreen="playground"]:has([data-expired-playground="desktop"]) .PlaygroundShell {
+    max-width: none;
+    padding: 36px 40px 60px;
+  }
+
+  body.is-authed[data-mscreen="playground"]:has([data-expired-playground="desktop"]) .site-footer,
+  body.is-authed[data-mscreen="playground"]:has([data-expired-playground="desktop"]) .sheet-footnote {
+    display: none !important;
+  }
+
+  .pg-home-grid[data-expired-playground="desktop"] {
+    display: block;
+  }
+
+  .expired-pg-desk {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    column-gap: 48px;
+    row-gap: 28px;
+    max-width: 960px;
+    align-items: start;
+  }
+
+  .expired-pg-kicker {
+    margin: 0 0 8px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--pg-teal);
+  }
+
+  .expired-pg-title {
+    margin: 0 0 10px;
+    font-family: var(--pg-font-display);
+    font-size: 34px;
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: 0;
+    color: var(--pg-ink);
+    text-wrap: balance;
+  }
+
+  .PlaygroundShell .expired-pg-title {
+    font-size: 34px;
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: 0;
+    margin: 0 0 10px;
+  }
+
+  .expired-pg-lede {
+    margin: 0 0 28px;
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--pg-muted);
+    max-width: 36em;
+  }
+
+  .expired-pg-saved-kicker {
+    margin: 0 0 10px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--pg-mid);
+  }
+
+  .expired-pg-tiles {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    border: 0;
+    margin: 0;
+    background: transparent;
+  }
+
+  .expired-pg-tiles .ProgressSummary-cell {
+    padding: 14px 16px;
+    background: var(--pg-paper);
+    border: 1px solid var(--pg-hairline);
+    border-radius: 12px;
+  }
+
+  .expired-pg-tiles .ProgressSummary-value {
+    font-size: 26px;
+    font-weight: 600;
+  }
+
+  .expired-pg-tiles .ProgressSummary-label {
+    margin-top: 3px;
+    font-size: 12.5px;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--pg-muted);
+  }
+
+  .expired-pg-card {
+    padding: 16px;
+    background: var(--pg-subtle);
+    border: 1px solid var(--pg-hairline);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-sizing: border-box;
+  }
+
+  .expired-pg-primary,
+  .expired-pg-secondary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 44px;
+    border-radius: var(--pg-radius-button);
+    font: inherit;
+    font-size: 14.5px;
+    font-weight: 600;
+    text-decoration: none;
+    box-sizing: border-box;
+  }
+
+  .expired-pg-primary {
+    height: 50px;
+    border: none;
+    background: var(--pg-ink);
+    color: var(--pg-paper);
+    box-shadow: var(--pg-shadow-press);
+  }
+
+  .PlaygroundShell .expired-pg-primary {
+    color: var(--pg-paper);
+  }
+
+  .expired-pg-primary:active {
+    transform: translateY(1px);
+    box-shadow: var(--pg-shadow-press-active);
+  }
+
+  .expired-pg-secondary {
+    height: 46px;
+    border: 1px solid var(--pg-hairline);
+    background: var(--pg-paper);
+    color: var(--pg-ink);
+  }
+
+  .PlaygroundShell .expired-pg-secondary {
+    color: var(--pg-ink);
+  }
+}
+
 /* Plus desktop /billing/subscriptions (CTA map plus/07-screen). Phone Plus
    keeps the production purchase panel. Guest, Free, Pro, Max, and
    pending/expired/halted manage stay on that panel. */
