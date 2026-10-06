@@ -6,6 +6,7 @@ from fastapi import APIRouter, Form, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 
+from constitution_memorizer.entitlements.dependencies import request_is_active_plus
 from constitution_memorizer.subscriptions.catalog import (
     UnknownSubscriptionTier,
     is_downgrade,
@@ -73,12 +74,18 @@ def create_subscription_router(templates: Jinja2Templates) -> APIRouter:
             history = service.list_history(uid)
             if any(row.status in {"cancelled", "completed", "expired"} for row in history):
                 ended_message = ENDED_MESSAGE
+        upgrades = _change_targets(current, upgrade=True)
+        upgrade_tiers = {row["tier"] for row in upgrades}
         products = [
             {
                 "tier": product.tier,
                 "display_name": product.display_name,
                 "price_label": _price_label(product.price_inr),
+                "price_display": f"₹{product.price_inr:,}",
                 "limit_label": _limit_label(product.playground_law_limit),
+                "card_limit_label": _card_limit_label(product.playground_law_limit),
+                "is_current": bool(current is not None and current.tier == product.tier),
+                "is_upgrade": product.tier in upgrade_tiers,
             }
             for product in list_subscription_products()
         ]
@@ -88,7 +95,7 @@ def create_subscription_router(templates: Jinja2Templates) -> APIRouter:
             {
                 "products": products,
                 "current": _public_current(current) if current is not None else None,
-                "upgrades": _change_targets(current, upgrade=True),
+                "upgrades": upgrades,
                 "downgrades": _change_targets(current, upgrade=False),
                 "can_cancel": bool(
                     current is not None
@@ -103,6 +110,7 @@ def create_subscription_router(templates: Jinja2Templates) -> APIRouter:
                 "ended_message": ended_message,
                 "signed_in": uid is not None,
                 "error_message": ERROR_MESSAGES.get(error or "", ""),
+                "plus_subscription": request_is_active_plus(request),
             },
         )
 
@@ -285,6 +293,13 @@ def _limit_label(limit: int | None) -> str:
     if limit is None:
         return "Unlimited active Playground laws per monthly Playground period"
     return f"{limit} active Playground laws per monthly Playground period"
+
+
+def _card_limit_label(limit: int | None) -> str:
+    if limit is None:
+        return "Unlimited Playground"
+    noun = "law" if limit == 1 else "laws"
+    return f"{limit} {noun} active per month"
 
 
 def _public_current(row: UserSubscription) -> dict[str, object]:
