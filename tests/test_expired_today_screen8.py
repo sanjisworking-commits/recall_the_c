@@ -278,6 +278,26 @@ def _hero(html: str) -> str:
     return html.split('data-today-mode="revision"', 1)[1].split("dash-path-card", 1)[0]
 
 
+def _assert_noncurrent_playground_new_meta_once(html: str) -> None:
+    found = False
+    for node in _path_nodes(html):
+        open_tag = node.split(">", 1)[0]
+        if 'data-today-source="playground"' not in open_tag:
+            continue
+        if "is-current" in open_tag:
+            continue
+        if "New · Playground" not in node:
+            continue
+        found = True
+        assert node.count("New · Playground") == 1, node
+        meta = re.search(r'<span class="rc-path-meta">([^<]*)</span>', node)
+        assert meta, node
+        assert meta.group(1).strip() == "New · Playground"
+        sub = re.search(r'<span class="rc-path-sub">([^<]*)</span>', node)
+        assert sub is None or sub.group(1).strip() != "New · Playground"
+    assert found, "no non-current Playground New row"
+
+
 def _live_playground_action(client: TestClient) -> tuple[str, str]:
     snap = client.app.state.entitlement_service.resolve(USER)
     card = playground_subscription_card(snap)
@@ -407,10 +427,21 @@ def test_expired_today_canonical_mixed_path_uses_live_state(
             assert "rc-path-cta" not in node
     assert html.find("data-today-unit") < html.find('data-today-source="playground"')
     assert "New · Playground" in html
+    _assert_noncurrent_playground_new_meta_once(html)
     assert "Section 8" in html
     assert "Article 20(1)" in html
     for phrase in INVENTED:
         assert phrase not in html, phrase
+
+
+def test_expired_today_noncurrent_playground_metadata_once(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    client = TestClient(_mu_app(tmp_path))
+    _sign_in(client)
+    _plus_then_expire(client, monkeypatch)
+    html = unescape(client.get("/dashboard").text)
+    _assert_noncurrent_playground_new_meta_once(html)
 
 
 def test_expired_today_constitution_hero_keeps_revision_start(
@@ -560,6 +591,8 @@ def test_guest_free_plus_halted_paused_pending_are_not_expired_today(
     hero = _hero(plus_html)
     assert "data-today-hero-cta" in hero
     assert 'action="/revision/start"' not in hero
+    assert "New · Playground" in plus_html
+    _assert_noncurrent_playground_new_meta_once(plus_html)
 
     halted = TestClient(_mu_app(tmp_path / "halted"))
     _sign_in(halted)

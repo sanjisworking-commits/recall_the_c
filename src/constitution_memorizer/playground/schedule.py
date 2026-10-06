@@ -372,7 +372,9 @@ def playground_new_today_unit(
         status="upcoming",
         href=learn_path_for_locator(loc, mode),
         position=0,
-        subtitle="New · Playground",
+        # Non-current rows already render day_label/eyebrow as rc-path-meta.
+        # Repeating the same string as subtitle duplicated "New · Playground".
+        subtitle="",
         day_label="New · Playground",
         source="playground",
         eyebrow="New · Playground",
