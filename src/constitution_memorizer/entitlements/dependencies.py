@@ -16,6 +16,7 @@ from constitution_memorizer.entitlements.models import (
     BLOCK_DEVICE_LIMIT,
     BLOCK_DEVICE_REPLACEMENT_LIMIT,
     BLOCK_DEVICE_REVOKED,
+    BLOCK_PAID_PERIOD_ENDED,
     EntitlementSnapshot,
 )
 from constitution_memorizer.entitlements.service import EntitlementService
@@ -30,6 +31,8 @@ _DEVICE_BLOCKS = frozenset(
         BLOCK_DEVICE_REPLACEMENT_LIMIT,
     }
 )
+
+_EXPIRED_EXCLUDED_STATUSES = frozenset({"pending", "halted", "paused"})
 
 
 def get_entitlement_snapshot(
@@ -71,6 +74,29 @@ def request_is_active_plus(request: object, *, now: datetime | None = None) -> b
     if getattr(getattr(request, "state", None), "current_user", None) is None:
         return False
     return snapshot_is_active_plus(get_entitlement_snapshot(request, now=now))
+
+
+def snapshot_is_expired_subscriber(snapshot: EntitlementSnapshot) -> bool:
+    """Paid-period-ended subscriber. Not guest, Free, active Plus, pending, or halted."""
+
+    return bool(
+        snapshot.is_authenticated
+        and snapshot.playground_block_reason == BLOCK_PAID_PERIOD_ENDED
+        and snapshot.tier is not None
+        and snapshot.billing_period_end is not None
+        and snapshot.subscription_status not in _EXPIRED_EXCLUDED_STATUSES
+        and not snapshot.is_subscribed
+        and not snapshot.can_open_playground
+        and not snapshot.can_consume_new_playground_law
+    )
+
+
+def request_is_expired_subscriber(request: object, *, now: datetime | None = None) -> bool:
+    """Resolve once via ``get_entitlement_snapshot``. Guests are never expired."""
+
+    if getattr(getattr(request, "state", None), "current_user", None) is None:
+        return False
+    return snapshot_is_expired_subscriber(get_entitlement_snapshot(request, now=now))
 
 
 def invalidate_entitlement_snapshot(request: object) -> None:

@@ -1185,11 +1185,14 @@ def create_app(
         if app.state.multiuser_enabled:
             from constitution_memorizer.entitlements.dependencies import (
                 request_is_active_plus,
+                request_is_expired_subscriber,
             )
 
             plus_landing = request_is_active_plus(request)
+            expired_landing = request_is_expired_subscriber(request)
             # Guest and signed-in viewers share this dark landing. Plus marks
-            # Screen 01 from EntitlementSnapshot only. The light variant is
+            # Screen 01 from EntitlementSnapshot only. Expired marks the same
+            # surface from the paid-period-ended snapshot. The light variant is
             # currently disabled — always serve the dark landing
             # (a stale rtc_landing_theme cookie must not strand anyone on
             # light). landing_light.html stays in the repo, dormant, for easy
@@ -1200,6 +1203,7 @@ def create_app(
                 {
                     "landing_review_days": list(INTERVAL_LADDER),
                     "plus_landing": plus_landing,
+                    "expired_landing": expired_landing,
                 },
             )
         eng = _engine()
