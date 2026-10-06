@@ -4464,6 +4464,19 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   }
 }
 
+/* Expired desktop /profile (CTA map expired/10-screen). Phone Profile,
+   guest/Free/Plus/halted Profile keep the existing signed-in panel. */
+@media (min-width: 561px) {
+  body.is-authed[data-mscreen="account"]:has([data-expired-profile="desktop"]) .account-menu-btn-status {
+    display: block;
+  }
+
+  [data-expired-profile="desktop"] .pg-sub-card .pg-btn--ghost {
+    color: var(--pg-teal-dark);
+    border-color: var(--pg-teal-border);
+  }
+}
+
 /* Plus desktop /settings (CTA map plus/11-screen). Phone Plus and
    guest/Free/Pro Settings keep the existing signed-in panel. */
 @media (min-width: 561px) {

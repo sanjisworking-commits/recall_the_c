@@ -578,6 +578,7 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
     async def profile_get(request: Request) -> HTMLResponse:
         from constitution_memorizer.entitlements.dependencies import (
             request_is_active_plus,
+            request_is_expired_subscriber,
         )
         from constitution_memorizer.playground.view import (
             device_count_copy,
@@ -589,6 +590,14 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
         snapshot = get_entitlement_snapshot(request)
         playground_card = playground_subscription_card(snapshot)
         plus_profile = bool(user) and request_is_active_plus(request)
+        expired_profile = bool(user) and request_is_expired_subscriber(request)
+        expired_header_status = ""
+        if expired_profile:
+            from constitution_memorizer.playground.view import gate_view
+
+            expired_header_status = gate_view(
+                reason=str(snapshot.playground_block_reason or "")
+            ).title
         device_label = ""
         if user is None:
             return templates.TemplateResponse(
@@ -606,6 +615,9 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
                     "playground_subscription": playground_card,
                     "device_count_label": "",
                     "identity_meta": "Guest · Reading only",
+                    "plus_profile": False,
+                    "expired_profile": False,
+                    "expired_header_status": "",
                 },
             )
         eng = request.app.state.engine.for_user(user.id)
@@ -653,6 +665,8 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
                 "device_count_label": device_label,
                 "identity_meta": identity_meta,
                 "plus_profile": plus_profile,
+                "expired_profile": expired_profile,
+                "expired_header_status": expired_header_status,
             },
         )
 

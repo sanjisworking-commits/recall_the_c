@@ -29,7 +29,7 @@
   </div>
 </section>
 {% endif %}
-<section class="panel profile-panel"{% if is_guest_profile|default(false) and multiuser_enabled|default(false) %} data-guest-profile-phone{% endif %}{% if user and not is_guest_profile|default(false) %} data-signed-in-profile{% endif %}{% if plus_profile|default(false) %} data-plus-profile="desktop"{% endif %}>
+<section class="panel profile-panel"{% if is_guest_profile|default(false) and multiuser_enabled|default(false) %} data-guest-profile-phone{% endif %}{% if user and not is_guest_profile|default(false) %} data-signed-in-profile{% endif %}{% if plus_profile|default(false) %} data-plus-profile="desktop"{% endif %}{% if expired_profile|default(false) %} data-expired-profile="desktop"{% endif %}>
   <div class="mobile-topbar">
     <a class="mobile-back" href="/settings">← Settings</a>
   </div>
