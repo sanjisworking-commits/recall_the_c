@@ -2940,6 +2940,11 @@ def create_app(
                 logger.exception("learning plan pace lookup failed")
         record_request_timing("calendar_build", started)
         started = time.perf_counter()
+        from constitution_memorizer.entitlements.dependencies import (
+            request_is_active_plus,
+        )
+
+        plus_calendar = request_is_active_plus(request)
         study_context = calendar_study_context(request)
         if (
             study_context.get("study_entry_count")
@@ -2960,6 +2965,7 @@ def create_app(
                 "calendar_view": calendar_view,
                 "revisions": revisions,
                 "pace_label": pace,
+                "plus_calendar": plus_calendar,
                 **study_context,
             },
         )

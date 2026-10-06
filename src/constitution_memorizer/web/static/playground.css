@@ -3996,3 +3996,36 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     border-color: var(--pg-teal-border);
   }
 }
+
+/* Plus desktop /calendar month view (CTA map plus/09-screen). Phone Plus,
+   guest/Free/Pro calendar, and week columns keep the existing panel. */
+@media (min-width: 561px) {
+  body.is-authed[data-mscreen="revisions"]:has([data-plus-calendar="desktop"]) .account-menu-btn-status {
+    display: block;
+  }
+
+  body.is-authed[data-mscreen="revisions"]:has([data-plus-calendar="desktop"]) .page-wrap,
+  body.is-authed[data-mscreen="revisions"]:has([data-plus-calendar="desktop"]) .sheet,
+  body.is-authed[data-mscreen="revisions"]:has([data-plus-calendar="desktop"]) .main {
+    background: var(--page);
+  }
+
+  [data-plus-calendar="desktop"].calendar {
+    background: transparent;
+  }
+
+  [data-plus-calendar="desktop"]:not(.is-week) .calendar-chip[data-cal-source="playground"] {
+    border-color: var(--pg-teal);
+    color: var(--pg-teal-dark);
+  }
+
+  [data-plus-calendar="desktop"]:not(.is-week) .calendar-chip[data-cal-source="playground"].is-due {
+    background: var(--pg-teal-tint);
+    border-color: var(--pg-teal);
+    color: var(--pg-teal-dark);
+  }
+
+  [data-plus-calendar="desktop"]:not(.is-week) .cal-si-unit-row[data-cal-source="playground"] .cal-si-unit-meta {
+    color: var(--pg-teal);
+  }
+}

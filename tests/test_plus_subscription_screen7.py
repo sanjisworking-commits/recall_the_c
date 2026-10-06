@@ -365,7 +365,7 @@ def test_plus_subscription_marker_uses_shared_predicate() -> None:
     assert "plus_billing" in base
     assert "plus_subscription" in base
     assert "RecallC Plus" in base
-    assert "playground.css?v=pg24" in base
+    assert "playground.css?v=pg25" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-plus-subscription="desktop"' in css
     assert "plus-sub-card" in css
