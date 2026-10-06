@@ -4234,6 +4234,55 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   }
 }
 
+/* Expired desktop /billing/subscriptions (Screen 07). Phone expired keeps
+   the production purchase panel. Plus Screen 07 stays on
+   data-plus-subscription="desktop". Guest, Free, halted, pending, and
+   paused stay on that panel. */
+[data-expired-subscription="desktop"] {
+  display: none;
+}
+
+@media (min-width: 561px) {
+  body.is-authed[data-mscreen="purchase"]:has([data-expired-subscription="desktop"]) .page-wrap,
+  body.is-authed[data-mscreen="purchase"]:has([data-expired-subscription="desktop"]) .sheet,
+  body.is-authed[data-mscreen="purchase"]:has([data-expired-subscription="desktop"]) .main {
+    background: var(--page, var(--pg-page));
+  }
+
+  body.is-authed[data-mscreen="purchase"]:has([data-expired-subscription="desktop"]) .site-header {
+    background: var(--paper, var(--pg-paper));
+  }
+
+  body.is-authed[data-mscreen="purchase"]:has([data-expired-subscription="desktop"]) .site-footer,
+  body.is-authed[data-mscreen="purchase"]:has([data-expired-subscription="desktop"]) .sheet-footnote {
+    display: none !important;
+  }
+
+  body.is-authed[data-mscreen="purchase"]:has([data-expired-subscription="desktop"]) .panel.purchase {
+    display: none;
+  }
+
+  [data-expired-subscription="desktop"] {
+    display: block;
+    box-sizing: border-box;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 26px 40px 60px;
+  }
+
+  .expired-sub-desk .expired-sub-cta {
+    background: var(--pg-ink);
+    color: var(--pg-paper);
+    border: none;
+    box-shadow: var(--pg-shadow-press);
+  }
+
+  .PlaygroundShell .expired-sub-desk .expired-sub-cta,
+  .expired-sub-desk .expired-sub-cta {
+    color: var(--pg-paper);
+  }
+}
+
 /* Plus desktop /dashboard Today (CTA map plus/08-screen). Phone Plus and
    guest/Free/Pro Today keep the existing dashboard panel. */
 @media (min-width: 561px) {

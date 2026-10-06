@@ -6,7 +6,12 @@ from fastapi import APIRouter, Form, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
 from fastapi.templating import Jinja2Templates
 
-from constitution_memorizer.entitlements.dependencies import request_is_active_plus
+from constitution_memorizer.entitlements.dependencies import (
+    request_is_active_plus,
+    request_is_expired_subscriber,
+)
+from constitution_memorizer.entitlements.models import BLOCK_PAID_PERIOD_ENDED
+from constitution_memorizer.playground.view import gate_view
 from constitution_memorizer.subscriptions.catalog import (
     UnknownSubscriptionTier,
     is_downgrade,
@@ -82,11 +87,17 @@ def create_subscription_router(templates: Jinja2Templates) -> APIRouter:
         service = require_subscription_service(request)
         uid = subscription_user_id(request)
         current = service.get_current(uid) if uid is not None else None
+        expired_subscription = request_is_expired_subscriber(request)
+        expired_header_status = ""
+        if expired_subscription:
+            expired_header_status = gate_view(reason=BLOCK_PAID_PERIOD_ENDED).title
         ended_message = ""
         if uid is not None and current is None:
             history = service.list_history(uid)
             if any(row.status in {"cancelled", "completed", "expired"} for row in history):
                 ended_message = ENDED_MESSAGE
+        elif expired_subscription:
+            ended_message = ENDED_MESSAGE
         upgrades = _change_targets(current, upgrade=True)
         upgrade_tiers = {row["tier"] for row in upgrades}
         products = [
@@ -98,7 +109,11 @@ def create_subscription_router(templates: Jinja2Templates) -> APIRouter:
                 "limit_label": _limit_label(product.playground_law_limit),
                 "card_limit_label": _card_limit_label(product.playground_law_limit),
                 "description": _card_description(product.tier),
-                "is_current": bool(current is not None and current.tier == product.tier),
+                "is_current": bool(
+                    current is not None
+                    and current.tier == product.tier
+                    and not expired_subscription
+                ),
                 "is_upgrade": product.tier in upgrade_tiers,
             }
             for product in list_subscription_products()
@@ -125,6 +140,8 @@ def create_subscription_router(templates: Jinja2Templates) -> APIRouter:
                 "signed_in": uid is not None,
                 "error_message": ERROR_MESSAGES.get(error or "", ""),
                 "plus_subscription": request_is_active_plus(request),
+                "expired_subscription": expired_subscription,
+                "expired_header_status": expired_header_status,
                 "plus_plan_lede": PLUS_DESK_LEDE,
                 "plus_plan_gst": PLUS_DESK_GST,
                 "plus_plan_explain": PLUS_DESK_EXPLAIN,

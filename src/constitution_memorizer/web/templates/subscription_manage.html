@@ -79,6 +79,41 @@
   </div>
 </section>
 {% endif %}
+{% set expired_sub = expired_subscription|default(false) %}
+{% if expired_sub %}
+<section class="expired-sub-desk" data-expired-subscription="desktop">
+  <p class="pg-eyebrow plus-sub-eyebrow">Playground</p>
+  <h1 class="plus-sub-title">Playground plans</h1>
+  {% if ended_message %}
+  <p class="plus-sub-lede">{{ ended_message }}</p>
+  {% endif %}
+  {% if error_message %}
+  <p class="plus-sub-error" role="alert">{{ error_message }}</p>
+  {% endif %}
+  <div class="plus-sub-cards" role="list">
+    {% for product in products %}
+    <article class="plus-sub-card" data-tier="{{ product.tier }}" role="listitem">
+      <p class="plus-sub-name">{{ product.display_name }}</p>
+      <p class="plus-sub-price">{{ product.price_display }}<span> / month</span></p>
+      <p class="plus-sub-limit">{{ product.card_limit_label }}</p>
+      {% if product.description %}
+      <p class="plus-sub-tag">{{ product.description }}</p>
+      {% endif %}
+      {% if signed_in %}
+      <form method="post" action="/billing/subscriptions/create">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <input type="hidden" name="tier" value="{{ product.tier }}">
+        <button type="submit" class="plus-sub-cta expired-sub-cta">Subscribe to {{ product.display_name }}</button>
+      </form>
+      {% else %}
+      <a class="plus-sub-cta expired-sub-cta" href="/login?next=/billing/subscriptions">Sign in to subscribe</a>
+      {% endif %}
+    </article>
+    {% endfor %}
+  </div>
+  <p class="plus-sub-gst">Monthly. GST included. Cancel at the end of the current paid cycle.</p>
+</section>
+{% endif %}
 <section class="panel purchase">
   <p class="purchase-card-title">Playground plans</p>
   <p class="purchase-note">Monthly. GST included. Cancel at the end of the current paid cycle.</p>
@@ -86,7 +121,7 @@
   <p class="purchase-error" role="alert">{{ error_message }}</p>
   {% endif %}
 
-  {% if current %}
+  {% if current and not expired_sub %}
   <div class="purchase-card purchase-confirm">
     <p class="purchase-card-title">Current plan</p>
     <div class="purchase-row">
@@ -158,7 +193,7 @@
   </div>
   {% endif %}
 
-  {% if not current %}
+  {% if not current or expired_sub %}
   {% if ended_message %}
   <p class="purchase-note">{{ ended_message }}</p>
   {% endif %}
