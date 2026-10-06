@@ -32,7 +32,12 @@ from constitution_memorizer.multiuser.settings import (
 from constitution_memorizer.playground.view import (
     PLAYGROUND_BILLING_PATH,
     PlaygroundSubscriptionCard,
+    format_plan_end,
     plus_profile_subscription_card,
+)
+from constitution_memorizer.playground.roster.period import (
+    playground_month_bounds,
+    playground_month_name,
 )
 from constitution_memorizer.web.app import create_app
 from tests.test_roster_m5a import _confirm_add, _csrf
@@ -161,6 +166,19 @@ def _identity(html: str) -> str:
     return html.split("data-profile-identity", 1)[1].split("</article>", 1)[0]
 
 
+def _usage_parts(*, used: int, limit: int = 10) -> tuple[str, str, str, str]:
+    start, end = playground_month_bounds()
+    month = playground_month_name(start)
+    nxt = format_plan_end(end)
+    following = date(
+        start.year + (1 if start.month == 12 else 0),
+        1 if start.month == 12 else start.month + 1,
+        1,
+    )
+    assert end == following
+    return f"{used}/{limit}", month, nxt, f"laws in {month} · new spaces open {nxt}"
+
+
 def test_plus_profile_subscription_card_uses_live_roster_not_magic_quota() -> None:
     card = PlaygroundSubscriptionCard(
         title="RecallC Plus",
@@ -172,31 +190,55 @@ def test_plus_profile_subscription_card_uses_live_roster_not_magic_quota() -> No
         cta_label="Manage plan",
         cta_href=PLAYGROUND_BILLING_PATH,
     )
-    roster = SimpleNamespace(
-        peek_capacity=lambda user_id, snapshot: SimpleNamespace(
-            used=3,
-            law_limit=10,
-            period_start=date(2026, 9, 1),
+
+    def _peek(start: date, end: date | None, *, used: int = 3, limit: int = 10):
+        return SimpleNamespace(
+            peek_capacity=lambda user_id, snapshot: SimpleNamespace(
+                used=used,
+                law_limit=limit,
+                period_start=start,
+                period_end=end,
+            )
         )
-    )
-    out = plus_profile_subscription_card(
+
+    september = plus_profile_subscription_card(
         card,
         snapshot=SimpleNamespace(playground_law_limit=10),
-        roster=roster,
+        roster=_peek(date(2026, 9, 1), date(2026, 10, 1)),
         user_id="x",
     )
-    assert out.stat_big == "3/10"
-    assert "laws in September" in out.stat_label
-    assert "new spaces open" in out.stat_label
-    assert out.cta_label == "Change plan"
-    assert out.cta_href == PLAYGROUND_BILLING_PATH
-    assert out.chip == "ACTIVE"
-    assert out.body == card.body
-    assert "8/10" not in out.stat_big
+    assert september.stat_big == "3/10"
+    assert september.stat_label == "laws in September · new spaces open 1 October"
+    assert "1 November" not in september.stat_label
+    assert september.cta_label == "Change plan"
+    assert september.cta_href == PLAYGROUND_BILLING_PATH
+    assert september.chip == "ACTIVE"
+    assert september.body == card.body
+
+    october = plus_profile_subscription_card(
+        card,
+        snapshot=SimpleNamespace(playground_law_limit=10),
+        roster=_peek(date(2026, 10, 1), date(2026, 11, 1), used=1),
+        user_id="x",
+    )
+    assert october.stat_big == "1/10"
+    assert october.stat_label == "laws in October · new spaces open 1 November"
+    assert "September" not in october.stat_label
+
+    # Missing period_end must still follow period_start, not the calendar clock.
+    incomplete = plus_profile_subscription_card(
+        card,
+        snapshot=SimpleNamespace(playground_law_limit=10),
+        roster=_peek(date(2026, 9, 1), None),
+        user_id="x",
+    )
+    assert incomplete.stat_label == "laws in September · new spaces open 1 October"
+
     source = inspect.getsource(plus_profile_subscription_card)
     assert "8/10" not in source
     assert " = 10" not in source
     assert source.count("10") == 0
+    assert "next_playground_month_bounds" not in source
 
 
 def test_plus_profile_reaches_profile_with_profile_selected(tmp_path: Path) -> None:
@@ -253,8 +295,11 @@ def test_plus_profile_card_uses_live_subscription_and_roster(
     assert 'data-chip="active"' in sub
     assert ">ACTIVE<" in sub
     assert "1/10" in sub
-    assert "laws in" in sub
-    assert "new spaces open" in sub
+    stat, month, nxt, line = _usage_parts(used=1)
+    assert stat in sub
+    assert line in sub
+    assert f"laws in {month}" in sub
+    assert f"new spaces open {nxt}" in sub
     assert "8/10" not in sub
     assert "Change plan" in sub
     assert f'href="{PLAYGROUND_BILLING_PATH}"' in sub
@@ -268,6 +313,68 @@ def test_plus_profile_card_uses_live_subscription_and_roster(
     )[1]
     assert "0/10" in empty_sub
     assert "1/10" not in empty_sub
+    _, month, nxt, empty_line = _usage_parts(used=0)
+    assert empty_line in empty_sub
+    assert f"laws in {month}" in empty_sub
+    assert f"new spaces open {nxt}" in empty_sub
+
+
+def test_plus_profile_get_does_not_mutate_roster(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    client = _plus_client(tmp_path)
+    roster = client.app.state.roster
+    writes: list[str] = []
+    real_ensure = roster.ensure_current_period
+    real_capacity = roster.capacity
+
+    def ensure(*args, **kwargs):
+        writes.append("ensure")
+        return real_ensure(*args, **kwargs)
+
+    def capacity(*args, **kwargs):
+        writes.append("capacity")
+        return real_capacity(*args, **kwargs)
+
+    monkeypatch.setattr(roster, "ensure_current_period", ensure)
+    monkeypatch.setattr(roster, "capacity", capacity)
+    before = [
+        (row.period_start, row.period_end, row.law_limit, row.status)
+        for row in roster.list_periods(USER)
+    ]
+    html = client.get("/profile").text
+    assert 'data-plus-profile="desktop"' in html
+    _, month, nxt, line = _usage_parts(used=0)
+    assert line in unescape(html)
+    assert writes == []
+    after = [
+        (row.period_start, row.period_end, row.law_limit, row.status)
+        for row in roster.list_periods(USER)
+    ]
+    assert after == before == []
+
+    monkeypatch.undo()
+    assert _confirm_add(client, "ndps").status_code == 303
+    writes.clear()
+    monkeypatch.setattr(roster, "ensure_current_period", ensure)
+    monkeypatch.setattr(roster, "capacity", capacity)
+    seeded = [
+        (row.period_start, row.period_end, row.law_limit, row.status)
+        for row in roster.list_periods(USER)
+    ]
+    start, end = playground_month_bounds()
+    assert seeded
+    assert seeded[0][0] == start
+    assert seeded[0][1] == end
+    used = roster.peek_capacity(USER, None).used
+    html = unescape(client.get("/profile").text)
+    _, month, nxt, line = _usage_parts(used=used)
+    assert line in html
+    assert writes == []
+    assert [
+        (row.period_start, row.period_end, row.law_limit, row.status)
+        for row in roster.list_periods(USER)
+    ] == seeded
 
 
 def test_plus_profile_lifecycle_keeps_shared_card_semantics(tmp_path: Path) -> None:
@@ -689,7 +796,9 @@ def test_plus_profile_1280(tmp_path: Path) -> None:
     assert geo["chipKind"] == "active"
     assert re.search(r"\d+/\d+", geo["stat"] or "")
     assert "8/10" not in (geo["stat"] or "")
-    assert "laws in" in (geo["stat"] or "")
+    _, month, nxt, _line = _usage_parts(used=1)
+    assert f"laws in {month}" in (geo["stat"] or "")
+    assert f"new spaces open {nxt}" in (geo["stat"] or "")
     assert geo["ctaText"] == "Change plan"
     assert geo["ctaHref"] == PLAYGROUND_BILLING_PATH
     assert geo["reportDisplay"] == "flex"

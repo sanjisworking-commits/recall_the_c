@@ -37,6 +37,7 @@ from constitution_memorizer.playground.roster.period import (
     playground_month_bounds,
     playground_month_name,
     playground_today,
+    shift_playground_month,
 )
 from constitution_memorizer.playground.lifecycle import (
     format_study_date,
@@ -715,23 +716,29 @@ def plus_profile_subscription_card(
 ) -> PlaygroundSubscriptionCard:
     """Plus Profile: live roster usage on the existing subscription card.
 
-    Peek-only. Does not invent a quota, write a period, or replace chip/body.
+    Peek-only. used, law_limit, month_name, and next_open all come from the
+    same peek_capacity period (or current playground_month_bounds when no
+    roster). Does not invent a quota, write a period, or replace chip/body.
     """
 
     if not card.show:
         return card
     used = 0
     law_limit = getattr(snapshot, "playground_law_limit", None)
-    start, _end = playground_month_bounds()
-    month_name = playground_month_name(start)
-    next_start, _next_end = next_playground_month_bounds()
-    next_open = format_plan_end(next_start)
+    start, end = playground_month_bounds()
     if roster is not None and user_id is not None:
         cap = roster.peek_capacity(user_id, snapshot)
         used = int(cap.used or 0)
         if cap.law_limit is not None:
             law_limit = cap.law_limit
-        month_name = playground_month_name(cap.period_start)
+        if getattr(cap, "period_start", None) is not None:
+            start = cap.period_start
+        if getattr(cap, "period_end", None) is not None:
+            end = cap.period_end
+        elif start is not None:
+            end = shift_playground_month(start, 1)
+    month_name = playground_month_name(start)
+    next_open = format_plan_end(end)
     used_n = max(0, int(used))
     if law_limit is None:
         noun = "law" if used_n == 1 else "laws"
