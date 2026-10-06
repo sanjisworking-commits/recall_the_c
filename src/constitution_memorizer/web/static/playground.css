@@ -4074,3 +4074,18 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     border-color: var(--pg-teal-border);
   }
 }
+
+/* Plus desktop /settings (CTA map plus/11-screen). Phone Plus and
+   guest/Free/Pro Settings keep the existing signed-in panel. */
+@media (min-width: 561px) {
+  body.is-authed[data-mscreen="settings"]:has([data-plus-settings="desktop"]) .account-menu-btn-status {
+    display: block;
+  }
+
+  [data-plus-settings="desktop"] .segmented-input:checked + .segmented-btn,
+  [data-plus-settings="desktop"] .segmented-btn.is-active {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--on-accent);
+  }
+}

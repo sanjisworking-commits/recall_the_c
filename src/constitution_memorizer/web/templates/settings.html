@@ -4,7 +4,7 @@
 {% block content %}
 {% set is_guest = multiuser_enabled|default(false) and not current_user %}
 {% set account_label = (current_user.display_name or current_user.email or current_user.phone or 'Account') if current_user else 'Guest' %}
-<section class="panel settings"{% if current_user and not is_guest %} data-signed-in-settings{% endif %}>
+<section class="panel settings"{% if current_user and not is_guest %} data-signed-in-settings{% endif %}{% if plus_settings|default(false) %} data-plus-settings="desktop"{% endif %}>
   <div class="mobile-topbar">
     <a class="mobile-back" href="{% if multiuser_enabled|default(false) and current_user %}/dashboard{% else %}/{% endif %}">← {% if multiuser_enabled|default(false) and current_user %}Today{% else %}Home{% endif %}</a>
   </div>

@@ -3750,6 +3750,11 @@ def create_app(
         plan = None
         next_learning_day = None
         auto_entitled = can_use_auto_plan(request)
+        from constitution_memorizer.entitlements.dependencies import (
+            request_is_active_plus,
+        )
+
+        plus_settings = bool(user) and request_is_active_plus(request)
         if user is not None:
             try:
                 plan = eng.get_learning_plan()
@@ -3777,6 +3782,7 @@ def create_app(
                 "learning_plan": plan,
                 "can_auto_plan": auto_entitled,
                 "next_learning_day": next_learning_day,
+                "plus_settings": plus_settings,
             },
         )
 
