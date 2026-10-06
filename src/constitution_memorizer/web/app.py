@@ -3156,7 +3156,9 @@ def create_app(
         bare = get_bare_act(law_id)
         if bare is not None:
             from constitution_memorizer.entitlements.dependencies import (  # noqa: PLC0415
+                get_entitlement_snapshot,
                 request_is_active_plus,
+                request_is_expired_subscriber,
             )
             from constitution_memorizer.playground.access import (  # noqa: PLC0415
                 public_law_states,
@@ -3168,6 +3170,15 @@ def create_app(
             playground_state = None
             if is_playground_eligible_law(bare.slug):
                 playground_state = public_law_states(request, (bare.slug,)).get(bare.slug)
+            expired_bareact = request_is_expired_subscriber(request)
+            expired_header_status = ""
+            if expired_bareact:
+                from constitution_memorizer.playground.view import gate_view
+
+                snap = get_entitlement_snapshot(request)
+                expired_header_status = gate_view(
+                    reason=str(snap.playground_block_reason or "")
+                ).title
             started = time.perf_counter()
             seo_title, seo_description = build_law_seo(
                 law_name=bare.title, meta_label=bare.meta_label
@@ -3205,6 +3216,8 @@ def create_app(
                         ndps_guest_head() if bare.slug == "ndps" else None
                     ),
                     "plus_bareact": request_is_active_plus(request),
+                    "expired_bareact": expired_bareact,
+                    "expired_header_status": expired_header_status,
                 },
             )
             record_request_timing("template", started)

@@ -1044,23 +1044,17 @@ def law_membership(
                 if access.user_id is not None and overlay is not None:
                     historical = overlay.get_item(access.user_id, law_id) is not None
             if active:
-                href = law_path(law_id)
-                label = "Continue"
+                # Workspace/learn routes still require can_open. Keep the
+                # retained badge and Sections href from membership, but use
+                # the paid-period-ended lifecycle CTA instead of Continue.
                 sections_href = sections_path(law_id)
-                if overlay is not None and access.user_id is not None:
-                    item = overlay.get_item(access.user_id, law_id)
-                    selection = (
-                        overlay.list_selection(access.user_id, law_id) if item else []
-                    )
-                    if not selection:
-                        href = sections_href
-                        label = "Start learning"
+                gate = gate_view(reason=reason)
                 return _state(
                     KIND_ALREADY_ACTIVE,
                     active=True,
                     historical=historical,
-                    primary_label=label,
-                    primary_href=href,
+                    primary_label="Resume Playground",
+                    primary_href=gate.cta_href or PLAYGROUND_BILLING_PATH,
                     badge=MEMBERSHIP_IN,
                     badge_label="Already in Playground",
                     secondary_label="Sections",
