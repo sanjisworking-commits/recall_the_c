@@ -684,12 +684,21 @@ def test_guest_free_plus_halted_paused_pending_are_not_expired_calendar(
     halted.app.state.subscriptions.update_subscription_state(
         USER, stored.id, status="halted"
     )
-    halted_html = halted.get("/calendar").text
+    halted_html = unescape(halted.get("/calendar").text)
     assert 'data-expired-calendar="desktop"' not in halted_html
+    assert 'data-plus-calendar="desktop"' not in halted_html
     assert LIVE_HEADING not in _header(halted_html)
-    assert 'data-cal-source="playground"' not in halted_html
     halted_snap = halted.app.state.entitlement_service.resolve(USER)
     assert halted_snap.playground_block_reason != BLOCK_PAID_PERIOD_ENDED
+    assert 'data-cal-source="playground"' in halted_html
+    halted_due = [
+        href
+        for cls, href, _title, _label in _playground_chips(halted_html)
+        if "is-due" in cls
+    ]
+    assert halted_due
+    assert all(href == PLAYGROUND_BILLING_PATH for href in halted_due)
+    assert "Resume Playground" not in halted_html
 
     paused = TestClient(_mu_app(tmp_path / "paused"))
     _sign_in(paused)
@@ -715,6 +724,7 @@ def test_expired_calendar_marker_uses_shared_predicate() -> None:
     cal = CAL.read_text(encoding="utf-8")
     assert "expired_calendar" in cal
     assert 'data-expired-calendar="desktop"' in cal
+    assert 'data-halted-calendar="desktop"' in cal
     assert 'data-plus-calendar="desktop"' in cal
     assert "data-signed-in-calendar" in cal
     assert PLAYGROUND_BILLING_PATH not in cal

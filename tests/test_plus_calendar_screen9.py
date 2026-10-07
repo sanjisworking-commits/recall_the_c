@@ -333,6 +333,18 @@ def test_guest_free_pro_calendar_are_not_plus_screen_09(tmp_path: Path) -> None:
     assert 'data-plus-calendar="desktop"' not in pro_html
     assert "RecallC Plus" not in _header(pro_html)
 
+    halted = TestClient(_mu_app(tmp_path / "halted"))
+    _sign_in(halted)
+    _subscribe(halted)
+    stored = halted.app.state.subscriptions.get_current_subscription(USER)
+    assert stored is not None
+    halted.app.state.subscriptions.update_subscription_state(
+        USER, stored.id, status="halted"
+    )
+    halted_html = halted.get("/calendar").text
+    assert 'data-plus-calendar="desktop"' not in halted_html
+    assert "RecallC Plus" not in _header(halted_html)
+
 
 def test_plus_calendar_markup_preserves_routes_and_study_gates() -> None:
     cal = CAL.read_text(encoding="utf-8")

@@ -284,6 +284,29 @@ def reconcile_expired_playground_calendar_chips(
     }
 
 
+def reconcile_halted_playground_calendar_chips(
+    extra: dict[str, list[CalendarChip]], request
+) -> dict[str, list[CalendarChip]]:
+    """Rewrite unsafe Playground Calendar hrefs from Halted recovery.
+
+    Preserves kind, label, title, category and date. Callers must only invoke
+    this for ``request_is_halted_subscriber``. Always
+    ``gate_view(BLOCK_PAYMENT_HALTED)``, including elapsed Halted.
+    Scheduled Bare Act hrefs stay.
+    """
+
+    if not extra:
+        return extra
+    _label, href = halted_playground_today_action(request)
+    return {
+        iso: [
+            replace(chip, href=href) if _playground_chip_href_is_protected(chip) else chip
+            for chip in chips
+        ]
+        for iso, chips in extra.items()
+    }
+
+
 def attach_playground_calendar_chips(view, extra: dict[str, list[CalendarChip]]) -> None:
     if not extra:
         return
