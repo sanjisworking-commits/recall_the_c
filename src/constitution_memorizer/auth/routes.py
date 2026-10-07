@@ -593,6 +593,7 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
         from constitution_memorizer.entitlements.dependencies import (
             request_is_active_plus,
             request_is_expired_subscriber,
+            request_is_halted_subscriber,
         )
         from constitution_memorizer.playground.view import (
             device_count_copy,
@@ -604,9 +605,33 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
         snapshot = get_entitlement_snapshot(request)
         playground_card = playground_subscription_card(snapshot)
         plus_profile = bool(user) and request_is_active_plus(request)
+        halted_profile = bool(user) and request_is_halted_subscriber(request)
         expired_profile = bool(user) and request_is_expired_subscriber(request)
+        halted_header_status = ""
         expired_header_status = ""
-        if expired_profile:
+        if halted_profile:
+            from dataclasses import replace
+
+            from constitution_memorizer.entitlements.models import BLOCK_PAYMENT_HALTED
+            from constitution_memorizer.playground.view import gate_view
+
+            halted_gate = gate_view(reason=BLOCK_PAYMENT_HALTED)
+            halted_header_status = halted_gate.title
+            card_snapshot = snapshot
+            if (
+                str(getattr(snapshot, "playground_block_reason", None) or "")
+                != BLOCK_PAYMENT_HALTED
+            ):
+                card_snapshot = replace(
+                    snapshot, playground_block_reason=BLOCK_PAYMENT_HALTED
+                )
+            playground_card = playground_subscription_card(card_snapshot)
+            playground_card = replace(
+                playground_card,
+                cta_label=halted_gate.cta_label,
+                cta_href=halted_gate.cta_href,
+            )
+        elif expired_profile:
             from constitution_memorizer.playground.view import gate_view
 
             expired_header_status = gate_view(
@@ -630,7 +655,9 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
                     "device_count_label": "",
                     "identity_meta": "Guest · Reading only",
                     "plus_profile": False,
+                    "halted_profile": False,
                     "expired_profile": False,
+                    "halted_header_status": "",
                     "expired_header_status": "",
                 },
             )
@@ -679,7 +706,9 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
                 "device_count_label": device_label,
                 "identity_meta": identity_meta,
                 "plus_profile": plus_profile,
+                "halted_profile": halted_profile,
                 "expired_profile": expired_profile,
+                "halted_header_status": halted_header_status,
                 "expired_header_status": expired_header_status,
             },
         )

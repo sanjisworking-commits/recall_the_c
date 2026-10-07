@@ -366,6 +366,7 @@ def test_expired_profile_does_not_call_plus_capacity_helper() -> None:
         "async def profile_post", 1
     )[0]
     assert "request_is_expired_subscriber" in overlay
+    assert "request_is_halted_subscriber" in overlay
     assert "request_is_active_plus" in overlay
     assert "playground_subscription_card(snapshot)" in overlay
     assert "plus_profile_subscription_card(" in overlay
@@ -373,6 +374,11 @@ def test_expired_profile_does_not_call_plus_capacity_helper() -> None:
         "plus_profile_subscription_card("
     )
     assert overlay.find("expired_profile") < overlay.find("if plus_profile:")
+    assert overlay.find("if halted_profile:") < overlay.find("if plus_profile:")
+    halted_block = overlay.split("if halted_profile:", 1)[1].split(
+        "if plus_profile:", 1
+    )[0]
+    assert "plus_profile_subscription_card(" not in halted_block
     plus_block = overlay.split("if plus_profile:", 1)[1]
     assert "plus_profile_subscription_card(" in plus_block
     assert "expired_profile" not in plus_block.split("return templates", 1)[0]
@@ -498,13 +504,20 @@ def test_guest_free_plus_pro_max_halted_paused_pending_are_not_expired_profile(
     )
     halted_html = unescape(halted.get("/profile").text)
     assert 'data-expired-profile="desktop"' not in halted_html
+    assert 'data-plus-profile="desktop"' not in halted_html
+    assert 'data-halted-profile="desktop"' in halted_html
     assert LIVE_HEADING not in _header(halted_html)
+    assert "Your Playground is paused" not in _header(halted_html)
     halted_card = playground_subscription_card(
         halted.app.state.entitlement_service.resolve(USER)
     )
     assert halted_card.chip == "ON HOLD"
     assert halted_card.chip in halted_html
     assert halted_card.body in halted_html
+    halted_sub = _subscription(halted_html)
+    assert "Manage subscription" in halted_sub
+    assert ">Resume Playground<" not in halted_sub
+    assert "Change plan" not in halted_sub
     assert halted.app.state.entitlement_service.resolve(
         USER
     ).playground_block_reason != BLOCK_PAID_PERIOD_ENDED

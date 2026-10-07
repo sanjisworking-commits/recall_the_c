@@ -4523,14 +4523,17 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   }
 }
 
-/* Expired desktop /profile (CTA map expired/10-screen). Phone Profile,
-   guest/Free/Plus/halted Profile keep the existing signed-in panel. */
+/* Expired desktop /profile (CTA map expired/10-screen). Halted desktop
+   /profile (CTA map halted/10-screen) shares these desktop rules. Phone
+   Profile, guest/Free/Plus Profile keep the existing signed-in panel. */
 @media (min-width: 561px) {
-  body.is-authed[data-mscreen="account"]:has([data-expired-profile="desktop"]) .account-menu-btn-status {
+  body.is-authed[data-mscreen="account"]:has([data-expired-profile="desktop"]) .account-menu-btn-status,
+  body.is-authed[data-mscreen="account"]:has([data-halted-profile="desktop"]) .account-menu-btn-status {
     display: block;
   }
 
-  [data-expired-profile="desktop"] .pg-sub-card .pg-btn--ghost {
+  [data-expired-profile="desktop"] .pg-sub-card .pg-btn--ghost,
+  [data-halted-profile="desktop"] .pg-sub-card .pg-btn--ghost {
     color: var(--pg-teal-dark);
     border-color: var(--pg-teal-border);
   }

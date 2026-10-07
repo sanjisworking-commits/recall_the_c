@@ -453,6 +453,20 @@ def test_guest_free_pro_profile_are_not_plus_screen_10(tmp_path: Path) -> None:
     assert "Manage plan" in pro_html
     assert "Change plan" not in pro_html
 
+    halted = TestClient(_mu_app(tmp_path / "halted"))
+    _sign_in(halted)
+    _subscribe(halted)
+    stored = halted.app.state.subscriptions.get_current_subscription(USER)
+    assert stored is not None
+    halted.app.state.subscriptions.update_subscription_state(
+        USER, stored.id, status="halted"
+    )
+    halted_html = unescape(halted.get("/profile").text)
+    assert 'data-plus-profile="desktop"' not in halted_html
+    assert 'data-halted-profile="desktop"' in halted_html
+    assert "RecallC Plus" not in _header(halted_html)
+    assert "Change plan" not in halted_html
+
 
 def test_plus_profile_edit_name_and_sign_out_stay_existing(tmp_path: Path) -> None:
     client = _plus_client(tmp_path)
