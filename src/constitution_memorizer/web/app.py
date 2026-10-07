@@ -338,11 +338,12 @@ def _sniff_photo(content: bytes, filename: str) -> tuple[str, str]:
     return suffix, media_types.get(suffix, "application/octet-stream")
 
 
-def _halted_laws_index_states(request: Request, states: dict) -> dict:
-    """Laws-index overlay: live IN PLAYGROUND tags, no Playground learn hrefs.
+def _halted_law_presentation(request: Request, law_id: str, state):
+    """Halted law CTA overlay for Laws index and Bare Act.
 
-    Open-period Halted is KIND_RESUME without a badge. Retained roster laws
-    reuse the Expired already_active badge. Bare Act membership is unchanged.
+    Open-period Halted membership is KIND_RESUME without a badge. Retained
+    roster laws reuse the Expired already_active presentation; the primary
+    action is the Halted recovery CTA from gate_view(BLOCK_PAYMENT_HALTED).
     """
 
     from dataclasses import replace
@@ -355,53 +356,58 @@ def _halted_laws_index_states(request: Request, states: dict) -> dict:
         gate_view,
     )
 
+    if state is None:
+        return None
+    gate = gate_view(reason=BLOCK_PAYMENT_HALTED)
+    billed = gate.cta_href or PLAYGROUND_BILLING_PATH
+    recover = gate.cta_label
     uid = playground_user_id(request)
     roster = getattr(request.app.state, "roster", None)
-    billed = gate_view(reason=BLOCK_PAYMENT_HALTED).cta_href or PLAYGROUND_BILLING_PATH
-    patched = {}
-    for law_id, state in states.items():
-        hrefs = (state.primary_href or "", state.secondary_href or "")
-        learn = any("/learn" in href for href in hrefs)
-        active = bool(state.active_this_period)
-        if not active and uid is not None and roster is not None:
-            active = roster.is_law_active_this_period(uid, law_id)
-        if active:
-            patched[law_id] = replace(
-                state,
-                kind="already_active",
-                active_this_period=True,
-                badge="in_playground",
-                badge_label="Already in Playground",
-                primary_label="Resume Playground",
-                primary_href=billed,
-                secondary_label="Sections",
-                secondary_href=sections_path(law_id),
-                secondary_copy="",
-                opens_sheet=False,
-            )
-            continue
-        if learn:
-            patched[law_id] = replace(
-                state,
-                primary_href=(
-                    billed
-                    if "/learn" in (state.primary_href or "")
-                    else state.primary_href
-                ),
-                secondary_href=(
-                    ""
-                    if "/learn" in (state.secondary_href or "")
-                    else state.secondary_href
-                ),
-                secondary_label=(
-                    ""
-                    if "/learn" in (state.secondary_href or "")
-                    else state.secondary_label
-                ),
-            )
-            continue
-        patched[law_id] = state
-    return patched
+    hrefs = (state.primary_href or "", state.secondary_href or "")
+    learn = any("/learn" in href for href in hrefs)
+    active = bool(state.active_this_period)
+    if not active and uid is not None and roster is not None:
+        active = roster.is_law_active_this_period(uid, law_id)
+    if active:
+        return replace(
+            state,
+            kind="already_active",
+            active_this_period=True,
+            badge="in_playground",
+            badge_label="Already in Playground",
+            primary_label=recover,
+            primary_href=billed,
+            secondary_label="Sections",
+            secondary_href=sections_path(law_id),
+            secondary_copy="",
+            opens_sheet=False,
+        )
+    if learn:
+        primary_is_learn = "/learn" in (state.primary_href or "")
+        secondary_is_learn = "/learn" in (state.secondary_href or "")
+        return replace(
+            state,
+            primary_label=recover if primary_is_learn else state.primary_label,
+            primary_href=billed if primary_is_learn else state.primary_href,
+            secondary_href="" if secondary_is_learn else state.secondary_href,
+            secondary_label="" if secondary_is_learn else state.secondary_label,
+            opens_sheet=False,
+        )
+    return replace(
+        state,
+        primary_label=recover,
+        primary_href=billed,
+        opens_sheet=False,
+    )
+
+
+def _halted_laws_index_states(request: Request, states: dict) -> dict:
+    """Laws-index overlay: live IN PLAYGROUND tags, no Playground learn hrefs."""
+
+    return {
+        law_id: _halted_law_presentation(request, law_id, state)
+        for law_id, state in states.items()
+    }
 
 
 def create_app(
@@ -3285,6 +3291,7 @@ def create_app(
                 get_entitlement_snapshot,
                 request_is_active_plus,
                 request_is_expired_subscriber,
+                request_is_halted_subscriber,
             )
             from constitution_memorizer.playground.access import (  # noqa: PLC0415
                 public_law_states,
@@ -3297,14 +3304,30 @@ def create_app(
             if is_playground_eligible_law(bare.slug):
                 playground_state = public_law_states(request, (bare.slug,)).get(bare.slug)
             expired_bareact = request_is_expired_subscriber(request)
+            halted_bareact = request_is_halted_subscriber(request)
             expired_header_status = ""
-            if expired_bareact:
+            halted_header_status = ""
+            if expired_bareact or halted_bareact:
                 from constitution_memorizer.playground.view import gate_view
 
-                snap = get_entitlement_snapshot(request)
-                expired_header_status = gate_view(
-                    reason=str(snap.playground_block_reason or "")
-                ).title
+                if expired_bareact:
+                    snap = get_entitlement_snapshot(request)
+                    expired_header_status = gate_view(
+                        reason=str(snap.playground_block_reason or "")
+                    ).title
+                if halted_bareact:
+                    from constitution_memorizer.entitlements.models import (
+                        BLOCK_PAYMENT_HALTED,
+                    )
+
+                    # Presentation only: elapsed Halted keeps paid_period_ended
+                    # as the block reason, but the header stays Halted-family.
+                    halted_header_status = gate_view(
+                        reason=BLOCK_PAYMENT_HALTED
+                    ).title
+                    playground_state = _halted_law_presentation(
+                        request, bare.slug, playground_state
+                    )
             started = time.perf_counter()
             seo_title, seo_description = build_law_seo(
                 law_name=bare.title, meta_label=bare.meta_label
@@ -3343,7 +3366,9 @@ def create_app(
                     ),
                     "plus_bareact": request_is_active_plus(request),
                     "expired_bareact": expired_bareact,
+                    "halted_bareact": halted_bareact,
                     "expired_header_status": expired_header_status,
+                    "halted_header_status": halted_header_status,
                 },
             )
             record_request_timing("template", started)

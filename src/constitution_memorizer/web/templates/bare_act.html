@@ -39,7 +39,7 @@
 </section>
 {% endif %}
 {% if signed_in_bareact_desktop %}
-<section class="panel guest-bareact" data-signed-in-bareact-desktop{% if plus_bareact|default(false) %} data-plus-bareact="desktop"{% endif %}{% if expired_bareact|default(false) %} data-expired-bareact="desktop"{% endif %}>
+<section class="panel guest-bareact" data-signed-in-bareact-desktop{% if plus_bareact|default(false) %} data-plus-bareact="desktop"{% endif %}{% if expired_bareact|default(false) %} data-expired-bareact="desktop"{% endif %}{% if halted_bareact|default(false) %} data-halted-bareact="desktop"{% endif %}>
   <div class="guest-bareact-headband">
     <a class="guest-bareact-back" href="/laws"><svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M12.2 4.2 6.4 10l5.8 5.8"></path></svg>Laws</a>
     <div class="guest-bareact-head">
@@ -66,6 +66,8 @@
       {% elif pg_subscribed %}
       {{ playground_cta(pg) }}
       {% elif expired_bareact|default(false) and pg %}
+      {{ playground_cta(pg) }}
+      {% elif halted_bareact|default(false) and pg %}
       {{ playground_cta(pg) }}
       {% else %}
       <a

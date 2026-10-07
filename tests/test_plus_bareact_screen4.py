@@ -260,6 +260,7 @@ def test_halted_expired_and_pro_are_not_plus_screen_04(tmp_path: Path) -> None:
     _subscribe(halted, status="halted")
     halted_html = halted.get("/laws/ndps").text
     assert 'data-plus-bareact="desktop"' not in halted_html
+    assert 'data-halted-bareact="desktop"' in halted_html
     assert "RecallC Plus" not in _header(halted_html)
 
     expired = TestClient(_mu_app(tmp_path / "expired"))
