@@ -85,6 +85,7 @@
   {% if current_user %}data-signed-in-laws-desktop{% endif %}
   {% if plus_laws|default(false) %}data-plus-laws="desktop"{% endif %}
   {% if expired_laws|default(false) %}data-expired-laws="desktop"{% endif %}
+  {% if halted_laws|default(false) %}data-halted-laws="desktop"{% endif %}
   data-initial-q="{{ initial_q|e }}"
   {# Echoed raw, as before, and validated in JS; a status chip clears it. #}
   data-initial-subject="{{ '' if active_status else initial_subject|e }}"

@@ -199,7 +199,6 @@ def test_halted_expired_and_pro_are_not_plus_screen_03(tmp_path: Path) -> None:
     _subscribe(halted, status="halted")
     halted_html = halted.get("/laws").text
     assert 'data-plus-laws="desktop"' not in halted_html
-    assert "Free account" in _header(halted_html)
 
     expired = TestClient(_mu_app(tmp_path / "expired"))
     _sign_in(expired)

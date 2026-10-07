@@ -338,6 +338,72 @@ def _sniff_photo(content: bytes, filename: str) -> tuple[str, str]:
     return suffix, media_types.get(suffix, "application/octet-stream")
 
 
+def _halted_laws_index_states(request: Request, states: dict) -> dict:
+    """Laws-index overlay: live IN PLAYGROUND tags, no Playground learn hrefs.
+
+    Open-period Halted is KIND_RESUME without a badge. Retained roster laws
+    reuse the Expired already_active badge. Bare Act membership is unchanged.
+    """
+
+    from dataclasses import replace
+
+    from constitution_memorizer.entitlements.models import BLOCK_PAYMENT_HALTED
+    from constitution_memorizer.playground.http import playground_user_id
+    from constitution_memorizer.playground.urls import sections_path
+    from constitution_memorizer.playground.view import (
+        PLAYGROUND_BILLING_PATH,
+        gate_view,
+    )
+
+    uid = playground_user_id(request)
+    roster = getattr(request.app.state, "roster", None)
+    billed = gate_view(reason=BLOCK_PAYMENT_HALTED).cta_href or PLAYGROUND_BILLING_PATH
+    patched = {}
+    for law_id, state in states.items():
+        hrefs = (state.primary_href or "", state.secondary_href or "")
+        learn = any("/learn" in href for href in hrefs)
+        active = bool(state.active_this_period)
+        if not active and uid is not None and roster is not None:
+            active = roster.is_law_active_this_period(uid, law_id)
+        if active:
+            patched[law_id] = replace(
+                state,
+                kind="already_active",
+                active_this_period=True,
+                badge="in_playground",
+                badge_label="Already in Playground",
+                primary_label="Resume Playground",
+                primary_href=billed,
+                secondary_label="Sections",
+                secondary_href=sections_path(law_id),
+                secondary_copy="",
+                opens_sheet=False,
+            )
+            continue
+        if learn:
+            patched[law_id] = replace(
+                state,
+                primary_href=(
+                    billed
+                    if "/learn" in (state.primary_href or "")
+                    else state.primary_href
+                ),
+                secondary_href=(
+                    ""
+                    if "/learn" in (state.secondary_href or "")
+                    else state.secondary_href
+                ),
+                secondary_label=(
+                    ""
+                    if "/learn" in (state.secondary_href or "")
+                    else state.secondary_label
+                ),
+            )
+            continue
+        patched[law_id] = state
+    return patched
+
+
 def create_app(
     *,
     units_path: Path | str | None = None,
@@ -3139,6 +3205,7 @@ def create_app(
             get_entitlement_snapshot,
             request_is_active_plus,
             request_is_expired_subscriber,
+            request_is_halted_subscriber,
         )
         from constitution_memorizer.playground.access import (  # noqa: PLC0415
             public_law_states,
@@ -3149,14 +3216,33 @@ def create_app(
 
         plus_laws = request_is_active_plus(request)
         expired_laws = request_is_expired_subscriber(request)
+        halted_laws = request_is_halted_subscriber(request)
         expired_header_status = ""
-        if expired_laws:
+        halted_header_status = ""
+        if expired_laws or halted_laws:
             from constitution_memorizer.playground.view import gate_view
 
-            snap = get_entitlement_snapshot(request)
-            expired_header_status = gate_view(
-                reason=str(snap.playground_block_reason or "")
-            ).title
+            if expired_laws:
+                snap = get_entitlement_snapshot(request)
+                expired_header_status = gate_view(
+                    reason=str(snap.playground_block_reason or "")
+                ).title
+            if halted_laws:
+                from constitution_memorizer.entitlements.models import (
+                    BLOCK_PAYMENT_HALTED,
+                )
+
+                # Presentation only: elapsed Halted keeps paid_period_ended
+                # as the block reason, but the header stays Halted-family.
+                halted_header_status = gate_view(
+                    reason=BLOCK_PAYMENT_HALTED
+                ).title
+
+        playground_states = public_law_states(
+            request, list_playground_eligible_laws()
+        )
+        if halted_laws:
+            playground_states = _halted_laws_index_states(request, playground_states)
 
         seo_title, seo_description = build_laws_hub_seo()
         context = {
@@ -3170,16 +3256,16 @@ def create_app(
             "seo_title": seo_title,
             "seo_description": seo_description,
             "canonical_url": laws_hub_canonical_url(),
-            "playground_states": public_law_states(
-                request, list_playground_eligible_laws()
-            ),
+            "playground_states": playground_states,
             "initial_status": request.query_params.get("status") or "",
             "has_repealed": bool(catalog.repealed_laws),
             "guest_screen3_laws": GUEST_LAWS_CARDS,
             "guest_screen3_chips": GUEST_LAWS_CHIPS,
             "plus_laws": plus_laws,
             "expired_laws": expired_laws,
+            "halted_laws": halted_laws,
             "expired_header_status": expired_header_status,
+            "halted_header_status": halted_header_status,
         }
         started = time.perf_counter()
         response = templates.TemplateResponse(request, "laws.html", context)

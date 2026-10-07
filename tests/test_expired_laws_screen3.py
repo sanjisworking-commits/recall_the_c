@@ -323,11 +323,6 @@ def test_free_plus_guest_halted_stay_separate_from_expired(tmp_path: Path) -> No
     halted_snap = halted.app.state.entitlement_service.resolve(USER)
     assert halted_snap.subscription_status == "halted"
     assert halted_snap.playground_block_reason != BLOCK_PAID_PERIOD_ENDED
-    halted_desk = _desk(halted_html)
-    assert 'data-pg-kind="already_active"' not in halted_desk
-    assert "Already in Playground" not in halted_desk
-    for law_id in RETAINED:
-        assert _cta_kind(halted_desk, law_id) == "resume"
 
 
 def test_expired_laws_uses_shared_predicate_not_a_template_flag() -> None:
