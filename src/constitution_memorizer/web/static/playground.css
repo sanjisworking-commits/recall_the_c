@@ -2953,33 +2953,39 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   }
 }
 
-/* Expired desktop resume dialog (CTA map expired/05-screen). Phone resume
-   keeps Resume + Cancel. Halted / paused stay on the generic resume branch. */
+/* Expired / Halted desktop resume dialogs (CTA map 05-screen). Phone resume
+   keeps primary + Cancel. Paused stays on the generic resume branch. */
 @media (max-width: 560px) {
-  [data-expired-add-desktop] {
+  [data-expired-add-desktop],
+  [data-halted-add-desktop] {
     display: none !important;
   }
 }
 
 @media (min-width: 561px) {
-  [data-expired-add-phone] {
+  [data-expired-add-phone],
+  [data-halted-add-phone] {
     display: none !important;
   }
 
-  .pg-sheet-panel[data-expired-add="desktop"] > .pg-eyebrow {
+  .pg-sheet-panel[data-expired-add="desktop"] > .pg-eyebrow,
+  .pg-sheet-panel[data-halted-add="desktop"] > .pg-eyebrow {
     display: none;
   }
 
-  .pg-sheet-panel[data-expired-add="desktop"] {
+  .pg-sheet-panel[data-expired-add="desktop"],
+  .pg-sheet-panel[data-halted-add="desktop"] {
     padding: 26px 28px;
     border-radius: var(--pg-radius-dialog);
   }
 
-  body.is-authed dialog.pg-sheet[open]:has([data-expired-add-desktop])::backdrop {
+  body.is-authed dialog.pg-sheet[open]:has([data-expired-add-desktop])::backdrop,
+  body.is-authed dialog.pg-sheet[open]:has([data-halted-add-desktop])::backdrop {
     background: rgba(20, 20, 20, 0.28);
   }
 
-  [data-expired-add-desktop] .expired-add-title {
+  [data-expired-add-desktop] .expired-add-title,
+  [data-halted-add-desktop] .halted-add-title {
     font-family: var(--pg-font-display);
     font-weight: 500;
     font-size: 22px;
@@ -2989,14 +2995,16 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     color: var(--pg-ink);
   }
 
-  [data-expired-add-desktop] .expired-add-lede {
+  [data-expired-add-desktop] .expired-add-lede,
+  [data-halted-add-desktop] .halted-add-lede {
     margin: 0 0 18px;
     font-size: 13.5px;
     line-height: 1.55;
     color: var(--pg-muted);
   }
 
-  [data-expired-add-desktop] .expired-add-resume {
+  [data-expired-add-desktop] .expired-add-resume,
+  [data-halted-add-desktop] .halted-add-resume {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -3014,20 +3022,24 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     box-shadow: var(--pg-shadow-press);
   }
 
-  .PlaygroundShell [data-expired-add-desktop] .expired-add-resume {
+  .PlaygroundShell [data-expired-add-desktop] .expired-add-resume,
+  .PlaygroundShell [data-halted-add-desktop] .halted-add-resume {
     color: var(--pg-paper);
   }
 
-  [data-expired-add-desktop] .expired-add-resume:active {
+  [data-expired-add-desktop] .expired-add-resume:active,
+  [data-halted-add-desktop] .halted-add-resume:active {
     transform: translateY(1px);
     box-shadow: var(--pg-shadow-press-active);
   }
 
-  [data-expired-add-desktop] .expired-add-cancel {
+  [data-expired-add-desktop] .expired-add-cancel,
+  [data-halted-add-desktop] .halted-add-cancel {
     display: none;
   }
 
-  .pg-sheet-panel[data-expired-add="desktop"] > .pg-sheet-close {
+  .pg-sheet-panel[data-expired-add="desktop"] > .pg-sheet-close,
+  .pg-sheet-panel[data-halted-add="desktop"] > .pg-sheet-close {
     top: 14px;
     right: 14px;
     width: 32px;

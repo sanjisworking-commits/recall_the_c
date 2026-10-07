@@ -10,6 +10,7 @@
   data-roster-confirm="{{ law_id }}"
   {% if plus_add|default(false) %}data-plus-add="desktop"{% endif %}
   {% if expired_add|default(false) %}data-expired-add="desktop"{% endif %}
+  {% if halted_add|default(false) %}data-halted-add="desktop"{% endif %}
   role="dialog"
   aria-modal="true"
   aria-labelledby="pg-add-title"
@@ -51,7 +52,26 @@
   </div>
 
   {% elif kind == "resume" %}
-  {% if expired_add|default(false) %}
+  {% if halted_add|default(false) %}
+  <div data-halted-add-desktop>
+    <h1 id="pg-add-title" class="halted-add-title">{{ title }}</h1>
+    {% for line in lines %}
+    <p class="halted-add-lede">{{ line }}</p>
+    {% endfor %}
+    <a class="halted-add-resume" href="{{ resume_cta_href }}">{{ resume_cta_label }}</a>
+    <button type="button" class="halted-add-cancel" data-pg-sheet-close>Cancel</button>
+  </div>
+  <div data-halted-add-phone>
+    <h1 id="pg-add-title-phone">{{ title }}</h1>
+    {% for line in lines %}
+    <p class="pg-lede">{{ line }}</p>
+    {% endfor %}
+    <p class="pg-actions">
+      <a class="pg-btn" href="{{ resume_cta_href }}">{{ resume_cta_label }}</a>
+      <a class="pg-btn pg-btn--ghost" href="{{ cancel_href }}">Cancel</a>
+    </p>
+  </div>
+  {% elif expired_add|default(false) %}
   <div data-expired-add-desktop>
     <h1 id="pg-add-title" class="expired-add-title">{{ title }}</h1>
     {% for line in lines %}

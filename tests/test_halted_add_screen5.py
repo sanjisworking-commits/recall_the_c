@@ -1,12 +1,11 @@
-"""Expired cohort desktop Playground resume dialog Screen 05 (CTA map expired/05-screen).
+"""Halted cohort desktop Add interception sheet Screen 05 (CTA map halted/05-screen).
 
 Authorized: ChatGPT. Authenticated multiuser GET /playground/laws/ndps/add
-after NDPS was added through the real roster flow and the paid period ended.
-The existing resume sheet is the interception — no new route, no kind=expired.
-Heading/copy come from gate_view; primary comes from live LawPlaygroundState.
-Opening, closing, and reopening is read-only. Guest, Free, Plus, halted,
-pending, full, device-blocked, phone, Plus 01–11, and Expired 01–04 stay
-unchanged. Sections remains require_playground_open (full gate, not modal).
+after a real Plus subscription is halted. Existing resume kind stays; copy
+comes from gate_view(BLOCK_PAYMENT_HALTED), not generic Resume Playground.
+No new route, no kind=halted, no POST form. Guest, Free, Plus, Expired,
+paused, pending, device_blocked, roster-full, phone, Plus 01–11, Expired
+01–11, and Halted 01–04 stay unchanged. No Halted 06 work.
 """
 
 from __future__ import annotations
@@ -28,13 +27,16 @@ from constitution_memorizer.auth.sessions import (
     SESSION_COOKIE_NAME,
     InMemorySessionStore,
 )
-from constitution_memorizer.entitlements.models import BLOCK_PAID_PERIOD_ENDED
+from constitution_memorizer.entitlements.models import (
+    BLOCK_PAID_PERIOD_ENDED,
+    BLOCK_PAYMENT_HALTED,
+)
 from constitution_memorizer.multiuser.settings import (
     MultiUserSettings,
     clear_settings_cache,
 )
 from constitution_memorizer.playground.access import PlaygroundAccess
-from constitution_memorizer.playground.urls import add_path, home_path, law_path, remove_path, sections_path
+from constitution_memorizer.playground.urls import add_path, home_path, law_path, sections_path
 from constitution_memorizer.playground.view import PLAYGROUND_BILLING_PATH, gate_view, law_membership
 from constitution_memorizer.web.app import create_app
 from constitution_memorizer.web.guest_bareact_head import NDPS_GUEST_TITLE
@@ -49,6 +51,7 @@ LAWS = ROOT / "src/constitution_memorizer/web/templates/laws.html"
 BARE = ROOT / "src/constitution_memorizer/web/templates/bare_act.html"
 ADD = ROOT / "src/constitution_memorizer/web/templates/playground_add.html"
 HOME = ROOT / "src/constitution_memorizer/web/templates/playground.html"
+GATE = ROOT / "src/constitution_memorizer/web/templates/playground_gate.html"
 MANAGE = ROOT / "src/constitution_memorizer/web/templates/subscription_manage.html"
 DASH = ROOT / "src/constitution_memorizer/web/templates/dashboard.html"
 CAL = ROOT / "src/constitution_memorizer/web/templates/calendar.html"
@@ -61,23 +64,27 @@ APP = ROOT / "src/constitution_memorizer/web/app.py"
 PG_CSS = ROOT / "src/constitution_memorizer/web/static/playground.css"
 PG_JS = ROOT / "src/constitution_memorizer/web/static/playground.js"
 MOBILE = ROOT / "src/constitution_memorizer/web/static/mobile.css"
+BASE = ROOT / "src/constitution_memorizer/web/templates/base.html"
 USER = UUID("11111111-1111-4111-8111-111111111111")
 EXPIRED_START = datetime(2026, 8, 16, tzinfo=timezone.utc)
 EXPIRED_END = datetime(2026, 9, 15, tzinfo=timezone.utc)
 ACTIVE_START = datetime(2026, 9, 15, tzinfo=timezone.utc)
 ACTIVE_END = datetime(2026, 10, 15, tzinfo=timezone.utc)
-LIVE_GATE = gate_view(reason=BLOCK_PAID_PERIOD_ENDED)
-LIVE_HEADING = LIVE_GATE.title
-LIVE_COPY = LIVE_GATE.lines
+LIVE_HALTED_GATE = gate_view(reason=BLOCK_PAYMENT_HALTED)
+LIVE_HEADING = LIVE_HALTED_GATE.title
+LIVE_COPY = LIVE_HALTED_GATE.lines
+LIVE_CTA = LIVE_HALTED_GATE.cta_label
+LIVE_EXPIRED_STATUS = gate_view(reason=BLOCK_PAID_PERIOD_ENDED).title
 INVENTED = (
-    "Your plan expired",
+    "Your subscription expired",
     "Resume subscription",
-    "Premium",
-    "Unlimited",
-    "Unlock all",
+    "Your payment failed",
+    "Fix your payment",
+    "Subscription halted",
+    "Playground unavailable",
     "Free plan",
-    "All 3 slots",
-    "kind == \"expired\"",
+    "Unlock all",
+    'kind == "halted"',
 )
 
 
@@ -141,7 +148,7 @@ def _subscribe(
     client: TestClient,
     *,
     tier: str = "plus",
-    status: str = "active",
+    status: str = "halted",
     period_start: datetime = ACTIVE_START,
     period_end: datetime = ACTIVE_END,
 ) -> None:
@@ -169,24 +176,16 @@ def _confirm_add(client: TestClient, law_id: str):
     return preview
 
 
-def _expire(client: TestClient) -> None:
-    stored = client.app.state.subscriptions.get_current_subscription(USER)
-    assert stored is not None
-    client.app.state.subscriptions.update_subscription_state(
-        USER,
-        stored.id,
-        status="expired",
-        billing_period_start=EXPIRED_START,
-        billing_period_end=EXPIRED_END,
-    )
-
-
-def _seed_ndps_then_expire(client: TestClient) -> None:
-    _subscribe(client)
+def _seed_ndps_then_halt(client: TestClient) -> None:
+    _subscribe(client, status="active")
     added = _confirm_add(client, "ndps")
     assert added.status_code in {200, 303}
     assert client.app.state.roster.is_law_active_this_period(USER, "ndps")
-    _expire(client)
+    stored = client.app.state.subscriptions.get_current_subscription(USER)
+    assert stored is not None
+    client.app.state.subscriptions.update_subscription_state(
+        USER, stored.id, status="halted"
+    )
 
 
 def _facts(client: TestClient) -> dict:
@@ -194,6 +193,7 @@ def _facts(client: TestClient) -> dict:
     roster = client.app.state.roster
     overlay = client.app.state.playground
     cap = roster.peek_capacity(USER, snap)
+    stored = client.app.state.subscriptions.get_current_subscription(USER)
     return {
         "active": tuple(sorted(i.law_id for i in roster.active_roster_items(USER))),
         "removed": tuple(sorted(i.law_id for i in roster.removed_roster_items(USER))),
@@ -211,71 +211,37 @@ def _facts(client: TestClient) -> dict:
                 for p in overlay.list_progress(USER, "ndps")
             )
         ),
+        "subscription": None
+        if stored is None
+        else (stored.id, stored.status, stored.tier, stored.is_current),
+        "entitlement": (
+            snap.subscription_status,
+            snap.playground_block_reason,
+            snap.can_open_playground,
+        ),
     }
 
 
 def _desk(html: str) -> str:
-    return html.split("data-expired-add-desktop", 1)[1].split(
-        "data-expired-add-phone", 1
+    return html.split("data-halted-add-desktop", 1)[1].split(
+        "data-halted-add-phone", 1
     )[0]
 
 
-def _expired_client(tmp_path: Path, *, units: Path | None = None) -> TestClient:
-    client = TestClient(_mu_app(tmp_path, units=units))
+def test_halted_add_is_existing_resume_not_confirm(tmp_path: Path) -> None:
+    client = TestClient(_mu_app(tmp_path))
     _sign_in(client)
-    _seed_ndps_then_expire(client)
-    return client
-
-
-def test_expired_retained_add_is_existing_resume_not_confirm(tmp_path: Path) -> None:
-    client = _expired_client(tmp_path)
+    _seed_ndps_then_halt(client)
     snap = client.app.state.entitlement_service.resolve(USER)
-    assert snap.playground_block_reason == BLOCK_PAID_PERIOD_ENDED
-    assert snap.subscription_status == "expired"
+    assert snap.is_authenticated is True
+    assert snap.tier == "plus"
+    assert snap.subscription_status == "halted"
     assert snap.is_subscribed is False
     assert snap.can_open_playground is False
-    req_html = client.get(add_path("ndps"))
-    assert req_html.status_code == 200
-    html = unescape(req_html.text)
-    assert 'data-pg-kind="resume"' in html
-    assert 'data-expired-add="desktop"' in html
-    assert "data-expired-add-desktop" in html
-    assert "data-expired-add-phone" in html
-    assert 'data-pg-kind="already_active"' not in html
-    assert 'data-pg-kind="eligible_to_add"' not in html
-    assert 'data-plus-add="desktop"' not in html
-    assert "data-plus-add-desktop" not in html
-    assert "data-guest-add-desktop" not in html
-    assert "data-signed-in-add-desktop" not in html
-    assert 'data-pg-add-confirm' not in html
-    assert 'action="/playground/laws/ndps/add"' not in html
-    assert 'name="confirm"' not in html
-    assert 'name="scope"' not in html
-    assert ">Entire Act<" not in html
-    assert ">Choose sections<" not in html
-    desk = _desk(html)
-    assert f">{LIVE_HEADING}<" in desk
-    for line in LIVE_COPY:
-        assert line in desk
-    assert ">Resume Playground<" in desk
-    assert f'href="{PLAYGROUND_BILLING_PATH}"' in desk
-    assert "Add to Playground" not in desk
-    assert "+ Add to Playground" not in desk
-    assert "Unlock Playground" not in desk
-    assert "Sign in" not in desk
-    assert "Create an account" not in desk
-    assert "Already in Playground" not in desk
-    assert "Playground full this month" not in desk
-    assert "temporarily unavailable" not in desk
-    assert "Resume a plan to add" not in desk
-    for phrase in INVENTED:
-        assert phrase not in desk, phrase
-    assert client.app.state.roster.is_law_active_this_period(USER, "ndps") is True
-
-
-def test_expired_add_primary_is_live_state_not_post(tmp_path: Path) -> None:
-    client = _expired_client(tmp_path)
-    snap = client.app.state.entitlement_service.resolve(USER)
+    assert snap.can_consume_new_playground_law is False
+    assert snap.playground_block_reason == BLOCK_PAYMENT_HALTED
+    assert LIVE_HEADING == "Payment retries have stopped"
+    assert LIVE_CTA == "Manage subscription"
     access = PlaygroundAccess(
         user_id=USER,
         snapshot=snap,
@@ -284,43 +250,65 @@ def test_expired_add_primary_is_live_state_not_post(tmp_path: Path) -> None:
         local_owner=False,
         can_view_home=True,
     )
-    state = law_membership(
+    raw = law_membership(
         law_id="ndps",
         access=access,
         roster=client.app.state.roster,
         overlay=client.app.state.playground,
     )
-    live_gate = gate_view(reason=str(snap.playground_block_reason or ""))
-    html = unescape(client.get(add_path("ndps")).text)
-    desk = _desk(html)
-    assert state.kind == "already_active"
-    assert state.primary_label == "Resume Playground"
-    assert state.primary_href == PLAYGROUND_BILLING_PATH
-    assert live_gate.title == LIVE_HEADING
-    assert f">{live_gate.title}<" in desk
-    for line in live_gate.lines:
-        assert line in desk
-    assert f">{state.primary_label}<" in desk
-    assert f'href="{state.primary_href}"' in desk
-    assert 'action="/playground/laws/ndps/add"' not in html
-    posted = client.post(
-        add_path("ndps"),
-        data={**_csrf(client), "confirm": "add", "scope": "sections"},
-        follow_redirects=False,
-    )
-    assert posted.status_code == 303
-    assert posted.headers.get("location") == home_path()
-    assert client.app.state.roster.is_law_active_this_period(USER, "ndps") is True
+    assert raw.kind == "resume"
+    assert raw.primary_label == "Resume Playground"
 
-
-def test_expired_add_mutation_safety_open_close_reopen(tmp_path: Path) -> None:
-    client = _expired_client(tmp_path)
     before = _facts(client)
-    assert "ndps" in before["active"]
-    first = client.get(add_path("ndps"))
-    assert first.status_code == 200
-    assert 'data-pg-kind="resume"' in first.text
-    after_open = _facts(client)
+    page = client.get(add_path("ndps"))
+    assert page.status_code == 200
+    html = unescape(page.text)
+    assert 'data-pg-kind="resume"' in html
+    assert 'data-halted-add="desktop"' in html
+    assert "data-halted-add-desktop" in html
+    assert "data-halted-add-phone" in html
+    assert 'data-pg-kind="halted"' not in html
+    assert 'data-pg-kind="already_active"' not in html
+    assert 'data-pg-kind="eligible_to_add"' not in html
+    assert 'data-plus-add="desktop"' not in html
+    assert 'data-expired-add="desktop"' not in html
+    assert "data-guest-add-desktop" not in html
+    assert "data-signed-in-add-desktop" not in html
+    assert "data-pg-add-confirm" not in html
+    assert 'action="/playground/laws/ndps/add"' not in html
+    assert 'name="confirm"' not in html
+    assert 'name="scope"' not in html
+    assert ">Entire Act<" not in html
+    assert ">Choose sections<" not in html
+    assert "Add to Playground" not in html
+    assert "Add back" not in html
+    desk = _desk(html)
+    assert f">{LIVE_HEADING}<" in desk
+    for line in LIVE_COPY:
+        assert line in desk
+    assert f">{LIVE_CTA}<" in desk
+    assert f'href="{PLAYGROUND_BILLING_PATH}"' in desk
+    assert ">Resume Playground<" not in desk
+    assert "Resume a plan to add" not in desk
+    assert LIVE_EXPIRED_STATUS not in desk
+    assert "Unlock Playground" not in desk
+    assert "Sign in" not in desk
+    assert "data-pg-sheet-close" in desk
+    for phrase in INVENTED:
+        assert phrase not in desk, phrase
+    phone = html.split("data-halted-add-phone", 1)[1]
+    assert f'href="/laws/ndps"' in phone
+    assert LIVE_CTA in phone
+    assert client.get("/laws/ndps").status_code == 200
+    assert 'data-halted-bareact="desktop"' in client.get("/laws/ndps").text
+    workspace = client.get(law_path("ndps"))
+    assert workspace.status_code == 200
+    assert f'data-playground-gate="{BLOCK_PAYMENT_HALTED}"' in workspace.text
+    assert 'data-pg-learn-panel="cloze"' not in workspace.text
+    sections = client.get(sections_path("ndps"))
+    assert sections.status_code == 200
+    assert f'data-playground-gate="{BLOCK_PAYMENT_HALTED}"' in sections.text
+    assert "data-pg-picker" not in sections.text
     posted = client.post(
         add_path("ndps"),
         data={**_csrf(client), "confirm": "add", "scope": "entire"},
@@ -328,46 +316,55 @@ def test_expired_add_mutation_safety_open_close_reopen(tmp_path: Path) -> None:
     )
     assert posted.status_code == 303
     assert posted.headers.get("location") == home_path()
-    after_post = _facts(client)
-    second = client.get(add_path("ndps"))
-    assert second.status_code == 200
-    assert 'data-pg-kind="resume"' in second.text
-    after_reopen = _facts(client)
-    assert after_open == before
-    assert after_post == before
-    assert after_reopen == before
-    assert client.get("/laws/ndps").status_code == 200
+    again = client.get(add_path("ndps"))
+    assert again.status_code == 200
+    assert _facts(client) == before
+    bns = client.get(add_path("bns"))
+    assert bns.status_code == 200
     assert _facts(client) == before
 
 
-def test_expired_sections_stay_gated_not_picker(tmp_path: Path) -> None:
-    client = _expired_client(tmp_path)
-    sections = client.get(sections_path("ndps"))
-    assert sections.status_code == 200
-    assert f'data-playground-gate="{BLOCK_PAID_PERIOD_ENDED}"' in sections.text
-    assert 'data-pg-picker' not in sections.text
-    assert "Choose what to learn" not in sections.text
-    assert 'name="scope"' not in sections.text
-    assert "Select sections to add" not in sections.text
-    workspace = client.get(law_path("ndps"))
-    assert workspace.status_code == 200
-    assert f'data-playground-gate="{BLOCK_PAID_PERIOD_ENDED}"' in workspace.text
-    assert 'data-pg-learn-panel="cloze"' not in workspace.text
+def test_halted_elapsed_period_stays_halted_on_add(tmp_path: Path) -> None:
+    client = TestClient(_mu_app(tmp_path))
+    _sign_in(client)
+    _seed_ndps_then_halt(client)
+    stored = client.app.state.subscriptions.get_current_subscription(USER)
+    assert stored is not None
+    client.app.state.subscriptions.update_subscription_state(
+        USER,
+        stored.id,
+        billing_period_start=EXPIRED_START,
+        billing_period_end=EXPIRED_END,
+    )
+    snap = client.app.state.entitlement_service.resolve(USER)
+    assert snap.subscription_status == "halted"
+    assert snap.playground_block_reason == BLOCK_PAID_PERIOD_ENDED
+    html = unescape(client.get(add_path("ndps")).text)
+    assert 'data-halted-add="desktop"' in html
+    assert 'data-expired-add="desktop"' not in html
+    assert 'data-plus-add="desktop"' not in html
+    assert 'data-pg-kind="resume"' in html
+    assert f">{LIVE_HEADING}<" in html
+    assert LIVE_EXPIRED_STATUS not in html
+    assert f">{LIVE_CTA}<" in html
+    assert ">Resume Playground<" not in html
 
 
-def test_non_retained_expired_law_cannot_add(tmp_path: Path) -> None:
-    client = _expired_client(tmp_path)
+def test_never_added_halted_bns_gets_same_sheet(tmp_path: Path) -> None:
+    client = TestClient(_mu_app(tmp_path))
+    _sign_in(client)
+    _seed_ndps_then_halt(client)
     html = unescape(client.get(add_path("bns")).text)
     assert 'data-pg-kind="resume"' in html
-    assert 'data-expired-add="desktop"' in html
+    assert 'data-halted-add="desktop"' in html
     assert 'data-pg-kind="eligible_to_add"' not in html
-    assert 'data-pg-add-confirm' not in html
+    assert "data-pg-add-confirm" not in html
     assert 'name="confirm"' not in html
     assert 'name="scope"' not in html
     assert f">{LIVE_HEADING}<" in html
     for line in LIVE_COPY:
         assert line in html
-    assert ">Resume Playground<" in html
+    assert f">{LIVE_CTA}<" in html
     assert PLAYGROUND_BILLING_PATH in html
     posted = client.post(
         add_path("bns"),
@@ -379,164 +376,139 @@ def test_non_retained_expired_law_cannot_add(tmp_path: Path) -> None:
     assert client.app.state.roster.is_law_active_this_period(USER, "bns") is False
 
 
-def test_guest_free_plus_halted_pending_stay_separate(tmp_path: Path) -> None:
+def test_guest_free_plus_expired_paused_pending_are_not_halted_add(
+    tmp_path: Path,
+) -> None:
     guest_html = TestClient(_mu_app(tmp_path / "guest")).get(add_path("ndps")).text
     assert "data-guest-add-desktop" in guest_html
-    assert 'data-pg-kind="guest"' in guest_html
-    assert "Create an account" in guest_html
-    assert 'data-expired-add="desktop"' not in guest_html
+    assert 'data-halted-add="desktop"' not in guest_html
     assert LIVE_HEADING not in guest_html
 
     free = TestClient(_mu_app(tmp_path / "free"))
     _sign_in(free)
     free_html = free.get(add_path("ndps")).text
     assert "data-signed-in-add-desktop" in free_html
-    assert 'data-pg-kind="subscribe"' in free_html
     assert "Unlock Playground" in free_html
-    assert 'data-expired-add="desktop"' not in free_html
-    assert LIVE_HEADING not in free_html
-    assert "Resume Playground" not in free_html
+    assert 'data-halted-add="desktop"' not in free_html
 
     plus = TestClient(_mu_app(tmp_path / "plus"))
     _sign_in(plus)
-    _subscribe(plus)
+    _subscribe(plus, status="active")
     plus_html = plus.get(add_path("ndps")).text
     assert 'data-plus-add="desktop"' in plus_html
-    assert "data-plus-add-desktop" in plus_html
-    assert 'data-pg-kind="eligible_to_add"' in plus_html
-    assert 'data-pg-add-confirm' in plus_html
-    assert 'data-expired-add="desktop"' not in plus_html
-    assert LIVE_HEADING not in plus_html
-    assert "Resume Playground" not in plus_html
-    added = _confirm_add(plus, "ndps")
-    assert added.status_code in {200, 303}
-    plus.post(remove_path("ndps"), data=_csrf(plus), follow_redirects=False)
-    readd = plus.get(add_path("ndps")).text
-    assert 'data-pg-kind="re_add"' in readd
-    assert "Add back" in readd
-    assert 'data-plus-add="desktop"' not in readd
-    assert 'data-expired-add="desktop"' not in readd
+    assert "data-pg-add-confirm" in plus_html
+    assert "Add to Playground" in plus_html
+    assert 'data-halted-add="desktop"' not in plus_html
 
-    halted = TestClient(_mu_app(tmp_path / "halted"))
-    _sign_in(halted)
-    _subscribe(halted)
-    _confirm_add(halted, "ndps")
-    stored = halted.app.state.subscriptions.get_current_subscription(USER)
-    halted.app.state.subscriptions.update_subscription_state(
-        USER, stored.id, status="halted"
+    expired = TestClient(_mu_app(tmp_path / "expired"))
+    _sign_in(expired)
+    _subscribe(expired, status="active")
+    added = _confirm_add(expired, "ndps")
+    assert added.status_code in {200, 303}
+    stored = expired.app.state.subscriptions.get_current_subscription(USER)
+    expired.app.state.subscriptions.update_subscription_state(
+        USER,
+        stored.id,
+        status="expired",
+        billing_period_start=EXPIRED_START,
+        billing_period_end=EXPIRED_END,
     )
-    halted_html = halted.get(add_path("ndps")).text
-    assert 'data-pg-kind="resume"' in halted_html
-    assert 'data-expired-add="desktop"' not in halted_html
-    assert 'data-halted-add="desktop"' in halted_html
-    assert LIVE_HEADING not in halted_html
-    assert "Resume a plan to add" not in halted_html
-    assert ">Resume Playground<" not in halted_html
-    halted_snap = halted.app.state.entitlement_service.resolve(USER)
-    assert halted_snap.subscription_status == "halted"
-    assert halted_snap.playground_block_reason != BLOCK_PAID_PERIOD_ENDED
+    expired_html = unescape(expired.get(add_path("ndps")).text)
+    assert 'data-expired-add="desktop"' in expired_html
+    assert 'data-halted-add="desktop"' not in expired_html
+    assert f">{LIVE_EXPIRED_STATUS}<" in expired_html
+    assert ">Resume Playground<" in expired_html
+    assert LIVE_HEADING not in expired_html
+
+    paused = TestClient(_mu_app(tmp_path / "paused"))
+    _sign_in(paused)
+    _subscribe(paused, status="paused")
+    paused_html = paused.get(add_path("ndps")).text
+    assert 'data-halted-add="desktop"' not in paused_html
+    assert "Resume Playground" in paused_html
+    assert LIVE_HEADING not in paused_html
 
     pending = TestClient(_mu_app(tmp_path / "pending"))
     _sign_in(pending)
     _subscribe(pending, status="pending")
     pending_html = pending.get(add_path("ndps")).text
-    assert 'data-expired-add="desktop"' not in pending_html
-    assert LIVE_HEADING not in pending_html
+    assert 'data-halted-add="desktop"' not in pending_html
     assert "temporarily unavailable" in pending_html.lower() or 'data-pg-kind="pending"' in pending_html
 
 
-def test_expired_add_uses_shared_predicate_existing_resume_route() -> None:
+def test_halted_add_uses_shared_predicate_existing_resume_route() -> None:
     add_src = ADD.read_text(encoding="utf-8")
     assert 'kind == "resume"' in add_src
-    assert 'kind == "expired"' not in add_src
-    assert "expired_add" in add_src
-    assert 'data-expired-add="desktop"' in add_src
-    assert "data-expired-add-desktop" in add_src
-    assert "data-expired-add-phone" in add_src
-    assert "state.primary_href" in add_src
-    assert "state.primary_label" in add_src
-    assert 'data-plus-add="desktop"' in add_src
-    assert "data-plus-add-desktop" in add_src
-    assert "data-guest-add-desktop" in add_src
-    assert "data-signed-in-add-desktop" in add_src
-    assert 'kind == "device_blocked"' in add_src
-    assert "blocked_pending or kind == " in add_src
-    assert "blocked_full or kind == " in add_src
-    assert 'action="/playground/laws/{{ law_id }}/add"' in add_src
-    resume_branch = add_src.split("{% elif kind == \"resume\" %}", 1)[1].split(
-        "{% elif kind == \"device_blocked\" %}", 1
+    assert 'kind == "halted"' not in add_src
+    assert "halted_add" in add_src
+    assert 'data-halted-add="desktop"' in add_src
+    assert "data-halted-add-desktop" in add_src
+    assert "data-halted-add-phone" in add_src
+    assert "resume_cta_label" in add_src
+    assert "resume_cta_href" in add_src
+    assert "state.primary_label" not in add_src.split("{% if halted_add|default(false) %}", 1)[1].split(
+        "{% elif expired_add|default(false) %}", 1
+    )[0]
+    assert LIVE_HEADING not in add_src
+    halted_branch = add_src.split("{% if halted_add|default(false) %}", 1)[1].split(
+        "{% elif expired_add|default(false) %}", 1
+    )[0]
+    assert LIVE_CTA not in halted_branch
+    assert "Payment retries have stopped" not in halted_branch
+    assert 'method="post"' not in halted_branch
+    assert "data-pg-add-confirm" not in halted_branch
+    assert 'name="scope"' not in halted_branch
+    assert "data-pg-sheet-close" in halted_branch
+    resume_branch = add_src.split('{% elif kind == "resume" %}', 1)[1].split(
+        '{% elif kind == "device_blocked" %}', 1
     )[0]
     assert 'method="post"' not in resume_branch
-    assert "data-pg-add-confirm" not in resume_branch
-    assert "name=\"scope\"" not in resume_branch
     routes = ROUTES.read_text(encoding="utf-8")
     ctx = routes.split("def _add_page_context", 1)[1].split("def _rollover_ids", 1)[0]
+    assert "request_is_halted_subscriber" in ctx
     assert "request_is_expired_subscriber" in ctx
-    assert "request_is_active_plus" in ctx
-    assert 'kind == "already_active"' in ctx
-    assert 'kind = "resume"' in ctx
+    assert "BLOCK_PAYMENT_HALTED" in ctx
     assert "gate_view" in ctx
-    assert "expired_add" in ctx
-    assert 'law_id == "ndps"' in ctx
-    assert "plus_add_confirm_copy" in ctx
-    add_route = routes.split('"/laws/{law_id}/add"', 1)[1].split(
-        "@router.post", 1
-    )[0]
-    assert "playground_add_confirm" in add_route or "require_eligible_law" in add_route
-    assert "/expired/resume" not in routes
-    deps = DEPS.read_text(encoding="utf-8")
-    assert "def request_is_expired_subscriber" in deps
-    assert "BLOCK_PAID_PERIOD_ENDED" in deps
+    assert "halted_add" in ctx
+    assert "resume_cta_label" in ctx
+    assert 'kind = "resume"' in ctx
+    assert "def law_membership" not in ctx
+    assert 'kind == "halted"' not in ctx
+    assert "def request_is_halted_subscriber" in DEPS.read_text(encoding="utf-8")
     view = VIEW.read_text(encoding="utf-8")
-    assert 'primary_label="Resume Playground"' in view
     assert 'KIND_RESUME = "resume"' in view
-    assert "kind == \"expired\"" not in view
+    assert 'kind == "halted"' not in view
     js = PG_JS.read_text(encoding="utf-8")
     assert "function enhanceSheets" in js
     assert "[data-pg-sheet]" in js
-    assert "dialog.pg-sheet" in js
     css = PG_CSS.read_text(encoding="utf-8")
+    assert "[data-halted-add-desktop]" in css
     assert "[data-expired-add-desktop]" in css
-    assert "[data-plus-add-desktop]" in css
-    assert "[data-guest-add-desktop]" in css
-    assert "[data-signed-in-add-desktop]" in css
-    assert "data-expired-bareact" not in add_src
+    assert "playground.css?v=pg28" in BASE.read_text(encoding="utf-8")
+    assert "data-halted-add" not in MOBILE.read_text(encoding="utf-8")
 
 
-def test_plus_screens_and_expired_01_04_untouched() -> None:
-    assert 'data-plus-landing="desktop"' in LANDING.read_text(encoding="utf-8")
-    assert 'data-expired-landing="desktop"' in LANDING.read_text(encoding="utf-8")
-    assert 'data-plus-browse="desktop"' in BROWSE.read_text(encoding="utf-8")
-    assert 'data-expired-browse="desktop"' in BROWSE.read_text(encoding="utf-8")
-    assert 'data-plus-laws="desktop"' in LAWS.read_text(encoding="utf-8")
-    assert 'data-expired-laws="desktop"' in LAWS.read_text(encoding="utf-8")
-    assert 'data-plus-bareact="desktop"' in BARE.read_text(encoding="utf-8")
-    assert 'data-expired-bareact="desktop"' in BARE.read_text(encoding="utf-8")
-    assert 'data-plus-add="desktop"' in ADD.read_text(encoding="utf-8")
-    assert 'data-plus-playground="desktop"' in HOME.read_text(encoding="utf-8")
-    assert 'data-plus-subscription="desktop"' in MANAGE.read_text(encoding="utf-8")
-    assert 'data-plus-today="desktop"' in DASH.read_text(encoding="utf-8")
-    assert 'data-plus-calendar="desktop"' in CAL.read_text(encoding="utf-8")
-    assert 'data-plus-profile="desktop"' in PROFILE.read_text(encoding="utf-8")
-    assert 'data-plus-settings="desktop"' in SETTINGS.read_text(encoding="utf-8")
-    for path in (LANDING, BROWSE, LAWS, BARE, HOME, MANAGE, DASH, CAL, PROFILE, SETTINGS):
-        text = path.read_text(encoding="utf-8")
-        assert "data-expired-add" not in text
+def test_plus_expired_and_halted_01_04_untouched() -> None:
+    landing = LANDING.read_text(encoding="utf-8")
+    assert 'data-halted-landing="desktop"' in landing
+    assert "data-halted-add" not in landing
+    browse = BROWSE.read_text(encoding="utf-8")
+    assert 'data-halted-browse="desktop"' in browse
+    assert "data-halted-add" not in browse
+    laws = LAWS.read_text(encoding="utf-8")
+    assert 'data-halted-laws="desktop"' in laws
+    assert "data-halted-add" not in laws
     bare = BARE.read_text(encoding="utf-8")
-    assert "pg.kind == 'already_active'" in bare
-    assert 'href="/playground">Continue</a>' in bare
-    app = APP.read_text(encoding="utf-8")
-    page = app.split("async def law_detail_page", 1)[1].split(
-        "async def bare_act_section_page", 1
-    )[0]
-    assert "request_is_expired_subscriber" in page
-    assert '"plus_bareact": request_is_active_plus(request)' in page
-    assert "def request_is_active_plus" in DEPS.read_text(encoding="utf-8")
-    assert 'snapshot.tier == "plus"' in DEPS.read_text(encoding="utf-8")
-    mobile = MOBILE.read_text(encoding="utf-8")
-    assert "data-expired-add" not in mobile
-    view = VIEW.read_text(encoding="utf-8")
-    assert 'badge_label="Already in Playground"' in view
+    assert 'data-halted-bareact="desktop"' in bare
+    assert "data-halted-add" not in bare
+    assert 'data-plus-add="desktop"' in ADD.read_text(encoding="utf-8")
+    assert 'data-expired-add="desktop"' in ADD.read_text(encoding="utf-8")
+    assert 'data-plus-playground="desktop"' in HOME.read_text(encoding="utf-8")
+    assert 'data-expired-playground="desktop"' in HOME.read_text(encoding="utf-8")
+    for path in (LANDING, BROWSE, LAWS, BARE, HOME, GATE, MANAGE, DASH, CAL, PROFILE, SETTINGS):
+        text = path.read_text(encoding="utf-8")
+        assert "data-halted-add" not in text
+        assert "halted_add" not in text
 
 
 def _serve(app, host: str = "127.0.0.1") -> tuple[int, object]:
@@ -562,20 +534,21 @@ def _serve(app, host: str = "127.0.0.1") -> tuple[int, object]:
     return port, server
 
 
-def test_expired_phone_add_uses_resume_not_confirm(tmp_path: Path) -> None:
+def test_halted_phone_add_uses_resume_not_confirm(tmp_path: Path) -> None:
     pytest.importorskip("playwright")
     from playwright.sync_api import sync_playwright
 
     app = _mu_app(tmp_path)
     client = TestClient(app)
     _sign_in(client)
-    _seed_ndps_then_expire(client)
+    _seed_ndps_then_halt(client)
     html = unescape(client.get(add_path("ndps")).text)
-    phone = html.split("data-expired-add-phone", 1)[1]
+    phone = html.split("data-halted-add-phone", 1)[1]
     assert LIVE_HEADING in phone
-    assert "Resume Playground" in phone
+    assert LIVE_CTA in phone
     assert PLAYGROUND_BILLING_PATH in phone
-    assert 'data-pg-add-confirm' not in phone
+    assert 'href="/laws/ndps"' in phone
+    assert "data-pg-add-confirm" not in phone
     session = client.cookies.get(SESSION_COOKIE_NAME)
     assert session
     port, _server = _serve(app)
@@ -602,41 +575,44 @@ def test_expired_phone_add_uses_resume_not_confirm(tmp_path: Path) -> None:
         geo = page.evaluate(
             """() => {
               const panel = document.querySelector('[data-pg-add]');
-              const desk = panel && panel.querySelector('[data-expired-add-desktop]');
-              const phoneBlock = panel && panel.querySelector('[data-expired-add-phone]');
+              const desk = panel && panel.querySelector('[data-halted-add-desktop]');
+              const phoneBlock = panel && panel.querySelector('[data-halted-add-phone]');
+              const cancel = phoneBlock && phoneBlock.querySelector('.pg-btn--ghost');
               return {
                 kind: panel && panel.getAttribute('data-pg-kind'),
-                expired: panel && panel.getAttribute('data-expired-add'),
+                halted: panel && panel.getAttribute('data-halted-add'),
                 deskDisplay: desk ? getComputedStyle(desk).display : null,
                 phoneDisplay: phoneBlock ? getComputedStyle(phoneBlock).display : null,
                 title: phoneBlock && phoneBlock.querySelector('h1') &&
                   phoneBlock.querySelector('h1').textContent.trim(),
+                cancelHref: cancel && cancel.getAttribute('href'),
               };
             }"""
         )
         browser.close()
     assert geo["kind"] == "resume"
-    assert geo["expired"] == "desktop"
+    assert geo["halted"] == "desktop"
     assert geo["deskDisplay"] == "none"
     assert geo["phoneDisplay"] != "none"
     assert geo["title"] == LIVE_HEADING
+    assert geo["cancelHref"] == "/laws/ndps"
 
 
-def test_expired_add_screen05_1280(tmp_path: Path) -> None:
+def test_halted_add_screen05_1280(tmp_path: Path) -> None:
     pytest.importorskip("playwright")
     from playwright.sync_api import sync_playwright
 
     app = _mu_app(tmp_path, units=UNITS if UNITS.exists() else MINI_UNITS)
     client = TestClient(app)
     _sign_in(client)
-    _seed_ndps_then_expire(client)
+    _seed_ndps_then_halt(client)
     session = client.cookies.get(SESSION_COOKIE_NAME)
     assert session
 
     port, _server = _serve(app)
     artifact_dir = Path("/opt/cursor/artifacts")
     artifact_dir.mkdir(parents=True, exist_ok=True)
-    shot_path = artifact_dir / "expired_add_screen05_1280.png"
+    shot_path = artifact_dir / "halted_add_screen05_1280.png"
     origin = f"http://127.0.0.1:{port}"
 
     with sync_playwright() as pw:
@@ -675,28 +651,28 @@ def test_expired_add_screen05_1280(tmp_path: Path) -> None:
               a.click();
             }"""
         )
-        page.wait_for_selector("[data-expired-add-desktop]", timeout=8000)
+        page.wait_for_selector("[data-halted-add-desktop]", timeout=8000)
         geo = page.evaluate(
             """() => {
               const dialog = document.querySelector('dialog.pg-sheet');
               const panel = document.querySelector('[data-pg-add]');
-              const desk = panel && panel.querySelector('[data-expired-add-desktop]');
-              const phoneBlock = panel && panel.querySelector('[data-expired-add-phone]');
-              const resume = desk && desk.querySelector('.expired-add-resume');
-              const cancel = desk && desk.querySelector('.expired-add-cancel');
+              const desk = panel && panel.querySelector('[data-halted-add-desktop]');
+              const phoneBlock = panel && panel.querySelector('[data-halted-add-phone]');
+              const resume = desk && desk.querySelector('.halted-add-resume');
+              const cancel = desk && desk.querySelector('.halted-add-cancel');
               const closeBtn = panel && panel.querySelector('[data-pg-sheet-close].pg-sheet-close');
-              const expiredBare = document.querySelector('[data-expired-bareact="desktop"]');
+              const haltedBare = document.querySelector('[data-halted-bareact="desktop"]');
               const cluster = document.querySelector('.signed-bareact-in-pg');
-              const titleEl = desk && desk.querySelector('.expired-add-title');
-              const ledeEl = desk && desk.querySelector('.expired-add-lede');
-              const backdrop = dialog ? getComputedStyle(dialog, '::backdrop') : null;
+              const titleEl = desk && desk.querySelector('.halted-add-title');
+              const ledeEl = desk && desk.querySelector('.halted-add-lede');
               const confirmForm = panel && panel.querySelector('[data-pg-add-confirm]');
               const scope = panel && panel.querySelector("[data-add-step='scope']");
               return {
                 open: Boolean(dialog && dialog.open),
                 kind: panel && panel.getAttribute('data-pg-kind'),
-                expiredAdd: panel && panel.getAttribute('data-expired-add'),
+                haltedAdd: panel && panel.getAttribute('data-halted-add'),
                 plus: panel && panel.getAttribute('data-plus-add'),
+                expired: panel && panel.getAttribute('data-expired-add'),
                 deskDisplay: desk ? getComputedStyle(desk).display : null,
                 phoneDisplay: phoneBlock ? getComputedStyle(phoneBlock).display : null,
                 eyebrowDisplay: panel && panel.querySelector('.pg-eyebrow')
@@ -709,19 +685,15 @@ def test_expired_add_screen05_1280(tmp_path: Path) -> None:
                 cancelDisplay: cancel ? getComputedStyle(cancel).display : null,
                 hasClose: Boolean(closeBtn),
                 closeLabel: closeBtn && closeBtn.getAttribute('aria-label'),
-                background: Boolean(expiredBare),
+                background: Boolean(haltedBare),
                 already: Boolean(cluster && cluster.innerText.includes('Already in Playground')),
                 header: document.querySelector('.account-menu-btn-status') &&
                   document.querySelector('.account-menu-btn-status').textContent.trim(),
-                actTitle: expiredBare && expiredBare.querySelector('.guest-bareact-title') &&
-                  expiredBare.querySelector('.guest-bareact-title').textContent.trim(),
+                actTitle: haltedBare && haltedBare.querySelector('.guest-bareact-title') &&
+                  haltedBare.querySelector('.guest-bareact-title').textContent.trim(),
                 confirmForm: Boolean(confirmForm),
                 scope: Boolean(scope),
-                guestAdd: Boolean(panel && panel.querySelector('[data-guest-add-desktop]')),
-                signedAdd: Boolean(panel && panel.querySelector('[data-signed-in-add-desktop]')),
-                plusAdd: Boolean(panel && panel.querySelector('[data-plus-add-desktop]')),
                 path: location.pathname,
-                scrim: backdrop && backdrop.backgroundColor,
               };
             }"""
         )
@@ -735,7 +707,7 @@ def test_expired_add_screen05_1280(tmp_path: Path) -> None:
               return {
                 open: Boolean(dialog && dialog.open),
                 path: location.pathname,
-                head: Boolean(document.querySelector('[data-expired-bareact="desktop"]')),
+                head: Boolean(document.querySelector('[data-halted-bareact="desktop"]')),
               };
             }"""
         )
@@ -743,14 +715,17 @@ def test_expired_add_screen05_1280(tmp_path: Path) -> None:
 
     assert geo["open"] is True
     assert geo["kind"] == "resume"
-    assert geo["expiredAdd"] == "desktop"
+    assert geo["haltedAdd"] == "desktop"
     assert geo["plus"] in (None, "")
+    assert geo["expired"] in (None, "")
     assert geo["deskDisplay"] != "none"
     assert geo["phoneDisplay"] == "none"
     assert geo["eyebrowDisplay"] == "none"
     assert geo["title"] == LIVE_HEADING
     assert geo["lede"] == LIVE_COPY[0]
-    assert geo["resumeText"] == "Resume Playground"
+    assert geo["resumeText"] == LIVE_CTA
+    assert geo["resumeText"] != "Continue"
+    assert geo["resumeText"] != "Add to Playground"
     assert geo["resumeHref"] == PLAYGROUND_BILLING_PATH
     assert geo["cancelDisplay"] == "none"
     assert geo["hasClose"] is True
@@ -761,9 +736,6 @@ def test_expired_add_screen05_1280(tmp_path: Path) -> None:
     assert geo["actTitle"] == NDPS_GUEST_TITLE
     assert geo["confirmForm"] is False
     assert geo["scope"] is False
-    assert geo["guestAdd"] is False
-    assert geo["signedAdd"] is False
-    assert geo["plusAdd"] is False
     assert geo["path"] == "/laws/ndps"
     assert closed["open"] is False
     assert closed["path"] == "/laws/ndps"
@@ -772,14 +744,14 @@ def test_expired_add_screen05_1280(tmp_path: Path) -> None:
     assert shot_path.stat().st_size > 1000
 
 
-def test_expired_add_plus_regression_1280(tmp_path: Path) -> None:
+def test_halted_add_plus_regression_1280(tmp_path: Path) -> None:
     pytest.importorskip("playwright")
     from playwright.sync_api import sync_playwright
 
     app = _mu_app(tmp_path, units=UNITS if UNITS.exists() else MINI_UNITS)
     client = TestClient(app)
     _sign_in(client)
-    _subscribe(client)
+    _subscribe(client, status="active")
     session = client.cookies.get(SESSION_COOKIE_NAME)
     csrf = client.cookies.get(CSRF_COOKIE_NAME)
     assert session
@@ -787,7 +759,7 @@ def test_expired_add_plus_regression_1280(tmp_path: Path) -> None:
     port, _server = _serve(app)
     artifact_dir = Path("/opt/cursor/artifacts")
     artifact_dir.mkdir(parents=True, exist_ok=True)
-    shot_path = artifact_dir / "expired_add_screen05_plus_regression_1280.png"
+    shot_path = artifact_dir / "halted_add_screen05_plus_regression_1280.png"
     origin = f"http://127.0.0.1:{port}"
 
     with sync_playwright() as pw:
@@ -832,14 +804,14 @@ def test_expired_add_plus_regression_1280(tmp_path: Path) -> None:
             """() => {
               const panel = document.querySelector('[data-pg-add]');
               const desk = panel && panel.querySelector('[data-plus-add-desktop]');
-              const expired = panel && panel.querySelector('[data-expired-add-desktop]');
+              const halted = panel && panel.querySelector('[data-halted-add-desktop]');
               const title = desk && desk.querySelector('.plus-add-title');
               const submit = desk && desk.querySelector('.plus-add-submit');
               return {
                 kind: panel && panel.getAttribute('data-pg-kind'),
                 plus: panel && panel.getAttribute('data-plus-add'),
-                expiredAttr: panel && panel.getAttribute('data-expired-add'),
-                expiredPresent: Boolean(expired),
+                haltedAttr: panel && panel.getAttribute('data-halted-add'),
+                haltedPresent: Boolean(halted),
                 title: title && title.textContent.trim(),
                 submit: submit && submit.textContent.trim(),
                 confirm: Boolean(panel && panel.querySelector('[data-pg-add-confirm]')),
@@ -854,8 +826,8 @@ def test_expired_add_plus_regression_1280(tmp_path: Path) -> None:
 
     assert geo["kind"] == "eligible_to_add"
     assert geo["plus"] == "desktop"
-    assert geo["expiredAttr"] in (None, "")
-    assert geo["expiredPresent"] is False
+    assert geo["haltedAttr"] in (None, "")
+    assert geo["haltedPresent"] is False
     assert geo["title"] == "Add to Playground"
     assert geo["submit"] == "Add to Playground"
     assert geo["confirm"] is True

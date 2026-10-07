@@ -135,8 +135,12 @@ from constitution_memorizer.playground.progress import (
 from constitution_memorizer.entitlements.dependencies import (
     request_is_active_plus,
     request_is_expired_subscriber,
+    request_is_halted_subscriber,
 )
-from constitution_memorizer.entitlements.models import BLOCK_PAID_PERIOD_ENDED
+from constitution_memorizer.entitlements.models import (
+    BLOCK_PAID_PERIOD_ENDED,
+    BLOCK_PAYMENT_HALTED,
+)
 from constitution_memorizer.playground.view import (
     add_confirm_copy,
     build_home_view,
@@ -381,7 +385,8 @@ def _add_page_context(
             entire_meta = ""
     kind = state.kind
     expired_add = request_is_expired_subscriber(request)
-    if expired_add and kind == "already_active":
+    halted_add = request_is_halted_subscriber(request)
+    if (expired_add or halted_add) and kind == "already_active":
         kind = "resume"
     login_href = playground_login_href(
         local_next_path(str(request.url.path), add_path(law_id))
@@ -406,7 +411,17 @@ def _add_page_context(
         )
     title = confirm_title
     lines = confirm_lines
-    if expired_add and kind == "resume":
+    resume_cta_label = ""
+    resume_cta_href = ""
+    if halted_add and kind == "resume":
+        # Presentation only: elapsed Halted keeps paid_period_ended as the
+        # block reason, but the sheet stays Halted-family.
+        gate = gate_view(reason=BLOCK_PAYMENT_HALTED)
+        title = gate.title
+        lines = gate.lines
+        resume_cta_label = gate.cta_label
+        resume_cta_href = gate.cta_href
+    elif expired_add and kind == "resume":
         reason = BLOCK_PAID_PERIOD_ENDED
         snapshot = access.snapshot
         if snapshot is not None and snapshot.playground_block_reason:
@@ -446,6 +461,9 @@ def _add_page_context(
         "plus_add_space": plus_space,
         "plus_add_footer": plus_footer,
         "expired_add": expired_add,
+        "halted_add": halted_add,
+        "resume_cta_label": resume_cta_label,
+        "resume_cta_href": resume_cta_href,
     }
 
 

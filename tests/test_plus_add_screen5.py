@@ -356,6 +356,7 @@ def test_halted_expired_pro_free_guest_are_not_plus_add(tmp_path: Path) -> None:
     halted_html = halted.get(add_path("ndps")).text
     assert "data-plus-add-desktop" not in halted_html
     assert 'data-plus-add="desktop"' not in halted_html
+    assert 'data-halted-add="desktop"' in halted_html
 
     expired = TestClient(_mu_app(tmp_path / "expired"))
     _sign_in(expired)
