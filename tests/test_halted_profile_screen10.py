@@ -1,9 +1,9 @@
 """Halted cohort desktop /profile Screen 10 (CTA map halted/10-screen).
 
 Authorized: ChatGPT. Authenticated multiuser GET /profile after a real Plus
-subscription is halted. Overlay on the live Profile model: Halted title/chip/body
-from playground_subscription_card even when elapsed; CTA Manage subscription
-from gate_view(BLOCK_PAYMENT_HALTED). No Plus usage stat, no Change plan, no
+subscription is halted. Overlay on the live Profile model: Halted title/chip from
+playground_subscription_card even when elapsed; body and CTA Manage
+subscription from gate_view(BLOCK_PAYMENT_HALTED). No Plus usage stat, no Change plan, no
 plus_profile_subscription_card. Guest, Free, Plus Screen 10, Expired Screen 10,
 Pro/Max, paused, pending, phone, Plus 01–11, Expired 01–11, and Halted 01–09
 stay unchanged. No new route. No Halted 11.
@@ -12,6 +12,7 @@ stay unchanged. No new route. No Halted 11.
 from __future__ import annotations
 
 import re
+import shutil
 import socket
 import threading
 import time
@@ -76,11 +77,13 @@ ACTIVE_START = datetime(2026, 9, 15, tzinfo=timezone.utc)
 ACTIVE_END = datetime(2026, 10, 15, tzinfo=timezone.utc)
 LIVE_GATE = gate_view(reason=BLOCK_PAYMENT_HALTED)
 LIVE_HEADING = LIVE_GATE.title
+LIVE_BODY = " ".join(LIVE_GATE.lines)
 LIVE_CTA = LIVE_GATE.cta_label
 LIVE_EXPIRED = gate_view(reason=BLOCK_PAID_PERIOD_ENDED).title
 LOCATOR = "ndps:section:8:clause:a"
 INVENTED = (
     "Plan ended 31 August",
+    "Resume Playground",
     "Resume your Playground",
     "Your Playground is paused",
     "This paid period has ended",
@@ -227,7 +230,12 @@ def _halted_card(client: TestClient):
         card_snap = replace(snap, playground_block_reason=BLOCK_PAYMENT_HALTED)
     card = playground_subscription_card(card_snap)
     gate = gate_view(reason=BLOCK_PAYMENT_HALTED)
-    return replace(card, cta_label=gate.cta_label, cta_href=gate.cta_href)
+    return replace(
+        card,
+        body=" ".join(gate.lines),
+        cta_label=gate.cta_label,
+        cta_href=gate.cta_href,
+    )
 
 
 def _facts(client: TestClient) -> dict:
@@ -336,6 +344,7 @@ def test_halted_profile_reaches_profile_with_profile_selected(tmp_path: Path) ->
     assert "data-report-open" in account
     assert "data-open-signout" in account
     assert 'action="/logout"' in html
+    assert LIVE_BODY in html
     for phrase in INVENTED:
         assert phrase not in html, phrase
 
@@ -355,8 +364,11 @@ def test_halted_profile_card_uses_halted_branch_and_gate_cta(tmp_path: Path) -> 
     assert not helper.stat_big
     card = _halted_card(client)
     assert card.chip == helper.chip
-    assert card.body == helper.body
     assert card.title == helper.title
+    assert card.body == LIVE_BODY == "Playground learning is paused. Your progress is saved."
+    assert card.body == " ".join(LIVE_GATE.lines)
+    assert card.body != helper.body
+    assert "Resume Playground" in helper.body
     assert card.cta_label == LIVE_CTA == "Manage subscription"
     assert card.cta_href == LIVE_GATE.cta_href == PLAYGROUND_BILLING_PATH
     html = unescape(client.get("/profile").text)
@@ -365,10 +377,12 @@ def test_halted_profile_card_uses_halted_branch_and_gate_cta(tmp_path: Path) -> 
     assert f">{card.chip}<" in sub
     assert f'data-chip="{card.chip_kind}"' in sub
     assert card.body in sub
+    assert LIVE_BODY in sub
+    assert helper.body not in html
     assert card.cta_label in sub
     assert f'href="{card.cta_href}"' in sub
     assert PLAYGROUND_BILLING_PATH == "/billing/subscriptions"
-    assert ">Resume Playground<" not in sub
+    assert "Resume Playground" not in html
     assert "Change plan" not in html
     assert "new spaces open" not in html
     assert "Manage plan" not in sub
@@ -401,6 +415,8 @@ def test_halted_profile_does_not_call_plus_capacity_helper() -> None:
     assert "plus_profile_subscription_card(" not in halted_block
     assert "peek_capacity" not in overlay
     assert "gate_view" in overlay
+    assert "halted_gate.lines" in halted_block
+    assert "body=" in halted_block
     assert '"halted_profile": halted_profile' in overlay
     assert '"halted_header_status": halted_header_status' in overlay
     plus_block = overlay.split("if plus_profile:", 1)[1]
@@ -496,8 +512,9 @@ def test_halted_elapsed_period_stays_halted_on_profile(tmp_path: Path) -> None:
     assert card.title in sub
     assert f">{card.chip}<" in sub
     assert card.body in sub
+    assert LIVE_BODY in sub
     assert LIVE_CTA in sub
-    assert ">Resume Playground<" not in sub
+    assert "Resume Playground" not in html
     assert "This paid period has ended" not in html
     assert LIVE_EXPIRED not in html
     assert "Change plan" not in html
@@ -646,6 +663,8 @@ def test_halted_profile_marker_uses_shared_predicate() -> None:
     assert "playground_subscription_card" in overlay
     assert "gate_view" in overlay
     assert "BLOCK_PAYMENT_HALTED" in overlay
+    assert "halted_gate.lines" in overlay
+    assert "Playground learning is paused" not in overlay
     assert "def snapshot_is_halted_subscriber" not in overlay
     assert "def request_is_halted_subscriber" in DEPS.read_text(encoding="utf-8")
     assert "subscription_status == \"halted\"" in DEPS.read_text(encoding="utf-8")
@@ -656,6 +675,7 @@ def test_halted_profile_marker_uses_shared_predicate() -> None:
     )[0]
     assert 'chip="ON HOLD"' in halted
     assert 'cta_label="Resume Playground"' in halted
+    assert "Resume Playground when you are ready." in halted
     assert "cta_href=PLAYGROUND_BILLING_PATH" in halted
     base = BASE.read_text(encoding="utf-8")
     assert "halted_profile_chrome" in base
@@ -832,6 +852,7 @@ def test_halted_profile_screen10_1280(tmp_path: Path) -> None:
     artifact_dir = Path("/opt/cursor/artifacts")
     artifact_dir.mkdir(parents=True, exist_ok=True)
     shot_path = artifact_dir / "halted_profile_screen10_1280.png"
+    fix_path = artifact_dir / "halted_profile_screen10_fix_1280.png"
     origin = f"http://127.0.0.1:{port}"
     with sync_playwright() as pw:
         browser = pw.chromium.launch(channel="chrome", args=["--disable-lcd-text"])
@@ -904,7 +925,8 @@ def test_halted_profile_screen10_1280(tmp_path: Path) -> None:
             }"""
         )
         page.evaluate("() => document.activeElement && document.activeElement.blur()")
-        page.screenshot(path=str(shot_path), full_page=False)
+        page.screenshot(path=str(fix_path), full_page=False)
+        shutil.copyfile(fix_path, shot_path)
         context.close()
         browser.close()
     assert geo["present"] is True
@@ -918,13 +940,15 @@ def test_halted_profile_screen10_1280(tmp_path: Path) -> None:
     assert geo["subTitle"] == card.title
     assert geo["chip"] == card.chip == "ON HOLD"
     assert geo["chipKind"] == "hold"
-    assert (geo["subBody"] or "").strip() == card.body
+    assert (geo["subBody"] or "").strip() == card.body == LIVE_BODY
+    assert "Resume Playground" not in (geo["subBody"] or "")
     assert geo["statPresent"] is False
     assert geo["ctaText"] == card.cta_label == "Manage subscription"
     assert geo["ctaHref"] == card.cta_href == PLAYGROUND_BILLING_PATH
     assert geo["status"] == LIVE_HEADING
     assert geo["statusDisplay"] != "none"
     assert "Profile" in (geo["navActive"] or "")
+    assert fix_path.exists() and fix_path.stat().st_size > 1000
     assert shot_path.exists() and shot_path.stat().st_size > 1000
 
 

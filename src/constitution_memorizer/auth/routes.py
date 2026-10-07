@@ -628,6 +628,7 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
             playground_card = playground_subscription_card(card_snapshot)
             playground_card = replace(
                 playground_card,
+                body=" ".join(halted_gate.lines),
                 cta_label=halted_gate.cta_label,
                 cta_href=halted_gate.cta_href,
             )

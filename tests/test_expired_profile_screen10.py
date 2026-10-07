@@ -25,7 +25,10 @@ from fastapi.testclient import TestClient
 
 from constitution_memorizer.auth.fake_provider import FakeAuthProvider
 from constitution_memorizer.auth.sessions import SESSION_COOKIE_NAME, InMemorySessionStore
-from constitution_memorizer.entitlements.models import BLOCK_PAID_PERIOD_ENDED
+from constitution_memorizer.entitlements.models import (
+    BLOCK_PAID_PERIOD_ENDED,
+    BLOCK_PAYMENT_HALTED,
+)
 from constitution_memorizer.multiuser.settings import (
     MultiUserSettings,
     clear_settings_cache,
@@ -511,12 +514,15 @@ def test_guest_free_plus_pro_max_halted_paused_pending_are_not_expired_profile(
     halted_card = playground_subscription_card(
         halted.app.state.entitlement_service.resolve(USER)
     )
+    halted_gate = gate_view(reason=BLOCK_PAYMENT_HALTED)
+    halted_body = " ".join(halted_gate.lines)
     assert halted_card.chip == "ON HOLD"
     assert halted_card.chip in halted_html
-    assert halted_card.body in halted_html
+    assert halted_body in halted_html
+    assert halted_card.body not in halted_html
     halted_sub = _subscription(halted_html)
     assert "Manage subscription" in halted_sub
-    assert ">Resume Playground<" not in halted_sub
+    assert "Resume Playground" not in halted_html
     assert "Change plan" not in halted_sub
     assert halted.app.state.entitlement_service.resolve(
         USER
