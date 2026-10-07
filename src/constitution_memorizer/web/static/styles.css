@@ -11537,7 +11537,7 @@ body.is-admin-previewing { padding-top: 40px; }
     font-weight: 600;
   }
 
-  body.is-authed[data-mscreen="playground"]:not(:has([data-signed-in-pg-gate])):not(:has([data-plus-playground])):not(:has([data-expired-playground])) .account-menu-btn-status {
+  body.is-authed[data-mscreen="playground"]:not(:has([data-signed-in-pg-gate])):not(:has([data-plus-playground])):not(:has([data-expired-playground])):not(:has([data-halted-playground])) .account-menu-btn-status {
     display: none;
   }
 

@@ -5,15 +5,49 @@
 {% set home = home_view %}
 {% set plus_pg = plus_playground|default(false) %}
 {% set expired_pg = expired_playground|default(false) %}
-{% if expired_pg %}
+{% set halted_pg = halted_playground|default(false) %}
+{% if halted_pg %}
+<div data-halted-pg-phone>
+{{ banner(home.banner) }}
+</div>
+{% elif expired_pg %}
 <div data-expired-pg-phone>
 {{ banner(home.banner) }}
 </div>
 {% else %}
 {{ banner(home.banner) }}
 {% endif %}
-<div class="pg-home-grid{% if home.read_only %} is-readonly{% endif %}"{% if plus_pg %} data-plus-playground="desktop"{% endif %}{% if expired_pg %} data-expired-playground="desktop"{% endif %}>
-  {% if expired_pg and expired_gate %}
+<div class="pg-home-grid{% if home.read_only %} is-readonly{% endif %}"{% if plus_pg %} data-plus-playground="desktop"{% endif %}{% if expired_pg %} data-expired-playground="desktop"{% endif %}{% if halted_pg %} data-halted-playground="desktop"{% endif %}>
+  {% if halted_pg and halted_gate %}
+  <section class="expired-pg-desk" data-halted-pg-desktop>
+    <div class="expired-pg-main">
+      <p class="expired-pg-kicker">Playground</p>
+      <h1 class="expired-pg-title">{{ halted_gate.title }}</h1>
+      {% for line in halted_gate.lines %}
+      <p class="expired-pg-lede">{{ line }}</p>
+      {% endfor %}
+      <p class="expired-pg-saved-kicker">Saved progress</p>
+      <div class="ProgressSummary expired-pg-tiles" aria-label="Saved progress">
+        <div class="ProgressSummary-cell">
+          <div class="ProgressSummary-value">{{ home.due_today }}</div>
+          <div class="ProgressSummary-label">Due today</div>
+        </div>
+        <div class="ProgressSummary-cell">
+          <div class="ProgressSummary-value">{{ home.overdue }}</div>
+          <div class="ProgressSummary-label">Overdue</div>
+        </div>
+        <div class="ProgressSummary-cell">
+          <div class="ProgressSummary-value">{{ home.sections_learned }}</div>
+          <div class="ProgressSummary-label">Sections learned</div>
+        </div>
+      </div>
+    </div>
+    <aside class="expired-pg-card" aria-label="Playground plan">
+      <a class="expired-pg-primary" href="{{ halted_gate.cta_href }}">{{ halted_gate.cta_label }}</a>
+      <a class="expired-pg-secondary" href="{{ halted_gate.secondary_href }}">{{ halted_gate.secondary_label }}</a>
+    </aside>
+  </section>
+  {% elif expired_pg and expired_gate %}
   <section class="expired-pg-desk" data-expired-pg-desktop>
     <div class="expired-pg-main">
       <p class="expired-pg-kicker">Playground</p>
@@ -43,7 +77,7 @@
     </aside>
   </section>
   {% endif %}
-  <div{% if expired_pg %} data-expired-pg-phone{% endif %}>
+  <div{% if halted_pg %} data-halted-pg-phone{% elif expired_pg %} data-expired-pg-phone{% endif %}>
     <p class="pg-eyebrow pg-home-kicker">{{ home.kicker }}</p>
     <h1 class="pg-home-title{% if plus_pg %} plus-pg-desk-hide{% endif %}">{{ home.heading }}</h1>
     {% if plus_pg %}
@@ -159,7 +193,7 @@
     </div>
     {% endif %}
   </div>
-  <aside class="pg-aside"{% if expired_pg %} data-expired-pg-phone{% endif %} aria-label="{{ home.capacity.month_name }} capacity">
+  <aside class="pg-aside"{% if halted_pg %} data-halted-pg-phone{% elif expired_pg %} data-expired-pg-phone{% endif %} aria-label="{{ home.capacity.month_name }} capacity">
     {% if plus_pg %}
     <div class="plus-pg-aside-card">
       <p class="pg-eyebrow">{{ home.capacity.month_name }}</p>

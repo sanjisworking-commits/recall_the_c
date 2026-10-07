@@ -3811,36 +3811,45 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   }
 }
 
-/* Expired desktop Playground home (CTA map expired/06-screen). Phone
-   expired keeps the production read-only home. Plus, guest, Free, and
-   halted/paused stay on their own wrappers. */
+/* Expired and Halted desktop Playground home (CTA maps expired/06-screen
+   and halted/06-screen). Shared selectors; Halted reuses expired-pg-*
+   visual classes. Phone keeps the production read-only home. Plus, guest,
+   Free, and paused stay on their own wrappers. */
 @media (max-width: 560px) {
-  [data-expired-pg-desktop] {
+  [data-expired-pg-desktop],
+  [data-halted-pg-desktop] {
     display: none !important;
   }
 }
 
 @media (min-width: 561px) {
-  [data-expired-pg-phone] {
+  [data-expired-pg-phone],
+  [data-halted-pg-phone] {
     display: none !important;
   }
 
   body.is-authed.playground-app:has([data-expired-playground="desktop"]) .page-wrap,
-  body.is-authed.playground-app:has([data-expired-playground="desktop"]) .sheet {
+  body.is-authed.playground-app:has([data-expired-playground="desktop"]) .sheet,
+  body.is-authed.playground-app:has([data-halted-playground="desktop"]) .page-wrap,
+  body.is-authed.playground-app:has([data-halted-playground="desktop"]) .sheet {
     background: var(--pg-paper);
   }
 
-  body.is-authed[data-mscreen="playground"]:has([data-expired-playground="desktop"]) .PlaygroundShell {
+  body.is-authed[data-mscreen="playground"]:has([data-expired-playground="desktop"]) .PlaygroundShell,
+  body.is-authed[data-mscreen="playground"]:has([data-halted-playground="desktop"]) .PlaygroundShell {
     max-width: none;
     padding: 36px 40px 60px;
   }
 
   body.is-authed[data-mscreen="playground"]:has([data-expired-playground="desktop"]) .site-footer,
-  body.is-authed[data-mscreen="playground"]:has([data-expired-playground="desktop"]) .sheet-footnote {
+  body.is-authed[data-mscreen="playground"]:has([data-expired-playground="desktop"]) .sheet-footnote,
+  body.is-authed[data-mscreen="playground"]:has([data-halted-playground="desktop"]) .site-footer,
+  body.is-authed[data-mscreen="playground"]:has([data-halted-playground="desktop"]) .sheet-footnote {
     display: none !important;
   }
 
-  .pg-home-grid[data-expired-playground="desktop"] {
+  .pg-home-grid[data-expired-playground="desktop"],
+  .pg-home-grid[data-halted-playground="desktop"] {
     display: block;
   }
 

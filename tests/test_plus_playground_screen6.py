@@ -266,6 +266,7 @@ def test_halted_expired_pro_free_guest_are_not_plus_screen_06(tmp_path: Path) ->
     _sign_in(halted)
     _subscribe(halted, status="halted")
     halted_html = halted.get("/playground").text
+    assert 'data-halted-playground="desktop"' in halted_html
     assert 'data-plus-playground="desktop"' not in halted_html
     assert "RecallC Plus" not in _header(halted_html)
 

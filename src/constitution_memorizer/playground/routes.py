@@ -501,6 +501,12 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             overlay=overlay,
             notice=str(request.query_params.get("notice") or ""),
         )
+        halted_playground = request_is_halted_subscriber(request)
+        halted_gate = None
+        halted_header_status = ""
+        if halted_playground:
+            halted_gate = gate_view(reason=BLOCK_PAYMENT_HALTED)
+            halted_header_status = halted_gate.title
         expired_playground = request_is_expired_subscriber(request)
         expired_gate = None
         expired_header_status = ""
@@ -533,6 +539,9 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                 "hard_gate": False,
                 "read_only": bool(getattr(access, "can_view_home", False) and not access.can_open),
                 "plus_playground": request_is_active_plus(request),
+                "halted_playground": halted_playground,
+                "halted_gate": halted_gate,
+                "halted_header_status": halted_header_status,
                 "expired_playground": expired_playground,
                 "expired_gate": expired_gate,
                 "expired_header_status": expired_header_status,
