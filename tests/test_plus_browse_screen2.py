@@ -183,8 +183,6 @@ def test_halted_and_pro_are_not_plus_screen_02(tmp_path: Path) -> None:
     _subscribe(halted, status="halted")
     halted_html = halted.get("/browse").text
     assert 'data-plus-browse="desktop"' not in halted_html
-    assert "data-signed-in-browse-strip" in halted_html
-    assert "Unlock all" in halted_html
 
     pro = TestClient(_mu_app(tmp_path / "pro"))
     _sign_in(pro)

@@ -2531,18 +2531,32 @@ def create_app(
             get_entitlement_snapshot,
             request_is_active_plus,
             request_is_expired_subscriber,
+            request_is_halted_subscriber,
         )
 
         plus_browse = request_is_active_plus(request)
         expired_browse = request_is_expired_subscriber(request)
+        halted_browse = request_is_halted_subscriber(request)
         expired_header_status = ""
-        if expired_browse:
+        halted_header_status = ""
+        if expired_browse or halted_browse:
             from constitution_memorizer.playground.view import gate_view
 
-            snap = get_entitlement_snapshot(request)
-            expired_header_status = gate_view(
-                reason=str(snap.playground_block_reason or "")
-            ).title
+            if expired_browse:
+                snap = get_entitlement_snapshot(request)
+                expired_header_status = gate_view(
+                    reason=str(snap.playground_block_reason or "")
+                ).title
+            if halted_browse:
+                from constitution_memorizer.entitlements.models import (
+                    BLOCK_PAYMENT_HALTED,
+                )
+
+                # Presentation only: elapsed Halted keeps paid_period_ended
+                # as the block reason, but the header stays Halted-family.
+                halted_header_status = gate_view(
+                    reason=BLOCK_PAYMENT_HALTED
+                ).title
         # Phone Browse is Part-first (design 02): each Part card carries its own
         # progress and due count, and opens a Part page instead of scrolling.
         today = date.today()
@@ -2571,7 +2585,9 @@ def create_app(
                 "claimed_articles": claimed,
                 "plus_browse": plus_browse,
                 "expired_browse": expired_browse,
+                "halted_browse": halted_browse,
                 "expired_header_status": expired_header_status,
+                "halted_header_status": halted_header_status,
             },
         )
         record_request_timing("template", started)
