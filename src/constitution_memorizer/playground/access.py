@@ -75,9 +75,15 @@ from constitution_memorizer.playground.roster.period import playground_month_nam
 from constitution_memorizer.playground.roster.service import roster_full_body
 from constitution_memorizer.playground.urls import add_path, home_path, roster_path
 from constitution_memorizer.playground.view import (
+    FREE_GATE_HOW_STEPS,
+    GATE_STAGE_INTRO,
+    PLAYGROUND_PLANS_PATH,
+    gate_plan_continue_label,
+    gate_selector_plan_views,
     gate_view,
     law_membership,
     load_membership_index,
+    parse_playground_gate_stage_from_request,
     saved_progress_summary,
 )
 
@@ -547,6 +553,7 @@ def _render_gate(
     gate,
     *,
     saved: tuple[int, int] | None = None,
+    extra: dict[str, Any] | None = None,
 ) -> Response:
     context = {
         "gate": gate,
@@ -566,7 +573,15 @@ def _render_gate(
         "catalogue_plans": gate.plans,
         "from_price": gate.from_price,
         "show_included": gate.show_included,
+        "pg_gate_stage": GATE_STAGE_INTRO,
+        "selected_tier": "",
+        "gate_selector_plans": (),
+        "gate_continue_label": "",
+        "gate_how_steps": (),
+        "current_plan_tier": "",
     }
+    if extra:
+        context.update(extra)
     return templates.TemplateResponse(request, "playground_gate.html", context)
 
 
@@ -646,7 +661,9 @@ def _gate_page(
         cta_href = MANAGE_DEVICES_PATH
     elif reason == BLOCK_SIGN_IN_REQUIRED:
         cta_href = playground_login_href(local_next_path(next_url, home_path()))
-    elif reason in {BLOCK_NOT_SUBSCRIBED, BLOCK_PAID_PERIOD_ENDED}:
+    elif reason == BLOCK_NOT_SUBSCRIBED:
+        cta_href = PLAYGROUND_PLANS_PATH
+    elif reason == BLOCK_PAID_PERIOD_ENDED:
         cta_href = PLAYGROUND_BILLING_PATH
     elif reason in {BLOCK_PAYMENT_HALTED, BLOCK_SUBSCRIPTION_PAUSED}:
         cta_href = PLAYGROUND_BILLING_PATH
@@ -663,7 +680,25 @@ def _gate_page(
         uid = playground_user_id(request)
         if overlay is not None and uid is not None:
             saved = saved_progress_summary(overlay, uid)
-    return _render_gate(request, templates, gate, saved=saved)
+    extra: dict[str, Any] = {}
+    if reason == BLOCK_NOT_SUBSCRIBED:
+        stage, selected_tier = parse_playground_gate_stage_from_request(request)
+        snap = getattr(request.state, "entitlement_snapshot", None)
+        current_tier = ""
+        if snap is not None and getattr(snap, "is_subscribed", False):
+            current_tier = str(getattr(snap, "tier", None) or "")
+        extra = {
+            "pg_gate_stage": stage,
+            "selected_tier": selected_tier or "",
+            "gate_selector_plans": gate_selector_plan_views(),
+            "gate_continue_label": gate_plan_continue_label(
+                selected_tier=selected_tier,
+                current_tier=current_tier or None,
+            ),
+            "gate_how_steps": FREE_GATE_HOW_STEPS,
+            "current_plan_tier": current_tier,
+        }
+    return _render_gate(request, templates, gate, saved=saved, extra=extra)
 
 
 def new_law_home_notice(request: Request, access: PlaygroundAccess) -> str | None:

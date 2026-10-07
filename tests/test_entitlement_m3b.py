@@ -271,12 +271,11 @@ def _hydrate_spy(monkeypatch: pytest.MonkeyPatch) -> list[str]:
 def _assert_subscribe_gate(response) -> None:
     assert response.status_code == 200
     assert 'data-playground-gate="not_subscribed"' in response.text
-    assert "Unlock Playground" in response.text
-    assert "Included with your account" in response.text
-    assert "complete Constitution" in response.text
-    assert "Six learning methods" in response.text
+    assert "Your RecallC account already includes the complete Constitution." in response.text
+    assert ">Unlock Playground<" not in response.text
+    assert "Included with your account" not in response.text
     assert "Playground adds structured learning for laws." in response.text
-    assert PLAYGROUND_BILLING_PATH in response.text
+    assert "/playground?stage=plans" in response.text
     assert "Sign in to use Playground" not in response.text
     assert 'data-hard-gate="true"' in response.text
 

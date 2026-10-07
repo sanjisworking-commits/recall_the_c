@@ -265,7 +265,7 @@ def test_d102_gate_variants_remain_distinct() -> None:
     views = [gate_view(reason=reason) for reason in reasons]
     titles = [view.title for view in views]
     assert len(set(titles)) == len(reasons)
-    assert "Unlock Playground" in titles
+    assert "Your RecallC account already includes the complete Constitution." in titles
     assert "Device limit reached" in titles
     gate = (TEMPLATES / "playground_gate.html").read_text(encoding="utf-8")
     assert 'data-playground-gate="{{ gate.reason }}"' in gate

@@ -3202,9 +3202,9 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   }
 }
 
-/* Signed-in desktop not-subscribed Gate (CTA map signedIn/06-screen).
-   Reuses EntitlementGate copy and /billing/subscriptions. Phone Gate,
-   subscriber home, and other entitlement reasons stay unchanged. */
+/* Signed-in desktop not-subscribed Gate (CTA map signedIn/07-screen intro).
+   Plans stage shares this grid and unhides .pg-plan-stage below. Phone Gate
+   is parked; subscriber home and other entitlement reasons stay unchanged. */
 @media (min-width: 561px) {
   body.is-authed.playground-app:has([data-signed-in-pg-gate]) .page-wrap,
   body.is-authed.playground-app:has([data-signed-in-pg-gate]) .sheet {
@@ -3331,6 +3331,69 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     font-size: 14px;
     box-sizing: border-box;
     box-shadow: var(--pg-shadow-press-active);
+  }
+
+  /* Signed-in desktop Free Gate plans stage (CTA map signedIn/07-screen).
+     Phone Gate is parked; subscriber home and other entitlement reasons
+     stay unchanged. */
+  .EntitlementGate[data-signed-in-pg-gate][data-pg-gate-stage="plans"] {
+    grid-template-areas:
+      "kicker card"
+      "title card"
+      "lede card"
+      "plans card";
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate][data-pg-gate-stage="plans"]:not(:has([data-pg-plan-continue])) {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "kicker"
+      "title"
+      "lede"
+      "plans";
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate][data-pg-gate-stage="plans"] > .pg-plan-stage {
+    display: grid !important;
+    grid-area: plans;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin: 16px 0 0;
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate][data-pg-gate-stage="plans"] > .HowPlaygroundWorks {
+    display: none;
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate] a.pg-plan-card {
+    display: block;
+    margin: 0;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate] .pg-plan-card.is-selected {
+    border-color: var(--pg-ink);
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate] .pg-plan-card.is-disabled {
+    pointer-events: none;
+    color: var(--pg-muted);
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate] .pg-plan-current {
+    margin: 8px 0 0;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate][data-pg-gate-stage="plans"] > .pg-actions button.pg-btn {
+    width: 100%;
+    height: 42px;
+    min-height: 42px;
+    font-size: 14px;
+    box-sizing: border-box;
   }
 }
 

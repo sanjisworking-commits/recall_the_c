@@ -124,7 +124,8 @@ def test_signed_in_browse_strip_uses_existing_copy_and_unlocks_gate(
     assert gate.status_code == 200
     assert 'class="EntitlementGate"' in gate.text
     assert 'data-playground-gate="not_subscribed"' in gate.text
-    assert "Unlock Playground" in gate.text
+    assert "Your RecallC account already includes the complete Constitution." in gate.text
+    assert ">Unlock Playground<" not in gate.text
 
 
 def test_signed_in_browse_laws_and_tables_keep_existing_hrefs(tmp_path: Path) -> None:
@@ -550,7 +551,7 @@ def test_signed_in_browse_1280_matches_desktop_shot(tmp_path: Path) -> None:
     assert header_rgb[0] > 250
     assert "/playground" in gate_url
     assert 'data-playground-gate="not_subscribed"' in gate_html
-    assert "Unlock Playground" in gate_html
+    assert "Your RecallC account already includes the complete Constitution." in gate_html
     assert "/laws" in laws_url
     assert tables_href == "/tables"
     assert article_href and article_href.startswith("/browse/article/")

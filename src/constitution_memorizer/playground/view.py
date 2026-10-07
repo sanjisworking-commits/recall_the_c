@@ -65,16 +65,23 @@ from constitution_memorizer.subscriptions.catalog import (
     get_subscription_product,
     list_subscription_products,
 )
+from constitution_memorizer.web.guest_playground_intro import GUEST_PG_STEPS
 
 PLAYGROUND_BILLING_PATH = "/billing/subscriptions"
+PLAYGROUND_PLANS_PATH = "/playground?stage=plans"
+GATE_STAGE_INTRO = "intro"
+GATE_STAGE_PLANS = "plans"
 CONSTITUTION_HOME_PATH = "/dashboard"
 MANAGE_DEVICES_PATH = "/profile/security/devices"
 BROWSE_LAWS_PATH = "/laws"
 SAVED_PROGRESS_HOME_LIMIT = 8
+_GATE_SELECTOR_TIERS = frozenset({"plus", "pro", "max"})
 
 TRUST_MARK = "Verbatim, always."
 TRUST_HOME = "Every provision you learn is the Bare Act text, word for word."
 TRUST_WORKSPACE = "Verbatim, always. Bare Act wording, never rewritten."
+
+FREE_GATE_HOW_STEPS: tuple[str, ...] = GUEST_PG_STEPS
 
 HOW_PLAYGROUND_WORKS: tuple[tuple[str, str, str], ...] = (
     (
@@ -869,6 +876,66 @@ def catalogue_plan_views(
     return tuple(plans)
 
 
+def parse_playground_gate_stage(
+    stage: str | None = None,
+    tier: str | None = None,
+) -> tuple[str, str | None]:
+    """Presentation-only Gate query. Invalid stage → intro. Bare ``tier`` stays intro."""
+
+    raw_stage = str(stage or "").strip().lower()
+    raw_tier = str(tier or "").strip().lower()
+    if raw_stage != GATE_STAGE_PLANS:
+        return GATE_STAGE_INTRO, None
+    selected = raw_tier if raw_tier in _GATE_SELECTOR_TIERS else None
+    return GATE_STAGE_PLANS, selected
+
+
+def parse_playground_gate_stage_from_request(request: Any) -> tuple[str, str | None]:
+    params = getattr(request, "query_params", None)
+    getter = getattr(params, "get", None)
+    if getter is None:
+        return GATE_STAGE_INTRO, None
+    return parse_playground_gate_stage(stage=getter("stage"), tier=getter("tier"))
+
+
+def gate_selector_plan_views() -> tuple[CataloguePlanView, ...]:
+    """In-Gate plan selectors. Does not change ``catalogue_plan_views()`` hrefs."""
+
+    plans: list[CataloguePlanView] = []
+    for product in list_subscription_products():
+        plans.append(
+            CataloguePlanView(
+                tier=product.tier,
+                display_name=product.display_name,
+                price_inr=product.price_inr,
+                price_label=f"₹{product.price_inr}",
+                limit_label=catalogue_limit_label(product.playground_law_limit),
+                cta_label="",
+                href=f"{home_path()}?stage={GATE_STAGE_PLANS}&tier={product.tier}",
+            )
+        )
+    return tuple(plans)
+
+
+def gate_plan_continue_label(
+    *,
+    selected_tier: str | None,
+    current_tier: str | None = None,
+) -> str:
+    if not selected_tier:
+        return ""
+    try:
+        name = get_subscription_product(selected_tier).display_name
+    except UnknownSubscriptionTier:
+        return ""
+    current = str(current_tier or "").strip().lower()
+    if current and current == selected_tier:
+        return ""
+    if current:
+        return f"Switch to {name}"
+    return f"Continue with {name}"
+
+
 def skips_add_confirm(access: Any) -> bool:
     """Max (unlimited) and local/admin skip the numeric confirm step."""
 
@@ -1247,14 +1314,14 @@ def gate_view(
         return PlaygroundGateView(
             reason=reason,
             eyebrow="Playground",
-            title="Unlock Playground",
+            title="Your RecallC account already includes the complete Constitution.",
             lines=("Playground adds structured learning for laws.",),
             cta_label="View Playground plans",
-            cta_href=cta_href or PLAYGROUND_BILLING_PATH,
+            cta_href=cta_href or PLAYGROUND_PLANS_PATH,
             show_how=True,
-            show_included=True,
-            show_plans=True,
-            plans=catalogue_plan_views(),
+            show_included=False,
+            show_plans=False,
+            plans=gate_selector_plan_views(),
             from_price=catalogue_from_price(),
             hard_gate=True,
         )

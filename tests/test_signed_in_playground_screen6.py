@@ -1,9 +1,8 @@
-"""Signed-in desktop Playground home Screen 06 (CTA map signedIn/06-screen).
+"""Signed-in desktop Playground home Screen 06 density (now Screen 07 intro).
 
-Authorized: ChatGPT. Authenticated multiuser GET /playground desktop Gate
-for a non-subscriber only. Subscriber home, phone Gate, guest intro, and
-accepted screens 01–05 stay unchanged. View Playground plans keeps
-/billing/subscriptions. Copy is the existing Gate, not the prototype title.
+Free GET /playground uses the Screen 07 intro copy. Subscriber home, guest
+intro, and accepted screens 01–05 stay unchanged. View Playground plans opens
+the in-Gate plans stage.
 """
 
 from __future__ import annotations
@@ -24,8 +23,9 @@ from constitution_memorizer.multiuser.settings import (
     MultiUserSettings,
     clear_settings_cache,
 )
-from constitution_memorizer.playground.view import PLAYGROUND_BILLING_PATH
+from constitution_memorizer.playground.view import PLAYGROUND_PLANS_PATH
 from constitution_memorizer.web.app import create_app
+from constitution_memorizer.web.guest_playground_intro import GUEST_PG_STEPS
 
 MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
 ROOT = Path(__file__).resolve().parents[1]
@@ -41,12 +41,8 @@ HOME = ROOT / "src/constitution_memorizer/web/templates/playground.html"
 GATE = ROOT / "src/constitution_memorizer/web/templates/playground_gate.html"
 USER = UUID("11111111-1111-4111-8111-111111111111")
 LEDE = "Playground adds structured learning for laws."
-HOW_TITLES = (
-    "Choose your laws each month",
-    "Progress never disappears",
-    "Next month, decide what to keep",
-    "Read the law, verbatim",
-)
+TITLE = "Your RecallC account already includes the complete Constitution."
+HOW_TITLES = GUEST_PG_STEPS
 
 
 @pytest.fixture(autouse=True)
@@ -124,16 +120,16 @@ def test_signed_in_non_subscriber_reuses_existing_gate(tmp_path: Path) -> None:
     assert 'data-hard-gate="true"' in html
     assert "data-guest-pg-intro" not in html
     gate = _gate(html)
-    assert ">Unlock Playground<" in gate
+    assert f">{TITLE}<" in gate
+    assert ">Unlock Playground<" not in gate
     assert LEDE in gate
     assert ">View Playground plans<" in gate
-    assert f'href="{PLAYGROUND_BILLING_PATH}"' in gate
-    assert PLAYGROUND_BILLING_PATH == "/billing/subscriptions"
+    assert f'href="{PLAYGROUND_PLANS_PATH}"' in gate
+    assert PLAYGROUND_PLANS_PATH == "/playground?stage=plans"
     assert "How Playground works" in gate
     for title in HOW_TITLES:
         assert title in gate
-    assert "Included with your account" in gate
-    assert "complete Constitution" in gate
+    assert "Included with your account" not in gate
     assert "Sign in to use Playground" not in gate
     assert "Sign in to build your law-learning Playground." not in gate
     assert "Your Playground is paused" not in gate
@@ -360,8 +356,8 @@ def test_signed_in_pg_gate_1280_and_phone(tmp_path: Path) -> None:
         page.screenshot(path=str(shot_path), full_page=False)
 
         page.locator("[data-signed-in-pg-gate] > .pg-actions > .pg-btn").click()
-        page.wait_for_url("**/billing/subscriptions**", timeout=8000)
-        billing_path = page.evaluate("() => location.pathname")
+        page.wait_for_url("**/playground?stage=plans**", timeout=8000)
+        plans_url = page.evaluate("() => location.pathname + location.search")
 
         page.set_viewport_size({"width": 390, "height": 844})
         page.goto(f"{origin}/playground", wait_until="networkidle")
@@ -390,22 +386,22 @@ def test_signed_in_pg_gate_1280_and_phone(tmp_path: Path) -> None:
     assert geo["present"] is True
     assert geo["reason"] == "not_subscribed"
     assert geo["kicker"] == "Playground"
-    assert geo["title"] == "Unlock Playground"
+    assert geo["title"] == TITLE
     assert geo["titleSize"] == "28px"
     assert geo["titleWeight"] in ("500", "normal")
     assert geo["lede"] == LEDE
     assert geo["ledeSize"] == "13.5px"
     assert geo["howMargin"] == "16px"
     assert geo["ctaText"] == "View Playground plans"
-    assert geo["ctaHref"] == PLAYGROUND_BILLING_PATH
+    assert geo["ctaHref"] == PLAYGROUND_PLANS_PATH
     assert geo["ctaH"] == pytest.approx(42, abs=2)
     assert geo["circle"] == pytest.approx(22, abs=1)
     assert geo["stepSize"] == "13.5px"
     assert geo["cardW"] == pytest.approx(300, abs=8)
     assert geo["colGap"] == pytest.approx(40, abs=16)
     assert geo["shellPad"] == "28px"
-    assert geo["includedDisplay"] == "none"
-    assert geo["plansDisplay"] == "none"
+    assert geo["includedDisplay"] is None
+    assert geo["plansDisplay"] is None
     assert geo["howDisplay"] != "none"
     assert geo["stepCount"] == 4
     assert geo["stepTitles"] == list(HOW_TITLES)
@@ -423,11 +419,11 @@ def test_signed_in_pg_gate_1280_and_phone(tmp_path: Path) -> None:
     assert geo["status"] == "Free account"
     assert geo["statusDisplay"] != "none"
     assert "invert" in (geo["markFilter"] or "")
-    assert billing_path == PLAYGROUND_BILLING_PATH
-    assert phone_geo["title"] == "Unlock Playground"
-    assert phone_geo["includedDisplay"] != "none"
-    assert phone_geo["plansDisplay"] != "none"
-    assert phone_geo["ctaHref"] == PLAYGROUND_BILLING_PATH
+    assert plans_url.startswith("/playground?stage=plans")
+    assert phone_geo["title"] == TITLE
+    assert phone_geo["includedDisplay"] is None
+    assert phone_geo["plansDisplay"] is None
+    assert phone_geo["ctaHref"] == PLAYGROUND_PLANS_PATH
     assert phone_geo["grid"] != "grid"
     assert shot_path.is_file()
     assert shot_path.stat().st_size > 1000

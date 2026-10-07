@@ -291,7 +291,8 @@ def test_halted_expired_pro_free_guest_are_not_plus_screen_06(tmp_path: Path) ->
     free_html = free.get("/playground").text
     assert 'data-plus-playground="desktop"' not in free_html
     assert "data-signed-in-pg-gate" in free_html
-    assert ">Unlock Playground<" in free_html
+    assert "Your RecallC account already includes the complete Constitution." in free_html
+    assert ">Unlock Playground<" not in free_html
 
     guest = TestClient(_mu_app(tmp_path / "guest")).get("/playground").text
     assert 'data-plus-playground="desktop"' not in guest

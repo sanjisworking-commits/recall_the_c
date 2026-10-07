@@ -544,18 +544,30 @@ def test_t20_guest_json_stays_401_on_home_and_learn(tmp_path: Path):
 
 
 def test_t21_subscribe_gate_plans_come_from_catalogue(tmp_path: Path):
+    from constitution_memorizer.playground.view import (
+        catalogue_limit_label,
+        catalogue_plan_views,
+        gate_selector_plan_views,
+    )
+    from constitution_memorizer.subscriptions.catalog import list_subscription_products
+
     client, _repo = _m3_authed(tmp_path)
     home = client.get("/playground")
     _assert_subscribe_gate(home)
-    assert "₹199" in home.text
-    assert "₹399" in home.text
-    assert "₹1199" in home.text
-    assert "10 laws / month" in home.text
-    assert "30 laws / month" in home.text
-    assert "Unlimited laws / month" in home.text
-    assert "Plus" in home.text and "Pro" in home.text and "Max" in home.text
-    assert "₹149" not in home.text
-    assert PLAYGROUND_BILLING_PATH in home.text
+    plans_page = client.get("/playground?stage=plans")
+    assert plans_page.status_code == 200
+    for product in list_subscription_products():
+        assert f"₹{product.price_inr}" in plans_page.text
+        assert catalogue_limit_label(product.playground_law_limit) in plans_page.text
+        assert product.display_name in plans_page.text
+    assert "₹149" not in plans_page.text
+    assert PLAYGROUND_BILLING_PATH not in plans_page.text
+    billed = catalogue_plan_views()
+    assert billed
+    assert all(plan.href == PLAYGROUND_BILLING_PATH for plan in billed)
+    selectors = gate_selector_plan_views()
+    assert tuple(plan.tier for plan in selectors) == ("plus", "pro", "max")
+    assert all("stage=plans&tier=" in plan.href for plan in selectors)
 
 
 def test_t19_halted_and_expired_home_are_read_only(tmp_path: Path):

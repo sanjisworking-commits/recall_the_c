@@ -23,7 +23,8 @@
   </aside>
 </section>
 {% endif %}
-<section class="EntitlementGate" data-playground-gate="{{ gate.reason }}" aria-labelledby="pg-gate-title"{% if guest_pg_intro %} data-pg-gate-phone{% endif %}{% if current_user and gate.reason == 'not_subscribed' %} data-signed-in-pg-gate{% endif %}>
+{% set gate_stage = pg_gate_stage if pg_gate_stage is defined else 'intro' %}
+<section class="EntitlementGate" data-playground-gate="{{ gate.reason }}" aria-labelledby="pg-gate-title"{% if guest_pg_intro %} data-pg-gate-phone{% endif %}{% if current_user and gate.reason == 'not_subscribed' %} data-signed-in-pg-gate data-pg-gate-stage="{{ gate_stage }}"{% endif %}>
   <p class="pg-eyebrow">{{ gate.eyebrow }}</p>
   <h1 id="pg-gate-title">{{ gate.title }}</h1>
   {% for line in gate.lines %}
@@ -48,7 +49,30 @@
     </div>
   </div>
   {% endif %}
-  {% if gate.show_plans and gate.plans %}
+  {% if gate_stage == 'plans' and gate_selector_plans %}
+  <div class="pg-plan-stage" data-pg-plans>
+    <p class="pg-eyebrow">Playground plans</p>
+    {% for plan in gate_selector_plans %}
+    {% set is_current = current_plan_tier and plan.tier == current_plan_tier %}
+    {% set is_selected = selected_tier and plan.tier == selected_tier %}
+    {% if is_current %}
+    <article class="pg-plan-card is-disabled{% if is_selected %} is-selected{% endif %}" data-tier="{{ plan.tier }}" data-pg-plan-current{% if is_selected %} data-pg-plan-selected aria-current="true"{% endif %}>
+      <p class="pg-plan-name">{{ plan.display_name }}</p>
+      <p class="pg-plan-price">{{ plan.price_label }} <span>/ month</span></p>
+      <p class="pg-lede">{{ plan.limit_label }}</p>
+      <p class="pg-plan-current">Current plan</p>
+    </article>
+    {% else %}
+    <a class="pg-plan-card{% if is_selected %} is-selected{% endif %}" href="{{ plan.href }}" data-tier="{{ plan.tier }}" aria-pressed="{{ 'true' if is_selected else 'false' }}"{% if is_selected %} data-pg-plan-selected aria-current="true"{% endif %}>
+      <p class="pg-plan-name">{{ plan.display_name }}</p>
+      <p class="pg-plan-price">{{ plan.price_label }} <span>/ month</span></p>
+      <p class="pg-lede">{{ plan.limit_label }}</p>
+    </a>
+    {% endif %}
+    {% endfor %}
+    {% if gate.from_price %}<p class="pg-note">Monthly. GST included. {{ gate.from_price }}.</p>{% endif %}
+  </div>
+  {% elif gate.show_plans and gate.plans %}
   <div class="pg-plan-stage" data-pg-plans>
     <p class="pg-eyebrow">Playground plans</p>
     {% for plan in gate.plans %}
@@ -62,6 +86,11 @@
     {% if gate.from_price %}<p class="pg-note">Monthly. GST included. {{ gate.from_price }}.</p>{% endif %}
   </div>
   {% endif %}
+  {% if gate_stage == 'plans' and gate_continue_label %}
+  <p class="pg-actions">
+    <button type="button" class="pg-btn" data-pg-plan-continue>{{ gate_continue_label }}</button>
+  </p>
+  {% elif gate_stage != 'plans' %}
   <p class="pg-actions">
     {% if gate.cta_label and gate.cta_href %}
     <a class="pg-btn" href="{{ gate.cta_href }}">{{ gate.cta_label }}</a>
@@ -70,8 +99,23 @@
     <a class="pg-btn pg-btn--ghost" href="{{ gate.secondary_href }}">{{ gate.secondary_label }}</a>
     {% endif %}
   </p>
-  {% if gate.show_how %}
+  {% endif %}
+  {% if gate.show_how and gate_stage != 'plans' %}
+  {% if current_user and gate.reason == 'not_subscribed' and gate_how_steps %}
+  <div class="HowPlaygroundWorks">
+    <p class="pg-eyebrow">How Playground works</p>
+    {% for step in gate_how_steps %}
+    <div class="HowPlaygroundWorks-row">
+      <span class="HowPlaygroundWorks-n" aria-hidden="true">{{ loop.index }}</span>
+      <div>
+        <p><strong>{{ step }}</strong></p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
   {{ how_it_works() }}
+  {% endif %}
   {% endif %}
 </section>
 {% endblock %}

@@ -154,7 +154,7 @@ def test_signed_in_add_unlock_opens_existing_gate(tmp_path: Path) -> None:
     assert gate.status_code == 200
     assert 'class="EntitlementGate"' in gate.text
     assert 'data-playground-gate="not_subscribed"' in gate.text
-    assert "Unlock Playground" in gate.text
+    assert "Your RecallC account already includes the complete Constitution." in gate.text
 
 
 def test_signed_in_add_does_not_touch_accepted_screens() -> None:
@@ -461,7 +461,7 @@ def test_signed_in_add_1280_gate_and_close(tmp_path: Path) -> None:
     assert gate["path"] == home_path()
     assert gate["present"] is True
     assert gate["reason"] == "not_subscribed"
-    assert gate["title"] == "Unlock Playground"
+    assert gate["title"] == "Your RecallC account already includes the complete Constitution."
     assert closed_x["open"] is False
     assert closed_x["path"] == "/laws/ndps"
     assert closed_x["head"] is True
