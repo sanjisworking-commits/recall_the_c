@@ -4554,10 +4554,12 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   }
 }
 
-/* Expired desktop /settings (CTA map expired/11-screen). Phone Settings,
-   guest/Free/Plus/halted Settings keep the existing signed-in panel. */
+/* Expired desktop /settings (CTA map expired/11-screen). Halted desktop
+   /settings (CTA map halted/11-screen) shares these desktop rules. Phone
+   Settings, guest/Free/Plus Settings keep the existing signed-in panel. */
 @media (min-width: 561px) {
-  body.is-authed[data-mscreen="settings"]:has([data-expired-settings="desktop"]) .account-menu-btn-status {
+  body.is-authed[data-mscreen="settings"]:has([data-expired-settings="desktop"]) .account-menu-btn-status,
+  body.is-authed[data-mscreen="settings"]:has([data-halted-settings="desktop"]) .account-menu-btn-status {
     display: block;
   }
 }

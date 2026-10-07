@@ -503,6 +503,7 @@ def test_guest_free_plus_pro_max_halted_paused_pending_are_not_expired_settings(
         USER, stored.id, status="halted"
     )
     halted_html = unescape(halted.get("/settings").text)
+    assert 'data-halted-settings="desktop"' in halted_html
     assert 'data-expired-settings="desktop"' not in halted_html
     assert LIVE_HEADING not in _header(halted_html)
     assert halted.app.state.entitlement_service.resolve(

@@ -258,6 +258,18 @@ def test_plus_settings_marker_only_for_active_plus(tmp_path: Path) -> None:
     assert 'data-plus-settings="desktop"' not in pro_html
     assert "RecallC Plus" not in _header(pro_html)
 
+    halted = TestClient(_mu_app(tmp_path / "halted"))
+    _sign_in(halted)
+    _subscribe(halted)
+    stored = halted.app.state.subscriptions.get_current_subscription(USER)
+    halted.app.state.subscriptions.update_subscription_state(
+        USER, stored.id, status="halted"
+    )
+    halted_html = halted.get("/settings").text
+    assert 'data-halted-settings="desktop"' in halted_html
+    assert 'data-plus-settings="desktop"' not in halted_html
+    assert "RecallC Plus" not in _header(halted_html)
+
 
 def test_plus_settings_marker_uses_shared_predicate() -> None:
     settings = SETTINGS.read_text(encoding="utf-8")

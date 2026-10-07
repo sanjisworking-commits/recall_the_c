@@ -3965,12 +3965,22 @@ def create_app(
             get_entitlement_snapshot,
             request_is_active_plus,
             request_is_expired_subscriber,
+            request_is_halted_subscriber,
         )
 
         plus_settings = bool(user) and request_is_active_plus(request)
+        halted_settings = bool(user) and request_is_halted_subscriber(request)
         expired_settings = bool(user) and request_is_expired_subscriber(request)
+        halted_header_status = ""
         expired_header_status = ""
-        if expired_settings:
+        if halted_settings:
+            from constitution_memorizer.entitlements.models import BLOCK_PAYMENT_HALTED
+            from constitution_memorizer.playground.view import gate_view
+
+            # Presentation only: elapsed Halted keeps paid_period_ended as the
+            # snapshot reason; Settings header stays Halted.
+            halted_header_status = gate_view(reason=BLOCK_PAYMENT_HALTED).title
+        elif expired_settings:
             from constitution_memorizer.playground.view import gate_view
 
             snap = get_entitlement_snapshot(request)
@@ -4005,7 +4015,9 @@ def create_app(
                 "can_auto_plan": auto_entitled,
                 "next_learning_day": next_learning_day,
                 "plus_settings": plus_settings,
+                "halted_settings": halted_settings,
                 "expired_settings": expired_settings,
+                "halted_header_status": halted_header_status,
                 "expired_header_status": expired_header_status,
             },
         )
