@@ -8,9 +8,11 @@ import time
 from datetime import date
 from urllib.parse import urlencode
 
-from fastapi import APIRouter, Form, Request
+from fastapi import APIRouter, Depends, Form, Request
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
+
+from constitution_memorizer.auth.dependencies import require_csrf
 
 from constitution_memorizer.auth.exceptions import (
     InvalidCredentialsError,
@@ -36,6 +38,8 @@ from constitution_memorizer.auth.sessions import (
 )
 from constitution_memorizer.progress.repository import ONBOARDING_KEY
 from constitution_memorizer.web.completion import build_completion, caught_up_quote
+from constitution_memorizer.devices.token import request_device_token
+from constitution_memorizer.entitlements.dependencies import get_entitlement_snapshot
 from constitution_memorizer.web.entitlements import (
     access_summary,
     can_use_auto_plan,
@@ -324,12 +328,17 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
             return RedirectResponse(url=f"/login?{qs}", status_code=303)
         return _establish_session(request, auth_session, next_url=_safe_next(next))
 
-    @router.post("/logout")
+    @router.post("/logout", dependencies=[Depends(require_csrf)])
     async def logout(request: Request) -> RedirectResponse:
         settings = request.app.state.multiuser_settings
         session_id = request.cookies.get(SESSION_COOKIE_NAME)
         if session_id:
+            stored = request.app.state.session_store.get(session_id)
+            user_id = stored.user.id if stored is not None else None
             request.app.state.session_store.delete(session_id)
+            devices = getattr(request.app.state, "device_service", None)
+            if devices is not None and user_id is not None:
+                devices.end_session_binding(user_id, session_id)
         response = RedirectResponse(url="/signed-out", status_code=303)
         response.delete_cookie(SESSION_COOKIE_NAME, path="/")
         response.delete_cookie("rtc_oauth_state", path="/")
@@ -435,6 +444,21 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
             or user.display_name
             or (mask_phone(user.phone) if user.phone else user.email or "Learner")
         )
+        from constitution_memorizer.entitlements.dependencies import (
+            request_is_active_plus,
+            request_is_expired_subscriber,
+        )
+
+        plus_today = request_is_active_plus(request)
+        expired_today = request_is_expired_subscriber(request)
+        expired_header_status = ""
+        if expired_today:
+            from constitution_memorizer.playground.view import gate_view
+
+            snap = get_entitlement_snapshot(request)
+            expired_header_status = gate_view(
+                reason=str(snap.playground_block_reason or "")
+            ).title
         try:
             from constitution_memorizer.web.dashboard import build_dashboard_context
 
@@ -456,6 +480,34 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
             # Lifecycle surfaces (design 04/07): only expiring-soon and lapsed
             # may appear outside Profile. Dormant while billing returns None.
             ctx["subscription"] = subscription_status(request, eng)
+            from constitution_memorizer.playground.schedule import (
+                apply_expired_today_hero,
+                apply_merged_today_hero,
+                playground_today_context,
+                merge_today_path,
+                reconcile_expired_playground_today,
+            )
+            from constitution_memorizer.playground.roster.period import playground_today
+
+            law_ctx = playground_today_context(request, as_of=playground_today())
+            ctx.update(law_ctx)
+            playground_dues = list(law_ctx.get("playground_due_units") or ())
+            playground_new = law_ctx.get("playground_new_unit")
+            ctx["today_units"] = merge_today_path(
+                ctx.get("today_units") or [],
+                playground_dues,
+                playground_new,
+            )
+            if expired_today:
+                reconcile_expired_playground_today(ctx, request)
+            apply_merged_today_hero(ctx)
+            if expired_today:
+                apply_expired_today_hero(ctx)
+            ctx["plus_today"] = plus_today
+            ctx["expired_today"] = expired_today
+            ctx["expired_header_status"] = expired_header_status
+            if ctx["today_units"]:
+                ctx["show_first_run"] = False
             done_id = request.query_params.get("done")
             started = time.perf_counter()
             ctx["completion"] = build_completion(
@@ -514,6 +566,9 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
                     "goal_total": 0,
                     "goal_pct": 0,
                     "daily_goal_streak": 0,
+                    "plus_today": plus_today,
+                    "expired_today": expired_today,
+                    "expired_header_status": expired_header_status,
                 },
             )
             record_request_timing("template", started)
@@ -521,17 +576,77 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
 
     @router.get("/profile", response_class=HTMLResponse)
     async def profile_get(request: Request) -> HTMLResponse:
-        user = getattr(request.state, "current_user", None)
-        if user is None:
-            return signin_redirect(next_url="/profile", reason="default")
-        from constitution_memorizer.web.service import free_article_slots
+        from constitution_memorizer.entitlements.dependencies import (
+            request_is_active_plus,
+            request_is_expired_subscriber,
+        )
+        from constitution_memorizer.playground.view import (
+            device_count_copy,
+            playground_subscription_card,
+            plus_profile_subscription_card,
+        )
 
+        user = getattr(request.state, "current_user", None)
+        snapshot = get_entitlement_snapshot(request)
+        playground_card = playground_subscription_card(snapshot)
+        plus_profile = bool(user) and request_is_active_plus(request)
+        expired_profile = bool(user) and request_is_expired_subscriber(request)
+        expired_header_status = ""
+        if expired_profile:
+            from constitution_memorizer.playground.view import gate_view
+
+            expired_header_status = gate_view(
+                reason=str(snapshot.playground_block_reason or "")
+            ).title
+        device_label = ""
+        if user is None:
+            return templates.TemplateResponse(
+                request,
+                "profile.html",
+                {
+                    "user": None,
+                    "profile": {},
+                    "access": None,
+                    "display_label": "Guest",
+                    "csrf_token": request.cookies.get(CSRF_COOKIE_NAME) or "",
+                    "saved": False,
+                    "edit_name": False,
+                    "is_guest_profile": True,
+                    "playground_subscription": playground_card,
+                    "device_count_label": "",
+                    "identity_meta": "Guest · Reading only",
+                    "plus_profile": False,
+                    "expired_profile": False,
+                    "expired_header_status": "",
+                },
+            )
         eng = request.app.state.engine.for_user(user.id)
         profile = eng.repo.get_profile(user.id) or {}
         access = access_summary(request, eng)
-        slots = (
-            free_article_slots(eng) if access.enabled and access.is_free else []
-        )
+        service = getattr(request.app.state, "device_service", None)
+        if service is not None:
+            summaries = service.list_device_summaries(
+                user.id, request_device_token(request)
+            )
+            active_n = sum(1 for row in summaries if row.is_active)
+            device_label = device_count_copy(active_n, service.device_limit)
+        else:
+            device_label = device_count_copy(
+                snapshot.registered_device_count, snapshot.device_limit
+            )
+        if user.provider == "google":
+            identity_meta = "Signed in with Google"
+        elif user.phone:
+            identity_meta = "Signed in with phone"
+        else:
+            identity_meta = "Signed in"
+        if plus_profile:
+            playground_card = plus_profile_subscription_card(
+                playground_card,
+                snapshot=snapshot,
+                roster=getattr(request.app.state, "roster", None),
+                user_id=user.id,
+            )
         return templates.TemplateResponse(
             request,
             "profile.html",
@@ -539,14 +654,19 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
                 "user": user,
                 "profile": profile,
                 "access": access,
-                "free_slots": slots,
-                "subscription": subscription_status(request, eng),
                 "display_label": profile.get("display_name")
                 or user.display_name
                 or (mask_phone(user.phone) if user.phone else user.email or "Learner"),
                 "csrf_token": request.cookies.get(CSRF_COOKIE_NAME) or "",
                 "saved": request.query_params.get("saved") == "1",
                 "edit_name": request.query_params.get("edit") == "name",
+                "is_guest_profile": False,
+                "playground_subscription": playground_card,
+                "device_count_label": device_label,
+                "identity_meta": identity_meta,
+                "plus_profile": plus_profile,
+                "expired_profile": expired_profile,
+                "expired_header_status": expired_header_status,
             },
         )
 
@@ -712,6 +832,21 @@ def _establish_session(
         )
     else:
         response.delete_cookie("rtc_auth_next", path="/")
+    from constitution_memorizer.devices.token import (
+        DEVICE_COOKIE_NAME,
+        apply_device_cookie,
+        mint_installation_token,
+    )
+
+    existing_device = request.cookies.get(DEVICE_COOKIE_NAME)
+    if existing_device:
+        request.state.device_token = existing_device
+    else:
+        device_token = mint_installation_token()
+        request.state.device_token = device_token
+        apply_device_cookie(
+            response, device_token, secure=bool(settings.cookie_secure)
+        )
     return response
 
 
@@ -775,6 +910,12 @@ def install_auth_middleware(app) -> None:
             request.state.bound_memory = (
                 memory.for_user(user.id) if memory is not None else None
             )
+            from constitution_memorizer.devices.token import (
+                ensure_request_device_token,
+                maybe_set_device_cookie,
+            )
+
+            ensure_request_device_token(request)
         else:
             request.state.bound_engine = request.app.state.engine
             request.state.bound_memory = getattr(request.app.state, "memory", None)
@@ -798,6 +939,7 @@ def install_auth_middleware(app) -> None:
                 or path.startswith("/profile")
                 or path.startswith("/api/theme")
                 or path.startswith("/admin")
+                or path.startswith("/billing/subscriptions/checkout")
             ):
                 return signin_redirect(next_url=path, reason="default")
             elif method != "GET":
@@ -814,15 +956,22 @@ def install_auth_middleware(app) -> None:
                         )
                     )
                 )
-                return signin_redirect(next_url=path, reason=reason)
-
-        if path == "/" and user is not None:
-            return RedirectResponse(url="/dashboard", status_code=303)
+                next_url = (
+                    "/billing/subscriptions"
+                    if path == "/billing" or path.startswith("/billing/")
+                    else path
+                )
+                return signin_redirect(next_url=next_url, reason=reason)
 
         token_e = bound_engine.set(request.state.bound_engine)
         token_m = bound_memory.set(request.state.bound_memory)
         try:
-            return await call_next(request)
+            response = await call_next(request)
+            if user is not None:
+                from constitution_memorizer.devices.token import maybe_set_device_cookie
+
+                maybe_set_device_cookie(request, response)
+            return response
         finally:
             bound_engine.reset(token_e)
             bound_memory.reset(token_m)

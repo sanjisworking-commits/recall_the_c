@@ -1,0 +1,142 @@
+{% extends "playground_base.html" %}
+{% from "partials/playground.html" import trust_mark, status_badge %}
+{% block title %}{{ act.short_name }} · Playground{% endblock %}
+{% block playground %}
+<section class="pg-workspace pg-act-progress">
+  <header class="pg-act-head">
+    <a class="pg-back" href="/playground">← Playground</a>
+    <p class="pg-eyebrow">Playground · {{ progress.scope_label }}</p>
+    <h1>{{ act.short_name }}</h1>
+    <p>{{ status_badge('in_playground', 'In ' + month_name + ' Playground') }}</p>
+  </header>
+
+  {% if progress.selected_count %}
+  <div class="pg-act-ring-row">
+    <span
+      class="pg-progress-ring pg-progress-ring--act"
+      style="--pg-ring-pct: {{ progress.ring_pct }};"
+      role="img"
+      aria-label="{{ progress.fraction_label }} provisions learned"
+    >
+      <span class="pg-progress-ring-label">{{ progress.fraction_label }}</span>
+    </span>
+    <span class="pg-act-ring-copy">
+      <span class="pg-act-headline">{{ progress.headline }}</span>
+      {% if progress.subhead %}<span class="pg-act-subhead">{{ progress.subhead }}</span>{% endif %}
+    </span>
+  </div>
+  {% if progress.next_citation %}
+  <p class="pg-act-next-row">
+    <span class="pg-chip pg-chip--next" title="{{ progress.next_citation }}">Next · {{ progress.next_citation }}</span>
+  </p>
+  {% endif %}
+  <p class="pg-eyebrow">{{ progress.scope_label }}</p>
+  <div class="pg-waffle" role="list" aria-label="Selected provisions">
+    {% for cell in progress.waffle %}
+    <span
+      class="pg-waffle-cell is-{{ cell.status }}"
+      role="listitem"
+      title="{{ cell.title }}"
+    ><span class="visually-hidden">{{ cell.title }}</span></span>
+    {% endfor %}
+  </div>
+  <p class="pg-eyebrow">On the ladder</p>
+  <div class="pg-rung-bar pg-rung-bar--act" role="img" aria-label="Revision ladder">
+    {% for rung in progress.rungs %}
+    <span class="pg-rung-col">
+      <span class="pg-rung-count">{{ rung.count }}</span>
+      <span class="pg-rung pg-grow" style="--pg-rung-h: {{ rung.height_pct }}%;"></span>
+      <span class="pg-rung-label">{{ rung.label }}</span>
+    </span>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="pg-act-empty">
+    <p class="pg-act-headline">{{ progress.headline }}</p>
+    <p class="pg-lede">{{ progress.subhead }}</p>
+  </div>
+  {% endif %}
+
+  <p class="pg-actions pg-act-cta">
+    {% if progress.selected_count and progress.next_href %}
+    <a class="pg-btn" href="{{ progress.next_href }}">{{ progress.next_cta }}</a>
+    {% endif %}
+    <a class="pg-btn {% if progress.selected_count %}pg-btn--ghost{% endif %}" href="/playground/laws/{{ act.slug }}/sections">Manage sections</a>
+  </p>
+  <p class="pg-actions">
+    <a class="pg-btn pg-btn--ghost" href="/laws/{{ act.slug }}">Read Bare Act</a>
+  </p>
+  {{ trust_mark("Bare Act wording, never rewritten.") }}
+  {% if provenance %}
+  <p class="pg-lede">{% for line in provenance %}{{ line }}{% if not loop.last %} · {% endif %}{% endfor %}</p>
+  {% endif %}
+  {% if source_state and source_state.status == 'review_required' %}
+  <div class="pg-update-panel" role="status">
+    <p>{{ status_badge('updated', 'Law updated') }}</p>
+    {% if learned_changed == 1 %}
+    <p class="pg-lede">1 learned provision changed since your recorded learning source.</p>
+    {% elif learned_changed > 1 %}
+    <p class="pg-lede">{{ learned_changed }} learned provisions changed since your recorded learning source.</p>
+    {% else %}
+    <p class="pg-lede">Review affected provisions.</p>
+    {% endif %}
+    <p class="pg-actions"><a class="pg-btn" href="{{ source_review_href }}">Review affected provisions</a></p>
+  </div>
+  {% elif source_state and source_state.status == 'reviewed' and source_state.registry_outdated %}
+  <p class="pg-note">Source updated. Your learned provisions are unchanged.</p>
+  {% elif source_state and source_state.status == 'update_detected' %}
+  <div class="pg-update-panel" role="status">
+    <p>{{ status_badge('updated', 'Law updated') }}</p>
+    <p class="pg-actions"><a class="pg-btn" href="{{ source_review_href }}">Review affected provisions</a></p>
+  </div>
+  {% endif %}
+  {% if not rows %}
+  <p class="pg-lede">No provisions selected yet.</p>
+  {% else %}
+  {% if launch %}
+  <div class="CanonicalText pg-act-desktop-prompt">
+    <div class="LearningPrompt">
+      <p class="pg-eyebrow">Up next · Learning prompt</p>
+      <p class="pg-lede">Practice {{ launch.citation }} — {{ launch.title }}</p>
+      <p class="pg-actions"><a class="pg-btn" href="{{ launch.href }}">{{ launch.cta }}</a></p>
+    </div>
+    {% if launch_verbatim %}
+    <div class="VerbatimText" data-verbatim data-open="true">
+    <p class="VerbatimText-kicker pg-chip pg-chip--verbatim">VERBATIM TEXT</p>
+      <p>{{ launch.citation }} — {{ launch.title }}</p>
+      <blockquote>{{ launch_verbatim }}</blockquote>
+      <p class="pg-actions">
+        <button type="button" class="pg-btn pg-btn--quiet" data-verbatim-toggle aria-expanded="true">Hide verbatim text</button>
+      </p>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+  <div class="pg-act-section-list">
+  {% for row in rows %}
+  <div class="pg-workspace-row">
+    <div>
+      <strong>{{ row.citation }}</strong>
+      <span>{{ row.title }}</span>
+      <p>
+        {{ status_badge(row.status, row.status_label) }}
+        {% if row.schedule_label %}<span class="pg-methods-count">{{ row.schedule_label }}</span>{% endif %}
+        {% if row.methods_label %}<span class="pg-methods-count">{{ row.methods_label }}</span>{% endif %}
+        {% if row.due_label %}<span class="pg-methods-count">{{ row.due_label }}</span>{% endif %}
+        {% if row.outdated %}{{ status_badge('updated', 'Law updated') }}{% endif %}
+        {% if row.source_change_status == 'reviewed' %}<span class="pg-methods-count">Update reviewed</span>{% endif %}
+      </p>
+    </div>
+    <div class="pg-card-actions">
+      {% if row.review_href and row.outdated %}
+      <a class="pg-btn pg-btn--quiet" href="{{ row.review_href }}">Review</a>
+      {% endif %}
+      <a class="pg-btn pg-btn--ghost" href="{{ row.href }}">{{ row.cta }}</a>
+    </div>
+  </div>
+  {% endfor %}
+  </div>
+  {% endif %}
+  <p class="pg-actions"><a class="pg-back" href="/playground">← Playground</a></p>
+</section>
+{% endblock %}

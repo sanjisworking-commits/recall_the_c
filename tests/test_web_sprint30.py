@@ -38,7 +38,8 @@ def test_brand_and_how_to_use(client: TestClient):
     assert "Read the Bare Act wording twice, verbatim." in html
     assert "Answer a short auto-made quiz — new questions each revision." in html
     assert "theme-toggle" in html
-    assert "styles.css?v=main70" in html
+    # T33: R6 restyled Today two-column and Calendar week in styles.css (main74 → main75).
+    assert "styles.css?v=main84" in html
 
 
 def test_dashboard_surfaces_use_theme_tokens():

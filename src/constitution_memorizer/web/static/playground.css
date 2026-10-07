@@ -1,0 +1,4542 @@
+/* Playground design system (R1). Tokens follow the authoritative prototypes
+   in docs/design/. Theme comes from html[data-theme]; there is no separate
+   Playground preference. Hex values live in these token blocks only. */
+
+:root,
+html[data-theme="light"] {
+  --pg-ink: #141414;
+  --pg-muted: #6b6b6b;
+  --pg-faint: #9a9a9a;
+  --pg-mid: #8f8f8d;
+  --pg-guest-avatar: #e2e2e0;
+  --pg-hairline: #dcdcdc;
+  --pg-page: #ececea;
+  --pg-paper: #fff;
+  --pg-destructive: #b42318;
+  --pg-destructive-tint: #fbf1ef;
+  --pg-destructive-deep: #8a1f16;
+  --pg-subtle: #fafaf9;
+  --pg-wash: #f2f2f0;
+  --pg-control-border: #c9c9c7;
+  --pg-teal: #0e7569;
+  --pg-teal-dark: #0e5b52;
+  --pg-teal-tint: #e7f1ef;
+  --pg-teal-border: #bcd8d2;
+  --pg-teal-done: #b7d6d0;
+  --pg-teal-on-dark: #7fc4ba;
+  --pg-teal-hover: #0b5d53;
+  --pg-amber: #b45309;
+  --pg-amber-tint: #f6efe4;
+  --pg-amber-deep: #7c4a12;
+  --pg-amber-border: #e3c9a8;
+  --pg-font-display: "Fraunces", Georgia, serif;
+  --pg-font-ui: "Source Sans 3", "Segoe UI", sans-serif;
+  --pg-label-size: 10.5px;
+  --pg-label-weight: 600;
+  --pg-label-tracking: 0.1em;
+  --pg-radius-sheet: 22px;
+  --pg-radius-card: 16px;
+  --pg-radius-row: 14px;
+  --pg-radius-button: 12px;
+  --pg-radius-chip: 999px;
+  --pg-radius-tile: 9px;
+  --pg-radius-dialog: 16px;
+  --pg-shadow-press: 0 2px 0 rgba(0, 0, 0, 0.28);
+  --pg-shadow-press-active: 0 1px 0 rgba(0, 0, 0, 0.14);
+  --pg-shadow-sheet: 0 -10px 40px rgba(20, 20, 20, 0.18);
+  --pg-shadow-dialog: 0 24px 60px rgba(20, 20, 20, 0.24);
+  --pg-shadow-menu: 0 14px 34px rgba(20, 20, 20, 0.14);
+  --pg-scrim: rgba(20, 20, 20, 0.42);
+  --pg-focus-ring: 2px solid var(--pg-ink);
+  --pg-tap: 44px;
+  --pg-shell-max: 1040px;
+  --pg-shell-pad: 16px;
+}
+
+html[data-theme="dark"] {
+  --pg-ink: #ecebe6;
+  --pg-muted: #a8a59e;
+  --pg-faint: #7d7a73;
+  --pg-mid: #8f8f8d;
+  --pg-hairline: #34322e;
+  --pg-page: #0f0e0d;
+  --pg-paper: #1a1917;
+  --pg-destructive: #e4776b;
+  --pg-destructive-tint: #3a1c18;
+  --pg-destructive-deep: #f0a8a0;
+  --pg-subtle: #232220;
+  --pg-guest-avatar: var(--pg-subtle);
+  --pg-wash: #191918;
+  --pg-control-border: #4a4a48;
+  --pg-teal: #2a9d8f;
+  --pg-teal-dark: #8fd4c8;
+  --pg-teal-tint: #143833;
+  --pg-teal-border: #2a5f58;
+  --pg-teal-done: #3f6b64;
+  --pg-teal-on-dark: #7fc4ba;
+  --pg-teal-hover: #3db5a6;
+  --pg-amber: #d97706;
+  --pg-amber-tint: #3a2a18;
+  --pg-amber-deep: #f0c48a;
+  --pg-amber-border: #7c4a12;
+  --pg-shadow-press: 0 2px 0 rgba(0, 0, 0, 0.4);
+  --pg-shadow-press-active: 0 1px 0 rgba(0, 0, 0, 0.3);
+  --pg-shadow-sheet: 0 -10px 40px rgba(0, 0, 0, 0.45);
+  --pg-shadow-dialog: 0 24px 60px rgba(0, 0, 0, 0.55);
+  --pg-shadow-menu: 0 14px 34px rgba(0, 0, 0, 0.4);
+  --pg-scrim: rgba(0, 0, 0, 0.55);
+  --pg-font-display: "Fraunces", Georgia, serif;
+  --pg-font-ui: "Source Sans 3", "Segoe UI", sans-serif;
+  --pg-label-size: 10.5px;
+  --pg-label-weight: 600;
+  --pg-label-tracking: 0.1em;
+  --pg-radius-sheet: 22px;
+  --pg-radius-card: 16px;
+  --pg-radius-row: 14px;
+  --pg-radius-button: 12px;
+  --pg-radius-chip: 999px;
+  --pg-radius-tile: 9px;
+  --pg-radius-dialog: 16px;
+  --pg-focus-ring: 2px solid var(--pg-ink);
+  --pg-tap: 44px;
+  --pg-shell-max: 1040px;
+  --pg-shell-pad: 16px;
+}
+
+.PlaygroundShell,
+.PlaygroundShell * {
+  box-sizing: border-box;
+}
+
+.PlaygroundShell {
+  color: var(--pg-ink);
+  font-family: var(--pg-font-ui);
+  max-width: var(--pg-shell-max);
+  margin: 0 auto;
+  padding: 18px var(--pg-shell-pad) 48px;
+}
+
+body.playground-app .page-wrap,
+body.playground-app .sheet {
+  background: var(--pg-page);
+}
+
+.PlaygroundShell :focus-visible {
+  outline: var(--pg-focus-ring);
+  outline-offset: 2px;
+}
+
+.PlaygroundShell a {
+  color: inherit;
+}
+
+/* .PlaygroundShell a is more specific than .pg-btn; keep solid CTAs paper-on-ink. */
+.PlaygroundShell a.pg-btn {
+  color: var(--pg-paper);
+}
+
+.PlaygroundShell a.pg-btn--ghost,
+.PlaygroundShell a.pg-btn--quiet,
+.PlaygroundShell a.pg-btn--outline {
+  color: var(--pg-ink);
+}
+
+.PlaygroundShell a.pg-btn--teal {
+  color: var(--pg-paper);
+}
+
+.PlaygroundShell a.pg-btn--destructive {
+  color: var(--pg-destructive);
+}
+
+.pg-eyebrow,
+.pg-label {
+  margin: 0 0 6px;
+  font-size: var(--pg-label-size);
+  font-weight: var(--pg-label-weight);
+  letter-spacing: var(--pg-label-tracking);
+  text-transform: uppercase;
+  color: var(--pg-mid);
+}
+
+.PlaygroundShell h1,
+.pg-display {
+  font-family: var(--pg-font-display);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  font-size: clamp(32px, 6vw, 44px);
+  line-height: 1.08;
+  margin: 0 0 10px;
+}
+
+.PlaygroundShell h2 {
+  font-family: var(--pg-font-display);
+  font-weight: 500;
+  font-size: 22px;
+  margin: 28px 0 12px;
+}
+
+.pg-lede {
+  margin: 0 0 16px;
+  font-size: 16px;
+  line-height: 1.5;
+  color: var(--pg-muted);
+  max-width: 36em;
+}
+
+.pg-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 18px 0 8px;
+}
+
+.pg-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--pg-tap);
+  min-width: var(--pg-tap);
+  padding: 0 18px;
+  border: 1px solid var(--pg-ink);
+  border-radius: var(--pg-radius-button);
+  background: var(--pg-ink);
+  color: var(--pg-paper);
+  font: inherit;
+  font-size: 14.5px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: var(--pg-shadow-press);
+}
+
+.pg-btn:hover {
+  filter: brightness(1.08);
+}
+
+.pg-btn:active:not(:disabled):not(.is-disabled) {
+  transform: translateY(1px);
+  box-shadow: var(--pg-shadow-press-active);
+}
+
+.pg-btn--ghost,
+.pg-btn--outline {
+  background: var(--pg-paper);
+  color: var(--pg-ink);
+  border-color: var(--pg-hairline);
+  box-shadow: none;
+}
+
+.pg-btn--quiet {
+  background: transparent;
+  border-color: var(--pg-hairline);
+  color: var(--pg-ink);
+  font-weight: 600;
+  box-shadow: none;
+}
+
+.pg-btn--teal {
+  background: var(--pg-teal);
+  border-color: var(--pg-teal);
+  color: var(--pg-paper);
+}
+
+.pg-btn--destructive {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  color: var(--pg-destructive);
+  min-height: var(--pg-tap);
+  padding: 0 8px;
+}
+
+.pg-btn:disabled,
+.pg-btn.is-disabled {
+  border-color: var(--pg-control-border);
+  background: var(--pg-wash);
+  color: var(--pg-faint);
+  box-shadow: none;
+  pointer-events: none;
+}
+
+/* Author `display` on .pg-btn beats the UA [hidden] rule. */
+.PlaygroundShell [hidden] {
+  display: none !important;
+}
+
+.PaymentStateBanner {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  margin: 0 0 22px;
+  border: 1px solid var(--pg-ink);
+  border-radius: var(--pg-radius-card);
+  background: var(--pg-subtle);
+}
+
+.PaymentStateBanner--quiet {
+  border-color: var(--pg-hairline);
+  background: transparent;
+  padding: 0 0 12px;
+  margin: 0 0 8px;
+}
+
+.PaymentStateBanner p {
+  margin: 0;
+}
+
+.PaymentStateBanner .pg-lede {
+  margin: 4px 0 0;
+  font-size: 14.5px;
+}
+
+.RosterCapacity {
+  margin: 0 0 8px;
+}
+
+.RosterCapacity-counts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px 16px;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.RosterCapacity-remaining {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--pg-muted);
+}
+
+.RosterCapacity-bar {
+  display: flex;
+  gap: 3px;
+  margin: 12px 0 8px;
+  min-height: 14px;
+}
+
+.RosterCapacity-cell {
+  flex: 1 1 0;
+  min-width: 8px;
+  height: 12px;
+  border: 1px solid var(--pg-ink);
+  background: transparent;
+}
+
+.RosterCapacity-cell.is-active {
+  background: var(--pg-ink);
+}
+
+.RosterCapacity-cell.is-removed {
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--pg-ink),
+    var(--pg-ink) 2px,
+    transparent 2px,
+    transparent 5px
+  );
+}
+
+.RosterCapacity-cell.is-open {
+  border-color: var(--pg-hairline);
+}
+
+.RosterCapacity-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--pg-muted);
+}
+
+.TrustMark {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  margin: 18px 0 8px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--pg-muted);
+}
+
+.TrustMark-mark {
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border: 1px solid var(--pg-ink);
+  display: grid;
+  place-items: center;
+  font-family: var(--pg-font-display);
+  font-size: 13px;
+  color: var(--pg-ink);
+}
+
+.ProgressSummary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  border: 1px solid var(--pg-hairline);
+  margin: 22px 0 8px;
+}
+
+.ProgressSummary-cell {
+  padding: 14px 12px;
+  border-right: 1px solid var(--pg-hairline);
+}
+
+.ProgressSummary-cell:last-child {
+  border-right: 0;
+}
+
+.ProgressSummary-value {
+  font-family: var(--pg-font-display);
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.ProgressSummary-label {
+  margin-top: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--pg-muted);
+}
+
+.LawCard,
+.pg-card {
+  border: 1px solid var(--pg-hairline);
+  border-radius: var(--pg-radius-card);
+  padding: 18px 18px 16px;
+  background: var(--pg-paper);
+}
+
+.LawCard--emphasised,
+.pg-card--emphasised {
+  border: 1.5px solid var(--pg-ink);
+}
+
+.LawCard--saved,
+.pg-card--saved {
+  border-style: dashed;
+  border-color: var(--pg-hairline);
+}
+
+.LawCard + .LawCard {
+  margin-top: 12px;
+}
+
+.LawCard--compact {
+  border-color: var(--pg-hairline);
+}
+
+.LawCard-kicker {
+  margin: 0 0 4px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--pg-muted);
+}
+
+.LawCard h2,
+.LawCard-title {
+  font-family: var(--pg-font-display);
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0 0 2px;
+}
+
+.LawCard-full {
+  margin: 0 0 10px;
+  font-size: 13.5px;
+  color: var(--pg-muted);
+}
+
+.LawCard-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 10px 0 14px;
+  font-size: 13.5px;
+  color: var(--pg-muted);
+}
+
+.LawStatusBadge,
+.DueBadge,
+.pg-chip,
+.pg-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 22px;
+  border: 1px solid var(--pg-hairline);
+  border-radius: var(--pg-radius-chip);
+  padding: 0 8px;
+  background: var(--pg-paper);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.LawStatusBadge-mark,
+.DueBadge-mark {
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--pg-ink);
+  background: transparent;
+  flex: none;
+}
+
+.LawStatusBadge[data-status="learning"] .LawStatusBadge-mark,
+.LawStatusBadge[data-status="in_playground"] .LawStatusBadge-mark {
+  background: var(--pg-ink);
+}
+
+.LawStatusBadge[data-status="learned"] .LawStatusBadge-mark,
+.LawStatusBadge[data-status="due"] .LawStatusBadge-mark {
+  background: var(--pg-ink);
+}
+
+.LawStatusBadge[data-status="mastered"] .LawStatusBadge-mark {
+  box-shadow: inset 0 0 0 1px var(--pg-paper);
+  background: var(--pg-ink);
+}
+
+.LawStatusBadge[data-status="progress_saved"],
+.LawStatusBadge[data-status="removed_this_month"] {
+  border-style: dashed;
+}
+
+.DueBadge {
+  border-color: var(--pg-amber);
+  color: var(--pg-amber-deep);
+}
+
+.DueBadge-mark {
+  background: var(--pg-amber);
+  border-color: var(--pg-amber);
+}
+
+.DueBadge[data-due="overdue"] {
+  background: var(--pg-amber-tint);
+}
+
+.pg-chip--teal,
+.pg-badge--teal {
+  border-color: var(--pg-teal-border);
+  background: var(--pg-teal-tint);
+  color: var(--pg-teal-dark);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.pg-chip--due {
+  border-color: var(--pg-ink);
+  font-weight: 700;
+}
+
+.pg-chip--verbatim {
+  border-color: var(--pg-ink);
+  letter-spacing: 0.08em;
+}
+
+.pg-chip--plan {
+  border-color: var(--pg-teal-border);
+  color: var(--pg-teal-dark);
+}
+
+.pg-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pg-card-actions .pg-btn {
+  min-height: 44px;
+  padding: 10px 14px;
+}
+
+.pg-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.pg-section-count {
+  font-size: 13px;
+  color: var(--pg-muted);
+}
+
+.pg-plan-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 1px solid var(--pg-hairline);
+}
+
+a.pg-plan-row {
+  align-items: center;
+  margin-top: 26px;
+  padding: 16px 20px;
+  background: var(--pg-paper);
+  border: 1px solid var(--pg-hairline);
+  border-radius: var(--pg-radius-card);
+  text-decoration: none;
+  color: inherit;
+}
+
+a.pg-plan-row:hover {
+  background: var(--pg-subtle);
+}
+
+.EntitlementGate {
+  padding: 8px 0 28px;
+}
+
+.HowPlaygroundWorks {
+  margin-top: 34px;
+  border-top: 1px solid var(--pg-ink);
+}
+
+.HowPlaygroundWorks-row {
+  display: flex;
+  gap: 14px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--pg-hairline);
+}
+
+.HowPlaygroundWorks-n {
+  flex: none;
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--pg-ink);
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 13px;
+}
+
+.RosterManager-rules {
+  margin: 0 0 20px;
+  padding: 12px 16px;
+  border: 1px solid var(--pg-hairline);
+  border-radius: var(--pg-radius-card);
+  background: var(--pg-paper);
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--pg-muted);
+}
+
+.RosterManager-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px 24px;
+  margin: 0 0 18px;
+}
+
+.RosterManager-notice {
+  border-color: var(--pg-teal-border);
+  background: var(--pg-teal-tint);
+  color: var(--pg-teal-dark);
+  font-weight: 600;
+}
+
+.RosterManager-section {
+  margin: 0 0 22px;
+}
+
+.RosterManager-sectionHead {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 0 0 10px;
+}
+
+.RosterManager-sectionHead h2 {
+  margin: 0;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--pg-faint);
+}
+
+.RosterManager-sectionHead span {
+  font-size: 13px;
+  color: var(--pg-muted);
+}
+
+.RosterList {
+  background: var(--pg-paper);
+  border: 1px solid var(--pg-hairline);
+  border-radius: var(--pg-radius-card);
+  overflow: hidden;
+}
+
+.RosterRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 14px;
+  min-height: 60px;
+  padding: 12px 18px;
+  border-top: 1px solid var(--pg-hairline);
+}
+
+.RosterList .RosterRow:first-child {
+  border-top: 0;
+}
+
+.RosterRow-copy {
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+
+.RosterRow-copy h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.RosterRow-progress {
+  margin: 6px 0 0;
+  font-size: 13px;
+  color: var(--pg-muted);
+}
+
+.RosterRow-actions {
+  flex: none;
+}
+
+.RosterAddDialog,
+.RosterRemoveDialog {
+  margin-bottom: 20px;
+}
+
+.RolloverLayout {
+  display: grid;
+  gap: 24px;
+}
+
+.RolloverKey {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  margin: 0 0 14px;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--pg-muted);
+}
+
+.RolloverKey p {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+}
+
+.RolloverKey-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  flex: none;
+  background: var(--pg-ink);
+}
+
+.RolloverKey [data-key="remove"] .RolloverKey-swatch {
+  background: var(--pg-subtle);
+  border: 1px solid var(--pg-muted);
+}
+
+.RolloverKey [data-key="undecided"] .RolloverKey-swatch {
+  background: transparent;
+  border: 1px dashed var(--pg-muted);
+}
+
+.RolloverCandidate {
+  border: 1px solid var(--pg-ink);
+  padding: 16px;
+  margin: 0 0 12px;
+  border-radius: var(--pg-radius-card);
+  background: var(--pg-paper);
+}
+
+.RolloverCandidate[data-rollover-decision="undecided"] {
+  border-style: dashed;
+}
+
+.RolloverCandidate[data-rollover-decision="decline"] {
+  background: var(--pg-subtle);
+}
+
+.RolloverCandidate-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.RolloverCandidate-head h2 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.RolloverCandidate-controls {
+  display: flex;
+  margin-top: 12px;
+  border: 1px solid var(--pg-ink);
+  border-radius: 9px;
+  overflow: hidden;
+}
+
+.RolloverCandidate-controls label {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 44px;
+  cursor: pointer;
+  font-weight: 700;
+  position: relative;
+}
+
+.RolloverCandidate-controls label + label {
+  border-left: 1px solid var(--pg-ink);
+}
+
+.RolloverCandidate-controls input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.RolloverCandidate-controls label:has(input:checked) {
+  background: var(--pg-ink);
+  color: var(--pg-paper);
+}
+
+.RolloverCandidate-controls label[data-choice="decline"]:has(input:checked) {
+  background: var(--pg-subtle);
+  color: var(--pg-ink);
+}
+
+.RolloverCandidate-controls label[data-choice="undecided"]:has(input:checked),
+.RolloverCandidate-controls label[data-choice="undecided"].is-selected {
+  background: var(--pg-paper);
+  color: var(--pg-muted);
+}
+
+.RolloverCandidate-controls label:has(input:focus-visible) {
+  outline: 2px solid var(--pg-ink);
+  outline-offset: -2px;
+}
+
+.RolloverCandidate.is-locked .RolloverCandidate-controls {
+  opacity: 0.92;
+}
+
+.RolloverPlanner-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.RolloverPlanner-planned {
+  margin: 0;
+  text-align: center;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.RolloverPlanner-aside {
+  display: none;
+}
+
+.RolloverPlanner-done {
+  display: none;
+}
+
+/* Desktop Profile / Settings / checkout use .panel rise (fill-mode both).
+   Phone already sets animation:none. Skip the enter fade so these R5
+   surfaces paint at full opacity immediately. */
+.panel.profile-panel,
+.panel.settings,
+.panel.purchase {
+  animation: none;
+}
+
+.pg-profile-identity,
+.pg-sub-card,
+.pg-account-list {
+  background: var(--paper, var(--pg-paper));
+  border: 1px solid var(--hairline, var(--pg-hairline));
+  border-radius: 14px;
+  color: var(--ink, var(--pg-ink));
+}
+
+.pg-profile-identity {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  margin: 0 0 20px;
+}
+
+.pg-profile-identity-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.pg-profile-identity-copy p {
+  margin: 1px 0 0;
+  font-size: 12.5px;
+  color: var(--muted, var(--pg-faint));
+}
+
+.pg-sub-card {
+  padding: 20px;
+  margin: 0 0 20px;
+}
+
+.pg-sub-card-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 8px;
+}
+
+.pg-sub-card-head h2 {
+  margin: 0;
+  font-family: var(--pg-font-display, Fraunces, Georgia, serif);
+  font-size: 19px;
+  font-weight: 500;
+}
+
+.pg-sub-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+.pg-sub-chip[data-chip="active"] {
+  background: var(--pg-teal-tint);
+  color: var(--pg-teal-dark);
+}
+
+.pg-sub-chip[data-chip="pending"] {
+  border: 1px solid var(--pg-amber);
+  color: var(--pg-amber-deep);
+  background: var(--pg-amber-tint);
+}
+
+.pg-sub-chip[data-chip="paused"],
+.pg-sub-chip[data-chip="hold"] {
+  border: 1px solid var(--pg-ink);
+  color: var(--pg-ink);
+}
+
+.pg-sub-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 8px 0 16px;
+}
+
+.pg-sub-stat-big {
+  font-family: var(--pg-font-display, Fraunces, Georgia, serif);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--pg-teal-dark);
+}
+
+.pg-account-list {
+  overflow: hidden;
+  margin: 0 0 20px;
+}
+
+.pg-account-list a,
+.pg-account-list .pg-account-row {
+  display: flex;
+  align-items: center;
+  min-height: 52px;
+  padding: 0 18px;
+  border-top: 1px solid var(--pg-hairline);
+  font-size: 14.5px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.pg-account-list a:first-child,
+.pg-account-list .pg-account-row:first-child {
+  border-top: 0;
+}
+
+.pg-account-list .pg-account-meta {
+  margin-left: auto;
+  font-size: 12.5px;
+  color: var(--muted, var(--pg-faint));
+}
+
+.pg-devices-lede {
+  font-size: 15px;
+  color: var(--pg-muted);
+}
+
+.pg-checkout-card {
+  max-width: 460px;
+}
+
+@media (min-width: 900px) {
+  .RolloverLayout {
+    grid-template-columns: minmax(0, 1fr) 320px;
+    align-items: start;
+    gap: 32px;
+  }
+
+  .RolloverPlanner-aside {
+    display: block;
+    position: sticky;
+    top: 0;
+    padding: 20px;
+    background: var(--pg-paper);
+    border: 1px solid var(--pg-hairline);
+    border-radius: var(--pg-radius-card);
+  }
+
+  .RolloverPlanner-footer .RolloverPlanner-continue,
+  .RolloverPlanner-footer .RolloverPlanner-planned,
+  .RolloverNewLaws {
+    display: none;
+  }
+
+  .RolloverPlanner-aside .RolloverPlanner-done,
+  .RolloverPlanner-footer .RolloverPlanner-done {
+    display: inline-flex;
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  .RolloverPlanner-footer {
+    display: none;
+  }
+
+  .pg-profile-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+    max-width: 960px;
+  }
+}
+
+.pg-workspace-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--pg-hairline);
+}
+
+.CanonicalText {
+  margin: 8px 0 24px;
+}
+
+.LearningPrompt {
+  margin-bottom: 18px;
+}
+
+.VerbatimText {
+  border: 1px solid var(--pg-ink);
+  padding: 16px 16px 14px;
+}
+
+.VerbatimText-kicker {
+  margin: 0 0 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.VerbatimText blockquote {
+  margin: 8px 0 12px;
+  padding: 0;
+  border: 0;
+  font-size: 16.5px;
+  line-height: 1.6;
+}
+
+.VerbatimText[data-open="false"] blockquote {
+  display: none;
+}
+
+.pg-sheet,
+dialog.pg-sheet {
+  border: 0;
+  padding: 0;
+  max-width: 460px;
+  width: calc(100% - 24px);
+  background: transparent;
+  color: var(--pg-ink);
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  height: fit-content;
+  max-height: min(90vh, calc(100% - 32px));
+}
+
+.pg-sheet::backdrop,
+dialog.pg-sheet::backdrop {
+  background: var(--pg-scrim);
+  inset: 0;
+}
+
+.pg-sheet-panel {
+  position: relative;
+  background: var(--pg-paper);
+  color: var(--pg-ink);
+  border: 1px solid var(--pg-hairline);
+  border-radius: var(--pg-radius-dialog);
+  padding: 24px 20px 22px;
+  box-shadow: var(--pg-shadow-dialog);
+}
+
+.pg-sheet-panel::before {
+  content: "";
+  display: none;
+}
+
+.pg-sheet-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--pg-mid);
+  font: inherit;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.pg-sheet-close:hover {
+  background: var(--pg-wash);
+}
+
+.pg-sheet-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+
+.pg-note {
+  margin: 0 0 16px;
+  font-size: 14.5px;
+}
+
+.pg-home-grid {
+  display: block;
+}
+
+.pg-aside {
+  display: none;
+}
+
+.playground-add .LawStatusBadge,
+.bareact-head .LawPlaygroundCta {
+  margin-top: 12px;
+}
+
+.LawPlaygroundCta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+@media (min-width: 561px) {
+  :root {
+    --pg-shell-pad: 24px;
+  }
+
+  .pg-sheet-close {
+    display: inline-flex;
+  }
+}
+
+@media (min-width: 900px) {
+  :root {
+    --pg-shell-pad: 32px;
+  }
+
+  .pg-home-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 280px;
+    gap: 36px;
+    align-items: start;
+  }
+
+  .pg-aside {
+    display: block;
+    position: sticky;
+    top: 16px;
+    border: 1px solid var(--pg-hairline);
+    border-radius: var(--pg-radius-card);
+    padding: 16px;
+    background: var(--pg-paper);
+  }
+
+  .pg-law-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .pg-law-grid .LawCard + .LawCard {
+    margin-top: 0;
+  }
+}
+
+@media (min-width: 1040px) {
+  :root {
+    --pg-shell-max: 1040px;
+  }
+}
+
+@media (min-width: 1280px) {
+  :root {
+    --pg-shell-max: 1200px;
+    --pg-shell-pad: 40px;
+  }
+
+  .pg-home-grid {
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 32px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .PlaygroundShell *,
+  .PlaygroundShell *::before,
+  .PlaygroundShell *::after,
+  .pg-sheet,
+  .pg-sheet *,
+  .pg-sheet *::before,
+  .pg-sheet *::after,
+  .pg-rise,
+  .pg-pop,
+  .pg-motion-sheet,
+  .pg-grow,
+  .pg-fade,
+  .pg-modal {
+    transition: none !important;
+    animation: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+html:not(.rtc-anim) .pg-rise,
+html:not(.rtc-anim) .pg-pop,
+html:not(.rtc-anim) .pg-motion-sheet,
+html:not(.rtc-anim) .pg-grow,
+html:not(.rtc-anim) .pg-fade,
+html:not(.rtc-anim) .pg-modal,
+html:not(.rtc-anim) .PlaygroundShell * {
+  animation: none !important;
+  transition: none !important;
+}
+
+.laws-index-card-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+}
+
+.PrimaryTabs--top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 8px;
+}
+
+.PrimaryTabs--bottom .mobile-tab,
+.PrimaryTabs--bottom.mobile-tabbar .mobile-tab {
+  min-height: 60px;
+}
+
+.RolloverCandidate-controls label.is-selected {
+  background: var(--pg-ink);
+  color: var(--pg-paper);
+}
+
+.RolloverCandidate-controls label[data-choice="decline"].is-selected {
+  background: var(--pg-subtle);
+  color: var(--pg-ink);
+}
+
+.RolloverCandidate-controls label[data-choice="undecided"].is-selected {
+  background: transparent;
+  color: var(--pg-ink);
+}
+
+.LawPlaygroundCta .pg-lede {
+  margin: 6px 0 8px;
+  font-size: 14px;
+}
+
+.pg-sheet[open],
+dialog.pg-sheet[open] {
+  border: 0;
+  padding: 0;
+  max-width: 460px;
+  width: calc(100% - 24px);
+  background: transparent;
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  height: fit-content;
+  max-height: min(90vh, calc(100% - 32px));
+}
+
+.pg-sheet[open]::backdrop,
+dialog.pg-sheet[open]::backdrop {
+  background: var(--pg-scrim);
+  inset: 0;
+}
+
+.pg-learn {
+  padding-bottom: 96px;
+}
+
+.pg-mode-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0 8px;
+}
+
+.pg-mode-exit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  text-decoration: none;
+  border: 1px solid var(--pg-hairline);
+}
+
+.pg-mode-stepper {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+}
+
+.pg-mode-step {
+  flex: 1;
+  height: 6px;
+  background: var(--pg-hairline);
+}
+
+.pg-mode-step.is-current {
+  background: var(--pg-ink);
+}
+
+.pg-mode-step.is-done {
+  background: var(--pg-muted);
+}
+
+.pg-mode-step-label,
+.pg-methods-tracker,
+.pg-methods-count {
+  font-size: 13px;
+  color: var(--pg-muted);
+}
+
+.pg-mode-task {
+  font-family: var(--pg-font-display);
+  font-size: 22px;
+  margin: 0 0 16px;
+}
+
+.pg-mode-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 16px;
+}
+
+.pg-learn-deck {
+  display: none;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  margin: 0 0 20px;
+}
+
+.pg-learn-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 160px;
+  padding: 14px 14px 0;
+  border: 1px solid var(--pg-hairline);
+  background: var(--pg-paper);
+  color: var(--pg-ink);
+  text-decoration: none;
+}
+
+.pg-learn-card .learn-deck-card-eyebrow {
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--pg-muted);
+}
+
+.pg-learn-card .learn-deck-card-title {
+  font-family: var(--pg-font-display);
+  font-size: 22px;
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+
+.pg-learn-card .learn-deck-card-lede {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--pg-muted);
+}
+
+.pg-learn-card .learn-deck-card-foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  margin: auto -14px 0;
+  padding: 0 14px;
+  border-top: 1px solid var(--pg-hairline);
+  font-size: 14px;
+}
+
+.pg-learn-card .learn-deck-card-state {
+  color: var(--pg-muted);
+}
+
+.pg-learn-card.is-done .learn-deck-card-state {
+  color: var(--pg-ink);
+  font-weight: 700;
+}
+
+.pg-learn-card .learn-deck-card-open {
+  margin-left: auto;
+}
+
+.pg-mode-tabs.mode-tabs {
+  flex-wrap: wrap;
+  overflow: visible;
+  gap: 6px;
+  width: auto;
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0 0 16px;
+}
+
+.pg-mode-tabs .mode-tab {
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--pg-hairline);
+  color: var(--pg-ink) !important;
+}
+
+.pg-mode-tabs .mode-tab.is-active {
+  background: var(--pg-ink);
+  color: var(--pg-paper) !important;
+  border-color: var(--pg-ink);
+}
+
+.pg-mode-tabs .mode-tab.is-done {
+  font-weight: 700;
+}
+
+.pg-learn-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 16px 0 8px;
+}
+
+/* Constitution desktop hides .learn-read-controls at ≥561px. Playground
+   completion is explicit on every viewport, so never reuse that class. */
+.pg-learn .learn-read-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 16px 0 8px;
+}
+
+.pg-learn-panel {
+  display: block;
+  margin: 0 0 20px;
+}
+
+/* Constitution hides unused .learn-panel-* unless .learn[data-mode=…] wraps them. */
+.pg-learn .learn-panel-cloze,
+.pg-learn .learn-panel-letters,
+.pg-learn .learn-panel-type,
+.pg-learn .learn-panel-recite,
+.pg-learn .learn-panel-test {
+  display: block;
+}
+
+@media (min-width: 1040px) {
+  .pg-learn-deck {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pg-learn {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 360px);
+    gap: 24px;
+  }
+
+  .pg-learn > .pg-eyebrow,
+  .pg-learn > h1,
+  .pg-learn > .pg-lede,
+  .pg-learn > .pg-note,
+  .pg-learn > .pg-mode-bar,
+  .pg-learn > .pg-mode-head,
+  .pg-learn > .pg-mode-tabs,
+  .pg-learn > .pg-methods-tracker {
+    grid-column: 1 / -1;
+  }
+
+  .pg-learn-deck {
+    grid-column: 1;
+  }
+
+  .pg-learn-panel,
+  .pg-learn-feedback,
+  .pg-learn > .VerbatimText,
+  .pg-learn > .pg-actions {
+    grid-column: 2;
+  }
+}
+
+.pg-learn-card.is-current {
+  outline: 2px solid var(--pg-ink);
+}
+
+.pg-learn-feedback {
+  margin: 16px 0;
+  padding: 16px;
+  background: var(--pg-subtle);
+  border: 1px solid var(--pg-hairline);
+}
+
+.pg-learn .learn-read-done,
+.pg-learn .learn-cloze-density-btn,
+.pg-learn .learn-letters-speak,
+.pg-learn .learn-letters-btn,
+.pg-learn .learn-recite-toggle,
+.pg-learn .learn-recite-peek,
+.pg-learn .learn-recite-check,
+.pg-learn .learn-letters-check-text,
+.pg-learn .learn-type-input,
+.pg-learn .learn-test-fill,
+.pg-learn button[data-pg-complete] {
+  min-height: 44px;
+}
+
+.pg-learn .learn-type-input,
+.pg-learn .learn-letters-manual,
+.pg-learn .learn-recite-manual,
+.pg-learn .learn-test-fill {
+  width: 100%;
+  font: inherit;
+}
+
+.pg-update-panel {
+  margin: 16px 0 24px;
+  padding: 16px;
+  border: 1px solid var(--pg-hairline);
+  background: var(--pg-subtle);
+}
+
+/* ── R1 shared primitives ─────────────────────────────────────────────── */
+
+@keyframes pg-rise {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pg-pop {
+  0% { transform: scale(0.5); opacity: 0; }
+  70% { transform: scale(1.08); }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes pg-sheet-rise {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+@keyframes pg-grow {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+
+@keyframes pg-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes pg-modal {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+  to { opacity: 1; transform: none; }
+}
+
+.pg-rise { animation: pg-rise 0.35s ease both; }
+.pg-pop { animation: pg-pop 0.35s ease both; }
+.pg-motion-sheet { animation: pg-sheet-rise 0.28s ease both; }
+.pg-grow { animation: pg-grow 0.4s ease both; transform-origin: bottom; }
+.pg-fade { animation: pg-fade 0.2s ease both; }
+.pg-modal { animation: pg-modal 0.25s ease both; }
+
+.pg-back {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--pg-tap);
+  margin: 0 0 8px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--pg-muted);
+  font: inherit;
+  font-size: 13px;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.pg-back:hover {
+  color: var(--pg-ink);
+}
+
+.PlaygroundShell input:not([type="hidden"]):not([type="checkbox"]):not([type="radio"]):not([type="submit"]),
+.PlaygroundShell textarea,
+.PlaygroundShell select,
+.pg-field {
+  display: block;
+  width: 100%;
+  min-height: var(--pg-tap);
+  padding: 8px 12px;
+  border: 1px solid var(--pg-hairline);
+  border-radius: var(--pg-radius-row);
+  background: var(--pg-paper);
+  color: var(--pg-ink);
+  font: inherit;
+  font-size: 16px;
+}
+
+.PlaygroundShell input:not([type="hidden"]):focus-visible,
+.PlaygroundShell textarea:focus-visible,
+.PlaygroundShell select:focus-visible,
+.pg-field:focus-visible {
+  outline: var(--pg-focus-ring);
+  outline-offset: 2px;
+}
+
+.pg-progress-ring {
+  --pg-ring-size: 72px;
+  --pg-ring-pct: 0;
+  width: var(--pg-ring-size);
+  height: var(--pg-ring-size);
+  border-radius: 50%;
+  background: conic-gradient(var(--pg-teal) calc(var(--pg-ring-pct) * 1%), var(--pg-hairline) 0);
+  display: grid;
+  place-items: center;
+}
+
+.pg-progress-ring::after {
+  content: "";
+  width: calc(var(--pg-ring-size) - 12px);
+  height: calc(var(--pg-ring-size) - 12px);
+  border-radius: 50%;
+  background: var(--pg-paper);
+}
+
+.pg-progress-bar {
+  display: flex;
+  height: 4px;
+  overflow: hidden;
+  border-radius: var(--pg-radius-chip);
+  background: var(--pg-hairline);
+}
+
+.pg-progress-bar-fill {
+  height: 100%;
+  background: var(--pg-teal);
+  transform-origin: left center;
+}
+
+.pg-waffle {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+
+.pg-waffle-cell {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--pg-hairline);
+}
+
+.pg-waffle-cell.is-done {
+  background: var(--pg-teal-done);
+}
+
+.pg-waffle-cell.is-due {
+  background: var(--pg-amber);
+}
+
+.pg-rung-bar {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  height: 48px;
+}
+
+.pg-rung {
+  flex: 1 1 0;
+  min-width: 8px;
+  height: var(--pg-rung-h, 20%);
+  border-radius: 3px 3px 0 0;
+  background: var(--pg-teal-tint);
+  transform-origin: bottom;
+}
+
+.pg-rung.is-current {
+  background: var(--pg-teal);
+}
+
+.pg-columns {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+
+.pg-sticky-cta {
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 0 calc(12px + env(safe-area-inset-bottom, 0px));
+  background: var(--pg-paper);
+}
+
+@media (min-width: 900px) {
+  .RolloverPlanner .pg-sticky-cta {
+    display: none;
+  }
+}
+
+.pg-surface--fixed-dark,
+html:has(.pg-surface--fixed-dark),
+html:has(.pg-surface--fixed-dark) body,
+html:has(.pg-surface--fixed-dark) .page-wrap,
+html:has(.pg-surface--fixed-dark) .sheet {
+  color-scheme: dark;
+  background: #141414;
+  color: #f2f2f0;
+  --pg-ink: #f2f2f0;
+  --pg-muted: #9a9a9a;
+  --pg-faint: #8f8f8d;
+  --pg-mid: #8f8f8d;
+  --pg-hairline: #333333;
+  --pg-page: #141414;
+  --pg-paper: #1d1d1d;
+  --pg-subtle: #1d1d1d;
+  --pg-wash: #1d1d1d;
+  --pg-control-border: #3a3a3a;
+  --pg-teal: #7fc4ba;
+  --pg-teal-dark: #7fc4ba;
+  --pg-teal-tint: #1d3a36;
+  --pg-teal-border: #2a5f58;
+  --pg-teal-done: #3f6b64;
+  --pg-teal-on-dark: #7fc4ba;
+  --pg-teal-hover: #8fd4c8;
+  --pg-amber: #d97706;
+  --pg-amber-tint: #3a2a18;
+  --pg-amber-deep: #f0c48a;
+  --pg-amber-border: #7c4a12;
+  --pg-destructive: #e4776b;
+  --pg-destructive-tint: #3a1c18;
+  --pg-destructive-deep: #f0a8a0;
+}
+
+@media (min-width: 561px) {
+  .pg-back {
+    min-height: 32px;
+  }
+
+  .pg-columns--2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 900px) {
+  .pg-columns--3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .pg-sheet,
+  .pg-sheet[open],
+  dialog.pg-sheet,
+  dialog.pg-sheet[open] {
+    --pg-sheet-anchor: bottom;
+    position: fixed;
+    top: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    inset: auto 0 0 0;
+    width: calc(100% - (2 * var(--pg-shell-pad)));
+    max-width: none;
+    margin: 0 auto 0;
+    height: fit-content;
+    max-height: min(92dvh, 100%);
+    border-radius: var(--pg-radius-sheet) var(--pg-radius-sheet) 0 0;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .pg-sheet-panel {
+    border: 0;
+    border-radius: var(--pg-radius-sheet) var(--pg-radius-sheet) 0 0;
+    box-shadow: var(--pg-shadow-sheet);
+    padding-top: 12px;
+    padding-bottom: calc(22px + env(safe-area-inset-bottom, 0px));
+    animation: pg-sheet-rise 0.28s ease both;
+  }
+
+  .pg-sheet-panel::before {
+    content: "";
+    display: block;
+    width: 36px;
+    height: 4px;
+    margin: 0 auto 14px;
+    border-radius: var(--pg-radius-chip);
+    background: var(--pg-hairline);
+  }
+
+  .pg-sheet-close {
+    display: none;
+  }
+
+  .PlaygroundShell .pg-btn,
+  .PlaygroundShell .pg-back,
+  .PlaygroundShell .pg-card-actions .pg-btn {
+    min-height: var(--pg-tap);
+  }
+}
+
+/* R2 section/clause picker */
+.pg-select h1 {
+  font-family: var(--pg-font-display);
+  font-size: 28px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  margin: 8px 0 8px;
+}
+
+.pg-select-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 24px;
+}
+
+.pg-pick-chapter {
+  margin: 28px 0 10px;
+  font-size: var(--pg-label-size);
+  font-weight: var(--pg-label-weight);
+  letter-spacing: var(--pg-label-tracking);
+  text-transform: uppercase;
+  color: var(--pg-muted);
+}
+
+.pg-pick-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pg-pick-section {
+  position: relative;
+  border-bottom: 1px solid var(--pg-hairline);
+  padding: 12px 48px 12px 0;
+}
+
+.pg-pick-section.is-disabled {
+  opacity: 0.55;
+}
+
+.pg-pick-row {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  gap: 10px;
+  align-items: start;
+}
+
+.pg-pick-check-wrap,
+.pg-pick-clause-label {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: var(--pg-tap);
+  cursor: pointer;
+}
+
+.pg-pick-check,
+.pg-pick-clause-check {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.pg-pick-box,
+.pg-pick-clause-box {
+  width: 22px;
+  height: 22px;
+  border: 1.5px solid var(--pg-control-border);
+  border-radius: 6px;
+  background: var(--pg-paper);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--pg-paper);
+  font-size: 14px;
+  line-height: 1;
+  flex: 0 0 auto;
+}
+
+.pg-pick-clause-box {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+}
+
+.pg-pick-check:focus-visible + .pg-pick-box,
+.pg-pick-clause-check:focus-visible + .pg-pick-clause-box,
+.pg-pick-caret:focus-visible {
+  outline: var(--pg-focus-ring);
+  outline-offset: 3px;
+}
+
+.pg-pick-check:checked + .pg-pick-box,
+.pg-pick-clause-check:checked + .pg-pick-clause-box {
+  background: var(--pg-teal);
+  border-color: var(--pg-teal);
+}
+
+.pg-pick-check:checked + .pg-pick-box::after,
+.pg-pick-clause-check:checked + .pg-pick-clause-box::after {
+  content: "✓";
+}
+
+.pg-pick-check:indeterminate + .pg-pick-box,
+.pg-pick-check[aria-checked="mixed"] + .pg-pick-box {
+  background: var(--pg-teal-tint);
+  border-color: var(--pg-teal);
+  color: var(--pg-teal-dark);
+}
+
+.pg-pick-check:indeterminate + .pg-pick-box::after,
+.pg-pick-check[aria-checked="mixed"] + .pg-pick-box::after {
+  content: "–";
+  font-weight: 700;
+}
+
+.pg-pick-section.is-disabled .pg-pick-check,
+.pg-pick-section.is-disabled .pg-pick-clause-check {
+  cursor: not-allowed;
+}
+
+.pg-pick-eyebrow {
+  margin: 0;
+  font-size: var(--pg-label-size);
+  font-weight: var(--pg-label-weight);
+  letter-spacing: var(--pg-label-tracking);
+  text-transform: uppercase;
+  color: var(--pg-faint);
+}
+
+.pg-pick-title {
+  margin: 2px 0 0;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--pg-ink);
+}
+
+.pg-pick-status {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--pg-faint);
+}
+
+.pg-pick-status[data-status="learning"] {
+  color: var(--pg-teal);
+}
+
+.pg-pick-status[data-status="learned"] {
+  color: var(--pg-teal-dark);
+}
+
+.pg-pick-status[data-status="due"] {
+  color: var(--pg-amber-deep);
+}
+
+.pg-pick-status[data-status="mastered"] {
+  color: var(--pg-ink);
+}
+
+.pg-pick-expand {
+  margin: 0;
+}
+
+.pg-pick-caret {
+  position: absolute;
+  top: 10px;
+  right: 0;
+  width: var(--pg-tap);
+  height: var(--pg-tap);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  list-style: none;
+  cursor: pointer;
+  color: var(--pg-muted);
+}
+
+.pg-pick-caret::-webkit-details-marker {
+  display: none;
+}
+
+.pg-pick-expand[open] > .pg-pick-caret .pg-pick-caret-mark {
+  transform: rotate(90deg);
+}
+
+.pg-pick-caret-mark {
+  display: inline-block;
+}
+
+.pg-pick-clauses {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 8px 44px;
+}
+
+.pg-pick-clause-label {
+  gap: 10px;
+  align-items: flex-start;
+  padding: 6px 0;
+}
+
+.pg-pick-clause-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  font-size: 14px;
+  color: var(--pg-ink);
+}
+
+.pg-pick-clause-text span {
+  color: var(--pg-muted);
+  font-size: 13px;
+}
+
+.pg-pick-footer .pg-pick-count {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--pg-muted);
+}
+
+.pg-pick-aside {
+  display: none;
+}
+
+.pg-pick-aside-kicker {
+  margin: 0 0 8px;
+  font-size: var(--pg-label-size);
+  font-weight: var(--pg-label-weight);
+  letter-spacing: var(--pg-label-tracking);
+  text-transform: uppercase;
+  color: var(--pg-muted);
+}
+
+.pg-pick-aside-count {
+  margin: 0 0 16px;
+  font-family: var(--pg-font-display);
+  font-size: 28px;
+}
+
+.pg-pick-aside-count strong {
+  font-weight: 500;
+}
+
+.pg-pick-aside-list {
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+}
+
+.pg-pick-aside-list li {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--pg-hairline);
+  font-size: 14px;
+}
+
+.pg-pick-aside-note {
+  font-size: 13px;
+  color: var(--pg-muted);
+  margin: 0 0 16px;
+}
+
+@media (min-width: 900px) {
+  .pg-select-layout {
+    grid-template-columns: minmax(0, 1fr) 280px;
+    align-items: start;
+  }
+
+  .pg-pick-aside {
+    display: block;
+    position: sticky;
+    top: 24px;
+    padding: 18px;
+    border: 1px solid var(--pg-hairline);
+    border-radius: var(--pg-radius-card);
+    background: var(--pg-paper);
+  }
+
+  .pg-pick-footer {
+    display: none;
+  }
+
+  .pg-pick-status {
+    position: absolute;
+    right: 52px;
+    top: 18px;
+    width: 220px;
+    text-align: right;
+    margin: 0;
+  }
+
+  .pg-pick-section {
+    padding-right: 280px;
+  }
+}
+
+/* R3 — Act-head, Add, home, gates */
+body:has(.PlaygroundShell[data-hard-gate="true"]) .PrimaryTabs--top,
+body:has(.PlaygroundShell[data-hard-gate="true"]) .mobile-tabbar {
+  display: none;
+}
+
+.pg-home-kicker {
+  display: none;
+}
+
+.pg-month-strip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  margin: 8px 0 16px;
+  font-size: 13.5px;
+}
+
+.pg-month-strip a {
+  color: inherit;
+}
+
+.pg-home-title {
+  font-family: var(--pg-font-display, inherit);
+  font-weight: 500;
+  margin: 0;
+}
+
+.pg-home-month {
+  margin: 4px 0 0;
+  color: var(--pg-muted);
+}
+
+.pg-card-actions--desktop {
+  display: none;
+}
+
+.pg-card-actions--phone {
+  display: flex;
+}
+
+.LawCard-bar {
+  margin: 8px 0;
+}
+
+.pg-add-choice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  text-align: left;
+  margin: 0 0 9px;
+  padding: 13px 14px;
+  border: 1px solid var(--pg-hairline);
+  border-radius: var(--pg-radius-row);
+  background: var(--pg-paper);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.pg-add-choice:first-of-type {
+  border-color: var(--pg-ink);
+}
+
+.pg-included-card,
+.pg-plan-card {
+  border: 1px solid var(--pg-hairline);
+  border-radius: var(--pg-radius-card);
+  padding: 16px;
+  margin: 12px 0;
+  background: var(--pg-paper);
+}
+
+.pg-plan-name {
+  margin: 0;
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.pg-plan-price {
+  margin: 4px 0 0;
+  font-family: var(--pg-font-display, inherit);
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.pg-plan-price span {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--pg-muted);
+}
+
+.pg-error {
+  max-width: 36rem;
+}
+
+body.playground-app:has(.PlaygroundShell[data-playground-error]) {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--pg-page);
+  color: var(--pg-ink);
+  font-family: var(--pg-font-ui);
+}
+
+.PlaygroundShell[data-playground-error] {
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+@media (min-width: 900px) {
+  .pg-home-kicker {
+    display: block;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-size: 10.5px;
+  }
+
+  .pg-home-title {
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .pg-home-month {
+    font-family: var(--pg-font-display, inherit);
+    font-size: 32px;
+    font-weight: 500;
+    color: var(--pg-ink);
+  }
+
+  .pg-month-strip {
+    display: none;
+  }
+
+  .pg-card-actions--phone {
+    display: none;
+  }
+
+  .pg-card-actions--desktop {
+    display: flex;
+  }
+
+  .pg-home-tiles {
+    display: flex;
+  }
+}
+
+@media (max-width: 899px) {
+  .pg-home-grid > div > .RosterCapacity,
+  .pg-home-tiles {
+    display: none;
+  }
+
+  .pg-home-grid .pg-aside {
+    display: none;
+  }
+}
+
+@media (min-width: 1024px) {
+  .bareact-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 380px;
+    column-gap: 32px;
+    align-items: start;
+  }
+
+  .bareact-head .LawPlaygroundCta {
+    grid-column: 2;
+    grid-row: 1 / span 8;
+    width: 380px;
+    max-width: 100%;
+    margin-top: 0;
+    padding: 16px;
+    border: 1px solid var(--pg-hairline);
+    border-radius: var(--pg-radius-card);
+    background: var(--pg-paper);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pg-pick-caret-mark {
+    transform: none !important;
+  }
+}
+
+/* R4 Act progress + Learn + completion */
+.pg-act-head .pg-back {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--pg-tap);
+  margin: 0 0 8px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--pg-muted);
+  text-decoration: none;
+}
+.pg-act-ring-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 18px 0 8px;
+}
+.pg-progress-ring--act {
+  --pg-ring-size: 84px;
+  position: relative;
+  flex: none;
+}
+.pg-progress-ring-label {
+  position: relative;
+  z-index: 1;
+  font-family: var(--pg-font-display);
+  font-size: 17px;
+  font-weight: 500;
+}
+.pg-act-ring-copy {
+  min-width: 0;
+}
+.pg-act-headline {
+  display: block;
+  font-family: var(--pg-font-display);
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+.pg-act-subhead {
+  display: block;
+  margin-top: 2px;
+  font-size: 12.5px;
+  color: var(--pg-muted);
+}
+.pg-act-next-row {
+  margin: 10px 0 0;
+}
+.pg-chip--next {
+  border-color: var(--pg-teal-border);
+  background: var(--pg-teal-tint);
+  color: var(--pg-teal-dark);
+}
+.pg-waffle-cell.is-learned,
+.pg-waffle-cell.is-mastered {
+  background: var(--pg-teal-done);
+}
+.pg-waffle-cell.is-learning {
+  background: var(--pg-teal);
+}
+.pg-waffle-cell.is-due {
+  background: var(--pg-amber);
+}
+.pg-waffle-cell.is-missing,
+.pg-waffle-cell.is-not_started {
+  background: var(--pg-hairline);
+}
+.pg-rung-bar--act {
+  height: 72px;
+  gap: 10px;
+  margin: 0 0 8px;
+}
+.pg-rung-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+.pg-rung-count {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--pg-teal-dark);
+}
+.pg-rung-label {
+  font-size: 10px;
+  color: var(--pg-mid);
+}
+.pg-act-cta {
+  margin-top: 24px;
+}
+.pg-act-desktop-prompt,
+.pg-act-section-list {
+  display: none;
+}
+.pg-learn-lead-in {
+  margin: 0 0 12px;
+  padding: 12px 14px;
+  border-left: 3px solid var(--pg-hairline);
+  color: var(--pg-muted);
+  font-size: 14px;
+}
+.pg-learn-help {
+  min-width: var(--pg-tap);
+  min-height: var(--pg-tap);
+}
+.pg-learn .pg-chip--verbatim {
+  margin-left: 8px;
+}
+.pg-methods-left {
+  font-size: 13px;
+  color: var(--pg-muted);
+}
+.pg-complete {
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 28px 0 48px;
+}
+.pg-complete-kicker {
+  font-size: var(--pg-label-size);
+  font-weight: var(--pg-label-weight);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--pg-muted);
+}
+.pg-complete h1 {
+  font-family: var(--pg-font-display);
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.15;
+  margin: 8px 0 8px;
+}
+.pg-complete-ladder {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 16px 0;
+}
+.pg-complete-chip {
+  display: inline-flex;
+  align-items: center;
+  height: 28px;
+  padding: 0 11px;
+  border-radius: 14px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--pg-hairline);
+  color: var(--pg-muted);
+}
+.pg-complete-chip.is-next,
+.pg-complete-chip.is-done {
+  background: var(--pg-teal);
+  color: var(--pg-paper);
+}
+.pg-complete-count {
+  font-size: 14px;
+  color: var(--pg-muted);
+}
+.pg-complete.pg-surface--fixed-dark {
+  min-height: 100vh;
+  margin: 0 calc(-1 * var(--pg-gutter, 18px));
+  padding: 28px var(--pg-gutter, 18px) 48px;
+}
+html:has(.pg-complete.pg-surface--fixed-dark) .site-header,
+html:has(.pg-complete.pg-surface--fixed-dark) .sheet-footnote,
+html:has(.pg-complete.pg-surface--fixed-dark) .mobile-tabbar {
+  display: none;
+}
+html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
+  padding-bottom: 0;
+}
+.pg-learn-help {
+  position: relative;
+}
+.pg-learn-help summary {
+  list-style: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--pg-tap);
+  min-height: var(--pg-tap);
+  border: 1px solid var(--pg-hairline);
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+}
+.pg-learn-help summary::-webkit-details-marker {
+  display: none;
+}
+.pg-learn-help p {
+  position: absolute;
+  right: 0;
+  z-index: 2;
+  width: min(280px, 80vw);
+  margin: 8px 0 0;
+  padding: 12px 14px;
+  border: 1px solid var(--pg-hairline);
+  border-radius: var(--pg-radius-card);
+  background: var(--pg-paper);
+  color: var(--pg-ink);
+  font-size: 13px;
+  box-shadow: var(--pg-shadow-menu);
+}
+.pg-source-outdated {
+  color: var(--pg-amber-deep);
+}
+
+@media (min-width: 900px) {
+  .pg-progress-ring--act {
+    --pg-ring-size: 104px;
+  }
+  .pg-act-desktop-prompt,
+  .pg-act-section-list {
+    display: block;
+  }
+}
+
+@media (max-width: 899px) {
+  .pg-learn-deck {
+    display: none;
+  }
+  .pg-mode-tabs {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pg-rung,
+  .pg-progress-ring--act,
+  .pg-grow {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* R7 closeout — D17 / D25. No IA change. */
+.PlaygroundShell {
+  overflow-x: hidden;
+}
+
+@media (max-width: 899px) {
+  .pg-learn .learn-letters-view-btn,
+  .pg-learn .segmented-btn {
+    min-height: 44px;
+    min-width: 44px;
+    height: auto;
+  }
+
+  .pg-month-strip a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    min-width: 44px;
+    box-sizing: border-box;
+  }
+}
+
+@media (min-width: 900px) and (max-width: 1039px) {
+  .pg-home-grid,
+  .pg-select-layout,
+  .RolloverLayout,
+  .bareact-head {
+    min-width: 0;
+  }
+
+  .bareact-head .LawPlaygroundCta {
+    width: auto;
+    max-width: 100%;
+  }
+}
+
+/* Guest desktop Add dialog (CTA map guest/05-screen). Phone guest sheet
+   keeps Sign in to use Playground + Cancel. Subscriber sheets unchanged. */
+@media (max-width: 560px) {
+  [data-guest-add-desktop] {
+    display: none !important;
+  }
+}
+
+@media (min-width: 561px) {
+  [data-guest-add-phone] {
+    display: none !important;
+  }
+
+  .pg-sheet-panel[data-pg-kind="guest"] > .pg-eyebrow {
+    display: none;
+  }
+
+  .pg-sheet-panel[data-pg-kind="guest"] {
+    padding: 26px 28px;
+  }
+
+  body.is-guest dialog.pg-sheet[open]::backdrop {
+    background: rgba(20, 20, 20, 0.35);
+  }
+
+  [data-guest-add-desktop] .guest-add-title {
+    font-family: var(--pg-font-display);
+    font-weight: 500;
+    font-size: 22px;
+    line-height: 1.25;
+    letter-spacing: 0;
+    margin: 0 0 4px;
+    color: var(--pg-ink);
+  }
+
+  [data-guest-add-desktop] .guest-add-lede {
+    margin: 0 0 18px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--pg-muted);
+    max-width: none;
+  }
+
+  [data-guest-add-desktop] .guest-add-signin,
+  [data-guest-add-desktop] .guest-add-create {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    border-radius: 12px;
+    font: inherit;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    box-sizing: border-box;
+  }
+
+  [data-guest-add-desktop] .guest-add-signin {
+    height: 50px;
+    border: none;
+    background: var(--pg-ink);
+    color: var(--pg-paper);
+    font-size: 15px;
+    box-shadow: var(--pg-shadow-press);
+  }
+
+  .PlaygroundShell [data-guest-add-desktop] .guest-add-signin {
+    color: var(--pg-paper);
+  }
+
+  [data-guest-add-desktop] .guest-add-signin:active {
+    transform: translateY(1px);
+    box-shadow: var(--pg-shadow-press-active);
+  }
+
+  [data-guest-add-desktop] .guest-add-create {
+    height: 46px;
+    margin-top: 9px;
+    border: 1px solid var(--pg-hairline);
+    background: var(--pg-paper);
+    color: var(--pg-ink);
+    font-size: 14.5px;
+  }
+
+  .PlaygroundShell [data-guest-add-desktop] .guest-add-create {
+    color: var(--pg-ink);
+  }
+
+  [data-guest-add-desktop] .guest-add-create:hover {
+    background: var(--pg-subtle);
+  }
+
+  .pg-sheet-panel[data-pg-kind="guest"] > .pg-sheet-close {
+    top: 14px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    font-size: 15px;
+    color: var(--pg-mid);
+  }
+}
+
+/* Signed-in desktop subscribe Add dialog (CTA map signedIn/05-screen).
+   Phone subscribe sheet keeps Unlock Playground + Cancel. Other kinds
+   stay on the production add rows. */
+@media (max-width: 560px) {
+  [data-signed-in-add-desktop] {
+    display: none !important;
+  }
+}
+
+@media (min-width: 561px) {
+  [data-signed-in-add-phone] {
+    display: none !important;
+  }
+
+  .pg-sheet-panel[data-pg-kind="subscribe"] > .pg-eyebrow {
+    display: none;
+  }
+
+  .pg-sheet-panel[data-pg-kind="subscribe"] {
+    padding: 20px 24px 18px;
+    border-radius: 14px;
+  }
+
+  body.is-authed dialog.pg-sheet[open]:has([data-signed-in-add-desktop])::backdrop {
+    background: rgba(20, 20, 20, 0.28);
+  }
+
+  [data-signed-in-add-desktop] .signed-add-title {
+    font-family: var(--pg-font-display);
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 1.2;
+    letter-spacing: 0;
+    margin: 0 0 2px;
+    color: var(--pg-ink);
+  }
+
+  [data-signed-in-add-desktop] .signed-add-lede {
+    margin: 0 0 14px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--pg-muted);
+  }
+
+  [data-signed-in-add-desktop] .signed-add-unlock {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 44px;
+    border: none;
+    border-radius: var(--pg-radius-button);
+    background: var(--pg-ink);
+    color: var(--pg-paper);
+    font: inherit;
+    font-size: 14.5px;
+    font-weight: 600;
+    text-decoration: none;
+    box-sizing: border-box;
+    box-shadow: var(--pg-shadow-press-active);
+  }
+
+  .PlaygroundShell [data-signed-in-add-desktop] .signed-add-unlock {
+    color: var(--pg-paper);
+  }
+
+  [data-signed-in-add-desktop] .signed-add-unlock:active {
+    transform: translateY(1px);
+    box-shadow: none;
+  }
+
+  [data-signed-in-add-desktop] .signed-add-note {
+    display: block;
+    width: 100%;
+    margin: 8px 0 0;
+    text-align: center;
+    font-size: 12px;
+    line-height: 1.45;
+    color: var(--pg-faint);
+  }
+
+  [data-signed-in-add-desktop] .signed-add-cancel {
+    display: none;
+  }
+
+  .pg-sheet-panel[data-pg-kind="subscribe"] > .pg-sheet-close {
+    top: 14px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    font-size: 15px;
+    color: var(--pg-mid);
+  }
+}
+
+/* Plus desktop Add dialog (CTA map plus/05-screen). Phone Plus sheet
+   keeps the production confirm + scope rows. Guest / Free subscribe
+   sheets stay on their own wrappers. */
+@media (max-width: 560px) {
+  [data-plus-add-desktop] {
+    display: none !important;
+  }
+}
+
+@media (min-width: 561px) {
+  [data-plus-add-phone] {
+    display: none !important;
+  }
+
+  .pg-sheet-panel[data-plus-add="desktop"] > .pg-eyebrow {
+    display: none;
+  }
+
+  .pg-sheet-panel[data-plus-add="desktop"] {
+    padding: 26px 28px;
+    border-radius: var(--pg-radius-dialog);
+  }
+
+  body.is-authed dialog.pg-sheet[open]:has([data-plus-add-desktop])::backdrop {
+    background: rgba(20, 20, 20, 0.35);
+  }
+
+  [data-plus-add-desktop] .plus-add-title {
+    font-family: var(--pg-font-display);
+    font-weight: 500;
+    font-size: 22px;
+    line-height: 1.25;
+    letter-spacing: 0;
+    margin: 0 0 4px;
+    color: var(--pg-ink);
+  }
+
+  [data-plus-add-desktop] .plus-add-lede {
+    margin: 0 0 6px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--pg-muted);
+  }
+
+  [data-plus-add-desktop] .plus-add-space {
+    margin: 0 0 18px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--pg-ink);
+  }
+
+  [data-plus-add-desktop] .plus-add-submit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 50px;
+    border: none;
+    border-radius: var(--pg-radius-button);
+    background: var(--pg-ink);
+    color: var(--pg-paper);
+    font: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    box-sizing: border-box;
+    box-shadow: var(--pg-shadow-press);
+  }
+
+  .PlaygroundShell [data-plus-add-desktop] .plus-add-submit {
+    color: var(--pg-paper);
+  }
+
+  [data-plus-add-desktop] .plus-add-submit:active {
+    transform: translateY(1px);
+    box-shadow: var(--pg-shadow-press-active);
+  }
+
+  [data-plus-add-desktop] .plus-add-footer {
+    margin: 12px 0 0;
+    text-align: center;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--pg-faint);
+  }
+
+  [data-plus-add-desktop] .plus-add-cancel {
+    display: none;
+  }
+
+  .pg-sheet-panel[data-plus-add="desktop"] > .pg-sheet-close {
+    top: 14px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    font-size: 15px;
+    color: var(--pg-mid);
+  }
+}
+
+/* Expired / Halted desktop resume dialogs (CTA map 05-screen). Phone resume
+   keeps primary + Cancel. Paused stays on the generic resume branch. */
+@media (max-width: 560px) {
+  [data-expired-add-desktop],
+  [data-halted-add-desktop] {
+    display: none !important;
+  }
+}
+
+@media (min-width: 561px) {
+  [data-expired-add-phone],
+  [data-halted-add-phone] {
+    display: none !important;
+  }
+
+  .pg-sheet-panel[data-expired-add="desktop"] > .pg-eyebrow,
+  .pg-sheet-panel[data-halted-add="desktop"] > .pg-eyebrow {
+    display: none;
+  }
+
+  .pg-sheet-panel[data-expired-add="desktop"],
+  .pg-sheet-panel[data-halted-add="desktop"] {
+    padding: 26px 28px;
+    border-radius: var(--pg-radius-dialog);
+  }
+
+  body.is-authed dialog.pg-sheet[open]:has([data-expired-add-desktop])::backdrop,
+  body.is-authed dialog.pg-sheet[open]:has([data-halted-add-desktop])::backdrop {
+    background: rgba(20, 20, 20, 0.28);
+  }
+
+  [data-expired-add-desktop] .expired-add-title,
+  [data-halted-add-desktop] .halted-add-title {
+    font-family: var(--pg-font-display);
+    font-weight: 500;
+    font-size: 22px;
+    line-height: 1.25;
+    letter-spacing: 0;
+    margin: 0 0 4px;
+    color: var(--pg-ink);
+  }
+
+  [data-expired-add-desktop] .expired-add-lede,
+  [data-halted-add-desktop] .halted-add-lede {
+    margin: 0 0 18px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--pg-muted);
+  }
+
+  [data-expired-add-desktop] .expired-add-resume,
+  [data-halted-add-desktop] .halted-add-resume {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 50px;
+    border: none;
+    border-radius: var(--pg-radius-button);
+    background: var(--pg-ink);
+    color: var(--pg-paper);
+    font: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    box-sizing: border-box;
+    box-shadow: var(--pg-shadow-press);
+  }
+
+  .PlaygroundShell [data-expired-add-desktop] .expired-add-resume,
+  .PlaygroundShell [data-halted-add-desktop] .halted-add-resume {
+    color: var(--pg-paper);
+  }
+
+  [data-expired-add-desktop] .expired-add-resume:active,
+  [data-halted-add-desktop] .halted-add-resume:active {
+    transform: translateY(1px);
+    box-shadow: var(--pg-shadow-press-active);
+  }
+
+  [data-expired-add-desktop] .expired-add-cancel,
+  [data-halted-add-desktop] .halted-add-cancel {
+    display: none;
+  }
+
+  .pg-sheet-panel[data-expired-add="desktop"] > .pg-sheet-close,
+  .pg-sheet-panel[data-halted-add="desktop"] > .pg-sheet-close {
+    top: 14px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    font-size: 15px;
+    color: var(--pg-mid);
+  }
+}
+
+/* Guest desktop Playground intro (CTA map guest/06-screen). Phone guest
+   /playground keeps the production entitlement Gate. */
+@media (max-width: 560px) {
+  [data-guest-pg-intro] {
+    display: none !important;
+  }
+}
+
+@media (min-width: 561px) {
+  [data-pg-gate-phone] {
+    display: none !important;
+  }
+
+  body.is-guest[data-mscreen="playground"]:has([data-guest-pg-intro]) .PlaygroundShell {
+    max-width: none;
+    padding: 48px 40px 60px;
+  }
+
+  .guest-pg-intro {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 380px;
+    gap: 64px;
+    max-width: 960px;
+    align-items: start;
+  }
+
+  .guest-pg-kicker {
+    margin: 0 0 8px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--pg-teal);
+  }
+
+  .guest-pg-title {
+    margin: 0 0 10px;
+    font-family: var(--pg-font-display);
+    font-size: 34px;
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: 0;
+    color: var(--pg-ink);
+    text-wrap: balance;
+  }
+
+  .PlaygroundShell .guest-pg-title {
+    font-size: 34px;
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: 0;
+    margin: 0 0 10px;
+  }
+
+  .guest-pg-lede {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--pg-muted);
+  }
+
+  .guest-pg-how {
+    margin: 26px 0 10px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--pg-mid);
+  }
+
+  .guest-pg-steps {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .guest-pg-steps li {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .guest-pg-step-n {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border: 1px solid var(--pg-ink);
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 700;
+    flex: none;
+  }
+
+  .guest-pg-step-t {
+    font-size: 14.5px;
+    line-height: 1.5;
+    padding-top: 2px;
+    color: var(--pg-ink);
+  }
+
+  .guest-pg-card {
+    padding: 24px;
+    background: var(--pg-subtle);
+    border: 1px solid var(--pg-hairline);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  .guest-pg-signin {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 50px;
+    border: none;
+    border-radius: 12px;
+    background: var(--pg-ink);
+    color: var(--pg-paper);
+    font: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: var(--pg-shadow-press);
+    box-sizing: border-box;
+  }
+
+  .PlaygroundShell .guest-pg-signin {
+    color: var(--pg-paper);
+  }
+
+  .guest-pg-signin:active {
+    transform: translateY(1px);
+    box-shadow: var(--pg-shadow-press-active);
+  }
+
+  .guest-pg-note {
+    margin: 6px 0 0;
+    font-size: 12px;
+    line-height: 1.55;
+    color: var(--pg-faint);
+  }
+}
+
+/* Signed-in desktop not-subscribed Gate (CTA map signedIn/06-screen).
+   Reuses EntitlementGate copy and /billing/subscriptions. Phone Gate,
+   subscriber home, and other entitlement reasons stay unchanged. */
+@media (min-width: 561px) {
+  body.is-authed.playground-app:has([data-signed-in-pg-gate]) .page-wrap,
+  body.is-authed.playground-app:has([data-signed-in-pg-gate]) .sheet {
+    background: var(--pg-paper);
+  }
+
+  body.is-authed[data-mscreen="playground"]:has([data-signed-in-pg-gate]) .PlaygroundShell {
+    max-width: none;
+    padding: 28px 40px 48px;
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    grid-template-areas:
+      "kicker card"
+      "title card"
+      "lede card"
+      "how card";
+    column-gap: 40px;
+    row-gap: 0;
+    max-width: 880px;
+    align-items: start;
+    padding: 0;
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate] > .pg-included-card,
+  .EntitlementGate[data-signed-in-pg-gate] > .pg-plan-stage,
+  .EntitlementGate[data-signed-in-pg-gate] > .ProgressSummary {
+    display: none !important;
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate] > .pg-eyebrow {
+    grid-area: kicker;
+    margin: 0 0 6px;
+    letter-spacing: 0.14em;
+    color: var(--pg-teal);
+  }
+
+  .PlaygroundShell .EntitlementGate[data-signed-in-pg-gate] h1 {
+    grid-area: title;
+    margin: 0 0 6px;
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 1.12;
+    letter-spacing: 0;
+    text-wrap: balance;
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate] > .pg-lede {
+    grid-area: lede;
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.5;
+    max-width: none;
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate] > .HowPlaygroundWorks {
+    grid-area: how;
+    margin-top: 16px;
+    border-top: 0;
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate] > .HowPlaygroundWorks > .pg-eyebrow {
+    margin: 0 0 8px;
+    letter-spacing: 0.1em;
+    color: var(--pg-mid);
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate] .HowPlaygroundWorks-row {
+    gap: 10px;
+    padding: 0;
+    margin: 0 0 8px;
+    border-bottom: 0;
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate] .HowPlaygroundWorks-row:last-child {
+    margin-bottom: 0;
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate] .HowPlaygroundWorks-n {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    font-size: 11px;
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate] .HowPlaygroundWorks-row p {
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.45;
+    padding-top: 1px;
+    color: var(--pg-ink);
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate] .HowPlaygroundWorks-row .pg-lede {
+    display: none;
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate] .HowPlaygroundWorks-row strong {
+    font-weight: 400;
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate] > .pg-actions {
+    grid-area: card;
+    align-self: start;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    width: 100%;
+    margin: 0;
+    padding: 14px 16px;
+    background: var(--pg-subtle);
+    border: 1px solid var(--pg-hairline);
+    border-radius: var(--pg-radius-row);
+    box-sizing: border-box;
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate] > .pg-actions .pg-btn {
+    width: 100%;
+    height: 42px;
+    min-height: 42px;
+    font-size: 14px;
+    box-sizing: border-box;
+    box-shadow: var(--pg-shadow-press-active);
+  }
+}
+
+/* Guest desktop Profile (CTA map guest/10-screen). Phone guest /profile
+   keeps the production guest card. */
+@media (min-width: 561px) {
+  .guest-profile-title {
+    margin: 0 0 16px;
+    font-family: var(--pg-font-display, Fraunces, Georgia, serif);
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 1.15;
+    color: var(--pg-ink);
+  }
+
+  .guest-profile-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+    max-width: 960px;
+  }
+
+  .guest-profile-col {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .guest-profile-identity {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+    background: var(--pg-paper);
+    border: 1px solid var(--pg-hairline);
+    border-radius: 14px;
+  }
+
+  .guest-profile-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--pg-guest-avatar);
+    color: var(--pg-mid);
+    font-family: var(--pg-font-display, Fraunces, Georgia, serif);
+    font-size: 15px;
+    font-weight: 500;
+    flex: none;
+  }
+
+  .guest-profile-identity-copy {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .guest-profile-name {
+    display: block;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--pg-ink);
+  }
+
+  .guest-profile-meta {
+    display: block;
+    margin-top: 1px;
+    font-size: 12.5px;
+    color: var(--pg-mid);
+  }
+
+  .guest-profile-signin {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 36px;
+    padding: 0 14px;
+    border: none;
+    border-radius: 10px;
+    background: var(--pg-ink);
+    color: var(--pg-paper);
+    font-size: 12.5px;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: var(--pg-shadow-press);
+    flex: none;
+  }
+
+  .guest-profile-signin:active {
+    transform: translateY(1px);
+    box-shadow: var(--pg-shadow-press-active);
+  }
+
+  .guest-profile-info {
+    padding: 16px 18px;
+    background: var(--pg-paper);
+    border: 1px solid var(--pg-hairline);
+    border-radius: 14px;
+  }
+
+  .guest-profile-lede {
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--pg-muted);
+    text-wrap: pretty;
+  }
+
+  .guest-profile-bareacts {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    margin-top: 12px;
+    padding: 0 15px;
+    border: 1px solid var(--pg-hairline);
+    border-radius: 11px;
+    background: var(--pg-paper);
+    color: var(--pg-ink);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .guest-profile-bareacts:hover {
+    background: var(--pg-subtle);
+  }
+
+  .guest-profile-kicker {
+    margin: 0 2px 8px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--pg-mid);
+  }
+
+  .guest-profile-account {
+    background: var(--pg-paper);
+    border: 1px solid var(--pg-hairline);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .guest-profile-report {
+    display: flex;
+    align-items: center;
+    min-height: 52px;
+    padding: 0 18px;
+    font-size: 14.5px;
+    color: var(--pg-ink);
+  }
+
+  .guest-profile-chevron {
+    margin-left: auto;
+    font-size: 12.5px;
+    color: var(--pg-faint);
+  }
+}
+
+/* Plus desktop Playground home (CTA map plus/06-screen). Phone Plus
+   keeps the production subscriber home. Guest intro, Free Gate, and
+   Pro home stay on their own wrappers. */
+@media (max-width: 560px) {
+  [data-plus-playground] .plus-pg-desk-only {
+    display: none !important;
+  }
+}
+
+@media (min-width: 561px) {
+  [data-plus-playground] .plus-pg-desk-hide {
+    display: none !important;
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 32px;
+    align-items: start;
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .pg-home-kicker {
+    display: block;
+    margin: 0 0 6px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--pg-mid);
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] h1.plus-pg-month {
+    display: block;
+    font-family: var(--pg-font-display);
+    font-size: 34px;
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: 0;
+    text-transform: none;
+    margin: 0;
+    color: var(--pg-ink);
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .pg-month-strip {
+    display: none;
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .pg-home-empty {
+    margin-top: 26px;
+    padding: 28px;
+    max-width: 560px;
+    background: var(--pg-paper);
+    border: 1px solid var(--pg-hairline);
+    border-radius: var(--pg-radius-card);
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .pg-home-empty-title {
+    font-family: var(--pg-font-display);
+    font-size: 24px;
+    font-weight: 500;
+    line-height: 1.2;
+    color: var(--pg-ink);
+    max-width: none;
+    margin: 0 0 8px;
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .pg-home-empty .pg-lede:not(.pg-home-empty-title) {
+    margin: 0 0 20px;
+    font-size: 14.5px;
+    line-height: 1.6;
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .pg-home-empty .pg-actions {
+    margin: 0;
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .pg-home-tiles {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    border: 0;
+    margin: 22px 0 8px;
+    background: transparent;
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .ProgressSummary-cell {
+    padding: 14px 16px;
+    background: var(--pg-paper);
+    border: 1px solid var(--pg-hairline);
+    border-radius: 12px;
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .ProgressSummary-value {
+    font-size: 26px;
+    font-weight: 600;
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .ProgressSummary-label {
+    margin-top: 3px;
+    font-size: 12.5px;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--pg-muted);
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .pg-section-head {
+    display: block;
+    margin: 26px 0 10px;
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .pg-section-head h2,
+  .pg-home-grid[data-plus-playground="desktop"] > div > h2 {
+    margin: 26px 0 10px;
+    font-family: var(--pg-font-ui);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--pg-mid);
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .pg-law-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .LawCard {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 18px 20px;
+    border-radius: var(--pg-radius-card);
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .LawCard--emphasised {
+    border: 1px solid var(--pg-hairline);
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .LawCard-kicker {
+    color: var(--pg-teal);
+    letter-spacing: 0.1em;
+    font-weight: 600;
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .LawCard-title {
+    font-size: 20px;
+    font-weight: 500;
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .LawCard[data-membership="in_playground"] .LawStatusBadge[data-status="in_playground"] {
+    display: none;
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .LawCard-meta {
+    display: block;
+    margin: 0;
+    font-size: 13px;
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .LawStatusBadge,
+  .pg-home-grid[data-plus-playground="desktop"] .DueBadge {
+    text-transform: none;
+    letter-spacing: 0;
+    border-radius: 6px;
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .DueBadge[data-due="today"] {
+    border: 1.5px solid var(--pg-ink);
+    font-weight: 700;
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .pg-note {
+    margin: 0;
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .pg-note a {
+    color: var(--pg-teal);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .pg-note a::after {
+    content: " →";
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .pg-card-actions--desktop {
+    display: flex;
+    margin-top: auto;
+    padding-top: 4px;
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .pg-card-actions--phone {
+    display: none !important;
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .pg-aside .TrustMark strong {
+    display: block;
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .pg-aside .TrustMark span:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .pg-aside {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    position: sticky;
+    top: 16px;
+    border: 0;
+    padding: 0;
+    background: transparent;
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .plus-pg-aside-card,
+  .pg-home-grid[data-plus-playground="desktop"] .pg-aside .TrustMark {
+    padding: 20px;
+    background: var(--pg-paper);
+    border: 1px solid var(--pg-hairline);
+    border-radius: var(--pg-radius-card);
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .pg-aside .TrustMark {
+    padding: 16px 18px;
+    margin: 0;
+    gap: 12px;
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .plus-pg-aside-card > .pg-eyebrow {
+    margin: 0 0 6px;
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .RosterCapacity-counts {
+    display: block;
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .RosterCapacity-counts > span:first-child {
+    display: block;
+    font-family: var(--pg-font-display);
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1.1;
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .RosterCapacity-remaining {
+    display: block;
+    margin-top: 4px;
+    font-size: 13.5px;
+    font-weight: 400;
+    color: var(--pg-muted);
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .RosterCapacity-legend {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .RosterCapacity-legend span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12.5px;
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .RosterCapacity-legend span::before {
+    content: "";
+    flex: none;
+    width: 10px;
+    height: 10px;
+    border: 1px solid var(--pg-ink);
+    box-sizing: border-box;
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .RosterCapacity-legend span:first-child::before {
+    background: var(--pg-ink);
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .RosterCapacity-legend span:last-child::before {
+    background: transparent;
+    border-color: var(--pg-hairline);
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .RosterCapacity-legend span:not(:first-child):not(:last-child)::before {
+    background: repeating-linear-gradient(
+      -45deg,
+      var(--pg-ink),
+      var(--pg-ink) 2px,
+      transparent 2px,
+      transparent 5px
+    );
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .pg-aside .pg-actions {
+    flex-direction: column;
+    gap: 8px;
+    margin: 16px 0 0;
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] .pg-aside .pg-btn {
+    width: 100%;
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] a.pg-plan-row {
+    margin-top: 26px;
+  }
+
+  .pg-home-grid[data-plus-playground="desktop"] a.pg-plan-row::after {
+    content: "›";
+    font-size: 16px;
+    color: var(--pg-faint);
+  }
+}
+
+/* Expired and Halted desktop Playground home (CTA maps expired/06-screen
+   and halted/06-screen). Shared selectors; Halted reuses expired-pg-*
+   visual classes. Phone keeps the production read-only home. Plus, guest,
+   Free, and paused stay on their own wrappers. */
+@media (max-width: 560px) {
+  [data-expired-pg-desktop],
+  [data-halted-pg-desktop] {
+    display: none !important;
+  }
+}
+
+@media (min-width: 561px) {
+  [data-expired-pg-phone],
+  [data-halted-pg-phone] {
+    display: none !important;
+  }
+
+  body.is-authed.playground-app:has([data-expired-playground="desktop"]) .page-wrap,
+  body.is-authed.playground-app:has([data-expired-playground="desktop"]) .sheet,
+  body.is-authed.playground-app:has([data-halted-playground="desktop"]) .page-wrap,
+  body.is-authed.playground-app:has([data-halted-playground="desktop"]) .sheet {
+    background: var(--pg-paper);
+  }
+
+  body.is-authed[data-mscreen="playground"]:has([data-expired-playground="desktop"]) .PlaygroundShell,
+  body.is-authed[data-mscreen="playground"]:has([data-halted-playground="desktop"]) .PlaygroundShell {
+    max-width: none;
+    padding: 36px 40px 60px;
+  }
+
+  body.is-authed[data-mscreen="playground"]:has([data-expired-playground="desktop"]) .site-footer,
+  body.is-authed[data-mscreen="playground"]:has([data-expired-playground="desktop"]) .sheet-footnote,
+  body.is-authed[data-mscreen="playground"]:has([data-halted-playground="desktop"]) .site-footer,
+  body.is-authed[data-mscreen="playground"]:has([data-halted-playground="desktop"]) .sheet-footnote {
+    display: none !important;
+  }
+
+  .pg-home-grid[data-expired-playground="desktop"],
+  .pg-home-grid[data-halted-playground="desktop"] {
+    display: block;
+  }
+
+  .expired-pg-desk {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    column-gap: 48px;
+    row-gap: 28px;
+    max-width: 960px;
+    align-items: start;
+  }
+
+  .expired-pg-kicker {
+    margin: 0 0 8px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--pg-teal);
+  }
+
+  .expired-pg-title {
+    margin: 0 0 10px;
+    font-family: var(--pg-font-display);
+    font-size: 34px;
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: 0;
+    color: var(--pg-ink);
+    text-wrap: balance;
+  }
+
+  .PlaygroundShell .expired-pg-title {
+    font-size: 34px;
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: 0;
+    margin: 0 0 10px;
+  }
+
+  .expired-pg-lede {
+    margin: 0 0 28px;
+    font-size: 14.5px;
+    line-height: 1.55;
+    color: var(--pg-muted);
+    max-width: 36em;
+  }
+
+  .expired-pg-saved-kicker {
+    margin: 0 0 10px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--pg-mid);
+  }
+
+  .expired-pg-tiles {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+    border: 0;
+    margin: 0;
+    background: transparent;
+  }
+
+  .expired-pg-tiles .ProgressSummary-cell {
+    padding: 14px 16px;
+    background: var(--pg-paper);
+    border: 1px solid var(--pg-hairline);
+    border-radius: 12px;
+  }
+
+  .expired-pg-tiles .ProgressSummary-value {
+    font-size: 26px;
+    font-weight: 600;
+  }
+
+  .expired-pg-tiles .ProgressSummary-label {
+    margin-top: 3px;
+    font-size: 12.5px;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--pg-muted);
+  }
+
+  .expired-pg-card {
+    padding: 16px;
+    background: var(--pg-subtle);
+    border: 1px solid var(--pg-hairline);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    box-sizing: border-box;
+  }
+
+  .expired-pg-primary,
+  .expired-pg-secondary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 44px;
+    border-radius: var(--pg-radius-button);
+    font: inherit;
+    font-size: 14.5px;
+    font-weight: 600;
+    text-decoration: none;
+    box-sizing: border-box;
+  }
+
+  .expired-pg-primary {
+    height: 50px;
+    border: none;
+    background: var(--pg-ink);
+    color: var(--pg-paper);
+    box-shadow: var(--pg-shadow-press);
+  }
+
+  .PlaygroundShell .expired-pg-primary {
+    color: var(--pg-paper);
+  }
+
+  .expired-pg-primary:active {
+    transform: translateY(1px);
+    box-shadow: var(--pg-shadow-press-active);
+  }
+
+  .expired-pg-secondary {
+    height: 46px;
+    border: 1px solid var(--pg-hairline);
+    background: var(--pg-paper);
+    color: var(--pg-ink);
+  }
+
+  .PlaygroundShell .expired-pg-secondary {
+    color: var(--pg-ink);
+  }
+}
+
+/* Plus and Halted desktop /billing/subscriptions (CTA maps plus/07-screen
+   and halted/07-screen). Shared plus-sub-* selectors. Phone keeps the
+   production purchase panel. Guest, Free, Pro, Max, pending, expired,
+   and paused manage stay on that panel. */
+[data-plus-subscription="desktop"],
+[data-halted-subscription="desktop"] {
+  display: none;
+}
+
+@media (min-width: 561px) {
+  body.is-authed[data-mscreen="purchase"]:has([data-plus-subscription="desktop"]) .page-wrap,
+  body.is-authed[data-mscreen="purchase"]:has([data-plus-subscription="desktop"]) .sheet,
+  body.is-authed[data-mscreen="purchase"]:has([data-plus-subscription="desktop"]) .main,
+  body.is-authed[data-mscreen="purchase"]:has([data-halted-subscription="desktop"]) .page-wrap,
+  body.is-authed[data-mscreen="purchase"]:has([data-halted-subscription="desktop"]) .sheet,
+  body.is-authed[data-mscreen="purchase"]:has([data-halted-subscription="desktop"]) .main {
+    background: var(--page, var(--pg-page));
+  }
+
+  body.is-authed[data-mscreen="purchase"]:has([data-plus-subscription="desktop"]) .site-header,
+  body.is-authed[data-mscreen="purchase"]:has([data-halted-subscription="desktop"]) .site-header {
+    background: var(--paper, var(--pg-paper));
+  }
+
+  body.is-authed[data-mscreen="purchase"]:has([data-plus-subscription="desktop"]) .site-footer,
+  body.is-authed[data-mscreen="purchase"]:has([data-plus-subscription="desktop"]) .sheet-footnote,
+  body.is-authed[data-mscreen="purchase"]:has([data-halted-subscription="desktop"]) .site-footer,
+  body.is-authed[data-mscreen="purchase"]:has([data-halted-subscription="desktop"]) .sheet-footnote {
+    display: none !important;
+  }
+
+  body.is-authed[data-mscreen="purchase"]:has([data-plus-subscription="desktop"]) .panel.purchase,
+  body.is-authed[data-mscreen="purchase"]:has([data-halted-subscription="desktop"]) .panel.purchase {
+    display: none;
+  }
+
+  [data-plus-subscription="desktop"],
+  [data-halted-subscription="desktop"] {
+    display: block;
+    box-sizing: border-box;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 26px 40px 60px;
+  }
+
+  [data-halted-subscription="desktop"] .plus-sub-cards {
+    grid-template-columns: minmax(280px, 360px);
+  }
+
+  [data-halted-subscription="desktop"] .plus-sub-life {
+    margin-top: 28px;
+    max-width: 36em;
+  }
+
+  .plus-sub-eyebrow {
+    margin: 0 0 8px;
+    letter-spacing: 0.14em;
+    color: var(--pg-teal);
+  }
+
+  .plus-sub-title {
+    margin: 0 0 10px;
+    font-family: var(--pg-font-display);
+    font-size: 36px;
+    font-weight: 500;
+    line-height: 1.1;
+    letter-spacing: 0;
+    text-wrap: balance;
+    color: var(--pg-ink);
+  }
+
+  .plus-sub-lede {
+    margin: 0 0 28px;
+    max-width: 620px;
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--pg-muted);
+    text-wrap: pretty;
+  }
+
+  .plus-sub-error {
+    margin: 0 0 16px;
+    max-width: 620px;
+    color: var(--pg-destructive);
+    font-size: 14px;
+  }
+
+  .plus-sub-cards {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .plus-sub-card {
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    padding: 22px;
+    border: 1px solid var(--pg-hairline);
+    border-radius: var(--pg-radius-card);
+    background: var(--pg-paper);
+  }
+
+  .plus-sub-card.is-current {
+    border: 1.5px solid var(--pg-ink);
+    background: var(--pg-subtle);
+  }
+
+  .plus-sub-name {
+    margin: 0 0 10px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--pg-mid);
+  }
+
+  .plus-sub-price {
+    margin: 0;
+    font-family: var(--pg-font-display);
+    font-size: 40px;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: var(--pg-ink);
+  }
+
+  .plus-sub-price span {
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0;
+    color: var(--pg-muted);
+  }
+
+  .plus-sub-limit {
+    margin: 10px 0 0;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--pg-ink);
+  }
+
+  .plus-sub-tag {
+    margin: 12px 0 0;
+    min-height: 44px;
+    font-family: var(--pg-font-display);
+    font-size: 15.5px;
+    line-height: 1.45;
+    font-weight: 500;
+    color: var(--rc-illustration);
+    text-wrap: pretty;
+  }
+
+  .plus-sub-card > form,
+  .plus-sub-card > button.plus-sub-cta {
+    margin-top: auto;
+    padding-top: 18px;
+  }
+
+  .plus-sub-cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 46px;
+    padding: 0 18px;
+    border: 1px solid var(--pg-hairline);
+    border-radius: var(--pg-radius-button);
+    background: var(--pg-paper);
+    color: var(--pg-ink);
+    font: inherit;
+    font-size: 14.5px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .plus-sub-cta.is-current,
+  .plus-sub-cta:disabled {
+    background: var(--pg-paper);
+    color: var(--pg-mid);
+    cursor: default;
+    pointer-events: none;
+  }
+
+  .plus-sub-gst {
+    margin: 14px 0 0;
+    font-size: 12px;
+    color: var(--pg-faint);
+  }
+
+  .plus-sub-foot {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 360px;
+    gap: 32px;
+    margin-top: 28px;
+    align-items: start;
+  }
+
+  .plus-sub-explain {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--pg-muted);
+    text-wrap: pretty;
+  }
+
+  .plus-sub-explain + .plus-sub-life-row,
+  .plus-sub-explain + .plus-sub-note {
+    margin-top: 12px;
+  }
+
+  .plus-sub-life-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 12px;
+    margin: 0 0 8px;
+    max-width: 28rem;
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--pg-muted);
+  }
+
+  .plus-sub-note {
+    margin: 0 0 8px;
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--pg-muted);
+  }
+
+  .plus-sub-checkout {
+    display: inline-flex;
+    align-items: center;
+    margin: 8px 0 0;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--pg-ink);
+  }
+
+  .plus-sub-cancel {
+    display: inline-flex;
+    align-items: center;
+    margin: 8px 0 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    font: inherit;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--pg-ink);
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .plus-sub-included {
+    padding: 16px 18px;
+    background: var(--pg-subtle);
+    border: 1px solid var(--pg-hairline);
+    border-radius: 14px;
+  }
+
+  .plus-sub-included > .pg-eyebrow {
+    margin: 0 0 6px;
+    letter-spacing: 0.12em;
+    color: var(--pg-teal);
+  }
+
+  .plus-sub-included-title {
+    margin: 0 0 4px;
+    font-family: var(--pg-font-display);
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--pg-ink);
+  }
+
+  .plus-sub-included-lede {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--pg-muted);
+  }
+}
+
+/* Expired desktop /billing/subscriptions (Screen 07). Phone expired keeps
+   the production purchase panel. Plus Screen 07 stays on
+   data-plus-subscription="desktop". Halted Screen 07 stays on
+   data-halted-subscription="desktop". Guest, Free, pending, and paused
+   stay on that panel. */
+[data-expired-subscription="desktop"] {
+  display: none;
+}
+
+@media (min-width: 561px) {
+  body.is-authed[data-mscreen="purchase"]:has([data-expired-subscription="desktop"]) .page-wrap,
+  body.is-authed[data-mscreen="purchase"]:has([data-expired-subscription="desktop"]) .sheet,
+  body.is-authed[data-mscreen="purchase"]:has([data-expired-subscription="desktop"]) .main {
+    background: var(--page, var(--pg-page));
+  }
+
+  body.is-authed[data-mscreen="purchase"]:has([data-expired-subscription="desktop"]) .site-header {
+    background: var(--paper, var(--pg-paper));
+  }
+
+  body.is-authed[data-mscreen="purchase"]:has([data-expired-subscription="desktop"]) .site-footer,
+  body.is-authed[data-mscreen="purchase"]:has([data-expired-subscription="desktop"]) .sheet-footnote {
+    display: none !important;
+  }
+
+  body.is-authed[data-mscreen="purchase"]:has([data-expired-subscription="desktop"]) .panel.purchase {
+    display: none;
+  }
+
+  [data-expired-subscription="desktop"] {
+    display: block;
+    box-sizing: border-box;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 26px 40px 60px;
+  }
+
+  .expired-sub-desk .expired-sub-cta {
+    background: var(--pg-ink);
+    color: var(--pg-paper);
+    border: none;
+    box-shadow: var(--pg-shadow-press);
+  }
+
+  .PlaygroundShell .expired-sub-desk .expired-sub-cta,
+  .expired-sub-desk .expired-sub-cta {
+    color: var(--pg-paper);
+  }
+}
+
+/* Plus desktop /dashboard Today (CTA map plus/08-screen). Phone Plus and
+   guest/Free/Pro Today keep the existing dashboard panel. */
+@media (min-width: 561px) {
+  body.is-authed[data-mscreen="today"]:has([data-plus-today="desktop"]) .account-menu-btn-status {
+    display: block;
+  }
+
+  [data-plus-today="desktop"] .dash-access-chip {
+    display: none;
+  }
+
+  [data-plus-today="desktop"] .rc-path-node[data-today-source="playground"].is-current .rc-path-eyebrow {
+    color: var(--pg-teal);
+  }
+
+  [data-plus-today="desktop"] .rc-path-node[data-today-source="playground"].is-current .rc-path-copy {
+    background: var(--pg-teal-tint);
+    border-color: var(--pg-teal-border);
+  }
+}
+
+/* Expired desktop /dashboard Today (CTA map expired/08-screen). Phone Today,
+   guest/Free/Plus/halted Today keep the existing dashboard panel. */
+@media (min-width: 561px) {
+  body.is-authed[data-mscreen="today"]:has([data-expired-today="desktop"]) .account-menu-btn-status {
+    display: block;
+  }
+
+  [data-expired-today="desktop"] .dash-access-chip {
+    display: none;
+  }
+
+  [data-expired-today="desktop"] .rc-path-node[data-today-source="playground"].is-current .rc-path-eyebrow {
+    color: var(--pg-teal);
+  }
+
+  [data-expired-today="desktop"] .rc-path-node[data-today-source="playground"].is-current .rc-path-copy {
+    background: var(--pg-teal-tint);
+    border-color: var(--pg-teal-border);
+  }
+}
+
+/* Plus desktop /calendar month view (CTA map plus/09-screen). Phone Plus,
+   guest/Free/Pro calendar, and week columns keep the existing panel. */
+@media (min-width: 561px) {
+  body.is-authed[data-mscreen="revisions"]:has([data-plus-calendar="desktop"]) .account-menu-btn-status {
+    display: block;
+  }
+
+  body.is-authed[data-mscreen="revisions"]:has([data-plus-calendar="desktop"]) .page-wrap,
+  body.is-authed[data-mscreen="revisions"]:has([data-plus-calendar="desktop"]) .sheet,
+  body.is-authed[data-mscreen="revisions"]:has([data-plus-calendar="desktop"]) .main {
+    background: var(--page);
+  }
+
+  [data-plus-calendar="desktop"].calendar {
+    background: transparent;
+  }
+
+  [data-plus-calendar="desktop"]:not(.is-week) .calendar-chip[data-cal-source="playground"] {
+    border-color: var(--pg-teal);
+    color: var(--pg-teal-dark);
+  }
+
+  [data-plus-calendar="desktop"]:not(.is-week) .calendar-chip[data-cal-source="playground"].is-due {
+    background: var(--pg-teal-tint);
+    border-color: var(--pg-teal);
+    color: var(--pg-teal-dark);
+  }
+
+  [data-plus-calendar="desktop"]:not(.is-week) .cal-si-unit-row[data-cal-source="playground"] .cal-si-unit-meta {
+    color: var(--pg-teal);
+  }
+
+  /* Two-column month layout: grid is its own column; the day-detail
+     rail is a sibling 380px track. Inner Sun–Sat tracks are equal
+     minmax(0, 1fr) so long chips cannot inflate Saturday under the panel. */
+  [data-plus-calendar="desktop"]:not(.is-week) .cal-si-desk {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 380px;
+    gap: 28px;
+    align-items: start;
+    width: 100%;
+    min-width: 0;
+  }
+
+  [data-plus-calendar="desktop"]:not(.is-week) .calendar-grid {
+    min-width: 0;
+    width: 100%;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+
+  [data-plus-calendar="desktop"]:not(.is-week) .calendar-cell,
+  [data-plus-calendar="desktop"]:not(.is-week) .calendar-dow {
+    min-width: 0;
+  }
+
+  [data-plus-calendar="desktop"]:not(.is-week) .cal-si-panel {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+/* Expired desktop /calendar month view (CTA map expired/09-screen). Phone
+   Calendar, guest/Free/Plus/halted Calendar, and week columns keep the
+   existing panel. Visibility of retained Playground chips is a projection
+   overlay; layout matches Plus Screen 09 so the seven-column grid does not
+   regress. */
+@media (min-width: 561px) {
+  body.is-authed[data-mscreen="revisions"]:has([data-expired-calendar="desktop"]) .account-menu-btn-status {
+    display: block;
+  }
+
+  body.is-authed[data-mscreen="revisions"]:has([data-expired-calendar="desktop"]) .page-wrap,
+  body.is-authed[data-mscreen="revisions"]:has([data-expired-calendar="desktop"]) .sheet,
+  body.is-authed[data-mscreen="revisions"]:has([data-expired-calendar="desktop"]) .main {
+    background: var(--page);
+  }
+
+  [data-expired-calendar="desktop"].calendar {
+    background: transparent;
+  }
+
+  [data-expired-calendar="desktop"]:not(.is-week) .calendar-chip[data-cal-source="playground"] {
+    border-color: var(--pg-teal);
+    color: var(--pg-teal-dark);
+  }
+
+  [data-expired-calendar="desktop"]:not(.is-week) .calendar-chip[data-cal-source="playground"].is-due {
+    background: var(--pg-teal-tint);
+    border-color: var(--pg-teal);
+    color: var(--pg-teal-dark);
+  }
+
+  [data-expired-calendar="desktop"]:not(.is-week) .cal-si-unit-row[data-cal-source="playground"] .cal-si-unit-meta {
+    color: var(--pg-teal);
+  }
+
+  [data-expired-calendar="desktop"]:not(.is-week) .cal-si-desk {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 380px;
+    gap: 28px;
+    align-items: start;
+    width: 100%;
+    min-width: 0;
+  }
+
+  [data-expired-calendar="desktop"]:not(.is-week) .calendar-grid {
+    min-width: 0;
+    width: 100%;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+
+  [data-expired-calendar="desktop"]:not(.is-week) .calendar-cell,
+  [data-expired-calendar="desktop"]:not(.is-week) .calendar-dow {
+    min-width: 0;
+  }
+
+  [data-expired-calendar="desktop"]:not(.is-week) .cal-si-panel {
+    min-width: 0;
+    width: 100%;
+  }
+}
+
+/* Plus desktop /profile (CTA map plus/10-screen). Phone Plus and
+   guest/Free/Pro Profile keep the existing signed-in panel. */
+@media (min-width: 561px) {
+  body.is-authed[data-mscreen="account"]:has([data-plus-profile="desktop"]) .account-menu-btn-status {
+    display: block;
+  }
+
+  [data-plus-profile="desktop"] .pg-sub-stat-big {
+    color: var(--pg-teal-dark);
+  }
+
+  [data-plus-profile="desktop"] .pg-sub-card .pg-btn--ghost {
+    color: var(--pg-teal-dark);
+    border-color: var(--pg-teal-border);
+  }
+}
+
+/* Expired desktop /profile (CTA map expired/10-screen). Phone Profile,
+   guest/Free/Plus/halted Profile keep the existing signed-in panel. */
+@media (min-width: 561px) {
+  body.is-authed[data-mscreen="account"]:has([data-expired-profile="desktop"]) .account-menu-btn-status {
+    display: block;
+  }
+
+  [data-expired-profile="desktop"] .pg-sub-card .pg-btn--ghost {
+    color: var(--pg-teal-dark);
+    border-color: var(--pg-teal-border);
+  }
+}
+
+/* Plus desktop /settings (CTA map plus/11-screen). Phone Plus and
+   guest/Free/Pro Settings keep the existing signed-in panel. */
+@media (min-width: 561px) {
+  body.is-authed[data-mscreen="settings"]:has([data-plus-settings="desktop"]) .account-menu-btn-status {
+    display: block;
+  }
+
+  [data-plus-settings="desktop"] .segmented-input:checked + .segmented-btn,
+  [data-plus-settings="desktop"] .segmented-btn.is-active {
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--on-accent);
+  }
+}
+
+/* Expired desktop /settings (CTA map expired/11-screen). Phone Settings,
+   guest/Free/Plus/halted Settings keep the existing signed-in panel. */
+@media (min-width: 561px) {
+  body.is-authed[data-mscreen="settings"]:has([data-expired-settings="desktop"]) .account-menu-btn-status {
+    display: block;
+  }
+}

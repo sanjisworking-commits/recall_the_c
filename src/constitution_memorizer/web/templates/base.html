@@ -69,9 +69,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/styles.css?v=main70">
+  <link rel="stylesheet" href="/static/styles.css?v=main84">
   <link rel="stylesheet" href="/static/visual-explainer.css?v=ve1">
-  <link rel="stylesheet" href="/static/mobile.css?v=mob92">
+  <link rel="stylesheet" href="/static/mobile.css?v=mob98">
+  <link rel="stylesheet" href="/static/playground.css?v=pg28">
   {% if onboarding_status|default('') == 'active' %}
   <link rel="stylesheet" href="/static/onboarding.css?v=ob6">
   {% endif %}
@@ -91,80 +92,121 @@
   </div>
   {% endif %}
   {% set path = request.url.path %}
+  {% set plus_billing = plus_subscription|default(false) and path.startswith('/billing/subscriptions') %}
+  {% set halted_billing = halted_subscription|default(false) and path.startswith('/billing/subscriptions') %}
+  {% set expired_billing = expired_subscription|default(false) and path.startswith('/billing/subscriptions') %}
+  {% set plus_today_chrome = plus_today|default(false) and path.startswith('/dashboard') %}
+  {% set expired_today_chrome = expired_today|default(false) and path.startswith('/dashboard') %}
+  {% set plus_calendar_chrome = plus_calendar|default(false) and path.rstrip('/') == '/calendar' %}
+  {% set expired_calendar_chrome = expired_calendar|default(false) and path.rstrip('/') == '/calendar' %}
+  {% set plus_profile_chrome = plus_profile|default(false) and path.rstrip('/') == '/profile' %}
+  {% set expired_profile_chrome = expired_profile|default(false) and path.rstrip('/') == '/profile' %}
+  {% set plus_settings_chrome = plus_settings|default(false) and path.rstrip('/') == '/settings' %}
+  {% set expired_settings_chrome = expired_settings|default(false) and path.rstrip('/') == '/settings' %}
   {% set auth_surface = path.startswith('/login') or path.startswith('/auth/') or path.startswith('/signed-out') or path.startswith('/session-expired') %}
+  {% set guest_browse_index = multiuser_enabled|default(false) and not current_user and not auth_surface and path == '/browse' %}
+  {% set guest_laws_index = multiuser_enabled|default(false) and not current_user and not auth_surface and path == '/laws' %}
+  {% set guest_bareact_head = multiuser_enabled|default(false) and not current_user and not auth_surface and path == '/laws/ndps' %}
+  {% set guest_playground_intro = multiuser_enabled|default(false) and not current_user and not auth_surface and path.rstrip('/') == '/playground' %}
+  {% set guest_profile = multiuser_enabled|default(false) and not current_user and not auth_surface and path.rstrip('/') == '/profile' %}
+  {% set guest_chrome = guest_browse_index or guest_laws_index or guest_bareact_head %}
   <div class="page-wrap">
     <div class="sheet">
       <header class="site-header">
+        {% if guest_chrome %}
+        <span class="brand" aria-label="{{ app_name|default('Recall the C') }}">
+          <img class="brand-mark" src="/static/main_logo.png" width="26" height="26" alt="">
+          <span class="brand-wordmark">{{ app_name|default('Recall the C') }}</span>
+        </span>
+        {% elif guest_playground_intro %}
+        <span class="brand" data-guest-pg-brand aria-label="{{ app_name|default('Recall the C') }}">
+          <img class="brand-mark" src="/static/main_logo.png" width="26" height="26" alt="">
+          <span class="brand-wordmark">{{ app_name|default('Recall the C') }}</span>
+        </span>
+        <a class="brand" data-pg-gate-phone-brand href="/" aria-label="{{ app_name|default('Recall the C') }} — Home">
+          <img class="brand-mark" src="/static/main_logo.png" width="26" height="26" alt="">
+          <span class="brand-wordmark">{{ app_name|default('Recall the C') }}</span>
+        </a>
+        {% elif guest_profile %}
+        <span class="brand" data-guest-profile-brand aria-label="{{ app_name|default('Recall the C') }}">
+          <img class="brand-mark" src="/static/main_logo.png" width="26" height="26" alt="">
+          <span class="brand-wordmark">{{ app_name|default('Recall the C') }}</span>
+        </span>
+        <a class="brand" data-guest-profile-phone-brand href="/" aria-label="{{ app_name|default('Recall the C') }} — Home">
+          <img class="brand-mark" src="/static/main_logo.png" width="26" height="26" alt="">
+          <span class="brand-wordmark">{{ app_name|default('Recall the C') }}</span>
+        </a>
+        {% else %}
         <a class="brand" href="{% if multiuser_enabled|default(false) and current_user %}/dashboard{% else %}/{% endif %}" aria-label="{{ app_name|default('Recall the C') }} — Home">
           <img class="brand-mark" src="/static/main_logo.png" width="26" height="26" alt="">
           <span class="brand-wordmark">{{ app_name|default('Recall the C') }}</span>
         </a>
-        <nav class="nav" aria-label="Primary">
+        {% endif %}
+        <nav class="nav PrimaryTabs PrimaryTabs--top" aria-label="Primary">
           {% if multiuser_enabled|default(false) and auth_surface %}
           <a href="/" class="nav-link{% if path == '/' %} is-active{% endif %}">Home</a>
           <a href="/browse" class="nav-link{% if path.startswith('/browse') %} is-active{% endif %}">Browse</a>
           <a href="/login" class="nav-link nav-signin{% if path.startswith('/login') %} is-active{% endif %}">Sign in</a>
           {% elif multiuser_enabled|default(false) and current_user %}
-          <a href="/dashboard" class="nav-link{% if path.startswith('/dashboard') %} is-active{% endif %}">Dashboard</a>
-          <a href="/learn" class="nav-link{% if path.startswith('/learn') %} is-active{% endif %}">Learn</a>
-          <a href="/browse" class="nav-link{% if path.startswith('/browse') %} is-active{% endif %}">
-            Browse{% if browse_due_total|default(0) > 0 %}
+          <a href="/dashboard" class="nav-link{% if path.startswith('/dashboard') %} is-active{% endif %}"{% if path.startswith('/dashboard') %} aria-current="page"{% endif %}><svg class="nav-icon" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M3 9.4 10 3l7 6.4V17h-4.6v-4.6H7.6V17H3V9.4Z"></path></svg>Today</a>
+          <a href="/browse" class="nav-link{% if path.startswith('/browse') or path.startswith('/laws') %} is-active{% endif %}"{% if path.startswith('/browse') or path.startswith('/laws') %} aria-current="page"{% endif %}>
+            <svg class="nav-icon" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M10 4.2C8.6 3 6.8 2.6 4.6 2.6c-.9 0-1.6.1-1.6.1v13s.7-.1 1.6-.1c2.2 0 4 .4 5.4 1.6 1.4-1.2 3.2-1.6 5.4-1.6.9 0 1.6.1 1.6.1v-13s-.7-.1-1.6-.1c-2.2 0-4 .4-5.4 1.6Zm0 0v13"></path></svg>Browse{% if browse_due_total|default(0) > 0 %}
             <span class="nav-due-badge" aria-label="{{ browse_due_total }} due or overdue">{{ browse_due_total }}</span>
             {% endif %}
           </a>
-          <a href="/progress" class="nav-link{% if path.startswith('/progress') %} is-active{% endif %}">Progress</a>
+          {% if playground_enabled|default(true) %}
+          <a href="/playground" class="nav-link{% if path.startswith('/playground') or plus_billing or halted_billing or expired_billing %} is-active{% endif %}"{% if path.startswith('/playground') or plus_billing or halted_billing or expired_billing %} aria-current="page"{% endif %}><svg class="nav-icon" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><rect x="3.2" y="3.2" width="13.6" height="13.6"></rect><path d="M3.2 8h13.6M8 3.2v13.6"></path></svg>Playground</a>
+          {% endif %}
+          <a href="/calendar" class="nav-link{% if path.startswith('/calendar') %} is-active{% endif %}"{% if path.startswith('/calendar') %} aria-current="page"{% endif %}><svg class="nav-icon" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><rect x="2.6" y="4" width="14.8" height="13" rx="2"></rect><path d="M2.6 8.2h14.8M6.6 2.2v3M13.4 2.2v3"></path></svg>Calendar</a>
+          <a href="/profile" class="nav-link{% if path.startswith('/profile') %} is-active{% endif %}"{% if path.startswith('/profile') %} aria-current="page"{% endif %}><svg class="nav-icon" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="6.6" r="3.4"></circle><path d="M3.4 17.4c.8-3.1 3.4-4.8 6.6-4.8s5.8 1.7 6.6 4.8"></path></svg>Profile</a>
           {% if pricing_enabled|default(false) %}
           <a href="/pricing" class="nav-link{% if path.startswith('/pricing') %} is-active{% endif %}">Pricing</a>
           {% endif %}
-          <div class="account-menu" data-account-menu>
-            {% set label = current_user.display_name or current_user.email or current_user.phone or 'Account' %}
-            {% set initials = (label[:1])|upper %}
-            <button
-              type="button"
-              class="account-menu-btn"
-              data-account-toggle
-              aria-expanded="false"
-              aria-haspopup="menu"
-              aria-label="Account menu"
-            >
-              {% if current_user.avatar_url %}
-              <img class="account-avatar" src="{{ current_user.avatar_url }}" alt="" width="28" height="28">
-              {% else %}
-              <span class="account-avatar account-avatar-fallback" aria-hidden="true">{{ initials }}</span>
-              {% endif %}
-            </button>
-            <div class="account-menu-panel" role="menu" hidden data-account-panel>
-              <div class="account-menu-identity">
-                <div class="account-menu-identity-main">
-                  <p class="account-menu-name">{{ label }}</p>
-                  {% if current_user.email or current_user.phone %}
-                  <p class="account-menu-contact">{{ current_user.email or current_user.phone }}</p>
-                  {% endif %}
-                </div>
-                {% if current_user.provider == 'google' %}
-                <span class="account-provider-badge is-google" title="Signed in with Google" aria-label="Signed in with Google">G</span>
-                {% else %}
-                <span class="account-provider-badge is-phone" title="Signed in with phone" aria-label="Signed in with phone">☎</span>
-                {% endif %}
-              </div>
-              <a role="menuitem" href="/profile">Profile</a>
-              <a role="menuitem" href="/settings">Settings</a>
-              <a role="menuitem" href="/calendar">Calendar</a>
-              {% if memory_log_enabled|default(false) %}
-              <a role="menuitem" href="/memory">Memory log</a>
-              {% endif %}
-              {% if is_admin_hint|default(false) %}
-              <a role="menuitem" href="/admin" class="account-menu-admin">
-                Admin console
-                <span class="account-menu-admin-tag" aria-hidden="true">/admin</span>
-              </a>
-              {% endif %}
-              <form method="post" action="/logout">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-                <button type="submit" role="menuitem" class="account-menu-logout">Sign out</button>
-              </form>
-            </div>
-          </div>
+          {% elif guest_chrome %}
+          <a href="/dashboard" class="nav-link{% if path.startswith('/dashboard') %} is-active{% endif %}"><svg class="nav-icon" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M3 9.4 10 3l7 6.4V17h-4.6v-4.6H7.6V17H3V9.4Z"></path></svg>Today</a>
+          <a href="/browse" class="nav-link is-active" aria-current="page">
+            <svg class="nav-icon" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M10 4.2C8.6 3 6.8 2.6 4.6 2.6c-.9 0-1.6.1-1.6.1v13s.7-.1 1.6-.1c2.2 0 4 .4 5.4 1.6 1.4-1.2 3.2-1.6 5.4-1.6.9 0 1.6.1 1.6.1v-13s-.7-.1-1.6-.1c-2.2 0-4 .4-5.4 1.6Zm0 0v13"></path></svg>Browse
+          </a>
+          {% if playground_enabled|default(true) %}
+          <a href="/playground" class="nav-link"><svg class="nav-icon" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><rect x="3.2" y="3.2" width="13.6" height="13.6"></rect><path d="M3.2 8h13.6M8 3.2v13.6"></path></svg>Playground</a>
+          {% endif %}
+          <a href="/calendar" class="nav-link"><svg class="nav-icon" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><rect x="2.6" y="4" width="14.8" height="13" rx="2"></rect><path d="M2.6 8.2h14.8M6.6 2.2v3M13.4 2.2v3"></path></svg>Calendar</a>
+          <a href="/profile" class="nav-link"><svg class="nav-icon" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="6.6" r="3.4"></circle><path d="M3.4 17.4c.8-3.1 3.4-4.8 6.6-4.8s5.8 1.7 6.6 4.8"></path></svg>Profile</a>
+          {% elif guest_playground_intro %}
+          <a href="/" class="nav-link{% if path == '/' %} is-active{% endif %}">Home</a>
+          <a href="/browse" class="nav-link{% if path.startswith('/browse') %} is-active{% endif %}">Browse</a>
+          <a href="/search" class="nav-link{% if path.startswith('/search') %} is-active{% endif %}">Search</a>
+          <a href="/learn" class="nav-link{% if path.startswith('/learn') %} is-active{% endif %}">Learn</a>
+          {% if pricing_enabled|default(false) %}
+          <a href="/pricing" class="nav-link{% if path.startswith('/pricing') %} is-active{% endif %}">Pricing</a>
+          {% endif %}
+          <span class="guest-pill" title="Learning as guest">
+            <span class="guest-pill-dot" aria-hidden="true"></span>
+            Learning as guest
+          </span>
+          <a href="/login" class="nav-link nav-signin">Sign in</a>
+          {% elif guest_profile %}
+          <a href="/dashboard" class="nav-link" data-guest-profile-nav><svg class="nav-icon" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M3 9.4 10 3l7 6.4V17h-4.6v-4.6H7.6V17H3V9.4Z"></path></svg>Today</a>
+          <a href="/browse" class="nav-link" data-guest-profile-nav>
+            <svg class="nav-icon" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M10 4.2C8.6 3 6.8 2.6 4.6 2.6c-.9 0-1.6.1-1.6.1v13s.7-.1 1.6-.1c2.2 0 4 .4 5.4 1.6 1.4-1.2 3.2-1.6 5.4-1.6.9 0 1.6.1 1.6.1v-13s-.7-.1-1.6-.1c-2.2 0-4 .4-5.4 1.6Zm0 0v13"></path></svg>Browse
+          </a>
+          {% if playground_enabled|default(true) %}
+          <a href="/playground" class="nav-link" data-guest-profile-nav><svg class="nav-icon" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><rect x="3.2" y="3.2" width="13.6" height="13.6"></rect><path d="M3.2 8h13.6M8 3.2v13.6"></path></svg>Playground</a>
+          {% endif %}
+          <a href="/calendar" class="nav-link" data-guest-profile-nav><svg class="nav-icon" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><rect x="2.6" y="4" width="14.8" height="13" rx="2"></rect><path d="M2.6 8.2h14.8M6.6 2.2v3M13.4 2.2v3"></path></svg>Calendar</a>
+          <a href="/profile" class="nav-link is-active" data-guest-profile-nav aria-current="page"><svg class="nav-icon" width="18" height="18" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="6.6" r="3.4"></circle><path d="M3.4 17.4c.8-3.1 3.4-4.8 6.6-4.8s5.8 1.7 6.6 4.8"></path></svg>Profile</a>
+          <a href="/" class="nav-link" data-guest-profile-phone-nav>Home</a>
+          <a href="/browse" class="nav-link" data-guest-profile-phone-nav>Browse</a>
+          <a href="/search" class="nav-link" data-guest-profile-phone-nav>Search</a>
+          <a href="/learn" class="nav-link" data-guest-profile-phone-nav>Learn</a>
+          {% if pricing_enabled|default(false) %}
+          <a href="/pricing" class="nav-link" data-guest-profile-phone-nav>Pricing</a>
+          {% endif %}
+          <span class="guest-pill" title="Learning as guest" data-guest-profile-phone-nav>
+            <span class="guest-pill-dot" aria-hidden="true"></span>
+            Learning as guest
+          </span>
+          <a href="/login" class="nav-link nav-signin" data-guest-profile-phone-nav>Sign in</a>
           {% elif multiuser_enabled|default(false) %}
           <a href="/" class="nav-link{% if path == '/' %} is-active{% endif %}">Home</a>
           <a href="/browse" class="nav-link{% if path.startswith('/browse') %} is-active{% endif %}">Browse</a>
@@ -190,6 +232,128 @@
           <a href="/search" class="nav-link{% if path.startswith('/search') %} is-active{% endif %}">Search</a>
           {% endif %}
         </nav>
+        {% if multiuser_enabled|default(false) and current_user and not auth_surface %}
+        <div class="account-menu" data-account-menu>
+          {% set label = current_user.display_name or current_user.email or current_user.phone or 'Account' %}
+          {% set initials = (label[:1])|upper %}
+          <button
+            type="button"
+            class="account-menu-btn"
+            data-account-toggle
+            aria-expanded="false"
+            aria-haspopup="menu"
+            aria-label="Account menu"
+          >
+            {% if current_user.avatar_url %}
+            <img class="account-avatar" src="{{ current_user.avatar_url }}" alt="" width="28" height="28">
+            {% else %}
+            <span class="account-avatar account-avatar-fallback" aria-hidden="true">{{ initials }}</span>
+            {% endif %}
+            <span class="account-menu-btn-copy">
+              <span class="account-menu-btn-name">{{ label }}</span>
+              {% if path == '/browse' or path.startswith('/laws') or path.rstrip('/') == '/playground' or plus_billing or halted_billing or expired_billing or plus_today_chrome or expired_today_chrome or plus_calendar_chrome or expired_calendar_chrome or plus_profile_chrome or expired_profile_chrome or plus_settings_chrome or expired_settings_chrome %}
+              <span class="account-menu-btn-status">{% if (plus_browse|default(false) and path == '/browse') or (plus_laws|default(false) and path == '/laws') or (plus_bareact|default(false) and path == '/laws/ndps') or (plus_playground|default(false) and path.rstrip('/') == '/playground') or plus_billing or plus_today_chrome or plus_calendar_chrome or plus_profile_chrome or plus_settings_chrome %}RecallC Plus{% elif (halted_browse|default(false) and path == '/browse') or (halted_laws|default(false) and path == '/laws') or (halted_bareact|default(false) and path == '/laws/ndps') or (halted_playground|default(false) and path.rstrip('/') == '/playground') or halted_billing %}{{ halted_header_status }}{% elif (expired_browse|default(false) and path == '/browse') or (expired_laws|default(false) and path == '/laws') or (expired_bareact|default(false) and path == '/laws/ndps') or (expired_playground|default(false) and path.rstrip('/') == '/playground') or expired_billing or expired_today_chrome or expired_calendar_chrome or expired_profile_chrome or expired_settings_chrome %}{{ expired_header_status }}{% else %}Free account{% endif %}</span>
+              {% endif %}
+            </span>
+          </button>
+          <div class="account-menu-panel" role="menu" hidden data-account-panel>
+            <div class="account-menu-identity">
+              <div class="account-menu-identity-main">
+                <p class="account-menu-name">{{ label }}</p>
+                {% if current_user.email or current_user.phone %}
+                <p class="account-menu-contact">{{ current_user.email or current_user.phone }}</p>
+                {% endif %}
+              </div>
+              {% if current_user.provider == 'google' %}
+              <span class="account-provider-badge is-google" title="Signed in with Google" aria-label="Signed in with Google">G</span>
+              {% else %}
+              <span class="account-provider-badge is-phone" title="Signed in with phone" aria-label="Signed in with phone">☎</span>
+              {% endif %}
+            </div>
+            <a role="menuitem" href="/profile">Profile</a>
+            <a role="menuitem" href="/settings">Settings</a>
+            <a role="menuitem" href="/learn">Learn</a>
+            <a role="menuitem" href="/progress">Progress</a>
+            <a role="menuitem" href="/calendar">Calendar</a>
+            {% if memory_log_enabled|default(false) %}
+            <a role="menuitem" href="/memory">Memory log</a>
+            {% endif %}
+            {% if is_admin_hint|default(false) %}
+            <a role="menuitem" href="/admin" class="account-menu-admin">
+              Admin console
+              <span class="account-menu-admin-tag" aria-hidden="true">/admin</span>
+            </a>
+            {% endif %}
+            <form method="post" action="/logout">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+              <button type="submit" role="menuitem" class="account-menu-logout">Sign out</button>
+            </form>
+          </div>
+        </div>
+        {% elif guest_profile %}
+        <div class="account-menu" data-account-menu data-guest-account-menu data-guest-profile-account>
+          <button
+            type="button"
+            class="account-menu-btn"
+            data-account-toggle
+            aria-expanded="false"
+            aria-haspopup="menu"
+            aria-label="Account menu"
+          >
+            <span class="account-avatar account-avatar-fallback" aria-hidden="true">?</span>
+            <span class="account-menu-btn-copy">
+              <span class="account-menu-btn-name">Guest</span>
+              <span class="account-menu-btn-status">Not signed in</span>
+            </span>
+          </button>
+          <div class="account-menu-panel" role="menu" hidden data-account-panel>
+            <a role="menuitem" href="/settings">Settings</a>
+            <button type="button" role="menuitem" class="account-menu-logout" data-account-close>Sign out</button>
+          </div>
+        </div>
+        {% elif guest_playground_intro %}
+        <div class="account-menu" data-account-menu data-guest-account-menu data-guest-pg-account>
+          <button
+            type="button"
+            class="account-menu-btn"
+            data-account-toggle
+            aria-expanded="false"
+            aria-haspopup="menu"
+            aria-label="Account menu"
+          >
+            <span class="account-avatar account-avatar-fallback" aria-hidden="true">?</span>
+            <span class="account-menu-btn-copy">
+              <span class="account-menu-btn-name">Guest</span>
+              <span class="account-menu-btn-status">Not signed in</span>
+            </span>
+          </button>
+          <div class="account-menu-panel" role="menu" hidden data-account-panel>
+            <a role="menuitem" href="/settings">Settings</a>
+            <button type="button" role="menuitem" class="account-menu-logout" data-account-close>Sign out</button>
+          </div>
+        </div>
+        {% elif guest_chrome %}
+        <div class="account-menu" data-account-menu data-guest-account-menu>
+          <button
+            type="button"
+            class="account-menu-btn"
+            data-account-toggle
+            aria-expanded="false"
+            aria-haspopup="menu"
+            aria-label="Account menu"
+          >
+            <span class="account-avatar account-avatar-fallback" aria-hidden="true">?</span>
+            <span class="account-menu-btn-copy">
+              <span class="account-menu-btn-name">Guest</span>
+              <span class="account-menu-btn-status">Not signed in</span>
+            </span>
+          </button>
+          <div class="account-menu-panel" role="menu" hidden data-account-panel>
+            <a role="menuitem" href="/settings">Settings</a>
+            <button type="button" role="menuitem" class="account-menu-logout" data-account-close>Sign out</button>
+          </div>
+        </div>
+        {% endif %}
       </header>
       <main class="main">
         {% block content %}{% endblock %}
@@ -199,6 +363,9 @@
           <a href="/tables" class="footer-link{% if path.startswith('/tables') %} is-active{% endif %}">Tables</a>
           {% if relevant_laws_enabled|default(false) %}
           <a href="/laws" class="footer-link{% if path.startswith('/laws') %} is-active{% endif %}">Relevant laws</a>
+          {% endif %}
+          {% if playground_enabled|default(true) and not (multiuser_enabled|default(false) and not current_user) %}
+          <a href="/playground" class="footer-link{% if path.startswith('/playground') %} is-active{% endif %}">Playground</a>
           {% endif %}
           {% if not (multiuser_enabled|default(false) and not current_user) %}
           {% if memory_log_enabled|default(false) %}
@@ -233,11 +400,14 @@
   </div>
 
   {% if multiuser_enabled|default(false) and current_user %}
-  <nav class="mobile-tabbar" aria-label="Mobile">
-    <a href="/dashboard" class="mobile-tab{% if path.startswith('/dashboard') %} is-active{% endif %}"><svg class="mobile-tab-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M3 9.4 10 3l7 6.4V17h-4.6v-4.6H7.6V17H3V9.4Z"></path></svg>Today</a>
-    <a href="/browse" class="mobile-tab{% if path.startswith('/browse') %} is-active{% endif %}"><svg class="mobile-tab-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M10 4.2C8.6 3 6.8 2.6 4.6 2.6c-.9 0-1.6.1-1.6.1v13s.7-.1 1.6-.1c2.2 0 4 .4 5.4 1.6 1.4-1.2 3.2-1.6 5.4-1.6.9 0 1.6.1 1.6.1v-13s-.7-.1-1.6-.1c-2.2 0-4 .4-5.4 1.6Zm0 0v13"></path></svg>Browse</a>
-    <a href="/calendar" class="mobile-tab{% if path.startswith('/calendar') %} is-active{% endif %}"><svg class="mobile-tab-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><rect x="2.6" y="4" width="14.8" height="13" rx="2"></rect><path d="M2.6 8.2h14.8M6.6 2.2v3M13.4 2.2v3"></path></svg>Calendar</a>
-    <a href="/progress" class="mobile-tab{% if path.startswith('/progress') %} is-active{% endif %}"><svg class="mobile-tab-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="6.6" r="3.4"></circle><path d="M3.4 17.4c.8-3.1 3.4-4.8 6.6-4.8s5.8 1.7 6.6 4.8"></path></svg>Profile</a>
+  <nav class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom" aria-label="Mobile">
+    <a href="/dashboard" class="mobile-tab{% if path.startswith('/dashboard') %} is-active{% endif %}"{% if path.startswith('/dashboard') %} aria-current="page"{% endif %}><svg class="mobile-tab-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M3 9.4 10 3l7 6.4V17h-4.6v-4.6H7.6V17H3V9.4Z"></path></svg>Today</a>
+    <a href="/browse" class="mobile-tab{% if path.startswith('/browse') %} is-active{% endif %}"{% if path.startswith('/browse') %} aria-current="page"{% endif %}><svg class="mobile-tab-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M10 4.2C8.6 3 6.8 2.6 4.6 2.6c-.9 0-1.6.1-1.6.1v13s.7-.1 1.6-.1c2.2 0 4 .4 5.4 1.6 1.4-1.2 3.2-1.6 5.4-1.6.9 0 1.6.1 1.6.1v-13s-.7-.1-1.6-.1c-2.2 0-4 .4-5.4 1.6Zm0 0v13"></path></svg>Browse</a>
+    {% if playground_enabled|default(true) %}
+    <a href="/playground" class="mobile-tab{% if path.startswith('/playground') %} is-active{% endif %}"{% if path.startswith('/playground') %} aria-current="page"{% endif %}><svg class="mobile-tab-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><rect x="3.2" y="3.2" width="13.6" height="13.6"></rect><path d="M3.2 8h13.6M8 3.2v13.6"></path></svg>Playground</a>
+    {% endif %}
+    <a href="/calendar" class="mobile-tab{% if path.startswith('/calendar') %} is-active{% endif %}"{% if path.startswith('/calendar') %} aria-current="page"{% endif %}><svg class="mobile-tab-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><rect x="2.6" y="4" width="14.8" height="13" rx="2"></rect><path d="M2.6 8.2h14.8M6.6 2.2v3M13.4 2.2v3"></path></svg>Calendar</a>
+    <a href="/profile" class="mobile-tab{% if path.startswith('/profile') %} is-active{% endif %}"{% if path.startswith('/profile') %} aria-current="page"{% endif %}><svg class="mobile-tab-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="6.6" r="3.4"></circle><path d="M3.4 17.4c.8-3.1 3.4-4.8 6.6-4.8s5.8 1.7 6.6 4.8"></path></svg>Profile</a>
   </nav>
   {% elif multiuser_enabled|default(false) and not auth_surface %}
   {# Guests browse and read; the fourth tab is the way in, not Revisions. #}
@@ -258,8 +428,11 @@
   {% include "visual_explainer.html" %}
 
   <script src="/static/recall_align.js?v=sprint22" defer></script>
-  <script src="/static/speech_client.js?v=speech2" defer></script>
+  <script src="/static/speech_client.js?v=speech3" defer></script>
   <script src="/static/app.js?v=main62" defer></script>
+  <script src="/static/playground.js?v=pg8" defer></script>
+  <script src="/static/playground-select.js?v=pg1" defer></script>
+  <script src="/static/playground-learn.js?v=pg3" defer></script>
   <script src="/static/mobile.js?v=mob29" defer></script>
   <script src="/static/visual-explainer.js?v=ve2" defer></script>
   <script src="/static/auth.js?v=main6" defer></script>

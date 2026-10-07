@@ -1,0 +1,122 @@
+{% extends "playground_base.html" %}
+{% block title %}Choose what to learn · {{ act.short_name }} · Playground{% endblock %}
+{% block playground %}
+<section class="playground-select pg-select"{% if chapterless %} data-chapterless{% endif %} data-pg-picker>
+  <p><a class="pg-back" href="/playground/laws/{{ act.slug }}">← {{ act.short_name }}</a></p>
+  <h1>Choose what to learn</h1>
+  <p class="pg-lede">Whole sections, or open one and pick clauses.</p>
+
+  <div class="pg-select-layout">
+    <form
+      id="pg-select-form"
+      method="post"
+      action="/playground/laws/{{ act.slug }}/sections"
+      class="pg-select-form"
+      data-pg-picker-form
+    >
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      {% for band in bands %}
+      <section class="pg-pick-band"{% if band.has_chapter %} data-chapter="{{ band.chapter_number }}"{% endif %}>
+        {% if band.has_chapter %}
+        <h2 class="pg-pick-chapter">CHAPTER {{ band.chapter_number }} · {{ band.chapter_title }}</h2>
+        {% endif %}
+        <ul class="pg-pick-list">
+          {% for section in band.sections %}
+          <li
+            class="pg-pick-section{% if section.disabled %} is-disabled{% endif %}{% if section.check_state == 'some' %} is-partial{% endif %}{% if section.check_state == 'all' %} is-all{% endif %}"
+            data-section="{{ section.number }}"
+            data-check-state="{{ section.check_state }}"
+          >
+            <div class="pg-pick-row">
+              <label class="pg-pick-check-wrap">
+                <input
+                  class="pg-pick-check"
+                  type="checkbox"
+                  name="section"
+                  value="{{ section.number }}"
+                  {% if section.checked %}checked{% endif %}
+                  {% if section.disabled %}disabled{% endif %}
+                  aria-checked="{{ section.aria_checked }}"
+                  {% if section.check_state == 'some' %}data-indeterminate="1"{% endif %}
+                >
+                <span class="pg-pick-box" aria-hidden="true"></span>
+                <span class="visually-hidden">Section {{ section.number }}</span>
+              </label>
+              <div class="pg-pick-copy">
+                <p class="pg-pick-eyebrow">SECTION {{ section.number }}</p>
+                <p class="pg-pick-title">{{ section.title }}</p>
+                <p class="pg-pick-status" data-status="{{ section.status }}">{{ section.status_label }}</p>
+              </div>
+            </div>
+            {% if section.expandable %}
+            {% set clauses_open = section.units | selectattr('checked') | list %}
+            <details class="pg-pick-expand"{% if clauses_open %} open{% endif %}>
+              <summary
+                class="pg-pick-caret"
+                aria-label="Show clauses"
+                aria-expanded="{{ 'true' if clauses_open else 'false' }}"
+              ><span class="pg-pick-caret-mark" aria-hidden="true">▸</span></summary>
+              <ul class="pg-pick-clauses" id="pg-clauses-{{ act.slug }}-{{ section.number }}">
+                {% for unit in section.units %}
+                <li class="pg-pick-clause">
+                  <label class="pg-pick-clause-label">
+                    <input
+                      class="pg-pick-clause-check"
+                      type="checkbox"
+                      name="unit"
+                      value="{{ unit.locator }}"
+                      {% if unit.checked %}checked{% endif %}
+                      {% if section.disabled %}disabled{% endif %}
+                    >
+                    <span class="pg-pick-clause-box" aria-hidden="true"></span>
+                    <span class="pg-pick-clause-text">
+                      <strong>{{ unit.display_label }}</strong>
+                      <span>{{ unit.preview }}</span>
+                    </span>
+                  </label>
+                </li>
+                {% endfor %}
+              </ul>
+            </details>
+            {% endif %}
+          </li>
+          {% endfor %}
+        </ul>
+      </section>
+      {% endfor %}
+
+      <div class="pg-sticky-cta pg-pick-footer">
+        <p class="pg-pick-count" data-pg-count>{{ provision_label }}</p>
+        <button
+          type="submit"
+          class="pg-btn"
+          data-pg-submit
+        >{{ cta_label }}</button>
+      </div>
+    </form>
+
+    <aside class="pg-pick-aside" aria-label="Selection">
+      <p class="pg-pick-aside-kicker">Selection</p>
+      <p class="pg-pick-aside-count" data-pg-aside-count>
+        <strong data-pg-aside-n>{{ aside_count }}</strong>
+        <span data-pg-aside-label>{{ aside_count_label }}</span>
+      </p>
+      <ul class="pg-pick-aside-list" data-pg-aside-list>
+        {% for item in aside_items %}
+        <li data-locator="{{ item.locator }}">
+          <strong>{{ item.citation }}</strong>
+          <span>{{ item.title }}</span>
+        </li>
+        {% endfor %}
+      </ul>
+      <p class="pg-pick-aside-note">Nothing is scheduled yet — sections activate the first time you learn them. You can change this list any time from the Act's progress page.</p>
+      <button
+        type="submit"
+        class="pg-btn"
+        form="pg-select-form"
+        data-pg-aside-submit
+      >{{ cta_label }}</button>
+    </aside>
+  </div>
+</section>
+{% endblock %}

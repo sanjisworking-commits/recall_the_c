@@ -70,6 +70,40 @@ Index search uses `search_blob` on this seed. It must not parse every Act.
    changing public routes. Do not implement chunking here.
 6. Do not implement cross-law search by loading every Act.
 
+## Sitemap (never hydrate Acts)
+
+**Root sitemap/index and sitemap discovery must never hydrate runtime/canonical JSON. Sitemap URL enumeration comes from a lightweight build-time manifest, not request-time Act hydration.**
+
+Current public layout (generic Bare Act SEO/sitemap from production `main`):
+
+```text
+/sitemap.xml                     generated sitemap index
+/sitemap-core.xml                static Constitution + marketing urlset
+/sitemap-laws.xml                the /laws hub
+/sitemap-laws-{slug}.xml         one urlset per small registered full Bare Act
+/sitemap-laws-{slug}-{n}.xml     extra chunks when a law exceeds SITEMAP_URL_CHUNK_SIZE
+```
+
+The index and per-law urlsets are built from the lightweight `BARE_ACTS` registry (`BareActSpec`) plus the committed manifest [`src/constitution_memorizer/web/law_sitemap_manifest.json`](../src/constitution_memorizer/web/law_sitemap_manifest.json). Request handlers MUST NOT call `get_bare_act()` / `list_bare_acts()` or open runtime/canonical statute JSON. Rebuild the manifest during ingestion/build (`scripts/build_law_sitemap_manifest.py`), never during a web request or FastAPI startup.
+
+Manifest fields (schema version 2):
+
+```text
+slug
+source_version
+runtime_identity
+sources (filename + sha256)
+section identifiers
+public schedule slugs
+optional last_modified (only a trustworthy build-time value; not invented)
+```
+
+`slug` and `source_version` are first-class. Request paths must not parse them back out of `runtime_identity`. Intra-law chunking is configurable (`SITEMAP_URL_CHUNK_SIZE`, protocol max 50,000 URLs / 50 MB). A 701st law is registry + manifest regeneration, not a new sitemap route.
+
+Playground, roster, Learn, device, account, and other personalized URLs **never** enter a sitemap. See [PLAYGROUND.md](PLAYGROUND.md). Public `/laws*` remains the indexable surface. Do not add a second SEO engine. HTML private pages emit `<meta name="robots" content="noindex, nofollow">` through `is_noindex_path()` + `base.html`. Private non-HTML responses get `X-Robots-Tag: noindex, nofollow` from `apply_private_robots_headers()`.
+
+**M11:** Admin account diagnostics, Playground home/roster, Today/Calendar, and sitemap handlers still hydrate **zero** Acts. A blocked Playground request hydrates zero Acts. `PLAYGROUND_ENABLED=false` does not load statutes. Operator migration proof is `scripts/verify_postgres_migrations.py` (no Act I/O).
+
 ## Later stages (not this batch)
 
 | Stage | When |
@@ -77,4 +111,4 @@ Index search uses `search_blob` on this seed. It must not parse every Act.
 | Per-law indexes + chapter/section chunks | ~10–30+ larger Acts |
 | DB/object-store corpus + precomputed search index | hundreds of laws or cross-law querying |
 
-BNSS and further Acts land only after this contract is enforced by tests.
+BNSS is already a registered full Bare Act under this loader. Further Acts land only after this contract is enforced by tests.

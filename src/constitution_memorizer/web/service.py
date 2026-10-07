@@ -72,6 +72,19 @@ _OPTIONAL_TABLES = frozenset(
         "auto_plan_day",
         "auto_plan_item",
         "daily_goal_met",
+        # Playground overlay / roster (T32): Constitution Today, Calendar, and
+        # Google sync must survive a database that has not been migrated past
+        # 0016. Unrelated SQL errors still raise.
+        "user_playground_item",
+        "user_playground_selection",
+        "user_playground_progress",
+        "user_playground_mode_progress",
+        "user_playground_revision_mode_progress",
+        "user_playground_revision_progress",
+        "user_playground_source_change",
+        "user_playground_source_scan",
+        "user_playground_period",
+        "user_playground_roster_item",
     }
 )
 _OPTIONAL_COLUMNS = frozenset({"target_effective_on"})

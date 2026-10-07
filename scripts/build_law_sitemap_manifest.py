@@ -3,7 +3,8 @@
 
 Derived runtime metadata, not the canonical statute: the flattened list of
 publicly routable section/schedule identifiers per registered Bare Act, plus a
-per-source SHA-256 freshness digest. It lives inside the package
+per-source SHA-256 freshness digest and first-class ``slug`` / ``source_version``
+fields. It lives inside the package
 (``src/constitution_memorizer/web/``) so it ships in the built wheel and the web
 process can emit sitemaps WITHOUT ever hydrating an Act — the deployed sitemap
 routes read exactly this file via ``sitemaps._manifest_path()``.
@@ -37,7 +38,7 @@ DEFAULT_OUT = (
     ROOT / "src" / "constitution_memorizer" / "web" / "law_sitemap_manifest.json"
 )
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
 
 def _source_digests(slug: str) -> list[dict[str, str]]:
@@ -67,6 +68,8 @@ def build_manifest() -> dict:
         if act is None:  # pragma: no cover - registry/loader disagree
             raise SystemExit(f"registered Act {slug!r} failed to load")
         laws[slug] = {
+            "slug": slug,
+            "source_version": spec.source_version,
             "runtime_identity": runtime_cache_identity(spec),
             "sources": _source_digests(slug),
             "sections": [section.number for section in act.section_order],

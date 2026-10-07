@@ -693,6 +693,15 @@ def test_a_real_database_error_is_not_swallowed(tmp_path: Path):
         Exception('relation "daily_goal_met" does not exist')
     )
     assert _is_missing_optional_schema(
+        Exception("no such table: user_playground_progress")
+    )
+    assert _is_missing_optional_schema(
+        Exception('relation "user_playground_item" does not exist')
+    )
+    assert _is_missing_optional_schema(
+        Exception("no such table: user_playground_roster_item")
+    )
+    assert _is_missing_optional_schema(
         Exception('column "target_effective_on" does not exist')
     )
     assert not _is_missing_optional_schema(Exception("connection refused"))

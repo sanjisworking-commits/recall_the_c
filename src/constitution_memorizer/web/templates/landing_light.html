@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -10,20 +10,21 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/styles.css?v=main84">
 <style>
-  body{margin:0;background:#fdfcfa;color:#141414;font-family:"Source Sans 3",system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+  body{margin:0;background:var(--page);color:var(--ink);font-family:"Source Sans 3",system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
   *,*::before,*::after{box-sizing:border-box}
   a{color:inherit;text-decoration:none}
-  a:hover{color:#0E7569}
-  .j-ink:hover{background:#0E7569;border-color:#0E7569;color:#fdfcfa}
-  .j-ghost:hover{border-color:#141414;color:#141414}
-  .j-ink-inv:hover{background:#8fd6c9;border-color:#8fd6c9;color:#141414}
-  .j-ghost-inv:hover{border-color:#fdfcfa;color:#fdfcfa}
-  .j-card:hover{border-color:#141414}
+  a:hover{color:var(--accent)}
+  .j-ink:hover{background:var(--accent-hover);border-color:var(--accent-hover);color:var(--on-accent)}
+  .j-ghost:hover{border-color:var(--ink);color:var(--ink)}
+  .j-ink-inv:hover{background:var(--hover);border-color:var(--hover);color:var(--ink)}
+  .j-ghost-inv:hover{border-color:var(--on-accent);color:var(--on-accent)}
+  .j-card:hover{border-color:var(--ink)}
   @keyframes caretBlink{0%,100%{opacity:1}50%{opacity:0}}
   @keyframes reciteBar{0%,100%{transform:scaleY(.25)}50%{transform:scaleY(1)}}
   @keyframes softIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-  [data-tab="on"]{background:#141414 !important;color:#fdfcfa !important;border-color:#141414 !important}
+  [data-tab="on"]{background:var(--ink) !important;color:var(--on-accent) !important;border-color:var(--ink) !important}
   [data-g] [data-s]{opacity:0;stroke-dashoffset:1;transform:scale(.9);transform-box:fill-box;transform-origin:center;transition:opacity .7s ease,stroke-dashoffset .9s cubic-bezier(.2,.7,.3,1),transform .9s cubic-bezier(.2,.7,.3,1)}
   [data-g="0"] [data-s="0"],
   [data-g="1"] [data-s="0"],[data-g="1"] [data-s="1"],
@@ -33,7 +34,7 @@
   [data-g="5"] [data-s]{opacity:1;stroke-dashoffset:0;transform:scale(1)}
   @media (max-width:1040px){
     [data-split]{display:block !important}
-    [data-fig]{position:sticky !important;top:57px !important;height:auto !important;z-index:30;border-bottom:1px solid #e7e3db;border-left:0 !important;padding:14px 20px 12px !important;gap:12px !important}
+    [data-fig]{position:sticky !important;top:57px !important;height:auto !important;z-index:30;border-bottom:1px solid var(--hairline);border-left:0 !important;padding:14px 20px 12px !important;gap:12px !important}
     [data-figwrap]{gap:12px !important}
     [data-fig] svg{max-height:24vh !important}
     [data-figline]{max-width:none !important;padding-top:12px !important}
@@ -60,60 +61,60 @@
 </head>
 <body>
 
-<div style="width:100%;overflow-x:clip;background:#fdfcfa">
+<div style="width:100%;overflow-x:clip;background:var(--page)">
 
-<header style="position:sticky;top:0;z-index:60;background:rgba(253,252,250,0.94);backdrop-filter:saturate(1.3) blur(10px);border-bottom:1px solid #e7e3db">
+<header style="position:sticky;top:0;z-index:60;background:color-mix(in srgb, var(--page) 94%, transparent);backdrop-filter:saturate(1.3) blur(10px);border-bottom:1px solid var(--hairline)">
   <div data-hdrbar="1" style="max-width:1400px;margin:0 auto;padding:13px clamp(20px,3vw,36px);display:flex;align-items:center;justify-content:space-between;gap:20px">
     <a href="#top" data-brand="1" style="display:inline-flex;align-items:center;gap:11px">
-      <span style="width:31px;height:31px;display:grid;place-items:center;border:1.5px solid #141414;font-family:Fraunces,Georgia,serif;font-weight:700;font-size:17px;line-height:1">C</span>
+      <span style="width:31px;height:31px;display:grid;place-items:center;border:1.5px solid var(--ink);font-family:Fraunces,Georgia,serif;font-weight:700;font-size:17px;line-height:1">C</span>
       <span style="font-family:Fraunces,Georgia,serif;font-size:19px;font-weight:700;letter-spacing:-0.02em;white-space:nowrap">Recall the C</span>
     </a>
     <div data-hdr="1" style="display:flex;align-items:center;gap:8px">
       <nav data-navlinks="1" style="display:flex;align-items:center;gap:2px;margin-right:10px">
-        <a href="#arithmetic" style="padding:8px 11px;font-size:14px;font-weight:600;color:#6f6a63">The arithmetic</a>
-        <a href="#method" style="padding:8px 11px;font-size:14px;font-weight:600;color:#6f6a63">Recall</a>
-        <a href="#learn" style="padding:8px 11px;font-size:14px;font-weight:600;color:#6f6a63">Modes</a>
+        <a href="#arithmetic" style="padding:8px 11px;font-size:14px;font-weight:600;color:var(--muted)">The arithmetic</a>
+        <a href="#method" style="padding:8px 11px;font-size:14px;font-weight:600;color:var(--muted)">Recall</a>
+        <a href="#learn" style="padding:8px 11px;font-size:14px;font-weight:600;color:var(--muted)">Modes</a>
         {% if pricing_enabled|default(false) %}
-        <a href="/pricing" style="padding:8px 11px;font-size:14px;font-weight:600;color:#6f6a63">Pricing</a>
+        <a href="/pricing" style="padding:8px 11px;font-size:14px;font-weight:600;color:var(--muted)">Pricing</a>
         {% endif %}
       </nav>
-      <a href="/browse" style="border:1px solid #d6d1c7;padding:9px 16px;font-size:14px;font-weight:600;white-space:nowrap" class="j-ghost"><span data-lbl-full>Explore as guest</span><span data-lbl-short>Explore</span></a>
-      <a href="/login" style="background:#141414;color:#fdfcfa;border:1px solid #141414;padding:10px 18px;font-size:14px;font-weight:700;white-space:nowrap" class="j-ink"><span data-lbl-full>Start learning</span><span data-lbl-short>Learn</span></a>
-      <button id="landing-theme-toggle" data-to="dark" type="button" aria-label="Switch to dark theme" title="Dark theme" style="display:grid;place-items:center;width:38px;height:38px;background:none;border:1px solid #d6d1c7;color:#6f6a63;font-size:15px;line-height:1;cursor:pointer;font-family:inherit">&#9789;</button>
+      <a href="/browse" style="border:1px solid var(--control-border);padding:9px 16px;font-size:14px;font-weight:600;white-space:nowrap" class="j-ghost"><span data-lbl-full>Explore as guest</span><span data-lbl-short>Explore</span></a>
+      <a href="/login" style="background:var(--ink);color:var(--page);border:1px solid var(--ink);padding:10px 18px;font-size:14px;font-weight:700;white-space:nowrap" class="j-ink"><span data-lbl-full>Start learning</span><span data-lbl-short>Learn</span></a>
+      <button id="landing-theme-toggle" data-to="dark" type="button" aria-label="Switch to dark theme" title="Dark theme" style="display:grid;place-items:center;width:38px;height:38px;background:none;border:1px solid var(--control-border);color:var(--muted);font-size:15px;line-height:1;cursor:pointer;font-family:inherit">&#9789;</button>
     </div>
   </div>
 </header>
 
 <div data-split="1" style="display:flex;align-items:flex-start;max-width:1400px;margin:0 auto">
 
-  <aside data-fig="1" style="order:2;flex:0 0 42%;position:sticky;top:57px;height:calc(100vh - 57px);display:flex;flex-direction:column;justify-content:center;gap:26px;padding:40px clamp(20px,3vw,44px);background:#fdfcfa;border-left:1px solid #e7e3db">
+  <aside data-fig="1" style="order:2;flex:0 0 42%;position:sticky;top:57px;height:calc(100vh - 57px);display:flex;flex-direction:column;justify-content:center;gap:26px;padding:40px clamp(20px,3vw,44px);background:var(--page);border-left:1px solid var(--hairline)">
     <div data-g="0" data-figwrap="1" style="display:flex;flex-direction:column;align-items:center;gap:26px;width:100%;min-height:0">
       <svg viewBox="0 0 420 470" preserveAspectRatio="xMidYMid meet" aria-hidden="true" style="width:100%;max-width:390px;max-height:52vh;height:auto;display:block;overflow:visible">
-        <circle data-s="5" cx="222" cy="186" r="96" fill="#fdf1df" stroke="none"></circle>
-        <path data-s="5" pathLength="1" stroke-dasharray="1" d="M-30 186 H452" stroke="#F59022" stroke-width="2" fill="none"></path>
+        <circle data-s="5" cx="222" cy="186" r="96" fill="var(--wash)" stroke="none"></circle>
+        <path data-s="5" pathLength="1" stroke-dasharray="1" d="M-30 186 H452" stroke="var(--accent)" stroke-width="2" fill="none"></path>
         <g transform="rotate(-42 222 186)">
-          <circle data-s="1" cx="222" cy="186" r="52" pathLength="1" stroke-dasharray="0.84 0.16" fill="none" stroke="#141414" stroke-width="1.8"></circle>
+          <circle data-s="1" cx="222" cy="186" r="52" pathLength="1" stroke-dasharray="0.84 0.16" fill="none" stroke="var(--ink)" stroke-width="1.8"></circle>
         </g>
         <g transform="rotate(24 222 186)">
-          <circle data-s="2" cx="222" cy="186" r="88" pathLength="1" stroke-dasharray="0.8 0.2" fill="none" stroke="#6f6a63" stroke-width="1.5"></circle>
+          <circle data-s="2" cx="222" cy="186" r="88" pathLength="1" stroke-dasharray="0.8 0.2" fill="none" stroke="var(--muted)" stroke-width="1.5"></circle>
         </g>
         <g transform="rotate(-12 222 186)">
-          <circle data-s="3" cx="222" cy="186" r="126" pathLength="1" stroke-dasharray="0.76 0.24" fill="none" stroke="#9d978d" stroke-width="1.4"></circle>
+          <circle data-s="3" cx="222" cy="186" r="126" pathLength="1" stroke-dasharray="0.76 0.24" fill="none" stroke="var(--faint)" stroke-width="1.4"></circle>
         </g>
         <g transform="rotate(56 222 186)">
-          <circle data-s="4" cx="222" cy="186" r="166" pathLength="1" stroke-dasharray="0.68 0.32" fill="none" stroke="#F59022" stroke-width="1.8"></circle>
+          <circle data-s="4" cx="222" cy="186" r="166" pathLength="1" stroke-dasharray="0.68 0.32" fill="none" stroke="var(--accent)" stroke-width="1.8"></circle>
         </g>
-        <circle data-s="0" cx="222" cy="186" r="7" fill="#141414" stroke="none"></circle>
-        <g fill="none" stroke="#d6d1c7" stroke-width="1.5" stroke-linecap="round">
+        <circle data-s="0" cx="222" cy="186" r="7" fill="var(--ink)" stroke="none"></circle>
+        <g fill="none" stroke="var(--control-border)" stroke-width="1.5" stroke-linecap="round">
           <path data-s="0" pathLength="1" stroke-dasharray="1" d="M150 378 H222"></path>
           <path data-s="1" pathLength="1" stroke-dasharray="1" d="M150 402 H262"></path>
           <path data-s="2" pathLength="1" stroke-dasharray="1" d="M150 426 H300"></path>
           <path data-s="3" pathLength="1" stroke-dasharray="1" d="M150 450 H336"></path>
         </g>
       </svg>
-      <div data-figline="1" style="width:100%;max-width:390px;display:flex;align-items:baseline;justify-content:space-between;gap:20px;padding-top:16px;border-top:1px solid #d6d1c7">
-        <span style="font-family:Fraunces,Georgia,serif;font-size:17px;font-style:italic;line-height:1.45;color:#141414;flex:1;text-wrap:pretty">It begins with one line, held on purpose.</span>
-        <span style="font-size:11.5px;font-weight:700;letter-spacing:0.14em;color:#9d978d;white-space:nowrap">01 / 05</span>
+      <div data-figline="1" style="width:100%;max-width:390px;display:flex;align-items:baseline;justify-content:space-between;gap:20px;padding-top:16px;border-top:1px solid var(--control-border)">
+        <span style="font-family:Fraunces,Georgia,serif;font-size:17px;font-style:italic;line-height:1.45;color:var(--ink);flex:1;text-wrap:pretty">It begins with one line, held on purpose.</span>
+        <span style="font-size:11.5px;font-weight:700;letter-spacing:0.14em;color:var(--faint);white-space:nowrap">01 / 05</span>
       </div>
     </div>
   </aside>
@@ -122,34 +123,34 @@
 
   <!-- ══ HERO ══ -->
   <section id="top" data-stage="0" style="padding:clamp(52px,6vw,88px) clamp(20px,3vw,56px) clamp(56px,6vw,88px)">
-    <p style="margin:0 0 26px;display:flex;align-items:center;gap:12px;text-transform:uppercase;letter-spacing:0.2em;font-size:11.5px;font-weight:700;color:#0E7569">
-      <span style="width:26px;height:1px;background:#0E7569;display:inline-block"></span>A memory system for the Bare Act
+    <p style="margin:0 0 26px;display:flex;align-items:center;gap:12px;text-transform:uppercase;letter-spacing:0.2em;font-size:11.5px;font-weight:700;color:var(--accent)">
+      <span style="width:26px;height:1px;background:var(--accent);display:inline-block"></span>A memory system for the Bare Act
     </p>
     <h1 style="font-family:Fraunces,Georgia,serif;font-size:clamp(38px,5.4vw,66px);line-height:1.03;letter-spacing:-0.035em;font-weight:700;margin:0 0 26px;text-wrap:balance">Memorize the C.<br><span style="font-style:italic;font-weight:500">Verbatim.</span><br>In 180 days.</h1>
-    <p style="margin:0 0 32px;font-size:19px;line-height:1.6;color:#4a4744;max-width:480px;text-wrap:pretty">The exact wording of the Bare Act, kept where you actually need it &mdash; in your head.</p>
+    <p style="margin:0 0 32px;font-size:19px;line-height:1.6;color:var(--muted);max-width:480px;text-wrap:pretty">The exact wording of the Bare Act, kept where you actually need it &mdash; in your head.</p>
     <div data-herocta="1" style="display:flex;flex-wrap:wrap;gap:12px;align-items:center">
-      <a href="/login" style="background:#141414;color:#fdfcfa;border:1px solid #141414;padding:15px 30px;font-size:16px;font-weight:700" class="j-ink">Start learning</a>
-      <a href="/browse" style="border:1px solid #d6d1c7;padding:15px 26px;font-size:15px;font-weight:600" class="j-ghost">Explore the Constitution &rarr;</a>
-      <span style="font-size:13.5px;color:#9d978d">No account needed to look around.</span>
+      <a href="/login" style="background:var(--ink);color:var(--page);border:1px solid var(--ink);padding:15px 30px;font-size:16px;font-weight:700" class="j-ink">Start learning</a>
+      <a href="/browse" style="border:1px solid var(--control-border);padding:15px 26px;font-size:15px;font-weight:600" class="j-ghost">Explore the Constitution &rarr;</a>
+      <span style="font-size:13.5px;color:var(--faint)">No account needed to look around.</span>
     </div>
   </section>
 
   <!-- ══ § 01 THE ARITHMETIC ══ -->
-  <section id="arithmetic" data-stage="1" style="background:#f5f2ec;border-top:1px solid #e7e3db;border-bottom:1px solid #e7e3db;padding:clamp(56px,6vw,92px) clamp(20px,3vw,56px)">
-    <div data-reveal="1" style="display:flex;align-items:baseline;justify-content:space-between;gap:20px;padding-bottom:9px;border-bottom:1px solid #141414;margin-bottom:clamp(24px,3vw,36px);opacity:0;transform:translateY(10px);transition:opacity .6s ease,transform .6s ease">
-      <span style="font-size:11.5px;text-transform:uppercase;letter-spacing:0.2em;font-weight:700;color:#141414">The arithmetic</span>
-      <span style="font-family:Fraunces,Georgia,serif;font-size:13px;font-weight:600;letter-spacing:0.08em;color:#9d978d">&sect;&thinsp;01</span>
+  <section id="arithmetic" data-stage="1" style="background:var(--wash);border-top:1px solid var(--hairline);border-bottom:1px solid var(--hairline);padding:clamp(56px,6vw,92px) clamp(20px,3vw,56px)">
+    <div data-reveal="1" style="display:flex;align-items:baseline;justify-content:space-between;gap:20px;padding-bottom:9px;border-bottom:1px solid var(--ink);margin-bottom:clamp(24px,3vw,36px);opacity:0;transform:translateY(10px);transition:opacity .6s ease,transform .6s ease">
+      <span style="font-size:11.5px;text-transform:uppercase;letter-spacing:0.2em;font-weight:700;color:var(--ink)">The arithmetic</span>
+      <span style="font-family:Fraunces,Georgia,serif;font-size:13px;font-weight:600;letter-spacing:0.08em;color:var(--faint)">&sect;&thinsp;01</span>
     </div>
     <div data-reveal="1" data-delay="80" style="opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease">
       <h2 style="font-family:Fraunces,Georgia,serif;font-size:clamp(27px,3.4vw,42px);line-height:1.12;letter-spacing:-0.03em;font-weight:700;margin:0 0 18px;max-width:18ch;text-wrap:balance">Three Articles a day is not ambitious. Six months of them is.</h2>
-      <p style="margin:0 0 40px;font-size:17.5px;line-height:1.6;color:#4a4744;max-width:520px;text-wrap:pretty">Nothing here asks for a heroic week. It asks for ordinary days, in a row.</p>
+      <p style="margin:0 0 40px;font-size:17.5px;line-height:1.6;color:var(--muted);max-width:520px;text-wrap:pretty">Nothing here asks for a heroic week. It asks for ordinary days, in a row.</p>
 
       <div style="margin-bottom:0">
-        <div style="position:relative;height:26px;border-bottom:1px solid #141414">
-          <div style="position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,#d6d1c7 0 1px,transparent 1px 1.6666%),repeating-linear-gradient(90deg,#141414 0 1px,transparent 1px 16.666%);background-position:bottom;background-size:100% 8px,100% 16px;background-repeat:repeat-x"></div>
-          <div data-fill="34" style="position:absolute;left:0;bottom:0;width:0;height:16px;background:#0E7569;opacity:0.16;transition:width 1.6s cubic-bezier(.2,.7,.3,1)"></div>
+        <div style="position:relative;height:26px;border-bottom:1px solid var(--ink)">
+          <div style="position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,var(--control-border) 0 1px,transparent 1px 1.6666%),repeating-linear-gradient(90deg,var(--ink) 0 1px,transparent 1px 16.666%);background-position:bottom;background-size:100% 8px,100% 16px;background-repeat:repeat-x"></div>
+          <div data-fill="34" style="position:absolute;left:0;bottom:0;width:0;height:16px;background:var(--accent);opacity:0.16;transition:width 1.6s cubic-bezier(.2,.7,.3,1)"></div>
         </div>
-        <div style="display:flex;justify-content:space-between;margin-top:8px;font-family:Fraunces,Georgia,serif;font-size:12.5px;font-weight:600;color:#9d978d">
+        <div style="display:flex;justify-content:space-between;margin-top:8px;font-family:Fraunces,Georgia,serif;font-size:12.5px;font-weight:600;color:var(--faint)">
           <span>000</span><span>030</span><span>060</span><span>090</span><span>120</span><span>150</span><span>180</span>
         </div>
       </div>
@@ -158,182 +159,182 @@
 
   <!-- ══ § 02 RECALL ══ -->
   <section id="method" data-stage="2" style="padding:clamp(56px,6vw,92px) clamp(20px,3vw,56px)">
-    <div data-reveal="1" style="display:flex;align-items:baseline;justify-content:space-between;gap:20px;padding-bottom:9px;border-bottom:1px solid #141414;margin-bottom:clamp(24px,3vw,36px);opacity:0;transform:translateY(10px);transition:opacity .6s ease,transform .6s ease">
-      <span style="font-size:11.5px;text-transform:uppercase;letter-spacing:0.2em;font-weight:700;color:#141414">Why rereading fails</span>
-      <span style="font-family:Fraunces,Georgia,serif;font-size:13px;font-weight:600;letter-spacing:0.08em;color:#9d978d">&sect;&thinsp;02</span>
+    <div data-reveal="1" style="display:flex;align-items:baseline;justify-content:space-between;gap:20px;padding-bottom:9px;border-bottom:1px solid var(--ink);margin-bottom:clamp(24px,3vw,36px);opacity:0;transform:translateY(10px);transition:opacity .6s ease,transform .6s ease">
+      <span style="font-size:11.5px;text-transform:uppercase;letter-spacing:0.2em;font-weight:700;color:var(--ink)">Why rereading fails</span>
+      <span style="font-family:Fraunces,Georgia,serif;font-size:13px;font-weight:600;letter-spacing:0.08em;color:var(--faint)">&sect;&thinsp;02</span>
     </div>
     <div data-reveal="1" data-delay="80" style="opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease">
       <h2 style="font-family:Fraunces,Georgia,serif;font-size:clamp(27px,3.4vw,42px);line-height:1.12;letter-spacing:-0.03em;font-weight:700;margin:0 0 18px;max-width:20ch;text-wrap:balance">Rereading is recognition. Recall is knowledge.</h2>
-      <p style="margin:0 0 36px;font-size:17.5px;line-height:1.6;color:#4a4744;max-width:520px;text-wrap:pretty">Familiarity feels like knowing. The real question is whether the words are still there once the page is gone.</p>
+      <p style="margin:0 0 36px;font-size:17.5px;line-height:1.6;color:var(--muted);max-width:520px;text-wrap:pretty">Familiarity feels like knowing. The real question is whether the words are still there once the page is gone.</p>
 
-      <div style="display:flex;flex-wrap:wrap;gap:0;border:1px solid #d6d1c7;background:#fff">
-        <div style="flex:1 1 280px;min-width:0;padding:24px 26px;border-right:1px solid #e7e3db">
-          <p style="margin:0 0 14px;display:flex;align-items:center;gap:9px;font-size:11.5px;font-weight:700;color:#9d978d;text-transform:uppercase;letter-spacing:0.14em"><span style="width:20px;height:20px;display:grid;place-items:center;border:1px solid #d6d1c7;border-radius:50%;font-family:Fraunces,Georgia,serif;font-size:11px">1</span>On the page</p>
-          <p style="margin:0;font-family:Fraunces,Georgia,serif;font-size:19px;line-height:1.56;font-weight:500;color:#4a4744">No person shall be deprived of his life or personal liberty except according to procedure established by law.</p>
-          <p style="margin:14px 0 0;font-size:13.5px;color:#9d978d">Every word is right there.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:0;border:1px solid var(--control-border);background:var(--paper)">
+        <div style="flex:1 1 280px;min-width:0;padding:24px 26px;border-right:1px solid var(--hairline)">
+          <p style="margin:0 0 14px;display:flex;align-items:center;gap:9px;font-size:11.5px;font-weight:700;color:var(--faint);text-transform:uppercase;letter-spacing:0.14em"><span style="width:20px;height:20px;display:grid;place-items:center;border:1px solid var(--control-border);border-radius:50%;font-family:Fraunces,Georgia,serif;font-size:11px">1</span>On the page</p>
+          <p style="margin:0;font-family:Fraunces,Georgia,serif;font-size:19px;line-height:1.56;font-weight:500;color:var(--muted)">No person shall be deprived of his life or personal liberty except according to procedure established by law.</p>
+          <p style="margin:14px 0 0;font-size:13.5px;color:var(--faint)">Every word is right there.</p>
         </div>
-        <div style="flex:1 1 280px;min-width:0;padding:24px 26px;background:#fbfaf7">
-          <p style="margin:0 0 14px;display:flex;align-items:center;gap:9px;font-size:11.5px;font-weight:700;color:#0E7569;text-transform:uppercase;letter-spacing:0.14em"><span style="width:20px;height:20px;display:grid;place-items:center;background:#0E7569;color:#fff;border-radius:50%;font-family:Fraunces,Georgia,serif;font-size:11px">2</span>From memory</p>
-          <p style="margin:0;font-family:Fraunces,Georgia,serif;font-size:19px;line-height:1.56;font-weight:500">No person shall be <span style="display:inline-block;min-width:82px;border-bottom:2px solid #c9c5bd">&nbsp;</span> of his <span style="display:inline-block;min-width:52px;border-bottom:2px solid #c9c5bd">&nbsp;</span> or personal <span style="display:inline-block;min-width:66px;border-bottom:2px solid #c9c5bd">&nbsp;</span> except according to <span style="display:inline-block;min-width:86px;border-bottom:2px solid #c9c5bd">&nbsp;</span> established by <span style="display:inline-block;min-width:44px;border-bottom:2px solid #c9c5bd">&nbsp;</span>.</p>
-          <p style="margin:14px 0 0;font-size:13.5px;color:#4a4744;font-weight:600">Five words gone. The only test that counts.</p>
+        <div style="flex:1 1 280px;min-width:0;padding:24px 26px;background:var(--hover)">
+          <p style="margin:0 0 14px;display:flex;align-items:center;gap:9px;font-size:11.5px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.14em"><span style="width:20px;height:20px;display:grid;place-items:center;background:var(--accent);color:var(--on-accent);border-radius:50%;font-family:Fraunces,Georgia,serif;font-size:11px">2</span>From memory</p>
+          <p style="margin:0;font-family:Fraunces,Georgia,serif;font-size:19px;line-height:1.56;font-weight:500">No person shall be <span style="display:inline-block;min-width:82px;border-bottom:2px solid var(--control-border)">&nbsp;</span> of his <span style="display:inline-block;min-width:52px;border-bottom:2px solid var(--control-border)">&nbsp;</span> or personal <span style="display:inline-block;min-width:66px;border-bottom:2px solid var(--control-border)">&nbsp;</span> except according to <span style="display:inline-block;min-width:86px;border-bottom:2px solid var(--control-border)">&nbsp;</span> established by <span style="display:inline-block;min-width:44px;border-bottom:2px solid var(--control-border)">&nbsp;</span>.</p>
+          <p style="margin:14px 0 0;font-size:13.5px;color:var(--muted);font-weight:600">Five words gone. The only test that counts.</p>
         </div>
       </div>
-      <p style="margin:20px 0 0;font-size:15px;color:#6f6a63">Recall the C lives entirely in the second panel.</p>
+      <p style="margin:20px 0 0;font-size:15px;color:var(--muted)">Recall the C lives entirely in the second panel.</p>
     </div>
   </section>
 
   <!-- ══ § 03 SIX MODES ══ -->
-  <section id="learn" data-stage="3" style="background:#f5f2ec;border-top:1px solid #e7e3db;border-bottom:1px solid #e7e3db;padding:clamp(56px,6vw,92px) clamp(20px,3vw,56px)">
-    <div data-reveal="1" style="display:flex;align-items:baseline;justify-content:space-between;gap:20px;padding-bottom:9px;border-bottom:1px solid #141414;margin-bottom:clamp(24px,3vw,36px);opacity:0;transform:translateY(10px);transition:opacity .6s ease,transform .6s ease">
-      <span style="font-size:11.5px;text-transform:uppercase;letter-spacing:0.2em;font-weight:700;color:#141414">Six modes, one provision</span>
-      <span style="font-family:Fraunces,Georgia,serif;font-size:13px;font-weight:600;letter-spacing:0.08em;color:#9d978d">&sect;&thinsp;03</span>
+  <section id="learn" data-stage="3" style="background:var(--wash);border-top:1px solid var(--hairline);border-bottom:1px solid var(--hairline);padding:clamp(56px,6vw,92px) clamp(20px,3vw,56px)">
+    <div data-reveal="1" style="display:flex;align-items:baseline;justify-content:space-between;gap:20px;padding-bottom:9px;border-bottom:1px solid var(--ink);margin-bottom:clamp(24px,3vw,36px);opacity:0;transform:translateY(10px);transition:opacity .6s ease,transform .6s ease">
+      <span style="font-size:11.5px;text-transform:uppercase;letter-spacing:0.2em;font-weight:700;color:var(--ink)">Six modes, one provision</span>
+      <span style="font-family:Fraunces,Georgia,serif;font-size:13px;font-weight:600;letter-spacing:0.08em;color:var(--faint)">&sect;&thinsp;03</span>
     </div>
     <div data-reveal="1" data-delay="80" style="opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease">
       <h2 style="font-family:Fraunces,Georgia,serif;font-size:clamp(27px,3.4vw,42px);line-height:1.12;letter-spacing:-0.03em;font-weight:700;margin:0 0 18px;max-width:20ch;text-wrap:balance">Understand the structure. Memorize the wording.</h2>
-      <p style="margin:0 0 30px;font-size:17.5px;line-height:1.6;color:#4a4744;max-width:520px;text-wrap:pretty">Each mode takes away a little more of the text.</p>
+      <p style="margin:0 0 30px;font-size:17.5px;line-height:1.6;color:var(--muted);max-width:520px;text-wrap:pretty">Each mode takes away a little more of the text.</p>
 
       <div data-modes="1" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:-1px;position:relative;z-index:2">
-        <button type="button" data-mode="0" data-tab="on" style="border:1px solid #d6d1c7;background:#fff;color:#4a4744;padding:9px 16px;font-size:13.5px;font-weight:700;cursor:pointer">Read</button>
-        <button type="button" data-mode="1" data-tab="off" style="border:1px solid #d6d1c7;background:#fff;color:#4a4744;padding:9px 16px;font-size:13.5px;font-weight:700;cursor:pointer">Cloze</button>
-        <button type="button" data-mode="2" data-tab="off" style="border:1px solid #d6d1c7;background:#fff;color:#4a4744;padding:9px 16px;font-size:13.5px;font-weight:700;cursor:pointer">Letters</button>
-        <button type="button" data-mode="3" data-tab="off" style="border:1px solid #d6d1c7;background:#fff;color:#4a4744;padding:9px 16px;font-size:13.5px;font-weight:700;cursor:pointer">Type</button>
-        <button type="button" data-mode="4" data-tab="off" style="border:1px solid #d6d1c7;background:#fff;color:#4a4744;padding:9px 16px;font-size:13.5px;font-weight:700;cursor:pointer">Recite</button>
-        <button type="button" data-mode="5" data-tab="off" style="border:1px solid #d6d1c7;background:#fff;color:#4a4744;padding:9px 16px;font-size:13.5px;font-weight:700;cursor:pointer">Card</button>
+        <button type="button" data-mode="0" data-tab="on" style="border:1px solid var(--control-border);background:var(--paper);color:var(--muted);padding:9px 16px;font-size:13.5px;font-weight:700;cursor:pointer">Read</button>
+        <button type="button" data-mode="1" data-tab="off" style="border:1px solid var(--control-border);background:var(--paper);color:var(--muted);padding:9px 16px;font-size:13.5px;font-weight:700;cursor:pointer">Cloze</button>
+        <button type="button" data-mode="2" data-tab="off" style="border:1px solid var(--control-border);background:var(--paper);color:var(--muted);padding:9px 16px;font-size:13.5px;font-weight:700;cursor:pointer">Letters</button>
+        <button type="button" data-mode="3" data-tab="off" style="border:1px solid var(--control-border);background:var(--paper);color:var(--muted);padding:9px 16px;font-size:13.5px;font-weight:700;cursor:pointer">Type</button>
+        <button type="button" data-mode="4" data-tab="off" style="border:1px solid var(--control-border);background:var(--paper);color:var(--muted);padding:9px 16px;font-size:13.5px;font-weight:700;cursor:pointer">Recite</button>
+        <button type="button" data-mode="5" data-tab="off" style="border:1px solid var(--control-border);background:var(--paper);color:var(--muted);padding:9px 16px;font-size:13.5px;font-weight:700;cursor:pointer">Card</button>
       </div>
 
-      <div style="border:1px solid #141414;background:#fff">
-        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:15px 24px;border-bottom:1px solid #e7e3db">
+      <div style="border:1px solid var(--ink);background:var(--paper)">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:15px 24px;border-bottom:1px solid var(--hairline)">
           <span style="font-family:Fraunces,Georgia,serif;font-size:16px;font-weight:700">Article 32(1)</span>
-          <span style="font-size:11.5px;text-transform:uppercase;letter-spacing:0.14em;font-weight:700;color:#9d978d">Remedies for enforcement of rights</span>
+          <span style="font-size:11.5px;text-transform:uppercase;letter-spacing:0.14em;font-weight:700;color:var(--faint)">Remedies for enforcement of rights</span>
         </div>
         <div style="padding:28px 24px 24px;min-height:250px;display:flex;flex-direction:column;justify-content:space-between">
           <div data-mode-panel="0" style="animation:softIn .4s ease both">
             <p style="margin:0;font-family:Fraunces,Georgia,serif;font-size:clamp(19px,1.9vw,22px);line-height:1.6;font-weight:500">The right to move the Supreme Court by appropriate proceedings for the enforcement of the rights conferred by this Part is guaranteed.</p>
-            <p style="margin:22px 0 0;font-size:14px;color:#6f6a63">The Bare Act wording, unedited.</p>
+            <p style="margin:22px 0 0;font-size:14px;color:var(--muted)">The Bare Act wording, unedited.</p>
           </div>
           <div data-mode-panel="1" hidden style="animation:softIn .4s ease both">
-            <p style="margin:0;font-family:Fraunces,Georgia,serif;font-size:clamp(19px,1.9vw,22px);line-height:1.8;font-weight:500">The right to move the <span style="color:#0E7569;border-bottom:2px solid #0E7569;font-weight:600">Supreme Court</span> by <span style="display:inline-block;min-width:104px;border-bottom:2px solid #c9c5bd">&nbsp;</span> proceedings for the <span style="display:inline-block;min-width:110px;border-bottom:2px solid #c9c5bd">&nbsp;</span> of the rights conferred by this Part is <span style="display:inline-block;min-width:104px;border-bottom:2px solid #c9c5bd">&nbsp;</span>.</p>
-            <p style="margin:22px 0 0;font-size:14px;color:#6f6a63">Load-bearing words come out, one blank at a time.</p>
+            <p style="margin:0;font-family:Fraunces,Georgia,serif;font-size:clamp(19px,1.9vw,22px);line-height:1.8;font-weight:500">The right to move the <span style="color:var(--accent);border-bottom:2px solid var(--accent);font-weight:600">Supreme Court</span> by <span style="display:inline-block;min-width:104px;border-bottom:2px solid var(--control-border)">&nbsp;</span> proceedings for the <span style="display:inline-block;min-width:110px;border-bottom:2px solid var(--control-border)">&nbsp;</span> of the rights conferred by this Part is <span style="display:inline-block;min-width:104px;border-bottom:2px solid var(--control-border)">&nbsp;</span>.</p>
+            <p style="margin:22px 0 0;font-size:14px;color:var(--muted)">Load-bearing words come out, one blank at a time.</p>
           </div>
           <div data-mode-panel="2" hidden style="animation:softIn .4s ease both">
             <p style="margin:0 0 12px;font-family:Fraunces,Georgia,serif;font-size:clamp(20px,2.1vw,25px);letter-spacing:0.24em;line-height:1.7;font-weight:600">T r t m t S C b a p f t e o t r c b t P i g.</p>
-            <p style="margin:0;font-family:Fraunces,Georgia,serif;font-size:15px;font-style:italic;color:#9d978d">The right to move the&hellip;</p>
-            <p style="margin:22px 0 0;font-size:14px;color:#6f6a63">A scaffold to hang the sentence on. Not enough to read.</p>
+            <p style="margin:0;font-family:Fraunces,Georgia,serif;font-size:15px;font-style:italic;color:var(--faint)">The right to move the&hellip;</p>
+            <p style="margin:22px 0 0;font-size:14px;color:var(--muted)">A scaffold to hang the sentence on. Not enough to read.</p>
           </div>
           <div data-mode-panel="3" hidden style="animation:softIn .4s ease both">
-            <div style="border:1px solid #141414;background:#fbfaf7;padding:18px;min-height:92px">
-              <p style="margin:0;font-family:Fraunces,Georgia,serif;font-size:19px;line-height:1.6;font-weight:500">The right to move the Supreme Court by <span style="color:#9a6b2f;border-bottom:2px wavy #9a6b2f">apropriate</span> proceed<span style="display:inline-block;width:2px;height:19px;background:#141414;vertical-align:-3px;margin-left:1px;animation:caretBlink 1s step-end infinite"></span></p>
+            <div style="border:1px solid var(--ink);background:var(--hover);padding:18px;min-height:92px">
+              <p style="margin:0;font-family:Fraunces,Georgia,serif;font-size:19px;line-height:1.6;font-weight:500">The right to move the Supreme Court by <span style="color:var(--accent);border-bottom:2px wavy var(--accent)">apropriate</span> proceed<span style="display:inline-block;width:2px;height:19px;background:var(--ink);vertical-align:-3px;margin-left:1px;animation:caretBlink 1s step-end infinite"></span></p>
             </div>
             <div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px">
-              <span style="font-size:12px;font-weight:700;border:1px solid #d6d1c7;padding:5px 10px;color:#4a4744">9 of 22 words</span>
-              <span style="font-size:12px;font-weight:700;border:1px solid #9a6b2f;color:#9a6b2f;padding:5px 10px">1 spelling to fix</span>
+              <span style="font-size:12px;font-weight:700;border:1px solid var(--control-border);padding:5px 10px;color:var(--muted)">9 of 22 words</span>
+              <span style="font-size:12px;font-weight:700;border:1px solid var(--accent);color:var(--accent);padding:5px 10px">1 spelling to fix</span>
             </div>
-            <p style="margin:20px 0 0;font-size:14px;color:#6f6a63">Near enough is flagged, not accepted.</p>
+            <p style="margin:20px 0 0;font-size:14px;color:var(--muted)">Near enough is flagged, not accepted.</p>
           </div>
           <div data-mode-panel="4" hidden style="animation:softIn .4s ease both">
             <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px">
-              <span style="width:40px;height:40px;flex:none;display:grid;place-items:center;border-radius:50%;background:#0E7569;color:#fff;font-size:16px">&#9679;</span>
+              <span style="width:40px;height:40px;flex:none;display:grid;place-items:center;border-radius:50%;background:var(--accent);color:var(--on-accent);font-size:16px">&#9679;</span>
               <div style="display:flex;align-items:center;gap:4px;height:28px">
-                <span style="width:3px;height:28px;background:#0E7569;display:block;animation:reciteBar .9s ease-in-out infinite"></span>
-                <span style="width:3px;height:28px;background:#0E7569;display:block;animation:reciteBar .9s ease-in-out infinite;animation-delay:.15s"></span>
-                <span style="width:3px;height:28px;background:#0E7569;display:block;animation:reciteBar .9s ease-in-out infinite;animation-delay:.3s"></span>
-                <span style="width:3px;height:28px;background:#0E7569;display:block;animation:reciteBar .9s ease-in-out infinite;animation-delay:.45s"></span>
-                <span style="width:3px;height:28px;background:#0E7569;display:block;animation:reciteBar .9s ease-in-out infinite;animation-delay:.6s"></span>
+                <span style="width:3px;height:28px;background:var(--accent);display:block;animation:reciteBar .9s ease-in-out infinite"></span>
+                <span style="width:3px;height:28px;background:var(--accent);display:block;animation:reciteBar .9s ease-in-out infinite;animation-delay:.15s"></span>
+                <span style="width:3px;height:28px;background:var(--accent);display:block;animation:reciteBar .9s ease-in-out infinite;animation-delay:.3s"></span>
+                <span style="width:3px;height:28px;background:var(--accent);display:block;animation:reciteBar .9s ease-in-out infinite;animation-delay:.45s"></span>
+                <span style="width:3px;height:28px;background:var(--accent);display:block;animation:reciteBar .9s ease-in-out infinite;animation-delay:.6s"></span>
               </div>
-              <span style="font-size:12px;text-transform:uppercase;letter-spacing:0.14em;font-weight:700;color:#0E7569">Listening</span>
+              <span style="font-size:12px;text-transform:uppercase;letter-spacing:0.14em;font-weight:700;color:var(--accent)">Listening</span>
             </div>
-            <p style="margin:0;font-family:Fraunces,Georgia,serif;font-size:clamp(19px,1.9vw,22px);line-height:1.6;font-weight:500">The right to move the Supreme Court by appropriate proceedings <span style="color:#c9c5bd">for the enforcement of the rights conferred by this Part is guaranteed.</span></p>
-            <p style="margin:22px 0 0;font-size:14px;color:#6f6a63">Said aloud, matched as you speak.</p>
+            <p style="margin:0;font-family:Fraunces,Georgia,serif;font-size:clamp(19px,1.9vw,22px);line-height:1.6;font-weight:500">The right to move the Supreme Court by appropriate proceedings <span style="color:var(--control-border)">for the enforcement of the rights conferred by this Part is guaranteed.</span></p>
+            <p style="margin:22px 0 0;font-size:14px;color:var(--muted)">Said aloud, matched as you speak.</p>
           </div>
           <div data-mode-panel="5" hidden style="animation:softIn .4s ease both">
-            <button type="button" data-card-flip style="width:100%;text-align:left;border:1px dashed #9d978d;background:#fbfaf7;padding:26px 22px;cursor:pointer;min-height:140px;display:block" class="j-card">
+            <button type="button" data-card-flip style="width:100%;text-align:left;border:1px dashed var(--faint);background:var(--hover);padding:26px 22px;cursor:pointer;min-height:140px;display:block" class="j-card">
               <span data-card-front style="display:block">
-                <span style="display:block;font-size:12px;text-transform:uppercase;letter-spacing:0.14em;font-weight:700;color:#9d978d;margin-bottom:12px">Prompt</span>
+                <span style="display:block;font-size:12px;text-transform:uppercase;letter-spacing:0.14em;font-weight:700;color:var(--faint);margin-bottom:12px">Prompt</span>
                 <span style="display:block;font-family:Fraunces,Georgia,serif;font-size:25px;font-weight:700">Article 32(1)</span>
-                <span style="display:block;margin-top:10px;font-size:14px;color:#6f6a63">Recall it in full, then tap to check.</span>
+                <span style="display:block;margin-top:10px;font-size:14px;color:var(--muted)">Recall it in full, then tap to check.</span>
               </span>
               <span data-card-back hidden style="display:block;animation:softIn .3s ease both">
-                <span style="display:block;font-size:12px;text-transform:uppercase;letter-spacing:0.14em;font-weight:700;color:#0E7569;margin-bottom:12px">The text</span>
+                <span style="display:block;font-size:12px;text-transform:uppercase;letter-spacing:0.14em;font-weight:700;color:var(--accent);margin-bottom:12px">The text</span>
                 <span style="display:block;font-family:Fraunces,Georgia,serif;font-size:19px;line-height:1.6;font-weight:500">The right to move the Supreme Court by appropriate proceedings for the enforcement of the rights conferred by this Part is guaranteed.</span>
               </span>
             </button>
-            <p style="margin:20px 0 0;font-size:14px;color:#6f6a63">Cards are what the schedule sends back to you.</p>
+            <p style="margin:20px 0 0;font-size:14px;color:var(--muted)">Cards are what the schedule sends back to you.</p>
           </div>
-          <div style="display:flex;align-items:center;gap:10px;margin-top:24px;padding-top:15px;border-top:1px solid #e7e3db">
-            <div style="flex:1;height:2px;background:#e7e3db;position:relative">
-              <div data-mode-prog style="position:absolute;left:0;top:0;height:2px;background:#141414;width:17%;transition:width .45s ease"></div>
+          <div style="display:flex;align-items:center;gap:10px;margin-top:24px;padding-top:15px;border-top:1px solid var(--hairline)">
+            <div style="flex:1;height:2px;background:var(--hairline);position:relative">
+              <div data-mode-prog style="position:absolute;left:0;top:0;height:2px;background:var(--ink);width:17%;transition:width .45s ease"></div>
             </div>
-            <span style="font-size:11.5px;text-transform:uppercase;letter-spacing:0.14em;font-weight:700;color:#9d978d">Read &rarr; Recall</span>
+            <span style="font-size:11.5px;text-transform:uppercase;letter-spacing:0.14em;font-weight:700;color:var(--faint)">Read &rarr; Recall</span>
           </div>
         </div>
       </div>
-      <p style="margin:20px 0 0;font-size:15px;color:#6f6a63;max-width:520px;text-wrap:pretty">Provisions that are easier to see than to read also come as Visual Explainers &mdash; the structure whole, before the wording.</p>
+      <p style="margin:20px 0 0;font-size:15px;color:var(--muted);max-width:520px;text-wrap:pretty">Provisions that are easier to see than to read also come as Visual Explainers &mdash; the structure whole, before the wording.</p>
     </div>
   </section>
 
   <!-- ══ § 04 RELEVANT LAWS ══ -->
-  <section data-stage="4" style="background:#f2ede3;border-top:1px solid #e0d9c9;padding:clamp(56px,6vw,92px) clamp(20px,3vw,56px)">
-    <div data-reveal="1" style="display:flex;align-items:baseline;justify-content:space-between;gap:20px;padding-bottom:9px;border-bottom:1px solid #141414;margin-bottom:clamp(24px,3vw,36px);opacity:0;transform:translateY(10px);transition:opacity .6s ease,transform .6s ease">
-      <span style="font-size:11.5px;text-transform:uppercase;letter-spacing:0.2em;font-weight:700;color:#8a6a2f">Coming soon &middot; Relevant laws</span>
-      <span style="font-family:Fraunces,Georgia,serif;font-size:13px;font-weight:600;letter-spacing:0.08em;color:#9d978d">&sect;&thinsp;05</span>
+  <section data-stage="4" style="background:var(--wash);border-top:1px solid var(--hairline);padding:clamp(56px,6vw,92px) clamp(20px,3vw,56px)">
+    <div data-reveal="1" style="display:flex;align-items:baseline;justify-content:space-between;gap:20px;padding-bottom:9px;border-bottom:1px solid var(--ink);margin-bottom:clamp(24px,3vw,36px);opacity:0;transform:translateY(10px);transition:opacity .6s ease,transform .6s ease">
+      <span style="font-size:11.5px;text-transform:uppercase;letter-spacing:0.2em;font-weight:700;color:var(--accent)">Coming soon &middot; Relevant laws</span>
+      <span style="font-family:Fraunces,Georgia,serif;font-size:13px;font-weight:600;letter-spacing:0.08em;color:var(--faint)">&sect;&thinsp;05</span>
     </div>
     <div data-reveal="1" data-delay="80" style="opacity:0;transform:translateY(16px);transition:opacity .7s ease,transform .7s ease">
       <h2 style="font-family:Fraunces,Georgia,serif;font-size:clamp(27px,3.4vw,42px);line-height:1.12;letter-spacing:-0.03em;font-weight:700;margin:0 0 18px;max-width:20ch;text-wrap:balance">The Constitution does not operate alone.</h2>
-      <p style="margin:0 0 32px;font-size:17.5px;line-height:1.6;color:#4a4744;max-width:520px;text-wrap:pretty">The statutes that carry it into practice are next, each tied to the Articles it answers to.</p>
+      <p style="margin:0 0 32px;font-size:17.5px;line-height:1.6;color:var(--muted);max-width:520px;text-wrap:pretty">The statutes that carry it into practice are next, each tied to the Articles it answers to.</p>
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">
-        <article style="border:1px solid #d9d0bc;background:#fbf8f1;padding:20px 18px">
-          <p style="margin:0 0 6px;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#8a6a2f">Evidence</p>
+        <article style="border:1px solid var(--hairline);background:var(--paper);padding:20px 18px">
+          <p style="margin:0 0 6px;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent)">Evidence</p>
           <p style="margin:0 0 10px;font-family:Fraunces,Georgia,serif;font-size:19px;font-weight:700">Indian Evidence Act</p>
-          <p style="margin:0 0 12px;font-size:14.5px;line-height:1.5;color:#6f6a63">Proof, presumption, and the limits of compelled testimony.</p>
-          <p style="margin:0;padding-top:11px;border-top:1px solid #e2dac8;font-size:13px;color:#9d978d">Article 20(3)</p>
+          <p style="margin:0 0 12px;font-size:14.5px;line-height:1.5;color:var(--muted)">Proof, presumption, and the limits of compelled testimony.</p>
+          <p style="margin:0;padding-top:11px;border-top:1px solid var(--hairline);font-size:13px;color:var(--faint)">Article 20(3)</p>
         </article>
-        <article style="border:1px solid #d9d0bc;background:#fbf8f1;padding:20px 18px">
-          <p style="margin:0 0 6px;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#8a6a2f">Elections</p>
+        <article style="border:1px solid var(--hairline);background:var(--paper);padding:20px 18px">
+          <p style="margin:0 0 6px;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent)">Elections</p>
           <p style="margin:0 0 10px;font-family:Fraunces,Georgia,serif;font-size:19px;font-weight:700">Representation of the People Act</p>
-          <p style="margin:0 0 12px;font-size:14.5px;line-height:1.5;color:#6f6a63">Who may stand, who may vote, how a result is challenged.</p>
-          <p style="margin:0;padding-top:11px;border-top:1px solid #e2dac8;font-size:13px;color:#9d978d">Articles 324&ndash;329</p>
+          <p style="margin:0 0 12px;font-size:14.5px;line-height:1.5;color:var(--muted)">Who may stand, who may vote, how a result is challenged.</p>
+          <p style="margin:0;padding-top:11px;border-top:1px solid var(--hairline);font-size:13px;color:var(--faint)">Articles 324&ndash;329</p>
         </article>
-        <article style="border:1px solid #d9d0bc;background:#fbf8f1;padding:20px 18px">
-          <p style="margin:0 0 6px;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#8a6a2f">Environment</p>
+        <article style="border:1px solid var(--hairline);background:var(--paper);padding:20px 18px">
+          <p style="margin:0 0 6px;font-size:11px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:var(--accent)">Environment</p>
           <p style="margin:0 0 10px;font-family:Fraunces,Georgia,serif;font-size:19px;font-weight:700">Environment Protection Act</p>
-          <p style="margin:0 0 12px;font-size:14.5px;line-height:1.5;color:#6f6a63">The statutory frame behind what the courts read into the right to life.</p>
-          <p style="margin:0;padding-top:11px;border-top:1px solid #e2dac8;font-size:13px;color:#9d978d">Articles 21 &amp; 48A</p>
+          <p style="margin:0 0 12px;font-size:14.5px;line-height:1.5;color:var(--muted)">The statutory frame behind what the courts read into the right to life.</p>
+          <p style="margin:0;padding-top:11px;border-top:1px solid var(--hairline);font-size:13px;color:var(--faint)">Articles 21 &amp; 48A</p>
         </article>
       </div>
-      <p style="margin:20px 0 0;font-family:Fraunces,Georgia,serif;font-style:italic;font-size:16px;color:#6f6a63">Not yet available. The Constitution comes first.</p>
+      <p style="margin:20px 0 0;font-family:Fraunces,Georgia,serif;font-style:italic;font-size:16px;color:var(--muted)">Not yet available. The Constitution comes first.</p>
     </div>
   </section>
 
   <!-- ══ CLOSE ══ -->
-  <section style="background:#141414;color:#fdfcfa;padding:clamp(64px,7vw,104px) clamp(20px,3vw,56px)">
-    <p style="margin:0 0 22px;font-size:11.5px;text-transform:uppercase;letter-spacing:0.2em;font-weight:700;color:#9d978d">Day 001</p>
-    <h2 style="font-family:Fraunces,Georgia,serif;font-size:clamp(30px,4vw,52px);line-height:1.08;letter-spacing:-0.03em;font-weight:700;margin:0 0 22px;max-width:16ch;text-wrap:balance">The more you know, the more <span style="font-style:italic;font-weight:500;color:#8fd6c9">free</span> you become.</h2>
-    <p style="margin:0 0 32px;font-size:18px;line-height:1.6;color:rgba(253,252,250,0.74);max-width:460px;text-wrap:pretty">Start with one Article. The schedule takes care of the other 179 days.</p>
+  <section style="background:var(--ink);color:var(--on-accent);padding:clamp(64px,7vw,104px) clamp(20px,3vw,56px)">
+    <p style="margin:0 0 22px;font-size:11.5px;text-transform:uppercase;letter-spacing:0.2em;font-weight:700;color:var(--faint)">Day 001</p>
+    <h2 style="font-family:Fraunces,Georgia,serif;font-size:clamp(30px,4vw,52px);line-height:1.08;letter-spacing:-0.03em;font-weight:700;margin:0 0 22px;max-width:16ch;text-wrap:balance">The more you know, the more <span style="font-style:italic;font-weight:500;color:var(--hover)">free</span> you become.</h2>
+    <p style="margin:0 0 32px;font-size:18px;line-height:1.6;color:color-mix(in srgb, var(--on-accent) 74%, transparent);max-width:460px;text-wrap:pretty">Start with one Article. The schedule takes care of the other 179 days.</p>
     <div style="display:flex;flex-wrap:wrap;gap:12px">
-      <a href="/login" style="background:#fdfcfa;color:#141414;border:1px solid #fdfcfa;padding:15px 30px;font-size:16px;font-weight:700" class="j-ink-inv">Start memorizing</a>
-      <a href="/browse" style="border:1px solid rgba(253,252,250,0.45);color:#fdfcfa;padding:15px 26px;font-size:15px;font-weight:600" class="j-ghost-inv">Explore as a guest</a>
+      <a href="/login" style="background:var(--on-accent);color:var(--ink);border:1px solid var(--on-accent);padding:15px 30px;font-size:16px;font-weight:700" class="j-ink-inv">Start memorizing</a>
+      <a href="/browse" style="border:1px solid color-mix(in srgb, var(--on-accent) 45%, transparent);color:var(--page);padding:15px 26px;font-size:15px;font-weight:600" class="j-ghost-inv">Explore as a guest</a>
     </div>
   </section>
 
   </main>
 </div>
 
-<footer style="border-top:1px solid #e7e3db;background:#fdfcfa">
+<footer style="border-top:1px solid var(--hairline);background:var(--page)">
   <div style="max-width:1400px;margin:0 auto;padding:22px clamp(20px,3vw,36px);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 28px">
     <a href="#top" style="display:inline-flex;align-items:center;gap:11px">
-      <span style="width:28px;height:28px;display:grid;place-items:center;border:1.4px solid #141414;font-family:Fraunces,Georgia,serif;font-weight:700;font-size:15px;line-height:1">C</span>
+      <span style="width:28px;height:28px;display:grid;place-items:center;border:1.4px solid var(--ink);font-family:Fraunces,Georgia,serif;font-weight:700;font-size:15px;line-height:1">C</span>
       <span style="font-family:Fraunces,Georgia,serif;font-size:17px;font-weight:700;letter-spacing:-0.02em">Recall the C</span>
     </a>
-    <p style="margin:0;font-family:Fraunces,Georgia,serif;font-style:italic;font-size:14.5px;color:#6f6a63">Read it. See it. Recall it. Revisit it. Remember it.</p>
+    <p style="margin:0;font-family:Fraunces,Georgia,serif;font-style:italic;font-size:14.5px;color:var(--muted)">Read it. See it. Recall it. Revisit it. Remember it.</p>
     <nav aria-label="Legal" style="display:flex;flex-wrap:wrap;gap:8px 18px;font-size:13.5px;font-weight:600">
-      <a href="/terms" style="color:#6f6a63">Terms</a>
-      <a href="/privacy" style="color:#6f6a63">Privacy</a>
-      <a href="/grievance" style="color:#6f6a63">Grievance</a>
+      <a href="/terms" style="color:var(--muted)">Terms</a>
+      <a href="/privacy" style="color:var(--muted)">Privacy</a>
+      <a href="/grievance" style="color:var(--muted)">Grievance</a>
       {% if pricing_enabled|default(false) %}
-      <a href="/pricing" style="color:#6f6a63">Pricing</a>
+      <a href="/pricing" style="color:var(--muted)">Pricing</a>
       {% endif %}
     </nav>
-    <p style="margin:0;font-size:13px;color:#9d978d;max-width:420px">A study aid, not an official legal source. Verify against an authoritative publication where it counts.</p>
+    <p style="margin:0;font-size:13px;color:var(--faint);max-width:420px">A study aid, not an official legal source. Verify against an authoritative publication where it counts.</p>
   </div>
 </footer>
 

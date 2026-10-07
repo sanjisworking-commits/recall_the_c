@@ -1,0 +1,213 @@
+# Playground (this branch)
+
+**Guest = explore. Account = complete Constitution. Subscription = Playground. Tier = monthly roster capacity only** (plus 10 / pro 30 / max unlimited distinct laws **active this Playground month**). Overlay item/selection/progress is **persistent learning**, not that quota. **Playground also requires a registered device** (`PLAYGROUND_DEVICE_LIMIT = 2`, same for every tier). Constitution Learn and law reading never use this gate.
+
+RecallC Playground is the paid learning overlay on verbatim Bare Act JSON. Tiers do not change modes, ladders, quality, or device cap. Same-month remove + re-add does not consume an extra roster slot; next month’s laws are carry-forward candidates (Keep uses a new-period slot). **Neither payment, the roster, nor device revocation may delete progress.**
+
+| Document | Status |
+|----------|--------|
+| [PLAYGROUND_DELIVERY_TRACKER.md](PLAYGROUND_DELIVERY_TRACKER.md) | **Programme scoreboard.** Stage 1 = **DONE — 100.0 / 100**. Milestone 2 is `DONE` (37/37). Milestone 3 is `DONE` (15/15). Milestone 4 is `DONE` (25/25). Milestone 5 is `DONE` (27/27). Milestone 6 is `DONE` (37/37). Milestone 7 is `DONE` (six modes). Milestone 8 is `DONE` (Learned → 1 → 3 → 7 → 15 → 30 → 60 → Mastered). Milestone 9 is `DONE` (source-integrity review; cheap registry identity then targeted one-Act comparison). Milestone 10 is `DONE` (public statutory SEO vs private `noindex`; manifest-backed sitemaps). Milestone 11 is `DONE` (production hardening, legacy freeze, diagnostics, rollout). Stage 2 optimize is `NOT STARTED` until the Stage 1 release checklist is complete and production-ready state is proven. |
+| [PLAYGROUND_M11_REPORT.md](PLAYGROUND_M11_REPORT.md) | Milestone 11 close-out: centralized guards, CSRF inventory, diagnostics, kill switch, legacy inventory, rollout/rollback, tests, SHAs. |
+| [PLAYGROUND_PRODUCTION_ROLLOUT.md](PLAYGROUND_PRODUCTION_ROLLOUT.md) | Executable production checklist, smoke matrix, kill switch, app-first rollback. |
+| [LEGACY_COMMERCIAL_TRANSITION.md](LEGACY_COMMERCIAL_TRANSITION.md) | A/B/C/D inventory. Legacy tables retained. Current access does not depend on them. |
+| [PLAYGROUND_M10_REPORT.md](PLAYGROUND_M10_REPORT.md) | Milestone 10 close-out: unique `/laws` metadata, canonical helpers, Playground/account noindex, X-Robots-Tag, intra-law sitemap chunking, tests, SHAs. |
+| [PLAYGROUND_M9_REPORT.md](PLAYGROUND_M9_REPORT.md) | Milestone 9 close-out: cheap law-level detection, targeted section comparison, source-change persistence, review UX, tests, SHAs. |
+| [PLAYGROUND_M8_REPORT.md](PLAYGROUND_M8_REPORT.md) | Milestone 8 close-out: Learned transition, revision-mode table, official ladder, Today/Calendar projections, tests, SHAs. |
+| [PLAYGROUND_M7_REPORT.md](PLAYGROUND_M7_REPORT.md) | Milestone 7 close-out: six-mode engine, `user_playground_mode_progress`, M8 boundary, tests, SHAs. |
+| [PLAYGROUND_TWO_LAW_AUDIT.md](PLAYGROUND_TWO_LAW_AUDIT.md) | Overlay design. Cloze = architectural proof, not the finished mode set. NDPS/BNS = **historical validation corpus**, not a production allowlist. Item/selection/progress = persistent learning, not monthly quota and not the device registry. |
+| [PAYMENT_ENTITLEMENT_AUDIT.md](PAYMENT_ENTITLEMENT_AUDIT.md) | User-type + **device registry** + **monthly roster** (`Asia/Kolkata` period clock). Catalogue, `user_subscription` persistence, M2 lifecycle, M3-A `EntitlementService` (Constitution inversion), M3-B Playground commercial HTTP gate, M4-A two-device authorization, M4-B owner/admin device management, M4-C replacement-churn, **M5 monthly roster plus carry-forward**, and **M6 production UX/state presentation** exist. Platforms are `web | android | ios`. Replacement-churn rate policy is locked in §21 (`DEVICE_REPLACEMENT_WINDOW_DAYS = 30`, `DEVICE_REPLACEMENT_LIMIT = 3`, support email via `SUPPORT_EMAIL`). Overlay is lifetime learning; roster is current-month membership (`overlay != roster`). Pending + current-roster law is learnable; pending + historical overlay only is not. Previous-period laws are candidates only; Keep consumes the new period; decline does not; historical progress never waives monthly capacity. Commercial catalogue, access matrix, refunds, and disputes are **locked** in §21. |
+| [law-loading.md](law-loading.md) | Lazy hydration contract Playground inherits. Sitemap inventory is a **build-time manifest**, never request-time Act hydration. |
+
+**On this branch (M6):** Constitution access is inverted: Guest = explore (unchanged), signed-in account = full Constitution (all Articles, all six modes, persistence) regardless of Playground subscription, claims, or `ARTICLE_ENTITLEMENTS_ENABLED`. Commercial truth lives in [`entitlements/`](../src/constitution_memorizer/entitlements/) (`EntitlementSnapshot`); [`web/entitlements.py`](../src/constitution_memorizer/web/entitlements.py) is the Constitution adapter. **M3 commercial gate is complete:** [`playground/access.py`](../src/constitution_memorizer/playground/access.py) puts that snapshot in front of `/playground` (guest → Sign in, free/legacy → Subscribe, halted/paused/paid-period-ended → payment-state copy, pending → current-roster laws only, active/admin → roster + proof). **M4-A core two-device authorization is shipped** in [`devices/`](../src/constitution_memorizer/devices/): cookie `rtc_device` is minted on first authenticated response; HMAC is stored, never the raw token; paid Playground registers at most two installations (same cap for Plus/Pro/Max); platforms are `web | android | ios`; a third or revoked device is Playground-blocked without clearing `is_subscribed`. **M4-B owner/admin management is shipped:** `GET /profile/security/devices` (account security, not a paid feature) identifies **This device** from HMAC(`rtc_device`), lists active vs removed rows, and revokes through `DeviceService`; removing this device signs out and keeps `rtc_device`; `POST /admin/users/{id}/devices/reset` is admin-authenticated and audited (`reset_devices`) in the same transaction. **M4-C replacement-churn is shipped:** `user_device_replacement` records counted replacements (revoked device + different installation into the freed slot); at most 3 in any rolling 30-day UTC window; a fourth attempt is `device_replacement_limit` only (no ban, no cancel, no progress delete); existing active devices stay usable; Contact support uses `SUPPORT_EMAIL` when configured; admin `clear_device_replacement_limit` is a separate audited recovery action. **M5 monthly roster and rollover are shipped** in [`playground/roster/`](../src/constitution_memorizer/playground/roster/): Asia/Kolkata calendar month (`period_end` exclusive), `user_playground_period` + `user_playground_roster_item`, account-wide Plus 10 / Pro 30 / Max-or-admin unlimited (`law_limit` NULL), atomic consume, same-month remove-without-refund and re-add, `/playground/roster` confirm/management, home filtered to the current active roster. Sensitive law routes require `is_law_active_this_period` before Act hydration. **Locked pending rule:** pending + law active on the **current roster** → learnable; pending + historical overlay only → not learnable / cannot consume. Overlay rows (`user_playground_item` / selection / progress) remain lifetime learning history — **not** current-month membership (`overlay != roster`). Do **not** implement `user_playground_law_entitlement`. `/playground/roster/next` prepares or resolves carry-forward. Keep sets `origin=carry_forward` and consumes one target-period slot. Rollover Remove sets `declined_at` and consumes none. A later-month Add of an existing overlay uses `origin=re_add`, consumes one slot, and resumes the same selection and progress. Overlay is lifetime learning history; roster is monthly authorization (`overlay != roster`). Historical progress never waives monthly capacity. There is no automatic carry-forward. Add confirmation, section selection, Cloze, and revision rows remain the proof surfaces. Eligibility is `is_playground_eligible_law()` / `list_playground_eligible_laws()` in [`playground/eligibility.py`](../src/constitution_memorizer/playground/eligibility.py) (catalogue `full_act` + `BareActSpec`; NDPS, BNS, and BNSS). HTTP lives in [`playground/routes.py`](../src/constitution_memorizer/playground/routes.py) under `/playground/laws/{law_id}`. Proof `/playground/{law_id}` is retired. Law-level identity is `playground_law_source_identity()` from `BareActSpec.source_version` and `source_hash or filename` (stored in the historical `law_source_hash` column; a filename fallback is not a cryptographic hash). `GET /playground` and `GET /playground/roster` render from current-roster summaries plus catalogue/registry metadata and hydrate zero Acts. Blocked Playground requests hydrate zero Acts. Entire-Act selection hydrates that one Act and batch-writes section hashes. Canonical Plus/Pro/Max products, `user_subscription` rows, create/checkout/cancel/plan-change, Razorpay subscription webhooks, failure/terminal lifecycle, resubscribe, refunds/disputes (`subscription_charge`), and read-only legacy N-day classification live in [`subscriptions/`](../src/constitution_memorizer/subscriptions/) and feed `EntitlementService`. Webhooks notify; authenticated provider GET is current billing truth. Roster periods are independent of billing timestamps. Mode completion is production (M7). Learned → Day 1 → Mastered is production (M8). Source-integrity review is production (M9). Historical proof Cloze rows that already scheduled a ladder are grandfathered.
+
+**M9 source-integrity review is shipped.** Registry `BareActSpec.source_version` plus `source_hash or filename` is the cheap law-level gate (`playground_law_source_identity`, `is_law_registry_outdated`). Home, roster, Today, and Calendar never hydrate Acts for amendment detection. A stale law workspace visit or explicit `/playground/laws/{law_id}/source-review` hydrates **that Act only**, unions locators from selection / initial-mode / revision-mode / lifecycle rows, and compares `source_hash(section)` against the most recent practiced baseline (`historical_section_identity`). Changed, missing, and omitted user-relevant provisions become `user_playground_source_change` rows (`pending` / `reviewed`). Learning, revision, selection, and overlay identity rows are **not** rewritten. Commercial identity remains `law_id` — an amendment does not consume a second roster slot. Alembic head `20260927_0027`.
+
+**M11 production hardening is shipped.** Authorization remains `playground/access.py` (entitlement → device → current-period roster → then Act hydration). `PLAYGROUND_ENABLED=false` 404s `/playground*` without touching subscriptions, devices, roster, or progress. Admin `/admin/users/{id}` shows subscription, device, roster, and webhook diagnostics (masked ids, zero Act hydration) and can `reconcile_subscription` through the existing `SubscriptionService` machine. Logout and hosted Playground/subscription mutations fail closed on CSRF. Legacy N-day UI stays frozen behind `PRICING_ENABLED`. Alembic head remains `20260927_0027`. Native Android `/api/v1/auth/bootstrap` is not in this repo; web Google OAuth + session cookie and `web|android|ios` device platforms remain. Stage 2 is not started.
+
+**M10 public/private SEO is shipped.** Public statutory pages stay indexable through `web/seo.py`. Personalized Playground, Learn, roster, account, device, billing, and auth HTML emit `noindex, nofollow` from `is_noindex_path()`. Private non-HTML responses send `X-Robots-Tag`. Sitemaps read the committed `law_sitemap_manifest.json` (schema 2: first-class `slug` + `source_version`) and never hydrate Acts. Large Acts split into `sitemap-laws-{slug}-{n}.xml`. No Alembic change.
+
+**M8 revision lifecycle is shipped.** Completing all six `PLAYGROUND_LEARN_MODES` transitions a provision **once** to Learned (`learned_at` = Asia/Kolkata study date, Day 1 due tomorrow). Each scheduled rung reuses the same six methods against a separate `user_playground_revision_mode_progress` cycle (`rung_days` ∈ 1, 3, 7, 15, 30, 60). Official ladder after the last successful event: **1 → 3 → 7 → 15 → 30 → 60 → Mastered**. Overdue = `status != mastered` and `next_revision < today`; completing that overdue rung advances **one** rung and re-anchors from the completion date. Early practice does not consume the scheduled rung. GET never advances. Mastered is terminal (`next_revision = NULL`). Today and Calendar are projections of current-roster laws only; inactive historical ladders persist. Legacy proof `review` / `mastered` rows are grandfathered. `cloze_done` is compatibility-only. M9 records source-review facts when the statute changes; it does **not** invalidate Learned or demote Mastered. M8 migration `20260925_0026`.
+
+**M7 six-mode learning is shipped** in [`playground/learning/`](../src/constitution_memorizer/playground/learning/). Modes are exactly **Read → Cloze → Letters → Type → Recite → Test** (`PLAYGROUND_LEARN_MODES`). **Type** is “Write it out, word for word.” There is no seventh Write mode. Canonical source is `canonical_body_text(section)` from the requested Act only. Initial-learning progress lives in `user_playground_mode_progress` (Alembic `20260924_0025`) and is never reset by a later revision. Authorization order is unchanged (M3–M5). Constitution Learn is untouched.
+
+**M6 production UX is shipped** in [`playground/view.py`](../src/constitution_memorizer/playground/view.py), [`static/playground.css`](../src/constitution_memorizer/web/static/playground.css), and the Playground Jinja shell. Signed-in primary navigation is Today · Browse · Playground · Calendar · Profile. Home, roster, rollover, law workspace, public law CTAs, add/remove confirmation, entitlement gates, and payment banners share one presentation language. Guest `/playground` still 303s to Sign in (M3-B). Free accounts see “View Playground plans”, not a Constitution lock. Pending is a non-blocking banner: current roster remains usable, new/historical consume is blocked, same-month Add back is allowed. Undecided rollover consumes zero and is not auto-carried. Law-level badges follow M8 precedence: **Mastered > Due > Learned > Learning > Not started**. Completing a single initial method is **Learning**, not product Learned. **Mastered** is overlay `status = mastered`. M10 public/private SEO is shipped.
+
+**Finished train** is scored in [PLAYGROUND_DELIVERY_TRACKER.md](PLAYGROUND_DELIVERY_TRACKER.md): **Stage 1** is the 100-point build (milestones 0–11); **Stage 2** is an unweighted optimize checklist that starts only after Stage 1 is `DONE` (100/100) and proven. Cloze, the NDPS/BNS overlay, and proof revision rows do **not** make Stage 1 look finished and do **not** tick Stage 2. Next implementation batches follow Stage 1 on that tracker, not a second product model.
+
+```text
+This contract
+    ↓
+Generic eligibility helper + locator removal of two-law allowlist
+    ↓
+Dedicated Playground APIRouter + final URLs
+    ↓
+Runtime identity/hash cleanup (BareActSpec, no request-time read_bytes)
+    ↓
+Roster + batched dashboard repository
+    ↓
+noindex / X-Robots-Tag enforcement
+    ↓
+learning/workspace routes (all modes)
+    ↓
+sitemap manifest work separately (law-loading, not Playground)
+```
+
+Also still in-scope: user-type resolver, device registry, Razorpay lifecycle, admin override. Locked §21 commercial and device-churn cells do not restore article entitlements or lifetime unlocks.
+
+---
+
+## SEO, routing and performance contract
+
+Product model is unchanged. These rules keep Playground survivable at 30 active laws per user and hundreds of Bare Acts.
+
+### Public SEO vs private Playground
+
+The public Bare Act reader is the search-indexable law surface.
+
+**Public statutory content is indexable. Personal learning and account state is never indexable.**
+
+**Indexable:**
+
+- `/` (marketing), `/browse/article/{n}`, `/pricing` (when enabled), `/terms`, `/privacy`, `/grievance`
+- `/laws`
+- `/laws/{law_id}` for full Bare Acts
+- `/laws/{law_id}/section/{number}`
+- public schedule pages (`/laws/{law_id}/schedule/{slug}`)
+
+`/laws` has a unique title, unique description, and canonical `https://recall-the-c.in/laws`. Filter/search variants (`/laws?q=bail`, `/laws?subject=criminal`) canonicalize to `/laws` unless a future subject page is deliberately created as an indexable landing page. Bare Act landing, section, and schedule pages get their own canonical/title/description from `law_canonical_url()`, `provision_canonical_url()`, and `schedule_canonical_url()`. Section numbers stay strings (`27A`, `68-I`).
+
+Reuse [`web/seo.py`](../src/constitution_memorizer/web/seo.py) (`build_laws_hub_seo`, `build_law_seo`, `build_provision_seo`, `build_schedule_seo`, `build_article_seo`). That module is law-generic and does no corpus I/O. **Do not** create a Playground SEO engine.
+
+**Private / personalized — never in any sitemap:**
+
+- `/playground*`
+- Playground Learn / progress / revision
+- monthly roster management
+- device management (`/profile/security/devices`)
+- account / subscription lifecycle surfaces
+
+HTML private pages go through one context flag (`robots_noindex` from `is_noindex_path()` in [`web/seo.py`](../src/constitution_memorizer/web/seo.py)). `base.html` emits:
+
+```html
+<meta name="robots" content="noindex, nofollow">
+```
+
+Standalone `login.html` carries the same robots content. Do not copy `<meta name="robots">` into dozens of templates.
+
+Private **non-HTML** responses (JSON, PDF, CSV, octet-stream) send `X-Robots-Tag: noindex, nofollow` from `apply_private_robots_headers()` middleware. HTML does not also get that header.
+
+Sitemap request paths use the committed build manifest only. See [law-loading.md](law-loading.md).
+
+### Playground eligibility
+
+NDPS and BNS were the proof corpus, not a permanent production allowlist.
+
+A production law is Playground-eligible only when it is a registered **full Bare Act**:
+
+```text
+catalogue primary_content == "full_act"
+AND
+BareActSpec exists
+```
+
+Mapped / key-provision entries are **not** eligible until the product deliberately supports that shape.
+
+Production Playground eligibility must ultimately be exposed through **one lightweight shared helper**, conceptually:
+
+```python
+is_playground_eligible_law(law_id)
+list_playground_eligible_laws()
+```
+
+Routes, roster, locators, entitlement, and UI must **not** independently reconstruct eligibility rules. That is how `{ndps, bns}` would reappear in five forms.
+
+Canonical locator remains `{law_id}:section:{number}`. Parse a safe generic law slug, then validate through the helper against the lightweight full-Bare-Act registry. Do not hardcode slugs in routing or locators.
+
+### Route architecture
+
+Do not continue adding Playground HTTP handlers directly to [`web/app.py`](../src/constitution_memorizer/web/app.py).
+
+Create a dedicated FastAPI `APIRouter(prefix="/playground")` (for example `playground/routes.py`) and include it additively from the app factory. **Do not** refactor Constitution routing while doing this.
+
+**`/playground/{law_id}` is proof architecture, not production routing.** Prefer `/playground/laws/{law_id}` so static Playground paths never compete with a law slug.
+
+Locked production namespace:
+
+| Method | Path | Role |
+|--------|------|------|
+| GET | `/playground` | Personal Playground home (zero Bare Act hydration) |
+| GET | `/playground/roster` | Current month’s roster (zero hydration) |
+| GET/POST | `/playground/roster/next` | Next-month Keep/Remove |
+| GET | `/playground/laws/{law_id}` | Law learning workspace |
+| GET/POST | `/playground/laws/{law_id}/sections` | Selection |
+| GET | `/playground/laws/{law_id}/sections/{number}/learn/{mode}` | Learn mode |
+| — | same law/section tree | completion / revision actions |
+
+Example: `/playground/laws/ndps/sections/8/learn/cloze`.
+
+Device management belongs under account/profile security (`/profile/security/devices`), not under a Playground law route. Payment/subscription routes remain in the billing domain.
+
+### Authorization dependencies
+
+Centralize server-side guards rather than duplicating them across Learn-mode handlers:
+
+```text
+authenticated
+    → Playground subscription
+    → registered device
+    → law active in current monthly roster
+```
+
+Learning modes consume the resulting authorized Playground context. They do not contain provider, payment, or device logic themselves.
+
+### Law-loading contract
+
+Playground inherits [law-loading.md](law-loading.md):
+
+1. `/playground` and `/playground/roster` must **not** hydrate Bare Act JSON.
+2. Use catalogue/registry metadata for Playground cards (title, year, short title, scope).
+3. Hydrate only the Act whose workspace/section has been opened.
+4. Reuse the process-local `BareAct` cache.
+5. Never open/stat/hash every runtime law file from a request path.
+6. Runtime law identity comes from `BareActSpec.source_version` / `source_hash`.
+7. Exact section hashing occurs only after the relevant Act is loaded.
+8. Do not introduce cross-law search by hydrating all Acts.
+
+A content hash required for runtime identity must be computed during ingestion/build and stored in lightweight registry metadata, **not** recomputed by `read_bytes()` on a request. Playground law identity is `playground_law_source_identity()` (`BareActSpec.source_version` + `source_hash or filename`). Request paths must not open, stat, or hash runtime JSON merely to identify a law.
+
+Two-level amendment check: if law `source_version` / `source_hash` is unchanged, skip section revalidation. If it changed, hydrate **that** law and compare affected section hashes. Most Playground page loads must never inspect statutory bodies.
+
+### Playground dashboard query contract
+
+`GET /playground` must not perform per-law selection/progress queries.
+
+Provide a batched/aggregate repository read such as `list_playground_summaries(user_id, period)` returning card-level state:
+
+- `law_id`
+- `active_this_period`
+- selected / learning / Learned / due / mastered counts
+- last activity
+- lightweight source-update status
+
+Do not resolve every section or recompute every live section hash merely to render Playground home.
+
+Authenticated page chrome reuses the existing request-scoped bootstrap ([`request_context.py`](../src/constitution_memorizer/web/request_context.py)). Do not independently re-query theme, due count, onboarding, or identity in every Playground route.
+
+### Mutation efficiency
+
+Entire-Act selection and monthly roster rollover must use batched writes inside a single transaction (`executemany` / VALUES / COPY-equivalent). Avoid one query cycle per Section. Monthly capacity check + roster consumption remains atomic.
+
+### Monthly-period clock
+
+One authoritative timezone for Playground month boundaries: configured RecallC timezone **`Asia/Kolkata`**. Not UTC. Not per-account `user_timezone` unless account-local timezone is deliberately introduced later. Billing-period timezone and Playground-period timezone are independent (see [PAYMENT_ENTITLEMENT_AUDIT.md](PAYMENT_ENTITLEMENT_AUDIT.md) §14).
+
+### Performance / SEO tests
+
+- `GET /playground` performs **zero** Bare Act hydrations.
+- `GET /playground/roster` performs **zero** Bare Act hydrations.
+- Opening one Playground law hydrates **at most** that law.
+- Opening one law Section/Learn mode never hydrates another Act.
+- Dashboard retrieval is batched rather than N+1 by active-law count.
+- Request-time law identity never reads/hashes every runtime JSON.
+- Root sitemap/index and sitemap discovery never hydrate the Bare Act corpus.
+- Personalized Playground URLs are not indexable (HTML `noindex,nofollow`; non-HTML `X-Robots-Tag`) and are absent from sitemap.

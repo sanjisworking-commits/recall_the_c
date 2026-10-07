@@ -4,7 +4,7 @@
 {% block content %}
 {% set state = dashboard_state|default('ok') %}
 {% set initials = '?' if is_guest|default(false) else (display_label[:1] if display_label else 'L')|upper %}
-<section class="panel dashboard-panel">
+<section class="panel dashboard-panel"{% if user and not is_guest|default(false) %} data-signed-in-today{% endif %}{% if plus_today|default(false) %} data-plus-today="desktop"{% endif %}{% if expired_today|default(false) %} data-expired-today="desktop"{% endif %}>
   {% include "_completion_banner.html" %}
   {% if state == 'loading' %}
   <header class="dash-greeting">
@@ -61,11 +61,14 @@
     <div>
       <h1 class="display dash-hello">{{ greeting }}</h1>
       <p class="dash-subtext">{{ subtext }}</p>
+      {% if today_date_label|default('') %}
+      <p class="dash-date" data-today-date>{{ today_date_label }}</p>
+      {% endif %}
     </div>
     {% if not is_guest|default(false) %}
     <span class="rc-streak" data-daily-goal-streak="{{ daily_goal_streak|default(0) }}" title="Days the daily goal was completed">
       <svg class="rc-streak-glyph" width="13" height="15" viewBox="0 0 14 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M7 1.2c.6 2.6-2.9 3.9-2.9 7a3.4 3.4 0 0 0 6.8 0c0-1.4-.7-2.4-1.3-3.3-.5 1-1.1 1.4-1.1 1.4C8.9 4.4 8.6 2.4 7 1.2Z"></path></svg>
-      <span class="rc-streak-count">{{ daily_goal_streak|default(0) }}</span>
+      <span class="rc-streak-label"><span class="rc-streak-count">{{ daily_goal_streak|default(0) }}</span><span class="rc-streak-suffix">-day streak</span></span>
     </span>
     {% endif %}
     <a class="mobile-icon-btn dash-greeting-settings" href="/settings" aria-label="Settings">
@@ -207,7 +210,9 @@
           </p>
         </div>
         <p class="dash-load">Keep what you've learned strong.</p>
-        <p class="dash-load">About {{ revision_minutes }} minute{% if revision_minutes != 1 %}s{% endif %} of review.</p>
+        {% if show_revision_minutes|default(true) %}
+        <p class="dash-load" data-revision-minutes>About {{ revision_minutes }} minute{% if revision_minutes != 1 %}s{% endif %} of review.</p>
+        {% endif %}
         {% if revision_chips %}
         <ul class="dash-chips" aria-label="Due articles">
           {% for chip in revision_chips %}
@@ -219,9 +224,11 @@
         </ul>
         {% endif %}
         <div class="actions">
-          {# A POST because it snapshots the due list into a durable queue.
-             Idempotent: a second tap resumes rather than re-snapshotting.
-             A div, not a p: a form is block content and would close a p. #}
+          {# Playground current work opens the path node's href. Constitution
+             revision still snapshots into the durable queue via POST. #}
+          {% if hero_cta_kind|default('constitution_revision') == 'playground_review' %}
+          <a class="btn dash-btn-full" href="{{ hero_cta_href }}" data-today-hero-cta>{{ hero_cta_label }}</a>
+          {% else %}
           <form class="dash-revision-form" method="post" action="/revision/start">
             <button type="submit" class="btn dash-btn-full" data-revision-start>
               {%- if revision_remaining|default(0) > 0 -%}
@@ -231,6 +238,7 @@
               {%- endif -%}
             </button>
           </form>
+          {% endif %}
         </div>
       </div>
     </article>
@@ -323,21 +331,22 @@
     {% endif %}
     {% if today_units|default([]) %}
     {# The design labels the path, the way it labels the starter list. #}
+    <div class="dash-path-card" data-today-path-card>
     <p class="dash-eyebrow rc-path-head">Today’s path</p>
     <ol class="rc-path" data-today-path>
       {% for item in today_units %}
-      <li class="rc-path-node is-{{ item.status }}" data-today-unit="{{ item.unit_id }}" data-today-kind="{{ item.kind }}">
+      <li class="rc-path-node is-{{ item.status }}" data-today-unit="{{ item.unit_id }}" data-today-kind="{{ item.kind }}" data-today-source="{{ item.source|default('constitution') }}">
         <span class="rc-path-mark" aria-hidden="true">{% if item.status == 'done' %}✓{% elif item.status == 'current' %}•{% endif %}</span>
         <span class="rc-path-copy">
           {# The current node leads with where it sits on the ladder; the rows
              below set the same label against their title instead. #}
-          {% if item.status == 'current' and item.day_label %}
-          <span class="rc-path-eyebrow">{{ item.day_label }}</span>
+          {% if item.status == 'current' and (item.eyebrow or item.day_label) %}
+          <span class="rc-path-eyebrow">{{ item.eyebrow or item.day_label }}</span>
           {% endif %}
           <span class="rc-path-line">
             <span class="rc-path-title">{{ item.title }}</span>
-            {% if item.status != 'current' and item.day_label %}
-            <span class="rc-path-meta">{{ item.day_label }}{% if item.status == 'deferred' %} · skipped{% endif %}</span>
+            {% if item.status != 'current' and (item.eyebrow or item.day_label) %}
+            <span class="rc-path-meta">{{ item.eyebrow or item.day_label }}{% if item.status == 'deferred' %} · skipped{% endif %}</span>
             {% elif item.status == 'deferred' %}
             <span class="rc-path-meta">skipped</span>
             {% endif %}
@@ -348,14 +357,13 @@
           {% if item.status == 'current' %}
           {# diff.md item 7 · the node's action names what it will open, rather
              than reading "Start →" beside a title it does not repeat. #}
-          <a class="rc-path-cta" href="{{ item.href }}">
-            {%- if item.kind == 'review' -%}Start revision →{%- else -%}Learn {{ item.title }} →{%- endif -%}
-          </a>
+          <a class="rc-path-cta" href="{{ item.href }}">{{ item.cta_label or ('Start revision →' if item.kind == 'review' else 'Learn ' ~ item.title ~ ' →') }}</a>
           {% endif %}
         </span>
       </li>
       {% endfor %}
     </ol>
+    </div>
     {# The ladder line under Today's path is gone from the design: the path
        already shows what today holds, and the schedule is Recall's business. #}
     {% endif %}
