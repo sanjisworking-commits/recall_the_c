@@ -602,12 +602,20 @@ def test_guest_free_plus_halted_paused_pending_are_not_expired_today(
     halted.app.state.subscriptions.update_subscription_state(
         USER, stored.id, status="halted"
     )
-    halted_html = halted.get("/dashboard").text
+    halted_html = unescape(halted.get("/dashboard").text)
     assert 'data-expired-today="desktop"' not in halted_html
+    assert 'data-plus-today="desktop"' not in halted_html
     assert LIVE_HEADING not in _header(halted_html)
-    assert 'data-today-source="playground"' not in halted_html
     halted_snap = halted.app.state.entitlement_service.resolve(USER)
     assert halted_snap.playground_block_reason != BLOCK_PAID_PERIOD_ENDED
+    assert 'data-today-source="playground"' in halted_html
+    halted_current = _current_node(halted_html)
+    halted_cta = re.search(
+        r'<a class="rc-path-cta" href="([^"]+)">([^<]+)', halted_current
+    )
+    assert halted_cta
+    assert halted_cta.group(2).strip() != LIVE_GATE.cta_label
+    assert "Resume Playground" not in halted_current
 
     paused = TestClient(_mu_app(tmp_path / "paused"))
     _sign_in(paused)
@@ -633,6 +641,7 @@ def test_expired_today_marker_uses_shared_predicate() -> None:
     dash = DASH.read_text(encoding="utf-8")
     assert "expired_today" in dash
     assert 'data-expired-today="desktop"' in dash
+    assert 'data-halted-today="desktop"' in dash
     assert 'data-plus-today="desktop"' in dash
     assert "data-signed-in-today" in dash
     assert 'action="/revision/start"' in dash

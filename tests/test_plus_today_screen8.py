@@ -346,6 +346,18 @@ def test_guest_free_pro_today_are_not_plus_screen_08(tmp_path: Path) -> None:
     assert 'data-plus-today="desktop"' not in pro_html
     assert "RecallC Plus" not in _header(pro_html)
 
+    halted = TestClient(_mu_app(tmp_path / "halted"))
+    _sign_in(halted)
+    _subscribe(halted)
+    stored = halted.app.state.subscriptions.get_current_subscription(USER)
+    assert stored is not None
+    halted.app.state.subscriptions.update_subscription_state(
+        USER, stored.id, status="halted"
+    )
+    halted_html = halted.get("/dashboard").text
+    assert 'data-plus-today="desktop"' not in halted_html
+    assert "RecallC Plus" not in _header(halted_html)
+
 
 def test_plus_today_first_run_loading_error_markup_unchanged() -> None:
     dash = DASH.read_text(encoding="utf-8")

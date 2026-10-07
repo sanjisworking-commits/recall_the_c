@@ -447,18 +447,25 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
         from constitution_memorizer.entitlements.dependencies import (
             request_is_active_plus,
             request_is_expired_subscriber,
+            request_is_halted_subscriber,
         )
 
         plus_today = request_is_active_plus(request)
+        halted_today = request_is_halted_subscriber(request)
         expired_today = request_is_expired_subscriber(request)
+        halted_header_status = ""
         expired_header_status = ""
-        if expired_today:
+        if halted_today or expired_today:
+            from constitution_memorizer.entitlements.models import BLOCK_PAYMENT_HALTED
             from constitution_memorizer.playground.view import gate_view
 
-            snap = get_entitlement_snapshot(request)
-            expired_header_status = gate_view(
-                reason=str(snap.playground_block_reason or "")
-            ).title
+            if halted_today:
+                halted_header_status = gate_view(reason=BLOCK_PAYMENT_HALTED).title
+            if expired_today:
+                snap = get_entitlement_snapshot(request)
+                expired_header_status = gate_view(
+                    reason=str(snap.playground_block_reason or "")
+                ).title
         try:
             from constitution_memorizer.web.dashboard import build_dashboard_context
 
@@ -486,6 +493,7 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
                 playground_today_context,
                 merge_today_path,
                 reconcile_expired_playground_today,
+                reconcile_halted_playground_today,
             )
             from constitution_memorizer.playground.roster.period import playground_today
 
@@ -498,12 +506,16 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
                 playground_dues,
                 playground_new,
             )
+            if halted_today:
+                reconcile_halted_playground_today(ctx, request)
             if expired_today:
                 reconcile_expired_playground_today(ctx, request)
             apply_merged_today_hero(ctx)
-            if expired_today:
+            if halted_today or expired_today:
                 apply_expired_today_hero(ctx)
             ctx["plus_today"] = plus_today
+            ctx["halted_today"] = halted_today
+            ctx["halted_header_status"] = halted_header_status
             ctx["expired_today"] = expired_today
             ctx["expired_header_status"] = expired_header_status
             if ctx["today_units"]:
@@ -567,6 +579,8 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
                     "goal_pct": 0,
                     "daily_goal_streak": 0,
                     "plus_today": plus_today,
+                    "halted_today": halted_today,
+                    "halted_header_status": halted_header_status,
                     "expired_today": expired_today,
                     "expired_header_status": expired_header_status,
                 },

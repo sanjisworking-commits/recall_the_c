@@ -157,13 +157,16 @@ def playground_today_context(request, *, as_of: date | None = None) -> dict[str,
         if access.user_id is None:
             return _empty_today_context()
         expired = False
+        halted = False
         if not access.can_open:
             from constitution_memorizer.entitlements.dependencies import (
                 request_is_expired_subscriber,
+                request_is_halted_subscriber,
             )
 
             expired = request_is_expired_subscriber(request)
-            if not expired:
+            halted = request_is_halted_subscriber(request)
+            if not expired and not halted:
                 return _empty_today_context()
         user_id = access.user_id
         items = law_revision_today_items(overlay, roster, user_id, as_of=as_of)
@@ -173,6 +176,10 @@ def playground_today_context(request, *, as_of: date | None = None) -> dict[str,
         )
         if expired:
             due_units, new_unit = _bind_expired_playground_units(
+                request, due_units, new_unit
+            )
+        elif halted:
+            due_units, new_unit = _bind_halted_playground_units(
                 request, due_units, new_unit
             )
         return {
@@ -525,12 +532,23 @@ def expired_playground_today_action(request) -> tuple[str, str]:
     return label, href
 
 
-def _bind_expired_playground_units(
-    request,
+def halted_playground_today_action(request) -> tuple[str, str]:
+    """Halted recovery CTA. Always BLOCK_PAYMENT_HALTED, even if elapsed."""
+
+    from constitution_memorizer.entitlements.models import BLOCK_PAYMENT_HALTED
+    from constitution_memorizer.playground.view import gate_view
+
+    del request
+    gate = gate_view(reason=BLOCK_PAYMENT_HALTED)
+    return gate.cta_label, gate.cta_href
+
+
+def _stamp_playground_today_action(
     due_units: Sequence[TodayUnit],
     new_unit: TodayUnit | None,
+    label: str,
+    href: str,
 ) -> tuple[tuple[TodayUnit, ...], TodayUnit | None]:
-    label, href = expired_playground_today_action(request)
     dues = tuple(
         replace(unit, href=href, cta_label=label) if unit.source == "playground" else unit
         for unit in due_units
@@ -538,6 +556,24 @@ def _bind_expired_playground_units(
     if new_unit is not None and new_unit.source == "playground":
         new_unit = replace(new_unit, href=href, cta_label=label)
     return dues, new_unit
+
+
+def _bind_expired_playground_units(
+    request,
+    due_units: Sequence[TodayUnit],
+    new_unit: TodayUnit | None,
+) -> tuple[tuple[TodayUnit, ...], TodayUnit | None]:
+    label, href = expired_playground_today_action(request)
+    return _stamp_playground_today_action(due_units, new_unit, label, href)
+
+
+def _bind_halted_playground_units(
+    request,
+    due_units: Sequence[TodayUnit],
+    new_unit: TodayUnit | None,
+) -> tuple[tuple[TodayUnit, ...], TodayUnit | None]:
+    label, href = halted_playground_today_action(request)
+    return _stamp_playground_today_action(due_units, new_unit, label, href)
 
 
 def reconcile_expired_playground_today(ctx: dict[str, Any], request) -> dict[str, Any]:
@@ -558,6 +594,30 @@ def reconcile_expired_playground_today(ctx: dict[str, Any], request) -> dict[str
     dues = tuple(ctx.get("playground_due_units") or ())
     new_unit = ctx.get("playground_new_unit")
     ctx["playground_due_units"], ctx["playground_new_unit"] = _bind_expired_playground_units(
+        request, dues, new_unit
+    )
+    return ctx
+
+
+def reconcile_halted_playground_today(ctx: dict[str, Any], request) -> dict[str, Any]:
+    """Rewrite Playground Today hrefs from Halted recovery. Mutates ``ctx``.
+
+    Constitution units keep their live href and CTA. Callers must only invoke
+    this for ``request_is_halted_subscriber``. Always
+    ``gate_view(BLOCK_PAYMENT_HALTED)``, including elapsed Halted.
+    """
+
+    label, href = halted_playground_today_action(request)
+    units: list[TodayUnit] = []
+    for unit in ctx.get("today_units") or []:
+        if getattr(unit, "source", "") == "playground":
+            units.append(replace(unit, href=href, cta_label=label))
+        else:
+            units.append(unit)
+    ctx["today_units"] = units
+    dues = tuple(ctx.get("playground_due_units") or ())
+    new_unit = ctx.get("playground_new_unit")
+    ctx["playground_due_units"], ctx["playground_new_unit"] = _bind_halted_playground_units(
         request, dues, new_unit
     )
     return ctx

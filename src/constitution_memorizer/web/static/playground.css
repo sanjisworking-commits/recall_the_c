@@ -4345,22 +4345,27 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   }
 }
 
-/* Expired desktop /dashboard Today (CTA map expired/08-screen). Phone Today,
-   guest/Free/Plus/halted Today keep the existing dashboard panel. */
+/* Expired and Halted desktop /dashboard Today (CTA maps expired/08-screen
+   and halted/08-screen). Phone Today, guest/Free/Plus keep the existing
+   dashboard panel. */
 @media (min-width: 561px) {
-  body.is-authed[data-mscreen="today"]:has([data-expired-today="desktop"]) .account-menu-btn-status {
+  body.is-authed[data-mscreen="today"]:has([data-expired-today="desktop"]) .account-menu-btn-status,
+  body.is-authed[data-mscreen="today"]:has([data-halted-today="desktop"]) .account-menu-btn-status {
     display: block;
   }
 
-  [data-expired-today="desktop"] .dash-access-chip {
+  [data-expired-today="desktop"] .dash-access-chip,
+  [data-halted-today="desktop"] .dash-access-chip {
     display: none;
   }
 
-  [data-expired-today="desktop"] .rc-path-node[data-today-source="playground"].is-current .rc-path-eyebrow {
+  [data-expired-today="desktop"] .rc-path-node[data-today-source="playground"].is-current .rc-path-eyebrow,
+  [data-halted-today="desktop"] .rc-path-node[data-today-source="playground"].is-current .rc-path-eyebrow {
     color: var(--pg-teal);
   }
 
-  [data-expired-today="desktop"] .rc-path-node[data-today-source="playground"].is-current .rc-path-copy {
+  [data-expired-today="desktop"] .rc-path-node[data-today-source="playground"].is-current .rc-path-copy,
+  [data-halted-today="desktop"] .rc-path-node[data-today-source="playground"].is-current .rc-path-copy {
     background: var(--pg-teal-tint);
     border-color: var(--pg-teal-border);
   }
