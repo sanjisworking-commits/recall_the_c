@@ -99,6 +99,33 @@ def request_is_expired_subscriber(request: object, *, now: datetime | None = Non
     return snapshot_is_expired_subscriber(get_entitlement_snapshot(request, now=now))
 
 
+def snapshot_is_halted_subscriber(snapshot: EntitlementSnapshot) -> bool:
+    """Halted subscriber. Status-based, not block-reason-based.
+
+    Open-period Halted still cannot open Playground. An elapsed paid period
+    yields ``paid_period_ended`` as the block reason, but ``subscription_status``
+    remains ``halted``, so this stays the Halted cohort. Expired keeps excluding
+    ``halted``. Not guest, Free, active Plus, pending, or paused.
+    """
+
+    return bool(
+        snapshot.is_authenticated
+        and snapshot.subscription_status == "halted"
+        and snapshot.tier is not None
+        and not snapshot.is_subscribed
+        and not snapshot.can_open_playground
+        and not snapshot.can_consume_new_playground_law
+    )
+
+
+def request_is_halted_subscriber(request: object, *, now: datetime | None = None) -> bool:
+    """Resolve once via ``get_entitlement_snapshot``. Guests are never Halted."""
+
+    if getattr(getattr(request, "state", None), "current_user", None) is None:
+        return False
+    return snapshot_is_halted_subscriber(get_entitlement_snapshot(request, now=now))
+
+
 def invalidate_entitlement_snapshot(request: object) -> None:
     state = getattr(request, "state", None)
     if state is not None and hasattr(state, "entitlement_snapshot"):

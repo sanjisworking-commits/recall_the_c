@@ -82,7 +82,7 @@
 </style>
 </head>
 <body>
-<section class="rc-desk" data-guest-landing="desktop"{% if plus_landing|default(false) %} data-plus-landing="desktop"{% endif %}{% if expired_landing|default(false) %} data-expired-landing="desktop"{% endif %}>
+<section class="rc-desk" data-guest-landing="desktop"{% if plus_landing|default(false) %} data-plus-landing="desktop"{% endif %}{% if expired_landing|default(false) %} data-expired-landing="desktop"{% endif %}{% if halted_landing|default(false) %} data-halted-landing="desktop"{% endif %}>
   <div class="rc-desk-stack">
     <span class="rc-desk-mark" aria-hidden="true">C</span>
     <h1 class="rc-desk-name">Recall the C</h1>
