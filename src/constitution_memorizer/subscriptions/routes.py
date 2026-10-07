@@ -9,8 +9,12 @@ from fastapi.templating import Jinja2Templates
 from constitution_memorizer.entitlements.dependencies import (
     request_is_active_plus,
     request_is_expired_subscriber,
+    request_is_halted_subscriber,
 )
-from constitution_memorizer.entitlements.models import BLOCK_PAID_PERIOD_ENDED
+from constitution_memorizer.entitlements.models import (
+    BLOCK_PAID_PERIOD_ENDED,
+    BLOCK_PAYMENT_HALTED,
+)
 from constitution_memorizer.playground.view import gate_view
 from constitution_memorizer.subscriptions.catalog import (
     UnknownSubscriptionTier,
@@ -91,6 +95,10 @@ def create_subscription_router(templates: Jinja2Templates) -> APIRouter:
         # Shared paid_period_ended predicate, but only when the current row is
         # already terminal/historical. Live current rows (active, including
         # cancel-at-period-end) keep the existing current-plan surface.
+        halted_subscription = request_is_halted_subscriber(request)
+        halted_header_status = ""
+        if halted_subscription:
+            halted_header_status = gate_view(reason=BLOCK_PAYMENT_HALTED).title
         expired_subscription = bool(
             request_is_expired_subscriber(request)
             and (current is None or current.status in TERMINAL_STATUSES)
@@ -147,6 +155,8 @@ def create_subscription_router(templates: Jinja2Templates) -> APIRouter:
                 "signed_in": uid is not None,
                 "error_message": ERROR_MESSAGES.get(error or "", ""),
                 "plus_subscription": request_is_active_plus(request),
+                "halted_subscription": halted_subscription,
+                "halted_header_status": halted_header_status,
                 "expired_subscription": expired_subscription,
                 "expired_header_status": expired_header_status,
                 "plus_plan_lede": PLUS_DESK_LEDE,

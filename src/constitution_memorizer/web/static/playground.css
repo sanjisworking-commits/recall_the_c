@@ -3992,39 +3992,58 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   }
 }
 
-/* Plus desktop /billing/subscriptions (CTA map plus/07-screen). Phone Plus
-   keeps the production purchase panel. Guest, Free, Pro, Max, and
-   pending/expired/halted manage stay on that panel. */
-[data-plus-subscription="desktop"] {
+/* Plus and Halted desktop /billing/subscriptions (CTA maps plus/07-screen
+   and halted/07-screen). Shared plus-sub-* selectors. Phone keeps the
+   production purchase panel. Guest, Free, Pro, Max, pending, expired,
+   and paused manage stay on that panel. */
+[data-plus-subscription="desktop"],
+[data-halted-subscription="desktop"] {
   display: none;
 }
 
 @media (min-width: 561px) {
   body.is-authed[data-mscreen="purchase"]:has([data-plus-subscription="desktop"]) .page-wrap,
   body.is-authed[data-mscreen="purchase"]:has([data-plus-subscription="desktop"]) .sheet,
-  body.is-authed[data-mscreen="purchase"]:has([data-plus-subscription="desktop"]) .main {
+  body.is-authed[data-mscreen="purchase"]:has([data-plus-subscription="desktop"]) .main,
+  body.is-authed[data-mscreen="purchase"]:has([data-halted-subscription="desktop"]) .page-wrap,
+  body.is-authed[data-mscreen="purchase"]:has([data-halted-subscription="desktop"]) .sheet,
+  body.is-authed[data-mscreen="purchase"]:has([data-halted-subscription="desktop"]) .main {
     background: var(--page, var(--pg-page));
   }
 
-  body.is-authed[data-mscreen="purchase"]:has([data-plus-subscription="desktop"]) .site-header {
+  body.is-authed[data-mscreen="purchase"]:has([data-plus-subscription="desktop"]) .site-header,
+  body.is-authed[data-mscreen="purchase"]:has([data-halted-subscription="desktop"]) .site-header {
     background: var(--paper, var(--pg-paper));
   }
 
   body.is-authed[data-mscreen="purchase"]:has([data-plus-subscription="desktop"]) .site-footer,
-  body.is-authed[data-mscreen="purchase"]:has([data-plus-subscription="desktop"]) .sheet-footnote {
+  body.is-authed[data-mscreen="purchase"]:has([data-plus-subscription="desktop"]) .sheet-footnote,
+  body.is-authed[data-mscreen="purchase"]:has([data-halted-subscription="desktop"]) .site-footer,
+  body.is-authed[data-mscreen="purchase"]:has([data-halted-subscription="desktop"]) .sheet-footnote {
     display: none !important;
   }
 
-  body.is-authed[data-mscreen="purchase"]:has([data-plus-subscription="desktop"]) .panel.purchase {
+  body.is-authed[data-mscreen="purchase"]:has([data-plus-subscription="desktop"]) .panel.purchase,
+  body.is-authed[data-mscreen="purchase"]:has([data-halted-subscription="desktop"]) .panel.purchase {
     display: none;
   }
 
-  [data-plus-subscription="desktop"] {
+  [data-plus-subscription="desktop"],
+  [data-halted-subscription="desktop"] {
     display: block;
     box-sizing: border-box;
     max-width: 1000px;
     margin: 0 auto;
     padding: 26px 40px 60px;
+  }
+
+  [data-halted-subscription="desktop"] .plus-sub-cards {
+    grid-template-columns: minmax(280px, 360px);
+  }
+
+  [data-halted-subscription="desktop"] .plus-sub-life {
+    margin-top: 28px;
+    max-width: 36em;
   }
 
   .plus-sub-eyebrow {
@@ -4257,8 +4276,9 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
 
 /* Expired desktop /billing/subscriptions (Screen 07). Phone expired keeps
    the production purchase panel. Plus Screen 07 stays on
-   data-plus-subscription="desktop". Guest, Free, halted, pending, and
-   paused stay on that panel. */
+   data-plus-subscription="desktop". Halted Screen 07 stays on
+   data-halted-subscription="desktop". Guest, Free, pending, and paused
+   stay on that panel. */
 [data-expired-subscription="desktop"] {
   display: none;
 }

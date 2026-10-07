@@ -79,6 +79,49 @@
   </div>
 </section>
 {% endif %}
+{% set halted_sub = halted_subscription|default(false) %}
+{% if halted_sub %}
+<section class="plus-sub-desk" data-halted-subscription="desktop">
+  <p class="pg-eyebrow plus-sub-eyebrow">Playground · Your plan</p>
+  <h1 class="plus-sub-title">Playground plans</h1>
+  {% if error_message %}
+  <p class="plus-sub-error" role="alert">{{ error_message }}</p>
+  {% endif %}
+  <div class="plus-sub-cards" role="list">
+    {% for product in products %}
+    {% if current and product.tier == current.tier %}
+    <article
+      class="plus-sub-card is-current"
+      data-tier="{{ product.tier }}"
+      data-halted-sub-current
+      role="listitem"
+    >
+      <p class="plus-sub-name">RecallC {{ product.display_name }}</p>
+      <p class="plus-sub-price">{{ product.price_display }}<span> / month</span></p>
+      <p class="plus-sub-limit">{{ product.card_limit_label }}</p>
+      {% if product.description %}
+      <p class="plus-sub-tag">{{ product.description }}</p>
+      {% endif %}
+      <button type="button" class="plus-sub-cta is-current" disabled>Current plan</button>
+    </article>
+    {% endif %}
+    {% endfor %}
+  </div>
+  {% if current %}
+  <div class="plus-sub-life">
+    {% if current.lifecycle_message %}
+    <p class="plus-sub-note">{{ current.lifecycle_message }}</p>
+    {% endif %}
+    {% if current.billing_period_end %}
+    <div class="plus-sub-life-row">
+      <span>Current paid period ends</span>
+      <span>{{ current.billing_period_end }}</span>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+</section>
+{% endif %}
 {% set expired_sub = expired_subscription|default(false) %}
 {% if expired_sub %}
 <section class="expired-sub-desk" data-expired-subscription="desktop">

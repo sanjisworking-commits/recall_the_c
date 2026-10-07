@@ -1,12 +1,14 @@
-"""Expired cohort desktop /billing/subscriptions Screen 07.
+"""Halted cohort desktop /billing/subscriptions Screen 07.
 
 Authorized: ChatGPT. Authenticated multiuser GET /billing/subscriptions after
-a real Plus period ends. This is the plan/resubscribe page reached from
-Expired Screen 06 "View Playground plans", not a second paused-home screen.
-Hero copy stays established Playground plans + ended_message. Catalogue and
-Subscribe to Plus/Pro/Max POST /billing/subscriptions/create are live.
-Guest, Free, Plus Screen 07, halted, pending, paused, phone, Plus 01–11,
-and Expired 01–06 stay unchanged. No new route.
+a real Plus subscription is halted. This is the management page reached from
+Halted Screen 06 "Manage subscription", not a second paused-home screen.
+Current-plan card is live catalog data. Lifecycle copy is
+LIFECYCLE_MESSAGES["halted"]. Header from gate_view(BLOCK_PAYMENT_HALTED).
+No upgrade/downgrade/cancel/checkout/Subscribe chooser. Guest, Free, Plus,
+Expired, paused, pending, created/authenticated, terminal, phone, Plus 01–11,
+Expired 01–11, and Halted 01–06 stay unchanged. No new route. No /resume.
+No Halted 08.
 """
 
 from __future__ import annotations
@@ -24,23 +26,20 @@ from fastapi.testclient import TestClient
 
 from constitution_memorizer.auth.fake_provider import FakeAuthProvider
 from constitution_memorizer.auth.sessions import CSRF_COOKIE_NAME, SESSION_COOKIE_NAME, InMemorySessionStore
-from constitution_memorizer.entitlements.models import BLOCK_PAID_PERIOD_ENDED
+from constitution_memorizer.entitlements.models import (
+    BLOCK_PAID_PERIOD_ENDED,
+    BLOCK_PAYMENT_HALTED,
+)
 from constitution_memorizer.multiuser.settings import (
     MultiUserSettings,
     clear_settings_cache,
 )
-from constitution_memorizer.playground.urls import add_path
-from constitution_memorizer.playground.view import (
-    CONSTITUTION_HOME_PATH,
-    PLAYGROUND_BILLING_PATH,
-    gate_view,
-)
+from constitution_memorizer.playground.urls import add_path, home_path
+from constitution_memorizer.playground.view import PLAYGROUND_BILLING_PATH, gate_view
 from constitution_memorizer.subscriptions.catalog import list_subscription_products
-from constitution_memorizer.subscriptions.config import SubscriptionPlanIds
-from constitution_memorizer.subscriptions.routes import ENDED_MESSAGE
+from constitution_memorizer.subscriptions.routes import LIFECYCLE_MESSAGES
 from constitution_memorizer.subscriptions.service import SubscriptionService
 from constitution_memorizer.web.app import create_app
-from tests.conftest import PLAYGROUND_TEST_NOW
 from tests.test_subscription_lifecycle import FakeProvider, KEY_ID, PLAN_IDS
 
 MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
@@ -61,8 +60,6 @@ SETTINGS = ROOT / "src/constitution_memorizer/web/templates/settings.html"
 BASE = ROOT / "src/constitution_memorizer/web/templates/base.html"
 DEPS = ROOT / "src/constitution_memorizer/entitlements/dependencies.py"
 ROUTES = ROOT / "src/constitution_memorizer/subscriptions/routes.py"
-PG_ROUTES = ROOT / "src/constitution_memorizer/playground/routes.py"
-VIEW = ROOT / "src/constitution_memorizer/playground/view.py"
 PG_CSS = ROOT / "src/constitution_memorizer/web/static/playground.css"
 MOBILE = ROOT / "src/constitution_memorizer/web/static/mobile.css"
 USER = UUID("11111111-1111-4111-8111-111111111111")
@@ -70,19 +67,32 @@ EXPIRED_START = datetime(2026, 8, 16, tzinfo=timezone.utc)
 EXPIRED_END = datetime(2026, 9, 15, tzinfo=timezone.utc)
 ACTIVE_START = datetime(2026, 9, 15, tzinfo=timezone.utc)
 ACTIVE_END = datetime(2026, 10, 15, tzinfo=timezone.utc)
-LIVE_GATE = gate_view(reason=BLOCK_PAID_PERIOD_ENDED)
+LIVE_GATE = gate_view(reason=BLOCK_PAYMENT_HALTED)
 LIVE_HEADING = LIVE_GATE.title
+LIVE_CTA = LIVE_GATE.cta_label
+LIVE_EXPIRED = gate_view(reason=BLOCK_PAID_PERIOD_ENDED).title
 CATALOG = {row.tier: row for row in list_subscription_products()}
+PLUS_TAG = "A steady pace — enough for one exam’s syllabus of Acts."
+HALTED_LIFE = LIFECYCLE_MESSAGES["halted"]
 CREATE_PATH = "/billing/subscriptions/create"
+CHANGE_PATH = "/billing/subscriptions/change"
+CANCEL_PATH = "/billing/subscriptions/cancel"
 INVENTED = (
-    "Your plan expired",
+    "Your subscription expired",
     "Resume subscription",
-    "Renew Plus",
-    "Your Plus expired",
-    "Premium",
-    "Unlock all",
-    "Free plan",
     "Change your plan",
+    "Subscribe to Plus",
+    "Subscribe to Pro",
+    "Subscribe to Max",
+    "Switch to Pro",
+    "Switch to Max",
+    "Cancel at cycle end",
+    "Continue checkout",
+    "Your payment failed",
+    "Fix your payment",
+    "Subscription halted",
+    "Free plan",
+    "Unlock all",
 )
 
 
@@ -165,7 +175,6 @@ def _subscribe(
     status: str = "active",
     period_start: datetime = ACTIVE_START,
     period_end: datetime = ACTIVE_END,
-    cancel_at_period_end: bool = False,
 ):
     return client.app.state.subscriptions.create_subscription_record(
         USER,
@@ -174,7 +183,6 @@ def _subscribe(
         billing_period_start=period_start,
         billing_period_end=period_end,
         is_current=True,
-        cancel_at_period_end=cancel_at_period_end,
     )
 
 
@@ -192,23 +200,19 @@ def _confirm_add(client: TestClient, law_id: str):
     return preview
 
 
-def _expire(client: TestClient) -> None:
+def _halt(client: TestClient) -> None:
     stored = client.app.state.subscriptions.get_current_subscription(USER)
     assert stored is not None
     client.app.state.subscriptions.update_subscription_state(
-        USER,
-        stored.id,
-        status="expired",
-        billing_period_start=EXPIRED_START,
-        billing_period_end=EXPIRED_END,
+        USER, stored.id, status="halted"
     )
 
 
-def _seed_plus_then_expire(client: TestClient) -> None:
+def _seed_plus_then_halt(client: TestClient) -> None:
     _subscribe(client)
     added = _confirm_add(client, "ndps")
     assert added.status_code in {200, 303}
-    _expire(client)
+    _halt(client)
 
 
 def _facts(client: TestClient, fake: FakeProvider | None = None) -> dict:
@@ -221,22 +225,25 @@ def _facts(client: TestClient, fake: FakeProvider | None = None) -> dict:
         "current": (
             None
             if current is None
-            else (current.id, current.status, current.is_current, current.tier)
+            else (
+                current.id,
+                current.status,
+                current.is_current,
+                current.tier,
+                current.billing_period_start,
+                current.billing_period_end,
+            )
         ),
         "history": tuple(
             sorted((row.id, row.status, row.is_current, row.tier) for row in history)
         ),
         "creates": tuple(req.plan_id for req in (fake.creates if fake else [])),
         "fetches": tuple(fake.fetches if fake else ()),
+        "cancels": tuple(fake.cancels if fake else ()),
+        "updates": tuple(fake.updates if fake else ()),
         "active": tuple(sorted(i.law_id for i in roster.active_roster_items(USER))),
         "overlay": tuple(
             sorted((item.law_id, item.status) for item in overlay.list_items(USER))
-        ),
-        "progress": tuple(
-            sorted(
-                (p.source_locator, p.status)
-                for p in overlay.list_progress(USER, "ndps")
-            )
         ),
     }
 
@@ -246,74 +253,104 @@ def _header(html: str) -> str:
 
 
 def _desk(html: str) -> str:
-    marker = 'data-expired-subscription="desktop"'
+    marker = 'data-halted-subscription="desktop"'
     assert marker in html
     return unescape(html.split(marker, 1)[1].split('class="panel purchase"', 1)[0])
 
 
-def _expired_client(tmp_path: Path) -> tuple[TestClient, FakeProvider]:
+def _halted_client(tmp_path: Path) -> tuple[TestClient, FakeProvider]:
     app = _mu_app(tmp_path)
     fake = _attach_fake(app)
     client = TestClient(app)
     _sign_in(client)
-    _seed_plus_then_expire(client)
+    _seed_plus_then_halt(client)
     return client, fake
 
 
-def test_expired_billing_is_plan_chooser_not_paused_home(tmp_path: Path) -> None:
-    client, fake = _expired_client(tmp_path)
+def test_halted_billing_is_current_plan_not_paused_home(tmp_path: Path) -> None:
+    client, fake = _halted_client(tmp_path)
     snap = client.app.state.entitlement_service.resolve(USER)
-    assert snap.playground_block_reason == BLOCK_PAID_PERIOD_ENDED
+    assert snap.subscription_status == "halted"
+    assert snap.playground_block_reason == BLOCK_PAYMENT_HALTED
     page = client.get("/billing/subscriptions")
     assert page.status_code == 200
     html = unescape(page.text)
     desk = _desk(html)
     header = _header(html)
-    assert 'data-expired-subscription="desktop"' in html
+    assert 'data-halted-subscription="desktop"' in html
     assert 'data-plus-subscription="desktop"' not in html
-    assert "Change your plan" not in html
-    assert "Current plan" not in html
-    assert "data-plus-sub-current" not in html
-    assert ">Playground plans<" in desk
-    assert ENDED_MESSAGE in desk
+    assert 'data-expired-subscription="desktop"' not in html
+    assert PLAYGROUND_BILLING_PATH == "/billing/subscriptions"
+    assert LIVE_CTA == "Manage subscription"
+    assert LIVE_GATE.cta_href == PLAYGROUND_BILLING_PATH
     assert LIVE_HEADING in header
     assert "RecallC Plus" not in header
     assert "Free account" not in header
     assert 'href="/playground"' in header
     assert "is-active" in header.split('href="/playground"', 1)[1].split("</a>", 1)[0]
-    assert PLAYGROUND_BILLING_PATH == "/billing/subscriptions"
-    assert LIVE_GATE.cta_href == PLAYGROUND_BILLING_PATH
-    assert f"₹{CATALOG['plus'].price_inr:,}" in desk or f"₹{CATALOG['plus'].price_inr}" in desk
-    assert f"₹{CATALOG['pro'].price_inr:,}" in desk or f"₹{CATALOG['pro'].price_inr}" in desk
-    assert f"₹{CATALOG['max'].price_inr:,}" in desk
+    assert "Playground · Your plan" in desk
+    assert ">Playground plans<" in desk
+    assert "Change your plan" not in html
+    assert "RecallC Plus" in desk
+    assert f"₹{CATALOG['plus'].price_inr}" in desk
     assert f"{CATALOG['plus'].playground_law_limit} laws active per month" in desk
-    assert f"{CATALOG['pro'].playground_law_limit} laws active per month" in desk
-    assert "Unlimited Playground" in desk
-    assert "Subscribe to Plus" in desk
-    assert "Subscribe to Pro" in desk
-    assert "Subscribe to Max" in desk
-    assert f'action="{CREATE_PATH}"' in desk
-    assert 'name="csrf_token"' in desk
-    assert 'name="tier" value="plus"' in desk
-    assert 'name="tier" value="pro"' in desk
-    assert 'name="tier" value="max"' in desk
-    assert "/billing/subscriptions/change" not in desk
-    assert "/resume" not in desk
+    assert PLUS_TAG in desk
+    assert ">Current plan<" in desk
+    assert HALTED_LIFE in desk
+    assert HALTED_LIFE == "Automatic retries have stopped"
+    assert "Current paid period ends" in desk
+    assert str(ACTIVE_END.date()) in desk or "2026-10-15" in desk
+    assert 'data-halted-sub-current' in desk
+    assert 'action="/billing/subscriptions/create"' not in desk
+    assert 'action="/billing/subscriptions/change"' not in desk
+    assert 'action="/billing/subscriptions/cancel"' not in desk
+    assert "Subscribe to Plus" not in desk
+    assert "Subscribe to Pro" not in desk
+    assert "Subscribe to Max" not in desk
+    assert "Switch to" not in desk
     assert "Your Playground is paused" not in desk
-    assert "View Playground plans" not in desk
+    assert LIVE_EXPIRED not in desk
     assert "Back to Constitution" not in desk
-    assert CONSTITUTION_HOME_PATH not in desk
+    assert "Due today" not in desk
+    assert "Sections learned" not in desk
     assert fake.creates == []
     assert fake.fetches == []
+    home = client.get(home_path())
+    assert home.status_code == 200
+    assert 'data-halted-playground="desktop"' in home.text
     for phrase in INVENTED:
         assert phrase not in desk, phrase
 
 
-def test_expired_billing_get_is_read_only(tmp_path: Path) -> None:
-    client, fake = _expired_client(tmp_path)
+def test_halted_elapsed_period_stays_halted_on_billing(tmp_path: Path) -> None:
+    client, _fake = _halted_client(tmp_path)
+    stored = client.app.state.subscriptions.get_current_subscription(USER)
+    assert stored is not None
+    client.app.state.subscriptions.update_subscription_state(
+        USER,
+        stored.id,
+        billing_period_start=EXPIRED_START,
+        billing_period_end=EXPIRED_END,
+    )
+    snap = client.app.state.entitlement_service.resolve(USER)
+    assert snap.subscription_status == "halted"
+    assert snap.playground_block_reason == BLOCK_PAID_PERIOD_ENDED
+    html = unescape(client.get("/billing/subscriptions").text)
+    assert 'data-halted-subscription="desktop"' in html
+    assert 'data-expired-subscription="desktop"' not in html
+    desk = _desk(html)
+    assert HALTED_LIFE in desk
+    assert ">Current plan<" in desk
+    assert "Subscribe to Plus" not in desk
+    assert LIVE_EXPIRED not in desk
+    assert LIVE_HEADING in _header(html)
+
+
+def test_halted_billing_get_is_read_only(tmp_path: Path) -> None:
+    client, fake = _halted_client(tmp_path)
     before = _facts(client, fake)
     assert before["current"] is not None
-    assert before["current"][1] == "expired"
+    assert before["current"][1] == "halted"
     assert "ndps" in before["active"]
     page = client.get("/billing/subscriptions")
     assert page.status_code == 200
@@ -324,59 +361,57 @@ def test_expired_billing_get_is_read_only(tmp_path: Path) -> None:
     assert _facts(client, fake) == before
     assert fake.creates == []
     assert fake.fetches == []
+    assert fake.cancels == []
+    assert fake.updates == []
 
 
-def test_expired_resubscribe_posts_create_and_archives_old_row(tmp_path: Path) -> None:
-    client, fake = _expired_client(tmp_path)
+def test_halted_posts_do_not_mutate(tmp_path: Path) -> None:
+    client, fake = _halted_client(tmp_path)
     before = _facts(client, fake)
-    old_id = before["current"][0]
     client.get("/billing/subscriptions")
     csrf = client.cookies.get(CSRF_COOKIE_NAME)
     assert csrf
-    denied = client.post(
-        CREATE_PATH,
-        data={"csrf_token": "nope", "tier": "plus"},
-        follow_redirects=False,
-    )
-    assert denied.status_code == 403
-    assert fake.creates == []
-    posted = client.post(
+    created = client.post(
         CREATE_PATH,
         data={"csrf_token": csrf, "tier": "plus"},
         follow_redirects=False,
     )
-    assert posted.status_code == 303
-    assert posted.headers.get("location") == "/billing/subscriptions/checkout"
-    assert len(fake.creates) == 1
-    assert fake.creates[0].plan_id == "plan_plus"
-    current = client.app.state.subscriptions.get_current_subscription(USER)
-    assert current is not None
-    assert current.id != old_id
-    assert current.status == "created"
-    assert current.is_current is True
-    old = client.app.state.subscriptions.get_subscription(USER, old_id)
-    assert old is not None
-    assert old.is_current is False
-    assert old.status == "expired"
-    history = client.app.state.subscriptions.list_subscription_history(USER)
-    assert {row.id for row in history} == {old_id, current.id}
-    roster_ids = {i.law_id for i in client.app.state.roster.active_roster_items(USER)}
-    assert "ndps" in roster_ids
+    assert created.status_code == 303
+    assert created.headers.get("location") == "/billing/subscriptions?error=change_required"
+    changed = client.post(
+        CHANGE_PATH,
+        data={"csrf_token": csrf, "tier": "pro"},
+        follow_redirects=False,
+    )
+    assert changed.status_code == 303
+    assert "/billing/subscriptions?error=" in (changed.headers.get("location") or "")
+    cancelled = client.post(
+        CANCEL_PATH,
+        data={"csrf_token": csrf},
+        follow_redirects=False,
+    )
+    assert cancelled.status_code == 303
+    assert cancelled.headers.get("location") == "/billing/subscriptions?error=unpaid_cancel"
+    assert _facts(client, fake) == before
+    assert fake.creates == []
+    assert fake.fetches == []
+    assert fake.cancels == []
+    assert fake.updates == []
 
 
-def test_guest_free_plus_halted_paused_stay_separate(tmp_path: Path) -> None:
+def test_guest_free_plus_expired_paused_pending_are_not_halted_billing(
+    tmp_path: Path,
+) -> None:
     guest_html = TestClient(_mu_app(tmp_path / "guest")).get("/billing/subscriptions").text
-    assert 'data-expired-subscription="desktop"' not in guest_html
+    assert 'data-halted-subscription="desktop"' not in guest_html
     assert "Sign in to subscribe" in guest_html
-    assert ENDED_MESSAGE not in guest_html
     assert LIVE_HEADING not in _header(guest_html)
 
     free = TestClient(_mu_app(tmp_path / "free"))
     _sign_in(free)
     free_html = free.get("/billing/subscriptions").text
-    assert 'data-expired-subscription="desktop"' not in free_html
+    assert 'data-halted-subscription="desktop"' not in free_html
     assert "Subscribe to Plus" in free_html
-    assert ENDED_MESSAGE not in free_html
     assert LIVE_HEADING not in _header(free_html)
 
     plus = TestClient(_mu_app(tmp_path / "plus"))
@@ -384,27 +419,33 @@ def test_guest_free_plus_halted_paused_stay_separate(tmp_path: Path) -> None:
     _subscribe(plus)
     plus_html = unescape(plus.get("/billing/subscriptions").text)
     assert 'data-plus-subscription="desktop"' in plus_html
-    assert 'data-expired-subscription="desktop"' not in plus_html
+    assert 'data-halted-subscription="desktop"' not in plus_html
     assert "Change your plan" in plus_html
     assert "RecallC Plus" in _header(plus_html)
-    assert "Current plan" in plus_html
+    assert "Switch to Pro" in plus_html
 
-    halted = TestClient(_mu_app(tmp_path / "halted"))
-    _sign_in(halted)
-    _subscribe(halted, status="halted")
-    halted_html = halted.get("/billing/subscriptions").text
-    assert 'data-halted-subscription="desktop"' in halted_html
-    assert 'data-expired-subscription="desktop"' not in halted_html
-    assert "Automatic retries have stopped" in halted_html
-    assert "Current plan" in halted_html
-    assert "Payment retries have stopped" in halted_html
-    assert LIVE_HEADING not in halted_html
+    expired = TestClient(_mu_app(tmp_path / "expired"))
+    _sign_in(expired)
+    _subscribe(expired)
+    stored = expired.app.state.subscriptions.get_current_subscription(USER)
+    expired.app.state.subscriptions.update_subscription_state(
+        USER,
+        stored.id,
+        status="expired",
+        billing_period_start=EXPIRED_START,
+        billing_period_end=EXPIRED_END,
+    )
+    expired_html = unescape(expired.get("/billing/subscriptions").text)
+    assert 'data-expired-subscription="desktop"' in expired_html
+    assert 'data-halted-subscription="desktop"' not in expired_html
+    assert "Subscribe to Plus" in expired_html
+    assert LIVE_HEADING not in expired_html
 
     paused = TestClient(_mu_app(tmp_path / "paused"))
     _sign_in(paused)
     _subscribe(paused, status="paused")
     paused_html = paused.get("/billing/subscriptions").text
-    assert 'data-expired-subscription="desktop"' not in paused_html
+    assert 'data-halted-subscription="desktop"' not in paused_html
     assert "Subscription paused" in paused_html
     assert LIVE_HEADING not in paused_html
 
@@ -412,7 +453,7 @@ def test_guest_free_plus_halted_paused_stay_separate(tmp_path: Path) -> None:
     _sign_in(pending)
     _subscribe(pending, status="pending")
     pending_html = pending.get("/billing/subscriptions").text
-    assert 'data-expired-subscription="desktop"' not in pending_html
+    assert 'data-halted-subscription="desktop"' not in pending_html
     assert "Payment retry in progress" in pending_html
 
     for status in ("created", "authenticated", "cancelled", "completed"):
@@ -420,118 +461,85 @@ def test_guest_free_plus_halted_paused_stay_separate(tmp_path: Path) -> None:
         _sign_in(client)
         _subscribe(client, status=status)
         html = client.get("/billing/subscriptions").text
-        assert 'data-expired-subscription="desktop"' not in html
-        assert "Change your plan" not in html
+        assert 'data-halted-subscription="desktop"' not in html
         assert LIVE_HEADING not in html
 
-    checkout_expired = TestClient(_mu_app(tmp_path / "co-exp"))
-    _sign_in(checkout_expired)
-    _subscribe(checkout_expired, status="expired")
-    checkout_html = checkout_expired.get("/billing/subscriptions").text
-    assert 'data-expired-subscription="desktop"' not in checkout_html
-    assert "Subscription checkout expired" in checkout_html
-    assert "Change your plan" not in checkout_html
 
-    billed = _expired_client(tmp_path / "co")[0]
-    bounced = billed.get("/billing/subscriptions/checkout", follow_redirects=False)
-    assert bounced.status_code == 303
-    assert bounced.headers.get("location") == "/billing/subscriptions"
-
-
-def test_cancel_at_period_end_current_plus_is_not_expired_chooser(
-    tmp_path: Path,
-) -> None:
-    client = TestClient(_mu_app(tmp_path))
-    _sign_in(client)
-    stored = _subscribe(
-        client,
-        period_start=EXPIRED_START,
-        period_end=EXPIRED_END,
-        cancel_at_period_end=True,
-    )
-    assert stored.status == "active"
-    assert stored.is_current is True
-    snap = client.app.state.entitlement_service.resolve(USER)
-    assert snap.playground_block_reason == BLOCK_PAID_PERIOD_ENDED
-    html = unescape(client.get("/billing/subscriptions").text)
-    assert 'data-expired-subscription="desktop"' not in html
-    assert "Ends after the current paid cycle" in html
-    assert "Current plan" in html
-    assert "Change your plan" not in html
-
-
-def test_expired_subscription_uses_shared_predicate_and_existing_create() -> None:
+def test_halted_subscription_uses_shared_predicate_and_existing_routes() -> None:
     manage = MANAGE.read_text(encoding="utf-8")
-    assert "expired_subscription" in manage
-    assert 'data-expired-subscription="desktop"' in manage
+    assert "halted_subscription" in manage
+    assert 'data-halted-subscription="desktop"' in manage
     assert 'data-plus-subscription="desktop"' in manage
+    assert 'data-expired-subscription="desktop"' in manage
     assert "Playground plans" in manage
     assert "Change your plan" in manage
+    assert "current.lifecycle_message" in manage
+    assert "current.billing_period_end" in manage
+    assert LIVE_HEADING not in manage
+    assert "Automatic retries have stopped" not in manage
+    assert "Payment retries have stopped" not in manage
+    halted_branch = manage.split("{% if halted_sub %}", 1)[1].split(
+        "{% set expired_sub", 1
+    )[0]
+    assert 'action="/billing/subscriptions/create"' not in halted_branch
+    assert 'action="/billing/subscriptions/change"' not in halted_branch
+    assert 'action="/billing/subscriptions/cancel"' not in halted_branch
+    assert "Subscribe to" not in halted_branch
+    assert "Switch to" not in halted_branch
     assert 'action="/billing/subscriptions/create"' in manage
     assert 'action="/billing/subscriptions/change"' in manage
-    assert "Subscribe to {{ product.display_name }}" in manage
-    assert "Your Playground is paused" not in manage
-    assert "View Playground plans" not in manage
+    assert 'action="/billing/subscriptions/cancel"' in manage
     routes = ROUTES.read_text(encoding="utf-8")
     page = routes.split("async def manage_page", 1)[1].split(
         "async def create_subscription", 1
     )[0]
+    assert "request_is_halted_subscriber" in page
     assert "request_is_expired_subscriber" in page
     assert "request_is_active_plus" in page
-    assert '"plus_subscription": request_is_active_plus(request)' in page
-    assert "TERMINAL_STATUSES" in page
-    assert "ENDED_MESSAGE" in page
+    assert '"halted_subscription": halted_subscription' in page
+    assert "BLOCK_PAYMENT_HALTED" in page
     assert "gate_view" in page
+    assert "TERMINAL_STATUSES" in page
     assert "/resume" not in routes
+    assert 'async def create_subscription' in routes
+    assert 'async def change_subscription' in routes
+    assert 'async def cancel_subscription' in routes
     deps = DEPS.read_text(encoding="utf-8")
-    assert "def request_is_expired_subscriber" in deps
-    home = HOME.read_text(encoding="utf-8")
-    assert "expired_gate.cta_href" in home
-    view = VIEW.read_text(encoding="utf-8")
-    assert 'cta_href=cta_href or PLAYGROUND_BILLING_PATH' in view or "PLAYGROUND_BILLING_PATH" in view
-    assert PLAYGROUND_BILLING_PATH == "/billing/subscriptions"
+    assert "def request_is_halted_subscriber" in deps
+    assert HALTED_LIFE == LIFECYCLE_MESSAGES["halted"]
     css = PG_CSS.read_text(encoding="utf-8")
+    assert '[data-halted-subscription="desktop"]' in css
+    assert '[data-plus-subscription="desktop"]' in css
     assert '[data-expired-subscription="desktop"]' in css
-    assert 'data-plus-subscription="desktop"' in css
+    assert ".halted-sub-desk" not in css
     base = BASE.read_text(encoding="utf-8")
-    assert "expired_billing" in base
-    assert "expired_header_status" in base
-    assert "plus_billing" in base
+    assert "halted_billing" in base
+    assert "halted_subscription" in base
+    assert "halted_header_status" in base
+    assert LIVE_HEADING not in base
+    assert "playground.css?v=pg28" in base
     checkout = CHECKOUT.read_text(encoding="utf-8")
-    assert "data-expired-subscription" not in checkout
-    assert SubscriptionPlanIds is not None
+    assert "data-halted-subscription" not in checkout
+    assert "data-halted-subscription" not in MOBILE.read_text(encoding="utf-8")
 
 
-def test_plus_screens_and_expired_01_06_untouched() -> None:
-    assert 'data-plus-landing="desktop"' in LANDING.read_text(encoding="utf-8")
-    assert 'data-expired-landing="desktop"' in LANDING.read_text(encoding="utf-8")
-    assert 'data-plus-browse="desktop"' in BROWSE.read_text(encoding="utf-8")
-    assert 'data-expired-browse="desktop"' in BROWSE.read_text(encoding="utf-8")
-    assert 'data-plus-laws="desktop"' in LAWS.read_text(encoding="utf-8")
-    assert 'data-expired-laws="desktop"' in LAWS.read_text(encoding="utf-8")
-    assert 'data-plus-bareact="desktop"' in BARE.read_text(encoding="utf-8")
-    assert 'data-expired-bareact="desktop"' in BARE.read_text(encoding="utf-8")
-    assert 'data-plus-add="desktop"' in ADD.read_text(encoding="utf-8")
-    assert 'data-expired-add="desktop"' in ADD.read_text(encoding="utf-8")
-    assert 'data-plus-playground="desktop"' in HOME.read_text(encoding="utf-8")
-    assert 'data-expired-playground="desktop"' in HOME.read_text(encoding="utf-8")
+def test_plus_expired_and_halted_01_06_untouched() -> None:
+    assert 'data-halted-landing="desktop"' in LANDING.read_text(encoding="utf-8")
+    assert 'data-halted-browse="desktop"' in BROWSE.read_text(encoding="utf-8")
+    assert 'data-halted-laws="desktop"' in LAWS.read_text(encoding="utf-8")
+    assert 'data-halted-bareact="desktop"' in BARE.read_text(encoding="utf-8")
+    assert 'data-halted-add="desktop"' in ADD.read_text(encoding="utf-8")
+    assert 'data-halted-playground="desktop"' in HOME.read_text(encoding="utf-8")
     assert 'data-plus-subscription="desktop"' in MANAGE.read_text(encoding="utf-8")
+    assert 'data-expired-subscription="desktop"' in MANAGE.read_text(encoding="utf-8")
     assert 'data-plus-today="desktop"' in DASH.read_text(encoding="utf-8")
-    assert 'data-plus-calendar="desktop"' in CAL.read_text(encoding="utf-8")
-    assert 'data-plus-profile="desktop"' in PROFILE.read_text(encoding="utf-8")
-    assert 'data-plus-settings="desktop"' in SETTINGS.read_text(encoding="utf-8")
-    for path in (LANDING, BROWSE, LAWS, BARE, ADD, HOME, DASH, CAL, PROFILE, SETTINGS):
+    for path in (LANDING, BROWSE, LAWS, BARE, ADD, HOME, GATE, DASH, CAL, PROFILE, SETTINGS):
         text = path.read_text(encoding="utf-8")
-        assert "data-expired-subscription" not in text
-    assert "data-expired-subscription" not in GATE.read_text(encoding="utf-8")
-    assert "data-expired-subscription" not in MOBILE.read_text(encoding="utf-8")
-    assert "data-expired-subscription" not in CHECKOUT.read_text(encoding="utf-8")
-    home_fn = PG_ROUTES.read_text(encoding="utf-8").split(
-        "async def playground_home", 1
-    )[1].split("async def playground_roster", 1)[0]
-    assert '"plus_playground": request_is_active_plus(request)' in home_fn
+        assert "data-halted-subscription" not in text
+        assert "halted_subscription" not in text
     add = ADD.read_text(encoding="utf-8")
     assert 'kind == "resume"' in add
+    assert 'kind == "halted"' not in add
 
 
 def _serve(app, host: str = "127.0.0.1") -> tuple[int, object]:
@@ -557,7 +565,7 @@ def _serve(app, host: str = "127.0.0.1") -> tuple[int, object]:
     return port, server
 
 
-def test_expired_phone_billing_keeps_purchase_panel(tmp_path: Path) -> None:
+def test_halted_phone_billing_keeps_purchase_panel(tmp_path: Path) -> None:
     pytest.importorskip("playwright")
     from playwright.sync_api import sync_playwright
 
@@ -565,7 +573,7 @@ def test_expired_phone_billing_keeps_purchase_panel(tmp_path: Path) -> None:
     _attach_fake(app)
     client = TestClient(app)
     _sign_in(client)
-    _seed_plus_then_expire(client)
+    _seed_plus_then_halt(client)
     session = client.cookies.get(SESSION_COOKIE_NAME)
     assert session
     port, _server = _serve(app)
@@ -591,14 +599,18 @@ def test_expired_phone_billing_keeps_purchase_panel(tmp_path: Path) -> None:
         page.goto(f"{origin}/billing/subscriptions", wait_until="networkidle")
         geo = page.evaluate(
             """() => {
-              const desk = document.querySelector('[data-expired-subscription="desktop"]');
+              const desk = document.querySelector('[data-halted-subscription="desktop"]');
               const panel = document.querySelector('.panel.purchase');
               return {
                 marker: Boolean(desk),
                 deskDisplay: desk ? getComputedStyle(desk).display : null,
                 panelDisplay: panel ? getComputedStyle(panel).display : null,
                 plus: Boolean(document.querySelector('[data-plus-subscription="desktop"]')),
+                expired: Boolean(document.querySelector('[data-expired-subscription="desktop"]')),
+                current: panel && /Current plan/.test(panel.innerText),
+                life: panel && /Automatic retries have stopped/.test(panel.innerText),
                 subscribe: /Subscribe to Plus/.test(document.body.innerText),
+                switchPlan: /Switch to/.test(document.body.innerText),
               };
             }"""
         )
@@ -607,10 +619,14 @@ def test_expired_phone_billing_keeps_purchase_panel(tmp_path: Path) -> None:
     assert geo["deskDisplay"] == "none"
     assert geo["panelDisplay"] != "none"
     assert geo["plus"] is False
-    assert geo["subscribe"] is True
+    assert geo["expired"] is False
+    assert geo["current"] is True
+    assert geo["life"] is True
+    assert geo["subscribe"] is False
+    assert geo["switchPlan"] is False
 
 
-def test_expired_subscription_screen07_1280(tmp_path: Path) -> None:
+def test_halted_subscription_screen07_1280(tmp_path: Path) -> None:
     pytest.importorskip("playwright")
     from playwright.sync_api import sync_playwright
 
@@ -618,13 +634,13 @@ def test_expired_subscription_screen07_1280(tmp_path: Path) -> None:
     _attach_fake(app)
     client = TestClient(app)
     _sign_in(client)
-    _seed_plus_then_expire(client)
+    _seed_plus_then_halt(client)
     session = client.cookies.get(SESSION_COOKIE_NAME)
     assert session
     port, _server = _serve(app)
     artifact_dir = Path("/opt/cursor/artifacts")
     artifact_dir.mkdir(parents=True, exist_ok=True)
-    shot_path = artifact_dir / "expired_subscription_screen07_1280.png"
+    shot_path = artifact_dir / "halted_subscription_screen07_1280.png"
     origin = f"http://127.0.0.1:{port}"
     with sync_playwright() as pw:
         browser = pw.chromium.launch(channel="chrome", args=["--disable-lcd-text"])
@@ -654,24 +670,35 @@ def test_expired_subscription_screen07_1280(tmp_path: Path) -> None:
         )
         geo = page.evaluate(
             """() => {
-              const desk = document.querySelector('[data-expired-subscription="desktop"]');
+              const desk = document.querySelector('[data-halted-subscription="desktop"]');
               const plus = document.querySelector('[data-plus-subscription="desktop"]');
+              const expired = document.querySelector('[data-expired-subscription="desktop"]');
               const panel = document.querySelector('.panel.purchase');
               const title = desk && desk.querySelector('.plus-sub-title');
-              const lede = desk && desk.querySelector('.plus-sub-lede');
-              const ctas = desk ? [...desk.querySelectorAll('.expired-sub-cta')] : [];
+              const name = desk && desk.querySelector('.plus-sub-name');
+              const price = desk && desk.querySelector('.plus-sub-price');
+              const cta = desk && desk.querySelector('.plus-sub-cta');
+              const note = desk && desk.querySelector('.plus-sub-note');
               return {
                 marker: Boolean(desk),
                 plus: Boolean(plus),
+                expired: Boolean(expired),
                 deskDisplay: desk ? getComputedStyle(desk).display : null,
                 panelDisplay: panel ? getComputedStyle(panel).display : null,
                 title: title && title.textContent.trim(),
-                lede: lede && lede.textContent.trim(),
-                ctaText: ctas.map((el) => el.textContent.trim()),
+                eyebrow: desk && desk.querySelector('.plus-sub-eyebrow') &&
+                  desk.querySelector('.plus-sub-eyebrow').textContent.trim(),
+                name: name && name.textContent.trim(),
+                price: price && price.textContent.replace(/\\s+/g, ' ').trim(),
+                cta: cta && cta.textContent.trim(),
+                ctaDisabled: cta && cta.disabled,
+                life: note && note.textContent.trim(),
+                period: desk && /Current paid period ends/.test(desk.innerText),
                 header: document.querySelector('.account-menu-btn-status') &&
                   document.querySelector('.account-menu-btn-status').textContent.trim(),
-                changePlan: document.body.innerText.includes('Change your plan'),
-                currentPlan: desk && /Current plan/.test(desk.innerText),
+                subscribe: desk && /Subscribe to/.test(desk.innerText),
+                switchPlan: desk && /Switch to/.test(desk.innerText),
+                changePlan: /Change your plan/.test(document.body.innerText),
                 pausedHome: desk && /Your Playground is paused/.test(desk.innerText),
               };
             }"""
@@ -681,20 +708,27 @@ def test_expired_subscription_screen07_1280(tmp_path: Path) -> None:
         browser.close()
     assert geo["marker"] is True
     assert geo["plus"] is False
+    assert geo["expired"] is False
     assert geo["deskDisplay"] != "none"
     assert geo["panelDisplay"] == "none"
     assert geo["title"] == "Playground plans"
-    assert geo["lede"] == ENDED_MESSAGE
-    assert geo["ctaText"] == ["Subscribe to Plus", "Subscribe to Pro", "Subscribe to Max"]
+    assert geo["eyebrow"] == "Playground · Your plan"
+    assert geo["name"] == "RecallC Plus"
+    assert geo["price"] and "₹199" in geo["price"]
+    assert geo["cta"] == "Current plan"
+    assert geo["ctaDisabled"] is True
+    assert geo["life"] == HALTED_LIFE
+    assert geo["period"] is True
     assert geo["header"] == LIVE_HEADING
+    assert geo["subscribe"] is False
+    assert geo["switchPlan"] is False
     assert geo["changePlan"] is False
-    assert geo["currentPlan"] is False
     assert geo["pausedHome"] is False
     assert shot_path.is_file()
     assert shot_path.stat().st_size > 1000
 
 
-def test_expired_subscription_plus_regression_1280(tmp_path: Path) -> None:
+def test_halted_subscription_plus_regression_1280(tmp_path: Path) -> None:
     pytest.importorskip("playwright")
     from playwright.sync_api import sync_playwright
 
@@ -707,7 +741,7 @@ def test_expired_subscription_plus_regression_1280(tmp_path: Path) -> None:
     port, _server = _serve(app)
     artifact_dir = Path("/opt/cursor/artifacts")
     artifact_dir.mkdir(parents=True, exist_ok=True)
-    shot_path = artifact_dir / "expired_subscription_screen07_plus_regression_1280.png"
+    shot_path = artifact_dir / "halted_subscription_screen07_plus_regression_1280.png"
     origin = f"http://127.0.0.1:{port}"
     with sync_playwright() as pw:
         browser = pw.chromium.launch(channel="chrome", args=["--disable-lcd-text"])
@@ -738,16 +772,19 @@ def test_expired_subscription_plus_regression_1280(tmp_path: Path) -> None:
         geo = page.evaluate(
             """() => {
               const plus = document.querySelector('[data-plus-subscription="desktop"]');
+              const halted = document.querySelector('[data-halted-subscription="desktop"]');
               const expired = document.querySelector('[data-expired-subscription="desktop"]');
               const title = plus && plus.querySelector('.plus-sub-title');
               return {
                 plus: Boolean(plus),
+                halted: Boolean(halted),
                 expired: Boolean(expired),
                 title: title && title.textContent.trim(),
                 current: plus && /Current plan/.test(plus.innerText),
+                switchPro: plus && /Switch to Pro/.test(plus.innerText),
                 header: document.querySelector('.account-menu-btn-status') &&
                   document.querySelector('.account-menu-btn-status').textContent.trim(),
-                ended: document.body.innerText.includes('Previous subscription ended'),
+                haltedCopy: document.body.innerText.includes('Payment retries have stopped'),
               };
             }"""
         )
@@ -755,10 +792,12 @@ def test_expired_subscription_plus_regression_1280(tmp_path: Path) -> None:
         page.screenshot(path=str(shot_path), full_page=False)
         browser.close()
     assert geo["plus"] is True
+    assert geo["halted"] is False
     assert geo["expired"] is False
     assert geo["title"] == "Change your plan"
     assert geo["current"] is True
+    assert geo["switchPro"] is True
     assert geo["header"] == "RecallC Plus"
-    assert geo["ended"] is False
+    assert geo["haltedCopy"] is False
     assert shot_path.is_file()
     assert shot_path.stat().st_size > 1000

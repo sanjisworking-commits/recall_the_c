@@ -312,6 +312,8 @@ def test_halted_expired_pending_are_not_plus_screen_07(tmp_path: Path) -> None:
         html = client.get("/billing/subscriptions").text
         assert 'data-plus-subscription="desktop"' not in html
         assert "Change your plan" not in html
+        if status == "halted":
+            assert 'data-halted-subscription="desktop"' in html
         if needle:
             assert needle in html
 
