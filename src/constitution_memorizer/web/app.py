@@ -3816,10 +3816,21 @@ def create_app(
         next_learning_day = None
         auto_entitled = can_use_auto_plan(request)
         from constitution_memorizer.entitlements.dependencies import (
+            get_entitlement_snapshot,
             request_is_active_plus,
+            request_is_expired_subscriber,
         )
 
         plus_settings = bool(user) and request_is_active_plus(request)
+        expired_settings = bool(user) and request_is_expired_subscriber(request)
+        expired_header_status = ""
+        if expired_settings:
+            from constitution_memorizer.playground.view import gate_view
+
+            snap = get_entitlement_snapshot(request)
+            expired_header_status = gate_view(
+                reason=str(snap.playground_block_reason or "")
+            ).title
         if user is not None:
             try:
                 plan = eng.get_learning_plan()
@@ -3848,6 +3859,8 @@ def create_app(
                 "can_auto_plan": auto_entitled,
                 "next_learning_day": next_learning_day,
                 "plus_settings": plus_settings,
+                "expired_settings": expired_settings,
+                "expired_header_status": expired_header_status,
             },
         )
 

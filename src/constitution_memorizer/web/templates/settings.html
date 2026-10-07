@@ -4,7 +4,7 @@
 {% block content %}
 {% set is_guest = multiuser_enabled|default(false) and not current_user %}
 {% set account_label = (current_user.display_name or current_user.email or current_user.phone or 'Account') if current_user else 'Guest' %}
-<section class="panel settings"{% if current_user and not is_guest %} data-signed-in-settings{% endif %}{% if plus_settings|default(false) %} data-plus-settings="desktop"{% endif %}>
+<section class="panel settings"{% if current_user and not is_guest %} data-signed-in-settings{% endif %}{% if plus_settings|default(false) %} data-plus-settings="desktop"{% endif %}{% if expired_settings|default(false) %} data-expired-settings="desktop"{% endif %}>
   <div class="mobile-topbar">
     <a class="mobile-back" href="{% if multiuser_enabled|default(false) and current_user %}/dashboard{% else %}/{% endif %}">← {% if multiuser_enabled|default(false) and current_user %}Today{% else %}Home{% endif %}</a>
   </div>
@@ -22,7 +22,9 @@
     {% endif %}
     <span class="settings-account-copy">
       <span class="settings-account-name">{{ account_label }}</span>
-      {% if current_user and access and access.enabled %}
+      {% if expired_settings|default(false) and expired_header_status %}
+      <span class="settings-account-status">{{ expired_header_status }}</span>
+      {% elif current_user and access and access.enabled %}
       <span class="settings-account-status">{{ access.status_line }}</span>
       {% elif current_user and current_user.provider == 'google' %}
       <span class="settings-account-status">Signed in with Google</span>

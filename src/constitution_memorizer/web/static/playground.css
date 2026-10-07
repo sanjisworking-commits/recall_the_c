@@ -4491,3 +4491,11 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     color: var(--on-accent);
   }
 }
+
+/* Expired desktop /settings (CTA map expired/11-screen). Phone Settings,
+   guest/Free/Plus/halted Settings keep the existing signed-in panel. */
+@media (min-width: 561px) {
+  body.is-authed[data-mscreen="settings"]:has([data-expired-settings="desktop"]) .account-menu-btn-status {
+    display: block;
+  }
+}
