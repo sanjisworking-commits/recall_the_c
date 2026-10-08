@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import asyncio
+import inspect
 import logging
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from time import perf_counter
 from types import SimpleNamespace
@@ -34,6 +35,8 @@ from constitution_memorizer.entitlements.dependencies import (
     commercial_playground_notes,
     device_playground_notes,
     get_entitlement_snapshot,
+    record_roster_access_outcome,
+    roster_playground_notes,
 )
 from constitution_memorizer.entitlements.models import (
     BLOCK_NOT_SUBSCRIBED,
@@ -44,7 +47,18 @@ from constitution_memorizer.entitlements.models import (
     CONSTITUTION_ACCESS_FULL,
     EntitlementSnapshot,
 )
-from constitution_memorizer.playground.access import _ensure_device_and_refresh
+from constitution_memorizer.playground.access import (
+    PlaygroundAccess,
+    _attach_current_period,
+    _ensure_device_and_refresh,
+    consume_blocked_response,
+    require_law_active_this_period,
+)
+from constitution_memorizer.playground.roster.models import (
+    RESULT_NEW_BLOCKED,
+    RESULT_ROSTER_FULL,
+)
+from constitution_memorizer.playground.service import activate_law
 from constitution_memorizer.entitlements.service import EntitlementService
 from constitution_memorizer.multiuser.settings import MultiUserSettings, clear_settings_cache
 from constitution_memorizer.progress.db import open_progress_db
@@ -798,6 +812,47 @@ def _plus_open_snap() -> EntitlementSnapshot:
     )
 
 
+def _plus_open_access(*, local_owner: bool = False) -> PlaygroundAccess:
+    return PlaygroundAccess(
+        user_id=USER,
+        snapshot=_plus_open_snap(),
+        can_open=True,
+        can_consume_new_law=True,
+        local_owner=local_owner,
+        can_view_home=True,
+    )
+
+
+def _capacity(*, remaining: int | None = 10, used: int = 0):
+    return SimpleNamespace(
+        period_start=date(2026, 10, 1),
+        period_end=date(2026, 11, 1),
+        used=used,
+        remaining=remaining,
+        law_limit=10 if remaining is not None else None,
+    )
+
+
+def _fill_plus_roster(app, monkeypatch: pytest.MonkeyPatch, n: int = 10) -> None:
+    from constitution_memorizer.playground.roster import service as roster_service
+
+    real = roster_service.is_playground_eligible_law
+
+    def wrapped(law_id: str) -> bool:
+        if str(law_id).startswith("slot-"):
+            return True
+        return real(law_id)
+
+    monkeypatch.setattr(roster_service, "is_playground_eligible_law", wrapped)
+    snap = app.state.entitlement_service.resolve(USER)
+    roster = app.state.roster
+    for index in range(n):
+        result = roster.confirm_add_law(
+            USER, f"slot-{index}", snap, can_consume_new_law=True
+        )
+        assert result.ok, result.status
+
+
 def _assert_t3_entitlement(
     snap,
     *,
@@ -806,6 +861,9 @@ def _assert_t3_entitlement(
     auth_state: str,
     device_result: str,
     device_lookups: int = 0,
+    roster_result: str | None = None,
+    roster_access_n: int = 0,
+    law_state: str | None = None,
 ) -> None:
     assert snap is not None
     assert "playground_entitlement" in snap.timings
@@ -824,9 +882,25 @@ def _assert_t3_entitlement(
     else:
         assert "playground_device" not in snap.timings
         assert "playground_device_lookups" not in snap.counters
-    assert "playground_roster_access" not in snap.timings
-    assert "playground_roster_result" not in snap.notes
-    assert "playground_law_state" not in snap.notes
+    if roster_access_n:
+        assert snap.timings["playground_roster_access"][1] == roster_access_n
+    else:
+        assert "playground_roster_access" not in snap.timings
+    if roster_result is None:
+        assert "playground_roster_result" not in snap.notes
+    else:
+        assert snap.notes["playground_roster_result"] == roster_result
+        assert roster_result != "peek"
+    if law_state is None:
+        assert "playground_law_state" not in snap.notes
+    else:
+        assert snap.notes["playground_law_state"] == law_state
+        assert law_state != "none"
+    assert "playground_roster_reads" not in snap.counters
+    assert "playground_repo_round_trips" not in snap.counters
+    assert "playground_home_build" not in snap.timings
+    assert "playground_today" not in snap.timings
+    assert "playground_calendar" not in snap.timings
 
 
 def _breakdown_messages(caplog: logging.LogCaptureFixture) -> list[str]:
@@ -1602,6 +1676,8 @@ def test_pending_playground_snapshot_access_result_pending(tmp_path: Path):
         auth_state="authed",
         device_result="ok",
         device_lookups=2,
+        roster_result="ok",
+        roster_access_n=1,
     )
 
 
@@ -1694,6 +1770,8 @@ def test_plus_active_playground_snapshot_access_result_allowed(tmp_path: Path):
         auth_state="authed",
         device_result="ok",
         device_lookups=2,
+        roster_result="ok",
+        roster_access_n=1,
     )
 
 
@@ -2189,6 +2267,8 @@ def test_plus_active_playground_snapshot_device_ok_two_lookups(tmp_path: Path):
         auth_state="authed",
         device_result="ok",
         device_lookups=2,
+        roster_result="ok",
+        roster_access_n=1,
     )
 
 
@@ -2215,6 +2295,8 @@ def test_pending_playground_snapshot_keeps_pending_when_device_ok(tmp_path: Path
         auth_state="authed",
         device_result="ok",
         device_lookups=2,
+        roster_result="ok",
+        roster_access_n=1,
     )
 
 
@@ -2268,6 +2350,8 @@ def test_admin_playground_snapshot_skipped_unpaid_no_ensure(tmp_path: Path):
         auth_state="authed",
         device_result="skipped_unpaid",
         device_lookups=1,
+        roster_result="ok",
+        roster_access_n=1,
     )
 
 
@@ -2469,3 +2553,590 @@ def test_free_device_limit_does_not_overwrite_access_result(tmp_path: Path):
         device_result="skipped_unpaid",
         device_lookups=1,
     )
+
+
+@pytest.mark.parametrize(
+    "kwargs, roster_result, overwrite, law_state",
+    [
+        ({"source": "attach", "remaining": 10}, "ok", None, None),
+        ({"source": "attach", "remaining": 0}, "roster_full", None, None),
+        ({"source": "attach", "remaining": None}, "ok", None, None),
+        ({"source": "attach", "local_owner": True, "remaining": 0}, "local_owner", None, None),
+        ({"source": "consume_deny"}, "roster_full", "roster_full", None),
+        ({"source": "membership", "membership_active": True}, "ok", None, "active"),
+        (
+            {"source": "membership", "membership_active": False},
+            "inactive_law",
+            "inactive_law",
+            None,
+        ),
+        (
+            {
+                "source": "membership",
+                "membership_active": False,
+                "law_state": "removed",
+            },
+            "inactive_law",
+            "inactive_law",
+            "removed",
+        ),
+        (
+            {
+                "source": "membership",
+                "membership_active": False,
+                "law_state": "historical",
+            },
+            "inactive_law",
+            "inactive_law",
+            "historical",
+        ),
+        (
+            {
+                "source": "membership",
+                "membership_active": False,
+                "law_state": "none",
+            },
+            "inactive_law",
+            "inactive_law",
+            None,
+        ),
+        (
+            {"source": "membership", "period_missing": True},
+            "roster_missing",
+            "roster_missing",
+            None,
+        ),
+    ],
+)
+def test_roster_playground_notes_mapping(kwargs, roster_result, overwrite, law_state):
+    got_result, got_overwrite, got_state = roster_playground_notes(**kwargs)
+    assert got_result == roster_result
+    assert got_overwrite == overwrite
+    assert got_state == law_state
+    assert got_result in PLAYGROUND_ROSTER_RESULTS or got_result in PLAYGROUND_ACCESS_RESULTS
+    assert got_result != "peek"
+    if got_overwrite is not None:
+        assert got_overwrite in PLAYGROUND_ACCESS_RESULTS
+    if got_state is not None:
+        assert got_state in PLAYGROUND_LAW_STATES
+        assert got_state != "none"
+    blob = f"{got_result} {got_overwrite} {got_state}"
+    assert str(USER) not in blob
+    assert USER_EMAIL not in blob
+    assert "ndps" not in blob
+    assert "10" not in blob
+
+
+def test_roster_full_attach_does_not_overwrite_allowed():
+    result, overwrite, state = roster_playground_notes(source="attach", remaining=0)
+    assert result == "roster_full"
+    assert overwrite is None
+    assert state is None
+
+
+def test_roster_consume_deny_overwrites_access_result():
+    result, overwrite, state = roster_playground_notes(source="consume_deny")
+    assert result == "roster_full"
+    assert overwrite == "roster_full"
+    assert state is None
+
+
+def test_raising_capacity_times_without_fabricated_roster_note():
+    class Boom:
+        def capacity(self, *args, **kwargs):
+            raise RuntimeError("capacity boom")
+
+    request = SimpleNamespace(
+        app=SimpleNamespace(state=SimpleNamespace(roster=Boom())),
+        state=SimpleNamespace(),
+    )
+    token = begin_request_timings()
+    try:
+        with pytest.raises(RuntimeError, match="capacity boom"):
+            _attach_current_period(request, _plus_open_access())
+        assert snapshot_request_timings()["playground_roster_access"][1] == 1
+        notes = snapshot_request_notes()
+        assert "playground_roster_result" not in notes
+        assert "playground_law_state" not in notes
+        assert "playground_roster_reads" not in snapshot_request_counters()
+    finally:
+        reset_request_timings(token)
+
+
+def test_raising_is_law_active_times_without_fabricated_roster_note(monkeypatch):
+    opened = _plus_open_access()
+
+    class Boom:
+        def is_law_active_this_period(self, *args, **kwargs):
+            raise RuntimeError("membership boom")
+
+    request = SimpleNamespace(
+        app=SimpleNamespace(state=SimpleNamespace(roster=Boom())),
+    )
+    monkeypatch.setattr(
+        "constitution_memorizer.playground.access.require_playground_open",
+        lambda *args, **kwargs: opened,
+    )
+    monkeypatch.setattr(
+        "constitution_memorizer.playground.access.require_roster_service",
+        lambda req: req.app.state.roster,
+    )
+    token = begin_request_timings()
+    try:
+        with pytest.raises(RuntimeError, match="membership boom"):
+            require_law_active_this_period(
+                request,
+                templates=None,
+                overlay=None,
+                law_id="ndps",
+                next_url="/playground",
+            )
+        assert snapshot_request_timings()["playground_roster_access"][1] == 1
+        notes = snapshot_request_notes()
+        assert "playground_roster_result" not in notes
+        assert "playground_law_state" not in notes
+        assert "playground_roster_reads" not in snapshot_request_counters()
+    finally:
+        reset_request_timings(token)
+
+
+def test_direct_roster_service_calls_are_not_instrumented():
+    class Svc:
+        def capacity(self, *args, **kwargs):
+            return _capacity()
+
+        def is_law_active_this_period(self, *args, **kwargs):
+            return True
+
+        def peek_capacity(self, *args, **kwargs):
+            return _capacity()
+
+    token = begin_request_timings()
+    try:
+        Svc().capacity(USER, None)
+        Svc().is_law_active_this_period(USER, "ndps")
+        Svc().peek_capacity(USER, None)
+        assert snapshot_request_timings() == {}
+        assert snapshot_request_counters() == {}
+        assert snapshot_request_notes() == {}
+    finally:
+        reset_request_timings(token)
+
+
+def test_roster_records_noop_without_collector():
+    class Cap:
+        def capacity(self, *args, **kwargs):
+            return _capacity(remaining=4, used=6)
+
+    request = SimpleNamespace(
+        app=SimpleNamespace(state=SimpleNamespace(roster=Cap())),
+        state=SimpleNamespace(),
+    )
+    _attach_current_period(request, _plus_open_access())
+    assert snapshot_request_timings() == {}
+    assert snapshot_request_counters() == {}
+    assert snapshot_request_notes() == {}
+
+
+def test_attach_skips_timing_when_no_roster_call():
+    request = SimpleNamespace(
+        app=SimpleNamespace(state=SimpleNamespace(roster=None)),
+        state=SimpleNamespace(),
+    )
+    token = begin_request_timings()
+    try:
+        _attach_current_period(request, _plus_open_access())
+        none_user = PlaygroundAccess(
+            user_id=None,
+            snapshot=_plus_open_snap(),
+            can_open=True,
+            can_consume_new_law=True,
+            local_owner=False,
+            can_view_home=True,
+        )
+        _attach_current_period(request, none_user)
+        assert "playground_roster_access" not in snapshot_request_timings()
+        assert "playground_roster_result" not in snapshot_request_notes()
+    finally:
+        reset_request_timings(token)
+
+
+def test_attach_full_keeps_allowed_access_result():
+    class Cap:
+        def capacity(self, *args, **kwargs):
+            return _capacity(remaining=0, used=10)
+
+    request = SimpleNamespace(
+        app=SimpleNamespace(state=SimpleNamespace(roster=Cap())),
+        state=SimpleNamespace(),
+    )
+    token = begin_request_timings()
+    try:
+        record_request_note("playground_access_result", "allowed")
+        _attach_current_period(request, _plus_open_access())
+        notes = snapshot_request_notes()
+        assert notes["playground_roster_result"] == "roster_full"
+        assert notes["playground_access_result"] == "allowed"
+        assert "playground_law_state" not in notes
+        assert snapshot_request_timings()["playground_roster_access"][1] == 1
+    finally:
+        reset_request_timings(token)
+
+
+def test_attach_local_owner_result():
+    class Cap:
+        def capacity(self, *args, **kwargs):
+            return _capacity(remaining=None, used=0)
+
+    request = SimpleNamespace(
+        app=SimpleNamespace(state=SimpleNamespace(roster=Cap())),
+        state=SimpleNamespace(),
+    )
+    token = begin_request_timings()
+    try:
+        _attach_current_period(request, _plus_open_access(local_owner=True))
+        notes = snapshot_request_notes()
+        assert notes["playground_roster_result"] == "local_owner"
+        assert "playground_access_result" not in notes
+        assert "playground_law_state" not in notes
+    finally:
+        reset_request_timings(token)
+
+
+def test_consume_blocked_roster_full_overwrites_without_timing():
+    token = begin_request_timings()
+    try:
+        record_request_note("playground_access_result", "allowed")
+        resp = consume_blocked_response(
+            SimpleNamespace(),
+            templates=None,
+            access=_plus_open_access(),
+            result_status=RESULT_ROSTER_FULL,
+            json_mode=True,
+        )
+        assert resp.status_code == 403
+        body = resp.body.decode()
+        assert "roster_full" in body
+        assert "inactive_law" not in body
+        notes = snapshot_request_notes()
+        assert notes["playground_roster_result"] == "roster_full"
+        assert notes["playground_access_result"] == "roster_full"
+        assert "playground_roster_access" not in snapshot_request_timings()
+        assert "playground_law_state" not in notes
+    finally:
+        reset_request_timings(token)
+
+
+def test_consume_blocked_new_blocked_is_not_relabeled():
+    token = begin_request_timings()
+    try:
+        record_request_note("playground_access_result", "pending")
+        resp = consume_blocked_response(
+            SimpleNamespace(),
+            templates=None,
+            access=_plus_open_access(),
+            result_status=RESULT_NEW_BLOCKED,
+            json_mode=True,
+        )
+        assert resp.status_code == 403
+        assert "inactive_law" not in resp.body.decode()
+        assert "roster_full" not in resp.body.decode()
+        notes = snapshot_request_notes()
+        assert notes["playground_access_result"] == "pending"
+        assert "playground_roster_result" not in notes
+        assert "playground_roster_access" not in snapshot_request_timings()
+    finally:
+        reset_request_timings(token)
+
+
+def test_membership_false_maps_to_inactive_law_not_missing():
+    token = begin_request_timings()
+    try:
+        record_roster_access_outcome(source="membership", membership_active=False)
+        notes = snapshot_request_notes()
+        assert notes["playground_roster_result"] == "inactive_law"
+        assert notes["playground_access_result"] == "inactive_law"
+        assert "playground_law_state" not in notes
+    finally:
+        reset_request_timings(token)
+
+
+def test_roster_missing_is_mapper_only():
+    result, overwrite, state = roster_playground_notes(
+        source="membership", period_missing=True
+    )
+    assert result == "roster_missing"
+    assert overwrite == "roster_missing"
+    assert state is None
+    source = inspect.getsource(require_law_active_this_period)
+    assert "get_period(" not in source
+    assert "peek_capacity(" not in source
+    assert "period_missing" not in source
+    attach_src = inspect.getsource(_attach_current_period)
+    assert "peek_capacity(" not in attach_src
+    assert "get_period(" not in attach_src
+
+
+def test_plus_inactive_law_overwrites_access_result(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            resp = await client.get("/playground/laws/ndps")
+            snap = get_last_request_performance()
+            return resp, snap
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 303
+    assert resp.headers.get("location") == "/laws/ndps"
+    _assert_t3_entitlement(
+        snap,
+        access="inactive_law",
+        disposition="active",
+        auth_state="authed",
+        device_result="ok",
+        device_lookups=2,
+        roster_result="inactive_law",
+        roster_access_n=2,
+    )
+
+
+def test_inactive_json_mode_keeps_not_active_this_period(monkeypatch):
+    opened = _plus_open_access()
+
+    class Roster:
+        def is_law_active_this_period(self, *args, **kwargs):
+            return False
+
+    request = SimpleNamespace(
+        app=SimpleNamespace(state=SimpleNamespace(roster=Roster())),
+    )
+    monkeypatch.setattr(
+        "constitution_memorizer.playground.access.require_playground_open",
+        lambda *args, **kwargs: opened,
+    )
+    monkeypatch.setattr(
+        "constitution_memorizer.playground.access.require_roster_service",
+        lambda req: req.app.state.roster,
+    )
+    token = begin_request_timings()
+    try:
+        resp = require_law_active_this_period(
+            request,
+            templates=None,
+            overlay=None,
+            law_id="ndps",
+            next_url="/playground",
+            json_mode=True,
+        )
+        assert resp.status_code == 403
+        payload = resp.body.decode()
+        assert "not_active_this_period" in payload
+        assert "inactive_law" not in payload
+        notes = snapshot_request_notes()
+        assert notes["playground_access_result"] == "inactive_law"
+        assert notes["playground_roster_result"] == "inactive_law"
+        assert "playground_law_state" not in notes
+    finally:
+        reset_request_timings(token)
+
+
+def test_plus_active_law_records_ok_and_law_state_active(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            snap_ent = app.state.entitlement_service.resolve(USER)
+            result = app.state.roster.confirm_add_law(
+                USER, "ndps", snap_ent, can_consume_new_law=True
+            )
+            assert result.ok
+            resp = await client.get("/playground/laws/ndps")
+            snap = get_last_request_performance()
+            return resp, snap
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t3_entitlement(
+        snap,
+        access="allowed",
+        disposition="active",
+        auth_state="authed",
+        device_result="ok",
+        device_lookups=2,
+        roster_result="ok",
+        roster_access_n=2,
+        law_state="active",
+    )
+
+
+def test_plus_removed_law_records_law_state_removed(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            snap_ent = app.state.entitlement_service.resolve(USER)
+            assert app.state.roster.confirm_add_law(
+                USER, "ndps", snap_ent, can_consume_new_law=True
+            ).ok
+            activate_law(app.state.playground, USER, "ndps")
+            app.state.roster.remove_law_this_period(USER, "ndps", snap_ent)
+            resp = await client.get("/playground/laws/ndps")
+            snap = get_last_request_performance()
+            return resp, snap
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t3_entitlement(
+        snap,
+        access="inactive_law",
+        disposition="active",
+        auth_state="authed",
+        device_result="ok",
+        device_lookups=2,
+        roster_result="inactive_law",
+        roster_access_n=2,
+        law_state="removed",
+    )
+
+
+def test_plus_historical_overlay_records_law_state_historical(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            activate_law(app.state.playground, USER, "ndps")
+            resp = await client.get("/playground/laws/ndps")
+            snap = get_last_request_performance()
+            return resp, snap
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t3_entitlement(
+        snap,
+        access="inactive_law",
+        disposition="active",
+        auth_state="authed",
+        device_result="ok",
+        device_lookups=2,
+        roster_result="inactive_law",
+        roster_access_n=2,
+        law_state="historical",
+    )
+
+
+def test_plus_roster_full_home_keeps_allowed(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            _fill_plus_roster(app, monkeypatch)
+            resp = await client.get("/playground")
+            snap = get_last_request_performance()
+            return resp, snap
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t3_entitlement(
+        snap,
+        access="allowed",
+        disposition="active",
+        auth_state="authed",
+        device_result="ok",
+        device_lookups=2,
+        roster_result="roster_full",
+        roster_access_n=1,
+    )
+
+
+def test_plus_roster_full_add_overwrites_access_result(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            _fill_plus_roster(app, monkeypatch)
+            await client.get("/playground")
+            csrf = client.cookies.get("rtc_csrf") or ""
+            resp = await client.post(
+                "/playground/laws/ndps/add",
+                data={"csrf_token": csrf, "confirm": "add", "scope": "sections"},
+                headers={"Accept": "application/json"},
+            )
+            snap = get_last_request_performance()
+            return resp, snap
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code in {200, 403}
+    if resp.status_code == 403:
+        assert resp.json()["error"] == "roster_full"
+    else:
+        assert "roster_full" in resp.text
+    assert "inactive_law" not in resp.text
+    _assert_t3_entitlement(
+        snap,
+        access="roster_full",
+        disposition="active",
+        auth_state="authed",
+        device_result="ok",
+        device_lookups=3,
+        roster_result="roster_full",
+        roster_access_n=2,
+    )
+
+
+def test_roster_notes_omit_law_text_user_ids_tokens(
+    tmp_path: Path, caplog: logging.LogCaptureFixture
+):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            with caplog.at_level(logging.INFO, logger="uvicorn.error"):
+                caplog.clear()
+                resp = await client.get(
+                    "/playground/laws/ndps",
+                    headers={
+                        "User-Agent": "Mozilla/5.0 PrivacyProbe",
+                        "X-Forwarded-For": "203.0.113.9",
+                    },
+                )
+            snap = get_last_request_performance()
+            cookie = client.cookies.get(DEVICE_COOKIE_NAME) or ""
+            return resp, snap, cookie
+        finally:
+            await client.aclose()
+
+    resp, snap, cookie = asyncio.run(_go())
+    assert resp.status_code == 303
+    assert snap is not None
+    notes = " ".join(snap.notes.values())
+    breakdown = "\n".join(_breakdown_messages(caplog))
+    blob = f"{notes}\n{snap.path_group}\n{breakdown}"
+    assert str(USER) not in blob
+    assert USER_EMAIL not in blob
+    assert "ndps" not in blob
+    assert "Mozilla" not in blob
+    assert "PrivacyProbe" not in blob
+    assert "203.0.113.9" not in blob
+    assert TEST_DEVICE_HMAC_SECRET not in blob
+    if cookie:
+        assert cookie not in blob
+    assert "none" not in snap.notes.values()
+    assert snap.notes.get("playground_roster_result") != "peek"
+    assert snap.path_group == "/playground/laws/{law_id}"

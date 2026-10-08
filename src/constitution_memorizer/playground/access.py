@@ -40,6 +40,7 @@ from constitution_memorizer.entitlements.dependencies import (
     get_entitlement_snapshot,
     invalidate_entitlement_snapshot,
     record_device_lookup_outcome,
+    record_roster_access_outcome,
 )
 from constitution_memorizer.entitlements.models import (
     BLOCK_DEVICE_CONFIG_ERROR,
@@ -364,8 +365,23 @@ def require_law_active_this_period(
     if isinstance(opened, Response):
         return opened
     roster = require_roster_service(request)
-    if roster.is_law_active_this_period(opened.user_id, law_id):
+    from time import perf_counter
+
+    from constitution_memorizer.web.request_context import (  # noqa: PLC0415
+        record_request_timing,
+    )
+
+    started = perf_counter()
+    try:
+        active = roster.is_law_active_this_period(opened.user_id, law_id)
+    finally:
+        record_request_timing("playground_roster_access", started)
+    if active:
+        record_roster_access_outcome(source="membership", membership_active=True)
         return opened
+    # Post-attach False is inactive_law. Do not add a period lookup
+    # to distinguish roster_missing (mapper/stub only).
+    record_roster_access_outcome(source="membership", membership_active=False)
     return _deny_inactive_law(
         request,
         templates,
@@ -392,9 +408,24 @@ def _attach_current_period(request: Request, access: PlaygroundAccess) -> Playgr
     roster = getattr(request.app.state, "roster", None)
     if roster is None:
         return access
-    capacity = roster.capacity(
-        access.user_id,
-        access.snapshot,
+    from time import perf_counter
+
+    from constitution_memorizer.web.request_context import (  # noqa: PLC0415
+        record_request_timing,
+    )
+
+    started = perf_counter()
+    try:
+        capacity = roster.capacity(
+            access.user_id,
+            access.snapshot,
+            local_owner=access.local_owner,
+        )
+    finally:
+        record_request_timing("playground_roster_access", started)
+    record_roster_access_outcome(
+        source="attach",
+        remaining=capacity.remaining,
         local_owner=access.local_owner,
     )
     if access.snapshot is None:
@@ -554,7 +585,17 @@ def _deny_inactive_law(
     roster = require_roster_service(request)
     already = roster.already_consumed_this_period(access.user_id, law_id)
     if already:
+        record_roster_access_outcome(
+            source="membership",
+            membership_active=False,
+            law_state="removed",
+        )
         return _progress_saved_page(request, templates, law_id)
+    record_roster_access_outcome(
+        source="membership",
+        membership_active=False,
+        law_state="historical",
+    )
     if not access.can_consume_new_law:
         return _gate_page(
             request,
@@ -659,6 +700,7 @@ def consume_blocked_response(
             request, templates, access, json_mode=json_mode
         )
     if result_status == RESULT_ROSTER_FULL:
+        record_roster_access_outcome(source="consume_deny")
         if json_mode:
             return JSONResponse({"ok": False, "error": BLOCK_ROSTER_FULL}, status_code=403)
         return roster_full_page(request, templates, access)

@@ -153,6 +153,71 @@ def record_device_lookup_outcome(
         record_request_note("playground_access_result", access_overwrite)
 
 
+def roster_playground_notes(
+    *,
+    source: str,
+    remaining: int | None = None,
+    local_owner: bool = False,
+    membership_active: bool | None = None,
+    period_missing: bool = False,
+    law_state: str | None = None,
+) -> tuple[str | None, str | None, str | None]:
+    """Map roster HTTP-facade outcomes to notes.
+
+    Returns ``(roster_result, access_overwrite, law_state)``. Attach never
+    overwrites ``playground_access_result`` (home stays open at remaining 0).
+    ``period_missing`` is mapper/stub-only: production membership False after
+    attach is ``inactive_law`` and must not add a ``get_period`` read.
+    ``peek`` is never produced here. ``none`` is never written as law_state.
+    """
+
+    if source == "attach":
+        if local_owner:
+            return "local_owner", None, None
+        if remaining == 0:
+            return "roster_full", None, None
+        return "ok", None, None
+    if source == "consume_deny":
+        return "roster_full", "roster_full", None
+    if source == "membership":
+        state = law_state if law_state not in {None, "none"} else None
+        if period_missing:
+            return "roster_missing", "roster_missing", state
+        if membership_active:
+            return "ok", None, "active"
+        return "inactive_law", "inactive_law", state
+    return None, None, None
+
+
+def record_roster_access_outcome(
+    *,
+    source: str,
+    remaining: int | None = None,
+    local_owner: bool = False,
+    membership_active: bool | None = None,
+    period_missing: bool = False,
+    law_state: str | None = None,
+) -> None:
+    from constitution_memorizer.web.request_context import (  # noqa: PLC0415
+        record_request_note,
+    )
+
+    roster_result, access_overwrite, state = roster_playground_notes(
+        source=source,
+        remaining=remaining,
+        local_owner=local_owner,
+        membership_active=membership_active,
+        period_missing=period_missing,
+        law_state=law_state,
+    )
+    if roster_result is not None:
+        record_request_note("playground_roster_result", roster_result)
+    if access_overwrite is not None:
+        record_request_note("playground_access_result", access_overwrite)
+    if state is not None:
+        record_request_note("playground_law_state", state)
+
+
 def get_entitlement_snapshot(
     request: object,
     *,
