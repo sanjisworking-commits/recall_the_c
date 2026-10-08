@@ -32,6 +32,7 @@ from constitution_memorizer.playground.revision import (
     advance_interval,
     next_revision_date,
 )
+from constitution_memorizer.playground.repo_counters import count_playground_repo_call
 from constitution_memorizer.playground.roster.period import playground_today
 from constitution_memorizer.playground.source_review import (
     CHANGE_KINDS,
@@ -277,6 +278,7 @@ class SqlitePlaygroundRepository:
         finally:
             self.conn.isolation_level = previous
 
+    @count_playground_repo_call(kind="read")
     def get_item(self, user_id: UUID | str, law_id: str) -> PlaygroundItem | None:
         row = self.conn.execute(
             """
@@ -298,6 +300,7 @@ class SqlitePlaygroundRepository:
             law_source_hash=row["law_source_hash"],
         )
 
+    @count_playground_repo_call(kind="read")
     def list_items(self, user_id: UUID | str) -> list[PlaygroundItem]:
         rows = self.conn.execute(
             """
@@ -321,6 +324,7 @@ class SqlitePlaygroundRepository:
             for row in rows
         ]
 
+    @count_playground_repo_call(kind="write")
     def add_item(
         self,
         user_id: UUID | str,
@@ -354,6 +358,7 @@ class SqlitePlaygroundRepository:
         self.conn.commit()
         return self.get_item(user_id, law_id)  # type: ignore[return-value]
 
+    @count_playground_repo_call(kind="read", domain="summary")
     def list_playground_summaries(
         self,
         user_id: UUID | str,
@@ -378,6 +383,7 @@ class SqlitePlaygroundRepository:
             for row in rows
         ]
 
+    @count_playground_repo_call(kind="read")
     def list_selection(self, user_id: UUID | str, law_id: str) -> list[PlaygroundSelection]:
         rows = self.conn.execute(
             """
@@ -398,6 +404,7 @@ class SqlitePlaygroundRepository:
             for row in rows
         ]
 
+    @count_playground_repo_call(kind="write")
     def replace_selection(
         self,
         user_id: UUID | str,
@@ -433,6 +440,7 @@ class SqlitePlaygroundRepository:
         )
         self.conn.commit()
 
+    @count_playground_repo_call(kind="read", domain="progress")
     def get_progress(
         self, user_id: UUID | str, law_id: str, source_locator: str
     ) -> PlaygroundProgress | None:
@@ -450,6 +458,7 @@ class SqlitePlaygroundRepository:
             return None
         return self._progress_from_row(row)
 
+    @count_playground_repo_call(kind="read", domain="progress")
     def list_progress(self, user_id: UUID | str, law_id: str) -> list[PlaygroundProgress]:
         rows = self.conn.execute(
             """
@@ -463,6 +472,7 @@ class SqlitePlaygroundRepository:
         ).fetchall()
         return [self._progress_from_row(row) for row in rows]
 
+    @count_playground_repo_call(kind="write")
     def complete_cloze(
         self,
         user_id: UUID | str,
@@ -572,6 +582,7 @@ class SqlitePlaygroundRepository:
             learned_at=row.learned_at,
         )
 
+    @count_playground_repo_call(kind="read", domain="progress")
     def get_mode_progress(
         self,
         user_id: UUID | str,
@@ -593,6 +604,7 @@ class SqlitePlaygroundRepository:
             return None
         return _mode_from_row(row)
 
+    @count_playground_repo_call(kind="read", domain="progress")
     def list_mode_progress(
         self,
         user_id: UUID | str,
@@ -624,6 +636,7 @@ class SqlitePlaygroundRepository:
             ).fetchall()
         return [_mode_from_row(row) for row in rows]
 
+    @count_playground_repo_call(kind="write")
     def start_mode(
         self,
         user_id: UUID | str,
@@ -664,6 +677,7 @@ class SqlitePlaygroundRepository:
         assert row is not None
         return row
 
+    @count_playground_repo_call(kind="write")
     def complete_mode(
         self,
         user_id: UUID | str,
@@ -685,6 +699,7 @@ class SqlitePlaygroundRepository:
             as_of=as_of,
         )
 
+    @count_playground_repo_call(kind="write")
     def complete_learning_mode_and_transition_if_ready(
         self,
         user_id: UUID | str,
@@ -724,6 +739,7 @@ class SqlitePlaygroundRepository:
         assert row is not None
         return row
 
+    @count_playground_repo_call(kind="write")
     def mark_learned_if_ready(
         self,
         user_id: UUID | str,
@@ -749,16 +765,19 @@ class SqlitePlaygroundRepository:
             )
         return self.get_progress(user_id, law_id, source_locator)
 
+    @count_playground_repo_call(kind="read", domain="revision")
     def get_revision_progress(
         self, user_id: UUID | str, law_id: str, source_locator: str
     ) -> PlaygroundProgress | None:
         return self.get_progress(user_id, law_id, source_locator)
 
+    @count_playground_repo_call(kind="read", domain="revision")
     def list_revision_progress(
         self, user_id: UUID | str, law_id: str
     ) -> list[PlaygroundProgress]:
         return self.list_progress(user_id, law_id)
 
+    @count_playground_repo_call(kind="read", domain="revision")
     def get_revision_mode_progress(
         self,
         user_id: UUID | str,
@@ -781,6 +800,7 @@ class SqlitePlaygroundRepository:
             return None
         return _mode_from_row(row)
 
+    @count_playground_repo_call(kind="read", domain="revision")
     def list_revision_mode_progress(
         self,
         user_id: UUID | str,
@@ -805,6 +825,7 @@ class SqlitePlaygroundRepository:
         rows = self.conn.execute(sql, tuple(params)).fetchall()
         return [_mode_from_row(row) for row in rows]
 
+    @count_playground_repo_call(kind="write")
     def start_revision_mode(
         self,
         user_id: UUID | str,
@@ -865,6 +886,7 @@ class SqlitePlaygroundRepository:
         assert row is not None
         return row
 
+    @count_playground_repo_call(kind="write")
     def complete_revision_mode(
         self,
         user_id: UUID | str,
@@ -888,6 +910,7 @@ class SqlitePlaygroundRepository:
             claimed_rung=claimed_rung,
         )
 
+    @count_playground_repo_call(kind="write")
     def complete_revision_mode_and_advance_if_ready(
         self,
         user_id: UUID | str,
@@ -941,6 +964,7 @@ class SqlitePlaygroundRepository:
         assert row is not None
         return row
 
+    @count_playground_repo_call(kind="read", domain="revision")
     def list_due_revisions(
         self,
         user_id: UUID | str,
@@ -978,6 +1002,7 @@ class SqlitePlaygroundRepository:
             for row in rows
         ]
 
+    @count_playground_repo_call(kind="read", domain="revision")
     def list_revision_schedule(
         self,
         user_id: UUID | str,
@@ -1333,6 +1358,7 @@ class SqlitePlaygroundRepository:
             (now, uid, law_id),
         )
 
+    @count_playground_repo_call(kind="read", domain="source_review")
     def get_source_scan(
         self,
         user_id: UUID | str,
@@ -1356,6 +1382,7 @@ class SqlitePlaygroundRepository:
             return None
         return self._scan_from_row(row)
 
+    @count_playground_repo_call(kind="read", domain="source_review")
     def list_source_scans(
         self, user_id: UUID | str, law_ids: list[str] | tuple[str, ...]
     ) -> list[SourceScanRecord]:
@@ -1376,6 +1403,7 @@ class SqlitePlaygroundRepository:
         ).fetchall()
         return [self._scan_from_row(row) for row in rows]
 
+    @count_playground_repo_call(kind="write")
     def upsert_source_scan(
         self,
         user_id: UUID | str,
@@ -1429,6 +1457,7 @@ class SqlitePlaygroundRepository:
         assert row is not None
         return row
 
+    @count_playground_repo_call(kind="read", domain="source_review")
     def list_source_changes(
         self,
         user_id: UUID | str,
@@ -1464,6 +1493,7 @@ class SqlitePlaygroundRepository:
         rows = self.conn.execute(sql, params).fetchall()
         return [self._change_from_row(row) for row in rows]
 
+    @count_playground_repo_call(kind="read", domain="source_review")
     def get_source_change(
         self,
         user_id: UUID | str,
@@ -1496,6 +1526,7 @@ class SqlitePlaygroundRepository:
             return None
         return self._change_from_row(row)
 
+    @count_playground_repo_call(kind="write")
     def upsert_source_change(
         self,
         user_id: UUID | str,
@@ -1575,6 +1606,7 @@ class SqlitePlaygroundRepository:
         assert row is not None
         return row
 
+    @count_playground_repo_call(kind="write")
     def mark_source_change_reviewed(
         self,
         user_id: UUID | str,

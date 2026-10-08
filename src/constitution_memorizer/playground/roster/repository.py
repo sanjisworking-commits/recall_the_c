@@ -12,6 +12,7 @@ from datetime import date, datetime, timezone
 from typing import Any, Iterator, Protocol
 from uuid import UUID, uuid4
 
+from constitution_memorizer.playground.repo_counters import count_playground_repo_call
 from constitution_memorizer.playground.roster.decisions import plan_rollover_batch
 from constitution_memorizer.playground.roster.models import (
     ORIGIN_CARRY_FORWARD,
@@ -202,6 +203,7 @@ class SqliteRosterRepository:
         except sqlite3.Error:
             pass
 
+    @count_playground_repo_call(kind="read", domain="roster")
     def get_period(
         self, user_id: UUID | str, period_start: date
     ) -> PlaygroundPeriod | None:
@@ -213,6 +215,7 @@ class SqliteRosterRepository:
             ).fetchone()
         return period_from_mapping(row) if row is not None else None
 
+    @count_playground_repo_call(kind="read", domain="roster")
     def list_periods(self, user_id: UUID | str) -> list[PlaygroundPeriod]:
         uid = as_user_id(user_id)
         with self._lock:
@@ -222,6 +225,7 @@ class SqliteRosterRepository:
             ).fetchall()
         return [period_from_mapping(row) for row in rows]
 
+    @count_playground_repo_call(kind="write")
     def ensure_period(
         self,
         user_id: UUID | str,
@@ -247,6 +251,7 @@ class SqliteRosterRepository:
                 stamp=stamp,
             )
 
+    @count_playground_repo_call(kind="read", domain="roster")
     def get_item(
         self, user_id: UUID | str, period_start: date, law_id: str
     ) -> RosterItem | None:
@@ -258,6 +263,7 @@ class SqliteRosterRepository:
             ).fetchone()
         return item_from_mapping(row) if row is not None else None
 
+    @count_playground_repo_call(kind="read", domain="roster")
     def list_items(
         self, user_id: UUID | str, period_start: date
     ) -> list[RosterItem]:
@@ -270,6 +276,7 @@ class SqliteRosterRepository:
             ).fetchall()
         return [item_from_mapping(row) for row in rows]
 
+    @count_playground_repo_call(kind="read", domain="roster")
     def count_consumed(self, user_id: UUID | str, period_start: date) -> int:
         uid = as_user_id(user_id)
         with self._lock:
@@ -283,6 +290,7 @@ class SqliteRosterRepository:
             ).fetchone()
         return int(row["n"] if row is not None else 0)
 
+    @count_playground_repo_call(kind="write")
     def consume_law(
         self,
         user_id: UUID | str,
@@ -431,6 +439,7 @@ class SqliteRosterRepository:
                 period=period,
             )
 
+    @count_playground_repo_call(kind="write")
     def remove_law(
         self,
         user_id: UUID | str,
@@ -579,6 +588,7 @@ class SqliteRosterRepository:
             (PERIOD_STATUS_CLOSED, stamp, uid, PERIOD_STATUS_ACTIVE, start),
         )
 
+    @count_playground_repo_call(kind="write")
     def apply_rollover(
         self,
         user_id: UUID | str,

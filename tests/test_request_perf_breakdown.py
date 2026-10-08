@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import inspect
 import logging
+import sqlite3
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from time import perf_counter
@@ -58,6 +59,19 @@ from constitution_memorizer.playground.roster.models import (
     RESULT_NEW_BLOCKED,
     RESULT_ROSTER_FULL,
 )
+from constitution_memorizer.playground.db import (
+    ensure_sqlite_schema as ensure_overlay_sqlite_schema,
+)
+from constitution_memorizer.playground.repository import SqlitePlaygroundRepository
+from constitution_memorizer.playground.roster.db import (
+    ensure_sqlite_schema as ensure_roster_sqlite_schema,
+)
+from constitution_memorizer.playground.roster.period import (
+    playground_month_bounds,
+    playground_today,
+)
+from constitution_memorizer.playground.roster.repository import SqliteRosterRepository
+from constitution_memorizer.playground.roster.service import RosterService
 from constitution_memorizer.playground.service import activate_law
 from constitution_memorizer.entitlements.service import EntitlementService
 from constitution_memorizer.multiuser.settings import MultiUserSettings, clear_settings_cache
@@ -896,11 +910,71 @@ def _assert_t3_entitlement(
     else:
         assert snap.notes["playground_law_state"] == law_state
         assert law_state != "none"
-    assert "playground_roster_reads" not in snap.counters
-    assert "playground_repo_round_trips" not in snap.counters
     assert "playground_home_build" not in snap.timings
     assert "playground_today" not in snap.timings
     assert "playground_calendar" not in snap.timings
+
+
+_T6_COUNTERS = (
+    "playground_db_reads",
+    "playground_db_writes",
+    "playground_repo_round_trips",
+    "playground_summary_reads",
+    "playground_roster_reads",
+    "playground_progress_reads",
+    "playground_source_review_reads",
+    "playground_revision_reads",
+)
+
+
+def _assert_t6_absent(counters: dict) -> None:
+    for name in _T6_COUNTERS:
+        assert name not in counters
+
+
+def _assert_t6_counts(
+    counters: dict,
+    *,
+    db_reads: int = 0,
+    db_writes: int = 0,
+    roster_reads: int = 0,
+    summary_reads: int = 0,
+    progress_reads: int = 0,
+    revision_reads: int = 0,
+    source_review_reads: int = 0,
+) -> None:
+    expected = {
+        "playground_db_reads": db_reads,
+        "playground_db_writes": db_writes,
+        "playground_repo_round_trips": db_reads + db_writes,
+        "playground_roster_reads": roster_reads,
+        "playground_summary_reads": summary_reads,
+        "playground_progress_reads": progress_reads,
+        "playground_revision_reads": revision_reads,
+        "playground_source_review_reads": source_review_reads,
+    }
+    reads = counters.get("playground_db_reads", 0)
+    writes = counters.get("playground_db_writes", 0)
+    round_trips = counters.get("playground_repo_round_trips", 0)
+    assert round_trips == reads + writes
+    for name, value in expected.items():
+        if value:
+            assert counters.get(name) == value, (name, value, dict(counters))
+        else:
+            assert name not in counters, (name, dict(counters))
+    extra = set(counters) & set(_T6_COUNTERS) - set(expected)
+    assert not extra, extra
+
+
+def _t6_sqlite(tmp_path: Path):
+    tmp_path.mkdir(parents=True, exist_ok=True)
+    conn = sqlite3.connect(tmp_path / "t6.db")
+    conn.row_factory = sqlite3.Row
+    ensure_overlay_sqlite_schema(conn)
+    ensure_roster_sqlite_schema(conn)
+    overlay = SqlitePlaygroundRepository(conn)
+    roster_repo = SqliteRosterRepository(conn)
+    return overlay, roster_repo, RosterService(roster_repo), conn
 
 
 def _breakdown_messages(caplog: logging.LogCaptureFixture) -> list[str]:
@@ -3140,3 +3214,728 @@ def test_roster_notes_omit_law_text_user_ids_tokens(
     assert "none" not in snap.notes.values()
     assert snap.notes.get("playground_roster_result") != "peek"
     assert snap.path_group == "/playground/laws/{law_id}"
+
+
+def test_repo_counters_uses_contextvar_token_reset_and_wraps():
+    src = (
+        Path(__file__).resolve().parents[1]
+        / "src/constitution_memorizer/playground/repo_counters.py"
+    ).read_text(encoding="utf-8")
+    assert "token = _repo_counter_depth.set(_repo_counter_depth.get() + 1)" in src
+    assert "_repo_counter_depth.reset(token)" in src
+    assert "@wraps(fn)" in src
+    assert "depth -= 1" not in src
+    assert "threading.local" not in src
+    assert "request.app" not in src
+    assert "sqlite" not in src.lower()
+    assert "sqlalchemy" not in src.lower()
+    assert "entitlement" not in src.lower()
+    assert "subscription" not in src.lower()
+    assert "from constitution_memorizer.web.request_context import" in src
+    assert src.index("def _increment") < src.index(
+        "from constitution_memorizer.web.request_context import"
+    )
+
+
+def test_t6_does_not_add_counter_names():
+    assert "playground_roster_writes" not in REQUEST_COUNTERS
+    assert "playground_item_reads" not in REQUEST_COUNTERS
+    assert "playground_selection_reads" not in REQUEST_COUNTERS
+    assert REQUEST_COUNTERS[REQUEST_COUNTERS.index("playground_db_reads") :] == (
+        "playground_db_reads",
+        "playground_db_writes",
+        "playground_repo_round_trips",
+        "playground_summary_reads",
+        "playground_roster_reads",
+        "playground_progress_reads",
+        "playground_source_review_reads",
+        "playground_revision_reads",
+        "playground_entitlement_resolves",
+        "playground_device_lookups",
+    )
+
+
+def test_t6_does_not_instrument_postgres_or_other_sqlite():
+    playground = (
+        Path(__file__).resolve().parents[1] / "src/constitution_memorizer/playground"
+    )
+    assert "count_playground_repo_call" not in (
+        playground / "postgres.py"
+    ).read_text(encoding="utf-8")
+    assert "count_playground_repo_call" not in (
+        playground / "roster" / "postgres.py"
+    ).read_text(encoding="utf-8")
+    root = Path(__file__).resolve().parents[1] / "src/constitution_memorizer"
+    devices = (root / "devices/repository.py").read_text(encoding="utf-8")
+    subs = (root / "subscriptions/repository.py").read_text(encoding="utf-8")
+    assert "count_playground_repo_call" not in devices
+    assert "count_playground_repo_call" not in subs
+    assert "count_playground_repo_call" not in inspect.getsource(
+        SqliteRosterRepository._ensure_period_locked
+    )
+
+
+def test_sqlite_roster_get_period_increments_roster_reads(tmp_path: Path):
+    _overlay, roster_repo, _svc, _conn = _t6_sqlite(tmp_path)
+    token = begin_request_timings()
+    try:
+        roster_repo.get_period(USER, playground_month_bounds()[0])
+        _assert_t6_counts(
+            snapshot_request_counters(), db_reads=1, roster_reads=1
+        )
+    finally:
+        reset_request_timings(token)
+
+
+def test_sqlite_list_periods_counts_as_roster_read(tmp_path: Path):
+    _overlay, roster_repo, _svc, _conn = _t6_sqlite(tmp_path)
+    token = begin_request_timings()
+    try:
+        roster_repo.list_periods(USER)
+        _assert_t6_counts(
+            snapshot_request_counters(), db_reads=1, roster_reads=1
+        )
+    finally:
+        reset_request_timings(token)
+
+
+def test_sqlite_roster_ensure_period_is_write_not_roster_reads(tmp_path: Path):
+    _overlay, roster_repo, _svc, _conn = _t6_sqlite(tmp_path)
+    start, end = playground_month_bounds()
+    token = begin_request_timings()
+    try:
+        roster_repo.ensure_period(
+            USER,
+            period_start=start,
+            period_end=end,
+            tier_snapshot="plus",
+            law_limit=10,
+        )
+        _assert_t6_counts(snapshot_request_counters(), db_writes=1)
+    finally:
+        reset_request_timings(token)
+
+
+def test_sqlite_roster_consume_early_return_is_still_write(tmp_path: Path):
+    _overlay, roster_repo, svc, _conn = _t6_sqlite(tmp_path)
+    snap = _plus_open_snap()
+    start, _end = playground_month_bounds()
+    svc.ensure_current_period(USER, snap)
+    first = roster_repo.consume_law(
+        USER,
+        period_start=start,
+        law_id="ndps",
+        law_limit=10,
+        allow_new=True,
+    )
+    assert first.ok or first.status in {RESULT_ROSTER_FULL}
+    token = begin_request_timings()
+    try:
+        again = roster_repo.consume_law(
+            USER,
+            period_start=start,
+            law_id="ndps",
+            law_limit=10,
+            allow_new=True,
+        )
+        assert again.status != "ok" or again.ok
+        _assert_t6_counts(snapshot_request_counters(), db_writes=1)
+    finally:
+        reset_request_timings(token)
+
+
+def test_sqlite_confirm_add_law_counts_ensure_and_consume(tmp_path: Path):
+    _overlay, _roster_repo, svc, _conn = _t6_sqlite(tmp_path)
+    token = begin_request_timings()
+    try:
+        result = svc.confirm_add_law(
+            USER, "ndps", _plus_open_snap(), can_consume_new_law=True
+        )
+        assert result.ok
+        _assert_t6_counts(snapshot_request_counters(), db_writes=2)
+    finally:
+        reset_request_timings(token)
+
+
+def test_sqlite_capacity_counts_ensure_and_count_consumed(tmp_path: Path):
+    _overlay, _roster_repo, svc, _conn = _t6_sqlite(tmp_path)
+    token = begin_request_timings()
+    try:
+        svc.capacity(USER, _plus_open_snap())
+        _assert_t6_counts(
+            snapshot_request_counters(),
+            db_reads=1,
+            db_writes=1,
+            roster_reads=1,
+        )
+    finally:
+        reset_request_timings(token)
+
+
+def test_sqlite_peek_missing_period_is_one_roster_read(tmp_path: Path):
+    _overlay, _roster_repo, svc, _conn = _t6_sqlite(tmp_path)
+    token = begin_request_timings()
+    try:
+        svc.peek_capacity(USER, _plus_open_snap())
+        _assert_t6_counts(
+            snapshot_request_counters(), db_reads=1, roster_reads=1
+        )
+    finally:
+        reset_request_timings(token)
+
+
+def test_sqlite_overlay_get_item_has_no_domain_counter(tmp_path: Path):
+    overlay, _roster_repo, _svc, _conn = _t6_sqlite(tmp_path)
+    token = begin_request_timings()
+    try:
+        overlay.get_item(USER, "ndps")
+        overlay.list_items(USER)
+        overlay.list_selection(USER, "ndps")
+        _assert_t6_counts(snapshot_request_counters(), db_reads=3)
+    finally:
+        reset_request_timings(token)
+
+
+def test_sqlite_list_summaries_increments_summary_reads(tmp_path: Path):
+    overlay, _roster_repo, _svc, _conn = _t6_sqlite(tmp_path)
+    token = begin_request_timings()
+    try:
+        overlay.list_playground_summaries(USER, as_of=playground_today())
+        _assert_t6_counts(
+            snapshot_request_counters(), db_reads=1, summary_reads=1
+        )
+    finally:
+        reset_request_timings(token)
+
+
+def test_sqlite_empty_summary_law_ids_still_counts(tmp_path: Path):
+    overlay, _roster_repo, _svc, _conn = _t6_sqlite(tmp_path)
+    token = begin_request_timings()
+    try:
+        rows = overlay.list_playground_summaries(
+            USER, as_of=playground_today(), law_ids=[]
+        )
+        assert rows == []
+        overlay.list_due_revisions(USER, playground_today(), [])
+        overlay.list_source_scans(USER, [])
+        _assert_t6_counts(
+            snapshot_request_counters(),
+            db_reads=3,
+            summary_reads=1,
+            revision_reads=1,
+            source_review_reads=1,
+        )
+    finally:
+        reset_request_timings(token)
+
+
+def test_sqlite_get_progress_increments_progress_reads(tmp_path: Path):
+    overlay, _roster_repo, _svc, _conn = _t6_sqlite(tmp_path)
+    token = begin_request_timings()
+    try:
+        overlay.get_progress(USER, "ndps", "ndps:section:1")
+        overlay.get_mode_progress(USER, "ndps", "ndps:section:1", "read")
+        _assert_t6_counts(
+            snapshot_request_counters(), db_reads=2, progress_reads=2
+        )
+    finally:
+        reset_request_timings(token)
+
+
+def test_sqlite_get_revision_progress_counts_revision_not_progress(tmp_path: Path):
+    overlay, _roster_repo, _svc, _conn = _t6_sqlite(tmp_path)
+    token = begin_request_timings()
+    try:
+        overlay.get_revision_progress(USER, "ndps", "ndps:section:1")
+        _assert_t6_counts(
+            snapshot_request_counters(), db_reads=1, revision_reads=1
+        )
+    finally:
+        reset_request_timings(token)
+
+
+def test_sqlite_list_source_changes_increments_source_review_reads(tmp_path: Path):
+    overlay, _roster_repo, _svc, _conn = _t6_sqlite(tmp_path)
+    token = begin_request_timings()
+    try:
+        overlay.list_source_changes(USER, "ndps")
+        _assert_t6_counts(
+            snapshot_request_counters(), db_reads=1, source_review_reads=1
+        )
+    finally:
+        reset_request_timings(token)
+
+
+def test_sqlite_add_item_nested_get_item_does_not_double_count(tmp_path: Path):
+    overlay, _roster_repo, _svc, _conn = _t6_sqlite(tmp_path)
+    token = begin_request_timings()
+    try:
+        overlay.add_item(
+            USER, "ndps", source_version="v1", law_source_hash="hash"
+        )
+        _assert_t6_counts(snapshot_request_counters(), db_writes=1)
+    finally:
+        reset_request_timings(token)
+
+
+def test_sqlite_complete_mode_nested_is_one_write(tmp_path: Path):
+    overlay, _roster_repo, _svc, _conn = _t6_sqlite(tmp_path)
+    overlay.add_item(USER, "ndps", source_version="v1", law_source_hash="hash")
+    token = begin_request_timings()
+    try:
+        overlay.complete_mode(
+            USER,
+            "ndps",
+            "ndps:section:1",
+            "read",
+            source_version="v1",
+            source_hash="hash",
+        )
+        _assert_t6_counts(snapshot_request_counters(), db_writes=1)
+    finally:
+        reset_request_timings(token)
+
+
+def test_sqlite_direct_complete_learning_mode_is_one_write(tmp_path: Path):
+    overlay, _roster_repo, _svc, _conn = _t6_sqlite(tmp_path)
+    token = begin_request_timings()
+    try:
+        overlay.complete_learning_mode_and_transition_if_ready(
+            USER,
+            "ndps",
+            "ndps:section:1",
+            "read",
+            source_version="v1",
+            source_hash="hash",
+        )
+        _assert_t6_counts(snapshot_request_counters(), db_writes=1)
+    finally:
+        reset_request_timings(token)
+
+
+def test_sqlite_repo_exception_still_increments(tmp_path: Path):
+    _overlay, roster_repo, _svc, conn = _t6_sqlite(tmp_path)
+    conn.close()
+    token = begin_request_timings()
+    try:
+        with pytest.raises(sqlite3.Error):
+            roster_repo.get_period(USER, playground_month_bounds()[0])
+        _assert_t6_counts(
+            snapshot_request_counters(), db_reads=1, roster_reads=1
+        )
+    finally:
+        reset_request_timings(token)
+
+
+def test_sqlite_repo_records_noop_without_collector(tmp_path: Path):
+    overlay, roster_repo, svc, _conn = _t6_sqlite(tmp_path)
+    overlay.get_item(USER, "ndps")
+    roster_repo.get_period(USER, playground_month_bounds()[0])
+    svc.capacity(USER, _plus_open_snap())
+    assert snapshot_request_counters() == {}
+
+
+def test_sqlite_remove_law_and_apply_rollover_are_writes(tmp_path: Path):
+    _overlay, roster_repo, _svc, _conn = _t6_sqlite(tmp_path)
+    start, end = playground_month_bounds()
+    token = begin_request_timings()
+    try:
+        roster_repo.remove_law(USER, period_start=start, law_id="ndps")
+        roster_repo.apply_rollover(
+            USER,
+            period_start=start,
+            period_end=end,
+            tier_snapshot="plus",
+            law_limit=10,
+            activate=False,
+            keep_ids=[],
+            decline_ids=[],
+            allowed_ids=frozenset(),
+            allow_new_keep=True,
+        )
+        _assert_t6_counts(snapshot_request_counters(), db_writes=2)
+    finally:
+        reset_request_timings(token)
+
+
+def test_guest_playground_has_zero_t6_repo_counters(tmp_path: Path):
+    async def _go():
+        client, _app = await _async_guest_client(tmp_path)
+        try:
+            resp = await client.get("/playground")
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t3_entitlement(
+        snap,
+        access="guest",
+        auth_state="guest",
+        device_result="skipped_unpaid",
+        device_lookups=0,
+    )
+    _assert_t6_absent(snap.counters)
+
+
+def test_free_playground_has_zero_t6_repo_counters(tmp_path: Path):
+    async def _go():
+        client, _repo = await _async_authed_client(tmp_path)
+        try:
+            resp = await client.get("/playground")
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t3_entitlement(
+        snap,
+        access="free",
+        auth_state="authed",
+        device_result="skipped_unpaid",
+        device_lookups=1,
+    )
+    _assert_t6_absent(snap.counters)
+
+
+@pytest.mark.parametrize(
+    "seed, access, disposition",
+    [
+        (
+            lambda app: _seed_subscription(app, tier="max", status="halted"),
+            "halted",
+            "halted",
+        ),
+        (
+            lambda app: _seed_subscription(app, tier="pro", status="paused"),
+            "paused",
+            "paused",
+        ),
+        (
+            lambda app: _seed_period_ended_refund(app),
+            "paid_period_ended",
+            "active",
+        ),
+    ],
+)
+def test_read_only_home_t6_reads_without_writes_or_t5(
+    tmp_path: Path, seed, access, disposition
+):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            seed(app)
+            resp = await client.get("/playground")
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t3_entitlement(
+        snap,
+        access=access,
+        disposition=disposition,
+        auth_state="authed",
+        device_result="skipped_unpaid",
+        device_lookups=1,
+    )
+    _assert_t6_counts(
+        snap.counters,
+        db_reads=5,
+        roster_reads=3,
+        summary_reads=1,
+    )
+
+
+def test_plus_empty_home_records_duplicate_capacity_writes(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            resp = await client.get("/playground")
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t3_entitlement(
+        snap,
+        access="allowed",
+        disposition="active",
+        auth_state="authed",
+        device_result="ok",
+        device_lookups=2,
+        roster_result="ok",
+        roster_access_n=1,
+    )
+    _assert_t6_counts(
+        snap.counters,
+        db_reads=7,
+        db_writes=2,
+        roster_reads=5,
+        summary_reads=1,
+    )
+
+
+def test_pending_home_t6_matches_plus_empty(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="pending")
+            resp = await client.get("/playground")
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t3_entitlement(
+        snap,
+        access="pending",
+        disposition="pending",
+        auth_state="authed",
+        device_result="ok",
+        device_lookups=2,
+        roster_result="ok",
+        roster_access_n=1,
+    )
+    _assert_t6_counts(
+        snap.counters,
+        db_reads=7,
+        db_writes=2,
+        roster_reads=5,
+        summary_reads=1,
+    )
+
+
+def test_admin_playground_t6_matches_plus_empty_writes(tmp_path: Path):
+    async def _go():
+        client, app, repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_admin(repo)
+            resp = await client.get("/playground")
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t3_entitlement(
+        snap,
+        access="allowed",
+        auth_state="authed",
+        device_result="skipped_unpaid",
+        device_lookups=1,
+        roster_result="ok",
+        roster_access_n=1,
+    )
+    _assert_t6_counts(
+        snap.counters,
+        db_reads=7,
+        db_writes=2,
+        roster_reads=5,
+        summary_reads=1,
+    )
+
+
+def test_dashboard_plus_t6_reads_without_t5_or_t9(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            resp = await client.get("/dashboard")
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t3_entitlement(
+        snap,
+        access="allowed",
+        disposition="active",
+        auth_state="authed",
+        device_result="skipped_unpaid",
+        device_lookups=1,
+    )
+    _assert_t6_counts(
+        snap.counters,
+        db_reads=3,
+        roster_reads=2,
+        revision_reads=1,
+    )
+
+
+def test_plus_active_law_workspace_t6_counts(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            snap_ent = app.state.entitlement_service.resolve(USER)
+            assert app.state.roster.confirm_add_law(
+                USER, "ndps", snap_ent, can_consume_new_law=True
+            ).ok
+            resp = await client.get("/playground/laws/ndps")
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t3_entitlement(
+        snap,
+        access="allowed",
+        disposition="active",
+        auth_state="authed",
+        device_result="ok",
+        device_lookups=2,
+        roster_result="ok",
+        roster_access_n=2,
+        law_state="active",
+    )
+    _assert_t6_counts(
+        snap.counters,
+        db_reads=11,
+        db_writes=1,
+        roster_reads=3,
+        progress_reads=2,
+        revision_reads=1,
+        source_review_reads=2,
+    )
+
+
+def test_plus_inactive_law_t6_counts(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            resp = await client.get("/playground/laws/ndps")
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 303
+    assert resp.headers.get("location") == "/laws/ndps"
+    _assert_t3_entitlement(
+        snap,
+        access="inactive_law",
+        disposition="active",
+        auth_state="authed",
+        device_result="ok",
+        device_lookups=2,
+        roster_result="inactive_law",
+        roster_access_n=2,
+    )
+    _assert_t6_counts(
+        snap.counters,
+        db_reads=4,
+        db_writes=1,
+        roster_reads=3,
+    )
+
+
+def test_plus_full_add_consume_deny_t6_counts(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            _fill_plus_roster(app, monkeypatch)
+            await client.get("/playground")
+            csrf = client.cookies.get("rtc_csrf") or ""
+            resp = await client.post(
+                "/playground/laws/ndps/add",
+                data={"csrf_token": csrf, "confirm": "add", "scope": "sections"},
+                headers={"Accept": "application/json"},
+            )
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code in {200, 403}
+    _assert_t3_entitlement(
+        snap,
+        access="roster_full",
+        disposition="active",
+        auth_state="authed",
+        device_result="ok",
+        device_lookups=3,
+        roster_result="roster_full",
+        roster_access_n=2,
+    )
+    _assert_t6_counts(
+        snap.counters,
+        db_reads=5,
+        db_writes=5,
+        roster_reads=4,
+    )
+
+
+def test_plus_full_home_keeps_two_capacity_writes(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            _fill_plus_roster(app, monkeypatch)
+            resp = await client.get("/playground")
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t3_entitlement(
+        snap,
+        access="allowed",
+        disposition="active",
+        auth_state="authed",
+        device_result="ok",
+        device_lookups=2,
+        roster_result="roster_full",
+        roster_access_n=1,
+    )
+    assert snap.counters.get("playground_db_writes") == 2
+    assert snap.counters.get("playground_roster_reads", 0) >= 5
+    reads = snap.counters.get("playground_db_reads", 0)
+    writes = snap.counters.get("playground_db_writes", 0)
+    assert snap.counters.get("playground_repo_round_trips", 0) == reads + writes
+
+
+def test_t6_http_omits_sql_and_ids_on_breakdown(
+    tmp_path: Path, caplog: logging.LogCaptureFixture
+):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            with caplog.at_level(logging.INFO, logger="uvicorn.error"):
+                caplog.clear()
+                resp = await client.get("/playground")
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    notes = " ".join(snap.notes.values())
+    breakdown = "\n".join(_breakdown_messages(caplog))
+    blob = f"{notes}\n{snap.path_group}\n{breakdown}\n{snap.counters}"
+    assert str(USER) not in blob
+    assert USER_EMAIL not in blob
+    assert "ndps" not in blob
+    assert "SELECT " not in blob
+    assert "INSERT " not in blob
+    assert "?" not in snap.path_group
+    assert "playground_today" not in snap.timings
+    assert "playground_calendar" not in snap.timings
+    assert "playground_home_build" not in snap.timings
+
