@@ -522,7 +522,7 @@ def test_d35_guest_add_sheet_preserves_next(tmp_path: Path):
     page = client.get(add_path("ndps"), follow_redirects=False)
     assert page.status_code == 200
     assert 'data-pg-kind="guest"' in page.text
-    assert "Sign in to use Playground" in page.text
+    assert "Add to Playground" in page.text
     assert f"/login?next={add_path('ndps')}" in page.text
     assert 'data-hard-gate="true"' in page.text
 

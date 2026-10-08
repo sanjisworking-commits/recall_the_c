@@ -1,8 +1,8 @@
 """Guest desktop Add dialog Screen 5 (CTA map guest/05-screen).
 
 Authorized: ChatGPT plan. Guest `/laws/ndps` desktop sheet only. Phone guest
-Add sheet, Bare Act readers, Landing, Browse, Laws index, and subscriber
-sheets stay unchanged.
+Add sheet is Screen 02. Bare Act readers, Landing, Browse, Laws index, and
+subscriber sheets stay on their own wrappers.
 """
 
 from __future__ import annotations
@@ -76,7 +76,7 @@ def _guest_desk_add(html: str) -> str:
 
 
 def _guest_phone_add(html: str) -> str:
-    return html.split("data-guest-add-phone", 1)[1]
+    return html.split("data-guest-add-phone", 1)[1].split("</div>", 1)[0]
 
 
 def test_screen5_desktop_copy_and_gate_actions(tmp_path: Path) -> None:
@@ -99,15 +99,22 @@ def test_screen5_desktop_copy_and_gate_actions(tmp_path: Path) -> None:
     assert guest_add_reading_name("ndps", "NDPS Act") == NDPS_GUEST_READING_NAME
 
 
-def test_screen5_phone_guest_sheet_keeps_sign_in_and_cancel(tmp_path: Path) -> None:
+def test_screen5_phone_guest_sheet_defers_to_screen02_composition(
+    tmp_path: Path,
+) -> None:
     html = _guest_client(tmp_path).get(add_path("ndps")).text
     phone = _guest_phone_add(html)
-    assert "Sign in to use Playground" in phone
-    assert ">Cancel<" in phone
-    assert f'href="{LOGIN_NEXT}"' in phone
-    assert f'href="/laws/ndps"' in phone
-    assert "Create an account" not in phone
-    assert GUEST_ADD_TITLE not in phone
+    assert GUEST_ADD_TITLE in phone
+    assert NDPS_GUEST_READING_NAME in phone
+    assert "Create an account" in phone
+    assert ">Cancel<" not in phone
+    assert "Sign in to use Playground" not in phone
+    assert 'data-guest-add-gate' not in phone
+    assert f'href="{LOGIN_NEXT}"' not in phone
+    assert 'type="button"' in phone
+    desk = _guest_desk_add(html)
+    assert desk.count('data-guest-add-gate') == 2
+    assert desk.count(f'href="{LOGIN_NEXT}"') == 2
 
 
 def test_screen5_does_not_restore_subscriber_ctas_on_ndps_head(tmp_path: Path) -> None:
@@ -278,11 +285,13 @@ def test_screen5_1280_dialog_gate_and_close(tmp_path: Path) -> None:
                 deskDisplay: desk ? getComputedStyle(desk).display : null,
                 phoneDisplay: phoneBlock ? getComputedStyle(phoneBlock).display : null,
                 title: phoneBlock && phoneBlock.querySelector('h1') && phoneBlock.querySelector('h1').textContent.trim(),
-                hasCancel: Boolean(phoneBlock && [...phoneBlock.querySelectorAll('a')].some((a) => a.textContent.trim() === 'Cancel')),
+                hasCancel: Boolean(phoneBlock && [...phoneBlock.querySelectorAll('a, button')].some((a) => a.textContent.trim() === 'Cancel')),
                 createVisible: Boolean(
-                  desk && getComputedStyle(desk).display !== 'none'
-                  && desk.textContent.includes('Create an account')
+                  phoneBlock && getComputedStyle(phoneBlock).display !== 'none'
+                  && phoneBlock.textContent.includes('Create an account')
                 ),
+                signinTag: phoneBlock && phoneBlock.querySelector('.guest-add-signin') && phoneBlock.querySelector('.guest-add-signin').tagName,
+                createTag: phoneBlock && phoneBlock.querySelector('.guest-add-create') && phoneBlock.querySelector('.guest-add-create').tagName,
               };
             }"""
         )
@@ -311,7 +320,9 @@ def test_screen5_1280_dialog_gate_and_close(tmp_path: Path) -> None:
     assert closed["head"] is True
     assert phone_geo["deskDisplay"] == "none"
     assert phone_geo["phoneDisplay"] != "none"
-    assert phone_geo["title"] == "Sign in to use Playground"
-    assert phone_geo["hasCancel"] is True
-    assert phone_geo["createVisible"] is False
+    assert phone_geo["title"] == GUEST_ADD_TITLE
+    assert phone_geo["hasCancel"] is False
+    assert phone_geo["createVisible"] is True
+    assert phone_geo["signinTag"] == "BUTTON"
+    assert phone_geo["createTag"] == "BUTTON"
     assert shot_path.is_file()

@@ -1,8 +1,8 @@
 """Phone Guest Bare Act head Screen 01 (CTA map guest/01-screen, 390x844).
 
 Authorized: ChatGPT. Guest GET /laws/ndps phone composition only. Desktop
-1280 guest/04-screen, signed-in/Plus/Expired/Halted phone CTAs, Add-sheet
-Screen 02, and Guest Phone 02 stay unchanged.
+1280 guest/04-screen and signed-in/Plus/Expired/Halted phone CTAs stay on
+production Bare Act. Add-sheet Screen 02 has its own tests.
 """
 
 from __future__ import annotations
@@ -244,7 +244,6 @@ def test_phone_guest_add_sheet_is_existing_guest_kind(tmp_path: Path) -> None:
     assert 'data-pg-kind="guest"' in sheet.text
     assert "data-pg-add" in sheet.text
     assert _facts(client) == before
-    # Screen 02 composition is parked; do not assert Sign in / Create visuals.
 
 
 def test_phone_guest_gets_are_mutation_free(tmp_path: Path) -> None:

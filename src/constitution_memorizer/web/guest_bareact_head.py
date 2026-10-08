@@ -75,7 +75,7 @@ def is_guest_ndps_head_path(path: str) -> bool:
 
 
 def guest_add_reading_name(law_id: str, short_title: str = "") -> str:
-    """Act name used in the guest desktop Add dialog lede."""
+    """Act name used in the guest Add-sheet lede (desktop dialog and phone sheet)."""
 
     if law_id == NDPS_SLUG:
         return NDPS_GUEST_READING_NAME
