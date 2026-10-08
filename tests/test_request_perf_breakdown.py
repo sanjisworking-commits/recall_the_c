@@ -2,10 +2,12 @@
 
 from __future__ import annotations
 
+import ast
 import asyncio
 import inspect
 import logging
 import sqlite3
+from contextlib import contextmanager
 from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from time import perf_counter
@@ -62,10 +64,12 @@ from constitution_memorizer.playground.roster.models import (
 from constitution_memorizer.playground.db import (
     ensure_sqlite_schema as ensure_overlay_sqlite_schema,
 )
+from constitution_memorizer.playground.postgres import PostgresPlaygroundRepository
 from constitution_memorizer.playground.repository import SqlitePlaygroundRepository
 from constitution_memorizer.playground.roster.db import (
     ensure_sqlite_schema as ensure_roster_sqlite_schema,
 )
+from constitution_memorizer.playground.roster.postgres import PostgresRosterRepository
 from constitution_memorizer.playground.roster.period import (
     playground_month_bounds,
     playground_today,
@@ -975,6 +979,184 @@ def _t6_sqlite(tmp_path: Path):
     overlay = SqlitePlaygroundRepository(conn)
     roster_repo = SqliteRosterRepository(conn)
     return overlay, roster_repo, RosterService(roster_repo), conn
+
+
+_SRC_PLAYGROUND = (
+    Path(__file__).resolve().parents[1] / "src/constitution_memorizer/playground"
+)
+
+
+def _count_decorator_spec(node: ast.AST) -> tuple[str, str | None] | None:
+    if not isinstance(node, ast.Call):
+        return None
+    func = node.func
+    name = None
+    if isinstance(func, ast.Name):
+        name = func.id
+    elif isinstance(func, ast.Attribute):
+        name = func.attr
+    if name != "count_playground_repo_call":
+        return None
+    kwargs: dict[str, str | None] = {}
+    for kw in node.keywords:
+        if kw.arg in {"kind", "domain"}:
+            kwargs[kw.arg] = ast.literal_eval(kw.value)
+    assert "kind" in kwargs, ast.dump(node)
+    return kwargs["kind"], kwargs.get("domain")
+
+
+def _class_def(path: Path, class_name: str) -> ast.ClassDef:
+    tree = ast.parse(path.read_text(encoding="utf-8"))
+    for node in tree.body:
+        if isinstance(node, ast.ClassDef) and node.name == class_name:
+            return node
+    raise AssertionError(f"{class_name} not found in {path}")
+
+
+def _public_method_counter_map(
+    path: Path, class_name: str
+) -> dict[str, tuple[str, str | None]]:
+    class_node = _class_def(path, class_name)
+    mapping: dict[str, tuple[str, str | None]] = {}
+    decorated_private: list[str] = []
+    for item in class_node.body:
+        if not isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            continue
+        spec = None
+        for dec in item.decorator_list:
+            parsed = _count_decorator_spec(dec)
+            if parsed is not None:
+                spec = parsed
+                break
+        if spec is None:
+            continue
+        if item.name.startswith("_"):
+            decorated_private.append(item.name)
+        mapping[item.name] = spec
+    assert not decorated_private, decorated_private
+    return mapping
+
+
+def _assert_postgres_counter_map_matches_sqlite(
+    sqlite_path: Path,
+    sqlite_class: str,
+    postgres_path: Path,
+    postgres_class: str,
+) -> dict[str, tuple[str, str | None]]:
+    sqlite_map = _public_method_counter_map(sqlite_path, sqlite_class)
+    postgres_map = _public_method_counter_map(postgres_path, postgres_class)
+    missing = set(sqlite_map) - set(postgres_map)
+    extra = set(postgres_map) - set(sqlite_map)
+    assert not missing, missing
+    assert not extra, extra
+    mismatched = {
+        name: (sqlite_map[name], postgres_map[name])
+        for name in sqlite_map
+        if sqlite_map[name] != postgres_map[name]
+    }
+    assert not mismatched, mismatched
+    pg_class = _class_def(postgres_path, postgres_class)
+    pg_public = {
+        item.name
+        for item in pg_class.body
+        if isinstance(item, (ast.FunctionDef, ast.AsyncFunctionDef))
+        and not item.name.startswith("_")
+        and item.name != "__init__"
+    }
+    missing_decorator = (set(sqlite_map) & pg_public) - set(postgres_map)
+    assert not missing_decorator, missing_decorator
+    return postgres_map
+
+
+class _T7FakeCursor:
+    """Local fake cursor. Programmed fetchone values in call order; no SQL parse."""
+
+    def __init__(self, fetchone_queue: list | None = None) -> None:
+        self.execute_sql: list[str] = []
+        self._fetchone_queue = list(fetchone_queue or [])
+
+    def execute(self, sql, params=None):
+        self.execute_sql.append(sql)
+
+    def executemany(self, sql, seq_of_params):
+        return None
+
+    def fetchall(self):
+        return []
+
+    def fetchone(self):
+        if self._fetchone_queue:
+            return self._fetchone_queue.pop(0)
+        return None
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_exc):
+        return False
+
+
+class _T7FakeConn:
+    def __init__(self, cursor: _T7FakeCursor) -> None:
+        self.cursor_obj = cursor
+        self.commits = 0
+        self.rollbacks = 0
+
+    def cursor(self, row_factory=None):
+        return self.cursor_obj
+
+    def commit(self):
+        self.commits += 1
+
+    def rollback(self):
+        self.rollbacks += 1
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_exc):
+        return False
+
+
+class _T7FakePool:
+    def __init__(self, fetchone_queue: list | None = None) -> None:
+        self.cursor = _T7FakeCursor(fetchone_queue=fetchone_queue)
+        self.conn = _T7FakeConn(self.cursor)
+
+    @contextmanager
+    def connection(self):
+        yield self.conn
+
+
+class _T7RaisingPool:
+    @contextmanager
+    def connection(self):
+        raise RuntimeError("t7-spy-closed")
+        yield  # pragma: no cover
+
+
+def _t7_period_row() -> dict:
+    start, end = playground_month_bounds()
+    now = datetime.now(timezone.utc).replace(microsecond=0)
+    return {
+        "id": "period-1",
+        "user_id": str(USER),
+        "period_start": start,
+        "period_end": end,
+        "tier_snapshot": "plus",
+        "law_limit": 10,
+        "status": "active",
+        "confirmed_at": now,
+        "created_at": now,
+        "updated_at": now,
+    }
+
+
+def _t7_repos(fetchone_queue: list | None = None):
+    pool = _T7FakePool(fetchone_queue=fetchone_queue)
+    overlay = PostgresPlaygroundRepository(pool)
+    roster_repo = PostgresRosterRepository(pool)
+    return overlay, roster_repo, RosterService(roster_repo), pool
 
 
 def _breakdown_messages(caplog: logging.LogCaptureFixture) -> list[str]:
@@ -3255,16 +3437,7 @@ def test_t6_does_not_add_counter_names():
     )
 
 
-def test_t6_does_not_instrument_postgres_or_other_sqlite():
-    playground = (
-        Path(__file__).resolve().parents[1] / "src/constitution_memorizer/playground"
-    )
-    assert "count_playground_repo_call" not in (
-        playground / "postgres.py"
-    ).read_text(encoding="utf-8")
-    assert "count_playground_repo_call" not in (
-        playground / "roster" / "postgres.py"
-    ).read_text(encoding="utf-8")
+def test_t6_does_not_instrument_other_sqlite_or_private_helpers():
     root = Path(__file__).resolve().parents[1] / "src/constitution_memorizer"
     devices = (root / "devices/repository.py").read_text(encoding="utf-8")
     subs = (root / "subscriptions/repository.py").read_text(encoding="utf-8")
@@ -3272,6 +3445,15 @@ def test_t6_does_not_instrument_postgres_or_other_sqlite():
     assert "count_playground_repo_call" not in subs
     assert "count_playground_repo_call" not in inspect.getsource(
         SqliteRosterRepository._ensure_period_locked
+    )
+    assert "count_playground_repo_call" not in inspect.getsource(
+        PostgresRosterRepository._ensure_period_locked
+    )
+    assert "count_playground_repo_call" not in inspect.getsource(
+        PostgresPlaygroundRepository._item_from_row
+    )
+    assert "count_playground_repo_call" not in inspect.getsource(
+        PostgresPlaygroundRepository._mode_from_row
     )
 
 
@@ -3938,4 +4120,383 @@ def test_t6_http_omits_sql_and_ids_on_breakdown(
     assert "playground_today" not in snap.timings
     assert "playground_calendar" not in snap.timings
     assert "playground_home_build" not in snap.timings
+
+
+def test_postgres_overlay_decorator_map_matches_sqlite():
+    postgres_map = _assert_postgres_counter_map_matches_sqlite(
+        _SRC_PLAYGROUND / "repository.py",
+        "SqlitePlaygroundRepository",
+        _SRC_PLAYGROUND / "postgres.py",
+        "PostgresPlaygroundRepository",
+    )
+    assert postgres_map["get_item"] == ("read", None)
+    assert postgres_map["list_items"] == ("read", None)
+    assert postgres_map["list_selection"] == ("read", None)
+    assert postgres_map["list_playground_summaries"] == ("read", "summary")
+    assert postgres_map["get_progress"] == ("read", "progress")
+    assert postgres_map["get_mode_progress"] == ("read", "progress")
+    assert postgres_map["get_revision_progress"] == ("read", "revision")
+    assert postgres_map["list_due_revisions"] == ("read", "revision")
+    assert postgres_map["list_source_scans"] == ("read", "source_review")
+    assert postgres_map["add_item"] == ("write", None)
+    assert postgres_map["complete_mode"] == ("write", None)
+    assert postgres_map["complete_learning_mode_and_transition_if_ready"] == (
+        "write",
+        None,
+    )
+    assert "_item_from_row" not in postgres_map
+    assert "_mode_from_row" not in postgres_map
+
+
+def test_postgres_roster_decorator_map_matches_sqlite():
+    postgres_map = _assert_postgres_counter_map_matches_sqlite(
+        _SRC_PLAYGROUND / "roster" / "repository.py",
+        "SqliteRosterRepository",
+        _SRC_PLAYGROUND / "roster" / "postgres.py",
+        "PostgresRosterRepository",
+    )
+    assert postgres_map["get_period"] == ("read", "roster")
+    assert postgres_map["list_periods"] == ("read", "roster")
+    assert postgres_map["get_item"] == ("read", "roster")
+    assert postgres_map["list_items"] == ("read", "roster")
+    assert postgres_map["count_consumed"] == ("read", "roster")
+    assert postgres_map["ensure_period"] == ("write", None)
+    assert postgres_map["consume_law"] == ("write", None)
+    assert postgres_map["remove_law"] == ("write", None)
+    assert postgres_map["apply_rollover"] == ("write", None)
+    assert "_ensure_period_locked" not in postgres_map
+    assert "_count_consumed_locked" not in postgres_map
+
+
+def test_postgres_get_item_is_undomain_read():
+    overlay, _roster, _svc, _pool = _t7_repos()
+    token = begin_request_timings()
+    try:
+        overlay.get_item(USER, "ndps")
+        overlay.list_items(USER)
+        overlay.list_selection(USER, "ndps")
+        _assert_t6_counts(snapshot_request_counters(), db_reads=3)
+    finally:
+        reset_request_timings(token)
+
+
+def test_postgres_list_periods_is_roster_read():
+    _overlay, roster, _svc, _pool = _t7_repos()
+    token = begin_request_timings()
+    try:
+        roster.list_periods(USER)
+        _assert_t6_counts(
+            snapshot_request_counters(), db_reads=1, roster_reads=1
+        )
+    finally:
+        reset_request_timings(token)
+
+
+def test_postgres_empty_summary_law_ids_still_counts():
+    overlay, _roster, _svc, pool = _t7_repos()
+    token = begin_request_timings()
+    try:
+        rows = overlay.list_playground_summaries(
+            USER, as_of=playground_today(), law_ids=[]
+        )
+        assert rows == []
+        assert pool.cursor.execute_sql == []
+        _assert_t6_counts(
+            snapshot_request_counters(), db_reads=1, summary_reads=1
+        )
+    finally:
+        reset_request_timings(token)
+
+
+def test_postgres_empty_due_revisions_and_scans_still_count():
+    overlay, _roster, _svc, pool = _t7_repos()
+    token = begin_request_timings()
+    try:
+        overlay.list_due_revisions(USER, playground_today(), [])
+        overlay.list_source_scans(USER, [])
+        overlay.list_source_changes(USER, law_ids=[])
+        assert pool.cursor.execute_sql == []
+        _assert_t6_counts(
+            snapshot_request_counters(),
+            db_reads=3,
+            revision_reads=1,
+            source_review_reads=2,
+        )
+    finally:
+        reset_request_timings(token)
+
+
+def test_postgres_get_revision_progress_is_revision_not_progress():
+    overlay, _roster, _svc, _pool = _t7_repos()
+    token = begin_request_timings()
+    try:
+        overlay.get_revision_progress(USER, "ndps", "ndps:section:1")
+        _assert_t6_counts(
+            snapshot_request_counters(), db_reads=1, revision_reads=1
+        )
+    finally:
+        reset_request_timings(token)
+
+
+def test_postgres_get_progress_increments_progress_reads():
+    overlay, _roster, _svc, _pool = _t7_repos()
+    token = begin_request_timings()
+    try:
+        overlay.get_progress(USER, "ndps", "ndps:section:1")
+        overlay.get_mode_progress(USER, "ndps", "ndps:section:1", "read")
+        _assert_t6_counts(
+            snapshot_request_counters(), db_reads=2, progress_reads=2
+        )
+    finally:
+        reset_request_timings(token)
+
+
+def test_postgres_add_item_nested_get_item_is_one_write():
+    overlay, _roster, _svc, _pool = _t7_repos()
+    token = begin_request_timings()
+    try:
+        overlay.add_item(
+            USER, "ndps", source_version="v1", law_source_hash="hash"
+        )
+        _assert_t6_counts(snapshot_request_counters(), db_writes=1)
+    finally:
+        reset_request_timings(token)
+
+
+def test_postgres_complete_mode_nested_is_one_write():
+    overlay, _roster, _svc, _pool = _t7_repos(fetchone_queue=[{"n": 0}])
+    token = begin_request_timings()
+    try:
+        with pytest.raises(AssertionError):
+            overlay.complete_mode(
+                USER,
+                "ndps",
+                "ndps:section:1",
+                "read",
+                source_version="v1",
+                source_hash="hash",
+            )
+        _assert_t6_counts(snapshot_request_counters(), db_writes=1)
+    finally:
+        reset_request_timings(token)
+
+
+def test_postgres_direct_complete_learning_mode_is_one_write():
+    overlay, _roster, _svc, _pool = _t7_repos(fetchone_queue=[{"n": 0}])
+    token = begin_request_timings()
+    try:
+        with pytest.raises(AssertionError):
+            overlay.complete_learning_mode_and_transition_if_ready(
+                USER,
+                "ndps",
+                "ndps:section:1",
+                "read",
+                source_version="v1",
+                source_hash="hash",
+            )
+        _assert_t6_counts(snapshot_request_counters(), db_writes=1)
+    finally:
+        reset_request_timings(token)
+
+
+def test_postgres_ensure_period_is_write():
+    period = _t7_period_row()
+    _overlay, roster, _svc, _pool = _t7_repos(
+        fetchone_queue=[period, {"n": 0}, period]
+    )
+    start, end = playground_month_bounds()
+    token = begin_request_timings()
+    try:
+        roster.ensure_period(
+            USER,
+            period_start=start,
+            period_end=end,
+            tier_snapshot="plus",
+            law_limit=10,
+        )
+        _assert_t6_counts(snapshot_request_counters(), db_writes=1)
+    finally:
+        reset_request_timings(token)
+
+
+def test_postgres_consume_missing_period_is_still_write():
+    _overlay, roster, _svc, _pool = _t7_repos()
+    start, _end = playground_month_bounds()
+    token = begin_request_timings()
+    try:
+        result = roster.consume_law(
+            USER,
+            period_start=start,
+            law_id="ndps",
+            law_limit=10,
+            allow_new=True,
+        )
+        assert result.status == RESULT_NEW_BLOCKED
+        _assert_t6_counts(snapshot_request_counters(), db_writes=1)
+    finally:
+        reset_request_timings(token)
+
+
+def test_postgres_capacity_is_one_write_plus_one_read():
+    period = _t7_period_row()
+    _overlay, _roster, svc, _pool = _t7_repos(
+        fetchone_queue=[period, {"n": 0}, period, {"n": 0}]
+    )
+    token = begin_request_timings()
+    try:
+        svc.capacity(USER, _plus_open_snap())
+        _assert_t6_counts(
+            snapshot_request_counters(),
+            db_reads=1,
+            db_writes=1,
+            roster_reads=1,
+        )
+    finally:
+        reset_request_timings(token)
+
+
+def test_postgres_confirm_add_law_is_two_writes():
+    period = _t7_period_row()
+    _overlay, _roster, svc, _pool = _t7_repos(
+        fetchone_queue=[period, {"n": 0}, period]
+    )
+    token = begin_request_timings()
+    try:
+        svc.confirm_add_law(
+            USER, "ndps", _plus_open_snap(), can_consume_new_law=True
+        )
+        _assert_t6_counts(snapshot_request_counters(), db_writes=2)
+    finally:
+        reset_request_timings(token)
+
+
+def test_postgres_peek_missing_period_is_one_roster_read():
+    _overlay, _roster, svc, _pool = _t7_repos()
+    token = begin_request_timings()
+    try:
+        svc.peek_capacity(USER, _plus_open_snap())
+        _assert_t6_counts(
+            snapshot_request_counters(), db_reads=1, roster_reads=1
+        )
+    finally:
+        reset_request_timings(token)
+
+
+def test_postgres_repo_exception_still_increments():
+    roster = PostgresRosterRepository(_T7RaisingPool())
+    token = begin_request_timings()
+    try:
+        with pytest.raises(RuntimeError, match="t7-spy-closed"):
+            roster.get_period(USER, playground_month_bounds()[0])
+        _assert_t6_counts(
+            snapshot_request_counters(), db_reads=1, roster_reads=1
+        )
+    finally:
+        reset_request_timings(token)
+
+
+def test_postgres_repo_records_noop_without_collector():
+    overlay, roster, _svc, _pool = _t7_repos()
+    overlay.get_item(USER, "ndps")
+    roster.get_period(USER, playground_month_bounds()[0])
+    period = _t7_period_row()
+    _overlay, _roster, svc, _cap_pool = _t7_repos(
+        fetchone_queue=[period, {"n": 0}, period, {"n": 0}]
+    )
+    svc.capacity(USER, _plus_open_snap())
+    assert snapshot_request_counters() == {}
+
+
+def test_postgres_round_trips_equals_reads_plus_writes():
+    overlay, roster, _svc, _pool = _t7_repos()
+    token = begin_request_timings()
+    try:
+        overlay.get_item(USER, "ndps")
+        overlay.list_playground_summaries(
+            USER, as_of=playground_today(), law_ids=[]
+        )
+        roster.list_periods(USER)
+        roster.consume_law(
+            USER,
+            period_start=playground_month_bounds()[0],
+            law_id="ndps",
+            law_limit=10,
+            allow_new=True,
+        )
+        counters = snapshot_request_counters()
+        reads = counters.get("playground_db_reads", 0)
+        writes = counters.get("playground_db_writes", 0)
+        assert counters.get("playground_repo_round_trips") == reads + writes
+        _assert_t6_counts(
+            counters,
+            db_reads=3,
+            db_writes=1,
+            summary_reads=1,
+            roster_reads=1,
+        )
+    finally:
+        reset_request_timings(token)
+
+
+def test_postgres_repo_counters_are_integer_t1_names():
+    overlay, roster, _svc, _pool = _t7_repos()
+    token = begin_request_timings()
+    try:
+        overlay.get_item(USER, "ndps")
+        overlay.list_playground_summaries(
+            USER, as_of=playground_today(), law_ids=[]
+        )
+        overlay.get_progress(USER, "ndps", "ndps:section:1")
+        overlay.get_revision_progress(USER, "ndps", "ndps:section:1")
+        overlay.list_source_scans(USER, [])
+        roster.list_periods(USER)
+        counters = snapshot_request_counters()
+        assert set(counters) <= set(REQUEST_COUNTERS)
+        assert all(isinstance(value, int) for value in counters.values())
+        blob = " ".join(counters)
+        assert "SELECT" not in blob
+        assert "ndps" not in blob
+        assert str(USER) not in blob
+        assert "%" not in blob
+    finally:
+        reset_request_timings(token)
+
+
+def test_postgres_remove_law_and_apply_rollover_are_writes():
+    _overlay, roster, _svc, _pool = _t7_repos()
+    start, end = playground_month_bounds()
+    token = begin_request_timings()
+    try:
+        roster.remove_law(USER, period_start=start, law_id="ndps")
+        roster.apply_rollover(
+            USER,
+            period_start=start,
+            period_end=end,
+            tier_snapshot="plus",
+            law_limit=10,
+            activate=False,
+            keep_ids=[],
+            decline_ids=[],
+            allowed_ids=frozenset(),
+            allow_new_keep=True,
+        )
+        _assert_t6_counts(snapshot_request_counters(), db_writes=2)
+    finally:
+        reset_request_timings(token)
+
+
+def test_t7_does_not_add_names_or_touch_sqlite_http_table():
+    assert "playground_roster_writes" not in REQUEST_COUNTERS
+    assert REQUEST_COUNTERS[REQUEST_COUNTERS.index("playground_db_reads") :] == (
+        "playground_db_reads",
+        "playground_db_writes",
+        "playground_repo_round_trips",
+        "playground_summary_reads",
+        "playground_roster_reads",
+        "playground_progress_reads",
+        "playground_source_review_reads",
+        "playground_revision_reads",
+        "playground_entitlement_resolves",
+        "playground_device_lookups",
+    )
 
