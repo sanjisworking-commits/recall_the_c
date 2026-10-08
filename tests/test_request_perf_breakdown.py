@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from time import perf_counter
+from types import SimpleNamespace
 from uuid import UUID
 
 import pytest
@@ -14,9 +16,24 @@ from httpx import ASGITransport, AsyncClient
 
 from constitution_memorizer.auth.fake_provider import FakeAuthProvider
 from constitution_memorizer.auth.sessions import InMemorySessionStore
+from constitution_memorizer.entitlements.dependencies import (
+    commercial_playground_notes,
+    get_entitlement_snapshot,
+)
+from constitution_memorizer.entitlements.models import (
+    BLOCK_NOT_SUBSCRIBED,
+    BLOCK_PAID_PERIOD_ENDED,
+    BLOCK_PAYMENT_HALTED,
+    BLOCK_SIGN_IN_REQUIRED,
+    BLOCK_SUBSCRIPTION_PAUSED,
+    CONSTITUTION_ACCESS_FULL,
+    EntitlementSnapshot,
+)
+from constitution_memorizer.entitlements.service import EntitlementService
 from constitution_memorizer.multiuser.settings import MultiUserSettings, clear_settings_cache
 from constitution_memorizer.progress.db import open_progress_db
 from constitution_memorizer.progress.repository import ProgressRepository
+from constitution_memorizer.web import bare_acts
 from constitution_memorizer.web.app import create_app
 from constitution_memorizer.web.request_context import (
     PLAYGROUND_ACCESS_RESULTS,
@@ -510,6 +527,7 @@ def test_snapshot_is_independent_copy():
 
 
 def _counting_app(tmp_path: Path) -> tuple[object, CountingProgressRepo]:
+    tmp_path.mkdir(parents=True, exist_ok=True)
     conn = open_progress_db(tmp_path / "progress.db")
     repo = CountingProgressRepo(ProgressRepository(conn))
     provider = FakeAuthProvider()
@@ -544,7 +562,9 @@ def _counting_client(tmp_path: Path) -> tuple[TestClient, CountingProgressRepo]:
     return client, repo
 
 
-async def _async_authed_client(tmp_path: Path) -> tuple[AsyncClient, CountingProgressRepo]:
+async def _async_authed_session(
+    tmp_path: Path,
+) -> tuple[AsyncClient, object, CountingProgressRepo]:
     """Same-task ASGI client so ContextVar snapshots are visible after the request."""
     app, repo = _counting_app(tmp_path)
     client = AsyncClient(
@@ -559,7 +579,149 @@ async def _async_authed_client(tmp_path: Path) -> tuple[AsyncClient, CountingPro
     )
     assert cb.status_code == 303
     repo.reset_counts()
+    return client, app, repo
+
+
+async def _async_authed_client(tmp_path: Path) -> tuple[AsyncClient, CountingProgressRepo]:
+    client, _app, repo = await _async_authed_session(tmp_path)
     return client, repo
+
+
+async def _async_guest_client(tmp_path: Path) -> tuple[AsyncClient, object]:
+    app, _repo = _counting_app(tmp_path)
+    client = AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://testserver",
+        follow_redirects=False,
+    )
+    return client, app
+
+
+def _billing_window() -> tuple[datetime, datetime]:
+    now = datetime.now(timezone.utc)
+    return now - timedelta(days=1), now + timedelta(days=30)
+
+
+def _seed_subscription(app, *, tier: str, status: str, user_id=USER):
+    start, end = _billing_window()
+    return app.state.subscriptions.create_subscription_record(
+        user_id,
+        tier=tier,
+        status=status,
+        billing_period_start=start,
+        billing_period_end=end,
+        is_current=True,
+    )
+
+
+def _seed_period_ended_refund(app, *, user_id=USER):
+    start, end = _billing_window()
+    sub = app.state.subscriptions.create_subscription_record(
+        user_id,
+        tier="plus",
+        status="active",
+        billing_period_start=start,
+        billing_period_end=end,
+        is_current=True,
+    )
+    charge = app.state.subscription_charges.upsert_charge(
+        provider_payment_id="pay_refund_t3",
+        user_subscription_id=sub.id,
+        billing_period_start=start,
+        billing_period_end=end,
+        refund_status="full",
+    )
+    assert charge.access_effect == "period_ended"
+    return sub
+
+
+class CountingSubscriptions:
+    def __init__(self, inner) -> None:
+        self.inner = inner
+        self.calls = 0
+
+    def get_current_subscription(self, user_id):
+        self.calls += 1
+        return self.inner.get_current_subscription(user_id)
+
+    def __getattr__(self, name):
+        return getattr(self.inner, name)
+
+
+def _spy_subscriptions(app) -> CountingSubscriptions:
+    counting = CountingSubscriptions(app.state.subscriptions)
+    app.state.subscriptions = counting
+    app.state.entitlement_service._subscriptions = counting
+    return counting
+
+
+def _hydrate_spy(monkeypatch: pytest.MonkeyPatch) -> list[str]:
+    hydrated: list[str] = []
+    real = bare_acts._load_cached
+
+    def wrapped(slug: str, identity: str):
+        hydrated.append(slug)
+        return real(slug, identity)
+
+    wrapped.cache_clear = real.cache_clear  # type: ignore[attr-defined]
+    monkeypatch.setattr(bare_acts, "_load_cached", wrapped)
+    return hydrated
+
+
+def _commercial_snap(**overrides) -> EntitlementSnapshot:
+    fields = {
+        "is_authenticated": True,
+        "subscription_status": None,
+        "tier": None,
+        "is_subscribed": False,
+        "admin_override": False,
+        "can_use_constitution_learn": True,
+        "constitution_access": CONSTITUTION_ACCESS_FULL,
+        "can_read_laws": True,
+        "can_open_playground": False,
+        "can_consume_new_playground_law": False,
+        "playground_law_limit": None,
+        "playground_block_reason": BLOCK_NOT_SUBSCRIBED,
+        "billing_period_start": None,
+        "billing_period_end": None,
+        "legacy_status": None,
+    }
+    fields.update(overrides)
+    return EntitlementSnapshot(**fields)
+
+
+def _fake_entitlement_request(*, resolver, current_user=None):
+    state = SimpleNamespace(current_user=current_user)
+    app_state = SimpleNamespace(
+        entitlement_service=resolver,
+        multiuser_enabled=False,
+        device_service=None,
+    )
+    return SimpleNamespace(state=state, app=SimpleNamespace(state=app_state))
+
+
+def _assert_t3_entitlement(
+    snap,
+    *,
+    access: str,
+    disposition: str | None = None,
+    auth_state: str,
+) -> None:
+    assert snap is not None
+    assert "playground_entitlement" in snap.timings
+    assert snap.timings["playground_entitlement"][1] == 1
+    assert snap.counters["playground_entitlement_resolves"] == 1
+    assert snap.notes["playground_access_result"] == access
+    if disposition is None:
+        assert "playground_subscription_disposition" not in snap.notes
+    else:
+        assert snap.notes["playground_subscription_disposition"] == disposition
+    assert snap.notes["auth_state"] == auth_state
+    assert "playground_device" not in snap.timings
+    assert "playground_roster_access" not in snap.timings
+    assert "playground_device_result" not in snap.notes
+    assert "playground_roster_result" not in snap.notes
+    assert "playground_law_state" not in snap.notes
 
 
 def _breakdown_messages(caplog: logging.LogCaptureFixture) -> list[str]:
@@ -1097,3 +1259,416 @@ def test_one_middleware_total_ms_reused_on_snapshot_and_logs(
     ][0]
     assert access_total == breakdown_total
     assert f"{snap.total_ms:.1f}" == access_total
+
+
+@pytest.mark.parametrize(
+    "snapshot, access, disposition",
+    [
+        (EntitlementService().resolve(None), "guest", None),
+        (
+            _commercial_snap(
+                playground_block_reason=BLOCK_NOT_SUBSCRIBED,
+                subscription_status=None,
+            ),
+            "free",
+            None,
+        ),
+        (
+            _commercial_snap(
+                subscription_status="pending",
+                tier="plus",
+                is_subscribed=True,
+                can_open_playground=True,
+                can_consume_new_playground_law=False,
+                playground_block_reason=None,
+                playground_law_limit=10,
+            ),
+            "pending",
+            "pending",
+        ),
+        (
+            _commercial_snap(
+                subscription_status="paused",
+                tier="pro",
+                playground_block_reason=BLOCK_SUBSCRIPTION_PAUSED,
+            ),
+            "paused",
+            "paused",
+        ),
+        (
+            _commercial_snap(
+                subscription_status="halted",
+                tier="max",
+                playground_block_reason=BLOCK_PAYMENT_HALTED,
+            ),
+            "halted",
+            "halted",
+        ),
+        (
+            _commercial_snap(
+                subscription_status="active",
+                tier="plus",
+                playground_block_reason=BLOCK_PAID_PERIOD_ENDED,
+            ),
+            "paid_period_ended",
+            "active",
+        ),
+        (
+            _commercial_snap(
+                subscription_status="halted",
+                tier="max",
+                playground_block_reason=BLOCK_PAID_PERIOD_ENDED,
+            ),
+            "paid_period_ended",
+            "halted",
+        ),
+        (
+            _commercial_snap(
+                subscription_status="active",
+                tier="plus",
+                is_subscribed=True,
+                can_open_playground=True,
+                can_consume_new_playground_law=True,
+                playground_block_reason=None,
+                playground_law_limit=10,
+            ),
+            "allowed",
+            "active",
+        ),
+        (
+            _commercial_snap(
+                admin_override=True,
+                can_open_playground=True,
+                can_consume_new_playground_law=True,
+                playground_block_reason=None,
+                subscription_status=None,
+            ),
+            "allowed",
+            None,
+        ),
+    ],
+)
+def test_commercial_playground_notes_mapping(snapshot, access, disposition):
+    got_access, got_disposition = commercial_playground_notes(snapshot)
+    assert got_access == access
+    assert got_disposition == disposition
+    assert got_access in PLAYGROUND_ACCESS_RESULTS
+    if got_disposition is not None:
+        assert got_disposition in PLAYGROUND_SUBSCRIPTION_DISPOSITIONS
+    blob = f"{got_access} {got_disposition}"
+    assert str(USER) not in blob
+    assert USER_EMAIL not in blob
+    assert "ndps" not in blob
+    assert snapshot.tier is None or snapshot.tier not in (got_access, got_disposition or "")
+
+
+def test_get_entitlement_snapshot_memo_does_not_double_resolve():
+    class Spy:
+        def __init__(self, inner) -> None:
+            self.inner = inner
+            self.calls = 0
+
+        def resolve_for_request(self, request, *, now=None):
+            self.calls += 1
+            return self.inner.resolve_for_request(request, now=now)
+
+    spy = Spy(EntitlementService())
+    request = _fake_entitlement_request(resolver=spy, current_user=None)
+    token = begin_request_timings()
+    try:
+        first = get_entitlement_snapshot(request)
+        record_request_note("playground_access_result", "mutated")
+        second = get_entitlement_snapshot(request)
+        assert first is second
+        assert spy.calls == 1
+        assert snapshot_request_counters()["playground_entitlement_resolves"] == 1
+        assert snapshot_request_timings()["playground_entitlement"][1] == 1
+        assert snapshot_request_notes()["playground_access_result"] == "mutated"
+    finally:
+        reset_request_timings(token)
+
+
+def test_entitlement_records_noop_without_collector():
+    request = _fake_entitlement_request(
+        resolver=EntitlementService(), current_user=None
+    )
+    snap = get_entitlement_snapshot(request)
+    assert snap.is_authenticated is False
+    assert snapshot_request_timings() == {}
+    assert snapshot_request_counters() == {}
+
+
+def test_raising_resolver_counts_attempt_without_fabricated_note():
+    class Boom:
+        def resolve_for_request(self, request, *, now=None):
+            raise RuntimeError("resolve boom")
+
+    request = _fake_entitlement_request(resolver=Boom(), current_user=None)
+    token = begin_request_timings()
+    try:
+        with pytest.raises(RuntimeError, match="resolve boom"):
+            get_entitlement_snapshot(request)
+        assert snapshot_request_counters()["playground_entitlement_resolves"] == 1
+        assert snapshot_request_timings()["playground_entitlement"][1] == 1
+        notes = snapshot_request_notes()
+        assert "playground_access_result" not in notes
+        assert "playground_subscription_disposition" not in notes
+        assert not hasattr(request.state, "entitlement_snapshot")
+    finally:
+        reset_request_timings(token)
+
+
+def test_direct_entitlement_service_resolve_is_not_instrumented():
+    token = begin_request_timings()
+    try:
+        snap = EntitlementService().resolve(None)
+        assert snap.playground_block_reason == BLOCK_SIGN_IN_REQUIRED
+        assert snapshot_request_counters() == {}
+        assert snapshot_request_timings() == {}
+        assert snapshot_request_notes() == {}
+    finally:
+        reset_request_timings(token)
+
+
+def test_guest_playground_snapshot_access_result_guest(tmp_path: Path):
+    async def _go():
+        client, _app = await _async_guest_client(tmp_path)
+        try:
+            resp = await client.get("/playground")
+            snap = get_last_request_performance()
+            return resp, snap
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    assert snap is not None
+    assert snap.path_group == "/playground"
+    _assert_t3_entitlement(snap, access="guest", auth_state="guest")
+
+
+def test_free_authed_playground_snapshot_access_result_free(tmp_path: Path):
+    async def _go():
+        client, _repo = await _async_authed_client(tmp_path)
+        try:
+            resp = await client.get("/playground")
+            snap = get_last_request_performance()
+            return resp, snap
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    assert snap is not None
+    assert snap.path_group == "/playground"
+    _assert_t3_entitlement(snap, access="free", auth_state="authed")
+    assert snap.notes["auth_state"] != "guest"
+
+
+def test_pending_playground_snapshot_access_result_pending(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="pending")
+            resp = await client.get("/playground")
+            snap = get_last_request_performance()
+            return resp, snap
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t3_entitlement(
+        snap, access="pending", disposition="pending", auth_state="authed"
+    )
+
+
+def test_paused_playground_snapshot_access_result_paused(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="pro", status="paused")
+            resp = await client.get("/playground")
+            snap = get_last_request_performance()
+            return resp, snap
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t3_entitlement(
+        snap, access="paused", disposition="paused", auth_state="authed"
+    )
+
+
+def test_halted_playground_snapshot_access_result_halted(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="max", status="halted")
+            resp = await client.get("/playground")
+            snap = get_last_request_performance()
+            return resp, snap
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t3_entitlement(
+        snap, access="halted", disposition="halted", auth_state="authed"
+    )
+
+
+def test_period_ended_playground_snapshot_access_result(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_period_ended_refund(app)
+            resp = await client.get("/playground")
+            snap = get_last_request_performance()
+            return resp, snap
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t3_entitlement(
+        snap,
+        access="paid_period_ended",
+        disposition="active",
+        auth_state="authed",
+    )
+
+
+def test_plus_active_playground_snapshot_access_result_allowed(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            resp = await client.get("/playground")
+            snap = get_last_request_performance()
+            return resp, snap
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t3_entitlement(
+        snap, access="allowed", disposition="active", auth_state="authed"
+    )
+
+
+def test_halted_home_does_not_increment_entitlement_twice(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="max", status="halted")
+            resp = await client.get("/playground")
+            snap = get_last_request_performance()
+            return resp, snap
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    assert snap is not None
+    assert snap.counters["playground_entitlement_resolves"] == 1
+    assert snap.timings["playground_entitlement"][1] == 1
+
+
+def test_guest_and_free_playground_get_do_not_hydrate_acts(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    hydrated = _hydrate_spy(monkeypatch)
+    guest = TestClient(_counting_app(tmp_path / "guest")[0])
+    assert guest.get("/playground").status_code == 200
+    free, _repo = _counting_client(tmp_path / "free")
+    assert free.get("/playground").status_code == 200
+    assert hydrated == []
+
+
+def test_guest_playground_does_not_read_subscriptions(tmp_path: Path):
+    async def _go():
+        client, app = await _async_guest_client(tmp_path)
+        spy = _spy_subscriptions(app)
+        try:
+            resp = await client.get("/playground")
+            snap = get_last_request_performance()
+            return resp, snap, spy.calls
+        finally:
+            await client.aclose()
+
+    resp, snap, calls = asyncio.run(_go())
+    assert resp.status_code == 200
+    assert calls == 0
+    _assert_t3_entitlement(snap, access="guest", auth_state="guest")
+
+
+def test_free_playground_reads_current_subscription_once(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        spy = _spy_subscriptions(app)
+        try:
+            resp = await client.get("/playground")
+            snap = get_last_request_performance()
+            return resp, snap, spy.calls
+        finally:
+            await client.aclose()
+
+    resp, snap, calls = asyncio.run(_go())
+    assert resp.status_code == 200
+    assert calls == 1
+    _assert_t3_entitlement(snap, access="free", auth_state="authed")
+
+
+def test_entitlement_notes_omit_pii_on_breakdown_and_snapshot(
+    tmp_path: Path, caplog: logging.LogCaptureFixture
+):
+    async def _go():
+        client, _repo = await _async_authed_client(tmp_path)
+        try:
+            with caplog.at_level(logging.INFO, logger="uvicorn.error"):
+                caplog.clear()
+                resp = await client.get("/playground?notice=x")
+            snap = get_last_request_performance()
+            return resp, snap
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    assert snap is not None
+    assert "?" not in snap.path_group
+    assert "notice" not in snap.path_group
+    assert str(USER) not in snap.path_group
+    assert str(USER) not in snap.notes.values()
+    assert USER_EMAIL not in snap.notes.values()
+    breakdown = "\n".join(_breakdown_messages(caplog))
+    assert str(USER) not in breakdown
+    assert USER_EMAIL not in breakdown
+    assert "notice=x" not in breakdown
+    assert "?" not in breakdown
+
+
+def test_dashboard_free_snapshot_records_entitlement_once(tmp_path: Path):
+    async def _go():
+        client, _repo = await _async_authed_client(tmp_path)
+        try:
+            resp = await client.get("/dashboard")
+            snap = get_last_request_performance()
+            return resp, snap
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    assert snap is not None
+    assert snap.path_group == "/dashboard"
+    _assert_t3_entitlement(snap, access="free", auth_state="authed")
+
+
+def test_guest_playground_json_still_401(tmp_path: Path):
+    client = TestClient(_counting_app(tmp_path)[0])
+    resp = client.get("/playground", headers={"Accept": "application/json"})
+    assert resp.status_code == 401
+    assert resp.json()["error"] == "auth_required"

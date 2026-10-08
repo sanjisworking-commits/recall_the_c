@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from dataclasses import replace
 from datetime import date, datetime
+from time import perf_counter
 from typing import Any
 
 from constitution_memorizer.entitlements.models import (
@@ -16,7 +17,11 @@ from constitution_memorizer.entitlements.models import (
     BLOCK_DEVICE_LIMIT,
     BLOCK_DEVICE_REPLACEMENT_LIMIT,
     BLOCK_DEVICE_REVOKED,
+    BLOCK_NOT_SUBSCRIBED,
     BLOCK_PAID_PERIOD_ENDED,
+    BLOCK_PAYMENT_HALTED,
+    BLOCK_SIGN_IN_REQUIRED,
+    BLOCK_SUBSCRIPTION_PAUSED,
     EntitlementSnapshot,
 )
 from constitution_memorizer.entitlements.service import EntitlementService
@@ -35,6 +40,56 @@ _DEVICE_BLOCKS = frozenset(
 _EXPIRED_EXCLUDED_STATUSES = frozenset({"pending", "halted", "paused"})
 
 
+def commercial_playground_notes(
+    snapshot: EntitlementSnapshot,
+) -> tuple[str | None, str | None]:
+    """Map a commercial snapshot to bounded access_result and disposition.
+
+    Device and roster outcomes are not written here (T4 / T5).
+    """
+
+    from constitution_memorizer.web.request_context import (  # noqa: PLC0415
+        PLAYGROUND_SUBSCRIPTION_DISPOSITIONS,
+    )
+
+    disposition: str | None = snapshot.subscription_status
+    if disposition not in PLAYGROUND_SUBSCRIPTION_DISPOSITIONS:
+        disposition = None
+
+    reason = snapshot.playground_block_reason
+    if not snapshot.is_authenticated:
+        return "guest", None
+    if reason == BLOCK_PAID_PERIOD_ENDED:
+        return "paid_period_ended", disposition
+    if reason == BLOCK_PAYMENT_HALTED:
+        return "halted", disposition
+    if reason == BLOCK_SUBSCRIPTION_PAUSED:
+        return "paused", disposition
+    if snapshot.subscription_status == "pending":
+        return "pending", disposition
+    if reason == BLOCK_SIGN_IN_REQUIRED:
+        return "guest", None
+    if reason == BLOCK_NOT_SUBSCRIBED:
+        return "free", disposition
+    if snapshot.can_open_playground or snapshot.admin_override:
+        if snapshot.admin_override:
+            return "allowed", None
+        return "allowed", disposition
+    return None, disposition
+
+
+def _record_commercial_notes(snapshot: EntitlementSnapshot) -> None:
+    from constitution_memorizer.web.request_context import (  # noqa: PLC0415
+        record_request_note,
+    )
+
+    access_result, disposition = commercial_playground_notes(snapshot)
+    if access_result is not None:
+        record_request_note("playground_access_result", access_result)
+    if disposition is not None:
+        record_request_note("playground_subscription_disposition", disposition)
+
+
 def get_entitlement_snapshot(
     request: object,
     *,
@@ -49,7 +104,20 @@ def get_entitlement_snapshot(
     resolver = getattr(service, "entitlement_service", None)
     if resolver is None:
         resolver = EntitlementService()
-    snapshot = resolver.resolve_for_request(request, now=now)
+    from constitution_memorizer.web.request_context import (  # noqa: PLC0415
+        record_request_counter,
+        record_request_timing,
+    )
+
+    # Count the attempt before the call. Time the call in finally. Notes only
+    # after a snapshot is returned. Exceptions propagate; no fallback snapshot.
+    record_request_counter("playground_entitlement_resolves", 1)
+    started = perf_counter()
+    try:
+        snapshot = resolver.resolve_for_request(request, now=now)
+    finally:
+        record_request_timing("playground_entitlement", started)
+    _record_commercial_notes(snapshot)
     snapshot = overlay_device_on_snapshot(request, snapshot)
     state = getattr(request, "state", None)
     if state is not None:
