@@ -11559,8 +11559,8 @@ body.is-admin-previewing { padding-top: 40px; }
   }
 }
 
-/* Guest Profile (CTA map guest/10-screen). Desktop only; phone /profile
-   keeps the production guest card and guest tabbar. */
+/* Guest Profile (CTA map guest/10-screen desktop). Phone /profile is
+   guest/06-screen in playground.css. */
 @media (max-width: 560px) {
   [data-guest-profile-desktop],
   [data-guest-profile-brand],

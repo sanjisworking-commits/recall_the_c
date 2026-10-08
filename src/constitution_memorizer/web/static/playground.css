@@ -3635,9 +3635,195 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   }
 }
 
+/* Guest phone Profile (CTA map guest/06-screen). Desktop is guest/10-screen. */
+@media (max-width: 560px) {
+  body.is-guest[data-mscreen="account"]:has([data-phone-profile="guest"]) [data-guest-profile-phone] {
+    display: none !important;
+  }
+
+  body.is-guest[data-mscreen="account"]:has([data-phone-profile="guest"]) .page-wrap,
+  body.is-guest[data-mscreen="account"]:has([data-phone-profile="guest"]) .sheet,
+  body.is-guest[data-mscreen="account"]:has([data-phone-profile="guest"]) .main {
+    background: var(--page);
+  }
+
+  [data-phone-profile="guest"] {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 8px 0 12px;
+  }
+
+  [data-phone-profile="guest"] h1 {
+    margin: 0 0 2px;
+    font-family: var(--pg-font-display, Fraunces, Georgia, serif);
+    font-size: 26px;
+    font-weight: 500;
+    line-height: 1.15;
+    color: var(--pg-ink);
+  }
+
+  [data-phone-profile="guest"] .guest-profile-col {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  [data-phone-profile="guest"] .guest-profile-identity {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--pg-paper);
+    border: 1px solid var(--pg-hairline);
+    border-radius: 14px;
+  }
+
+  [data-phone-profile="guest"] .guest-profile-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--pg-guest-avatar);
+    color: var(--pg-mid);
+    font-family: var(--pg-font-display, Fraunces, Georgia, serif);
+    font-size: 15px;
+    font-weight: 500;
+    flex: none;
+  }
+
+  [data-phone-profile="guest"] .guest-profile-identity-copy {
+    flex: 1;
+    min-width: 0;
+  }
+
+  [data-phone-profile="guest"] .guest-profile-name {
+    display: block;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--pg-ink);
+  }
+
+  [data-phone-profile="guest"] .guest-profile-meta {
+    display: block;
+    margin-top: 1px;
+    font-size: 12.5px;
+    color: var(--pg-mid);
+  }
+
+  [data-phone-profile="guest"] .guest-profile-signin {
+    appearance: none;
+    -webkit-appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 36px;
+    min-height: 36px;
+    padding: 0 14px;
+    border: none;
+    border-radius: 10px;
+    background: var(--pg-ink);
+    color: var(--pg-paper);
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+    box-shadow: var(--pg-shadow-press);
+    flex: none;
+  }
+
+  [data-phone-profile="guest"] .guest-profile-signin:active {
+    transform: translateY(1px);
+    box-shadow: var(--pg-shadow-press-active);
+  }
+
+  [data-phone-profile="guest"] .guest-profile-info {
+    padding: 16px 18px;
+    background: var(--pg-paper);
+    border: 1px solid var(--pg-hairline);
+    border-radius: 14px;
+  }
+
+  [data-phone-profile="guest"] .guest-profile-lede {
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--pg-muted);
+    text-wrap: pretty;
+  }
+
+  [data-phone-profile="guest"] .guest-profile-bareacts {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    min-height: 40px;
+    margin-top: 12px;
+    padding: 0 15px;
+    border: 1px solid var(--pg-hairline);
+    border-radius: 11px;
+    background: var(--pg-paper);
+    color: var(--pg-ink);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  [data-phone-profile="guest"] .guest-profile-kicker {
+    margin: 0 2px 8px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--pg-mid);
+  }
+
+  [data-phone-profile="guest"] .guest-profile-account {
+    background: var(--pg-paper);
+    border: 1px solid var(--pg-hairline);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  [data-phone-profile="guest"] .guest-profile-report {
+    appearance: none;
+    -webkit-appearance: none;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: 52px;
+    padding: 0 18px;
+    border: none;
+    background: transparent;
+    font: inherit;
+    font-size: 14.5px;
+    color: var(--pg-ink);
+    text-align: left;
+    cursor: pointer;
+  }
+
+  [data-phone-profile="guest"] .guest-profile-chevron {
+    margin-left: auto;
+    font-size: 12.5px;
+    color: var(--pg-faint);
+  }
+
+  body.is-guest[data-mscreen="account"]:has([data-phone-profile="guest"]) .mobile-tab.is-active {
+    color: var(--pg-ink);
+  }
+}
+
 /* Guest desktop Profile (CTA map guest/10-screen). Phone guest /profile
-   keeps the production guest card. */
+   is guest/06-screen. */
 @media (min-width: 561px) {
+  [data-phone-profile="guest"],
+  [data-guest-profile-phone-tabs] {
+    display: none !important;
+  }
+
   .guest-profile-title {
     margin: 0 0 16px;
     font-family: var(--pg-font-display, Fraunces, Georgia, serif);

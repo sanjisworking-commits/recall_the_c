@@ -1,8 +1,9 @@
 """Guest desktop Profile Screen 10 (CTA map guest/10-screen).
 
-Authorized: ChatGPT. Guest GET `/profile` desktop only. Phone guest Profile,
-subscriber Profile, Landing, Browse, Laws, Bare Act, Playground, Today, and
-Calendar stay unchanged. Sign in uses the existing `/login?next=/profile` path.
+Authorized: ChatGPT. Guest GET `/profile` desktop only. Phone guest Profile
+is Screen 06. Subscriber Profile, Landing, Browse, Laws, Bare Act,
+Playground, Today, and Calendar stay unchanged. Desktop Sign in uses
+`/login?next=/profile`.
 """
 
 from __future__ import annotations
@@ -76,12 +77,14 @@ def _header(html: str) -> str:
 
 def _desktop(html: str) -> str:
     return html.split("data-guest-profile-desktop", 1)[1].split(
-        "data-guest-profile-phone", 1
+        "data-phone-profile", 1
     )[0]
 
 
 def _phone(html: str) -> str:
-    return html.split("data-guest-profile-phone>", 1)[1]
+    return html.split('data-phone-profile="guest"', 1)[1].split(
+        "</section>", 1
+    )[0]
 
 
 def test_screen10_header_is_profile_selected_guest_chrome(tmp_path: Path) -> None:
@@ -144,16 +147,23 @@ def test_screen10_identity_info_report_and_existing_auth_path(tmp_path: Path) ->
     assert "data-profile-subscription" not in desk
 
 
-def test_screen10_phone_keeps_production_guest_card(tmp_path: Path) -> None:
+def test_screen10_phone_is_guest_06_composition(tmp_path: Path) -> None:
     html = _guest_client(tmp_path).get("/profile").text
     phone = _phone(html)
-    assert "Guest · Reading only" in phone
-    assert 'href="/laws"' in phone
-    assert 'href="/laws/ndps"' not in phone
-    assert "data-guest-profile" in phone
-    assert "Read mode." not in phone
-    assert "guest-profile-report" not in phone
-    assert f'href="{GUEST_PROFILE_SIGNIN_HREF}"' in phone
+    assert 'data-phone-profile="guest"' in html
+    assert GUEST_PROFILE_NAME in phone
+    assert GUEST_PROFILE_META in phone
+    assert GUEST_PROFILE_LEDE in phone
+    assert GUEST_PROFILE_BARE_ACTS_LABEL in phone
+    assert f'href="{GUEST_PROFILE_BARE_ACTS_HREF}"' in phone
+    assert GUEST_PROFILE_REPORT in phone
+    assert 'type="button"' in phone
+    assert GUEST_PROFILE_SIGNIN_HREF not in phone
+    assert "Guest · Reading only" not in phone
+    assert 'href="/laws"' not in phone.replace(
+        f'href="{GUEST_PROFILE_BARE_ACTS_HREF}"', ""
+    )
+    assert "data-guest-profile-phone" in html
 
 
 def test_screen10_does_not_change_other_screens(tmp_path: Path) -> None:
@@ -236,6 +246,7 @@ def test_screen10_1280_signin_ndps_report_and_phone(tmp_path: Path) -> None:
             """() => {
               const desk = document.querySelector('[data-guest-profile-desktop]');
               const phone = document.querySelector('[data-guest-profile-phone]');
+              const phone06 = document.querySelector('[data-phone-profile="guest"]');
               const brand = document.querySelector('[data-guest-profile-brand]');
               const phoneBrand = document.querySelector('[data-guest-profile-phone-brand]');
               const deskNav = [...document.querySelectorAll('[data-guest-profile-nav]')];
@@ -254,6 +265,7 @@ def test_screen10_1280_signin_ndps_report_and_phone(tmp_path: Path) -> None:
               return {
                 deskDisplay: getComputedStyle(desk).display,
                 phoneDisplay: phone ? getComputedStyle(phone).display : null,
+                phone06Display: phone06 ? getComputedStyle(phone06).display : null,
                 brandTag: brand && brand.tagName,
                 brandDisplay: brand ? getComputedStyle(brand).display : null,
                 phoneBrandDisplay: phoneBrand ? getComputedStyle(phoneBrand).display : null,
@@ -308,11 +320,14 @@ def test_screen10_1280_signin_ndps_report_and_phone(tmp_path: Path) -> None:
             """() => {
               const desk = document.querySelector('[data-guest-profile-desktop]');
               const prod = document.querySelector('[data-guest-profile-phone]');
-              const bare = prod && prod.querySelector('[data-guest-profile] a');
+              const phone06 = document.querySelector('[data-phone-profile="guest"]');
+              const bare = phone06 && phone06.querySelector('.guest-profile-bareacts');
               return {
                 deskDisplay: desk ? getComputedStyle(desk).display : null,
                 prodDisplay: prod ? getComputedStyle(prod).display : null,
-                meta: prod && prod.querySelector('.muted') && prod.querySelector('.muted').textContent.trim(),
+                phone06Display: phone06 ? getComputedStyle(phone06).display : null,
+                meta: phone06 && phone06.querySelector('.guest-profile-meta')
+                  && phone06.querySelector('.guest-profile-meta').textContent.trim(),
                 bareHref: bare && bare.getAttribute('href'),
               };
             }"""
@@ -321,6 +336,7 @@ def test_screen10_1280_signin_ndps_report_and_phone(tmp_path: Path) -> None:
 
     assert geo["deskDisplay"] != "none"
     assert geo["phoneDisplay"] == "none"
+    assert geo["phone06Display"] == "none"
     assert geo["brandTag"] == "SPAN"
     assert geo["brandDisplay"] != "none"
     assert geo["phoneBrandDisplay"] == "none"
@@ -354,7 +370,8 @@ def test_screen10_1280_signin_ndps_report_and_phone(tmp_path: Path) -> None:
     assert "data-guest-bareact-desktop" in ndps_html
     assert "data-guest-pg-intro" in playground_html
     assert phone_geo["deskDisplay"] == "none"
-    assert phone_geo["prodDisplay"] != "none"
-    assert phone_geo["meta"] == "Guest · Reading only"
-    assert phone_geo["bareHref"] == "/laws"
+    assert phone_geo["prodDisplay"] == "none"
+    assert phone_geo["phone06Display"] != "none"
+    assert phone_geo["meta"] == GUEST_PROFILE_META
+    assert phone_geo["bareHref"] == GUEST_PROFILE_BARE_ACTS_HREF
     assert shot_path.is_file()

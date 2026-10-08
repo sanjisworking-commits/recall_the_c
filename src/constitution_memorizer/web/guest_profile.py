@@ -1,7 +1,7 @@
-"""Guest desktop Profile (CTA map guest/10-screen). Presentation only.
+"""Guest Profile (CTA map guest/10-screen desktop, guest/06-screen phone).
 
-Phone guest `/profile` keeps the production guest card. Subscriber Profile
-is unchanged. Sign in uses the existing `/login?next=/profile` Gate path.
+Desktop Sign in uses `/login?next=/profile`. Phone Sign in and Report are
+inert type=button controls. Subscriber Profile is unchanged.
 """
 
 from __future__ import annotations

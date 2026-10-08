@@ -28,6 +28,29 @@
     </div>
   </div>
 </section>
+<section class="panel profile-panel guest-profile-phone" data-phone-profile="guest">
+  <h1>Profile</h1>
+  <div class="guest-profile-col">
+    <article class="guest-profile-identity">
+      <span class="guest-profile-avatar" aria-hidden="true">?</span>
+      <span class="guest-profile-identity-copy">
+        <span class="guest-profile-name">Guest</span>
+        <span class="guest-profile-meta">Read mode.</span>
+      </span>
+      <button type="button" class="guest-profile-signin">Sign in</button>
+    </article>
+    <article class="guest-profile-info">
+      <p class="guest-profile-lede">Sign in to save progress and unlock the Constitution learning experience.</p>
+      <a class="guest-profile-bareacts" href="/laws/ndps">Browse the Bare Acts →</a>
+    </article>
+    <div>
+      <p class="guest-profile-kicker">Account</p>
+      <div class="guest-profile-account">
+        <button type="button" class="guest-profile-report">Report an issue<span class="guest-profile-chevron" aria-hidden="true">›</span></button>
+      </div>
+    </div>
+  </div>
+</section>
 {% endif %}
 <section class="panel profile-panel"{% if is_guest_profile|default(false) and multiuser_enabled|default(false) %} data-guest-profile-phone{% endif %}{% if user and not is_guest_profile|default(false) %} data-signed-in-profile{% endif %}{% if plus_profile|default(false) %} data-plus-profile="desktop"{% endif %}{% if halted_profile|default(false) %} data-halted-profile="desktop"{% endif %}{% if expired_profile|default(false) %} data-expired-profile="desktop"{% endif %}>
   <div class="mobile-topbar">
