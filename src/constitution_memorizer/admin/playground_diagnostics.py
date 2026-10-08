@@ -229,19 +229,24 @@ def collect_playground_diagnostics(
 ) -> PlaygroundAccountDiagnostic:
     """Assemble support facts. Zero Act hydration."""
 
-    snapshot = _snapshot(request, user_id)
-    subscription = _subscription_diag(request, user_id, snapshot)
-    devices = _device_diag(request, user_id)
-    roster = _roster_diag(request, user_id, period_start=period_start)
-    webhooks = _webhook_diag(request, user_id)
-    overlay = _overlay_diag(request, user_id)
-    return PlaygroundAccountDiagnostic(
-        subscription=subscription,
-        devices=devices,
-        roster=roster,
-        webhooks=webhooks,
-        overlay=overlay,
+    from constitution_memorizer.playground.stage_timer import (  # noqa: PLC0415
+        time_playground_stage,
     )
+
+    with time_playground_stage("playground_admin_diagnostics"):
+        snapshot = _snapshot(request, user_id)
+        subscription = _subscription_diag(request, user_id, snapshot)
+        devices = _device_diag(request, user_id)
+        roster = _roster_diag(request, user_id, period_start=period_start)
+        webhooks = _webhook_diag(request, user_id)
+        overlay = _overlay_diag(request, user_id)
+        return PlaygroundAccountDiagnostic(
+            subscription=subscription,
+            devices=devices,
+            roster=roster,
+            webhooks=webhooks,
+            overlay=overlay,
+        )
 
 
 def _overlay_diag(request: Any, user_id: UUID | str) -> tuple[OverlaySelectionDiagnostic, ...]:

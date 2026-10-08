@@ -34,6 +34,7 @@ from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from starlette.responses import Response
 
+from constitution_memorizer.playground.stage_timer import time_playground_stage
 from constitution_memorizer.entitlements.dependencies import (
     apply_device_access,
     apply_roster_capacity,
@@ -648,7 +649,8 @@ def _render_gate(
     }
     if extra:
         context.update(extra)
-    return templates.TemplateResponse(request, "playground_gate.html", context)
+    with time_playground_stage("template"):
+        return templates.TemplateResponse(request, "playground_gate.html", context)
 
 
 def roster_full_page(

@@ -47,6 +47,7 @@ from constitution_memorizer.playground.source_review import (
     batch_source_presentations,
     is_law_registry_outdated,
 )
+from constitution_memorizer.playground.stage_timer import time_playground_stage
 from constitution_memorizer.playground.urls import (
     add_path,
     home_path,
@@ -1663,9 +1664,10 @@ def build_home_view(
     active_ids = [item.law_id for item in active_items]
     removed_ids = [item.law_id for item in removed_items]
     as_of = playground_today()
-    summaries = overlay.list_playground_summaries(
-        access.user_id, as_of=as_of, law_ids=active_ids + removed_ids
-    )
+    with time_playground_stage("playground_home_summaries"):
+        summaries = overlay.list_playground_summaries(
+            access.user_id, as_of=as_of, law_ids=active_ids + removed_ids
+        )
     by_id = {row.law_id: row for row in summaries}
     next_id = None
     for item in active_items:
@@ -1738,9 +1740,10 @@ def build_home_view(
     ][:SAVED_PROGRESS_HOME_LIMIT]
     saved_cards: list[LawCardView] = []
     if historical_ids:
-        hist_rows = overlay.list_playground_summaries(
-            access.user_id, as_of=as_of, law_ids=historical_ids
-        )
+        with time_playground_stage("playground_home_summaries"):
+            hist_rows = overlay.list_playground_summaries(
+                access.user_id, as_of=as_of, law_ids=historical_ids
+            )
         hist_by = {row.law_id: row for row in hist_rows}
         month = playground_month_name(cap.period_start)
         can_add = access.can_consume_new_law or access.local_owner
@@ -1778,11 +1781,12 @@ def build_home_view(
                 saved_cards.append(card)
         del month
 
-    presentations = batch_source_presentations(
-        overlay,
-        access.user_id,
-        [card.law_id for card in (*active_cards, *removed_cards, *saved_cards)],
-    )
+    with time_playground_stage("playground_source_presentations"):
+        presentations = batch_source_presentations(
+            overlay,
+            access.user_id,
+            [card.law_id for card in (*active_cards, *removed_cards, *saved_cards)],
+        )
     active_cards = [
         _with_source_state(card, presentations) for card in active_cards
     ]

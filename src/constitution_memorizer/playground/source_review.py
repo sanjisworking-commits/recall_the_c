@@ -16,6 +16,7 @@ from constitution_memorizer.playground.eligibility import (
     playground_bare_act_spec,
     playground_law_source_identity,
 )
+from constitution_memorizer.playground.stage_timer import time_playground_stage
 from constitution_memorizer.playground.lifecycle import LIFECYCLE_ACTIVE
 from constitution_memorizer.playground.locators import (
     LocatorError,
@@ -492,8 +493,6 @@ def detect_source_changes(
 ) -> SourceChangeSummary:
     """Targeted comparison. Hydrates at most the requested Act, and only if stale."""
 
-    from constitution_memorizer.playground.service import require_playground_law
-
     identity = playground_law_source_identity(law_id)
     filename_fallback = identity_is_filename_fallback(law_id)
     item = overlay.get_item(user_id, law_id)
@@ -517,6 +516,28 @@ def detect_source_changes(
     )
     if not outdated:
         return empty
+
+    with time_playground_stage("playground_source_scan"):
+        return _detect_source_changes_scan(
+            overlay,
+            user_id,
+            law_id,
+            identity=identity,
+            filename_fallback=filename_fallback,
+            hydrate=hydrate,
+        )
+
+
+def _detect_source_changes_scan(
+    overlay: Any,
+    user_id: UUID | str,
+    law_id: str,
+    *,
+    identity: Any,
+    filename_fallback: bool,
+    hydrate: Callable[[str], Any] | None,
+) -> SourceChangeSummary:
+    from constitution_memorizer.playground.service import require_playground_law
 
     mode_rows = overlay.list_mode_progress(user_id, law_id)
     rev_rows = overlay.list_revision_mode_progress(user_id, law_id)

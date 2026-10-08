@@ -76,7 +76,13 @@ from constitution_memorizer.playground.roster.period import (
 )
 from constitution_memorizer.playground.roster.repository import SqliteRosterRepository
 from constitution_memorizer.playground.roster.service import RosterService
-from constitution_memorizer.playground.service import activate_law
+from constitution_memorizer.playground.service import (
+    activate_law,
+    persist_entire_act_selection,
+)
+from constitution_memorizer.playground.source_review import detect_source_changes
+from constitution_memorizer.playground.stage_timer import time_playground_stage
+from constitution_memorizer.playground.view import build_home_view
 from constitution_memorizer.entitlements.service import EntitlementService
 from constitution_memorizer.multiuser.settings import MultiUserSettings, clear_settings_cache
 from constitution_memorizer.progress.db import open_progress_db
@@ -914,7 +920,6 @@ def _assert_t3_entitlement(
     else:
         assert snap.notes["playground_law_state"] == law_state
         assert law_state != "none"
-    assert "playground_home_build" not in snap.timings
     assert "playground_today" not in snap.timings
     assert "playground_calendar" not in snap.timings
 
@@ -4119,7 +4124,7 @@ def test_t6_http_omits_sql_and_ids_on_breakdown(
     assert "?" not in snap.path_group
     assert "playground_today" not in snap.timings
     assert "playground_calendar" not in snap.timings
-    assert "playground_home_build" not in snap.timings
+    assert snap.timings["playground_home_build"][1] == 1
 
 
 def test_postgres_overlay_decorator_map_matches_sqlite():
@@ -4499,4 +4504,969 @@ def test_t7_does_not_add_names_or_touch_sqlite_http_table():
         "playground_entitlement_resolves",
         "playground_device_lookups",
     )
+
+
+_T8_VIEW_STAGES = (
+    "playground_home_build",
+    "playground_home_summaries",
+    "playground_source_presentations",
+    "playground_workspace_build",
+    "playground_selection_read",
+    "playground_mode_progress",
+    "playground_revision_progress",
+    "playground_rollover_build",
+    "playground_rollover_write",
+    "playground_learning_build",
+    "playground_learning_write",
+    "playground_revision_build",
+    "playground_revision_write",
+    "playground_source_review",
+    "playground_source_scan",
+    "playground_admin_diagnostics",
+)
+
+_T8_HOME_CONTEXT_KEYS = frozenset(
+    {
+        "home_view",
+        "cards",
+        "new_law_notice",
+        "roster_path",
+        "hard_gate",
+        "read_only",
+        "plus_playground",
+        "halted_playground",
+        "halted_gate",
+        "halted_header_status",
+        "expired_playground",
+        "expired_gate",
+        "expired_header_status",
+    }
+)
+
+_T8_GATE_CONTEXT_KEYS = frozenset(
+    {
+        "gate",
+        "playground_gate",
+        "hard_gate",
+        "title",
+        "lede",
+        "body",
+        "cta_label",
+        "cta_href",
+        "secondary_label",
+        "secondary_href",
+        "block_reason",
+        "consume_blocked",
+        "saved_laws",
+        "saved_learned",
+        "catalogue_plans",
+        "from_price",
+        "show_included",
+        "pg_gate_stage",
+        "selected_tier",
+        "gate_selector_plans",
+        "gate_continue_label",
+        "gate_how_steps",
+        "current_plan_tier",
+        "guest_gate_values",
+        "guest_gate_footnote",
+    }
+)
+
+_T8_INSTRUMENTATION_MARKERS = (
+    "playground_home_build",
+    "playground_workspace_build",
+    "RequestPerformanceSnapshot",
+    "path_group=",
+    "Server-Timing",
+    "x-perf",
+    "total_ms",
+)
+
+
+def _assert_t8_n(timings: dict, stage: str, n: int = 1) -> None:
+    assert stage in timings, (stage, timings)
+    ms, count = timings[stage]
+    assert count == n, (stage, count, n, timings)
+    assert ms >= 0
+
+
+def _assert_t8_absent(timings: dict, *stages: str) -> None:
+    for stage in stages:
+        assert stage not in timings, (stage, timings)
+
+
+def _assert_t8_home_stages(snap) -> None:
+    _assert_t8_n(snap.timings, "playground_home_build")
+    _assert_t8_n(snap.timings, "playground_home_summaries")
+    _assert_t8_n(snap.timings, "playground_source_presentations")
+    _assert_t8_n(snap.timings, "template")
+    _assert_t8_absent(
+        snap.timings,
+        "playground_workspace_build",
+        "playground_today",
+        "playground_calendar",
+        "playground_source_scan",
+        "playground_admin_diagnostics",
+    )
+
+
+def _assert_t8_no_view_stages(snap, *, allow_template: bool = False) -> None:
+    for stage in _T8_VIEW_STAGES:
+        assert stage not in snap.timings, (stage, snap.timings)
+    assert "playground_today" not in snap.timings
+    assert "playground_calendar" not in snap.timings
+    if not allow_template:
+        assert "template" not in snap.timings
+
+
+def _spy_template_contexts(app) -> list[tuple[str, frozenset[str], dict]]:
+    templates = app.state.templates
+    captured: list[tuple[str, frozenset[str], dict]] = []
+    real = templates.TemplateResponse
+
+    def wrapped(request, name, context, *args, **kwargs):
+        captured.append((name, frozenset(context.keys()), dict(context)))
+        return real(request, name, context, *args, **kwargs)
+
+    templates.TemplateResponse = wrapped
+    return captured
+
+
+def _plus_ndps_on_roster(app) -> None:
+    snap_ent = app.state.entitlement_service.resolve(USER)
+    assert app.state.roster.confirm_add_law(
+        USER, "ndps", snap_ent, can_consume_new_law=True
+    ).ok
+
+
+def _plus_ndps_selected(app) -> None:
+    _plus_ndps_on_roster(app)
+    persist_entire_act_selection(app.state.playground, USER, "ndps")
+
+
+def test_plus_empty_home_records_t8_home_stages(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            resp = await client.get("/playground")
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t3_entitlement(
+        snap,
+        access="allowed",
+        disposition="active",
+        auth_state="authed",
+        device_result="ok",
+        device_lookups=2,
+        roster_result="ok",
+        roster_access_n=1,
+    )
+    _assert_t8_home_stages(snap)
+    _assert_t6_counts(
+        snap.counters,
+        db_reads=7,
+        db_writes=2,
+        roster_reads=5,
+        summary_reads=1,
+    )
+    assert snap.total_ms >= 0
+    assert "playground_total" not in snap.timings
+
+
+@pytest.mark.parametrize(
+    "seed, access, disposition",
+    [
+        (
+            lambda app: _seed_subscription(app, tier="max", status="halted"),
+            "halted",
+            "halted",
+        ),
+        (
+            lambda app: _seed_subscription(app, tier="pro", status="paused"),
+            "paused",
+            "paused",
+        ),
+        (
+            lambda app: _seed_period_ended_refund(app),
+            "paid_period_ended",
+            "active",
+        ),
+    ],
+)
+def test_read_only_home_records_t8_home_without_t5(
+    tmp_path: Path, seed, access, disposition
+):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            seed(app)
+            resp = await client.get("/playground")
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t3_entitlement(
+        snap,
+        access=access,
+        disposition=disposition,
+        auth_state="authed",
+        device_result="skipped_unpaid",
+        device_lookups=1,
+    )
+    _assert_t8_home_stages(snap)
+    _assert_t6_counts(
+        snap.counters,
+        db_reads=5,
+        roster_reads=3,
+        summary_reads=1,
+    )
+
+
+def test_guest_playground_has_template_without_home_build(tmp_path: Path):
+    async def _go():
+        client, _app = await _async_guest_client(tmp_path)
+        try:
+            resp = await client.get("/playground")
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t3_entitlement(
+        snap,
+        access="guest",
+        auth_state="guest",
+        device_result="skipped_unpaid",
+        device_lookups=0,
+    )
+    _assert_t8_n(snap.timings, "template")
+    _assert_t8_no_view_stages(snap, allow_template=True)
+    _assert_t6_absent(snap.counters)
+
+
+def test_free_playground_has_template_without_home_build(tmp_path: Path):
+    async def _go():
+        client, _repo = await _async_authed_client(tmp_path)
+        try:
+            resp = await client.get("/playground")
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t3_entitlement(
+        snap,
+        access="free",
+        auth_state="authed",
+        device_result="skipped_unpaid",
+        device_lookups=1,
+    )
+    _assert_t8_n(snap.timings, "template")
+    _assert_t8_no_view_stages(snap, allow_template=True)
+    _assert_t6_absent(snap.counters)
+
+
+@pytest.mark.parametrize("kind", ("pending", "admin"))
+def test_pending_and_admin_home_match_plus_empty_t8(tmp_path: Path, kind: str):
+    async def _go():
+        client, app, repo = await _async_authed_session(tmp_path)
+        try:
+            if kind == "pending":
+                _seed_subscription(app, tier="plus", status="pending")
+            else:
+                _seed_admin(repo)
+            resp = await client.get("/playground")
+            return resp, get_last_request_performance(), kind
+        finally:
+            await client.aclose()
+
+    resp, snap, kind = asyncio.run(_go())
+    assert resp.status_code == 200
+    if kind == "pending":
+        _assert_t3_entitlement(
+            snap,
+            access="pending",
+            disposition="pending",
+            auth_state="authed",
+            device_result="ok",
+            device_lookups=2,
+            roster_result="ok",
+            roster_access_n=1,
+        )
+    else:
+        _assert_t3_entitlement(
+            snap,
+            access="allowed",
+            auth_state="authed",
+            device_result="skipped_unpaid",
+            device_lookups=1,
+            roster_result="ok",
+            roster_access_n=1,
+        )
+    _assert_t8_home_stages(snap)
+    _assert_t6_counts(
+        snap.counters,
+        db_reads=7,
+        db_writes=2,
+        roster_reads=5,
+        summary_reads=1,
+    )
+
+
+def test_plus_active_workspace_records_t8_workspace_stages(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            _plus_ndps_on_roster(app)
+            resp = await client.get("/playground/laws/ndps")
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t3_entitlement(
+        snap,
+        access="allowed",
+        disposition="active",
+        auth_state="authed",
+        device_result="ok",
+        device_lookups=2,
+        roster_result="ok",
+        roster_access_n=2,
+        law_state="active",
+    )
+    _assert_t8_n(snap.timings, "playground_workspace_build")
+    _assert_t8_n(snap.timings, "playground_selection_read")
+    _assert_t8_n(snap.timings, "playground_mode_progress")
+    _assert_t8_n(snap.timings, "playground_revision_progress")
+    _assert_t8_n(snap.timings, "template")
+    _assert_t8_absent(
+        snap.timings,
+        "playground_home_build",
+        "playground_today",
+        "playground_calendar",
+        "playground_source_scan",
+    )
+    _assert_t6_counts(
+        snap.counters,
+        db_reads=11,
+        db_writes=1,
+        roster_reads=3,
+        progress_reads=2,
+        revision_reads=1,
+        source_review_reads=2,
+    )
+
+
+def test_plus_inactive_workspace_has_no_t8_view_or_template(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            resp = await client.get("/playground/laws/ndps")
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 303
+    assert resp.headers.get("location") == "/laws/ndps"
+    _assert_t3_entitlement(
+        snap,
+        access="inactive_law",
+        disposition="active",
+        auth_state="authed",
+        device_result="ok",
+        device_lookups=2,
+        roster_result="inactive_law",
+        roster_access_n=2,
+    )
+    _assert_t8_no_view_stages(snap)
+    _assert_t6_counts(
+        snap.counters,
+        db_reads=4,
+        db_writes=1,
+        roster_reads=3,
+    )
+
+
+def test_full_roster_consume_deny_has_no_t8_view(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            _fill_plus_roster(app, monkeypatch)
+            await client.get("/playground")
+            csrf = client.cookies.get("rtc_csrf") or ""
+            resp = await client.post(
+                "/playground/laws/ndps/add",
+                data={"csrf_token": csrf, "confirm": "add", "scope": "sections"},
+                headers={"Accept": "application/json"},
+            )
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code in {200, 403}
+    _assert_t3_entitlement(
+        snap,
+        access="roster_full",
+        disposition="active",
+        auth_state="authed",
+        device_result="ok",
+        device_lookups=3,
+        roster_result="roster_full",
+        roster_access_n=2,
+    )
+    _assert_t8_absent(
+        snap.timings,
+        "playground_home_build",
+        "playground_workspace_build",
+        "playground_today",
+        "playground_calendar",
+    )
+    content_type = resp.headers.get("content-type") or ""
+    if "application/json" in content_type:
+        assert "template" not in snap.timings
+    _assert_t6_counts(
+        snap.counters,
+        db_reads=5,
+        db_writes=5,
+        roster_reads=4,
+    )
+
+
+def test_dashboard_plus_has_no_t8_playground_view_stages(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            resp = await client.get("/dashboard")
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t3_entitlement(
+        snap,
+        access="allowed",
+        disposition="active",
+        auth_state="authed",
+        device_result="skipped_unpaid",
+        device_lookups=1,
+    )
+    _assert_t8_no_view_stages(snap, allow_template=True)
+    _assert_t6_counts(
+        snap.counters,
+        db_reads=3,
+        roster_reads=2,
+        revision_reads=1,
+    )
+
+
+@pytest.mark.parametrize(
+    "path, extra_absent",
+    [
+        ("/playground/roster", ("playground_rollover_build",)),
+        ("/playground/laws/ndps/sections", ("playground_workspace_build",)),
+    ],
+)
+def test_roster_and_picker_template_without_build_stages(
+    tmp_path: Path, path: str, extra_absent: tuple[str, ...]
+):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            _plus_ndps_on_roster(app)
+            resp = await client.get(path)
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t8_n(snap.timings, "template")
+    _assert_t8_absent(
+        snap.timings,
+        "playground_home_build",
+        "playground_workspace_build",
+        *extra_absent,
+    )
+    if path.endswith("/sections"):
+        _assert_t8_n(snap.timings, "playground_selection_read")
+        _assert_t8_absent(
+            snap.timings, "playground_mode_progress", "playground_revision_progress"
+        )
+
+
+def test_home_build_times_duplicate_capacity_not_t5(tmp_path: Path):
+    overlay, _roster_repo, roster, _conn = _t6_sqlite(tmp_path)
+    token = begin_request_timings()
+    try:
+        with time_playground_stage("playground_home_build"):
+            build_home_view(
+                access=_plus_open_access(),
+                roster=roster,
+                overlay=overlay,
+                notice="",
+            )
+        timings = snapshot_request_timings()
+        _assert_t8_n(timings, "playground_home_build")
+        _assert_t8_n(timings, "playground_home_summaries")
+        _assert_t8_n(timings, "playground_source_presentations")
+        assert "playground_roster_access" not in timings
+        _assert_t6_counts(
+            snapshot_request_counters(),
+            db_reads=6,
+            db_writes=1,
+            roster_reads=4,
+            summary_reads=1,
+        )
+    finally:
+        reset_request_timings(token)
+
+
+def test_empty_summary_law_ids_still_time_home_summaries(tmp_path: Path):
+    overlay, _roster_repo, roster, _conn = _t6_sqlite(tmp_path)
+    token = begin_request_timings()
+    try:
+        build_home_view(
+            access=_plus_open_access(),
+            roster=roster,
+            overlay=overlay,
+            notice="",
+        )
+        timings = snapshot_request_timings()
+        _assert_t8_n(timings, "playground_home_summaries")
+        _assert_t8_n(timings, "playground_source_presentations")
+        assert "playground_home_build" not in timings
+    finally:
+        reset_request_timings(token)
+
+
+def test_nested_home_summaries_do_not_add_a_second_home_build(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            resp = await client.get("/playground")
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t8_n(snap.timings, "playground_home_build")
+    _assert_t8_n(snap.timings, "playground_home_summaries")
+
+
+def test_t8_stage_records_in_finally_on_exception():
+    token = begin_request_timings()
+    try:
+        with pytest.raises(RuntimeError, match="boom"):
+            with time_playground_stage("playground_home_build"):
+                raise RuntimeError("boom")
+        _assert_t8_n(snapshot_request_timings(), "playground_home_build")
+    finally:
+        reset_request_timings(token)
+
+
+def test_t8_noop_without_collector(tmp_path: Path):
+    with time_playground_stage("playground_home_build"):
+        pass
+    assert snapshot_request_timings() == {}
+    overlay, _roster_repo, roster, _conn = _t6_sqlite(tmp_path)
+    build_home_view(
+        access=_plus_open_access(),
+        roster=roster,
+        overlay=overlay,
+        notice="",
+    )
+    assert snapshot_request_timings() == {}
+    detect_source_changes(overlay, USER, "ndps")
+    assert snapshot_request_timings() == {}
+
+
+def test_t8_template_bytes_match_unwrapped_render(tmp_path: Path):
+    from starlette.requests import Request
+
+    app, _repo = _counting_app(tmp_path)
+    templates = app.state.templates
+    request = Request(
+        {
+            "type": "http",
+            "asgi": {"spec_version": "2.3", "version": "3.0"},
+            "http_version": "1.1",
+            "method": "GET",
+            "scheme": "http",
+            "path": "/playground/roster/ndps/remove",
+            "raw_path": b"/playground/roster/ndps/remove",
+            "query_string": b"",
+            "headers": [],
+            "client": ("testclient", 50000),
+            "server": ("testserver", 80),
+            "root_path": "",
+            "app": app,
+        }
+    )
+    context = {
+        "law_id": "ndps",
+        "month_name": "October",
+        "short_title": "NDPS",
+    }
+    token = begin_request_timings()
+    try:
+        with time_playground_stage("template"):
+            timed = templates.TemplateResponse(
+                request, "playground_remove.html", dict(context)
+            )
+        untimed = templates.TemplateResponse(
+            request, "playground_remove.html", dict(context)
+        )
+        assert timed.body == untimed.body
+        _assert_t8_n(snapshot_request_timings(), "template")
+        body = timed.body.decode("utf-8", "replace")
+        for marker in _T8_INSTRUMENTATION_MARKERS:
+            assert marker not in body
+    finally:
+        reset_request_timings(token)
+
+
+def test_t8_html_omits_stage_names_and_ids(tmp_path: Path, caplog):
+    async def _go():
+        results = []
+        guest, _gapp = await _async_guest_client(tmp_path / "guest")
+        try:
+            with caplog.at_level(logging.INFO, logger="uvicorn.error"):
+                caplog.clear()
+                resp = await guest.get("/playground")
+            results.append(("guest", resp, get_last_request_performance()))
+        finally:
+            await guest.aclose()
+        client, app, _repo = await _async_authed_session(tmp_path / "plus")
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            captured = _spy_template_contexts(app)
+            resp = await client.get("/playground")
+            results.append(("plus_home", resp, get_last_request_performance(), captured[:]))
+            _plus_ndps_on_roster(app)
+            captured.clear()
+            resp = await client.get("/playground/laws/ndps")
+            results.append(
+                ("plus_workspace", resp, get_last_request_performance(), captured[:])
+            )
+            return results
+        finally:
+            await client.aclose()
+
+    results = asyncio.run(_go())
+    guest_resp, guest_snap = results[0][1], results[0][2]
+    plus_home_resp, plus_home_snap, plus_home_ctx = (
+        results[1][1],
+        results[1][2],
+        results[1][3],
+    )
+    plus_ws_resp, plus_ws_snap = results[2][1], results[2][2]
+    for resp, snap in (
+        (guest_resp, guest_snap),
+        (plus_home_resp, plus_home_snap),
+        (plus_ws_resp, plus_ws_snap),
+    ):
+        assert resp.status_code == 200
+        header_names = {name.lower() for name in resp.headers}
+        assert "server-timing" not in header_names
+        assert "x-perf" not in header_names
+        notes = " ".join(snap.notes.values())
+        breakdown = "\n".join(_breakdown_messages(caplog))
+        meta = f"{notes}\n{snap.path_group}\n{breakdown}\n{list(snap.timings)}\n{snap.counters}"
+        assert str(USER) not in meta
+        assert USER_EMAIL not in meta
+        body = resp.content.decode("utf-8", "replace")
+        for marker in _T8_INSTRUMENTATION_MARKERS:
+            assert marker not in body
+        assert "SELECT " not in meta
+        assert "INSERT " not in meta
+        assert "?" not in snap.path_group
+    home_names = {name for name, _keys, _ctx in plus_home_ctx}
+    assert "playground.html" in home_names
+    home_keys = next(
+        keys for name, keys, _ctx in plus_home_ctx if name == "playground.html"
+    )
+    assert home_keys == _T8_HOME_CONTEXT_KEYS
+    home_ctx = next(
+        ctx for name, _keys, ctx in plus_home_ctx if name == "playground.html"
+    )
+    for forbidden in _T8_VIEW_STAGES + ("template", "total_ms", "timings"):
+        assert forbidden not in home_ctx
+
+
+def test_t8_gate_context_keyset_frozen(tmp_path: Path):
+    async def _go():
+        client, app = await _async_guest_client(tmp_path)
+        try:
+            captured = _spy_template_contexts(app)
+            resp = await client.get("/playground")
+            return resp, captured
+        finally:
+            await client.aclose()
+
+    resp, captured = asyncio.run(_go())
+    assert resp.status_code == 200
+    assert captured
+    name, keys, ctx = captured[0]
+    assert name == "playground_gate.html"
+    assert keys == _T8_GATE_CONTEXT_KEYS
+    for forbidden in _T8_VIEW_STAGES + ("template", "total_ms", "timings"):
+        assert forbidden not in ctx
+
+
+def test_t8_does_not_add_vocabulary():
+    assert TIMING_STAGES[-len(_PLAYGROUND_STAGES) :] == _PLAYGROUND_STAGES
+    for name in (
+        "playground_roster_build",
+        "playground_picker_build",
+        "playground_gate",
+        "playground_template",
+        "playground_home_template",
+        "playground_gate_template",
+        "playground_total",
+    ):
+        assert name not in TIMING_STAGES
+        assert name not in REQUEST_COUNTERS
+    assert "template" in TIMING_STAGES
+
+
+def test_middleware_remains_only_total(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            resp = await client.get("/playground")
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    assert snap.total_ms >= 0
+    assert "playground_total" not in snap.timings
+    assert "playground_home_build" in snap.timings
+
+
+def test_rollover_build_and_write_stages(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            got = await client.get("/playground/roster/next")
+            get_snap = get_last_request_performance()
+            csrf = client.cookies.get("rtc_csrf") or ""
+            posted = await client.post(
+                "/playground/roster/next",
+                data={"csrf_token": csrf},
+            )
+            post_snap = get_last_request_performance()
+            return got, get_snap, posted, post_snap
+        finally:
+            await client.aclose()
+
+    got, get_snap, posted, post_snap = asyncio.run(_go())
+    assert got.status_code == 200
+    _assert_t8_n(get_snap.timings, "playground_rollover_build")
+    _assert_t8_n(get_snap.timings, "template")
+    _assert_t8_absent(
+        get_snap.timings,
+        "playground_rollover_write",
+        "playground_workspace_build",
+        "playground_home_build",
+    )
+    assert posted.status_code in {303, 400}
+    _assert_t8_n(post_snap.timings, "playground_rollover_write")
+    _assert_t8_absent(
+        post_snap.timings,
+        "playground_rollover_build",
+        "template",
+        "playground_workspace_build",
+    )
+
+
+def test_learning_build_not_revision_on_learn_get(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            _plus_ndps_selected(app)
+            resp = await client.get("/playground/laws/ndps/sections/1/learn/read")
+            get_snap = get_last_request_performance()
+            csrf = client.cookies.get("rtc_csrf") or ""
+            started = await client.post(
+                "/playground/laws/ndps/sections/1/learn/read/start",
+                json={},
+                headers={"X-CSRF-Token": csrf, "Accept": "application/json"},
+            )
+            write_snap = get_last_request_performance()
+            return resp, get_snap, started, write_snap
+        finally:
+            await client.aclose()
+
+    resp, get_snap, started, write_snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t8_n(get_snap.timings, "playground_learning_build")
+    _assert_t8_n(get_snap.timings, "template")
+    _assert_t8_absent(
+        get_snap.timings,
+        "playground_revision_build",
+        "playground_learning_write",
+        "playground_revision_write",
+        "playground_home_build",
+        "playground_workspace_build",
+    )
+    assert started.status_code == 200
+    _assert_t8_n(write_snap.timings, "playground_learning_write")
+    _assert_t8_absent(
+        write_snap.timings,
+        "playground_revision_write",
+        "playground_learning_build",
+        "playground_revision_build",
+        "template",
+    )
+
+
+def test_revision_build_not_learning_on_due_revision_get(tmp_path: Path):
+    from constitution_memorizer.playground.locators import section_locator
+    from constitution_memorizer.playground.roster.period import playground_today
+    from tests.test_playground_m8 import _seed_progress
+
+    loc = section_locator("ndps", "1").value
+    today = playground_today().isoformat()
+
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            _plus_ndps_selected(app)
+            _seed_progress(
+                app.state.playground,
+                USER,
+                "ndps",
+                loc,
+                status="review",
+                interval_days=3,
+                next_revision=today,
+                times_completed=1,
+                learned_at=today,
+            )
+            resp = await client.get(
+                "/playground/laws/ndps/sections/1/learn/read?revision=1"
+            )
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t8_n(snap.timings, "playground_revision_build")
+    _assert_t8_n(snap.timings, "template")
+    _assert_t8_absent(
+        snap.timings,
+        "playground_learning_build",
+        "playground_revision_write",
+        "playground_learning_write",
+    )
+
+
+def test_source_scan_times_detect_source_changes(tmp_path: Path):
+    overlay, _roster_repo, _svc, _conn = _t6_sqlite(tmp_path)
+    token = begin_request_timings()
+    try:
+        detect_source_changes(overlay, USER, "ndps")
+        assert "playground_source_scan" not in snapshot_request_timings()
+    finally:
+        reset_request_timings(token)
+    overlay.add_item(USER, "ndps", source_version="stale", law_source_hash="stale")
+    token = begin_request_timings()
+    try:
+        detect_source_changes(overlay, USER, "ndps")
+        _assert_t8_n(snapshot_request_timings(), "playground_source_scan")
+    finally:
+        reset_request_timings(token)
+
+
+def test_source_review_records_stage_without_scan_on_fresh_law(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            _plus_ndps_selected(app)
+            resp = await client.get("/playground/laws/ndps/source-review")
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t8_n(snap.timings, "playground_source_review")
+    _assert_t8_n(snap.timings, "template")
+    _assert_t8_absent(
+        snap.timings,
+        "playground_source_scan",
+        "playground_workspace_build",
+        "playground_home_build",
+    )
+
+
+def test_admin_user_detail_times_playground_admin_diagnostics(tmp_path: Path):
+    async def _go():
+        client, app, repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_admin(repo)
+            app.state.admin_enabled = True
+            resp = await client.get(f"/admin/users/{USER}")
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t8_n(snap.timings, "playground_admin_diagnostics")
+    _assert_t8_absent(
+        snap.timings,
+        "playground_home_build",
+        "playground_workspace_build",
+        "playground_today",
+        "playground_calendar",
+    )
+    assert snap.path_group == "/admin/users/{user_id}"
+    assert str(USER) not in snap.path_group
+
+
+def test_stage_timer_has_no_route_or_contextvar():
+    src = inspect.getsource(time_playground_stage)
+    module_path = Path(__file__).resolve().parents[1] / (
+        "src/constitution_memorizer/playground/stage_timer.py"
+    )
+    module_src = module_path.read_text(encoding="utf-8")
+    assert "perf_counter" in src
+    assert "record_request_timing" in src
+    assert "finally:" in src
+    assert "ContextVar" not in module_src
+    assert "TIMING_STAGES" not in module_src
+    assert "/playground" not in module_src
 

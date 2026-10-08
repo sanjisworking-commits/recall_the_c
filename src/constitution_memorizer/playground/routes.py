@@ -141,6 +141,7 @@ from constitution_memorizer.entitlements.models import (
     BLOCK_PAID_PERIOD_ENDED,
     BLOCK_PAYMENT_HALTED,
 )
+from constitution_memorizer.playground.stage_timer import time_playground_stage
 from constitution_memorizer.playground.view import (
     add_confirm_copy,
     build_home_view,
@@ -484,6 +485,10 @@ def _rollover_ids(form) -> tuple[list[str], list[str]]:
 def create_playground_router(templates: Jinja2Templates) -> APIRouter:
     router = APIRouter(prefix="/playground")
 
+    def _timed_template(request: Request, name: str, context: dict, **kwargs):
+        with time_playground_stage("template"):
+            return templates.TemplateResponse(request, name, context, **kwargs)
+
     @router.get("", response_class=HTMLResponse)
     @router.get("/", response_class=HTMLResponse)
     async def playground_home(request: Request) -> HTMLResponse:
@@ -495,12 +500,13 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             return blocked  # type: ignore[return-value]
         overlay = require_playground_repo(request)
         roster = require_roster_service(request)
-        home = build_home_view(
-            access=access,
-            roster=roster,
-            overlay=overlay,
-            notice=str(request.query_params.get("notice") or ""),
-        )
+        with time_playground_stage("playground_home_build"):
+            home = build_home_view(
+                access=access,
+                roster=roster,
+                overlay=overlay,
+                notice=str(request.query_params.get("notice") or ""),
+            )
         halted_playground = request_is_halted_subscriber(request)
         halted_gate = None
         halted_header_status = ""
@@ -516,7 +522,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                 reason = access.snapshot.playground_block_reason
             expired_gate = gate_view(reason=reason)
             expired_header_status = expired_gate.title
-        return templates.TemplateResponse(
+        return _timed_template(
             request,
             "playground.html",
             {
@@ -630,7 +636,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         notice = ""
         if request.query_params.get("notice") == "readded" and add_id:
             notice = f"{add_short} is back in {month}. No extra space used."
-        return templates.TemplateResponse(
+        return _timed_template(
             request,
             "playground_roster.html",
             {
@@ -673,44 +679,45 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             return blocked  # type: ignore[return-value]
         overlay = require_playground_repo(request)
         roster = require_roster_service(request)
-        plan = roster.get_rollover_plan(
-            access.user_id,
-            access.snapshot,
-            has_overlay=lambda law_id: overlay.get_item(access.user_id, law_id) is not None,
-            local_owner=access.local_owner,
-        )
-        cards = []
-        keep_slots_open = plan.law_limit is None or (
-            plan.remaining is not None and plan.remaining > 0
-        )
-        for candidate in plan.candidates:
-            catalog = playground_catalogue_law(candidate.law_id)
-            already_keep = bool(candidate.target_consumed or candidate.target_decision == "keep")
-            cards.append(
-                {
-                    "law_id": candidate.law_id,
-                    "title": catalog.title if catalog is not None else candidate.law_id,
-                    "previously_removed": candidate.previously_removed,
-                    "target_decision": candidate.target_decision,
-                    "target_consumed": candidate.target_consumed,
-                    "can_decline": plan.target_status != "active" or not candidate.target_consumed,
-                    "can_keep": already_keep or keep_slots_open,
-                }
+        with time_playground_stage("playground_rollover_build"):
+            plan = roster.get_rollover_plan(
+                access.user_id,
+                access.snapshot,
+                has_overlay=lambda law_id: overlay.get_item(access.user_id, law_id) is not None,
+                local_owner=access.local_owner,
             )
-        notice = request.query_params.get("blocked") or ""
-        limit_label = (
-            "unlimited" if plan.law_limit is None else str(plan.law_limit)
-        )
-        cap_view = capacity_view(
-            period_start=plan.target_period_start,
-            used=plan.used,
-            law_limit=plan.law_limit,
-            remaining=plan.remaining,
-            active_count=sum(1 for row in cards if row["target_consumed"]),
-            removed_consumed_count=0,
-            planned=True,
-        )
-        return templates.TemplateResponse(
+            cards = []
+            keep_slots_open = plan.law_limit is None or (
+                plan.remaining is not None and plan.remaining > 0
+            )
+            for candidate in plan.candidates:
+                catalog = playground_catalogue_law(candidate.law_id)
+                already_keep = bool(candidate.target_consumed or candidate.target_decision == "keep")
+                cards.append(
+                    {
+                        "law_id": candidate.law_id,
+                        "title": catalog.title if catalog is not None else candidate.law_id,
+                        "previously_removed": candidate.previously_removed,
+                        "target_decision": candidate.target_decision,
+                        "target_consumed": candidate.target_consumed,
+                        "can_decline": plan.target_status != "active" or not candidate.target_consumed,
+                        "can_keep": already_keep or keep_slots_open,
+                    }
+                )
+            notice = request.query_params.get("blocked") or ""
+            limit_label = (
+                "unlimited" if plan.law_limit is None else str(plan.law_limit)
+            )
+            cap_view = capacity_view(
+                period_start=plan.target_period_start,
+                used=plan.used,
+                law_limit=plan.law_limit,
+                remaining=plan.remaining,
+                active_count=sum(1 for row in cards if row["target_consumed"]),
+                removed_consumed_count=0,
+                planned=True,
+            )
+        return _timed_template(
             request,
             "playground_roster_next.html",
             {
@@ -745,15 +752,16 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         keep_ids, decline_ids = _rollover_ids(form)
         overlay = require_playground_repo(request)
         roster = require_roster_service(request)
-        result = roster.confirm_carry_forward(
-            opened.user_id,
-            keep_ids,
-            decline_ids,
-            opened.snapshot,
-            has_overlay=lambda law_id: overlay.get_item(opened.user_id, law_id) is not None,
-            local_owner=opened.local_owner,
-            can_consume_new_law=opened.can_consume_new_law,
-        )
+        with time_playground_stage("playground_rollover_write"):
+            result = roster.confirm_carry_forward(
+                opened.user_id,
+                keep_ids,
+                decline_ids,
+                opened.snapshot,
+                has_overlay=lambda law_id: overlay.get_item(opened.user_id, law_id) is not None,
+                local_owner=opened.local_owner,
+                can_consume_new_law=opened.can_consume_new_law,
+            )
         if result.status == RESULT_INVALID_CANDIDATE:
             raise HTTPException(status_code=400, detail=RESULT_INVALID_CANDIDATE)
         if result.status != RESULT_OK:
@@ -793,7 +801,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             step=step,
             hydrate_scope=True,
         )
-        return templates.TemplateResponse(request, "playground_add.html", ctx)
+        return _timed_template(request, "playground_add.html", ctx)
 
     @router.post("/laws/{law_id}/add")
     async def playground_add(
@@ -866,7 +874,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                 step="scope",
                 hydrate_scope=True,
             )
-            return templates.TemplateResponse(request, "playground_add.html", ctx)
+            return _timed_template(request, "playground_add.html", ctx)
 
         if scope_value == SCOPE_ENTIRE:
             try:
@@ -952,7 +960,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         month = playground_month_name(capacity.period_start)
         _long, short = catalog_titles(law_id)
         del _long
-        return templates.TemplateResponse(
+        return _timed_template(
             request,
             "playground_remove.html",
             {
@@ -999,109 +1007,118 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         blocked = _denied(access)
         if blocked is not None:
             return blocked  # type: ignore[return-value]
-        item = overlay.get_item(access.user_id, law_id)
-        try:
-            act = require_playground_law(law_id)
-        except PlaygroundLawError:
-            raise HTTPException(status_code=404, detail="Law not found") from None
-        identity = playground_law_source_identity(law_id)
-        source_summary = None
-        if is_law_registry_outdated(item, identity):
-            source_summary = detect_source_changes(
-                overlay, access.user_id, law_id, hydrate=lambda _lid: act
-            )
-        source_state = law_source_state(overlay, access.user_id, law_id)
-        change_by = {
-            row.source_locator: row
-            for row in overlay.list_source_changes(
-                access.user_id, law_id, status=STATUS_PENDING
-            )
-            if row.current_source_version == identity.source_version
-            and row.current_law_source_hash == identity.identity_token
-        }
-        selections = overlay.list_selection(access.user_id, law_id)
-        progress_map = {
-            row.source_locator: mark_outdated(
-                row, _section_source_hash(act, row.source_locator, law_id)
-            )
-            for row in overlay.list_progress(access.user_id, law_id)
-        }
-        live_hashes = {
-            sel.source_locator: _section_source_hash(act, sel.source_locator, law_id)
-            for sel in selections
-        }
-        mode_summaries = summaries_for_locators(
-            overlay.list_mode_progress(access.user_id, law_id),
-            [sel.source_locator for sel in selections],
-            live_hashes=live_hashes,
-        )
-        revision_rows = overlay.list_revision_mode_progress(access.user_id, law_id)
-        revision_by_key: dict[tuple[str, int], list] = {}
-        for row in revision_rows:
-            if row.rung_days is None:
-                continue
-            revision_by_key.setdefault((row.source_locator, row.rung_days), []).append(row)
-        rows = []
-        as_of = playground_today()
-        month = ""
-        if access.snapshot is not None and access.snapshot.playground_period_start is not None:
-            month = playground_month_name(access.snapshot.playground_period_start)
-        else:
-            cap = require_roster_service(request).capacity(
-                access.user_id, access.snapshot, local_owner=access.local_owner
-            )
-            month = playground_month_name(cap.period_start)
-        for sel in selections:
-            loc = parse_selected_locator(sel.source_locator, law_id)
-            if loc is None:
-                continue
-            section = act.section(loc.section_number)
-            missing = section is None
-            progress = progress_map.get(sel.source_locator)
-            interval = int(getattr(progress, "interval_days", 0) or 0) if progress else 0
-            rev_modes = None
-            if interval in REVISION_RUNGS_SET:
-                rev_modes = build_revision_mode_progress(
-                    sel.source_locator,
-                    interval,
-                    revision_by_key.get((sel.source_locator, interval), ()),
-                    live_hash=live_hashes.get(sel.source_locator, ""),
+        with time_playground_stage("playground_workspace_build"):
+            item = overlay.get_item(access.user_id, law_id)
+            try:
+                act = require_playground_law(law_id)
+            except PlaygroundLawError:
+                raise HTTPException(status_code=404, detail="Law not found") from None
+            identity = playground_law_source_identity(law_id)
+            source_summary = None
+            if is_law_registry_outdated(item, identity):
+                source_summary = detect_source_changes(
+                    overlay, access.user_id, law_id, hydrate=lambda _lid: act
                 )
-            change = change_by.get(sel.source_locator)
-            pending_change = bool(change and change.status == STATUS_PENDING)
-            rows.append(
-                section_row_view(
-                    number=loc.section_number,
-                    title=(
-                        section.list_title
-                        if section is not None
-                        else f"Section {loc.section_number}"
-                    ),
-                    locator=sel.source_locator,
-                    progress=progress,
-                    outdated=pending_change,
-                    as_of=as_of,
-                    law_id=law_id,
-                    mode_progress=mode_summaries.get(sel.source_locator),
-                    revision_modes=rev_modes,
-                    source_change=change,
-                    missing=missing or (
-                        change is not None and change.change_kind == CHANGE_KIND_MISSING
-                    ),
+            source_state = law_source_state(overlay, access.user_id, law_id)
+            change_by = {
+                row.source_locator: row
+                for row in overlay.list_source_changes(
+                    access.user_id, law_id, status=STATUS_PENDING
                 )
+                if row.current_source_version == identity.source_version
+                and row.current_law_source_hash == identity.identity_token
+            }
+            with time_playground_stage("playground_selection_read"):
+                selections = overlay.list_selection(access.user_id, law_id)
+            progress_map = {
+                row.source_locator: mark_outdated(
+                    row, _section_source_hash(act, row.source_locator, law_id)
+                )
+                for row in overlay.list_progress(access.user_id, law_id)
+            }
+            live_hashes = {
+                sel.source_locator: _section_source_hash(act, sel.source_locator, law_id)
+                for sel in selections
+            }
+            with time_playground_stage("playground_mode_progress"):
+                mode_rows = overlay.list_mode_progress(access.user_id, law_id)
+            mode_summaries = summaries_for_locators(
+                mode_rows,
+                [sel.source_locator for sel in selections],
+                live_hashes=live_hashes,
             )
-        launch = choose_next_workspace_row(rows)
-        progress = build_act_progress(rows, law_id=law_id, act=act)
-        launch_verbatim = ""
-        if launch is not None:
-            loc = parse_selected_locator(launch["locator"], law_id)
-            section = act.section(launch["number"])
-            if section is not None and loc is not None:
-                launch_verbatim = canonical_text_for_locator(loc, section)
-        learned_changed = (
-            source_state.pending_learned_count if source_state.registry_outdated else 0
-        )
-        return templates.TemplateResponse(
+            with time_playground_stage("playground_revision_progress"):
+                revision_rows = overlay.list_revision_mode_progress(
+                    access.user_id, law_id
+                )
+            revision_by_key: dict[tuple[str, int], list] = {}
+            for row in revision_rows:
+                if row.rung_days is None:
+                    continue
+                revision_by_key.setdefault(
+                    (row.source_locator, row.rung_days), []
+                ).append(row)
+            rows = []
+            as_of = playground_today()
+            month = ""
+            if access.snapshot is not None and access.snapshot.playground_period_start is not None:
+                month = playground_month_name(access.snapshot.playground_period_start)
+            else:
+                cap = require_roster_service(request).capacity(
+                    access.user_id, access.snapshot, local_owner=access.local_owner
+                )
+                month = playground_month_name(cap.period_start)
+            for sel in selections:
+                loc = parse_selected_locator(sel.source_locator, law_id)
+                if loc is None:
+                    continue
+                section = act.section(loc.section_number)
+                missing = section is None
+                progress = progress_map.get(sel.source_locator)
+                interval = int(getattr(progress, "interval_days", 0) or 0) if progress else 0
+                rev_modes = None
+                if interval in REVISION_RUNGS_SET:
+                    rev_modes = build_revision_mode_progress(
+                        sel.source_locator,
+                        interval,
+                        revision_by_key.get((sel.source_locator, interval), ()),
+                        live_hash=live_hashes.get(sel.source_locator, ""),
+                    )
+                change = change_by.get(sel.source_locator)
+                pending_change = bool(change and change.status == STATUS_PENDING)
+                rows.append(
+                    section_row_view(
+                        number=loc.section_number,
+                        title=(
+                            section.list_title
+                            if section is not None
+                            else f"Section {loc.section_number}"
+                        ),
+                        locator=sel.source_locator,
+                        progress=progress,
+                        outdated=pending_change,
+                        as_of=as_of,
+                        law_id=law_id,
+                        mode_progress=mode_summaries.get(sel.source_locator),
+                        revision_modes=rev_modes,
+                        source_change=change,
+                        missing=missing or (
+                            change is not None and change.change_kind == CHANGE_KIND_MISSING
+                        ),
+                    )
+                )
+            launch = choose_next_workspace_row(rows)
+            progress = build_act_progress(rows, law_id=law_id, act=act)
+            launch_verbatim = ""
+            if launch is not None:
+                loc = parse_selected_locator(launch["locator"], law_id)
+                section = act.section(launch["number"])
+                if section is not None and loc is not None:
+                    launch_verbatim = canonical_text_for_locator(loc, section)
+            learned_changed = (
+                source_state.pending_learned_count if source_state.registry_outdated else 0
+            )
+        return _timed_template(
             request,
             "playground_law.html",
             {
@@ -1143,7 +1160,10 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             detect_source_changes(
                 overlay, access.user_id, law_id, hydrate=lambda _lid: act
             )
-        selected = selected_locator_set(overlay.list_selection(access.user_id, law_id))
+        with time_playground_stage("playground_selection_read"):
+            selected = selected_locator_set(
+                overlay.list_selection(access.user_id, law_id)
+            )
         learnable = {loc.value for loc in locators_for_act(law_id, act=act)}
         progress_map = {
             row.source_locator: row
@@ -1173,7 +1193,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             as_of=playground_today(),
             learnable=learnable,
         )
-        return templates.TemplateResponse(
+        return _timed_template(
             request,
             "playground_select.html",
             {
@@ -1256,28 +1276,29 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         if blocked is not None:
             return blocked  # type: ignore[return-value]
         _none, overlay, access, act, summary = opened
-        progress_by = {
-            row.source_locator: row
-            for row in overlay.list_progress(access.user_id, law_id)
-        }
-        current = [
-            row
-            for row in summary.changes
-            if row.current_source_version == summary.current_source_version
-            and row.current_law_source_hash == summary.current_identity_token
-        ]
-        pending = [row for row in current if row.status == STATUS_PENDING]
-        provisions = [
-            affected_provision_view(
-                row, progress=progress_by.get(row.source_locator), act=act
-            )
-            for row in current
-        ]
-        catalog = playground_catalogue_law(law_id)
-        title = catalog.title if catalog is not None else law_id
-        all_reviewed = bool(current) and not pending
-        zero_affected = summary.affected_total == 0
-        return templates.TemplateResponse(
+        with time_playground_stage("playground_source_review"):
+            progress_by = {
+                row.source_locator: row
+                for row in overlay.list_progress(access.user_id, law_id)
+            }
+            current = [
+                row
+                for row in summary.changes
+                if row.current_source_version == summary.current_source_version
+                and row.current_law_source_hash == summary.current_identity_token
+            ]
+            pending = [row for row in current if row.status == STATUS_PENDING]
+            provisions = [
+                affected_provision_view(
+                    row, progress=progress_by.get(row.source_locator), act=act
+                )
+                for row in current
+            ]
+            catalog = playground_catalogue_law(law_id)
+            title = catalog.title if catalog is not None else law_id
+            all_reviewed = bool(current) and not pending
+            zero_affected = summary.affected_total == 0
+        return _timed_template(
             request,
             "playground_source_review.html",
             {
@@ -1484,64 +1505,68 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             and int(progress.interval_days or 0) in REVISION_RUNGS_SET
         )
         rung = int(progress.interval_days) if is_revision and progress is not None else None
-        if is_revision and rung is not None:
-            mode_rows = overlay.list_revision_mode_progress(
-                access.user_id, law_id, loc.value, rung
-            )
-            summary = build_revision_mode_progress(
-                loc.value, rung, mode_rows, live_hash=live_hash
-            )
-        else:
-            mode_rows = overlay.list_mode_progress(
-                access.user_id, law_id, loc.value
-            )
-            summary = provision_mode_view(
-                source_locator=loc.value, rows=mode_rows, live_hash=live_hash
-            )
-        source_outdated = bool(
-            summary.source_outdated or (progress and progress.source_outdated)
+        stage = (
+            "playground_revision_build" if is_revision else "playground_learning_build"
         )
-        test_row = next((row for row in mode_rows if row.mode == "test"), None)
-        cycle = test_row.attempt_count if test_row is not None else 0
-        quiz_questions = []
-        if mode == "test":
-            quiz_questions = [
-                question.public_dict()
-                for question in quiz_for_attempt(
-                    law_id=law_id,
-                    source_locator=loc.value,
-                    canonical_body=body,
-                    cycle=cycle,
-                    source_hash=live_hash,
-                    rung_days=rung,
+        with time_playground_stage(stage):
+            if is_revision and rung is not None:
+                mode_rows = overlay.list_revision_mode_progress(
+                    access.user_id, law_id, loc.value, rung
                 )
-            ]
-        current = next(
-            (row for row in mode_rows if row.mode == mode),
-            None,
-        )
-        current_status = current.status if current is not None else "not_started"
-        definitions = mode_definitions()
-        step_n = next(
-            (item["ordinal"] for item in definitions if item["id"] == mode),
-            1,
-        )
-        remaining = max(0, summary.total_modes - summary.completed_count)
-        if remaining <= 0:
-            methods_left = "Mark it Done"
-        elif remaining == 1:
-            methods_left = "1 method left"
-        else:
-            methods_left = f"{remaining} methods left"
-        advance = next(
-            (item.get("advance") for item in definitions if item["id"] == mode),
-            "Mark as done",
-        )
-        lead_in = opened.get("lead_in") or ""
-        speech_url = ""
-        if mode in {"letters", "recite"}:
-            speech_url = learn_speech_path_for_locator(loc, mode)
-        return templates.TemplateResponse(
+                summary = build_revision_mode_progress(
+                    loc.value, rung, mode_rows, live_hash=live_hash
+                )
+            else:
+                mode_rows = overlay.list_mode_progress(
+                    access.user_id, law_id, loc.value
+                )
+                summary = provision_mode_view(
+                    source_locator=loc.value, rows=mode_rows, live_hash=live_hash
+                )
+            source_outdated = bool(
+                summary.source_outdated or (progress and progress.source_outdated)
+            )
+            test_row = next((row for row in mode_rows if row.mode == "test"), None)
+            cycle = test_row.attempt_count if test_row is not None else 0
+            quiz_questions = []
+            if mode == "test":
+                quiz_questions = [
+                    question.public_dict()
+                    for question in quiz_for_attempt(
+                        law_id=law_id,
+                        source_locator=loc.value,
+                        canonical_body=body,
+                        cycle=cycle,
+                        source_hash=live_hash,
+                        rung_days=rung,
+                    )
+                ]
+            current = next(
+                (row for row in mode_rows if row.mode == mode),
+                None,
+            )
+            current_status = current.status if current is not None else "not_started"
+            definitions = mode_definitions()
+            step_n = next(
+                (item["ordinal"] for item in definitions if item["id"] == mode),
+                1,
+            )
+            remaining = max(0, summary.total_modes - summary.completed_count)
+            if remaining <= 0:
+                methods_left = "Mark it Done"
+            elif remaining == 1:
+                methods_left = "1 method left"
+            else:
+                methods_left = f"{remaining} methods left"
+            advance = next(
+                (item.get("advance") for item in definitions if item["id"] == mode),
+                "Mark as done",
+            )
+            lead_in = opened.get("lead_in") or ""
+            speech_url = ""
+            if mode in {"letters", "recite"}:
+                speech_url = learn_speech_path_for_locator(loc, mode)
+        return _timed_template(
             request,
             "playground_learn.html",
             {
@@ -1611,16 +1636,17 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         as_of = playground_today()
         if wants_revision:
             try:
-                row = overlay.start_revision_mode(
-                    access.user_id,
-                    law_id,
-                    loc.value,
-                    mode,
-                    source_version=opened["source_version"],
-                    source_hash=opened["live_hash"],
-                    as_of=as_of,
-                    claimed_rung=claimed,
-                )
+                with time_playground_stage("playground_revision_write"):
+                    row = overlay.start_revision_mode(
+                        access.user_id,
+                        law_id,
+                        loc.value,
+                        mode,
+                        source_version=opened["source_version"],
+                        source_hash=opened["live_hash"],
+                        as_of=as_of,
+                        claimed_rung=claimed,
+                    )
             except (StaleRevisionError, RevisionNotDueError) as exc:
                 return _revision_error(exc)
             lifecycle = overlay.get_progress(access.user_id, law_id, loc.value)
@@ -1634,14 +1660,15 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                 live_hash=opened["live_hash"],
             )
         else:
-            row = overlay.start_mode(
-                access.user_id,
-                law_id,
-                loc.value,
-                mode,
-                source_version=opened["source_version"],
-                source_hash=opened["live_hash"],
-            )
+            with time_playground_stage("playground_learning_write"):
+                row = overlay.start_mode(
+                    access.user_id,
+                    law_id,
+                    loc.value,
+                    mode,
+                    source_version=opened["source_version"],
+                    source_hash=opened["live_hash"],
+                )
             summary = provision_mode_view(
                 source_locator=loc.value,
                 rows=overlay.list_mode_progress(access.user_id, law_id, loc.value),
@@ -1684,16 +1711,17 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         as_of = playground_today()
         if wants_revision:
             try:
-                row = overlay.complete_revision_mode_and_advance_if_ready(
-                    access.user_id,
-                    law_id,
-                    loc.value,
-                    mode,
-                    source_version=opened["source_version"],
-                    source_hash=opened["live_hash"],
-                    as_of=as_of,
-                    claimed_rung=claimed,
-                )
+                with time_playground_stage("playground_revision_write"):
+                    row = overlay.complete_revision_mode_and_advance_if_ready(
+                        access.user_id,
+                        law_id,
+                        loc.value,
+                        mode,
+                        source_version=opened["source_version"],
+                        source_hash=opened["live_hash"],
+                        as_of=as_of,
+                        claimed_rung=claimed,
+                    )
             except (StaleRevisionError, RevisionNotDueError) as exc:
                 return _revision_error(exc)
             rung = int(row.rung_days or claimed or 0)
@@ -1724,15 +1752,16 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             )
             _schedule_playground_calendar_sync(request, access.user_id)
             return JSONResponse(payload)
-        row = overlay.complete_mode(
-            access.user_id,
-            law_id,
-            loc.value,
-            mode,
-            source_version=opened["source_version"],
-            source_hash=opened["live_hash"],
-            as_of=as_of,
-        )
+        with time_playground_stage("playground_learning_write"):
+            row = overlay.complete_mode(
+                access.user_id,
+                law_id,
+                loc.value,
+                mode,
+                source_version=opened["source_version"],
+                source_hash=opened["live_hash"],
+                as_of=as_of,
+            )
         summary = provision_mode_view(
             source_locator=loc.value,
             rows=overlay.list_mode_progress(access.user_id, law_id, loc.value),
@@ -1815,16 +1844,17 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                 return JSONResponse({"ok": False, "error": "malformed"}, status_code=400)
             graded = grade_section_quiz(questions, answers)
             try:
-                row = overlay.complete_revision_mode_and_advance_if_ready(
-                    access.user_id,
-                    law_id,
-                    loc.value,
-                    "test",
-                    source_version=opened["source_version"],
-                    source_hash=live_hash,
-                    as_of=as_of,
-                    claimed_rung=rung,
-                )
+                with time_playground_stage("playground_revision_write"):
+                    row = overlay.complete_revision_mode_and_advance_if_ready(
+                        access.user_id,
+                        law_id,
+                        loc.value,
+                        "test",
+                        source_version=opened["source_version"],
+                        source_hash=live_hash,
+                        as_of=as_of,
+                        claimed_rung=rung,
+                    )
             except (StaleRevisionError, RevisionNotDueError) as exc:
                 return _revision_error(exc)
             summary = build_revision_mode_progress(
@@ -1876,15 +1906,16 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         if answers is None:
             return JSONResponse({"ok": False, "error": "malformed"}, status_code=400)
         graded = grade_section_quiz(questions, answers)
-        row = overlay.complete_mode(
-            access.user_id,
-            law_id,
-            loc.value,
-            "test",
-            source_version=opened["source_version"],
-            source_hash=live_hash,
-            as_of=as_of,
-        )
+        with time_playground_stage("playground_learning_write"):
+            row = overlay.complete_mode(
+                access.user_id,
+                law_id,
+                loc.value,
+                "test",
+                source_version=opened["source_version"],
+                source_hash=live_hash,
+                as_of=as_of,
+            )
         summary = provision_mode_view(
             source_locator=loc.value,
             rows=overlay.list_mode_progress(access.user_id, law_id, loc.value),
@@ -2160,7 +2191,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             note = "First revision · Day 1"
             if when:
                 note = f"{note} · {when}"
-        return templates.TemplateResponse(
+        return _timed_template(
             request,
             "playground_learned.html",
             {
@@ -2227,7 +2258,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         )
         if not ok:
             return RedirectResponse(url=law_path(law_id), status_code=303)
-        return templates.TemplateResponse(
+        return _timed_template(
             request,
             "playground_learned.html",
             {
@@ -2262,28 +2293,29 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         if blocked is not None:
             return blocked
         _none, overlay, access, act, summary = opened
-        try:
-            loc = _source_review_locator(law_id, number, unit)
-        except LocatorError:
-            raise HTTPException(status_code=404, detail="Source change not found") from None
-        locator = loc.value
-        record = next(
-            (row for row in summary.changes if row.source_locator == locator),
-            None,
-        )
-        if record is None:
-            record = overlay.get_source_change(
-                access.user_id,
-                law_id,
-                locator,
-                current_source_version=summary.current_source_version,
-                current_law_source_hash=summary.current_identity_token,
+        with time_playground_stage("playground_source_review"):
+            try:
+                loc = _source_review_locator(law_id, number, unit)
+            except LocatorError:
+                raise HTTPException(status_code=404, detail="Source change not found") from None
+            locator = loc.value
+            record = next(
+                (row for row in summary.changes if row.source_locator == locator),
+                None,
             )
-        if record is None:
-            raise HTTPException(status_code=404, detail="Source change not found")
-        progress = overlay.get_progress(access.user_id, law_id, locator)
-        provision = affected_provision_view(record, progress=progress, act=act)
-        return templates.TemplateResponse(
+            if record is None:
+                record = overlay.get_source_change(
+                    access.user_id,
+                    law_id,
+                    locator,
+                    current_source_version=summary.current_source_version,
+                    current_law_source_hash=summary.current_identity_token,
+                )
+            if record is None:
+                raise HTTPException(status_code=404, detail="Source change not found")
+            progress = overlay.get_progress(access.user_id, law_id, locator)
+            provision = affected_provision_view(record, progress=progress, act=act)
+        return _timed_template(
             request,
             "playground_source_review_section.html",
             {
