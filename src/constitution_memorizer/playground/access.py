@@ -39,6 +39,7 @@ from constitution_memorizer.entitlements.dependencies import (
     apply_roster_capacity,
     get_entitlement_snapshot,
     invalidate_entitlement_snapshot,
+    record_device_lookup_outcome,
 )
 from constitution_memorizer.entitlements.models import (
     BLOCK_DEVICE_CONFIG_ERROR,
@@ -418,26 +419,44 @@ def _ensure_device_and_refresh(
     user = getattr(request.state, "current_user", None)
     if user is None:
         return snapshot
+    from time import perf_counter
+
     from constitution_memorizer.devices.models import PLATFORM_WEB
     from constitution_memorizer.devices.token import (
         display_name_from_user_agent,
         request_device_token,
     )
+    from constitution_memorizer.web.request_context import (  # noqa: PLC0415
+        record_request_counter,
+        record_request_timing,
+    )
 
+    commercially_open = bool(snapshot.can_open_playground)
     session = getattr(request.state, "auth_session", None)
     session_id = getattr(session, "session_id", None)
-    access = service.ensure_current_device(
-        user.id,
-        request_device_token(request),
-        auth_session_id=session_id,
-        commercially_eligible=True,
+    record_request_counter("playground_device_lookups", 1)
+    started = perf_counter()
+    try:
+        access = service.ensure_current_device(
+            user.id,
+            request_device_token(request),
+            auth_session_id=session_id,
+            commercially_eligible=True,
+            admin_override=False,
+            # Website cookie installation. Safari on iPhone stays web; native
+            # iOS apps are not registered from this HTTP path.
+            platform=PLATFORM_WEB,
+            display_name=display_name_from_user_agent(
+                request.headers.get("user-agent")
+            ),
+        )
+    finally:
+        record_request_timing("playground_device", started)
+    record_device_lookup_outcome(
+        access,
+        commercially_open=commercially_open,
+        ensure_ran=True,
         admin_override=False,
-        # Website cookie installation. Safari on iPhone stays web; native
-        # iOS apps are not registered from this HTTP path.
-        platform=PLATFORM_WEB,
-        display_name=display_name_from_user_agent(
-            request.headers.get("user-agent")
-        ),
     )
     invalidate_entitlement_snapshot(request)
     refreshed = apply_device_access(snapshot, access)

@@ -37,6 +37,14 @@ _DEVICE_BLOCKS = frozenset(
     }
 )
 
+# Product block_reason -> T1 note token. replacement_limit is the short name.
+_DEVICE_NOTE_BY_BLOCK = {
+    BLOCK_DEVICE_LIMIT: "device_limit",
+    BLOCK_DEVICE_REVOKED: "device_revoked",
+    BLOCK_DEVICE_CONFIG_ERROR: "device_config_error",
+    BLOCK_DEVICE_REPLACEMENT_LIMIT: "replacement_limit",
+}
+
 _EXPIRED_EXCLUDED_STATUSES = frozenset({"pending", "halted", "paused"})
 
 
@@ -88,6 +96,61 @@ def _record_commercial_notes(snapshot: EntitlementSnapshot) -> None:
         record_request_note("playground_access_result", access_result)
     if disposition is not None:
         record_request_note("playground_subscription_disposition", disposition)
+
+
+def device_playground_notes(
+    access: Any | None,
+    *,
+    commercially_open: bool,
+    ensure_ran: bool,
+    admin_override: bool = False,
+) -> tuple[str | None, str | None]:
+    """Map inspect/ensure to ``(device_result, access_overwrite_or_none)``.
+
+    ``commercially_open`` MUST be ``snapshot.can_open_playground`` captured
+    **before** ``apply_device_access``. Never infer it from the returned
+    snapshot. Admin override never becomes a device denial.
+    """
+
+    if admin_override:
+        return ("ok" if ensure_ran else "skipped_unpaid"), None
+
+    block_reason = getattr(access, "block_reason", None) if access is not None else None
+    mapped = _DEVICE_NOTE_BY_BLOCK.get(block_reason) if block_reason else None
+    apply_will_deny = bool(commercially_open) and mapped is not None
+
+    if ensure_ran:
+        if block_reason is not None and mapped is None:
+            return None, None
+        device_result = mapped if mapped is not None else "ok"
+        return device_result, (mapped if apply_will_deny else None)
+
+    if apply_will_deny:
+        return mapped, mapped
+    return "skipped_unpaid", None
+
+
+def record_device_lookup_outcome(
+    access: Any | None,
+    *,
+    commercially_open: bool,
+    ensure_ran: bool,
+    admin_override: bool = False,
+) -> None:
+    from constitution_memorizer.web.request_context import (  # noqa: PLC0415
+        record_request_note,
+    )
+
+    device_result, access_overwrite = device_playground_notes(
+        access,
+        commercially_open=commercially_open,
+        ensure_ran=ensure_ran,
+        admin_override=admin_override,
+    )
+    if device_result is not None:
+        record_request_note("playground_device_result", device_result)
+    if access_overwrite is not None:
+        record_request_note("playground_access_result", access_overwrite)
 
 
 def get_entitlement_snapshot(
@@ -206,20 +269,56 @@ def overlay_device_on_snapshot(
 ) -> EntitlementSnapshot:
     """Read-only device overlay. Does not register a slot."""
 
+    commercially_open = bool(snapshot.can_open_playground)
+    admin_override = bool(snapshot.admin_override)
     app_state = getattr(getattr(request, "app", None), "state", None)
     if not getattr(app_state, "multiuser_enabled", False):
+        record_device_lookup_outcome(
+            None,
+            commercially_open=commercially_open,
+            ensure_ran=False,
+            admin_override=admin_override,
+        )
         return snapshot
     devices = getattr(app_state, "device_service", None)
     if devices is None:
+        record_device_lookup_outcome(
+            None,
+            commercially_open=commercially_open,
+            ensure_ran=False,
+            admin_override=admin_override,
+        )
         return snapshot
     user = getattr(getattr(request, "state", None), "current_user", None)
     if user is None:
+        record_device_lookup_outcome(
+            None,
+            commercially_open=commercially_open,
+            ensure_ran=False,
+            admin_override=admin_override,
+        )
         return snapshot
     from constitution_memorizer.devices.token import request_device_token
+    from constitution_memorizer.web.request_context import (  # noqa: PLC0415
+        record_request_counter,
+        record_request_timing,
+    )
 
     token = request_device_token(request)
-    access = devices.inspect_current_device(
-        user.id, token, admin_bypass=bool(snapshot.admin_override)
+    # Count the attempt before the call. Time in finally. Notes only on success.
+    record_request_counter("playground_device_lookups", 1)
+    started = perf_counter()
+    try:
+        access = devices.inspect_current_device(
+            user.id, token, admin_bypass=admin_override
+        )
+    finally:
+        record_request_timing("playground_device", started)
+    record_device_lookup_outcome(
+        access,
+        commercially_open=commercially_open,
+        ensure_ran=False,
+        admin_override=admin_override,
     )
     return apply_device_access(snapshot, access)
 

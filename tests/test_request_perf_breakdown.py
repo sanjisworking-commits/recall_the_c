@@ -16,8 +16,23 @@ from httpx import ASGITransport, AsyncClient
 
 from constitution_memorizer.auth.fake_provider import FakeAuthProvider
 from constitution_memorizer.auth.sessions import InMemorySessionStore
+from constitution_memorizer.devices.models import (
+    BLOCK_DEVICE_CONFIG_ERROR,
+    BLOCK_DEVICE_LIMIT,
+    BLOCK_DEVICE_REPLACEMENT_LIMIT,
+    BLOCK_DEVICE_REVOKED,
+    DeviceAccess,
+)
+from constitution_memorizer.devices.service import DeviceService
+from constitution_memorizer.devices.token import (
+    DEVICE_COOKIE_NAME,
+    TEST_DEVICE_HMAC_SECRET,
+    mint_installation_token,
+)
 from constitution_memorizer.entitlements.dependencies import (
+    apply_device_access,
     commercial_playground_notes,
+    device_playground_notes,
     get_entitlement_snapshot,
 )
 from constitution_memorizer.entitlements.models import (
@@ -29,6 +44,7 @@ from constitution_memorizer.entitlements.models import (
     CONSTITUTION_ACCESS_FULL,
     EntitlementSnapshot,
 )
+from constitution_memorizer.playground.access import _ensure_device_and_refresh
 from constitution_memorizer.entitlements.service import EntitlementService
 from constitution_memorizer.multiuser.settings import MultiUserSettings, clear_settings_cache
 from constitution_memorizer.progress.db import open_progress_db
@@ -690,14 +706,96 @@ def _commercial_snap(**overrides) -> EntitlementSnapshot:
     return EntitlementSnapshot(**fields)
 
 
-def _fake_entitlement_request(*, resolver, current_user=None):
-    state = SimpleNamespace(current_user=current_user)
+def _fake_entitlement_request(
+    *,
+    resolver,
+    current_user=None,
+    multiuser_enabled=False,
+    device_service=None,
+):
+    state = SimpleNamespace(current_user=current_user, auth_session=None)
     app_state = SimpleNamespace(
         entitlement_service=resolver,
-        multiuser_enabled=False,
-        device_service=None,
+        multiuser_enabled=multiuser_enabled,
+        device_service=device_service,
     )
-    return SimpleNamespace(state=state, app=SimpleNamespace(state=app_state))
+    return SimpleNamespace(
+        state=state,
+        app=SimpleNamespace(state=app_state),
+        cookies={},
+        headers={},
+    )
+
+
+def _canned_device_access(*, block_reason=None, current_device_id=None) -> DeviceAccess:
+    return DeviceAccess(
+        device_limit=2,
+        registered_device_count=2 if block_reason == BLOCK_DEVICE_LIMIT else 0,
+        current_device_id=current_device_id,
+        current_device_registered=False,
+        current_device_allowed=block_reason is None,
+        current_device_revoked=block_reason == BLOCK_DEVICE_REVOKED,
+        device_slots_remaining=0 if block_reason == BLOCK_DEVICE_LIMIT else 2,
+        block_reason=block_reason,
+    )
+
+
+class _DeviceCallCounter:
+    def __init__(self, inner) -> None:
+        self.inner = inner
+        self.inspect_calls = 0
+        self.ensure_calls = 0
+
+    def inspect_current_device(self, *args, **kwargs):
+        self.inspect_calls += 1
+        return self.inner.inspect_current_device(*args, **kwargs)
+
+    def ensure_current_device(self, *args, **kwargs):
+        self.ensure_calls += 1
+        return self.inner.ensure_current_device(*args, **kwargs)
+
+    def __getattr__(self, name):
+        return getattr(self.inner, name)
+
+
+def _spy_device_service(app) -> _DeviceCallCounter:
+    counting = _DeviceCallCounter(app.state.device_service)
+    app.state.device_service = counting
+    return counting
+
+
+def _seed_other_devices(app, n: int = 2, *, user_id=USER) -> None:
+    service = app.state.device_service
+    inner = getattr(service, "inner", service)
+    for index in range(n):
+        access = inner.ensure_current_device(
+            user_id,
+            mint_installation_token(),
+            auth_session_id=f"seed-sess-{index}",
+            commercially_eligible=True,
+        )
+        assert access.current_device_registered is True
+
+
+def _seed_admin(repo) -> None:
+    conn = repo.conn
+    conn.execute(
+        "INSERT INTO user_roles (user_id, role, created_at) VALUES (?, 'admin', ?)",
+        (str(USER), datetime.now(timezone.utc).isoformat()),
+    )
+    conn.commit()
+
+
+def _plus_open_snap() -> EntitlementSnapshot:
+    return _commercial_snap(
+        subscription_status="active",
+        tier="plus",
+        is_subscribed=True,
+        can_open_playground=True,
+        can_consume_new_playground_law=True,
+        playground_block_reason=None,
+        playground_law_limit=10,
+    )
 
 
 def _assert_t3_entitlement(
@@ -706,6 +804,8 @@ def _assert_t3_entitlement(
     access: str,
     disposition: str | None = None,
     auth_state: str,
+    device_result: str,
+    device_lookups: int = 0,
 ) -> None:
     assert snap is not None
     assert "playground_entitlement" in snap.timings
@@ -717,9 +817,14 @@ def _assert_t3_entitlement(
     else:
         assert snap.notes["playground_subscription_disposition"] == disposition
     assert snap.notes["auth_state"] == auth_state
-    assert "playground_device" not in snap.timings
+    assert snap.notes["playground_device_result"] == device_result
+    if device_lookups:
+        assert snap.counters["playground_device_lookups"] == device_lookups
+        assert snap.timings["playground_device"][1] == device_lookups
+    else:
+        assert "playground_device" not in snap.timings
+        assert "playground_device_lookups" not in snap.counters
     assert "playground_roster_access" not in snap.timings
-    assert "playground_device_result" not in snap.notes
     assert "playground_roster_result" not in snap.notes
     assert "playground_law_state" not in snap.notes
 
@@ -1444,7 +1549,13 @@ def test_guest_playground_snapshot_access_result_guest(tmp_path: Path):
     assert resp.status_code == 200
     assert snap is not None
     assert snap.path_group == "/playground"
-    _assert_t3_entitlement(snap, access="guest", auth_state="guest")
+    _assert_t3_entitlement(
+        snap,
+        access="guest",
+        auth_state="guest",
+        device_result="skipped_unpaid",
+        device_lookups=0,
+    )
 
 
 def test_free_authed_playground_snapshot_access_result_free(tmp_path: Path):
@@ -1461,7 +1572,13 @@ def test_free_authed_playground_snapshot_access_result_free(tmp_path: Path):
     assert resp.status_code == 200
     assert snap is not None
     assert snap.path_group == "/playground"
-    _assert_t3_entitlement(snap, access="free", auth_state="authed")
+    _assert_t3_entitlement(
+        snap,
+        access="free",
+        auth_state="authed",
+        device_result="skipped_unpaid",
+        device_lookups=1,
+    )
     assert snap.notes["auth_state"] != "guest"
 
 
@@ -1479,7 +1596,12 @@ def test_pending_playground_snapshot_access_result_pending(tmp_path: Path):
     resp, snap = asyncio.run(_go())
     assert resp.status_code == 200
     _assert_t3_entitlement(
-        snap, access="pending", disposition="pending", auth_state="authed"
+        snap,
+        access="pending",
+        disposition="pending",
+        auth_state="authed",
+        device_result="ok",
+        device_lookups=2,
     )
 
 
@@ -1497,7 +1619,12 @@ def test_paused_playground_snapshot_access_result_paused(tmp_path: Path):
     resp, snap = asyncio.run(_go())
     assert resp.status_code == 200
     _assert_t3_entitlement(
-        snap, access="paused", disposition="paused", auth_state="authed"
+        snap,
+        access="paused",
+        disposition="paused",
+        auth_state="authed",
+        device_result="skipped_unpaid",
+        device_lookups=1,
     )
 
 
@@ -1515,7 +1642,12 @@ def test_halted_playground_snapshot_access_result_halted(tmp_path: Path):
     resp, snap = asyncio.run(_go())
     assert resp.status_code == 200
     _assert_t3_entitlement(
-        snap, access="halted", disposition="halted", auth_state="authed"
+        snap,
+        access="halted",
+        disposition="halted",
+        auth_state="authed",
+        device_result="skipped_unpaid",
+        device_lookups=1,
     )
 
 
@@ -1537,6 +1669,8 @@ def test_period_ended_playground_snapshot_access_result(tmp_path: Path):
         access="paid_period_ended",
         disposition="active",
         auth_state="authed",
+        device_result="skipped_unpaid",
+        device_lookups=1,
     )
 
 
@@ -1554,7 +1688,12 @@ def test_plus_active_playground_snapshot_access_result_allowed(tmp_path: Path):
     resp, snap = asyncio.run(_go())
     assert resp.status_code == 200
     _assert_t3_entitlement(
-        snap, access="allowed", disposition="active", auth_state="authed"
+        snap,
+        access="allowed",
+        disposition="active",
+        auth_state="authed",
+        device_result="ok",
+        device_lookups=2,
     )
 
 
@@ -1601,7 +1740,13 @@ def test_guest_playground_does_not_read_subscriptions(tmp_path: Path):
     resp, snap, calls = asyncio.run(_go())
     assert resp.status_code == 200
     assert calls == 0
-    _assert_t3_entitlement(snap, access="guest", auth_state="guest")
+    _assert_t3_entitlement(
+        snap,
+        access="guest",
+        auth_state="guest",
+        device_result="skipped_unpaid",
+        device_lookups=0,
+    )
 
 
 def test_free_playground_reads_current_subscription_once(tmp_path: Path):
@@ -1618,7 +1763,13 @@ def test_free_playground_reads_current_subscription_once(tmp_path: Path):
     resp, snap, calls = asyncio.run(_go())
     assert resp.status_code == 200
     assert calls == 1
-    _assert_t3_entitlement(snap, access="free", auth_state="authed")
+    _assert_t3_entitlement(
+        snap,
+        access="free",
+        auth_state="authed",
+        device_result="skipped_unpaid",
+        device_lookups=1,
+    )
 
 
 def test_entitlement_notes_omit_pii_on_breakdown_and_snapshot(
@@ -1664,7 +1815,13 @@ def test_dashboard_free_snapshot_records_entitlement_once(tmp_path: Path):
     assert resp.status_code == 200
     assert snap is not None
     assert snap.path_group == "/dashboard"
-    _assert_t3_entitlement(snap, access="free", auth_state="authed")
+    _assert_t3_entitlement(
+        snap,
+        access="free",
+        auth_state="authed",
+        device_result="skipped_unpaid",
+        device_lookups=1,
+    )
 
 
 def test_guest_playground_json_still_401(tmp_path: Path):
@@ -1672,3 +1829,643 @@ def test_guest_playground_json_still_401(tmp_path: Path):
     resp = client.get("/playground", headers={"Accept": "application/json"})
     assert resp.status_code == 401
     assert resp.json()["error"] == "auth_required"
+
+
+@pytest.mark.parametrize(
+    "access, commercially_open, ensure_ran, admin_override, device_result, overwrite",
+    [
+        (None, False, False, False, "skipped_unpaid", None),
+        (
+            _canned_device_access(block_reason=BLOCK_DEVICE_LIMIT),
+            False,
+            False,
+            False,
+            "skipped_unpaid",
+            None,
+        ),
+        (
+            _canned_device_access(block_reason=BLOCK_DEVICE_LIMIT),
+            True,
+            False,
+            False,
+            "device_limit",
+            "device_limit",
+        ),
+        (
+            _canned_device_access(block_reason=BLOCK_DEVICE_REVOKED),
+            True,
+            True,
+            False,
+            "device_revoked",
+            "device_revoked",
+        ),
+        (
+            _canned_device_access(block_reason=BLOCK_DEVICE_CONFIG_ERROR),
+            True,
+            True,
+            False,
+            "device_config_error",
+            "device_config_error",
+        ),
+        (
+            _canned_device_access(block_reason=BLOCK_DEVICE_REPLACEMENT_LIMIT),
+            True,
+            True,
+            False,
+            "replacement_limit",
+            "replacement_limit",
+        ),
+        (
+            _canned_device_access(block_reason=None),
+            True,
+            True,
+            False,
+            "ok",
+            None,
+        ),
+        (
+            _canned_device_access(block_reason=BLOCK_DEVICE_LIMIT),
+            True,
+            False,
+            True,
+            "skipped_unpaid",
+            None,
+        ),
+        (
+            _canned_device_access(block_reason=None),
+            True,
+            True,
+            True,
+            "ok",
+            None,
+        ),
+    ],
+)
+def test_device_playground_notes_mapping(
+    access,
+    commercially_open,
+    ensure_ran,
+    admin_override,
+    device_result,
+    overwrite,
+):
+    got_device, got_overwrite = device_playground_notes(
+        access,
+        commercially_open=commercially_open,
+        ensure_ran=ensure_ran,
+        admin_override=admin_override,
+    )
+    assert got_device == device_result
+    assert got_overwrite == overwrite
+    assert got_device in PLAYGROUND_DEVICE_RESULTS
+    if got_overwrite is not None:
+        assert got_overwrite in PLAYGROUND_ACCESS_RESULTS
+    blob = f"{got_device} {got_overwrite}"
+    assert str(USER) not in blob
+    assert USER_EMAIL not in blob
+    assert "device_replacement_limit" not in blob
+    assert "Mozilla" not in blob
+    assert TEST_DEVICE_HMAC_SECRET not in blob
+
+
+def test_device_notes_use_openness_before_apply():
+    access = _canned_device_access(block_reason=BLOCK_DEVICE_LIMIT)
+    snap = _plus_open_snap()
+    commercially_open = bool(snap.can_open_playground)
+    applied = apply_device_access(snap, access)
+    assert commercially_open is True
+    assert applied.can_open_playground is False
+    result, overwrite = device_playground_notes(
+        access, commercially_open=commercially_open, ensure_ran=True
+    )
+    assert result == "device_limit"
+    assert overwrite == "device_limit"
+    _, inferred = device_playground_notes(
+        access, commercially_open=bool(applied.can_open_playground), ensure_ran=True
+    )
+    assert inferred is None
+
+
+def test_overlay_skip_guest_does_not_count_or_time_device():
+    class Spy:
+        def inspect_current_device(self, *args, **kwargs):
+            raise AssertionError("guest overlay must not inspect")
+
+        def ensure_current_device(self, *args, **kwargs):
+            raise AssertionError("guest overlay must not ensure")
+
+    request = _fake_entitlement_request(
+        resolver=EntitlementService(),
+        current_user=None,
+        multiuser_enabled=True,
+        device_service=Spy(),
+    )
+    token = begin_request_timings()
+    try:
+        get_entitlement_snapshot(request)
+        assert "playground_device" not in snapshot_request_timings()
+        assert "playground_device_lookups" not in snapshot_request_counters()
+        assert snapshot_request_notes()["playground_device_result"] == "skipped_unpaid"
+        assert snapshot_request_counters()["playground_entitlement_resolves"] == 1
+    finally:
+        reset_request_timings(token)
+
+
+def test_overlay_inspect_counts_once_on_memo_miss_only():
+    class Spy:
+        def __init__(self) -> None:
+            self.calls = 0
+
+        def inspect_current_device(self, *args, **kwargs):
+            self.calls += 1
+            return _canned_device_access()
+
+    spy = Spy()
+    request = _fake_entitlement_request(
+        resolver=EntitlementService(),
+        current_user=SimpleNamespace(id=USER),
+        multiuser_enabled=True,
+        device_service=spy,
+    )
+    token = begin_request_timings()
+    try:
+        get_entitlement_snapshot(request)
+        record_request_note("playground_device_result", "mutated")
+        get_entitlement_snapshot(request)
+        assert spy.calls == 1
+        assert snapshot_request_counters()["playground_device_lookups"] == 1
+        assert snapshot_request_timings()["playground_device"][1] == 1
+        assert snapshot_request_notes()["playground_device_result"] == "mutated"
+    finally:
+        reset_request_timings(token)
+
+
+def test_raising_inspect_counts_attempt_without_fabricated_device_note():
+    class Boom:
+        def inspect_current_device(self, *args, **kwargs):
+            raise RuntimeError("inspect boom")
+
+    request = _fake_entitlement_request(
+        resolver=EntitlementService(),
+        current_user=SimpleNamespace(id=USER),
+        multiuser_enabled=True,
+        device_service=Boom(),
+    )
+    token = begin_request_timings()
+    try:
+        with pytest.raises(RuntimeError, match="inspect boom"):
+            get_entitlement_snapshot(request)
+        assert snapshot_request_counters()["playground_device_lookups"] == 1
+        assert snapshot_request_timings()["playground_device"][1] == 1
+        notes = snapshot_request_notes()
+        assert "playground_device_result" not in notes
+        assert notes["playground_access_result"] == "free"
+        assert not hasattr(request.state, "entitlement_snapshot")
+    finally:
+        reset_request_timings(token)
+
+
+def test_raising_ensure_counts_attempt_without_ok_note():
+    class Boom:
+        def ensure_current_device(self, *args, **kwargs):
+            raise RuntimeError("ensure boom")
+
+    request = SimpleNamespace(
+        app=SimpleNamespace(state=SimpleNamespace(device_service=Boom())),
+        state=SimpleNamespace(
+            current_user=SimpleNamespace(id=USER),
+            auth_session=None,
+        ),
+        cookies={},
+        headers={},
+    )
+    token = begin_request_timings()
+    try:
+        with pytest.raises(RuntimeError, match="ensure boom"):
+            _ensure_device_and_refresh(request, _plus_open_snap())
+        assert snapshot_request_counters()["playground_device_lookups"] == 1
+        assert snapshot_request_timings()["playground_device"][1] == 1
+        notes = snapshot_request_notes()
+        assert notes.get("playground_device_result") != "ok"
+        assert "playground_access_result" not in notes
+    finally:
+        reset_request_timings(token)
+
+
+def test_device_records_noop_without_collector():
+    request = _fake_entitlement_request(
+        resolver=EntitlementService(),
+        current_user=SimpleNamespace(id=USER),
+        multiuser_enabled=True,
+        device_service=SimpleNamespace(
+            inspect_current_device=lambda *a, **k: _canned_device_access()
+        ),
+    )
+    snap = get_entitlement_snapshot(request)
+    assert snap.is_authenticated is True
+    assert snapshot_request_timings() == {}
+    assert snapshot_request_counters() == {}
+
+
+def test_direct_device_service_inspect_is_not_instrumented():
+    class NullRepo:
+        def count_active(self, user_id):
+            return 0
+
+        def get_by_hash(self, user_id, digest):
+            return None
+
+        def find_unpaired_revoked(self, user_id):
+            return None
+
+    token = begin_request_timings()
+    try:
+        svc = DeviceService(NullRepo(), hmac_secret="unit-hmac-secret", device_limit=2)
+        svc.inspect_current_device(USER, None)
+        svc.ensure_current_device(
+            USER, None, auth_session_id=None, commercially_eligible=False
+        )
+        assert snapshot_request_counters() == {}
+        assert snapshot_request_timings() == {}
+        assert snapshot_request_notes() == {}
+    finally:
+        reset_request_timings(token)
+
+
+def test_guest_playground_snapshot_device_skipped_zero_lookups(tmp_path: Path):
+    async def _go():
+        client, app = await _async_guest_client(tmp_path)
+        spy = _spy_device_service(app)
+        try:
+            resp = await client.get("/playground")
+            snap = get_last_request_performance()
+            return resp, snap, spy.inspect_calls, spy.ensure_calls
+        finally:
+            await client.aclose()
+
+    resp, snap, inspect_n, ensure_n = asyncio.run(_go())
+    assert resp.status_code == 200
+    assert inspect_n == 0
+    assert ensure_n == 0
+    _assert_t3_entitlement(
+        snap,
+        access="guest",
+        auth_state="guest",
+        device_result="skipped_unpaid",
+        device_lookups=0,
+    )
+
+
+def test_free_authed_playground_snapshot_device_skipped_one_inspect(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        spy = _spy_device_service(app)
+        try:
+            resp = await client.get("/playground")
+            snap = get_last_request_performance()
+            return resp, snap, spy.inspect_calls, spy.ensure_calls
+        finally:
+            await client.aclose()
+
+    resp, snap, inspect_n, ensure_n = asyncio.run(_go())
+    assert resp.status_code == 200
+    assert inspect_n == 1
+    assert ensure_n == 0
+    _assert_t3_entitlement(
+        snap,
+        access="free",
+        auth_state="authed",
+        device_result="skipped_unpaid",
+        device_lookups=1,
+    )
+
+
+def test_halted_playground_snapshot_does_not_ensure(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        spy = _spy_device_service(app)
+        try:
+            _seed_subscription(app, tier="max", status="halted")
+            resp = await client.get("/playground")
+            snap = get_last_request_performance()
+            return resp, snap, spy.inspect_calls, spy.ensure_calls
+        finally:
+            await client.aclose()
+
+    resp, snap, inspect_n, ensure_n = asyncio.run(_go())
+    assert resp.status_code == 200
+    assert inspect_n == 1
+    assert ensure_n == 0
+    _assert_t3_entitlement(
+        snap,
+        access="halted",
+        disposition="halted",
+        auth_state="authed",
+        device_result="skipped_unpaid",
+        device_lookups=1,
+    )
+
+
+def test_plus_active_playground_snapshot_device_ok_two_lookups(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        spy = _spy_device_service(app)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            resp = await client.get("/playground")
+            snap = get_last_request_performance()
+            return resp, snap, spy.inspect_calls, spy.ensure_calls
+        finally:
+            await client.aclose()
+
+    resp, snap, inspect_n, ensure_n = asyncio.run(_go())
+    assert resp.status_code == 200
+    assert inspect_n == 1
+    assert ensure_n == 1
+    _assert_t3_entitlement(
+        snap,
+        access="allowed",
+        disposition="active",
+        auth_state="authed",
+        device_result="ok",
+        device_lookups=2,
+    )
+
+
+def test_pending_playground_snapshot_keeps_pending_when_device_ok(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        spy = _spy_device_service(app)
+        try:
+            _seed_subscription(app, tier="plus", status="pending")
+            resp = await client.get("/playground")
+            snap = get_last_request_performance()
+            return resp, snap, spy.inspect_calls, spy.ensure_calls
+        finally:
+            await client.aclose()
+
+    resp, snap, inspect_n, ensure_n = asyncio.run(_go())
+    assert resp.status_code == 200
+    assert inspect_n == 1
+    assert ensure_n == 1
+    _assert_t3_entitlement(
+        snap,
+        access="pending",
+        disposition="pending",
+        auth_state="authed",
+        device_result="ok",
+        device_lookups=2,
+    )
+
+
+def test_dashboard_plus_snapshot_inspects_but_does_not_ensure(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        spy = _spy_device_service(app)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            resp = await client.get("/dashboard")
+            snap = get_last_request_performance()
+            return resp, snap, spy.inspect_calls, spy.ensure_calls
+        finally:
+            await client.aclose()
+
+    resp, snap, inspect_n, ensure_n = asyncio.run(_go())
+    assert resp.status_code == 200
+    assert snap is not None
+    assert snap.path_group == "/dashboard"
+    assert inspect_n == 1
+    assert ensure_n == 0
+    _assert_t3_entitlement(
+        snap,
+        access="allowed",
+        disposition="active",
+        auth_state="authed",
+        device_result="skipped_unpaid",
+        device_lookups=1,
+    )
+
+
+def test_admin_playground_snapshot_skipped_unpaid_no_ensure(tmp_path: Path):
+    async def _go():
+        client, app, repo = await _async_authed_session(tmp_path)
+        spy = _spy_device_service(app)
+        try:
+            _seed_admin(repo)
+            resp = await client.get("/playground")
+            snap = get_last_request_performance()
+            return resp, snap, spy.inspect_calls, spy.ensure_calls
+        finally:
+            await client.aclose()
+
+    resp, snap, inspect_n, ensure_n = asyncio.run(_go())
+    assert resp.status_code == 200
+    assert inspect_n == 1
+    assert ensure_n == 0
+    _assert_t3_entitlement(
+        snap,
+        access="allowed",
+        auth_state="authed",
+        device_result="skipped_unpaid",
+        device_lookups=1,
+    )
+
+
+def test_device_limit_overwrites_access_result_on_plus_playground(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            _seed_other_devices(app, n=2)
+            resp = await client.get("/playground")
+            snap = get_last_request_performance()
+            cookie = client.cookies.get(DEVICE_COOKIE_NAME) or ""
+            return resp, snap, cookie
+        finally:
+            await client.aclose()
+
+    resp, snap, cookie = asyncio.run(_go())
+    assert resp.status_code == 200
+    assert 'data-playground-gate="device_limit"' in resp.text
+    _assert_t3_entitlement(
+        snap,
+        access="device_limit",
+        disposition="active",
+        auth_state="authed",
+        device_result="device_limit",
+        device_lookups=2,
+    )
+    assert str(USER) not in snap.notes.values()
+    if cookie:
+        assert cookie not in snap.notes.values()
+        assert cookie not in snap.path_group
+
+
+def test_device_revoked_overwrites_access_result_on_plus_playground(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            first = await client.get("/playground")
+            assert first.status_code == 200
+            token = client.cookies.get(DEVICE_COOKIE_NAME)
+            access = app.state.device_service.inspect_current_device(USER, token)
+            assert access.current_device_id
+            app.state.device_service.revoke_device(USER, access.current_device_id)
+            resp = await client.get("/playground")
+            snap = get_last_request_performance()
+            return resp, snap
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t3_entitlement(
+        snap,
+        access="device_revoked",
+        disposition="active",
+        auth_state="authed",
+        device_result="device_revoked",
+        device_lookups=2,
+    )
+
+
+def _install_device_stub(app, access: DeviceAccess):
+    inner = app.state.device_service
+
+    class Stub:
+        def inspect_current_device(self, *args, **kwargs):
+            return access
+
+        def ensure_current_device(self, *args, **kwargs):
+            return access
+
+        def __getattr__(self, name):
+            return getattr(inner, name)
+
+    app.state.device_service = Stub()
+
+
+def test_device_config_error_note_and_access_result(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            _install_device_stub(
+                app,
+                _canned_device_access(block_reason=BLOCK_DEVICE_CONFIG_ERROR),
+            )
+            resp = await client.get("/playground")
+            snap = get_last_request_performance()
+            return resp, snap
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t3_entitlement(
+        snap,
+        access="device_config_error",
+        disposition="active",
+        auth_state="authed",
+        device_result="device_config_error",
+        device_lookups=2,
+    )
+
+
+def test_replacement_limit_note_maps_short_token(
+    tmp_path: Path, caplog: logging.LogCaptureFixture
+):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            _install_device_stub(
+                app,
+                _canned_device_access(block_reason=BLOCK_DEVICE_REPLACEMENT_LIMIT),
+            )
+            with caplog.at_level(logging.INFO, logger="uvicorn.error"):
+                caplog.clear()
+                resp = await client.get("/playground")
+            snap = get_last_request_performance()
+            return resp, snap
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t3_entitlement(
+        snap,
+        access="replacement_limit",
+        disposition="active",
+        auth_state="authed",
+        device_result="replacement_limit",
+        device_lookups=2,
+    )
+    assert "device_replacement_limit" not in snap.notes.values()
+    breakdown = "\n".join(_breakdown_messages(caplog))
+    assert "device_replacement_limit" not in breakdown
+    assert "playground_device_result=replacement_limit" in breakdown
+
+
+def test_device_notes_omit_token_hmac_ua_ip_on_breakdown_and_snapshot(
+    tmp_path: Path, caplog: logging.LogCaptureFixture
+):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            with caplog.at_level(logging.INFO, logger="uvicorn.error"):
+                caplog.clear()
+                resp = await client.get(
+                    "/playground",
+                    headers={
+                        "User-Agent": "Mozilla/5.0 PrivacyProbe",
+                        "X-Forwarded-For": "203.0.113.9",
+                    },
+                )
+            snap = get_last_request_performance()
+            cookie = client.cookies.get(DEVICE_COOKIE_NAME) or ""
+            return resp, snap, cookie
+        finally:
+            await client.aclose()
+
+    resp, snap, cookie = asyncio.run(_go())
+    assert resp.status_code == 200
+    assert snap is not None
+    notes = " ".join(snap.notes.values())
+    breakdown = "\n".join(_breakdown_messages(caplog))
+    blob = f"{notes}\n{snap.path_group}\n{breakdown}"
+    assert str(USER) not in blob
+    assert USER_EMAIL not in blob
+    assert "Mozilla" not in blob
+    assert "PrivacyProbe" not in blob
+    assert "203.0.113.9" not in blob
+    assert TEST_DEVICE_HMAC_SECRET not in blob
+    assert "rtc_device" not in blob
+    if cookie:
+        assert cookie not in blob
+
+
+def test_free_device_limit_does_not_overwrite_access_result(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _install_device_stub(
+                app, _canned_device_access(block_reason=BLOCK_DEVICE_LIMIT)
+            )
+            resp = await client.get("/playground")
+            snap = get_last_request_performance()
+            return resp, snap
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t3_entitlement(
+        snap,
+        access="free",
+        auth_state="authed",
+        device_result="skipped_unpaid",
+        device_lookups=1,
+    )
