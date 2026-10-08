@@ -3980,6 +3980,76 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   }
 }
 
+/* Guest phone Settings (CTA map guest/07-screen). Desktop guest /settings
+   stays the production Settings surface. */
+@media (max-width: 560px) {
+  body.is-guest[data-mscreen="settings"]:has([data-phone-settings="guest"]) .settings > .lede {
+    display: block;
+    margin: 8px 2px 4px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  body.is-guest[data-mscreen="settings"]:has([data-phone-settings="guest"]) .settings > .section-title {
+    display: none;
+  }
+
+  body.is-guest[data-mscreen="settings"]:has([data-phone-settings="guest"]) .panel.settings {
+    padding-bottom: 28px;
+  }
+
+  [data-phone-settings="guest"] .settings-account-row:active {
+    transform: none;
+  }
+
+  [data-phone-settings="guest"] .settings-account-copy {
+    flex: 1;
+    min-width: 0;
+  }
+
+  [data-phone-settings="guest"] .settings-account-avatar.is-guest-placeholder {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--pg-guest-avatar);
+    color: var(--pg-mid);
+    font-family: var(--pg-font-display, Fraunces, Georgia, serif);
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  [data-phone-settings="guest"] .settings-account-signin {
+    appearance: none;
+    -webkit-appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0 4px;
+    border: none;
+    background: transparent;
+    font: inherit;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--browse-due);
+    cursor: pointer;
+    white-space: nowrap;
+    margin-left: auto;
+  }
+
+  [data-phone-settings="guest"] .settings-theme[aria-label="Theme"] .settings-theme-btn.is-active {
+    background: var(--ink);
+    border-color: var(--ink);
+    box-shadow: none;
+    color: var(--on-accent);
+    font-weight: 600;
+  }
+}
+
 /* Plus desktop Playground home (CTA map plus/06-screen). Phone Plus
    keeps the production subscriber home. Guest intro, Free Gate, and
    Pro home stay on their own wrappers. */

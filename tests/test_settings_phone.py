@@ -68,7 +68,8 @@ def test_guest_get_settings_renders_page(tmp_path: Path):
     # hidden rather than shown switched off.
     assert "Guest · Reading only" in html
     assert 'href="/login"' in html
-    assert 'data-report-section="Settings"' in html
+    assert "data-guest-settings-report" in html
+    assert 'data-report-section="Settings"' not in html
     assert "Bare Act text verbatim · Day 1 · 3 · 7 · 15 · 30 · 60" in html
     assert "data-motion-toggle" in html
     assert "Sign out" not in html

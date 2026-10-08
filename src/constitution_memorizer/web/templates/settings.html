@@ -4,9 +4,9 @@
 {% block content %}
 {% set is_guest = multiuser_enabled|default(false) and not current_user %}
 {% set account_label = (current_user.display_name or current_user.email or current_user.phone or 'Account') if current_user else 'Guest' %}
-<section class="panel settings"{% if current_user and not is_guest %} data-signed-in-settings{% endif %}{% if plus_settings|default(false) %} data-plus-settings="desktop"{% endif %}{% if halted_settings|default(false) %} data-halted-settings="desktop"{% endif %}{% if expired_settings|default(false) %} data-expired-settings="desktop"{% endif %}>
+<section class="panel settings"{% if is_guest %} data-phone-settings="guest"{% endif %}{% if current_user and not is_guest %} data-signed-in-settings{% endif %}{% if plus_settings|default(false) %} data-plus-settings="desktop"{% endif %}{% if halted_settings|default(false) %} data-halted-settings="desktop"{% endif %}{% if expired_settings|default(false) %} data-expired-settings="desktop"{% endif %}>
   <div class="mobile-topbar">
-    <a class="mobile-back" href="{% if multiuser_enabled|default(false) and current_user %}/dashboard{% else %}/{% endif %}">← {% if multiuser_enabled|default(false) and current_user %}Today{% else %}Home{% endif %}</a>
+    <a class="mobile-back" href="{% if multiuser_enabled|default(false) %}/dashboard{% else %}/{% endif %}">← {% if multiuser_enabled|default(false) %}Today{% else %}Home{% endif %}</a>
   </div>
   {% if current_user and not is_guest %}
   <p class="si-settings-desk-back"><a href="/dashboard">← Today</a></p>
@@ -14,7 +14,17 @@
   <h1 class="display">Settings</h1>
 
   {% if multiuser_enabled|default(false) %}
-  <a class="settings-account-row" href="{% if current_user %}/profile{% else %}/login{% endif %}">
+  {% if is_guest %}
+  <article class="settings-account-row" data-guest-settings-identity>
+    <span class="settings-account-avatar is-guest-placeholder" aria-hidden="true">?</span>
+    <span class="settings-account-copy">
+      <span class="settings-account-name">Guest</span>
+      <span class="settings-account-status">Guest · Reading only</span>
+    </span>
+    <button type="button" class="settings-account-signin" data-guest-settings-identity-signin>Sign in</button>
+  </article>
+  {% else %}
+  <a class="settings-account-row" href="/profile">
     {% if current_user and current_user.avatar_url %}
     <img class="settings-account-avatar" src="{{ current_user.avatar_url }}" alt="" width="38" height="38">
     {% else %}
@@ -34,16 +44,11 @@
       <span class="settings-account-status">Signed in with phone</span>
       {% elif current_user %}
       <span class="settings-account-status">Signed in</span>
-      {% elif is_guest %}
-      <span class="settings-account-status">Guest · Reading only</span>
       {% endif %}
     </span>
-    {% if is_guest %}
-    <span class="settings-account-signin">Sign in</span>
-    {% else %}
     <span class="settings-account-chevron" aria-hidden="true">›</span>
-    {% endif %}
   </a>
+  {% endif %}
   {% endif %}
 
   {% if multiuser_enabled|default(false) %}
@@ -454,20 +459,29 @@
         <span class="settings-account-chevron" aria-hidden="true">›</span>
       </a>
       {% else %}
-      <a class="settings-row settings-row-link" href="/login">
+      <button type="button" class="settings-row settings-row-link" data-guest-settings-signin>
         <span class="settings-row-copy">
           <span class="settings-row-label">Sign in</span>
         </span>
         <span class="settings-account-chevron" aria-hidden="true">›</span>
-      </a>
+      </button>
       {% endif %}
       {% if multiuser_enabled|default(false) %}
+      {% if is_guest %}
+      <button type="button" class="settings-row settings-row-link" data-guest-settings-report>
+        <span class="settings-row-copy">
+          <span class="settings-row-label">Report an issue</span>
+        </span>
+        <span class="settings-account-chevron" aria-hidden="true">›</span>
+      </button>
+      {% else %}
       <button type="button" class="settings-row settings-row-link" data-report-open data-report-section="Settings">
         <span class="settings-row-copy">
           <span class="settings-row-label">Report an issue</span>
         </span>
         <span class="settings-account-chevron" aria-hidden="true">›</span>
       </button>
+      {% endif %}
       {% endif %}
       {% if current_user %}
       <form method="post" action="/logout" class="settings-signout-form">

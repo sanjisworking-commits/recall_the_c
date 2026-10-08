@@ -72,7 +72,7 @@
   <link rel="stylesheet" href="/static/styles.css?v=main85">
   <link rel="stylesheet" href="/static/visual-explainer.css?v=ve1">
   <link rel="stylesheet" href="/static/mobile.css?v=mob99">
-  <link rel="stylesheet" href="/static/playground.css?v=pg31">
+  <link rel="stylesheet" href="/static/playground.css?v=pg32">
   {% if onboarding_status|default('') == 'active' %}
   <link rel="stylesheet" href="/static/onboarding.css?v=ob6">
   {% endif %}
@@ -113,6 +113,7 @@
   {% set guest_bareact_head = multiuser_enabled|default(false) and not current_user and not auth_surface and path == '/laws/ndps' %}
   {% set guest_playground_intro = multiuser_enabled|default(false) and not current_user and not auth_surface and path.rstrip('/') == '/playground' %}
   {% set guest_profile = multiuser_enabled|default(false) and not current_user and not auth_surface and path.rstrip('/') == '/profile' %}
+  {% set guest_settings = multiuser_enabled|default(false) and not current_user and not auth_surface and path.rstrip('/') == '/settings' %}
   {% set guest_chrome = guest_browse_index or guest_laws_index or guest_bareact_head %}
   <div class="page-wrap">
     <div class="sheet">
@@ -433,6 +434,8 @@
     <a href="/calendar" class="mobile-tab"><svg class="mobile-tab-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><rect x="2.6" y="4" width="14.8" height="13" rx="2"></rect><path d="M2.6 8.2h14.8M6.6 2.2v3M13.4 2.2v3"></path></svg>Calendar</a>
     <a href="/profile" class="mobile-tab is-active" aria-current="page"><svg class="mobile-tab-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="6.6" r="3.4"></circle><path d="M3.4 17.4c.8-3.1 3.4-4.8 6.6-4.8s5.8 1.7 6.6 4.8"></path></svg>Profile</a>
   </nav>
+  {% elif guest_settings %}
+  {# Phone Guest Screen 07: no bottom tabs. Desktop tabbar stays hidden. #}
   {% elif guest_bareact_head %}
   <nav class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom" aria-label="Mobile" data-guest-bareact-phone-tabs>
     <a href="/dashboard" class="mobile-tab"><svg class="mobile-tab-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M3 9.4 10 3l7 6.4V17h-4.6v-4.6H7.6V17H3V9.4Z"></path></svg>Today</a>
