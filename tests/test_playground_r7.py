@@ -98,12 +98,13 @@ def test_t33_r7_asset_pins() -> None:
     html = BASE.read_text(encoding="utf-8")
     assert "styles.css?v=main85" in html
     assert "mobile.css?v=mob99" in html
-    assert "playground.css?v=pg29" in html
+    assert "playground.css?v=pg30" in html
     assert "playground.js?v=pg8" in html
     assert "styles.css?v=main76" not in html
     assert "styles.css?v=main84" not in html
     assert "mobile.css?v=mob97" not in html
     assert "mobile.css?v=mob98" not in html
+    assert "playground.css?v=pg29" not in html
     assert "playground.css?v=pg28" not in html
     assert "playground.css?v=pg26" not in html
     assert "playground.css?v=pg25" not in html
@@ -313,7 +314,7 @@ def test_r7_shell_still_has_phone_and_desktop_breakpoints(tmp_path: Path) -> Non
     home = client.get("/playground")
     assert home.status_code == 200
     assert "PlaygroundShell" in home.text
-    css = client.get("/static/playground.css?v=pg29").text
+    css = client.get("/static/playground.css?v=pg30").text
     assert "--pg-tap: 44px" in css or "--pg-tap:" in css
     styles = client.get("/static/styles.css?v=main85").text
     assert "R7 closeout" in styles

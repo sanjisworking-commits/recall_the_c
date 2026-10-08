@@ -145,6 +145,33 @@
 {% endif %}
 {% endmacro %}
 
+{% macro guest_phone_gate(gate, values, footnote) %}
+{# Shared Gate guest intro (cta-map-mobile shared/05, guest/03-screen). #}
+<section class="pg-guest-gate" data-phone-pg-gate="guest" aria-labelledby="pg-gate-title">
+  <p class="pg-guest-gate-kicker">{{ gate.eyebrow }}</p>
+  <h1 id="pg-gate-title">{{ gate.title }}</h1>
+  {% for line in gate.lines %}
+  <p class="pg-guest-gate-lede">{{ line }}</p>
+  {% endfor %}
+  <ul class="pg-guest-gate-values">
+    {% for item in values %}
+    <li>
+      <span class="pg-guest-gate-check" aria-hidden="true">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6.5 4.8 9.2 10 3.2"></path></svg>
+      </span>
+      <span class="pg-guest-gate-value">
+        <strong>{{ item.title }}</strong>
+        <span>{{ item.body }}</span>
+      </span>
+    </li>
+    {% endfor %}
+  </ul>
+  <button type="button" class="pg-guest-gate-signin">Sign in</button>
+  <button type="button" class="pg-guest-gate-create">Create an account</button>
+  {% if footnote %}<p class="pg-guest-gate-note">{{ footnote }}</p>{% endif %}
+</section>
+{% endmacro %}
+
 {% macro how_it_works() %}
 <div class="HowPlaygroundWorks">
   <p class="pg-eyebrow">How Playground works</p>

@@ -86,6 +86,10 @@ from constitution_memorizer.playground.view import (
     parse_playground_gate_stage_from_request,
     saved_progress_summary,
 )
+from constitution_memorizer.web.guest_playground_intro import (
+    GUEST_GATE_FOOTNOTE,
+    GUEST_GATE_VALUES,
+)
 
 PLAYGROUND_BILLING_PATH = "/billing/subscriptions"
 CONSTITUTION_HOME_PATH = "/dashboard"
@@ -579,6 +583,8 @@ def _render_gate(
         "gate_continue_label": "",
         "gate_how_steps": (),
         "current_plan_tier": "",
+        "guest_gate_values": (),
+        "guest_gate_footnote": "",
     }
     if extra:
         context.update(extra)
@@ -681,6 +687,11 @@ def _gate_page(
         if overlay is not None and uid is not None:
             saved = saved_progress_summary(overlay, uid)
     extra: dict[str, Any] = {}
+    if reason == BLOCK_SIGN_IN_REQUIRED:
+        extra = {
+            "guest_gate_values": GUEST_GATE_VALUES,
+            "guest_gate_footnote": GUEST_GATE_FOOTNOTE,
+        }
     if reason == BLOCK_NOT_SUBSCRIBED:
         stage, selected_tier = parse_playground_gate_stage_from_request(request)
         snap = getattr(request.state, "entitlement_snapshot", None)

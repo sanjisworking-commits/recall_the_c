@@ -1,8 +1,8 @@
 """Guest desktop Playground intro Screen 6 (CTA map guest/06-screen).
 
-Authorized: ChatGPT. Guest GET `/playground` desktop only. Phone Gate,
-subscriber home, Landing, Browse, Laws, and Bare Act heads stay unchanged.
-Sign in uses the existing `/login?next=/playground` path.
+Authorized: ChatGPT. Guest GET `/playground` desktop only. Phone Gate is
+Screen 03 (shared/05). Subscriber home, Landing, Browse, Laws, and Bare Act
+heads stay on their own wrappers. Desktop Sign in uses `/login?next=/playground`.
 """
 
 from __future__ import annotations
@@ -74,12 +74,14 @@ def _header(html: str) -> str:
 
 def _intro(html: str) -> str:
     return html.split("data-guest-pg-intro", 1)[1].split(
-        'data-pg-gate-phone>', 1
+        "data-phone-pg-gate", 1
     )[0]
 
 
 def _phone_gate(html: str) -> str:
-    return html.split('data-pg-gate-phone>', 1)[1]
+    return html.split('data-phone-pg-gate="guest"', 1)[1].split(
+        "</section>", 1
+    )[0]
 
 
 def test_screen6_header_is_brand_and_guest_chip(tmp_path: Path) -> None:
@@ -129,14 +131,18 @@ def test_screen6_copy_single_signin_and_existing_auth_path(tmp_path: Path) -> No
     assert "/billing/subscriptions" not in intro
 
 
-def test_screen6_phone_gate_keeps_production_copy(tmp_path: Path) -> None:
+def test_screen6_phone_gate_defers_to_screen03_composition(tmp_path: Path) -> None:
     html = _guest_client(tmp_path).get("/playground").text
     phone = _phone_gate(html)
     assert "Sign in to use Playground" in phone
     assert GUEST_PG_TITLE not in phone
-    assert "How Playground works" in phone
-    assert f'href="{GUEST_PG_SIGNIN_HREF}"' in phone
+    assert "Create an account" in phone
+    assert 'type="button"' in phone
+    assert GUEST_PG_SIGNIN_HREF not in phone
     assert "data-hard-gate=\"true\"" in html
+    intro = _intro(html)
+    assert f'href="{GUEST_PG_SIGNIN_HREF}"' in intro
+    assert "Create an account" not in intro
 
 
 def test_screen6_does_not_change_other_screens(tmp_path: Path) -> None:
@@ -217,7 +223,7 @@ def test_screen6_1280_matches_intro_and_signin_reaches_login(tmp_path: Path) -> 
         geo = page.evaluate(
             """() => {
               const intro = document.querySelector('[data-guest-pg-intro]');
-              const phone = document.querySelector('[data-pg-gate-phone]');
+              const phone = document.querySelector('[data-phone-pg-gate="guest"]');
               const brand = document.querySelector('[data-guest-pg-brand]');
               const phoneBrand = document.querySelector('[data-pg-gate-phone-brand]');
               const nav = document.querySelector('.PrimaryTabs--top');
@@ -265,7 +271,7 @@ def test_screen6_1280_matches_intro_and_signin_reaches_login(tmp_path: Path) -> 
         phone_geo = phone.evaluate(
             """() => {
               const intro = document.querySelector('[data-guest-pg-intro]');
-              const prod = document.querySelector('[data-pg-gate-phone]');
+              const prod = document.querySelector('[data-phone-pg-gate="guest"]');
               return {
                 introDisplay: intro ? getComputedStyle(intro).display : null,
                 prodDisplay: prod ? getComputedStyle(prod).display : null,

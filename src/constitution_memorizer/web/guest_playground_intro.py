@@ -1,10 +1,13 @@
-"""Guest desktop Playground intro (CTA map guest/06-screen). Presentation only.
+"""Guest Playground Gate copy (desktop guest/06-screen, phone shared/05).
 
-Phone guest `/playground` keeps the production entitlement Gate. Subscriber
-home is unchanged. Sign in uses the existing `/login?next=/playground` Gate path.
+Presentation only. Desktop intro and phone Gate share this helper so Shared
+05 can reuse the same values. Subscriber home is unchanged. Desktop Sign in
+keeps `/login?next=/playground`. Phone CTAs are handlerless.
 """
 
 from __future__ import annotations
+
+from typing import NamedTuple
 
 GUEST_PG_PATH = "/playground"
 GUEST_PG_KICKER = "Playground"
@@ -26,6 +29,31 @@ GUEST_PG_NOTE = (
     "stays free for everyone."
 )
 GUEST_PG_SIGNIN_HREF = "/login?next=/playground"
+
+
+class GuestGateValue(NamedTuple):
+    title: str
+    body: str
+
+
+GUEST_GATE_VALUES: tuple[GuestGateValue, ...] = (
+    GuestGateValue(
+        "Six recall methods",
+        "Read, cloze, first letters, type, recite and test — one section at a time.",
+    ),
+    GuestGateValue(
+        "A spaced ladder",
+        "Reviews on day 1, 3, 7, 15, 30 and 60. The app tells you what is due.",
+    ),
+    GuestGateValue(
+        "Verbatim, always",
+        "You learn the Bare Act text itself from the official Gazette source.",
+    ),
+)
+GUEST_GATE_FOOTNOTE = (
+    "Signing in also unlocks the full Constitution learning experience, free. "
+    "Reading the Bare Acts stays free for everyone."
+)
 
 
 def is_guest_playground_intro_path(path: str) -> bool:

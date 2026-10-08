@@ -2183,7 +2183,7 @@ html:has(.pg-surface--fixed-dark) .sheet {
 
 /* R3 — Act-head, Add, home, gates */
 body:has(.PlaygroundShell[data-hard-gate="true"]) .PrimaryTabs--top,
-body:has(.PlaygroundShell[data-hard-gate="true"]) .mobile-tabbar {
+body:has(.PlaygroundShell[data-hard-gate="true"]) .mobile-tabbar:not([data-guest-pg-phone-tabs]) {
   display: none;
 }
 
@@ -3152,14 +3152,152 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
 }
 
 /* Guest desktop Playground intro (CTA map guest/06-screen). Phone guest
-   /playground keeps the production entitlement Gate. */
+   /playground is shared/05 / guest/03-screen. */
 @media (max-width: 560px) {
   [data-guest-pg-intro] {
     display: none !important;
   }
+
+  body.is-guest[data-mscreen="playground"]:has([data-phone-pg-gate="guest"]) .page-wrap,
+  body.is-guest[data-mscreen="playground"]:has([data-phone-pg-gate="guest"]) .sheet,
+  body.is-guest[data-mscreen="playground"]:has([data-phone-pg-gate="guest"]) .PlaygroundShell {
+    background: var(--pg-paper);
+  }
+
+  body.is-guest[data-mscreen="playground"]:has([data-phone-pg-gate="guest"]) .PlaygroundShell {
+    padding: 14px 22px calc(var(--m-tabbar, 60px) + 28px + env(safe-area-inset-bottom, 0px));
+  }
+
+  body.is-guest[data-mscreen="playground"]:has([data-phone-pg-gate="guest"]) .mobile-tab.is-active {
+    color: var(--pg-ink);
+  }
+
+  [data-phone-pg-gate="guest"] {
+    padding: 0 0 8px;
+  }
+
+  [data-phone-pg-gate="guest"] .pg-guest-gate-kicker {
+    margin: 0 0 6px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--pg-teal);
+  }
+
+  body.is-guest .PlaygroundShell [data-phone-pg-gate="guest"] h1 {
+    margin: 0 0 8px;
+    font-family: var(--pg-font-display);
+    font-size: 26px;
+    font-weight: 500;
+    line-height: 1.12;
+    letter-spacing: 0;
+    color: var(--pg-ink);
+    text-wrap: balance;
+  }
+
+  [data-phone-pg-gate="guest"] .pg-guest-gate-lede {
+    margin: 0 0 20px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--pg-muted);
+  }
+
+  [data-phone-pg-gate="guest"] .pg-guest-gate-values {
+    display: flex;
+    flex-direction: column;
+    gap: 13px;
+    margin: 0 0 22px;
+    padding: 0;
+    list-style: none;
+  }
+
+  [data-phone-pg-gate="guest"] .pg-guest-gate-values li {
+    display: flex;
+    gap: 11px;
+  }
+
+  [data-phone-pg-gate="guest"] .pg-guest-gate-check {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    margin-top: 1px;
+    border-radius: 50%;
+    background: var(--pg-teal-tint);
+    color: var(--pg-teal);
+    flex: none;
+  }
+
+  [data-phone-pg-gate="guest"] .pg-guest-gate-value {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  [data-phone-pg-gate="guest"] .pg-guest-gate-value strong {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--pg-ink);
+  }
+
+  [data-phone-pg-gate="guest"] .pg-guest-gate-value span {
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--pg-muted);
+  }
+
+  [data-phone-pg-gate="guest"] .pg-guest-gate-signin,
+  [data-phone-pg-gate="guest"] .pg-guest-gate-create {
+    appearance: none;
+    -webkit-appearance: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    border-radius: 12px;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    box-sizing: border-box;
+  }
+
+  [data-phone-pg-gate="guest"] .pg-guest-gate-signin {
+    height: 50px;
+    border: none;
+    background: var(--pg-ink);
+    color: var(--pg-paper);
+    font-size: 15px;
+    box-shadow: var(--pg-shadow-press);
+  }
+
+  [data-phone-pg-gate="guest"] .pg-guest-gate-signin:active {
+    transform: translateY(1px);
+    box-shadow: var(--pg-shadow-press-active);
+  }
+
+  [data-phone-pg-gate="guest"] .pg-guest-gate-create {
+    height: 46px;
+    margin-top: 9px;
+    border: 1px solid var(--pg-hairline);
+    background: var(--pg-paper);
+    color: var(--pg-ink);
+    font-size: 14.5px;
+  }
+
+  [data-phone-pg-gate="guest"] .pg-guest-gate-note {
+    margin: 12px 0 0;
+    text-align: center;
+    font-size: 11.5px;
+    line-height: 1.55;
+    color: var(--pg-faint);
+  }
 }
 
 @media (min-width: 561px) {
+  [data-phone-pg-gate="guest"],
+  [data-guest-pg-phone-tabs],
   [data-pg-gate-phone] {
     display: none !important;
   }
