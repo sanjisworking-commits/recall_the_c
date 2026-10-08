@@ -2,8 +2,12 @@
 
 from __future__ import annotations
 
+import math
+import os
+import random
 import re
 from contextvars import ContextVar, Token
+from dataclasses import dataclass
 from time import perf_counter
 from typing import TYPE_CHECKING
 
@@ -26,6 +30,24 @@ _request_counters: ContextVar[dict[str, int] | None] = ContextVar(
 _request_notes: ContextVar[dict[str, str] | None] = ContextVar(
     "request_notes", default=None
 )
+# Last finished breakdown request in this task. Independent of collectors.
+_last_request_performance: ContextVar[RequestPerformanceSnapshot | None] = ContextVar(
+    "last_request_performance", default=None
+)
+
+
+@dataclass(frozen=True)
+class RequestPerformanceSnapshot:
+    """In-process copy of one request's timing breakdown. Not sent on the wire."""
+
+    path_group: str
+    method: str
+    status_code: int
+    total_ms: float
+    timings: dict[str, tuple[float, int]]
+    counters: dict[str, int]
+    notes: dict[str, str]
+
 
 TIMING_STAGES: tuple[str, ...] = (
     "auth_session",
@@ -585,3 +607,117 @@ def snapshot_request_notes() -> dict[str, str]:
     if current is None:
         return {}
     return dict(current)
+
+
+def _clone_request_performance(
+    snapshot: RequestPerformanceSnapshot,
+) -> RequestPerformanceSnapshot:
+    return RequestPerformanceSnapshot(
+        path_group=snapshot.path_group,
+        method=snapshot.method,
+        status_code=snapshot.status_code,
+        total_ms=snapshot.total_ms,
+        timings=dict(snapshot.timings),
+        counters=dict(snapshot.counters),
+        notes=dict(snapshot.notes),
+    )
+
+
+def clear_last_request_performance() -> None:
+    """Drop the task-local snapshot. Called at the start of every request."""
+    _last_request_performance.set(None)
+
+
+def capture_request_performance(
+    *,
+    path: str,
+    method: str,
+    status_code: int,
+    total_ms: float,
+) -> RequestPerformanceSnapshot:
+    """Store a fresh snapshot from the current collectors; return a separate clone."""
+    stored = RequestPerformanceSnapshot(
+        path_group=normalize_request_path_group(path),
+        method=method,
+        status_code=int(status_code),
+        total_ms=float(total_ms),
+        timings=snapshot_request_timings(),
+        counters=snapshot_request_counters(),
+        notes=snapshot_request_notes(),
+    )
+    _last_request_performance.set(stored)
+    return _clone_request_performance(stored)
+
+
+def get_last_request_performance() -> RequestPerformanceSnapshot | None:
+    """Fresh clone of the last snapshot in this task, or None."""
+    current = _last_request_performance.get()
+    if current is None:
+        return None
+    return _clone_request_performance(current)
+
+
+def perf_log_sample_rate() -> float:
+    """PERF_LOG_SAMPLE_RATE in [0, 1]. Missing, invalid, non-finite, or out of range → 1.0."""
+    raw = os.environ.get("PERF_LOG_SAMPLE_RATE")
+    if raw is None or str(raw).strip() == "":
+        return 1.0
+    try:
+        value = float(raw)
+    except (TypeError, ValueError):
+        return 1.0
+    if not math.isfinite(value) or value < 0.0 or value > 1.0:
+        return 1.0
+    return value
+
+
+def should_emit_request_breakdown_log() -> bool:
+    """Whether to emit the request_breakdown line. Does not affect collection."""
+    rate = perf_log_sample_rate()
+    if rate >= 1.0:
+        return True
+    if rate <= 0.0:
+        return False
+    return random.random() < rate
+
+
+def breakdown_includes_raw_path(path: str) -> bool:
+    """False when a raw path= label would leak a law id, UUID, or sitemap slug."""
+    canonical = _canonical_request_path(path)
+    parts = [segment for segment in canonical.split("/") if segment]
+    if parts and parts[0] == "playground":
+        return False
+    if len(parts) == 3 and parts[0] == "admin" and parts[1] == "users":
+        return False
+    if (
+        len(parts) == 1
+        and parts[0].startswith("sitemap-laws-")
+        and parts[0].endswith(".xml")
+        and parts[0] != "sitemap-laws.xml"
+    ):
+        return False
+    return True
+
+
+def format_request_breakdown_line(
+    snapshot: RequestPerformanceSnapshot,
+    *,
+    raw_path: str,
+) -> str:
+    """Build the request_breakdown log line. Constitution keeps path=; others do not."""
+    parts = [f"request_breakdown method={snapshot.method}"]
+    if breakdown_includes_raw_path(raw_path):
+        parts.append(f"path={_canonical_request_path(raw_path)}")
+    parts.append(f"path_group={snapshot.path_group}")
+    parts.append(f"total_ms={snapshot.total_ms:.1f}")
+    for stage in TIMING_STAGES:
+        if stage not in snapshot.timings:
+            continue
+        stage_ms, count = snapshot.timings[stage]
+        parts.append(f"{stage}_ms={stage_ms:.1f}")
+        parts.append(f"{stage}_n={count}")
+    for name, count in snapshot.counters.items():
+        parts.append(f"{name}={count}")
+    for name, value in snapshot.notes.items():
+        parts.append(f"{name}={value}")
+    return " ".join(parts)

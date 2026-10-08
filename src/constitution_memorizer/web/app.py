@@ -98,16 +98,17 @@ from constitution_memorizer.progress.scheduler import (
 )
 from constitution_memorizer.progress.user_ids import LOCAL_USER_ID
 from constitution_memorizer.web.request_context import (
-    TIMING_STAGES,
     begin_request_timings,
     bound_engine,
     bound_memory,
+    capture_request_performance,
+    clear_last_request_performance,
+    format_request_breakdown_line,
+    get_last_request_performance,
     record_request_note,
     record_request_timing,
     reset_request_timings,
-    snapshot_request_counters,
-    snapshot_request_notes,
-    snapshot_request_timings,
+    should_emit_request_breakdown_log,
     wants_request_breakdown,
 )
 from constitution_memorizer.web.amendments import get_article_amendments, load_amendments
@@ -1041,6 +1042,16 @@ def create_app(
         return await playground_error_middleware(request, call_next)
 
     @app.middleware("http")
+    async def private_robots_headers(request: Request, call_next):
+        """X-Robots-Tag on private non-HTML responses. HTML uses the meta tag."""
+        response = await call_next(request)
+        return apply_private_robots_headers(request.url.path, response)
+
+    # Registered last so it is the outermost BaseHTTPMiddleware. Starlette runs
+    # inner @middleware layers in a child task; only the outermost dispatch
+    # (and its finally) share the caller's ContextVar — required for
+    # get_last_request_performance() after an in-process ASGI request.
+    @app.middleware("http")
     async def request_timing(request: Request, call_next):
         """Log method/path/status/duration_ms; skip health and static assets."""
         path = request.url.path
@@ -1049,6 +1060,7 @@ def create_app(
             or path.startswith("/static/")
         )
         breakdown = wants_request_breakdown(path)
+        clear_last_request_performance()
         token = begin_request_timings() if breakdown else None
         started = time.perf_counter()
         status = 500
@@ -1057,6 +1069,7 @@ def create_app(
             status = response.status_code
             return response
         finally:
+            duration_ms = (time.perf_counter() - started) * 1000.0
             if breakdown:
                 # Recorded here, after call_next, because the auth middleware
                 # runs inside this one and is what sets current_user. Without
@@ -1069,8 +1082,13 @@ def create_app(
                 else:
                     auth_state = "guest"
                 record_request_note("auth_state", auth_state)
+                capture_request_performance(
+                    path=path,
+                    method=request.method,
+                    status_code=status,
+                    total_ms=duration_ms,
+                )
             if not skip:
-                duration_ms = (time.perf_counter() - started) * 1000.0
                 timing_logger.info(
                     "request method=%s path=%s status=%s duration_ms=%.1f",
                     request.method,
@@ -1078,32 +1096,13 @@ def create_app(
                     status,
                     duration_ms,
                 )
-                snapshot = snapshot_request_timings()
-                counters = snapshot_request_counters()
-                notes = snapshot_request_notes()
-                if snapshot or counters or notes:
-                    parts = [
-                        f"request_breakdown method={request.method} path={path}"
-                    ]
-                    for stage in TIMING_STAGES:
-                        if stage not in snapshot:
-                            continue
-                        total_ms, count = snapshot[stage]
-                        parts.append(f"{stage}_ms={total_ms:.1f}")
-                        parts.append(f"{stage}_n={count}")
-                    for name, count in counters.items():
-                        parts.append(f"{name}={count}")
-                    for name, value in notes.items():
-                        parts.append(f"{name}={value}")
-                    timing_logger.info(" ".join(parts))
+                snap = get_last_request_performance()
+                if snap is not None and should_emit_request_breakdown_log():
+                    timing_logger.info(
+                        format_request_breakdown_line(snap, raw_path=path)
+                    )
             if token is not None:
                 reset_request_timings(token)
-
-    @app.middleware("http")
-    async def private_robots_headers(request: Request, call_next):
-        """X-Robots-Tag on private non-HTML responses. HTML uses the meta tag."""
-        response = await call_next(request)
-        return apply_private_robots_headers(request.url.path, response)
 
     app.include_router(create_auth_router(templates))
     from constitution_memorizer.devices.routes import (  # noqa: PLC0415

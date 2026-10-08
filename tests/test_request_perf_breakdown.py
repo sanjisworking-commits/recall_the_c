@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 from pathlib import Path
 from time import perf_counter
@@ -9,6 +10,7 @@ from uuid import UUID
 
 import pytest
 from fastapi.testclient import TestClient
+from httpx import ASGITransport, AsyncClient
 
 from constitution_memorizer.auth.fake_provider import FakeAuthProvider
 from constitution_memorizer.auth.sessions import InMemorySessionStore
@@ -25,12 +27,20 @@ from constitution_memorizer.web.request_context import (
     REQUEST_COUNTERS,
     REQUEST_NOTES,
     TIMING_STAGES,
+    RequestPerformanceSnapshot,
     begin_request_timings,
+    breakdown_includes_raw_path,
+    capture_request_performance,
+    clear_last_request_performance,
+    format_request_breakdown_line,
+    get_last_request_performance,
     normalize_request_path_group,
+    perf_log_sample_rate,
     record_request_counter,
     record_request_note,
     record_request_timing,
     reset_request_timings,
+    should_emit_request_breakdown_log,
     snapshot_request_counters,
     snapshot_request_notes,
     snapshot_request_timings,
@@ -106,6 +116,13 @@ def _clear_settings():
     clear_settings_cache()
     yield
     clear_settings_cache()
+
+
+@pytest.fixture(autouse=True)
+def _clear_performance_snapshot():
+    clear_last_request_performance()
+    yield
+    clear_last_request_performance()
 
 
 def _settings(**overrides) -> MultiUserSettings:
@@ -492,7 +509,7 @@ def test_snapshot_is_independent_copy():
     assert snapshot["profile"] == (0.0, 99)
 
 
-def _counting_client(tmp_path: Path) -> tuple[TestClient, CountingProgressRepo]:
+def _counting_app(tmp_path: Path) -> tuple[object, CountingProgressRepo]:
     conn = open_progress_db(tmp_path / "progress.db")
     repo = CountingProgressRepo(ProgressRepository(conn))
     provider = FakeAuthProvider()
@@ -510,12 +527,35 @@ def _counting_client(tmp_path: Path) -> tuple[TestClient, CountingProgressRepo]:
         session_store=InMemorySessionStore(),
         progress_repo=repo,
     )
+    return app, repo
+
+
+def _counting_client(tmp_path: Path) -> tuple[TestClient, CountingProgressRepo]:
+    app, repo = _counting_app(tmp_path)
     client = TestClient(app)
     start = client.get("/auth/google/start", follow_redirects=False)
     state = start.cookies.get("rtc_oauth_state")
     cb = client.get(
         f"/auth/callback?code=fake-google-code&state={state}",
         follow_redirects=False,
+    )
+    assert cb.status_code == 303
+    repo.reset_counts()
+    return client, repo
+
+
+async def _async_authed_client(tmp_path: Path) -> tuple[AsyncClient, CountingProgressRepo]:
+    """Same-task ASGI client so ContextVar snapshots are visible after the request."""
+    app, repo = _counting_app(tmp_path)
+    client = AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://testserver",
+        follow_redirects=False,
+    )
+    start = await client.get("/auth/google/start")
+    state = start.cookies.get("rtc_oauth_state")
+    cb = await client.get(
+        f"/auth/callback?code=fake-google-code&state={state}",
     )
     assert cb.status_code == 303
     repo.reset_counts()
@@ -612,3 +652,448 @@ def test_breakdown_logs_omit_sensitive_data(
     assert "cookie" not in joined.lower()
     assert "token" not in joined.lower()
     assert "phone" not in joined.lower()
+
+
+def _access_messages(caplog: logging.LogCaptureFixture) -> list[str]:
+    return [
+        record.getMessage()
+        for record in caplog.records
+        if record.getMessage().startswith("request method=")
+    ]
+
+
+def test_capture_request_performance_shape_and_copies():
+    token = begin_request_timings()
+    try:
+        record_request_timing("playground_entitlement", perf_counter() - 0.01)
+        record_request_counter("playground_repo_round_trips", 2)
+        record_request_note("auth_state", "authed")
+        record_request_note("playground_access_result", "allowed")
+        returned = capture_request_performance(
+            path="/playground/laws/ndps",
+            method="GET",
+            status_code=200,
+            total_ms=12.5,
+        )
+        assert returned.path_group == "/playground/laws/{law_id}"
+        assert "ndps" not in returned.path_group
+        assert returned.method == "GET"
+        assert returned.status_code == 200
+        assert returned.total_ms == 12.5
+        assert returned.counters["playground_repo_round_trips"] == 2
+        assert returned.notes["auth_state"] == "authed"
+        assert returned.notes["playground_access_result"] == "allowed"
+        assert returned.timings["playground_entitlement"][1] == 1
+
+        via_get = get_last_request_performance()
+        assert via_get is not None
+        assert returned is not via_get
+        assert returned.timings is not via_get.timings
+        assert returned.counters is not via_get.counters
+        assert returned.notes is not via_get.notes
+
+        returned.notes["auth_state"] = "mutated-return"
+        returned.timings["playground_entitlement"] = (0.0, 99)
+        returned.counters["playground_repo_round_trips"] = 0
+        after_return_mutation = get_last_request_performance()
+        assert after_return_mutation is not None
+        assert after_return_mutation.notes["auth_state"] == "authed"
+        assert after_return_mutation.timings["playground_entitlement"][1] == 1
+        assert after_return_mutation.counters["playground_repo_round_trips"] == 2
+
+        via_get.notes["auth_state"] = "mutated-get"
+        via_get.counters["playground_repo_round_trips"] = 99
+        after_get_mutation = get_last_request_performance()
+        assert after_get_mutation is not None
+        assert after_get_mutation.notes["auth_state"] == "authed"
+        assert after_get_mutation.counters["playground_repo_round_trips"] == 2
+        assert after_get_mutation is not via_get
+        assert after_get_mutation.notes is not via_get.notes
+    finally:
+        reset_request_timings(token)
+        clear_last_request_performance()
+
+
+def test_get_last_request_performance_default_none():
+    assert get_last_request_performance() is None
+
+
+@pytest.mark.parametrize(
+    "raw, expected",
+    [
+        (None, 1.0),
+        ("", 1.0),
+        ("   ", 1.0),
+        ("1", 1.0),
+        ("1.0", 1.0),
+        ("0", 0.0),
+        ("0.0", 0.0),
+        ("0.05", 0.05),
+        ("abc", 1.0),
+        ("true", 1.0),
+        ("-1", 1.0),
+        ("2", 1.0),
+        ("nan", 1.0),
+        ("NaN", 1.0),
+        ("inf", 1.0),
+        ("-inf", 1.0),
+    ],
+)
+def test_perf_log_sample_rate_parse(monkeypatch, raw: str | None, expected: float):
+    if raw is None:
+        monkeypatch.delenv("PERF_LOG_SAMPLE_RATE", raising=False)
+    else:
+        monkeypatch.setenv("PERF_LOG_SAMPLE_RATE", raw)
+    assert perf_log_sample_rate() == expected
+
+
+def test_should_emit_request_breakdown_log_edges(monkeypatch):
+    monkeypatch.setenv("PERF_LOG_SAMPLE_RATE", "1")
+    monkeypatch.setattr(
+        "constitution_memorizer.web.request_context.random.random",
+        lambda: pytest.fail("rate 1 must bypass RNG"),
+    )
+    assert should_emit_request_breakdown_log() is True
+
+    monkeypatch.setenv("PERF_LOG_SAMPLE_RATE", "0")
+    monkeypatch.setattr(
+        "constitution_memorizer.web.request_context.random.random",
+        lambda: pytest.fail("rate 0 must bypass RNG"),
+    )
+    assert should_emit_request_breakdown_log() is False
+
+    monkeypatch.setenv("PERF_LOG_SAMPLE_RATE", "0.5")
+    monkeypatch.setattr(
+        "constitution_memorizer.web.request_context.random.random",
+        lambda: 0.49,
+    )
+    assert should_emit_request_breakdown_log() is True
+    monkeypatch.setattr(
+        "constitution_memorizer.web.request_context.random.random",
+        lambda: 0.51,
+    )
+    assert should_emit_request_breakdown_log() is False
+
+
+def test_format_request_breakdown_line_playground_omits_raw_path():
+    snap = RequestPerformanceSnapshot(
+        path_group="/playground/laws/{law_id}",
+        method="GET",
+        status_code=200,
+        total_ms=12.5,
+        timings={},
+        counters={},
+        notes={"auth_state": "authed"},
+    )
+    line = format_request_breakdown_line(snap, raw_path="/playground/laws/ndps")
+    assert "path_group=/playground/laws/{law_id}" in line
+    assert "total_ms=12.5" in line
+    assert "path=/playground/laws/ndps" not in line
+    assert "ndps" not in line
+    assert "?" not in line
+    assert breakdown_includes_raw_path("/playground/laws/ndps") is False
+
+
+def test_format_request_breakdown_line_constitution_keeps_raw_path():
+    snap = RequestPerformanceSnapshot(
+        path_group="/dashboard",
+        method="GET",
+        status_code=200,
+        total_ms=8.0,
+        timings={},
+        counters={},
+        notes={"auth_state": "authed"},
+    )
+    line = format_request_breakdown_line(snap, raw_path="/dashboard")
+    assert "path=/dashboard" in line
+    assert "path_group=/dashboard" in line
+    assert "total_ms=8.0" in line
+    assert breakdown_includes_raw_path("/dashboard") is True
+
+
+def test_format_request_breakdown_line_admin_uuid_omitted():
+    uuid = "11111111-1111-4111-8111-111111111111"
+    snap = RequestPerformanceSnapshot(
+        path_group="/admin/users/{user_id}",
+        method="GET",
+        status_code=200,
+        total_ms=3.0,
+        timings={},
+        counters={},
+        notes={"auth_state": "authed"},
+    )
+    line = format_request_breakdown_line(snap, raw_path=f"/admin/users/{uuid}")
+    assert "path_group=/admin/users/{user_id}" in line
+    assert uuid not in line
+    assert f"path=/admin/users/{uuid}" not in line
+    assert breakdown_includes_raw_path(f"/admin/users/{uuid}") is False
+
+
+def test_format_request_breakdown_line_sitemap_slug_omitted():
+    snap = RequestPerformanceSnapshot(
+        path_group="/sitemap-laws-{slug}.xml",
+        method="GET",
+        status_code=200,
+        total_ms=1.0,
+        timings={},
+        counters={},
+        notes={"auth_state": "guest"},
+    )
+    line = format_request_breakdown_line(snap, raw_path="/sitemap-laws-bnss.xml")
+    assert "path_group=/sitemap-laws-{slug}.xml" in line
+    assert "bnss" not in line
+    assert "path=/sitemap-laws-bnss.xml" not in line
+    assert breakdown_includes_raw_path("/sitemap-laws-bnss.xml") is False
+    assert breakdown_includes_raw_path("/sitemap-laws.xml") is True
+
+
+def test_sync_testclient_does_not_expose_snapshot_contextvar(tmp_path: Path):
+    client, _repo = _counting_client(tmp_path)
+    resp = client.get("/dashboard")
+    assert resp.status_code == 200
+    assert get_last_request_performance() is None
+
+
+def test_playground_get_produces_snapshot_with_path_group_and_auth_state(
+    tmp_path: Path,
+):
+    async def _go():
+        client, _repo = await _async_authed_client(tmp_path)
+        try:
+            resp = await client.get("/playground")
+            snap = get_last_request_performance()
+            return resp, snap
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code in {200, 302, 303}
+    assert snap is not None
+    assert snap.path_group == "/playground"
+    assert snap.method == "GET"
+    assert snap.status_code == resp.status_code
+    assert snap.total_ms >= 0
+    assert snap.notes["auth_state"] == "authed"
+    assert snap.notes["auth_state"] != "guest"
+
+
+def test_playground_breakdown_log_uses_path_group_not_law_id(
+    tmp_path: Path, caplog: logging.LogCaptureFixture
+):
+    client, _repo = _counting_client(tmp_path)
+    with caplog.at_level(logging.INFO, logger="uvicorn.error"):
+        caplog.clear()
+        resp = client.get("/playground/laws/ndps")
+    assert resp.status_code in {200, 302, 303, 403, 404}
+    messages = _breakdown_messages(caplog)
+    assert len(messages) == 1
+    line = messages[0]
+    assert "path_group=/playground/laws/{law_id}" in line
+    assert "path_group=" in line
+    assert "total_ms=" in line
+    assert "path=/playground/laws/ndps" not in line
+    assert "ndps" not in line
+    assert "?" not in line
+
+
+def test_dashboard_snapshot_and_breakdown_keep_path(tmp_path: Path, caplog):
+    async def _go():
+        client, _repo = await _async_authed_client(tmp_path)
+        try:
+            with caplog.at_level(logging.INFO, logger="uvicorn.error"):
+                caplog.clear()
+                resp = await client.get("/dashboard")
+            snap = get_last_request_performance()
+            return resp, snap
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    assert snap is not None
+    assert snap.path_group == "/dashboard"
+    assert snap.total_ms > 0
+    assert snap.notes["auth_state"] == "authed"
+    messages = _breakdown_messages(caplog)
+    assert len(messages) == 1
+    line = messages[0]
+    assert "path=/dashboard" in line
+    assert "path_group=/dashboard" in line
+    assert "auth_session_n=1" in line
+    assert "total_ms=" in line
+
+
+def test_sample_rate_zero_collects_snapshot_but_does_not_log_breakdown(
+    tmp_path: Path, caplog: logging.LogCaptureFixture, monkeypatch
+):
+    monkeypatch.setenv("PERF_LOG_SAMPLE_RATE", "0")
+
+    async def _go():
+        client, _repo = await _async_authed_client(tmp_path)
+        try:
+            with caplog.at_level(logging.INFO, logger="uvicorn.error"):
+                caplog.clear()
+                resp = await client.get("/dashboard")
+            snap = get_last_request_performance()
+            return resp, snap
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    assert snap is not None
+    assert snap.path_group == "/dashboard"
+    assert snap.notes["auth_state"] == "authed"
+    joined = "\n".join(record.getMessage() for record in caplog.records)
+    assert "request method=" in joined
+    assert "request_breakdown" not in joined
+
+
+def test_sample_rate_one_logs_breakdown(
+    tmp_path: Path, caplog: logging.LogCaptureFixture, monkeypatch
+):
+    monkeypatch.setenv("PERF_LOG_SAMPLE_RATE", "1")
+    client, _repo = _counting_client(tmp_path)
+    with caplog.at_level(logging.INFO, logger="uvicorn.error"):
+        caplog.clear()
+        resp = client.get("/dashboard")
+    assert resp.status_code == 200
+    assert len(_breakdown_messages(caplog)) == 1
+
+
+def test_health_clears_snapshot_and_stays_silent(
+    tmp_path: Path, caplog: logging.LogCaptureFixture
+):
+    async def _go():
+        client, _repo = await _async_authed_client(tmp_path)
+        try:
+            dash = await client.get("/dashboard")
+            after_dash = get_last_request_performance()
+            with caplog.at_level(logging.INFO, logger="uvicorn.error"):
+                caplog.clear()
+                health = await client.get("/health")
+            after_health = get_last_request_performance()
+            return dash, after_dash, health, after_health
+        finally:
+            await client.aclose()
+
+    dash, after_dash, health, after_health = asyncio.run(_go())
+    assert dash.status_code == 200
+    assert after_dash is not None
+    assert after_dash.path_group == "/dashboard"
+    assert health.status_code == 200
+    assert after_health is None
+    joined = " ".join(record.getMessage() for record in caplog.records)
+    assert "request method=" not in joined
+    assert "request_breakdown" not in joined
+
+
+def test_sitemap_xml_snapshot_without_logs(
+    tmp_path: Path, caplog: logging.LogCaptureFixture
+):
+    async def _go():
+        client, _repo = await _async_authed_client(tmp_path)
+        try:
+            with caplog.at_level(logging.INFO, logger="uvicorn.error"):
+                caplog.clear()
+                resp = await client.get("/sitemap.xml")
+            snap = get_last_request_performance()
+            return resp, snap
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    assert snap is not None
+    assert snap.path_group == "/sitemap.xml"
+    assert snap.method == "GET"
+    assert snap.total_ms >= 0
+    # /sitemap.xml is in ROOT_ASSET_PATHS, so auth skips the session lookup
+    # and current_user is unset even when the client already holds a cookie.
+    # Ruling 7 (auth_state=authed) applies to playground/dashboard snapshot tests.
+    assert snap.notes["auth_state"] == "guest"
+    joined = " ".join(record.getMessage() for record in caplog.records)
+    assert "request method=" not in joined
+    assert "request_breakdown" not in joined
+
+
+def test_snapshot_and_breakdown_omit_query_and_user_id(tmp_path: Path, caplog):
+    async def _go():
+        client, _repo = await _async_authed_client(tmp_path)
+        try:
+            with caplog.at_level(logging.INFO, logger="uvicorn.error"):
+                caplog.clear()
+                dash = await client.get("/dashboard?done=clause-1")
+                dash_snap = get_last_request_performance()
+                play = await client.get("/playground?notice=added")
+                play_snap = get_last_request_performance()
+            return dash, dash_snap, play, play_snap
+        finally:
+            await client.aclose()
+
+    dash, dash_snap, play, play_snap = asyncio.run(_go())
+    assert dash.status_code == 200
+    assert play.status_code in {200, 302, 303}
+    assert dash_snap is not None
+    assert play_snap is not None
+    assert dash_snap.path_group == "/dashboard"
+    assert play_snap.path_group == "/playground"
+    assert "?" not in dash_snap.path_group
+    assert "?" not in play_snap.path_group
+    assert "done" not in dash_snap.path_group
+    assert "notice" not in play_snap.path_group
+    assert str(USER) not in dash_snap.path_group
+    assert str(USER) not in play_snap.notes.values()
+    breakdown = "\n".join(_breakdown_messages(caplog))
+    assert "done=clause-1" not in breakdown
+    assert "notice=added" not in breakdown
+    assert "?" not in breakdown
+    assert str(USER) not in breakdown
+    assert USER_EMAIL not in breakdown
+
+
+def test_response_has_no_performance_payload_or_headers(tmp_path: Path):
+    client, _repo = _counting_client(tmp_path)
+    for path in ("/dashboard", "/playground"):
+        resp = client.get(path)
+        names = {key.lower() for key in resp.headers}
+        assert "server-timing" not in names
+        assert not any(name.startswith("x-perf") for name in names)
+        body = resp.text
+        assert "RequestPerformanceSnapshot" not in body
+        assert "path_group=" not in body
+
+
+def test_one_middleware_total_ms_reused_on_snapshot_and_logs(
+    tmp_path: Path, caplog: logging.LogCaptureFixture
+):
+    async def _go():
+        client, _repo = await _async_authed_client(tmp_path)
+        try:
+            with caplog.at_level(logging.INFO, logger="uvicorn.error"):
+                caplog.clear()
+                resp = await client.get("/dashboard")
+            snap = get_last_request_performance()
+            return resp, snap
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    assert snap is not None
+    access = _access_messages(caplog)
+    breakdown = _breakdown_messages(caplog)
+    assert len(access) == 1
+    assert len(breakdown) == 1
+    access_total = [
+        part.split("=", 1)[1]
+        for part in access[0].split()
+        if part.startswith("duration_ms=")
+    ][0]
+    breakdown_total = [
+        part.split("=", 1)[1]
+        for part in breakdown[0].split()
+        if part.startswith("total_ms=")
+    ][0]
+    assert access_total == breakdown_total
+    assert f"{snap.total_ms:.1f}" == access_total
