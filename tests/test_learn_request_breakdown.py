@@ -261,6 +261,29 @@ def test_wants_request_breakdown_paths():
     assert wants_request_breakdown("/health") is False
     assert wants_request_breakdown("/static/styles.css") is False
 
+    assert wants_request_breakdown("/playground") is True
+    assert wants_request_breakdown("/playground/") is True
+    assert wants_request_breakdown("/playground/roster") is True
+    assert wants_request_breakdown("/playground/roster/next") is True
+    assert wants_request_breakdown("/playground/laws/ndps") is True
+    assert wants_request_breakdown(
+        "/playground/laws/ndps/sections/2/learn/read"
+    ) is True
+    assert wants_request_breakdown(
+        "/playground/laws/ndps/sections/2/learn/read/start"
+    ) is True
+    assert wants_request_breakdown("/sitemap.xml") is True
+    assert wants_request_breakdown("/sitemap-core.xml") is True
+    assert wants_request_breakdown("/sitemap-laws.xml") is True
+    assert wants_request_breakdown("/sitemap-laws-bnss.xml") is True
+    assert wants_request_breakdown("/sitemap-laws-ndps-2.xml") is True
+    assert wants_request_breakdown(
+        "/admin/users/11111111-1111-4111-8111-111111111111"
+    ) is True
+    assert wants_request_breakdown(
+        "/admin/users/11111111-1111-4111-8111-111111111111?period=2026-09-01"
+    ) is True
+
 
 def test_learn_get_records_expected_stages(tmp_path: Path, caplog):
     client, repo = _counting_client(tmp_path)
