@@ -11094,8 +11094,9 @@ body.is-admin-previewing { padding-top: 40px; }
   }
 }
 
-/* Guest NDPS Bare Act head (CTA map guest/04-screen). Desktop only; phone
-   Bare Act keeps the production accordion, About card, and Playground CTA. */
+/* Guest NDPS Bare Act head (desktop CTA map guest/04-screen). Phone guest
+   Screen 01 uses [data-guest-bareact-phone] in mobile.css. Signed-in /
+   Plus / Expired / Halted phone keep the production accordion. */
 @media (max-width: 560px) {
   [data-guest-bareact-desktop] {
     display: none !important;
@@ -11103,6 +11104,10 @@ body.is-admin-previewing { padding-top: 40px; }
 }
 
 @media (min-width: 561px) {
+  [data-guest-bareact-phone] {
+    display: none !important;
+  }
+
   body.is-guest[data-mscreen="bareact"]:has([data-guest-bareact-desktop]) .brand-mark {
     filter: invert(1);
   }

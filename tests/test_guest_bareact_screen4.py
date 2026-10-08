@@ -79,7 +79,7 @@ def _primary_nav(html: str) -> str:
 
 def _guest_desk(html: str) -> str:
     return html.split("data-guest-bareact-desktop", 1)[1].split(
-        "data-bareact-phone", 1
+        "data-guest-bareact-phone", 1
     )[0]
 
 
@@ -245,6 +245,7 @@ def test_screen4_1280_cta_opens_add_dialog_and_rows_are_inert(tmp_path: Path) ->
         geo = page.evaluate(
             """() => {
               const desk = document.querySelector('[data-guest-bareact-desktop]');
+              const phoneGuest = document.querySelector('[data-guest-bareact-phone]');
               const phone = document.querySelector('[data-bareact-phone]');
               const brand = document.querySelector('.brand');
               const mark = document.querySelector('.brand-mark');
@@ -256,6 +257,7 @@ def test_screen4_1280_cta_opens_add_dialog_and_rows_are_inert(tmp_path: Path) ->
                 brandTag: brand.tagName,
                 markFilter: getComputedStyle(mark).filter,
                 deskDisplay: getComputedStyle(desk).display,
+                phoneGuestDisplay: phoneGuest ? getComputedStyle(phoneGuest).display : null,
                 phoneDisplay: phone ? getComputedStyle(phone).display : null,
                 backHref: back.getAttribute('href'),
                 kicker: desk.querySelector('.guest-bareact-kicker').textContent.trim(),
@@ -346,11 +348,12 @@ def test_screen4_1280_cta_opens_add_dialog_and_rows_are_inert(tmp_path: Path) ->
         phone_geo = phone.evaluate(
             """() => {
               const desk = document.querySelector('[data-guest-bareact-desktop]');
+              const phoneGuest = document.querySelector('[data-guest-bareact-phone]');
               const prod = document.querySelector('[data-bareact-phone]');
               return {
                 deskDisplay: desk ? getComputedStyle(desk).display : null,
+                phoneGuestDisplay: phoneGuest ? getComputedStyle(phoneGuest).display : null,
                 prodDisplay: prod ? getComputedStyle(prod).display : null,
-                details: prod ? prod.querySelectorAll('details').length : 0,
               };
             }"""
         )
@@ -359,6 +362,7 @@ def test_screen4_1280_cta_opens_add_dialog_and_rows_are_inert(tmp_path: Path) ->
     assert geo["brandTag"] == "SPAN"
     assert "invert" in geo["markFilter"]
     assert geo["deskDisplay"] != "none"
+    assert geo["phoneGuestDisplay"] == "none"
     assert geo["phoneDisplay"] == "none"
     assert geo["backHref"] == "/laws"
     assert geo["kicker"] == NDPS_GUEST_KICKER
@@ -383,8 +387,8 @@ def test_screen4_1280_cta_opens_add_dialog_and_rows_are_inert(tmp_path: Path) ->
     assert dialog["title"] == "Add to Playground"
     assert still_on_ndps is True
     assert phone_geo["deskDisplay"] == "none"
-    assert phone_geo["prodDisplay"] != "none"
-    assert phone_geo["details"] == 8
+    assert phone_geo["phoneGuestDisplay"] != "none"
+    assert phone_geo["prodDisplay"] == "none"
     assert FIXTURE.is_file(), "guest/04-screen.jpg fixture missing"
     assert diff is not None
     assert diff["w"] == 1280

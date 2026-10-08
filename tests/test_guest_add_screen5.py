@@ -113,7 +113,7 @@ def test_screen5_phone_guest_sheet_keeps_sign_in_and_cancel(tmp_path: Path) -> N
 def test_screen5_does_not_restore_subscriber_ctas_on_ndps_head(tmp_path: Path) -> None:
     desk = _guest_client(tmp_path).get("/laws/ndps").text.split(
         "data-guest-bareact-desktop", 1
-    )[1].split("data-bareact-phone", 1)[0]
+    )[1].split("data-guest-bareact-phone", 1)[0]
     assert "Sign in to use Playground" in desk
     assert "Already in Playground" not in desk
     assert ">Sections<" not in desk
@@ -267,7 +267,7 @@ def test_screen5_1280_dialog_gate_and_close(tmp_path: Path) -> None:
             viewport={"width": 390, "height": 844}, device_scale_factor=1
         )
         phone.goto(f"{origin}/laws/ndps", wait_until="networkidle")
-        phone.locator("[data-bareact-phone] [data-pg-sheet]").first.click()
+        phone.locator("[data-guest-bareact-phone] .guest-bareact-cta").click()
         phone.wait_for_selector("[data-pg-add]", timeout=8000)
         phone_geo = phone.evaluate(
             """() => {

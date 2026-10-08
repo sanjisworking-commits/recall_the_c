@@ -1,7 +1,8 @@
-"""Guest desktop NDPS Bare Act head (CTA map guest/04-screen). Presentation only.
+"""Guest NDPS Bare Act head (desktop guest/04-screen, phone guest/01-screen).
 
-Phone Bare Act readers and subscriber heads keep `bare_act.html` production
-markup. Chapter rows on this surface are display-only.
+Presentation only. Same live NDPS model on both surfaces. Chapter rows are
+display-only. Signed-in / Plus / Expired / Halted phone keep production
+`bare_act.html` markup.
 """
 
 from __future__ import annotations

@@ -5495,6 +5495,139 @@
   body[data-mscreen="bareact"] .bareact-schedule-name {
     font-size: 14.5px;
   }
+
+  /* Guest NDPS Bare Act head (cta-map-mobile guest/01-screen). Compact
+     phone composition of the live guest_screen4 model. Production accordion
+     stays for signed-in / Plus / Expired / Halted. */
+  body.is-guest[data-mscreen="bareact"]:has([data-guest-bareact-phone]) [data-bareact-phone] {
+    display: none !important;
+  }
+
+  body.is-guest[data-mscreen="bareact"] [data-guest-bareact-phone] {
+    display: block;
+    max-width: none;
+    padding: 0 0 calc(var(--m-tabbar) + 28px);
+    background: var(--rc-paper);
+    overflow-x: hidden;
+  }
+
+  body.is-guest[data-mscreen="bareact"] [data-guest-bareact-phone] .guest-bareact-headband {
+    padding: 2px var(--m-gutter) 16px;
+    background: var(--rc-page);
+    border-bottom: 1px solid var(--rc-hairline);
+  }
+
+  body.is-guest[data-mscreen="bareact"] [data-guest-bareact-phone] .guest-bareact-back {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    margin: 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  body.is-guest[data-mscreen="bareact"] [data-guest-bareact-phone] .guest-bareact-head {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 14px;
+    margin-top: 0;
+  }
+
+  body.is-guest[data-mscreen="bareact"] [data-guest-bareact-phone] .guest-bareact-copy {
+    min-width: 0;
+  }
+
+  body.is-guest[data-mscreen="bareact"] [data-guest-bareact-phone] .guest-bareact-kicker {
+    margin: 0 0 6px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mid);
+  }
+
+  body.is-guest[data-mscreen="bareact"] [data-guest-bareact-phone] .guest-bareact-title {
+    margin: 0 0 6px;
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 1.18;
+    letter-spacing: 0;
+    text-wrap: pretty;
+  }
+
+  body.is-guest[data-mscreen="bareact"] [data-guest-bareact-phone] .guest-bareact-meta {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--mid);
+  }
+
+  body.is-guest[data-mscreen="bareact"] [data-guest-bareact-phone] .guest-bareact-cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 44px;
+    padding: 0 16px;
+    border: none;
+    border-radius: 12px;
+    background: var(--ink);
+    color: var(--on-accent);
+    font-size: 14.5px;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: var(--rc-press-depth);
+    box-sizing: border-box;
+  }
+
+  body.is-guest[data-mscreen="bareact"] [data-guest-bareact-phone] .guest-bareact-cta:active {
+    transform: translateY(1px);
+  }
+
+  body.is-guest[data-mscreen="bareact"] [data-guest-bareact-phone] .guest-bareact-rows {
+    padding: 0;
+  }
+
+  body.is-guest[data-mscreen="bareact"] [data-guest-bareact-phone] .guest-bareact-row {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    align-items: center;
+    column-gap: 10px;
+    min-height: 52px;
+    padding: 12px var(--m-gutter);
+    border-bottom: 1px solid var(--rc-hairline);
+    background: var(--rc-paper);
+  }
+
+  body.is-guest[data-mscreen="bareact"] [data-guest-bareact-phone] .guest-bareact-row-tag {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    color: var(--mid);
+    white-space: nowrap;
+  }
+
+  body.is-guest[data-mscreen="bareact"] [data-guest-bareact-phone] .guest-bareact-row-title {
+    min-width: 0;
+    font-size: 14.5px;
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  body.is-guest[data-mscreen="bareact"] [data-guest-bareact-phone] .guest-bareact-row-range {
+    font-size: 12px;
+    color: var(--faint);
+    white-space: nowrap;
+  }
+
+  body.is-guest[data-mscreen="bareact"] [data-guest-bareact-phone] .guest-bareact-row-chevron {
+    font-size: 14px;
+    color: var(--control-border);
+  }
 }
 
 @media (max-width: 560px) and (prefers-reduced-motion: reduce) {
