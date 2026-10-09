@@ -1,10 +1,11 @@
-"""Playground Stage 2 WS6–WS11 benchmark library (T13–T20).
+"""Playground Stage 2 WS6–WS11 benchmark library (T13–T21).
 
 Statistics, fail-closed production guard, deterministic fixtures, in-process
 HTTP runner, JSON reporting, disposable PostgreSQL EXPLAIN (ANALYZE,
 BUFFERS), the T18 read-only concurrency harness, the T19 mutation-load
-plus webhook-duplicate harness, and the T20 page-weight / static inventory
-harness. Does not change product behavior or T1–T9 instrumentation.
+plus webhook-duplicate harness, the T20 page-weight / static inventory
+harness, and the T21 cold-start / import-hydration subprocess. Does not
+change product behavior or T1–T9 instrumentation.
 PostgreSQL EXPLAIN is T15/WS8 (``--explain`` or
 ``scripts/explain_playground_queries.py``). BNSS cold/warm is
 ``--protocol bnss-cold-warm`` (T14/WS7); omitting ``--protocol`` keeps the
@@ -14,6 +15,8 @@ matched-density helper; it is not a CLI scenario. ``--concurrency`` is T18
 ``--webhooks`` are T19 (SQLite-only, not default pytest, not T18).
 ``--page-weight`` is T20 (SQLite-only, in-process ASGI + disk + gzip
 equivalents, not Lighthouse, not T21 cold-start, not default pytest).
+``--cold-start`` is T21 (SQLite-only, fresh-interpreter subprocess, not
+default pytest, no startup SLA).
 """
 
 from __future__ import annotations
@@ -67,7 +70,12 @@ DEFAULT_CONCURRENCY_JSON_PATH = Path("artifacts/playground-concurrency.json")
 DEFAULT_MUTATIONS_JSON_PATH = Path("artifacts/playground-mutations.json")
 DEFAULT_WEBHOOKS_JSON_PATH = Path("artifacts/playground-webhooks.json")
 DEFAULT_PAGE_WEIGHT_JSON_PATH = Path("artifacts/playground-page-weight.json")
+DEFAULT_COLD_START_JSON_PATH = Path("artifacts/playground-cold-start.json")
 DEFAULT_EXPLAIN_JSON_PATH = Path("docs/performance/explain-pro-30-summary.json")
+COLD_START_CHILD_TIMEOUT_S = 60.0
+COLD_START_INCIDENTAL_LIMIT = 8000
+COLD_START_MEASUREMENT_MODE = "fresh_interpreter_subprocess"
+COLD_START_CLIENT_SHAPE = "fresh_child_python"
 DEFAULT_EXPLAIN_PLAN_DIR = Path("docs/performance")
 DEFAULT_CONCURRENCY_LEVELS = (1, 5, 10, 25)
 MAX_CONCURRENCY = 25
@@ -587,6 +595,18 @@ def build_arg_parser() -> argparse.ArgumentParser:
             "T20 page-weight and static-asset inventory (four WS11 pages, "
             "disk + gzip equivalents). SQLite-only. Not Lighthouse. Not "
             "default pytest. Not --protocol/--concurrency/--mutations/"
+            "--webhooks/--explain/--cold-start."
+        ),
+    )
+    parser.add_argument(
+        "--cold-start",
+        action="store_true",
+        dest="cold_start",
+        help=(
+            "T21 cold-start and import hydration guard. Fresh-interpreter "
+            "subprocess times factory import and create_app separately. "
+            "SQLite-only. Not default pytest. No startup SLA. Not "
+            "--page-weight/--protocol/--concurrency/--mutations/"
             "--webhooks/--explain."
         ),
     )
@@ -596,10 +616,10 @@ def build_arg_parser() -> argparse.ArgumentParser:
         help=(
             "sqlite:/// filesystem path for the HTTP runner (T13/T14/T18), or a "
             "local disposable postgresql:// URL for --explain (T15). "
-            "T18 --concurrency, T19 --mutations/--webhooks, and T20 "
-            "--page-weight reject PostgreSQL (T23). T19/T20 treat the path "
-            "as a stem and write a fresh file per fixture/wave. Never falls "
-            "back to process DATABASE_URL."
+            "T18 --concurrency, T19 --mutations/--webhooks, T20 "
+            "--page-weight, and T21 --cold-start reject PostgreSQL (T23). "
+            "T19/T20 treat the path as a stem and write a fresh file per "
+            "fixture/wave. Never falls back to process DATABASE_URL."
         ),
     )
     parser.add_argument(
@@ -617,7 +637,8 @@ def build_arg_parser() -> argparse.ArgumentParser:
             f"{DEFAULT_BNSS_JSON_PATH} with --protocol {PROTOCOL_BNSS_COLD_WARM}, "
             f"or {DEFAULT_MUTATIONS_JSON_PATH} with --mutations, "
             f"or {DEFAULT_WEBHOOKS_JSON_PATH} with --webhooks, "
-            f"or {DEFAULT_PAGE_WEIGHT_JSON_PATH} with --page-weight."
+            f"or {DEFAULT_PAGE_WEIGHT_JSON_PATH} with --page-weight, "
+            f"or {DEFAULT_COLD_START_JSON_PATH} with --cold-start."
         ),
     )
     parser.add_argument(
@@ -639,6 +660,8 @@ def build_arg_parser() -> argparse.ArgumentParser:
             f"webhook N={WEBHOOK_QUICK_N}, M={WEBHOOK_QUICK_M}. "
             "With --page-weight, still one GET per WS11 page (bytes are "
             "deterministic). "
+            "With --cold-start, still one fresh child (counts are "
+            "deterministic; no SLA iterations). "
             "With --protocol bnss-cold-warm, cold warmup stays 0."
         ),
     )
@@ -668,6 +691,7 @@ class BenchmarkRunConfig:
     webhook_n: int = 0
     webhook_m: int = 0
     page_weight: bool = False
+    cold_start: bool = False
 
 
 def parse_concurrency_levels(raw: str) -> tuple[int, ...]:
@@ -740,6 +764,19 @@ def assert_t20_sqlite(url: str) -> Path:
     return assert_fresh_sqlite(url)
 
 
+def assert_t21_sqlite(url: str) -> Path:
+    """T21 accepts only a fresh disposable SQLite file. PostgreSQL is T23."""
+    parsed = urlparse(str(url or "").strip())
+    scheme = (parsed.scheme or "").lower()
+    if scheme in {"postgres", "postgresql"}:
+        raise BenchmarkAborted(
+            "T21 cold-start is SQLite-only; PostgreSQL is T23"
+        )
+    if scheme not in {"sqlite", "sqlite3"}:
+        raise BenchmarkAborted("T21 cold-start requires a sqlite:/// URL")
+    return assert_fresh_sqlite(url)
+
+
 def config_from_args(
     args: argparse.Namespace, environ: Mapping[str, str] | None = None
 ) -> BenchmarkRunConfig:
@@ -749,6 +786,7 @@ def config_from_args(
     mutations = bool(getattr(args, "mutations", False))
     webhooks = bool(getattr(args, "webhooks", False))
     page_weight = bool(getattr(args, "page_weight", False))
+    cold_start = bool(getattr(args, "cold_start", False))
     concurrency_raw = getattr(args, "concurrency", None)
     concurrency_levels = (
         parse_concurrency_levels(str(concurrency_raw))
@@ -786,6 +824,20 @@ def config_from_args(
         raise BenchmarkAborted(
             "T20 --page-weight uses a fixed four-page matrix; omit --scenario"
         )
+    if cold_start and page_weight:
+        raise BenchmarkAborted("--cold-start cannot be combined with --page-weight")
+    if cold_start and t19:
+        raise BenchmarkAborted(
+            "--cold-start cannot be combined with --mutations/--webhooks"
+        )
+    if cold_start and explain:
+        raise BenchmarkAborted("--cold-start cannot be combined with --explain")
+    if cold_start and protocol:
+        raise BenchmarkAborted("--cold-start cannot be combined with --protocol")
+    if cold_start and concurrency_levels:
+        raise BenchmarkAborted("--cold-start cannot be combined with --concurrency")
+    if cold_start and scenario:
+        raise BenchmarkAborted("T21 --cold-start omits --scenario")
     if explain and protocol == PROTOCOL_BNSS_COLD_WARM:
         raise BenchmarkAborted(
             "--explain cannot be combined with --protocol bnss-cold-warm"
@@ -801,6 +853,8 @@ def config_from_args(
         assert_t19_sqlite(url)
     if page_weight:
         assert_t20_sqlite(url)
+    if cold_start:
+        assert_t21_sqlite(url)
     if concurrency_levels:
         assert_concurrency_sqlite(url)
         if scenario and scenario not in CONCURRENCY_SCENARIOS:
@@ -826,6 +880,8 @@ def config_from_args(
         scenario = scenario or ""
     elif page_weight:
         scenario = ""
+    elif cold_start:
+        scenario = ""
     elif not scenario:
         raise BenchmarkAborted("--scenario is required")
     warmup = int(args.warmup)
@@ -849,6 +905,8 @@ def config_from_args(
                     f"webhook N,M cannot exceed {WEBHOOK_MAX_NM}"
                 )
     elif page_weight:
+        warmup, iterations = 0, 1
+    elif cold_start:
         warmup, iterations = 0, 1
     elif concurrency_levels:
         if args.quick:
@@ -879,6 +937,8 @@ def config_from_args(
             json_path = DEFAULT_WEBHOOKS_JSON_PATH
         elif page_weight:
             json_path = DEFAULT_PAGE_WEIGHT_JSON_PATH
+        elif cold_start:
+            json_path = DEFAULT_COLD_START_JSON_PATH
         else:
             json_path = DEFAULT_JSON_PATH
     else:
@@ -900,6 +960,7 @@ def config_from_args(
         webhook_n=webhook_n,
         webhook_m=webhook_m,
         page_weight=page_weight,
+        cold_start=cold_start,
     )
 
 
@@ -5838,6 +5899,404 @@ def run_page_weight_benchmark(
     return _finish(aborted=False, reason=None)
 
 
+COLD_START_REQUIRED_KEYS = (
+    "schema_version",
+    "kind",
+    "measurement_mode",
+    "app_env",
+    "database_backend",
+    "client_shape",
+    "spy_targets",
+    "spy_installed",
+    "spy_installed_too_late",
+    "hook_installed_before_web_app_import",
+    "preimport_web_app",
+    "preimport_web_asgi",
+    "preimport_bare_acts",
+    "alembic_head",
+    "git_head",
+    "aborted",
+    "complete",
+    "contract_passed",
+    "import",
+    "create_app",
+    "first_request",
+    "startup",
+    "failures",
+    "incidental_stdout",
+    "incidental_stderr",
+)
+COLD_START_PHASE_KEYS = (
+    "duration_ms",
+    "get_bare_act_calls",
+    "load_cached_calls",
+    "cache_hits",
+    "cache_misses",
+    "hydrated_slugs",
+    "cache_currsize",
+)
+_COLD_START_HOSTS = ("recall-the-c.in", "recallthec.in")
+
+
+def _assert_cold_start_json_safe(payload: Mapping[str, Any]) -> None:
+    """T21 sanitizer. Does not reuse T13 hex/@ or T20 page-weight helpers."""
+    blob = json.dumps(payload)
+    if BENCH_EMAIL in blob:
+        raise BenchmarkAborted("JSON report must not include fixture email")
+    lowered = blob.lower()
+    if "bearer " in lowered or "rtc_device" in lowered:
+        raise BenchmarkAborted("JSON report would include sensitive data")
+    if "eyj" in lowered:
+        raise BenchmarkAborted("JSON report would include sensitive data")
+    for host in _COLD_START_HOSTS:
+        if host in lowered:
+            raise BenchmarkAborted("JSON report would include production host")
+
+
+def _truncate_incidental(text: str | None) -> str:
+    raw = text or ""
+    if len(raw) <= COLD_START_INCIDENTAL_LIMIT:
+        return raw
+    return raw[:COLD_START_INCIDENTAL_LIMIT] + "\n…truncated…\n"
+
+
+def _cold_start_timeout_s(environ: Mapping[str, str] | None) -> float:
+    env = os.environ if environ is None else environ
+    raw = str(env.get("T21_CHILD_TIMEOUT_S") or "").strip()
+    if raw:
+        try:
+            value = float(raw)
+        except ValueError as exc:
+            raise BenchmarkAborted("T21_CHILD_TIMEOUT_S must be a number") from exc
+        if value <= 0:
+            raise BenchmarkAborted("T21_CHILD_TIMEOUT_S must be positive")
+        return value
+    return COLD_START_CHILD_TIMEOUT_S
+
+
+def _empty_cold_start_phase() -> dict[str, Any]:
+    return {
+        "duration_ms": 0.0,
+        "get_bare_act_calls": 0,
+        "load_cached_calls": 0,
+        "cache_hits": 0,
+        "cache_misses": 0,
+        "hydrated_slugs": [],
+        "cache_currsize": 0,
+    }
+
+
+def _cold_start_skeleton(*, reason: str | None = None) -> dict[str, Any]:
+    aborted = reason is not None
+    return {
+        "schema_version": SCHEMA_VERSION,
+        "kind": "cold-start",
+        "measurement_mode": COLD_START_MEASUREMENT_MODE,
+        "app_env": "test",
+        "database_backend": "sqlite",
+        "client_shape": COLD_START_CLIENT_SHAPE,
+        "spy_targets": ["get_bare_act", "_load_cached"],
+        "spy_installed": False,
+        "spy_installed_too_late": False,
+        "hook_installed": False,
+        "hook_installed_before_web_app_import": False,
+        "wrap_applied": False,
+        "too_late_reason": reason if aborted else None,
+        "web_app_in_sys_modules_at_wrap": False,
+        "cache_info_at_wrap": None,
+        "preimport_web_app": False,
+        "preimport_web_asgi": False,
+        "preimport_bare_acts": False,
+        "asgi_imported": False,
+        "alembic_head": EXPECTED_ALEMBIC_HEAD,
+        "git_head": _page_weight_git_head(),
+        "aborted": aborted,
+        "aborted_reason": reason,
+        "complete": False,
+        "contract_passed": False,
+        "import": _empty_cold_start_phase(),
+        "create_app": _empty_cold_start_phase(),
+        "first_request": None,
+        "startup": {
+            "sqlite_existed_before": None,
+            "sqlite_exists_after": None,
+            "sqlite_bytes_after": None,
+            "sqlite_tables_after": [],
+            "units_json_path": None,
+            "units_json_bytes": None,
+            "postgres_pool_created": None,
+            "asgi_imported": False,
+            "browse_imported_during_create_app": None,
+            "lifespan_ran": False,
+        },
+        "failures": (
+            [{"kind": "incomplete_capture", "detail": reason}] if reason else []
+        ),
+        "incidental_stdout": "",
+        "incidental_stderr": "",
+        "child_returncode": None,
+    }
+
+
+def _cold_start_phase_ok(phase: Mapping[str, Any] | None) -> bool:
+    if not isinstance(phase, dict):
+        return False
+    for key in COLD_START_PHASE_KEYS:
+        if key not in phase:
+            return False
+    duration = phase.get("duration_ms")
+    if not isinstance(duration, (int, float)) or not math.isfinite(float(duration)):
+        return False
+    if float(duration) < 0:
+        return False
+    return True
+
+
+def _cold_start_result_complete(payload: Mapping[str, Any]) -> bool:
+    if not payload.get("complete"):
+        return False
+    if payload.get("spy_installed_too_late"):
+        return False
+    if not payload.get("spy_installed"):
+        return False
+    if not payload.get("hook_installed_before_web_app_import"):
+        return False
+    if not _cold_start_phase_ok(payload.get("import")):
+        return False
+    if not _cold_start_phase_ok(payload.get("create_app")):
+        return False
+    for key in COLD_START_REQUIRED_KEYS:
+        if key not in payload:
+            return False
+    return True
+
+
+def spawn_cold_start_child(
+    *,
+    mode: str,
+    result_path: Path,
+    db_path: Path | None = None,
+    units_path: Path | None = None,
+    timeout_s: float | None = None,
+    environ: Mapping[str, str] | None = None,
+) -> dict[str, Any]:
+    """Spawn a virgin interpreter. Kill and reap on timeout. No retries."""
+    env_in = os.environ if environ is None else environ
+    env = {k: v for k, v in dict(env_in).items() if k != "DATABASE_URL"}
+    src = str(REPO_ROOT / "src")
+    existing = str(env.get("PYTHONPATH") or "")
+    env["PYTHONPATH"] = src if not existing else src + os.pathsep + existing
+    env["APP_ENV"] = "test"
+    env.pop("PYTHONSTARTUP", None)
+    cmd = [
+        sys.executable,
+        "-m",
+        "constitution_memorizer.playground.cold_start_spy",
+        "--mode",
+        mode,
+        "--result",
+        str(result_path),
+    ]
+    if db_path is not None:
+        cmd.extend(["--db-path", str(db_path)])
+    if units_path is not None:
+        cmd.extend(["--units-path", str(units_path)])
+    bound = COLD_START_CHILD_TIMEOUT_S if timeout_s is None else float(timeout_s)
+    result_path.parent.mkdir(parents=True, exist_ok=True)
+    proc = subprocess.Popen(
+        cmd,
+        cwd=str(REPO_ROOT),
+        env=env,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    timed_out = False
+    try:
+        stdout, stderr = proc.communicate(timeout=bound)
+    except subprocess.TimeoutExpired:
+        timed_out = True
+        proc.kill()
+        stdout, stderr = proc.communicate()
+    return {
+        "returncode": proc.returncode,
+        "stdout": stdout or "",
+        "stderr": stderr or "",
+        "timed_out": timed_out,
+        "result_path": result_path,
+    }
+
+
+def _read_child_result(path: Path) -> dict[str, Any] | None:
+    if not path.is_file():
+        return None
+    raw = path.read_text(encoding="utf-8")
+    if not raw.strip():
+        return None
+    try:
+        loaded = json.loads(raw)
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(loaded, dict):
+        return None
+    return loaded
+
+
+def _merge_child_measure(
+    child: dict[str, Any] | None,
+    *,
+    spawn: Mapping[str, Any],
+    reason: str | None,
+) -> dict[str, Any]:
+    payload = _cold_start_skeleton(reason=reason)
+    payload["incidental_stdout"] = _truncate_incidental(str(spawn.get("stdout") or ""))
+    payload["incidental_stderr"] = _truncate_incidental(str(spawn.get("stderr") or ""))
+    payload["child_returncode"] = spawn.get("returncode")
+    payload["git_head"] = _page_weight_git_head()
+    if child:
+        for key, value in child.items():
+            if key in {"incidental_stdout", "incidental_stderr"}:
+                continue
+            payload[key] = value
+        payload["git_head"] = child.get("git_head") or payload["git_head"]
+        payload["alembic_head"] = EXPECTED_ALEMBIC_HEAD
+        payload["incidental_stdout"] = _truncate_incidental(
+            str(spawn.get("stdout") or "")
+        )
+        payload["incidental_stderr"] = _truncate_incidental(
+            str(spawn.get("stderr") or "")
+        )
+        payload["child_returncode"] = spawn.get("returncode")
+        payload["first_request"] = None
+    if reason:
+        payload["aborted"] = True
+        payload["aborted_reason"] = reason
+        payload["complete"] = False
+        payload["contract_passed"] = False
+        kinds = {row.get("kind") for row in payload.get("failures") or [] if isinstance(row, dict)}
+        fail_kind = "incomplete_capture"
+        if reason == "child_timeout":
+            fail_kind = "child_timeout"
+        elif reason in {"child_exit", "missing_result"}:
+            fail_kind = reason
+        elif reason == "malformed_result":
+            fail_kind = "malformed_result"
+        elif reason == "spy_installed_too_late":
+            fail_kind = "spy_installed_too_late"
+        if fail_kind not in kinds:
+            payload.setdefault("failures", []).append(
+                {"kind": fail_kind, "detail": reason}
+            )
+    return payload
+
+
+def run_cold_start_self_test(
+    *,
+    result_path: Path,
+    timeout_s: float | None = None,
+    environ: Mapping[str, str] | None = None,
+) -> dict[str, Any]:
+    """Positive-control child. Never reuse this process for measurement."""
+    spawn = spawn_cold_start_child(
+        mode="self-test",
+        result_path=result_path,
+        timeout_s=timeout_s,
+        environ=environ,
+    )
+    child = _read_child_result(result_path)
+    if spawn["timed_out"]:
+        raise BenchmarkAborted("T21 positive-control child_timeout")
+    if child is None:
+        raise BenchmarkAborted("T21 positive-control missing or malformed result")
+    if child.get("kind") != "cold-start-self-test" or not child.get("complete"):
+        raise BenchmarkAborted(
+            child.get("aborted_reason") or "T21 positive-control failed"
+        )
+    return child
+
+
+def run_cold_start_benchmark(
+    config: BenchmarkRunConfig, environ: Mapping[str, str] | None = None
+) -> dict[str, Any]:
+    """T21 fresh-interpreter import + create_app measurement. SQLite-only."""
+    if (
+        config.explain
+        or config.protocol
+        or config.concurrency_levels
+        or config.mutations
+        or config.webhooks
+        or config.page_weight
+        or not config.cold_start
+    ):
+        raise BenchmarkAborted("run_cold_start_benchmark is T21 --cold-start only")
+    effective_app_env = evaluate_safety_guard(
+        requested_app_env=config.app_env,
+        accept_nontest=config.accept_nontest,
+        explain=False,
+        environ=environ,
+    )
+    db_path = assert_t21_sqlite(config.database_url)
+    json_path = config.json_path or DEFAULT_COLD_START_JSON_PATH
+    units = MINI_UNITS
+    timeout_s = _cold_start_timeout_s(environ)
+    result_path = json_path.parent / f".{json_path.name}.child.json"
+
+    def _write(payload: dict[str, Any]) -> dict[str, Any]:
+        payload["app_env"] = str(effective_app_env)
+        payload["git_head"] = payload.get("git_head") or _page_weight_git_head()
+        payload["alembic_head"] = EXPECTED_ALEMBIC_HEAD
+        payload["first_request"] = None
+        _assert_cold_start_json_safe(payload)
+        write_json_report(json_path, payload)
+        try:
+            result_path.unlink()
+        except OSError:
+            pass
+        return payload
+
+    spawn = spawn_cold_start_child(
+        mode="measure",
+        result_path=result_path,
+        db_path=db_path,
+        units_path=units,
+        timeout_s=timeout_s,
+        environ=environ,
+    )
+    child = _read_child_result(result_path)
+    if spawn["timed_out"]:
+        payload = _merge_child_measure(child, spawn=spawn, reason="child_timeout")
+        _write(payload)
+        raise BenchmarkAborted("T21 child_timeout")
+    if child is None:
+        reason = "missing_result" if not result_path.is_file() else "malformed_result"
+        if spawn["returncode"] not in (0, 1):
+            reason = "child_exit"
+        payload = _merge_child_measure(child, spawn=spawn, reason=reason)
+        _write(payload)
+        raise BenchmarkAborted(f"T21 {reason}")
+    payload = _merge_child_measure(child, spawn=spawn, reason=None)
+    if payload.get("spy_installed_too_late") or not payload.get("spy_installed"):
+        payload = _merge_child_measure(
+            child, spawn=spawn, reason="spy_installed_too_late"
+        )
+        _write(payload)
+        raise BenchmarkAborted("T21 spy_installed_too_late")
+    if not _cold_start_result_complete(payload):
+        payload["complete"] = False
+        payload["contract_passed"] = False
+        payload["aborted"] = True
+        payload["aborted_reason"] = payload.get("aborted_reason") or "incomplete_capture"
+        payload.setdefault("failures", []).append(
+            {"kind": "incomplete_capture", "detail": "incomplete_capture"}
+        )
+        _write(payload)
+        raise BenchmarkAborted("T21 incomplete_capture")
+    if not payload.get("contract_passed"):
+        _write(payload)
+        raise BenchmarkAborted("T21 import/create_app hydration contract failed")
+    return _write(payload)
+
+
 def run_cli(argv: list[str] | None = None, environ: Mapping[str, str] | None = None) -> int:
     parser = build_arg_parser()
     try:
@@ -5862,6 +6321,8 @@ def run_cli(argv: list[str] | None = None, environ: Mapping[str, str] | None = N
             run_webhooks_benchmark(config, environ=env)
         elif config.page_weight:
             run_page_weight_benchmark(config, environ=env)
+        elif config.cold_start:
+            run_cold_start_benchmark(config, environ=env)
         else:
             run_benchmark(config, environ=env)
     except BenchmarkAborted as exc:

@@ -1,9 +1,10 @@
-"""WS6 / WS7 / WS8 / WS9 / WS10 / WS11 (T13–T20) benchmark harness tests. No duration assertions."""
+"""WS6 / WS7 / WS8 / WS9 / WS10 / WS11 (T13–T21) benchmark harness tests. No duration assertions."""
 
 from __future__ import annotations
 
 import asyncio
 import json
+import math
 import os
 import re
 import subprocess
@@ -33,7 +34,10 @@ from constitution_memorizer.playground.benchmarking import (
     DEFAULT_MUTATION_WAVES,
     DEFAULT_MUTATIONS_JSON_PATH,
     DEFAULT_PAGE_WEIGHT_JSON_PATH,
+    DEFAULT_COLD_START_JSON_PATH,
     DEFAULT_WEBHOOKS_JSON_PATH,
+    COLD_START_CHILD_TIMEOUT_S,
+    COLD_START_MEASUREMENT_MODE,
     GZIP_COMPRESSLEVEL,
     PAGE_WEIGHT_MEASUREMENT_MODE,
     PAGE_WEIGHT_STATIC_DIR,
@@ -64,6 +68,7 @@ from constitution_memorizer.playground.benchmarking import (
     assert_concurrency_warm_workspace,
     assert_t19_sqlite,
     assert_t20_sqlite,
+    assert_t21_sqlite,
     assert_disposable_postgres,
     assert_fresh_sqlite,
     assert_readonly_select,
@@ -85,6 +90,12 @@ from constitution_memorizer.playground.benchmarking import (
     percentile_nearest_rank,
     resolve_database_url,
     run_bnss_cold_warm,
+    run_cold_start_benchmark,
+    run_cold_start_self_test,
+    spawn_cold_start_child,
+    _assert_cold_start_json_safe,
+    _cold_start_result_complete,
+    MINI_UNITS,
     run_concurrent_batch,
     run_sequential_webhook_duplicate,
     run_single_mutation_wave,
@@ -158,6 +169,7 @@ def test_cli_help_subprocess():
         "--concurrency",
         "--mutations",
         "--webhooks",
+        "--cold-start",
     ):
         assert flag in text
     assert PROTOCOL_BNSS_COLD_WARM in text
@@ -2112,4 +2124,368 @@ def test_page_weight_measurement_mode_is_in_process():
     help_text = build_arg_parser().format_help()
     assert "--page-weight" in help_text
     assert "Lighthouse" in help_text
+
+
+def test_cold_start_help_lists_flag():
+    parser = build_arg_parser()
+    text = parser.format_help()
+    assert "--cold-start" in text
+    assert "T21" in text
+    assert COLD_START_CHILD_TIMEOUT_S == 60.0
+    assert COLD_START_MEASUREMENT_MODE == "fresh_interpreter_subprocess"
+
+
+def test_cold_start_without_flag_keeps_sequential_config():
+    args = build_arg_parser().parse_args(
+        [
+            "--scenario",
+            "plus-10",
+            "--database-url",
+            "sqlite:///fresh.db",
+            "--app-env",
+            "test",
+        ]
+    )
+    config = config_from_args(args, environ={})
+    assert config.cold_start is False
+    assert config.page_weight is False
+    assert config.json_path == DEFAULT_JSON_PATH
+
+
+def test_cold_start_config_from_args(tmp_path: Path):
+    db = tmp_path / "t21.sqlite"
+    args = build_arg_parser().parse_args(
+        [
+            "--cold-start",
+            "--database-url",
+            f"sqlite:///{db}",
+            "--app-env",
+            "test",
+        ]
+    )
+    config = config_from_args(args, environ={})
+    assert config.cold_start is True
+    assert config.page_weight is False
+    assert config.scenario == ""
+    assert config.warmup == 0
+    assert config.iterations == 1
+    assert config.json_path == DEFAULT_COLD_START_JSON_PATH
+
+
+def test_cold_start_plus_page_weight_aborts(tmp_path: Path):
+    db = tmp_path / "t21.sqlite"
+    args = build_arg_parser().parse_args(
+        [
+            "--cold-start",
+            "--page-weight",
+            "--database-url",
+            f"sqlite:///{db}",
+            "--app-env",
+            "test",
+        ]
+    )
+    with pytest.raises(BenchmarkAborted, match="--page-weight"):
+        config_from_args(args, environ={})
+
+
+def test_cold_start_plus_mutations_aborts(tmp_path: Path):
+    db = tmp_path / "t21.sqlite"
+    args = build_arg_parser().parse_args(
+        [
+            "--cold-start",
+            "--mutations",
+            "--database-url",
+            f"sqlite:///{db}",
+            "--app-env",
+            "test",
+        ]
+    )
+    with pytest.raises(BenchmarkAborted, match="--mutations"):
+        config_from_args(args, environ={})
+
+
+def test_cold_start_plus_webhooks_aborts(tmp_path: Path):
+    db = tmp_path / "t21.sqlite"
+    args = build_arg_parser().parse_args(
+        [
+            "--cold-start",
+            "--webhooks",
+            "--database-url",
+            f"sqlite:///{db}",
+            "--app-env",
+            "test",
+        ]
+    )
+    with pytest.raises(BenchmarkAborted, match="--webhooks"):
+        config_from_args(args, environ={})
+
+
+def test_cold_start_plus_concurrency_aborts(tmp_path: Path):
+    db = tmp_path / "t21.sqlite"
+    args = build_arg_parser().parse_args(
+        [
+            "--cold-start",
+            "--concurrency",
+            "1,5",
+            "--database-url",
+            f"sqlite:///{db}",
+            "--app-env",
+            "test",
+        ]
+    )
+    with pytest.raises(BenchmarkAborted, match="--concurrency"):
+        config_from_args(args, environ={})
+
+
+def test_cold_start_plus_explain_aborts():
+    args = build_arg_parser().parse_args(
+        [
+            "--cold-start",
+            "--explain",
+            "--app-env",
+            "test",
+        ]
+    )
+    with pytest.raises(BenchmarkAborted, match="--explain"):
+        config_from_args(args, environ={})
+
+
+def test_cold_start_plus_protocol_aborts(tmp_path: Path):
+    db = tmp_path / "t21.sqlite"
+    args = build_arg_parser().parse_args(
+        [
+            "--cold-start",
+            "--protocol",
+            PROTOCOL_BNSS_COLD_WARM,
+            "--database-url",
+            f"sqlite:///{db}",
+            "--app-env",
+            "test",
+        ]
+    )
+    with pytest.raises(BenchmarkAborted, match="--protocol"):
+        config_from_args(args, environ={})
+
+
+def test_cold_start_plus_scenario_aborts(tmp_path: Path):
+    db = tmp_path / "t21.sqlite"
+    args = build_arg_parser().parse_args(
+        [
+            "--cold-start",
+            "--scenario",
+            "plus-10",
+            "--database-url",
+            f"sqlite:///{db}",
+            "--app-env",
+            "test",
+        ]
+    )
+    with pytest.raises(BenchmarkAborted, match="omits --scenario"):
+        config_from_args(args, environ={})
+
+
+def test_cold_start_rejects_postgresql():
+    with pytest.raises(BenchmarkAborted, match="T23"):
+        assert_t21_sqlite("postgresql://localhost/recall")
+    args = build_arg_parser().parse_args(
+        [
+            "--cold-start",
+            "--database-url",
+            "postgresql://localhost/recall",
+            "--app-env",
+            "test",
+        ]
+    )
+    with pytest.raises(BenchmarkAborted, match="T23"):
+        config_from_args(args, environ={})
+
+
+def test_cold_start_json_sanitizer_refuses_secrets():
+    _assert_cold_start_json_safe({"duration_ms": 12.5, "hydrated_slugs": []})
+    with pytest.raises(BenchmarkAborted, match="fixture email"):
+        _assert_cold_start_json_safe({"email": BENCH_EMAIL})
+    with pytest.raises(BenchmarkAborted, match="sensitive"):
+        _assert_cold_start_json_safe({"auth": "Bearer abc"})
+    with pytest.raises(BenchmarkAborted, match="sensitive"):
+        _assert_cold_start_json_safe({"cookie": "rtc_device=1"})
+    with pytest.raises(BenchmarkAborted, match="production host"):
+        _assert_cold_start_json_safe({"url": "https://recall-the-c.in/"})
+
+
+def test_cold_start_positive_control_subprocess(tmp_path: Path):
+    result = tmp_path / "t21-self-test.json"
+    payload = run_cold_start_self_test(result_path=result, environ=_env_without_db())
+    assert payload["kind"] == "cold-start-self-test"
+    assert payload["complete"] is True
+    assert payload["spy_installed"] is True
+    assert payload["spy_installed_too_late"] is False
+    assert payload["hook_installed_before_web_app_import"] is True
+    miss = payload["miss"]
+    hit = payload["hit"]
+    direct = payload["direct_load"]
+    assert miss["get_bare_act_calls"] >= 1
+    assert miss["load_cached_calls"] >= 1
+    assert miss["cache_misses"] >= 1
+    assert hit["get_bare_act_calls"] >= 2
+    assert hit["load_cached_calls"] >= 2
+    assert hit["cache_hits"] >= 1
+    assert direct["load_cached_calls"] > hit["load_cached_calls"]
+    assert direct["get_bare_act_calls"] == hit["get_bare_act_calls"]
+    assert direct["cache_hits"] >= hit["cache_hits"] + 1
+
+
+def test_cold_start_zero_hydration_fresh_child(tmp_path: Path):
+    db = tmp_path / "t21-measure.sqlite"
+    report = tmp_path / "t21-measure.json"
+    args = build_arg_parser().parse_args(
+        [
+            "--cold-start",
+            "--database-url",
+            f"sqlite:///{db}",
+            "--app-env",
+            "test",
+            "--json",
+            str(report),
+        ]
+    )
+    config = config_from_args(args, environ={})
+    payload = run_cold_start_benchmark(config, environ=_env_without_db(APP_ENV="test"))
+    assert payload["kind"] == "cold-start"
+    assert payload["complete"] is True
+    assert payload["contract_passed"] is True
+    assert payload["spy_installed"] is True
+    assert payload["spy_installed_too_late"] is False
+    assert payload["hook_installed_before_web_app_import"] is True
+    assert payload["preimport_web_app"] is False
+    assert payload["preimport_web_asgi"] is False
+    assert payload["preimport_bare_acts"] is False
+    assert payload["first_request"] is None
+    assert payload["asgi_imported"] is False
+    for phase_name in ("import", "create_app"):
+        phase = payload[phase_name]
+        assert phase["get_bare_act_calls"] == 0
+        assert phase["load_cached_calls"] == 0
+        assert phase["cache_hits"] == 0
+        assert phase["cache_misses"] == 0
+        assert phase["hydrated_slugs"] == []
+        assert phase["cache_currsize"] == 0
+        duration = phase["duration_ms"]
+        assert isinstance(duration, (int, float))
+        assert math.isfinite(duration)
+        assert duration >= 0
+    startup = payload["startup"]
+    assert startup["postgres_pool_created"] is False
+    assert startup["asgi_imported"] is False
+    assert startup["lifespan_ran"] is False
+    assert startup["browse_imported_during_create_app"] is True
+    assert startup["sqlite_exists_after"] is True
+    assert startup["units_json_bytes"] and startup["units_json_bytes"] > 0
+    assert MINI_UNITS.name in str(startup["units_json_path"])
+    assert "Browse module" in payload["incidental_stdout"]
+    blob = report.read_text(encoding="utf-8")
+    assert BENCH_EMAIL not in blob
+    assert "Lighthouse" not in blob
+
+
+def test_cold_start_late_app_fails_closed(tmp_path: Path):
+    result = tmp_path / "t21-late-app.json"
+    spawn = spawn_cold_start_child(
+        mode="late-app",
+        result_path=result,
+        environ=_env_without_db(),
+    )
+    payload = json.loads(result.read_text(encoding="utf-8"))
+    assert spawn["timed_out"] is False
+    assert spawn["returncode"] == 1
+    assert payload["spy_installed_too_late"] is True
+    assert payload["complete"] is False
+    assert payload["contract_passed"] is False
+    assert payload["hook_installed_before_web_app_import"] is False
+
+
+def test_cold_start_late_cache_fails_closed(tmp_path: Path):
+    result = tmp_path / "t21-late-cache.json"
+    spawn = spawn_cold_start_child(
+        mode="late-cache",
+        result_path=result,
+        environ=_env_without_db(),
+    )
+    payload = json.loads(result.read_text(encoding="utf-8"))
+    assert spawn["returncode"] == 1
+    assert payload["spy_installed_too_late"] is True
+    assert payload["complete"] is False
+    assert "preimported" in str(payload.get("too_late_reason") or payload.get("aborted_reason") or "")
+
+
+def test_cold_start_child_timeout_fails_closed(tmp_path: Path):
+    result = tmp_path / "t21-hang.json"
+    spawn = spawn_cold_start_child(
+        mode="hang",
+        result_path=result,
+        timeout_s=0.2,
+        environ=_env_without_db(),
+    )
+    assert spawn["timed_out"] is True
+    assert not result.exists() or result.stat().st_size == 0
+
+
+def test_cold_start_child_crash_fails_closed(tmp_path: Path):
+    result = tmp_path / "t21-crash.json"
+    spawn = spawn_cold_start_child(
+        mode="crash",
+        result_path=result,
+        environ=_env_without_db(),
+    )
+    assert spawn["timed_out"] is False
+    assert spawn["returncode"] == 3
+    assert not result.exists()
+
+
+def test_cold_start_malformed_result_rejected(tmp_path: Path):
+    result = tmp_path / "t21-empty.json"
+    spawn = spawn_cold_start_child(
+        mode="empty",
+        result_path=result,
+        environ=_env_without_db(),
+    )
+    assert spawn["returncode"] == 0
+    loaded = json.loads(result.read_text(encoding="utf-8"))
+    assert loaded == {}
+    assert _cold_start_result_complete(loaded) is False
+
+
+def test_cold_start_leak_fails_contract(tmp_path: Path):
+    db = tmp_path / "t21-leak.sqlite"
+    result = tmp_path / "t21-leak.json"
+    spawn = spawn_cold_start_child(
+        mode="leak",
+        result_path=result,
+        db_path=db,
+        units_path=MINI_UNITS,
+        environ=_env_without_db(),
+    )
+    payload = json.loads(result.read_text(encoding="utf-8"))
+    assert spawn["returncode"] == 1
+    assert payload["complete"] is True
+    assert payload["contract_passed"] is False
+    assert payload["import"]["get_bare_act_calls"] >= 1
+    assert payload["import"]["load_cached_calls"] >= 1
+
+
+def test_cold_start_t20_schema_unchanged():
+    schema = json.loads(
+        (ROOT / "docs" / "performance" / "playground-page-weight.schema.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert schema["properties"]["create_app_timed"]["const"] is False
+
+
+def test_cold_start_t17_loader_spy_lock_untouched():
+    text = (ROOT / "tests" / "test_playground_stage2_observability.py").read_text(
+        encoding="utf-8"
+    )
+    assert "def test_t17_active_plus_repeated_zero_hydration" in text
+    assert "_hydrate_spy" in text
+    assert "from tests.test_playground import _hydrate_spy" in text
 

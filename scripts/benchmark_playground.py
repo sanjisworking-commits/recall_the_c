@@ -11,7 +11,8 @@ not default pytest). --mutations and --webhooks are T19 (SQLite-only
 service-level races and process_delivery duplicates, not default pytest,
 no live Razorpay). --page-weight is T20 (SQLite-only in-process ASGI + disk
 + gzip equivalents, not Lighthouse, not default pytest, no external
-network).
+network). --cold-start is T21 (SQLite-only fresh-interpreter import and
+create_app hydration guard, not default pytest, no startup SLA).
 """
 
 from __future__ import annotations
