@@ -28,6 +28,7 @@ from constitution_memorizer.playground.source_review import (
     CHANGE_KIND_OMITTED,
     STATUS_PENDING,
 )
+from constitution_memorizer.playground.stage_timer import time_playground_stage
 from constitution_memorizer.playground.urls import law_path, learn_path_for_locator
 from constitution_memorizer.playground.units import citation_label
 from constitution_memorizer.playground.view import catalog_titles
@@ -169,26 +170,27 @@ def playground_today_context(request, *, as_of: date | None = None) -> dict[str,
             if not expired and not halted:
                 return _empty_today_context()
         user_id = access.user_id
-        items = law_revision_today_items(overlay, roster, user_id, as_of=as_of)
-        due_units = tuple(_today_unit_from_revision(item) for item in items)
-        new_unit = playground_new_today_unit(
-            overlay, roster, user_id, as_of=as_of
-        )
-        if expired:
-            due_units, new_unit = _bind_expired_playground_units(
-                request, due_units, new_unit
+        with time_playground_stage("playground_today"):
+            items = law_revision_today_items(overlay, roster, user_id, as_of=as_of)
+            due_units = tuple(_today_unit_from_revision(item) for item in items)
+            new_unit = playground_new_today_unit(
+                overlay, roster, user_id, as_of=as_of
             )
-        elif halted:
-            due_units, new_unit = _bind_halted_playground_units(
-                request, due_units, new_unit
-            )
-        return {
-            "law_revisions": (),
-            "law_revision_count": len(due_units),
-            "playground_due_units": due_units,
-            "playground_new_unit": new_unit,
-            "playground_due_count": len(due_units),
-        }
+            if expired:
+                due_units, new_unit = _bind_expired_playground_units(
+                    request, due_units, new_unit
+                )
+            elif halted:
+                due_units, new_unit = _bind_halted_playground_units(
+                    request, due_units, new_unit
+                )
+            return {
+                "law_revisions": (),
+                "law_revision_count": len(due_units),
+                "playground_due_units": due_units,
+                "playground_new_unit": new_unit,
+                "playground_due_count": len(due_units),
+            }
     except Exception as error:  # noqa: BLE001 — T32 missing-schema only
         if not _is_missing_optional_schema(error):
             raise
@@ -205,47 +207,50 @@ def playground_calendar_chips(
     today: date,
 ) -> dict[str, list[CalendarChip]]:
     try:
-        active = _active_law_ids(roster, user_id)
-        facts = overlay.list_revision_schedule(
-            user_id, month_start, month_end, active
-        )
-        by_iso: dict[str, list[CalendarChip]] = {}
-        for fact in facts:
-            nxt = parse_iso_date(fact.next_revision)
-            if nxt is None:
-                continue
-            catalog = playground_catalogue_law(fact.law_id)
-            short = catalog.short_title if catalog is not None else fact.law_id
-            number = _chip_number_label(fact.source_locator)
-            label = f"{short} · §{number} · Playground"
-            title = (
-                f"{short} · {_chip_title_provision(fact.source_locator)}"
-                f" — Day {fact.interval_days} revision · Playground"
+        with time_playground_stage("playground_calendar"):
+            active = _active_law_ids(roster, user_id)
+            facts = overlay.list_revision_schedule(
+                user_id, month_start, month_end, active
             )
-            due = nxt <= today
-            if due:
-                rows = overlay.list_revision_mode_progress(
-                    user_id, fact.law_id, fact.source_locator, fact.interval_days
+            by_iso: dict[str, list[CalendarChip]] = {}
+            for fact in facts:
+                nxt = parse_iso_date(fact.next_revision)
+                if nxt is None:
+                    continue
+                catalog = playground_catalogue_law(fact.law_id)
+                short = catalog.short_title if catalog is not None else fact.law_id
+                number = _chip_number_label(fact.source_locator)
+                label = f"{short} · §{number} · Playground"
+                title = (
+                    f"{short} · {_chip_title_provision(fact.source_locator)}"
+                    f" — Day {fact.interval_days} revision · Playground"
                 )
-                cycle = build_revision_mode_progress(
-                    fact.source_locator, fact.interval_days, rows
+                due = nxt <= today
+                if due:
+                    rows = overlay.list_revision_mode_progress(
+                        user_id, fact.law_id, fact.source_locator, fact.interval_days
+                    )
+                    cycle = build_revision_mode_progress(
+                        fact.source_locator, fact.interval_days, rows
+                    )
+                    href = _revise_href(
+                        fact.law_id, fact.source_locator, cycle.next_mode
+                    )
+                    kind = "due"
+                else:
+                    href = law_path(fact.law_id)
+                    kind = "scheduled"
+                by_iso.setdefault(nxt.isoformat(), []).append(
+                    CalendarChip(
+                        kind=kind,
+                        unit_id="",
+                        label=label,
+                        title=title,
+                        href=href,
+                        category="Playground",
+                    )
                 )
-                href = _revise_href(fact.law_id, fact.source_locator, cycle.next_mode)
-                kind = "due"
-            else:
-                href = law_path(fact.law_id)
-                kind = "scheduled"
-            by_iso.setdefault(nxt.isoformat(), []).append(
-                CalendarChip(
-                    kind=kind,
-                    unit_id="",
-                    label=label,
-                    title=title,
-                    href=href,
-                    category="Playground",
-                )
-            )
-        return by_iso
+            return by_iso
     except Exception as error:  # noqa: BLE001 — T32 missing-schema only
         if not _is_missing_optional_schema(error):
             raise

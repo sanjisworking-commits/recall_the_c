@@ -80,6 +80,12 @@ from constitution_memorizer.playground.service import (
     activate_law,
     persist_entire_act_selection,
 )
+from constitution_memorizer.playground.schedule import (
+    playground_calendar_chips,
+    playground_google_extra,
+    playground_projection_extra,
+    playground_today_context,
+)
 from constitution_memorizer.playground.source_review import detect_source_changes
 from constitution_memorizer.playground.stage_timer import time_playground_stage
 from constitution_memorizer.playground.view import build_home_view
@@ -920,8 +926,6 @@ def _assert_t3_entitlement(
     else:
         assert snap.notes["playground_law_state"] == law_state
         assert law_state != "none"
-    assert "playground_today" not in snap.timings
-    assert "playground_calendar" not in snap.timings
 
 
 _T6_COUNTERS = (
@@ -3929,7 +3933,7 @@ def test_admin_playground_t6_matches_plus_empty_writes(tmp_path: Path):
     )
 
 
-def test_dashboard_plus_t6_reads_without_t5_or_t9(tmp_path: Path):
+def test_dashboard_plus_t6_reads_without_t5_records_t9_today(tmp_path: Path):
     async def _go():
         client, app, _repo = await _async_authed_session(tmp_path)
         try:
@@ -3949,6 +3953,7 @@ def test_dashboard_plus_t6_reads_without_t5_or_t9(tmp_path: Path):
         device_result="skipped_unpaid",
         device_lookups=1,
     )
+    _assert_t9_today_only(snap)
     _assert_t6_counts(
         snap.counters,
         db_reads=3,
@@ -4614,10 +4619,22 @@ def _assert_t8_home_stages(snap) -> None:
 def _assert_t8_no_view_stages(snap, *, allow_template: bool = False) -> None:
     for stage in _T8_VIEW_STAGES:
         assert stage not in snap.timings, (stage, snap.timings)
-    assert "playground_today" not in snap.timings
-    assert "playground_calendar" not in snap.timings
     if not allow_template:
         assert "template" not in snap.timings
+
+
+def _assert_t9_absent(timings: dict) -> None:
+    _assert_t8_absent(timings, "playground_today", "playground_calendar")
+
+
+def _assert_t9_today_only(snap) -> None:
+    _assert_t8_n(snap.timings, "playground_today")
+    _assert_t8_absent(snap.timings, "playground_calendar")
+
+
+def _assert_t9_calendar_only(snap) -> None:
+    _assert_t8_n(snap.timings, "playground_calendar")
+    _assert_t8_absent(snap.timings, "playground_today")
 
 
 def _spy_template_contexts(app) -> list[tuple[str, frozenset[str], dict]]:
@@ -4750,6 +4767,7 @@ def test_guest_playground_has_template_without_home_build(tmp_path: Path):
     )
     _assert_t8_n(snap.timings, "template")
     _assert_t8_no_view_stages(snap, allow_template=True)
+    _assert_t9_absent(snap.timings)
     _assert_t6_absent(snap.counters)
 
 
@@ -4773,6 +4791,7 @@ def test_free_playground_has_template_without_home_build(tmp_path: Path):
     )
     _assert_t8_n(snap.timings, "template")
     _assert_t8_no_view_stages(snap, allow_template=True)
+    _assert_t9_absent(snap.timings)
     _assert_t6_absent(snap.counters)
 
 
@@ -4894,6 +4913,7 @@ def test_plus_inactive_workspace_has_no_t8_view_or_template(tmp_path: Path):
         roster_access_n=2,
     )
     _assert_t8_no_view_stages(snap)
+    _assert_t9_absent(snap.timings)
     _assert_t6_counts(
         snap.counters,
         db_reads=4,
@@ -4972,6 +4992,7 @@ def test_dashboard_plus_has_no_t8_playground_view_stages(tmp_path: Path):
         device_lookups=1,
     )
     _assert_t8_no_view_stages(snap, allow_template=True)
+    _assert_t9_today_only(snap)
     _assert_t6_counts(
         snap.counters,
         db_reads=3,
@@ -5007,6 +5028,8 @@ def test_roster_and_picker_template_without_build_stages(
         snap.timings,
         "playground_home_build",
         "playground_workspace_build",
+        "playground_today",
+        "playground_calendar",
         *extra_absent,
     )
     if path.endswith("/sections"):
@@ -5296,6 +5319,8 @@ def test_rollover_build_and_write_stages(tmp_path: Path):
         "playground_rollover_write",
         "playground_workspace_build",
         "playground_home_build",
+        "playground_today",
+        "playground_calendar",
     )
     assert posted.status_code in {303, 400}
     _assert_t8_n(post_snap.timings, "playground_rollover_write")
@@ -5469,4 +5494,633 @@ def test_stage_timer_has_no_route_or_contextvar():
     assert "ContextVar" not in module_src
     assert "TIMING_STAGES" not in module_src
     assert "/playground" not in module_src
+
+
+_T9_DASHBOARD_REQUIRED_KEYS = frozenset(
+    {
+        "today_units",
+        "playground_due_units",
+        "playground_new_unit",
+        "playground_due_count",
+        "law_revisions",
+        "law_revision_count",
+        "plus_today",
+        "halted_today",
+        "expired_today",
+        "dashboard_state",
+    }
+)
+_T9_CALENDAR_REQUIRED_KEYS = frozenset(
+    {
+        "calendar",
+        "week",
+        "calendar_view",
+        "plus_calendar",
+        "halted_calendar",
+        "expired_calendar",
+    }
+)
+_T9_INSTRUMENTATION_MARKERS = _T8_INSTRUMENTATION_MARKERS + (
+    "playground_today",
+    "playground_calendar",
+)
+_T9_CONTEXT_TIMING_KEYS = _T8_VIEW_STAGES + (
+    "playground_today",
+    "playground_calendar",
+    "template",
+    "total_ms",
+    "timings",
+)
+
+
+def _assert_t9_dashboard_plus_contract(snap) -> None:
+    _assert_t3_entitlement(
+        snap,
+        access="allowed",
+        disposition="active",
+        auth_state="authed",
+        device_result="skipped_unpaid",
+        device_lookups=1,
+    )
+    _assert_t9_today_only(snap)
+    _assert_t8_no_view_stages(snap, allow_template=True)
+    _assert_t8_n(snap.timings, "template")
+    assert snap.timings["template"][1] == 1
+    assert snap.path_group == "/dashboard"
+    assert snap.total_ms >= 0
+    assert "playground_total" not in snap.timings
+    _assert_t6_counts(
+        snap.counters,
+        db_reads=3,
+        roster_reads=2,
+        revision_reads=1,
+    )
+
+
+def test_dashboard_plus_records_t9_today_without_calendar(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            resp = await client.get("/dashboard")
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t9_dashboard_plus_contract(snap)
+
+
+def test_dashboard_guest_has_no_t9(tmp_path: Path):
+    async def _go():
+        client, _app = await _async_guest_client(tmp_path)
+        try:
+            resp = await client.get("/dashboard")
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t9_absent(snap.timings)
+
+
+def test_dashboard_free_has_no_t9(tmp_path: Path):
+    async def _go():
+        client, _repo = await _async_authed_client(tmp_path)
+        try:
+            resp = await client.get("/dashboard")
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t3_entitlement(
+        snap,
+        access="free",
+        auth_state="authed",
+        device_result="skipped_unpaid",
+        device_lookups=1,
+    )
+    _assert_t9_absent(snap.timings)
+    _assert_t6_absent(snap.counters)
+
+
+def test_dashboard_paused_has_no_t9(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="pro", status="paused")
+            resp = await client.get("/dashboard")
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t3_entitlement(
+        snap,
+        access="paused",
+        disposition="paused",
+        auth_state="authed",
+        device_result="skipped_unpaid",
+        device_lookups=1,
+    )
+    _assert_t9_absent(snap.timings)
+    _assert_t6_absent(snap.counters)
+
+
+@pytest.mark.parametrize(
+    "seed, access, disposition",
+    [
+        (
+            lambda app: _seed_subscription(app, tier="max", status="halted"),
+            "halted",
+            "halted",
+        ),
+        (
+            lambda app: _seed_period_ended_refund(app),
+            "paid_period_ended",
+            "active",
+        ),
+    ],
+)
+def test_dashboard_halted_and_expired_record_t9_today(
+    tmp_path: Path, seed, access, disposition
+):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            seed(app)
+            resp = await client.get("/dashboard")
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t3_entitlement(
+        snap,
+        access=access,
+        disposition=disposition,
+        auth_state="authed",
+        device_result="skipped_unpaid",
+        device_lookups=1,
+    )
+    _assert_t9_today_only(snap)
+    _assert_t8_no_view_stages(snap, allow_template=True)
+    _assert_t6_counts(
+        snap.counters,
+        db_reads=3,
+        roster_reads=2,
+        revision_reads=1,
+    )
+
+
+@pytest.mark.parametrize("kind", ("pending", "admin"))
+def test_dashboard_pending_and_admin_match_plus_t9(tmp_path: Path, kind: str):
+    async def _go():
+        client, app, repo = await _async_authed_session(tmp_path)
+        try:
+            if kind == "pending":
+                _seed_subscription(app, tier="plus", status="pending")
+            else:
+                _seed_admin(repo)
+            resp = await client.get("/dashboard")
+            return resp, get_last_request_performance(), kind
+        finally:
+            await client.aclose()
+
+    resp, snap, kind = asyncio.run(_go())
+    assert resp.status_code == 200
+    if kind == "pending":
+        _assert_t3_entitlement(
+            snap,
+            access="pending",
+            disposition="pending",
+            auth_state="authed",
+            device_result="skipped_unpaid",
+            device_lookups=1,
+        )
+    else:
+        _assert_t3_entitlement(
+            snap,
+            access="allowed",
+            auth_state="authed",
+            device_result="skipped_unpaid",
+            device_lookups=1,
+        )
+    _assert_t9_today_only(snap)
+    _assert_t8_no_view_stages(snap, allow_template=True)
+    _assert_t6_counts(
+        snap.counters,
+        db_reads=3,
+        roster_reads=2,
+        revision_reads=1,
+    )
+
+
+def test_calendar_plus_records_t9_calendar_without_today(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            resp = await client.get("/calendar")
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t3_entitlement(
+        snap,
+        access="allowed",
+        disposition="active",
+        auth_state="authed",
+        device_result="skipped_unpaid",
+        device_lookups=1,
+    )
+    _assert_t9_calendar_only(snap)
+    _assert_t8_no_view_stages(snap, allow_template=True)
+    _assert_t8_n(snap.timings, "template")
+    assert snap.timings["template"][1] == 1
+    assert snap.path_group == "/calendar"
+    assert snap.total_ms >= 0
+    assert "playground_total" not in snap.timings
+    _assert_t6_counts(
+        snap.counters,
+        db_reads=2,
+        roster_reads=1,
+        revision_reads=1,
+    )
+
+
+def test_calendar_guest_and_free_have_no_t9(tmp_path: Path):
+    async def _guest():
+        client, _app = await _async_guest_client(tmp_path / "guest")
+        try:
+            resp = await client.get("/calendar")
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    async def _free():
+        client, _repo = await _async_authed_client(tmp_path / "free")
+        try:
+            resp = await client.get("/calendar")
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    guest_resp, guest_snap = asyncio.run(_guest())
+    free_resp, free_snap = asyncio.run(_free())
+    assert guest_resp.status_code == 303
+    assert free_resp.status_code == 200
+    assert guest_snap is not None
+    _assert_t9_absent(guest_snap.timings)
+    _assert_t9_absent(free_snap.timings)
+    _assert_t6_absent(free_snap.counters)
+
+
+def test_calendar_paused_has_no_t9(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="pro", status="paused")
+            resp = await client.get("/calendar")
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t9_absent(snap.timings)
+    _assert_t6_absent(snap.counters)
+
+
+@pytest.mark.parametrize(
+    "seed",
+    [
+        lambda app: _seed_subscription(app, tier="max", status="halted"),
+        lambda app: _seed_period_ended_refund(app),
+    ],
+)
+def test_calendar_halted_and_expired_record_t9_calendar(tmp_path: Path, seed):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            seed(app)
+            resp = await client.get("/calendar")
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t9_calendar_only(snap)
+    _assert_t8_no_view_stages(snap, allow_template=True)
+    _assert_t6_counts(
+        snap.counters,
+        db_reads=2,
+        roster_reads=1,
+        revision_reads=1,
+    )
+
+
+def test_calendar_week_view_times_chips_once(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            resp = await client.get("/calendar?view=week")
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t9_calendar_only(snap)
+    _assert_t8_n(snap.timings, "playground_calendar")
+    _assert_t6_counts(
+        snap.counters,
+        db_reads=2,
+        roster_reads=1,
+        revision_reads=1,
+    )
+
+
+def test_playground_routes_still_omit_t9(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            home = await client.get("/playground")
+            home_snap = get_last_request_performance()
+            _plus_ndps_on_roster(app)
+            workspace = await client.get("/playground/laws/ndps")
+            workspace_snap = get_last_request_performance()
+            return home, home_snap, workspace, workspace_snap
+        finally:
+            await client.aclose()
+
+    home, home_snap, workspace, workspace_snap = asyncio.run(_go())
+    assert home.status_code == 200
+    assert workspace.status_code == 200
+    _assert_t8_home_stages(home_snap)
+    _assert_t9_absent(home_snap.timings)
+    _assert_t9_absent(workspace_snap.timings)
+    _assert_t6_counts(
+        home_snap.counters,
+        db_reads=7,
+        db_writes=2,
+        roster_reads=5,
+        summary_reads=1,
+    )
+
+
+def test_google_extra_does_not_record_playground_calendar():
+    from constitution_memorizer.playground.schedule import (
+        apply_expired_today_hero,
+        apply_merged_today_hero,
+        attach_playground_calendar_chips,
+        merge_today_path,
+        reconcile_expired_playground_calendar_chips,
+        reconcile_expired_playground_today,
+        reconcile_halted_playground_calendar_chips,
+        reconcile_halted_playground_today,
+    )
+
+    for fn in (
+        playground_google_extra,
+        playground_projection_extra,
+        attach_playground_calendar_chips,
+        merge_today_path,
+        reconcile_expired_playground_calendar_chips,
+        reconcile_halted_playground_calendar_chips,
+        reconcile_expired_playground_today,
+        reconcile_halted_playground_today,
+        apply_merged_today_hero,
+        apply_expired_today_hero,
+    ):
+        assert "time_playground_stage" not in inspect.getsource(fn)
+
+
+def test_t9_today_skips_timer_on_missing_overlay():
+    request = SimpleNamespace(
+        app=SimpleNamespace(state=SimpleNamespace(playground=None, roster=None))
+    )
+    token = begin_request_timings()
+    try:
+        ctx = playground_today_context(request)
+        assert ctx["playground_due_count"] == 0
+        assert "playground_today" not in snapshot_request_timings()
+    finally:
+        reset_request_timings(token)
+
+
+def test_t9_today_empty_plus_still_n_1(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            resp = await client.get("/dashboard")
+            return resp, get_last_request_performance()
+        finally:
+            await client.aclose()
+
+    resp, snap = asyncio.run(_go())
+    assert resp.status_code == 200
+    _assert_t8_n(snap.timings, "playground_today")
+    assert snap.timings["playground_today"][1] == 1
+
+
+def test_t9_records_in_finally_on_exception(tmp_path: Path, monkeypatch):
+    overlay, _roster_repo, roster, _conn = _t6_sqlite(tmp_path)
+
+    def boom_today(*_args, **_kwargs):
+        raise RuntimeError("today boom")
+
+    monkeypatch.setattr(
+        "constitution_memorizer.playground.schedule.playground_view_access",
+        lambda _request: _plus_open_access(),
+    )
+    monkeypatch.setattr(
+        "constitution_memorizer.playground.schedule.law_revision_today_items",
+        boom_today,
+    )
+    request = SimpleNamespace(
+        app=SimpleNamespace(state=SimpleNamespace(playground=overlay, roster=roster))
+    )
+    token = begin_request_timings()
+    try:
+        with pytest.raises(RuntimeError, match="today boom"):
+            playground_today_context(request)
+        _assert_t8_n(snapshot_request_timings(), "playground_today")
+    finally:
+        reset_request_timings(token)
+
+    class BoomOverlay:
+        def list_revision_schedule(self, *_args, **_kwargs):
+            raise RuntimeError("calendar boom")
+
+    class Roster:
+        def active_roster_items(self, _user_id):
+            return []
+
+    token = begin_request_timings()
+    try:
+        with pytest.raises(RuntimeError, match="calendar boom"):
+            playground_calendar_chips(
+                BoomOverlay(),
+                Roster(),
+                USER,
+                month_start=date(2026, 10, 1),
+                month_end=date(2026, 10, 31),
+                today=date(2026, 10, 9),
+            )
+        _assert_t8_n(snapshot_request_timings(), "playground_calendar")
+    finally:
+        reset_request_timings(token)
+
+
+def test_t9_noop_without_collector(tmp_path: Path):
+    overlay, _roster_repo, roster, _conn = _t6_sqlite(tmp_path)
+    playground_calendar_chips(
+        overlay,
+        roster,
+        USER,
+        month_start=date(2026, 10, 1),
+        month_end=date(2026, 10, 31),
+        today=date(2026, 10, 9),
+    )
+    assert snapshot_request_timings() == {}
+    request = SimpleNamespace(
+        app=SimpleNamespace(state=SimpleNamespace(playground=None, roster=None))
+    )
+    playground_today_context(request)
+    assert snapshot_request_timings() == {}
+
+
+def test_t9_does_not_change_dashboard_or_calendar_context_keys(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            captured = _spy_template_contexts(app)
+            dash = await client.get("/dashboard")
+            dash_ctx = captured[:]
+            captured.clear()
+            cal = await client.get("/calendar")
+            cal_ctx = captured[:]
+            return dash, dash_ctx, cal, cal_ctx
+        finally:
+            await client.aclose()
+
+    dash, dash_ctx, cal, cal_ctx = asyncio.run(_go())
+    assert dash.status_code == 200
+    assert cal.status_code == 200
+    dash_keys = next(keys for name, keys, _ctx in dash_ctx if name == "dashboard.html")
+    cal_keys = next(keys for name, keys, _ctx in cal_ctx if name == "calendar.html")
+    assert _T9_DASHBOARD_REQUIRED_KEYS <= dash_keys
+    assert _T9_CALENDAR_REQUIRED_KEYS <= cal_keys
+    dash_context = next(ctx for name, _keys, ctx in dash_ctx if name == "dashboard.html")
+    cal_context = next(ctx for name, _keys, ctx in cal_ctx if name == "calendar.html")
+    for forbidden in _T9_CONTEXT_TIMING_KEYS:
+        assert forbidden not in dash_context
+        assert forbidden not in cal_context
+
+
+def test_t9_html_omits_stage_names_and_ids(
+    tmp_path: Path, caplog: logging.LogCaptureFixture
+):
+    async def _go():
+        results = []
+        guest, _gapp = await _async_guest_client(tmp_path / "guest")
+        try:
+            resp = await guest.get("/dashboard")
+            results.append(("guest_dash", resp, get_last_request_performance()))
+        finally:
+            await guest.aclose()
+        client, app, _repo = await _async_authed_session(tmp_path / "plus")
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            with caplog.at_level(logging.INFO, logger="uvicorn.error"):
+                caplog.clear()
+                dash = await client.get("/dashboard")
+                results.append(("plus_dash", dash, get_last_request_performance()))
+                cal = await client.get("/calendar")
+                results.append(("plus_cal", cal, get_last_request_performance()))
+            halted_client, halted_app, _hrepo = await _async_authed_session(
+                tmp_path / "halted"
+            )
+            try:
+                _seed_subscription(halted_app, tier="max", status="halted")
+                halted = await halted_client.get("/dashboard")
+                results.append(("halted_dash", halted, get_last_request_performance()))
+            finally:
+                await halted_client.aclose()
+            return results
+        finally:
+            await client.aclose()
+
+    results = asyncio.run(_go())
+    for _label, resp, snap in results:
+        assert resp.status_code == 200
+        header_names = {name.lower() for name in resp.headers}
+        assert "server-timing" not in header_names
+        assert "x-perf" not in header_names
+        notes = " ".join(snap.notes.values())
+        breakdown = "\n".join(_breakdown_messages(caplog))
+        meta = (
+            f"{notes}\n{snap.path_group}\n{breakdown}\n"
+            f"{list(snap.timings)}\n{snap.counters}"
+        )
+        assert str(USER) not in meta
+        assert USER_EMAIL not in meta
+        body = resp.content.decode("utf-8", "replace")
+        for marker in _T9_INSTRUMENTATION_MARKERS:
+            assert marker not in body
+        assert "SELECT " not in meta
+        assert "INSERT " not in meta
+        assert "?" not in snap.path_group
+
+
+def test_t9_does_not_add_vocabulary():
+    assert "playground_today" in TIMING_STAGES
+    assert "playground_calendar" in TIMING_STAGES
+    for name in (
+        "playground_today_build",
+        "playground_today_context",
+        "playground_calendar_chips",
+        "playground_calendar_build",
+        "playground_google",
+        "playground_projection",
+        "playground_hero",
+        "playground_total",
+    ):
+        assert name not in TIMING_STAGES
+        assert name not in REQUEST_COUNTERS
+    assert TIMING_STAGES[-len(_PLAYGROUND_STAGES) :] == _PLAYGROUND_STAGES
+
+
+def test_t9_does_not_double_wrap_template(tmp_path: Path):
+    async def _go():
+        client, app, _repo = await _async_authed_session(tmp_path)
+        try:
+            _seed_subscription(app, tier="plus", status="active")
+            dash = await client.get("/dashboard")
+            dash_snap = get_last_request_performance()
+            cal = await client.get("/calendar")
+            cal_snap = get_last_request_performance()
+            return dash, dash_snap, cal, cal_snap
+        finally:
+            await client.aclose()
+
+    dash, dash_snap, cal, cal_snap = asyncio.run(_go())
+    assert dash.status_code == 200
+    assert cal.status_code == 200
+    assert dash_snap.timings["template"][1] == 1
+    assert cal_snap.timings["template"][1] == 1
 
