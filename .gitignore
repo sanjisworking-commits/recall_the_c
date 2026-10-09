@@ -75,5 +75,6 @@ logs/
 src/constitution_memorizer/web/static/_prototype.html
 src/constitution_memorizer/web/static/support.js
 
-# Stage 2 S2-0 WS6 machine timings (schema sample lives under docs/performance/)
+# Stage 2 S2-0 WS6/WS7 machine timings (schema samples live under docs/performance/)
 artifacts/playground-performance-baseline.json
+artifacts/playground-bnss-cold-warm.json

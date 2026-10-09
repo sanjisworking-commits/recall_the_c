@@ -15,19 +15,32 @@ import pytest
 from constitution_memorizer.playground.benchmarking import (
     APP_ENV_TEST_REQUIRED,
     BENCH_USER,
+    BNSS_LEARN_MODE,
+    BNSS_LEARN_PATH,
+    BNSS_PUBLIC_PATH,
+    BNSS_WORKSPACE_PATH,
+    DEFAULT_BNSS_JSON_PATH,
+    DEFAULT_JSON_PATH,
     ELIGIBLE_LAWS,
+    PROTOCOL_BNSS_COLD_WARM,
     SCENARIO_BUILDERS,
     SCENARIOS,
     BenchmarkAborted,
+    BenchmarkRunConfig,
+    assert_cache_class,
     assert_fresh_sqlite,
+    bnss_cell_report,
     build_arg_parser,
+    classify_cache_snapshot,
     collect_snapshots,
     config_from_args,
     create_benchmark_app,
     evaluate_safety_guard,
     host_is_production_looking,
+    largest_eligible_runtime_act,
     percentile_nearest_rank,
     resolve_database_url,
+    run_bnss_cold_warm,
     seed_scenario,
     snapshots_to_report,
     sqlite_filesystem_path,
@@ -81,8 +94,10 @@ def test_cli_help_subprocess():
         "--i-accept-nontest-db",
         "--warmup",
         "--iterations",
+        "--protocol",
     ):
         assert flag in text
+    assert PROTOCOL_BNSS_COLD_WARM in text
 
 
 def test_app_env_test_is_accepted():
@@ -272,6 +287,8 @@ def test_quick_overrides_warmup_and_iterations():
     config = config_from_args(args, environ={})
     assert config.warmup == 1
     assert config.iterations == 3
+    assert config.protocol is None
+    assert config.json_path == DEFAULT_JSON_PATH
 
 
 def test_host_match_uses_dns_label_boundaries():
@@ -441,3 +458,323 @@ def test_absent_stage_zero_means_not_executed():
 
 def test_user_id_constant_is_uuid():
     assert isinstance(BENCH_USER, UUID)
+
+
+def _cache_snap(
+    *,
+    cache: str | None,
+    misses: int,
+    load: bool,
+    path_group: str = "/playground/laws/{law_id}",
+):
+    timings = {"template": (1.0, 1)}
+    if load:
+        timings["bare_act_load"] = (9.0, 1)
+    notes = {}
+    if cache is not None:
+        notes["bare_act_cache"] = cache
+    return SimpleNamespace(
+        path_group=path_group,
+        method="GET",
+        status_code=200,
+        total_ms=5.0,
+        timings=timings,
+        counters={
+            "playground_repo_round_trips": 1,
+            "playground_db_reads": 1,
+            "bare_act_cache_misses": misses,
+        },
+        notes=notes,
+    )
+
+
+def test_classify_cache_snapshot_miss_and_hit():
+    miss = _cache_snap(cache="miss", misses=1, load=True)
+    hit = _cache_snap(cache="hit", misses=0, load=False)
+    mixed = _cache_snap(cache="hit", misses=1, load=True)
+    assert classify_cache_snapshot(miss) == "miss"
+    assert classify_cache_snapshot(hit) == "hit"
+    assert classify_cache_snapshot(mixed) == "unknown"
+
+
+def test_assert_cache_class_rejects_contamination():
+    miss = _cache_snap(cache="miss", misses=1, load=True)
+    hit = _cache_snap(cache="hit", misses=0, load=False)
+    assert_cache_class([miss], "miss", label="cold")
+    assert_cache_class([hit], "hit", label="warm")
+    with pytest.raises(BenchmarkAborted, match="expected 'miss'"):
+        assert_cache_class([hit], "miss", label="cold")
+    with pytest.raises(BenchmarkAborted, match="expected 'hit'"):
+        assert_cache_class([miss], "hit", label="warm")
+
+
+def test_bnss_cell_report_refuses_mixed_and_omits_warm_load():
+    path_group = "/playground/laws/{law_id}"
+    miss = _cache_snap(cache="miss", misses=1, load=True, path_group=path_group)
+    hit = _cache_snap(cache="hit", misses=0, load=False, path_group=path_group)
+    with pytest.raises(BenchmarkAborted, match="expected 'miss'"):
+        bnss_cell_report(
+            [miss, hit],
+            expected="miss",
+            warmup=0,
+            iterations=2,
+            method="GET",
+            app_env="test",
+            label="cold",
+            path_group=path_group,
+        )
+    warm = bnss_cell_report(
+        [hit, hit],
+        expected="hit",
+        warmup=1,
+        iterations=2,
+        method="GET",
+        app_env="test",
+        label="warm",
+        path_group=path_group,
+    )
+    assert "bare_act_load" not in warm["stages_present"]
+    assert "bare_act_load" not in warm["metrics"]
+    assert warm["cache_evidence"]["cache_class"] == "hit"
+    assert warm["cache_evidence"]["bare_act_load_present_count"] == 0
+    cold = bnss_cell_report(
+        [miss, miss],
+        expected="miss",
+        warmup=0,
+        iterations=2,
+        method="GET",
+        app_env="test",
+        label="cold",
+        path_group=path_group,
+    )
+    assert "bare_act_load" in cold["stages_present"]
+    assert cold["cache_evidence"]["bare_act_load_absent_count"] == 0
+
+
+def test_protocol_requires_law_workspace_scenario():
+    args = build_arg_parser().parse_args(
+        [
+            "--protocol",
+            PROTOCOL_BNSS_COLD_WARM,
+            "--scenario",
+            "plus-10",
+            "--database-url",
+            "sqlite:///fresh.db",
+            "--app-env",
+            "test",
+        ]
+    )
+    with pytest.raises(BenchmarkAborted, match="law-workspace"):
+        config_from_args(args, environ={})
+
+
+def test_protocol_defaults_scenario_and_json_path():
+    args = build_arg_parser().parse_args(
+        [
+            "--protocol",
+            PROTOCOL_BNSS_COLD_WARM,
+            "--database-url",
+            "sqlite:///fresh.db",
+            "--app-env",
+            "test",
+            "--quick",
+        ]
+    )
+    config = config_from_args(args, environ={})
+    assert config.scenario == "law-workspace"
+    assert config.protocol == PROTOCOL_BNSS_COLD_WARM
+    assert config.warmup == 1
+    assert config.iterations == 3
+    assert config.json_path == DEFAULT_BNSS_JSON_PATH
+
+
+def test_protocol_cli_plus_10_aborts_subprocess():
+    proc = subprocess.run(
+        [
+            sys.executable,
+            str(CLI),
+            "--protocol",
+            PROTOCOL_BNSS_COLD_WARM,
+            "--scenario",
+            "plus-10",
+            "--database-url",
+            "sqlite:///unused.db",
+            "--app-env",
+            "test",
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+        env=_env_without_db(APP_ENV="test"),
+    )
+    assert proc.returncode == 1
+    assert "law-workspace" in proc.stderr
+
+
+def test_protocol_routes_are_bnss_read_only():
+    assert BNSS_WORKSPACE_PATH == "/playground/laws/bnss"
+    assert BNSS_LEARN_PATH == "/playground/laws/bnss/sections/1/learn/read"
+    assert BNSS_PUBLIC_PATH == "/laws/bnss"
+    assert BNSS_LEARN_MODE == "read"
+    assert "cloze" not in BNSS_LEARN_PATH
+    for path in (BNSS_WORKSPACE_PATH, BNSS_LEARN_PATH, BNSS_PUBLIC_PATH):
+        assert "/bnss" in path
+
+
+def test_largest_eligible_runtime_act_is_bnss():
+    from constitution_memorizer.playground.benchmarking import HydrationProbe
+
+    probe = HydrationProbe()
+    probe.install()
+    try:
+        info = largest_eligible_runtime_act()
+    finally:
+        probe.remove()
+    assert probe.calls == 0
+    assert info["slug"] == "bnss"
+    assert info["filename"] == "bnss_runtime_v1.json"
+    assert info["confirmed_largest_eligible"] is True
+    assert info["bytes"] > 0
+
+
+def test_bnss_get_bare_act_miss_then_hit():
+    from constitution_memorizer.web.bare_acts import clear_bare_act_cache, get_bare_act
+    from constitution_memorizer.web.request_context import (
+        begin_request_timings,
+        reset_request_timings,
+        snapshot_request_counters,
+        snapshot_request_notes,
+        snapshot_request_timings,
+    )
+
+    clear_bare_act_cache()
+    first = begin_request_timings()
+    try:
+        assert get_bare_act("bnss") is not None
+        assert snapshot_request_notes()["bare_act_cache"] == "miss"
+        assert snapshot_request_counters()["bare_act_cache_misses"] == 1
+        assert "bare_act_load" in snapshot_request_timings()
+    finally:
+        reset_request_timings(first)
+    second = begin_request_timings()
+    try:
+        assert get_bare_act("bnss") is not None
+        assert snapshot_request_notes()["bare_act_cache"] == "hit"
+        assert snapshot_request_counters().get("bare_act_cache_misses", 0) == 0
+        assert "bare_act_load" not in snapshot_request_timings()
+    finally:
+        reset_request_timings(second)
+
+
+def test_fresh_app_is_not_a_cold_load(tmp_path: Path):
+    from constitution_memorizer.web.bare_acts import clear_bare_act_cache, get_bare_act
+    from constitution_memorizer.web.request_context import (
+        begin_request_timings,
+        reset_request_timings,
+        snapshot_request_notes,
+        snapshot_request_timings,
+    )
+
+    clear_bare_act_cache()
+    warmed = begin_request_timings()
+    try:
+        assert get_bare_act("bnss") is not None
+        assert snapshot_request_notes()["bare_act_cache"] == "miss"
+    finally:
+        reset_request_timings(warmed)
+    create_benchmark_app(tmp_path / "fresh-app.db")
+    still_warm = begin_request_timings()
+    try:
+        assert get_bare_act("bnss") is not None
+        assert snapshot_request_notes()["bare_act_cache"] == "hit"
+        assert "bare_act_load" not in snapshot_request_timings()
+    finally:
+        reset_request_timings(still_warm)
+    clear_bare_act_cache()
+    after_clear = begin_request_timings()
+    try:
+        assert get_bare_act("bnss") is not None
+        assert snapshot_request_notes()["bare_act_cache"] == "miss"
+        assert "bare_act_load" in snapshot_request_timings()
+    finally:
+        reset_request_timings(after_clear)
+
+
+def test_bnss_cold_warm_protocol_http_classifies_cells(tmp_path: Path):
+    db = tmp_path / "t14.sqlite"
+    report = tmp_path / "t14.json"
+    config = BenchmarkRunConfig(
+        scenario="law-workspace",
+        warmup=0,
+        iterations=1,
+        database_url=f"sqlite:///{db}",
+        app_env="test",
+        json_path=report,
+        explain=False,
+        accept_nontest=False,
+        protocol=PROTOCOL_BNSS_COLD_WARM,
+    )
+    payload = run_bnss_cold_warm(config, environ={"APP_ENV": "test"})
+    assert payload["protocol"] == PROTOCOL_BNSS_COLD_WARM
+    assert payload["largest_act"]["slug"] == "bnss"
+    assert payload["learn_route"]["path"] == BNSS_LEARN_PATH
+    assert payload["learn_route"]["mode"] == "read"
+    assert set(payload["runs"]) == {
+        "playground_workspace",
+        "playground_learn",
+        "public_bare_act",
+    }
+    for key, run in payload["runs"].items():
+        cold = run["cold"]
+        warm = run["warm"]
+        assert cold["cache_evidence"]["cache_class"] == "miss"
+        assert cold["cache_evidence"]["bare_act_load_present_count"] == 1
+        assert cold["warmup_discarded"] == 0
+        assert "bare_act_load" in cold["stages_present"]
+        assert warm["cache_evidence"]["cache_class"] == "hit"
+        assert warm["cache_evidence"]["bare_act_cache_misses_max"] == 0
+        assert warm["cache_evidence"]["bare_act_load_present_count"] == 0
+        assert "bare_act_load" not in warm["stages_present"]
+        assert "bare_act_load" not in warm["metrics"]
+    blob = report.read_text(encoding="utf-8")
+    assert "bench@example.invalid" not in blob
+    assert json.loads(blob)["runs"]["playground_learn"]["path"] == BNSS_LEARN_PATH
+
+
+def test_cli_protocol_quick_smoke(tmp_path: Path):
+    db = tmp_path / "t14-quick.sqlite"
+    report = tmp_path / "t14-quick.json"
+    proc = subprocess.run(
+        [
+            sys.executable,
+            str(CLI),
+            "--scenario",
+            "law-workspace",
+            "--protocol",
+            PROTOCOL_BNSS_COLD_WARM,
+            "--quick",
+            "--app-env",
+            "test",
+            "--database-url",
+            f"sqlite:///{db}",
+            "--json",
+            str(report),
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+        env=_env_without_db(APP_ENV="test"),
+    )
+    assert proc.returncode == 0, proc.stderr
+    payload = json.loads(report.read_text(encoding="utf-8"))
+    assert payload["protocol"] == PROTOCOL_BNSS_COLD_WARM
+    learn_cold = payload["runs"]["playground_learn"]["cold"]
+    learn_warm = payload["runs"]["playground_learn"]["warm"]
+    assert learn_cold["iterations"] == 3
+    assert learn_cold["warmup_discarded"] == 0
+    assert learn_warm["iterations"] == 3
+    assert learn_warm["warmup_discarded"] == 1
+    assert learn_cold["cache_evidence"]["bare_act_load_present_count"] == 3
+    assert learn_warm["cache_evidence"]["bare_act_load_present_count"] == 0

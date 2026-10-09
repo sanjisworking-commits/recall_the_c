@@ -1,8 +1,10 @@
-"""Playground Stage 2 WS6 benchmark library (execution T13).
+"""Playground Stage 2 WS6/WS7 benchmark library (execution T13 + T14).
 
 Statistics, fail-closed production guard, deterministic fixtures, in-process
 HTTP runner, and JSON reporting. Does not change product behavior or T2–T9
-instrumentation. PostgreSQL EXPLAIN is T15/WS8. BNSS cold/warm is T14/WS7.
+instrumentation. PostgreSQL EXPLAIN is T15/WS8. BNSS cold/warm is
+``--protocol bnss-cold-warm`` (T14/WS7); omitting ``--protocol`` keeps the
+T13 unlabeled primary-route path.
 """
 
 from __future__ import annotations
@@ -34,7 +36,33 @@ SCENARIOS = (
     "law-workspace",
 )
 ELIGIBLE_LAWS = ("bns", "bnss", "ndps", "uapa", "pss", "mtp")
+SOURCE_REVIEW_LAW = "ndps"
+LAW_WORKSPACE_LAW = "bnss"
+LAW_WORKSPACE_SELECTED_COUNT = 40
 DEFAULT_JSON_PATH = Path("artifacts/playground-performance-baseline.json")
+DEFAULT_BNSS_JSON_PATH = Path("artifacts/playground-bnss-cold-warm.json")
+PROTOCOL_BNSS_COLD_WARM = "bnss-cold-warm"
+PROTOCOLS = (PROTOCOL_BNSS_COLD_WARM,)
+BNSS_LEARN_MODE = "read"
+BNSS_LEARN_SECTION = "1"
+BNSS_LEARN_LOCATOR = f"{LAW_WORKSPACE_LAW}:section:{BNSS_LEARN_SECTION}"
+BNSS_WORKSPACE_PATH = f"/playground/laws/{LAW_WORKSPACE_LAW}"
+BNSS_LEARN_PATH = (
+    f"/playground/laws/{LAW_WORKSPACE_LAW}"
+    f"/sections/{BNSS_LEARN_SECTION}/learn/{BNSS_LEARN_MODE}"
+)
+BNSS_PUBLIC_PATH = f"/laws/{LAW_WORKSPACE_LAW}"
+BNSS_WORKSPACE_PATH_GROUP = "/playground/laws/{law_id}"
+BNSS_LEARN_PATH_GROUP = (
+    "/playground/laws/{law_id}/sections/{number}/learn/{mode}"
+)
+BNSS_PUBLIC_PATH_GROUP = BNSS_PUBLIC_PATH
+PHASE0_ROUTES = ("/playground", "/playground/roster")
+PHASE0_TEMPLATES = (
+    "playground_law.html",
+    "playground_learn.html",
+    "bare_act.html",
+)
 KNOWN_APP_ENVS = frozenset({"test", "development", "staging", "production"})
 PRODUCTION_ENVS = frozenset({"staging", "production"})
 PRODUCTION_HOSTS = ("recall-the-c.in", "recallthec.in")
@@ -46,8 +74,6 @@ STAGING_PRODUCTION_CONSENT = (
     "APP_BASE_URL without --i-accept-nontest-db and "
     "BENCHMARK_ALLOW_NONTEST=1"
 )
-SOURCE_REVIEW_LAW = "ndps"
-LAW_WORKSPACE_LAW = "bnss"
 REPO_ROOT = Path(__file__).resolve().parents[3]
 MINI_UNITS = REPO_ROOT / "tests" / "fixtures" / "learning" / "mini_units.json"
 
@@ -303,6 +329,16 @@ def build_arg_parser() -> argparse.ArgumentParser:
         choices=SCENARIOS,
         help="Fixture and primary HTTP route",
     )
+    parser.add_argument(
+        "--protocol",
+        choices=PROTOCOLS,
+        default=None,
+        help=(
+            "WS7 BNSS cold/warm protocol. Omit for the T13 unlabeled "
+            "primary-route runner. Requires --scenario law-workspace "
+            "(defaulted when omitted)."
+        ),
+    )
     parser.add_argument("--warmup", type=int, default=5)
     parser.add_argument("--iterations", type=int, default=50)
     parser.add_argument(
@@ -318,8 +354,12 @@ def build_arg_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument(
         "--json",
-        default=str(DEFAULT_JSON_PATH),
-        help="Machine JSON output path (gitignored instance file)",
+        default=None,
+        help=(
+            "Machine JSON output path (gitignored instance file). "
+            f"Default {DEFAULT_JSON_PATH} without --protocol, or "
+            f"{DEFAULT_BNSS_JSON_PATH} with --protocol {PROTOCOL_BNSS_COLD_WARM}."
+        ),
     )
     parser.add_argument(
         "--explain",
@@ -329,7 +369,10 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--quick",
         action="store_true",
-        help="Override warmup=1 and iterations=3",
+        help=(
+            "Override warmup=1 and iterations=3. "
+            "With --protocol bnss-cold-warm, cold warmup stays 0."
+        ),
     )
     parser.add_argument(
         "--i-accept-nontest-db",
@@ -350,6 +393,7 @@ class BenchmarkRunConfig:
     json_path: Path | None
     explain: bool
     accept_nontest: bool
+    protocol: str | None = None
 
 
 def config_from_args(
@@ -357,7 +401,16 @@ def config_from_args(
 ) -> BenchmarkRunConfig:
     if args.explain:
         raise BenchmarkAborted("EXPLAIN is WS8/T15; not implemented in T13")
-    if not args.scenario:
+    protocol = str(getattr(args, "protocol", None) or "").strip() or None
+    scenario = str(getattr(args, "scenario", None) or "").strip()
+    if protocol == PROTOCOL_BNSS_COLD_WARM:
+        if not scenario:
+            scenario = "law-workspace"
+        if scenario != "law-workspace":
+            raise BenchmarkAborted(
+                "--protocol bnss-cold-warm requires --scenario law-workspace"
+            )
+    elif not scenario:
         raise BenchmarkAborted("--scenario is required")
     warmup = int(args.warmup)
     iterations = int(args.iterations)
@@ -366,10 +419,18 @@ def config_from_args(
     if warmup < 0 or iterations < 1:
         raise BenchmarkAborted("warmup must be >= 0 and iterations >= 1")
     url = resolve_database_url(args.database_url, environ)
-    json_raw = str(getattr(args, "json", "") or "").strip()
-    json_path = Path(json_raw) if json_raw else None
+    json_raw = getattr(args, "json", None)
+    if json_raw is None:
+        json_path = (
+            DEFAULT_BNSS_JSON_PATH
+            if protocol == PROTOCOL_BNSS_COLD_WARM
+            else DEFAULT_JSON_PATH
+        )
+    else:
+        text = str(json_raw).strip()
+        json_path = Path(text) if text else None
     return BenchmarkRunConfig(
-        scenario=str(args.scenario),
+        scenario=scenario,
         warmup=warmup,
         iterations=iterations,
         database_url=url,
@@ -377,6 +438,7 @@ def config_from_args(
         json_path=json_path,
         explain=bool(args.explain),
         accept_nontest=bool(args.accept_nontest),
+        protocol=protocol,
     )
 
 
@@ -981,6 +1043,347 @@ def write_json_report(path: Path, payload: Mapping[str, Any]) -> None:
     path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
+def _assert_json_safe(payload: Mapping[str, Any]) -> None:
+    blob = json.dumps(payload)
+    if _SENSITIVE.search(blob) and "@" in blob:
+        raise BenchmarkAborted("JSON report would include sensitive data")
+    if BENCH_EMAIL in blob:
+        raise BenchmarkAborted("JSON report must not include fixture email")
+
+
+def _runtime_file_path(filename: str) -> Path:
+    """Locate a packaged runtime JSON without hydrating the Act."""
+    repo = REPO_ROOT / "data" / "reference" / filename
+    packaged = REPO_ROOT / "src" / "constitution_memorizer" / "web" / filename
+    for candidate in (repo, packaged):
+        if candidate.exists():
+            return candidate
+    raise BenchmarkAborted(f"runtime file missing: {filename}")
+
+
+def largest_eligible_runtime_act() -> dict[str, Any]:
+    """Largest Playground-eligible Act by runtime file size. Does not hydrate."""
+    from constitution_memorizer.playground.eligibility import (
+        list_playground_eligible_laws,
+    )
+    from constitution_memorizer.web.bare_acts import BARE_ACTS
+
+    ranked: list[tuple[int, str, str]] = []
+    for slug in list_playground_eligible_laws():
+        spec = BARE_ACTS.get(slug)
+        if spec is None:
+            continue
+        path = _runtime_file_path(spec.filename)
+        ranked.append((path.stat().st_size, slug, spec.filename))
+    if not ranked:
+        raise BenchmarkAborted("no eligible Bare Acts with runtime files")
+    bytes_, slug, filename = max(ranked, key=lambda row: row[0])
+    confirmed = slug == LAW_WORKSPACE_LAW
+    info = {
+        "slug": slug,
+        "filename": filename,
+        "bytes": int(bytes_),
+        "confirmed_largest_eligible": confirmed,
+    }
+    if not confirmed:
+        raise BenchmarkAborted(
+            f"largest eligible Act is {slug} ({bytes_} bytes), "
+            f"not {LAW_WORKSPACE_LAW}"
+        )
+    return info
+
+
+def classify_cache_snapshot(snap: Any) -> str:
+    """Return miss, hit, or unknown from request notes/counters/timings."""
+    notes = getattr(snap, "notes", None) or {}
+    counters = getattr(snap, "counters", None) or {}
+    timings = getattr(snap, "timings", None) or {}
+    note = notes.get("bare_act_cache")
+    misses = int(counters.get("bare_act_cache_misses") or 0)
+    load_present = "bare_act_load" in timings
+    if note == "miss" and misses >= 1 and load_present:
+        return "miss"
+    if note == "hit" and misses == 0 and not load_present:
+        return "hit"
+    return "unknown"
+
+
+def assert_cache_class(
+    snapshots: list[Any], expected: str, *, label: str
+) -> None:
+    if expected not in {"miss", "hit"}:
+        raise BenchmarkAborted(f"unsupported cache class {expected!r}")
+    if not snapshots:
+        raise BenchmarkAborted(f"{label}: no snapshots to classify")
+    for index, snap in enumerate(snapshots, start=1):
+        got = classify_cache_snapshot(snap)
+        if got != expected:
+            raise BenchmarkAborted(
+                f"{label} sample {index} cache class {got!r}, expected {expected!r}"
+            )
+
+
+def cache_evidence_from_snapshots(
+    snapshots: list[Any], expected: str
+) -> dict[str, Any]:
+    values: set[str] = set()
+    misses: list[int] = []
+    present = 0
+    for snap in snapshots:
+        notes = getattr(snap, "notes", None) or {}
+        counters = getattr(snap, "counters", None) or {}
+        timings = getattr(snap, "timings", None) or {}
+        note = str(notes.get("bare_act_cache") or "")
+        if note:
+            values.add(note)
+        misses.append(int(counters.get("bare_act_cache_misses") or 0))
+        if "bare_act_load" in timings:
+            present += 1
+    return {
+        "cache_class": expected,
+        "samples": len(snapshots),
+        "bare_act_cache_values": sorted(values),
+        "bare_act_cache_misses_min": min(misses) if misses else 0,
+        "bare_act_cache_misses_max": max(misses) if misses else 0,
+        "bare_act_load_present_count": present,
+        "bare_act_load_absent_count": len(snapshots) - present,
+    }
+
+
+def bnss_cell_report(
+    snapshots: list[Any],
+    *,
+    expected: str,
+    warmup: int,
+    iterations: int,
+    method: str,
+    app_env: str,
+    label: str,
+    path_group: str,
+) -> dict[str, Any]:
+    """One cold or warm cell. Refuses mixed snapshots; no warm bare_act_load."""
+    assert_cache_class(snapshots, expected, label=label)
+    for index, snap in enumerate(snapshots, start=1):
+        if str(snap.path_group) != path_group:
+            raise BenchmarkAborted(
+                f"{label} sample {index} path_group {snap.path_group!r}, "
+                f"expected {path_group!r}"
+            )
+    payload = snapshots_to_report(
+        snapshots,
+        scenario="law-workspace",
+        warmup=warmup,
+        iterations=iterations,
+        method=method,
+        app_env=app_env,
+    )
+    stages = payload.get("stages_present") or []
+    if expected == "hit" and "bare_act_load" in stages:
+        raise BenchmarkAborted(
+            f"{label}: warm cell must not include bare_act_load"
+        )
+    if expected == "miss" and "bare_act_load" not in stages:
+        raise BenchmarkAborted(f"{label}: cold cell missing bare_act_load")
+    payload["cache_evidence"] = cache_evidence_from_snapshots(
+        snapshots, expected
+    )
+    return payload
+
+
+def _phase0_assert_no_hydrate(snap: Any, *, label: str) -> None:
+    notes = getattr(snap, "notes", None) or {}
+    timings = getattr(snap, "timings", None) or {}
+    if notes.get("bare_act_cache") == "miss" or "bare_act_load" in timings:
+        raise BenchmarkAborted(f"{label} hydrated Bare Act")
+
+
+def _compile_phase0_templates(app) -> None:
+    env = getattr(getattr(app.state, "templates", None), "env", None)
+    if env is None:
+        raise BenchmarkAborted("benchmark app is missing Jinja templates")
+    for name in PHASE0_TEMPLATES:
+        env.get_template(name)
+
+
+def _bnss_protocol_routes() -> tuple[tuple[str, str, str], ...]:
+    return (
+        ("playground_workspace", BNSS_WORKSPACE_PATH, BNSS_WORKSPACE_PATH_GROUP),
+        ("playground_learn", BNSS_LEARN_PATH, BNSS_LEARN_PATH_GROUP),
+        ("public_bare_act", BNSS_PUBLIC_PATH, BNSS_PUBLIC_PATH_GROUP),
+    )
+
+
+async def _http_snapshot(client, path: str, *, label: str):
+    from constitution_memorizer.web.request_context import get_last_request_performance
+
+    response = await client.get(path)
+    status = int(response.status_code)
+    if status < 200 or status >= 300:
+        raise BenchmarkAborted(f"{label} HTTP {status}")
+    snap = get_last_request_performance()
+    if snap is None:
+        raise BenchmarkAborted(f"{label} missing RequestPerformanceSnapshot")
+    return snap
+
+
+async def _collect_cold_http(client, path: str, *, iterations: int, label: str):
+    from constitution_memorizer.web.bare_acts import clear_bare_act_cache
+
+    snapshots = []
+    for index in range(iterations):
+        clear_bare_act_cache()
+        snap = await _http_snapshot(
+            client, path, label=f"{label} cold {index + 1}"
+        )
+        if classify_cache_snapshot(snap) != "miss":
+            raise BenchmarkAborted(
+                f"{label} cold {index + 1} was not a cache miss"
+            )
+        snapshots.append(snap)
+    return snapshots
+
+
+async def _collect_warm_http(
+    client, path: str, *, warmup: int, iterations: int, label: str
+):
+    for index in range(warmup):
+        snap = await _http_snapshot(
+            client, path, label=f"{label} warm warmup {index + 1}"
+        )
+        if classify_cache_snapshot(snap) != "hit":
+            raise BenchmarkAborted(
+                f"{label} warm warmup {index + 1} was not a cache hit"
+            )
+    snapshots = []
+    for index in range(iterations):
+        snap = await _http_snapshot(
+            client, path, label=f"{label} warm {index + 1}"
+        )
+        if classify_cache_snapshot(snap) != "hit":
+            raise BenchmarkAborted(
+                f"{label} warm {index + 1} was not a cache hit"
+            )
+        snapshots.append(snap)
+    return snapshots
+
+
+def run_bnss_cold_warm(
+    config: BenchmarkRunConfig, environ: Mapping[str, str] | None = None
+) -> dict[str, Any]:
+    """WS7 BNSS cold/warm protocol. Does not alter the T13 primary-route runner."""
+    import asyncio
+
+    from httpx import ASGITransport, AsyncClient
+
+    from constitution_memorizer.web.bare_acts import clear_bare_act_cache
+
+    if config.protocol != PROTOCOL_BNSS_COLD_WARM:
+        raise BenchmarkAborted("run_bnss_cold_warm requires --protocol bnss-cold-warm")
+    if config.scenario != "law-workspace":
+        raise BenchmarkAborted(
+            "--protocol bnss-cold-warm requires --scenario law-workspace"
+        )
+    largest = largest_eligible_runtime_act()
+    effective_app_env = evaluate_safety_guard(
+        requested_app_env=config.app_env,
+        accept_nontest=config.accept_nontest,
+        explain=config.explain,
+        environ=environ,
+    )
+    db_path = assert_fresh_sqlite(config.database_url)
+    app = create_benchmark_app(db_path, app_env="test")
+    seed_scenario(app, config.scenario)
+    clear_bare_act_cache()
+
+    async def _run() -> dict[str, tuple[list[Any], list[Any]]]:
+        transport = ASGITransport(app=app)
+        async with AsyncClient(
+            transport=transport,
+            base_url="http://testserver",
+            follow_redirects=False,
+        ) as client:
+            await sign_in_benchmark_client(client)
+            for path in PHASE0_ROUTES:
+                snap = await _http_snapshot(client, path, label=f"phase0 {path}")
+                _phase0_assert_no_hydrate(snap, label=f"phase0 {path}")
+            _compile_phase0_templates(app)
+            collected: dict[str, tuple[list[Any], list[Any]]] = {}
+            for key, path, _group in _bnss_protocol_routes():
+                cold = await _collect_cold_http(
+                    client,
+                    path,
+                    iterations=config.iterations,
+                    label=key,
+                )
+                collected[key] = (cold, [])
+            for key, path, _group in _bnss_protocol_routes():
+                warm = await _collect_warm_http(
+                    client,
+                    path,
+                    warmup=config.warmup,
+                    iterations=config.iterations,
+                    label=key,
+                )
+                cold, _empty = collected[key]
+                collected[key] = (cold, warm)
+            return collected
+
+    collected = asyncio.run(_run())
+    runs: dict[str, Any] = {}
+    for key, path, path_group in _bnss_protocol_routes():
+        cold_snaps, warm_snaps = collected[key]
+        runs[key] = {
+            "path": path,
+            "path_group": path_group,
+            "cold": bnss_cell_report(
+                cold_snaps,
+                expected="miss",
+                warmup=0,
+                iterations=config.iterations,
+                method="GET",
+                app_env=effective_app_env,
+                label=f"{key} cold",
+                path_group=path_group,
+            ),
+            "warm": bnss_cell_report(
+                warm_snaps,
+                expected="hit",
+                warmup=config.warmup,
+                iterations=config.iterations,
+                method="GET",
+                app_env=effective_app_env,
+                label=f"{key} warm",
+                path_group=path_group,
+            ),
+        }
+    payload = {
+        "schema_version": SCHEMA_VERSION,
+        "protocol": PROTOCOL_BNSS_COLD_WARM,
+        "scenario": config.scenario,
+        "app_env": str(effective_app_env),
+        "database_backend": "sqlite",
+        "largest_act": largest,
+        "learn_route": {
+            "method": "GET",
+            "path": BNSS_LEARN_PATH,
+            "locator": BNSS_LEARN_LOCATOR,
+            "mode": BNSS_LEARN_MODE,
+            "path_group": BNSS_LEARN_PATH_GROUP,
+        },
+        "selection": {
+            "law_id": LAW_WORKSPACE_LAW,
+            "selected_count": LAW_WORKSPACE_SELECTED_COUNT,
+            "status": "learned",
+            "complete_modes": True,
+        },
+        "runs": runs,
+    }
+    _assert_json_safe(payload)
+    if config.json_path is not None:
+        write_json_report(config.json_path, payload)
+    return payload
+
+
 def run_benchmark(
     config: BenchmarkRunConfig, environ: Mapping[str, str] | None = None
 ) -> dict[str, Any]:
@@ -1064,7 +1467,10 @@ def run_cli(argv: list[str] | None = None, environ: Mapping[str, str] | None = N
     try:
         env = os.environ if environ is None else environ
         config = config_from_args(args, env)
-        run_benchmark(config, environ=env)
+        if config.protocol == PROTOCOL_BNSS_COLD_WARM:
+            run_bnss_cold_warm(config, environ=env)
+        else:
+            run_benchmark(config, environ=env)
     except BenchmarkAborted as exc:
         print(exc.message, file=sys.stderr)
         return exc.exit_code
