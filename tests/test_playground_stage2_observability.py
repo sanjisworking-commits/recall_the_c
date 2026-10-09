@@ -1,6 +1,6 @@
-"""T16 / WS9 N+1 scaling locks and T17 repeated zero-hydration + Halted-home.
+"""T16 / WS9 N+1 scaling locks, T17 repeated zero-hydration + Halted-home, and T22 / WS12 observability + privacy consolidation.
 
-Integer query counts and loader-call locks only; no millisecond asserts.
+Integer query counts, path groups, counters, notes, and privacy locks only; no millisecond asserts.
 """
 
 from __future__ import annotations
@@ -917,3 +917,858 @@ def test_t17_halted_home_repeated_zero_hydration_and_roster_denial(
     assert _t17_current_status(app) == "halted"
     assert device.ensure_calls == 0
     assert hydrated == []
+
+
+# --- T22 / WS12 observability + privacy consolidation ---
+
+import json
+import logging
+import math
+from dataclasses import asdict
+
+from alembic.config import Config
+from alembic.script import ScriptDirectory
+
+from constitution_memorizer.devices.token import DEVICE_COOKIE_NAME, mint_installation_token
+from constitution_memorizer.playground.benchmarking import BENCH_EMAIL
+from constitution_memorizer.playground.repo_counters import _repo_counter_depth
+from constitution_memorizer.web.request_context import (
+    PLAYGROUND_ACCESS_RESULTS,
+    PLAYGROUND_DEVICE_RESULTS,
+    PLAYGROUND_LAW_STATES,
+    PLAYGROUND_ROSTER_RESULTS,
+    PLAYGROUND_SUBSCRIPTION_DISPOSITIONS,
+    REQUEST_COUNTERS,
+    REQUEST_NOTES,
+    TIMING_STAGES,
+    breakdown_includes_raw_path,
+    wants_request_breakdown,
+)
+
+_T22_ROOT = Path(__file__).resolve().parents[1]
+_T22_TRACKER = _T22_ROOT / "docs" / "PLAYGROUND_DELIVERY_TRACKER.md"
+_T22_ALEMBIC_HEAD = "20260927_0027"
+_T22_UUID_RE = re.compile(
+    r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
+)
+_T22_LAW_SLUGS = ("bns", "bnss", "ndps", "uapa", "pss", "mtp")
+_T22_AUTH_STATES = frozenset({"single_user", "authed", "guest"})
+_T22_BARE_ACT_CACHE_NOTES = frozenset({"hit", "miss"})
+_T22_NOTE_VALUES = {
+    "playground_access_result": PLAYGROUND_ACCESS_RESULTS,
+    "playground_subscription_disposition": PLAYGROUND_SUBSCRIPTION_DISPOSITIONS,
+    "playground_device_result": PLAYGROUND_DEVICE_RESULTS,
+    "playground_roster_result": PLAYGROUND_ROSTER_RESULTS,
+    "playground_law_state": PLAYGROUND_LAW_STATES,
+    "auth_state": _T22_AUTH_STATES,
+    "bare_act_cache": _T22_BARE_ACT_CACHE_NOTES,
+}
+_T22_PLAYGROUND_STAGES = (
+    "playground_entitlement",
+    "playground_device",
+    "playground_roster_access",
+    "playground_home_build",
+    "playground_home_summaries",
+    "playground_source_presentations",
+    "playground_workspace_build",
+    "playground_selection_read",
+    "playground_mode_progress",
+    "playground_revision_progress",
+    "playground_rollover_build",
+    "playground_rollover_write",
+    "playground_learning_build",
+    "playground_learning_write",
+    "playground_revision_build",
+    "playground_revision_write",
+    "playground_source_review",
+    "playground_source_scan",
+    "playground_today",
+    "playground_calendar",
+    "playground_admin_diagnostics",
+)
+_T22_PLAYGROUND_COUNTERS = (
+    "playground_db_reads",
+    "playground_db_writes",
+    "playground_repo_round_trips",
+    "playground_summary_reads",
+    "playground_roster_reads",
+    "playground_progress_reads",
+    "playground_source_review_reads",
+    "playground_revision_reads",
+    "playground_entitlement_resolves",
+    "playground_device_lookups",
+)
+_T22_PLAYGROUND_NOTES = (
+    "playground_access_result",
+    "playground_subscription_disposition",
+    "playground_device_result",
+    "playground_roster_result",
+    "playground_law_state",
+)
+_T22_PLUS_ROUTES = (
+    ("home", HOME_PATH, "/playground"),
+    ("roster", T17_ROSTER_PATH, "/playground/roster"),
+    ("roster_next", T17_ROSTER_NEXT_PATH, "/playground/roster/next"),
+    ("today", TODAY_PATH, "/dashboard"),
+    ("calendar", T17_CALENDAR_PATH, "/calendar"),
+)
+_T22_SIX_ROUTE_PATHS = (
+    HOME_PATH,
+    T17_ROSTER_PATH,
+    T17_ROSTER_NEXT_PATH,
+    TODAY_PATH,
+    T17_CALENDAR_PATH,
+    T17_SITEMAP_PATH,
+)
+_T22_PRIVACY_QUERY = (
+    "/playground?email=bench@example.invalid&token=t22-secret-token&code=t22-oauth-code"
+)
+_T22_CALENDAR_QUERY = "/calendar?year=2026&month=9"
+_T22_QUERY_SECRETS = (
+    "bench@example.invalid",
+    "t22-secret-token",
+    "t22-oauth-code",
+    "email=",
+    "token=",
+    "code=",
+    "year=",
+    "month=",
+)
+
+
+def _t22_force_sample_rate(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setenv("PERF_LOG_SAMPLE_RATE", "1")
+
+
+def _t22_breakdown_messages(caplog: pytest.LogCaptureFixture) -> list[str]:
+    return [
+        record.getMessage()
+        for record in caplog.records
+        if record.getMessage().startswith("request_breakdown ")
+    ]
+
+
+def _t22_snapshot_text(snap) -> str:
+    return json.dumps(asdict(snap), default=str, sort_keys=True)
+
+
+def _t22_cookie_values(client: AsyncClient) -> dict[str, str]:
+    values: dict[str, str] = {}
+    session = client.cookies.get("rtc_session") or ""
+    device = client.cookies.get(DEVICE_COOKIE_NAME) or ""
+    if session:
+        values["rtc_session"] = session
+    if device:
+        values[DEVICE_COOKIE_NAME] = device
+    return values
+
+
+async def _t22_request(client: AsyncClient, method: str, path: str, **kwargs):
+    if method == "GET":
+        response = await client.get(path, **kwargs)
+    elif method == "POST":
+        response = await client.post(path, **kwargs)
+    else:
+        raise AssertionError(f"T22 unsupported method {method}")
+    snap = get_last_request_performance()
+    if snap is None:
+        pytest.fail(f"t22_missing_snapshot method={method} route={path}")
+    return response, snap
+
+
+def _t22_assert_shape(snap, *, route: str, method: str, status: int) -> None:
+    assert snap.method == method, f"T22 method route={route}"
+    assert snap.status_code == status, (
+        f"T22 status route={route} expected={status} got={snap.status_code}"
+    )
+    assert isinstance(snap.total_ms, (int, float))
+    assert snap.total_ms >= 0
+    assert math.isfinite(float(snap.total_ms))
+
+
+def _t22_assert_path_group(snap, expected: str, *, route: str) -> None:
+    got = snap.path_group
+    if got != expected:
+        pytest.fail(f"T22 path_group route={route} expected={expected} got={got!r}")
+    if "?" in got or "year=" in got or "month=" in got:
+        pytest.fail(f"T22 query leaked into path_group route={route}")
+    if _T22_UUID_RE.search(got):
+        pytest.fail(f"T22 UUID leaked into path_group route={route}")
+    if expected.startswith("/playground"):
+        for slug in _T22_LAW_SLUGS:
+            token = f"/{slug}"
+            if token in got or got.endswith(slug):
+                pytest.fail(f"T22 law id in path_group route={route}")
+
+
+def _t22_assert_counters(snap, *, route: str, entitlement_exact: int | None) -> None:
+    counters = snap.counters or {}
+    for name, value in counters.items():
+        if name not in REQUEST_COUNTERS:
+            pytest.fail(f"T22 unexpected counter {name} route={route}")
+        if type(value) is not int or value < 0:
+            pytest.fail(f"T22 counter {name} not a nonnegative int route={route}")
+    resolves = int(counters.get("playground_entitlement_resolves") or 0)
+    if resolves > 1:
+        pytest.fail(
+            f"T22 playground_entitlement_resolves={resolves} > 1 route={route}"
+        )
+    if entitlement_exact is not None:
+        assert resolves == entitlement_exact, (
+            f"T22 playground_entitlement_resolves route={route} "
+            f"expected={entitlement_exact} got={resolves}"
+        )
+
+
+def _t22_assert_notes(snap, *, route: str) -> None:
+    notes = snap.notes or {}
+    for name, value in notes.items():
+        if name not in REQUEST_NOTES:
+            pytest.fail(f"T22 unexpected note {name} route={route}")
+        allowed = _T22_NOTE_VALUES.get(name)
+        if allowed is None:
+            continue
+        if value not in allowed:
+            pytest.fail(f"T22 note {name} outside closed set route={route}")
+
+
+def _t22_assert_attribution(snap, *, route: str) -> None:
+    counters = snap.counters or {}
+    reads = int(counters.get("playground_db_reads") or 0)
+    writes = int(counters.get("playground_db_writes") or 0)
+    trips = int(counters.get("playground_repo_round_trips") or 0)
+    summaries = int(counters.get("playground_summary_reads") or 0)
+    if trips != reads + writes:
+        pytest.fail(
+            f"T22 round_trips={trips} != reads={reads}+writes={writes} route={route}"
+        )
+    if trips < summaries:
+        pytest.fail(
+            f"T22 round_trips={trips} < summary_reads={summaries} route={route}"
+        )
+
+
+def _t22_assert_hydration_zeros(snap, *, route: str) -> None:
+    counters = snap.counters or {}
+    notes = snap.notes or {}
+    timings = snap.timings or {}
+    misses = int(counters.get("bare_act_cache_misses") or 0)
+    if misses != 0:
+        pytest.fail(f"T22 bare_act_cache_misses={misses} route={route}")
+    if "bare_act_cache" in notes:
+        pytest.fail(f"T22 bare_act_cache note present route={route}")
+    if "bare_act_load" in timings:
+        pytest.fail(f"T22 bare_act_load timing present route={route}")
+
+
+def _t22_assert_privacy(
+    snap,
+    breakdown_lines: list[str],
+    *,
+    route: str,
+    cookies: dict[str, str],
+    extra_needles: tuple[str, ...] = (),
+) -> None:
+    blob = _t22_snapshot_text(snap)
+    playground = snap.path_group.startswith("/playground")
+    needles = [
+        ("email", BENCH_EMAIL),
+        ("user_id", str(BENCH_USER)),
+        ("bearer", "Bearer "),
+        ("session_secret", "SESSION_SECRET"),
+        ("database_url", "DATABASE_URL"),
+        ("postgresql", "postgresql://"),
+    ]
+    for label, value in cookies.items():
+        if value:
+            needles.append((label, value))
+    for secret in extra_needles:
+        needles.append(("query", secret))
+    for label, needle in needles:
+        if needle and needle in blob:
+            pytest.fail(f"T22 privacy leak ({label}) source=snapshot route={route}")
+    if playground:
+        _t22_assert_no_law_id_in_group(snap.path_group, route=route, source="snapshot")
+    for line in breakdown_lines:
+        for label, needle in needles:
+            if needle and needle in line:
+                pytest.fail(f"T22 privacy leak ({label}) source=log route={route}")
+        if "?" in line or "year=" in line or "month=" in line:
+            pytest.fail(f"T22 query leaked into request_breakdown route={route}")
+        if _T22_UUID_RE.search(line):
+            pytest.fail(f"T22 UUID leaked into request_breakdown route={route}")
+        parts = line.split()
+        raw_paths = [
+            part for part in parts if part.startswith("path=") and not part.startswith("path_group=")
+        ]
+        if playground:
+            if raw_paths:
+                pytest.fail(f"T22 raw path= on playground request_breakdown route={route}")
+            if not breakdown_includes_raw_path(route.split("?", 1)[0]):
+                pass
+            for slug in _T22_LAW_SLUGS:
+                if slug in line:
+                    pytest.fail(f"T22 law id in playground request_breakdown route={route}")
+        else:
+            for part in raw_paths:
+                if "?" in part or "year=" in part or "month=" in part:
+                    pytest.fail(f"T22 query in breakdown path= route={route}")
+
+
+def _t22_assert_no_law_id_in_group(path_group: str, *, route: str, source: str) -> None:
+    for slug in _T22_LAW_SLUGS:
+        if f"/{slug}" in path_group or path_group.endswith(slug):
+            pytest.fail(f"T22 law id in path_group source={source} route={route}")
+
+
+def _t22_assert_repo_depth_clear(*, route: str) -> None:
+    depth = _repo_counter_depth.get()
+    if depth != 0:
+        pytest.fail(f"T22 leaked _repo_counter_depth={depth} route={route}")
+
+
+def _t22_subscribe_plus(app) -> None:
+    app.state.subscriptions.create_subscription_record(
+        BENCH_USER,
+        tier="plus",
+        status="active",
+        billing_period_start=datetime(2026, 9, 15, tzinfo=timezone.utc),
+        billing_period_end=datetime(2026, 10, 15, tzinfo=timezone.utc),
+        is_current=True,
+    )
+
+
+def _t22_seed_other_devices(app, n: int = 2) -> None:
+    service = app.state.device_service
+    inner = getattr(service, "inner", service)
+    for index in range(n):
+        access = inner.ensure_current_device(
+            BENCH_USER,
+            mint_installation_token(),
+            auth_session_id=f"t22-seed-sess-{index}",
+            commercially_eligible=True,
+        )
+        assert access.current_device_registered is True
+
+
+def _t22_fill_plus_roster(app, monkeypatch: pytest.MonkeyPatch, n: int = 10) -> None:
+    from constitution_memorizer.playground.roster import service as roster_service
+
+    real = roster_service.is_playground_eligible_law
+
+    def wrapped(law_id: str) -> bool:
+        if str(law_id).startswith("slot-"):
+            return True
+        return real(law_id)
+
+    monkeypatch.setattr(roster_service, "is_playground_eligible_law", wrapped)
+    snap = app.state.entitlement_service.resolve(BENCH_USER)
+    roster = app.state.roster
+    for index in range(n):
+        result = roster.confirm_add_law(
+            BENCH_USER, f"slot-{index}", snap, can_consume_new_law=True
+        )
+        assert result.ok, result.status
+
+
+def _t22_cell(
+    snap,
+    _response,
+    *,
+    route: str,
+    expected_group: str,
+    method: str,
+    status: int,
+    entitlement_exact: int | None,
+    breakdown_lines: list[str],
+    cookies: dict[str, str],
+    extra_needles: tuple[str, ...] = (),
+    expect_breakdown: bool,
+    attribution: bool,
+) -> None:
+    _t22_assert_shape(snap, route=route, method=method, status=status)
+    _t22_assert_path_group(snap, expected_group, route=route)
+    _t22_assert_counters(snap, route=route, entitlement_exact=entitlement_exact)
+    _t22_assert_notes(snap, route=route)
+    _t22_assert_hydration_zeros(snap, route=route)
+    _t22_assert_privacy(
+        snap,
+        breakdown_lines,
+        route=route,
+        cookies=cookies,
+        extra_needles=extra_needles,
+    )
+    if expect_breakdown and not breakdown_lines:
+        pytest.fail(f"T22 missing request_breakdown log route={route}")
+    if attribution:
+        _t22_assert_attribution(snap, route=route)
+    _t22_assert_repo_depth_clear(route=route)
+
+
+async def _t22_measured_get(
+    client: AsyncClient,
+    caplog: pytest.LogCaptureFixture,
+    path: str,
+):
+    with caplog.at_level(logging.INFO, logger="uvicorn.error"):
+        caplog.clear()
+        response, snap = await _t22_request(client, "GET", path)
+        lines = _t22_breakdown_messages(caplog)
+    return response, snap, lines
+
+
+def test_t22_playground_vocabulary_is_registered():
+    for path in _T22_SIX_ROUTE_PATHS:
+        assert wants_request_breakdown(path) is True, path
+    assert wants_request_breakdown("/playground/laws/ndps/add") is True
+    assert TIMING_STAGES[-len(_T22_PLAYGROUND_STAGES) :] == _T22_PLAYGROUND_STAGES
+    assert REQUEST_COUNTERS[-len(_T22_PLAYGROUND_COUNTERS) :] == _T22_PLAYGROUND_COUNTERS
+    assert REQUEST_NOTES[-len(_T22_PLAYGROUND_NOTES) :] == _T22_PLAYGROUND_NOTES
+    playground_stages = tuple(name for name in TIMING_STAGES if name.startswith("playground_"))
+    playground_counters = tuple(
+        name for name in REQUEST_COUNTERS if name.startswith("playground_")
+    )
+    playground_notes = tuple(name for name in REQUEST_NOTES if name.startswith("playground_"))
+    assert playground_stages == _T22_PLAYGROUND_STAGES
+    assert playground_counters == _T22_PLAYGROUND_COUNTERS
+    assert playground_notes == _T22_PLAYGROUND_NOTES
+    for name in _T22_PLAYGROUND_STAGES:
+        assert name in TIMING_STAGES
+    for name in _T22_PLAYGROUND_COUNTERS:
+        assert name in REQUEST_COUNTERS
+    for name in _T22_PLAYGROUND_NOTES:
+        assert name in REQUEST_NOTES
+    assert "auth_state" in REQUEST_NOTES
+    assert "bare_act_cache_misses" in REQUEST_COUNTERS
+    assert "bare_act_load" in TIMING_STAGES
+
+
+def test_t22_stage1_freeze_tracker_and_alembic_head():
+    tracker = _T22_TRACKER.read_text(encoding="utf-8")
+    assert "DONE — 100.0 / 100" in tracker
+    assert "Stage 2 may begin only after" in tracker
+    cfg = Config(str(_T22_ROOT / "alembic.ini"))
+    script = ScriptDirectory.from_config(cfg)
+    heads = script.get_heads()
+    assert heads == [_T22_ALEMBIC_HEAD], heads
+
+
+def test_t22_plus_five_route_matrix(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+):
+    _t22_force_sample_rate(monkeypatch)
+    install_nplusone_clock(monkeypatch)
+    app = create_benchmark_app(tmp_path / "t22-plus.db")
+    info = build_due_heavy_fixture(app)
+    assert info["tier"] == "plus"
+
+    async def _go():
+        transport = ASGITransport(app=app)
+        async with AsyncClient(
+            transport=transport,
+            base_url="http://testserver",
+            follow_redirects=False,
+        ) as client:
+            await sign_in_benchmark_client(client)
+            warmup, warmup_snap = await _t22_request(client, "GET", HOME_PATH)
+            assert warmup.status_code == 200
+            assert warmup_snap is not None
+            for label, path, group in _T22_PLUS_ROUTES:
+                response, snap, lines = await _t22_measured_get(client, caplog, path)
+                assert response.status_code == 200, (
+                    f"T22 plus {label} HTTP {response.status_code}"
+                )
+                entitlement_exact = 1 if label in {"home", "roster", "roster_next"} else None
+                _t22_cell(
+                    snap,
+                    response,
+                    route=path,
+                    expected_group=group,
+                    method="GET",
+                    status=200,
+                    entitlement_exact=entitlement_exact,
+                    breakdown_lines=lines,
+                    cookies=_t22_cookie_values(client),
+                    expect_breakdown=True,
+                    attribution=label in {"home", "roster"},
+                )
+                _assert_active_identity(label, path, response, snap, response.text)
+                notes = snap.notes or {}
+                assert notes.get("auth_state") == "authed"
+                assert notes.get("playground_access_result") == "allowed"
+            query_resp, query_snap, query_lines = await _t22_measured_get(
+                client, caplog, _T22_PRIVACY_QUERY
+            )
+            assert query_resp.status_code == 200
+            _t22_cell(
+                query_snap,
+                query_resp,
+                route=_T22_PRIVACY_QUERY,
+                expected_group="/playground",
+                method="GET",
+                status=200,
+                entitlement_exact=1,
+                breakdown_lines=query_lines,
+                cookies=_t22_cookie_values(client),
+                extra_needles=_T22_QUERY_SECRETS,
+                expect_breakdown=True,
+                attribution=True,
+            )
+            cal_resp, cal_snap, cal_lines = await _t22_measured_get(
+                client, caplog, _T22_CALENDAR_QUERY
+            )
+            assert cal_resp.status_code == 200
+            _t22_cell(
+                cal_snap,
+                cal_resp,
+                route=_T22_CALENDAR_QUERY,
+                expected_group="/calendar",
+                method="GET",
+                status=200,
+                entitlement_exact=None,
+                breakdown_lines=cal_lines,
+                cookies=_t22_cookie_values(client),
+                extra_needles=("year=", "month="),
+                expect_breakdown=True,
+                attribution=False,
+            )
+
+    try:
+        asyncio.run(_go())
+    finally:
+        clear_bare_act_cache()
+
+
+def test_t22_guest_sitemap_and_playground(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+):
+    _t22_force_sample_rate(monkeypatch)
+    install_nplusone_clock(monkeypatch)
+    app = create_benchmark_app(tmp_path / "t22-guest.db")
+
+    async def _go():
+        transport = ASGITransport(app=app)
+        async with AsyncClient(
+            transport=transport,
+            base_url="http://testserver",
+            follow_redirects=False,
+        ) as client:
+            assert not client.cookies.get("rtc_session")
+            site_resp, site_snap, site_lines = await _t22_measured_get(
+                client, caplog, T17_SITEMAP_PATH
+            )
+            _assert_sitemap_identity(site_resp, site_snap)
+            _t22_cell(
+                site_snap,
+                site_resp,
+                route=T17_SITEMAP_PATH,
+                expected_group="/sitemap.xml",
+                method="GET",
+                status=200,
+                entitlement_exact=0,
+                breakdown_lines=site_lines,
+                cookies=_t22_cookie_values(client),
+                expect_breakdown=False,
+                attribution=False,
+            )
+            assert "playground_access_result" not in (site_snap.notes or {})
+            assert (site_snap.notes or {}).get("auth_state") == "guest"
+            assert int((site_snap.counters or {}).get("playground_entitlement_resolves") or 0) == 0
+            home_resp, home_snap, home_lines = await _t22_measured_get(
+                client, caplog, HOME_PATH
+            )
+            assert home_resp.status_code == 200
+            notes = home_snap.notes or {}
+            _t22_cell(
+                home_snap,
+                home_resp,
+                route=HOME_PATH,
+                expected_group="/playground",
+                method="GET",
+                status=200,
+                entitlement_exact=1,
+                breakdown_lines=home_lines,
+                cookies=_t22_cookie_values(client),
+                expect_breakdown=True,
+                attribution=False,
+            )
+            assert notes.get("auth_state") == "guest"
+            assert notes.get("playground_access_result") == "guest"
+            assert notes.get("playground_device_result") == "skipped_unpaid"
+            assert "playground_roster_result" not in notes
+            assert int((home_snap.counters or {}).get("playground_device_lookups") or 0) == 0
+
+    try:
+        asyncio.run(_go())
+    finally:
+        clear_bare_act_cache()
+
+
+def test_t22_free_playground(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+):
+    _t22_force_sample_rate(monkeypatch)
+    install_nplusone_clock(monkeypatch)
+    app = create_benchmark_app(tmp_path / "t22-free.db")
+
+    async def _go():
+        transport = ASGITransport(app=app)
+        async with AsyncClient(
+            transport=transport,
+            base_url="http://testserver",
+            follow_redirects=False,
+        ) as client:
+            await sign_in_benchmark_client(client)
+            response, snap, lines = await _t22_measured_get(client, caplog, HOME_PATH)
+            assert response.status_code == 200
+            notes = snap.notes or {}
+            _t22_cell(
+                snap,
+                response,
+                route=HOME_PATH,
+                expected_group="/playground",
+                method="GET",
+                status=200,
+                entitlement_exact=1,
+                breakdown_lines=lines,
+                cookies=_t22_cookie_values(client),
+                expect_breakdown=True,
+                attribution=False,
+            )
+            assert notes.get("auth_state") == "authed"
+            assert notes.get("playground_access_result") == "free"
+            assert notes.get("playground_device_result") == "skipped_unpaid"
+            assert int((snap.counters or {}).get("playground_device_lookups") or 0) == 1
+
+    try:
+        asyncio.run(_go())
+    finally:
+        clear_bare_act_cache()
+
+
+def test_t22_halted_playground_readonly(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+):
+    _t22_force_sample_rate(monkeypatch)
+    install_nplusone_clock(monkeypatch)
+    app = create_benchmark_app(tmp_path / "t22-halted.db")
+    activate_law(app.state.playground, BENCH_USER, "ndps")
+    _seed_halted_subscription(app)
+
+    async def _go():
+        transport = ASGITransport(app=app)
+        async with AsyncClient(
+            transport=transport,
+            base_url="http://testserver",
+            follow_redirects=False,
+        ) as client:
+            await sign_in_benchmark_client(client)
+            response, snap, lines = await _t22_measured_get(client, caplog, HOME_PATH)
+            _assert_halted_home_identity(response, snap, response.text)
+            _t22_cell(
+                snap,
+                response,
+                route=HOME_PATH,
+                expected_group="/playground",
+                method="GET",
+                status=200,
+                entitlement_exact=1,
+                breakdown_lines=lines,
+                cookies=_t22_cookie_values(client),
+                expect_breakdown=True,
+                attribution=False,
+            )
+            notes = snap.notes or {}
+            assert notes.get("playground_access_result") == "halted"
+            assert notes.get("playground_device_result") == "skipped_unpaid"
+            assert "playground_roster_result" not in notes
+            assert "is-readonly" in response.text
+
+    try:
+        asyncio.run(_go())
+    finally:
+        clear_bare_act_cache()
+
+
+def test_t22_device_limit_playground(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+):
+    _t22_force_sample_rate(monkeypatch)
+    install_nplusone_clock(monkeypatch)
+    app = create_benchmark_app(tmp_path / "t22-device.db")
+    _t22_subscribe_plus(app)
+
+    async def _go():
+        transport = ASGITransport(app=app)
+        async with AsyncClient(
+            transport=transport,
+            base_url="http://testserver",
+            follow_redirects=False,
+        ) as client:
+            await sign_in_benchmark_client(client)
+            _t22_seed_other_devices(app, 2)
+            response, snap, lines = await _t22_measured_get(client, caplog, HOME_PATH)
+            assert response.status_code == 200
+            _t22_cell(
+                snap,
+                response,
+                route=HOME_PATH,
+                expected_group="/playground",
+                method="GET",
+                status=200,
+                entitlement_exact=1,
+                breakdown_lines=lines,
+                cookies=_t22_cookie_values(client),
+                expect_breakdown=True,
+                attribution=False,
+            )
+            notes = snap.notes or {}
+            assert notes.get("auth_state") == "authed"
+            assert notes.get("playground_access_result") == "device_limit"
+            assert notes.get("playground_device_result") == "device_limit"
+            assert int((snap.counters or {}).get("playground_device_lookups") or 0) == 2
+            assert 'data-playground-gate="device_limit"' in response.text
+
+    try:
+        asyncio.run(_go())
+    finally:
+        clear_bare_act_cache()
+
+
+def test_t22_roster_full_add_denial_home_stays_allowed(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+):
+    _t22_force_sample_rate(monkeypatch)
+    install_nplusone_clock(monkeypatch)
+    app = create_benchmark_app(tmp_path / "t22-roster-full.db")
+    _t22_subscribe_plus(app)
+    _t22_fill_plus_roster(app, monkeypatch)
+
+    async def _go():
+        transport = ASGITransport(app=app)
+        async with AsyncClient(
+            transport=transport,
+            base_url="http://testserver",
+            follow_redirects=False,
+        ) as client:
+            await sign_in_benchmark_client(client)
+            home_resp, home_snap, home_lines = await _t22_measured_get(
+                client, caplog, HOME_PATH
+            )
+            assert home_resp.status_code == 200
+            _t22_cell(
+                home_snap,
+                home_resp,
+                route=HOME_PATH,
+                expected_group="/playground",
+                method="GET",
+                status=200,
+                entitlement_exact=1,
+                breakdown_lines=home_lines,
+                cookies=_t22_cookie_values(client),
+                expect_breakdown=True,
+                attribution=True,
+            )
+            home_notes = home_snap.notes or {}
+            assert home_notes.get("playground_access_result") == "allowed"
+            assert home_notes.get("playground_roster_result") == "roster_full"
+            csrf = client.cookies.get("rtc_csrf") or ""
+            with caplog.at_level(logging.INFO, logger="uvicorn.error"):
+                caplog.clear()
+                add_resp, add_snap = await _t22_request(
+                    client,
+                    "POST",
+                    "/playground/laws/ndps/add",
+                    data={"csrf_token": csrf, "confirm": "add", "scope": "sections"},
+                    headers={"Accept": "application/json"},
+                )
+                add_lines = _t22_breakdown_messages(caplog)
+            assert add_resp.status_code in {200, 403}
+            if add_resp.status_code == 403:
+                assert add_resp.json()["error"] == "roster_full"
+            else:
+                assert "roster_full" in add_resp.text
+            _t22_cell(
+                add_snap,
+                add_resp,
+                route="/playground/laws/ndps/add",
+                expected_group="/playground/laws/{law_id}/add",
+                method="POST",
+                status=add_resp.status_code,
+                entitlement_exact=1,
+                breakdown_lines=add_lines,
+                cookies=_t22_cookie_values(client),
+                expect_breakdown=True,
+                attribution=False,
+            )
+            add_notes = add_snap.notes or {}
+            assert add_notes.get("playground_access_result") == "roster_full"
+            assert add_notes.get("playground_roster_result") == "roster_full"
+
+    try:
+        asyncio.run(_go())
+    finally:
+        clear_bare_act_cache()
+
+
+def test_t22_plus_home_request_local_isolation(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, caplog: pytest.LogCaptureFixture
+):
+    _t22_force_sample_rate(monkeypatch)
+    install_nplusone_clock(monkeypatch)
+    app = create_benchmark_app(tmp_path / "t22-isolation.db")
+    info = build_due_heavy_fixture(app)
+    assert info["tier"] == "plus"
+
+    async def _go():
+        transport = ASGITransport(app=app)
+        async with AsyncClient(
+            transport=transport,
+            base_url="http://testserver",
+            follow_redirects=False,
+        ) as client:
+            await sign_in_benchmark_client(client)
+            warmup, warmup_snap = await _t22_request(client, "GET", HOME_PATH)
+            assert warmup.status_code == 200
+            assert warmup_snap is not None
+            _t22_assert_repo_depth_clear(route="warmup")
+            a_resp, a_snap, a_lines = await _t22_measured_get(client, caplog, HOME_PATH)
+            _t22_assert_repo_depth_clear(route="A")
+            b_resp, b_snap, b_lines = await _t22_measured_get(client, caplog, HOME_PATH)
+            _t22_assert_repo_depth_clear(route="B")
+            assert a_resp.status_code == 200
+            assert b_resp.status_code == 200
+            cookies = _t22_cookie_values(client)
+            for label, resp, snap, lines in (
+                ("A", a_resp, a_snap, a_lines),
+                ("B", b_resp, b_snap, b_lines),
+            ):
+                _t22_cell(
+                    snap,
+                    resp,
+                    route=f"{HOME_PATH}#{label}",
+                    expected_group="/playground",
+                    method="GET",
+                    status=200,
+                    entitlement_exact=1,
+                    breakdown_lines=lines,
+                    cookies=cookies,
+                    expect_breakdown=True,
+                    attribution=True,
+                )
+                notes = snap.notes or {}
+                assert notes.get("playground_access_result") == "allowed"
+            a_ent = int((a_snap.counters or {}).get("playground_entitlement_resolves") or 0)
+            b_ent = int((b_snap.counters or {}).get("playground_entitlement_resolves") or 0)
+            assert a_ent == 1
+            assert b_ent == 1
+            a_trips = int((a_snap.counters or {}).get("playground_repo_round_trips") or 0)
+            b_trips = int((b_snap.counters or {}).get("playground_repo_round_trips") or 0)
+            assert b_trips == a_trips, (
+                f"T22 isolation accumulated round_trips A={a_trips} B={b_trips}"
+            )
+
+    try:
+        asyncio.run(_go())
+    finally:
+        clear_bare_act_cache()
