@@ -35,8 +35,17 @@ SCENARIOS = (
 )
 ELIGIBLE_LAWS = ("bns", "bnss", "ndps", "uapa", "pss", "mtp")
 DEFAULT_JSON_PATH = Path("artifacts/playground-performance-baseline.json")
+KNOWN_APP_ENVS = frozenset({"test", "development", "staging", "production"})
 PRODUCTION_ENVS = frozenset({"staging", "production"})
 PRODUCTION_HOSTS = ("recall-the-c.in", "recallthec.in")
+APP_ENV_TEST_REQUIRED = (
+    "--app-env test is required unless BENCHMARK_ALLOW_NONTEST=1"
+)
+STAGING_PRODUCTION_CONSENT = (
+    "refusing staging/production APP_ENV or production-looking "
+    "APP_BASE_URL without --i-accept-nontest-db and "
+    "BENCHMARK_ALLOW_NONTEST=1"
+)
 SOURCE_REVIEW_LAW = "ndps"
 LAW_WORKSPACE_LAW = "bnss"
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -239,6 +248,15 @@ def resolve_database_url(
     return url
 
 
+def _effective_app_env(*, requested: str, process: str) -> str:
+    """Validated label: process staging/production cannot be masked by --app-env."""
+    if process in PRODUCTION_ENVS:
+        return process
+    if requested:
+        return requested
+    return process or "test"
+
+
 def evaluate_safety_guard(
     *,
     requested_app_env: str | None,
@@ -246,8 +264,8 @@ def evaluate_safety_guard(
     explain: bool,
     environ: Mapping[str, str] | None = None,
     multiuser: bool = True,
-) -> None:
-    """Abort before app creation or DB access when the environment is unsafe."""
+) -> str:
+    """Abort before app creation or DB access. Return the effective env label."""
     env = os.environ if environ is None else environ
     if explain:
         raise BenchmarkAborted(
@@ -257,9 +275,10 @@ def evaluate_safety_guard(
     requested = str(requested_app_env or "").strip().lower()
     allow_nontest = str(env.get("BENCHMARK_ALLOW_NONTEST") or "").strip() == "1"
     if not requested and not allow_nontest:
-        raise BenchmarkAborted(
-            "--app-env test is required unless BENCHMARK_ALLOW_NONTEST=1"
-        )
+        raise BenchmarkAborted(APP_ENV_TEST_REQUIRED)
+    nontest_requested = bool(requested) and requested != "test"
+    if nontest_requested and requested not in PRODUCTION_ENVS and not allow_nontest:
+        raise BenchmarkAborted(APP_ENV_TEST_REQUIRED)
     env_is_prod = process_app_env in PRODUCTION_ENVS or requested in PRODUCTION_ENVS
     base_url = str(env.get("APP_BASE_URL") or "").strip()
     host_blocked = bool(multiuser) and host_is_production_looking(
@@ -267,11 +286,8 @@ def evaluate_safety_guard(
     )
     if env_is_prod or host_blocked:
         if not (accept_nontest and allow_nontest):
-            raise BenchmarkAborted(
-                "refusing staging/production APP_ENV or production-looking "
-                "APP_BASE_URL without --i-accept-nontest-db and "
-                "BENCHMARK_ALLOW_NONTEST=1"
-            )
+            raise BenchmarkAborted(STAGING_PRODUCTION_CONSENT)
+    return _effective_app_env(requested=requested, process=process_app_env)
 
 
 def build_arg_parser() -> argparse.ArgumentParser:
@@ -297,7 +313,8 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--app-env",
         default=None,
-        help="Required test unless BENCHMARK_ALLOW_NONTEST=1",
+        help="Must be test unless BENCHMARK_ALLOW_NONTEST=1 "
+        "(staging/production also need --i-accept-nontest-db)",
     )
     parser.add_argument(
         "--json",
@@ -906,6 +923,7 @@ def snapshots_to_report(
     iterations: int,
     database_backend: str = "sqlite",
     method: str,
+    app_env: str = "test",
 ) -> dict[str, Any]:
     if not snapshots:
         raise BenchmarkAborted("no snapshots to report")
@@ -929,13 +947,17 @@ def snapshots_to_report(
     for snap in snapshots:
         stage_names.update((snap.timings or {}).keys())
     for name in sorted(stage_names):
-        metrics[name] = summarize_numbers(
-            float((snap.timings or {}).get(name, (0.0, 0))[0]) for snap in snapshots
-        )
+        # Missing from a sample → 0.0 means the stage did not execute that
+        # request, not a measured 0 ms.
+        series = []
+        for snap in snapshots:
+            timing = (snap.timings or {}).get(name)
+            series.append(float(timing[0]) if timing is not None else 0.0)
+        metrics[name] = summarize_numbers(series)
     payload = {
         "schema_version": SCHEMA_VERSION,
         "scenario": scenario,
-        "app_env": "test",
+        "app_env": str(app_env),
         "database_backend": database_backend,
         "warmup_discarded": warmup,
         "iterations": iterations,
@@ -966,17 +988,16 @@ def run_benchmark(
 
     from httpx import ASGITransport, AsyncClient
 
-    evaluate_safety_guard(
+    effective_app_env = evaluate_safety_guard(
         requested_app_env=config.app_env,
         accept_nontest=config.accept_nontest,
         explain=config.explain,
         environ=environ,
     )
     db_path = assert_fresh_sqlite(config.database_url)
-    app_env = str(config.app_env or "test").strip().lower() or "test"
-    if app_env not in {"test", "development"}:
-        app_env = "test"
-    app = create_benchmark_app(db_path, app_env=app_env)
+    # In-process app stays APP_ENV=test so T13 remains SQLite-only even after
+    # nontest overrides. JSON records effective_app_env, not this setting.
+    app = create_benchmark_app(db_path, app_env="test")
     seed_scenario(app, config.scenario)
     method, path = PRIMARY_ROUTES[config.scenario]
     if method != "GET":
@@ -1024,6 +1045,7 @@ def run_benchmark(
         warmup=config.warmup,
         iterations=config.iterations,
         method=method,
+        app_env=effective_app_env,
     )
     if config.json_path is not None:
         write_json_report(config.json_path, payload)

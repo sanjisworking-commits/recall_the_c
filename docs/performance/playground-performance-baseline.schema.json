@@ -2,7 +2,7 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://recall.local/schemas/playground-performance-baseline.json",
   "title": "Playground WS6 performance baseline (schema sample)",
-  "description": "Machine-specific timings are not committed. This file documents the JSON shape written by scripts/benchmark_playground.py.",
+  "description": "Machine-specific timings are not committed. This file documents the JSON shape written by scripts/benchmark_playground.py. Stage metrics union names across samples: a 0.0 contribution means that stage did not execute on that sample, not a measured 0 ms.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -31,7 +31,10 @@
         "law-workspace"
       ]
     },
-    "app_env": { "type": "string", "const": "test" },
+    "app_env": {
+      "type": "string",
+      "description": "Effective validated environment after the fail-closed guard. Ordinary runs are test. development requires BENCHMARK_ALLOW_NONTEST=1. staging/production require that flag and --i-accept-nontest-db. Process staging/production cannot be masked by --app-env test."
+    },
     "database_backend": { "type": "string", "enum": ["sqlite", "postgresql"] },
     "warmup_discarded": { "type": "integer", "minimum": 0 },
     "iterations": { "type": "integer", "minimum": 1 },
@@ -43,6 +46,7 @@
     },
     "metrics": {
       "type": "object",
+      "description": "Distributions for total_ms, playground_repo_round_trips, playground_db_reads, and each unioned timing stage. If a stage is absent from a sample, that sample contributes 0.0 as 'stage not executed', not a measured 0 ms.",
       "required": ["total_ms", "playground_repo_round_trips", "playground_db_reads"],
       "additionalProperties": { "$ref": "#/$defs/summary" }
     },

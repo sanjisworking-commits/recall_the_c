@@ -13,6 +13,7 @@ from uuid import UUID
 import pytest
 
 from constitution_memorizer.playground.benchmarking import (
+    APP_ENV_TEST_REQUIRED,
     BENCH_USER,
     ELIGIBLE_LAWS,
     SCENARIO_BUILDERS,
@@ -84,6 +85,41 @@ def test_cli_help_subprocess():
         assert flag in text
 
 
+def test_app_env_test_is_accepted():
+    assert (
+        evaluate_safety_guard(
+            requested_app_env="test",
+            accept_nontest=False,
+            explain=False,
+            environ={"APP_ENV": "test"},
+        )
+        == "test"
+    )
+
+
+@pytest.mark.parametrize("value", ["development", "unknown", "prod"])
+def test_app_env_nontest_without_allow_is_rejected(value: str):
+    with pytest.raises(BenchmarkAborted, match="--app-env test is required"):
+        evaluate_safety_guard(
+            requested_app_env=value,
+            accept_nontest=False,
+            explain=False,
+            environ={"APP_ENV": "test"},
+        )
+
+
+def test_app_env_development_with_allow_does_not_need_i_accept():
+    assert (
+        evaluate_safety_guard(
+            requested_app_env="development",
+            accept_nontest=False,
+            explain=False,
+            environ={"APP_ENV": "test", "BENCHMARK_ALLOW_NONTEST": "1"},
+        )
+        == "development"
+    )
+
+
 def test_production_app_env_aborts_without_override():
     with pytest.raises(BenchmarkAborted, match="refusing staging/production"):
         evaluate_safety_guard(
@@ -125,6 +161,61 @@ def test_production_looking_base_url_aborts_even_with_app_env_test():
                 "APP_BASE_URL": "https://app.recall-the-c.in",
             },
         )
+
+
+@pytest.mark.parametrize("value", ["staging", "production"])
+def test_requested_staging_production_need_dual_consent(value: str):
+    with pytest.raises(BenchmarkAborted, match="refusing staging/production"):
+        evaluate_safety_guard(
+            requested_app_env=value,
+            accept_nontest=False,
+            explain=False,
+            environ={"APP_ENV": "test", "BENCHMARK_ALLOW_NONTEST": "1"},
+        )
+    assert (
+        evaluate_safety_guard(
+            requested_app_env=value,
+            accept_nontest=True,
+            explain=False,
+            environ={"APP_ENV": "test", "BENCHMARK_ALLOW_NONTEST": "1"},
+        )
+        == value
+    )
+
+
+def test_process_production_not_masked_by_app_env_test_even_with_consent():
+    assert (
+        evaluate_safety_guard(
+            requested_app_env="test",
+            accept_nontest=True,
+            explain=False,
+            environ={"APP_ENV": "production", "BENCHMARK_ALLOW_NONTEST": "1"},
+        )
+        == "production"
+    )
+
+
+def test_cli_development_abort_subprocess():
+    proc = subprocess.run(
+        [
+            sys.executable,
+            str(CLI),
+            "--scenario",
+            "plus-10",
+            "--database-url",
+            "sqlite:///unused.db",
+            "--app-env",
+            "development",
+            "--quick",
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+        env=_env_without_db(APP_ENV="test"),
+    )
+    assert proc.returncode == 1
+    assert APP_ENV_TEST_REQUIRED in proc.stderr
 
 
 def test_cli_production_abort_subprocess():
@@ -291,6 +382,61 @@ def test_json_report_has_distributions_and_no_email():
     assert "bench@example.invalid" not in blob
     assert "email" not in payload.get("notes_observed", {})
     assert payload["notes_observed"]["playground_access_result"] == ["allowed"]
+    assert payload["app_env"] == "test"
+
+
+def test_json_app_env_uses_validated_label():
+    snap = SimpleNamespace(
+        path_group="/playground",
+        method="GET",
+        status_code=200,
+        total_ms=1.0,
+        timings={},
+        counters={"playground_repo_round_trips": 1, "playground_db_reads": 1},
+        notes={},
+    )
+    payload = snapshots_to_report(
+        [snap],
+        scenario="plus-10",
+        warmup=0,
+        iterations=1,
+        method="GET",
+        app_env="development",
+    )
+    assert payload["app_env"] == "development"
+
+
+def test_absent_stage_zero_means_not_executed():
+    present = SimpleNamespace(
+        path_group="/playground",
+        method="GET",
+        status_code=200,
+        total_ms=2.0,
+        timings={"template": (1.0, 1), "playground_home_build": (2.0, 1)},
+        counters={"playground_repo_round_trips": 1, "playground_db_reads": 1},
+        notes={},
+    )
+    absent = SimpleNamespace(
+        path_group="/playground",
+        method="GET",
+        status_code=200,
+        total_ms=1.0,
+        timings={"template": (1.0, 1)},
+        counters={"playground_repo_round_trips": 1, "playground_db_reads": 1},
+        notes={},
+    )
+    payload = snapshots_to_report(
+        [present, absent],
+        scenario="plus-10",
+        warmup=0,
+        iterations=2,
+        method="GET",
+    )
+    home = payload["metrics"]["playground_home_build"]
+    assert home["count"] == 2
+    assert home["min"] == 0.0
+    assert home["max"] == 2.0
+    assert payload["metrics"]["template"]["min"] == 1.0
 
 
 def test_user_id_constant_is_uuid():
