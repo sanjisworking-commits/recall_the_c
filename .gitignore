@@ -81,3 +81,8 @@ artifacts/playground-bnss-cold-warm.json
 # Stage 2 S2-0 WS10 T18 operator concurrency JSON
 artifacts/playground-concurrency.json
 artifacts/playground-concurrency-*.json
+# Stage 2 S2-0 WS10 T19 operator mutation/webhook JSON
+artifacts/playground-mutations.json
+artifacts/playground-mutations-*.json
+artifacts/playground-webhooks.json
+artifacts/playground-webhooks-*.json

@@ -1,21 +1,24 @@
-"""Playground Stage 2 WS6–WS10 benchmark library (T13–T18).
+"""Playground Stage 2 WS6–WS10 benchmark library (T13–T19).
 
 Statistics, fail-closed production guard, deterministic fixtures, in-process
 HTTP runner, JSON reporting, disposable PostgreSQL EXPLAIN (ANALYZE,
-BUFFERS), and the T18 read-only concurrency harness. Does not change product
-behavior or T1–T9 instrumentation.
+BUFFERS), the T18 read-only concurrency harness, and the T19 mutation-load
+plus webhook-duplicate harness. Does not change product behavior or T1–T9
+instrumentation.
 PostgreSQL EXPLAIN is T15/WS8 (``--explain`` or
 ``scripts/explain_playground_queries.py``). BNSS cold/warm is
 ``--protocol bnss-cold-warm`` (T14/WS7); omitting ``--protocol`` keeps the
 T13 unlabeled primary-route path. ``build_nplusone_fixture`` is the T16
 matched-density helper; it is not a CLI scenario. ``--concurrency`` is T18
-(SQLite-only, not default pytest, not T19 mutations).
+(SQLite-only, not default pytest, not T19 mutations). ``--mutations`` and
+``--webhooks`` are T19 (SQLite-only, not default pytest, not T18).
 """
 
 from __future__ import annotations
 
 import argparse
 import hashlib
+import hmac
 import json
 import math
 import os
@@ -23,10 +26,13 @@ import re
 import sqlite3
 import subprocess
 import sys
+import threading
+import time
+from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import date, datetime, timezone
 from pathlib import Path
-from typing import Any, Callable, Iterable, Mapping
+from typing import Any, Callable, Iterable, Mapping, Sequence
 from urllib.parse import unquote, urlparse, urlunparse
 from uuid import UUID, uuid4
 
@@ -54,6 +60,8 @@ NPLUSONE_DUE_REVISION = "2026-09-10"
 DEFAULT_JSON_PATH = Path("artifacts/playground-performance-baseline.json")
 DEFAULT_BNSS_JSON_PATH = Path("artifacts/playground-bnss-cold-warm.json")
 DEFAULT_CONCURRENCY_JSON_PATH = Path("artifacts/playground-concurrency.json")
+DEFAULT_MUTATIONS_JSON_PATH = Path("artifacts/playground-mutations.json")
+DEFAULT_WEBHOOKS_JSON_PATH = Path("artifacts/playground-webhooks.json")
 DEFAULT_EXPLAIN_JSON_PATH = Path("docs/performance/explain-pro-30-summary.json")
 DEFAULT_EXPLAIN_PLAN_DIR = Path("docs/performance")
 DEFAULT_CONCURRENCY_LEVELS = (1, 5, 10, 25)
@@ -62,6 +70,32 @@ DEFAULT_CONCURRENCY_BATCHES = 5
 CONCURRENCY_BATCH_TIMEOUT_S = 60.0
 CONCURRENCY_SCENARIOS = frozenset({"plus-10", "law-workspace"})
 CONCURRENCY_CLIENT_SHAPE = "single_async_client"
+MUTATION_CLIENT_SHAPE = "threadpool_separate_connections"
+DEFAULT_MUTATION_WAVES = 5
+MUTATION_WAVE_TIMEOUT_S = 10.0
+MUTATION_CLEANUP_WAIT_S = 2.0
+MUTATION_BUSY_TIMEOUT_MS = 8000
+MUTATION_CONCURRENCY_LEVELS = (1, 2)
+MUTATION_CELLS = (
+    "roster-cap",
+    "roster-same-law",
+    "device-cap",
+    "device-idem",
+    "progress-learned",
+    "revision-sixth",
+)
+MUTATION_PROGRESS_TODAY = date(2026, 9, 25)
+WEBHOOK_QUICK_N = 3
+WEBHOOK_QUICK_M = 3
+WEBHOOK_FULL_N = 10
+WEBHOOK_FULL_M = 10
+WEBHOOK_MAX_NM = 25
+T19_DEVICE_SECRET = "t19-bench-device-secret"
+T19_WEBHOOK_SECRET = "t19-bench-whsec"
+T19_PROVIDER_START = int(datetime(2026, 9, 1, tzinfo=timezone.utc).timestamp())
+T19_PROVIDER_END = int(datetime(2026, 10, 1, tzinfo=timezone.utc).timestamp())
+T19_PROVIDER_START_2 = int(datetime(2026, 10, 1, tzinfo=timezone.utc).timestamp())
+T19_PROVIDER_END_2 = int(datetime(2026, 11, 1, tzinfo=timezone.utc).timestamp())
 PROTOCOL_BNSS_COLD_WARM = "bnss-cold-warm"
 PROTOCOLS = (PROTOCOL_BNSS_COLD_WARM,)
 EXPLAIN_SCENARIO = "pro-30"
@@ -435,7 +469,9 @@ def build_arg_parser() -> argparse.ArgumentParser:
         help=(
             "Sequential measured GETs (T13/T14 default 50; --quick uses 3). "
             "With --concurrency, measured batches per level "
-            f"(default {DEFAULT_CONCURRENCY_BATCHES}; --quick uses 1)."
+            f"(default {DEFAULT_CONCURRENCY_BATCHES}; --quick uses 1). "
+            "With --mutations/--webhooks, waves per cell/level "
+            f"(default {DEFAULT_MUTATION_WAVES}; --quick uses 1)."
         ),
     )
     parser.add_argument(
@@ -448,13 +484,31 @@ def build_arg_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
+        "--mutations",
+        action="store_true",
+        help=(
+            "T19 service-level mutation-load harness (C=1 control + C=2 races). "
+            "SQLite-only. Not default pytest. Not --concurrency. No live Razorpay."
+        ),
+    )
+    parser.add_argument(
+        "--webhooks",
+        action="store_true",
+        help=(
+            "T19 process_delivery webhook duplicate harness (N unique + M "
+            "replays + out-of-order pair). SQLite-only. Not default pytest. "
+            "No live Razorpay."
+        ),
+    )
+    parser.add_argument(
         "--database-url",
         default=None,
         help=(
             "sqlite:/// filesystem path for the HTTP runner (T13/T14/T18), or a "
             "local disposable postgresql:// URL for --explain (T15). "
-            "T18 --concurrency rejects PostgreSQL (T23). "
-            "Never falls back to process DATABASE_URL."
+            "T18 --concurrency and T19 --mutations/--webhooks reject PostgreSQL "
+            "(T23). T19 treats the path as a stem and writes a fresh file per "
+            "wave. Never falls back to process DATABASE_URL."
         ),
     )
     parser.add_argument(
@@ -469,7 +523,9 @@ def build_arg_parser() -> argparse.ArgumentParser:
         help=(
             "Machine JSON output path (gitignored instance file). "
             f"Default {DEFAULT_JSON_PATH} without --protocol, or "
-            f"{DEFAULT_BNSS_JSON_PATH} with --protocol {PROTOCOL_BNSS_COLD_WARM}."
+            f"{DEFAULT_BNSS_JSON_PATH} with --protocol {PROTOCOL_BNSS_COLD_WARM}, "
+            f"or {DEFAULT_MUTATIONS_JSON_PATH} with --mutations, "
+            f"or {DEFAULT_WEBHOOKS_JSON_PATH} with --webhooks."
         ),
     )
     parser.add_argument(
@@ -487,6 +543,8 @@ def build_arg_parser() -> argparse.ArgumentParser:
         help=(
             "Override warmup=1 and iterations=3. "
             "With --concurrency, warmup=1 and batches=1 at every listed level. "
+            "With --mutations/--webhooks, one wave per cell/level and "
+            f"webhook N={WEBHOOK_QUICK_N}, M={WEBHOOK_QUICK_M}. "
             "With --protocol bnss-cold-warm, cold warmup stays 0."
         ),
     )
@@ -511,6 +569,10 @@ class BenchmarkRunConfig:
     accept_nontest: bool
     protocol: str | None = None
     concurrency_levels: tuple[int, ...] | None = None
+    mutations: bool = False
+    webhooks: bool = False
+    webhook_n: int = 0
+    webhook_m: int = 0
 
 
 def parse_concurrency_levels(raw: str) -> tuple[int, ...]:
@@ -557,18 +619,48 @@ def assert_concurrency_sqlite(url: str) -> Path:
     return assert_fresh_sqlite(url)
 
 
+def assert_t19_sqlite(url: str) -> Path:
+    """T19 accepts only a fresh disposable SQLite stem. PostgreSQL is T23."""
+    parsed = urlparse(str(url or "").strip())
+    scheme = (parsed.scheme or "").lower()
+    if scheme in {"postgres", "postgresql"}:
+        raise BenchmarkAborted(
+            "T19 mutations/webhooks are SQLite-only; PostgreSQL is T23"
+        )
+    if scheme not in {"sqlite", "sqlite3"}:
+        raise BenchmarkAborted("T19 mutations/webhooks require a sqlite:/// URL")
+    return assert_fresh_sqlite(url)
+
+
 def config_from_args(
     args: argparse.Namespace, environ: Mapping[str, str] | None = None
 ) -> BenchmarkRunConfig:
     protocol = str(getattr(args, "protocol", None) or "").strip() or None
     scenario = str(getattr(args, "scenario", None) or "").strip()
     explain = bool(getattr(args, "explain", False))
+    mutations = bool(getattr(args, "mutations", False))
+    webhooks = bool(getattr(args, "webhooks", False))
     concurrency_raw = getattr(args, "concurrency", None)
     concurrency_levels = (
         parse_concurrency_levels(str(concurrency_raw))
         if concurrency_raw is not None
         else None
     )
+    if mutations and webhooks:
+        raise BenchmarkAborted("--mutations cannot be combined with --webhooks")
+    t19 = mutations or webhooks
+    if t19 and explain:
+        raise BenchmarkAborted(
+            "--mutations/--webhooks cannot be combined with --explain"
+        )
+    if t19 and protocol:
+        raise BenchmarkAborted(
+            "--mutations/--webhooks cannot be combined with --protocol"
+        )
+    if t19 and concurrency_levels:
+        raise BenchmarkAborted(
+            "--mutations/--webhooks cannot be combined with --concurrency"
+        )
     if explain and protocol == PROTOCOL_BNSS_COLD_WARM:
         raise BenchmarkAborted(
             "--explain cannot be combined with --protocol bnss-cold-warm"
@@ -580,6 +672,8 @@ def config_from_args(
             "--concurrency cannot be combined with --protocol bnss-cold-warm"
         )
     url = resolve_database_url(args.database_url, environ)
+    if t19:
+        assert_t19_sqlite(url)
     if concurrency_levels:
         assert_concurrency_sqlite(url)
         if scenario and scenario not in CONCURRENCY_SCENARIOS:
@@ -601,11 +695,31 @@ def config_from_args(
             raise BenchmarkAborted(
                 "--protocol bnss-cold-warm requires --scenario law-workspace"
             )
+    elif t19:
+        scenario = scenario or ""
     elif not scenario:
         raise BenchmarkAborted("--scenario is required")
     warmup = int(args.warmup)
     iterations_arg = getattr(args, "iterations", None)
-    if concurrency_levels:
+    webhook_n = 0
+    webhook_m = 0
+    if t19:
+        if args.quick:
+            warmup, iterations = 1, 1
+        else:
+            iterations = (
+                DEFAULT_MUTATION_WAVES
+                if iterations_arg is None
+                else int(iterations_arg)
+            )
+        if webhooks:
+            webhook_n = WEBHOOK_QUICK_N if args.quick else WEBHOOK_FULL_N
+            webhook_m = WEBHOOK_QUICK_M if args.quick else WEBHOOK_FULL_M
+            if webhook_n > WEBHOOK_MAX_NM or webhook_m > WEBHOOK_MAX_NM:
+                raise BenchmarkAborted(
+                    f"webhook N,M cannot exceed {WEBHOOK_MAX_NM}"
+                )
+    elif concurrency_levels:
         if args.quick:
             warmup, iterations = 1, 1
         else:
@@ -628,6 +742,10 @@ def config_from_args(
             json_path = DEFAULT_BNSS_JSON_PATH
         elif concurrency_levels:
             json_path = DEFAULT_CONCURRENCY_JSON_PATH
+        elif mutations:
+            json_path = DEFAULT_MUTATIONS_JSON_PATH
+        elif webhooks:
+            json_path = DEFAULT_WEBHOOKS_JSON_PATH
         else:
             json_path = DEFAULT_JSON_PATH
     else:
@@ -644,6 +762,10 @@ def config_from_args(
         accept_nontest=bool(args.accept_nontest),
         protocol=protocol,
         concurrency_levels=concurrency_levels,
+        mutations=mutations,
+        webhooks=webhooks,
+        webhook_n=webhook_n,
+        webhook_m=webhook_m,
     )
 
 
@@ -3291,6 +3413,1428 @@ def run_benchmark(
     return payload
 
 
+def sqlite_url_for_path(path: Path) -> str:
+    resolved = path if path.is_absolute() else path.resolve()
+    return f"sqlite:///{resolved}"
+
+
+def derived_t19_sqlite_path(stem_url: str, *parts: str) -> Path:
+    """Fresh sibling file for one T19 scenario/wave. Never reuses the stem."""
+    stem = sqlite_filesystem_path(stem_url)
+    stem.parent.mkdir(parents=True, exist_ok=True)
+    label = "-".join(str(part) for part in parts if str(part))
+    unique = uuid4().hex[:10]
+    suffix = stem.suffix if stem.suffix else ".db"
+    target = stem.parent / f"{stem.stem}-{label}-{unique}{suffix}"
+    assert_fresh_sqlite(sqlite_url_for_path(target))
+    return target
+
+
+def webhook_delivery_counts(results: Sequence[Any]) -> dict[str, int]:
+    """Harness counters over process_delivery results. Not a product field."""
+    deliveries = 0
+    owned = 0
+    duplicate = 0
+    retry_busy = 0
+    errors = 0
+    for item in results:
+        deliveries += 1
+        status = int(getattr(item, "status_code", 0) or 0)
+        is_owned = bool(getattr(item, "owned", False))
+        error = getattr(item, "error", None)
+        if is_owned:
+            owned += 1
+        is_retry_busy = status == 503 and not is_owned
+        if status == 200 and not is_owned:
+            duplicate += 1
+        if is_retry_busy:
+            retry_busy += 1
+        elif status >= 400 or error is not None:
+            errors += 1
+    return {
+        "deliveries": deliveries,
+        "owned": owned,
+        "duplicate": duplicate,
+        "retry_busy": retry_busy,
+        "errors": errors,
+    }
+
+
+class FakeProvider:
+    """Harness-only in-memory provider for process_delivery. No sockets."""
+
+    def __init__(self) -> None:
+        self.fetches: list[str] = []
+        self._lock = threading.Lock()
+        self.status = "active"
+        self.plan_id = "plan_plus"
+        self.current_start = T19_PROVIDER_START
+        self.current_end = T19_PROVIDER_END
+        self.has_scheduled_changes = False
+        self.customer_id = "cust_t19"
+
+    def fetch_subscription(self, subscription_id: str):
+        from constitution_memorizer.subscriptions.razorpay import ProviderSubscription
+
+        with self._lock:
+            self.fetches.append(str(subscription_id))
+        return ProviderSubscription(
+            id=str(subscription_id),
+            plan_id=self.plan_id,
+            status=self.status,
+            current_start=self.current_start,
+            current_end=self.current_end,
+            customer_id=self.customer_id,
+            short_url=None,
+            has_scheduled_changes=self.has_scheduled_changes,
+            raw={
+                "id": str(subscription_id),
+                "plan_id": self.plan_id,
+                "status": self.status,
+            },
+        )
+
+
+def _connect_mutation_sqlite(path: Path) -> sqlite3.Connection:
+    conn = sqlite3.connect(str(path), timeout=10, check_same_thread=False)
+    conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA journal_mode=WAL")
+    conn.execute(f"PRAGMA busy_timeout = {MUTATION_BUSY_TIMEOUT_MS}")
+    conn.execute("PRAGMA foreign_keys = ON")
+    return conn
+
+
+@contextmanager
+def _allow_stub_laws():
+    from constitution_memorizer.playground.roster import service as roster_service
+
+    real = roster_service.is_playground_eligible_law
+
+    def wrapped(law_id: str) -> bool:
+        if str(law_id).startswith("stub-"):
+            return True
+        return real(law_id)
+
+    roster_service.is_playground_eligible_law = wrapped
+    try:
+        yield
+    finally:
+        roster_service.is_playground_eligible_law = real
+
+
+def _plus_entitlement_snapshot():
+    from constitution_memorizer.entitlements.models import (
+        CONSTITUTION_ACCESS_FULL,
+        EntitlementSnapshot,
+    )
+
+    return EntitlementSnapshot(
+        is_authenticated=True,
+        subscription_status="active",
+        tier="plus",
+        is_subscribed=True,
+        admin_override=False,
+        can_use_constitution_learn=True,
+        constitution_access=CONSTITUTION_ACCESS_FULL,
+        can_read_laws=True,
+        can_open_playground=True,
+        can_consume_new_playground_law=True,
+        playground_law_limit=10,
+        playground_block_reason=None,
+        billing_period_start=None,
+        billing_period_end=None,
+        legacy_status=None,
+    )
+
+
+def _worker_collectors(fn: Callable[[], dict[str, Any]]) -> dict[str, Any]:
+    from constitution_memorizer.web.request_context import (
+        begin_request_timings,
+        reset_request_timings,
+        snapshot_request_counters,
+    )
+
+    token = begin_request_timings()
+    started = time.perf_counter()
+    try:
+        payload = fn()
+    except Exception as exc:
+        payload = {
+            "error_class": type(exc).__name__,
+            "error_message": _sanitize_error_text(str(exc)),
+        }
+    elapsed_ms = (time.perf_counter() - started) * 1000.0
+    counters = snapshot_request_counters()
+    reset_request_timings(token)
+    payload["elapsed_ms"] = elapsed_ms
+    payload["playground_db_writes"] = int(counters.get("playground_db_writes") or 0)
+    payload["playground_repo_round_trips"] = int(
+        counters.get("playground_repo_round_trips") or 0
+    )
+    return payload
+
+
+def _wait_wave_futures(futures, *, timeout_s: float, cleanup_s: float):
+    deadline = time.monotonic() + timeout_s
+    results: list[Any] = [None] * len(futures)
+    incomplete = False
+    for index, future in enumerate(futures):
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            incomplete = True
+            break
+        try:
+            results[index] = future.result(timeout=remaining)
+        except TimeoutError:
+            incomplete = True
+            break
+    if incomplete:
+        cleanup_deadline = time.monotonic() + cleanup_s
+        for future in futures:
+            if future.done():
+                continue
+            leftover = max(0.0, cleanup_deadline - time.monotonic())
+            try:
+                future.result(timeout=leftover)
+            except Exception:
+                pass
+    workers_terminated = all(future.done() for future in futures)
+    for index, future in enumerate(futures):
+        if results[index] is not None:
+            continue
+        if future.done():
+            try:
+                results[index] = future.result(timeout=0)
+            except Exception as exc:
+                results[index] = {
+                    "error_class": type(exc).__name__,
+                    "error_message": _sanitize_error_text(str(exc)),
+                    "elapsed_ms": 0.0,
+                    "playground_db_writes": 0,
+                    "playground_repo_round_trips": 0,
+                }
+        else:
+            results[index] = {
+                "error_class": "timeout",
+                "error_message": "wave_timeout",
+                "elapsed_ms": 0.0,
+                "playground_db_writes": 0,
+                "playground_repo_round_trips": 0,
+            }
+    return results, incomplete, workers_terminated
+
+
+def _run_thread_wave(
+    jobs: Sequence[Callable[[], dict[str, Any]]],
+    *,
+    timeout_s: float = MUTATION_WAVE_TIMEOUT_S,
+    cleanup_s: float = MUTATION_CLEANUP_WAIT_S,
+) -> dict[str, Any]:
+    from concurrent.futures import ThreadPoolExecutor
+
+    wall_started = time.perf_counter()
+    executor = ThreadPoolExecutor(max_workers=max(1, len(jobs)))
+    futures = [executor.submit(_worker_collectors, job) for job in jobs]
+    results, incomplete, workers_terminated = _wait_wave_futures(
+        futures, timeout_s=timeout_s, cleanup_s=cleanup_s
+    )
+    if incomplete and not workers_terminated:
+        executor.shutdown(wait=False, cancel_futures=True)
+    else:
+        executor.shutdown(wait=True)
+    wall_seconds = time.perf_counter() - wall_started
+    error_classes: dict[str, int] = {}
+    for row in results:
+        klass = str((row or {}).get("error_class") or "")
+        if klass:
+            error_classes[klass] = error_classes.get(klass, 0) + 1
+    completed = sum(1 for row in results if not (row or {}).get("error_class"))
+    throughput = None
+    if not incomplete and wall_seconds > 0 and completed:
+        throughput = completed / wall_seconds
+    return {
+        "workers": results,
+        "incomplete": incomplete,
+        "workers_terminated": workers_terminated,
+        "wave_wall_seconds": wall_seconds,
+        "error_classes": error_classes,
+        "throughput_rps": throughput,
+        "preserved_db": incomplete,
+    }
+
+
+def _count_consumed(conn: sqlite3.Connection) -> int:
+    row = conn.execute(
+        """
+        SELECT COUNT(DISTINCT law_id) AS n FROM user_playground_roster_item
+        WHERE consumed_at IS NOT NULL
+        """
+    ).fetchone()
+    return int(row["n"] if row is not None else 0)
+
+
+def _count_roster_rows(conn: sqlite3.Connection) -> int:
+    row = conn.execute("SELECT COUNT(*) AS n FROM user_playground_roster_item").fetchone()
+    return int(row["n"] if row is not None else 0)
+
+
+def _progress_integrity(conn: sqlite3.Connection) -> dict[str, Any]:
+    rows = conn.execute(
+        """
+        SELECT status, learned_at, times_completed, interval_days
+        FROM user_playground_progress
+        """
+    ).fetchall()
+    learned_at_values = [
+        None if row["learned_at"] is None else str(row["learned_at"])[:10]
+        for row in rows
+    ]
+    return {
+        "progress_rows": len(rows),
+        "status": None if not rows else str(rows[0]["status"]),
+        "learned_at": None if not learned_at_values else learned_at_values[0],
+        "learned_at_set_count": sum(1 for value in learned_at_values if value),
+        "times_completed": None if not rows else int(rows[0]["times_completed"]),
+        "interval_days": None if not rows else int(rows[0]["interval_days"]),
+    }
+
+
+def _seed_progress_row(
+    repo,
+    *,
+    status: str,
+    interval_days: int,
+    next_revision: str,
+    times_completed: int,
+    learned_at: str,
+    locator: str,
+) -> None:
+    now = "2026-09-25T00:00:00+00:00"
+    repo.conn.execute(
+        """
+        INSERT INTO user_playground_progress (
+            user_id, law_id, source_locator, status, cloze_done,
+            times_completed, last_completed, next_revision, interval_days,
+            source_version, source_hash, updated_at, learned_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'v', 'h', ?, ?)
+        ON CONFLICT (user_id, law_id, source_locator) DO UPDATE SET
+            status = excluded.status,
+            times_completed = excluded.times_completed,
+            last_completed = excluded.last_completed,
+            next_revision = excluded.next_revision,
+            interval_days = excluded.interval_days,
+            learned_at = excluded.learned_at,
+            cloze_done = excluded.cloze_done
+        """,
+        (
+            str(BENCH_USER),
+            "ndps",
+            locator,
+            status,
+            0,
+            times_completed,
+            None,
+            next_revision,
+            interval_days,
+            now,
+            learned_at,
+        ),
+    )
+    repo.conn.commit()
+
+
+def _prepare_mutation_schemas(conn: sqlite3.Connection, cell_id: str) -> None:
+    from constitution_memorizer.playground.db import (
+        ensure_sqlite_schema as ensure_overlay_schema,
+    )
+
+    ensure_overlay_schema(conn)
+    if cell_id.startswith("roster-"):
+        from constitution_memorizer.playground.roster.db import (
+            ensure_sqlite_schema as ensure_roster_schema,
+        )
+
+        ensure_roster_schema(conn)
+    if cell_id.startswith("device-"):
+        from constitution_memorizer.devices.db import (
+            ensure_sqlite_schema as ensure_device_schema,
+        )
+
+        ensure_device_schema(conn)
+
+
+def _seed_mutation_cell(conn: sqlite3.Connection, cell_id: str) -> dict[str, Any]:
+    _prepare_mutation_schemas(conn, cell_id)
+    if cell_id == "roster-cap":
+        from constitution_memorizer.playground.roster.repository import (
+            SqliteRosterRepository,
+        )
+        from constitution_memorizer.playground.roster.service import RosterService
+
+        snap = _plus_entitlement_snapshot()
+        service = RosterService(SqliteRosterRepository(conn))
+        service.ensure_current_period(BENCH_USER, snap, now=PLAYGROUND_TEST_NOW)
+        for index in range(9):
+            result = service.confirm_add_law(
+                BENCH_USER, f"stub-{index}", snap, now=PLAYGROUND_TEST_NOW
+            )
+            if not result.ok:
+                raise BenchmarkAborted(
+                    f"roster-cap seed failed on stub-{index}: {result.status}"
+                )
+        return {
+            "consumed_distinct": _count_consumed(conn),
+            "law_limit": 10,
+            "seeded_stub_count": 9,
+        }
+    if cell_id == "roster-same-law":
+        from constitution_memorizer.playground.roster.repository import (
+            SqliteRosterRepository,
+        )
+        from constitution_memorizer.playground.roster.service import RosterService
+
+        snap = _plus_entitlement_snapshot()
+        RosterService(SqliteRosterRepository(conn)).ensure_current_period(
+            BENCH_USER, snap, now=PLAYGROUND_TEST_NOW
+        )
+        return {
+            "consumed_distinct": _count_consumed(conn),
+            "roster_rows": _count_roster_rows(conn),
+            "law_id": "ndps",
+        }
+    if cell_id == "device-cap":
+        from constitution_memorizer.devices.repository import SqliteDeviceRepository
+        from constitution_memorizer.devices.service import DeviceService
+        from constitution_memorizer.devices.token import mint_installation_token
+
+        repo = SqliteDeviceRepository(conn)
+        service = DeviceService(repo, hmac_secret=T19_DEVICE_SECRET, device_limit=2)
+        seeded = service.ensure_current_device(
+            BENCH_USER,
+            mint_installation_token(),
+            auth_session_id="sess-seed",
+            commercially_eligible=True,
+        )
+        if int(seeded.registered_device_count) != 1:
+            raise BenchmarkAborted("device-cap seed did not register one device")
+        return {
+            "active_devices": repo.count_active(BENCH_USER),
+            "device_limit": 2,
+            "seeded_devices": 1,
+        }
+    if cell_id == "device-idem":
+        from constitution_memorizer.devices.repository import SqliteDeviceRepository
+
+        repo = SqliteDeviceRepository(conn)
+        return {
+            "active_devices": repo.count_active(BENCH_USER),
+            "device_limit": 2,
+            "shared_hash": True,
+        }
+    if cell_id == "progress-learned":
+        from constitution_memorizer.playground.learning.modes import (
+            PLAYGROUND_LEARN_MODES,
+        )
+        from constitution_memorizer.playground.repository import (
+            SqlitePlaygroundRepository,
+        )
+
+        repo = SqlitePlaygroundRepository(conn)
+        repo.add_item(BENCH_USER, "ndps", source_version="v", law_source_hash="t")
+        locator = "ndps:section:8"
+        for mode in PLAYGROUND_LEARN_MODES[:5]:
+            repo.complete_mode(
+                BENCH_USER,
+                "ndps",
+                locator,
+                mode,
+                source_version="v",
+                source_hash="h",
+                as_of=MUTATION_PROGRESS_TODAY,
+            )
+        integrity = _progress_integrity(conn)
+        integrity["locator"] = locator
+        integrity["seeded_modes"] = 5
+        return integrity
+    if cell_id == "revision-sixth":
+        from constitution_memorizer.playground.learning.modes import (
+            PLAYGROUND_LEARN_MODES,
+        )
+        from constitution_memorizer.playground.repository import (
+            SqlitePlaygroundRepository,
+        )
+
+        repo = SqlitePlaygroundRepository(conn)
+        repo.add_item(BENCH_USER, "ndps", source_version="v", law_source_hash="t")
+        locator = "ndps:section:8"
+        _seed_progress_row(
+            repo,
+            status="review",
+            interval_days=3,
+            next_revision=MUTATION_PROGRESS_TODAY.isoformat(),
+            times_completed=1,
+            learned_at="2026-09-20",
+            locator=locator,
+        )
+        for mode in PLAYGROUND_LEARN_MODES[:5]:
+            repo.complete_revision_mode_and_advance_if_ready(
+                BENCH_USER,
+                "ndps",
+                locator,
+                mode,
+                source_version="v",
+                source_hash="h",
+                as_of=MUTATION_PROGRESS_TODAY,
+                claimed_rung=3,
+            )
+        integrity = _progress_integrity(conn)
+        integrity["locator"] = locator
+        integrity["claimed_rung"] = 3
+        return integrity
+    raise BenchmarkAborted(f"unknown mutation cell {cell_id!r}")
+
+
+def _mutation_jobs(
+    path: Path, cell_id: str, concurrency: int
+) -> list[Callable[[], dict[str, Any]]]:
+    if cell_id == "roster-cap":
+        law_ids = ("stub-x",) if concurrency == 1 else ("stub-x", "stub-y")
+
+        def make_job(law_id: str) -> Callable[[], dict[str, Any]]:
+            def job() -> dict[str, Any]:
+                from constitution_memorizer.playground.roster.repository import (
+                    SqliteRosterRepository,
+                )
+                from constitution_memorizer.playground.roster.service import (
+                    RosterService,
+                )
+
+                conn = _connect_mutation_sqlite(path)
+                try:
+                    result = RosterService(SqliteRosterRepository(conn)).confirm_add_law(
+                        BENCH_USER,
+                        law_id,
+                        _plus_entitlement_snapshot(),
+                        now=PLAYGROUND_TEST_NOW,
+                    )
+                    return {"status": result.status, "ok": bool(result.ok)}
+                finally:
+                    conn.close()
+
+            return job
+
+        return [make_job(law_id) for law_id in law_ids]
+    if cell_id == "roster-same-law":
+
+        def job() -> dict[str, Any]:
+            from constitution_memorizer.playground.roster.repository import (
+                SqliteRosterRepository,
+            )
+            from constitution_memorizer.playground.roster.service import RosterService
+
+            conn = _connect_mutation_sqlite(path)
+            try:
+                result = RosterService(SqliteRosterRepository(conn)).confirm_add_law(
+                    BENCH_USER,
+                    "ndps",
+                    _plus_entitlement_snapshot(),
+                    now=PLAYGROUND_TEST_NOW,
+                )
+                return {"status": result.status, "ok": bool(result.ok)}
+            finally:
+                conn.close()
+
+        return [job for _ in range(concurrency)]
+    if cell_id == "device-cap":
+        from constitution_memorizer.devices.token import mint_installation_token
+
+        tokens = [mint_installation_token() for _ in range(concurrency)]
+
+        def make_job(index: int, token: str) -> Callable[[], dict[str, Any]]:
+            def job() -> dict[str, Any]:
+                from constitution_memorizer.devices.repository import (
+                    SqliteDeviceRepository,
+                )
+                from constitution_memorizer.devices.service import DeviceService
+
+                conn = _connect_mutation_sqlite(path)
+                try:
+                    access = DeviceService(
+                        SqliteDeviceRepository(conn),
+                        hmac_secret=T19_DEVICE_SECRET,
+                        device_limit=2,
+                    ).ensure_current_device(
+                        BENCH_USER,
+                        token,
+                        auth_session_id=f"sess-{index}",
+                        commercially_eligible=True,
+                    )
+                    return {
+                        "registered": bool(access.current_device_registered),
+                        "block_reason": access.block_reason,
+                    }
+                finally:
+                    conn.close()
+
+            return job
+
+        return [make_job(index, token) for index, token in enumerate(tokens)]
+    if cell_id == "device-idem":
+        from constitution_memorizer.devices.token import hash_device_token
+
+        digest = hash_device_token(T19_DEVICE_SECRET, "t19-shared-device-token")
+
+        def job() -> dict[str, Any]:
+            from constitution_memorizer.devices.models import PLATFORM_WEB
+            from constitution_memorizer.devices.repository import SqliteDeviceRepository
+
+            conn = _connect_mutation_sqlite(path)
+            try:
+                outcome = SqliteDeviceRepository(conn).register_if_under_cap(
+                    BENCH_USER,
+                    device_key_hash=digest,
+                    platform=PLATFORM_WEB,
+                    display_name="T19 web",
+                    limit=2,
+                )
+                return {"status": outcome.status}
+            finally:
+                conn.close()
+
+        return [job for _ in range(concurrency)]
+    if cell_id == "progress-learned":
+
+        def job() -> dict[str, Any]:
+            from constitution_memorizer.playground.repository import (
+                SqlitePlaygroundRepository,
+            )
+
+            conn = _connect_mutation_sqlite(path)
+            try:
+                SqlitePlaygroundRepository(conn).complete_mode(
+                    BENCH_USER,
+                    "ndps",
+                    "ndps:section:8",
+                    "test",
+                    source_version="v",
+                    source_hash="h",
+                    as_of=MUTATION_PROGRESS_TODAY,
+                )
+                return {"status": "completed"}
+            finally:
+                conn.close()
+
+        return [job for _ in range(concurrency)]
+    if cell_id == "revision-sixth":
+
+        def job() -> dict[str, Any]:
+            from constitution_memorizer.playground.repository import (
+                SqlitePlaygroundRepository,
+            )
+
+            conn = _connect_mutation_sqlite(path)
+            try:
+                SqlitePlaygroundRepository(conn).complete_revision_mode_and_advance_if_ready(
+                    BENCH_USER,
+                    "ndps",
+                    "ndps:section:8",
+                    "test",
+                    source_version="v",
+                    source_hash="h",
+                    as_of=MUTATION_PROGRESS_TODAY,
+                    claimed_rung=3,
+                )
+                return {"status": "completed"}
+            finally:
+                conn.close()
+
+        return [job for _ in range(concurrency)]
+    raise BenchmarkAborted(f"unknown mutation cell {cell_id!r}")
+
+
+def _mutation_integrity_after(conn: sqlite3.Connection, cell_id: str) -> dict[str, Any]:
+    if cell_id.startswith("roster-"):
+        return {
+            "consumed_distinct": _count_consumed(conn),
+            "roster_rows": _count_roster_rows(conn),
+        }
+    if cell_id.startswith("device-"):
+        from constitution_memorizer.devices.repository import SqliteDeviceRepository
+
+        repo = SqliteDeviceRepository(conn)
+        return {
+            "active_devices": repo.count_active(BENCH_USER),
+            "stored_devices": len(repo.list_devices(BENCH_USER)),
+        }
+    return _progress_integrity(conn)
+
+
+def _expected_mutation_outcomes(cell_id: str, concurrency: int) -> list[str]:
+    if cell_id == "roster-cap":
+        return ["ok"] if concurrency == 1 else ["ok", "roster_full"]
+    if cell_id == "roster-same-law":
+        return ["successful"] * concurrency
+    if cell_id == "device-cap":
+        return ["registered"] if concurrency == 1 else ["device_limit", "registered"]
+    if cell_id == "device-idem":
+        return ["created"] if concurrency == 1 else ["created", "existing"]
+    if cell_id in {"progress-learned", "revision-sixth"}:
+        return ["completed"] * concurrency
+    raise BenchmarkAborted(f"unknown mutation cell {cell_id!r}")
+
+
+def _observed_mutation_outcomes(
+    cell_id: str, workers: Sequence[Mapping[str, Any]]
+) -> list[str]:
+    if cell_id == "roster-same-law":
+        return [
+            "successful" if row.get("ok") else str(row.get("status") or "error")
+            for row in workers
+        ]
+    if cell_id.startswith("roster-"):
+        return [str(row.get("status") or "error") for row in workers]
+    if cell_id == "device-cap":
+        observed: list[str] = []
+        for row in workers:
+            if row.get("registered"):
+                observed.append("registered")
+            elif row.get("block_reason") == "device_limit":
+                observed.append("device_limit")
+            else:
+                observed.append(str(row.get("block_reason") or "error"))
+        return observed
+    if cell_id == "device-idem":
+        return [str(row.get("status") or "error") for row in workers]
+    return [str(row.get("status") or "error") for row in workers]
+
+
+def _mutation_correctness(
+    cell_id: str,
+    concurrency: int,
+    *,
+    workers: Sequence[Mapping[str, Any]],
+    after: Mapping[str, Any],
+) -> str | None:
+    if any(row.get("error_class") for row in workers):
+        return "worker_error"
+    observed = sorted(_observed_mutation_outcomes(cell_id, workers))
+    expected = sorted(_expected_mutation_outcomes(cell_id, concurrency))
+    if cell_id == "roster-same-law":
+        if not all(row.get("ok") for row in workers):
+            return f"same-law not both successful: {observed}"
+        if int(after["roster_rows"]) != 1:
+            return f"roster_rows {after['roster_rows']} != 1"
+        return None
+    if observed != expected:
+        return f"outcome_multiset {observed} != {expected}"
+    if cell_id == "roster-cap":
+        if int(after["consumed_distinct"]) != 10:
+            return f"consumed_distinct {after['consumed_distinct']} != 10"
+        return None
+    if cell_id == "roster-same-law":
+        if int(after["roster_rows"]) != 1:
+            return f"roster_rows {after['roster_rows']} != 1"
+        return None
+    if cell_id == "device-cap":
+        if int(after["active_devices"]) != 2:
+            return f"active_devices {after['active_devices']} != 2"
+        return None
+    if cell_id == "device-idem":
+        if int(after["active_devices"]) != 1 or int(after["stored_devices"]) != 1:
+            return (
+                "device_idem stored "
+                f"{after['stored_devices']} active {after['active_devices']}"
+            )
+        return None
+    if cell_id == "progress-learned":
+        if int(after["progress_rows"]) != 1:
+            return "progress_rows != 1"
+        if after["status"] != "learned":
+            return f"status {after['status']!r} != 'learned'"
+        if int(after["learned_at_set_count"]) != 1:
+            return "learned_at was not set once"
+        if after["learned_at"] != MUTATION_PROGRESS_TODAY.isoformat():
+            return f"learned_at {after['learned_at']!r}"
+        if int(after["times_completed"] or 0) != 0:
+            return "times_completed should stay 0 on learned transition"
+        return None
+    if cell_id == "revision-sixth":
+        if int(after["times_completed"] or 0) != 2:
+            return f"times_completed {after['times_completed']} != 2"
+        if int(after["interval_days"] or 0) != 7:
+            return f"interval_days {after['interval_days']} != 7"
+        return None
+    return "unknown_cell"
+
+
+def run_single_mutation_wave(
+    cell_id: str,
+    db_path: Path,
+    *,
+    concurrency: int,
+) -> dict[str, Any]:
+    """One C=1 or C=2 wave on a fresh SQLite file. Operator and C=1 pytest."""
+    if cell_id not in MUTATION_CELLS:
+        raise BenchmarkAborted(f"unknown mutation cell {cell_id!r}")
+    if concurrency not in MUTATION_CONCURRENCY_LEVELS:
+        raise BenchmarkAborted("T19 mutation concurrency must be 1 or 2")
+    assert_fresh_sqlite(sqlite_url_for_path(db_path))
+    with _allow_stub_laws():
+        seed = _connect_mutation_sqlite(db_path)
+        try:
+            before = _seed_mutation_cell(seed, cell_id)
+            seed.commit()
+        finally:
+            seed.close()
+        wave = _run_thread_wave(_mutation_jobs(db_path, cell_id, concurrency))
+    after_conn = _connect_mutation_sqlite(db_path)
+    try:
+        after = _mutation_integrity_after(after_conn, cell_id)
+    finally:
+        after_conn.close()
+    reason = None
+    if wave["incomplete"]:
+        reason = "wave_timeout"
+        if not wave["workers_terminated"]:
+            reason = "wave_timeout_workers_still_running"
+    else:
+        reason = _mutation_correctness(
+            cell_id, concurrency, workers=wave["workers"], after=after
+        )
+    elapsed = [
+        float(row.get("elapsed_ms") or 0.0)
+        for row in wave["workers"]
+        if row.get("error_class") != "timeout"
+    ]
+    writes = [int(row.get("playground_db_writes") or 0) for row in wave["workers"]]
+    trips = [
+        int(row.get("playground_repo_round_trips") or 0) for row in wave["workers"]
+    ]
+    return {
+        "cell": cell_id,
+        "concurrency": concurrency,
+        "db_basename": db_path.name,
+        "incomplete": bool(wave["incomplete"]),
+        "workers_terminated": bool(wave["workers_terminated"]),
+        "preserved_db": bool(wave["preserved_db"]),
+        "wave_wall_seconds": wave["wave_wall_seconds"],
+        "throughput_rps": wave["throughput_rps"],
+        "worker_elapsed_ms": elapsed,
+        "playground_db_writes": writes,
+        "playground_repo_round_trips": trips,
+        "error_classes": wave["error_classes"],
+        "outcome_multiset_expected": _expected_mutation_outcomes(cell_id, concurrency),
+        "outcome_multiset_observed": _observed_mutation_outcomes(
+            cell_id, wave["workers"]
+        ),
+        "worker_statuses": [
+            str(
+                row.get("status")
+                or row.get("block_reason")
+                or ("registered" if row.get("registered") else "error")
+            )
+            for row in wave["workers"]
+        ],
+        "integrity_before": before,
+        "integrity_after": after,
+        "correct": reason is None,
+        "aborted_reason": reason,
+        "busy_timeout_ms": MUTATION_BUSY_TIMEOUT_MS,
+        "wave_timeout_s": MUTATION_WAVE_TIMEOUT_S,
+    }
+
+
+def _level_mutation_summary(waves: list[dict[str, Any]], *, concurrency: int) -> dict[str, Any]:
+    complete = [wave for wave in waves if not wave.get("incomplete") and wave.get("correct")]
+    walls = [float(wave["wave_wall_seconds"]) for wave in complete]
+    worker_ms = [
+        ms
+        for wave in complete
+        for ms in wave.get("worker_elapsed_ms") or []
+    ]
+    return {
+        "concurrency": concurrency,
+        "requested_concurrency": concurrency,
+        "waves": waves,
+        "waves_ok": len(complete),
+        "incomplete_waves": sum(1 for wave in waves if wave.get("incomplete")),
+        "correct_waves": sum(1 for wave in waves if wave.get("correct")),
+        "wave_wall_seconds": summarize_numbers(walls) if walls else None,
+        "worker_elapsed_ms": summarize_numbers(worker_ms) if worker_ms else None,
+        "throughput_rps": None
+        if any(wave.get("incomplete") or not wave.get("correct") for wave in waves)
+        else (
+            summarize_numbers(
+                [float(wave["throughput_rps"]) for wave in complete if wave.get("throughput_rps")]
+            )
+            if complete and all(wave.get("throughput_rps") is not None for wave in complete)
+            else None
+        ),
+        "latency_caveat": (
+            "do not compare absolute latency across materially different initial states"
+        ),
+    }
+
+
+def run_mutations_benchmark(
+    config: BenchmarkRunConfig, environ: Mapping[str, str] | None = None
+) -> dict[str, Any]:
+    """T19 C=1 control + C=2 service-level races on separate SQLite connections."""
+    if config.explain or config.protocol or config.concurrency_levels or config.webhooks:
+        raise BenchmarkAborted("run_mutations_benchmark is T19 --mutations only")
+    effective_app_env = evaluate_safety_guard(
+        requested_app_env=config.app_env,
+        accept_nontest=config.accept_nontest,
+        explain=False,
+        environ=environ,
+    )
+    assert_t19_sqlite(config.database_url)
+    waves_requested = int(config.iterations)
+    payload: dict[str, Any] = {
+        "schema_version": SCHEMA_VERSION,
+        "kind": "mutations",
+        "app_env": str(effective_app_env),
+        "database_backend": "sqlite",
+        "client_shape": MUTATION_CLIENT_SHAPE,
+        "waves_requested": waves_requested,
+        "concurrency_levels_requested": list(MUTATION_CONCURRENCY_LEVELS),
+        "wave_timeout_s": MUTATION_WAVE_TIMEOUT_S,
+        "busy_timeout_ms": MUTATION_BUSY_TIMEOUT_MS,
+        "live_razorpay": False,
+        "http_smokes": False,
+        "m5b_excluded": True,
+        "aborted": False,
+        "aborted_reason": None,
+        "cells": [],
+    }
+
+    def _finish(*, aborted: bool, reason: str | None) -> dict[str, Any]:
+        payload["aborted"] = aborted
+        payload["aborted_reason"] = reason
+        _assert_json_safe(payload)
+        if config.json_path is not None:
+            write_json_report(config.json_path, payload)
+        if aborted:
+            raise BenchmarkAborted(reason or "T19 mutations aborted")
+        return payload
+
+    with _allow_stub_laws():
+        for cell_id in MUTATION_CELLS:
+            cell_report: dict[str, Any] = {
+                "id": cell_id,
+                "levels": [],
+            }
+            payload["cells"].append(cell_report)
+            for concurrency in MUTATION_CONCURRENCY_LEVELS:
+                level_waves: list[dict[str, Any]] = []
+                for wave_index in range(waves_requested):
+                    db_path = derived_t19_sqlite_path(
+                        config.database_url,
+                        cell_id,
+                        f"c{concurrency}",
+                        f"w{wave_index}",
+                    )
+                    wave = run_single_mutation_wave(
+                        cell_id, db_path, concurrency=concurrency
+                    )
+                    wave["wave_index"] = wave_index
+                    level_waves.append(wave)
+                    if wave.get("incomplete") or not wave.get("correct"):
+                        cell_report["levels"].append(
+                            _level_mutation_summary(
+                                level_waves, concurrency=concurrency
+                            )
+                        )
+                        return _finish(
+                            aborted=True,
+                            reason=str(wave.get("aborted_reason") or "mutation_failed"),
+                        )
+                cell_report["levels"].append(
+                    _level_mutation_summary(level_waves, concurrency=concurrency)
+                )
+    return _finish(aborted=False, reason=None)
+
+
+def _sign_webhook_body(raw: bytes, secret: str = T19_WEBHOOK_SECRET) -> str:
+    return hmac.new(secret.encode("utf-8"), raw, hashlib.sha256).hexdigest()
+
+
+def _webhook_event_payload(event_name: str, *, sub_id: str = "sub_t19") -> dict[str, Any]:
+    return {
+        "entity": "event",
+        "event": event_name,
+        "payload": {
+            "subscription": {
+                "entity": {
+                    "id": sub_id,
+                    "status": "pending",
+                    "plan_id": "plan_plus",
+                }
+            }
+        },
+        "created_at": T19_PROVIDER_START,
+    }
+
+
+def _webhook_secrets():
+    from constitution_memorizer.subscriptions.webhook_signature import WebhookSecrets
+
+    return WebhookSecrets(current=T19_WEBHOOK_SECRET, previous="")
+
+
+def _build_webhook_processor(conn: sqlite3.Connection, fake: FakeProvider):
+    from constitution_memorizer.subscriptions.config import SubscriptionPlanIds
+    from constitution_memorizer.subscriptions.repository import (
+        SqliteSubscriptionRepository,
+    )
+    from constitution_memorizer.subscriptions.service import SubscriptionService
+    from constitution_memorizer.subscriptions.webhook_repository import (
+        SqliteWebhookEventRepository,
+    )
+    from constitution_memorizer.subscriptions.webhooks import WebhookProcessor
+
+    plans = SubscriptionPlanIds(plus="plan_plus", pro="plan_pro", max="plan_max")
+    repo = SqliteSubscriptionRepository(conn)
+    events = SqliteWebhookEventRepository(conn)
+    service = SubscriptionService(repo, fake, plans, public_key_id="rzp_test_t19")
+    processor = WebhookProcessor(
+        events=events,
+        subscriptions=repo,
+        service=service,
+        secrets=_webhook_secrets(),
+    )
+    return processor, service, events
+
+
+def _seed_webhook_plus(conn: sqlite3.Connection) -> None:
+    from constitution_memorizer.subscriptions.repository import (
+        SqliteSubscriptionRepository,
+    )
+
+    SqliteSubscriptionRepository(conn).create_subscription_record(
+        BENCH_USER,
+        tier="plus",
+        status="active",
+        provider_subscription_id="sub_t19",
+        provider_plan_id="plan_plus",
+        provider_customer_id="cust_t19",
+        billing_period_start=datetime.fromtimestamp(
+            T19_PROVIDER_START, tz=timezone.utc
+        ),
+        billing_period_end=datetime.fromtimestamp(T19_PROVIDER_END, tz=timezone.utc),
+        is_current=True,
+    )
+
+
+def _prepare_webhook_db(path: Path) -> sqlite3.Connection:
+    from constitution_memorizer.subscriptions.db import ensure_sqlite_schema
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    conn = _connect_mutation_sqlite(path)
+    ensure_sqlite_schema(conn)
+    _seed_webhook_plus(conn)
+    conn.commit()
+    return conn
+
+
+def _billing_state(service) -> dict[str, Any]:
+    current = service.get_current(BENCH_USER)
+    if current is None:
+        return {"status": None, "billing_period_end": None, "tier": None}
+    end = current.billing_period_end
+    start = current.billing_period_start
+    return {
+        "status": current.status,
+        "tier": current.tier,
+        "billing_period_start": None if start is None else start.isoformat(),
+        "billing_period_end": None if end is None else end.isoformat(),
+        "provider_plan_id": current.provider_plan_id,
+    }
+
+
+def _provider_state(fake: FakeProvider) -> dict[str, Any]:
+    return {
+        "status": fake.status,
+        "plan_id": fake.plan_id,
+        "current_start": fake.current_start,
+        "current_end": fake.current_end,
+        "fetch_count": len(fake.fetches),
+    }
+
+
+def _result_public(result: Any, *, elapsed_ms: float | None = None) -> dict[str, Any]:
+    payload = {
+        "status_code": int(result.status_code),
+        "owned": bool(result.owned),
+        "error": result.error,
+        "processing_status": result.processing_status,
+    }
+    if elapsed_ms is not None:
+        payload["elapsed_ms"] = elapsed_ms
+    return payload
+
+
+def _count_webhook_event_rows(conn: sqlite3.Connection) -> int:
+    row = conn.execute(
+        "SELECT COUNT(*) AS n FROM subscription_webhook_event"
+    ).fetchone()
+    return int(row["n"] if row is not None else 0)
+
+
+def run_sequential_webhook_duplicate(db_path: Path) -> dict[str, Any]:
+    """First owned delivery then processed replay: duplicate=1, one provider fetch."""
+    assert_fresh_sqlite(sqlite_url_for_path(db_path))
+    conn = _prepare_webhook_db(db_path)
+    fake = FakeProvider()
+    try:
+        processor, service, events = _build_webhook_processor(conn, fake)
+        raw = json.dumps(
+            _webhook_event_payload("subscription.charged"),
+            separators=(",", ":"),
+        ).encode("utf-8")
+        signature = _sign_webhook_body(raw)
+        first_started = time.perf_counter()
+        first = processor.process_delivery(raw, signature, "evt_dup")
+        first_ms = (time.perf_counter() - first_started) * 1000.0
+        second_started = time.perf_counter()
+        second = processor.process_delivery(raw, signature, "evt_dup")
+        second_ms = (time.perf_counter() - second_started) * 1000.0
+        counts = webhook_delivery_counts([first, second])
+        stored = events.get_event_by_provider_event_id("evt_dup")
+        proof = {
+            "first": _result_public(first, elapsed_ms=first_ms),
+            "replay": _result_public(second, elapsed_ms=second_ms),
+            "counts": counts,
+            "provider_fetches": len(fake.fetches),
+            "event_rows": _count_webhook_event_rows(conn),
+            "processing_status": None
+            if stored is None
+            else stored.processing_status,
+            "billing": _billing_state(service),
+            "provider": _provider_state(fake),
+        }
+        if (
+            first.status_code != 200
+            or not first.owned
+            or second.status_code != 200
+            or second.owned
+            or counts["duplicate"] != 1
+            or counts["owned"] != 1
+            or counts["retry_busy"] != 0
+            or len(fake.fetches) != 1
+        ):
+            raise BenchmarkAborted(
+                "sequential webhook duplicate proof failed: "
+                f"counts={counts} fetches={len(fake.fetches)}"
+            )
+        return proof
+    finally:
+        conn.close()
+
+
+def run_concurrent_webhook_duplicate(db_path: Path) -> dict[str, Any]:
+    """C=2 same event id. Owned exactly once; fetches stay 1. Do not assume winner."""
+    assert_fresh_sqlite(sqlite_url_for_path(db_path))
+    seed = _prepare_webhook_db(db_path)
+    seed.close()
+    fake = FakeProvider()
+    raw = json.dumps(
+        _webhook_event_payload("subscription.charged"),
+        separators=(",", ":"),
+    ).encode("utf-8")
+    signature = _sign_webhook_body(raw)
+    barrier = threading.Barrier(2, timeout=3)
+
+    def job() -> dict[str, Any]:
+        conn = sqlite3.connect(
+            str(db_path),
+            timeout=2,
+            isolation_level=None,
+            check_same_thread=False,
+        )
+        conn.row_factory = sqlite3.Row
+        conn.execute("PRAGMA busy_timeout=1000")
+        try:
+            processor, _service, _events = _build_webhook_processor(conn, fake)
+            barrier.wait()
+            started = time.perf_counter()
+            result = processor.process_delivery(raw, signature, "evt_same")
+            elapsed_ms = (time.perf_counter() - started) * 1000.0
+            payload = _result_public(result, elapsed_ms=elapsed_ms)
+            return payload
+        finally:
+            conn.close()
+
+    wave = _run_thread_wave([job, job], timeout_s=10.0, cleanup_s=MUTATION_CLEANUP_WAIT_S)
+    if wave["incomplete"]:
+        reason = "wave_timeout"
+        if not wave["workers_terminated"]:
+            reason = "wave_timeout_workers_still_running"
+        raise BenchmarkAborted(reason)
+    results = []
+    for row in wave["workers"]:
+        if row.get("error_class"):
+            raise BenchmarkAborted(
+                f"concurrent webhook worker error {row.get('error_class')}"
+            )
+        results.append(
+            type(
+                "Delivery",
+                (),
+                {
+                    "status_code": row["status_code"],
+                    "owned": row["owned"],
+                    "error": row.get("error"),
+                    "processing_status": row.get("processing_status"),
+                },
+            )()
+        )
+    counts = webhook_delivery_counts(results)
+    owned = int(counts["owned"])
+    if owned != 1 or len(fake.fetches) != 1:
+        raise BenchmarkAborted(
+            "concurrent duplicate event-id failed: "
+            f"owned={owned} fetches={len(fake.fetches)} counts={counts}"
+        )
+    non_owned = [row for row in wave["workers"] if not row.get("owned")]
+    if len(non_owned) != 1:
+        raise BenchmarkAborted("concurrent duplicate did not leave exactly one non-owner")
+    other = non_owned[0]
+    if int(other["status_code"]) == 200:
+        if counts["duplicate"] != 1 or counts["retry_busy"] != 0:
+            raise BenchmarkAborted(
+                "processed concurrent replay must be duplicate=1, retry_busy=0"
+            )
+    elif int(other["status_code"]) == 503:
+        if counts["retry_busy"] != 1 or counts["duplicate"] != 0:
+            raise BenchmarkAborted(
+                "in-flight concurrent 503 must be retry_busy, not duplicate"
+            )
+    else:
+        raise BenchmarkAborted(f"unexpected non-owner status {other['status_code']}")
+    read = _connect_mutation_sqlite(db_path)
+    try:
+        from constitution_memorizer.subscriptions.config import SubscriptionPlanIds
+        from constitution_memorizer.subscriptions.repository import (
+            SqliteSubscriptionRepository,
+        )
+        from constitution_memorizer.subscriptions.service import SubscriptionService
+
+        service = SubscriptionService(
+            SqliteSubscriptionRepository(read),
+            fake,
+            SubscriptionPlanIds(plus="plan_plus", pro="plan_pro", max="plan_max"),
+            public_key_id="rzp_test_t19",
+        )
+        billing = _billing_state(service)
+        event_rows = _count_webhook_event_rows(read)
+    finally:
+        read.close()
+    return {
+        "counts": counts,
+        "deliveries": [_result_public(item) for item in results],
+        "provider_fetches": len(fake.fetches),
+        "event_rows": event_rows,
+        "billing": billing,
+        "provider": _provider_state(fake),
+        "wave_wall_seconds": wave["wave_wall_seconds"],
+        "workers_terminated": wave["workers_terminated"],
+        "incomplete": False,
+    }
+
+
+def run_webhook_script(
+    db_path: Path, *, unique_n: int, replay_m: int
+) -> dict[str, Any]:
+    """N unique charged events, M replays of the first id, then a distinct OOO pair."""
+    if unique_n < 1 or replay_m < 1:
+        raise BenchmarkAborted("webhook N and M must be >= 1")
+    if unique_n > WEBHOOK_MAX_NM or replay_m > WEBHOOK_MAX_NM:
+        raise BenchmarkAborted(f"webhook N,M cannot exceed {WEBHOOK_MAX_NM}")
+    assert_fresh_sqlite(sqlite_url_for_path(db_path))
+    conn = _prepare_webhook_db(db_path)
+    fake = FakeProvider()
+    try:
+        processor, service, _events = _build_webhook_processor(conn, fake)
+
+        def deliver(event_name: str, event_id: str) -> tuple[Any, float]:
+            raw = json.dumps(
+                _webhook_event_payload(event_name),
+                separators=(",", ":"),
+            ).encode("utf-8")
+            started = time.perf_counter()
+            result = processor.process_delivery(raw, _sign_webhook_body(raw), event_id)
+            return result, (time.perf_counter() - started) * 1000.0
+
+        unique_results: list[Any] = []
+        unique_elapsed: list[float] = []
+        unique_ids = [f"evt_u{index}" for index in range(unique_n)]
+        for event_id in unique_ids:
+            result, elapsed = deliver("subscription.charged", event_id)
+            unique_results.append(result)
+            unique_elapsed.append(elapsed)
+            if result.status_code != 200 or not result.owned:
+                raise BenchmarkAborted(
+                    f"unique webhook {event_id} failed status={result.status_code}"
+                )
+        fetches_after_unique = len(fake.fetches)
+        if fetches_after_unique != unique_n:
+            raise BenchmarkAborted(
+                f"unique webhooks fetched {fetches_after_unique}, expected {unique_n}"
+            )
+        replay_results: list[Any] = []
+        replay_elapsed: list[float] = []
+        replay_id = unique_ids[0]
+        for _index in range(replay_m):
+            result, elapsed = deliver("subscription.charged", replay_id)
+            replay_results.append(result)
+            replay_elapsed.append(elapsed)
+            if result.status_code != 200 or result.owned:
+                raise BenchmarkAborted(
+                    "replayed processed event must be HTTP 200 owned=False"
+                )
+        if len(fake.fetches) != fetches_after_unique:
+            raise BenchmarkAborted("duplicates must not cause extra provider fetches")
+        replay_counts = webhook_delivery_counts(replay_results)
+        if replay_counts["duplicate"] != replay_m or replay_counts["owned"] != 0:
+            raise BenchmarkAborted(f"replay counts {replay_counts}")
+        fake.current_start = T19_PROVIDER_START_2
+        fake.current_end = T19_PROVIDER_END_2
+        ooo_pending, ooo_pending_ms = deliver(
+            "subscription.pending", "evt_ooo_pending"
+        )
+        ooo_charged, ooo_charged_ms = deliver(
+            "subscription.charged", "evt_ooo_charged"
+        )
+        ooo_results = [ooo_pending, ooo_charged]
+        ooo_counts = webhook_delivery_counts(ooo_results)
+        if ooo_counts["duplicate"] != 0:
+            raise BenchmarkAborted("distinct out-of-order ids must not be duplicates")
+        if ooo_counts["owned"] != 2:
+            raise BenchmarkAborted(
+                f"out-of-order pair owned={ooo_counts['owned']}, expected 2"
+            )
+        if len(fake.fetches) != unique_n + 2:
+            raise BenchmarkAborted(
+                f"provider fetches {len(fake.fetches)} != N+2 ({unique_n + 2})"
+            )
+        billing = _billing_state(service)
+        expected_end = datetime.fromtimestamp(T19_PROVIDER_END_2, tz=timezone.utc)
+        current = service.get_current(BENCH_USER)
+        if (
+            current is None
+            or current.status != fake.status
+            or current.billing_period_end != expected_end
+        ):
+            raise BenchmarkAborted(
+                "final billing state does not match provider "
+                f"{billing} vs end={expected_end.isoformat()} status={fake.status}"
+            )
+        all_results = unique_results + replay_results + ooo_results
+        return {
+            "n": unique_n,
+            "m": replay_m,
+            "unique": {
+                "event_ids": unique_ids,
+                "counts": webhook_delivery_counts(unique_results),
+                "elapsed_ms": unique_elapsed,
+                "provider_fetches": fetches_after_unique,
+            },
+            "replays": {
+                "source_event_id": replay_id,
+                "m": replay_m,
+                "counts": replay_counts,
+                "elapsed_ms": replay_elapsed,
+                "extra_provider_fetches": 0,
+            },
+            "out_of_order": {
+                "event_ids": ["evt_ooo_pending", "evt_ooo_charged"],
+                "event_names": ["subscription.pending", "subscription.charged"],
+                "counts": ooo_counts,
+                "deliveries": [
+                    _result_public(ooo_pending, elapsed_ms=ooo_pending_ms),
+                    _result_public(ooo_charged, elapsed_ms=ooo_charged_ms),
+                ],
+                "provider_fetches": 2,
+            },
+            "totals": webhook_delivery_counts(all_results),
+            "provider_fetches": len(fake.fetches),
+            "event_rows": _count_webhook_event_rows(conn),
+            "billing": billing,
+            "provider": _provider_state(fake),
+            "live_razorpay": False,
+        }
+    finally:
+        conn.close()
+
+
+def run_webhooks_benchmark(
+    config: BenchmarkRunConfig, environ: Mapping[str, str] | None = None
+) -> dict[str, Any]:
+    """T19 process_delivery duplicate + N/M + out-of-order script. SQLite only."""
+    if config.explain or config.protocol or config.concurrency_levels or config.mutations:
+        raise BenchmarkAborted("run_webhooks_benchmark is T19 --webhooks only")
+    effective_app_env = evaluate_safety_guard(
+        requested_app_env=config.app_env,
+        accept_nontest=config.accept_nontest,
+        explain=False,
+        environ=environ,
+    )
+    assert_t19_sqlite(config.database_url)
+    payload: dict[str, Any] = {
+        "schema_version": SCHEMA_VERSION,
+        "kind": "webhooks",
+        "app_env": str(effective_app_env),
+        "database_backend": "sqlite",
+        "client_shape": MUTATION_CLIENT_SHAPE,
+        "n": int(config.webhook_n),
+        "m": int(config.webhook_m),
+        "waves_requested": int(config.iterations),
+        "live_razorpay": False,
+        "http_smokes": False,
+        "aborted": False,
+        "aborted_reason": None,
+        "sequential_duplicate": None,
+        "concurrent_duplicate": [],
+        "script": [],
+    }
+
+    def _finish(*, aborted: bool, reason: str | None) -> dict[str, Any]:
+        payload["aborted"] = aborted
+        payload["aborted_reason"] = reason
+        _assert_json_safe(payload)
+        if config.json_path is not None:
+            write_json_report(config.json_path, payload)
+        if aborted:
+            raise BenchmarkAborted(reason or "T19 webhooks aborted")
+        return payload
+
+    try:
+        seq_path = derived_t19_sqlite_path(config.database_url, "wh-seq")
+        payload["sequential_duplicate"] = run_sequential_webhook_duplicate(seq_path)
+        for wave_index in range(int(config.iterations)):
+            conc_path = derived_t19_sqlite_path(
+                config.database_url, "wh-conc", f"w{wave_index}"
+            )
+            concurrent = run_concurrent_webhook_duplicate(conc_path)
+            concurrent["wave_index"] = wave_index
+            payload["concurrent_duplicate"].append(concurrent)
+        for wave_index in range(int(config.iterations)):
+            script_path = derived_t19_sqlite_path(
+                config.database_url, "wh-script", f"w{wave_index}"
+            )
+            script = run_webhook_script(
+                script_path,
+                unique_n=int(config.webhook_n),
+                replay_m=int(config.webhook_m),
+            )
+            script["wave_index"] = wave_index
+            payload["script"].append(script)
+    except BenchmarkAborted as exc:
+        return _finish(aborted=True, reason=exc.message)
+    return _finish(aborted=False, reason=None)
+
+
 def run_cli(argv: list[str] | None = None, environ: Mapping[str, str] | None = None) -> int:
     parser = build_arg_parser()
     try:
@@ -3309,6 +4853,10 @@ def run_cli(argv: list[str] | None = None, environ: Mapping[str, str] | None = N
             run_bnss_cold_warm(config, environ=env)
         elif config.concurrency_levels:
             run_concurrency_benchmark(config, environ=env)
+        elif config.mutations:
+            run_mutations_benchmark(config, environ=env)
+        elif config.webhooks:
+            run_webhooks_benchmark(config, environ=env)
         else:
             run_benchmark(config, environ=env)
     except BenchmarkAborted as exc:

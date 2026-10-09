@@ -1,4 +1,4 @@
-"""WS6 / WS7 / WS8 / WS9 / WS10 (T13–T18) benchmark harness tests. No duration assertions."""
+"""WS6 / WS7 / WS8 / WS9 / WS10 (T13–T19) benchmark harness tests. No duration assertions."""
 
 from __future__ import annotations
 
@@ -30,6 +30,9 @@ from constitution_memorizer.playground.benchmarking import (
     DEFAULT_CONCURRENCY_JSON_PATH,
     DEFAULT_EXPLAIN_JSON_PATH,
     DEFAULT_JSON_PATH,
+    DEFAULT_MUTATION_WAVES,
+    DEFAULT_MUTATIONS_JSON_PATH,
+    DEFAULT_WEBHOOKS_JSON_PATH,
     MAX_CONCURRENCY,
     ELIGIBLE_LAWS,
     EXPLAIN_QUERY_LABELS,
@@ -41,7 +44,10 @@ from constitution_memorizer.playground.benchmarking import (
     PROTOCOL_BNSS_COLD_WARM,
     SCENARIO_BUILDERS,
     SCENARIOS,
+    WEBHOOK_QUICK_M,
+    WEBHOOK_QUICK_N,
     BenchmarkAborted,
+    FakeProvider,
     BenchmarkRunConfig,
     ExplainCaptureConn,
     ExplainCaptureCursor,
@@ -51,6 +57,7 @@ from constitution_memorizer.playground.benchmarking import (
     assert_concurrency_home_no_bare_act,
     assert_concurrency_sqlite,
     assert_concurrency_warm_workspace,
+    assert_t19_sqlite,
     assert_disposable_postgres,
     assert_fresh_sqlite,
     assert_readonly_select,
@@ -73,6 +80,9 @@ from constitution_memorizer.playground.benchmarking import (
     resolve_database_url,
     run_bnss_cold_warm,
     run_concurrent_batch,
+    run_sequential_webhook_duplicate,
+    run_single_mutation_wave,
+    webhook_delivery_counts,
     sanitize_explain_text,
     seed_scenario,
     snapshots_to_report,
@@ -132,6 +142,8 @@ def test_cli_help_subprocess():
         "--iterations",
         "--protocol",
         "--concurrency",
+        "--mutations",
+        "--webhooks",
     ):
         assert flag in text
     assert PROTOCOL_BNSS_COLD_WARM in text
@@ -1562,3 +1574,219 @@ def test_concurrency_warm_cache_classification():
         assert_concurrency_home_no_bare_act(hit, label="home")
     with pytest.raises(BenchmarkAborted, match="Bare Act"):
         assert_concurrency_home_no_bare_act(miss, label="home")
+
+
+def test_mutations_help_lists_flag():
+    parser = build_arg_parser()
+    text = parser.format_help()
+    assert "--mutations" in text
+    assert "--webhooks" in text
+    assert "T19" in text
+
+
+def test_mutations_without_flag_keeps_sequential_config():
+    args = build_arg_parser().parse_args(
+        [
+            "--scenario",
+            "plus-10",
+            "--database-url",
+            "sqlite:///fresh.db",
+            "--app-env",
+            "test",
+        ]
+    )
+    config = config_from_args(args, environ={})
+    assert config.mutations is False
+    assert config.webhooks is False
+    assert config.concurrency_levels is None
+    assert config.iterations == 50
+    assert config.json_path == DEFAULT_JSON_PATH
+
+
+def test_mutations_config_from_args(tmp_path: Path):
+    db = tmp_path / "t19.sqlite"
+    args = build_arg_parser().parse_args(
+        [
+            "--mutations",
+            "--database-url",
+            f"sqlite:///{db}",
+            "--app-env",
+            "test",
+        ]
+    )
+    config = config_from_args(args, environ={})
+    assert config.mutations is True
+    assert config.webhooks is False
+    assert config.scenario == ""
+    assert config.iterations == DEFAULT_MUTATION_WAVES
+    assert config.json_path == DEFAULT_MUTATIONS_JSON_PATH
+    assert config.concurrency_levels is None
+
+
+def test_webhooks_quick_sets_one_wave_and_nm(tmp_path: Path):
+    db = tmp_path / "t19-wh.sqlite"
+    args = build_arg_parser().parse_args(
+        [
+            "--webhooks",
+            "--quick",
+            "--warmup",
+            "9",
+            "--iterations",
+            "40",
+            "--database-url",
+            f"sqlite:///{db}",
+            "--app-env",
+            "test",
+        ]
+    )
+    config = config_from_args(args, environ={})
+    assert config.webhooks is True
+    assert config.warmup == 1
+    assert config.iterations == 1
+    assert config.webhook_n == WEBHOOK_QUICK_N
+    assert config.webhook_m == WEBHOOK_QUICK_M
+    assert config.json_path == DEFAULT_WEBHOOKS_JSON_PATH
+
+
+def test_mutations_plus_concurrency_aborts(tmp_path: Path):
+    db = tmp_path / "t19-combo.sqlite"
+    args = build_arg_parser().parse_args(
+        [
+            "--mutations",
+            "--concurrency",
+            "1",
+            "--database-url",
+            f"sqlite:///{db}",
+            "--app-env",
+            "test",
+        ]
+    )
+    with pytest.raises(BenchmarkAborted, match="--concurrency"):
+        config_from_args(args, environ={})
+
+
+def test_mutations_plus_explain_aborts():
+    args = build_arg_parser().parse_args(
+        [
+            "--mutations",
+            "--explain",
+            "--app-env",
+            "test",
+        ]
+    )
+    with pytest.raises(BenchmarkAborted, match="--explain"):
+        config_from_args(args, environ={})
+
+
+def test_webhooks_plus_protocol_aborts():
+    args = build_arg_parser().parse_args(
+        [
+            "--webhooks",
+            "--protocol",
+            PROTOCOL_BNSS_COLD_WARM,
+            "--database-url",
+            "sqlite:///unused.db",
+            "--app-env",
+            "test",
+        ]
+    )
+    with pytest.raises(BenchmarkAborted, match="--protocol"):
+        config_from_args(args, environ={})
+
+
+def test_mutations_plus_webhooks_aborts(tmp_path: Path):
+    db = tmp_path / "t19-both.sqlite"
+    args = build_arg_parser().parse_args(
+        [
+            "--mutations",
+            "--webhooks",
+            "--database-url",
+            f"sqlite:///{db}",
+            "--app-env",
+            "test",
+        ]
+    )
+    with pytest.raises(BenchmarkAborted, match="--webhooks"):
+        config_from_args(args, environ={})
+
+
+def test_mutations_rejects_postgresql():
+    with pytest.raises(BenchmarkAborted, match="T23"):
+        assert_t19_sqlite("postgresql://localhost/recall")
+    args = build_arg_parser().parse_args(
+        [
+            "--mutations",
+            "--database-url",
+            "postgresql://localhost/recall",
+            "--app-env",
+            "test",
+        ]
+    )
+    with pytest.raises(BenchmarkAborted, match="T23"):
+        config_from_args(args, environ={})
+
+
+def test_webhooks_rejects_postgresql():
+    args = build_arg_parser().parse_args(
+        [
+            "--webhooks",
+            "--database-url",
+            "postgresql://localhost/recall",
+            "--app-env",
+            "test",
+        ]
+    )
+    with pytest.raises(BenchmarkAborted, match="T23"):
+        config_from_args(args, environ={})
+
+
+def test_webhook_delivery_counts_duplicate_versus_retry_busy():
+    from constitution_memorizer.subscriptions.webhooks import WebhookDeliveryResult
+
+    owned = WebhookDeliveryResult(200, owned=True, processing_status="processed")
+    duplicate = WebhookDeliveryResult(200, owned=False, processing_status="processed")
+    busy = WebhookDeliveryResult(
+        503, error="provider", owned=False, processing_status="processing"
+    )
+    bad = WebhookDeliveryResult(400, error="invalid_signature", owned=False)
+    counts = webhook_delivery_counts([owned, duplicate, busy, bad])
+    assert counts["deliveries"] == 4
+    assert counts["owned"] == 1
+    assert counts["duplicate"] == 1
+    assert counts["retry_busy"] == 1
+    assert counts["errors"] == 1
+    busy_only = webhook_delivery_counts([busy])
+    assert busy_only["retry_busy"] == 1
+    assert busy_only["duplicate"] == 0
+    dup_only = webhook_delivery_counts([duplicate])
+    assert dup_only["duplicate"] == 1
+    assert dup_only["retry_busy"] == 0
+
+
+def test_webhook_sequential_duplicate_is_one(tmp_path: Path):
+    db = tmp_path / "t19-dup.sqlite"
+    proof = run_sequential_webhook_duplicate(db)
+    assert proof["counts"]["deliveries"] == 2
+    assert proof["counts"]["owned"] == 1
+    assert proof["counts"]["duplicate"] == 1
+    assert proof["counts"]["retry_busy"] == 0
+    assert proof["counts"]["errors"] == 0
+    assert proof["provider_fetches"] == 1
+    assert proof["first"]["status_code"] == 200
+    assert proof["first"]["owned"] is True
+    assert proof["replay"]["status_code"] == 200
+    assert proof["replay"]["owned"] is False
+    assert proof["event_rows"] == 1
+    assert FakeProvider is not None
+
+
+def test_mutations_c1_roster_cap_sample(tmp_path: Path):
+    db = tmp_path / "t19-roster-c1.sqlite"
+    wave = run_single_mutation_wave("roster-cap", db, concurrency=1)
+    assert wave["incomplete"] is False
+    assert wave["workers_terminated"] is True
+    assert wave["correct"] is True
+    assert wave["outcome_multiset_observed"] == ["ok"]
+    assert wave["integrity_after"]["consumed_distinct"] == 10
+    assert wave["aborted_reason"] is None
+    assert "elapsed_ms" not in str(wave["correct"])

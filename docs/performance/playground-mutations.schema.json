@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://recall.local/schemas/playground-mutations.json",
+  "title": "Playground WS10 T19 mutation-load baseline (schema sample)",
+  "description": "Machine-specific timings are not committed. Shape written by scripts/benchmark_playground.py --mutations. T19 is SQLite-only service-level C=1 control plus C=2 races on separate connections. Outcome multisets are asserted; winner identity is not. throughput_rps is null when a level had a failed or incomplete wave. Do not compare absolute latency across materially different initial states. A 0.0 counter means the collector was bound and the worker recorded zero, not a missing product stage.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "kind",
+    "app_env",
+    "database_backend",
+    "client_shape",
+    "waves_requested",
+    "concurrency_levels_requested",
+    "wave_timeout_s",
+    "busy_timeout_ms",
+    "live_razorpay",
+    "http_smokes",
+    "m5b_excluded",
+    "aborted",
+    "cells"
+  ],
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "kind": { "type": "string", "const": "mutations" },
+    "app_env": { "type": "string" },
+    "database_backend": { "type": "string", "const": "sqlite" },
+    "client_shape": { "type": "string", "const": "threadpool_separate_connections" },
+    "waves_requested": { "type": "integer", "minimum": 1 },
+    "concurrency_levels_requested": {
+      "type": "array",
+      "items": { "type": "integer", "enum": [1, 2] }
+    },
+    "wave_timeout_s": { "type": "number", "const": 10 },
+    "busy_timeout_ms": { "type": "integer", "const": 8000 },
+    "live_razorpay": { "type": "boolean", "const": false },
+    "http_smokes": { "type": "boolean", "const": false },
+    "m5b_excluded": { "type": "boolean", "const": true },
+    "aborted": { "type": "boolean" },
+    "aborted_reason": { "type": ["string", "null"] },
+    "cells": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/cell" }
+    }
+  },
+  "$defs": {
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["count", "min", "mean", "p50", "p95", "p99", "max"],
+      "properties": {
+        "count": { "type": "integer", "minimum": 1 },
+        "min": { "type": "number" },
+        "mean": { "type": "number" },
+        "p50": { "type": "number" },
+        "p95": { "type": "number" },
+        "p99": { "type": "number" },
+        "max": { "type": "number" }
+      }
+    },
+    "cell": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "levels"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "enum": [
+            "roster-cap",
+            "roster-same-law",
+            "device-cap",
+            "device-idem",
+            "progress-learned",
+            "revision-sixth"
+          ]
+        },
+        "levels": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/level" }
+        }
+      }
+    },
+    "level": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "concurrency",
+        "requested_concurrency",
+        "waves",
+        "waves_ok",
+        "incomplete_waves",
+        "correct_waves",
+        "wave_wall_seconds",
+        "worker_elapsed_ms",
+        "throughput_rps",
+        "latency_caveat"
+      ],
+      "properties": {
+        "concurrency": { "type": "integer", "enum": [1, 2] },
+        "requested_concurrency": { "type": "integer", "enum": [1, 2] },
+        "waves": {
+          "type": "array",
+          "items": { "type": "object" }
+        },
+        "waves_ok": { "type": "integer", "minimum": 0 },
+        "incomplete_waves": { "type": "integer", "minimum": 0 },
+        "correct_waves": { "type": "integer", "minimum": 0 },
+        "wave_wall_seconds": {
+          "anyOf": [{ "$ref": "#/$defs/summary" }, { "type": "null" }]
+        },
+        "worker_elapsed_ms": {
+          "anyOf": [{ "$ref": "#/$defs/summary" }, { "type": "null" }]
+        },
+        "throughput_rps": {
+          "anyOf": [{ "$ref": "#/$defs/summary" }, { "type": "null" }]
+        },
+        "latency_caveat": { "type": "string" }
+      }
+    }
+  }
+}

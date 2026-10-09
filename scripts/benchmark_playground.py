@@ -7,7 +7,9 @@ Omit --protocol for the T13 unlabeled runner. --protocol bnss-cold-warm is
 the T14 BNSS cold/warm Bare Act protocol. --explain is the T15 disposable
 PostgreSQL EXPLAIN (ANALYZE, BUFFERS) path and is not the HTTP runner.
 --concurrency is the T18 read-only overlap harness (1/5/10/25, SQLite-only,
-not default pytest). --mutations / webhook load is T19 and is not this CLI.
+not default pytest). --mutations and --webhooks are T19 (SQLite-only
+service-level races and process_delivery duplicates, not default pytest,
+no live Razorpay).
 """
 
 from __future__ import annotations

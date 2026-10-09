@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://recall.local/schemas/playground-webhooks.json",
+  "title": "Playground WS10 T19 webhook duplicate baseline (schema sample)",
+  "description": "Machine-specific timings are not committed. Shape written by scripts/benchmark_playground.py --webhooks. T19 uses WebhookProcessor.process_delivery plus a harness-only FakeProvider. duplicate is HTTP 200 owned=False. retry_busy is HTTP 503 owned=False and is not a processed duplicate. Replays are counted separately from the extra distinct out-of-order pair. No product webhook_duplicates counter or timing stage is added. No live Razorpay.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "kind",
+    "app_env",
+    "database_backend",
+    "client_shape",
+    "n",
+    "m",
+    "waves_requested",
+    "live_razorpay",
+    "http_smokes",
+    "aborted",
+    "sequential_duplicate",
+    "concurrent_duplicate",
+    "script"
+  ],
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "kind": { "type": "string", "const": "webhooks" },
+    "app_env": { "type": "string" },
+    "database_backend": { "type": "string", "const": "sqlite" },
+    "client_shape": { "type": "string", "const": "threadpool_separate_connections" },
+    "n": { "type": "integer", "minimum": 1, "maximum": 25 },
+    "m": { "type": "integer", "minimum": 1, "maximum": 25 },
+    "waves_requested": { "type": "integer", "minimum": 1 },
+    "live_razorpay": { "type": "boolean", "const": false },
+    "http_smokes": { "type": "boolean", "const": false },
+    "aborted": { "type": "boolean" },
+    "aborted_reason": { "type": ["string", "null"] },
+    "sequential_duplicate": {
+      "anyOf": [{ "type": "object" }, { "type": "null" }]
+    },
+    "concurrent_duplicate": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "script": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/script_wave" }
+    }
+  },
+  "$defs": {
+    "counts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["deliveries", "owned", "duplicate", "retry_busy", "errors"],
+      "properties": {
+        "deliveries": { "type": "integer", "minimum": 0 },
+        "owned": { "type": "integer", "minimum": 0 },
+        "duplicate": { "type": "integer", "minimum": 0 },
+        "retry_busy": { "type": "integer", "minimum": 0 },
+        "errors": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "script_wave": {
+      "type": "object",
+      "properties": {
+        "n": { "type": "integer", "minimum": 1 },
+        "m": { "type": "integer", "minimum": 1 },
+        "unique": { "type": "object" },
+        "replays": { "type": "object" },
+        "out_of_order": { "type": "object" },
+        "totals": { "$ref": "#/$defs/counts" },
+        "provider_fetches": { "type": "integer", "minimum": 0 },
+        "event_rows": { "type": "integer", "minimum": 0 },
+        "billing": { "type": "object" },
+        "provider": { "type": "object" },
+        "live_razorpay": { "type": "boolean", "const": false },
+        "wave_index": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}
