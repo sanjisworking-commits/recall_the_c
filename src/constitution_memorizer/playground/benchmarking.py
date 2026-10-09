@@ -1,4 +1,4 @@
-"""Playground Stage 2 WS6/WS7/WS8 benchmark library (T13 + T14 + T15).
+"""Playground Stage 2 WS6/WS7/WS8/WS9 benchmark library (T13 + T14 + T15 + T16).
 
 Statistics, fail-closed production guard, deterministic fixtures, in-process
 HTTP runner, JSON reporting, and disposable PostgreSQL EXPLAIN (ANALYZE,
@@ -6,7 +6,8 @@ BUFFERS). Does not change product behavior or T1–T9 instrumentation.
 PostgreSQL EXPLAIN is T15/WS8 (``--explain`` or
 ``scripts/explain_playground_queries.py``). BNSS cold/warm is
 ``--protocol bnss-cold-warm`` (T14/WS7); omitting ``--protocol`` keeps the
-T13 unlabeled primary-route path.
+T13 unlabeled primary-route path. ``build_nplusone_fixture`` is the T16
+matched-density helper; it is not a CLI scenario.
 """
 
 from __future__ import annotations
@@ -43,6 +44,11 @@ ELIGIBLE_LAWS = ("bns", "bnss", "ndps", "uapa", "pss", "mtp")
 SOURCE_REVIEW_LAW = "ndps"
 LAW_WORKSPACE_LAW = "bnss"
 LAW_WORKSPACE_SELECTED_COUNT = 40
+NPLUSONE_ROSTER_SIZES = (1, 10, 30)
+NPLUSONE_LOCATORS_PER_LAW = 4
+NPLUSONE_TIER = "pro"
+NPLUSONE_LAW_LIMIT = 30
+NPLUSONE_DUE_REVISION = "2026-09-10"
 DEFAULT_JSON_PATH = Path("artifacts/playground-performance-baseline.json")
 DEFAULT_BNSS_JSON_PATH = Path("artifacts/playground-bnss-cold-warm.json")
 DEFAULT_EXPLAIN_JSON_PATH = Path("docs/performance/explain-pro-30-summary.json")
@@ -1001,6 +1007,42 @@ def build_law_workspace_fixture(app) -> dict[str, Any]:
         "roster_count": _roster_count(app),
         "law_ids": [LAW_WORKSPACE_LAW],
         "tier": "plus",
+    }
+
+
+def build_nplusone_fixture(app, n: int) -> dict[str, Any]:
+    """Matched-density Pro fixture for T16 N+1 locks. Synthetic ids only.
+
+    Same tier, law limit, clock, and locator density at N=1/10/30. Does not
+    mark syn-* Playground-eligible; the observability test patches that
+    locally. Not a CLI scenario.
+    """
+
+    if n not in NPLUSONE_ROSTER_SIZES:
+        raise ValueError(f"T16 roster size must be one of {NPLUSONE_ROSTER_SIZES}")
+    _subscribe(app, tier=NPLUSONE_TIER)
+    _ensure_period(app, tier=NPLUSONE_TIER, law_limit=NPLUSONE_LAW_LIMIT)
+    laws = list(synthetic_law_ids(n))
+    _consume(app, laws, law_limit=NPLUSONE_LAW_LIMIT)
+    for law_id in laws:
+        _activate_or_stub(app, law_id)
+        _bulk_overlay(
+            app,
+            law_id,
+            _locators(law_id, NPLUSONE_LOCATORS_PER_LAW),
+            status="learned",
+            next_revision=NPLUSONE_DUE_REVISION,
+            complete_modes=True,
+            source_changes=1,
+        )
+    return {
+        "roster_count": _roster_count(app),
+        "law_ids": laws,
+        "tier": NPLUSONE_TIER,
+        "law_limit": NPLUSONE_LAW_LIMIT,
+        "locators_per_law": NPLUSONE_LOCATORS_PER_LAW,
+        "expected_due_facts": NPLUSONE_LOCATORS_PER_LAW * n,
+        "expected_source_change_laws": n,
     }
 
 

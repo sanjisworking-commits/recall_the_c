@@ -1,4 +1,4 @@
-"""WS6 / WS7 / WS8 (T13–T15) benchmark harness tests. No duration assertions."""
+"""WS6 / WS7 / WS8 / WS9 (T13–T16) benchmark harness tests. No duration assertions."""
 
 from __future__ import annotations
 
@@ -28,6 +28,11 @@ from constitution_memorizer.playground.benchmarking import (
     DEFAULT_JSON_PATH,
     ELIGIBLE_LAWS,
     EXPLAIN_QUERY_LABELS,
+    NPLUSONE_LAW_LIMIT,
+    NPLUSONE_LOCATORS_PER_LAW,
+    NPLUSONE_ROSTER_SIZES,
+    NPLUSONE_TIER,
+    PLAYGROUND_TEST_NOW,
     PROTOCOL_BNSS_COLD_WARM,
     SCENARIO_BUILDERS,
     SCENARIOS,
@@ -36,12 +41,14 @@ from constitution_memorizer.playground.benchmarking import (
     ExplainCaptureConn,
     ExplainCaptureCursor,
     ExplainCapturePool,
+    HydrationProbe,
     assert_cache_class,
     assert_disposable_postgres,
     assert_fresh_sqlite,
     assert_readonly_select,
     bnss_cell_report,
     build_arg_parser,
+    build_nplusone_fixture,
     capture_explain_statements,
     classify_cache_snapshot,
     collect_snapshots,
@@ -380,6 +387,37 @@ def test_pro_30_builder_thirty_rows_without_hydration(tmp_path: Path):
     assert info["roster_count"] == 30
     assert _count_roster(app) == 30
     assert set(synthetic_law_ids(24)).issubset(set(info["law_ids"]))
+
+
+@pytest.mark.parametrize("n", NPLUSONE_ROSTER_SIZES)
+def test_nplusone_builder_matched_density_without_hydration(tmp_path: Path, n: int):
+    db = tmp_path / f"nplusone-{n}.db"
+    app = create_benchmark_app(db)
+    probe = HydrationProbe()
+    probe.install()
+    try:
+        info = build_nplusone_fixture(app, n)
+    finally:
+        probe.remove()
+    assert probe.calls == 0
+    assert info["tier"] == NPLUSONE_TIER
+    assert info["law_limit"] == NPLUSONE_LAW_LIMIT
+    assert info["roster_count"] == n
+    assert _count_roster(app) == n
+    assert info["law_ids"] == list(synthetic_law_ids(n))
+    assert set(info["law_ids"]).isdisjoint(ELIGIBLE_LAWS)
+    overlay = app.state.playground
+    assert len(overlay.list_items(BENCH_USER)) == n
+    due = overlay.list_due_revisions(
+        BENCH_USER, PLAYGROUND_TEST_NOW.date(), list(info["law_ids"])
+    )
+    assert len(due) == n * NPLUSONE_LOCATORS_PER_LAW
+    pending = overlay.list_source_changes(
+        BENCH_USER, law_ids=list(info["law_ids"]), status="pending"
+    )
+    assert {row.law_id for row in pending} == set(info["law_ids"])
+    assert "nplusone" not in SCENARIO_BUILDERS
+    assert build_nplusone_fixture not in SCENARIO_BUILDERS.values()
 
 
 @pytest.mark.parametrize("scenario", SCENARIOS)
