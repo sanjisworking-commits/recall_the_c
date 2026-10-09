@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""Playground WS6/WS7/WS8 benchmark CLI. See playground/benchmarking.py.
+"""Playground WS6/WS7/WS8/WS10 benchmark CLI. See playground/benchmarking.py.
 
 Not part of the default pytest run. Fail-closed: never uses process
 DATABASE_URL, never writes a nonempty SQLite file.
 Omit --protocol for the T13 unlabeled runner. --protocol bnss-cold-warm is
 the T14 BNSS cold/warm Bare Act protocol. --explain is the T15 disposable
 PostgreSQL EXPLAIN (ANALYZE, BUFFERS) path and is not the HTTP runner.
+--concurrency is the T18 read-only overlap harness (1/5/10/25, SQLite-only,
+not default pytest). --mutations / webhook load is T19 and is not this CLI.
 """
 
 from __future__ import annotations

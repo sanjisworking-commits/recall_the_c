@@ -1,7 +1,8 @@
-"""WS6 / WS7 / WS8 / WS9 (T13–T16) benchmark harness tests. No duration assertions."""
+"""WS6 / WS7 / WS8 / WS9 / WS10 (T13–T18) benchmark harness tests. No duration assertions."""
 
 from __future__ import annotations
 
+import asyncio
 import json
 import os
 import re
@@ -13,6 +14,7 @@ from types import SimpleNamespace
 from uuid import UUID
 
 import pytest
+from httpx import ASGITransport, AsyncClient
 
 from constitution_memorizer.devices.postgres import PostgresDeviceRepository
 from constitution_memorizer.playground.benchmarking import (
@@ -24,8 +26,11 @@ from constitution_memorizer.playground.benchmarking import (
     BNSS_PUBLIC_PATH,
     BNSS_WORKSPACE_PATH,
     DEFAULT_BNSS_JSON_PATH,
+    DEFAULT_CONCURRENCY_BATCHES,
+    DEFAULT_CONCURRENCY_JSON_PATH,
     DEFAULT_EXPLAIN_JSON_PATH,
     DEFAULT_JSON_PATH,
+    MAX_CONCURRENCY,
     ELIGIBLE_LAWS,
     EXPLAIN_QUERY_LABELS,
     NPLUSONE_LAW_LIMIT,
@@ -43,6 +48,9 @@ from constitution_memorizer.playground.benchmarking import (
     ExplainCapturePool,
     HydrationProbe,
     assert_cache_class,
+    assert_concurrency_home_no_bare_act,
+    assert_concurrency_sqlite,
+    assert_concurrency_warm_workspace,
     assert_disposable_postgres,
     assert_fresh_sqlite,
     assert_readonly_select,
@@ -59,10 +67,12 @@ from constitution_memorizer.playground.benchmarking import (
     evaluate_safety_guard,
     host_is_production_looking,
     largest_eligible_runtime_act,
+    parse_concurrency_levels,
     parse_explain_text,
     percentile_nearest_rank,
     resolve_database_url,
     run_bnss_cold_warm,
+    run_concurrent_batch,
     sanitize_explain_text,
     seed_scenario,
     snapshots_to_report,
@@ -121,6 +131,7 @@ def test_cli_help_subprocess():
         "--warmup",
         "--iterations",
         "--protocol",
+        "--concurrency",
     ):
         assert flag in text
     assert PROTOCOL_BNSS_COLD_WARM in text
@@ -1175,3 +1186,379 @@ def test_spy_cursor_postgres_repo_sql_predicates():
     cursor.statements.clear()
     overlay.list_source_changes(uid)
     assert "user_playground_source_change" in cursor.statements[-1][0]
+
+
+def _fake_probe_app(
+    *,
+    status: int = 200,
+    hang: bool = False,
+    overlap_target: int = 0,
+):
+    from constitution_memorizer.web.request_context import (
+        begin_request_timings,
+        capture_request_performance,
+        record_request_counter,
+        reset_request_timings,
+    )
+
+    state = {
+        "current": 0,
+        "max": 0,
+        "seq": 0,
+        "reached": asyncio.Event(),
+    }
+
+    async def app(scope, receive, send):
+        if scope["type"] != "http":
+            return
+        await receive()
+        if hang:
+            await asyncio.Event().wait()
+        state["seq"] += 1
+        seq = state["seq"]
+        state["current"] += 1
+        if state["current"] > state["max"]:
+            state["max"] = state["current"]
+        if overlap_target and state["current"] >= overlap_target:
+            state["reached"].set()
+        token = begin_request_timings()
+        try:
+            record_request_counter("playground_repo_round_trips", seq)
+            capture_request_performance(
+                path="/probe",
+                method="GET",
+                status_code=status,
+                total_ms=float(seq),
+            )
+        finally:
+            reset_request_timings(token)
+        if overlap_target:
+            try:
+                await asyncio.wait_for(state["reached"].wait(), timeout=2)
+            except TimeoutError:
+                pass
+        await send(
+            {
+                "type": "http.response.start",
+                "status": status,
+                "headers": [[b"content-type", b"text/plain"]],
+            }
+        )
+        await send({"type": "http.response.body", "body": b"ok"})
+        state["current"] -= 1
+
+    return app, state
+
+
+def test_parse_concurrency_levels_golden():
+    assert parse_concurrency_levels("1,5,10,25") == (1, 5, 10, 25)
+    assert parse_concurrency_levels("1, 5, 10, 25") == (1, 5, 10, 25)
+    assert parse_concurrency_levels("5,5,1") == (5, 1)
+    with pytest.raises(BenchmarkAborted, match="ceiling"):
+        parse_concurrency_levels("26")
+    with pytest.raises(BenchmarkAborted, match="positive"):
+        parse_concurrency_levels("0")
+    with pytest.raises(BenchmarkAborted, match="blank"):
+        parse_concurrency_levels("1,,5")
+    with pytest.raises(BenchmarkAborted, match="comma-separated"):
+        parse_concurrency_levels("  ")
+    with pytest.raises(BenchmarkAborted, match="invalid"):
+        parse_concurrency_levels("abc")
+
+
+def test_concurrency_help_lists_flag():
+    parser = build_arg_parser()
+    text = parser.format_help()
+    assert "--concurrency" in text
+    assert "1,5,10,25" in text
+
+
+def test_concurrency_without_flag_keeps_sequential_config():
+    args = build_arg_parser().parse_args(
+        [
+            "--scenario",
+            "plus-10",
+            "--database-url",
+            "sqlite:///fresh.db",
+            "--app-env",
+            "test",
+        ]
+    )
+    config = config_from_args(args, environ={})
+    assert config.concurrency_levels is None
+    assert config.iterations == 50
+    assert config.warmup == 5
+    assert config.json_path == DEFAULT_JSON_PATH
+
+
+def test_concurrency_config_from_args(tmp_path: Path):
+    db = tmp_path / "t18.sqlite"
+    args = build_arg_parser().parse_args(
+        [
+            "--scenario",
+            "plus-10",
+            "--concurrency",
+            "1,5,10,25",
+            "--database-url",
+            f"sqlite:///{db}",
+            "--app-env",
+            "test",
+        ]
+    )
+    config = config_from_args(args, environ={})
+    assert config.concurrency_levels == (1, 5, 10, 25)
+    assert config.iterations == DEFAULT_CONCURRENCY_BATCHES
+    assert config.warmup == 5
+    assert config.json_path == DEFAULT_CONCURRENCY_JSON_PATH
+    assert config.protocol is None
+
+
+def test_concurrency_quick_sets_one_batch(tmp_path: Path):
+    db = tmp_path / "t18-quick.sqlite"
+    args = build_arg_parser().parse_args(
+        [
+            "--scenario",
+            "law-workspace",
+            "--concurrency",
+            "1,5,10,25",
+            "--quick",
+            "--warmup",
+            "9",
+            "--iterations",
+            "40",
+            "--database-url",
+            f"sqlite:///{db}",
+            "--app-env",
+            "test",
+        ]
+    )
+    config = config_from_args(args, environ={})
+    assert config.concurrency_levels == (1, 5, 10, 25)
+    assert config.warmup == 1
+    assert config.iterations == 1
+
+
+def test_concurrency_plus_explain_aborts():
+    args = build_arg_parser().parse_args(
+        [
+            "--scenario",
+            "plus-10",
+            "--concurrency",
+            "1,5",
+            "--explain",
+            "--app-env",
+            "test",
+        ]
+    )
+    with pytest.raises(BenchmarkAborted, match="--explain"):
+        config_from_args(args, environ={})
+
+
+def test_concurrency_plus_protocol_aborts():
+    args = build_arg_parser().parse_args(
+        [
+            "--protocol",
+            PROTOCOL_BNSS_COLD_WARM,
+            "--concurrency",
+            "1",
+            "--database-url",
+            "sqlite:///unused.db",
+            "--app-env",
+            "test",
+        ]
+    )
+    with pytest.raises(BenchmarkAborted, match="--protocol"):
+        config_from_args(args, environ={})
+
+
+def test_concurrency_rejects_postgresql():
+    with pytest.raises(BenchmarkAborted, match="T23"):
+        assert_concurrency_sqlite("postgresql://localhost/recall")
+    args = build_arg_parser().parse_args(
+        [
+            "--scenario",
+            "plus-10",
+            "--concurrency",
+            "1",
+            "--database-url",
+            "postgresql://localhost/recall",
+            "--app-env",
+            "test",
+        ]
+    )
+    with pytest.raises(BenchmarkAborted, match="T23"):
+        config_from_args(args, environ={})
+
+
+def test_concurrency_rejects_unsupported_scenario(tmp_path: Path):
+    db = tmp_path / "t18-due.sqlite"
+    args = build_arg_parser().parse_args(
+        [
+            "--scenario",
+            "due-heavy",
+            "--concurrency",
+            "1",
+            "--database-url",
+            f"sqlite:///{db}",
+            "--app-env",
+            "test",
+        ]
+    )
+    with pytest.raises(BenchmarkAborted, match="plus-10 or law-workspace"):
+        config_from_args(args, environ={})
+
+
+def test_concurrency_rejects_level_above_ceiling(tmp_path: Path):
+    db = tmp_path / "t18-hi.sqlite"
+    args = build_arg_parser().parse_args(
+        [
+            "--scenario",
+            "plus-10",
+            "--concurrency",
+            str(MAX_CONCURRENCY + 1),
+            "--database-url",
+            f"sqlite:///{db}",
+            "--app-env",
+            "test",
+        ]
+    )
+    with pytest.raises(BenchmarkAborted, match="ceiling"):
+        config_from_args(args, environ={})
+
+
+def test_concurrency_c1_fake_app():
+    async def _go():
+        app, _state = _fake_probe_app(status=200)
+        transport = ASGITransport(app=app)
+        async with AsyncClient(
+            transport=transport, base_url="http://testserver", follow_redirects=False
+        ) as client:
+            return await run_concurrent_batch(
+                client, "/probe", concurrency=1, batch_index=0, timeout_s=5
+            )
+
+    result = asyncio.run(_go())
+    assert len(result.samples) == 1
+    assert result.samples[0].status_code == 200
+    assert result.failed_requests == 0
+    assert result.completed_requests == 1
+    assert result.incomplete is False
+    assert result.max_in_flight_observed == 1
+    assert result.requested_concurrency == 1
+
+
+def test_concurrency_c5_overlap_fake_app():
+    async def _go():
+        app, state = _fake_probe_app(status=200, overlap_target=5)
+        transport = ASGITransport(app=app)
+        async with AsyncClient(
+            transport=transport, base_url="http://testserver", follow_redirects=False
+        ) as client:
+            result = await run_concurrent_batch(
+                client, "/probe", concurrency=5, batch_index=0, timeout_s=5
+            )
+            return result, state
+
+    result, state = asyncio.run(_go())
+    assert result.max_in_flight_observed == 5
+    assert state["max"] == 5
+    assert result.completed_requests == 5
+    assert result.failed_requests == 0
+    assert result.throughput_rps is not None
+
+
+def test_concurrency_snapshot_attribution():
+    from constitution_memorizer.web.request_context import get_last_request_performance
+
+    async def _go():
+        app, _state = _fake_probe_app(status=200, overlap_target=5)
+        transport = ASGITransport(app=app)
+        async with AsyncClient(
+            transport=transport, base_url="http://testserver", follow_redirects=False
+        ) as client:
+            parent_before = get_last_request_performance()
+            result = await run_concurrent_batch(
+                client, "/probe", concurrency=5, batch_index=0, timeout_s=5
+            )
+            parent_after = get_last_request_performance()
+            return parent_before, parent_after, result
+
+    parent_before, parent_after, result = asyncio.run(_go())
+    assert parent_before is None
+    assert parent_after is None
+    task_ids = [sample.task_id for sample in result.samples]
+    assert len(set(task_ids)) == 5
+    identities = [sample.snapshot_identity for sample in result.samples]
+    assert None not in identities
+    assert len(set(identities)) == 5
+    counters = [
+        int(sample.snapshot.counters["playground_repo_round_trips"])
+        for sample in result.samples
+    ]
+    assert len(set(counters)) == 5
+    assert all(sample.error_class is None for sample in result.samples)
+
+
+def test_concurrency_timeout_cancellation():
+    async def _go():
+        app, _state = _fake_probe_app(hang=True)
+        transport = ASGITransport(app=app)
+        async with AsyncClient(
+            transport=transport, base_url="http://testserver", follow_redirects=False
+        ) as client:
+            return await run_concurrent_batch(
+                client, "/probe", concurrency=2, batch_index=0, timeout_s=0.2
+            )
+
+    result = asyncio.run(_go())
+    assert result.incomplete is True
+    assert result.aborted_reason == "batch_timeout"
+    assert result.throughput_rps is None
+    assert all(sample.error_class == "timeout" for sample in result.samples)
+
+
+def test_concurrency_non_200_abort():
+    async def _go():
+        app, _state = _fake_probe_app(status=500)
+        transport = ASGITransport(app=app)
+        results = []
+        async with AsyncClient(
+            transport=transport, base_url="http://testserver", follow_redirects=False
+        ) as client:
+            for concurrency in (1, 5):
+                for batch_index in range(2):
+                    result = await run_concurrent_batch(
+                        client,
+                        "/probe",
+                        concurrency=concurrency,
+                        batch_index=batch_index,
+                        timeout_s=5,
+                    )
+                    results.append(result)
+                    if result.failed_requests or result.aborted_reason:
+                        return results
+        return results
+
+    results = asyncio.run(_go())
+    assert len(results) == 1
+    assert results[0].concurrency == 1
+    assert results[0].aborted_reason == "http_500"
+    assert results[0].samples[0].status_code == 500
+    assert results[0].throughput_rps is None
+
+
+def test_concurrency_warm_cache_classification():
+    hit = _cache_snap(cache="hit", misses=0, load=False)
+    miss = _cache_snap(cache="miss", misses=1, load=True)
+    assert classify_cache_snapshot(hit) == "hit"
+    assert_concurrency_warm_workspace(hit, label="warm")
+    with pytest.raises(BenchmarkAborted, match="expected 'hit'"):
+        assert_concurrency_warm_workspace(miss, label="warm")
+    assert_concurrency_home_no_bare_act(
+        _cache_snap(cache=None, misses=0, load=False, path_group="/playground"),
+        label="home",
+    )
+    with pytest.raises(BenchmarkAborted, match="Bare Act"):
+        assert_concurrency_home_no_bare_act(hit, label="home")
+    with pytest.raises(BenchmarkAborted, match="Bare Act"):
+        assert_concurrency_home_no_bare_act(miss, label="home")

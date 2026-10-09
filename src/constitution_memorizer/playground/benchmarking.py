@@ -1,13 +1,15 @@
-"""Playground Stage 2 WS6/WS7/WS8/WS9 benchmark library (T13 + T14 + T15 + T16).
+"""Playground Stage 2 WS6–WS10 benchmark library (T13–T18).
 
 Statistics, fail-closed production guard, deterministic fixtures, in-process
-HTTP runner, JSON reporting, and disposable PostgreSQL EXPLAIN (ANALYZE,
-BUFFERS). Does not change product behavior or T1–T9 instrumentation.
+HTTP runner, JSON reporting, disposable PostgreSQL EXPLAIN (ANALYZE,
+BUFFERS), and the T18 read-only concurrency harness. Does not change product
+behavior or T1–T9 instrumentation.
 PostgreSQL EXPLAIN is T15/WS8 (``--explain`` or
 ``scripts/explain_playground_queries.py``). BNSS cold/warm is
 ``--protocol bnss-cold-warm`` (T14/WS7); omitting ``--protocol`` keeps the
 T13 unlabeled primary-route path. ``build_nplusone_fixture`` is the T16
-matched-density helper; it is not a CLI scenario.
+matched-density helper; it is not a CLI scenario. ``--concurrency`` is T18
+(SQLite-only, not default pytest, not T19 mutations).
 """
 
 from __future__ import annotations
@@ -51,8 +53,15 @@ NPLUSONE_LAW_LIMIT = 30
 NPLUSONE_DUE_REVISION = "2026-09-10"
 DEFAULT_JSON_PATH = Path("artifacts/playground-performance-baseline.json")
 DEFAULT_BNSS_JSON_PATH = Path("artifacts/playground-bnss-cold-warm.json")
+DEFAULT_CONCURRENCY_JSON_PATH = Path("artifacts/playground-concurrency.json")
 DEFAULT_EXPLAIN_JSON_PATH = Path("docs/performance/explain-pro-30-summary.json")
 DEFAULT_EXPLAIN_PLAN_DIR = Path("docs/performance")
+DEFAULT_CONCURRENCY_LEVELS = (1, 5, 10, 25)
+MAX_CONCURRENCY = 25
+DEFAULT_CONCURRENCY_BATCHES = 5
+CONCURRENCY_BATCH_TIMEOUT_S = 60.0
+CONCURRENCY_SCENARIOS = frozenset({"plus-10", "law-workspace"})
+CONCURRENCY_CLIENT_SHAPE = "single_async_client"
 PROTOCOL_BNSS_COLD_WARM = "bnss-cold-warm"
 PROTOCOLS = (PROTOCOL_BNSS_COLD_WARM,)
 EXPLAIN_SCENARIO = "pro-30"
@@ -419,13 +428,32 @@ def build_arg_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument("--warmup", type=int, default=5)
-    parser.add_argument("--iterations", type=int, default=50)
+    parser.add_argument(
+        "--iterations",
+        type=int,
+        default=None,
+        help=(
+            "Sequential measured GETs (T13/T14 default 50; --quick uses 3). "
+            "With --concurrency, measured batches per level "
+            f"(default {DEFAULT_CONCURRENCY_BATCHES}; --quick uses 1)."
+        ),
+    )
+    parser.add_argument(
+        "--concurrency",
+        default=None,
+        help=(
+            "T18 comma-separated simultaneous GET counts, e.g. 1,5,10,25. "
+            f"Maximum {MAX_CONCURRENCY}. SQLite-only. Not default pytest. "
+            "Not --mutations (T19)."
+        ),
+    )
     parser.add_argument(
         "--database-url",
         default=None,
         help=(
-            "sqlite:/// filesystem path for the HTTP runner (T13/T14), or a "
+            "sqlite:/// filesystem path for the HTTP runner (T13/T14/T18), or a "
             "local disposable postgresql:// URL for --explain (T15). "
+            "T18 --concurrency rejects PostgreSQL (T23). "
             "Never falls back to process DATABASE_URL."
         ),
     )
@@ -458,6 +486,7 @@ def build_arg_parser() -> argparse.ArgumentParser:
         action="store_true",
         help=(
             "Override warmup=1 and iterations=3. "
+            "With --concurrency, warmup=1 and batches=1 at every listed level. "
             "With --protocol bnss-cold-warm, cold warmup stays 0."
         ),
     )
@@ -481,6 +510,51 @@ class BenchmarkRunConfig:
     explain: bool
     accept_nontest: bool
     protocol: str | None = None
+    concurrency_levels: tuple[int, ...] | None = None
+
+
+def parse_concurrency_levels(raw: str) -> tuple[int, ...]:
+    """Unique positive ints, first-seen order, capped at MAX_CONCURRENCY."""
+    text = str(raw or "").strip()
+    if not text:
+        raise BenchmarkAborted(
+            "--concurrency requires a comma-separated list such as 1,5,10,25"
+        )
+    parts = [part.strip() for part in text.split(",")]
+    if any(part == "" for part in parts):
+        raise BenchmarkAborted("--concurrency has a blank entry")
+    values: list[int] = []
+    seen: set[int] = set()
+    for part in parts:
+        try:
+            level = int(part, 10)
+        except ValueError as exc:
+            raise BenchmarkAborted(f"invalid concurrency {part!r}") from exc
+        if level < 1:
+            raise BenchmarkAborted("concurrency levels must be positive integers")
+        if level > MAX_CONCURRENCY:
+            raise BenchmarkAborted(
+                f"concurrency {level} exceeds S2-0 ceiling {MAX_CONCURRENCY}"
+            )
+        if level not in seen:
+            seen.add(level)
+            values.append(level)
+    if not values:
+        raise BenchmarkAborted("--concurrency produced no levels")
+    return tuple(values)
+
+
+def assert_concurrency_sqlite(url: str) -> Path:
+    """T18 accepts only a fresh disposable SQLite file. PostgreSQL is T23."""
+    parsed = urlparse(str(url or "").strip())
+    scheme = (parsed.scheme or "").lower()
+    if scheme in {"postgres", "postgresql"}:
+        raise BenchmarkAborted(
+            "T18 concurrency is SQLite-only; PostgreSQL concurrency is T23"
+        )
+    if scheme not in {"sqlite", "sqlite3"}:
+        raise BenchmarkAborted("T18 concurrency requires a sqlite:/// URL")
+    return assert_fresh_sqlite(url)
 
 
 def config_from_args(
@@ -489,11 +563,29 @@ def config_from_args(
     protocol = str(getattr(args, "protocol", None) or "").strip() or None
     scenario = str(getattr(args, "scenario", None) or "").strip()
     explain = bool(getattr(args, "explain", False))
+    concurrency_raw = getattr(args, "concurrency", None)
+    concurrency_levels = (
+        parse_concurrency_levels(str(concurrency_raw))
+        if concurrency_raw is not None
+        else None
+    )
     if explain and protocol == PROTOCOL_BNSS_COLD_WARM:
         raise BenchmarkAborted(
             "--explain cannot be combined with --protocol bnss-cold-warm"
         )
+    if concurrency_levels and explain:
+        raise BenchmarkAborted("--concurrency cannot be combined with --explain")
+    if concurrency_levels and protocol:
+        raise BenchmarkAborted(
+            "--concurrency cannot be combined with --protocol bnss-cold-warm"
+        )
     url = resolve_database_url(args.database_url, environ)
+    if concurrency_levels:
+        assert_concurrency_sqlite(url)
+        if scenario and scenario not in CONCURRENCY_SCENARIOS:
+            raise BenchmarkAborted(
+                "--concurrency supports --scenario plus-10 or law-workspace"
+            )
     if explain:
         if not scenario:
             scenario = EXPLAIN_SCENARIO
@@ -512,9 +604,20 @@ def config_from_args(
     elif not scenario:
         raise BenchmarkAborted("--scenario is required")
     warmup = int(args.warmup)
-    iterations = int(args.iterations)
-    if args.quick:
+    iterations_arg = getattr(args, "iterations", None)
+    if concurrency_levels:
+        if args.quick:
+            warmup, iterations = 1, 1
+        else:
+            iterations = (
+                DEFAULT_CONCURRENCY_BATCHES
+                if iterations_arg is None
+                else int(iterations_arg)
+            )
+    elif args.quick:
         warmup, iterations = 1, 3
+    else:
+        iterations = 50 if iterations_arg is None else int(iterations_arg)
     if warmup < 0 or iterations < 1:
         raise BenchmarkAborted("warmup must be >= 0 and iterations >= 1")
     json_raw = getattr(args, "json", None)
@@ -523,6 +626,8 @@ def config_from_args(
             json_path = DEFAULT_EXPLAIN_JSON_PATH
         elif protocol == PROTOCOL_BNSS_COLD_WARM:
             json_path = DEFAULT_BNSS_JSON_PATH
+        elif concurrency_levels:
+            json_path = DEFAULT_CONCURRENCY_JSON_PATH
         else:
             json_path = DEFAULT_JSON_PATH
     else:
@@ -538,6 +643,7 @@ def config_from_args(
         explain=explain,
         accept_nontest=bool(args.accept_nontest),
         protocol=protocol,
+        concurrency_levels=concurrency_levels,
     )
 
 
@@ -2455,6 +2561,663 @@ def run_explain_harness(
     return payload
 
 
+@dataclass
+class ConcurrentSample:
+    """One worker GET. Snapshot is captured inside this worker's asyncio task."""
+
+    worker_index: int
+    batch_index: int
+    concurrency: int
+    status_code: int | None
+    error_class: str | None
+    error_message: str | None
+    elapsed_ms: float
+    snapshot: Any | None
+    task_id: int
+    snapshot_identity: int | None
+
+
+@dataclass
+class ConcurrentBatchResult:
+    concurrency: int
+    batch_index: int
+    requested_concurrency: int
+    max_in_flight_observed: int
+    samples: list[ConcurrentSample]
+    batch_wall_seconds: float
+    completed_requests: int
+    failed_requests: int
+    throughput_rps: float | None
+    incomplete: bool
+    aborted_reason: str | None
+
+
+class _InFlightTracker:
+    """Harness-side overlapping GETs (started, not completed). Not parallel SQL."""
+
+    def __init__(self) -> None:
+        self.current = 0
+        self.max_observed = 0
+
+    def enter(self) -> None:
+        self.current += 1
+        if self.current > self.max_observed:
+            self.max_observed = self.current
+
+    def exit(self) -> None:
+        self.current -= 1
+        if self.current < 0:
+            self.current = 0
+
+
+def _stored_snapshot_identity() -> int | None:
+    from constitution_memorizer.web.request_context import _last_request_performance
+
+    current = _last_request_performance.get()
+    if current is None:
+        return None
+    return id(current)
+
+
+def _sanitize_error_text(text: str) -> str:
+    cleaned = _SENSITIVE.sub("[redacted]", str(text))
+    if BENCH_EMAIL in cleaned:
+        cleaned = cleaned.replace(BENCH_EMAIL, "[redacted]")
+    return cleaned[:240]
+
+
+def assert_concurrency_home_no_bare_act(snap: Any, *, label: str) -> None:
+    notes = getattr(snap, "notes", None) or {}
+    counters = getattr(snap, "counters", None) or {}
+    timings = getattr(snap, "timings", None) or {}
+    misses = int(counters.get("bare_act_cache_misses") or 0)
+    if notes.get("bare_act_cache") or misses or "bare_act_load" in timings:
+        raise BenchmarkAborted(
+            f"{label} unexpected Bare Act cache access or hydration"
+        )
+
+
+def assert_concurrency_warm_workspace(snap: Any, *, label: str) -> None:
+    got = classify_cache_snapshot(snap)
+    if got != "hit":
+        raise BenchmarkAborted(
+            f"{label} warm workspace cache class {got!r}, expected 'hit'"
+        )
+
+
+def _concurrency_path_group(scenario: str) -> str:
+    if scenario == "plus-10":
+        return "/playground"
+    if scenario == "law-workspace":
+        return BNSS_WORKSPACE_PATH_GROUP
+    raise BenchmarkAborted(f"unsupported T18 scenario {scenario!r}")
+
+
+def _concurrency_snapshot_error(
+    *,
+    scenario: str,
+    snap: Any,
+    status_code: int | None,
+    expected_path_group: str,
+) -> str | None:
+    if snap is None:
+        return "snapshot_missing"
+    if status_code is not None and int(getattr(snap, "status_code", 0) or 0) != int(
+        status_code
+    ):
+        return "snapshot_stale"
+    if str(getattr(snap, "path_group", "")) != expected_path_group:
+        return "snapshot_stale"
+    if scenario == "plus-10":
+        try:
+            assert_concurrency_home_no_bare_act(snap, label="measured")
+        except BenchmarkAborted:
+            return "unexpected_bare_act"
+    elif scenario == "law-workspace":
+        if classify_cache_snapshot(snap) != "hit":
+            return "warm_cache_miss"
+    return None
+
+
+def read_concurrency_integrity(app) -> dict[str, Any]:
+    from constitution_memorizer.playground.roster.period import playground_month_bounds
+
+    start, _end = playground_month_bounds(PLAYGROUND_TEST_NOW)
+    roster_used = int(app.state.roster._repo.count_consumed(BENCH_USER, start))
+    overlay_items = len(app.state.playground.list_items(BENCH_USER))
+    billing = app.state.subscription_service.get_current(BENCH_USER)
+    devices = app.state.device_service.list_devices(BENCH_USER)
+    return {
+        "roster_used": roster_used,
+        "overlay_items": overlay_items,
+        "subscription_status": None if billing is None else str(billing.status),
+        "device_rows": len(devices),
+    }
+
+
+def _integrity_drift_reason(before: Mapping[str, Any], after: Mapping[str, Any]) -> str | None:
+    if int(after["roster_used"]) > int(before["roster_used"]):
+        return (
+            "integrity drift: roster_used "
+            f"{before['roster_used']} -> {after['roster_used']}"
+        )
+    if after["overlay_items"] != before["overlay_items"]:
+        return (
+            "integrity drift: overlay_items "
+            f"{before['overlay_items']} -> {after['overlay_items']}"
+        )
+    if after["subscription_status"] != before["subscription_status"]:
+        return (
+            "integrity drift: subscription_status "
+            f"{before['subscription_status']} -> {after['subscription_status']}"
+        )
+    if after["device_rows"] != before["device_rows"]:
+        return (
+            "integrity drift: device_rows "
+            f"{before['device_rows']} -> {after['device_rows']}"
+        )
+    return None
+
+
+def _warmup_cache_proof(scenario: str, snap: Any) -> dict[str, Any]:
+    notes = getattr(snap, "notes", None) or {}
+    counters = getattr(snap, "counters", None) or {}
+    timings = getattr(snap, "timings", None) or {}
+    misses = int(counters.get("bare_act_cache_misses") or 0)
+    load_absent = "bare_act_load" not in timings
+    if scenario == "plus-10":
+        return {
+            "kind": "home",
+            "bare_act_cache_absent": "bare_act_cache" not in notes,
+            "bare_act_cache_misses": misses,
+            "bare_act_load_absent": load_absent,
+        }
+    return {
+        "kind": "workspace",
+        "cache_class": classify_cache_snapshot(snap),
+        "bare_act_cache": notes.get("bare_act_cache"),
+        "bare_act_cache_misses": misses,
+        "bare_act_load_absent": load_absent,
+    }
+
+
+def _counter_series(snapshots: list[Any], name: str) -> list[float]:
+    return [float(int((snap.counters or {}).get(name, 0) or 0)) for snap in snapshots]
+
+
+async def run_concurrent_batch(
+    client,
+    path: str,
+    *,
+    concurrency: int,
+    batch_index: int,
+    timeout_s: float = CONCURRENCY_BATCH_TIMEOUT_S,
+    scenario: str | None = None,
+    expected_path_group: str | None = None,
+) -> ConcurrentBatchResult:
+    """Release C workers together. Capture snapshots inside each worker task."""
+    import asyncio
+    from time import perf_counter
+
+    from constitution_memorizer.web.request_context import (
+        clear_last_request_performance,
+        get_last_request_performance,
+    )
+
+    if concurrency < 1:
+        raise BenchmarkAborted("concurrency must be >= 1")
+    tracker = _InFlightTracker()
+    go = asyncio.Event()
+    parked = 0
+    all_parked = asyncio.Event()
+    samples: list[ConcurrentSample | None] = [None] * concurrency
+    path_group = expected_path_group or path
+
+    async def worker(index: int) -> None:
+        nonlocal parked
+        task_id = id(asyncio.current_task())
+        parked += 1
+        if parked >= concurrency:
+            all_parked.set()
+        try:
+            await go.wait()
+        except asyncio.CancelledError:
+            samples[index] = ConcurrentSample(
+                worker_index=index,
+                batch_index=batch_index,
+                concurrency=concurrency,
+                status_code=None,
+                error_class="timeout",
+                error_message="cancelled before release",
+                elapsed_ms=0.0,
+                snapshot=None,
+                task_id=task_id,
+                snapshot_identity=None,
+            )
+            raise
+        t0 = perf_counter()
+        tracker.enter()
+        status: int | None = None
+        snap = None
+        identity = None
+        error_class = None
+        error_message = None
+        try:
+            try:
+                clear_last_request_performance()
+                response = await client.get(path)
+                status = int(response.status_code)
+                identity = _stored_snapshot_identity()
+                snap = get_last_request_performance()
+                if status != 200:
+                    error_class = f"http_{status}"
+                elif scenario is not None:
+                    error_class = _concurrency_snapshot_error(
+                        scenario=scenario,
+                        snap=snap,
+                        status_code=status,
+                        expected_path_group=path_group,
+                    )
+                elif snap is None:
+                    error_class = "snapshot_missing"
+            except asyncio.CancelledError:
+                error_class = "timeout"
+                error_message = "batch timeout"
+                raise
+            except Exception as exc:
+                module = type(exc).__module__
+                name = type(exc).__name__
+                error_message = _sanitize_error_text(f"{name}: {exc}")
+                if name == "OperationalError" and module.startswith("sqlite3"):
+                    error_class = "sqlite3.OperationalError"
+                elif module.startswith("httpx"):
+                    error_class = "httpx.HTTPError"
+                else:
+                    error_class = name
+        finally:
+            elapsed_ms = (perf_counter() - t0) * 1000.0
+            tracker.exit()
+            if samples[index] is None:
+                samples[index] = ConcurrentSample(
+                    worker_index=index,
+                    batch_index=batch_index,
+                    concurrency=concurrency,
+                    status_code=status,
+                    error_class=error_class,
+                    error_message=error_message,
+                    elapsed_ms=elapsed_ms,
+                    snapshot=snap,
+                    task_id=task_id,
+                    snapshot_identity=identity,
+                )
+
+    tasks = [
+        asyncio.create_task(worker(index), name=f"t18-c{concurrency}-b{batch_index}-w{index}")
+        for index in range(concurrency)
+    ]
+    aborted_reason: str | None = None
+    incomplete = False
+    batch_wall_seconds = 0.0
+    try:
+        await asyncio.wait_for(all_parked.wait(), timeout=timeout_s)
+    except TimeoutError:
+        incomplete = True
+        aborted_reason = "barrier_timeout"
+        for task in tasks:
+            task.cancel()
+        await asyncio.gather(*tasks, return_exceptions=True)
+    else:
+        batch_wall_start = perf_counter()
+        go.set()
+        _done, pending = await asyncio.wait(tasks, timeout=timeout_s)
+        batch_wall_seconds = perf_counter() - batch_wall_start
+        if pending:
+            incomplete = True
+            aborted_reason = "batch_timeout"
+            for task in pending:
+                task.cancel()
+            await asyncio.gather(*pending, return_exceptions=True)
+
+    filled: list[ConcurrentSample] = []
+    identities: list[int] = []
+    for index, sample in enumerate(samples):
+        if sample is None:
+            incomplete = True
+            sample = ConcurrentSample(
+                worker_index=index,
+                batch_index=batch_index,
+                concurrency=concurrency,
+                status_code=None,
+                error_class="timeout",
+                error_message="worker finished without a sample",
+                elapsed_ms=0.0,
+                snapshot=None,
+                task_id=0,
+                snapshot_identity=None,
+            )
+        filled.append(sample)
+        if sample.snapshot_identity is not None:
+            identities.append(sample.snapshot_identity)
+    if identities and len(identities) != len(set(identities)):
+        aborted_reason = aborted_reason or "snapshot_misattributed"
+        filled = [
+            ConcurrentSample(
+                worker_index=sample.worker_index,
+                batch_index=sample.batch_index,
+                concurrency=sample.concurrency,
+                status_code=sample.status_code,
+                error_class=sample.error_class or "snapshot_misattributed",
+                error_message=sample.error_message,
+                elapsed_ms=sample.elapsed_ms,
+                snapshot=sample.snapshot,
+                task_id=sample.task_id,
+                snapshot_identity=sample.snapshot_identity,
+            )
+            for sample in filled
+        ]
+    completed = sum(
+        1
+        for sample in filled
+        if sample.error_class is None and sample.status_code == 200
+    )
+    failed = len(filled) - completed
+    if incomplete or failed or aborted_reason:
+        throughput: float | None = None
+    elif batch_wall_seconds <= 0:
+        throughput = None
+    else:
+        throughput = completed / batch_wall_seconds
+    if failed and aborted_reason is None:
+        first_error = next(sample.error_class for sample in filled if sample.error_class)
+        aborted_reason = first_error
+    if incomplete and aborted_reason is None:
+        aborted_reason = "incomplete_batch"
+    return ConcurrentBatchResult(
+        concurrency=concurrency,
+        batch_index=batch_index,
+        requested_concurrency=concurrency,
+        max_in_flight_observed=tracker.max_observed,
+        samples=filled,
+        batch_wall_seconds=batch_wall_seconds,
+        completed_requests=completed,
+        failed_requests=failed,
+        throughput_rps=throughput,
+        incomplete=incomplete,
+        aborted_reason=aborted_reason,
+    )
+
+
+def _level_report(
+    results: list[ConcurrentBatchResult],
+    *,
+    concurrency: int,
+    batches_requested: int,
+) -> dict[str, Any]:
+    all_samples = [sample for result in results for sample in result.samples]
+    ok_snaps = [
+        sample.snapshot
+        for sample in all_samples
+        if sample.error_class is None and sample.snapshot is not None
+    ]
+    status_counts: dict[str, int] = {}
+    error_classes: dict[str, int] = {}
+    for sample in all_samples:
+        if sample.status_code is not None:
+            key = str(int(sample.status_code))
+            status_counts[key] = status_counts.get(key, 0) + 1
+        if sample.error_class:
+            error_classes[sample.error_class] = (
+                error_classes.get(sample.error_class, 0) + 1
+            )
+    metrics: dict[str, Any] = {}
+    if ok_snaps:
+        metrics["total_ms"] = summarize_numbers(snap.total_ms for snap in ok_snaps)
+        for name in (
+            "playground_repo_round_trips",
+            "playground_db_reads",
+            "playground_entitlement_resolves",
+            "playground_device_lookups",
+            "bare_act_cache_misses",
+        ):
+            metrics[name] = summarize_numbers(_counter_series(ok_snaps, name))
+        stage_names: set[str] = set()
+        for snap in ok_snaps:
+            stage_names.update((snap.timings or {}).keys())
+        for name in sorted(stage_names):
+            series = []
+            for snap in ok_snaps:
+                timing = (snap.timings or {}).get(name)
+                series.append(float(timing[0]) if timing is not None else 0.0)
+            metrics[name] = summarize_numbers(series)
+    if all_samples:
+        metrics["worker_elapsed_ms"] = summarize_numbers(
+            sample.elapsed_ms for sample in all_samples
+        )
+    throughputs = [
+        result.throughput_rps
+        for result in results
+        if result.throughput_rps is not None
+    ]
+    incomplete_batches = sum(1 for result in results if result.incomplete)
+    samples_ok = sum(result.completed_requests for result in results)
+    samples_error = sum(result.failed_requests for result in results)
+    payload = {
+        "concurrency": concurrency,
+        "requested_concurrency": concurrency,
+        "max_in_flight_observed": max(
+            (result.max_in_flight_observed for result in results), default=0
+        ),
+        "asgi_in_flight_is_not_parallel_sql": True,
+        "batches": len(results),
+        "batches_requested": batches_requested,
+        "incomplete_batches": incomplete_batches,
+        "samples_ok": samples_ok,
+        "samples_error": samples_error,
+        "status_counts": status_counts,
+        "error_classes": error_classes,
+        "metrics": metrics,
+        "throughput_rps": summarize_numbers(throughputs) if throughputs else None,
+        "notes_observed": _note_tokens(ok_snaps) if ok_snaps else {},
+        "batch_wall_seconds": [result.batch_wall_seconds for result in results],
+        "batch_throughput_rps": throughputs,
+        "aborted_reason": next(
+            (
+                result.aborted_reason
+                for result in results
+                if result.aborted_reason
+            ),
+            None,
+        ),
+    }
+    return payload
+
+
+def _concurrency_payload_base(
+    *,
+    scenario: str,
+    app_env: str,
+    warmup_discarded: int,
+    batches_requested: int,
+    levels_requested: tuple[int, ...],
+    path: str,
+    path_group: str,
+) -> dict[str, Any]:
+    return {
+        "schema_version": SCHEMA_VERSION,
+        "kind": "concurrency",
+        "scenario": scenario,
+        "app_env": str(app_env),
+        "database_backend": "sqlite",
+        "client_shape": CONCURRENCY_CLIENT_SHAPE,
+        "path": path,
+        "path_group": path_group,
+        "method": "GET",
+        "warmup_discarded": warmup_discarded,
+        "batches_requested": batches_requested,
+        "concurrency_levels_requested": list(levels_requested),
+        "batch_timeout_s": CONCURRENCY_BATCH_TIMEOUT_S,
+        "asgi_in_flight_is_not_parallel_sql": True,
+        "aborted": False,
+        "aborted_reason": None,
+        "warmup_cache": {},
+        "integrity": {},
+        "levels": [],
+    }
+
+
+def run_concurrency_benchmark(
+    config: BenchmarkRunConfig, environ: Mapping[str, str] | None = None
+) -> dict[str, Any]:
+    """T18 warm plus-10 home and warm BNSS workspace at 1/5/10/25. SQLite only."""
+    import asyncio
+
+    from httpx import ASGITransport, AsyncClient, Limits, Timeout
+
+    if config.explain:
+        raise BenchmarkAborted("T18 concurrency cannot run --explain")
+    if config.protocol:
+        raise BenchmarkAborted("T18 concurrency cannot run --protocol")
+    levels = config.concurrency_levels
+    if not levels:
+        raise BenchmarkAborted("run_concurrency_benchmark requires --concurrency")
+    if config.scenario not in CONCURRENCY_SCENARIOS:
+        raise BenchmarkAborted(
+            "--concurrency supports --scenario plus-10 or law-workspace"
+        )
+    effective_app_env = evaluate_safety_guard(
+        requested_app_env=config.app_env,
+        accept_nontest=config.accept_nontest,
+        explain=False,
+        environ=environ,
+    )
+    db_path = assert_concurrency_sqlite(config.database_url)
+    app = create_benchmark_app(db_path, app_env="test")
+    seed_scenario(app, config.scenario)
+    method, path = PRIMARY_ROUTES[config.scenario]
+    if method != "GET":
+        raise BenchmarkAborted(f"T18 routes are GET-only, got {method}")
+    path_group = _concurrency_path_group(config.scenario)
+    batches = int(config.iterations)
+    payload = _concurrency_payload_base(
+        scenario=config.scenario,
+        app_env=effective_app_env,
+        warmup_discarded=config.warmup,
+        batches_requested=batches,
+        levels_requested=levels,
+        path=path,
+        path_group=path_group,
+    )
+
+    def _finish(*, aborted: bool, reason: str | None) -> dict[str, Any]:
+        payload["aborted"] = aborted
+        payload["aborted_reason"] = reason
+        _assert_json_safe(payload)
+        if config.json_path is not None:
+            write_json_report(config.json_path, payload)
+        if aborted:
+            raise BenchmarkAborted(reason or "T18 concurrency aborted")
+        return payload
+
+    async def _run() -> None:
+        transport = ASGITransport(app=app)
+        timeout = Timeout(CONCURRENCY_BATCH_TIMEOUT_S)
+        limits = Limits(
+            max_connections=MAX_CONCURRENCY,
+            max_keepalive_connections=MAX_CONCURRENCY,
+        )
+        async with AsyncClient(
+            transport=transport,
+            base_url="http://testserver",
+            follow_redirects=False,
+            timeout=timeout,
+            limits=limits,
+        ) as client:
+            await sign_in_benchmark_client(client)
+            last_warmup = None
+            discarded = 0
+            for index in range(config.warmup):
+                last_warmup = await _http_snapshot(
+                    client, path, label=f"warmup {index + 1}"
+                )
+                discarded += 1
+            if config.scenario == "law-workspace":
+                if last_warmup is None or classify_cache_snapshot(last_warmup) != "hit":
+                    last_warmup = await _http_snapshot(
+                        client, path, label="warmup extra warm"
+                    )
+                    discarded += 1
+                assert_concurrency_warm_workspace(
+                    last_warmup, label="warmup last"
+                )
+            elif last_warmup is not None:
+                assert_concurrency_home_no_bare_act(
+                    last_warmup, label="warmup last"
+                )
+            payload["warmup_discarded"] = discarded
+            if last_warmup is not None:
+                payload["warmup_cache"] = _warmup_cache_proof(
+                    config.scenario, last_warmup
+                )
+            baseline = read_concurrency_integrity(app)
+            payload["integrity"] = {"after_warmup": baseline, "levels": []}
+            for concurrency in levels:
+                before = read_concurrency_integrity(app)
+                batch_results: list[ConcurrentBatchResult] = []
+                level_abort: str | None = None
+                for batch_index in range(batches):
+                    result = await run_concurrent_batch(
+                        client,
+                        path,
+                        concurrency=concurrency,
+                        batch_index=batch_index,
+                        timeout_s=CONCURRENCY_BATCH_TIMEOUT_S,
+                        scenario=config.scenario,
+                        expected_path_group=path_group,
+                    )
+                    batch_results.append(result)
+                    if (
+                        result.incomplete
+                        or result.failed_requests
+                        or result.aborted_reason
+                    ):
+                        level_abort = result.aborted_reason or "batch_failed"
+                        break
+                after = read_concurrency_integrity(app)
+                drift = _integrity_drift_reason(before, after)
+                if drift:
+                    level_abort = level_abort or drift
+                level = _level_report(
+                    batch_results,
+                    concurrency=concurrency,
+                    batches_requested=batches,
+                )
+                level["integrity_before"] = before
+                level["integrity_after"] = after
+                payload["levels"].append(level)
+                payload["integrity"]["levels"].append(
+                    {
+                        "concurrency": concurrency,
+                        "before": before,
+                        "after": after,
+                    }
+                )
+                if level_abort:
+                    payload["integrity"]["final"] = after
+                    raise BenchmarkAborted(level_abort)
+            payload["integrity"]["final"] = read_concurrency_integrity(app)
+            drift = _integrity_drift_reason(
+                baseline, payload["integrity"]["final"]
+            )
+            if drift:
+                raise BenchmarkAborted(drift)
+
+    try:
+        asyncio.run(_run())
+    except BenchmarkAborted as exc:
+        return _finish(aborted=True, reason=exc.message)
+    return _finish(aborted=False, reason=None)
+
+
 def run_benchmark(
     config: BenchmarkRunConfig, environ: Mapping[str, str] | None = None
 ) -> dict[str, Any]:
@@ -2544,6 +3307,8 @@ def run_cli(argv: list[str] | None = None, environ: Mapping[str, str] | None = N
             run_explain_harness(config, environ=env)
         elif config.protocol == PROTOCOL_BNSS_COLD_WARM:
             run_bnss_cold_warm(config, environ=env)
+        elif config.concurrency_levels:
+            run_concurrency_benchmark(config, environ=env)
         else:
             run_benchmark(config, environ=env)
     except BenchmarkAborted as exc:

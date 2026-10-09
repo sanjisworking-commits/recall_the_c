@@ -1,0 +1,122 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://recall.local/schemas/playground-concurrency.json",
+  "title": "Playground WS10 T18 concurrency baseline (schema sample)",
+  "description": "Machine-specific timings are not committed. Shape written by scripts/benchmark_playground.py --concurrency. T18 is SQLite-only. asgi_in_flight_is_not_parallel_sql records that overlapping ASGI GETs do not prove parallel SQLite execution. throughput_rps is null when a level had a failed or incomplete batch. A 0.0 stage contribution means the stage did not execute on that sample, not a measured 0 ms.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "kind",
+    "scenario",
+    "app_env",
+    "database_backend",
+    "client_shape",
+    "path",
+    "path_group",
+    "method",
+    "warmup_discarded",
+    "batches_requested",
+    "concurrency_levels_requested",
+    "batch_timeout_s",
+    "asgi_in_flight_is_not_parallel_sql",
+    "aborted",
+    "levels"
+  ],
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "kind": { "type": "string", "const": "concurrency" },
+    "scenario": { "type": "string", "enum": ["plus-10", "law-workspace"] },
+    "app_env": { "type": "string" },
+    "database_backend": { "type": "string", "const": "sqlite" },
+    "client_shape": { "type": "string", "const": "single_async_client" },
+    "path": { "type": "string" },
+    "path_group": { "type": "string" },
+    "method": { "type": "string", "const": "GET" },
+    "warmup_discarded": { "type": "integer", "minimum": 0 },
+    "batches_requested": { "type": "integer", "minimum": 1 },
+    "concurrency_levels_requested": {
+      "type": "array",
+      "items": { "type": "integer", "minimum": 1, "maximum": 25 }
+    },
+    "batch_timeout_s": { "type": "number", "const": 60 },
+    "asgi_in_flight_is_not_parallel_sql": { "type": "boolean", "const": true },
+    "aborted": { "type": "boolean" },
+    "aborted_reason": { "type": ["string", "null"] },
+    "warmup_cache": { "type": "object" },
+    "integrity": { "type": "object" },
+    "levels": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/level" }
+    }
+  },
+  "$defs": {
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["count", "min", "mean", "p50", "p95", "p99", "max"],
+      "properties": {
+        "count": { "type": "integer", "minimum": 1 },
+        "min": { "type": "number" },
+        "mean": { "type": "number" },
+        "p50": { "type": "number" },
+        "p95": { "type": "number" },
+        "p99": { "type": "number" },
+        "max": { "type": "number" }
+      }
+    },
+    "level": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "concurrency",
+        "requested_concurrency",
+        "max_in_flight_observed",
+        "asgi_in_flight_is_not_parallel_sql",
+        "batches",
+        "incomplete_batches",
+        "samples_ok",
+        "samples_error",
+        "status_counts",
+        "error_classes",
+        "metrics",
+        "throughput_rps"
+      ],
+      "properties": {
+        "concurrency": { "type": "integer", "minimum": 1, "maximum": 25 },
+        "requested_concurrency": { "type": "integer", "minimum": 1, "maximum": 25 },
+        "max_in_flight_observed": { "type": "integer", "minimum": 0 },
+        "asgi_in_flight_is_not_parallel_sql": { "type": "boolean", "const": true },
+        "batches": { "type": "integer", "minimum": 0 },
+        "batches_requested": { "type": "integer", "minimum": 1 },
+        "incomplete_batches": { "type": "integer", "minimum": 0 },
+        "samples_ok": { "type": "integer", "minimum": 0 },
+        "samples_error": { "type": "integer", "minimum": 0 },
+        "status_counts": {
+          "type": "object",
+          "additionalProperties": { "type": "integer", "minimum": 0 }
+        },
+        "error_classes": {
+          "type": "object",
+          "additionalProperties": { "type": "integer", "minimum": 0 }
+        },
+        "metrics": { "type": "object" },
+        "throughput_rps": {
+          "anyOf": [{ "$ref": "#/$defs/summary" }, { "type": "null" }]
+        },
+        "notes_observed": { "type": "object" },
+        "batch_wall_seconds": {
+          "type": "array",
+          "items": { "type": "number" }
+        },
+        "batch_throughput_rps": {
+          "type": "array",
+          "items": { "type": "number" }
+        },
+        "aborted_reason": { "type": ["string", "null"] },
+        "integrity_before": { "type": "object" },
+        "integrity_after": { "type": "object" }
+      }
+    }
+  }
+}
