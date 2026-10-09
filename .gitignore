@@ -74,3 +74,6 @@ logs/
 .design-ref/
 src/constitution_memorizer/web/static/_prototype.html
 src/constitution_memorizer/web/static/support.js
+
+# Stage 2 S2-0 WS6 machine timings (schema sample lives under docs/performance/)
+artifacts/playground-performance-baseline.json

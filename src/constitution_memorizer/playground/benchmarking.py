@@ -1,0 +1,1049 @@
+"""Playground Stage 2 WS6 benchmark library (execution T13).
+
+Statistics, fail-closed production guard, deterministic fixtures, in-process
+HTTP runner, and JSON reporting. Does not change product behavior or T2–T9
+instrumentation. PostgreSQL EXPLAIN is T15/WS8. BNSS cold/warm is T14/WS7.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import math
+import os
+import re
+import sqlite3
+import sys
+from dataclasses import dataclass
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any, Callable, Iterable, Mapping
+from urllib.parse import unquote, urlparse
+from uuid import UUID
+
+PLAYGROUND_TEST_NOW = datetime(2026, 9, 16, 12, 0, tzinfo=timezone.utc)
+BENCH_USER = UUID("11111111-1111-4111-8111-111111111111")
+BENCH_EMAIL = "bench@example.invalid"
+SCHEMA_VERSION = 1
+SCENARIOS = (
+    "plus-10",
+    "pro-30",
+    "due-heavy",
+    "learned-heavy",
+    "source-review",
+    "law-workspace",
+)
+ELIGIBLE_LAWS = ("bns", "bnss", "ndps", "uapa", "pss", "mtp")
+DEFAULT_JSON_PATH = Path("artifacts/playground-performance-baseline.json")
+PRODUCTION_ENVS = frozenset({"staging", "production"})
+PRODUCTION_HOSTS = ("recall-the-c.in", "recallthec.in")
+SOURCE_REVIEW_LAW = "ndps"
+LAW_WORKSPACE_LAW = "bnss"
+REPO_ROOT = Path(__file__).resolve().parents[3]
+MINI_UNITS = REPO_ROOT / "tests" / "fixtures" / "learning" / "mini_units.json"
+
+PRIMARY_ROUTES: dict[str, tuple[str, str]] = {
+    "plus-10": ("GET", "/playground"),
+    "pro-30": ("GET", "/playground"),
+    "due-heavy": ("GET", "/dashboard"),
+    "learned-heavy": ("GET", "/playground"),
+    "source-review": ("GET", f"/playground/laws/{SOURCE_REVIEW_LAW}/source-review"),
+    "law-workspace": ("GET", f"/playground/laws/{LAW_WORKSPACE_LAW}"),
+}
+
+_SENSITIVE = re.compile(
+    r"@|[A-Fa-f0-9]{16,}|Bearer\s|eyJ|rtc_device|hmac|token=",
+    re.IGNORECASE,
+)
+_BOUNDED_NOTE_VALUES: dict[str, frozenset[str]] | None = None
+_CLOCK_INSTALLED = False
+_STUBS_INSTALLED = False
+
+
+class BenchmarkAborted(Exception):
+    """Fail-closed abort. ``exit_code`` is 1 unless argparse already used 2."""
+
+    def __init__(self, message: str, *, exit_code: int = 1) -> None:
+        super().__init__(message)
+        self.exit_code = exit_code
+        self.message = message
+
+
+def percentile_nearest_rank(sorted_values: list[float], p: float) -> float:
+    """Nearest-rank percentile: rank = ceil(p/100 × n), 1-indexed."""
+    n = len(sorted_values)
+    if n == 0:
+        raise ValueError("percentile_nearest_rank requires at least one value")
+    if not math.isfinite(p) or p <= 0 or p > 100:
+        raise ValueError(f"percentile p must be in (0, 100], got {p!r}")
+    rank = max(1, min(n, math.ceil(p / 100.0 * n)))
+    return float(sorted_values[rank - 1])
+
+
+def summarize_numbers(values: Iterable[float]) -> dict[str, float | int]:
+    data = [float(v) for v in values]
+    if not data:
+        raise ValueError("summarize_numbers requires at least one value")
+    ordered = sorted(data)
+    return {
+        "count": len(ordered),
+        "min": ordered[0],
+        "mean": sum(ordered) / len(ordered),
+        "p50": percentile_nearest_rank(ordered, 50),
+        "p95": percentile_nearest_rank(ordered, 95),
+        "p99": percentile_nearest_rank(ordered, 99),
+        "max": ordered[-1],
+    }
+
+
+def synthetic_law_ids(count: int) -> tuple[str, ...]:
+    if count < 0:
+        raise ValueError("synthetic count must be >= 0")
+    return tuple(f"syn-{n}" for n in range(1, count + 1))
+
+
+def _synthetic_catalog_entry(law_id: str):
+    from constitution_memorizer.web.law_catalog import CatalogLaw
+
+    n = int(law_id.split("-", 1)[1])
+    return CatalogLaw(
+        id=law_id,
+        title=f"Synthetic fixture {n}",
+        short_title=f"Syn {n}",
+        year=2026,
+        aliases=(),
+        subjects=("synthetic",),
+        primary_subject="synthetic",
+        display_order=900 + n,
+        scope_label="",
+        primary_content="full_act",
+        full_act_ref=None,
+        key_provisions_ref=None,
+        tag_line="",
+        href="/laws",
+        search_blob=law_id,
+        status="current",
+    )
+
+
+def install_synthetic_catalogue_stubs() -> None:
+    """Metadata-only syn-* titles. Does not mark them Playground-eligible."""
+    global _STUBS_INSTALLED
+    if _STUBS_INSTALLED:
+        return
+    from constitution_memorizer.playground import eligibility, routes, schedule, service, view
+
+    original = eligibility.playground_catalogue_law
+
+    def wrapped(law_id: str):
+        text = str(law_id or "")
+        if re.fullmatch(r"syn-[1-9][0-9]*", text):
+            return _synthetic_catalog_entry(text)
+        return original(law_id)
+
+    for mod in (eligibility, view, routes, service, schedule):
+        setattr(mod, "playground_catalogue_law", wrapped)
+    _STUBS_INSTALLED = True
+
+
+def install_benchmark_clock() -> None:
+    global _CLOCK_INSTALLED
+    if _CLOCK_INSTALLED:
+        return
+    from constitution_memorizer.entitlements import service as entitlement_service
+    from constitution_memorizer.playground.roster import period as period_mod
+
+    real_period_utc = period_mod._as_utc
+    real_ent_utc = entitlement_service._utc
+
+    def frozen_period_utc(now):
+        return real_period_utc(now or PLAYGROUND_TEST_NOW)
+
+    def frozen_ent_utc(now):
+        return real_ent_utc(now or PLAYGROUND_TEST_NOW)
+
+    period_mod._as_utc = frozen_period_utc
+    entitlement_service._utc = frozen_ent_utc
+    _CLOCK_INSTALLED = True
+
+
+def host_is_production_looking(host: str) -> bool:
+    """DNS-label match on recall-the-c.in / recallthec.in and subdomains."""
+    cleaned = str(host or "").strip().lower().rstrip(".")
+    if not cleaned:
+        return False
+    for domain in PRODUCTION_HOSTS:
+        if cleaned == domain or cleaned.endswith("." + domain):
+            return True
+    return False
+
+
+def _hostname_from_base_url(url: str) -> str:
+    text = str(url or "").strip()
+    if not text:
+        return ""
+    parsed = urlparse(text if "://" in text else "http://" + text)
+    return (parsed.hostname or "").lower()
+
+
+def sqlite_filesystem_path(url: str) -> Path:
+    raw = str(url or "").strip()
+    parsed = urlparse(raw)
+    if parsed.scheme not in {"sqlite", "sqlite3"}:
+        raise BenchmarkAborted(
+            "T13 automated seeding requires a sqlite:/// URL; "
+            "PostgreSQL belongs to T15/WS8"
+        )
+    if parsed.query or parsed.fragment:
+        raise BenchmarkAborted("SQLite URL must not include query or fragment")
+    if parsed.netloc:
+        raise BenchmarkAborted("unexpected SQLite URL netloc")
+    path = unquote(parsed.path or "")
+    lowered = path.lower()
+    if ":memory:" in raw.lower() or lowered in {"/:memory:", "/memory:"}:
+        raise BenchmarkAborted(
+            "T13 requires a filesystem SQLite file, not :memory:"
+        )
+    if path.startswith("//"):
+        fs = Path(path[1:])
+    elif path.startswith("/"):
+        fs = Path(path[1:])
+    else:
+        fs = Path(path)
+    if not str(fs):
+        raise BenchmarkAborted("SQLite URL is missing a filesystem path")
+    return fs
+
+
+def assert_fresh_sqlite(url: str) -> Path:
+    path = sqlite_filesystem_path(url)
+    if path.exists() and path.is_dir():
+        raise BenchmarkAborted(f"SQLite path is a directory: {path}")
+    if path.exists() and path.stat().st_size > 0:
+        raise BenchmarkAborted(
+            "refusing nonempty SQLite database; T13 requires a fresh empty file"
+        )
+    return path
+
+
+def resolve_database_url(
+    cli_url: str | None, environ: Mapping[str, str] | None = None
+) -> str:
+    env = os.environ if environ is None else environ
+    url = str(cli_url or "").strip() or str(env.get("BENCHMARK_DATABASE_URL") or "").strip()
+    if not url:
+        raise BenchmarkAborted(
+            "require --database-url or BENCHMARK_DATABASE_URL "
+            "(never process DATABASE_URL)"
+        )
+    return url
+
+
+def evaluate_safety_guard(
+    *,
+    requested_app_env: str | None,
+    accept_nontest: bool,
+    explain: bool,
+    environ: Mapping[str, str] | None = None,
+    multiuser: bool = True,
+) -> None:
+    """Abort before app creation or DB access when the environment is unsafe."""
+    env = os.environ if environ is None else environ
+    if explain:
+        raise BenchmarkAborted(
+            "EXPLAIN is WS8/T15; not implemented in T13"
+        )
+    process_app_env = str(env.get("APP_ENV") or "").strip().lower()
+    requested = str(requested_app_env or "").strip().lower()
+    allow_nontest = str(env.get("BENCHMARK_ALLOW_NONTEST") or "").strip() == "1"
+    if not requested and not allow_nontest:
+        raise BenchmarkAborted(
+            "--app-env test is required unless BENCHMARK_ALLOW_NONTEST=1"
+        )
+    env_is_prod = process_app_env in PRODUCTION_ENVS or requested in PRODUCTION_ENVS
+    base_url = str(env.get("APP_BASE_URL") or "").strip()
+    host_blocked = bool(multiuser) and host_is_production_looking(
+        _hostname_from_base_url(base_url)
+    )
+    if env_is_prod or host_blocked:
+        if not (accept_nontest and allow_nontest):
+            raise BenchmarkAborted(
+                "refusing staging/production APP_ENV or production-looking "
+                "APP_BASE_URL without --i-accept-nontest-db and "
+                "BENCHMARK_ALLOW_NONTEST=1"
+            )
+
+
+def build_arg_parser() -> argparse.ArgumentParser:
+    parser = argparse.ArgumentParser(
+        prog="benchmark_playground.py",
+        description=(
+            "Playground WS6 in-process benchmark CLI. "
+            "Not part of the default pytest run. No duration SLAs."
+        ),
+    )
+    parser.add_argument(
+        "--scenario",
+        choices=SCENARIOS,
+        help="Fixture and primary HTTP route",
+    )
+    parser.add_argument("--warmup", type=int, default=5)
+    parser.add_argument("--iterations", type=int, default=50)
+    parser.add_argument(
+        "--database-url",
+        default=None,
+        help="Required sqlite:/// path. Never falls back to DATABASE_URL.",
+    )
+    parser.add_argument(
+        "--app-env",
+        default=None,
+        help="Required test unless BENCHMARK_ALLOW_NONTEST=1",
+    )
+    parser.add_argument(
+        "--json",
+        default=str(DEFAULT_JSON_PATH),
+        help="Machine JSON output path (gitignored instance file)",
+    )
+    parser.add_argument(
+        "--explain",
+        action="store_true",
+        help="Parsed then refused until T15/WS8",
+    )
+    parser.add_argument(
+        "--quick",
+        action="store_true",
+        help="Override warmup=1 and iterations=3",
+    )
+    parser.add_argument(
+        "--i-accept-nontest-db",
+        action="store_true",
+        dest="accept_nontest",
+        help="Must pair with BENCHMARK_ALLOW_NONTEST=1; still SQLite-only",
+    )
+    return parser
+
+
+@dataclass(frozen=True)
+class BenchmarkRunConfig:
+    scenario: str
+    warmup: int
+    iterations: int
+    database_url: str
+    app_env: str | None
+    json_path: Path | None
+    explain: bool
+    accept_nontest: bool
+
+
+def config_from_args(
+    args: argparse.Namespace, environ: Mapping[str, str] | None = None
+) -> BenchmarkRunConfig:
+    if args.explain:
+        raise BenchmarkAborted("EXPLAIN is WS8/T15; not implemented in T13")
+    if not args.scenario:
+        raise BenchmarkAborted("--scenario is required")
+    warmup = int(args.warmup)
+    iterations = int(args.iterations)
+    if args.quick:
+        warmup, iterations = 1, 3
+    if warmup < 0 or iterations < 1:
+        raise BenchmarkAborted("warmup must be >= 0 and iterations >= 1")
+    url = resolve_database_url(args.database_url, environ)
+    json_raw = str(getattr(args, "json", "") or "").strip()
+    json_path = Path(json_raw) if json_raw else None
+    return BenchmarkRunConfig(
+        scenario=str(args.scenario),
+        warmup=warmup,
+        iterations=iterations,
+        database_url=url,
+        app_env=args.app_env,
+        json_path=json_path,
+        explain=bool(args.explain),
+        accept_nontest=bool(args.accept_nontest),
+    )
+
+
+def _bounded_note_sets() -> dict[str, frozenset[str]]:
+    global _BOUNDED_NOTE_VALUES
+    if _BOUNDED_NOTE_VALUES is None:
+        from constitution_memorizer.web.request_context import (
+            PLAYGROUND_ACCESS_RESULTS,
+            PLAYGROUND_DEVICE_RESULTS,
+            PLAYGROUND_LAW_STATES,
+            PLAYGROUND_ROSTER_RESULTS,
+            PLAYGROUND_SUBSCRIPTION_DISPOSITIONS,
+        )
+
+        _BOUNDED_NOTE_VALUES = {
+            "playground_access_result": PLAYGROUND_ACCESS_RESULTS,
+            "playground_subscription_disposition": PLAYGROUND_SUBSCRIPTION_DISPOSITIONS,
+            "playground_device_result": PLAYGROUND_DEVICE_RESULTS,
+            "playground_roster_result": PLAYGROUND_ROSTER_RESULTS,
+            "playground_law_state": PLAYGROUND_LAW_STATES,
+            "auth_state": frozenset({"single_user", "authed", "guest"}),
+            "bare_act_cache": frozenset({"hit", "miss"}),
+        }
+    return _BOUNDED_NOTE_VALUES
+
+
+class HydrationProbe:
+    """Counts get_bare_act calls. Fixture construction must stay at zero."""
+
+    def __init__(self) -> None:
+        self.calls = 0
+        self._restore: list[tuple[Any, str, Any]] = []
+
+    def install(self) -> None:
+        from constitution_memorizer.web import bare_acts
+
+        probe = self
+        real = bare_acts.get_bare_act
+
+        def wrapped(law_id: str):
+            probe.calls += 1
+            return real(law_id)
+
+        bare_acts.get_bare_act = wrapped  # type: ignore[method-assign]
+        self._restore.append((bare_acts, "get_bare_act", real))
+
+    def remove(self) -> None:
+        for obj, name, value in reversed(self._restore):
+            setattr(obj, name, value)
+        self._restore.clear()
+
+
+def _settings(*, app_env: str) -> Any:
+    from constitution_memorizer.multiuser.settings import MultiUserSettings
+
+    return MultiUserSettings(
+        _env_file=None,
+        APP_ENV=app_env,
+        MULTIUSER_ENABLED="true",
+        AUTH_GOOGLE_ENABLED="true",
+        AUTH_PHONE_ENABLED="true",
+        SESSION_SECRET="benchmark-secret",
+        SUPABASE_URL="http://example.invalid",
+        SUPABASE_ANON_KEY="anon",
+        DATABASE_URL="",
+        COOKIE_SECURE="false",
+        APP_BASE_URL="http://127.0.0.1:8010",
+    )
+
+
+def create_benchmark_app(db_path: Path, *, app_env: str = "test"):
+    from constitution_memorizer.auth.fake_provider import FakeAuthProvider
+    from constitution_memorizer.auth.sessions import InMemorySessionStore
+    from constitution_memorizer.multiuser.settings import clear_settings_cache
+    from constitution_memorizer.web.app import create_app
+
+    install_benchmark_clock()
+    install_synthetic_catalogue_stubs()
+    clear_settings_cache()
+    units = MINI_UNITS if MINI_UNITS.is_file() else None
+    provider = FakeAuthProvider()
+    provider.seed_google_user(
+        user_id=BENCH_USER,
+        email=BENCH_EMAIL,
+        display_name="Benchmark User",
+        avatar_url=None,
+    )
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+    return create_app(
+        units_path=units,
+        db_path=db_path,
+        multiuser=True,
+        multiuser_settings=_settings(app_env=app_env),
+        auth_provider=provider,
+        session_store=InMemorySessionStore(),
+    )
+
+
+async def sign_in_benchmark_client(client) -> None:
+    """Same-task ASGI client so T2 ContextVar snapshots remain visible."""
+    from constitution_memorizer.auth.sessions import SESSION_COOKIE_NAME
+
+    start = await client.get("/auth/google/start")
+    state = start.cookies.get("rtc_oauth_state")
+    await client.get(f"/auth/callback?code=fake-google-code&state={state}")
+    if not client.cookies.get(SESSION_COOKIE_NAME):
+        raise BenchmarkAborted("benchmark sign-in did not set a session cookie")
+
+
+def _subscribe(app, *, tier: str) -> None:
+    app.state.subscriptions.create_subscription_record(
+        BENCH_USER,
+        tier=tier,
+        status="active",
+        billing_period_start=datetime(2026, 9, 15, tzinfo=timezone.utc),
+        billing_period_end=datetime(2026, 10, 15, tzinfo=timezone.utc),
+        is_current=True,
+    )
+
+
+def _ensure_period(app, *, tier: str, law_limit: int) -> None:
+    from constitution_memorizer.playground.roster.period import playground_month_bounds
+
+    start, end = playground_month_bounds(PLAYGROUND_TEST_NOW)
+    result = app.state.roster._repo.ensure_period(
+        BENCH_USER,
+        period_start=start,
+        period_end=end,
+        tier_snapshot=tier,
+        law_limit=law_limit,
+        now=PLAYGROUND_TEST_NOW,
+    )
+    del result
+
+
+def _consume(app, law_ids: Iterable[str], *, law_limit: int) -> None:
+    from constitution_memorizer.playground.roster.period import playground_month_bounds
+
+    start, _end = playground_month_bounds(PLAYGROUND_TEST_NOW)
+    for law_id in law_ids:
+        result = app.state.roster._repo.consume_law(
+            BENCH_USER,
+            period_start=start,
+            law_id=law_id,
+            law_limit=law_limit,
+            allow_new=True,
+            now=PLAYGROUND_TEST_NOW,
+        )
+        if not result.ok:
+            raise BenchmarkAborted(
+                f"consume_law({law_id}) failed: {result.status}"
+            )
+
+
+def _activate_or_stub(app, law_id: str) -> None:
+    from constitution_memorizer.playground.eligibility import is_playground_eligible_law
+    from constitution_memorizer.playground.service import activate_law
+
+    overlay = app.state.playground
+    if is_playground_eligible_law(law_id):
+        activate_law(overlay, BENCH_USER, law_id)
+        return
+    overlay.add_item(
+        BENCH_USER,
+        law_id,
+        source_version="stub",
+        law_source_hash="stub",
+    )
+
+
+def _locators(law_id: str, count: int) -> list[str]:
+    return [f"{law_id}:section:{n}" for n in range(1, count + 1)]
+
+
+def _bulk_overlay(
+    app,
+    law_id: str,
+    locators: list[str],
+    *,
+    status: str = "new",
+    next_revision: str | None = None,
+    complete_modes: bool = False,
+    source_changes: int = 0,
+    revision_history: bool = False,
+) -> None:
+    from constitution_memorizer.playground.learning.modes import PLAYGROUND_LEARN_MODES
+    from constitution_memorizer.progress.user_ids import as_user_id
+
+    overlay = app.state.playground
+    uid = as_user_id(BENCH_USER)
+    now = PLAYGROUND_TEST_NOW.replace(microsecond=0).isoformat()
+    due = next_revision or None
+    rows = [(loc, "v1", "hash-v1") for loc in locators]
+    overlay.replace_selection(BENCH_USER, law_id, rows)
+    conn: sqlite3.Connection = overlay.conn
+    progress_rows = [
+        (
+            uid,
+            law_id,
+            loc,
+            status,
+            1 if complete_modes else 0,
+            1 if status in {"learned", "review"} else 0,
+            now if status in {"learned", "review"} else None,
+            due,
+            1 if due else 0,
+            "v1",
+            "hash-v1",
+            now,
+            now[:10] if status in {"learned", "review"} else None,
+        )
+        for loc in locators
+    ]
+    conn.executemany(
+        """
+        INSERT OR REPLACE INTO user_playground_progress (
+            user_id, law_id, source_locator, status, cloze_done,
+            times_completed, last_completed, next_revision, interval_days,
+            source_version, source_hash, updated_at, learned_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        progress_rows,
+    )
+    if complete_modes:
+        mode_rows = []
+        for loc in locators:
+            for mode in PLAYGROUND_LEARN_MODES:
+                mode_rows.append(
+                    (
+                        uid,
+                        law_id,
+                        loc,
+                        mode,
+                        "completed",
+                        1,
+                        now,
+                        now,
+                        now,
+                        "v1",
+                        "hash-v1",
+                        now,
+                        now,
+                    )
+                )
+        conn.executemany(
+            """
+            INSERT OR REPLACE INTO user_playground_mode_progress (
+                user_id, law_id, source_locator, mode, status, attempt_count,
+                first_started_at, last_attempt_at, completed_at,
+                source_version, source_hash, created_at, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            mode_rows,
+        )
+    if revision_history:
+        rev_rows = []
+        for loc in locators[: min(20, len(locators))]:
+            for mode in PLAYGROUND_LEARN_MODES[:2]:
+                rev_rows.append(
+                    (
+                        uid,
+                        law_id,
+                        loc,
+                        1,
+                        mode,
+                        "completed",
+                        1,
+                        now,
+                        now,
+                        now,
+                        "v1",
+                        "hash-v1",
+                        now,
+                        now,
+                    )
+                )
+        conn.executemany(
+            """
+            INSERT OR REPLACE INTO user_playground_revision_mode_progress (
+                user_id, law_id, source_locator, rung_days, mode, status,
+                attempt_count, first_started_at, last_attempt_at, completed_at,
+                source_version, source_hash, created_at, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            rev_rows,
+        )
+    if source_changes:
+        change_rows = []
+        for loc in locators[:source_changes]:
+            change_rows.append(
+                (
+                    uid,
+                    law_id,
+                    loc,
+                    "stale",
+                    "stale",
+                    "stale",
+                    "old-hash",
+                    "current",
+                    "current",
+                    "new-hash",
+                    "changed",
+                    "pending",
+                    1,
+                    1,
+                    now,
+                    now,
+                    now,
+                )
+            )
+        conn.executemany(
+            """
+            INSERT OR REPLACE INTO user_playground_source_change (
+                user_id, law_id, source_locator, detected_source_version,
+                detected_law_source_hash, previous_source_version,
+                previous_section_hash, current_source_version,
+                current_law_source_hash, current_section_hash, change_kind,
+                status, had_learning, had_selection, detected_at,
+                created_at, updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            change_rows,
+        )
+    conn.commit()
+
+
+def _roster_count(app) -> int:
+    from constitution_memorizer.playground.roster.period import playground_month_bounds
+
+    start, _end = playground_month_bounds(PLAYGROUND_TEST_NOW)
+    return len(app.state.roster._repo.list_items(BENCH_USER, start))
+
+
+def build_plus_10_fixture(app) -> dict[str, Any]:
+    """Plus, 6 real + 4 syn-* roster rows. Mixed due/learned/source-change on real laws."""
+    _subscribe(app, tier="plus")
+    _ensure_period(app, tier="plus", law_limit=10)
+    syn = synthetic_law_ids(4)
+    laws = list(ELIGIBLE_LAWS) + list(syn)
+    _consume(app, laws, law_limit=10)
+    for law_id in laws:
+        _activate_or_stub(app, law_id)
+    _bulk_overlay(
+        app,
+        "bns",
+        _locators("bns", 8),
+        status="learned",
+        next_revision="2026-09-01",
+        complete_modes=True,
+    )
+    _bulk_overlay(
+        app,
+        "bnss",
+        _locators("bnss", 8),
+        status="learned",
+        complete_modes=True,
+    )
+    _bulk_overlay(
+        app,
+        "ndps",
+        _locators("ndps", 8),
+        status="learning",
+        source_changes=4,
+    )
+    _bulk_overlay(app, "uapa", _locators("uapa", 4), status="new")
+    return {"roster_count": _roster_count(app), "law_ids": laws, "tier": "plus"}
+
+
+def build_pro_30_fixture(app) -> dict[str, Any]:
+    """Pro, 6 real + 24 syn-* rows. Heavy overlay on synthetic ids only."""
+    _subscribe(app, tier="pro")
+    _ensure_period(app, tier="pro", law_limit=30)
+    syn = synthetic_law_ids(24)
+    laws = list(ELIGIBLE_LAWS) + list(syn)
+    _consume(app, laws, law_limit=30)
+    for law_id in laws:
+        _activate_or_stub(app, law_id)
+    for law_id in syn:
+        _bulk_overlay(
+            app,
+            law_id,
+            _locators(law_id, 20),
+            status="learned",
+            next_revision="2026-09-10",
+            complete_modes=True,
+            revision_history=True,
+        )
+    return {"roster_count": _roster_count(app), "law_ids": laws, "tier": "pro"}
+
+
+def build_due_heavy_fixture(app) -> dict[str, Any]:
+    _subscribe(app, tier="plus")
+    _ensure_period(app, tier="plus", law_limit=10)
+    laws = list(ELIGIBLE_LAWS[:3])
+    _consume(app, laws, law_limit=10)
+    for law_id in laws:
+        _activate_or_stub(app, law_id)
+        _bulk_overlay(
+            app,
+            law_id,
+            _locators(law_id, 40),
+            status="learned",
+            next_revision="2026-09-01",
+            complete_modes=True,
+        )
+    return {"roster_count": _roster_count(app), "law_ids": laws, "tier": "plus"}
+
+
+def build_learned_heavy_fixture(app) -> dict[str, Any]:
+    _subscribe(app, tier="plus")
+    _ensure_period(app, tier="plus", law_limit=10)
+    laws = list(ELIGIBLE_LAWS)
+    _consume(app, laws, law_limit=10)
+    for law_id in laws:
+        _activate_or_stub(app, law_id)
+        _bulk_overlay(
+            app,
+            law_id,
+            _locators(law_id, 30),
+            status="learned",
+            complete_modes=True,
+        )
+    return {"roster_count": _roster_count(app), "law_ids": laws, "tier": "plus"}
+
+
+def build_source_review_fixture(app) -> dict[str, Any]:
+    _subscribe(app, tier="plus")
+    _ensure_period(app, tier="plus", law_limit=10)
+    _consume(app, [SOURCE_REVIEW_LAW], law_limit=10)
+    overlay = app.state.playground
+    overlay.add_item(
+        BENCH_USER,
+        SOURCE_REVIEW_LAW,
+        source_version="stale",
+        law_source_hash="stale",
+    )
+    locators = _locators(SOURCE_REVIEW_LAW, 40)
+    _bulk_overlay(
+        app,
+        SOURCE_REVIEW_LAW,
+        locators,
+        status="learned",
+        complete_modes=True,
+        source_changes=24,
+    )
+    return {
+        "roster_count": _roster_count(app),
+        "law_ids": [SOURCE_REVIEW_LAW],
+        "tier": "plus",
+    }
+
+
+def build_law_workspace_fixture(app) -> dict[str, Any]:
+    _subscribe(app, tier="plus")
+    _ensure_period(app, tier="plus", law_limit=10)
+    _consume(app, [LAW_WORKSPACE_LAW], law_limit=10)
+    _activate_or_stub(app, LAW_WORKSPACE_LAW)
+    _bulk_overlay(
+        app,
+        LAW_WORKSPACE_LAW,
+        _locators(LAW_WORKSPACE_LAW, 40),
+        status="learned",
+        complete_modes=True,
+        revision_history=True,
+    )
+    return {
+        "roster_count": _roster_count(app),
+        "law_ids": [LAW_WORKSPACE_LAW],
+        "tier": "plus",
+    }
+
+
+SCENARIO_BUILDERS: dict[str, Callable[[Any], dict[str, Any]]] = {
+    "plus-10": build_plus_10_fixture,
+    "pro-30": build_pro_30_fixture,
+    "due-heavy": build_due_heavy_fixture,
+    "learned-heavy": build_learned_heavy_fixture,
+    "source-review": build_source_review_fixture,
+    "law-workspace": build_law_workspace_fixture,
+}
+
+
+def seed_scenario(app, scenario: str) -> dict[str, Any]:
+    builder = SCENARIO_BUILDERS.get(scenario)
+    if builder is None:
+        raise BenchmarkAborted(f"unknown scenario: {scenario}")
+    probe = HydrationProbe()
+    probe.install()
+    try:
+        info = builder(app)
+    finally:
+        probe.remove()
+    if probe.calls:
+        raise BenchmarkAborted(
+            f"fixture {scenario} called get_bare_act {probe.calls} time(s)"
+        )
+    return info
+
+
+def collect_snapshots(
+    request: Callable[[], Any],
+    *,
+    warmup: int,
+    iterations: int,
+) -> list[Any]:
+    from constitution_memorizer.web.request_context import get_last_request_performance
+
+    def _one(label: str):
+        response = request()
+        status = int(getattr(response, "status_code", 0) or 0)
+        if status < 200 or status >= 300:
+            raise BenchmarkAborted(f"{label} HTTP {status}")
+        snap = get_last_request_performance()
+        if snap is None:
+            raise BenchmarkAborted(f"{label} missing RequestPerformanceSnapshot")
+        return snap
+
+    for index in range(warmup):
+        _one(f"warmup {index + 1}")
+    return [_one(f"iteration {index + 1}") for index in range(iterations)]
+
+
+def _note_tokens(snapshots: list[Any]) -> dict[str, list[str]]:
+    allowed = _bounded_note_sets()
+    observed: dict[str, set[str]] = {name: set() for name in allowed}
+    for snap in snapshots:
+        notes = getattr(snap, "notes", {}) or {}
+        for name, value in notes.items():
+            text = str(value)
+            if name not in allowed:
+                continue
+            if _SENSITIVE.search(text):
+                continue
+            if text in allowed[name]:
+                observed[name].add(text)
+    return {name: sorted(values) for name, values in observed.items() if values}
+
+
+def snapshots_to_report(
+    snapshots: list[Any],
+    *,
+    scenario: str,
+    warmup: int,
+    iterations: int,
+    database_backend: str = "sqlite",
+    method: str,
+) -> dict[str, Any]:
+    if not snapshots:
+        raise BenchmarkAborted("no snapshots to report")
+    path_group = str(snapshots[0].path_group)
+    status_counts: dict[str, int] = {}
+    for snap in snapshots:
+        key = str(int(snap.status_code))
+        status_counts[key] = status_counts.get(key, 0) + 1
+    metrics: dict[str, Any] = {
+        "total_ms": summarize_numbers(snap.total_ms for snap in snapshots),
+        "playground_repo_round_trips": summarize_numbers(
+            int((snap.counters or {}).get("playground_repo_round_trips", 0))
+            for snap in snapshots
+        ),
+        "playground_db_reads": summarize_numbers(
+            int((snap.counters or {}).get("playground_db_reads", 0))
+            for snap in snapshots
+        ),
+    }
+    stage_names: set[str] = set()
+    for snap in snapshots:
+        stage_names.update((snap.timings or {}).keys())
+    for name in sorted(stage_names):
+        metrics[name] = summarize_numbers(
+            float((snap.timings or {}).get(name, (0.0, 0))[0]) for snap in snapshots
+        )
+    payload = {
+        "schema_version": SCHEMA_VERSION,
+        "scenario": scenario,
+        "app_env": "test",
+        "database_backend": database_backend,
+        "warmup_discarded": warmup,
+        "iterations": iterations,
+        "path_group": path_group,
+        "method": method,
+        "status_counts": status_counts,
+        "metrics": metrics,
+        "stages_present": sorted(stage_names),
+        "notes_observed": _note_tokens(snapshots),
+    }
+    blob = json.dumps(payload)
+    if _SENSITIVE.search(blob) and "@" in blob:
+        raise BenchmarkAborted("JSON report would include sensitive data")
+    if BENCH_EMAIL in blob:
+        raise BenchmarkAborted("JSON report must not include fixture email")
+    return payload
+
+
+def write_json_report(path: Path, payload: Mapping[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def run_benchmark(
+    config: BenchmarkRunConfig, environ: Mapping[str, str] | None = None
+) -> dict[str, Any]:
+    import asyncio
+
+    from httpx import ASGITransport, AsyncClient
+
+    evaluate_safety_guard(
+        requested_app_env=config.app_env,
+        accept_nontest=config.accept_nontest,
+        explain=config.explain,
+        environ=environ,
+    )
+    db_path = assert_fresh_sqlite(config.database_url)
+    app_env = str(config.app_env or "test").strip().lower() or "test"
+    if app_env not in {"test", "development"}:
+        app_env = "test"
+    app = create_benchmark_app(db_path, app_env=app_env)
+    seed_scenario(app, config.scenario)
+    method, path = PRIMARY_ROUTES[config.scenario]
+    if method != "GET":
+        raise BenchmarkAborted(f"T13 primary routes are GET-only, got {method}")
+
+    async def _run() -> list[Any]:
+        transport = ASGITransport(app=app)
+        async with AsyncClient(
+            transport=transport,
+            base_url="http://testserver",
+            follow_redirects=False,
+        ) as client:
+            await sign_in_benchmark_client(client)
+
+            async def _request():
+                return await client.get(path)
+
+            snapshots = []
+            from constitution_memorizer.web.request_context import (
+                get_last_request_performance,
+            )
+
+            for index in range(config.warmup):
+                response = await _request()
+                status = int(response.status_code)
+                if status < 200 or status >= 300:
+                    raise BenchmarkAborted(f"warmup {index + 1} HTTP {status}")
+            for index in range(config.iterations):
+                response = await _request()
+                status = int(response.status_code)
+                if status < 200 or status >= 300:
+                    raise BenchmarkAborted(f"iteration {index + 1} HTTP {status}")
+                snap = get_last_request_performance()
+                if snap is None:
+                    raise BenchmarkAborted(
+                        f"iteration {index + 1} missing RequestPerformanceSnapshot"
+                    )
+                snapshots.append(snap)
+            return snapshots
+
+    snapshots = asyncio.run(_run())
+    payload = snapshots_to_report(
+        snapshots,
+        scenario=config.scenario,
+        warmup=config.warmup,
+        iterations=config.iterations,
+        method=method,
+    )
+    if config.json_path is not None:
+        write_json_report(config.json_path, payload)
+    return payload
+
+
+def run_cli(argv: list[str] | None = None, environ: Mapping[str, str] | None = None) -> int:
+    parser = build_arg_parser()
+    try:
+        args = parser.parse_args(argv)
+    except SystemExit as exc:
+        code = exc.code
+        if code in (0, 2, None):
+            return 0 if code in (0, None) else 2
+        return int(code)
+    try:
+        env = os.environ if environ is None else environ
+        config = config_from_args(args, env)
+        run_benchmark(config, environ=env)
+    except BenchmarkAborted as exc:
+        print(exc.message, file=sys.stderr)
+        return exc.exit_code
+    return 0
