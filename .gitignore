@@ -86,3 +86,6 @@ artifacts/playground-mutations.json
 artifacts/playground-mutations-*.json
 artifacts/playground-webhooks.json
 artifacts/playground-webhooks-*.json
+# Stage 2 S2-0 WS11 T20 operator page-weight JSON
+artifacts/playground-page-weight.json
+artifacts/playground-page-weight-*.json

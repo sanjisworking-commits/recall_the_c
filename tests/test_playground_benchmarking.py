@@ -1,4 +1,4 @@
-"""WS6 / WS7 / WS8 / WS9 / WS10 (T13–T19) benchmark harness tests. No duration assertions."""
+"""WS6 / WS7 / WS8 / WS9 / WS10 / WS11 (T13–T20) benchmark harness tests. No duration assertions."""
 
 from __future__ import annotations
 
@@ -32,7 +32,12 @@ from constitution_memorizer.playground.benchmarking import (
     DEFAULT_JSON_PATH,
     DEFAULT_MUTATION_WAVES,
     DEFAULT_MUTATIONS_JSON_PATH,
+    DEFAULT_PAGE_WEIGHT_JSON_PATH,
     DEFAULT_WEBHOOKS_JSON_PATH,
+    GZIP_COMPRESSLEVEL,
+    PAGE_WEIGHT_MEASUREMENT_MODE,
+    PAGE_WEIGHT_STATIC_DIR,
+    WS11_NAMED_FILES,
     MAX_CONCURRENCY,
     ELIGIBLE_LAWS,
     EXPLAIN_QUERY_LABELS,
@@ -58,6 +63,7 @@ from constitution_memorizer.playground.benchmarking import (
     assert_concurrency_sqlite,
     assert_concurrency_warm_workspace,
     assert_t19_sqlite,
+    assert_t20_sqlite,
     assert_disposable_postgres,
     assert_fresh_sqlite,
     assert_readonly_select,
@@ -83,6 +89,14 @@ from constitution_memorizer.playground.benchmarking import (
     run_sequential_webhook_duplicate,
     run_single_mutation_wave,
     webhook_delivery_counts,
+    first_party_page_weight_totals,
+    gzip_equivalent_bytes,
+    iter_html_assets,
+    page_weight_catalog_key,
+    resolve_static_disk_path,
+    summarize_html_assets,
+    ws11_named_file_inventory,
+    _incomplete_page_row,
     sanitize_explain_text,
     seed_scenario,
     snapshots_to_report,
@@ -1790,3 +1804,312 @@ def test_mutations_c1_roster_cap_sample(tmp_path: Path):
     assert wave["integrity_after"]["consumed_distinct"] == 10
     assert wave["aborted_reason"] is None
     assert "elapsed_ms" not in str(wave["correct"])
+
+
+def test_page_weight_help_lists_flag():
+    parser = build_arg_parser()
+    text = parser.format_help()
+    assert "--page-weight" in text
+    assert "T20" in text
+    assert "--inventory" not in text
+
+
+def test_page_weight_without_flag_keeps_sequential_config():
+    args = build_arg_parser().parse_args(
+        [
+            "--scenario",
+            "plus-10",
+            "--database-url",
+            "sqlite:///fresh.db",
+            "--app-env",
+            "test",
+        ]
+    )
+    config = config_from_args(args, environ={})
+    assert config.page_weight is False
+    assert config.mutations is False
+    assert config.webhooks is False
+    assert config.concurrency_levels is None
+    assert config.iterations == 50
+    assert config.json_path == DEFAULT_JSON_PATH
+
+
+def test_page_weight_config_from_args(tmp_path: Path):
+    db = tmp_path / "t20.sqlite"
+    args = build_arg_parser().parse_args(
+        [
+            "--page-weight",
+            "--database-url",
+            f"sqlite:///{db}",
+            "--app-env",
+            "test",
+        ]
+    )
+    config = config_from_args(args, environ={})
+    assert config.page_weight is True
+    assert config.scenario == ""
+    assert config.warmup == 0
+    assert config.iterations == 1
+    assert config.json_path == DEFAULT_PAGE_WEIGHT_JSON_PATH
+    assert config.mutations is False
+    assert config.webhooks is False
+    assert config.concurrency_levels is None
+    assert config.protocol is None
+
+
+def test_page_weight_plus_mutations_aborts(tmp_path: Path):
+    db = tmp_path / "t20-combo.sqlite"
+    args = build_arg_parser().parse_args(
+        [
+            "--page-weight",
+            "--mutations",
+            "--database-url",
+            f"sqlite:///{db}",
+            "--app-env",
+            "test",
+        ]
+    )
+    with pytest.raises(BenchmarkAborted, match="--mutations"):
+        config_from_args(args, environ={})
+
+
+def test_page_weight_plus_webhooks_aborts(tmp_path: Path):
+    db = tmp_path / "t20-wh.sqlite"
+    args = build_arg_parser().parse_args(
+        [
+            "--page-weight",
+            "--webhooks",
+            "--database-url",
+            f"sqlite:///{db}",
+            "--app-env",
+            "test",
+        ]
+    )
+    with pytest.raises(BenchmarkAborted, match="--webhooks"):
+        config_from_args(args, environ={})
+
+
+def test_page_weight_plus_concurrency_aborts(tmp_path: Path):
+    db = tmp_path / "t20-c.sqlite"
+    args = build_arg_parser().parse_args(
+        [
+            "--page-weight",
+            "--concurrency",
+            "1",
+            "--database-url",
+            f"sqlite:///{db}",
+            "--app-env",
+            "test",
+        ]
+    )
+    with pytest.raises(BenchmarkAborted, match="--concurrency"):
+        config_from_args(args, environ={})
+
+
+def test_page_weight_plus_explain_aborts():
+    args = build_arg_parser().parse_args(
+        [
+            "--page-weight",
+            "--explain",
+            "--app-env",
+            "test",
+        ]
+    )
+    with pytest.raises(BenchmarkAborted, match="--explain"):
+        config_from_args(args, environ={})
+
+
+def test_page_weight_plus_protocol_aborts():
+    args = build_arg_parser().parse_args(
+        [
+            "--page-weight",
+            "--protocol",
+            PROTOCOL_BNSS_COLD_WARM,
+            "--database-url",
+            "sqlite:///unused.db",
+            "--app-env",
+            "test",
+        ]
+    )
+    with pytest.raises(BenchmarkAborted, match="--protocol"):
+        config_from_args(args, environ={})
+
+
+def test_page_weight_plus_scenario_aborts(tmp_path: Path):
+    db = tmp_path / "t20-scen.sqlite"
+    args = build_arg_parser().parse_args(
+        [
+            "--page-weight",
+            "--scenario",
+            "plus-10",
+            "--database-url",
+            f"sqlite:///{db}",
+            "--app-env",
+            "test",
+        ]
+    )
+    with pytest.raises(BenchmarkAborted, match="omit --scenario"):
+        config_from_args(args, environ={})
+
+
+def test_page_weight_rejects_postgresql():
+    with pytest.raises(BenchmarkAborted, match="T23"):
+        assert_t20_sqlite("postgresql://localhost/recall")
+    args = build_arg_parser().parse_args(
+        [
+            "--page-weight",
+            "--database-url",
+            "postgresql://localhost/recall",
+            "--app-env",
+            "test",
+        ]
+    )
+    with pytest.raises(BenchmarkAborted, match="T23"):
+        config_from_args(args, environ={})
+
+
+def test_inventory_playground_css_size_positive():
+    sizes = ws11_named_file_inventory()
+    assert sizes["playground.css"] > 0
+    assert (PAGE_WEIGHT_STATIC_DIR / "playground.css").is_file()
+
+
+def test_inventory_ws11_named_files_exist():
+    sizes = ws11_named_file_inventory()
+    assert tuple(sizes) == WS11_NAMED_FILES
+    for name, size in sizes.items():
+        assert size > 0, name
+
+
+def test_page_weight_parse_stylesheet_and_script():
+    html = """
+    <html><head>
+    <link rel="stylesheet" href="/static/styles.css?v=main85">
+    <script src="/static/app.js?v=main62" defer></script>
+    </head></html>
+    """
+    assets = iter_html_assets(html)
+    hrefs = [row["url"] for row in assets if row["kind"] == "stylesheet"]
+    srcs = [row["url"] for row in assets if row["kind"] == "script"]
+    assert hrefs == ["/static/styles.css?v=main85"]
+    assert srcs == ["/static/app.js?v=main62"]
+    assert page_weight_catalog_key(hrefs[0]) == "/static/styles.css"
+    assert page_weight_catalog_key("/static/styles.css?v=other") == "/static/styles.css"
+
+
+def test_page_weight_google_fonts_are_third_party():
+    html = """
+    <html><head>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/styles.css?v=main85">
+    </head></html>
+    """
+    summary = summarize_html_assets(html, static_dir=PAGE_WEIGHT_STATIC_DIR)
+    third_urls = [row["url"] for row in summary["third_party"]]
+    assert any("fonts.googleapis.com" in url for url in third_urls)
+    css_keys = [row["catalog_key"] for row in summary["first_party_css"]]
+    assert "/static/styles.css" in css_keys
+    assert all("fonts.googleapis.com" not in key for key in css_keys)
+    assert all(row.get("fetch") == "skipped_no_external_network" for row in summary["third_party"])
+
+
+def test_gzip_equivalent_golden():
+    import gzip as gzip_mod
+
+    raw = b"abc" * 100
+    expected = len(gzip_mod.compress(raw, compresslevel=GZIP_COMPRESSLEVEL))
+    assert gzip_equivalent_bytes(raw) == expected
+    assert GZIP_COMPRESSLEVEL == 9
+
+
+def test_page_weight_missing_static_asset_reported(tmp_path: Path):
+    html = '<link rel="stylesheet" href="/static/does-not-exist.css">'
+    summary = summarize_html_assets(html, static_dir=tmp_path)
+    assert summary["missing_assets"]
+    assert summary["complete"] is False
+    assert any("does-not-exist.css" in str(item.get("url")) for item in summary["missing_assets"])
+
+
+def test_page_weight_html_http_500_incomplete():
+    spec = {
+        "id": "plus_home",
+        "fixture": "plus-10",
+        "method": "GET",
+        "path": "/playground",
+        "path_group": "/playground",
+    }
+    row = _incomplete_page_row(spec, reason="HTTP 500", status_code=500)
+    assert row["complete"] is False
+    assert row["status_code"] == 500
+    assert row["http_failures"]
+    assert row["http_failures"][0]["kind"] == "http_error"
+
+
+def test_page_weight_catalog_key_strips_query():
+    assert page_weight_catalog_key("/static/styles.css?v=main85") == "/static/styles.css"
+    assert page_weight_catalog_key("/static/styles.css?v=other") == "/static/styles.css"
+
+
+def test_page_weight_inclusive_vs_unique_shared_css(tmp_path: Path):
+    (tmp_path / "styles.css").write_bytes(b"c" * 10)
+    (tmp_path / "app.js").write_bytes(b"j" * 4)
+    html = (
+        '<link rel="stylesheet" href="/static/styles.css?v=a">'
+        '<script src="/static/app.js?v=b"></script>'
+    )
+    one = summarize_html_assets(html, static_dir=tmp_path)
+    two = summarize_html_assets(html, static_dir=tmp_path)
+    assert one["css_source_bytes"] == 10
+    assert two["css_source_bytes"] == 10
+    inclusive_css = one["css_source_bytes"] + two["css_source_bytes"]
+    unique_css = first_party_page_weight_totals(
+        0, one["first_party_css"], []
+    )["css_source_bytes"]
+    assert inclusive_css == 20
+    assert unique_css == 10
+    assert one["js_source_bytes"] == 4
+
+
+def test_static_asset_path_rejects_traversal(tmp_path: Path):
+    (tmp_path / "styles.css").write_bytes(b"ok")
+    with pytest.raises(BenchmarkAborted, match="rejected"):
+        resolve_static_disk_path("/static/../secrets.txt", static_dir=tmp_path)
+    resolved = resolve_static_disk_path("/static/styles.css", static_dir=tmp_path)
+    assert resolved == (tmp_path / "styles.css").resolve()
+
+
+def test_static_asset_path_rejects_urlencoded_traversal(tmp_path: Path):
+    with pytest.raises(BenchmarkAborted, match="rejected"):
+        resolve_static_disk_path("/static/%2e%2e/secrets.txt", static_dir=tmp_path)
+    with pytest.raises(BenchmarkAborted, match="rejected"):
+        resolve_static_disk_path(
+            "/static/foo/%2e%2e/%2e%2e/etc/passwd", static_dir=tmp_path
+        )
+
+
+def test_page_weight_json_allows_font_url_and_digest():
+    from constitution_memorizer.playground.benchmarking import (
+        _assert_page_weight_json_safe,
+    )
+
+    _assert_page_weight_json_safe(
+        {
+            "third_party": [
+                {
+                    "url": "https://fonts.googleapis.com/css2?family=Fraunces:wght@400"
+                }
+            ],
+            "sha256": "a" * 64,
+        }
+    )
+    with pytest.raises(BenchmarkAborted, match="fixture email"):
+        _assert_page_weight_json_safe({"email": BENCH_EMAIL})
+
+
+def test_page_weight_measurement_mode_is_in_process():
+    assert PAGE_WEIGHT_MEASUREMENT_MODE == "in_process_testclient_disk_gzip"
+    help_text = build_arg_parser().format_help()
+    assert "--page-weight" in help_text
+    assert "Lighthouse" in help_text
+

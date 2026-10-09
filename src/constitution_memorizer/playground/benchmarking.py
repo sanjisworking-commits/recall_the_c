@@ -1,10 +1,10 @@
-"""Playground Stage 2 WS6–WS10 benchmark library (T13–T19).
+"""Playground Stage 2 WS6–WS11 benchmark library (T13–T20).
 
 Statistics, fail-closed production guard, deterministic fixtures, in-process
 HTTP runner, JSON reporting, disposable PostgreSQL EXPLAIN (ANALYZE,
-BUFFERS), the T18 read-only concurrency harness, and the T19 mutation-load
-plus webhook-duplicate harness. Does not change product behavior or T1–T9
-instrumentation.
+BUFFERS), the T18 read-only concurrency harness, the T19 mutation-load
+plus webhook-duplicate harness, and the T20 page-weight / static inventory
+harness. Does not change product behavior or T1–T9 instrumentation.
 PostgreSQL EXPLAIN is T15/WS8 (``--explain`` or
 ``scripts/explain_playground_queries.py``). BNSS cold/warm is
 ``--protocol bnss-cold-warm`` (T14/WS7); omitting ``--protocol`` keeps the
@@ -12,11 +12,14 @@ T13 unlabeled primary-route path. ``build_nplusone_fixture`` is the T16
 matched-density helper; it is not a CLI scenario. ``--concurrency`` is T18
 (SQLite-only, not default pytest, not T19 mutations). ``--mutations`` and
 ``--webhooks`` are T19 (SQLite-only, not default pytest, not T18).
+``--page-weight`` is T20 (SQLite-only, in-process ASGI + disk + gzip
+equivalents, not Lighthouse, not T21 cold-start, not default pytest).
 """
 
 from __future__ import annotations
 
 import argparse
+import gzip
 import hashlib
 import hmac
 import json
@@ -31,9 +34,10 @@ import time
 from contextlib import contextmanager
 from dataclasses import dataclass
 from datetime import date, datetime, timezone
+from html.parser import HTMLParser
 from pathlib import Path
 from typing import Any, Callable, Iterable, Mapping, Sequence
-from urllib.parse import unquote, urlparse, urlunparse
+from urllib.parse import parse_qs, unquote, urlparse, urlunparse
 from uuid import UUID, uuid4
 
 PLAYGROUND_TEST_NOW = datetime(2026, 9, 16, 12, 0, tzinfo=timezone.utc)
@@ -62,6 +66,7 @@ DEFAULT_BNSS_JSON_PATH = Path("artifacts/playground-bnss-cold-warm.json")
 DEFAULT_CONCURRENCY_JSON_PATH = Path("artifacts/playground-concurrency.json")
 DEFAULT_MUTATIONS_JSON_PATH = Path("artifacts/playground-mutations.json")
 DEFAULT_WEBHOOKS_JSON_PATH = Path("artifacts/playground-webhooks.json")
+DEFAULT_PAGE_WEIGHT_JSON_PATH = Path("artifacts/playground-page-weight.json")
 DEFAULT_EXPLAIN_JSON_PATH = Path("docs/performance/explain-pro-30-summary.json")
 DEFAULT_EXPLAIN_PLAN_DIR = Path("docs/performance")
 DEFAULT_CONCURRENCY_LEVELS = (1, 5, 10, 25)
@@ -197,6 +202,80 @@ STAGING_PRODUCTION_CONSENT = (
 )
 REPO_ROOT = Path(__file__).resolve().parents[3]
 MINI_UNITS = REPO_ROOT / "tests" / "fixtures" / "learning" / "mini_units.json"
+PAGE_WEIGHT_STATIC_DIR = (
+    REPO_ROOT / "src" / "constitution_memorizer" / "web" / "static"
+)
+GZIP_COMPRESSLEVEL = 9
+PAGE_WEIGHT_CLIENT_SHAPE = "in_process_asgi"
+PAGE_WEIGHT_MEASUREMENT_MODE = "in_process_testclient_disk_gzip"
+WS11_NAMED_FILES = (
+    "styles.css",
+    "mobile.css",
+    "playground.css",
+    "app.js",
+    "playground.js",
+    "playground-learn.js",
+    "speech_client.js",
+    "recall_align.js",
+)
+PAGE_WEIGHT_VIEWPORT_PROFILES = (
+    {
+        "id": "desktop_1280",
+        "width": 1280,
+        "height": 800,
+        "device_scale_factor": 1,
+        "role": "css_applies_note",
+    },
+    {
+        "id": "phone_390",
+        "width": 390,
+        "height": 844,
+        "device_scale_factor": 1,
+        "role": "css_applies_note",
+    },
+)
+# Bounded literal /static/ references (condition F: do not parse JS).
+PAGE_WEIGHT_BOUNDED_STATIC_LITERALS = (
+    "/static/completion-done.mp3",
+    "/static/onboarding-tick.m4a",
+    "/static/onboarding-move.m4a",
+)
+PAGE_WEIGHT_WELL_KNOWN_ROOT_DISK = {
+    "/apple-touch-icon.png": "brand-c.png",
+    "/apple-touch-icon-precomposed.png": "brand-c.png",
+    "/favicon.ico": "brand-c.png",
+    "/sw.js": "sw.js",
+}
+PAGE_WEIGHT_PAGES: tuple[dict[str, str], ...] = (
+    {
+        "id": "plus_home",
+        "fixture": "plus-10",
+        "method": "GET",
+        "path": "/playground",
+        "path_group": "/playground",
+    },
+    {
+        "id": "bnss_workspace",
+        "fixture": "law-workspace",
+        "method": "GET",
+        "path": BNSS_WORKSPACE_PATH,
+        "path_group": BNSS_WORKSPACE_PATH_GROUP,
+    },
+    {
+        "id": "bnss_learn",
+        "fixture": "law-workspace",
+        "method": "GET",
+        "path": BNSS_LEARN_PATH,
+        "path_group": BNSS_LEARN_PATH_GROUP,
+    },
+    {
+        "id": "bnss_public",
+        "fixture": "law-workspace",
+        "method": "GET",
+        "path": BNSS_PUBLIC_PATH,
+        "path_group": BNSS_PUBLIC_PATH_GROUP,
+    },
+)
 
 PRIMARY_ROUTES: dict[str, tuple[str, str]] = {
     "plus-10": ("GET", "/playground"),
@@ -501,14 +580,26 @@ def build_arg_parser() -> argparse.ArgumentParser:
         ),
     )
     parser.add_argument(
+        "--page-weight",
+        action="store_true",
+        dest="page_weight",
+        help=(
+            "T20 page-weight and static-asset inventory (four WS11 pages, "
+            "disk + gzip equivalents). SQLite-only. Not Lighthouse. Not "
+            "default pytest. Not --protocol/--concurrency/--mutations/"
+            "--webhooks/--explain."
+        ),
+    )
+    parser.add_argument(
         "--database-url",
         default=None,
         help=(
             "sqlite:/// filesystem path for the HTTP runner (T13/T14/T18), or a "
             "local disposable postgresql:// URL for --explain (T15). "
-            "T18 --concurrency and T19 --mutations/--webhooks reject PostgreSQL "
-            "(T23). T19 treats the path as a stem and writes a fresh file per "
-            "wave. Never falls back to process DATABASE_URL."
+            "T18 --concurrency, T19 --mutations/--webhooks, and T20 "
+            "--page-weight reject PostgreSQL (T23). T19/T20 treat the path "
+            "as a stem and write a fresh file per fixture/wave. Never falls "
+            "back to process DATABASE_URL."
         ),
     )
     parser.add_argument(
@@ -525,7 +616,8 @@ def build_arg_parser() -> argparse.ArgumentParser:
             f"Default {DEFAULT_JSON_PATH} without --protocol, or "
             f"{DEFAULT_BNSS_JSON_PATH} with --protocol {PROTOCOL_BNSS_COLD_WARM}, "
             f"or {DEFAULT_MUTATIONS_JSON_PATH} with --mutations, "
-            f"or {DEFAULT_WEBHOOKS_JSON_PATH} with --webhooks."
+            f"or {DEFAULT_WEBHOOKS_JSON_PATH} with --webhooks, "
+            f"or {DEFAULT_PAGE_WEIGHT_JSON_PATH} with --page-weight."
         ),
     )
     parser.add_argument(
@@ -545,6 +637,8 @@ def build_arg_parser() -> argparse.ArgumentParser:
             "With --concurrency, warmup=1 and batches=1 at every listed level. "
             "With --mutations/--webhooks, one wave per cell/level and "
             f"webhook N={WEBHOOK_QUICK_N}, M={WEBHOOK_QUICK_M}. "
+            "With --page-weight, still one GET per WS11 page (bytes are "
+            "deterministic). "
             "With --protocol bnss-cold-warm, cold warmup stays 0."
         ),
     )
@@ -573,6 +667,7 @@ class BenchmarkRunConfig:
     webhooks: bool = False
     webhook_n: int = 0
     webhook_m: int = 0
+    page_weight: bool = False
 
 
 def parse_concurrency_levels(raw: str) -> tuple[int, ...]:
@@ -632,6 +727,19 @@ def assert_t19_sqlite(url: str) -> Path:
     return assert_fresh_sqlite(url)
 
 
+def assert_t20_sqlite(url: str) -> Path:
+    """T20 accepts only a fresh disposable SQLite stem. PostgreSQL is T23."""
+    parsed = urlparse(str(url or "").strip())
+    scheme = (parsed.scheme or "").lower()
+    if scheme in {"postgres", "postgresql"}:
+        raise BenchmarkAborted(
+            "T20 page-weight is SQLite-only; PostgreSQL is T23"
+        )
+    if scheme not in {"sqlite", "sqlite3"}:
+        raise BenchmarkAborted("T20 page-weight requires a sqlite:/// URL")
+    return assert_fresh_sqlite(url)
+
+
 def config_from_args(
     args: argparse.Namespace, environ: Mapping[str, str] | None = None
 ) -> BenchmarkRunConfig:
@@ -640,6 +748,7 @@ def config_from_args(
     explain = bool(getattr(args, "explain", False))
     mutations = bool(getattr(args, "mutations", False))
     webhooks = bool(getattr(args, "webhooks", False))
+    page_weight = bool(getattr(args, "page_weight", False))
     concurrency_raw = getattr(args, "concurrency", None)
     concurrency_levels = (
         parse_concurrency_levels(str(concurrency_raw))
@@ -661,6 +770,22 @@ def config_from_args(
         raise BenchmarkAborted(
             "--mutations/--webhooks cannot be combined with --concurrency"
         )
+    if page_weight and t19:
+        raise BenchmarkAborted(
+            "--page-weight cannot be combined with --mutations/--webhooks"
+        )
+    if page_weight and explain:
+        raise BenchmarkAborted("--page-weight cannot be combined with --explain")
+    if page_weight and protocol:
+        raise BenchmarkAborted("--page-weight cannot be combined with --protocol")
+    if page_weight and concurrency_levels:
+        raise BenchmarkAborted(
+            "--page-weight cannot be combined with --concurrency"
+        )
+    if page_weight and scenario:
+        raise BenchmarkAborted(
+            "T20 --page-weight uses a fixed four-page matrix; omit --scenario"
+        )
     if explain and protocol == PROTOCOL_BNSS_COLD_WARM:
         raise BenchmarkAborted(
             "--explain cannot be combined with --protocol bnss-cold-warm"
@@ -674,6 +799,8 @@ def config_from_args(
     url = resolve_database_url(args.database_url, environ)
     if t19:
         assert_t19_sqlite(url)
+    if page_weight:
+        assert_t20_sqlite(url)
     if concurrency_levels:
         assert_concurrency_sqlite(url)
         if scenario and scenario not in CONCURRENCY_SCENARIOS:
@@ -697,6 +824,8 @@ def config_from_args(
             )
     elif t19:
         scenario = scenario or ""
+    elif page_weight:
+        scenario = ""
     elif not scenario:
         raise BenchmarkAborted("--scenario is required")
     warmup = int(args.warmup)
@@ -719,6 +848,8 @@ def config_from_args(
                 raise BenchmarkAborted(
                     f"webhook N,M cannot exceed {WEBHOOK_MAX_NM}"
                 )
+    elif page_weight:
+        warmup, iterations = 0, 1
     elif concurrency_levels:
         if args.quick:
             warmup, iterations = 1, 1
@@ -746,6 +877,8 @@ def config_from_args(
             json_path = DEFAULT_MUTATIONS_JSON_PATH
         elif webhooks:
             json_path = DEFAULT_WEBHOOKS_JSON_PATH
+        elif page_weight:
+            json_path = DEFAULT_PAGE_WEIGHT_JSON_PATH
         else:
             json_path = DEFAULT_JSON_PATH
     else:
@@ -766,6 +899,7 @@ def config_from_args(
         webhooks=webhooks,
         webhook_n=webhook_n,
         webhook_m=webhook_m,
+        page_weight=page_weight,
     )
 
 
@@ -4835,6 +4969,875 @@ def run_webhooks_benchmark(
     return _finish(aborted=False, reason=None)
 
 
+def _assert_page_weight_json_safe(payload: Mapping[str, Any]) -> None:
+    """T13 _assert_json_safe treats sha256/etag hex plus Google Fonts '@' as secrets.
+
+    T20 still refuses fixture email and token-like blobs. It must be able to
+    record font URLs, etags, and file digests.
+    """
+    blob = json.dumps(payload)
+    if BENCH_EMAIL in blob:
+        raise BenchmarkAborted("JSON report must not include fixture email")
+    lowered = blob.lower()
+    if "bearer " in lowered or "rtc_device" in lowered:
+        raise BenchmarkAborted("JSON report would include sensitive data")
+
+
+def gzip_equivalent_bytes(raw: bytes) -> int:
+    """Local gzip -9 equivalent. Not served on the wire."""
+    return len(gzip.compress(raw, compresslevel=GZIP_COMPRESSLEVEL))
+
+
+def brotli_equivalent_bytes(raw: bytes) -> tuple[int | None, str]:
+    """Optional Brotli equivalent. Null when the library is not installed."""
+    try:
+        import brotli
+    except ImportError:
+        return None, "library_not_installed"
+    return len(brotli.compress(raw)), "computed"
+
+
+def page_weight_byte_classes(
+    raw: bytes, *, transferred_bytes: int | None = None
+) -> dict[str, Any]:
+    brotli_n, brotli_status = brotli_equivalent_bytes(raw)
+    transferred = len(raw) if transferred_bytes is None else int(transferred_bytes)
+    return {
+        "source_bytes": len(raw),
+        "transferred_bytes": transferred,
+        "decoded_bytes": len(raw),
+        "gzip_equivalent_bytes": gzip_equivalent_bytes(raw),
+        "gzip_served": False,
+        "gzip_compresslevel": GZIP_COMPRESSLEVEL,
+        "brotli_equivalent_bytes": brotli_n,
+        "brotli_served": False,
+        "brotli_status": brotli_status,
+        "sha256": hashlib.sha256(raw).hexdigest(),
+        "browser_transfer_size": None,
+        "browser_encoded_body_size": None,
+        "browser_decoded_body_size": None,
+        "browser_timing_reason": "not_captured_ws11_in_process",
+    }
+
+
+def page_weight_catalog_key(url: str) -> str:
+    parsed = urlparse(str(url or "").strip())
+    path = unquote(parsed.path or "")
+    if not path:
+        return ""
+    if not path.startswith("/"):
+        path = "/" + path
+    return unquote(path)
+
+
+def page_weight_cache_bust(url: str) -> str | None:
+    parsed = urlparse(str(url or "").strip())
+    if not parsed.query:
+        return None
+    values = parse_qs(parsed.query, keep_blank_values=True).get("v")
+    if values:
+        return values[0]
+    return parsed.query
+
+
+def is_page_weight_third_party(url: str) -> bool:
+    parsed = urlparse(str(url or "").strip())
+    return parsed.scheme in {"http", "https"} and bool(parsed.netloc)
+
+
+def is_first_party_static_url(url: str) -> bool:
+    if is_page_weight_third_party(url):
+        return False
+    key = page_weight_catalog_key(url)
+    return key.startswith("/static/") or key in PAGE_WEIGHT_WELL_KNOWN_ROOT_DISK
+
+
+def resolve_static_disk_path(
+    url: str, *, static_dir: Path | None = None
+) -> Path:
+    """Resolve a first-party URL under STATIC_DIR. Reject traversal."""
+    root = (static_dir or PAGE_WEIGHT_STATIC_DIR).resolve()
+    key = page_weight_catalog_key(url)
+    if "\x00" in key:
+        raise BenchmarkAborted(f"T20 static path rejected: {url!r}")
+    well_known = PAGE_WEIGHT_WELL_KNOWN_ROOT_DISK.get(key)
+    if well_known is not None:
+        relative = well_known
+    else:
+        if not key.startswith("/static/"):
+            raise BenchmarkAborted(f"T20 static path rejected: {url!r}")
+        relative = key[len("/static/") :]
+    if not relative or relative.startswith("/") or relative.startswith("\\"):
+        raise BenchmarkAborted(f"T20 static path rejected: {url!r}")
+    parts = Path(relative).parts
+    if any(part in {"", ".."} or part.startswith("/") for part in parts):
+        raise BenchmarkAborted(f"T20 static path rejected: {url!r}")
+    if any(".." in unquote(part) for part in parts):
+        raise BenchmarkAborted(f"T20 static path rejected: {url!r}")
+    candidate = (root / relative).resolve()
+    try:
+        candidate.relative_to(root)
+    except ValueError as exc:
+        raise BenchmarkAborted(f"T20 static path rejected: {url!r}") from exc
+    return candidate
+
+
+class _PageWeightHTMLParser(HTMLParser):
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.assets: list[dict[str, Any]] = []
+        self._in_script = False
+        self._script_src: str | None = None
+        self._script_type = ""
+        self._script_chunks: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        ad = {str(key).lower(): ("" if value is None else str(value)) for key, value in attrs}
+        if tag == "link":
+            rel_tokens = [token.lower() for token in (ad.get("rel") or "").split()]
+            href = ad.get("href") or ""
+            if not href:
+                return
+            rels = set(rel_tokens)
+            if "stylesheet" in rels:
+                self.assets.append({"kind": "stylesheet", "url": href, "rel": " ".join(rel_tokens)})
+            elif rels & {
+                "icon",
+                "shortcut",
+                "apple-touch-icon",
+                "apple-touch-icon-precomposed",
+            }:
+                self.assets.append({"kind": "icon", "url": href, "rel": " ".join(rel_tokens)})
+            elif rels & {"preconnect", "dns-prefetch"}:
+                self.assets.append({"kind": "preconnect", "url": href, "rel": " ".join(rel_tokens)})
+            return
+        if tag == "script":
+            self._in_script = True
+            self._script_src = ad.get("src") or None
+            self._script_type = (ad.get("type") or "").lower()
+            self._script_chunks = []
+            if self._script_src:
+                self.assets.append(
+                    {
+                        "kind": "script",
+                        "url": self._script_src,
+                        "script_type": self._script_type,
+                    }
+                )
+            return
+        if tag == "img":
+            src = ad.get("src") or ""
+            if src:
+                self.assets.append({"kind": "img", "url": src})
+
+    def handle_data(self, data: str) -> None:
+        if self._in_script and not self._script_src:
+            self._script_chunks.append(data)
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag != "script" or not self._in_script:
+            return
+        if not self._script_src:
+            body = "".join(self._script_chunks)
+            kind = (
+                "json_ld"
+                if self._script_type == "application/ld+json"
+                else "inline_script"
+            )
+            self.assets.append(
+                {
+                    "kind": kind,
+                    "url": None,
+                    "bytes": len(body.encode("utf-8")),
+                }
+            )
+        self._in_script = False
+        self._script_src = None
+        self._script_type = ""
+        self._script_chunks = []
+
+
+def iter_html_assets(html_text: str) -> list[dict[str, Any]]:
+    parser = _PageWeightHTMLParser()
+    parser.feed(html_text)
+    parser.close()
+    return list(parser.assets)
+
+
+def ws11_named_file_inventory(static_dir: Path | None = None) -> dict[str, int]:
+    root = static_dir or PAGE_WEIGHT_STATIC_DIR
+    sizes: dict[str, int] = {}
+    for name in WS11_NAMED_FILES:
+        path = root / name
+        sizes[name] = int(path.stat().st_size) if path.is_file() else 0
+    return sizes
+
+
+def list_static_inventory_files(static_dir: Path | None = None) -> list[Path]:
+    root = static_dir or PAGE_WEIGHT_STATIC_DIR
+    if not root.is_dir():
+        return []
+    return sorted(path for path in root.iterdir() if path.is_file())
+
+
+def first_party_page_weight_totals(
+    html_source_bytes: int,
+    css_rows: Sequence[Mapping[str, Any]],
+    js_rows: Sequence[Mapping[str, Any]],
+) -> dict[str, int]:
+    """Inclusive HTML + distinct first-party CSS/JS. Images/fonts excluded."""
+    seen: set[str] = set()
+    css_source = 0
+    css_gzip = 0
+    js_source = 0
+    js_gzip = 0
+    for row in css_rows:
+        key = str(row.get("catalog_key") or "")
+        if not key or key in seen:
+            continue
+        seen.add(key)
+        css_source += int(row.get("source_bytes") or 0)
+        css_gzip += int(row.get("gzip_equivalent_bytes") or 0)
+    for row in js_rows:
+        key = str(row.get("catalog_key") or "")
+        if not key or key in seen:
+            continue
+        seen.add(key)
+        js_source += int(row.get("source_bytes") or 0)
+        js_gzip += int(row.get("gzip_equivalent_bytes") or 0)
+    return {
+        "css_source_bytes": css_source,
+        "css_gzip_equivalent_bytes": css_gzip,
+        "js_source_bytes": js_source,
+        "js_gzip_equivalent_bytes": js_gzip,
+        "page_weight_html_css_js_source_bytes": html_source_bytes
+        + css_source
+        + js_source,
+    }
+
+
+def _html_gzip_plus_assets(
+    html_raw: bytes, css_rows: Sequence[Mapping[str, Any]], js_rows: Sequence[Mapping[str, Any]]
+) -> int:
+    seen: set[str] = set()
+    total = gzip_equivalent_bytes(html_raw)
+    for row in list(css_rows) + list(js_rows):
+        key = str(row.get("catalog_key") or "")
+        if not key or key in seen:
+            continue
+        seen.add(key)
+        total += int(row.get("gzip_equivalent_bytes") or 0)
+    return total
+
+
+def summarize_html_assets(
+    html_text: str,
+    *,
+    static_dir: Path | None = None,
+    html_raw: bytes | None = None,
+) -> dict[str, Any]:
+    """Account CSS/JS/images from HTML. Disk is the source-byte basis."""
+    root = static_dir or PAGE_WEIGHT_STATIC_DIR
+    raw = html_text.encode("utf-8") if html_raw is None else html_raw
+    assets = iter_html_assets(html_text)
+    css_rows: list[dict[str, Any]] = []
+    js_rows: list[dict[str, Any]] = []
+    image_rows: list[dict[str, Any]] = []
+    third_party: list[dict[str, Any]] = []
+    inline = {"theme_script_bytes": 0, "json_ld_bytes": 0, "other_inline_script_bytes": 0}
+    missing: list[dict[str, Any]] = []
+    seen_css: set[str] = set()
+    seen_js: set[str] = set()
+    seen_img: set[str] = set()
+    seen_third: set[str] = set()
+    linked_static_urls: list[str] = []
+
+    def _record_missing(kind: str, url: str, detail: str) -> None:
+        missing.append(
+            {"kind": "missing_asset", "asset_kind": kind, "url": url, "detail": detail}
+        )
+
+    for asset in assets:
+        kind = str(asset.get("kind") or "")
+        url = asset.get("url")
+        if kind == "json_ld":
+            inline["json_ld_bytes"] += int(asset.get("bytes") or 0)
+            continue
+        if kind == "inline_script":
+            nbytes = int(asset.get("bytes") or 0)
+            if inline["theme_script_bytes"] == 0:
+                inline["theme_script_bytes"] = nbytes
+            else:
+                inline["other_inline_script_bytes"] += nbytes
+            continue
+        if not isinstance(url, str) or not url:
+            continue
+        if is_page_weight_third_party(url):
+            if url not in seen_third:
+                seen_third.add(url)
+                third_party.append(
+                    {
+                        "kind": kind,
+                        "url": url,
+                        "fetch": "skipped_no_external_network",
+                    }
+                )
+            continue
+        if kind == "preconnect":
+            if url not in seen_third:
+                seen_third.add(url)
+                third_party.append(
+                    {
+                        "kind": "preconnect",
+                        "url": url,
+                        "fetch": "skipped_no_external_network",
+                    }
+                )
+            continue
+        if not is_first_party_static_url(url):
+            continue
+        catalog_key = page_weight_catalog_key(url)
+        try:
+            disk_path = resolve_static_disk_path(url, static_dir=root)
+        except BenchmarkAborted as exc:
+            _record_missing(kind, url, exc.message)
+            continue
+        if kind in {"stylesheet", "script", "icon", "img"}:
+            linked_static_urls.append(url)
+        exists = disk_path.is_file()
+        disk_bytes = disk_path.read_bytes() if exists else b""
+        classes = page_weight_byte_classes(disk_bytes) if exists else {
+            "source_bytes": 0,
+            "transferred_bytes": None,
+            "decoded_bytes": 0,
+            "gzip_equivalent_bytes": 0,
+            "gzip_served": False,
+            "gzip_compresslevel": GZIP_COMPRESSLEVEL,
+            "brotli_equivalent_bytes": None,
+            "brotli_served": False,
+            "brotli_status": "skipped_missing",
+            "sha256": None,
+            "browser_transfer_size": None,
+            "browser_encoded_body_size": None,
+            "browser_decoded_body_size": None,
+            "browser_timing_reason": "not_captured_ws11_in_process",
+        }
+        row = {
+            "url": url,
+            "catalog_key": catalog_key,
+            "cache_bust": page_weight_cache_bust(url),
+            "filename": disk_path.name,
+            "disk_path": str(disk_path),
+            "exists": exists,
+            **classes,
+        }
+        if not exists:
+            _record_missing(kind, url, f"missing on disk: {disk_path.name}")
+        if kind == "stylesheet":
+            if catalog_key not in seen_css:
+                seen_css.add(catalog_key)
+                css_rows.append(row)
+        elif kind == "script":
+            if catalog_key not in seen_js:
+                seen_js.add(catalog_key)
+                js_rows.append(row)
+        elif kind in {"icon", "img"}:
+            if catalog_key not in seen_img:
+                seen_img.add(catalog_key)
+                image_rows.append(row)
+
+    html_classes = page_weight_byte_classes(raw, transferred_bytes=len(raw))
+    totals = first_party_page_weight_totals(
+        html_classes["source_bytes"], css_rows, js_rows
+    )
+    totals["page_weight_html_css_js_gzip_equivalent_bytes"] = _html_gzip_plus_assets(
+        raw, css_rows, js_rows
+    )
+    css_ok = bool(css_rows) and all(row.get("exists") for row in css_rows)
+    js_ok = all(row.get("exists") for row in js_rows)
+    complete = (not missing) and css_ok and js_ok
+    return {
+        "html": html_classes,
+        "first_party_css": css_rows,
+        "first_party_js": js_rows,
+        "images": image_rows,
+        "third_party": third_party,
+        "inline": inline,
+        "missing_assets": missing,
+        "linked_static_urls": linked_static_urls,
+        "complete": complete,
+        **totals,
+    }
+
+
+def derived_t20_sqlite_path(stem_url: str, fixture: str) -> Path:
+    stem = sqlite_filesystem_path(stem_url)
+    stem.parent.mkdir(parents=True, exist_ok=True)
+    unique = uuid4().hex[:10]
+    suffix = stem.suffix if stem.suffix else ".db"
+    target = stem.parent / f"{stem.stem}-{fixture}-{unique}{suffix}"
+    assert_fresh_sqlite(sqlite_url_for_path(target))
+    return target
+
+
+def _page_weight_git_head() -> str:
+    try:
+        out = subprocess.check_output(
+            ["git", "rev-parse", "HEAD"],
+            cwd=str(REPO_ROOT),
+            text=True,
+            stderr=subprocess.DEVNULL,
+        )
+        return out.strip()
+    except (OSError, subprocess.CalledProcessError):
+        return "unknown"
+
+
+def _response_header(response: Any, name: str) -> str | None:
+    value = response.headers.get(name)
+    if value is None or str(value).strip() == "":
+        return None
+    return str(value)
+
+
+def static_cache_observation(response: Any, url: str) -> dict[str, Any]:
+    encoding = _response_header(response, "content-encoding")
+    return {
+        "url": url,
+        "status_code": int(response.status_code),
+        "content_type": _response_header(response, "content-type"),
+        "cache_control": _response_header(response, "cache-control"),
+        "etag": _response_header(response, "etag"),
+        "last_modified": _response_header(response, "last-modified"),
+        "content_encoding": encoding,
+        "content_length_header": _response_header(response, "content-length"),
+        "http_body_bytes": len(response.content),
+        "served_encoding": encoding or "identity",
+    }
+
+
+def _incomplete_page_row(spec: Mapping[str, str], *, reason: str, status_code: int | None = None) -> dict[str, Any]:
+    return {
+        "id": spec["id"],
+        "fixture": spec["fixture"],
+        "method": spec["method"],
+        "path": spec["path"],
+        "path_group": spec["path_group"],
+        "status_code": status_code,
+        "complete": False,
+        "skipped": status_code is None,
+        "viewport_profiles": [dict(row) for row in PAGE_WEIGHT_VIEWPORT_PROFILES],
+        "html": None,
+        "first_party_css": [],
+        "first_party_js": [],
+        "images": [],
+        "third_party": [],
+        "inline": {},
+        "missing_assets": [],
+        "http_failures": [
+            {
+                "kind": "incomplete_capture" if status_code is None else "http_error",
+                "page": spec["id"],
+                "url": spec["path"],
+                "detail": reason,
+            }
+        ],
+        "page_weight_html_css_js_source_bytes": 0,
+        "page_weight_html_css_js_gzip_equivalent_bytes": 0,
+    }
+
+
+def run_page_weight_benchmark(
+    config: BenchmarkRunConfig, environ: Mapping[str, str] | None = None
+) -> dict[str, Any]:
+    """T20 four-page inventory. In-process ASGI + disk + gzip equivalents."""
+    import asyncio
+
+    from httpx import ASGITransport, AsyncClient
+
+    if (
+        config.explain
+        or config.protocol
+        or config.concurrency_levels
+        or config.mutations
+        or config.webhooks
+        or not config.page_weight
+    ):
+        raise BenchmarkAborted("run_page_weight_benchmark is T20 --page-weight only")
+    effective_app_env = evaluate_safety_guard(
+        requested_app_env=config.app_env,
+        accept_nontest=config.accept_nontest,
+        explain=False,
+        environ=environ,
+    )
+    assert_t20_sqlite(config.database_url)
+    named_sizes = ws11_named_file_inventory()
+    named_rows = []
+    named_missing = [
+        name for name, size in named_sizes.items() if int(size) <= 0
+    ]
+    for name, size in named_sizes.items():
+        path = PAGE_WEIGHT_STATIC_DIR / name
+        raw = path.read_bytes() if path.is_file() else b""
+        classes = page_weight_byte_classes(raw) if path.is_file() else {
+            "source_bytes": 0,
+            "gzip_equivalent_bytes": 0,
+            "brotli_equivalent_bytes": None,
+            "sha256": None,
+        }
+        named_rows.append(
+            {
+                "filename": name,
+                "static_path": f"/static/{name}",
+                "exists": path.is_file(),
+                "ws11_named": True,
+                "source_bytes": classes.get("source_bytes", size),
+                "gzip_equivalent_bytes": classes.get("gzip_equivalent_bytes", 0),
+                "brotli_equivalent_bytes": classes.get("brotli_equivalent_bytes"),
+                "sha256": classes.get("sha256"),
+            }
+        )
+    payload: dict[str, Any] = {
+        "schema_version": SCHEMA_VERSION,
+        "kind": "page-weight",
+        "measurement_mode": PAGE_WEIGHT_MEASUREMENT_MODE,
+        "lighthouse": False,
+        "browser_network": False,
+        "external_network": False,
+        "compression_served": "identity",
+        "gzip_compresslevel": GZIP_COMPRESSLEVEL,
+        "gzip_served": False,
+        "app_env": str(effective_app_env),
+        "database_backend": "sqlite",
+        "client_shape": PAGE_WEIGHT_CLIENT_SHAPE,
+        "git_head": _page_weight_git_head(),
+        "alembic_head": EXPECTED_ALEMBIC_HEAD,
+        "attribution": "inclusive_per_page_plus_unique_catalog",
+        "create_app_timed": False,
+        "aborted": False,
+        "aborted_reason": None,
+        "complete": False,
+        "pages": [],
+        "catalog": [],
+        "ws11_named_files": named_rows,
+        "third_party": [],
+        "cache_policy": [],
+        "js_css_referenced_assets": [],
+        "unreferenced_static": [],
+        "failures": [],
+        "viewport_profiles": [dict(row) for row in PAGE_WEIGHT_VIEWPORT_PROFILES],
+    }
+
+    def _finish(*, aborted: bool, reason: str | None) -> dict[str, Any]:
+        pages_complete = bool(payload["pages"]) and all(
+            bool(page.get("complete")) for page in payload["pages"]
+        )
+        named_ok = not named_missing
+        four_pages = len(payload["pages"]) == len(PAGE_WEIGHT_PAGES)
+        is_complete = (
+            (not aborted)
+            and pages_complete
+            and named_ok
+            and four_pages
+            and not payload["failures"]
+        )
+        payload["complete"] = is_complete
+        payload["aborted"] = (not is_complete) or aborted
+        payload["aborted_reason"] = None if is_complete else (
+            reason or "T20 page-weight capture incomplete"
+        )
+        _assert_page_weight_json_safe(payload)
+        if config.json_path is not None:
+            write_json_report(config.json_path, payload)
+        if payload["aborted"]:
+            raise BenchmarkAborted(payload["aborted_reason"] or "T20 page-weight aborted")
+        return payload
+
+    def _add_failure(**item: Any) -> None:
+        payload["failures"].append(item)
+
+    for name in named_missing:
+        _add_failure(
+            kind="missing_asset",
+            page=None,
+            url=f"/static/{name}",
+            detail=f"WS11 named file missing: {name}",
+        )
+
+    async def _capture_fixture(fixture: str, specs: list[dict[str, str]]) -> None:
+        db_path = derived_t20_sqlite_path(config.database_url, fixture)
+        app = create_benchmark_app(db_path, app_env="test")
+        seed_scenario(app, fixture)
+        skip_rest = False
+        skip_reason = "prior page in fixture failed"
+        transport = ASGITransport(app=app)
+        async with AsyncClient(
+            transport=transport,
+            base_url="http://testserver",
+            follow_redirects=False,
+        ) as client:
+            await sign_in_benchmark_client(client)
+            header_cache: dict[str, dict[str, Any]] = {}
+            for spec in specs:
+                if skip_rest:
+                    row = _incomplete_page_row(spec, reason=skip_reason)
+                    payload["pages"].append(row)
+                    _add_failure(
+                        kind="incomplete_capture",
+                        page=spec["id"],
+                        url=spec["path"],
+                        detail=skip_reason,
+                    )
+                    continue
+                response = await client.get(spec["path"])
+                status = int(response.status_code)
+                html_raw = bytes(response.content)
+                if status < 200 or status >= 300:
+                    row = _incomplete_page_row(
+                        spec, reason=f"HTTP {status}", status_code=status
+                    )
+                    payload["pages"].append(row)
+                    _add_failure(
+                        kind="http_error",
+                        page=spec["id"],
+                        url=spec["path"],
+                        detail=f"HTTP {status}",
+                    )
+                    skip_rest = True
+                    skip_reason = f"{spec['id']} HTTP {status}"
+                    continue
+                html_text = html_raw.decode("utf-8", errors="replace")
+                summary = summarize_html_assets(
+                    html_text, html_raw=html_raw, static_dir=PAGE_WEIGHT_STATIC_DIR
+                )
+                http_failures: list[dict[str, Any]] = []
+                for url in summary["linked_static_urls"]:
+                    if is_page_weight_third_party(url):
+                        continue
+                    parsed = urlparse(url)
+                    request_url = parsed.path
+                    if parsed.query:
+                        request_url = f"{parsed.path}?{parsed.query}"
+                    if url not in header_cache:
+                        static_response = await client.get(request_url)
+                        observation = static_cache_observation(
+                            static_response, request_url
+                        )
+                        try:
+                            disk_path = resolve_static_disk_path(
+                                url, static_dir=PAGE_WEIGHT_STATIC_DIR
+                            )
+                        except BenchmarkAborted as exc:
+                            observation["capture_kind"] = "http_error"
+                            observation["capture_detail"] = exc.message
+                            header_cache[url] = observation
+                            http_failures.append(
+                                {
+                                    "kind": "http_error",
+                                    "page": spec["id"],
+                                    "url": request_url,
+                                    "detail": exc.message,
+                                }
+                            )
+                            continue
+                        disk_size = (
+                            disk_path.stat().st_size if disk_path.is_file() else None
+                        )
+                        observation["disk_source_bytes"] = disk_size
+                        static_status = int(static_response.status_code)
+                        if static_status < 200 or static_status >= 300:
+                            observation["capture_kind"] = "http_error"
+                            observation["capture_detail"] = f"HTTP {static_status}"
+                        elif (
+                            disk_size is not None
+                            and disk_size != observation["http_body_bytes"]
+                        ):
+                            observation["capture_kind"] = "body_disk_mismatch"
+                            observation["capture_detail"] = (
+                                f"http {observation['http_body_bytes']} "
+                                f"!= disk {disk_size}"
+                            )
+                        else:
+                            observation["capture_kind"] = None
+                            observation["capture_detail"] = None
+                        header_cache[url] = observation
+                    observation = header_cache[url]
+                    if observation.get("capture_kind"):
+                        http_failures.append(
+                            {
+                                "kind": observation["capture_kind"],
+                                "page": spec["id"],
+                                "url": request_url,
+                                "detail": observation.get("capture_detail"),
+                            }
+                        )
+                    for bucket in (
+                        summary["first_party_css"],
+                        summary["first_party_js"],
+                        summary["images"],
+                    ):
+                        for item in bucket:
+                            if item.get("url") == url:
+                                item["transferred_bytes"] = observation[
+                                    "http_body_bytes"
+                                ]
+                                item["http_status"] = observation["status_code"]
+                seen_cache_urls = {row.get("url") for row in payload["cache_policy"]}
+                for observation in header_cache.values():
+                    if observation.get("url") not in seen_cache_urls:
+                        payload["cache_policy"].append(observation)
+                        seen_cache_urls.add(observation.get("url"))
+                seen_third = {row.get("url") for row in payload["third_party"]}
+                for item in summary["third_party"]:
+                    if item.get("url") not in seen_third:
+                        payload["third_party"].append(item)
+                        seen_third.add(item.get("url"))
+                page_complete = bool(summary["complete"]) and not http_failures
+                if summary["missing_assets"]:
+                    for miss in summary["missing_assets"]:
+                        _add_failure(
+                            kind="missing_asset",
+                            page=spec["id"],
+                            url=miss.get("url"),
+                            detail=miss.get("detail"),
+                        )
+                for fail in http_failures:
+                    _add_failure(**fail)
+                page_row = {
+                    "id": spec["id"],
+                    "fixture": spec["fixture"],
+                    "method": spec["method"],
+                    "path": spec["path"],
+                    "path_group": spec["path_group"],
+                    "status_code": status,
+                    "complete": page_complete,
+                    "skipped": False,
+                    "viewport_profiles": [
+                        dict(row) for row in PAGE_WEIGHT_VIEWPORT_PROFILES
+                    ],
+                    "html": {
+                        **summary["html"],
+                        "cache_control": _response_header(response, "cache-control"),
+                        "etag": _response_header(response, "etag"),
+                        "last_modified": _response_header(response, "last-modified"),
+                        "content_encoding": _response_header(
+                            response, "content-encoding"
+                        ),
+                    },
+                    "first_party_css": summary["first_party_css"],
+                    "first_party_js": summary["first_party_js"],
+                    "images": summary["images"],
+                    "third_party": summary["third_party"],
+                    "inline": summary["inline"],
+                    "missing_assets": summary["missing_assets"],
+                    "http_failures": http_failures,
+                    "page_weight_html_css_js_source_bytes": summary[
+                        "page_weight_html_css_js_source_bytes"
+                    ],
+                    "page_weight_html_css_js_gzip_equivalent_bytes": summary[
+                        "page_weight_html_css_js_gzip_equivalent_bytes"
+                    ],
+                    "css_source_bytes": summary["css_source_bytes"],
+                    "js_source_bytes": summary["js_source_bytes"],
+                    "css_gzip_equivalent_bytes": summary["css_gzip_equivalent_bytes"],
+                    "js_gzip_equivalent_bytes": summary["js_gzip_equivalent_bytes"],
+                }
+                payload["pages"].append(page_row)
+                if not page_complete:
+                    skip_rest = True
+                    skip_reason = f"{spec['id']} incomplete"
+
+    async def _run() -> None:
+        grouped: dict[str, list[dict[str, str]]] = {}
+        for spec in PAGE_WEIGHT_PAGES:
+            grouped.setdefault(spec["fixture"], []).append(spec)
+        for fixture, specs in grouped.items():
+            await _capture_fixture(fixture, specs)
+
+    def _build_catalog() -> None:
+        referenced: set[str] = set()
+        request_urls: dict[str, list[str]] = {}
+        pages_by_file: dict[str, list[str]] = {}
+        for page in payload["pages"]:
+            page_id = str(page.get("id") or "")
+            for bucket_name in ("first_party_css", "first_party_js", "images"):
+                for item in page.get(bucket_name) or []:
+                    filename = str(item.get("filename") or "")
+                    if not filename:
+                        continue
+                    referenced.add(filename)
+                    request_urls.setdefault(filename, [])
+                    url = str(item.get("url") or "")
+                    if url and url not in request_urls[filename]:
+                        request_urls[filename].append(url)
+                    pages_by_file.setdefault(filename, [])
+                    if page_id and page_id not in pages_by_file[filename]:
+                        pages_by_file[filename].append(page_id)
+        catalog = []
+        unreferenced = []
+        for path in list_static_inventory_files():
+            raw = path.read_bytes()
+            classes = page_weight_byte_classes(raw)
+            linked = path.name in referenced
+            row = {
+                "filename": path.name,
+                "static_path": f"/static/{path.name}",
+                "request_urls": request_urls.get(path.name, []),
+                "pages": pages_by_file.get(path.name, []),
+                "referenced_by_t20_pages": linked,
+                "ws11_named": path.name in WS11_NAMED_FILES,
+                **classes,
+            }
+            catalog.append(row)
+            if not linked:
+                unreferenced.append(row)
+        payload["catalog"] = catalog
+        payload["unreferenced_static"] = unreferenced
+        literals = []
+        linked_js = {
+            item.get("filename")
+            for page in payload["pages"]
+            for item in page.get("first_party_js") or []
+        }
+        for literal in PAGE_WEIGHT_BOUNDED_STATIC_LITERALS:
+            filename = Path(literal).name
+            include = True
+            if filename.startswith("onboarding-") and "onboarding.js" not in linked_js:
+                include = False
+            if filename == "completion-done.mp3" and "app.js" not in linked_js:
+                include = False
+            if not include:
+                continue
+            disk = PAGE_WEIGHT_STATIC_DIR / filename
+            raw = disk.read_bytes() if disk.is_file() else b""
+            classes = page_weight_byte_classes(raw) if disk.is_file() else {
+                "source_bytes": 0,
+                "gzip_equivalent_bytes": 0,
+            }
+            literals.append(
+                {
+                    "url": literal,
+                    "filename": filename,
+                    "exists": disk.is_file(),
+                    "excluded_from_page_weight": True,
+                    "note": "bounded_literal_not_js_parsed",
+                    **classes,
+                }
+            )
+        payload["js_css_referenced_assets"] = literals
+
+    try:
+        asyncio.run(_run())
+        _build_catalog()
+    except BenchmarkAborted as exc:
+        try:
+            _build_catalog()
+        except Exception:
+            pass
+        return _finish(aborted=True, reason=exc.message)
+    return _finish(aborted=False, reason=None)
+
+
 def run_cli(argv: list[str] | None = None, environ: Mapping[str, str] | None = None) -> int:
     parser = build_arg_parser()
     try:
@@ -4857,6 +5860,8 @@ def run_cli(argv: list[str] | None = None, environ: Mapping[str, str] | None = N
             run_mutations_benchmark(config, environ=env)
         elif config.webhooks:
             run_webhooks_benchmark(config, environ=env)
+        elif config.page_weight:
+            run_page_weight_benchmark(config, environ=env)
         else:
             run_benchmark(config, environ=env)
     except BenchmarkAborted as exc:
