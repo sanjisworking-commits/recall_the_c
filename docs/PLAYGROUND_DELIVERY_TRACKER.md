@@ -916,7 +916,7 @@ Measured improvements against production behaviour; proven-dead legacy/proof pat
 
 ## 3. Law-loading optimization
 
-* [ ] Verify zero-hydration catalogue / Playground dashboard still holds under load (Stage 1 owns the contract)
+* [x] Verify zero-hydration catalogue / Playground dashboard still holds under load (Stage 1 owns the contract)
 * [ ] Profile `BareAct` hydration
 * [ ] Measure cache effectiveness
 * [ ] Prepare section/chapter chunking **only when corpus size justifies it**

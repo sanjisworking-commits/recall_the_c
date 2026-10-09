@@ -1,6 +1,6 @@
-"""T16 / WS9 N+1 scaling locks. Integer query counts only; no millisecond asserts.
+"""T16 / WS9 N+1 scaling locks and T17 repeated zero-hydration + Halted-home.
 
-T17 repeated zero-hydration and Halted-home are out of scope.
+Integer query counts and loader-call locks only; no millisecond asserts.
 """
 
 from __future__ import annotations
@@ -8,6 +8,7 @@ from __future__ import annotations
 import asyncio
 import re
 from collections import Counter
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
@@ -20,6 +21,7 @@ from constitution_memorizer.playground.benchmarking import (
     NPLUSONE_LOCATORS_PER_LAW,
     NPLUSONE_ROSTER_SIZES,
     PLAYGROUND_TEST_NOW,
+    build_due_heavy_fixture,
     build_nplusone_fixture,
     create_benchmark_app,
     sign_in_benchmark_client,
@@ -27,8 +29,14 @@ from constitution_memorizer.playground.benchmarking import (
 )
 from constitution_memorizer.playground.eligibility import PlaygroundLawIdentity
 from constitution_memorizer.playground.roster.period import playground_month_bounds
-from constitution_memorizer.web.bare_acts import BareActSpec
+from constitution_memorizer.playground.service import activate_law
+from constitution_memorizer.web.bare_acts import (
+    BareActSpec,
+    clear_bare_act_cache,
+    get_bare_act,
+)
 from constitution_memorizer.web.request_context import get_last_request_performance
+from tests.test_playground import _hydrate_spy
 
 HOME_PATH = "/playground"
 TODAY_PATH = "/dashboard"
@@ -503,3 +511,409 @@ def test_device_and_entitlement_are_route_specific_not_global_one(nplusone_rows)
     assert home_ent[0] >= 1
     assert today_ent[0] >= 1
     assert calendar_ent[0] >= 1
+
+
+# --- T17 / WS9 repeated zero-hydration + Halted-home -----------------------
+
+T17_REPEAT = 5
+T17_SITEMAP_PATH = "/sitemap.xml"
+T17_CALENDAR_PATH = "/calendar"
+T17_ROSTER_PATH = "/playground/roster"
+T17_ROSTER_NEXT_PATH = "/playground/roster/next"
+T17_ACTIVE_ROUTES = (
+    ("home", HOME_PATH),
+    ("roster", T17_ROSTER_PATH),
+    ("roster_next", T17_ROSTER_NEXT_PATH),
+    ("today", TODAY_PATH),
+    ("calendar", T17_CALENDAR_PATH),
+)
+
+
+class _T17DeviceCallCounter:
+    """Test-only inspect/ensure counter. Does not change device policy."""
+
+    def __init__(self, inner: Any) -> None:
+        self.inner = inner
+        self.inspect_calls = 0
+        self.ensure_calls = 0
+
+    def inspect_current_device(self, *args, **kwargs):
+        self.inspect_calls += 1
+        return self.inner.inspect_current_device(*args, **kwargs)
+
+    def ensure_current_device(self, *args, **kwargs):
+        self.ensure_calls += 1
+        return self.inner.ensure_current_device(*args, **kwargs)
+
+    def __getattr__(self, name):
+        return getattr(self.inner, name)
+
+
+def _seed_halted_subscription(app) -> None:
+    """Direct halted current row. Does not flip an active subscriber mid-test."""
+
+    app.state.subscriptions.create_subscription_record(
+        BENCH_USER,
+        tier="max",
+        status="halted",
+        billing_period_start=datetime(2026, 9, 15, tzinfo=timezone.utc),
+        billing_period_end=datetime(2026, 10, 15, tzinfo=timezone.utc),
+        is_current=True,
+    )
+
+
+def _t17_current_status(app) -> str | None:
+    row = app.state.subscriptions.get_current_subscription(BENCH_USER)
+    if row is None:
+        return None
+    return str(getattr(row, "status", None) or "")
+
+
+def _t17_fail_leak(
+    *,
+    route: str,
+    phase: str,
+    iteration: int,
+    hydrated: list[str],
+    snap,
+    extra: str = "",
+) -> None:
+    notes = getattr(snap, "notes", None) or {}
+    counters = getattr(snap, "counters", None) or {}
+    timings = getattr(snap, "timings", None) or {}
+    pytest.fail(
+        "T17 hydration leak: "
+        f"route={route} phase={phase} iteration={iteration} "
+        f"slugs={list(hydrated)} spy_count={len(hydrated)} "
+        f"misses={counters.get('bare_act_cache_misses', 0)} "
+        f"bare_act_cache={notes.get('bare_act_cache')} "
+        f"bare_act_load={'bare_act_load' in timings} "
+        f"http={getattr(snap, 'status_code', None)} "
+        f"access={notes.get('playground_access_result')} "
+        f"{extra}".rstrip()
+    )
+
+
+def _assert_t17_zero_loader(
+    hydrated: list[str],
+    snap,
+    *,
+    route: str,
+    phase: str,
+    iteration: int,
+) -> None:
+    notes = snap.notes or {}
+    counters = snap.counters or {}
+    timings = snap.timings or {}
+    if (
+        hydrated
+        or int(counters.get("bare_act_cache_misses") or 0) != 0
+        or "bare_act_cache" in notes
+        or "bare_act_load" in timings
+    ):
+        _t17_fail_leak(
+            route=route,
+            phase=phase,
+            iteration=iteration,
+            hydrated=hydrated,
+            snap=snap,
+        )
+
+
+def _t17_positive_control_cold(hydrated: list[str]) -> None:
+    clear_bare_act_cache()
+    hydrated.clear()
+    act = get_bare_act("ndps")
+    assert act is not None
+    assert hydrated == ["ndps"], (
+        f"T17 cold positive control did not record get_bare_act('ndps'); "
+        f"got {hydrated!r}"
+    )
+    hydrated.clear()
+    clear_bare_act_cache()
+
+
+def _t17_positive_control_warm(hydrated: list[str]) -> None:
+    hydrated.clear()
+    act = get_bare_act("ndps")
+    assert act is not None
+    assert "ndps" in hydrated, (
+        f"T17 warm positive control (load) did not record ndps; got {hydrated!r}"
+    )
+    hydrated.clear()
+    hit = get_bare_act("ndps")
+    assert hit is not None
+    assert hydrated == ["ndps"], (
+        f"T17 warm positive control (lru_cache hit) did not record ndps; "
+        f"got {hydrated!r}"
+    )
+    hydrated.clear()
+
+
+async def _t17_get(client: AsyncClient, path: str):
+    response = await client.get(path)
+    snap = get_last_request_performance()
+    return response, snap
+
+
+def _assert_active_identity(label: str, path: str, response, snap, html: str) -> None:
+    assert response.status_code == 200, (
+        f"T17 active {label} HTTP {response.status_code} for {path}"
+    )
+    assert snap is not None, f"T17 active {label} missing request snapshot"
+    assert snap.path_group == path.split("?", 1)[0]
+    notes = snap.notes or {}
+    counters = snap.counters or {}
+    timings = snap.timings or {}
+    assert notes.get("auth_state") == "authed"
+    assert notes.get("playground_access_result") == "allowed"
+    assert notes.get("playground_subscription_disposition") == "active"
+    if label == "home":
+        assert notes.get("playground_device_result") == "ok"
+        assert int(counters.get("playground_device_lookups") or 0) == 2
+        assert notes.get("playground_roster_result") == "ok"
+        assert 'data-plus-playground="desktop"' in html
+        assert 'data-halted-playground="desktop"' not in html
+        assert "Payment retries have stopped" not in html
+    elif label == "roster":
+        assert notes.get("playground_device_result") == "ok"
+        assert int(counters.get("playground_device_lookups") or 0) == 2
+        assert 'data-playground-roster="current"' in html
+        assert 'data-hard-gate="true"' not in html
+        assert 'data-playground-gate="payment_halted"' not in html
+    elif label == "roster_next":
+        assert notes.get("playground_device_result") == "ok"
+        assert int(counters.get("playground_device_lookups") or 0) == 2
+        assert "playground_rollover_build" in timings
+        assert 'data-playground-roster="next"' in html
+        assert 'data-hard-gate="true"' not in html
+        assert 'data-playground-gate="payment_halted"' not in html
+    elif label == "today":
+        assert notes.get("playground_device_result") == "skipped_unpaid"
+        assert int(counters.get("playground_device_lookups") or 0) == 1
+        assert snap.path_group == "/dashboard"
+    elif label == "calendar":
+        assert notes.get("playground_device_result") == "skipped_unpaid"
+        assert int(counters.get("playground_device_lookups") or 0) == 1
+        assert snap.path_group == "/calendar"
+        assert path == "/calendar"
+
+
+def _assert_halted_home_identity(response, snap, html: str) -> None:
+    assert response.status_code == 200
+    assert snap is not None
+    notes = snap.notes or {}
+    counters = snap.counters or {}
+    assert snap.path_group == "/playground"
+    assert notes.get("auth_state") == "authed"
+    assert notes.get("playground_access_result") == "halted"
+    assert notes.get("playground_subscription_disposition") == "halted"
+    assert notes.get("playground_device_result") == "skipped_unpaid"
+    assert int(counters.get("playground_device_lookups") or 0) == 1
+    assert int(counters.get("playground_entitlement_resolves") or 0) == 1
+    assert "playground_roster_result" not in notes
+    assert 'data-halted-playground="desktop"' in html
+    assert "Payment retries have stopped" in html
+    assert 'data-plus-playground="desktop"' not in html
+    assert 'data-hard-gate="true"' not in html
+    assert "is-readonly" in html
+
+
+def _assert_halted_denial_gate(label: str, path: str, response, snap, html: str) -> None:
+    assert response.status_code == 200, (
+        f"T17 Halted {label} HTTP {response.status_code}"
+    )
+    assert snap is not None
+    notes = snap.notes or {}
+    counters = snap.counters or {}
+    assert snap.path_group == path
+    assert notes.get("auth_state") == "authed"
+    assert notes.get("playground_access_result") == "halted"
+    assert notes.get("playground_subscription_disposition") == "halted"
+    assert notes.get("playground_device_result") == "skipped_unpaid"
+    assert int(counters.get("playground_device_lookups") or 0) == 1
+    assert 'data-playground-gate="payment_halted"' in html
+    assert 'data-hard-gate="true"' in html
+    assert "Payment retries have stopped" in html
+    assert 'data-playground-roster="current"' not in html
+    assert 'data-playground-roster="next"' not in html
+    assert 'data-halted-playground="desktop"' not in html
+
+
+def _assert_sitemap_identity(response, snap) -> None:
+    assert response.status_code == 200
+    content_type = response.headers.get("content-type", "")
+    assert "xml" in content_type.lower()
+    body = response.text
+    assert "<sitemapindex" in body
+    assert "sitemap-core.xml" in body
+    assert "sitemap-laws.xml" in body
+    assert snap is not None
+    assert snap.path_group == T17_SITEMAP_PATH
+    assert (snap.notes or {}).get("auth_state") == "guest"
+    assert "playground_access_result" not in (snap.notes or {})
+
+
+def test_t17_active_plus_repeated_zero_hydration(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    """Active Plus: five routes × 5 cold + 5 warm. Real Acts. No syn-* patch."""
+
+    install_nplusone_clock(monkeypatch)
+    hydrated = _hydrate_spy(monkeypatch)
+    app = create_benchmark_app(tmp_path / "t17-active.db")
+    info = build_due_heavy_fixture(app)
+    assert info["tier"] == "plus"
+    assert info["roster_count"] == 3
+    assert info["law_ids"] == ["bns", "bnss", "ndps"]
+
+    async def _go():
+        transport = ASGITransport(app=app)
+        async with AsyncClient(
+            transport=transport,
+            base_url="http://testserver",
+            follow_redirects=False,
+        ) as client:
+            await sign_in_benchmark_client(client)
+            _t17_positive_control_cold(hydrated)
+            for phase, control in (
+                ("A", None),
+                ("B", _t17_positive_control_warm),
+            ):
+                if control is not None:
+                    control(hydrated)
+                for label, path in T17_ACTIVE_ROUTES:
+                    for iteration in range(1, T17_REPEAT + 1):
+                        response, snap = await _t17_get(client, path)
+                        _assert_active_identity(
+                            label, path, response, snap, response.text
+                        )
+                        _assert_t17_zero_loader(
+                            hydrated,
+                            snap,
+                            route=path,
+                            phase=phase,
+                            iteration=iteration,
+                        )
+            assert hydrated == []
+
+    try:
+        asyncio.run(_go())
+    finally:
+        clear_bare_act_cache()
+    assert hydrated == []
+
+
+def test_t17_sitemap_unauthenticated_repeated_zero_hydration(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    """Unauthenticated GET /sitemap.xml only. No child maps. No session cookie."""
+
+    install_nplusone_clock(monkeypatch)
+    hydrated = _hydrate_spy(monkeypatch)
+    app = create_benchmark_app(tmp_path / "t17-sitemap.db")
+
+    async def _go():
+        transport = ASGITransport(app=app)
+        async with AsyncClient(
+            transport=transport,
+            base_url="http://testserver",
+            follow_redirects=False,
+        ) as client:
+            assert not client.cookies
+            _t17_positive_control_cold(hydrated)
+            for phase, control in (
+                ("A", None),
+                ("B", _t17_positive_control_warm),
+            ):
+                if control is not None:
+                    control(hydrated)
+                for iteration in range(1, T17_REPEAT + 1):
+                    response, snap = await _t17_get(client, T17_SITEMAP_PATH)
+                    _assert_sitemap_identity(response, snap)
+                    _assert_t17_zero_loader(
+                        hydrated,
+                        snap,
+                        route=T17_SITEMAP_PATH,
+                        phase=phase,
+                        iteration=iteration,
+                    )
+                    assert not client.cookies.get("rtc_session")
+            assert hydrated == []
+
+    try:
+        asyncio.run(_go())
+    finally:
+        clear_bare_act_cache()
+    assert hydrated == []
+
+
+def test_t17_halted_home_repeated_zero_hydration_and_roster_denial(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    """Halted subscriber GET /playground 5+5, then one-shot roster/next gates."""
+
+    install_nplusone_clock(monkeypatch)
+    hydrated = _hydrate_spy(monkeypatch)
+    app = create_benchmark_app(tmp_path / "t17-halted.db")
+    activate_law(app.state.playground, BENCH_USER, "ndps")
+    _seed_halted_subscription(app)
+    assert _t17_current_status(app) == "halted"
+    device = _T17DeviceCallCounter(app.state.device_service)
+    app.state.device_service = device
+
+    async def _go():
+        transport = ASGITransport(app=app)
+        async with AsyncClient(
+            transport=transport,
+            base_url="http://testserver",
+            follow_redirects=False,
+        ) as client:
+            await sign_in_benchmark_client(client)
+            assert _t17_current_status(app) == "halted"
+            _t17_positive_control_cold(hydrated)
+            for phase, control in (
+                ("A", None),
+                ("B", _t17_positive_control_warm),
+            ):
+                if control is not None:
+                    control(hydrated)
+                for iteration in range(1, T17_REPEAT + 1):
+                    response, snap = await _t17_get(client, HOME_PATH)
+                    _assert_halted_home_identity(response, snap, response.text)
+                    _assert_t17_zero_loader(
+                        hydrated,
+                        snap,
+                        route=HOME_PATH,
+                        phase=phase,
+                        iteration=iteration,
+                    )
+                    assert device.ensure_calls == 0
+                    assert _t17_current_status(app) == "halted"
+            for label, path in (
+                ("roster", T17_ROSTER_PATH),
+                ("roster_next", T17_ROSTER_NEXT_PATH),
+            ):
+                response, snap = await _t17_get(client, path)
+                _assert_halted_denial_gate(
+                    label, path, response, snap, response.text
+                )
+                _assert_t17_zero_loader(
+                    hydrated,
+                    snap,
+                    route=path,
+                    phase="denial",
+                    iteration=1,
+                )
+                assert device.ensure_calls == 0
+                assert _t17_current_status(app) == "halted"
+            assert hydrated == []
+            assert device.ensure_calls == 0
+
+    try:
+        asyncio.run(_go())
+    finally:
+        clear_bare_act_cache()
+    assert _t17_current_status(app) == "halted"
+    assert device.ensure_calls == 0
+    assert hydrated == []
