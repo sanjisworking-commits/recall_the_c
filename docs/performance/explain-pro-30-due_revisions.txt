@@ -1,0 +1,26 @@
+# disposable PostgreSQL baseline, not an SLA
+# query: due_revisions
+# alembic_head: 20260927_0027
+# fixture: pro-30+source-review
+# database_name_prefix: s2_
+Sort  (cost=41.48..41.51 rows=12 width=47) (actual time=0.643..0.663 rows=480 loops=1)
+  Sort Key: p.next_revision, p.law_id, p.source_locator
+  Sort Method: quicksort  Memory: 60kB
+  Buffers: shared hit=16
+  ->  Hash Join  (cost=25.03..41.27 rows=12 width=47) (actual time=0.196..0.352 rows=480 loops=1)
+        Hash Cond: ((s.law_id = p.law_id) AND (s.source_locator = p.source_locator))
+        Buffers: shared hit=16
+        ->  Seq Scan on user_playground_selection s  (cost=0.00..13.50 rows=520 width=39) (actual time=0.004..0.055 rows=520 loops=1)
+              Filter: (user_id = '11111111-1111-4111-8111-111111111111'::uuid)
+              Buffers: shared hit=7
+        ->  Hash  (cost=20.77..20.77 rows=284 width=63) (actual time=0.185..0.185 rows=480 loops=1)
+              Buckets: 1024  Batches: 1  Memory Usage: 54kB
+              Buffers: shared hit=9
+              ->  Seq Scan on user_playground_progress p  (cost=0.07..20.77 rows=284 width=63) (actual time=0.004..0.093 rows=480 loops=1)
+                    Filter: ((next_revision IS NOT NULL) AND (status <> 'mastered'::text) AND (next_revision <= '2026-09-16'::date) AND (user_id = '11111111-1111-4111-8111-111111111111'::uuid) AND (law_id = ANY ('{bns,bnss,ndps,uapa,pss,mtp,syn-1,syn-2,syn-3,syn-4,syn-5,syn-6,syn-7,syn-8,syn-9,syn-10,syn-11,syn-12,syn-13,syn-14,syn-15,syn-16,syn-17,syn-18,syn-19,syn-20,syn-21,syn-22,syn-23,syn-24}'::text[])))
+                    Rows Removed by Filter: 40
+                    Buffers: shared hit=9
+Planning:
+  Buffers: shared hit=14
+Planning Time: 0.185 ms
+Execution Time: 0.690 ms

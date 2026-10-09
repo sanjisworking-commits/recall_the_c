@@ -1,0 +1,16 @@
+# disposable PostgreSQL baseline, not an SLA
+# query: current_roster_lookup
+# alembic_head: 20260927_0027
+# fixture: pro-30+source-review
+# database_name_prefix: s2_
+Sort  (cost=2.19..2.26 rows=30 width=87) (actual time=0.021..0.022 rows=30 loops=1)
+  Sort Key: created_at, law_id
+  Sort Method: quicksort  Memory: 28kB
+  Buffers: shared hit=1
+  ->  Seq Scan on user_playground_roster_item  (cost=0.00..1.45 rows=30 width=87) (actual time=0.003..0.006 rows=30 loops=1)
+        Filter: ((user_id = '11111111-1111-4111-8111-111111111111'::uuid) AND (period_start = '2026-09-01'::date))
+        Buffers: shared hit=1
+Planning:
+  Buffers: shared hit=78
+Planning Time: 0.108 ms
+Execution Time: 0.034 ms

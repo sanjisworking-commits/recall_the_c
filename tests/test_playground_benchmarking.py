@@ -1,52 +1,71 @@
-"""WS6 / execution T13 benchmark harness tests. No duration assertions."""
+"""WS6 / WS7 / WS8 (T13–T15) benchmark harness tests. No duration assertions."""
 
 from __future__ import annotations
 
 import json
 import os
+import re
 import subprocess
 import sys
+from datetime import date
 from pathlib import Path
 from types import SimpleNamespace
 from uuid import UUID
 
 import pytest
 
+from constitution_memorizer.devices.postgres import PostgresDeviceRepository
 from constitution_memorizer.playground.benchmarking import (
     APP_ENV_TEST_REQUIRED,
+    BENCH_EMAIL,
     BENCH_USER,
     BNSS_LEARN_MODE,
     BNSS_LEARN_PATH,
     BNSS_PUBLIC_PATH,
     BNSS_WORKSPACE_PATH,
     DEFAULT_BNSS_JSON_PATH,
+    DEFAULT_EXPLAIN_JSON_PATH,
     DEFAULT_JSON_PATH,
     ELIGIBLE_LAWS,
+    EXPLAIN_QUERY_LABELS,
     PROTOCOL_BNSS_COLD_WARM,
     SCENARIO_BUILDERS,
     SCENARIOS,
     BenchmarkAborted,
     BenchmarkRunConfig,
+    ExplainCaptureConn,
+    ExplainCaptureCursor,
+    ExplainCapturePool,
     assert_cache_class,
+    assert_disposable_postgres,
     assert_fresh_sqlite,
+    assert_readonly_select,
     bnss_cell_report,
     build_arg_parser,
+    capture_explain_statements,
     classify_cache_snapshot,
     collect_snapshots,
     config_from_args,
     create_benchmark_app,
+    dummy_device_key_hash,
+    evaluate_explain_guard,
     evaluate_safety_guard,
     host_is_production_looking,
     largest_eligible_runtime_act,
+    parse_explain_text,
     percentile_nearest_rank,
     resolve_database_url,
     run_bnss_cold_warm,
+    sanitize_explain_text,
     seed_scenario,
     snapshots_to_report,
     sqlite_filesystem_path,
     summarize_numbers,
     synthetic_law_ids,
 )
+from constitution_memorizer.playground.postgres import PostgresPlaygroundRepository
+from constitution_memorizer.playground.roster.postgres import PostgresRosterRepository
+from constitution_memorizer.subscriptions.postgres import PostgresSubscriptionRepository
 from constitution_memorizer.playground.roster.period import playground_month_bounds
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -98,6 +117,8 @@ def test_cli_help_subprocess():
     ):
         assert flag in text
     assert PROTOCOL_BNSS_COLD_WARM in text
+    assert "refused until T15" not in text
+    assert "disposable PostgreSQL EXPLAIN" in text
 
 
 def test_app_env_test_is_accepted():
@@ -259,8 +280,10 @@ def test_explain_aborts_before_database_url():
     args = build_arg_parser().parse_args(
         ["--scenario", "plus-10", "--explain", "--app-env", "test"]
     )
-    with pytest.raises(BenchmarkAborted, match="T15"):
-        config_from_args(args, environ={})
+    with pytest.raises(BenchmarkAborted, match="never process DATABASE_URL"):
+        config_from_args(
+            args, environ={"DATABASE_URL": "postgresql://127.0.0.1/s2_0_explain"}
+        )
 
 
 def test_missing_database_url_does_not_use_process_database_url():
@@ -778,3 +801,339 @@ def test_cli_protocol_quick_smoke(tmp_path: Path):
     assert learn_warm["warmup_discarded"] == 1
     assert learn_cold["cache_evidence"]["bare_act_load_present_count"] == 3
     assert learn_warm["cache_evidence"]["bare_act_load_present_count"] == 0
+
+
+EXPLAIN_CLI = ROOT / "scripts" / "explain_playground_queries.py"
+SAMPLE_INDEX_PLAN = ROOT / "tests" / "fixtures" / "explain" / "sample_index_scan.txt"
+SAMPLE_NESTED_PLAN = ROOT / "tests" / "fixtures" / "explain" / "sample_nested_loop_seq.txt"
+
+
+def test_explain_sqlite_url_aborts():
+    args = build_arg_parser().parse_args(
+        [
+            "--explain",
+            "--scenario",
+            "pro-30",
+            "--app-env",
+            "test",
+            "--database-url",
+            "sqlite:////tmp/x.sqlite",
+        ]
+    )
+    config = config_from_args(args, environ={})
+    with pytest.raises(BenchmarkAborted, match="not sqlite"):
+        evaluate_explain_guard(
+            requested_app_env=config.app_env,
+            accept_nontest=False,
+            database_url=config.database_url,
+            environ={"APP_ENV": "test"},
+        )
+
+
+def test_explain_railway_url_aborts():
+    with pytest.raises(BenchmarkAborted, match="host"):
+        assert_disposable_postgres("postgresql://user:pw@db.railway.app/prod")
+
+
+def test_explain_postgres_maintenance_name_aborts():
+    with pytest.raises(BenchmarkAborted, match="maintenance"):
+        assert_disposable_postgres("postgresql://127.0.0.1/postgres")
+
+
+def test_explain_docker_hostname_postgres_aborts():
+    with pytest.raises(BenchmarkAborted, match="Docker service hostname"):
+        assert_disposable_postgres("postgresql://postgres@postgres/s2_0_explain")
+
+
+def test_explain_guard_accepts_loopback_disposable_name_without_connect():
+    url = "postgresql://127.0.0.1/s2_0_explain"
+    parsed = assert_disposable_postgres(url)
+    assert parsed["database"] == "s2_0_explain"
+    assert parsed["host"] == "127.0.0.1"
+    env = evaluate_explain_guard(
+        requested_app_env="test",
+        accept_nontest=False,
+        database_url=url,
+        environ={"APP_ENV": "test"},
+    )
+    assert env == "test"
+
+
+def test_explain_unix_peer_url_is_allowlisted():
+    parsed = assert_disposable_postgres("postgresql:///m11_migrate")
+    assert parsed["host"] == ""
+    assert parsed["database"] == "m11_migrate"
+
+
+def test_explain_i_accept_does_not_override_isolation():
+    with pytest.raises(BenchmarkAborted, match="host"):
+        evaluate_explain_guard(
+            requested_app_env="test",
+            accept_nontest=True,
+            database_url="postgresql://db.railway.app/s2_0_explain",
+            environ={"APP_ENV": "test", "BENCHMARK_ALLOW_NONTEST": "1"},
+        )
+
+
+def test_explain_staging_still_needs_dual_consent():
+    url = "postgresql://127.0.0.1/s2_0_explain"
+    with pytest.raises(BenchmarkAborted, match="refusing staging/production"):
+        evaluate_explain_guard(
+            requested_app_env="staging",
+            accept_nontest=False,
+            database_url=url,
+            environ={"APP_ENV": "test", "BENCHMARK_ALLOW_NONTEST": "1"},
+        )
+    assert (
+        evaluate_explain_guard(
+            requested_app_env="staging",
+            accept_nontest=True,
+            database_url=url,
+            environ={"APP_ENV": "test", "BENCHMARK_ALLOW_NONTEST": "1"},
+        )
+        == "staging"
+    )
+
+
+def test_explain_defaults_scenario_pro_30():
+    args = build_arg_parser().parse_args(
+        [
+            "--explain",
+            "--app-env",
+            "test",
+            "--database-url",
+            "postgresql://127.0.0.1/s2_0_explain",
+        ]
+    )
+    config = config_from_args(args, environ={})
+    assert config.explain is True
+    assert config.scenario == "pro-30"
+    assert config.json_path == DEFAULT_EXPLAIN_JSON_PATH
+
+
+def test_explain_rejects_unsupported_scenario():
+    args = build_arg_parser().parse_args(
+        [
+            "--explain",
+            "--scenario",
+            "plus-10",
+            "--app-env",
+            "test",
+            "--database-url",
+            "postgresql://127.0.0.1/s2_0_explain",
+        ]
+    )
+    with pytest.raises(BenchmarkAborted, match="unsupported"):
+        config_from_args(args, environ={})
+
+
+def test_explain_plus_protocol_aborts():
+    args = build_arg_parser().parse_args(
+        [
+            "--explain",
+            "--protocol",
+            PROTOCOL_BNSS_COLD_WARM,
+            "--app-env",
+            "test",
+            "--database-url",
+            "postgresql://127.0.0.1/s2_0_explain",
+        ]
+    )
+    with pytest.raises(BenchmarkAborted, match="cannot be combined"):
+        config_from_args(args, environ={})
+
+
+def test_cli_explain_without_url_subprocess():
+    proc = subprocess.run(
+        [
+            sys.executable,
+            str(CLI),
+            "--explain",
+            "--app-env",
+            "test",
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+        env=_env_without_db(
+            APP_ENV="test",
+            DATABASE_URL="postgresql://127.0.0.1/s2_0_explain",
+        ),
+    )
+    assert proc.returncode == 1
+    assert "never process DATABASE_URL" in proc.stderr
+
+
+def test_cli_explain_sqlite_subprocess():
+    proc = subprocess.run(
+        [
+            sys.executable,
+            str(CLI),
+            "--scenario",
+            "plus-10",
+            "--explain",
+            "--app-env",
+            "test",
+            "--database-url",
+            "sqlite:////tmp/x.sqlite",
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+        env=_env_without_db(APP_ENV="test"),
+    )
+    assert proc.returncode == 1
+    combined = proc.stderr + proc.stdout
+    assert "sqlite" in combined.lower() or "unsupported" in combined.lower()
+
+
+def test_explain_script_help_lists_explain():
+    proc = subprocess.run(
+        [sys.executable, str(EXPLAIN_CLI), "--help"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert proc.returncode == 0
+    assert "--explain" in proc.stdout
+    assert "disposable PostgreSQL EXPLAIN" in proc.stdout
+
+
+def test_readonly_select_refuses_writes():
+    assert assert_readonly_select("SELECT 1").upper().startswith("SELECT")
+    with pytest.raises(BenchmarkAborted, match="non-SELECT"):
+        assert_readonly_select("DELETE FROM user_device")
+    with pytest.raises(BenchmarkAborted, match="non-SELECT"):
+        assert_readonly_select("EXPLAIN SELECT 1")
+    with pytest.raises(BenchmarkAborted, match="multiple"):
+        assert_readonly_select("SELECT 1; SELECT 2")
+
+
+def test_parse_explain_text_hash_right_join_and_sort():
+    text = """
+Sort  (cost=227.78..227.85 rows=30 width=91) (actual time=3.907..3.911 rows=30 loops=1)
+  ->  Hash Right Join  (cost=209.95..227.04 rows=30 width=91) (actual time=2.768..3.897 rows=30 loops=1)
+        ->  Seq Scan on user_playground_item i  (cost=0.00..1.60 rows=30 width=43) (actual time=0.012..0.015 rows=30 loops=1)
+Planning Time: 0.4 ms
+Execution Time: 4.0 ms
+"""
+    parsed = parse_explain_text(text)
+    assert parsed["scan_types"][0] == "Sort"
+    assert "Hash Right Join" in parsed["scan_types"]
+    assert "Seq Scan" in parsed["scan_types"]
+    assert parsed["n_plus_one_hint"] is False
+
+
+def test_parse_explain_text_golden_index_scan():
+    text = SAMPLE_INDEX_PLAN.read_text(encoding="utf-8")
+    parsed = parse_explain_text(text)
+    assert "Index Scan" in parsed["scan_types"]
+    assert parsed["index_names"] == ["user_device_user_hash_key"]
+    assert parsed["actual_rows"] == 1
+    assert parsed["buffers_shared_hit"] == 4
+    assert parsed["buffers_shared_read"] == 1
+    assert parsed["planning_time_ms"] == 0.15
+    assert parsed["execution_time_ms"] == 0.045
+    assert parsed["n_plus_one_hint"] is False
+
+
+def test_parse_explain_text_nested_loop_seq_is_t16_hint_only():
+    text = SAMPLE_NESTED_PLAN.read_text(encoding="utf-8")
+    parsed = parse_explain_text(text)
+    assert parsed["n_plus_one_hint"] is True
+    assert "Nested Loop" in parsed["scan_types"]
+    assert "Seq Scan" in parsed["scan_types"]
+
+
+def test_nested_loop_alone_is_not_n_plus_one():
+    text = """
+Nested Loop  (cost=0.15..8.19 rows=1 width=32) (actual time=0.020..0.021 rows=1 loops=1)
+  ->  Index Scan using user_playground_progress_due on user_playground_progress  (cost=0.15..8.17 rows=1 width=32) (actual time=0.018..0.018 rows=1 loops=1)
+        Index Cond: (user_id = '11111111-1111-4111-8111-111111111111'::uuid)
+Planning Time: 0.1 ms
+Execution Time: 0.03 ms
+"""
+    parsed = parse_explain_text(text)
+    assert "Nested Loop" in parsed["scan_types"]
+    assert parsed["n_plus_one_hint"] is False
+    assert parsed["t16_note"]
+
+
+def test_dummy_device_hash_is_hex_not_a_token():
+    digest = dummy_device_key_hash()
+    assert re.fullmatch(r"[0-9a-f]{64}", digest)
+    for token in ("@", "Bearer", "eyJ", "rtc_device", "hmac", "token="):
+        assert token.lower() not in digest.lower()
+    sanitized = sanitize_explain_text(
+        f"device_key_hash = '{digest}' email={BENCH_EMAIL}",
+        dummy_hash=digest,
+    )
+    assert digest not in sanitized
+    assert BENCH_EMAIL not in sanitized
+    assert "<redacted-device-hash>" in sanitized
+
+
+def test_capture_explain_statements_matches_ws8_inventory():
+    captured = capture_explain_statements()
+    assert tuple(label for label, _sql, _params in captured) == EXPLAIN_QUERY_LABELS
+    by_label = {label: sql for label, sql, _params in captured}
+    assert "period_start" in by_label["current_roster_lookup"]
+    assert "consumed_at" in by_label["roster_capacity_count"]
+    assert "selected_count" in by_label["home_summary_aggregate"]
+    assert "IN (" in by_label["home_summary_aggregate"]
+    assert by_label["home_summary_aggregate"].count("%s") >= 34
+    assert "next_revision" in by_label["due_revisions"]
+    assert "next_revision" in by_label["calendar_schedule"]
+    assert "revoked_at IS NULL" in by_label["device_count"]
+    assert "device_key_hash" in by_label["device_lookup"]
+    assert "is_current = TRUE" in by_label["current_subscription"]
+    assert "user_playground_source_change" in by_label["source_review_aggregate"]
+    for _label, sql, _params in captured:
+        assert_readonly_select(sql)
+
+
+def test_spy_cursor_postgres_repo_sql_predicates():
+    cursor = ExplainCaptureCursor()
+    pool = ExplainCapturePool(ExplainCaptureConn(cursor))
+    uid = BENCH_USER
+    roster = PostgresRosterRepository(pool)
+    overlay = PostgresPlaygroundRepository(pool)
+    devices = PostgresDeviceRepository(pool)
+    subs = PostgresSubscriptionRepository(pool)
+    roster.list_items(uid, date(2026, 9, 1))
+    assert "period_start" in cursor.statements[-1][0]
+    cursor.statements.clear()
+    roster.count_consumed(uid, date(2026, 9, 1))
+    assert "consumed_at" in cursor.statements[-1][0]
+    cursor.statements.clear()
+    overlay.list_playground_summaries(
+        uid, as_of=date(2026, 9, 16), law_ids=list(ELIGIBLE_LAWS) + list(synthetic_law_ids(24))
+    )
+    sql = cursor.statements[-1][0]
+    assert "selected_count" in sql
+    assert "IN (" in sql
+    cursor.statements.clear()
+    overlay.list_due_revisions(uid, date(2026, 9, 16), list(ELIGIBLE_LAWS))
+    assert "next_revision" in cursor.statements[-1][0]
+    cursor.statements.clear()
+    overlay.list_revision_schedule(
+        uid, date(2026, 9, 1), date(2026, 10, 1), list(ELIGIBLE_LAWS)
+    )
+    schedule_sql = cursor.statements[-1][0]
+    assert "next_revision" in schedule_sql
+    assert schedule_sql.count("%s") >= 3
+    cursor.statements.clear()
+    devices.count_active(uid)
+    assert "revoked_at IS NULL" in cursor.statements[-1][0]
+    cursor.statements.clear()
+    devices.get_by_hash(uid, dummy_device_key_hash())
+    assert "device_key_hash" in cursor.statements[-1][0]
+    cursor.statements.clear()
+    subs.get_current_subscription(uid)
+    assert "is_current = TRUE" in cursor.statements[-1][0]
+    cursor.statements.clear()
+    overlay.list_source_changes(uid)
+    assert "user_playground_source_change" in cursor.statements[-1][0]

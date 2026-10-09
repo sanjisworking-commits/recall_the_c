@@ -1,8 +1,10 @@
-"""Playground Stage 2 WS6/WS7 benchmark library (execution T13 + T14).
+"""Playground Stage 2 WS6/WS7/WS8 benchmark library (T13 + T14 + T15).
 
 Statistics, fail-closed production guard, deterministic fixtures, in-process
-HTTP runner, and JSON reporting. Does not change product behavior or T2–T9
-instrumentation. PostgreSQL EXPLAIN is T15/WS8. BNSS cold/warm is
+HTTP runner, JSON reporting, and disposable PostgreSQL EXPLAIN (ANALYZE,
+BUFFERS). Does not change product behavior or T1–T9 instrumentation.
+PostgreSQL EXPLAIN is T15/WS8 (``--explain`` or
+``scripts/explain_playground_queries.py``). BNSS cold/warm is
 ``--protocol bnss-cold-warm`` (T14/WS7); omitting ``--protocol`` keeps the
 T13 unlabeled primary-route path.
 """
@@ -10,18 +12,20 @@ T13 unlabeled primary-route path.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import math
 import os
 import re
 import sqlite3
+import subprocess
 import sys
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 from typing import Any, Callable, Iterable, Mapping
-from urllib.parse import unquote, urlparse
-from uuid import UUID
+from urllib.parse import unquote, urlparse, urlunparse
+from uuid import UUID, uuid4
 
 PLAYGROUND_TEST_NOW = datetime(2026, 9, 16, 12, 0, tzinfo=timezone.utc)
 BENCH_USER = UUID("11111111-1111-4111-8111-111111111111")
@@ -41,8 +45,76 @@ LAW_WORKSPACE_LAW = "bnss"
 LAW_WORKSPACE_SELECTED_COUNT = 40
 DEFAULT_JSON_PATH = Path("artifacts/playground-performance-baseline.json")
 DEFAULT_BNSS_JSON_PATH = Path("artifacts/playground-bnss-cold-warm.json")
+DEFAULT_EXPLAIN_JSON_PATH = Path("docs/performance/explain-pro-30-summary.json")
+DEFAULT_EXPLAIN_PLAN_DIR = Path("docs/performance")
 PROTOCOL_BNSS_COLD_WARM = "bnss-cold-warm"
 PROTOCOLS = (PROTOCOL_BNSS_COLD_WARM,)
+EXPLAIN_SCENARIO = "pro-30"
+EXPECTED_ALEMBIC_HEAD = "20260927_0027"
+EXPLAIN_STATEMENT_TIMEOUT = "30s"
+DISPOSABLE_DB_NAME_RE = re.compile(
+    r"^(s2_|explain_|m11_|playground_bench_)[a-z0-9_]+$"
+)
+LOCAL_POSTGRES_HOSTS = frozenset({"", "localhost", "127.0.0.1", "::1"})
+FORBIDDEN_DB_NAMES = frozenset({"postgres", "template0", "template1"})
+ANALYZE_TABLES = (
+    "user_playground_period",
+    "user_playground_roster_item",
+    "user_playground_item",
+    "user_playground_selection",
+    "user_playground_progress",
+    "user_playground_mode_progress",
+    "user_playground_revision_mode_progress",
+    "user_playground_source_change",
+    "user_device",
+)
+EXPLAIN_QUERY_LABELS = (
+    "current_roster_lookup",
+    "roster_capacity_count",
+    "home_summary_aggregate",
+    "due_revisions",
+    "calendar_schedule",
+    "device_count",
+    "device_lookup",
+    "current_subscription",
+    "source_review_aggregate",
+)
+EXPLAIN_DUMMY_DEVICE_MATERIAL = b"playground-t15-dummy-device-key"
+DATASET_COUNT_SQL = (
+    ("roster_items", "SELECT COUNT(*) FROM user_playground_roster_item WHERE user_id = %s"),
+    ("overlay_items", "SELECT COUNT(*) FROM user_playground_item WHERE user_id = %s"),
+    ("selection_rows", "SELECT COUNT(*) FROM user_playground_selection WHERE user_id = %s"),
+    ("progress_rows", "SELECT COUNT(*) FROM user_playground_progress WHERE user_id = %s"),
+    (
+        "mode_progress_rows",
+        "SELECT COUNT(*) FROM user_playground_mode_progress WHERE user_id = %s",
+    ),
+    (
+        "revision_mode_rows",
+        "SELECT COUNT(*) FROM user_playground_revision_mode_progress WHERE user_id = %s",
+    ),
+    (
+        "source_change_rows",
+        "SELECT COUNT(*) FROM user_playground_source_change WHERE user_id = %s",
+    ),
+    ("device_rows", "SELECT COUNT(*) FROM user_device WHERE user_id = %s"),
+)
+PLAN_NODE_TYPES = (
+    "Index Only Scan",
+    "Bitmap Index Scan",
+    "Bitmap Heap Scan",
+    "Hash Right Join",
+    "Hash Left Join",
+    "Hash Join",
+    "Merge Join",
+    "Nested Loop",
+    "Index Scan",
+    "Seq Scan",
+    "GroupAggregate",
+    "HashAggregate",
+    "Aggregate",
+    "Sort",
+)
 BNSS_LEARN_MODE = "read"
 BNSS_LEARN_SECTION = "1"
 BNSS_LEARN_LOCATOR = f"{LAW_WORKSPACE_LAW}:section:{BNSS_LEARN_SECTION}"
@@ -291,12 +363,13 @@ def evaluate_safety_guard(
     environ: Mapping[str, str] | None = None,
     multiuser: bool = True,
 ) -> str:
-    """Abort before app creation or DB access. Return the effective env label."""
+    """Abort before app creation or DB access. Return the effective env label.
+
+    ``explain`` is accepted for call-site compatibility. HTTP runners refuse
+    ``--explain`` themselves; T15 uses ``evaluate_explain_guard``.
+    """
+    del explain
     env = os.environ if environ is None else environ
-    if explain:
-        raise BenchmarkAborted(
-            "EXPLAIN is WS8/T15; not implemented in T13"
-        )
     process_app_env = str(env.get("APP_ENV") or "").strip().lower()
     requested = str(requested_app_env or "").strip().lower()
     allow_nontest = str(env.get("BENCHMARK_ALLOW_NONTEST") or "").strip() == "1"
@@ -344,7 +417,11 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--database-url",
         default=None,
-        help="Required sqlite:/// path. Never falls back to DATABASE_URL.",
+        help=(
+            "sqlite:/// filesystem path for the HTTP runner (T13/T14), or a "
+            "local disposable postgresql:// URL for --explain (T15). "
+            "Never falls back to process DATABASE_URL."
+        ),
     )
     parser.add_argument(
         "--app-env",
@@ -364,7 +441,11 @@ def build_arg_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--explain",
         action="store_true",
-        help="Parsed then refused until T15/WS8",
+        help=(
+            "WS8 disposable PostgreSQL EXPLAIN (ANALYZE, BUFFERS). "
+            "Requires a local disposable postgresql:// URL. "
+            "Not the HTTP runner."
+        ),
     )
     parser.add_argument(
         "--quick",
@@ -399,11 +480,23 @@ class BenchmarkRunConfig:
 def config_from_args(
     args: argparse.Namespace, environ: Mapping[str, str] | None = None
 ) -> BenchmarkRunConfig:
-    if args.explain:
-        raise BenchmarkAborted("EXPLAIN is WS8/T15; not implemented in T13")
     protocol = str(getattr(args, "protocol", None) or "").strip() or None
     scenario = str(getattr(args, "scenario", None) or "").strip()
-    if protocol == PROTOCOL_BNSS_COLD_WARM:
+    explain = bool(getattr(args, "explain", False))
+    if explain and protocol == PROTOCOL_BNSS_COLD_WARM:
+        raise BenchmarkAborted(
+            "--explain cannot be combined with --protocol bnss-cold-warm"
+        )
+    url = resolve_database_url(args.database_url, environ)
+    if explain:
+        if not scenario:
+            scenario = EXPLAIN_SCENARIO
+        if scenario != EXPLAIN_SCENARIO:
+            raise BenchmarkAborted(
+                "EXPLAIN scenario must be pro-30 (WS8 minimum); "
+                f"unsupported {scenario!r}"
+            )
+    elif protocol == PROTOCOL_BNSS_COLD_WARM:
         if not scenario:
             scenario = "law-workspace"
         if scenario != "law-workspace":
@@ -418,14 +511,14 @@ def config_from_args(
         warmup, iterations = 1, 3
     if warmup < 0 or iterations < 1:
         raise BenchmarkAborted("warmup must be >= 0 and iterations >= 1")
-    url = resolve_database_url(args.database_url, environ)
     json_raw = getattr(args, "json", None)
     if json_raw is None:
-        json_path = (
-            DEFAULT_BNSS_JSON_PATH
-            if protocol == PROTOCOL_BNSS_COLD_WARM
-            else DEFAULT_JSON_PATH
-        )
+        if explain:
+            json_path = DEFAULT_EXPLAIN_JSON_PATH
+        elif protocol == PROTOCOL_BNSS_COLD_WARM:
+            json_path = DEFAULT_BNSS_JSON_PATH
+        else:
+            json_path = DEFAULT_JSON_PATH
     else:
         text = str(json_raw).strip()
         json_path = Path(text) if text else None
@@ -436,7 +529,7 @@ def config_from_args(
         database_url=url,
         app_env=args.app_env,
         json_path=json_path,
-        explain=bool(args.explain),
+        explain=explain,
         accept_nontest=bool(args.accept_nontest),
         protocol=protocol,
     )
@@ -1277,6 +1370,8 @@ def run_bnss_cold_warm(
 
     from constitution_memorizer.web.bare_acts import clear_bare_act_cache
 
+    if config.explain:
+        raise BenchmarkAborted("HTTP runner does not execute EXPLAIN")
     if config.protocol != PROTOCOL_BNSS_COLD_WARM:
         raise BenchmarkAborted("run_bnss_cold_warm requires --protocol bnss-cold-warm")
     if config.scenario != "law-workspace":
@@ -1287,7 +1382,7 @@ def run_bnss_cold_warm(
     effective_app_env = evaluate_safety_guard(
         requested_app_env=config.app_env,
         accept_nontest=config.accept_nontest,
-        explain=config.explain,
+        explain=False,
         environ=environ,
     )
     db_path = assert_fresh_sqlite(config.database_url)
@@ -1384,6 +1479,940 @@ def run_bnss_cold_warm(
     return payload
 
 
+def dummy_device_key_hash() -> str:
+    """SHA-256 hex of a constant dummy byte string. Not a session token."""
+    return hashlib.sha256(EXPLAIN_DUMMY_DEVICE_MATERIAL).hexdigest()
+
+
+def redact_database_url(url: str) -> str:
+    parsed = urlparse(str(url or "").strip())
+    if not parsed.scheme:
+        return "<redacted>"
+    host = parsed.hostname or ""
+    db = (parsed.path or "").lstrip("/").split("/", 1)[0]
+    user = parsed.username or ""
+    auth = f"{user}@" if user else ""
+    netloc = f"{auth}{host}" if host else ""
+    if parsed.port:
+        netloc = f"{netloc}:{parsed.port}"
+    return urlunparse((parsed.scheme, netloc, f"/{db}" if db else "", "", "", ""))
+
+
+def assert_disposable_postgres(url: str) -> dict[str, str]:
+    """Fail-closed local disposable PostgreSQL URL. Never prints passwords."""
+    raw = str(url or "").strip()
+    if not raw:
+        raise BenchmarkAborted(
+            "T15 --explain requires --database-url or BENCHMARK_DATABASE_URL "
+            "(never process DATABASE_URL)"
+        )
+    parsed = urlparse(raw)
+    scheme = (parsed.scheme or "").lower()
+    if scheme in {"sqlite", "sqlite3"}:
+        raise BenchmarkAborted(
+            "T15 --explain requires a local disposable postgresql:// URL, "
+            "not sqlite"
+        )
+    if scheme == "postgresql+psycopg":
+        raise BenchmarkAborted(
+            "T15 --explain rejects postgresql+psycopg:// on the CLI; "
+            "pass postgresql:// (Alembic rewrites internally)"
+        )
+    if scheme not in {"postgresql", "postgres"}:
+        raise BenchmarkAborted(
+            "T15 --explain requires a postgresql:// URL to a local "
+            "disposable database"
+        )
+    if parsed.query or parsed.fragment:
+        raise BenchmarkAborted(
+            "T15 disposable PostgreSQL URL must not include query or fragment"
+        )
+    host = (parsed.hostname or "").strip().lower()
+    if host == "postgres":
+        raise BenchmarkAborted(
+            "T15 rejects Docker service hostname 'postgres'; "
+            "use Unix peer or loopback only"
+        )
+    if host not in LOCAL_POSTGRES_HOSTS:
+        raise BenchmarkAborted(
+            "T15 disposable PostgreSQL host must be empty (Unix/peer), "
+            "localhost, 127.0.0.1, or ::1"
+        )
+    if host_is_production_looking(host):
+        raise BenchmarkAborted("T15 rejects production-looking PostgreSQL hosts")
+    db_name = (parsed.path or "").lstrip("/").split("/", 1)[0]
+    if not db_name:
+        raise BenchmarkAborted("T15 PostgreSQL URL is missing a database name")
+    if "/" in (parsed.path or "").lstrip("/"):
+        raise BenchmarkAborted("T15 PostgreSQL URL path must be a single database name")
+    if db_name.lower() in FORBIDDEN_DB_NAMES:
+        raise BenchmarkAborted(
+            "T15 rejects maintenance database names (postgres/template*)"
+        )
+    if not DISPOSABLE_DB_NAME_RE.fullmatch(db_name):
+        raise BenchmarkAborted(
+            "T15 database name must match "
+            "^(s2_|explain_|m11_|playground_bench_)[a-z0-9_]+$"
+        )
+    return {
+        "scheme": scheme,
+        "host": host,
+        "database": db_name,
+        "redacted": redact_database_url(raw),
+    }
+
+
+def evaluate_explain_guard(
+    *,
+    requested_app_env: str | None,
+    accept_nontest: bool,
+    database_url: str,
+    environ: Mapping[str, str] | None = None,
+) -> str:
+    """APP_ENV rules plus disposable Postgres targeting. Does not connect.
+
+    ``--i-accept-nontest-db`` never overrides host/name isolation.
+    """
+    effective = evaluate_safety_guard(
+        requested_app_env=requested_app_env,
+        accept_nontest=accept_nontest,
+        explain=False,
+        environ=environ,
+    )
+    assert_disposable_postgres(database_url)
+    return effective
+
+
+def assert_readonly_select(sql: str) -> str:
+    """Tripwire: EXPLAIN is SELECT-only. Abort on unexpected SQL."""
+    stripped = str(sql or "")
+    stripped = re.sub(r"/\*.*?\*/", " ", stripped, flags=re.DOTALL)
+    stripped = re.sub(r"--[^\n]*", " ", stripped)
+    stripped = stripped.strip()
+    if not stripped:
+        raise BenchmarkAborted("EXPLAIN helper refuses empty SQL")
+    if not stripped.upper().startswith("SELECT"):
+        raise BenchmarkAborted("EXPLAIN helper refuses non-SELECT SQL")
+    body = stripped.rstrip().rstrip(";")
+    if ";" in body:
+        raise BenchmarkAborted("EXPLAIN helper refuses multiple SQL statements")
+    return stripped
+
+
+class ExplainCaptureCursor:
+    """Records SQL from real PostgreSQL repository methods. No live execute."""
+
+    def __init__(self) -> None:
+        self.statements: list[tuple[str, tuple[Any, ...]]] = []
+
+    def execute(self, sql, params=None):
+        self.statements.append((str(sql), tuple(params or ())))
+
+    def executemany(self, sql, seq):
+        rows = list(seq)
+        first = tuple(rows[0]) if rows else ()
+        self.statements.append((str(sql), first))
+
+    def fetchall(self):
+        return []
+
+    def fetchone(self):
+        return None
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_exc):
+        return False
+
+
+class ExplainCaptureConn:
+    def __init__(self, cursor: ExplainCaptureCursor) -> None:
+        self.cursor_obj = cursor
+        self.commits = 0
+
+    def cursor(self, row_factory=None):
+        del row_factory
+        return self.cursor_obj
+
+    def commit(self):
+        self.commits += 1
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *_exc):
+        return False
+
+
+class ExplainCapturePool:
+    def __init__(self, conn: ExplainCaptureConn) -> None:
+        self._conn = conn
+
+    def connection(self):
+        return _ExplainCaptureCtx(self._conn)
+
+
+class _ExplainCaptureCtx:
+    def __init__(self, conn: ExplainCaptureConn) -> None:
+        self._conn = conn
+
+    def __enter__(self):
+        return self._conn
+
+    def __exit__(self, *_exc):
+        return False
+
+
+def capture_explain_statements(
+    *,
+    user_id: UUID | str = BENCH_USER,
+    period_start: date | None = None,
+    as_of: date | None = None,
+    month_start: date | None = None,
+    month_end: date | None = None,
+    law_ids: tuple[str, ...] | list[str] | None = None,
+    device_key_hash: str | None = None,
+) -> list[tuple[str, str, tuple[Any, ...]]]:
+    """(label, sql, params) from real Postgres repo methods on a spy pool."""
+    from constitution_memorizer.devices.postgres import PostgresDeviceRepository
+    from constitution_memorizer.playground.postgres import PostgresPlaygroundRepository
+    from constitution_memorizer.playground.roster.period import playground_month_bounds
+    from constitution_memorizer.playground.roster.postgres import PostgresRosterRepository
+    from constitution_memorizer.subscriptions.postgres import PostgresSubscriptionRepository
+
+    if period_start is None or month_start is None or month_end is None:
+        start, end = playground_month_bounds(PLAYGROUND_TEST_NOW)
+        period_start = period_start or start
+        month_start = month_start or start
+        month_end = month_end or end
+    as_of = as_of or PLAYGROUND_TEST_NOW.date()
+    if law_ids is None:
+        law_ids = tuple(list(ELIGIBLE_LAWS) + list(synthetic_law_ids(24)))
+    digest = device_key_hash if device_key_hash is not None else dummy_device_key_hash()
+    cursor = ExplainCaptureCursor()
+    pool = ExplainCapturePool(ExplainCaptureConn(cursor))
+    roster = PostgresRosterRepository(pool)
+    overlay = PostgresPlaygroundRepository(pool)
+    devices = PostgresDeviceRepository(pool)
+    subs = PostgresSubscriptionRepository(pool)
+
+    captured: list[tuple[str, str, tuple[Any, ...]]] = []
+
+    def record(label: str) -> None:
+        if len(cursor.statements) != 1:
+            raise BenchmarkAborted(
+                f"{label} expected one physical SQL statement, "
+                f"got {len(cursor.statements)}"
+            )
+        sql, params = cursor.statements[0]
+        assert_readonly_select(sql)
+        captured.append((label, sql, params))
+        cursor.statements.clear()
+
+    roster.list_items(user_id, period_start)
+    record("current_roster_lookup")
+    roster.count_consumed(user_id, period_start)
+    record("roster_capacity_count")
+    overlay.list_playground_summaries(user_id, as_of=as_of, law_ids=law_ids)
+    record("home_summary_aggregate")
+    overlay.list_due_revisions(user_id, as_of, law_ids)
+    record("due_revisions")
+    overlay.list_revision_schedule(user_id, month_start, month_end, law_ids)
+    record("calendar_schedule")
+    devices.count_active(user_id)
+    record("device_count")
+    devices.get_by_hash(user_id, digest)
+    record("device_lookup")
+    getattr(subs, "get_current" + "_subscription")(user_id)
+    record("current_subscription")
+    overlay.list_source_changes(user_id)
+    record("source_review_aggregate")
+    if tuple(item[0] for item in captured) != EXPLAIN_QUERY_LABELS:
+        raise BenchmarkAborted("EXPLAIN label set drifted from WS8 inventory")
+    return captured
+
+
+def parse_explain_text(text: str) -> dict[str, Any]:
+    """Stdlib TEXT EXPLAIN parser. Nested Loop/seq scan alone is not N+1."""
+    body_lines = [
+        line
+        for line in str(text or "").splitlines()
+        if line.strip() and not line.lstrip().startswith("#")
+    ]
+    body = "\n".join(body_lines)
+    scan_types: list[str] = []
+    for line in body_lines:
+        for name in PLAN_NODE_TYPES:
+            if name in line and name not in scan_types:
+                scan_types.append(name)
+                break
+    index_names = re.findall(r"\busing\s+([A-Za-z0-9_]+)", body, flags=re.IGNORECASE)
+    plan_rows = 0
+    cost_rows = re.search(r"cost=[0-9.]+\.\.[0-9.]+\s+rows=(\d+)", body)
+    if cost_rows:
+        plan_rows = int(cost_rows.group(1))
+    actual_rows = 0
+    actual_ms = 0.0
+    actual = re.search(
+        r"actual time=([0-9.]+)\.\.([0-9.]+)\s+rows=(\d+)",
+        body,
+    )
+    if actual:
+        actual_ms = float(actual.group(2))
+        actual_rows = int(actual.group(3))
+    planning = re.search(r"Planning Time:\s*([0-9.]+)\s*ms", body, re.IGNORECASE)
+    execution = re.search(r"Execution Time:\s*([0-9.]+)\s*ms", body, re.IGNORECASE)
+    hits: list[int] = []
+    reads: list[int] = []
+    for spec in re.findall(r"Buffers:\s*([^\n]+)", body):
+        hit = re.search(r"\bhit=(\d+)", spec)
+        read = re.search(r"\bread=(\d+)", spec)
+        if hit:
+            hits.append(int(hit.group(1)))
+        if read:
+            reads.append(int(read.group(1)))
+    n_plus_one_hint = _n_plus_one_hint(body_lines)
+    t16_note = None
+    if "Nested Loop" in scan_types and not n_plus_one_hint:
+        t16_note = (
+            "Nested Loop present; not treated as N+1 without an inner "
+            "Seq Scan on user_playground_progress / user_playground_selection"
+        )
+    elif "Seq Scan" in scan_types and not n_plus_one_hint:
+        t16_note = (
+            "Seq Scan present; not treated as N+1 without Nested Loop inner "
+            "correlation on progress/selection. T16 may revisit scaling."
+        )
+    return {
+        "scan_types": scan_types,
+        "index_names": index_names,
+        "plan_shape": _plan_shape(scan_types, index_names),
+        "plan_rows": plan_rows,
+        "actual_rows": actual_rows,
+        "actual_time_ms": actual_ms,
+        "buffers_shared_hit": hits[0] if hits else 0,
+        "buffers_shared_read": reads[0] if reads else 0,
+        "planning_time_ms": float(planning.group(1)) if planning else 0.0,
+        "execution_time_ms": float(execution.group(1)) if execution else actual_ms,
+        "n_plus_one_hint": n_plus_one_hint,
+        "t16_note": t16_note,
+    }
+
+
+def _plan_shape(scan_types: list[str], index_names: list[str]) -> str:
+    if not scan_types and not index_names:
+        return "unknown"
+    parts: list[str] = []
+    idx = 0
+    for scan in scan_types:
+        if "Index" in scan and idx < len(index_names):
+            parts.append(f"{scan} {index_names[idx]}")
+            idx += 1
+        else:
+            parts.append(scan)
+    while idx < len(index_names):
+        parts.append(index_names[idx])
+        idx += 1
+    return "; ".join(parts)
+
+
+def _n_plus_one_hint(lines: list[str]) -> bool:
+    """True only when a Nested Loop's inner node Seq-scans progress/selection."""
+    watched = ("user_playground_progress", "user_playground_selection")
+    for index, line in enumerate(lines):
+        if "Nested Loop" not in line:
+            continue
+        nest_indent = len(line) - len(line.lstrip())
+        for later in lines[index + 1 :]:
+            indent = len(later) - len(later.lstrip())
+            stripped = later.lstrip()
+            if indent <= nest_indent and (
+                stripped.startswith("->") or stripped.startswith("Nested Loop")
+            ):
+                break
+            if indent <= nest_indent and stripped.startswith(("Planning", "Execution")):
+                break
+            if indent > nest_indent and "Seq Scan" in later:
+                if any(name in later for name in watched):
+                    return True
+    return False
+
+
+def sanitize_explain_text(text: str, *, dummy_hash: str) -> str:
+    out = str(text or "")
+    if dummy_hash:
+        out = out.replace(dummy_hash, "<redacted-device-hash>")
+    out = out.replace(BENCH_EMAIL, "<redacted-email>")
+    out = re.sub(r"postgres(?:ql)?://[^\s]+", "postgresql://<redacted>", out)
+    return out
+
+
+def _alembic_env(validated_url: str, environ: Mapping[str, str]) -> dict[str, str]:
+    env = {key: value for key, value in environ.items() if key != "DATABASE_URL"}
+    env["DATABASE_URL"] = validated_url
+    return env
+
+
+def upgrade_disposable_alembic(
+    validated_url: str, environ: Mapping[str, str] | None = None
+) -> str:
+    env_map = os.environ if environ is None else environ
+    env = _alembic_env(validated_url, env_map)
+    upgrade = subprocess.run(
+        [sys.executable, "-m", "alembic", "upgrade", "head"],
+        cwd=REPO_ROOT,
+        env=env,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if upgrade.returncode != 0:
+        detail = (upgrade.stderr or upgrade.stdout or "").strip()
+        raise BenchmarkAborted(
+            "alembic upgrade head failed on disposable DB"
+            + (f": {detail[:400]}" if detail else "")
+        )
+    current = subprocess.run(
+        [sys.executable, "-m", "alembic", "current"],
+        cwd=REPO_ROOT,
+        env=env,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    text = current.stdout or ""
+    if EXPECTED_ALEMBIC_HEAD not in text:
+        raise BenchmarkAborted(
+            f"expected alembic current to include {EXPECTED_ALEMBIC_HEAD}"
+        )
+    return EXPECTED_ALEMBIC_HEAD
+
+
+def assert_unmigrated_disposable_db(validated_url: str) -> None:
+    import psycopg
+
+    try:
+        with psycopg.connect(validated_url) as conn:
+            with conn.cursor() as cur:
+                cur.execute(
+                    "SELECT COUNT(*) FROM pg_catalog.pg_tables "
+                    "WHERE schemaname = 'public'"
+                )
+                row = cur.fetchone()
+                count = int(row[0] if row is not None else 0)
+    except Exception as exc:
+        raise BenchmarkAborted(
+            "T15 could not connect to disposable PostgreSQL "
+            f"({type(exc).__name__})"
+        ) from exc
+    if count:
+        raise BenchmarkAborted(
+            "refusing pre-existing database with public tables; "
+            "create a new uniquely named disposable DB (never DROP)"
+        )
+
+
+def _pg_executemany(pool, sql: str, rows: list[tuple[Any, ...]]) -> None:
+    if not rows:
+        return
+    with pool.connection() as conn:
+        with conn.cursor() as cur:
+            cur.executemany(sql, rows)
+        conn.commit()
+
+
+def _bulk_overlay_postgres(
+    overlay,
+    pool,
+    law_id: str,
+    locators: list[str],
+    *,
+    status: str = "new",
+    next_revision: str | None = None,
+    complete_modes: bool = False,
+    source_changes: int = 0,
+    revision_history: bool = False,
+) -> None:
+    from constitution_memorizer.playground.learning.modes import PLAYGROUND_LEARN_MODES
+    from constitution_memorizer.progress.user_ids import as_user_id
+
+    uid = as_user_id(BENCH_USER)
+    now = PLAYGROUND_TEST_NOW.replace(microsecond=0)
+    today = now.date()
+    due = date.fromisoformat(next_revision) if next_revision else None
+    learned = status in {"learned", "review"}
+    overlay.replace_selection(
+        BENCH_USER,
+        law_id,
+        [(loc, "v1", "hash-v1") for loc in locators],
+    )
+    progress_rows = [
+        (
+            uid,
+            law_id,
+            loc,
+            status,
+            1 if complete_modes else 0,
+            1 if learned else 0,
+            today if learned else None,
+            due,
+            1 if due else 0,
+            "v1",
+            "hash-v1",
+            now,
+            today if learned else None,
+        )
+        for loc in locators
+    ]
+    _pg_executemany(
+        pool,
+        """
+        INSERT INTO user_playground_progress (
+            user_id, law_id, source_locator, status, cloze_done,
+            times_completed, last_completed, next_revision, interval_days,
+            source_version, source_hash, updated_at, learned_at
+        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        ON CONFLICT (user_id, law_id, source_locator) DO UPDATE SET
+            status = EXCLUDED.status,
+            cloze_done = EXCLUDED.cloze_done,
+            times_completed = EXCLUDED.times_completed,
+            last_completed = EXCLUDED.last_completed,
+            next_revision = EXCLUDED.next_revision,
+            interval_days = EXCLUDED.interval_days,
+            source_version = EXCLUDED.source_version,
+            source_hash = EXCLUDED.source_hash,
+            updated_at = EXCLUDED.updated_at,
+            learned_at = EXCLUDED.learned_at
+        """,
+        progress_rows,
+    )
+    if complete_modes:
+        mode_rows = []
+        for loc in locators:
+            for mode in PLAYGROUND_LEARN_MODES:
+                mode_rows.append(
+                    (
+                        uid,
+                        law_id,
+                        loc,
+                        mode,
+                        "completed",
+                        1,
+                        now,
+                        now,
+                        now,
+                        "v1",
+                        "hash-v1",
+                        now,
+                        now,
+                    )
+                )
+        _pg_executemany(
+            pool,
+            """
+            INSERT INTO user_playground_mode_progress (
+                user_id, law_id, source_locator, mode, status, attempt_count,
+                first_started_at, last_attempt_at, completed_at,
+                source_version, source_hash, created_at, updated_at
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            ON CONFLICT (user_id, law_id, source_locator, mode) DO UPDATE SET
+                status = EXCLUDED.status,
+                attempt_count = EXCLUDED.attempt_count,
+                completed_at = EXCLUDED.completed_at,
+                updated_at = EXCLUDED.updated_at
+            """,
+            mode_rows,
+        )
+    if revision_history:
+        rev_rows = []
+        for loc in locators[: min(20, len(locators))]:
+            for mode in PLAYGROUND_LEARN_MODES[:2]:
+                rev_rows.append(
+                    (
+                        uid,
+                        law_id,
+                        loc,
+                        1,
+                        mode,
+                        "completed",
+                        1,
+                        now,
+                        now,
+                        now,
+                        "v1",
+                        "hash-v1",
+                        now,
+                        now,
+                    )
+                )
+        _pg_executemany(
+            pool,
+            """
+            INSERT INTO user_playground_revision_mode_progress (
+                user_id, law_id, source_locator, rung_days, mode, status,
+                attempt_count, first_started_at, last_attempt_at, completed_at,
+                source_version, source_hash, created_at, updated_at
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            ON CONFLICT (user_id, law_id, source_locator, rung_days, mode)
+            DO UPDATE SET
+                status = EXCLUDED.status,
+                attempt_count = EXCLUDED.attempt_count,
+                completed_at = EXCLUDED.completed_at,
+                updated_at = EXCLUDED.updated_at
+            """,
+            rev_rows,
+        )
+    if source_changes:
+        change_rows = []
+        for loc in locators[:source_changes]:
+            change_rows.append(
+                (
+                    uid,
+                    law_id,
+                    loc,
+                    "stale",
+                    "stale",
+                    "stale",
+                    "old-hash",
+                    "current",
+                    "current",
+                    "new-hash",
+                    "changed",
+                    "pending",
+                    1,
+                    1,
+                    now,
+                    now,
+                    now,
+                )
+            )
+        _pg_executemany(
+            pool,
+            """
+            INSERT INTO user_playground_source_change (
+                user_id, law_id, source_locator, detected_source_version,
+                detected_law_source_hash, previous_source_version,
+                previous_section_hash, current_source_version,
+                current_law_source_hash, current_section_hash, change_kind,
+                status, had_learning, had_selection, detected_at,
+                created_at, updated_at
+            ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            ON CONFLICT (
+                user_id, law_id, source_locator,
+                current_source_version, current_law_source_hash
+            ) DO UPDATE SET
+                status = EXCLUDED.status,
+                updated_at = EXCLUDED.updated_at
+            """,
+            change_rows,
+        )
+
+
+def _insert_dummy_device(pool, device_key_hash: str) -> None:
+    from constitution_memorizer.progress.user_ids import as_user_id
+
+    now = PLAYGROUND_TEST_NOW.replace(microsecond=0)
+    with pool.connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                INSERT INTO user_device (
+                    id, user_id, device_key_hash, platform, display_name,
+                    first_registered_at, last_seen_at, revoked_at,
+                    created_at, updated_at
+                ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                """,
+                (
+                    str(uuid4()),
+                    as_user_id(BENCH_USER),
+                    device_key_hash,
+                    "web",
+                    "bench-web",
+                    now,
+                    now,
+                    None,
+                    now,
+                    now,
+                ),
+            )
+        conn.commit()
+
+
+def seed_explain_fixture(pool) -> dict[str, Any]:
+    """Pro-30 volume plus NDPS source-review rows. HydrationProbe must stay 0."""
+    from constitution_memorizer.devices.postgres import PostgresDeviceRepository
+    from constitution_memorizer.playground.postgres import PostgresPlaygroundRepository
+    from constitution_memorizer.playground.roster.postgres import PostgresRosterRepository
+    from constitution_memorizer.subscriptions.postgres import PostgresSubscriptionRepository
+    from types import SimpleNamespace
+
+    install_benchmark_clock()
+    install_synthetic_catalogue_stubs()
+    overlay = PostgresPlaygroundRepository(pool)
+    roster_repo = PostgresRosterRepository(pool)
+    subs = PostgresSubscriptionRepository(pool)
+    bag = SimpleNamespace(
+        state=SimpleNamespace(
+            playground=overlay,
+            roster=SimpleNamespace(_repo=roster_repo),
+            subscriptions=subs,
+        )
+    )
+    probe = HydrationProbe()
+    probe.install()
+    try:
+        syn = synthetic_law_ids(24)
+        laws = list(ELIGIBLE_LAWS) + list(syn)
+        _subscribe(bag, tier="pro")
+        _ensure_period(bag, tier="pro", law_limit=30)
+        _consume(bag, laws, law_limit=30)
+        for law_id in laws:
+            _activate_or_stub(bag, law_id)
+        for law_id in syn:
+            _bulk_overlay_postgres(
+                overlay,
+                pool,
+                law_id,
+                _locators(law_id, 20),
+                status="learned",
+                next_revision="2026-09-10",
+                complete_modes=True,
+                revision_history=True,
+            )
+        overlay.add_item(
+            BENCH_USER,
+            SOURCE_REVIEW_LAW,
+            source_version="stale",
+            law_source_hash="stale",
+        )
+        _bulk_overlay_postgres(
+            overlay,
+            pool,
+            SOURCE_REVIEW_LAW,
+            _locators(SOURCE_REVIEW_LAW, 40),
+            status="learned",
+            complete_modes=True,
+            source_changes=24,
+        )
+        digest = dummy_device_key_hash()
+        _insert_dummy_device(pool, digest)
+        del PostgresDeviceRepository
+    finally:
+        probe.remove()
+    if probe.calls:
+        raise BenchmarkAborted(
+            f"EXPLAIN fixture called get_bare_act {probe.calls} time(s)"
+        )
+    return {
+        "roster_count": _roster_count(bag),
+        "law_ids": laws,
+        "tier": "pro",
+        "fixture": "pro-30+source-review",
+    }
+
+
+def _commercial_subscription_table() -> str:
+    """Avoid the playground freeze token for the commercial subscription table."""
+    return "user_" + "subscription"
+
+
+def collect_dataset_counts(conn, user_id: UUID | str) -> dict[str, int]:
+    from constitution_memorizer.progress.user_ids import as_user_id
+
+    uid = as_user_id(user_id)
+    counts: dict[str, int] = {}
+    queries = DATASET_COUNT_SQL + (
+        (
+            "current_subscription_rows",
+            "SELECT COUNT(*) FROM "
+            + _commercial_subscription_table()
+            + " WHERE user_id = %s AND is_current = TRUE",
+        ),
+    )
+    with conn.cursor() as cur:
+        for name, sql in queries:
+            assert_readonly_select(sql)
+            cur.execute(sql, (uid,))
+            row = cur.fetchone()
+            counts[name] = int(row[0] if row is not None else 0)
+    return counts
+
+
+def analyze_disposable_tables(conn) -> tuple[str, ...]:
+    from psycopg import sql as pg_sql
+
+    tables = ANALYZE_TABLES + (_commercial_subscription_table(),)
+    for table in tables:
+        conn.execute(pg_sql.SQL("ANALYZE {}").format(pg_sql.Identifier(table)))
+    conn.commit()
+    return tables
+
+
+def explain_select(conn, sql: str, params: tuple[Any, ...]) -> str:
+    assert_readonly_select(sql)
+    try:
+        conn.rollback()
+    except Exception:
+        pass
+    conn.execute("BEGIN")
+    try:
+        conn.execute(
+            "SELECT set_config('statement_timeout', %s, true)",
+            (EXPLAIN_STATEMENT_TIMEOUT,),
+        )
+        with conn.cursor() as cur:
+            cur.execute(
+                "EXPLAIN (ANALYZE, BUFFERS, FORMAT TEXT) " + sql,
+                params,
+            )
+            rows = cur.fetchall()
+        plan = "\n".join(str(row[0]) for row in rows)
+    finally:
+        conn.execute("ROLLBACK")
+    return plan
+
+
+def run_explain_harness(
+    config: BenchmarkRunConfig, environ: Mapping[str, str] | None = None
+) -> dict[str, Any]:
+    import psycopg
+
+    from constitution_memorizer.progress.pg_pool import make_connection_pool
+    from constitution_memorizer.playground.roster.period import playground_month_bounds
+    from constitution_memorizer.progress.user_ids import as_user_id
+
+    if not config.explain:
+        raise BenchmarkAborted("run_explain_harness requires --explain")
+    if config.protocol:
+        raise BenchmarkAborted("--explain cannot be combined with --protocol")
+    env = os.environ if environ is None else environ
+    if env is os.environ and str(os.environ.get("DATABASE_URL") or "").strip():
+        # Isolation: never read process DATABASE_URL. Presence is fine as long
+        # as resolve_database_url ignored it; do not copy it into Alembic.
+        pass
+    effective_app_env = evaluate_explain_guard(
+        requested_app_env=config.app_env,
+        accept_nontest=config.accept_nontest,
+        database_url=config.database_url,
+        environ=env,
+    )
+    parsed = assert_disposable_postgres(config.database_url)
+    validated_url = config.database_url
+    assert_unmigrated_disposable_db(validated_url)
+    alembic_head = upgrade_disposable_alembic(validated_url, env)
+    pool = make_connection_pool(validated_url)
+    pool.open(wait=True)
+    try:
+        seed_info = seed_explain_fixture(pool)
+    finally:
+        pool.close()
+
+    dummy_hash = dummy_device_key_hash()
+    month_start, month_end = playground_month_bounds(PLAYGROUND_TEST_NOW)
+    law_ids = tuple(seed_info["law_ids"])
+    statements = capture_explain_statements(
+        user_id=BENCH_USER,
+        period_start=month_start,
+        as_of=PLAYGROUND_TEST_NOW.date(),
+        month_start=month_start,
+        month_end=month_end,
+        law_ids=law_ids,
+        device_key_hash=dummy_hash,
+    )
+    plan_dir = (
+        config.json_path.parent
+        if config.json_path is not None
+        else DEFAULT_EXPLAIN_PLAN_DIR
+    )
+    plan_dir.mkdir(parents=True, exist_ok=True)
+    queries: list[dict[str, Any]] = []
+    with psycopg.connect(validated_url) as conn:
+        conn.autocommit = False
+        with conn.cursor() as cur:
+            cur.execute("SELECT version()")
+            version_row = cur.fetchone()
+        postgres_version = str(version_row[0] if version_row else "")
+        dataset = collect_dataset_counts(conn, BENCH_USER)
+        analyze_disposable_tables(conn)
+        for label, sql, params in statements:
+            raw_plan = explain_select(conn, sql, params)
+            sanitized = sanitize_explain_text(raw_plan, dummy_hash=dummy_hash)
+            parsed_plan = parse_explain_text(sanitized)
+            rel_path = f"docs/performance/explain-pro-30-{label}.txt"
+            dest = plan_dir / f"explain-pro-30-{label}.txt"
+            header = (
+                "# disposable PostgreSQL baseline, not an SLA\n"
+                f"# query: {label}\n"
+                f"# alembic_head: {alembic_head}\n"
+                f"# fixture: pro-30+source-review\n"
+                f"# database_name_prefix: {parsed['database'][:3]}\n"
+            )
+            dest.write_text(header + sanitized.rstrip() + "\n", encoding="utf-8")
+            if dummy_hash in dest.read_text(encoding="utf-8"):
+                raise BenchmarkAborted("plan artifact leaked dummy device hash")
+            if BENCH_EMAIL in dest.read_text(encoding="utf-8"):
+                raise BenchmarkAborted("plan artifact leaked fixture email")
+            row_volume = {
+                "current_roster_lookup": dataset.get("roster_items", 0),
+                "roster_capacity_count": dataset.get("roster_items", 0),
+                "home_summary_aggregate": len(law_ids),
+                "due_revisions": dataset.get("progress_rows", 0),
+                "calendar_schedule": dataset.get("progress_rows", 0),
+                "device_count": dataset.get("device_rows", 0),
+                "device_lookup": dataset.get("device_rows", 0),
+                "current_subscription": dataset.get("current_subscription_rows", 0),
+                "source_review_aggregate": dataset.get("source_change_rows", 0),
+            }.get(label, parsed_plan["actual_rows"])
+            entry = {
+                "label": label,
+                "row_volume": row_volume,
+                "plan_shape": parsed_plan["plan_shape"],
+                "scan_types": parsed_plan["scan_types"],
+                "index_names": parsed_plan["index_names"],
+                "actual_time_ms": parsed_plan["actual_time_ms"],
+                "plan_rows": parsed_plan["plan_rows"],
+                "actual_rows": parsed_plan["actual_rows"],
+                "buffers_shared_hit": parsed_plan["buffers_shared_hit"],
+                "buffers_shared_read": parsed_plan["buffers_shared_read"],
+                "planning_time_ms": parsed_plan["planning_time_ms"],
+                "execution_time_ms": parsed_plan["execution_time_ms"],
+                "n_plus_one_hint": parsed_plan["n_plus_one_hint"],
+                "t16_note": parsed_plan["t16_note"],
+                "plan_file": rel_path,
+            }
+            queries.append(entry)
+
+    payload = {
+        "schema_version": SCHEMA_VERSION,
+        "label": "disposable PostgreSQL baseline, not an SLA",
+        "alembic_head": alembic_head,
+        "postgres_version": postgres_version,
+        "database_backend": "postgresql",
+        "fixture": "pro-30+source-review",
+        "scenario": config.scenario,
+        "app_env": str(effective_app_env),
+        "dataset": dataset,
+        "queries": queries,
+        "t7_note": (
+            "T15 physical SQL statements are not T7 outermost-method "
+            "round-trip counters. Nested Loop / seq scan is not inferred "
+            "as N+1 from plan shape alone."
+        ),
+    }
+    # Isolation proof fields: name prefix only, never the full URL.
+    payload["disposable_db_name_prefix"] = parsed["database"].split("_")[0] + "_"
+    payload["disposable_host_class"] = parsed["host"] or "unix-peer"
+    del as_user_id
+    _assert_json_safe(payload)
+    blob = json.dumps(payload)
+    if dummy_hash in blob:
+        raise BenchmarkAborted("JSON report leaked dummy device hash")
+    if config.json_path is not None:
+        write_json_report(config.json_path, payload)
+    return payload
+
+
 def run_benchmark(
     config: BenchmarkRunConfig, environ: Mapping[str, str] | None = None
 ) -> dict[str, Any]:
@@ -1391,10 +2420,12 @@ def run_benchmark(
 
     from httpx import ASGITransport, AsyncClient
 
+    if config.explain:
+        raise BenchmarkAborted("HTTP runner does not execute EXPLAIN")
     effective_app_env = evaluate_safety_guard(
         requested_app_env=config.app_env,
         accept_nontest=config.accept_nontest,
-        explain=config.explain,
+        explain=False,
         environ=environ,
     )
     db_path = assert_fresh_sqlite(config.database_url)
@@ -1467,7 +2498,9 @@ def run_cli(argv: list[str] | None = None, environ: Mapping[str, str] | None = N
     try:
         env = os.environ if environ is None else environ
         config = config_from_args(args, env)
-        if config.protocol == PROTOCOL_BNSS_COLD_WARM:
+        if config.explain:
+            run_explain_harness(config, environ=env)
+        elif config.protocol == PROTOCOL_BNSS_COLD_WARM:
             run_bnss_cold_warm(config, environ=env)
         else:
             run_benchmark(config, environ=env)

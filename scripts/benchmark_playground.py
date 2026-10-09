@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""Playground WS6/WS7 benchmark CLI. See playground/benchmarking.py.
+"""Playground WS6/WS7/WS8 benchmark CLI. See playground/benchmarking.py.
 
 Not part of the default pytest run. Fail-closed: never uses process
-DATABASE_URL, never writes a nonempty SQLite file, never runs EXPLAIN (T15).
+DATABASE_URL, never writes a nonempty SQLite file.
 Omit --protocol for the T13 unlabeled runner. --protocol bnss-cold-warm is
-the T14 BNSS cold/warm Bare Act protocol.
+the T14 BNSS cold/warm Bare Act protocol. --explain is the T15 disposable
+PostgreSQL EXPLAIN (ANALYZE, BUFFERS) path and is not the HTTP runner.
 """
 
 from __future__ import annotations
