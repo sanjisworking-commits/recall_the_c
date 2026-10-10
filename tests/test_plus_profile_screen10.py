@@ -582,7 +582,11 @@ def test_plus_profile_does_not_touch_accepted_screens_or_services() -> None:
     assert 'data-plus-today="desktop"' in DASH.read_text(encoding="utf-8")
     assert 'data-plus-calendar="desktop"' in CAL.read_text(encoding="utf-8")
     mobile = MOBILE.read_text(encoding="utf-8")
-    assert "data-plus-profile" not in mobile
+    generic, _, rest = mobile.partition("is signedIn/06-screen:")
+    assert "data-plus-profile" not in generic
+    phone_block = rest.split("/* R1 — Playground phone shell", 1)[0]
+    assert ":not([data-plus-profile])" in phone_block
+    assert 'data-plus-profile="desktop"' not in phone_block
     phone_profile = mobile.split(
         'body[data-mscreen="account"] .profile-panel > .display {', 1
     )[1].split("}", 1)[0]

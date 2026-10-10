@@ -272,7 +272,7 @@ def test_phone_signed_in_add_css_is_breakpoint_scoped() -> None:
     assert "playground.css?v=pg34" in BASE.read_text(encoding="utf-8")
     assert "playground.css?v=pg32" not in BASE.read_text(encoding="utf-8")
     assert "styles.css?v=main86" in BASE.read_text(encoding="utf-8")
-    assert "mobile.css?v=mob102" in BASE.read_text(encoding="utf-8")
+    assert "mobile.css?v=mob103" in BASE.read_text(encoding="utf-8")
 
 
 def test_guest_plus_expired_halted_add_sheets_stay_separate(tmp_path: Path) -> None:

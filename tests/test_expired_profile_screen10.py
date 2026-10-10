@@ -654,8 +654,12 @@ def test_plus_screens_and_expired_01_09_untouched() -> None:
     ):
         text = path.read_text(encoding="utf-8")
         assert "data-expired-profile" not in text
-    assert "data-expired-profile" not in MOBILE.read_text(encoding="utf-8")
     mobile = MOBILE.read_text(encoding="utf-8")
+    generic, _, rest = mobile.partition("is signedIn/06-screen:")
+    assert "data-expired-profile" not in generic
+    phone_block = rest.split("/* R1 — Playground phone shell", 1)[0]
+    assert ":not([data-expired-profile])" in phone_block
+    assert 'data-expired-profile="desktop"' not in phone_block
     phone_profile = mobile.split(
         'body[data-mscreen="account"] .profile-panel > .display {', 1
     )[1].split("}", 1)[0]

@@ -207,8 +207,15 @@ def test_signed_in_profile_does_not_touch_accepted_screens() -> None:
     assert "data-signed-in-bareact-desktop" in BARE.read_text(encoding="utf-8")
 
     mobile = MOBILE.read_text(encoding="utf-8")
-    assert "data-signed-in-profile" not in mobile
-    assert "si-profile-desk-only" not in mobile
+    generic, _, rest = mobile.partition("is signedIn/06-screen:")
+    assert "data-signed-in-profile" not in generic
+    assert "si-profile-desk-only" not in generic
+    phone_block = rest.split("/* R1 — Playground phone shell", 1)[0]
+    assert ":not([data-plus-profile])" in phone_block
+    assert ":not([data-expired-profile])" in phone_block
+    assert ":not([data-halted-profile])" in phone_block
+    assert 'data-plus-profile="desktop"' not in phone_block
+    assert "si-profile-desk-only" in phone_block
     phone_profile = mobile.split(
         'body[data-mscreen="account"] .profile-panel > .display {', 1
     )[1].split("}", 1)[0]
@@ -512,7 +519,7 @@ def test_signed_in_profile_1280_and_phone(tmp_path: Path) -> None:
     assert phone_geo["present"] is True
     assert phone_geo["gridDisplay"] != "grid"
     assert phone_geo["stacked"] is True
-    assert phone_geo["reportDisplay"] == "none"
-    assert phone_geo["deskSignoutDisplay"] == "none"
+    assert phone_geo["reportDisplay"] == "flex"
+    assert phone_geo["deskSignoutDisplay"] == "flex"
     assert shot_path.is_file()
     assert shot_path.stat().st_size > 1000

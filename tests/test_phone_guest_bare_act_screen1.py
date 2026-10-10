@@ -341,7 +341,7 @@ def test_phone_guest_markers_and_pins() -> None:
     base = BASE.read_text(encoding="utf-8")
     assert "data-guest-bareact-phone-tabs" in base
     assert "styles.css?v=main86" in base
-    assert "mobile.css?v=mob102" in base
+    assert "mobile.css?v=mob103" in base
     assert "mobile.css?v=mob99" not in base
     styles = STYLES.read_text(encoding="utf-8")
     hide_phone = styles.split("[data-guest-bareact-phone] {", 1)[1].split("}", 1)[0]
