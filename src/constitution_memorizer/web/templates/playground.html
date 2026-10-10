@@ -10,11 +10,7 @@
 <div data-halted-pg-phone>
 {{ banner(home.banner) }}
 </div>
-{% elif expired_pg %}
-<div data-expired-pg-phone>
-{{ banner(home.banner) }}
-</div>
-{% else %}
+{% elif not expired_pg %}
 {{ banner(home.banner) }}
 {% endif %}
 <div class="pg-home-grid{% if home.read_only %} is-readonly{% endif %}"{% if plus_pg %} data-plus-playground="desktop"{% endif %}{% if expired_pg %} data-expired-playground="desktop"{% endif %}{% if halted_pg %} data-halted-playground="desktop"{% endif %}>
@@ -84,6 +80,9 @@
     <h1 class="pg-home-title plus-pg-month plus-pg-desk-only">{{ home.capacity.month_name }}</h1>
     {% endif %}
     <p class="pg-home-month{% if plus_pg %} plus-pg-desk-hide{% endif %}">{{ home.month_count_label or home.capacity.month_name }}</p>
+    {% if expired_pg %}
+    {{ banner(home.banner) }}
+    {% endif %}
     {{ banner(home.quiet) }}
     <div class="pg-month-strip">
       {% if not home.read_only %}

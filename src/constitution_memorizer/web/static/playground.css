@@ -5103,12 +5103,213 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
 
 /* Expired and Halted desktop Playground home (CTA maps expired/06-screen
    and halted/06-screen). Shared selectors; Halted reuses expired-pg-*
-   visual classes. Phone keeps the production read-only home. Plus, guest,
-   Free, and paused stay on their own wrappers. */
+   visual classes. Halted phone keeps the production read-only home.
+   Expired 03 restyles [data-expired-pg-phone] in the block below.
+   Plus, guest, Free, and paused stay on their own wrappers. */
 @media (max-width: 560px) {
   [data-expired-pg-desktop],
   [data-halted-pg-desktop] {
     display: none !important;
+  }
+}
+
+/* Phone Expired Playground home is expired/03-screen: restyle the existing
+   [data-expired-pg-phone] readonly column. Live heading, live
+   month_count_label, live paused banner, live Resume Playground.
+   Desktop Screen 06 ≥561 block below is unchanged. No CSS order.
+   Halted / Plus / Guest / Free / Pro stay on their own wrappers. */
+@media (max-width: 560px) {
+  body.is-authed[data-mscreen="playground"]:has([data-expired-playground="desktop"]) {
+    overflow-x: hidden;
+  }
+
+  body.is-authed.playground-app:has([data-expired-playground="desktop"]) .page-wrap,
+  body.is-authed.playground-app:has([data-expired-playground="desktop"]) .sheet,
+  body.is-authed[data-mscreen="playground"]:has([data-expired-playground="desktop"]) .PlaygroundShell {
+    background: var(--pg-page);
+  }
+
+  body.is-authed[data-mscreen="playground"]:has([data-expired-playground="desktop"]) .PlaygroundShell {
+    max-width: none;
+    overflow-x: hidden;
+    padding: 12px var(--m-gutter, 18px) calc(var(--m-tabbar, 60px) + 28px + env(safe-area-inset-bottom, 0px));
+  }
+
+  body.is-authed[data-mscreen="playground"]:has([data-expired-playground="desktop"]) .mobile-tabbar {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  body.is-authed[data-mscreen="playground"]:has([data-expired-playground="desktop"]) .mobile-tab.is-active {
+    color: var(--pg-ink);
+  }
+
+  body.is-authed[data-mscreen="playground"]:has([data-expired-playground="desktop"])
+    .mobile-tab.is-active
+    .mobile-tab-icon {
+    fill: currentColor;
+  }
+
+  [data-expired-pg-phone] {
+    overflow-x: hidden;
+    min-width: 0;
+  }
+
+  [data-expired-pg-phone] .pg-home-kicker {
+    display: none;
+  }
+
+  .PlaygroundShell [data-expired-pg-phone] .pg-home-title {
+    display: inline;
+    margin: 0;
+    font-family: var(--pg-font-display);
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--pg-ink);
+  }
+
+  [data-expired-pg-phone] .pg-home-month {
+    display: inline;
+    margin: 0 0 0 8px;
+    font-family: var(--pg-font-ui);
+    font-size: 13.5px;
+    font-weight: 400;
+    line-height: 1.2;
+    color: var(--pg-muted);
+  }
+
+  [data-expired-pg-phone] .pg-month-strip,
+  [data-expired-pg-phone] > p.pg-actions,
+  [data-expired-pg-phone] .TrustMark,
+  [data-expired-pg-phone] .pg-section-head,
+  [data-expired-pg-phone] > h2,
+  [data-expired-pg-phone] .LawCard--saved {
+    display: none !important;
+  }
+
+  [data-expired-pg-phone] .PaymentStateBanner[data-state="expired"] {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    margin: 16px 0 4px;
+    padding: 16px 16px 14px;
+    background: var(--pg-paper);
+    border: 1px solid var(--pg-hairline);
+    border-radius: var(--pg-radius-card);
+    box-sizing: border-box;
+  }
+
+  [data-expired-pg-phone] .PaymentStateBanner[data-state="expired"] > div {
+    min-width: 0;
+    width: 100%;
+  }
+
+  [data-expired-pg-phone] .PaymentStateBanner[data-state="expired"] strong {
+    display: block;
+    font-family: var(--pg-font-display);
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.25;
+    color: var(--pg-ink);
+  }
+
+  [data-expired-pg-phone] .PaymentStateBanner[data-state="expired"] .pg-lede {
+    margin: 6px 0 0;
+    font-size: 13.5px;
+    line-height: 1.45;
+    color: var(--pg-muted);
+  }
+
+  [data-expired-pg-phone] .PaymentStateBanner[data-state="expired"] .pg-actions {
+    display: block;
+    margin: 14px 0 0;
+  }
+
+  .PlaygroundShell [data-expired-pg-phone]
+    .PaymentStateBanner[data-state="expired"]
+    a.pg-btn {
+    display: flex;
+    width: 100%;
+    min-height: 44px;
+    height: 50px;
+    padding: 0 18px;
+    border: none;
+    border-radius: var(--pg-radius-button);
+    background: var(--pg-ink);
+    color: var(--pg-paper);
+    box-shadow: var(--pg-shadow-press);
+    box-sizing: border-box;
+  }
+
+  .PlaygroundShell [data-expired-pg-phone]
+    .PaymentStateBanner[data-state="expired"]
+    a.pg-btn:active {
+    transform: translateY(1px);
+    box-shadow: var(--pg-shadow-press-active);
+  }
+
+  [data-expired-pg-phone] .pg-law-grid {
+    display: block;
+  }
+
+  [data-expired-pg-phone] .pg-law-grid .LawCard {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 12px;
+    padding: 16px 16px 14px;
+    background: var(--pg-paper);
+    border: 1px solid var(--pg-hairline);
+    border-radius: var(--pg-radius-card);
+    box-sizing: border-box;
+  }
+
+  [data-expired-pg-phone] .pg-law-grid .LawCard:first-child {
+    margin-top: 0;
+  }
+
+  [data-expired-pg-phone] .LawCard--emphasised {
+    border: 1px solid var(--pg-hairline);
+  }
+
+  [data-expired-pg-phone] .LawCard-kicker,
+  [data-expired-pg-phone] .LawCard-full,
+  [data-expired-pg-phone] .LawCard-meta,
+  [data-expired-pg-phone] .LawStatusBadge,
+  [data-expired-pg-phone] .DueBadge,
+  [data-expired-pg-phone] .LawCard > p:not(.LawCard-full):not(.LawCard-meta):not(.pg-note) {
+    display: none;
+  }
+
+  [data-expired-pg-phone] .LawCard-title {
+    margin: 0;
+    font-family: var(--pg-font-display);
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.25;
+    color: var(--pg-ink);
+  }
+
+  [data-expired-pg-phone] .LawCard-bar {
+    height: 2px;
+    margin: 10px 0 12px;
+    border-radius: 0;
+    background: var(--pg-hairline);
+  }
+
+  [data-expired-pg-phone] .pg-card-actions--phone {
+    display: flex;
+    margin: 0;
+  }
+
+  [data-expired-pg-phone] .pg-card-actions--phone .pg-btn {
+    width: 100%;
+    min-height: 44px;
+    box-sizing: border-box;
   }
 }
 
