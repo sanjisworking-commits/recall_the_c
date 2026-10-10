@@ -674,7 +674,7 @@ def test_halted_settings_marker_uses_shared_predicate() -> None:
     assert "expired_settings_chrome" in base
     assert LIVE_HEADING not in base
     assert "/resume" not in base
-    assert "playground.css?v=pg32" in base
+    assert "playground.css?v=pg33" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-halted-settings="desktop"' in css
     assert "halted/11-screen" in css

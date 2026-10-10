@@ -25,7 +25,7 @@ from constitution_memorizer.multiuser.settings import (
     MultiUserSettings,
     clear_settings_cache,
 )
-from constitution_memorizer.playground.urls import add_path
+from constitution_memorizer.playground.urls import add_path, home_path
 from constitution_memorizer.web.app import create_app
 from constitution_memorizer.web.guest_bareact_head import (
     NDPS_GUEST_KICKER,
@@ -256,7 +256,9 @@ def test_phone_signed_in_add_sheet_is_existing_subscribe_kind(tmp_path: Path) ->
     assert 'data-pg-kind="subscribe"' in sheet.text
     assert "data-pg-add" in sheet.text
     assert 'data-signed-in-add-phone' in sheet.text
-    assert 'href="/billing/subscriptions"' in sheet.text
+    phone = sheet.text.split("data-signed-in-add-phone", 1)[1].split("</div>", 1)[0]
+    assert f'href="{home_path()}"' in phone
+    assert 'href="/billing/subscriptions"' not in phone
     assert _facts(client) == before
 
 
@@ -345,7 +347,9 @@ def test_phone_signed_in_markers_and_pins() -> None:
     assert "signedIn/01-screen" in mobile
     assert "data-signed-in-bareact-phone" in mobile
     add = ADD.read_text(encoding="utf-8")
-    assert 'href="/billing/subscriptions"' in add
+    phone = add.split("data-signed-in-add-phone", 1)[1].split("</div>", 1)[0]
+    assert 'href="/playground"' in phone
+    assert 'href="/billing/subscriptions"' not in phone
 
 
 def _serve(app, host: str = "127.0.0.1") -> tuple[int, object]:
@@ -461,10 +465,12 @@ def test_phone_signed_in_bareact_screen01_390x844(tmp_path: Path) -> None:
         dialog = page.evaluate(
             """() => {
               const panel = document.querySelector('[data-pg-add]');
+              const unlock = panel && panel.querySelector('[data-signed-in-add-phone] .signed-add-unlock');
               return {
                 kind: panel && panel.getAttribute('data-pg-kind'),
                 url: location.pathname,
-                billing: !!(panel && panel.querySelector('a[href="/billing/subscriptions"]')),
+                unlockHref: unlock && unlock.getAttribute('href'),
+                billing: !!(panel && panel.querySelector('[data-signed-in-add-phone] a[href="/billing/subscriptions"]')),
               };
             }"""
         )
@@ -512,7 +518,8 @@ def test_phone_signed_in_bareact_screen01_390x844(tmp_path: Path) -> None:
     assert geo["continueLbl"] is False
     assert dialog["kind"] == "subscribe"
     assert still.endswith("/laws/ndps")
-    assert dialog["billing"] is True
+    assert dialog["unlockHref"] == "/playground"
+    assert dialog["billing"] is False
     assert shot_path.is_file()
     assert shot_path.stat().st_size > 1000
 

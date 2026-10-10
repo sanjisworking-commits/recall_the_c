@@ -462,7 +462,7 @@ def test_desktop_entry_points_open_playground_gate(tmp_path: Path) -> None:
     )[0]
     assert 'href="/playground">Unlock Playground</a>' in desk
     phone = add.text.split("data-signed-in-add-phone", 1)[1]
-    assert 'href="/billing/subscriptions">Unlock Playground</a>' in phone
+    assert 'href="/playground">Unlock Playground</a>' in phone
     gate = client.get("/playground")
     assert 'data-pg-gate-stage="intro"' in gate.text
     assert INTRO_TITLE in unescape(gate.text)
@@ -515,7 +515,7 @@ def test_free_gate_marker_and_parser_are_presentation_only() -> None:
     assert parse_playground_gate_stage("plans", "gold") == (GATE_STAGE_PLANS, None)
     assert FREE_GATE_HOW_STEPS == GUEST_PG_STEPS
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg32" in base
+    assert "playground.css?v=pg33" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert "signedIn/07-screen" in css
     assert 'data-pg-gate-stage="plans"' in css
@@ -528,7 +528,7 @@ def test_free_gate_marker_and_parser_are_presentation_only() -> None:
     )[0]
     assert 'href="/playground">Unlock Playground</a>' in desk
     phone = add.split("data-signed-in-add-phone", 1)[1]
-    assert 'href="/billing/subscriptions">Unlock Playground</a>' in phone
+    assert 'href="/playground">Unlock Playground</a>' in phone
     assert "data-signed-in-pg-gate" not in HOME.read_text(encoding="utf-8")
 
 

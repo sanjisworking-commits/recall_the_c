@@ -2854,11 +2854,120 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
 }
 
 /* Signed-in desktop subscribe Add dialog (CTA map signedIn/05-screen).
-   Phone subscribe sheet keeps Unlock Playground + Cancel. Other kinds
-   stay on the production add rows. */
+   Phone Free sheet is signedIn/02-screen: full-bleed only when the
+   dialog contains [data-signed-in-add-phone]. Guest 02 / Plus confirm
+   and scope / Expired / Halted keep their own wrappers. */
 @media (max-width: 560px) {
   [data-signed-in-add-desktop] {
     display: none !important;
+  }
+
+  body.is-authed dialog.pg-sheet[open]:has([data-signed-in-add-phone]) .pg-eyebrow {
+    display: none;
+  }
+
+  body.is-authed dialog.pg-sheet[open]:has([data-signed-in-add-phone]) {
+    inset: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: stretch;
+    background: transparent;
+    overflow: hidden;
+  }
+
+  body.is-authed dialog.pg-sheet[open]:has([data-signed-in-add-phone])::backdrop {
+    background: rgba(20, 20, 20, 0.35);
+  }
+
+  body.is-authed dialog.pg-sheet[open]:has([data-signed-in-add-phone]) .pg-sheet-panel {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    border-radius: var(--pg-radius-sheet) var(--pg-radius-sheet) 0 0;
+    padding: 12px 20px calc(22px + env(safe-area-inset-bottom, 0px));
+    box-sizing: border-box;
+    max-height: min(92dvh, 100%);
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body.is-authed dialog.pg-sheet[open]:has([data-signed-in-add-phone]) .pg-sheet-close {
+    display: none !important;
+  }
+
+  [data-signed-in-add-phone] .signed-add-title {
+    font-family: var(--pg-font-display);
+    font-weight: 500;
+    font-size: 22px;
+    line-height: 1.25;
+    letter-spacing: 0;
+    margin: 0 0 4px;
+    color: var(--pg-ink);
+  }
+
+  [data-signed-in-add-phone] .signed-add-lede {
+    margin: 0 0 18px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--pg-muted);
+    max-width: none;
+  }
+
+  [data-signed-in-add-phone] .signed-add-unlock {
+    appearance: none;
+    -webkit-appearance: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 100%;
+    min-height: 44px;
+    height: 50px;
+    padding: 0 16px;
+    border: none;
+    border-radius: 12px;
+    background: var(--pg-ink);
+    color: var(--pg-paper);
+    font: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    box-sizing: border-box;
+    box-shadow: var(--pg-shadow-press);
+  }
+
+  .PlaygroundShell [data-signed-in-add-phone] .signed-add-unlock {
+    color: var(--pg-paper);
+  }
+
+  [data-signed-in-add-phone] .signed-add-unlock:active {
+    transform: translateY(1px);
+    box-shadow: var(--pg-shadow-press-active);
+  }
+
+  [data-signed-in-add-phone] .signed-add-note {
+    display: block;
+    width: 100%;
+    margin: 8px 0 0;
+    text-align: center;
+    font-size: 12px;
+    line-height: 1.45;
+    color: var(--pg-faint);
   }
 }
 

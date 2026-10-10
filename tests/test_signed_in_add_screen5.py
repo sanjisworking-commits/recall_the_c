@@ -137,11 +137,11 @@ def test_signed_in_add_phone_keeps_billing_and_cancel_href(tmp_path: Path) -> No
     _sign_in(client)
     phone = _phone(client.get(add_path("ndps")).text)
     assert ">Unlock Playground<" in phone
-    assert 'href="/billing/subscriptions"' in phone
-    assert f'href="/laws/ndps"' in phone
-    assert ">Cancel<" in phone
+    assert f'href="{home_path()}"' in phone
+    assert 'href="/billing/subscriptions"' not in phone
+    assert f'href="/laws/ndps"' not in phone
+    assert ">Cancel<" not in phone
     assert 'data-pg-sheet-close' not in phone
-    assert f'href="{home_path()}"' not in phone
     assert "Create an account" not in phone
 
 
@@ -404,7 +404,7 @@ def test_signed_in_add_1280_gate_and_close(tmp_path: Path) -> None:
               const panel = document.querySelector('[data-pg-add]');
               const desk = panel.querySelector('[data-signed-in-add-desktop]');
               const phoneBlock = panel.querySelector('[data-signed-in-add-phone]');
-              const unlock = phoneBlock && phoneBlock.querySelector('a.pg-btn');
+              const unlock = phoneBlock && phoneBlock.querySelector('.signed-add-unlock');
               const cancel = phoneBlock && [...phoneBlock.querySelectorAll('a')].find(
                 (a) => a.textContent.trim() === 'Cancel'
               );
@@ -472,8 +472,8 @@ def test_signed_in_add_1280_gate_and_close(tmp_path: Path) -> None:
     assert phone_geo["deskDisplay"] == "none"
     assert phone_geo["phoneDisplay"] != "none"
     assert phone_geo["title"] == "Unlock Playground"
-    assert phone_geo["unlockHref"] == "/billing/subscriptions"
-    assert phone_geo["cancelHref"] == "/laws/ndps"
-    assert phone_geo["cancelCloses"] is False
+    assert phone_geo["unlockHref"] == home_path()
+    assert phone_geo["cancelHref"] is None
+    assert phone_geo["cancelCloses"] is None
     assert shot_path.is_file()
     assert shot_path.stat().st_size > 1000
