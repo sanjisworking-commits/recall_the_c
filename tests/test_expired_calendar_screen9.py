@@ -756,7 +756,7 @@ def test_expired_calendar_marker_uses_shared_predicate() -> None:
     base = BASE.read_text(encoding="utf-8")
     assert "expired_calendar_chrome" in base
     assert "plus_calendar_chrome" in base
-    assert "playground.css?v=pg44" in base
+    assert "playground.css?v=pg45" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-expired-calendar="desktop"' in css
     assert "expired/09-screen" in css

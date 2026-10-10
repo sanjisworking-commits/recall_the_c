@@ -394,7 +394,7 @@ def test_phone_expired_css_scope_pins_and_no_clone() -> None:
     assert "signed_in_expired_bareact_phone" in base
     assert "styles.css?v=main86" in base
     assert "mobile.css?v=mob105" in base
-    assert "playground.css?v=pg44" in base
+    assert "playground.css?v=pg45" in base
     assert "playground.css?v=pg40" not in base
     app = APP.read_text(encoding="utf-8")
     assert "request_is_expired_subscriber" in app

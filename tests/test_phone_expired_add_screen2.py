@@ -448,7 +448,7 @@ def test_phone_expired_add_css_scope_pins_and_no_clone() -> None:
     base = BASE.read_text(encoding="utf-8")
     assert "styles.css?v=main86" in base
     assert "mobile.css?v=mob105" in base
-    assert "playground.css?v=pg44" in base
+    assert "playground.css?v=pg45" in base
     assert "playground.css?v=pg41" not in base
 
 
