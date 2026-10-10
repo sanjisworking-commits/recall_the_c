@@ -334,7 +334,11 @@ def test_plus_settings_does_not_touch_accepted_screens_or_engines() -> None:
     assert 'data-plus-calendar="desktop"' in CAL.read_text(encoding="utf-8")
     assert 'data-plus-profile="desktop"' in PROFILE.read_text(encoding="utf-8")
     mobile = MOBILE.read_text(encoding="utf-8")
-    assert "data-plus-settings" not in mobile
+    generic, _, rest = mobile.partition("is signedIn/07-screen:")
+    assert "data-plus-settings" not in generic
+    phone_block = rest.split("/* R1 — Playground phone shell", 1)[0]
+    assert ":not([data-plus-settings])" in phone_block
+    assert 'data-plus-settings="desktop"' not in phone_block
     phone_desk = mobile.split(
         'body[data-mscreen="settings"] .settings-desk-copy {', 1
     )[1].split("}", 1)[0]

@@ -6498,6 +6498,120 @@
   }
 }
 
+/* Signed-in Free phone Settings is signedIn/07-screen:
+   existing settings.html nodes, Screen 11 contract.
+   Guest / Plus / Expired / Halted keep the generic settings panel.
+   Painted sequence stays the DOM sequence (identity, Study, Calendar,
+   App, Account, Legal) so keyboard focus matches what is on screen.
+   The five-tab bar stays hidden; Settings is not a tab destination. */
+@media (max-width: 560px) {
+  body.is-authed[data-mscreen="settings"]:has(
+    [data-signed-in-settings]:not([data-plus-settings]):not([data-expired-settings]):not([data-halted-settings])
+  ) {
+    overflow-x: hidden;
+  }
+
+  body.is-authed[data-mscreen="settings"]:has(
+    [data-signed-in-settings]:not([data-plus-settings]):not([data-expired-settings]):not([data-halted-settings])
+  ) .panel.settings {
+    padding: 0 var(--m-gutter, 18px)
+      calc(28px + env(safe-area-inset-bottom, 0px));
+  }
+
+  body.is-authed[data-mscreen="settings"]:has(
+    [data-signed-in-settings]:not([data-plus-settings]):not([data-expired-settings]):not([data-halted-settings])
+  ) .mobile-tabbar {
+    display: none;
+  }
+
+  [data-signed-in-settings]:not([data-plus-settings]):not([data-expired-settings]):not([data-halted-settings])
+    > .display {
+    margin: 0 0 14px;
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: 0;
+  }
+
+  [data-signed-in-settings]:not([data-plus-settings]):not([data-expired-settings]):not([data-halted-settings])
+    > .lede {
+    display: block;
+    margin: 8px 2px 4px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--muted, var(--mid));
+  }
+
+  [data-signed-in-settings]:not([data-plus-settings]):not([data-expired-settings]):not([data-halted-settings])
+    .settings-saved {
+    display: block;
+    margin: 8px 2px 12px;
+    font-size: 13px;
+    color: var(--browse-due, var(--mid));
+  }
+
+  [data-signed-in-settings]:not([data-plus-settings]):not([data-expired-settings]):not([data-halted-settings])
+    .settings-account-row {
+    gap: 12px;
+    padding: 14px 16px;
+    margin-bottom: 4px;
+    background: var(--rc-paper, var(--paper));
+    border: 1px solid var(--rc-hairline, var(--hairline));
+    border-radius: 14px;
+  }
+
+  [data-signed-in-settings]:not([data-plus-settings]):not([data-expired-settings]):not([data-halted-settings])
+    .settings-account-avatar,
+  [data-signed-in-settings]:not([data-plus-settings]):not([data-expired-settings]):not([data-halted-settings])
+    .settings-account-avatar.is-fallback {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--on-accent);
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  [data-signed-in-settings]:not([data-plus-settings]):not([data-expired-settings]):not([data-halted-settings])
+    .settings-account-name {
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  [data-signed-in-settings]:not([data-plus-settings]):not([data-expired-settings]):not([data-halted-settings])
+    .settings-account-status {
+    font-size: 12.5px;
+    color: var(--mid);
+  }
+
+  [data-signed-in-settings]:not([data-plus-settings]):not([data-expired-settings]):not([data-halted-settings])
+    .segmented-input:checked + .segmented-btn,
+  [data-signed-in-settings]:not([data-plus-settings]):not([data-expired-settings]):not([data-halted-settings])
+    .settings-theme-btn.is-active {
+    background: var(--ink);
+    border-color: var(--ink);
+    box-shadow: none;
+    color: var(--on-accent);
+    font-weight: 600;
+  }
+
+  [data-signed-in-settings]:not([data-plus-settings]):not([data-expired-settings]):not([data-halted-settings])
+    .settings-card,
+  [data-signed-in-settings]:not([data-plus-settings]):not([data-expired-settings]):not([data-halted-settings])
+    .settings-form.settings-card {
+    border-radius: 14px;
+  }
+
+  [data-signed-in-settings]:not([data-plus-settings]):not([data-expired-settings]):not([data-halted-settings])
+    .settings-row-link.is-danger {
+    color: var(--destructive);
+    font-weight: 500;
+  }
+}
+
 /* R1 — Playground phone shell. Constitution pages are not restyled here. */
 @media (max-width: 560px) {
   body[data-mscreen="playground"] .page-wrap,

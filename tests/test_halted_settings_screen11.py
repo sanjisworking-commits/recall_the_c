@@ -722,8 +722,12 @@ def test_plus_expired_and_halted_01_10_untouched() -> None:
     ):
         text = path.read_text(encoding="utf-8")
         assert "data-halted-settings" not in text
-    assert "data-halted-settings" not in MOBILE.read_text(encoding="utf-8")
     mobile = MOBILE.read_text(encoding="utf-8")
+    generic, _, rest = mobile.partition("is signedIn/07-screen:")
+    assert "data-halted-settings" not in generic
+    phone_block = rest.split("/* R1 — Playground phone shell", 1)[0]
+    assert ":not([data-halted-settings])" in phone_block
+    assert 'data-halted-settings="desktop"' not in phone_block
     phone_desk = mobile.split(
         'body[data-mscreen="settings"] .settings-desk-copy {', 1
     )[1].split("}", 1)[0]

@@ -623,8 +623,12 @@ def test_plus_screens_and_expired_01_10_untouched() -> None:
     ):
         text = path.read_text(encoding="utf-8")
         assert "data-expired-settings" not in text
-    assert "data-expired-settings" not in MOBILE.read_text(encoding="utf-8")
     mobile = MOBILE.read_text(encoding="utf-8")
+    generic, _, rest = mobile.partition("is signedIn/07-screen:")
+    assert "data-expired-settings" not in generic
+    phone_block = rest.split("/* R1 — Playground phone shell", 1)[0]
+    assert ":not([data-expired-settings])" in phone_block
+    assert 'data-expired-settings="desktop"' not in phone_block
     phone_desk = mobile.split(
         'body[data-mscreen="settings"] .settings-desk-copy {', 1
     )[1].split("}", 1)[0]
