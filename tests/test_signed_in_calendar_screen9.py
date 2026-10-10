@@ -261,7 +261,13 @@ def test_signed_in_calendar_does_not_touch_accepted_screens() -> None:
     assert "data-signed-in-bareact-desktop" in BARE.read_text(encoding="utf-8")
 
     mobile = MOBILE.read_text(encoding="utf-8")
-    assert "data-signed-in-calendar" not in mobile
+    generic, _, rest = mobile.partition("is signedIn/05-screen:")
+    assert "data-signed-in-calendar" not in generic
+    phone_block = rest.split("/* R1 — Playground phone shell", 1)[0]
+    assert ":not([data-plus-calendar])" in phone_block
+    assert ":not([data-expired-calendar])" in phone_block
+    assert ":not([data-halted-calendar])" in phone_block
+    assert 'data-plus-calendar="desktop"' not in phone_block
     assert "cal-si-toolbar" not in mobile
     phone_cal = mobile.split(
         'body[data-mscreen="revisions"] .calendar-grid,', 1

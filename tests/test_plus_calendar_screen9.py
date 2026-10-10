@@ -417,7 +417,11 @@ def test_plus_calendar_does_not_touch_accepted_screens_or_sync() -> None:
     assert 'data-plus-subscription="desktop"' in MANAGE.read_text(encoding="utf-8")
     assert 'data-plus-today="desktop"' in DASH.read_text(encoding="utf-8")
     mobile = MOBILE.read_text(encoding="utf-8")
-    assert "data-plus-calendar" not in mobile
+    generic, _, rest = mobile.partition("is signedIn/05-screen:")
+    assert "data-plus-calendar" not in generic
+    phone_block = rest.split("/* R1 — Playground phone shell", 1)[0]
+    assert ":not([data-plus-calendar])" in phone_block
+    assert 'data-plus-calendar="desktop"' not in phone_block
     phone = CAL.read_text(encoding="utf-8").split("revisions-mobile", 1)[1].split(
         "calendar-header", 1
     )[0]

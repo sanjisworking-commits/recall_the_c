@@ -863,8 +863,12 @@ def test_plus_expired_and_halted_01_08_untouched() -> None:
         text = path.read_text(encoding="utf-8")
         assert "data-halted-calendar" not in text
         assert "halted_calendar" not in text
-    assert "data-halted-calendar" not in MOBILE.read_text(encoding="utf-8")
     mobile = MOBILE.read_text(encoding="utf-8")
+    generic, _, rest = mobile.partition("is signedIn/05-screen:")
+    assert "data-halted-calendar" not in generic
+    phone_block = rest.split("/* R1 — Playground phone shell", 1)[0]
+    assert ":not([data-halted-calendar])" in phone_block
+    assert 'data-halted-calendar="desktop"' not in phone_block
     phone = CAL.read_text(encoding="utf-8").split("revisions-mobile", 1)[1].split(
         "calendar-header", 1
     )[0]

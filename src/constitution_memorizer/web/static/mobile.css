@@ -6010,6 +6010,264 @@
   }
 }
 
+/* Signed-in Free phone Calendar is signedIn/05-screen:
+   existing calendar.html nodes, Constitution chips, Screen 09 contract.
+   Guest / Plus / Expired / Halted keep the generic revisions-mobile panel. */
+@media (max-width: 560px) {
+  body.is-authed[data-mscreen="revisions"]:has(
+    [data-signed-in-calendar]:not([data-plus-calendar]):not([data-expired-calendar]):not([data-halted-calendar])
+  ) {
+    overflow-x: hidden;
+  }
+
+  body.is-authed[data-mscreen="revisions"]:has(
+    [data-signed-in-calendar]:not([data-plus-calendar]):not([data-expired-calendar]):not([data-halted-calendar])
+  ) .panel.calendar {
+    padding: 6px 0
+      calc(var(--m-tabbar, 60px) + 28px + env(safe-area-inset-bottom, 0px));
+  }
+
+  body.is-authed[data-mscreen="revisions"]:has(
+    [data-signed-in-calendar]:not([data-plus-calendar]):not([data-expired-calendar]):not([data-halted-calendar])
+  ) .mobile-tabbar {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    position: fixed;
+  }
+
+  [data-signed-in-calendar]:not([data-plus-calendar]):not([data-expired-calendar]):not([data-halted-calendar])
+    .revisions-head {
+    align-items: center;
+    padding: 4px var(--m-gutter, 18px) 0;
+  }
+
+  [data-signed-in-calendar]:not([data-plus-calendar]):not([data-expired-calendar]):not([data-halted-calendar])
+    .revisions-title {
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+
+  [data-signed-in-calendar]:not([data-plus-calendar]):not([data-expired-calendar]):not([data-halted-calendar])
+    .cal-m-nav {
+    gap: 0;
+    margin-left: auto;
+    border: 1px solid var(--rc-hairline);
+    border-radius: 10px;
+    background: var(--rc-paper);
+    overflow: hidden;
+  }
+
+  [data-signed-in-calendar]:not([data-plus-calendar]):not([data-expired-calendar]):not([data-halted-calendar])
+    .cal-m-nav-btn {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+  }
+
+  [data-signed-in-calendar]:not([data-plus-calendar]):not([data-expired-calendar]):not([data-halted-calendar])
+    .revisions-month {
+    margin: 0;
+    padding: 0 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+
+  [data-signed-in-calendar]:not([data-plus-calendar]):not([data-expired-calendar]):not([data-halted-calendar])
+    .cal-m-grid {
+    gap: 6px;
+    margin-top: 14px;
+  }
+
+  [data-signed-in-calendar]:not([data-plus-calendar]):not([data-expired-calendar]):not([data-halted-calendar])
+    .cal-m-dow {
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    color: var(--mid);
+  }
+
+  [data-signed-in-calendar]:not([data-plus-calendar]):not([data-expired-calendar]):not([data-halted-calendar])
+    .cal-m-cell:not(.is-blank) {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 7px 0 6px;
+    border: 1px solid var(--page);
+    border-radius: 12px;
+    background: var(--paper);
+  }
+
+  [data-signed-in-calendar]:not([data-plus-calendar]):not([data-expired-calendar]):not([data-halted-calendar])
+    .cal-m-cell.is-today {
+    background: var(--ink);
+    border: 2px solid var(--ink);
+    box-shadow: none;
+  }
+
+  [data-signed-in-calendar]:not([data-plus-calendar]):not([data-expired-calendar]):not([data-halted-calendar])
+    .cal-m-cell.is-today .cal-m-num {
+    color: var(--on-accent);
+    font-weight: 600;
+  }
+
+  [data-signed-in-calendar]:not([data-plus-calendar]):not([data-expired-calendar]):not([data-halted-calendar])
+    .cal-m-cell.is-today .cal-m-mark {
+    background: var(--on-accent);
+  }
+
+  [data-signed-in-calendar]:not([data-plus-calendar]):not([data-expired-calendar]):not([data-halted-calendar])
+    .cal-m-cell.is-selected {
+    background: var(--ink);
+    border: 2px solid var(--ink);
+    box-shadow: none;
+  }
+
+  [data-signed-in-calendar]:not([data-plus-calendar]):not([data-expired-calendar]):not([data-halted-calendar])
+    .cal-m-cell.is-selected .cal-m-num {
+    color: var(--on-accent);
+    font-weight: 600;
+  }
+
+  [data-signed-in-calendar]:not([data-plus-calendar]):not([data-expired-calendar]):not([data-halted-calendar])
+    .cal-m-cell.is-selected .cal-m-mark {
+    background: var(--on-accent);
+  }
+
+  [data-signed-in-calendar]:not([data-plus-calendar]):not([data-expired-calendar]):not([data-halted-calendar])
+    .cal-m-grid:has(.cal-m-cell.is-selected)
+    .cal-m-cell.is-today:not(.is-selected) {
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    box-shadow: none;
+  }
+
+  [data-signed-in-calendar]:not([data-plus-calendar]):not([data-expired-calendar]):not([data-halted-calendar])
+    .cal-m-grid:has(.cal-m-cell.is-selected)
+    .cal-m-cell.is-today:not(.is-selected)
+    .cal-m-num {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  [data-signed-in-calendar]:not([data-plus-calendar]):not([data-expired-calendar]):not([data-halted-calendar])
+    .cal-m-grid:has(.cal-m-cell.is-selected)
+    .cal-m-cell.is-today:not(.is-selected)
+    .cal-m-mark {
+    background: var(--ink);
+  }
+
+  [data-signed-in-calendar]:not([data-plus-calendar]):not([data-expired-calendar]):not([data-halted-calendar])
+    .cal-m-grid:has(.cal-m-cell.is-selected)
+    .cal-m-cell.is-today:not(.is-selected)
+    .cal-m-mark.is-scheduled,
+  [data-signed-in-calendar]:not([data-plus-calendar]):not([data-expired-calendar]):not([data-halted-calendar])
+    .cal-m-grid:has(.cal-m-cell.is-selected)
+    .cal-m-cell.is-today:not(.is-selected)
+    .cal-m-mark.is-due {
+    background: var(--browse-due);
+  }
+
+  [data-signed-in-calendar]:not([data-plus-calendar]):not([data-expired-calendar]):not([data-halted-calendar])
+    .cal-m-grid:has(.cal-m-cell.is-selected)
+    .cal-m-cell.is-today:not(.is-selected)
+    .cal-m-mark.is-overdue {
+    background: var(--browse-mark-news);
+  }
+
+  [data-signed-in-calendar]:not([data-plus-calendar]):not([data-expired-calendar]):not([data-halted-calendar])
+    .cal-m-grid:has(.cal-m-cell.is-selected)
+    .cal-m-cell.is-today:not(.is-selected)
+    .cal-m-mark.is-done {
+    background: var(--calendar-done);
+  }
+
+  [data-signed-in-calendar]:not([data-plus-calendar]):not([data-expired-calendar]):not([data-halted-calendar])
+    .cal-m-grid:has(.cal-m-cell.is-selected)
+    .cal-m-cell.is-today:not(.is-selected)
+    .cal-m-mark.is-new {
+    background: var(--rc-ink);
+  }
+
+  [data-signed-in-calendar]:not([data-plus-calendar]):not([data-expired-calendar]):not([data-halted-calendar])
+    .cal-m-legend {
+    gap: 10px 14px;
+    margin-top: 12px;
+  }
+
+  [data-signed-in-calendar]:not([data-plus-calendar]):not([data-expired-calendar]):not([data-halted-calendar])
+    .cal-m-daylist:not([hidden]) {
+    position: static;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    z-index: auto;
+    max-height: min(52vh, 360px);
+    overflow: auto;
+    margin: 16px var(--m-gutter, 18px) 0;
+    padding: 0 0 8px;
+    background: var(--rc-paper);
+    border: 1px solid var(--rc-hairline);
+    border-radius: var(--rc-radius-card, 14px);
+    box-shadow: none;
+    animation: none;
+  }
+
+  [data-signed-in-calendar]:not([data-plus-calendar]):not([data-expired-calendar]):not([data-halted-calendar])
+    .cal-m-daylist:not([hidden])::before {
+    display: none;
+    content: none;
+    width: 0;
+    height: 0;
+    margin: 0;
+  }
+
+  [data-signed-in-calendar]:not([data-plus-calendar]):not([data-expired-calendar]):not([data-halted-calendar])
+    .cal-m-daylist
+    .revisions-eyebrow {
+    border-top: 0;
+    padding: 14px 16px 8px;
+  }
+
+  [data-signed-in-calendar]:not([data-plus-calendar]):not([data-expired-calendar]):not([data-halted-calendar])
+    .cal-m-daylist
+    .revisions-row {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  [data-signed-in-calendar]:not([data-plus-calendar]):not([data-expired-calendar]):not([data-halted-calendar])
+    .cal-m-daylist
+    .revisions-empty {
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-bottom: 12px;
+  }
+
+  [data-signed-in-calendar]:not([data-plus-calendar]):not([data-expired-calendar]):not([data-halted-calendar])
+    .cal-m-today-card {
+    margin-top: 16px;
+    border-radius: var(--rc-radius-card, 14px);
+  }
+
+  [data-signed-in-calendar]:not([data-plus-calendar]):not([data-expired-calendar]):not([data-halted-calendar])
+    .cal-m-today-continue {
+    min-height: 44px;
+    height: 50px;
+    color: var(--rc-teal);
+  }
+
+  [data-signed-in-calendar]:not([data-plus-calendar]):not([data-expired-calendar]):not([data-halted-calendar])
+    .revisions-note {
+    margin-top: 14px;
+    margin-bottom: 8px;
+  }
+}
+
 /* R1 — Playground phone shell. Constitution pages are not restyled here. */
 @media (max-width: 560px) {
   body[data-mscreen="playground"] .page-wrap,
