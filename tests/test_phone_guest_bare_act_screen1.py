@@ -341,7 +341,7 @@ def test_phone_guest_markers_and_pins() -> None:
     base = BASE.read_text(encoding="utf-8")
     assert "data-guest-bareact-phone-tabs" in base
     assert "styles.css?v=main86" in base
-    assert "mobile.css?v=mob104" in base
+    assert "mobile.css?v=mob105" in base
     assert "mobile.css?v=mob99" not in base
     styles = STYLES.read_text(encoding="utf-8")
     hide_phone = styles.split("[data-guest-bareact-phone] {", 1)[1].split("}", 1)[0]
@@ -575,10 +575,12 @@ def test_phone_guest_bareact_screen01_desktop_regression_1280(tmp_path: Path) ->
               const phoneGuest = document.querySelector('[data-guest-bareact-phone]');
               const prod = document.querySelector('[data-bareact-phone]');
               const desk = document.querySelector('[data-signed-in-bareact-desktop]');
+              const plusPhone = document.querySelector('[data-plus-bareact-phone]');
               return {
                 guestPhone: phoneGuest ? getComputedStyle(phoneGuest).display : null,
                 prodDisplay: prod ? getComputedStyle(prod).display : null,
                 deskDisplay: desk ? getComputedStyle(desk).display : null,
+                plusPhoneDisplay: plusPhone ? getComputedStyle(plusPhone).display : null,
                 details: prod ? prod.querySelectorAll('details').length : 0,
                 cta: prod && prod.innerText.includes('Sign in to use Playground'),
               };
@@ -605,7 +607,8 @@ def test_phone_guest_bareact_screen01_desktop_regression_1280(tmp_path: Path) ->
     assert geo["title"] == NDPS_GUEST_TITLE
     assert geo["account"] == "Guest"
     assert plus_geo["guestPhone"] is None
-    assert plus_geo["prodDisplay"] != "none"
+    assert plus_geo["prodDisplay"] == "none"
+    assert plus_geo["plusPhoneDisplay"] != "none"
     assert plus_geo["deskDisplay"] == "none"
     assert plus_geo["details"] == 8
     assert plus_geo["cta"] is False

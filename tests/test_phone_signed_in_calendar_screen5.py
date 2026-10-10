@@ -395,8 +395,8 @@ def test_phone_free_calendar_css_is_breakpoint_scoped() -> None:
     assert "grid-template-columns: minmax(0, 1fr) 380px" in desk
     assert "playground.css?v=pg34" in BASE.read_text(encoding="utf-8")
     assert "styles.css?v=main86" in BASE.read_text(encoding="utf-8")
-    assert "mobile.css?v=mob104" in BASE.read_text(encoding="utf-8")
-    assert "mobile.css?v=mob103" not in BASE.read_text(encoding="utf-8")
+    assert "mobile.css?v=mob105" in BASE.read_text(encoding="utf-8")
+    assert "mobile.css?v=mob104" not in BASE.read_text(encoding="utf-8")
     cal = CAL.read_text(encoding="utf-8")
     assert "data-signed-in-calendar" in cal
     phone = cal.split("revisions-mobile", 1)[1].split("calendar-header", 1)[0]
@@ -409,10 +409,11 @@ def test_phone_free_calendar_css_is_breakpoint_scoped() -> None:
     assert "data-signed-in-pg-gate" in GATE.read_text(encoding="utf-8")
     assert "data-signed-in-today" in DASH.read_text(encoding="utf-8")
     first_bar = BASE.read_text(encoding="utf-8").split(
-        'class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom"', 1
-    )[1].split("</nav>", 1)[0]
+        'class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom"', 2
+    )[2].split("</nav>", 1)[0]
     assert 'href="/calendar"' in first_bar
     assert "path.startswith('/calendar')" in first_bar
+    assert "data-plus-bareact-phone-tabs" not in first_bar
     pg = PG_CSS.read_text(encoding="utf-8")
     assert "data-signed-in-calendar" not in pg.split(
         "/* Plus desktop /calendar", 1

@@ -647,7 +647,7 @@ def test_plus_add_1280_dialog_scope_and_select(tmp_path: Path) -> None:
 
         page.set_viewport_size({"width": 390, "height": 844})
         page.goto(f"{origin}/laws/ndps", wait_until="networkidle")
-        page.locator("[data-bareact-phone] [data-pg-sheet]").first.click()
+        page.locator("[data-plus-bareact-phone] [data-pg-sheet]").first.click()
         page.wait_for_selector("[data-pg-add]", timeout=8000)
         phone_geo = page.evaluate(
             """() => {

@@ -462,10 +462,12 @@ def test_plus_bareact_1280(tmp_path: Path) -> None:
               const desk = document.querySelector('[data-signed-in-bareact-desktop]');
               const plus = document.querySelector('[data-plus-bareact="desktop"]');
               const prod = document.querySelector('[data-bareact-phone]');
+              const plusPhone = document.querySelector('[data-plus-bareact-phone]');
               return {
                 plusPresent: Boolean(plus),
                 deskDisplay: desk ? getComputedStyle(desk).display : null,
                 prodDisplay: prod ? getComputedStyle(prod).display : null,
+                plusPhoneDisplay: plusPhone ? getComputedStyle(plusPhone).display : null,
                 details: prod ? prod.querySelectorAll('details').length : 0,
               };
             }"""
@@ -511,7 +513,8 @@ def test_plus_bareact_1280(tmp_path: Path) -> None:
     assert playground_gate is False
     assert phone_geo["plusPresent"] is True
     assert phone_geo["deskDisplay"] == "none"
-    assert phone_geo["prodDisplay"] != "none"
+    assert phone_geo["prodDisplay"] == "none"
+    assert phone_geo["plusPhoneDisplay"] != "none"
     assert phone_geo["details"] == 8
     assert shot_path.is_file()
     assert shot_path.stat().st_size > 1000

@@ -611,7 +611,7 @@ def test_fourth_tab_reads_calendar():
         Path(__file__).parent.parent
         / "src/constitution_memorizer/web/templates/base.html"
     ).read_text()
-    tabbar = base.split('class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom"', 1)[1].split(
+    tabbar = base.split('class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom"', 2)[2].split(
         "</nav>", 1
     )[0]
     assert ">Today</a>" in tabbar or ">Today<" in tabbar
@@ -1231,7 +1231,7 @@ def test_signed_in_tabbar_ships_icons_and_keeps_label_contract():
         Path(__file__).parent.parent
         / "src/constitution_memorizer/web/templates/base.html"
     ).read_text()
-    tabbar = base.split('class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom"', 1)[1].split(
+    tabbar = base.split('class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom"', 2)[2].split(
         "</nav>", 1
     )[0]
     assert ">Calendar</a>" in tabbar

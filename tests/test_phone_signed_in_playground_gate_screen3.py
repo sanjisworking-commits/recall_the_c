@@ -535,7 +535,7 @@ def test_phone_free_gate_css_is_breakpoint_scoped() -> None:
     assert "playground.css?v=pg34" in base
     assert "playground.css?v=pg33" not in base
     assert "styles.css?v=main86" in base
-    assert "mobile.css?v=mob104" in base
+    assert "mobile.css?v=mob105" in base
     assert "data-signed-in-pg-gate" not in MOBILE.read_text(encoding="utf-8")
     js = PG_JS.read_text(encoding="utf-8")
     assert "data-pg-plan-continue" not in js
@@ -555,11 +555,12 @@ def test_phone_free_gate_css_is_breakpoint_scoped() -> None:
     add = ADD.read_text(encoding="utf-8")
     assert 'href="/playground">Unlock Playground</a>' in add
     first_bar = BASE.read_text(encoding="utf-8").split(
-        'class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom"', 1
-    )[1].split("</nav>", 1)[0]
+        'class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom"', 2
+    )[2].split("</nav>", 1)[0]
     assert 'href="/calendar"' in first_bar
     assert "path.startswith('/profile')" in first_bar
     assert "data-signed-in-bareact-phone-tabs" not in first_bar
+    assert "data-plus-bareact-phone-tabs" not in first_bar
     assert "data-guest-pg-phone-tabs" not in first_bar
 
 

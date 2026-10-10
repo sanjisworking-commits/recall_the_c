@@ -309,6 +309,59 @@
     </div>
   </div>
 </section>
+{% if signed_in_bareact_desktop and plus_bareact|default(false) %}
+<section class="panel guest-bareact" data-plus-bareact-phone>
+  <div class="guest-bareact-headband">
+    <a class="guest-bareact-back" href="/laws">← Laws</a>
+    <div class="guest-bareact-head">
+      <div class="guest-bareact-copy">
+        <p class="guest-bareact-kicker">{{ guest_screen4.kicker }}</p>
+        <h1 class="guest-bareact-title">{{ guest_screen4.title }}</h1>
+        <p class="guest-bareact-meta">{{ guest_screen4.meta }}</p>
+      </div>
+      {% if pg_in_playground %}
+      <div class="signed-bareact-in-pg" data-pg-kind="already_active">
+        <span class="signed-bareact-in-pg-mark" aria-hidden="true">
+          <svg width="13" height="13" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6.5 4.8 9.2 10 3.2"></path></svg>
+        </span>
+        {{ status_badge(pg.badge, pg.badge_label) }}
+        {% if pg.secondary_href and pg.secondary_label %}
+        <a class="signed-bareact-sections" href="{{ pg.secondary_href }}">{{ pg.secondary_label }}</a>
+        {% endif %}
+        {% if pg_subscribed %}
+        <a class="signed-bareact-continue" href="/playground">Continue</a>
+        {% elif pg.primary_href and pg.primary_label %}
+        <a class="signed-bareact-continue" href="{{ pg.primary_href }}">{{ pg.primary_label }}</a>
+        {% endif %}
+      </div>
+      {% elif pg_subscribed %}
+      {{ playground_cta(pg) }}
+      {% elif expired_bareact|default(false) and pg %}
+      {{ playground_cta(pg) }}
+      {% elif halted_bareact|default(false) and pg %}
+      {{ playground_cta(pg) }}
+      {% else %}
+      <a
+        class="guest-bareact-cta"
+        href="{{ pg.primary_href if pg and pg.primary_href else guest_screen4.add_href }}"
+        data-pg-sheet
+        data-pg-kind="subscribe"
+      >Subscribe to use Playground</a>
+      {% endif %}
+    </div>
+  </div>
+  <div class="guest-bareact-rows" role="list">
+    {% for row in guest_screen4.rows %}
+    <div class="guest-bareact-row" role="listitem">
+      <span class="guest-bareact-row-tag">{{ row.tag }}</span>
+      <span class="guest-bareact-row-title">{{ row.title }}</span>
+      <span class="guest-bareact-row-range">{{ row.range_label }}</span>
+      <span class="guest-bareact-row-chevron" aria-hidden="true">›</span>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
 {% if signed_in_bareact_desktop and not plus_bareact|default(false) and not expired_bareact|default(false) and not halted_bareact|default(false) and not pg_subscribed %}
 <section class="panel guest-bareact" data-signed-in-bareact-phone>
   <div class="guest-bareact-headband">

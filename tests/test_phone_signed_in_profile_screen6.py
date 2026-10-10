@@ -293,8 +293,8 @@ def test_phone_free_profile_css_is_breakpoint_scoped() -> None:
     assert "font-size: 28px" in desk
     assert "playground.css?v=pg34" in BASE.read_text(encoding="utf-8")
     assert "styles.css?v=main86" in BASE.read_text(encoding="utf-8")
-    assert "mobile.css?v=mob104" in BASE.read_text(encoding="utf-8")
-    assert "mobile.css?v=mob103" not in BASE.read_text(encoding="utf-8")
+    assert "mobile.css?v=mob105" in BASE.read_text(encoding="utf-8")
+    assert "mobile.css?v=mob104" not in BASE.read_text(encoding="utf-8")
     src = PROFILE.read_text(encoding="utf-8")
     for phrase in MOCK_SCREEN_COPY:
         assert phrase not in src, phrase
@@ -304,10 +304,11 @@ def test_phone_free_profile_css_is_breakpoint_scoped() -> None:
     guest_css = PG_CSS.read_text(encoding="utf-8")
     assert "Guest phone Profile (CTA map guest/06-screen)" in guest_css
     first_bar = BASE.read_text(encoding="utf-8").split(
-        'class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom"', 1
-    )[1].split("</nav>", 1)[0]
+        'class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom"', 2
+    )[2].split("</nav>", 1)[0]
     assert 'href="/profile"' in first_bar
     assert "path.startswith('/profile')" in first_bar
+    assert "data-plus-bareact-phone-tabs" not in first_bar
 
 
 def test_guest_plus_expired_halted_profiles_stay_separate(tmp_path: Path) -> None:
