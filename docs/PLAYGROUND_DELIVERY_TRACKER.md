@@ -19,7 +19,7 @@
 | Milestone 9 | `DONE` — 15/15 × 5 = **5** |
 | Milestone 10 | `DONE` — 16/16 × 4 = **4** |
 | Milestone 11 | `DONE` — weight **7** |
-| **Stage 2 (optimize)** | **`NOT STARTED` — Stage 2 may begin only after the Stage 1 release checklist is complete and production-ready state is proven.** |
+| **Stage 2 (optimize)** | **`IN PROGRESS` (S2-0 measurement baseline). Stage 2 may begin only after the Stage 1 release checklist is complete and production-ready state is proven.** |
 
 Do not read leftover proof Cloze/Day-1 rows as a reset. Six Learn modes are production (M7). Learned → Day 1 → Mastered is production (M8). M9 source-integrity review is production: an amendment creates a source-review fact, not a rewritten learning history. A provision may be Mastered and still `Law updated`. M10 keeps public statutory pages indexable and personal Playground/account state out of the index and out of sitemaps.
 
@@ -95,7 +95,7 @@ cleanup
 
 **Stage 1** is milestones 0–11 below. That score **ends at 100**. Stage 2 stays completely outside it.
 
-**Stage 2 status:** `NOT STARTED` — start gate: Stage 1 = `DONE` (100/100). Do not start Stage 2 during Stage 1. Do not reopen prices, GST, roster math, device cap, URL shape, or Constitution independence in Stage 2.
+**Stage 2 status:** `IN PROGRESS` — S2-0 measurement baseline (local, not a production SLA). Start gate remains Stage 1 = `DONE` (100/100). Stage 2 may begin only after the Stage 1 release checklist is complete and production-ready state is proven. Do not reopen prices, GST, roster math, device cap, URL shape, or Constitution independence in Stage 2. Stage 2 overall is not `DONE`.
 
 **Overlap:** Stage 1 **implements** first-time correctness (zero-hydration home/roster, batched dashboard, atomic consume, webhook HMAC/idempotency, `noindex` / `X-Robots-Tag`, first-pass admin diagnostics, concurrency tests, rollout/rollback). Stage 2 **profiles / measures / tunes / automates / scales / retires** after measured production behaviour. Do not re-implement Stage 1 contracts under Stage 2 headings.
 
@@ -802,7 +802,7 @@ Stage 2 may begin only after the Stage 1 release checklist is complete and produ
 | 10. SEO/routing discoverability   |      4 | `DONE` — 16/16 × 4 = 4 |
 | 11. Production hardening/release  |      7 | `DONE` — weight 7 |
 | **TOTAL (Stage 1)**               |  **100** | **DONE — 100.0 / 100** |
-| Stage 2 — Optimize                |    — | `NOT STARTED` — Stage 2 may begin only after the Stage 1 release checklist is complete and production-ready state is proven. |
+| Stage 2 — Optimize                |    — | `IN PROGRESS` (S2-0 measurement baseline). Stage 2 may begin only after the Stage 1 release checklist is complete and production-ready state is proven. Stage 2 overall is not `DONE`. |
 
 ---
 
@@ -886,7 +886,7 @@ That definition is **Stage 1 = 100/100**. Stage 2 does not change it.
 
 # Stage 2 — Optimize Playground (unweighted)
 
-**Status: `NOT STARTED` — start gate: Stage 1 = `DONE` (100/100)**
+**Status: `IN PROGRESS` — S2-0 measurement baseline (local, not a production SLA). Start gate remains Stage 1 = `DONE` (100/100). Stage 2 overall is not `DONE`.**
 
 Starts only after Stage 1 contracts are implemented, tested, and proven in production-like use. Improve scale, reliability, performance, security, and operations **without reopening the product model**.
 
@@ -900,7 +900,7 @@ Measured improvements against production behaviour; proven-dead legacy/proof pat
 
 ## 1. Database optimization
 
-* [ ] Profile query plans for roster, revisions, devices, subscriptions, and progress
+* [x] Profile query plans for roster, revisions, devices, subscriptions, and progress
 * [ ] Tune indexes from those plans
 * [ ] Measure and eliminate remaining N+1 (Stage 1 already requires batched dashboard / no-N+1 home)
 * [ ] Measure p95 of aggregates/dashboard reads; tune
@@ -908,7 +908,7 @@ Measured improvements against production behaviour; proven-dead legacy/proof pat
 
 ## 2. Routing / backend optimization
 
-* [ ] Measure Playground route latency
+* [x] Measure Playground route latency
 * [ ] Trim unnecessary dependencies/queries found in traces
 * [ ] Tune request-scoped entitlement/bootstrap caching
 * [ ] Profile authorization guard composition; tune
@@ -917,8 +917,8 @@ Measured improvements against production behaviour; proven-dead legacy/proof pat
 ## 3. Law-loading optimization
 
 * [x] Verify zero-hydration catalogue / Playground dashboard still holds under load (Stage 1 owns the contract)
-* [ ] Profile `BareAct` hydration
-* [ ] Measure cache effectiveness
+* [x] Profile `BareAct` hydration
+* [x] Measure cache effectiveness
 * [ ] Prepare section/chapter chunking **only when corpus size justifies it**
 * [ ] Scale precomputed search/index infrastructure as the corpus grows
 
@@ -934,19 +934,19 @@ Measured improvements against production behaviour; proven-dead legacy/proof pat
 
 ## 5. Performance
 
-* [ ] Page-weight audit
+* [x] Page-weight audit
 * [ ] Tune JS/CSS delivery
-* [ ] Profile template rendering
+* [x] Profile template rendering
 * [ ] Measure DB latency
-* [ ] Cold-start behaviour
+* [x] Cold-start behaviour
 * [ ] Caching headers for public immutable/static law assets where appropriate
 
 ## 6. Concurrency & resilience
 
-* [ ] Profile roster races beyond Stage 1 atomic-consume tests
-* [ ] Profile device-registration races beyond Stage 1 cap tests
-* [ ] Concurrent progress/revision writes under load
-* [ ] Measure duplicate/out-of-order Razorpay handling (Stage 1 owns HMAC + event-id)
+* [x] Profile roster races beyond Stage 1 atomic-consume tests
+* [x] Profile device-registration races beyond Stage 1 cap tests
+* [x] Concurrent progress/revision writes under load (SQLite C=2, five waves; local characterization, not production load)
+* [x] Measure duplicate/out-of-order Razorpay handling (Stage 1 owns HMAC + event-id)
 * [ ] Tune retry/idempotency from observed failures
 * [ ] Degraded-provider scenarios
 
@@ -961,13 +961,13 @@ Measured improvements against production behaviour; proven-dead legacy/proof pat
 
 ## 8. Observability
 
-* [ ] Entitlement denial reasons
-* [ ] Device-limit events
-* [ ] Roster-full events
+* [x] Entitlement denial reasons
+* [x] Device-limit events
+* [x] Roster-full events
 * [ ] Webhook failures
 * [ ] Payment reconciliation failures
-* [ ] Law-load latency
-* [ ] Playground route latency / error rate
+* [x] Law-load latency
+* [x] Playground route latency / error rate
 
 ## 9. Operational tooling
 
@@ -992,7 +992,7 @@ Measured improvements against production behaviour; proven-dead legacy/proof pat
 
 * [ ] Realistic 700+ law catalogue
 * [ ] Users with 30 active laws
-* [ ] Large Acts
+* [x] Large Acts
 * [ ] High progress-row counts
 * [ ] Sitemap inventory scale
 * [ ] Concurrent subscriber traffic
