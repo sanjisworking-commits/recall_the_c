@@ -77,7 +77,7 @@
     </aside>
   </section>
   {% endif %}
-  <div{% if halted_pg %} data-halted-pg-phone{% elif expired_pg %} data-expired-pg-phone{% endif %}>
+  <div{% if plus_pg %} data-plus-playground-phone{% elif halted_pg %} data-halted-pg-phone{% elif expired_pg %} data-expired-pg-phone{% endif %}>
     <p class="pg-eyebrow pg-home-kicker">{{ home.kicker }}</p>
     <h1 class="pg-home-title{% if plus_pg %} plus-pg-desk-hide{% endif %}">{{ home.heading }}</h1>
     {% if plus_pg %}
@@ -87,6 +87,9 @@
     {{ banner(home.quiet) }}
     <div class="pg-month-strip">
       {% if not home.read_only %}
+      {% if plus_pg %}
+      <span class="plus-pg-period-label">Playground month<br>{{ home.capacity.month_name }}</span>
+      {% endif %}
       <a href="{{ home.manage_href }}">{{ home.manage_label }}</a>
       <a href="{{ home.add_law_href }}">{{ home.add_law_label }}</a>
       <a href="{{ home.plan_next_href }}">Manage {{ home.next_month_name }} ›</a>

@@ -4440,8 +4440,8 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
 }
 
 /* Plus desktop Playground home (CTA map plus/06-screen). Phone Plus
-   keeps the production subscriber home. Guest intro, Free Gate, and
-   Pro home stay on their own wrappers. */
+   is plus/03-screen on [data-plus-playground-phone] at ≤560px. Guest
+   intro, Free Gate, and Pro home stay on their own wrappers. */
 @media (max-width: 560px) {
   [data-plus-playground] .plus-pg-desk-only {
     display: none !important;
@@ -4754,6 +4754,216 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     content: "›";
     font-size: 16px;
     color: var(--pg-faint);
+  }
+}
+
+/* Phone Plus Playground home is plus/03-screen: restyle the existing
+   Plus home column, month strip, and LawCards. Live month name, live
+   month_count_label, live Start learning / Continue. Desktop Screen 06
+   ≥561 block above is unchanged. No CSS order. Guest / Free Gate /
+   Expired / Halted / Pro stay on their own wrappers. */
+@media (max-width: 560px) {
+  body.is-authed[data-mscreen="playground"]:has([data-plus-playground-phone]) {
+    overflow-x: hidden;
+  }
+
+  body.is-authed.playground-app:has([data-plus-playground-phone]) .page-wrap,
+  body.is-authed.playground-app:has([data-plus-playground-phone]) .sheet,
+  body.is-authed[data-mscreen="playground"]:has([data-plus-playground-phone]) .PlaygroundShell {
+    background: var(--pg-page);
+  }
+
+  body.is-authed[data-mscreen="playground"]:has([data-plus-playground-phone]) .PlaygroundShell {
+    max-width: none;
+    overflow-x: hidden;
+    padding: 12px var(--m-gutter, 18px) calc(var(--m-tabbar, 60px) + 28px + env(safe-area-inset-bottom, 0px));
+  }
+
+  body.is-authed[data-mscreen="playground"]:has([data-plus-playground-phone]) .mobile-tabbar {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  body.is-authed[data-mscreen="playground"]:has([data-plus-playground-phone]) .mobile-tab.is-active {
+    color: var(--pg-ink);
+  }
+
+  body.is-authed[data-mscreen="playground"]:has([data-plus-playground-phone])
+    .mobile-tab.is-active
+    .mobile-tab-icon {
+    fill: currentColor;
+  }
+
+  [data-plus-playground-phone] {
+    overflow-x: hidden;
+    min-width: 0;
+  }
+
+  [data-plus-playground-phone] .pg-home-kicker {
+    display: none;
+  }
+
+  [data-plus-playground-phone] .pg-home-title.plus-pg-desk-hide {
+    display: inline;
+    margin: 0;
+    font-family: var(--pg-font-display);
+    font-size: 28px;
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--pg-ink);
+  }
+
+  [data-plus-playground-phone] .pg-home-month {
+    display: inline;
+    margin: 0 0 0 8px;
+    font-family: var(--pg-font-ui);
+    font-size: 13.5px;
+    font-weight: 400;
+    line-height: 1.2;
+    color: var(--pg-muted);
+  }
+
+  [data-plus-playground-phone] .pg-month-strip {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    align-items: center;
+    column-gap: 8px;
+    row-gap: 4px;
+    margin: 14px 0 16px;
+    padding: 12px 12px 8px;
+    background: var(--pg-paper);
+    border-radius: var(--pg-radius-card);
+    box-sizing: border-box;
+  }
+
+  [data-plus-playground-phone] .plus-pg-period-label {
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 0;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.25;
+    color: var(--pg-muted);
+  }
+
+  [data-plus-playground-phone] .pg-month-strip > a:nth-of-type(1),
+  [data-plus-playground-phone] .pg-month-strip > a:nth-of-type(2) {
+    grid-row: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    min-width: 44px;
+    padding: 6px 12px;
+    border: 1px solid var(--pg-hairline);
+    border-radius: var(--pg-radius-chip);
+    background: var(--pg-paper);
+    color: var(--pg-ink);
+    font-size: 12.5px;
+    font-weight: 600;
+    line-height: 1.15;
+    text-align: center;
+    text-decoration: none;
+    box-sizing: border-box;
+  }
+
+  [data-plus-playground-phone] .pg-month-strip > a:nth-of-type(3) {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    min-width: 44px;
+    padding: 4px 0 2px;
+    color: var(--pg-teal);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  [data-plus-playground-phone] > p.pg-actions,
+  [data-plus-playground-phone] > div.plus-pg-desk-hide,
+  [data-plus-playground-phone] > .pg-plan-row {
+    display: none !important;
+  }
+
+  [data-plus-playground-phone] .pg-home-empty {
+    margin: 4px 0 16px;
+  }
+
+  [data-plus-playground-phone] .pg-home-empty-title {
+    margin: 0 0 6px;
+    font-family: var(--pg-font-display);
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.25;
+    color: var(--pg-ink);
+  }
+
+  [data-plus-playground-phone] .pg-section-head {
+    display: none;
+  }
+
+  [data-plus-playground-phone] .pg-law-grid {
+    display: block;
+  }
+
+  [data-plus-playground-phone] .LawCard {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 12px;
+    padding: 16px 16px 14px;
+    background: var(--pg-paper);
+    border: 1px solid var(--pg-hairline);
+    border-radius: var(--pg-radius-card);
+    box-sizing: border-box;
+  }
+
+  [data-plus-playground-phone] .LawCard:first-child {
+    margin-top: 0;
+  }
+
+  [data-plus-playground-phone] .LawCard--emphasised {
+    border: 1px solid var(--pg-hairline);
+  }
+
+  [data-plus-playground-phone] .LawCard-kicker,
+  [data-plus-playground-phone] .LawCard-full,
+  [data-plus-playground-phone] .LawCard-meta,
+  [data-plus-playground-phone] .LawStatusBadge,
+  [data-plus-playground-phone] .DueBadge,
+  [data-plus-playground-phone] .LawCard > p:not(.LawCard-full):not(.LawCard-meta):not(.pg-note) {
+    display: none;
+  }
+
+  [data-plus-playground-phone] .LawCard-title {
+    margin: 0;
+    font-family: var(--pg-font-display);
+    font-size: 18px;
+    font-weight: 500;
+    line-height: 1.25;
+    color: var(--pg-ink);
+  }
+
+  [data-plus-playground-phone] .LawCard-bar {
+    height: 2px;
+    margin: 10px 0 12px;
+    border-radius: 0;
+    background: var(--pg-hairline);
+  }
+
+  [data-plus-playground-phone] .pg-card-actions--phone {
+    display: flex;
+    margin: 0;
+  }
+
+  [data-plus-playground-phone] .pg-card-actions--phone .pg-btn {
+    width: 100%;
+    min-height: 44px;
+    box-sizing: border-box;
   }
 }
 
