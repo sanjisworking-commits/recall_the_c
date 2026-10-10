@@ -69,9 +69,9 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/static/styles.css?v=main85">
+  <link rel="stylesheet" href="/static/styles.css?v=main86">
   <link rel="stylesheet" href="/static/visual-explainer.css?v=ve1">
-  <link rel="stylesheet" href="/static/mobile.css?v=mob99">
+  <link rel="stylesheet" href="/static/mobile.css?v=mob100">
   <link rel="stylesheet" href="/static/playground.css?v=pg32">
   {% if onboarding_status|default('') == 'active' %}
   <link rel="stylesheet" href="/static/onboarding.css?v=ob6">
@@ -111,6 +111,8 @@
   {% set guest_browse_index = multiuser_enabled|default(false) and not current_user and not auth_surface and path == '/browse' %}
   {% set guest_laws_index = multiuser_enabled|default(false) and not current_user and not auth_surface and path == '/laws' %}
   {% set guest_bareact_head = multiuser_enabled|default(false) and not current_user and not auth_surface and path == '/laws/ndps' %}
+  {% set _pg_subscribed = playground_state.subscribed if playground_state is defined and playground_state else false %}
+  {% set signed_in_free_bareact_phone = multiuser_enabled|default(false) and current_user and not auth_surface and path == '/laws/ndps' and not plus_bareact|default(false) and not expired_bareact|default(false) and not halted_bareact|default(false) and not _pg_subscribed %}
   {% set guest_playground_intro = multiuser_enabled|default(false) and not current_user and not auth_surface and path.rstrip('/') == '/playground' %}
   {% set guest_profile = multiuser_enabled|default(false) and not current_user and not auth_surface and path.rstrip('/') == '/profile' %}
   {% set guest_settings = multiuser_enabled|default(false) and not current_user and not auth_surface and path.rstrip('/') == '/settings' %}
@@ -404,7 +406,7 @@
     <p class="sheet-footnote">Bare Act text verbatim · Constitution 1→3→7→15→30→60{% if memory_log_enabled|default(false) %} · Memory log 1→3→7→14→30{% endif %}</p>
   </div>
 
-  {% if multiuser_enabled|default(false) and current_user %}
+  {% if multiuser_enabled|default(false) and current_user and not signed_in_free_bareact_phone %}
   <nav class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom" aria-label="Mobile">
     <a href="/dashboard" class="mobile-tab{% if path.startswith('/dashboard') %} is-active{% endif %}"{% if path.startswith('/dashboard') %} aria-current="page"{% endif %}><svg class="mobile-tab-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M3 9.4 10 3l7 6.4V17h-4.6v-4.6H7.6V17H3V9.4Z"></path></svg>Today</a>
     <a href="/browse" class="mobile-tab{% if path.startswith('/browse') %} is-active{% endif %}"{% if path.startswith('/browse') %} aria-current="page"{% endif %}><svg class="mobile-tab-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M10 4.2C8.6 3 6.8 2.6 4.6 2.6c-.9 0-1.6.1-1.6.1v13s.7-.1 1.6-.1c2.2 0 4 .4 5.4 1.6 1.4-1.2 3.2-1.6 5.4-1.6.9 0 1.6.1 1.6.1v-13s-.7-.1-1.6-.1c-2.2 0-4 .4-5.4 1.6Zm0 0v13"></path></svg>Browse</a>
@@ -413,6 +415,16 @@
     {% endif %}
     <a href="/calendar" class="mobile-tab{% if path.startswith('/calendar') %} is-active{% endif %}"{% if path.startswith('/calendar') %} aria-current="page"{% endif %}><svg class="mobile-tab-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><rect x="2.6" y="4" width="14.8" height="13" rx="2"></rect><path d="M2.6 8.2h14.8M6.6 2.2v3M13.4 2.2v3"></path></svg>Calendar</a>
     <a href="/profile" class="mobile-tab{% if path.startswith('/profile') %} is-active{% endif %}"{% if path.startswith('/profile') %} aria-current="page"{% endif %}><svg class="mobile-tab-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="6.6" r="3.4"></circle><path d="M3.4 17.4c.8-3.1 3.4-4.8 6.6-4.8s5.8 1.7 6.6 4.8"></path></svg>Profile</a>
+  </nav>
+  {% elif signed_in_free_bareact_phone %}
+  <nav class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom" aria-label="Mobile" data-signed-in-bareact-phone-tabs>
+    <a href="/dashboard" class="mobile-tab"><svg class="mobile-tab-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M3 9.4 10 3l7 6.4V17h-4.6v-4.6H7.6V17H3V9.4Z"></path></svg>Today</a>
+    <a href="/browse" class="mobile-tab is-active" aria-current="page"><svg class="mobile-tab-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M10 4.2C8.6 3 6.8 2.6 4.6 2.6c-.9 0-1.6.1-1.6.1v13s.7-.1 1.6-.1c2.2 0 4 .4 5.4 1.6 1.4-1.2 3.2-1.6 5.4-1.6.9 0 1.6.1 1.6.1v-13s-.7-.1-1.6-.1c-2.2 0-4 .4-5.4 1.6Zm0 0v13"></path></svg>Browse</a>
+    {% if playground_enabled|default(true) %}
+    <a href="/playground" class="mobile-tab"><svg class="mobile-tab-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><rect x="3.2" y="3.2" width="13.6" height="13.6"></rect><path d="M3.2 8h13.6M8 3.2v13.6"></path></svg>Playground</a>
+    {% endif %}
+    <a href="/calendar" class="mobile-tab"><svg class="mobile-tab-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><rect x="2.6" y="4" width="14.8" height="13" rx="2"></rect><path d="M2.6 8.2h14.8M6.6 2.2v3M13.4 2.2v3"></path></svg>Calendar</a>
+    <a href="/profile" class="mobile-tab"><svg class="mobile-tab-icon" width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="6.6" r="3.4"></circle><path d="M3.4 17.4c.8-3.1 3.4-4.8 6.6-4.8s5.8 1.7 6.6 4.8"></path></svg>Profile</a>
   </nav>
   {% elif guest_playground_intro %}
   <nav class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom" aria-label="Mobile" data-guest-pg-phone-tabs>

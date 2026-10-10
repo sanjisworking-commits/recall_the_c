@@ -520,9 +520,11 @@ def test_signed_in_bareact_1280_non_subscriber_cta_and_inert_rows(
             """() => {
               const desk = document.querySelector('[data-signed-in-bareact-desktop]');
               const prod = document.querySelector('[data-bareact-phone]');
+              const phoneHead = document.querySelector('[data-signed-in-bareact-phone]');
               return {
                 deskDisplay: desk ? getComputedStyle(desk).display : null,
                 prodDisplay: prod ? getComputedStyle(prod).display : null,
+                phoneHeadDisplay: phoneHead ? getComputedStyle(phoneHead).display : null,
                 details: prod ? prod.querySelectorAll('details').length : 0,
                 sectionLinks: prod
                   ? prod.querySelectorAll('a[href*="/laws/ndps/section/"]').length
@@ -578,7 +580,8 @@ def test_signed_in_bareact_1280_non_subscriber_cta_and_inert_rows(
     assert laws_path == "/laws"
     assert laws_desk is True
     assert phone_geo["deskDisplay"] == "none"
-    assert phone_geo["prodDisplay"] != "none"
+    assert phone_geo["prodDisplay"] == "none"
+    assert phone_geo["phoneHeadDisplay"] != "none"
     assert phone_geo["details"] == 8
     assert phone_geo["sectionLinks"] > 0
     assert shot_path.is_file()

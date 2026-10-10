@@ -397,7 +397,7 @@ def test_signed_in_add_1280_gate_and_close(tmp_path: Path) -> None:
 
         page.set_viewport_size({"width": 390, "height": 844})
         page.goto(f"{origin}/laws/ndps", wait_until="networkidle")
-        page.locator("[data-bareact-phone] [data-pg-sheet]").first.click()
+        page.locator("[data-signed-in-bareact-phone] [data-pg-sheet]").first.click()
         page.wait_for_selector("[data-pg-add]", timeout=8000)
         phone_geo = page.evaluate(
             """() => {

@@ -11095,7 +11095,8 @@ body.is-admin-previewing { padding-top: 40px; }
 }
 
 /* Guest NDPS Bare Act head (desktop CTA map guest/04-screen). Phone guest
-   Screen 01 uses [data-guest-bareact-phone] in mobile.css. Signed-in /
+   Screen 01 uses [data-guest-bareact-phone] in mobile.css. Signed-in Free
+   phone Screen 01 uses [data-signed-in-bareact-phone] in mobile.css.
    Plus / Expired / Halted phone keep the production accordion. */
 @media (max-width: 560px) {
   [data-guest-bareact-desktop] {
@@ -11105,6 +11106,10 @@ body.is-admin-previewing { padding-top: 40px; }
 
 @media (min-width: 561px) {
   [data-guest-bareact-phone] {
+    display: none !important;
+  }
+
+  [data-signed-in-bareact-phone] {
     display: none !important;
   }
 

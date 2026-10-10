@@ -287,10 +287,16 @@ def test_signed_in_plus_expired_halted_phone_keep_production_cta(
     free_html = free.get("/laws/ndps").text
     assert "data-guest-bareact-phone" not in free_html
     assert "data-guest-bareact-phone-tabs" not in free_html
-    prod = free_html.split("data-bareact-phone", 1)[1]
-    assert "Subscribe to use Playground" in prod
-    assert PRIMARY not in prod
-    assert "LawPlaygroundCta" in prod
+    assert "data-signed-in-bareact-phone" in free_html
+    assert "data-signed-in-bareact-phone-tabs" in free_html
+    free_phone = free_html.split("data-signed-in-bareact-phone", 1)[1].split(
+        "</section>", 1
+    )[0]
+    assert "Subscribe to use Playground" in free_phone
+    assert PRIMARY not in free_phone
+    assert 'data-pg-kind="subscribe"' in free_phone
+    assert "LawPlaygroundCta" not in free_phone
+    assert "<details" not in free_phone
 
     plus = TestClient(_mu_app(tmp_path / "plus"))
     _sign_in(plus)
@@ -334,9 +340,9 @@ def test_phone_guest_markers_and_pins() -> None:
     assert 'data-pg-kind="guest"' in bare
     base = BASE.read_text(encoding="utf-8")
     assert "data-guest-bareact-phone-tabs" in base
-    assert "styles.css?v=main85" in base
-    assert "mobile.css?v=mob99" in base
-    assert "mobile.css?v=mob98" not in base
+    assert "styles.css?v=main86" in base
+    assert "mobile.css?v=mob100" in base
+    assert "mobile.css?v=mob99" not in base
     styles = STYLES.read_text(encoding="utf-8")
     hide_phone = styles.split("[data-guest-bareact-phone] {", 1)[1].split("}", 1)[0]
     assert "display: none" in hide_phone
