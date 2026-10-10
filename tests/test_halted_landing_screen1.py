@@ -476,7 +476,7 @@ def test_halted_landing_marker_uses_shared_predicate() -> None:
     assert '"pending", "halted", "paused"' in deps or (
         "pending" in deps and "halted" in deps and "paused" in deps
     )
-    assert "playground.css?v=pg40" not in src
+    assert "playground.css?v=pg41" not in src
     assert 'data-halted-landing="desktop"' not in PG_CSS.read_text(encoding="utf-8")
     assert "data-halted-landing" not in STYLES.read_text(encoding="utf-8")
     assert "data-halted-landing" not in MOBILE.read_text(encoding="utf-8")

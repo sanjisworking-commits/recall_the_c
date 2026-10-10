@@ -469,19 +469,28 @@ def test_expired_phone_bareact_unchanged(tmp_path: Path) -> None:
               const desk = document.querySelector('[data-signed-in-bareact-desktop]');
               const expired = document.querySelector('[data-expired-bareact="desktop"]');
               const prod = document.querySelector('[data-bareact-phone]');
+              const cont = desk && desk.querySelector('.signed-bareact-continue');
               return {
                 expiredPresent: Boolean(expired),
                 deskDisplay: desk ? getComputedStyle(desk).display : null,
+                expiredDisplay: expired ? getComputedStyle(expired).display : null,
                 prodDisplay: prod ? getComputedStyle(prod).display : null,
                 details: prod ? prod.querySelectorAll('details').length : 0,
+                resumeText: cont && cont.textContent.trim(),
+                resumeHref: cont && cont.getAttribute('href'),
+                continueShown: desk ? desk.innerText.includes('Continue') : false,
               };
             }"""
         )
         browser.close()
     assert phone["expiredPresent"] is True
-    assert phone["deskDisplay"] == "none"
-    assert phone["prodDisplay"] != "none"
+    assert phone["deskDisplay"] != "none"
+    assert phone["expiredDisplay"] != "none"
+    assert phone["prodDisplay"] == "none"
     assert phone["details"] > 0
+    assert phone["resumeText"] == "Resume Playground"
+    assert phone["resumeHref"] == PLAYGROUND_BILLING_PATH
+    assert phone["continueShown"] is False
 
 
 def test_expired_bareact_1280(tmp_path: Path) -> None:
