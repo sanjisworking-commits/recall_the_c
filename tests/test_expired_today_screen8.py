@@ -714,9 +714,13 @@ def test_plus_screens_and_expired_01_07_untouched() -> None:
     ):
         text = path.read_text(encoding="utf-8")
         assert "data-expired-today" not in text
-    assert "data-expired-today" not in MOBILE.read_text(encoding="utf-8")
     mobile = MOBILE.read_text(encoding="utf-8")
-    phone_cta = mobile.split(
+    generic, _, phone_free = mobile.partition("is signedIn/04-screen:")
+    assert "data-expired-today" not in generic
+    phone_block = phone_free.split("/* R1 — Playground phone shell", 1)[0]
+    assert ":not([data-expired-today])" in phone_block
+    assert 'data-expired-today="desktop"' not in phone_block
+    phone_cta = generic.split(
         'body[data-mscreen="today"] .rc-path-node.is-current .rc-path-cta {', 1
     )[1].split("}", 1)[0]
     assert "width: 100%" in phone_cta

@@ -412,8 +412,12 @@ def test_plus_today_does_not_touch_accepted_screens() -> None:
     assert 'data-plus-playground="desktop"' in HOME.read_text(encoding="utf-8")
     assert 'data-plus-subscription="desktop"' in MANAGE.read_text(encoding="utf-8")
     mobile = MOBILE.read_text(encoding="utf-8")
-    assert "data-plus-today" not in mobile
-    phone_cta = mobile.split(
+    generic, _, phone_free = mobile.partition("is signedIn/04-screen:")
+    assert "data-plus-today" not in generic
+    phone_block = phone_free.split("/* R1 — Playground phone shell", 1)[0]
+    assert ":not([data-plus-today])" in phone_block
+    assert 'data-plus-today="desktop"' not in phone_block
+    phone_cta = generic.split(
         "body[data-mscreen=\"today\"] .rc-path-node.is-current .rc-path-cta {", 1
     )[1].split("}", 1)[0]
     assert "width: 100%" in phone_cta

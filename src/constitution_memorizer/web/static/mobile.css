@@ -5854,6 +5854,162 @@
 
 }
 
+/* Signed-in Free phone Today is signedIn/04-screen:
+   existing dashboard.html nodes, Constitution progress, Screen 08 contract.
+   Guest / Plus / Expired / Halted keep the generic today panel. */
+@media (max-width: 560px) {
+  body.is-authed[data-mscreen="today"]:has(
+    [data-signed-in-today]:not([data-plus-today]):not([data-expired-today]):not([data-halted-today])
+  ) {
+    overflow-x: hidden;
+  }
+
+  body.is-authed[data-mscreen="today"]:has(
+    [data-signed-in-today]:not([data-plus-today]):not([data-expired-today]):not([data-halted-today])
+  ) .dashboard-panel {
+    padding: 8px var(--m-gutter, 18px)
+      calc(var(--m-tabbar, 60px) + 28px + env(safe-area-inset-bottom, 0px));
+  }
+
+  [data-signed-in-today]:not([data-plus-today]):not([data-expired-today]):not([data-halted-today])
+    .dash-greeting {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 12px;
+    padding: 4px 0 18px;
+    margin: 0;
+  }
+
+  [data-signed-in-today]:not([data-plus-today]):not([data-expired-today]):not([data-halted-today])
+    .dash-greeting > div {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  [data-signed-in-today]:not([data-plus-today]):not([data-expired-today]):not([data-halted-today])
+    .dash-avatar {
+    width: 40px;
+    height: 40px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--on-accent);
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  [data-signed-in-today]:not([data-plus-today]):not([data-expired-today]):not([data-halted-today])
+    .dash-hello {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: 0;
+    line-height: 1.15;
+  }
+
+  [data-signed-in-today]:not([data-plus-today]):not([data-expired-today]):not([data-halted-today])
+    .dash-subtext,
+  [data-signed-in-today]:not([data-plus-today]):not([data-expired-today]):not([data-halted-today])
+    .dash-greeting-settings {
+    display: none;
+  }
+
+  [data-signed-in-today]:not([data-plus-today]):not([data-expired-today]):not([data-halted-today])
+    .dash-date {
+    display: block;
+    margin: 2px 0 0;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--muted);
+  }
+
+  [data-signed-in-today]:not([data-plus-today]):not([data-expired-today]):not([data-halted-today])
+    .rc-streak {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+    height: 32px;
+    padding: 0 10px;
+    border: 1px solid var(--rc-hairline);
+    border-radius: 999px;
+    background: var(--rc-paper);
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  [data-signed-in-today]:not([data-plus-today]):not([data-expired-today]):not([data-halted-today])
+    .rc-streak-suffix {
+    display: inline;
+  }
+
+  [data-signed-in-today]:not([data-plus-today]):not([data-expired-today]):not([data-halted-today])
+    .dash-due.is-due .dash-load,
+  [data-signed-in-today]:not([data-plus-today]):not([data-expired-today]):not([data-halted-today])
+    .dash-due.is-due .dash-chips,
+  [data-signed-in-today]:not([data-plus-today]):not([data-expired-today]):not([data-halted-today])
+    .dash-due.is-due [data-revision-minutes] {
+    display: none;
+  }
+
+  [data-signed-in-today]:not([data-plus-today]):not([data-expired-today]):not([data-halted-today])
+    .dash-due.is-due .rc-goal {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 0 0 16px;
+  }
+
+  [data-signed-in-today]:not([data-plus-today]):not([data-expired-today]):not([data-halted-today])
+    .dash-due.is-due .dash-btn-full {
+    width: 100%;
+    height: 48px;
+    min-height: 48px;
+    border: 0;
+    border-radius: 12px;
+    font-size: 15px;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.28);
+  }
+
+  [data-signed-in-today]:not([data-plus-today]):not([data-expired-today]):not([data-halted-today])
+    .rc-path-node.is-current .rc-path-copy {
+    padding: 14px 15px;
+    background: var(--rc-paper);
+    border: 1px solid var(--rc-hairline);
+    border-radius: 14px;
+    box-shadow: none;
+  }
+
+  [data-signed-in-today]:not([data-plus-today]):not([data-expired-today]):not([data-halted-today])
+    .rc-path-node.is-current .rc-path-cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 44px;
+    height: 44px;
+    margin-top: 12px;
+    border-radius: 11px;
+    background: var(--ink);
+    color: var(--on-accent);
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.28);
+  }
+
+  body.is-authed[data-mscreen="today"]:has(
+    [data-signed-in-today]:not([data-plus-today]):not([data-expired-today]):not([data-halted-today])
+  ) .mobile-tabbar {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    position: fixed;
+  }
+}
+
 /* R1 — Playground phone shell. Constitution pages are not restyled here. */
 @media (max-width: 560px) {
   body[data-mscreen="playground"] .page-wrap,

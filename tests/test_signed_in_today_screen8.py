@@ -206,8 +206,15 @@ def test_signed_in_today_does_not_touch_accepted_screens() -> None:
     assert "data-signed-in-bareact-desktop" in BARE.read_text(encoding="utf-8")
 
     mobile = MOBILE.read_text(encoding="utf-8")
-    assert "data-signed-in-today" not in mobile
-    phone_cta = mobile.split(
+    generic_today, _, phone_free = mobile.partition("is signedIn/04-screen:")
+    assert "data-signed-in-today" not in generic_today
+    phone_block = phone_free.split("/* R1 — Playground phone shell", 1)[0]
+    assert "@media (max-width: 560px)" in phone_block
+    assert "[data-signed-in-today]" in phone_block
+    assert ":not([data-plus-today])" in phone_block
+    assert ":not([data-expired-today])" in phone_block
+    assert ":not([data-halted-today])" in phone_block
+    phone_cta = generic_today.split(
         "body[data-mscreen=\"today\"] .rc-path-node.is-current .rc-path-cta {", 1
     )[1].split("}", 1)[0]
     assert "width: 100%" in phone_cta
@@ -425,6 +432,6 @@ def test_signed_in_today_1280_and_phone(tmp_path: Path) -> None:
     assert phone_geo["present"] is True
     assert phone_geo["topDisplay"] == "block"
     assert phone_geo["stacked"] is True
-    assert phone_geo["dateDisplay"] == "none"
+    assert phone_geo["dateDisplay"] not in (None, "none")
     assert shot_path.is_file()
     assert shot_path.stat().st_size > 1000

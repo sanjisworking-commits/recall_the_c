@@ -789,9 +789,13 @@ def test_plus_expired_and_halted_01_07_untouched() -> None:
         text = path.read_text(encoding="utf-8")
         assert "data-halted-today" not in text
         assert "halted_today" not in text
-    assert "data-halted-today" not in MOBILE.read_text(encoding="utf-8")
     mobile = MOBILE.read_text(encoding="utf-8")
-    phone_cta = mobile.split(
+    generic, _, phone_free = mobile.partition("is signedIn/04-screen:")
+    assert "data-halted-today" not in generic
+    phone_block = phone_free.split("/* R1 — Playground phone shell", 1)[0]
+    assert ":not([data-halted-today])" in phone_block
+    assert 'data-halted-today="desktop"' not in phone_block
+    phone_cta = generic.split(
         'body[data-mscreen="today"] .rc-path-node.is-current .rc-path-cta {', 1
     )[1].split("}", 1)[0]
     assert "width: 100%" in phone_cta
