@@ -435,7 +435,7 @@ def test_phone_plus_add_css_is_breakpoint_scoped() -> None:
     assert "plus-add-cancel" in desk_src
     assert "data-pg-sheet-close" in desk_src
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg41" in base
+    assert "playground.css?v=pg42" in base
     assert "playground.css?v=pg34" not in base
     assert "styles.css?v=main86" in base
     assert "mobile.css?v=mob105" in base

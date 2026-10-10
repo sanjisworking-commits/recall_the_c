@@ -668,7 +668,7 @@ def test_expired_today_marker_uses_shared_predicate() -> None:
     base = BASE.read_text(encoding="utf-8")
     assert "expired_today_chrome" in base
     assert "plus_today_chrome" in base
-    assert "playground.css?v=pg41" in base
+    assert "playground.css?v=pg42" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-expired-today="desktop"' in css
     assert "expired/08-screen" in css

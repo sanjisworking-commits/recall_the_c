@@ -3375,6 +3375,140 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   }
 }
 
+/* Phone Expired NDPS Add resume sheet is expired/02-screen: full-bleed only
+   when dialog.pg-sheet[open] contains [data-expired-add-phone]. Live copy
+   and Resume Playground stay on the existing resume branch. Cancel and the
+   injected X stay in the DOM and are hidden. Direct GET /add is not this
+   overlay. Guest / Free / Plus / Halted sheets keep their own :has()
+   wrappers. Desktop Screen 05 ≥561 is untouched. No CSS order. */
+@media (max-width: 560px) {
+  body.is-authed dialog.pg-sheet[open]:has([data-expired-add-phone]) .pg-eyebrow {
+    display: none;
+  }
+
+  body.is-authed dialog.pg-sheet[open]:has([data-expired-add-phone]) {
+    inset: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: stretch;
+    background: transparent;
+    overflow: hidden;
+  }
+
+  body.is-authed dialog.pg-sheet[open]:has([data-expired-add-phone])::backdrop {
+    background: rgba(20, 20, 20, 0.35);
+  }
+
+  body.is-authed dialog.pg-sheet[open]:has([data-expired-add-phone]) .pg-sheet-panel {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    border-radius: var(--pg-radius-sheet) var(--pg-radius-sheet) 0 0;
+    padding: 12px 20px calc(22px + env(safe-area-inset-bottom, 0px));
+    box-sizing: border-box;
+    max-height: min(92dvh, 100%);
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body.is-authed dialog.pg-sheet[open]:has([data-expired-add-phone]) .pg-sheet-close {
+    display: none !important;
+  }
+
+  body.is-authed dialog.pg-sheet[open]:has([data-expired-add-phone])
+    [data-expired-add-phone]
+    h1 {
+    font-family: var(--pg-font-display);
+    font-weight: 500;
+    font-size: 22px;
+    line-height: 1.25;
+    letter-spacing: 0;
+    margin: 0 0 4px;
+    color: var(--pg-ink);
+  }
+
+  body.is-authed dialog.pg-sheet[open]:has([data-expired-add-phone])
+    [data-expired-add-phone]
+    .pg-lede {
+    margin: 0 0 18px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--pg-muted);
+    max-width: none;
+  }
+
+  body.is-authed dialog.pg-sheet[open]:has([data-expired-add-phone])
+    [data-expired-add-phone]
+    .pg-actions {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    gap: 0;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+  }
+
+  body.is-authed dialog.pg-sheet[open]:has([data-expired-add-phone])
+    [data-expired-add-phone]
+    .pg-btn--ghost {
+    display: none;
+  }
+
+  body.is-authed dialog.pg-sheet[open]:has([data-expired-add-phone])
+    [data-expired-add-phone]
+    a.pg-btn:not(.pg-btn--ghost) {
+    display: flex;
+    flex: 1 1 100%;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: var(--pg-tap, 44px);
+    height: 50px;
+    padding: 0 16px;
+    box-sizing: border-box;
+    border: none;
+    border-radius: var(--pg-radius-button);
+    background: var(--pg-ink);
+    color: var(--pg-paper);
+    font: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: var(--pg-shadow-press);
+  }
+
+  body.is-authed dialog.pg-sheet[open]:has([data-expired-add-phone])
+    [data-expired-add-phone]
+    a.pg-btn:not(.pg-btn--ghost):focus-visible {
+    outline: var(--pg-focus-ring);
+    outline-offset: 2px;
+  }
+
+  body.is-authed dialog.pg-sheet[open]:has([data-expired-add-phone])
+    [data-expired-add-phone]
+    a.pg-btn:not(.pg-btn--ghost):active {
+    transform: translateY(1px);
+    box-shadow: var(--pg-shadow-press-active);
+  }
+}
+
 /* Guest desktop Playground intro (CTA map guest/06-screen). Phone guest
    /playground is shared/05 / guest/03-screen. */
 @media (max-width: 560px) {
