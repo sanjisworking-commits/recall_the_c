@@ -668,7 +668,7 @@ def test_expired_today_marker_uses_shared_predicate() -> None:
     base = BASE.read_text(encoding="utf-8")
     assert "expired_today_chrome" in base
     assert "plus_today_chrome" in base
-    assert "playground.css?v=pg43" in base
+    assert "playground.css?v=pg44" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-expired-today="desktop"' in css
     assert "expired/08-screen" in css
@@ -807,7 +807,7 @@ def test_expired_phone_today_unchanged(
     assert geo["panelDisplay"] != "none"
     assert geo["today"] == "today"
     assert geo["plus"] is False
-    assert geo["dateDisplay"] == "none"
+    assert geo["dateDisplay"] not in (None, "none")
     assert (geo["ctaWidth"] or 0) > 0
     assert str(geo["ctaMinHeight"] or "").endswith("px")
     assert float(str(geo["ctaMinHeight"]).replace("px", "") or 0) >= 44

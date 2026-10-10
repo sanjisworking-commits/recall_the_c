@@ -6001,8 +6001,9 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
 }
 
 /* Expired and Halted desktop /dashboard Today (CTA maps expired/08-screen
-   and halted/08-screen). Phone Today, guest/Free/Plus keep the existing
-   dashboard panel. */
+   and halted/08-screen). Phone Expired Today is expired/04-screen on
+   [data-expired-today="desktop"] at ≤560px. Guest / Free / Plus / Halted
+   phone Today keep the existing dashboard panel. */
 @media (min-width: 561px) {
   body.is-authed[data-mscreen="today"]:has([data-expired-today="desktop"]) .account-menu-btn-status,
   body.is-authed[data-mscreen="today"]:has([data-halted-today="desktop"]) .account-menu-btn-status {
@@ -6023,6 +6024,170 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   [data-halted-today="desktop"] .rc-path-node[data-today-source="playground"].is-current .rc-path-copy {
     background: var(--pg-teal-tint);
     border-color: var(--pg-teal-border);
+  }
+}
+
+/* Phone Expired Today is expired/04-screen: restyle the existing
+   [data-expired-today="desktop"] panel. Live greeting, date, streak,
+   Constitution POST /revision/start when Constitution review remains,
+   mixed path with Playground Resume to billing. Desktop Screen 08
+   ≥561 block above is unchanged. No CSS order. Guest / Free /
+   Plus / Halted / Pro stay on their own wrappers. */
+@media (max-width: 560px) {
+  body.is-authed[data-mscreen="today"]:has([data-expired-today="desktop"]) {
+    overflow-x: hidden;
+  }
+
+  body.is-authed[data-mscreen="today"]:has([data-expired-today="desktop"]) .dashboard-panel {
+    padding: 8px var(--m-gutter, 18px)
+      calc(var(--m-tabbar, 60px) + 28px + env(safe-area-inset-bottom, 0px));
+  }
+
+  [data-expired-today="desktop"] .dash-greeting {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px 12px;
+    padding: 4px 0 18px;
+    margin: 0;
+  }
+
+  [data-expired-today="desktop"] .dash-greeting > div {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  [data-expired-today="desktop"] .dash-avatar {
+    width: 40px;
+    height: 40px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--on-accent);
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  [data-expired-today="desktop"] .dash-hello {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: 0;
+    line-height: 1.15;
+  }
+
+  [data-expired-today="desktop"] .dash-subtext,
+  [data-expired-today="desktop"] .dash-greeting-settings,
+  [data-expired-today="desktop"] .dash-access-chip,
+  [data-expired-today="desktop"] .dash-firstrun-plan {
+    display: none;
+  }
+
+  [data-expired-today="desktop"] .dash-date {
+    display: block;
+    margin: 2px 0 0;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--muted);
+  }
+
+  [data-expired-today="desktop"] .rc-streak {
+    display: inline-flex;
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+    height: 32px;
+    padding: 0 10px;
+    border: 1px solid var(--rc-hairline);
+    border-radius: 999px;
+    background: var(--rc-paper);
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  [data-expired-today="desktop"] .rc-streak-suffix {
+    display: inline;
+  }
+
+  [data-expired-today="desktop"] .dash-due.is-due .dash-load,
+  [data-expired-today="desktop"] .dash-due.is-due .dash-chips,
+  [data-expired-today="desktop"] .dash-due.is-due [data-revision-minutes] {
+    display: none;
+  }
+
+  [data-expired-today="desktop"] .dash-due.is-due .rc-goal {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 0 0 16px;
+  }
+
+  [data-expired-today="desktop"] .dash-due.is-due .dash-btn-full {
+    width: 100%;
+    height: 48px;
+    min-height: 48px;
+    border: 0;
+    border-radius: 12px;
+    font-size: 15px;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.28);
+  }
+
+  [data-expired-today="desktop"] .rc-path-node.is-current .rc-path-copy {
+    padding: 14px 15px;
+    background: var(--rc-paper);
+    border: 1px solid var(--rc-hairline);
+    border-radius: 14px;
+    box-shadow: none;
+  }
+
+  [data-expired-today="desktop"] .rc-path-node[data-today-source="playground"].is-current .rc-path-eyebrow {
+    color: var(--pg-teal);
+  }
+
+  [data-expired-today="desktop"] .rc-path-node.is-current .rc-path-cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 44px;
+    height: 44px;
+    margin-top: 12px;
+    border-radius: 11px;
+    background: var(--ink);
+    color: var(--on-accent);
+    font-size: 14px;
+    font-weight: 600;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.28);
+  }
+
+  [data-expired-today="desktop"] .dash-firstrun-hero,
+  [data-expired-today="desktop"] .dash-firstrun-list {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  [data-expired-today="desktop"] .dash-firstrun-cta {
+    height: 48px;
+    min-height: 48px;
+  }
+
+  body.is-authed[data-mscreen="today"]:has([data-expired-today="desktop"]) .mobile-tabbar {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    position: fixed;
+  }
+
+  body.is-authed[data-mscreen="today"]:has([data-expired-today="desktop"]) .mobile-tab.is-active {
+    color: var(--pg-ink);
+  }
+
+  body.is-authed[data-mscreen="today"]:has([data-expired-today="desktop"])
+    .mobile-tab.is-active
+    .mobile-tab-icon {
+    fill: currentColor;
   }
 }
 

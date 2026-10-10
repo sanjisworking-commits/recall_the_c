@@ -430,7 +430,7 @@ def test_phone_free_today_css_is_breakpoint_scoped() -> None:
     )[1]
     assert "@media (min-width: 561px)" in desk
     assert "minmax(260px, 380px)" in desk
-    assert "playground.css?v=pg43" in BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg44" in BASE.read_text(encoding="utf-8")
     assert "styles.css?v=main86" in BASE.read_text(encoding="utf-8")
     assert "mobile.css?v=mob105" in BASE.read_text(encoding="utf-8")
     assert "mobile.css?v=mob104" not in BASE.read_text(encoding="utf-8")
@@ -899,7 +899,7 @@ def test_phone_free_today_date_visible_other_cohorts_stay_hidden(
     )
     expired_geo = _shot_date(expired.app, expired.cookies.get(SESSION_COOKIE_NAME))
     assert expired_geo["expired"] is True
-    assert expired_geo["dateDisplay"] == "none"
+    assert expired_geo["dateDisplay"] not in (None, "none")
 
     halted = TestClient(_mu_app(tmp_path / "halted"))
     _sign_in(halted)

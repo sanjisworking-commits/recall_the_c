@@ -814,7 +814,7 @@ def test_halted_calendar_marker_uses_shared_predicate() -> None:
     assert "plus_calendar_chrome" in base
     assert "expired_calendar_chrome" in base
     assert LIVE_HEADING not in base
-    assert "playground.css?v=pg43" in base
+    assert "playground.css?v=pg44" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-halted-calendar="desktop"' in css
     assert "halted/09-screen" in css
