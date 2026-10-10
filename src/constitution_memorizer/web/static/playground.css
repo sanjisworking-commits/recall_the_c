@@ -3549,9 +3549,174 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   }
 }
 
+/* Signed-in phone not-subscribed Gate is signedIn/03-screen: restack the
+   existing [data-signed-in-pg-gate] section. Guest 03 is layout reference
+   only. The generic hard-gate tab hide stays intact; this block reveals the
+   five-tab bar only for not_subscribed. Desktop 07 grid is unchanged. */
+@media (max-width: 560px) {
+  body.is-authed[data-mscreen="playground"]:has([data-signed-in-pg-gate]) {
+    overflow-x: hidden;
+  }
+
+  body.is-authed.playground-app:has([data-signed-in-pg-gate]) .page-wrap,
+  body.is-authed.playground-app:has([data-signed-in-pg-gate]) .sheet,
+  body.is-authed[data-mscreen="playground"]:has([data-signed-in-pg-gate]) .PlaygroundShell {
+    background: var(--pg-paper);
+  }
+
+  body.is-authed[data-mscreen="playground"]:has([data-signed-in-pg-gate]) .PlaygroundShell {
+    max-width: none;
+    padding: 14px 22px calc(var(--m-tabbar, 60px) + 28px + env(safe-area-inset-bottom, 0px));
+    overflow-x: hidden;
+  }
+
+  body.is-authed[data-mscreen="playground"]:has([data-signed-in-pg-gate]) .mobile-tabbar {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  body.is-authed[data-mscreen="playground"]:has([data-signed-in-pg-gate]) .mobile-tab.is-active {
+    color: var(--pg-ink);
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate] {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 0 0 8px;
+    max-width: none;
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate] > .pg-eyebrow {
+    margin: 0 0 6px;
+    letter-spacing: 0.14em;
+    color: var(--pg-teal);
+  }
+
+  body.is-authed[data-mscreen="playground"]:has([data-signed-in-pg-gate])
+    .EntitlementGate[data-signed-in-pg-gate] h1 {
+    margin: 0 0 8px;
+    font-size: 26px;
+    font-weight: 500;
+    line-height: 1.12;
+    letter-spacing: 0;
+    text-wrap: balance;
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate] > .pg-lede {
+    margin: 0 0 20px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    max-width: none;
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate] > .HowPlaygroundWorks {
+    margin-top: 8px;
+    border-top: 0;
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate] > .HowPlaygroundWorks > .pg-eyebrow {
+    margin: 0 0 8px;
+    letter-spacing: 0.1em;
+    color: var(--pg-mid);
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate] .HowPlaygroundWorks-row {
+    gap: 10px;
+    padding: 0;
+    margin: 0 0 10px;
+    border-bottom: 0;
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate] .HowPlaygroundWorks-row:last-child {
+    margin-bottom: 0;
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate] .HowPlaygroundWorks-n {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    font-size: 11px;
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate] .HowPlaygroundWorks-row p {
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.45;
+    padding-top: 1px;
+    color: var(--pg-ink);
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate] .HowPlaygroundWorks-row .pg-lede {
+    display: none;
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate] .HowPlaygroundWorks-row strong {
+    font-weight: 400;
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate] > .pg-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    margin: 20px 0 0;
+    padding: 0;
+    gap: 0;
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate] > .pg-actions .pg-btn,
+  .PlaygroundShell .EntitlementGate[data-signed-in-pg-gate] > .pg-actions a.pg-btn,
+  .EntitlementGate[data-signed-in-pg-gate][data-pg-gate-stage="plans"] > .pg-actions button.pg-btn {
+    width: 100%;
+    height: 50px;
+    min-height: 50px;
+    box-sizing: border-box;
+    font-size: 15px;
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate][data-pg-gate-stage="plans"] > .pg-plan-stage {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+    margin: 0;
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate] a.pg-plan-card {
+    display: block;
+    margin: 0;
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate] .pg-plan-card.is-selected {
+    border-color: var(--pg-ink);
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate] .pg-plan-card.is-disabled {
+    pointer-events: none;
+    color: var(--pg-muted);
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate] .pg-plan-current {
+    margin: 8px 0 0;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate][data-pg-gate-stage="plans"] .pg-note {
+    margin: 4px 0 0;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--pg-muted);
+  }
+}
+
 /* Signed-in desktop not-subscribed Gate (CTA map signedIn/07-screen intro).
    Plans stage shares this grid and unhides .pg-plan-stage below. Phone Gate
-   is parked; subscriber home and other entitlement reasons stay unchanged. */
+   is signedIn/03-screen; subscriber home and other entitlement reasons stay
+   unchanged. */
 @media (min-width: 561px) {
   body.is-authed.playground-app:has([data-signed-in-pg-gate]) .page-wrap,
   body.is-authed.playground-app:has([data-signed-in-pg-gate]) .sheet {
@@ -3681,8 +3846,8 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   }
 
   /* Signed-in desktop Free Gate plans stage (CTA map signedIn/07-screen).
-     Phone Gate is parked; subscriber home and other entitlement reasons
-     stay unchanged. */
+     Phone Gate is signedIn/03-screen; subscriber home and other entitlement
+     reasons stay unchanged. */
   .EntitlementGate[data-signed-in-pg-gate][data-pg-gate-stage="plans"] {
     grid-template-areas:
       "kicker card"
