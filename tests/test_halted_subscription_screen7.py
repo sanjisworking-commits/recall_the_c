@@ -517,7 +517,7 @@ def test_halted_subscription_uses_shared_predicate_and_existing_routes() -> None
     assert "halted_subscription" in base
     assert "halted_header_status" in base
     assert LIVE_HEADING not in base
-    assert "playground.css?v=pg34" in base
+    assert "playground.css?v=pg35" in base
     checkout = CHECKOUT.read_text(encoding="utf-8")
     assert "data-halted-subscription" not in checkout
     assert "data-halted-subscription" not in MOBILE.read_text(encoding="utf-8")

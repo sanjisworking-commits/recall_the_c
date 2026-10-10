@@ -3059,12 +3059,127 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   }
 }
 
-/* Plus desktop Add dialog (CTA map plus/05-screen). Phone Plus sheet
-   keeps the production confirm + scope rows. Guest / Free subscribe
-   sheets stay on their own wrappers. */
+/* Plus desktop Add dialog (CTA map plus/05-screen). Phone Plus confirm
+   is plus/02-screen: full-bleed only when the dialog contains
+   [data-plus-add-phone] (eligible_to_add). Guest / Free subscribe
+   sheets stay on their own wrappers. Scope / re_add / roster_full keep
+   the generic inset sheet. */
 @media (max-width: 560px) {
   [data-plus-add-desktop] {
     display: none !important;
+  }
+
+  body.is-authed dialog.pg-sheet[open]:has([data-plus-add-phone]) .pg-eyebrow {
+    display: none;
+  }
+
+  body.is-authed dialog.pg-sheet[open]:has([data-plus-add-phone]) {
+    inset: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: stretch;
+    background: transparent;
+    overflow: hidden;
+  }
+
+  body.is-authed dialog.pg-sheet[open]:has([data-plus-add-phone])::backdrop {
+    background: rgba(20, 20, 20, 0.35);
+  }
+
+  body.is-authed dialog.pg-sheet[open]:has([data-plus-add-phone]) .pg-sheet-panel {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    border-radius: var(--pg-radius-sheet) var(--pg-radius-sheet) 0 0;
+    padding: 12px 20px calc(22px + env(safe-area-inset-bottom, 0px));
+    box-sizing: border-box;
+    max-height: min(92dvh, 100%);
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  body.is-authed dialog.pg-sheet[open]:has([data-plus-add-phone]) .pg-sheet-close {
+    display: none !important;
+  }
+
+  [data-plus-add-phone] .plus-add-title {
+    font-family: var(--pg-font-display);
+    font-weight: 500;
+    font-size: 22px;
+    line-height: 1.25;
+    letter-spacing: 0;
+    margin: 0 0 4px;
+    color: var(--pg-ink);
+  }
+
+  [data-plus-add-phone] .plus-add-lede {
+    margin: 0 0 6px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--pg-muted);
+    max-width: none;
+  }
+
+  [data-plus-add-phone] .plus-add-space {
+    margin: 0 0 18px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--pg-ink);
+  }
+
+  [data-plus-add-phone] .plus-add-submit {
+    appearance: none;
+    -webkit-appearance: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 100%;
+    min-height: 44px;
+    height: 50px;
+    padding: 0 16px;
+    border: none;
+    border-radius: 12px;
+    background: var(--pg-ink);
+    color: var(--pg-paper);
+    font: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    box-sizing: border-box;
+    box-shadow: var(--pg-shadow-press);
+  }
+
+  .PlaygroundShell [data-plus-add-phone] .plus-add-submit {
+    color: var(--pg-paper);
+  }
+
+  [data-plus-add-phone] .plus-add-submit:active {
+    transform: translateY(1px);
+    box-shadow: var(--pg-shadow-press-active);
+  }
+
+  [data-plus-add-phone] .plus-add-footer {
+    margin: 12px 0 0;
+    text-align: center;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--pg-faint);
   }
 }
 

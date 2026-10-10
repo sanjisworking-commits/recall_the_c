@@ -743,7 +743,7 @@ def test_halted_today_marker_uses_shared_predicate() -> None:
     assert "plus_today_chrome" in base
     assert "expired_today_chrome" in base
     assert LIVE_HEADING not in base
-    assert "playground.css?v=pg34" in base
+    assert "playground.css?v=pg35" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-halted-today="desktop"' in css
     assert "halted/08-screen" in css

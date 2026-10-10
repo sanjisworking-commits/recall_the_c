@@ -144,9 +144,19 @@
       {% if plus_add_footer %}<p class="plus-add-footer">{{ plus_add_footer }}</p>{% endif %}
       <button type="button" class="plus-add-cancel" data-pg-sheet-close>Cancel</button>
     </div>
-    {% endif %}
-    {% if plus_add|default(false) %}<div data-plus-add-phone>{% endif %}
-      <h1 id="{{ 'pg-add-title-phone' if plus_add|default(false) else 'pg-add-title' }}">{{ title }}</h1>
+    <div data-plus-add-phone>
+      <h1 id="pg-add-title-phone" class="plus-add-title">{{ plus_add_title }}</h1>
+      <p class="plus-add-lede">{{ plus_add_lede }}</p>
+      {% if plus_add_space %}<p class="plus-add-space">{{ plus_add_space }}</p>{% endif %}
+      <form method="post" action="/playground/laws/{{ law_id }}/add" data-pg-add-confirm>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <input type="hidden" name="confirm" value="{{ confirm_value }}">
+        <button type="submit" class="plus-add-submit">{{ action_label }}</button>
+      </form>
+      {% if plus_add_footer %}<p class="plus-add-footer">{{ plus_add_footer }}</p>{% endif %}
+    </div>
+    {% else %}
+      <h1 id="pg-add-title">{{ title }}</h1>
       {% for line in lines %}
       <p class="pg-lede">{{ line }}</p>
       {% endfor %}
@@ -158,7 +168,7 @@
           <a class="pg-btn pg-btn--ghost" href="{{ cancel_href }}">Cancel</a>
         </p>
       </form>
-    {% if plus_add|default(false) %}</div>{% endif %}
+    {% endif %}
   </div>
 
   <div data-add-step="scope" {% if step != "scope" and not skip_confirm %}hidden{% endif %}>

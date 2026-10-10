@@ -248,14 +248,18 @@ def test_plus_re_add_keeps_no_extra_space_copy(tmp_path: Path) -> None:
 def test_plus_add_phone_keeps_existing_subscriber_confirm(tmp_path: Path) -> None:
     client = _plus_client(tmp_path)
     phone = unescape(_phone(client.get(add_path("ndps")).text))
-    assert f"Add NDPS Act to {MONTH}?" in phone
-    assert f"This will use 1 of your 10 law spaces for {MONTH}." in phone
-    assert "You'll have 9 spaces remaining." in phone
-    assert ">Cancel<" in phone
-    assert f'href="/laws/ndps"' in phone
+    assert f'class="plus-add-title">Add to Playground<' in phone
+    assert LEDE in phone
+    assert SPACE in phone
+    assert 'data-pg-add-confirm' in phone
+    assert 'name="confirm" value="add"' in phone
+    assert f'class="plus-add-submit">Add to Playground<' in phone
+    assert ">Cancel<" not in phone
+    assert 'href="/laws/ndps"' not in phone
     assert 'data-pg-sheet-close' not in phone
     assert FOOTER not in phone
-    assert "joins this month" not in phone
+    assert "plus-add-footer" not in phone
+    assert f"Add NDPS Act to {MONTH}?" not in phone
     assert "Unlock Playground" not in phone
     assert "Create an account" not in phone
 
@@ -422,7 +426,8 @@ def test_plus_add_marker_uses_shared_predicate() -> None:
     css = PG_CSS.read_text(encoding="utf-8")
     assert "[data-plus-add-desktop]" in css
     assert "plus-add-submit" in css
-    assert "playground.css?v=pg34" in BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg35" in BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg34" not in BASE.read_text(encoding="utf-8")
     bare = BARE.read_text(encoding="utf-8")
     assert "data-plus-add-desktop" not in bare
     assert 'data-plus-bareact="desktop"' in bare
@@ -663,6 +668,10 @@ def test_plus_add_1280_dialog_scope_and_select(tmp_path: Path) -> None:
                 deskDisplay: desk ? getComputedStyle(desk).display : null,
                 phoneDisplay: phoneBlock ? getComputedStyle(phoneBlock).display : null,
                 title: title && title.textContent.trim(),
+                lede: phoneBlock && phoneBlock.querySelector('.plus-add-lede')
+                  && phoneBlock.querySelector('.plus-add-lede').textContent.trim(),
+                space: phoneBlock && phoneBlock.querySelector('.plus-add-space')
+                  && phoneBlock.querySelector('.plus-add-space').textContent.trim(),
                 cancelHref: cancel && cancel.getAttribute('href'),
                 plusChrome: Boolean(phoneBlock && phoneBlock.querySelector('.plus-add-title')),
               };
@@ -752,9 +761,11 @@ def test_plus_add_1280_dialog_scope_and_select(tmp_path: Path) -> None:
     assert phone_geo["kind"] == "eligible_to_add"
     assert phone_geo["deskDisplay"] == "none"
     assert phone_geo["phoneDisplay"] != "none"
-    assert phone_geo["title"] == f"Add NDPS Act to {MONTH}?"
-    assert phone_geo["cancelHref"] == "/laws/ndps"
-    assert phone_geo["plusChrome"] is False
+    assert phone_geo["title"] == "Add to Playground"
+    assert phone_geo["lede"] == LEDE
+    assert phone_geo["space"] == SPACE
+    assert phone_geo["cancelHref"] is None
+    assert phone_geo["plusChrome"] is True
     assert shot_path.is_file()
     assert shot_path.stat().st_size > 1000
     assert select_path.is_file()

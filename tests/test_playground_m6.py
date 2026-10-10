@@ -297,9 +297,10 @@ def test_add_confirm_get_does_not_write_and_requires_post(tmp_path: Path):
     _subscribe(client)
     preview = client.get(add_path("ndps"))
     assert preview.status_code == 200
-    assert "Add NDPS Act to September?" in preview.text
-    assert "This will use 1 of your 10 law spaces for September." in preview.text
-    assert "You'll have 9 spaces remaining." in unescape(preview.text)
+    assert "Add to Playground" in preview.text
+    assert "joins this month's Playground" in unescape(preview.text)
+    assert "This will use 1 of your 10 law spaces in September." in preview.text
+    assert "9 will remain." in unescape(preview.text)
     assert 'name="csrf_token"' in preview.text
     assert 'role="dialog"' in preview.text
     assert 'aria-modal="true"' in preview.text
