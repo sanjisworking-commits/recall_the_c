@@ -5691,8 +5691,10 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   }
 }
 
-/* Plus desktop /calendar month view (CTA map plus/09-screen). Phone Plus,
-   guest/Free/Pro calendar, and week columns keep the existing panel. */
+/* Plus desktop /calendar month view (CTA map plus/09-screen). Phone Plus
+   is plus/05-screen on [data-plus-calendar="desktop"] at ≤560px. Guest
+   / Free / Pro / Expired / Halted calendar and week columns stay on
+   their own wrappers. */
 @media (min-width: 561px) {
   body.is-authed[data-mscreen="revisions"]:has([data-plus-calendar="desktop"]) .account-menu-btn-status {
     display: block;
@@ -5749,6 +5751,251 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   [data-plus-calendar="desktop"]:not(.is-week) .cal-si-panel {
     min-width: 0;
     width: 100%;
+  }
+}
+
+/* Phone Plus Calendar is plus/05-screen: restyle the existing
+   [data-plus-calendar="desktop"] revisions-mobile tree. Live month,
+   Constitution today-card, Playground chips on selected-day lists,
+   Continue /dashboard on the current-month today-card only. Desktop
+   Screen 09 ≥561 block above is unchanged. No CSS order. Guest /
+   Free / Expired / Halted / Pro stay on their own wrappers. */
+@media (max-width: 560px) {
+  body.is-authed[data-mscreen="revisions"]:has([data-plus-calendar="desktop"]) {
+    overflow-x: hidden;
+  }
+
+  body.is-authed[data-mscreen="revisions"]:has([data-plus-calendar="desktop"])
+    .panel.calendar {
+    padding: 6px 0
+      calc(var(--m-tabbar, 60px) + 28px + env(safe-area-inset-bottom, 0px));
+  }
+
+  body.is-authed[data-mscreen="revisions"]:has([data-plus-calendar="desktop"])
+    .mobile-tabbar {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    position: fixed;
+  }
+
+  body.is-authed[data-mscreen="revisions"]:has([data-plus-calendar="desktop"])
+    .mobile-tab.is-active {
+    color: var(--pg-ink);
+  }
+
+  body.is-authed[data-mscreen="revisions"]:has([data-plus-calendar="desktop"])
+    .mobile-tab.is-active
+    .mobile-tab-icon {
+    fill: currentColor;
+  }
+
+  [data-plus-calendar="desktop"] .revisions-head {
+    align-items: center;
+    padding: 4px var(--m-gutter, 18px) 0;
+  }
+
+  [data-plus-calendar="desktop"] .revisions-title {
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+
+  [data-plus-calendar="desktop"] .cal-m-nav {
+    gap: 0;
+    margin-left: auto;
+    border: 1px solid var(--rc-hairline);
+    border-radius: 10px;
+    background: var(--rc-paper);
+    overflow: hidden;
+  }
+
+  [data-plus-calendar="desktop"] .cal-m-nav-btn {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    border: 0;
+    background: transparent;
+    color: var(--ink);
+  }
+
+  [data-plus-calendar="desktop"] .revisions-month {
+    margin: 0;
+    padding: 0 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+
+  [data-plus-calendar="desktop"] .cal-m-grid {
+    gap: 6px;
+    margin-top: 14px;
+  }
+
+  [data-plus-calendar="desktop"] .cal-m-dow {
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    color: var(--mid);
+  }
+
+  [data-plus-calendar="desktop"] .cal-m-cell:not(.is-blank) {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 7px 0 6px;
+    border: 1px solid var(--page);
+    border-radius: 12px;
+    background: var(--paper);
+  }
+
+  [data-plus-calendar="desktop"] .cal-m-cell.is-today {
+    background: var(--ink);
+    border: 2px solid var(--ink);
+    box-shadow: none;
+  }
+
+  [data-plus-calendar="desktop"] .cal-m-cell.is-today .cal-m-num {
+    color: var(--on-accent);
+    font-weight: 600;
+  }
+
+  [data-plus-calendar="desktop"] .cal-m-cell.is-today .cal-m-mark {
+    background: var(--on-accent);
+  }
+
+  [data-plus-calendar="desktop"] .cal-m-cell.is-selected {
+    background: var(--ink);
+    border: 2px solid var(--ink);
+    box-shadow: none;
+  }
+
+  [data-plus-calendar="desktop"] .cal-m-cell.is-selected .cal-m-num {
+    color: var(--on-accent);
+    font-weight: 600;
+  }
+
+  [data-plus-calendar="desktop"] .cal-m-cell.is-selected .cal-m-mark {
+    background: var(--on-accent);
+  }
+
+  [data-plus-calendar="desktop"] .cal-m-grid:has(.cal-m-cell.is-selected)
+    .cal-m-cell.is-today:not(.is-selected) {
+    background: var(--paper);
+    border: 2px solid var(--ink);
+    box-shadow: none;
+  }
+
+  [data-plus-calendar="desktop"] .cal-m-grid:has(.cal-m-cell.is-selected)
+    .cal-m-cell.is-today:not(.is-selected)
+    .cal-m-num {
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  [data-plus-calendar="desktop"] .cal-m-grid:has(.cal-m-cell.is-selected)
+    .cal-m-cell.is-today:not(.is-selected)
+    .cal-m-mark {
+    background: var(--ink);
+  }
+
+  [data-plus-calendar="desktop"] .cal-m-grid:has(.cal-m-cell.is-selected)
+    .cal-m-cell.is-today:not(.is-selected)
+    .cal-m-mark.is-scheduled,
+  [data-plus-calendar="desktop"] .cal-m-grid:has(.cal-m-cell.is-selected)
+    .cal-m-cell.is-today:not(.is-selected)
+    .cal-m-mark.is-due {
+    background: var(--browse-due);
+  }
+
+  [data-plus-calendar="desktop"] .cal-m-grid:has(.cal-m-cell.is-selected)
+    .cal-m-cell.is-today:not(.is-selected)
+    .cal-m-mark.is-overdue {
+    background: var(--browse-mark-news);
+  }
+
+  [data-plus-calendar="desktop"] .cal-m-grid:has(.cal-m-cell.is-selected)
+    .cal-m-cell.is-today:not(.is-selected)
+    .cal-m-mark.is-done {
+    background: var(--calendar-done);
+  }
+
+  [data-plus-calendar="desktop"] .cal-m-grid:has(.cal-m-cell.is-selected)
+    .cal-m-cell.is-today:not(.is-selected)
+    .cal-m-mark.is-new {
+    background: var(--rc-ink);
+  }
+
+  [data-plus-calendar="desktop"] .cal-m-legend {
+    gap: 10px 14px;
+    margin-top: 12px;
+  }
+
+  [data-plus-calendar="desktop"] .cal-m-daylist:not([hidden]) {
+    position: static;
+    left: auto;
+    right: auto;
+    bottom: auto;
+    z-index: auto;
+    max-height: min(52vh, 360px);
+    overflow: auto;
+    margin: 16px var(--m-gutter, 18px) 0;
+    padding: 0 0 8px;
+    background: var(--rc-paper);
+    border: 1px solid var(--rc-hairline);
+    border-radius: var(--rc-radius-card, 14px);
+    box-shadow: none;
+    animation: none;
+  }
+
+  [data-plus-calendar="desktop"] .cal-m-daylist:not([hidden])::before {
+    display: none;
+    content: none;
+    width: 0;
+    height: 0;
+    margin: 0;
+  }
+
+  [data-plus-calendar="desktop"] .cal-m-daylist .revisions-eyebrow {
+    border-top: 0;
+    padding: 14px 16px 8px;
+  }
+
+  [data-plus-calendar="desktop"] .cal-m-daylist .revisions-row {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  [data-plus-calendar="desktop"] .cal-m-daylist .revisions-empty {
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-bottom: 12px;
+  }
+
+  [data-plus-calendar="desktop"]
+    .cal-m-daylist
+    a.revisions-row[href*="/playground/"]
+    .revisions-row-title,
+  [data-plus-calendar="desktop"]
+    .cal-m-daylist
+    a.revisions-row[href*="/playground/"]
+    .revisions-row-meta {
+    color: var(--pg-teal);
+  }
+
+  [data-plus-calendar="desktop"] .cal-m-today-card {
+    margin-top: 16px;
+    border-radius: var(--rc-radius-card, 14px);
+  }
+
+  [data-plus-calendar="desktop"] .cal-m-today-continue {
+    min-height: 44px;
+    height: 50px;
+    color: var(--rc-teal);
+  }
+
+  [data-plus-calendar="desktop"] .revisions-note {
+    margin-top: 14px;
+    margin-bottom: 8px;
   }
 }
 

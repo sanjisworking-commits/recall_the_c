@@ -300,7 +300,7 @@ def test_plus_settings_marker_uses_shared_predicate() -> None:
     base = BASE.read_text(encoding="utf-8")
     assert "plus_settings_chrome" in base
     assert "RecallC Plus" in base
-    assert "playground.css?v=pg37" in base
+    assert "playground.css?v=pg38" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-plus-settings="desktop"' in css
     plus_css = css.split("plus/11-screen", 1)[-1]
