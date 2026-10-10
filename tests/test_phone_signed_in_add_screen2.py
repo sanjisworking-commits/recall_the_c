@@ -269,7 +269,7 @@ def test_phone_signed_in_add_css_is_breakpoint_scoped() -> None:
         "[data-signed-in-add-desktop] .signed-add-unlock {", 1
     )[1].split("}", 1)[0]
     assert "height: 44px" in desk_unlock
-    assert "playground.css?v=pg38" in BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg39" in BASE.read_text(encoding="utf-8")
     assert "playground.css?v=pg32" not in BASE.read_text(encoding="utf-8")
     assert "styles.css?v=main86" in BASE.read_text(encoding="utf-8")
     assert "mobile.css?v=mob105" in BASE.read_text(encoding="utf-8")

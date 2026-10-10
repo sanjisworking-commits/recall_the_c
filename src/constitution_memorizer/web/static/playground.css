@@ -6073,8 +6073,9 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   }
 }
 
-/* Plus desktop /profile (CTA map plus/10-screen). Phone Plus and
-   guest/Free/Pro Profile keep the existing signed-in panel. */
+/* Plus desktop /profile (CTA map plus/10-screen). Phone Plus
+   is plus/06-screen on [data-plus-profile="desktop"] at ≤560px. Guest
+   / Free / Pro / Expired / Halted Profile stay on their own wrappers. */
 @media (min-width: 561px) {
   body.is-authed[data-mscreen="account"]:has([data-plus-profile="desktop"]) .account-menu-btn-status {
     display: block;
@@ -6090,9 +6091,243 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   }
 }
 
+/* Phone Plus Profile is plus/06-screen: restyle the existing
+   [data-plus-profile="desktop"] account panel. Live identity-provider
+   copy, peek_capacity usage, Change plan /billing/subscriptions.
+   Painted sequence stays the DOM sequence (identity, account,
+   subscription) so keyboard focus matches what is on screen. No CSS
+   order. Guest / Free / Expired / Halted / Pro stay on their own
+   wrappers. Desktop Screen 10 ≥561 block above is unchanged. */
+@media (max-width: 560px) {
+  body.is-authed[data-mscreen="account"]:has([data-plus-profile="desktop"])
+    .profile-panel {
+    overflow-x: hidden;
+    padding: 8px var(--m-gutter, 18px)
+      calc(var(--m-tabbar, 60px) + 28px + env(safe-area-inset-bottom, 0px));
+  }
+
+  body.is-authed[data-mscreen="account"]:has([data-plus-profile="desktop"])
+    .mobile-tabbar {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    position: fixed;
+  }
+
+  body.is-authed[data-mscreen="account"]:has([data-plus-profile="desktop"])
+    .mobile-tab.is-active {
+    color: var(--pg-ink);
+  }
+
+  body.is-authed[data-mscreen="account"]:has([data-plus-profile="desktop"])
+    .mobile-tab.is-active
+    .mobile-tab-icon {
+    fill: currentColor;
+  }
+
+  [data-plus-profile="desktop"] > .mobile-topbar,
+  [data-plus-profile="desktop"] > .lede,
+  [data-plus-profile="desktop"] .profile-settings-link,
+  [data-plus-profile="desktop"] .slots-title,
+  [data-plus-profile="desktop"] .slots-title + .muted,
+  [data-plus-profile="desktop"] .settings-note,
+  [data-plus-profile="desktop"] h2.section-title:has(+ .slots-title),
+  [data-plus-profile="desktop"] h2.section-title:has(+ .settings-note) {
+    display: none;
+  }
+
+  [data-plus-profile="desktop"] > .display {
+    margin: 0 0 14px;
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: 0;
+  }
+
+  [data-plus-profile="desktop"] .pg-profile-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  [data-plus-profile="desktop"] .pg-profile-grid > div:first-child {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+  }
+
+  [data-plus-profile="desktop"] .pg-profile-identity,
+  [data-plus-profile="desktop"] .si-profile-account,
+  [data-plus-profile="desktop"] [data-profile-subscription],
+  [data-plus-profile="desktop"] .pg-sub-card,
+  [data-plus-profile="desktop"] .pg-account-list {
+    margin: 0;
+    min-width: 0;
+  }
+
+  [data-plus-profile="desktop"] .pg-eyebrow {
+    margin: 0 2px 8px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mid);
+  }
+
+  [data-plus-profile="desktop"] .pg-profile-identity {
+    gap: 12px;
+    align-items: flex-start;
+    padding: 14px 16px;
+    background: var(--rc-paper, var(--paper));
+    border: 1px solid var(--rc-hairline, var(--hairline));
+    border-radius: 14px;
+  }
+
+  [data-plus-profile="desktop"] .pg-profile-identity .dash-avatar,
+  [data-plus-profile="desktop"] .pg-profile-identity .dash-avatar-fallback {
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--on-accent);
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+    flex: none;
+  }
+
+  [data-plus-profile="desktop"] .profile-name {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+
+  [data-plus-profile="desktop"] .pg-profile-identity-copy .muted {
+    margin: 1px 0 0;
+    font-size: 12.5px;
+    color: var(--mid);
+  }
+
+  [data-plus-profile="desktop"] .pg-profile-identity-copy p:has(.link-btn) {
+    display: block;
+    margin: 6px 0 0;
+  }
+
+  [data-plus-profile="desktop"] .pg-profile-identity-copy .link-btn {
+    font-size: 12.5px;
+    font-weight: 600;
+  }
+
+  [data-plus-profile="desktop"] .pg-account-list {
+    background: var(--rc-paper, var(--paper));
+    border: 1px solid var(--rc-hairline, var(--hairline));
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  [data-plus-profile="desktop"] .pg-account-list a,
+  [data-plus-profile="desktop"] .pg-account-list .pg-account-row {
+    min-height: 52px;
+    padding: 0 18px;
+    font-size: 14.5px;
+  }
+
+  [data-plus-profile="desktop"] .si-profile-desk-only {
+    display: flex !important;
+    width: 100%;
+    margin: 0;
+    border: 0;
+    border-top: 1px solid var(--rc-hairline, var(--hairline));
+    border-radius: 0;
+    background: transparent;
+    font: inherit;
+    font-size: 14.5px;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  [data-plus-profile="desktop"] .pg-account-list .si-profile-account-signout {
+    color: var(--destructive);
+  }
+
+  [data-plus-profile="desktop"] .account-actions > li:has([data-open-signout]) {
+    display: none;
+  }
+
+  [data-plus-profile="desktop"] .pg-sub-card {
+    padding: 16px 18px;
+    background: var(--rc-paper, var(--paper));
+    border: 1px solid var(--rc-hairline, var(--hairline));
+    border-radius: 14px;
+  }
+
+  [data-plus-profile="desktop"] .pg-sub-card-head h2 {
+    font-size: 19px;
+    font-weight: 500;
+  }
+
+  [data-plus-profile="desktop"] .pg-sub-card .pg-lede {
+    margin: 0 0 14px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--muted);
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+
+  [data-plus-profile="desktop"] .pg-sub-stat {
+    flex-wrap: wrap;
+    min-width: 0;
+  }
+
+  [data-plus-profile="desktop"] .pg-sub-stat span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+
+  [data-plus-profile="desktop"] .pg-sub-card .pg-btn--ghost {
+    height: 44px;
+    min-height: 44px;
+    min-width: 44px;
+    width: auto;
+    max-width: 100%;
+    padding: 0 14px;
+    border-radius: 10px;
+    border-color: var(--pg-teal-border);
+    color: var(--pg-teal-dark);
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: none;
+  }
+
+  [data-plus-profile="desktop"] .signin-method-row,
+  [data-plus-profile="desktop"] .account-action,
+  [data-plus-profile="desktop"] .pg-sub-card .pg-btn--ghost,
+  [data-plus-profile="desktop"] .pg-account-list a,
+  [data-plus-profile="desktop"] .pg-account-list .pg-account-row {
+    scroll-margin-bottom: calc(
+      var(--m-tabbar, 60px) + 28px + env(safe-area-inset-bottom, 0px)
+    );
+  }
+
+  [data-plus-profile="desktop"] .signin-method-row {
+    min-height: 52px;
+  }
+
+  [data-plus-profile="desktop"] .account-action {
+    min-height: 52px;
+  }
+}
+
 /* Expired desktop /profile (CTA map expired/10-screen). Halted desktop
    /profile (CTA map halted/10-screen) shares these desktop rules. Phone
-   Profile, guest/Free/Plus Profile keep the existing signed-in panel. */
+   Guest / Free / Plus Profile stay on their own wrappers. */
 @media (min-width: 561px) {
   body.is-authed[data-mscreen="account"]:has([data-expired-profile="desktop"]) .account-menu-btn-status,
   body.is-authed[data-mscreen="account"]:has([data-halted-profile="desktop"]) .account-menu-btn-status {

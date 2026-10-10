@@ -548,7 +548,7 @@ def test_plus_profile_marker_uses_shared_predicate() -> None:
     base = BASE.read_text(encoding="utf-8")
     assert "plus_profile_chrome" in base
     assert "RecallC Plus" in base
-    assert "playground.css?v=pg38" in base
+    assert "playground.css?v=pg39" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-plus-profile="desktop"' in css
     plus_css = css.split("plus/10-screen", 1)[-1]
@@ -862,7 +862,7 @@ def test_plus_profile_1280(tmp_path: Path) -> None:
     assert phone["plusDisplay"] != "none"
     assert phone["gridDisplay"] != "grid"
     assert phone["stacked"] is True
-    assert phone["reportDisplay"] == "none"
+    assert phone["reportDisplay"] == "flex"
     assert phone["screen"] == "account"
     assert free_geo["plus"] is False
     assert free_geo["signed"] is True
