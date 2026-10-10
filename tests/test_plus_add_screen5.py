@@ -426,7 +426,7 @@ def test_plus_add_marker_uses_shared_predicate() -> None:
     css = PG_CSS.read_text(encoding="utf-8")
     assert "[data-plus-add-desktop]" in css
     assert "plus-add-submit" in css
-    assert "playground.css?v=pg39" in BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg40" in BASE.read_text(encoding="utf-8")
     assert "playground.css?v=pg34" not in BASE.read_text(encoding="utf-8")
     bare = BARE.read_text(encoding="utf-8")
     assert "data-plus-add-desktop" not in bare

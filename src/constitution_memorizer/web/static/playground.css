@@ -6341,8 +6341,10 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   }
 }
 
-/* Plus desktop /settings (CTA map plus/11-screen). Phone Plus and
-   guest/Free/Pro Settings keep the existing signed-in panel. */
+/* Plus desktop /settings (CTA map plus/11-screen). Phone Plus
+   is plus/07-screen on [data-plus-settings="desktop"] at ≤560px.
+   Guest / Free / Pro / Expired / Halted Settings stay on their
+   own wrappers. Desktop Screen 11 ≥561 block is unchanged. */
 @media (min-width: 561px) {
   body.is-authed[data-mscreen="settings"]:has([data-plus-settings="desktop"]) .account-menu-btn-status {
     display: block;
@@ -6353,6 +6355,152 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     background: var(--ink);
     border-color: var(--ink);
     color: var(--on-accent);
+  }
+}
+
+/* Phone Plus Settings is plus/07-screen: restyle the existing
+   [data-plus-settings="desktop"] panel. Live can_use_auto_plan,
+   live GCal branches, live access-summary identity. Painted
+   sequence stays the DOM sequence (identity, Study, Calendar,
+   App, Account, Legal) so keyboard focus matches what is on
+   screen. No CSS order. Five-tab bar stays hidden. Guest /
+   Free / Expired / Halted / Pro stay on their own wrappers.
+   Desktop Screen 11 ≥561 block above is unchanged. */
+@media (max-width: 560px) {
+  body.is-authed[data-mscreen="settings"]:has([data-plus-settings="desktop"])
+    .panel.settings {
+    overflow-x: hidden;
+    padding: 0 var(--m-gutter, 18px)
+      calc(28px + env(safe-area-inset-bottom, 0px));
+  }
+
+  body.is-authed[data-mscreen="settings"]:has([data-plus-settings="desktop"])
+    .mobile-tabbar {
+    display: none;
+  }
+
+  body.is-authed[data-mscreen="settings"]:has([data-plus-settings="desktop"])
+    .settings > .display {
+    margin: 0 0 14px;
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: 0;
+  }
+
+  body.is-authed[data-mscreen="settings"]:has([data-plus-settings="desktop"])
+    .settings > .lede {
+    display: block;
+    margin: 8px 2px 4px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--muted, var(--mid));
+  }
+
+  body.is-authed[data-mscreen="settings"]:has([data-plus-settings="desktop"])
+    .settings-saved {
+    display: block;
+    margin: 8px 2px 12px;
+    font-size: 13px;
+    color: var(--browse-due, var(--mid));
+  }
+
+  body.is-authed[data-mscreen="settings"]:has([data-plus-settings="desktop"])
+    .settings-account-row {
+    gap: 12px;
+    padding: 14px 16px;
+    margin-bottom: 4px;
+    background: var(--rc-paper, var(--paper));
+    border: 1px solid var(--rc-hairline, var(--hairline));
+    border-radius: 14px;
+  }
+
+  body.is-authed[data-mscreen="settings"]:has([data-plus-settings="desktop"])
+    .settings-account-avatar,
+  body.is-authed[data-mscreen="settings"]:has([data-plus-settings="desktop"])
+    .settings-account-avatar.is-fallback {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--on-accent);
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  body.is-authed[data-mscreen="settings"]:has([data-plus-settings="desktop"])
+    .settings-account-name {
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  body.is-authed[data-mscreen="settings"]:has([data-plus-settings="desktop"])
+    .settings-account-status {
+    font-size: 12.5px;
+    color: var(--mid);
+  }
+
+  body.is-authed[data-mscreen="settings"]:has([data-plus-settings="desktop"])
+    .segmented-input:checked + .segmented-btn,
+  body.is-authed[data-mscreen="settings"]:has([data-plus-settings="desktop"])
+    .settings-theme-btn.is-active {
+    background: var(--ink);
+    border-color: var(--ink);
+    box-shadow: none;
+    color: var(--on-accent);
+    font-weight: 600;
+  }
+
+  body.is-authed[data-mscreen="settings"]:has([data-plus-settings="desktop"])
+    .settings-card,
+  body.is-authed[data-mscreen="settings"]:has([data-plus-settings="desktop"])
+    .settings-form.settings-card {
+    border-radius: 14px;
+  }
+
+  body.is-authed[data-mscreen="settings"]:has([data-plus-settings="desktop"])
+    .settings-row-link.is-danger {
+    color: var(--destructive);
+    font-weight: 500;
+  }
+
+  body.is-authed[data-mscreen="settings"]:has([data-plus-settings="desktop"])
+    .mobile-back,
+  body.is-authed[data-mscreen="settings"]:has([data-plus-settings="desktop"])
+    .segmented-btn,
+  body.is-authed[data-mscreen="settings"]:has([data-plus-settings="desktop"])
+    .settings-theme-btn,
+  body.is-authed[data-mscreen="settings"]:has([data-plus-settings="desktop"])
+    .settings-toggle,
+  body.is-authed[data-mscreen="settings"]:has([data-plus-settings="desktop"])
+    .settings-stepper-btn,
+  body.is-authed[data-mscreen="settings"]:has([data-plus-settings="desktop"])
+    .settings-row-link {
+    min-height: 44px;
+  }
+
+  body.is-authed[data-mscreen="settings"]:has([data-plus-settings="desktop"])
+    .mobile-back,
+  body.is-authed[data-mscreen="settings"]:has([data-plus-settings="desktop"])
+    .settings-toggle,
+  body.is-authed[data-mscreen="settings"]:has([data-plus-settings="desktop"])
+    .settings-stepper-btn {
+    min-width: 44px;
+  }
+
+  body.is-authed[data-mscreen="settings"]:has([data-plus-settings="desktop"])
+    [data-experience-row="motion"],
+  body.is-authed[data-mscreen="settings"]:has([data-plus-settings="desktop"])
+    [data-settings-group="account"],
+  body.is-authed[data-mscreen="settings"]:has([data-plus-settings="desktop"])
+    .settings-verbatim,
+  body.is-authed[data-mscreen="settings"]:has([data-plus-settings="desktop"])
+    .settings > .section-title,
+  body.is-authed[data-mscreen="settings"]:has([data-plus-settings="desktop"])
+    .settings > .settings-note {
+    scroll-margin-bottom: calc(28px + env(safe-area-inset-bottom, 0px));
   }
 }
 
