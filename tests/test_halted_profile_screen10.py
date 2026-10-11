@@ -682,14 +682,16 @@ def test_halted_profile_marker_uses_shared_predicate() -> None:
     assert "plus_profile_chrome" in base
     assert "expired_profile_chrome" in base
     assert LIVE_HEADING not in base
-    assert "playground.css?v=pg45" in base
+    assert "playground.css?v=pg46" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-halted-profile="desktop"' in css
     assert "halted/10-screen" in css
     assert 'data-expired-profile="desktop"' in css
     assert "expired/10-screen" in css
     assert 'data-plus-profile="desktop"' in css
-    halted_css = css.split("halted/10-screen", 1)[1].split("plus/11-screen", 1)[0]
+    halted_css = css.split("halted/10-screen", 1)[1].split(
+        "is expired/06-screen:", 1
+    )[0]
     assert "var(--pg-teal-dark)" in halted_css
     assert "#0e7569" not in halted_css
     assert "#3a3a38" not in halted_css

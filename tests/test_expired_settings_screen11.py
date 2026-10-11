@@ -570,7 +570,7 @@ def test_expired_settings_marker_uses_shared_predicate() -> None:
     base = BASE.read_text(encoding="utf-8")
     assert "expired_settings_chrome" in base
     assert "plus_settings_chrome" in base
-    assert "playground.css?v=pg45" in base
+    assert "playground.css?v=pg46" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-expired-settings="desktop"' in css
     assert "expired/11-screen" in css

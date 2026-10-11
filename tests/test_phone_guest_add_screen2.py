@@ -263,7 +263,7 @@ def test_phone_guest_add_css_is_breakpoint_scoped() -> None:
         "}", 1
     )[0]
     assert "height: 50px" in guest_signin
-    assert "playground.css?v=pg45" in BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg46" in BASE.read_text(encoding="utf-8")
     assert "playground.css?v=pg31" not in BASE.read_text(encoding="utf-8")
     assert "playground.css?v=pg30" not in BASE.read_text(encoding="utf-8")
 

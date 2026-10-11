@@ -484,7 +484,7 @@ def test_halted_add_uses_shared_predicate_existing_resume_route() -> None:
     css = PG_CSS.read_text(encoding="utf-8")
     assert "[data-halted-add-desktop]" in css
     assert "[data-expired-add-desktop]" in css
-    assert "playground.css?v=pg45" in BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg46" in BASE.read_text(encoding="utf-8")
     assert "data-halted-add" not in MOBILE.read_text(encoding="utf-8")
 
 

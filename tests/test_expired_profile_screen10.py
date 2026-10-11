@@ -601,12 +601,14 @@ def test_expired_profile_marker_uses_shared_predicate() -> None:
     base = BASE.read_text(encoding="utf-8")
     assert "expired_profile_chrome" in base
     assert "plus_profile_chrome" in base
-    assert "playground.css?v=pg45" in base
+    assert "playground.css?v=pg46" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-expired-profile="desktop"' in css
     assert "expired/10-screen" in css
     plus_css = css.split("plus/10-screen", 1)[1].split("expired/10-screen", 1)[0]
-    expired_css = css.split("expired/10-screen", 1)[1].split("plus/11-screen", 1)[0]
+    expired_css = css.split("expired/10-screen", 1)[1].split(
+        "is expired/06-screen:", 1
+    )[0]
     assert "var(--pg-teal-dark)" in plus_css
     assert "var(--pg-teal-dark)" in expired_css
     assert "#0e7569" not in plus_css
