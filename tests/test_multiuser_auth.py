@@ -384,7 +384,11 @@ def test_logout_clears_session(tmp_path: Path):
     state = start.cookies.get("rtc_oauth_state")
     client.get(f"/auth/callback?code=fake-google-code&state={state}", follow_redirects=False)
     assert client.get("/dashboard").status_code == 200
-    out = client.post("/logout", follow_redirects=False)
+    out = client.post(
+        "/logout",
+        data={"csrf_token": client.cookies.get("rtc_csrf") or ""},
+        follow_redirects=False,
+    )
     assert out.status_code == 303
     assert out.headers["location"] == "/signed-out"
     gate = client.get("/dashboard")

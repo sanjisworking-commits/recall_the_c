@@ -74,3 +74,21 @@ logs/
 .design-ref/
 src/constitution_memorizer/web/static/_prototype.html
 src/constitution_memorizer/web/static/support.js
+
+# Stage 2 S2-0 WS6/WS7 machine timings (schema samples live under docs/performance/)
+artifacts/playground-performance-baseline.json
+artifacts/playground-bnss-cold-warm.json
+# Stage 2 S2-0 WS10 T18 operator concurrency JSON
+artifacts/playground-concurrency.json
+artifacts/playground-concurrency-*.json
+# Stage 2 S2-0 WS10 T19 operator mutation/webhook JSON
+artifacts/playground-mutations.json
+artifacts/playground-mutations-*.json
+artifacts/playground-webhooks.json
+artifacts/playground-webhooks-*.json
+# Stage 2 S2-0 WS11 T20 operator page-weight JSON
+artifacts/playground-page-weight.json
+artifacts/playground-page-weight-*.json
+# Stage 2 S2-0 WS11 T21 operator cold-start JSON
+artifacts/playground-cold-start.json
+artifacts/playground-cold-start-*.json

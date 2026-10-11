@@ -1,0 +1,27 @@
+{% extends "playground_base.html" %}
+{% from "partials/playground.html" import trust_mark, status_badge %}
+{% block title %}{{ title }} · Playground{% endblock %}
+{% block playground %}
+<section class="pg-complete pg-surface--fixed-dark" data-pg-complete data-pg-variant="{{ variant }}">
+  <p class="pg-complete-kicker">{{ kicker }}</p>
+  <h1>{{ title }}</h1>
+  {% if source_pending %}
+  <p>{{ status_badge('updated', 'Law updated') }}</p>
+  {% endif %}
+  <p class="pg-complete-count">
+    {{ progress.completed_scope_count }} of {{ progress.selected_count }} learned
+  </p>
+  <div class="pg-complete-ladder" aria-label="Revision ladder">
+    {% for day in rungs %}
+    <span
+      class="pg-complete-chip{% if variant == 'learned' and day == 1 %} is-next{% elif variant != 'learned' %} is-done{% endif %}"
+    >Day {{ day }}</span>
+    {% endfor %}
+  </div>
+  <p class="pg-lede">{{ note }}</p>
+  {{ trust_mark("Bare Act wording, never rewritten.") }}
+  <p class="pg-actions">
+    <a class="pg-btn" href="{{ workspace_href }}">Continue</a>
+  </p>
+</section>
+{% endblock %}

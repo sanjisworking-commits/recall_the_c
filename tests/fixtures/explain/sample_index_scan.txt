@@ -1,0 +1,7 @@
+# disposable PostgreSQL baseline, not an SLA
+# fixture TEXT for the parser; not a live ANALYZE
+Index Scan using user_device_user_hash_key on user_device  (cost=0.15..8.17 rows=1 width=128) (actual time=0.018..0.019 rows=1 loops=1)
+  Index Cond: ((user_id = '11111111-1111-4111-8111-111111111111'::uuid) AND (device_key_hash = '<redacted-device-hash>'::text))
+  Buffers: shared hit=4 read=1
+Planning Time: 0.150 ms
+Execution Time: 0.045 ms

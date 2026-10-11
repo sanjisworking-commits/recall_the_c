@@ -4,14 +4,27 @@
 {% block content %}
 {% set is_guest = multiuser_enabled|default(false) and not current_user %}
 {% set account_label = (current_user.display_name or current_user.email or current_user.phone or 'Account') if current_user else 'Guest' %}
-<section class="panel settings">
+<section class="panel settings"{% if is_guest %} data-phone-settings="guest"{% endif %}{% if current_user and not is_guest %} data-signed-in-settings{% endif %}{% if plus_settings|default(false) %} data-plus-settings="desktop"{% endif %}{% if halted_settings|default(false) %} data-halted-settings="desktop"{% endif %}{% if expired_settings|default(false) %} data-expired-settings="desktop"{% endif %}>
   <div class="mobile-topbar">
-    <a class="mobile-back" href="{% if multiuser_enabled|default(false) and current_user %}/dashboard{% else %}/{% endif %}">← {% if multiuser_enabled|default(false) and current_user %}Today{% else %}Home{% endif %}</a>
+    <a class="mobile-back" href="{% if multiuser_enabled|default(false) %}/dashboard{% else %}/{% endif %}">← {% if multiuser_enabled|default(false) %}Today{% else %}Home{% endif %}</a>
   </div>
+  {% if current_user and not is_guest %}
+  <p class="si-settings-desk-back"><a href="/dashboard">← Today</a></p>
+  {% endif %}
   <h1 class="display">Settings</h1>
 
   {% if multiuser_enabled|default(false) %}
-  <a class="settings-account-row" href="{% if current_user %}/profile{% else %}/login{% endif %}">
+  {% if is_guest %}
+  <article class="settings-account-row" data-guest-settings-identity>
+    <span class="settings-account-avatar is-guest-placeholder" aria-hidden="true">?</span>
+    <span class="settings-account-copy">
+      <span class="settings-account-name">Guest</span>
+      <span class="settings-account-status">Guest · Reading only</span>
+    </span>
+    <button type="button" class="settings-account-signin" data-guest-settings-identity-signin>Sign in</button>
+  </article>
+  {% else %}
+  <a class="settings-account-row" href="/profile">
     {% if current_user and current_user.avatar_url %}
     <img class="settings-account-avatar" src="{{ current_user.avatar_url }}" alt="" width="38" height="38">
     {% else %}
@@ -19,18 +32,23 @@
     {% endif %}
     <span class="settings-account-copy">
       <span class="settings-account-name">{{ account_label }}</span>
-      {% if current_user and access and access.enabled %}
+      {% if halted_settings|default(false) and halted_header_status %}
+      <span class="settings-account-status">{{ halted_header_status }}</span>
+      {% elif expired_settings|default(false) and expired_header_status %}
+      <span class="settings-account-status">{{ expired_header_status }}</span>
+      {% elif current_user and access and access.enabled %}
       <span class="settings-account-status">{{ access.status_line }}</span>
-      {% elif is_guest %}
-      <span class="settings-account-status">Guest · Reading only</span>
+      {% elif current_user and current_user.provider == 'google' %}
+      <span class="settings-account-status">Signed in with Google</span>
+      {% elif current_user and current_user.phone %}
+      <span class="settings-account-status">Signed in with phone</span>
+      {% elif current_user %}
+      <span class="settings-account-status">Signed in</span>
       {% endif %}
     </span>
-    {% if is_guest %}
-    <span class="settings-account-signin">Sign in</span>
-    {% else %}
     <span class="settings-account-chevron" aria-hidden="true">›</span>
-    {% endif %}
   </a>
+  {% endif %}
   {% endif %}
 
   {% if multiuser_enabled|default(false) %}
@@ -266,7 +284,7 @@
           <input type="text" name="user_timezone" class="gcal-tz-input" value="{{ gcal.prefs.timezone }}"
                  placeholder="Asia/Kolkata" spellcheck="false" data-gcal-timezone>
         </label>
-        <label class="gcal-pref">
+        <label class="gcal-pref settings-desk-copy">
           <span class="gcal-pref-label">Reminders</span>
           <select name="reminder_cadence">
             <option value="once"{% if gcal.prefs.reminder_cadence == 'once' %} selected{% endif %}>Once — 10 min before</option>
@@ -281,6 +299,21 @@
         <a class="btn btn-ghost" href="https://calendar.google.com/" target="_blank" rel="noopener">Open Google Calendar</a>
         <button type="submit" class="gcal-disconnect settings-desk-copy" form="gcal-disconnect-form">Disconnect</button>
       </div>
+    </form>
+    <form method="post" action="/calendar/google/preferences" class="settings-phone-only settings-card" data-settings-reminders>
+      <input type="hidden" name="csrf_token" value="{{ gcal.csrf_token }}">
+      <div class="settings-row is-stacked">
+        <div class="settings-row-copy">
+          <p class="settings-row-label">Reminders</p>
+          <p class="settings-row-desc">How often each revision day should remind you.</p>
+        </div>
+        <select name="reminder_cadence" data-reminder-cadence>
+          <option value="once"{% if gcal.prefs.reminder_cadence == 'once' %} selected{% endif %}>Once — 10 min before</option>
+          <option value="twice"{% if gcal.prefs.reminder_cadence == 'twice' %} selected{% endif %}>Twice — morning + 10 min before</option>
+          <option value="thrice"{% if gcal.prefs.reminder_cadence == 'thrice' %} selected{% endif %}>Thrice — 8 h, 4 h, 10 min before</option>
+        </select>
+      </div>
+      <p class="actions"><button type="submit" class="btn btn-accent">Save reminders</button></p>
     </form>
     <form method="post" action="/calendar/google/disconnect" id="gcal-disconnect-form"
           class="gcal-hidden-form"
@@ -310,7 +343,7 @@
     {% endif %}
 
     {% if gcal and gcal.status_param in ('connected', 'syncing') and not gcal.prefs.cadence_chosen %}
-    <dialog class="guest-modal gcal-reminder-modal" open aria-labelledby="gcal-reminder-title" data-gcal-reminder-modal>
+    <dialog class="guest-modal gcal-reminder-modal pg-sheet-panel" open aria-labelledby="gcal-reminder-title" data-gcal-reminder-modal role="dialog">
       <div class="guest-modal-card">
         <h2 class="guest-modal-title" id="gcal-reminder-title">Never miss a revision</h2>
         <p class="guest-modal-body">
@@ -414,7 +447,7 @@
 
   {# ── ACCOUNT ───────────────────────────────────────────────────────── #}
   {% if multiuser_enabled|default(false) %}
-  <div class="settings-group" data-settings-group="account">
+  <div class="settings-group settings-phone-only" data-settings-group="account">
     <p class="settings-group-eyebrow">Account</p>
     <div class="settings-card">
       {% if current_user %}
@@ -426,20 +459,29 @@
         <span class="settings-account-chevron" aria-hidden="true">›</span>
       </a>
       {% else %}
-      <a class="settings-row settings-row-link" href="/login">
+      <button type="button" class="settings-row settings-row-link" data-guest-settings-signin>
         <span class="settings-row-copy">
           <span class="settings-row-label">Sign in</span>
         </span>
         <span class="settings-account-chevron" aria-hidden="true">›</span>
-      </a>
+      </button>
       {% endif %}
       {% if multiuser_enabled|default(false) %}
+      {% if is_guest %}
+      <button type="button" class="settings-row settings-row-link" data-guest-settings-report>
+        <span class="settings-row-copy">
+          <span class="settings-row-label">Report an issue</span>
+        </span>
+        <span class="settings-account-chevron" aria-hidden="true">›</span>
+      </button>
+      {% else %}
       <button type="button" class="settings-row settings-row-link" data-report-open data-report-section="Settings">
         <span class="settings-row-copy">
           <span class="settings-row-label">Report an issue</span>
         </span>
         <span class="settings-account-chevron" aria-hidden="true">›</span>
       </button>
+      {% endif %}
       {% endif %}
       {% if current_user %}
       <form method="post" action="/logout" class="settings-signout-form">

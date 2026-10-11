@@ -261,6 +261,29 @@ def test_wants_request_breakdown_paths():
     assert wants_request_breakdown("/health") is False
     assert wants_request_breakdown("/static/styles.css") is False
 
+    assert wants_request_breakdown("/playground") is True
+    assert wants_request_breakdown("/playground/") is True
+    assert wants_request_breakdown("/playground/roster") is True
+    assert wants_request_breakdown("/playground/roster/next") is True
+    assert wants_request_breakdown("/playground/laws/ndps") is True
+    assert wants_request_breakdown(
+        "/playground/laws/ndps/sections/2/learn/read"
+    ) is True
+    assert wants_request_breakdown(
+        "/playground/laws/ndps/sections/2/learn/read/start"
+    ) is True
+    assert wants_request_breakdown("/sitemap.xml") is True
+    assert wants_request_breakdown("/sitemap-core.xml") is True
+    assert wants_request_breakdown("/sitemap-laws.xml") is True
+    assert wants_request_breakdown("/sitemap-laws-bnss.xml") is True
+    assert wants_request_breakdown("/sitemap-laws-ndps-2.xml") is True
+    assert wants_request_breakdown(
+        "/admin/users/11111111-1111-4111-8111-111111111111"
+    ) is True
+    assert wants_request_breakdown(
+        "/admin/users/11111111-1111-4111-8111-111111111111?period=2026-09-01"
+    ) is True
+
 
 def test_learn_get_records_expected_stages(tmp_path: Path, caplog):
     client, repo = _counting_client(tmp_path)
@@ -617,7 +640,7 @@ def test_quiz_with_entitlements_off_does_zero_entitlement_reads(tmp_path: Path, 
     assert override_calls["n"] == 0
 
 
-def test_learn_get_includes_account_when_entitlements_on(tmp_path: Path):
+def test_learn_get_does_not_load_article_claims(tmp_path: Path):
     client, repo = _counting_client(
         tmp_path, ARTICLE_ENTITLEMENTS_ENABLED="true"
     )
@@ -627,7 +650,7 @@ def test_learn_get_includes_account_when_entitlements_on(tmp_path: Path):
     assert repo.load_request_bootstrap_calls == 1
     assert repo.last_bootstrap_kwargs is not None
     assert repo.last_bootstrap_kwargs.get("include_modes") is True
-    assert repo.last_bootstrap_kwargs.get("include_account") is True
+    assert repo.last_bootstrap_kwargs.get("include_account") is not True
     assert repo.claimed_articles_calls == 0
 
 

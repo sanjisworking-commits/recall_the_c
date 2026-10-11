@@ -1,0 +1,18 @@
+# disposable PostgreSQL baseline, not an SLA
+# query: roster_capacity_count
+# alembic_head: 20260927_0027
+# fixture: pro-30+source-review
+# database_name_prefix: s2_
+Aggregate  (cost=2.34..2.35 rows=1 width=8) (actual time=0.032..0.033 rows=1 loops=1)
+  Buffers: shared hit=1
+  ->  Sort  (cost=2.19..2.26 rows=30 width=6) (actual time=0.026..0.027 rows=30 loops=1)
+        Sort Key: law_id
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=1
+        ->  Seq Scan on user_playground_roster_item  (cost=0.00..1.45 rows=30 width=6) (actual time=0.003..0.006 rows=30 loops=1)
+              Filter: ((consumed_at IS NOT NULL) AND (user_id = '11111111-1111-4111-8111-111111111111'::uuid) AND (period_start = '2026-09-01'::date))
+              Buffers: shared hit=1
+Planning:
+  Buffers: shared hit=3
+Planning Time: 0.049 ms
+Execution Time: 0.042 ms

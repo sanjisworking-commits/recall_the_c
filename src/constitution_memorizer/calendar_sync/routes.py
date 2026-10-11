@@ -127,6 +127,20 @@ def schedule_sync(request: Request, user_id) -> None:
     settings = request.app.state.multiuser_settings
     factory = make_client_factory(request)
 
+    def extra_loader(engine, today):
+        try:
+            from constitution_memorizer.calendar_sync.projection import (
+                PROJECTION_HORIZON_DAYS,
+            )
+            from constitution_memorizer.playground.schedule import playground_google_extra
+
+            return playground_google_extra(
+                request, today=today, horizon_days=PROJECTION_HORIZON_DAYS
+            )
+        except Exception:  # noqa: BLE001 — T31 isolation
+            logger.exception("playground google extra failed")
+            return {}
+
     async def _run() -> None:
         await sync_user_calendar(
             user_id=user_id,
@@ -134,6 +148,7 @@ def schedule_sync(request: Request, user_id) -> None:
             store=store,
             client_factory=factory,
             dashboard_url=_dashboard_url(settings),
+            extra_loader=extra_loader,
         )
 
     try:

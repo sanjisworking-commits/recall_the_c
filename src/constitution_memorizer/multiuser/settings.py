@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import re
 from functools import lru_cache
 from pathlib import Path
 from typing import Literal
@@ -14,6 +15,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from constitution_memorizer.auth.exceptions import AuthConfigError
 
 AppEnv = Literal["development", "staging", "production", "test"]
+
+# Conservative check for optional SUPPORT_EMAIL. Empty is allowed at boot.
+_SUPPORT_EMAIL_RE = re.compile(r"^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$")
 
 
 def load_env_file(path: Path | str | None = None, *, override: bool = False) -> Path | None:
@@ -69,8 +73,10 @@ class MultiUserSettings(BaseSettings):
 
     database_url: str = Field(default="", alias="DATABASE_URL")
     supabase_url: str = Field(default="", alias="SUPABASE_URL")
-    supabase_anon_key: str = Field(default="", alias="SUPABASE_ANON_KEY")
-    session_secret: str = Field(default="", alias="SESSION_SECRET")
+    supabase_anon_key: str = Field(
+        default="", alias="SUPABASE_ANON_KEY", repr=False
+    )
+    session_secret: str = Field(default="", alias="SESSION_SECRET", repr=False)
 
     auth_google_enabled: bool = Field(default=True, alias="AUTH_GOOGLE_ENABLED")
     # Phone OTP is paused until SMS provider registration completes. The login
@@ -122,6 +128,12 @@ class MultiUserSettings(BaseSettings):
     # working purchase flow.
     pricing_enabled: bool = Field(default=False, alias="PRICING_ENABLED")
 
+    # Operational Playground availability. False 404s /playground* and hides
+    # entry UI. Does not cancel subscriptions, revoke devices, alter roster,
+    # or reset progress. Constitution Learn and public Bare Acts stay up.
+    # Admin/support diagnostics remain on /admin.
+    playground_enabled: bool = Field(default=True, alias="PLAYGROUND_ENABLED")
+
     # Admin console (/admin/*) and the Admin nav link. Gates the console
     # ONLY: an admin identity's full Recall entitlement follows its
     # user_roles row and is unaffected by this flag — removing the role
@@ -134,7 +146,37 @@ class MultiUserSettings(BaseSettings):
     # "opens soon" placeholder. The key secret never reaches a template or
     # client payload — it is used only server-side (order create + HMAC verify).
     razorpay_key_id: str = Field(default="", alias="RAZORPAY_KEY_ID")
-    razorpay_key_secret: str = Field(default="", alias="RAZORPAY_KEY_SECRET")
+    razorpay_key_secret: str = Field(
+        default="", alias="RAZORPAY_KEY_SECRET", repr=False
+    )
+    # Externally created Razorpay Subscription Plan IDs. Empty in tests/dev
+    # does not block app startup. Required only when creating a subscription
+    # for that tier. Same KEY_ID/KEY_SECRET as legacy Orders.
+    razorpay_plan_id_plus: str = Field(default="", alias="RAZORPAY_PLAN_ID_PLUS")
+    razorpay_plan_id_pro: str = Field(default="", alias="RAZORPAY_PLAN_ID_PRO")
+    razorpay_plan_id_max: str = Field(default="", alias="RAZORPAY_PLAN_ID_MAX")
+    # Subscription webhook HMAC. Empty does not block startup. Required when
+    # the webhook endpoint is exercised. PREVIOUS is retained only so Razorpay
+    # retries signed before rotation still verify. Never log these values.
+    razorpay_webhook_secret: str = Field(
+        default="", alias="RAZORPAY_WEBHOOK_SECRET", repr=False
+    )
+    razorpay_webhook_secret_previous: str = Field(
+        default="", alias="RAZORPAY_WEBHOOK_SECRET_PREVIOUS", repr=False
+    )
+
+    # Paid Playground installation cap. Same integer for Plus/Pro/Max.
+    # Not a catalogue/SKU field. Invalid values (0, negative, non-integer)
+    # are rejected. Missing HMAC secret does not block app startup.
+    playground_device_limit: int = Field(default=2, alias="PLAYGROUND_DEVICE_LIMIT")
+    playground_device_hmac_secret: str = Field(
+        default="", alias="PLAYGROUND_DEVICE_HMAC_SECRET", repr=False
+    )
+
+    # Optional customer-support inbox for the device-replacement lockout CTA.
+    # Empty does not block startup. Non-empty values must look like an email.
+    # Do not fall back to LEGAL_SUPPORT_EMAIL.
+    support_email: str = Field(default="", alias="SUPPORT_EMAIL")
 
     # Google Calendar integration. A DEDICATED OAuth client (never the
     # Supabase sign-in client — the Calendar grant must be independently
@@ -175,6 +217,39 @@ class MultiUserSettings(BaseSettings):
             return self.auth_phone_enabled
         return False
 
+    @field_validator("playground_device_limit", mode="before")
+    @classmethod
+    def _parse_device_limit(cls, value: object) -> object:
+        if value is None or value == "":
+            return 2
+        if isinstance(value, bool):
+            raise ValueError("PLAYGROUND_DEVICE_LIMIT must be a positive integer")
+        if isinstance(value, int):
+            parsed = value
+        elif isinstance(value, str):
+            text = value.strip()
+            if text[1:].isdigit() if text[:1] in "+-" else text.isdigit():
+                parsed = int(text)
+            else:
+                raise ValueError("PLAYGROUND_DEVICE_LIMIT must be a positive integer")
+        else:
+            raise ValueError("PLAYGROUND_DEVICE_LIMIT must be a positive integer")
+        if parsed < 1:
+            raise ValueError("PLAYGROUND_DEVICE_LIMIT must be a positive integer")
+        return parsed
+
+    @field_validator("support_email", mode="before")
+    @classmethod
+    def _parse_support_email(cls, value: object) -> object:
+        if value is None:
+            return ""
+        text = str(value).strip()
+        if not text:
+            return ""
+        if _SUPPORT_EMAIL_RE.fullmatch(text) is None:
+            raise ValueError("SUPPORT_EMAIL must be a valid email address")
+        return text
+
     @field_validator(
         "auth_google_enabled",
         "auth_phone_enabled",
@@ -186,6 +261,7 @@ class MultiUserSettings(BaseSettings):
         "relevant_laws_enabled",
         "article_entitlements_enabled",
         "pricing_enabled",
+        "playground_enabled",
         "admin_enabled",
         mode="before",
     )

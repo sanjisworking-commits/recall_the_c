@@ -173,7 +173,11 @@ def test_logout_a_does_not_invalidate_b(tmp_path: Path):
     )
     assert client_a.get("/dashboard").status_code == 200
     assert client_b.get("/dashboard").status_code == 200
-    client_a.post("/logout", follow_redirects=False)
+    client_a.post(
+        "/logout",
+        data={"csrf_token": client_a.cookies.get("rtc_csrf") or ""},
+        follow_redirects=False,
+    )
     # Guests see an inline gate (not a redirect wall); B remains signed in.
     gate = client_a.get("/dashboard")
     assert gate.status_code == 200

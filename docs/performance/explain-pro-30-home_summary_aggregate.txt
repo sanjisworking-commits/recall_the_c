@@ -1,0 +1,65 @@
+# disposable PostgreSQL baseline, not an SLA
+# query: home_summary_aggregate
+# alembic_head: 20260927_0027
+# fixture: pro-30+source-review
+# database_name_prefix: s2_
+Sort  (cost=227.78..227.85 rows=30 width=91) (actual time=3.907..3.911 rows=30 loops=1)
+  Sort Key: i.added_at
+  Sort Method: quicksort  Memory: 28kB
+  Buffers: shared hit=81
+  ->  Hash Right Join  (cost=209.95..227.04 rows=30 width=91) (actual time=2.768..3.897 rows=30 loops=1)
+        Hash Cond: (s.law_id = i.law_id)
+        Buffers: shared hit=81
+        ->  GroupAggregate  (cost=190.97..207.47 rows=25 width=38) (actual time=2.598..3.716 rows=25 loops=1)
+              Group Key: s.law_id
+              Buffers: shared hit=73
+              ->  Sort  (cost=190.97..192.27 rows=520 width=45) (actual time=2.510..2.620 rows=3120 loops=1)
+                    Sort Key: s.law_id, (CASE WHEN ((m.status = 'completed'::text) AND ((p.status IS NULL) OR (p.status <> ALL ('{learned,review,mastered}'::text[])))) THEN s.source_locator ELSE NULL::text END)
+                    Sort Method: quicksort  Memory: 314kB
+                    Buffers: shared hit=73
+                    ->  Hash Left Join  (cost=44.60..167.51 rows=520 width=45) (actual time=0.281..1.692 rows=3120 loops=1)
+                          Hash Cond: ((s.law_id = p.law_id) AND (s.source_locator = p.source_locator))
+                          Buffers: shared hit=73
+                          ->  Hash Right Join  (cost=21.30..141.48 rows=520 width=49) (actual time=0.122..0.921 rows=3120 loops=1)
+                                Hash Cond: ((m.law_id = s.law_id) AND (m.source_locator = s.source_locator))
+                                Buffers: shared hit=64
+                                ->  Seq Scan on user_playground_mode_progress m  (cost=0.00..103.80 rows=3120 width=49) (actual time=0.002..0.301 rows=3120 loops=1)
+                                      Filter: ((status = 'completed'::text) AND (user_id = '11111111-1111-4111-8111-111111111111'::uuid))
+                                      Buffers: shared hit=57
+                                ->  Hash  (cost=13.50..13.50 rows=520 width=39) (actual time=0.109..0.109 rows=520 loops=1)
+                                      Buckets: 1024  Batches: 1  Memory Usage: 45kB
+                                      Buffers: shared hit=7
+                                      ->  Seq Scan on user_playground_selection s  (cost=0.00..13.50 rows=520 width=39) (actual time=0.001..0.041 rows=520 loops=1)
+                                            Filter: (user_id = '11111111-1111-4111-8111-111111111111'::uuid)
+                                            Buffers: shared hit=7
+                          ->  Hash  (cost=15.50..15.50 rows=520 width=51) (actual time=0.148..0.148 rows=520 loops=1)
+                                Buckets: 1024  Batches: 1  Memory Usage: 51kB
+                                Buffers: shared hit=9
+                                ->  Seq Scan on user_playground_progress p  (cost=0.00..15.50 rows=520 width=51) (actual time=0.002..0.055 rows=520 loops=1)
+                                      Filter: (user_id = '11111111-1111-4111-8111-111111111111'::uuid)
+                                      Buffers: shared hit=9
+        ->  Hash  (cost=18.60..18.60 rows=30 width=51) (actual time=0.157..0.159 rows=30 loops=1)
+              Buckets: 1024  Batches: 1  Memory Usage: 11kB
+              Buffers: shared hit=8
+              ->  Hash Left Join  (cost=16.99..18.60 rows=30 width=51) (actual time=0.143..0.153 rows=30 loops=1)
+                    Hash Cond: (i.law_id = sel.law_id)
+                    Buffers: shared hit=8
+                    ->  Seq Scan on user_playground_item i  (cost=0.07..1.60 rows=30 width=43) (actual time=0.012..0.015 rows=30 loops=1)
+                          Filter: ((user_id = '11111111-1111-4111-8111-111111111111'::uuid) AND (law_id = ANY ('{bns,bnss,ndps,uapa,pss,mtp,syn-1,syn-2,syn-3,syn-4,syn-5,syn-6,syn-7,syn-8,syn-9,syn-10,syn-11,syn-12,syn-13,syn-14,syn-15,syn-16,syn-17,syn-18,syn-19,syn-20,syn-21,syn-22,syn-23,syn-24}'::text[])))
+                          Buffers: shared hit=1
+                    ->  Hash  (cost=16.60..16.60 rows=25 width=14) (actual time=0.116..0.116 rows=25 loops=1)
+                          Buckets: 1024  Batches: 1  Memory Usage: 10kB
+                          Buffers: shared hit=7
+                          ->  Subquery Scan on sel  (cost=16.10..16.60 rows=25 width=14) (actual time=0.106..0.110 rows=25 loops=1)
+                                Buffers: shared hit=7
+                                ->  HashAggregate  (cost=16.10..16.35 rows=25 width=14) (actual time=0.105..0.107 rows=25 loops=1)
+                                      Group Key: user_playground_selection.law_id
+                                      Batches: 1  Memory Usage: 24kB
+                                      Buffers: shared hit=7
+                                      ->  Seq Scan on user_playground_selection  (cost=0.00..13.50 rows=520 width=6) (actual time=0.002..0.051 rows=520 loops=1)
+                                            Filter: (user_id = '11111111-1111-4111-8111-111111111111'::uuid)
+                                            Buffers: shared hit=7
+Planning:
+  Buffers: shared hit=162
+Planning Time: 0.459 ms
+Execution Time: 3.969 ms

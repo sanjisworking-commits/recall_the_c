@@ -39,7 +39,7 @@ def test_learn_enables_letters_tab_and_panel_markup(client: TestClient):
     assert "data-letters-speak" in html
     assert "data-letters-check" not in html.split("data-letters-check-text")[0]
     assert "Use the first letters." in html
-    assert "speech_client.js?v=speech2" in html
+    assert "speech_client.js?v=speech3" in html
     assert "app.js?v=main62" in html
     assert "speech_align.js" not in html
 

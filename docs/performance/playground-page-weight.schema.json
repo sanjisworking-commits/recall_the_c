@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://recall.local/schemas/playground-page-weight.json",
+  "title": "Playground WS11 T20 page-weight and static-asset inventory (schema sample)",
+  "description": "Machine JSON written by scripts/benchmark_playground.py --page-weight. In-process ASGI HTML body bytes plus first-party /static/ CSS/JS disk bytes. gzip_equivalent_bytes uses gzip.compress compresslevel=9 and is not served. Images and fonts are inventoried separately from the WS11 HTML+CSS+JS total. Lighthouse and browser Resource Timing are not captured. Incomplete captures set complete=false, aborted=true, and a nonzero process exit.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "kind",
+    "measurement_mode",
+    "lighthouse",
+    "browser_network",
+    "external_network",
+    "compression_served",
+    "gzip_compresslevel",
+    "gzip_served",
+    "app_env",
+    "database_backend",
+    "client_shape",
+    "attribution",
+    "create_app_timed",
+    "aborted",
+    "complete",
+    "pages",
+    "catalog",
+    "ws11_named_files",
+    "third_party",
+    "cache_policy",
+    "js_css_referenced_assets",
+    "unreferenced_static",
+    "failures",
+    "viewport_profiles"
+  ],
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "kind": { "type": "string", "const": "page-weight" },
+    "measurement_mode": {
+      "type": "string",
+      "const": "in_process_testclient_disk_gzip"
+    },
+    "lighthouse": { "type": "boolean", "const": false },
+    "browser_network": { "type": "boolean", "const": false },
+    "external_network": { "type": "boolean", "const": false },
+    "compression_served": { "type": "string", "const": "identity" },
+    "gzip_compresslevel": { "type": "integer", "const": 9 },
+    "gzip_served": { "type": "boolean", "const": false },
+    "app_env": { "type": "string" },
+    "database_backend": { "type": "string", "const": "sqlite" },
+    "client_shape": { "type": "string", "const": "in_process_asgi" },
+    "git_head": { "type": "string" },
+    "alembic_head": { "type": "string", "const": "20260927_0027" },
+    "attribution": {
+      "type": "string",
+      "const": "inclusive_per_page_plus_unique_catalog"
+    },
+    "create_app_timed": { "type": "boolean", "const": false },
+    "aborted": { "type": "boolean" },
+    "aborted_reason": { "type": ["string", "null"] },
+    "complete": { "type": "boolean" },
+    "pages": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "catalog": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "ws11_named_files": {
+      "type": "array",
+      "minItems": 8,
+      "maxItems": 8,
+      "items": { "type": "object" }
+    },
+    "third_party": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "cache_policy": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "js_css_referenced_assets": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "unreferenced_static": {
+      "type": "array",
+      "items": { "type": "object" }
+    },
+    "failures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "missing_asset",
+              "http_error",
+              "incomplete_capture",
+              "body_disk_mismatch"
+            ]
+          },
+          "page": { "type": ["string", "null"] },
+          "url": { "type": ["string", "null"] },
+          "detail": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "viewport_profiles": {
+      "type": "array",
+      "items": { "type": "object" }
+    }
+  }
+}

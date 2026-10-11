@@ -68,7 +68,8 @@ def test_guest_get_settings_renders_page(tmp_path: Path):
     # hidden rather than shown switched off.
     assert "Guest · Reading only" in html
     assert 'href="/login"' in html
-    assert 'data-report-section="Settings"' in html
+    assert "data-guest-settings-report" in html
+    assert 'data-report-section="Settings"' not in html
     assert "Bare Act text verbatim · Day 1 · 3 · 7 · 15 · 30 · 60" in html
     assert "data-motion-toggle" in html
     assert "Sign out" not in html
@@ -130,12 +131,13 @@ def test_guest_text_size_api_does_not_write(tmp_path: Path):
 
 
 def test_settings_assets_and_hooks(tmp_path: Path):
+    # T33: R6 bumped styles.css main74→main75 and mobile.css mob95→mob96.
     client = _client(tmp_path)
     html = client.get("/browse").text
-    assert "styles.css?v=main70" in html
-    assert "mobile.css?v=mob92" in html
+    assert "styles.css?v=main86" in html
+    assert "mobile.css?v=mob105" in html
     assert "app.js?v=main62" in html
-    css = client.get("/static/mobile.css?v=mob92").text
+    css = client.get("/static/mobile.css?v=mob105").text
     assert 'body[data-mscreen="settings"] .mobile-tabbar' in css
     assert 'body[data-mscreen="settings"] .settings-desk-copy' in css
     assert ".settings-toggle" in css
