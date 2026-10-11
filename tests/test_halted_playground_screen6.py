@@ -537,7 +537,7 @@ def test_halted_playground_uses_shared_predicate_and_gate_view() -> None:
     styles = STYLES.read_text(encoding="utf-8")
     assert ":has([data-halted-playground])" in styles
     assert ":has([data-expired-playground])" in styles
-    assert "playground.css?v=pg47" in base
+    assert "playground.css?v=pg48" in base
     assert "data-halted-playground" not in MOBILE.read_text(encoding="utf-8")
     assert "data-halted-playground" not in GATE.read_text(encoding="utf-8")
 
