@@ -293,7 +293,7 @@ def test_phone_guest_playground_css_is_breakpoint_scoped() -> None:
     hide = css.split("[data-phone-pg-gate=\"guest\"],", 1)[1].split("}", 1)[0]
     assert "display: none" in hide
     assert "data-guest-pg-phone-tabs" in hide or "data-guest-pg-phone-tabs" in css
-    assert "playground.css?v=pg46" in BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg47" in BASE.read_text(encoding="utf-8")
     assert "playground.css?v=pg31" not in BASE.read_text(encoding="utf-8")
     assert "playground.css?v=pg30" not in BASE.read_text(encoding="utf-8")
     guest_title = css.split(".guest-pg-title {", 1)[1].split("}", 1)[0]

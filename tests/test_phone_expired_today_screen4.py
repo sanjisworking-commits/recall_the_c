@@ -856,7 +856,7 @@ def test_phone_expired_today_css_scope_pins_and_desktop_08_untouched() -> None:
     assert "def apply_expired_today_hero" in schedule
     assert "def reconcile_expired_playground_today" in schedule
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg46" in base
+    assert "playground.css?v=pg47" in base
     assert "playground.css?v=pg43" not in base
     assert "styles.css?v=main86" in base
     assert "mobile.css?v=mob105" in base
