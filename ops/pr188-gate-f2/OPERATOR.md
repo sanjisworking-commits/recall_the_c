@@ -1,18 +1,26 @@
-# Gate F2 operator notes — REVISION f2_review_20261016
+# Gate F2 operator notes — REVISION f2_review_20261016b
 
-Review only. There is nothing to run on the Mac for F2.
+Review only. Do not Redeploy, Rollback, or change Railway.
 
-Do not change Railway. Do not deploy. Do not run Alembic. Do not restore
-any dump into live. Do not merge PR #188.
+## Still needed from the Mac dashboard (read-only)
 
-ChatGPT verifies the review document. This gate is paper: code identity
-of `0c0a8d5` vs `5d89fbd`, live HTTP identity of recall-the-c.in, and the
-closed Gate B / E2 backup record.
+Open Railway → `trustworthy-embrace` → `env` → `recall-th-c` → Deployments.
 
-If a later HEAD deploy of PR #188 misbehaves, the rollback (still not
-authorized by this file) is:
+Look for the active `0c0a8d5` deployment (Gate D id `76fbfcad` / Merge PR #209).
+Confirm it is retained and that the ⋮ menu offers Rollback and/or Redeploy.
+Do **not** click those actions.
 
-1. Redeploy git `0c0a8d5` on `trustworthy-embrace` / `env` / `recall-th-c`.
-2. Keep Alembic `20260927_0027` and the fifteen new tables.
-3. Keep `PLAYGROUND_ENABLED=false`.
-4. Do not `alembic downgrade`, `alembic stamp`, or restore-into-live.
+This cloud environment cannot open that UI (no Railway dashboard session).
+GitHub still reports `trustworthy-embrace - recall-th-c` SUCCESS for
+`76fbfcad`; that is **not** a substitute for seeing the ⋮ menu.
+
+## If a later HEAD deploy fails (not authorized by this file)
+
+1. Keep `PLAYGROUND_ENABLED=false`.
+2. Restore the previous `0c0a8d5` application deployment on
+   `recall-th-c` only, after a separate rollback authorization.
+3. Leave Alembic at `20260927_0027`. No downgrade, stamp, or DROP.
+4. Recheck `/health`, Google sign-in, Browse/Learn, `/playground` JSON 404.
+
+This rollback is for a **restricted** release (Playground off, new
+subscriptions not live). `0c0a8d5` has no Razorpay subscription webhook.
