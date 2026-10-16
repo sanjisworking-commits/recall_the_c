@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# REVISION=e4_prep_v1_20261016
+# REVISION=e4_prep_v1_1_20261016
 """Offline tests for Gate E4 now/verify fail-closed boundaries. No production."""
 from __future__ import annotations
 
@@ -259,15 +259,50 @@ def main() -> int:
         "",
     )
 
+    ident = "on|5432|postgres|20260828_0016|postgres|t|f|1|t|t|t|t"
+    counts = [f"{n}|1" for n in g.LEGACY_TABLES]
+    activity = "0|0|0"
+    unlabeled_0016 = "\n".join([ident] + counts + [activity, "", "", "0"]) + "\n"
+    unlabeled_n = len(runner.split_psql_stdout(unlabeled_0016))
+    record(
+        results,
+        "v1_blank_existence_rows_dropped_to_12",
+        unlabeled_n == 12,
+        f"TEST_UNLABELED_N={unlabeled_n}",
+    )
+    labeled_0016 = "\n".join(
+        [ident] + counts + [activity, "new_tables|none", "platform_check|absent", "learned_at|0"]
+    ) + "\n"
+    labeled_lines = runner.split_psql_stdout(labeled_0016)
+    record(
+        results,
+        "v1_1_labeled_sentinels_keep_14_rows",
+        len(labeled_lines) == 14
+        and labeled_lines[11] == "new_tables|none"
+        and labeled_lines[12] == "platform_check|absent"
+        and labeled_lines[13] == "learned_at|0",
+        f"TEST_LABELED_N={len(labeled_lines)}",
+    )
+    record(
+        results,
+        "now_sql_emits_labeled_sentinels",
+        "new_tables|" in runner.sql_now()
+        and "platform_check|" in runner.sql_now()
+        and "learned_at|" in runner.sql_now()
+        and "none" in runner.sql_now()
+        and "absent" in runner.sql_now(),
+        "",
+    )
+
     now_txt = NOW.read_text(encoding="utf-8")
     ver_txt = VERIFY.read_text(encoding="utf-8")
     py_txt = (HERE / "pr188_gate_e4.py").read_text(encoding="utf-8")
     record(
         results,
         "scripts_have_revision_marker",
-        "REVISION=e4_prep_v1_20261016" in now_txt
-        and "REVISION=e4_prep_v1_20261016" in ver_txt
-        and "REVISION=e4_prep_v1_20261016" in py_txt,
+        "REVISION=e4_prep_v1_1_20261016" in now_txt
+        and "REVISION=e4_prep_v1_1_20261016" in ver_txt
+        and "REVISION=e4_prep_v1_1_20261016" in py_txt,
         "",
     )
     record(

@@ -1,4 +1,4 @@
-PR #188 Gate E4 preparation bundle — REVISION e4_prep_v1_20261016
+PR #188 Gate E4 preparation bundle — REVISION e4_prep_v1_1_20261016
 Read-only. No Alembic, Railway variable changes, GRANT, stamp, or merge.
 
 What E4 is
@@ -34,7 +34,12 @@ What can safely run now
 Not in the script (operator/ChatGPT after output): Google sign-in, signed-in
 Constitution Learn, Railway log scan. Printed as E4_INTERACTIVE_*=not_in_script.
 
-Reject any file that does not contain REVISION=e4_prep_v1_20261016.
+v1.1: Mac E4-now failed `unexpected_row_count` because empty existence
+rows (no 0027 tables, no platform CHECK) were blank tuples-only lines and
+were dropped. Extra rows are now labeled `new_tables|none`,
+`platform_check|absent`, `learned_at|0`.
+
+Reject any file that does not contain REVISION=e4_prep_v1_1_20261016.
 
 Files
 -----

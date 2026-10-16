@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# REVISION=e4_prep_v1_20261016
+# REVISION=e4_prep_v1_1_20261016
 """PR #188 Gate E4 fail-closed helpers. Read-only. No dumps, GRANT, or Alembic."""
 from __future__ import annotations
 

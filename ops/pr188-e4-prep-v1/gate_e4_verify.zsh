@@ -1,5 +1,5 @@
 #!/bin/zsh
-# REVISION=e4_prep_v1_20261016
+# REVISION=e4_prep_v1_1_20261016
 # FINGERPRINT=e4_verify_readonly_at_0027
 # PR #188 Gate E4-verify — post-E3 read-only schema/privilege/HTTP check.
 # Requires alembic 20260927_0027. Production is still 20260828_0016, so this

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# REVISION=e4_prep_v1_20261016
+# REVISION=e4_prep_v1_1_20261016
 """PR #188 Gate E4 runners: `now` (0016 read-only) and `verify` (0027 read-only).
 
 No Alembic, GRANT, stamp, downgrade, Railway writes, or merge.
@@ -105,6 +105,30 @@ def check_http() -> None:
     print("E4_INTERACTIVE_RAILWAY_LOGS=not_in_script")
 
 
+def split_psql_stdout(text: str) -> list[str]:
+    """Keep non-empty lines. Extra 0016 rows must never be blank sentinels."""
+    return [ln.strip() for ln in (text or "").splitlines() if ln.strip()]
+
+
+def expect_line_count(lines: list[str], expected: int) -> None:
+    if len(lines) == expected:
+        return
+    print(f"E4_PSQL_LINE_COUNT={len(lines)}")
+    print(f"E4_PSQL_LINE_COUNT_EXPECTED={expected}")
+    kinds = []
+    for ln in lines:
+        kinds.append(ln.split("|", 1)[0] if "|" in ln else "unlabeled")
+    print("E4_PSQL_LINE_KINDS=" + ",".join(kinds))
+    fail("unexpected_row_count")
+
+
+def parse_labeled(line: str, prefix: str) -> str:
+    head = prefix + "|"
+    if not (line or "").startswith(head):
+        fail(prefix + "_row_unparseable")
+    return line[len(head):]
+
+
 def run_psql(sql: str, app_base: str) -> list[str]:
     env = os.environ.copy()
     env.pop("PGPASSWORD", None)
@@ -131,7 +155,7 @@ def run_psql(sql: str, app_base: str) -> list[str]:
         write_err("e4_psql.err", err)
         print("E4_PSQL_ERROR_CLASS=" + g.classify_psql_err(err))
         fail("psql_noninteractive_failed")
-    return [ln.strip() for ln in (proc.stdout or "").splitlines() if ln.strip()]
+    return split_psql_stdout(proc.stdout or "")
 
 
 def identity_sql() -> str:
@@ -211,21 +235,23 @@ SELECT
 
 def now_extra_sql() -> str:
     in_list = ", ".join("'" + t + "'" for t in g.NEW_TABLES)
+    # Prefix every extra row. At 0016, string_agg and constraintdef are empty;
+    # a blank tuples-only line is dropped and was reported as unexpected_row_count.
     return f"""
-SELECT coalesce((
+SELECT 'new_tables|' || coalesce(nullif((
   SELECT string_agg(c.relname, ',' ORDER BY c.relname)
   FROM pg_class c
   JOIN pg_namespace n ON n.oid = c.relnamespace
   WHERE n.nspname = 'public' AND c.relkind = 'r'
     AND c.relname IN ({in_list})
-), '');
-SELECT coalesce((
+), ''), 'none');
+SELECT 'platform_check|' || coalesce(nullif((
   SELECT pg_get_constraintdef(oid)
   FROM pg_constraint
   WHERE conname = 'user_device_platform_check'
   LIMIT 1
-), '');
-SELECT (
+), ''), 'absent');
+SELECT 'learned_at|' || (
   SELECT count(*)::text
   FROM information_schema.columns
   WHERE table_schema = 'public'
@@ -272,13 +298,13 @@ def verify_extra_sql() -> str:
     chunks = [verify_table_sql(t) for t in g.NEW_TABLES]
     chunks.append(
         """
-SELECT coalesce((
+SELECT 'platform_check|' || coalesce(nullif((
   SELECT pg_get_constraintdef(oid)
   FROM pg_constraint
   WHERE conname = 'user_device_platform_check'
   LIMIT 1
-), '');
-SELECT (
+), ''), 'absent');
+SELECT 'learned_at|' || (
   SELECT count(*)::text
   FROM information_schema.columns
   WHERE table_schema = 'public'
@@ -425,16 +451,15 @@ def cmd_now() -> int:
     print("E4_MERGE_NOT_RUN=yes")
     ref, app_base, _db = prepare_env()
     lines = run_psql(sql_now(), app_base)
-    if len(lines) != 14:
-        fail("unexpected_row_count")
+    expect_line_count(lines, 14)
     ident = parse_identity(lines[0], ref, app_base)
     live = parse_counts(lines[1:10])
     _insuf, hidden, competing = parse_activity(lines[10])
-    present = lines[11]
-    platform_def = lines[12]
-    learned = lines[13]
-    print(f"E4_NEW_TABLES_PRESENT={present if present else 'none'}")
-    print(f"E4_PLATFORM_CHECK_DEF={'present' if platform_def else 'absent'}")
+    present = parse_labeled(lines[11], "new_tables")
+    platform_def = parse_labeled(lines[12], "platform_check")
+    learned = parse_labeled(lines[13], "learned_at")
+    print(f"E4_NEW_TABLES_PRESENT={present}")
+    print(f"E4_PLATFORM_CHECK_DEF={platform_def}")
     print(f"E4_LEARNED_AT_COLUMNS={learned}")
     blockers = g.check_identity_common(
         ident["tx"], ident["inet_port"], ident["ver"], g.START_REV,
@@ -444,9 +469,9 @@ def cmd_now() -> int:
     )
     if ident["ver"] == g.HEAD_REV:
         blockers.append("alembic_is_0027_use_gate_e4_verify")
-    if present:
+    if present not in {"", "none"}:
         blockers.append("partial_0027_objects_while_0016")
-    if platform_def:
+    if platform_def not in {"", "absent"}:
         blockers.append("platform_check_present_while_0016")
     if learned != "0":
         blockers.append("learned_at_present_while_0016")
@@ -504,8 +529,7 @@ def cmd_verify() -> int:
         fail("alembic_not_0027")
     lines = run_psql(sql_verify(), app_base)
     # 1 ident + 9 counts + 1 activity + 15 priv + 1 platform + 1 learned = 28
-    if len(lines) != 28:
-        fail("unexpected_row_count")
+    expect_line_count(lines, 28)
     ident = parse_identity(lines[0], ref, app_base)
     if ident["ver"] == g.START_REV:
         print("E4_BLOCKERS=e3_not_run_alembic_still_0016")
@@ -537,8 +561,8 @@ def cmd_verify() -> int:
         print(f"E4_NEW_{name}_POLICIES={policies}")
         if reason:
             blockers.append(reason)
-    platform_def = lines[26]
-    learned = lines[27]
+    platform_def = parse_labeled(lines[26], "platform_check")
+    learned = parse_labeled(lines[27], "learned_at")
     print("E4_PLATFORM_CHECK_HAS_IOS=" + ("yes" if g.ios_in_platform_check(platform_def) else "no"))
     print(f"E4_LEARNED_AT_COLUMNS={learned}")
     if not g.ios_in_platform_check(platform_def):

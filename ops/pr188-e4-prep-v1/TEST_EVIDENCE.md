@@ -1,10 +1,13 @@
-# E4 v1 offline tests — sanitized evidence
+# E4 v1.1 offline tests — sanitized evidence
 
 Production was not contacted. Alembic was not run. Railway was not edited.
 
 Command: `python3 ops/pr188-e4-prep-v1/pr188_gate_e4_offline_test.py`
 
-TEST_SUMMARY total=30 passed=30 failed=0
+TEST_SUMMARY total=33 passed=33 failed=0
+
+v1 Mac failure (`unexpected_row_count`) reproduced offline: unlabeled empty
+existence rows collapse 14→12. Labeled sentinels keep 14.
 
 Covered:
 

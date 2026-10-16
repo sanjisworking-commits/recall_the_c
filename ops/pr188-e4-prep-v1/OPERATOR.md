@@ -1,11 +1,14 @@
-# E4 operator notes — REVISION e4_prep_v1_20261016
+# E4 operator notes — REVISION e4_prep_v1_1_20261016
 
 E3 is deferred. Production Alembic is **20260828_0016**. Do not run Alembic.
 Do not change Railway. Do not merge PR #188.
 
-Keep these files in the **same directory**. Copy them to `~/Desktop` (or
-another Mac path that is not `/workspace`) before running. The wrappers
-abort `cloud_workspace_forbidden_use_mac` if launched from this cloud tree.
+Keep these files in the **same directory**. Copy **v1.1** over v1. Reject `REVISION=e4_prep_v1_20261016` (that build
+failed on a clean 0016 database with `unexpected_row_count`).
+
+Copy them to `~/Desktop` (or another Mac path that is not `/workspace`)
+before running. The wrappers abort `cloud_workspace_forbidden_use_mac` if
+launched from this cloud tree.
 
 ## Loop
 

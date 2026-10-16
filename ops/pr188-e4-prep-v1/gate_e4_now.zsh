@@ -1,5 +1,5 @@
 #!/bin/zsh
-# REVISION=e4_prep_v1_20261016
+# REVISION=e4_prep_v1_1_20261016
 # FINGERPRINT=e4_now_readonly_at_0016
 # PR #188 Gate E4-now — read-only production check WHILE Alembic is still 0016.
 # REVIEW ONLY until ChatGPT verifies this script. Then Grok Bot may run it
