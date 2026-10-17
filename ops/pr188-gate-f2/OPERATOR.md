@@ -1,28 +1,27 @@
-# Gate F2 operator notes — REVISION f2_review_20261017c
+# Gate F2 operator notes — REVISION f2_review_20261017d
 
 Review only. Do not Redeploy, Rollback, or change Railway.
 
-## Still needed from the Mac dashboard (read-only)
+## Railway finding (closed)
 
-Open Railway → `trustworthy-embrace` → `env` → `recall-th-c` → Deployments.
+**Yes — deployment is retained and a restore/redeploy action is available.**
 
-Look for the active `0c0a8d5` deployment (Gate D id `76fbfcad` / Merge PR #209).
-Confirm it is retained and that the ⋮ menu offers Rollback and/or Redeploy.
-Do **not** click those actions.
+Screenshot of `recall-th-c` / `76fbfcad` **Active**, Deployment successful,
+Merge PR #209 on `main`, ⋯ present on that deployment. Do **not** open or
+click ⋯. Do **not** Remove `76fbfcad`.
 
-This cloud environment cannot open that UI (no Railway dashboard session).
-A 2026-10-17 browser open of the Gate D URL was a Railway 404 with Login;
-Login was not clicked. GitHub still reports `trustworthy-embrace - recall-th-c`
-SUCCESS for `76fbfcad`; that is **not** a substitute for seeing the ⋮ menu.
+Submit F2 finding: choose **Yes**.
 
-Leave the form on **Not yet checked**. Submit stays disabled until this
-Mac check produces Yes / Visible-no-action / Cannot find.
+## Still open (recovery)
+
+Pre-E3 backup `20261016T072148Z` is 0016-era. Post-E3 `0027` snapshot and
+a disposable restore rehearsal are **not** authorized by this file.
 
 ## If a later HEAD deploy fails (not authorized by this file)
 
 1. Keep `PLAYGROUND_ENABLED=false`.
-2. Restore the previous `0c0a8d5` application deployment on
-   `recall-th-c` only, after a separate rollback authorization.
+2. Restore `76fbfcad` / `0c0a8d5` on `recall-th-c` only, after a separate
+   rollback authorization (⋯ Rollback if listed, else Redeploy).
 3. Leave Alembic at `20260927_0027`. No downgrade, stamp, or DROP.
 4. Recheck `/health`, Google sign-in, Browse/Learn, `/playground` JSON 404.
 

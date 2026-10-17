@@ -1,5 +1,5 @@
 PR #188 Gate F2 — rollback and recovery review
-REVISION f2_review_20261017c
+REVISION f2_review_20261017d
 
 PARTIAL PASS — Recovery not yet certified. Review only. No operator scripts.
 
