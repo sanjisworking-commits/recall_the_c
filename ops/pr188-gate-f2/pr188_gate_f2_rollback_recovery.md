@@ -1,6 +1,7 @@
 # PR #188 Gate F2 — Rollback and recovery review (2026-10-16, rev b)
 
 **GATE F2: PARTIAL PASS — Recovery not yet certified.** Review only.
+(rev c, 2026-10-17: dashboard still unreachable from this environment.)
 
 PR #188 stays **draft**. E3 and E4 remain closed. F1 is compatible with a
 restricted, Playground-disabled rollout. F2 is **not fully closed**.
@@ -102,9 +103,16 @@ restore rehearsal. **Neither operation is authorized by this review.**
 
 **F2 finding: Not yet checked** (Deployments UI).
 
-This cloud VM has no Railway dashboard session (unauthenticated fetch of
-the Gate D deployment URL returns Login / 404). There is no Railway API
-token here. **No Redeploy, Rollback, Restart, or Remove was sent.**
+This cloud VM has no Railway dashboard session. Unauthenticated fetch of
+the Gate D deployment URL returns Login / 404. There is no Railway API
+token here. A 2026-10-17 browser open of the same URL showed Railway
+**404 “Looks like you are lost”** with **Login** in the corner; Login was
+not clicked. **No Redeploy, Rollback, Restart, or Remove was sent.**
+
+The F2 “Submit finding” control stays disabled on **Not yet checked**.
+That is correct: this environment cannot choose Yes / Visible-no-action /
+Cannot find. Sanjali’s Mac dashboard is the only path to a submittable
+answer.
 
 Read-only corroboration that is **not** a substitute for the ⋮ menu:
 
@@ -112,7 +120,7 @@ Read-only corroboration that is **not** a substitute for the ⋮ menu:
 |---|---|
 | GitHub commit status on `0c0a8d5` | Context `trustworthy-embrace - recall-th-c` = **success**, description `Success - recall-the-c.in`, updated 2026-10-15T03:07:57Z |
 | Status target | Service `recall-th-c`, environment `env` (`4352cbd8-…`), Railway deployment **`76fbfcad`** (Gate D restart of the same git SHA) |
-| Live HTTP 2026-10-16 | `/health` 200 `{"status":"ok"}`; `/playground` 404 `{"detail":"Not Found"}` `application/json` (old app still serving) |
+| Live HTTP 2026-10-16 and 2026-10-17 | `/health` 200 `{"status":"ok"}`; `/playground` 404 `{"detail":"Not Found"}` `application/json` (old app still serving) |
 | GitHub environment `trustworthy-embrace / env` | Deployment `6656601995` (sha `0c0a8d5`, created 2026-09-25) latest GitHub state **inactive** after sibling `7082767438` (`5d89fbd`) on the **same GitHub environment**. That sibling is **not** `recall-th-c`. Do not treat GitHub env inactivity as “live `recall-th-c` left `0c0a8d5`”. |
 
 ### What the Mac dashboard still has to answer
@@ -164,7 +172,7 @@ Railway docs (not observed in the UI here):
 | Read-only git `0c0a8d5` vs `5d89fbd` | Done |
 | Read-only HTTP `https://recall-the-c.in` | Done |
 | Read-only GitHub deployments / commit statuses | Done |
-| Railway Deployments UI | **Not opened — Pending** |
+| Railway Deployments UI | **Login wall / 404 — Pending** (2026-10-16 API fetch, 2026-10-17 browser) |
 | Railway writes, Redeploy, Rollback | **Not authorized — not done** |
 | Alembic / restore-into-live / post-E3 dump | **Not authorized — not done** |
 | Merge PR #188 | **Not authorized — not done** |

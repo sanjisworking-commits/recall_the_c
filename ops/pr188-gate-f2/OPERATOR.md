@@ -1,4 +1,4 @@
-# Gate F2 operator notes — REVISION f2_review_20261016b
+# Gate F2 operator notes — REVISION f2_review_20261017c
 
 Review only. Do not Redeploy, Rollback, or change Railway.
 
@@ -11,8 +11,12 @@ Confirm it is retained and that the ⋮ menu offers Rollback and/or Redeploy.
 Do **not** click those actions.
 
 This cloud environment cannot open that UI (no Railway dashboard session).
-GitHub still reports `trustworthy-embrace - recall-th-c` SUCCESS for
-`76fbfcad`; that is **not** a substitute for seeing the ⋮ menu.
+A 2026-10-17 browser open of the Gate D URL was a Railway 404 with Login;
+Login was not clicked. GitHub still reports `trustworthy-embrace - recall-th-c`
+SUCCESS for `76fbfcad`; that is **not** a substitute for seeing the ⋮ menu.
+
+Leave the form on **Not yet checked**. Submit stays disabled until this
+Mac check produces Yes / Visible-no-action / Cannot find.
 
 ## If a later HEAD deploy fails (not authorized by this file)
 
