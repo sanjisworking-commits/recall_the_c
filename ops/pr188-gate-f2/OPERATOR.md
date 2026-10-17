@@ -1,29 +1,36 @@
-# Gate F2 operator notes — REVISION f2_review_20261017d
+# Gate F2 operator notes — REVISION f2_review_20261017e
 
-Review only. Do not Redeploy, Rollback, or change Railway.
+Review only. Do not Redeploy, Rollback, dump, restore, or change Railway.
 
-## Railway finding (closed)
+## Recorded F2 finding
 
-**Yes — deployment is retained and a restore/redeploy action is available.**
+“Yes — deployment is retained and a restore/redeploy action is available.”
 
-Screenshot of `recall-th-c` / `76fbfcad` **Active**, Deployment successful,
-Merge PR #209 on `main`, ⋯ present on that deployment. Do **not** open or
-click ⋯. Do **not** Remove `76fbfcad`.
+Evidence: `trustworthy-embrace` / `env` / `recall-th-c`, id `76fbfcad`,
+Active successful, git `0c0a8d5` (Merge PR #209), `recall-the-c.in`,
+uvicorn only, ⋯ visible and **not opened**.
 
-Submit F2 finding: choose **Yes**.
+Preserve this distinction: the menu **options** (Rollback / Redeploy)
+were not independently verified.
 
-## Still open (recovery)
+Do **not** Remove `76fbfcad`. Do **not** open ⋯ unless a later rollback
+is separately authorized.
 
-Pre-E3 backup `20261016T072148Z` is 0016-era. Post-E3 `0027` snapshot and
-a disposable restore rehearsal are **not** authorized by this file.
+## Updated F2 status — PARTIAL PASS
 
-## If a later HEAD deploy fails (not authorized by this file)
+| Requirement | Status |
+|---|---|
+| Historical deployment retained | PASS |
+| Application rollback compatible with schema `0027` | PASS |
+| Specific rollback/redeploy menu action | Not directly verified |
+| Post-E3 encrypted backup | Pending |
+| Disposable restore rehearsal | Pending |
+| Full database recovery certification | Not established |
 
-1. Keep `PLAYGROUND_ENABLED=false`.
-2. Restore `76fbfcad` / `0c0a8d5` on `recall-th-c` only, after a separate
-   rollback authorization (⋯ Rollback if listed, else Redeploy).
-3. Leave Alembic at `20260927_0027`. No downgrade, stamp, or DROP.
-4. Recheck `/health`, Google sign-in, Browse/Learn, `/playground` JSON 404.
+## Next — Gate F3 (not authorized)
 
-This rollback is for a **restricted** release (Playground off, new
-subscriptions not live). `0c0a8d5` has no Razorpay subscription webhook.
+Post-E3 backup and disposable recovery rehearsal. Capture production at
+Alembic `20260927_0027`, verify an encrypted off-device copy, restore
+into an **isolated** database. Do not modify live production.
+
+Do not begin F3 until a later message explicitly authorizes it.
