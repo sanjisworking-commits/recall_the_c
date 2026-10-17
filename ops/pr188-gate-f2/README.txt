@@ -1,11 +1,10 @@
 PR #188 Gate F2 — rollback and recovery review
-REVISION f2_review_20261017e
+REVISION f2_review_20261017f
 
 PARTIAL PASS. Review only. No operator scripts.
 
-Recorded finding: historical deployment 76fbfcad retained. The ⋯
-control was visible and not opened; Rollback/Redeploy labels were not
-independently verified.
+Recorded finding: 76fbfcad retained and Active. ⋯ menu lists Restart,
+Redeploy, Remove. Rollback is not listed while Active. Do not click.
 
 Not authorized
 --------------

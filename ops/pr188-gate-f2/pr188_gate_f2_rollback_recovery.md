@@ -1,6 +1,7 @@
 # PR #188 Gate F2 — Rollback and recovery review (rev e, 2026-10-17)
 
 **GATE F2: PARTIAL PASS.** Review only. Recovery not certified.
+(rev f: ⋯ menu on Active `76fbfcad` lists Restart, Redeploy, Remove.)
 
 PR #188 stays **draft**. E3 and E4 remain closed. F1 is compatible with a
 restricted, Playground-disabled rollout. F2 is **not fully closed**.
@@ -22,13 +23,23 @@ restorations, or PR merges are authorized.
 | Git commit | `0c0a8d5` (Merge PR #209) |
 | Production hostname | `recall-the-c.in` |
 | Startup | Uvicorn only; no automatic Alembic |
-| Deployment overflow control | Visible, **not opened** |
+| Deployment overflow control | Opened read-only; items listed below |
 
-**Qualification (release assessment):** the screenshot confirms the
-deployment and its ⋯ control are present. Because the menu was not
-opened, the actual availability of **Rollback** or **Redeploy** has
-**not** been independently verified. Do not claim those menu options
-were observed.
+**⋯ menu on Active `76fbfcad` (observed, not clicked):**
+
+| Item | Present |
+|---|---|
+| Restart | Yes |
+| Redeploy | Yes |
+| Remove | Yes (red; **do not click**) |
+| Rollback | **No** — expected while this deployment is Active |
+
+**Redeploy** of this specific build is independently verified.
+**Rollback** is not listed on the live row. Railway only offers Rollback
+on a *previous* deployment after a newer one replaces it, and only while
+the image is inside the plan retention window. After a later PR #188
+deploy, re-check this same `76fbfcad` row for a Rollback item without
+clicking it.
 
 ---
 
@@ -38,7 +49,7 @@ were observed.
 |---|---|
 | Historical deployment retained | **PASS** |
 | Application rollback compatibility with schema `0027` | **PASS** |
-| Specific rollback/redeploy menu action | **Not directly verified** |
+| Specific rollback/redeploy menu action | **Redeploy observed** on Active `76fbfcad`. **Rollback not listed** (expected while Active) |
 | Post-E3 encrypted backup | **Pending** |
 | Disposable restore rehearsal | **Pending** |
 | Full database recovery certification | **Not established** |
@@ -96,8 +107,8 @@ Goal, when later authorized:
    `recall_restore_drill3`, not `recall_mig_rehearsal`, not live
    Supabase).
 
-F3 must **not** modify live production, change Railway, run Alembic,
-open ⋯, or merge PR #188.
+F3 must **not** modify live production, change Railway, click Restart /
+Redeploy / Remove, run Alembic, or merge PR #188.
 
 This document does **not** authorize F3, dumps, `age` encrypt, or any
 restore.

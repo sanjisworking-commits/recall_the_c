@@ -1,36 +1,27 @@
-# Gate F2 operator notes — REVISION f2_review_20261017e
+# Gate F2 operator notes — REVISION f2_review_20261017f
 
-Review only. Do not Redeploy, Rollback, dump, restore, or change Railway.
+Review only. Do **not** click Restart, Redeploy, or Remove.
 
-## Recorded F2 finding
+## Recorded overflow menu (Active `76fbfcad`)
 
-“Yes — deployment is retained and a restore/redeploy action is available.”
+Observed labels, none activated:
 
-Evidence: `trustworthy-embrace` / `env` / `recall-th-c`, id `76fbfcad`,
-Active successful, git `0c0a8d5` (Merge PR #209), `recall-the-c.in`,
-uvicorn only, ⋯ visible and **not opened**.
+- Restart
+- Redeploy
+- Remove (red)
 
-Preserve this distinction: the menu **options** (Rollback / Redeploy)
-were not independently verified.
+**Rollback is not in this menu.** That is expected: this deployment is
+the live Active build. Rollback appears on a previous deployment after a
+newer one takes over.
 
-Do **not** Remove `76fbfcad`. Do **not** open ⋯ unless a later rollback
-is separately authorized.
+Do **not** click **Remove**. That would drop the retained `0c0a8d5`
+image from history.
 
-## Updated F2 status — PARTIAL PASS
+## F2 status — still PARTIAL PASS
 
-| Requirement | Status |
-|---|---|
-| Historical deployment retained | PASS |
-| Application rollback compatible with schema `0027` | PASS |
-| Specific rollback/redeploy menu action | Not directly verified |
-| Post-E3 encrypted backup | Pending |
-| Disposable restore rehearsal | Pending |
-| Full database recovery certification | Not established |
+Redeploy of this specific build is verified. Recovery (post-E3 `0027`
+backup + isolated restore) is not. PR #188 stays draft.
 
 ## Next — Gate F3 (not authorized)
 
-Post-E3 backup and disposable recovery rehearsal. Capture production at
-Alembic `20260927_0027`, verify an encrypted off-device copy, restore
-into an **isolated** database. Do not modify live production.
-
-Do not begin F3 until a later message explicitly authorizes it.
+Do not dump, encrypt, or restore until a later explicit F3 authorization.
