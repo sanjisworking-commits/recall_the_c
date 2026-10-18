@@ -81,7 +81,7 @@ prototype shows all eight chapters as navigable rows.
 | D5 | Bare Act head — UAPA | `/laws/uapa` | DEVIATION DV-3, DV-4 | Legacy desktop shell (Home/Browse/Search/Learn, "Learning as guest", footer with theme chip) and legacy Bare Act page. |
 | D6 | Bare Act head — BNS | `/laws/bns` | DEVIATION DV-3, DV-4 | As D5. |
 | D7 | Playground gate | `/playground` | MATCH (DV-9) | Two-column gate matches; staging's card has only "Sign in" — the prototype also shows "Create an account". |
-| D8 | Sign in | `/login` | DEVIATION DV-10 | Split dark/light sign-in page vs the prototype's centred form. |
+| D8 | Sign in | `/login` | DEVIATION DV-10 (intentional) | Standalone split dark/light sign-in page (no shared nav by design) vs the prototype's centred form. |
 | D9 | Today (guest) | `/dashboard` | DEVIATION DV-4, DV-5 | Legacy shell and legacy dashboard copy. |
 | D10 | Calendar (guest) | `/calendar` | NOT REACHABLE — DV-6 | Redirects to login. |
 | D11 | Profile (guest) | `/profile` | MATCH | Identical. |
