@@ -4,6 +4,10 @@ Inserts a user_roles row and writes the audit log in the same transaction.
 Never creates a subscription or touches billing state — the admin's full
 Recall entitlement follows the role row itself.
 
+Playground paywall bypass for listed Google emails also follows
+ADMIN_EMAILS (default sanjisworking@gmail.com) without this CLI. That
+allowlist does not grant the /admin console.
+
     # Hosted (DATABASE_URL from .env)
     .venv/bin/python scripts/grant_admin.py --email name@recall.app
     .venv/bin/python scripts/grant_admin.py --user-id <uuid>

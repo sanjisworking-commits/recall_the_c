@@ -6,6 +6,7 @@ Consumes Milestone 2 facts:
 * ``subscription_charge.access_effect`` for the *current* billing period
 * :func:`classify_legacy_paid_access` (read-only; never writes ``user_subscription``)
 * admin role (not promotion / admin_grant / payment grants)
+* ``ADMIN_EMAILS`` allowlist (signed-in email; not a fake purchase)
 
 Does not import or call a provider HTTP client.
 Device overlay is applied after this commercial resolve (Milestone 4A).
@@ -14,7 +15,7 @@ Device overlay is applied after this commercial resolve (Milestone 4A).
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from typing import Any
+from typing import Any, Iterable
 from uuid import UUID
 
 from constitution_memorizer.entitlements.models import (
@@ -76,26 +77,35 @@ class EntitlementService:
         charges: Any = None,
         access_store: Any = None,
         legacy_store: Any = None,
+        admin_emails: Iterable[str] | None = None,
     ) -> None:
         self._subscriptions = subscriptions
         self._charges = charges
         self._access_store = access_store
         self._legacy_store = legacy_store
+        self._admin_emails = frozenset(
+            str(email).strip().lower()
+            for email in (admin_emails or ())
+            if email is not None and str(email).strip()
+        )
 
     def resolve(
         self,
         user_id: UUID | str | None,
         *,
         now: datetime | None = None,
+        email: str | None = None,
     ) -> EntitlementSnapshot:
         """Resolve commercial truth for ``user_id``. ``None`` is a guest.
 
         Guests perform zero subscription, charge, or legacy store reads.
+        A matching ``ADMIN_EMAILS`` identity is admin_override, not a
+        subscription. Guests stay guests even if ``email`` is passed.
         """
         if user_id is None:
             return _GUEST
         clock = _utc(now)
-        admin_override = self._is_admin(user_id)
+        admin_override = self._is_admin(user_id, email=email)
         subscription = self._current_subscription(user_id)
         legacy = None
         if self._legacy_store is not None:
@@ -137,9 +147,17 @@ class EntitlementService:
     ) -> EntitlementSnapshot:
         user = getattr(getattr(request, "state", None), "current_user", None)
         user_id = getattr(user, "id", None) if user is not None else None
-        return self.resolve(user_id, now=now)
+        email = getattr(user, "email", None) if user is not None else None
+        return self.resolve(user_id, now=now, email=email)
 
-    def _is_admin(self, user_id: UUID | str) -> bool:
+    def _email_is_admin(self, email: str | None) -> bool:
+        if not email or not self._admin_emails:
+            return False
+        return email.strip().lower() in self._admin_emails
+
+    def _is_admin(self, user_id: UUID | str, *, email: str | None = None) -> bool:
+        if self._email_is_admin(email):
+            return True
         store = self._access_store
         if store is None:
             return False
