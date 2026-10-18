@@ -1,4 +1,14 @@
-# Playground fidelity roadmap — milestone tracker (proposed, awaiting approval)
+# Playground fidelity roadmap — milestone tracker
+
+Status: M0 accepted as the **planning baseline** on 2026-10-18, with the
+evidence limitations in §0.4. Design direction approved (not
+implementation): five-tab navigation for guests with gates preserved;
+NDPS listed as eight chapter entries (I, II, IIA, III, IV, V, VA, VI) from
+the canonical Act data; a common data-driven Bare Act head preserving
+About, Schedules and full chapter/section navigation; Today may be
+visually restyled but keeps the accepted dashboard functions; Google-only
+sign-in, gated guest Calendar, Plus/Pro/Max pricing, accepted account
+controls and the parked Study archive stay unchanged.
 
 Goal: bring the Playground UI on `cursor/playground-220d` to high fidelity
 with the 18 October 2026 phone and desktop prototypes, delivered as
@@ -52,7 +62,30 @@ account surfaces on Profile stay · the NDPS fixture head is replaced only
 after the owner's design decision (M2 asks for it) · no production or
 deployment change.
 
-### 0.3 How to produce a prototype reference
+### 0.3 Deployment and comparison gates
+
+Staging serves the frozen commit `5d89fbd`. A milestone's implementation
+can be compared on staging only after the owner separately approves a
+staging deployment of that milestone's branch. Until then, local captures
+(from the `playground-dev` launcher) support preliminary review and are
+labelled "local"; **hosted acceptance requires the approved deployment**.
+Production Railway and Supabase are never used.
+
+### 0.4 Evidence limitations carried from M0
+
+- Signed-in **desktop** comparison in M0 was structural (DOM) only; it is
+  recorded as incomplete until full-resolution 1280×900 staging captures
+  exist (first task of M1).
+- Subscribed Playground flows (DV-17) and subscription/device edge states
+  (DV-18) are unverified. `ADMIN_ENABLED=false` and `PRICING_ENABLED=false`
+  on staging, so neither an admin grant nor a checkout is available there
+  today; reaching those states is an owner decision.
+- DV-14 is **provisional**: the plans page is a two-step selector (card
+  selects a tier, then "Continue with <plan>" appears); checkout is gated
+  by `PRICING_ENABLED` and billing keys. See the M0 report §4.
+- Dark fidelity cannot be judged against a design (no dark prototype).
+
+### 0.5 How to produce a prototype reference
 
 Serve the export folder and open the wrapper (`make_wrappers.py` in the
 M0 captures folder): `phone.html?pin=1&viewer=<v>&screen=<s>[&law=…]` or
@@ -64,9 +97,9 @@ are written as `phone:<query>` / `desktop:<query>`.
 
 | M | Name | Screen family | Depends on | Owner decisions needed first | Status |
 |---|---|---|---|---|---|
-| M0 | Audit baseline | all | — | — | **DONE** (PR #218, draft) |
-| M1 | Guest shell parity | shell: tab bar, top nav, footer | — | §4.1 item 3 (five-tab bar for guests) | proposed |
-| M2 | Bare Act head family | `/laws/{id}` for every eligible Act, Add sheet | M1 (shell) | §4.1 items 4 and 9; NDPS chapter-count wording | proposed |
+| M0 | Audit baseline | all | — | — | **ACCEPTED as planning baseline** (PR #218, draft; limitations §0.4) |
+| M1 | Guest shell parity | shell only: tab bar, top nav | — | direction approved; checklist `milestones/M1.md` awaiting approval | **checklist drafted** |
+| M2 | Bare Act head family (content + in-page navigation) | `/laws/{id}` for every eligible Act, Add sheet | M1 (shell) | direction approved (data-driven head, 8 NDPS entries, About/Schedules preserved) | proposed |
 | M3 | Browse and Laws index (phone) | `/browse`, `/laws`, `/browse/part/*` phone | M1 | — | proposed |
 | M4 | Today / dashboard | `/dashboard` guest + signed-in, both widths | M1 | §4.1 item 8 | proposed |
 | M5 | Account family | `/profile`, `/settings`, `/profile/security/devices`, `/playground` gate + plans | M1 | DV-9 (one or two gate buttons), DV-14 (plan select control) | proposed |
@@ -103,9 +136,14 @@ run in parallel on separate branches. M2 is independent of M3–M6.
   contrast of inactive tabs.
 - **Acceptance:** DV-1 and DV-4 closed on all listed routes at 390 and
   1280; no change to page content (that is M3–M6); regression suite green.
+- **Scope control:** shared navigation and shell components only (see
+  `milestones/M1.md` §2). No page content, authentication, legal pages or
+  accepted functionality change; Act-head content and navigation belong to
+  M2.
 - **Branch / PR:** `pg-m1-guest-shell` → draft PR into
   `cursor/playground-220d`. First task: a full-resolution desktop capture
   set of the signed-in pages (the M0 desktop pass was structural only).
+- **Checklist:** `docs/design/milestones/M1.md`.
 
 ### M2 — Bare Act head family
 
@@ -277,8 +315,8 @@ run in parallel on separate branches. M2 is independent of M3–M6.
 
 | M | Checklist approved | Implemented (SHA) | Tests | Evidence folder | Deviations open | Accepted on |
 |---|---|---|---|---|---|---|
-| M0 | n/a (audit) | 2866ede + this update | n/a | `proto-comparison-2026-10-18/` | DV-1…DV-19 classified | pending owner review |
-| M1 | — | — | — | — | — | — |
+| M0 | n/a (audit) | 2866ede, b4a0517 | n/a | `proto-comparison-2026-10-18/` | DV-1…DV-19 classified; desktop signed-in visual pass incomplete | accepted as planning baseline 2026-10-18 |
+| M1 | drafted (`milestones/M1.md`), awaiting approval | — | — | — | — | — |
 | M2 | — | — | — | — | — | — |
 | M3 | — | — | — | — | — | — |
 | M4 | — | — | — | — | — | — |
