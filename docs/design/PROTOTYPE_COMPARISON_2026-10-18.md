@@ -22,9 +22,11 @@ prototype in shell, structure, copy or behaviour (see the DV number) ·
 ## 1. Summary
 
 Guest-reachable screens were compared on both widths (11 staging pages, 13
-prototype screens per width). Signed-in screens could not be compared:
-staging signs in only through Google, and that sign-in has to be done by
-the account owner. §3 lists those rows ready to run.
+prototype screens per width) in the first pass. The second pass (M0)
+compared every signed-in screen reachable to a free account (§3) and
+consolidated all findings into one classified matrix (§4). Subscribed
+Playground flows and subscription edge states remain unverified because
+reaching them would require a payment or an entitlement change.
 
 The guest comparison splits cleanly into two groups:
 
@@ -96,56 +98,87 @@ app (`support.js` only uses `?theme=` for the canvas background), so dark
 mode was checked for palette consistency only, not against a dark
 prototype.
 
-## 3. Signed-in rows — pending
+## 3. Signed-in rows (M0, second pass)
 
-These need the account owner signed in on staging (Google). Prototype
-captures exist for every row in both widths and can be regenerated with
-§5. Routes are from `5d89fbd`.
+Session: the account owner signed in with Google in the browser pane;
+`/dashboard` greeted the account by name and `/profile` showed "Signed in
+with Google", Devices 0 of 2 and no Playground subscription. The account
+is therefore the prototype's `signedIn` viewer (free account, Constitution
+included, Playground locked). No cookie, token or credential was copied
+anywhere. No write was made other than page views.
 
-| Prototype screen | Staging route | Prototype state |
-|---|---|---|
-| Bare Act head (Plus) — "+ Add to Playground" | `/laws/uapa` | `viewer=plus&screen=act&law=uapa` |
-| Add sheet — act vs sections | `/playground/laws/uapa/add` | `…&sheet=1` |
-| Section picker — clause depth | `/playground/laws/uapa/sections` | `screen=picker` |
-| Playground — activated laws | `/playground` | `screen=playground&seed=1` |
-| Playground — empty | `/playground` (no laws) | `screen=playground&empty=1` |
-| Learn — six modes | start from the Act page `/playground/laws/{law}` (modes are entered through POST `…/learn/{mode}/start`) | `screen=learn&seed=1` |
-| Today (signed in) | `/dashboard` | `screen=today&seed=1` |
-| Calendar (saved recall) | `/calendar` | `screen=calendar&seed=1` (desktop: add `calDesign=classic`) |
-| Roster — manage this month | `/playground/roster` | `screen=roster&seed=1` |
-| Rollover — next month | `/playground/roster/next` | `screen=rollover` |
-| Act progress | `/playground/laws/{law}` | `screen=progress&seed=1` |
-| Section learned | `/playground/laws/{law}/sections/{n}/learned` | `screen=complete` |
-| Act mastered | `/playground/laws/{law}/mastered` | `screen=milestone` |
-| Profile / Settings (signed in) | `/profile`, `/settings` | `viewer=plus` |
-| Devices | `/profile/security/devices` | `screen=devices` |
-| Subscription states | `/profile`, Act head | desktop `viewer=` expired / halted / paused / deviceLimit / deviceRevoked / replacementLimit; `notice=` pending / cancelAtEnd / upgrade / downgradeScheduled / resubscribed |
+Evidence: `phone-signedin/stg_phone_*_signedin.png` (375×812 crops) against
+`phone-signedin/proto_phone_*_signedin.png`; desktop prototype states in
+`desktop-signedin/`. Desktop staging rows were verified structurally from
+the DOM (shell, headings, sections, CTAs) at an emulated 1280×900 because
+the browser pane was too narrow for a legible desktop capture during this
+pass; a visual desktop pass is listed as the first item of M1.
 
-Checkout cannot be exercised on staging (no Razorpay keys); speech modes
-fall back to typed input (no Deepgram key).
+| # | Prototype screen (`viewer=signedIn`) | Staging route | Verdict | Notes |
+|---|---|---|---|---|
+| S1 | Today | `/dashboard` | PARTIAL | Shell matches (five-tab bar, new top nav with avatar). Content is the accepted Constitution dashboard: "Welcome, Sanjali." + date + streak chip, Today's Recall ring 0/0, "Learn your first Article →", Good places to begin, Set a learning plan, Take the two-minute tour. Prototype: "Good morning." + avatar initial, Today's Recall with "3 revisions due" and Continue revision, TODAY'S PATH list. The prototype draws only a populated state; the empty state is not represented. Desktop: `main` spans the full 1280 px with no two-column layout. |
+| S2 | Playground gate → plans | `/playground`, `/playground?stage=plans` | MATCH / PARTIAL | Gate matches the desktop prototype exactly ("Your RecallC account already includes the complete Constitution." + View Playground plans + HOW PLAYGROUND WORKS). Plans page: three cards Plus ₹199 · Pro ₹399 · Max ₹1199 with "Monthly. GST included." but **no select/continue control on any card**; the prototype has "Continue with <plan>". The phone prototype's plan names and prices (Core/Deep/Infinite, ₹149/299/499) are stale placeholders; the desktop prototype and staging agree on Plus/Pro/Max. |
+| S3 | Bare Act head — UAPA | `/laws/uapa` | DEVIATION (DV-3) | Legacy Bare Act page (ABOUT THIS ACT, Chapters/Schedules tabs, accordion) with "Unlock Playground · from ₹199 / month." and "Subscribe to use Playground". New shell on both widths. Prototype: new head with meta line and the same CTA. |
+| S4 | Bare Act head — NDPS | `/laws/ndps` | DEVIATION (DV-2) | The fixture head is also what signed-in users see (`signed_in_bareact_desktop` reuses `guest_screen4`): "6 Chapters", three unlinked rows + Schedule. |
+| S5 | Add sheet | `/playground/laws/uapa/add` | PARTIAL | Staging: sheet "OCTOBER / Unlock Playground / Turning UAPA into a learning experience needs a plan. Reading it stays free. / Unlock Playground / from ₹199 / month…". Prototype: title "Add to Playground", lede names "The UAPA, 1967", footnote lists the plans. Opened by direct URL the sheet renders at the top of an empty page on both widths (desktop: a 1280×357 top sheet, not the prototype's centred modal); opening it from the Act page's CTA was not exercised and is unverified. |
+| S6 | Calendar | `/calendar` | MATCH (shell, empty state) | Phone: month grid, legend Today/Overdue/Scheduled/Done/New, "TODAY · NOTHING DUE" card. Desktop: month grid, Month/Week, Today, legend, right-hand day panel. The phone prototype's filter tabs (Constitution / Laws / Study material), "My material" legend, "Only you", "Add task" and "Mark revised" rows belong to the parked Study-archive design and are not expected. Populated state unverified (no revisions on the account). |
+| S7 | Profile | `/profile` | PARTIAL | Staging: name card "Signed in with Google / Edit name"; ACCOUNT (Profile, Devices 0 of 2, Learning preferences → Settings, Report an issue, Sign out); SUBSCRIPTION card "Playground / Subscribe to add Bare Acts to a monthly Playground. / Subscribe"; then Sign-in method, Security (desktop), Legal (desktop), Account (Reset progress…, Delete account…). Prototype: card "Free account · Constitution learning included"; SUBSCRIPTION "No plan yet / Playground learning is locked… / See plans ›" placed before ACCOUNT on phone; no Sign-in method / Security / Legal / Reset / Delete. Desktop staging keeps the two-column arrangement. |
+| S8 | Settings | `/settings` | PARTIAL | Staging phone: account card, STUDY (Pace Self-paced/Auto Plan; Daily target disabled), APP (Appearance, Bare Act text size, Motion), ACCOUNT, Legal. Prototype: adds a note under Pace ("Part of unlocking every Article — Unlock every Article →") and a CALENDAR section with a Google Calendar toggle. Staging shows no CALENDAR section at either width: the template renders it only when a `gcal` context is present, and staging has no Google Calendar variables configured (variable names checked, no values read). The Calendar page footer nevertheless says "With Google Calendar on in Settings". Desktop staging adds "Save learning plan" and an Experience section (Completion sounds), as the desktop prototype does. |
+| S9 | Devices | `/profile/security/devices` | PARTIAL | Staging: kicker SECURITY, "Your devices", "0 of 2 devices", "Active devices", "No active devices. A device is registered the first time Playground is used while subscribed." Prototype: "Devices", lede "Your plan supports Playground on up to 2 registered devices…", REGISTERED card with device rows and Remove. Empty state not drawn in the prototype; populated state unverified (needs a subscribed session). |
+| S10 | Browse | `/browse` | DEVIATION (DV-12) phone / PARTIAL desktop | Phone: same page as guest (title "Browse", search, "Marks" button, Part cards with progress) under the five-tab bar; prototype shows the new Browse with "Free plan — pick any 3 Articles. All 3 slots free. Unlock all" and the article grid. Desktop: article grid present (491 article cards, 24 parts) but the free-plan banner is absent. |
+| S11 | Laws index | `/laws` | DEVIATION (DV-8) phone / MATCH desktop | Phone cards carry "Unlock Playground · from ₹199 / month." + "Subscribe to use Playground"; prototype cards have no CTA. Desktop matches (search field, chips, two columns, no card CTAs). |
+| S12 | Act progress, picker, Learn, Playground home/empty, roster, rollover, section learned, Act mastered | `/playground/laws/{law}`, `…/sections`, `…/learned`, `…/mastered`, `/playground/roster`, `/playground/roster/next` | UNVERIFIED | Require an active Playground subscription. Not reached: no payment was simulated and no entitlement was changed. Staging has `ADMIN_ENABLED` and an admin grant route (`POST /admin/users/{id}/grants`), so a staging-only grant is possible if the owner chooses to issue one; that is a decision, not something this pass did. |
+| S13 | Subscription states (expired, halted, paused), device limit / revoked / replacement limit, notices (pending, cancel at end, upgrade, downgrade, resubscribed), checkout | various | UNVERIFIED | Not reachable safely; staging has no Razorpay keys. |
 
-## 4. Deviations
+## 4. Consolidated deviation matrix (M0)
 
-| ID | Where | What differs | Classification |
+Classes: **F** = functional defect (works incorrectly regardless of design
+scope) · **G** = approved-design gap (the 18 Oct prototypes show it, the
+branch does not; needs authorisation to build) · **I** = intentional
+divergence (a locked decision or previously accepted screen; not reopened
+by this audit) · **U** = unverified state.
+
+| ID | Where | Guest | Signed-in | Class | Summary |
+|---|---|---|---|---|---|
+| DV-2 | `/laws/ndps` head, both widths | ✓ | ✓ | **F** | Hard-coded head from `web/guest_bareact_head.py`: "6 Chapters", three unlinked rows; Act has eight chapters. Verified functional limitation; **design decision required** before any fix (owner's instruction). |
+| DV-14 | Plans page `/playground?stage=plans` | — | ✓ | **F** (candidate) | Plan cards have no select/continue control, so the page leads nowhere. Checkout itself is U on staging. Confirm whether this is a staging-only state (no Razorpay) or a missing control. |
+| DV-1 | Phone shell on guest pages | ✓ | — | **G** | Legacy four-tab bar on `/browse`, `/laws`, `/dashboard`, `/laws/uapa`, `/laws/bns`; none on `/settings`. Signed-in pages already carry the five-tab bar everywhere. Conflicts with tracker D20 (see §4.1). |
+| DV-3 | UAPA/BNS Act heads | ✓ | ✓ | **G** | New head exists only for NDPS; other Acts use the legacy Bare Act page at both widths and for both viewers. |
+| DV-4 | Desktop shell on guest pages | ✓ | — | **G** | Legacy top nav on `/laws/uapa`, `/laws/bns`, `/dashboard`, `/settings`, `/login`. Signed-in desktop pages already use the new top nav. |
+| DV-5 | Today / dashboard | ✓ | ✓ (S1) | **G** + **I** | Dashboard content is the accepted Constitution dashboard, not the prototype's Today ("Good morning.", TODAY'S PATH). Empty signed-in state is not in the prototype. Decision needed on whether the accepted dashboard is reopened (§4.1 item 8). |
+| DV-6 | Guest `/calendar` | ✓ | — | **I** | Redirect to login stays (locked). |
+| DV-7 | Settings | ✓ | ✓ (S8) | **G** / **U** | Guest phone: STUDY card missing, no tab bar; guest desktop legacy. Signed-in: Pace note missing; CALENDAR/Google section absent because it is env-gated on staging (U). |
+| DV-8 | Laws index phone | ✓ | ✓ (S11) | **G** | Legacy template with per-card CTAs, no subtitle, icon instead of search field. Desktop matches. Also: NDPS chapter-count wording (6 vs 8) is a content decision. |
+| DV-9 | Desktop gate | ✓ | — | **G** (minor) | "Create an account" secondary button missing on desktop; phone has it. With Google-only login both buttons start the same flow — decide whether to keep one. |
+| DV-10 | `/login` | ✓ | — | **I** | Google-only login, dark hero page. Email/password and phone OTP out of scope (locked). |
+| DV-11 | Landing | ✓ | — | **G** (minor) | Phone CTAs pinned to bottom; desktop footer line missing. |
+| DV-12 | Browse phone | ✓ | ✓ (S10) | **G** | Legacy phone Browse for both viewers; desktop signed-in lacks the free-plan banner. |
+| DV-13 | Profile copy | ✓ | ✓ (S7) | **G** (minor) + **I** | Guest copy differs; signed-in card copy, SUBSCRIPTION wording ("No plan yet / See plans") and section order differ. Extra account surfaces (Sign-in method, Security, Legal, Reset/Delete) are accepted R5 work and stay (I). |
+| DV-15 | Add sheet | — | ✓ (S5) | **G** (minor) + **U** | Title/kicker/lede differ from the prototype; desktop direct-URL render is a top sheet, in-page open unverified. |
+| DV-16 | Devices | — | ✓ (S9) | **G** + **U** | Page title/structure differ ("Your devices", SECURITY kicker, prose empty state vs card). Populated state unverified. |
+| DV-17 | Subscribed Playground flows | — | — | **U** | Playground home/empty, picker, Learn, roster, rollover, progress, learned, mastered: not reachable without an entitlement. |
+| DV-18 | Subscription edge states and checkout | — | — | **U** | Expired/halted/paused, device limit/revoked/replacement, notices, checkout. |
+| DV-19 | Dark theme | ✓ | — | **U** (prototype side) | Staging dark palette is consistent; the export exposes no dark prototype, so dark fidelity cannot be judged against a design. |
+
+Prototype-side issues (not code): phone gate typo "offical"; phone
+Playground month "12 Aug – 11 Sep"; phone plan placeholders Core/Deep/
+Infinite ₹149/299/499 (desktop and staging use Plus/Pro/Max ₹199/399/1,199);
+roster says NDPS has "129 sections" while the head says 83; the phone
+signed-in Calendar still draws the parked Study-archive controls.
+
+### 4.1 Prior accepted behaviour that conflicts with the 18 Oct prototypes
+
+| # | Accepted behaviour (where recorded) | Prototype shows | Status |
 |---|---|---|---|
-| DV-1 | Phone guest shell | `/browse`, `/laws`, `/dashboard`, `/laws/uapa`, `/laws/bns` show the legacy four-tab bar (`mobile-tabbar is-guest`: Browse/Search/Learn/Sign in); `/laws/ndps`, `/playground`, `/profile` show the five-tab bar; `/settings` shows none. Prototype: five-tab bar on every guest screen. | Scope gap — tracker D20 limited the five-tab HTML to signed-in multiuser pages; the 18 Oct prototypes extend it to guests. |
-| DV-2 | `/laws/ndps` (guest, both widths) | `guest_screen4` is `ndps_guest_head()` from `web/guest_bareact_head.py`: constant title, meta "6 Chapters · Sections 1–83 · Schedule" and three constant rows. The Act JSON (`web/ndps_act_final.json`) has eight chapters; the full accordion is in the HTML but hidden for guests; the fixture rows have no `href`. Prototype: eight linked rows, "8 Chapters". | **Defect** — guest head must be built from the loaded Act, with navigable rows. |
-| DV-3 | `/laws/uapa`, `/laws/bns` (guest) | Only NDPS gets the new guest head (`if bare.slug == "ndps"`). Other Acts render the legacy Bare Act page (ABOUT THIS ACT, Chapters/Schedules tabs, accordion open on Chapter I). Prototype uses one head for NDPS, BNS and UAPA. | Scope gap — generalise the head to every eligible Act (folds into DV-2's fix). |
-| DV-4 | Desktop shell | `/laws/uapa`, `/laws/bns`, `/dashboard`, `/settings`, `/login` use the legacy desktop shell (Home/Browse/Search/Learn + "Learning as guest" + footer). Prototype: new top nav on every screen. | Scope gap. |
-| DV-5 | `/dashboard` (guest) | Legacy dashboard content and copy on both widths. Prototype: greeting + date + "Reading as a guest", "Nothing due yet." card with Sign in / Browse the Bare Acts. | Scope gap. |
-| DV-6 | `/calendar` (guest) | Redirects to login. Prototype shows the empty month with a sign-in card. | Behavioural gap — decide whether guests should see the calendar. |
-| DV-7 | `/settings` (guest) | Phone: STUDY card missing, no bottom tab bar. Desktop: legacy shell and layout (no guest card, no STUDY card, no back link). | Scope gap. |
-| DV-8 | `/laws` | Phone: legacy template with per-card CTAs, no subtitle, no search field. Desktop: NDPS "6 Chapters" vs prototype "8 Chapters"; UAPA card lacks "· Schedule". | Phone: scope gap. Counts: content decision — NDPS has six numbered chapters plus IIA and VA; the prototype counts eight. Pick one and apply it to catalogue, head and card. |
-| DV-9 | `/playground` gate, desktop | "Create an account" secondary button missing. | Minor. |
-| DV-10 | `/login` | Different page entirely (dark hero + Google + phone vs light Google + email/password). Email/password auth does not exist in the app. | Intentional divergence to confirm — the login page is a previously accepted screen. |
-| DV-11 | `/` | Phone: CTAs pinned to the bottom instead of under the tagline. Desktop: footer line missing. | Minor. |
-| DV-12 | `/browse` phone | Legacy page (see P2). Desktop already matches. | Scope gap. |
-| DV-13 | `/profile` phone | Copy: "Sign in to save progress and unlock the Constitution learning experience." vs "Sign in to save progress." | Minor copy. |
-
-Prototype-side issues noticed while driving it (not code defects): the
-gate screen spells "offical"; the phone Playground month still reads
-"12 Aug – 11 Sep"; the roster says NDPS has "129 sections" while the Act
-head says 83.
+| 1 | Google-only login; phone OTP marked unavailable (login screen accepted earlier) | Email/password form, "Create an account" | **Locked** — not reopened. |
+| 2 | Guest `/calendar` redirects to login | Guest month grid with sign-in card | **Locked** — not reopened. |
+| 3 | Five-tab bar scoped to signed-in multiuser pages (tracker D20) | Five-tab bar on every guest screen | **Open decision** — M1 proposes extending it to guests. |
+| 4 | New Act head built for NDPS only, from a fixture (`guest_screen4`) | One generated head for every eligible Act | **Open decision** — verified limitation; fix not authorised yet (M2 proposes). |
+| 5 | Plans Plus/Pro/Max ₹199/399/1,199 (catalogue, staging, desktop prototype) | Phone prototype Core/Deep/Infinite ₹149/299/499 | **Locked** to Plus/Pro/Max; phone prototype is stale. |
+| 6 | Study archive = Stage 2, PARKED (tracker) | Phone signed-in Calendar with Study-material tabs; desktop `calDesign=study` default | **Parked** — compare only against `calDesign=classic`. |
+| 7 | Profile account surfaces (Sign-in method, Security, Legal, Reset/Delete) shipped in R5 | Not drawn | **Keep** — prototype omission, not a removal request. |
+| 8 | Constitution dashboard content ("Welcome, Name.", Good places to begin, learning plan, tour) | Today with greeting, ring, TODAY'S PATH | **Open decision** — M4 proposes restyling without removing accepted content. |
+| 9 | Legacy Bare Act page (About this Act, Chapters/Schedules tabs, accordion) for non-NDPS Acts | New head for all Acts | **Open decision** — folded into M2; schedules and About must survive in the new head. |
 
 ## 5. How the captures were made
 
