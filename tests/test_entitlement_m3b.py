@@ -74,36 +74,43 @@ class CountingSubscriptions:
         return getattr(self.inner, name)
 
 
-def _mu_settings() -> MultiUserSettings:
-    return MultiUserSettings(
-        _env_file=None,
-        APP_ENV="test",
-        MULTIUSER_ENABLED="true",
-        AUTH_GOOGLE_ENABLED="true",
-        AUTH_PHONE_ENABLED="true",
-        SESSION_SECRET="test-secret",
-        SUPABASE_URL="http://example.invalid",
-        SUPABASE_ANON_KEY="anon",
-        DATABASE_URL="",
-        COOKIE_SECURE="false",
-        ARTICLE_ENTITLEMENTS_ENABLED="true",
-        RELEVANT_LAWS_ENABLED="true",
-    )
+def _mu_settings(**overrides: object) -> MultiUserSettings:
+    payload: dict[str, object] = {
+        "_env_file": None,
+        "APP_ENV": "test",
+        "MULTIUSER_ENABLED": "true",
+        "AUTH_GOOGLE_ENABLED": "true",
+        "AUTH_PHONE_ENABLED": "true",
+        "SESSION_SECRET": "test-secret",
+        "SUPABASE_URL": "http://example.invalid",
+        "SUPABASE_ANON_KEY": "anon",
+        "DATABASE_URL": "",
+        "COOKIE_SECURE": "false",
+        "ARTICLE_ENTITLEMENTS_ENABLED": "true",
+        "RELEVANT_LAWS_ENABLED": "true",
+    }
+    payload.update(overrides)
+    return MultiUserSettings(**payload)  # type: ignore[arg-type]
 
 
-def _authed_client(tmp_path: Path) -> tuple[TestClient, ProgressRepository]:
+def _authed_client(
+    tmp_path: Path,
+    *,
+    email: str = "m3b@example.com",
+    settings: MultiUserSettings | None = None,
+) -> tuple[TestClient, ProgressRepository]:
     tmp_path.mkdir(parents=True, exist_ok=True)
     conn = open_progress_db(tmp_path / "progress.db")
     repo = ProgressRepository(conn)
     provider = FakeAuthProvider()
     provider.seed_google_user(
-        user_id=USER, email="m3b@example.com", display_name="M3B User"
+        user_id=USER, email=email, display_name="M3B User"
     )
     app = create_app(
         units_path=MINI_UNITS,
         db_path=tmp_path / "unused.db",
         multiuser=True,
-        multiuser_settings=_mu_settings(),
+        multiuser_settings=settings or _mu_settings(),
         auth_provider=provider,
         session_store=InMemorySessionStore(),
         progress_repo=repo,
@@ -617,6 +624,48 @@ def test_admin_without_subscription_is_allowed(tmp_path: Path):
     assert snap.can_open_playground is True
     assert snap.can_consume_new_playground_law is True
     assert client.app.state.subscriptions.get_current_subscription(USER) is None
+
+
+def test_owner_admin_email_without_role_opens_playground(tmp_path: Path):
+    client, repo = _authed_client(
+        tmp_path, email="SanjisWorking@gmail.com"
+    )
+    role = repo.conn.execute(
+        "SELECT 1 FROM user_roles WHERE user_id = ? AND role = 'admin'",
+        (str(USER),),
+    ).fetchone()
+    assert role is None
+    home = client.get("/playground")
+    assert home.status_code == 200
+    assert "My Playground" in home.text
+    assert 'data-playground-gate="not_subscribed"' not in home.text
+    added = _add_law(client, "ndps")
+    assert added.status_code == 303
+    assert client.app.state.playground.get_item(USER, "ndps") is not None
+    snap = client.app.state.entitlement_service.resolve(
+        USER, now=NOW, email="SanjisWorking@gmail.com"
+    )
+    assert snap.admin_override is True
+    assert snap.tier is None
+    assert snap.is_subscribed is False
+    assert snap.can_open_playground is True
+    assert snap.can_consume_new_playground_law is True
+    assert client.app.state.subscriptions.get_current_subscription(USER) is None
+
+
+def test_empty_admin_emails_keeps_owner_on_paywall(tmp_path: Path):
+    client, repo = _authed_client(
+        tmp_path,
+        email="sanjisworking@gmail.com",
+        settings=_mu_settings(ADMIN_EMAILS=""),
+    )
+    role = repo.conn.execute(
+        "SELECT 1 FROM user_roles WHERE user_id = ? AND role = 'admin'",
+        (str(USER),),
+    ).fetchone()
+    assert role is None
+    home = client.get("/playground")
+    _assert_subscribe_gate(home)
 
 
 @pytest.mark.parametrize(

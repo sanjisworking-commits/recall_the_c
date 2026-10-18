@@ -19,6 +19,10 @@ layer as another *access source* — never as a fake subscription.
   link **only**. It does not touch an admin identity's entitlement bypass —
   that follows the `user_roles` row. Removing the role is how admin access
   is revoked.
+- `ADMIN_EMAILS` (default `sanjisworking@gmail.com`) is a comma-separated
+  allowlist of signed-in emails that receive Playground `admin_override`
+  without a `user_roles` row or a paid subscription. `is_subscribed` stays
+  false. It does not open `/admin`. Set `ADMIN_EMAILS=` empty to disable.
 - Multiuser off (local single-user serve): the owner keeps full access,
   `/admin` 404s. `multiuser off ≠ admin`.
 - Grants become visible to users only while `ARTICLE_ENTITLEMENTS_ENABLED`

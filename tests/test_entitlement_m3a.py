@@ -11,6 +11,7 @@ from uuid import UUID, uuid4
 
 import pytest
 from fastapi.testclient import TestClient
+from pydantic import ValidationError
 
 from constitution_memorizer.auth.fake_provider import FakeAuthProvider
 from constitution_memorizer.auth.sessions import InMemorySessionStore
@@ -28,7 +29,11 @@ from constitution_memorizer.entitlements.models import (
     EntitlementSnapshot,
 )
 from constitution_memorizer.entitlements.service import EntitlementService
-from constitution_memorizer.multiuser.settings import MultiUserSettings
+from constitution_memorizer.multiuser.settings import (
+    DEFAULT_ADMIN_EMAILS,
+    MultiUserSettings,
+    parse_admin_emails,
+)
 from constitution_memorizer.progress.db import open_progress_db
 from constitution_memorizer.progress.repository import LEARN_MODES, ProgressRepository
 from constitution_memorizer.subscriptions.charge_repository import (
@@ -478,6 +483,110 @@ def test_admin_override_is_not_fake_max(tmp_path: Path):
     assert snap.can_consume_new_playground_law is True
     assert snap.playground_law_limit is None
     assert snap.playground_block_reason is None
+
+
+def test_admin_email_allowlist_is_not_fake_subscription():
+    boom = Boom()
+    service = EntitlementService(
+        access_store=boom,
+        admin_emails={"sanjisworking@gmail.com"},
+    )
+    snap = service.resolve(
+        USER, now=NOW, email="SanjisWorking@gmail.com"
+    )
+    _assert_full_constitution(snap)
+    assert snap.admin_override is True
+    assert snap.tier is None
+    assert snap.is_subscribed is False
+    assert snap.can_open_playground is True
+    assert snap.can_consume_new_playground_law is True
+    assert snap.playground_law_limit is None
+    assert snap.playground_block_reason is None
+
+
+def test_non_matching_email_does_not_open_playground():
+    service = EntitlementService(
+        admin_emails={"sanjisworking@gmail.com"},
+    )
+    snap = service.resolve(USER, now=NOW, email="other@example.com")
+    _assert_full_constitution(snap)
+    assert snap.admin_override is False
+    assert snap.is_subscribed is False
+    assert snap.can_open_playground is False
+    assert snap.playground_block_reason == BLOCK_NOT_SUBSCRIBED
+
+
+def test_guest_stays_gated_even_with_admin_email():
+    boom = Boom()
+    service = EntitlementService(
+        subscriptions=boom,
+        charges=boom,
+        access_store=boom,
+        legacy_store=boom,
+        admin_emails={"sanjisworking@gmail.com"},
+    )
+    snap = service.resolve(None, now=NOW, email="sanjisworking@gmail.com")
+    assert snap.is_authenticated is False
+    assert snap.admin_override is False
+    assert snap.can_open_playground is False
+    assert snap.playground_block_reason == BLOCK_SIGN_IN_REQUIRED
+
+
+def test_service_without_allowlist_ignores_owner_email():
+    service = EntitlementService()
+    snap = service.resolve(USER, now=NOW, email="sanjisworking@gmail.com")
+    assert snap.admin_override is False
+    assert snap.can_open_playground is False
+    assert snap.playground_block_reason == BLOCK_NOT_SUBSCRIBED
+
+
+def test_create_app_wires_default_admin_email(tmp_path: Path):
+    client, _repo = _authed_client(tmp_path)
+    service = _service_for_app(client)
+    assert "sanjisworking@gmail.com" in service._admin_emails
+    request = SimpleNamespace(
+        app=client.app,
+        state=SimpleNamespace(
+            current_user=SimpleNamespace(
+                id=USER, email="sanjisworking@gmail.com"
+            )
+        ),
+    )
+    snap = service.resolve_for_request(request, now=NOW)
+    assert snap.admin_override is True
+    assert snap.is_subscribed is False
+    assert snap.can_open_playground is True
+
+
+def test_admin_emails_setting_default_and_empty():
+    default = MultiUserSettings(
+        _env_file=None, APP_ENV="test", SESSION_SECRET="x"
+    )
+    assert default.admin_emails == DEFAULT_ADMIN_EMAILS
+    assert default.admin_email_set() == frozenset({"sanjisworking@gmail.com"})
+    empty = MultiUserSettings(
+        _env_file=None, APP_ENV="test", SESSION_SECRET="x", ADMIN_EMAILS=""
+    )
+    assert empty.admin_email_set() == frozenset()
+    listed = MultiUserSettings(
+        _env_file=None,
+        APP_ENV="test",
+        SESSION_SECRET="x",
+        ADMIN_EMAILS=" Owner@Example.com , sanjisworking@gmail.com ",
+    )
+    assert listed.admin_email_set() == frozenset(
+        {"owner@example.com", "sanjisworking@gmail.com"}
+    )
+    assert parse_admin_emails("sanjisworking@gmail.com") == frozenset(
+        {"sanjisworking@gmail.com"}
+    )
+    with pytest.raises(ValidationError):
+        MultiUserSettings(
+            _env_file=None,
+            APP_ENV="test",
+            SESSION_SECRET="x",
+            ADMIN_EMAILS="not-an-email",
+        )
 
 
 def test_promotion_grant_is_not_admin_override_or_playground(tmp_path: Path):

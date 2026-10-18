@@ -969,6 +969,7 @@ def create_app(
         charges=getattr(app.state, "subscription_charges", None),
         access_store=getattr(app.state, "access_store", None),
         legacy_store=legacy_store,
+        admin_emails=settings.admin_email_set(),
     )
 
     device_repo = None

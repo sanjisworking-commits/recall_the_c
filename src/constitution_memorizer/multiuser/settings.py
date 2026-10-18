@@ -19,6 +19,34 @@ AppEnv = Literal["development", "staging", "production", "test"]
 # Conservative check for optional SUPPORT_EMAIL. Empty is allowed at boot.
 _SUPPORT_EMAIL_RE = re.compile(r"^[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$")
 
+# Owner Google identity. Playground admin_override follows this allowlist
+# (and/or a user_roles row) so the account can open Playground without a
+# paid subscription. Not a fake purchase.
+DEFAULT_ADMIN_EMAILS = "sanjisworking@gmail.com"
+
+
+def parse_admin_emails(value: object) -> frozenset[str]:
+    """Split a comma/semicolon list of emails. Empty input is an empty set."""
+    if value is None:
+        return frozenset()
+    if isinstance(value, str):
+        parts = value.replace(";", ",").split(",")
+    elif isinstance(value, (set, frozenset, list, tuple)):
+        parts = [str(item) for item in value]
+    else:
+        parts = str(value).replace(";", ",").split(",")
+    emails: set[str] = set()
+    for part in parts:
+        email = part.strip().lower()
+        if not email:
+            continue
+        if _SUPPORT_EMAIL_RE.fullmatch(email) is None:
+            raise ValueError(
+                "ADMIN_EMAILS must be a comma-separated list of email addresses"
+            )
+        emails.add(email)
+    return frozenset(emails)
+
 
 def load_env_file(path: Path | str | None = None, *, override: bool = False) -> Path | None:
     """
@@ -141,6 +169,15 @@ class MultiUserSettings(BaseSettings):
     # false everywhere; enable explicitly where the console should exist.
     admin_enabled: bool = Field(default=False, alias="ADMIN_ENABLED")
 
+    # Comma-separated signed-in emails that receive Playground
+    # admin_override without a user_roles row or a paid subscription.
+    # is_subscribed stays false — this is not a fake purchase. Does not
+    # open /admin (that still needs the DB role and ADMIN_ENABLED). Empty
+    # disables the allowlist. Default is the owner Google account.
+    admin_emails: str = Field(
+        default=DEFAULT_ADMIN_EMAILS, alias="ADMIN_EMAILS"
+    )
+
     # Razorpay Standard Checkout. Both keys present = checkout is live on the
     # purchase flow; either missing = the /subscribe/pay page keeps its
     # "opens soon" placeholder. The key secret never reaches a template or
@@ -249,6 +286,22 @@ class MultiUserSettings(BaseSettings):
         if _SUPPORT_EMAIL_RE.fullmatch(text) is None:
             raise ValueError("SUPPORT_EMAIL must be a valid email address")
         return text
+
+    @field_validator("admin_emails", mode="before")
+    @classmethod
+    def _parse_admin_emails_field(cls, value: object) -> object:
+        if value is None:
+            return DEFAULT_ADMIN_EMAILS
+        if isinstance(value, str):
+            text = value.strip()
+            parse_admin_emails(text)
+            return text
+        emails = parse_admin_emails(value)
+        return ",".join(sorted(emails))
+
+    def admin_email_set(self) -> frozenset[str]:
+        """Normalized Playground admin-email allowlist."""
+        return parse_admin_emails(self.admin_emails)
 
     @field_validator(
         "auth_google_enabled",
