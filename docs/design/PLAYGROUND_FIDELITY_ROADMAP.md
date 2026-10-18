@@ -316,7 +316,7 @@ run in parallel on separate branches. M2 is independent of M3–M6.
 | M | Checklist approved | Implemented (SHA) | Tests | Evidence folder | Deviations open | Accepted on |
 |---|---|---|---|---|---|---|
 | M0 | n/a (audit) | 2866ede, b4a0517 | n/a | `proto-comparison-2026-10-18/` | DV-1…DV-19 classified; desktop signed-in visual pass incomplete | accepted as planning baseline 2026-10-18 |
-| M1 | revised after independent review (`milestones/M1.md`, Appendix A verifies findings); awaiting owner approval. Prerequisites: hosted deployment SHA re-verified; full-resolution signed-in desktop baseline (S1–S11) | — | — | — | — | — |
+| M1 | revised after independent review (`milestones/M1.md`, Appendix A verifies findings); awaiting owner approval. Prerequisites: hosted deployment verified (deployment `32971cbf…` = `5d89fbd`, 2026-10-18); full-resolution signed-in desktop baseline (S1–S11) still outstanding | — | — | — | — | — |
 | M2 | — | — | — | — | — | — |
 | M3 | — | — | — | — | — | — |
 | M4 | — | — | — | — | — | — |
