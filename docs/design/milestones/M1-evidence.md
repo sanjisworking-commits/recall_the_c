@@ -56,7 +56,7 @@ Failures: `FAILED tests/test_devices_m4c.py::test_existing_registered_device_sta
 
 Skips are Playwright-backed browser tests (`pytest.importorskip("playwright")`); Playwright is not installed in this environment, so those remain **NOT RUN** here, not passed. Browser behaviour was verified instead through the headless-Chrome captures and DOM probes below.
 
-New: `tests/test_guest_shell_parity.py` (55 tests, incl. the M1-A02 guest-scope rule test): five-tab guest bar with exactly one current tab on 14 routes; four tabs when `PLAYGROUND_ENABLED=false`; guest bar rendered visible on Settings and Search (CSS order); five-link guest top nav with one Sign in button and no legacy chrome; identical header shell across routes; Landing/Login/auth-surface exceptions unchanged; guest gates (`/calendar`, devices, Playground) unchanged; footer functions and Settings route kept; viewport allows zoom; signed-in top nav and account-slot subtitle on 16 routes (DV-20); signed-in Free phone bar unchanged; DV-21 CSS no longer hides the desktop nav; asset pins bumped.
+New: `tests/test_guest_shell_parity.py` (56 tests, incl. the M1-A02 guest-scope rule test and the Plus/expired/halted DV-21 HTML pin): five-tab guest bar with exactly one current tab on 14 routes; four tabs when `PLAYGROUND_ENABLED=false`; guest bar rendered visible on Settings and Search (CSS order); five-link guest top nav with one Sign in button and no legacy chrome; identical header shell across routes; Landing/Login/auth-surface exceptions unchanged; guest gates (`/calendar`, devices, Playground) unchanged; footer functions and Settings route kept; viewport allows zoom; signed-in top nav and account-slot subtitle on 16 routes (DV-20); signed-in Free phone bar unchanged; DV-21 CSS no longer hides the desktop nav; asset pins bumped.
 
 Existing tests changed (each change is the old shell contract giving way to the accepted one; no behaviour test was weakened to pass):
 
@@ -674,6 +674,49 @@ Status chains, screen keys, nav/bar visibility, current tab and account slot are
 | `/terms` | 768×1024 | visible | none | — | no |
 | `/terms` | 844×390 | visible | none | — | no |
 
-### 10.3 Signed-in Free regression on staging
+### 10.3 Signed-in Free — DV-21 on staging (2026-10-19)
 
-Pending: needs the owner signed in on staging in the browser pane (Google-only; no session is copied anywhere). Rows to run: §4 routes at 390 and 1280, light and dark, with the DOM probe; DV-20 subtitle and DV-21 nav on `/playground`, `/playground?stage=plans[&tier=plus]`, `/playground/laws/{id}/add` at 1280.
+**M1 remains unaccepted.** This subsection only answers the reported missing
+top nav on Playground. The full signed-in matrix (every §4 route, dark,
+responsive widths) is still outstanding.
+
+Reported state, identified from the open browser pane:
+
+| | |
+|---|---|
+| URL | `https://recallthec-production.up.railway.app/playground?stage=plans&tier=plus` |
+| Viewer | **Signed in** — Sanjali · Free account (`body.is-authed`, not guest) |
+| Viewport | 1280×900 (DV-21 is a desktop top-nav requirement) |
+| Pins | `main87` / `mob106` / `pg49` (deployment `b6ad47b0…` = `3b37f89`) |
+
+A tab that had been sitting on that URL since before the M1 deploy still had
+the frozen hide rules in memory (`display: none !important` on
+`.PrimaryTabs--top` from the pre-M1 `data-signed-in-pg-gate` and
+`data-hard-gate` selectors). That is why the attached screenshot showed
+brand + account only.
+
+After a cache-disabled reload of the same signed-in session, DV-21 holds:
+
+| Route | W | Top nav | Phone bar | Account |
+|---|---|---|---|---|
+| `/playground` | 1280 | visible (Today / Browse / Playground / Calendar / Profile, Playground current) | none | Sanjali · Free account |
+| `/playground?stage=plans` | 1280 | visible, same | none | Sanjali · Free account |
+| `/playground?stage=plans&tier=plus` | 1280 | visible, same | none | Sanjali · Free account |
+| `/playground/laws/ndps/add` | 1280 | visible, same | none | Sanjali · Free account |
+| `/playground/laws/uapa/add` | 1280 | visible, same | none | Sanjali · Free account |
+| `/playground` | 390 | hidden (header `display:none`; approved phone behaviour) | 5-tab, Playground current | — |
+| `/playground?stage=plans&tier=plus` | 390 | hidden | 5-tab, Playground current | — |
+| `/playground/laws/uapa/add` | 390 | hidden | none (frozen Add-sheet chrome, not DV-21) | — |
+
+Light captures: `hosted/hosted_signedin-free_playground_1280x900_light.png`,
+`…-plans…`, `…-plans-plus…`, `…-add-uapa…`, and the 390 gate
+(`hosted/hosted_signedin-free_playground_390x844_light.png`). Manifest:
+`manifests/hosted_signedin-free_dv21_b6ad47b0.json`.
+
+Other non-guest cohorts (not present on this staging account; local
+TestClient only, CSS is shared): Plus, Pro, Max, expired and halted
+Playground pages are **not** hard-gated and still render the five-link
+top nav on `/playground`, the plans query-string and Add. Pinned by
+`test_dv21_plus_expired_and_halted_keep_the_top_nav`. Subscribed/paid
+hosted states remain unverified (DV-17 / DV-18; `PRICING_ENABLED=false`,
+`ADMIN_ENABLED=false`).

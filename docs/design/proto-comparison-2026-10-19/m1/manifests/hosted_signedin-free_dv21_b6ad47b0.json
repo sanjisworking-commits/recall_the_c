@@ -1,0 +1,41 @@
+{
+ "label": "hosted_signedin-free_dv21",
+ "deployment": "b6ad47b0-01bb-4ec5-8137-f4837b402e00",
+ "sha": "3b37f8947c05577b57af93a2a53f1ac5539c4e3a",
+ "viewer": "signedin-free",
+ "account": "Sanjali \u00b7 Free account",
+ "base": "https://recallthec-production.up.railway.app",
+ "pins": [
+  "main87",
+  "mob106",
+  "pg49"
+ ],
+ "note": "DV-21 investigation 2026-10-19. Cache-disabled reload. Signed in. M1 not accepted.",
+ "files": [
+  {
+   "file": "hosted_signedin-free_playground_1280x900_light.png",
+   "bytes": 56119,
+   "sha256": "5c7261bd2fbeae1b1c072e2a86ea7ccda7f549a22b27c5c07d958f6790597302"
+  },
+  {
+   "file": "hosted_signedin-free_playground-plans_1280x900_light.png",
+   "bytes": 55999,
+   "sha256": "263c883c5e7686109c41f7514d840860f99d24d4bf6bd72902b98ec8a2f5dfe5"
+  },
+  {
+   "file": "hosted_signedin-free_playground-plans-plus_1280x900_light.png",
+   "bytes": 61806,
+   "sha256": "0a8c83fd4db9c4e35309340294bf0be3411189e2432ad137c4ef2e14406fcc6d"
+  },
+  {
+   "file": "hosted_signedin-free_playground-add-uapa_1280x900_light.png",
+   "bytes": 48032,
+   "sha256": "e3a9e15ccca14b929d14bdb4b66d1ca888eeb62b2a043e42bb807f0c1afc28fe"
+  },
+  {
+   "file": "hosted_signedin-free_playground_390x844_light.png",
+   "bytes": 38440,
+   "sha256": "84511224f27024e2dd6fdc9ee57cbaa0b6e4ba8ad0dd57de4e4b4ac72f83fba2"
+  }
+ ]
+}

@@ -277,6 +277,51 @@ def test_dv21_gate_plans_and_add_no_longer_hide_the_top_nav() -> None:
     assert ".PrimaryTabs--top" not in hard
 
 
+DV21_COHORT_ROUTES = (
+    "/playground",
+    "/playground?stage=plans",
+    "/playground?stage=plans&tier=plus",
+    "/playground/laws/ndps/add",
+    "/playground/laws/uapa/add",
+)
+
+
+def test_dv21_plus_expired_and_halted_keep_the_top_nav(tmp_path: Path) -> None:
+    """Non-guest cohorts besides Free: HTML still carries the five product tabs.
+
+    Plus / expired / halted Playground pages are not hard-gated; the DV-21 CSS
+    hide was scoped to hard-gated Free/guest gate, plans and Add. This pins
+    that those other cohorts did not lose the nav as a side effect.
+    """
+    from tests.test_expired_playground_screen6 import _expire
+    from tests.test_halted_playground_screen6 import _halt
+    from tests.test_plus_playground_screen6 import (
+        _mu_app,
+        _plus_client,
+        _sign_in,
+        _subscribe,
+    )
+
+    plus = _plus_client(tmp_path / "plus")
+
+    expired = TestClient(_mu_app(tmp_path / "expired"))
+    _sign_in(expired)
+    _subscribe(expired)
+    _expire(expired)
+
+    halted = TestClient(_mu_app(tmp_path / "halted"))
+    _sign_in(halted)
+    _subscribe(halted)
+    _halt(halted)
+
+    for name, client in (("plus", plus), ("expired", expired), ("halted", halted)):
+        for route in DV21_COHORT_ROUTES:
+            html = client.get(route).text
+            nav = _top_nav(html)
+            assert [l[0] for l in _links(nav)][:5] == TAB_ORDER, (name, route)
+            assert "is-authed" in html, (name, route)
+
+
 def test_asset_pins_were_bumped_for_shell_css(tmp_path: Path) -> None:
     html = _guest(tmp_path).get("/browse").text
     assert "styles.css?v=main86" not in html and "mobile.css?v=mob105" not in html
