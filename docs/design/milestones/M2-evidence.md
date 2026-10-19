@@ -1,6 +1,6 @@
 # M2 — Bare Act head family · LOCAL / PRELIMINARY evidence
 
-Status: **LOCAL/PRELIMINARY.** Produced from a local run of this branch; it does
+Status: **LOCAL/PRELIMINARY — under owner review (2026-10-20), not accepted.** Produced from a local run of this branch; it does
 **not** close hosted acceptance. No staging deployment has been made for M2
 (that needs the owner's separate authorisation, checklist §7); the hosted
 paid states (Plus/Pro/Max, expired, halted) stay **unverified** until a
@@ -315,16 +315,18 @@ All ≥ 4.5:1. Targets: back link 44 px, CTA 48 px, chapter rows 56/48 px, sched
 - Screen-reader smoke (VoiceOver): **NOT RUN**.
 - Dark mode (V04): palette-consistency only — every colour is a token, both dark blocks checked above; never fidelity.
 
-## 6. Open deviations for the owner
+## 6. Deviations — owner decisions (2026-10-20: all six KEPT)
 
-| # | Item | Proposal |
+Owner review 2026-10-20: M2 is **under review, not accepted**; the six deviations below are **owner-kept** (the implementation stays as it is). B12 (the never-enrolled expired head's billing button marked as a sheet opener) and the 561–768 px floating avatar stay out of M2.
+
+| # | Item | Owner decision |
 |---|---|---|
-| D1 | Accessible greys (`--muted` 4.5:1+) instead of the prototype's #8f8f8d/#9a9a9a for kicker, meta, tags and ranges | keep (M1 precedent) |
-| D2 | Chip buttons 40 px on desktop (prototype 34, rule 44) | keep at 40, or raise to 44 at the cost of a taller chip |
-| D3 | The head prints the state's note under the button (B11): Free sees "Unlock Playground · from ₹199 / month.", guest "Sign in to add this law to Playground.", expired the gate copy — the prototype head has none | keep for Free (price is useful) or drop for guest/Free; the expired note's missing full stop between title and lines is pre-existing copy in `view.py` |
-| D4 | The chip's primary says "Start learning" (→ Sections) when the law has no selection yet, "Continue" otherwise — the prototype only draws "Continue" | keep the live distinction (it is behaviour) |
-| D5 | Free sheet has no Cancel button (✕, Escape, scrim) as in the prototype; the other states keep Cancel | keep |
-| D6 | The Add page title is "Add to Playground · {Act title}" | keep |
+| D1 | Accessible greys (`--muted` 4.5:1+) instead of the prototype's #8f8f8d/#9a9a9a for kicker, meta, tags and ranges | **keep** |
+| D2 | Chip buttons 40 px on desktop (prototype 34, rule 44) | **keep at 40 px desktop** |
+| D3 | The head prints the state's note under the button (B11) | **keep** |
+| D4 | "Start learning" (→ Sections) vs "Continue" from the live state | **keep** |
+| D5 | Free sheet has no Cancel button (✕, Escape, scrim) | **keep** |
+| D6 | Add page title "Add to Playground · {Act title}" | **keep** |
 
 ## 7. Outstanding checks and follow-ups
 
