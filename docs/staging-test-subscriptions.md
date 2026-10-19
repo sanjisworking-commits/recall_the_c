@@ -88,7 +88,11 @@ Applied with `apply --all --commit` after a fresh eligibility check. Operator `2
 | Pro | `50cc6c08-beaa-4f21-8bd8-ef7d73c0c47d` | `4b0aaa22-c151-498e-897b-627f5c93dede` | `2026-10-18T20:30:30Z` – `2026-11-16T20:30:30Z` | `cd627b19-ba98-4436-bca6-3349f170a916` |
 | Max | `1134a7d0-8d9c-4e12-8d4d-9803f909b24c` | `a04780d7-fe86-4670-a6ca-350208519e5c` | `2026-10-18T20:30:31Z` – `2026-11-16T20:30:31Z` | `41603461-2e6f-4f9f-8a1b-a774f5af775c` |
 
-Each row is `active`, `is_current`, helper-owned, and resolves to its own tier with Playground open. Live profile shows RecallC Plus (10 laws), RecallC Pro (30 laws), and RecallC Max (unlimited), each Active through 17 November in the page's local date. Pro and Max Playground headers still say "Free account"; that copy fallback is unchanged. No expired, halted, or renewal fixtures.
+Each row is `active`, `is_current`, helper-owned, and resolves to its own tier with Playground open. Live profile shows RecallC Plus (10 laws), RecallC Pro (30 laws), and RecallC Max (unlimited), each Active. The stored end `2026-11-16T20:30Z` is 17 November at about 02:00 IST, which is the date Profile shows. No expired, halted, or renewal fixtures. Payment integration was not exercised.
+
+`user_device` was 0 immediately after apply. The paid-screen browser pass then registered two active web devices on each account (Chrome on Linux and Web browser, `2026-10-19T20:32:08Z` through `20:33:53Z`). A later shell capture left those counts at 2. Devices were not cleared. Profile “2 of 2” is that inventory against the normal cap.
+
+UI findings, left open: Pro and Max Playground headers say “Free account” while Profile shows the real tier. Plus, Pro, and Max also show “Free account” on Browse, Laws, NDPS, Article 14, Devices, Search, and Terms; Today, Calendar, Profile, and Settings show the plan name. Pro’s capacity indicator extends past its sidebar card, and Pro Profile duplicates the count as “30 30 laws / month.” The 561 px duplicate navigation and overlapping avatar stay open in M1. M1 is not accepted.
 
 **M2 (UI-fidelity Act heads):** no `docs/design/milestones/M2.md`. Open playground-stack PRs on 2026-10-19: #218 M0 audit, #219 M1 guest shell, #217 admin paywall bypass (do not use), #210 study calendar, #188 UI redesign. None is an M2 Act-heads milestone PR. Absence of a milestone file is not the only check; this branch/PR scan is. Confirm again at Gate B.
 
