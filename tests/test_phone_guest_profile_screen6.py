@@ -157,7 +157,7 @@ def _phone(html: str) -> str:
 
 
 def _tabs(html: str) -> str:
-    return html.split("data-guest-profile-phone-tabs", 1)[1].split("</nav>", 1)[0]
+    return html.split("data-guest-phone-tabs", 1)[1].split("</nav>", 1)[0]
 
 
 def _desk(html: str) -> str:
@@ -272,7 +272,7 @@ def test_phone_guest_profile_buttons_are_handlerless_in_source() -> None:
 
 def test_phone_guest_five_tabs_profile_active(tmp_path: Path) -> None:
     html = _guest_client(tmp_path).get("/profile").text
-    assert "data-guest-profile-phone-tabs" in html
+    assert "data-guest-phone-tabs" in html  # M1: shared guest bar
     assert "mobile-tabbar is-guest" not in html
     tabs = _tabs(html)
     labels = []
@@ -288,11 +288,9 @@ def test_phone_guest_five_tabs_profile_active(tmp_path: Path) -> None:
         chunk = tabs.split(f'href="{href}"', 1)[1].split("</a>", 1)[0]
         assert "is-active" not in chunk
     ndps = _guest_client(tmp_path / "ndps").get("/laws/ndps").text
-    assert "data-guest-profile-phone-tabs" not in ndps
-    assert "data-guest-bareact-phone-tabs" in ndps
+    assert "data-guest-phone-tabs" in ndps
     playground = _guest_client(tmp_path / "pg").get("/playground").text
-    assert "data-guest-profile-phone-tabs" not in playground
-    assert "data-guest-pg-phone-tabs" in playground
+    assert "data-guest-phone-tabs" in playground
 
 
 def test_phone_guest_profile_css_is_breakpoint_scoped() -> None:
@@ -305,10 +303,10 @@ def test_phone_guest_profile_css_is_breakpoint_scoped() -> None:
     assert "guest-profile-signin" in phone_block
     assert "guest-profile-report" in phone_block
     assert "guest-profile-bareacts" in phone_block
-    hide = css.split('[data-phone-profile="guest"],', 1)[1].split("}", 1)[0]
+    hide = css.split('@media (min-width: 561px) {\n  [data-phone-profile="guest"] {', 1)[1].split("}", 1)[0]
     assert "display: none" in hide
-    assert "data-guest-profile-phone-tabs" in hide
-    assert "playground.css?v=pg48" in BASE.read_text(encoding="utf-8")
+    assert "data-guest-profile-phone-tabs" not in css  # M1 removed the per-screen bar
+    assert "playground.css?v=pg49" in BASE.read_text(encoding="utf-8")
     assert "playground.css?v=pg31" not in BASE.read_text(encoding="utf-8")
     assert "playground.css?v=pg30" not in BASE.read_text(encoding="utf-8")
     guest_title = css.split(".guest-profile-title {", 1)[1].split("}", 1)[0]

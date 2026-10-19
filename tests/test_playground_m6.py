@@ -104,14 +104,15 @@ def test_signed_in_primary_nav_is_five_destinations(tmp_path: Path):
     assert "Design preview" not in html
 
 
-def test_guest_nav_is_not_the_five_product_tabs(tmp_path: Path):
+def test_guest_nav_is_the_five_product_tabs_behind_the_gate(tmp_path: Path):
+    # M1 (owner-accepted 2026-10-19): guests share the five-tab bar; the
+    # Playground tab leads to the sign-in gate, which is unchanged.
     client = _guest_client(tmp_path)
     home = client.get("/browse")
     assert home.status_code == 200
-    assert 'class="mobile-tabbar is-guest"' in home.text
-    guest_bar = home.text.split('class="mobile-tabbar is-guest"', 1)[1].split("</nav>", 1)[0]
-    assert ">Playground<" not in guest_bar
-    assert "Sign in" in guest_bar
+    assert 'class="mobile-tabbar is-guest"' not in home.text
+    guest_bar = home.text.split("data-guest-phone-tabs", 1)[1].split("</nav>", 1)[0]
+    assert "Playground" in guest_bar and 'href="/playground"' in guest_bar
     guest_playground = client.get("/playground", follow_redirects=False)
     assert guest_playground.status_code == 200
     assert "Sign in to use Playground" in guest_playground.text

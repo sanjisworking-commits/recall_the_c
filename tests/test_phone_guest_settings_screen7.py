@@ -268,10 +268,8 @@ def test_phone_guest_settings_copy_and_controls(tmp_path: Path) -> None:
     assert phone.count('type="button"') >= 3
     assert "/login" not in phone
     assert "<form" not in phone
-    assert "data-guest-profile-phone-tabs" not in html
     assert "mobile-tabbar is-guest" not in html
-    assert "data-guest-pg-phone-tabs" not in html
-    assert "data-guest-bareact-phone-tabs" not in html
+    assert "data-guest-phone-tabs" in html  # M1: shared guest bar
     for phrase in HIDDEN:
         assert phrase not in phone, phrase
     assert _facts(client) == before
@@ -353,12 +351,14 @@ def test_phone_guest_settings_today_goes_to_dashboard(tmp_path: Path) -> None:
     assert 'href="/"' not in topbar.replace('href="/dashboard"', "")
 
 
-def test_phone_guest_settings_has_no_five_tab_bar() -> None:
+def test_phone_guest_settings_has_the_shared_five_tab_bar() -> None:
+    # M1 (owner-accepted): guests keep the five tabs on Settings; the signed-in
+    # settings screen keeps its frozen bar-less behaviour via the generic CSS.
     base = BASE.read_text(encoding="utf-8")
-    assert "guest_settings" in base
-    chunk = base.split("{% elif guest_settings %}", 1)[1].split("{% elif", 1)[0]
-    assert "mobile-tabbar" not in chunk
-    assert "data-guest-profile-phone-tabs" not in chunk
+    assert "guest_settings" not in base
+    assert "data-guest-phone-tabs" in base
+    mobile = (BASE.parent.parent / "static" / "mobile.css").read_text(encoding="utf-8")
+    assert 'body.is-guest[data-mscreen="settings"] .mobile-tabbar' in mobile
 
 
 def test_phone_guest_settings_css_is_breakpoint_scoped() -> None:
@@ -372,7 +372,7 @@ def test_phone_guest_settings_css_is_breakpoint_scoped() -> None:
     assert "var(--ink)" in phone_block
     assert "var(--on-accent)" in phone_block
     assert "@media (min-width: 561px)" not in phone_block
-    assert "playground.css?v=pg48" in BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg49" in BASE.read_text(encoding="utf-8")
     assert "playground.css?v=pg31" not in BASE.read_text(encoding="utf-8")
 
 

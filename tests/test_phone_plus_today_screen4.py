@@ -632,11 +632,11 @@ def test_phone_plus_today_css_scope_pins_and_desktop_08_untouched() -> None:
     for phrase in TEMPLATE_INVENTED:
         assert phrase not in dash, phrase
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg48" in base
+    assert "playground.css?v=pg49" in base
     assert "playground.css?v=pg37" not in base
     assert "playground.css?v=pg36" not in base
-    assert "styles.css?v=main86" in base
-    assert "mobile.css?v=mob105" in base
+    assert "styles.css?v=main87" in base
+    assert "mobile.css?v=mob106" in base
     assert "data-plus-today-phone-tabs" not in base
     first_bar = base.split(
         'class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom"', 2

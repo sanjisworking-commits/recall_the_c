@@ -291,9 +291,9 @@ def test_phone_free_profile_css_is_breakpoint_scoped() -> None:
     assert "@media (min-width: 561px)" in desk
     assert "minmax(0, 1fr) minmax(0, 1fr)" in desk
     assert "font-size: 28px" in desk
-    assert "playground.css?v=pg48" in BASE.read_text(encoding="utf-8")
-    assert "styles.css?v=main86" in BASE.read_text(encoding="utf-8")
-    assert "mobile.css?v=mob105" in BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg49" in BASE.read_text(encoding="utf-8")
+    assert "styles.css?v=main87" in BASE.read_text(encoding="utf-8")
+    assert "mobile.css?v=mob106" in BASE.read_text(encoding="utf-8")
     assert "mobile.css?v=mob104" not in BASE.read_text(encoding="utf-8")
     src = PROFILE.read_text(encoding="utf-8")
     for phrase in MOCK_SCREEN_COPY:
@@ -317,7 +317,7 @@ def test_guest_plus_expired_halted_profiles_stay_separate(tmp_path: Path) -> Non
     guest_html = guest.text
     assert 'data-phone-profile="guest"' in guest_html
     assert "data-signed-in-profile" not in guest_html
-    assert "data-guest-profile-phone-tabs" in guest_html
+    assert "data-guest-phone-tabs" in guest_html  # M1: shared guest bar
 
     plus = TestClient(_mu_app(tmp_path / "plus"))
     _sign_in(plus)

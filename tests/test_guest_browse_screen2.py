@@ -108,10 +108,12 @@ def test_screen2_strip_signin_routes_to_the_gate(tmp_path: Path) -> None:
 
 
 def test_screen2_strip_is_the_only_desktop_signin_entry(tmp_path: Path) -> None:
+    # M1: the header account slot carries the shell Sign in button; the strip
+    # stays the only sign-in entry inside the page body.
     html = _guest_client(tmp_path).get("/browse").text
     header = _header(html)
     nav = _primary_nav(html)
-    assert "nav-signin" not in header
+    assert header.count("nav-signin") == 1
     assert 'href="/login"' not in nav
     strip = _guest_strip(html)
     assert strip.count('href="/login"') == 1
@@ -182,8 +184,7 @@ def test_screen2_desktop_header_and_guest_account_menu(tmp_path: Path) -> None:
     html = _guest_client(tmp_path).get("/browse").text
     header = _header(html)
     nav = _primary_nav(html)
-    assert "<span class=\"brand\"" in header
-    assert 'class="brand" href=' not in header
+    assert '<a class="brand" href="/"' in header  # M1: one brand link on every page
     assert 'src="/static/main_logo.png"' in header
     assert "Recall the C" in header
     css = (
@@ -208,21 +209,13 @@ def test_screen2_desktop_header_and_guest_account_menu(tmp_path: Path) -> None:
     assert ">Search<" not in nav
     assert ">Learn<" not in nav
     assert "Learning as guest" not in header
-    assert "nav-signin" not in header
-    assert 'data-guest-account-menu' in header
-    assert 'account-menu-btn-name">Guest<' in header
-    assert "Not signed in" in header
-    menu = header.split("data-account-panel", 1)[1]
-    assert 'href="/settings">Settings</a>' in menu
-    assert "data-account-close" in menu
-    assert ">Sign out<" in menu
-    assert 'action="/logout"' not in menu
-    assert 'href="/profile"' not in menu
-    assert 'href="/learn"' not in menu
-    assert 'href="/progress"' not in menu
-    assert 'href="/calendar"' not in menu
-    assert 'href="/memory"' not in menu
-    assert 'href="/admin"' not in menu
+    # M1 guest shell: a Sign in button replaces the guest account menu
+    assert '<a class="nav-signin" href="/login">Sign in</a>' in header
+    assert "data-guest-account-menu" not in header
+    assert "data-account-panel" not in header
+    assert 'action="/logout"' not in header
+    footer = html.split("<footer", 1)[1].split("</footer>", 1)[0]
+    assert 'href="/settings"' in footer  # Settings stays reachable for guests
 
 
 def test_screen2_does_not_change_mobile_browse_part_cards(tmp_path: Path) -> None:
@@ -230,7 +223,8 @@ def test_screen2_does_not_change_mobile_browse_part_cards(tmp_path: Path) -> Non
     assert 'class="browse-part-rail"' in html
     assert "part-card-track" in html
     assert 'class="mobile-screen-head"' in html
-    assert 'class="mobile-tabbar is-guest"' in html
+    assert "data-guest-phone-tabs" in html  # M1: shared five-tab bar
+    assert 'class="mobile-tabbar is-guest"' not in html
     css = (
         ROOT / "src/constitution_memorizer/web/static/mobile.css"
     ).read_text(encoding="utf-8")

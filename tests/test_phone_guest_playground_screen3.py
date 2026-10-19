@@ -145,7 +145,7 @@ def _phone(html: str) -> str:
 
 
 def _tabs(html: str) -> str:
-    return html.split("data-guest-pg-phone-tabs", 1)[1].split("</nav>", 1)[0]
+    return html.split("data-guest-phone-tabs", 1)[1].split("</nav>", 1)[0]
 
 
 def _facts(client: TestClient) -> dict:
@@ -261,7 +261,7 @@ def test_phone_guest_playground_buttons_are_handlerless_in_source() -> None:
 
 def test_phone_guest_five_tabs_playground_active(tmp_path: Path) -> None:
     html = _guest_client(tmp_path).get("/playground").text
-    assert "data-guest-pg-phone-tabs" in html
+    assert "data-guest-phone-tabs" in html  # M1: shared guest bar
     assert "mobile-tabbar is-guest" not in html
     tabs = _tabs(html)
     labels = []
@@ -277,8 +277,7 @@ def test_phone_guest_five_tabs_playground_active(tmp_path: Path) -> None:
         chunk = tabs.split(f'href="{href}"', 1)[1].split("</a>", 1)[0]
         assert "is-active" not in chunk
     ndps = _guest_client(tmp_path / "ndps").get("/laws/ndps").text
-    assert "data-guest-pg-phone-tabs" not in ndps
-    assert "data-guest-bareact-phone-tabs" in ndps
+    assert "data-guest-phone-tabs" in ndps  # same bar on the Act head
 
 
 def test_phone_guest_playground_css_is_breakpoint_scoped() -> None:
@@ -292,8 +291,8 @@ def test_phone_guest_playground_css_is_breakpoint_scoped() -> None:
     assert "pg-guest-gate-create" in phone_block
     hide = css.split("[data-phone-pg-gate=\"guest\"],", 1)[1].split("}", 1)[0]
     assert "display: none" in hide
-    assert "data-guest-pg-phone-tabs" in hide or "data-guest-pg-phone-tabs" in css
-    assert "playground.css?v=pg48" in BASE.read_text(encoding="utf-8")
+    assert "data-guest-phone-tabs" in css  # M1: hard-gate hide exempts the shared guest bar
+    assert "playground.css?v=pg49" in BASE.read_text(encoding="utf-8")
     assert "playground.css?v=pg31" not in BASE.read_text(encoding="utf-8")
     assert "playground.css?v=pg30" not in BASE.read_text(encoding="utf-8")
     guest_title = css.split(".guest-pg-title {", 1)[1].split("}", 1)[0]

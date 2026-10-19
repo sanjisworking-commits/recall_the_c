@@ -629,10 +629,10 @@ def test_phone_expired_profile_css_is_breakpoint_scoped() -> None:
     assert "reset_learning_progress" not in get
     assert "def request_is_expired_subscriber" in DEPS.read_text(encoding="utf-8")
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg48" in base
+    assert "playground.css?v=pg49" in base
     assert "playground.css?v=pg45" not in base
-    assert "styles.css?v=main86" in base
-    assert "mobile.css?v=mob105" in base
+    assert "styles.css?v=main87" in base
+    assert "mobile.css?v=mob106" in base
     assert "data-expired-profile-phone-tabs" not in base
     first_bar = base.split(
         'class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom"', 2

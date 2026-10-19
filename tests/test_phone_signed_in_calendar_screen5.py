@@ -393,9 +393,9 @@ def test_phone_free_calendar_css_is_breakpoint_scoped() -> None:
     )[1]
     assert "@media (min-width: 561px)" in desk
     assert "grid-template-columns: minmax(0, 1fr) 380px" in desk
-    assert "playground.css?v=pg48" in BASE.read_text(encoding="utf-8")
-    assert "styles.css?v=main86" in BASE.read_text(encoding="utf-8")
-    assert "mobile.css?v=mob105" in BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg49" in BASE.read_text(encoding="utf-8")
+    assert "styles.css?v=main87" in BASE.read_text(encoding="utf-8")
+    assert "mobile.css?v=mob106" in BASE.read_text(encoding="utf-8")
     assert "mobile.css?v=mob104" not in BASE.read_text(encoding="utf-8")
     cal = CAL.read_text(encoding="utf-8")
     assert "data-signed-in-calendar" in cal

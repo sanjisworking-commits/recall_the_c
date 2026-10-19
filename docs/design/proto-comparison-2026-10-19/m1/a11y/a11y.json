@@ -1,0 +1,1023 @@
+{
+ "base": "http://127.0.0.1:8912",
+ "zoom": [
+  {
+   "route": "/browse",
+   "emulation": "desktop-1280-x2",
+   "css_viewport": [
+    640,
+    450
+   ],
+   "dsf": 2,
+   "file": "zoom_desktop-1280-x2_browse.png",
+   "sha256": "4ad7f084abfba81da0e3d43c5addf04511c5440175a0176baaca65edd34a394f",
+   "hScroll": false,
+   "vw": 640,
+   "dpr": 2,
+   "targets": [
+    {
+     "text": "Recall the C",
+     "w": 131,
+     "h": 30,
+     "color": "rgb(20, 20, 20)",
+     "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+     "text": "Today",
+     "w": 80,
+     "h": 44,
+     "color": "rgb(107, 107, 107)",
+     "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+     "text": "Browse",
+     "w": 87,
+     "h": 44,
+     "color": "rgb(255, 255, 255)",
+     "bg": "rgb(20, 20, 20)"
+    },
+    {
+     "text": "Playground",
+     "w": 111,
+     "h": 44,
+     "color": "rgb(107, 107, 107)",
+     "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+     "text": "Calendar",
+     "w": 96,
+     "h": 44,
+     "color": "rgb(107, 107, 107)",
+     "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+     "text": "Profile",
+     "w": 83,
+     "h": 44,
+     "color": "rgb(107, 107, 107)",
+     "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+     "text": "Sign in",
+     "w": 77,
+     "h": 44,
+     "color": "rgb(255, 255, 255)",
+     "bg": "rgb(20, 20, 20)"
+    }
+   ],
+   "navVisible": true,
+   "barVisible": false
+  },
+  {
+   "route": "/browse",
+   "emulation": "phone-390-x2",
+   "css_viewport": [
+    195,
+    422
+   ],
+   "dsf": 2,
+   "file": "zoom_phone-390-x2_browse.png",
+   "sha256": "dd511a97cf77b211fa63def1566b7a4b3c6c7b8d27430de931780cb594ecd2ae",
+   "hScroll": false,
+   "vw": 195,
+   "dpr": 2,
+   "targets": [
+    {
+     "text": "Today",
+     "w": 34,
+     "h": 60,
+     "color": "rgb(107, 107, 107)",
+     "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+     "text": "Browse",
+     "w": 34,
+     "h": 60,
+     "color": "rgb(20, 20, 20)",
+     "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+     "text": "Playground",
+     "w": 52,
+     "h": 60,
+     "color": "rgb(107, 107, 107)",
+     "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+     "text": "Calendar",
+     "w": 41,
+     "h": 60,
+     "color": "rgb(107, 107, 107)",
+     "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+     "text": "Profile",
+     "w": 34,
+     "h": 60,
+     "color": "rgb(107, 107, 107)",
+     "bg": "rgba(0, 0, 0, 0)"
+    }
+   ],
+   "navVisible": false,
+   "barVisible": true
+  },
+  {
+   "route": "/settings",
+   "emulation": "desktop-1280-x2",
+   "css_viewport": [
+    640,
+    450
+   ],
+   "dsf": 2,
+   "file": "zoom_desktop-1280-x2_settings.png",
+   "sha256": "0c18a75517b2a1c077f072f142475c9d1de885a8ff8da719782717dec072b6f3",
+   "hScroll": false,
+   "vw": 640,
+   "dpr": 2,
+   "targets": [
+    {
+     "text": "Recall the C",
+     "w": 131,
+     "h": 30,
+     "color": "rgb(20, 20, 20)",
+     "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+     "text": "Today",
+     "w": 80,
+     "h": 44,
+     "color": "rgb(107, 107, 107)",
+     "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+     "text": "Browse",
+     "w": 87,
+     "h": 44,
+     "color": "rgb(107, 107, 107)",
+     "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+     "text": "Playground",
+     "w": 111,
+     "h": 44,
+     "color": "rgb(107, 107, 107)",
+     "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+     "text": "Calendar",
+     "w": 96,
+     "h": 44,
+     "color": "rgb(107, 107, 107)",
+     "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+     "text": "Profile",
+     "w": 83,
+     "h": 44,
+     "color": "rgb(255, 255, 255)",
+     "bg": "rgb(20, 20, 20)"
+    },
+    {
+     "text": "Sign in",
+     "w": 77,
+     "h": 44,
+     "color": "rgb(255, 255, 255)",
+     "bg": "rgb(20, 20, 20)"
+    }
+   ],
+   "navVisible": true,
+   "barVisible": false
+  },
+  {
+   "route": "/settings",
+   "emulation": "phone-390-x2",
+   "css_viewport": [
+    195,
+    422
+   ],
+   "dsf": 2,
+   "file": "zoom_phone-390-x2_settings.png",
+   "sha256": "9fa67273810baeb80c965e3803d505a461dc280e35bb3cad7b75641595aaee21",
+   "hScroll": false,
+   "vw": 195,
+   "dpr": 2,
+   "targets": [
+    {
+     "text": "Today",
+     "w": 34,
+     "h": 60,
+     "color": "rgb(107, 107, 107)",
+     "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+     "text": "Browse",
+     "w": 34,
+     "h": 60,
+     "color": "rgb(107, 107, 107)",
+     "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+     "text": "Playground",
+     "w": 52,
+     "h": 60,
+     "color": "rgb(107, 107, 107)",
+     "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+     "text": "Calendar",
+     "w": 41,
+     "h": 60,
+     "color": "rgb(107, 107, 107)",
+     "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+     "text": "Profile",
+     "w": 34,
+     "h": 60,
+     "color": "rgb(20, 20, 20)",
+     "bg": "rgba(0, 0, 0, 0)"
+    }
+   ],
+   "navVisible": false,
+   "barVisible": true
+  },
+  {
+   "route": "/playground",
+   "emulation": "desktop-1280-x2",
+   "css_viewport": [
+    640,
+    450
+   ],
+   "dsf": 2,
+   "file": "zoom_desktop-1280-x2_playground.png",
+   "sha256": "5b993b4663c2b35fb28ef4b15c61817cf3d1b29a87004eb02be065e24471d3b8",
+   "hScroll": false,
+   "vw": 640,
+   "dpr": 2,
+   "targets": [
+    {
+     "text": "Recall the C",
+     "w": 131,
+     "h": 30,
+     "color": "rgb(20, 20, 20)",
+     "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+     "text": "Today",
+     "w": 80,
+     "h": 44,
+     "color": "rgb(107, 107, 107)",
+     "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+     "text": "Browse",
+     "w": 87,
+     "h": 44,
+     "color": "rgb(107, 107, 107)",
+     "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+     "text": "Playground",
+     "w": 111,
+     "h": 44,
+     "color": "rgb(255, 255, 255)",
+     "bg": "rgb(20, 20, 20)"
+    },
+    {
+     "text": "Calendar",
+     "w": 96,
+     "h": 44,
+     "color": "rgb(107, 107, 107)",
+     "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+     "text": "Profile",
+     "w": 83,
+     "h": 44,
+     "color": "rgb(107, 107, 107)",
+     "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+     "text": "Sign in",
+     "w": 77,
+     "h": 44,
+     "color": "rgb(255, 255, 255)",
+     "bg": "rgb(20, 20, 20)"
+    }
+   ],
+   "navVisible": true,
+   "barVisible": false
+  },
+  {
+   "route": "/playground",
+   "emulation": "phone-390-x2",
+   "css_viewport": [
+    195,
+    422
+   ],
+   "dsf": 2,
+   "file": "zoom_phone-390-x2_playground.png",
+   "sha256": "c53fd922f66a18193a032a132d733a08cee972d7e93e12e11ec62dec1d804eec",
+   "hScroll": false,
+   "vw": 195,
+   "dpr": 2,
+   "targets": [
+    {
+     "text": "Today",
+     "w": 34,
+     "h": 60,
+     "color": "rgb(107, 107, 107)",
+     "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+     "text": "Browse",
+     "w": 34,
+     "h": 60,
+     "color": "rgb(107, 107, 107)",
+     "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+     "text": "Playground",
+     "w": 52,
+     "h": 60,
+     "color": "rgb(20, 20, 20)",
+     "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+     "text": "Calendar",
+     "w": 41,
+     "h": 60,
+     "color": "rgb(107, 107, 107)",
+     "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+     "text": "Profile",
+     "w": 34,
+     "h": 60,
+     "color": "rgb(107, 107, 107)",
+     "bg": "rgba(0, 0, 0, 0)"
+    }
+   ],
+   "navVisible": false,
+   "barVisible": true
+  },
+  {
+   "route": "/terms",
+   "emulation": "desktop-1280-x2",
+   "css_viewport": [
+    640,
+    450
+   ],
+   "dsf": 2,
+   "file": "zoom_desktop-1280-x2_terms.png",
+   "sha256": "55c8c8585e70553cfac6013e1bd44f709b1dbb85d8ca63d0c61fb8079bf6954b",
+   "hScroll": false,
+   "vw": 640,
+   "dpr": 2,
+   "targets": [
+    {
+     "text": "Recall the C",
+     "w": 131,
+     "h": 30,
+     "color": "rgb(20, 20, 20)",
+     "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+     "text": "Today",
+     "w": 80,
+     "h": 44,
+     "color": "rgb(107, 107, 107)",
+     "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+     "text": "Browse",
+     "w": 87,
+     "h": 44,
+     "color": "rgb(107, 107, 107)",
+     "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+     "text": "Playground",
+     "w": 111,
+     "h": 44,
+     "color": "rgb(107, 107, 107)",
+     "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+     "text": "Calendar",
+     "w": 96,
+     "h": 44,
+     "color": "rgb(107, 107, 107)",
+     "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+     "text": "Profile",
+     "w": 83,
+     "h": 44,
+     "color": "rgb(107, 107, 107)",
+     "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+     "text": "Sign in",
+     "w": 77,
+     "h": 44,
+     "color": "rgb(255, 255, 255)",
+     "bg": "rgb(20, 20, 20)"
+    }
+   ],
+   "navVisible": true,
+   "barVisible": false
+  },
+  {
+   "route": "/terms",
+   "emulation": "phone-390-x2",
+   "css_viewport": [
+    195,
+    422
+   ],
+   "dsf": 2,
+   "file": "zoom_phone-390-x2_terms.png",
+   "sha256": "9a7e0e62cc785f79c3dc03f5ceb77423729e9da9f51d9b5f869d44d60f18387d",
+   "hScroll": false,
+   "vw": 195,
+   "dpr": 2,
+   "targets": [
+    {
+     "text": "Today",
+     "w": 34,
+     "h": 60,
+     "color": "rgb(107, 107, 107)",
+     "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+     "text": "Browse",
+     "w": 34,
+     "h": 60,
+     "color": "rgb(107, 107, 107)",
+     "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+     "text": "Playground",
+     "w": 52,
+     "h": 60,
+     "color": "rgb(107, 107, 107)",
+     "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+     "text": "Calendar",
+     "w": 41,
+     "h": 60,
+     "color": "rgb(107, 107, 107)",
+     "bg": "rgba(0, 0, 0, 0)"
+    },
+    {
+     "text": "Profile",
+     "w": 34,
+     "h": 60,
+     "color": "rgb(107, 107, 107)",
+     "bg": "rgba(0, 0, 0, 0)"
+    }
+   ],
+   "navVisible": false,
+   "barVisible": true
+  }
+ ],
+ "keyboard": [
+  {
+   "route": "/browse",
+   "width": 390,
+   "stops": [
+    {
+     "tag": "A",
+     "text": "Search",
+     "href": "/search",
+     "outline": "solid 2px rgb(20, 20, 20)",
+     "box": [
+      44,
+      44
+     ],
+     "inShell": false
+    },
+    {
+     "tag": "A",
+     "text": "Sign in",
+     "href": "/login?next=/browse",
+     "outline": "solid 2px rgb(20, 20, 20)",
+     "box": [
+      59,
+      36
+     ],
+     "inShell": false
+    },
+    {
+     "tag": "A",
+     "text": "Laws Bare Acts & statutes \u203a",
+     "href": "/laws",
+     "outline": "solid 2px rgb(20, 20, 20)",
+     "box": [
+      173,
+      61
+     ],
+     "inShell": false
+    },
+    {
+     "tag": "A",
+     "text": "Tables Schedules, Parts, writs \u203a",
+     "href": "/tables",
+     "outline": "solid 2px rgb(20, 20, 20)",
+     "box": [
+      173,
+      61
+     ],
+     "inShell": false
+    },
+    {
+     "tag": "A",
+     "text": "PART I \u203a The Union And Its Territory Art",
+     "href": "/browse/part/i",
+     "outline": "solid 2px rgb(20, 20, 20)",
+     "box": [
+      354,
+      118
+     ],
+     "inShell": false
+    },
+    {
+     "tag": "A",
+     "text": "PART II \u203a Citizenship Articles 5\u201311 Not ",
+     "href": "/browse/part/ii",
+     "outline": "solid 2px rgb(20, 20, 20)",
+     "box": [
+      354,
+      118
+     ],
+     "inShell": false
+    },
+    {
+     "tag": "A",
+     "text": "PART III \u203a Fundamental Rights Articles 1",
+     "href": "/browse/part/iii",
+     "outline": "solid 2px rgb(20, 20, 20)",
+     "box": [
+      354,
+      118
+     ],
+     "inShell": false
+    },
+    {
+     "tag": "A",
+     "text": "PART IV \u203a Directive Principles Of State ",
+     "href": "/browse/part/iv",
+     "outline": "solid 2px rgb(20, 20, 20)",
+     "box": [
+      354,
+      118
+     ],
+     "inShell": false
+    },
+    {
+     "tag": "A",
+     "text": "PART V \u203a The Union Articles 52\u2013151 \u00b7 5 C",
+     "href": "/browse/part/v",
+     "outline": "solid 2px rgb(20, 20, 20)",
+     "box": [
+      354,
+      118
+     ],
+     "inShell": false
+    }
+   ]
+  },
+  {
+   "route": "/browse",
+   "width": 1280,
+   "stops": [
+    {
+     "tag": "A",
+     "text": "Recall the C",
+     "href": "/",
+     "outline": "solid 2px rgb(20, 20, 20)",
+     "box": [
+      131,
+      30
+     ],
+     "inShell": true,
+     "file": "focus_1280_browse_00.png"
+    },
+    {
+     "tag": "A",
+     "text": "Today",
+     "href": "/dashboard",
+     "outline": "solid 2px rgb(20, 20, 20)",
+     "box": [
+      90,
+      44
+     ],
+     "inShell": true,
+     "file": "focus_1280_browse_01.png"
+    },
+    {
+     "tag": "A",
+     "text": "Browse",
+     "href": "/browse",
+     "outline": "solid 2px rgb(20, 20, 20)",
+     "box": [
+      99,
+      44
+     ],
+     "inShell": true,
+     "file": "focus_1280_browse_02.png"
+    },
+    {
+     "tag": "A",
+     "text": "Playground",
+     "href": "/playground",
+     "outline": "solid 2px rgb(20, 20, 20)",
+     "box": [
+      124,
+      44
+     ],
+     "inShell": true,
+     "file": "focus_1280_browse_03.png"
+    },
+    {
+     "tag": "A",
+     "text": "Calendar",
+     "href": "/calendar",
+     "outline": "solid 2px rgb(20, 20, 20)",
+     "box": [
+      108,
+      44
+     ],
+     "inShell": true,
+     "file": "focus_1280_browse_04.png"
+    },
+    {
+     "tag": "A",
+     "text": "Profile",
+     "href": "/profile",
+     "outline": "solid 2px rgb(20, 20, 20)",
+     "box": [
+      94,
+      44
+     ],
+     "inShell": true,
+     "file": "focus_1280_browse_05.png"
+    },
+    {
+     "tag": "A",
+     "text": "Sign in",
+     "href": "/login",
+     "outline": "solid 2px rgb(20, 20, 20)",
+     "box": [
+      77,
+      44
+     ],
+     "inShell": true,
+     "file": "focus_1280_browse_06.png"
+    },
+    {
+     "tag": "A",
+     "text": "Sign in",
+     "href": "/login",
+     "outline": "solid 2px rgb(20, 20, 20)",
+     "box": [
+      74,
+      38
+     ],
+     "inShell": false
+    },
+    {
+     "tag": "A",
+     "text": "Laws Bare Acts & statutes \u203a",
+     "href": "/laws",
+     "outline": "solid 2px rgb(20, 20, 20)",
+     "box": [
+      395,
+      69
+     ],
+     "inShell": false
+    }
+   ]
+  },
+  {
+   "route": "/settings",
+   "width": 390,
+   "stops": [
+    {
+     "tag": "A",
+     "text": "\u2190 Today",
+     "href": "/dashboard",
+     "outline": "solid 2px rgb(20, 20, 20)",
+     "box": [
+      49,
+      44
+     ],
+     "inShell": false
+    },
+    {
+     "tag": "BUTTON",
+     "text": "Sign in",
+     "href": null,
+     "outline": "solid 2px rgb(20, 20, 20)",
+     "box": [
+      44,
+      44
+     ],
+     "inShell": false
+    },
+    {
+     "tag": "BUTTON",
+     "text": "Auto",
+     "href": null,
+     "outline": "solid 2px rgb(20, 20, 20)",
+     "box": [
+      105,
+      44
+     ],
+     "inShell": false
+    },
+    {
+     "tag": "BUTTON",
+     "text": "Light",
+     "href": null,
+     "outline": "solid 2px rgb(20, 20, 20)",
+     "box": [
+      105,
+      44
+     ],
+     "inShell": false
+    },
+    {
+     "tag": "BUTTON",
+     "text": "Dark",
+     "href": null,
+     "outline": "solid 2px rgb(20, 20, 20)",
+     "box": [
+      105,
+      44
+     ],
+     "inShell": false
+    },
+    {
+     "tag": "BUTTON",
+     "text": "Motion",
+     "href": null,
+     "outline": "solid 2px rgb(20, 20, 20)",
+     "box": [
+      46,
+      44
+     ],
+     "inShell": false
+    },
+    {
+     "tag": "BUTTON",
+     "text": "Sign in \u203a",
+     "href": null,
+     "outline": "solid 2px rgb(20, 20, 20)",
+     "box": [
+      352,
+      54
+     ],
+     "inShell": false
+    },
+    {
+     "tag": "BUTTON",
+     "text": "Report an issue \u203a",
+     "href": null,
+     "outline": "solid 2px rgb(20, 20, 20)",
+     "box": [
+      352,
+      54
+     ],
+     "inShell": false
+    },
+    {
+     "tag": "A",
+     "text": "Terms & Conditions",
+     "href": "/terms",
+     "outline": "solid 2px rgb(20, 20, 20)",
+     "box": [
+      130,
+      22
+     ],
+     "inShell": false
+    }
+   ]
+  },
+  {
+   "route": "/settings",
+   "width": 1280,
+   "stops": [
+    {
+     "tag": "A",
+     "text": "Recall the C",
+     "href": "/",
+     "outline": "solid 2px rgb(20, 20, 20)",
+     "box": [
+      131,
+      30
+     ],
+     "inShell": true,
+     "file": "focus_1280_settings_00.png"
+    },
+    {
+     "tag": "A",
+     "text": "Today",
+     "href": "/dashboard",
+     "outline": "solid 2px rgb(20, 20, 20)",
+     "box": [
+      90,
+      44
+     ],
+     "inShell": true,
+     "file": "focus_1280_settings_01.png"
+    },
+    {
+     "tag": "A",
+     "text": "Browse",
+     "href": "/browse",
+     "outline": "solid 2px rgb(20, 20, 20)",
+     "box": [
+      99,
+      44
+     ],
+     "inShell": true,
+     "file": "focus_1280_settings_02.png"
+    },
+    {
+     "tag": "A",
+     "text": "Playground",
+     "href": "/playground",
+     "outline": "solid 2px rgb(20, 20, 20)",
+     "box": [
+      124,
+      44
+     ],
+     "inShell": true,
+     "file": "focus_1280_settings_03.png"
+    },
+    {
+     "tag": "A",
+     "text": "Calendar",
+     "href": "/calendar",
+     "outline": "solid 2px rgb(20, 20, 20)",
+     "box": [
+      108,
+      44
+     ],
+     "inShell": true,
+     "file": "focus_1280_settings_04.png"
+    },
+    {
+     "tag": "A",
+     "text": "Profile",
+     "href": "/profile",
+     "outline": "solid 2px rgb(20, 20, 20)",
+     "box": [
+      94,
+      44
+     ],
+     "inShell": true,
+     "file": "focus_1280_settings_05.png"
+    },
+    {
+     "tag": "A",
+     "text": "Sign in",
+     "href": "/login",
+     "outline": "solid 2px rgb(20, 20, 20)",
+     "box": [
+      77,
+      44
+     ],
+     "inShell": true,
+     "file": "focus_1280_settings_06.png"
+    },
+    {
+     "tag": "BUTTON",
+     "text": "Auto",
+     "href": null,
+     "outline": "solid 2px rgb(20, 20, 20)",
+     "box": [
+      64,
+      32
+     ],
+     "inShell": false
+    },
+    {
+     "tag": "BUTTON",
+     "text": "Light",
+     "href": null,
+     "outline": "solid 2px rgb(20, 20, 20)",
+     "box": [
+      66,
+      32
+     ],
+     "inShell": false
+    }
+   ]
+  }
+ ],
+ "axtree": [
+  {
+   "route": "/browse",
+   "width": 390,
+   "navigations": [
+    {
+     "navigation": "Mobile",
+     "links": [
+      "Today",
+      "Browse",
+      "Playground",
+      "Calendar",
+      "Profile"
+     ]
+    }
+   ],
+   "ignored_svg_in_shell": 0
+  },
+  {
+   "route": "/browse",
+   "width": 1280,
+   "navigations": [
+    {
+     "navigation": "Primary",
+     "links": [
+      "Today",
+      "Browse",
+      "Playground",
+      "Calendar",
+      "Profile"
+     ]
+    },
+    {
+     "navigation": "Tools",
+     "links": [
+      "Tables",
+      "Relevant laws",
+      "Settings"
+     ]
+    },
+    {
+     "navigation": "Legal",
+     "links": [
+      "Terms",
+      "Privacy",
+      "Grievance"
+     ]
+    }
+   ],
+   "ignored_svg_in_shell": 0
+  },
+  {
+   "route": "/settings",
+   "width": 390,
+   "navigations": [
+    {
+     "navigation": "Mobile",
+     "links": [
+      "Today",
+      "Browse",
+      "Playground",
+      "Calendar",
+      "Profile"
+     ]
+    }
+   ],
+   "ignored_svg_in_shell": 0
+  },
+  {
+   "route": "/settings",
+   "width": 1280,
+   "navigations": [
+    {
+     "navigation": "Primary",
+     "links": [
+      "Today",
+      "Browse",
+      "Playground",
+      "Calendar",
+      "Profile"
+     ]
+    },
+    {
+     "navigation": "Tools",
+     "links": [
+      "Tables",
+      "Relevant laws",
+      "Settings"
+     ]
+    },
+    {
+     "navigation": "Legal",
+     "links": [
+      "Terms",
+      "Privacy",
+      "Grievance"
+     ]
+    }
+   ],
+   "ignored_svg_in_shell": 0
+  }
+ ]
+}

@@ -245,8 +245,10 @@ def test_phone_free_settings_is_live_screen11_contract(tmp_path: Path) -> None:
         assert f'href="{href}"' in panel
         assert client.get(href).status_code == 200
     assert "Bare Act text verbatim · Day 1 · 3 · 7 · 15 · 30 · 60" in panel
+    # M1 (DV-20): the header account slot carries "Free account" everywhere;
+    # the mock-copy check is scoped to the page body.
     for phrase in MOCK_SCREEN_COPY:
-        assert phrase not in html, phrase
+        assert phrase not in html.split("<main", 1)[1], phrase
     assert "/pricing" not in html
     assert "Guest · Reading only" not in panel
     assert "data-guest-settings-signin" not in panel
@@ -316,9 +318,9 @@ def test_phone_free_settings_css_is_breakpoint_scoped() -> None:
     assert "@media (min-width: 561px)" in desk
     assert "max-width: 720px" in desk
     assert "font-size: 30px" in desk
-    assert "playground.css?v=pg48" in BASE.read_text(encoding="utf-8")
-    assert "styles.css?v=main86" in BASE.read_text(encoding="utf-8")
-    assert "mobile.css?v=mob105" in BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg49" in BASE.read_text(encoding="utf-8")
+    assert "styles.css?v=main87" in BASE.read_text(encoding="utf-8")
+    assert "mobile.css?v=mob106" in BASE.read_text(encoding="utf-8")
     assert "mobile.css?v=mob104" not in BASE.read_text(encoding="utf-8")
     src = SETTINGS.read_text(encoding="utf-8")
     for phrase in MOCK_SCREEN_COPY:
@@ -329,10 +331,9 @@ def test_phone_free_settings_css_is_breakpoint_scoped() -> None:
     assert "data-signed-in-pg-gate" in GATE.read_text(encoding="utf-8")
     guest_css = PG_CSS.read_text(encoding="utf-8")
     assert "Guest phone Settings (CTA map guest/07-screen)" in guest_css
-    guest_chunk = BASE.read_text(encoding="utf-8").split(
-        "{% elif guest_settings %}", 1
-    )[1].split("{% elif", 1)[0]
-    assert "mobile-tabbar" not in guest_chunk
+    # M1: the per-screen guest branches are gone; guests share one bar.
+    assert "{% elif guest_settings %}" not in BASE.read_text(encoding="utf-8")
+    assert "data-guest-phone-tabs" in BASE.read_text(encoding="utf-8")
 
 
 def test_guest_plus_expired_halted_settings_stay_separate(tmp_path: Path) -> None:

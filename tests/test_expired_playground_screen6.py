@@ -446,8 +446,12 @@ def test_expired_playground_uses_shared_predicate_and_gate_view() -> None:
     assert "[data-expired-playground=\"desktop\"]" in css
     assert 'data-plus-playground="desktop"' in css
     styles = STYLES.read_text(encoding="utf-8")
-    assert ":has([data-expired-playground])" in styles
-    assert ":has([data-plus-playground])" in styles
+    # M1 (DV-20): styles.css no longer hides the account subtitle on Playground pages;
+    # the predicate is exercised by playground.css (asserted above).
+    assert ":has([data-expired-playground])" not in styles
+    # M1 (DV-20): styles.css no longer hides the account subtitle on Playground pages;
+    # the predicate is exercised by playground.css (asserted above).
+    assert ":has([data-plus-playground])" not in styles
 
 
 def test_plus_screens_and_expired_01_05_untouched() -> None:

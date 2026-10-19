@@ -406,8 +406,15 @@ def test_signed_in_pg_gate_1280_and_phone(tmp_path: Path) -> None:
     assert geo["stepCount"] == 4
     assert geo["stepTitles"] == list(HOW_TITLES)
     assert geo["howHasAnchors"] is False
-    assert geo["navDisplay"] == "none"
-    assert geo["visibleNav"] == []
+    # M1 DV-21: the desktop signed-in gate keeps the product top nav.
+    assert geo["navDisplay"] != "none"
+    assert geo["visibleNav"][:5] == [
+        "Today",
+        "Browse",
+        "Playground",
+        "Calendar",
+        "Profile",
+    ]
     assert geo["guestIntro"] is False
     assert geo["homeTitle"] is False
     assert geo["lawCard"] is False

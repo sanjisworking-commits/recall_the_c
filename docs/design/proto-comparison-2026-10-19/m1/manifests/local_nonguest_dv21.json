@@ -1,0 +1,1102 @@
+{
+ "label": "local_nonguest_dv21",
+ "clock": "2026-09-16T12:00:00+00:00",
+ "viewport": "1280x900",
+ "viewer": "non-guest cohorts (guest excluded)",
+ "fail_count": 0,
+ "rows": [
+  {
+   "cohort": "free",
+   "key": "playground",
+   "route": "/playground",
+   "hardGate": "true",
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "Free account",
+   "flags": {
+    "signedInGate": true,
+    "guestIntro": false,
+    "plusHome": false,
+    "expiredHome": false,
+    "haltedHome": false,
+    "signedAdd": false,
+    "plusAdd": false,
+    "expiredAdd": false
+   }
+  },
+  {
+   "cohort": "free",
+   "key": "plans",
+   "route": "/playground?stage=plans",
+   "hardGate": "true",
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "Free account",
+   "flags": {
+    "signedInGate": true,
+    "guestIntro": false,
+    "plusHome": false,
+    "expiredHome": false,
+    "haltedHome": false,
+    "signedAdd": false,
+    "plusAdd": false,
+    "expiredAdd": false
+   }
+  },
+  {
+   "cohort": "free",
+   "key": "plans-plus",
+   "route": "/playground?stage=plans&tier=plus",
+   "hardGate": "true",
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "Free account",
+   "flags": {
+    "signedInGate": true,
+    "guestIntro": false,
+    "plusHome": false,
+    "expiredHome": false,
+    "haltedHome": false,
+    "signedAdd": false,
+    "plusAdd": false,
+    "expiredAdd": false
+   }
+  },
+  {
+   "cohort": "free",
+   "key": "add-ndps",
+   "route": "/playground/laws/ndps/add",
+   "hardGate": "true",
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "Free account",
+   "flags": {
+    "signedInGate": false,
+    "guestIntro": false,
+    "plusHome": false,
+    "expiredHome": false,
+    "haltedHome": false,
+    "signedAdd": true,
+    "plusAdd": false,
+    "expiredAdd": false
+   }
+  },
+  {
+   "cohort": "free",
+   "key": "add-uapa",
+   "route": "/playground/laws/uapa/add",
+   "hardGate": "true",
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "Free account",
+   "flags": {
+    "signedInGate": false,
+    "guestIntro": false,
+    "plusHome": false,
+    "expiredHome": false,
+    "haltedHome": false,
+    "signedAdd": true,
+    "plusAdd": false,
+    "expiredAdd": false
+   }
+  },
+  {
+   "cohort": "plus",
+   "key": "playground",
+   "route": "/playground",
+   "hardGate": null,
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "RecallC Plus",
+   "flags": {
+    "signedInGate": false,
+    "guestIntro": false,
+    "plusHome": true,
+    "expiredHome": false,
+    "haltedHome": false,
+    "signedAdd": false,
+    "plusAdd": false,
+    "expiredAdd": false
+   }
+  },
+  {
+   "cohort": "plus",
+   "key": "plans",
+   "route": "/playground?stage=plans",
+   "hardGate": null,
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "RecallC Plus",
+   "flags": {
+    "signedInGate": false,
+    "guestIntro": false,
+    "plusHome": true,
+    "expiredHome": false,
+    "haltedHome": false,
+    "signedAdd": false,
+    "plusAdd": false,
+    "expiredAdd": false
+   }
+  },
+  {
+   "cohort": "plus",
+   "key": "plans-plus",
+   "route": "/playground?stage=plans&tier=plus",
+   "hardGate": null,
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "RecallC Plus",
+   "flags": {
+    "signedInGate": false,
+    "guestIntro": false,
+    "plusHome": true,
+    "expiredHome": false,
+    "haltedHome": false,
+    "signedAdd": false,
+    "plusAdd": false,
+    "expiredAdd": false
+   }
+  },
+  {
+   "cohort": "plus",
+   "key": "add-ndps",
+   "route": "/playground/laws/ndps/add",
+   "hardGate": null,
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "RecallC Plus",
+   "flags": {
+    "signedInGate": false,
+    "guestIntro": false,
+    "plusHome": false,
+    "expiredHome": false,
+    "haltedHome": false,
+    "signedAdd": false,
+    "plusAdd": true,
+    "expiredAdd": false
+   }
+  },
+  {
+   "cohort": "plus",
+   "key": "add-uapa",
+   "route": "/playground/laws/uapa/add",
+   "hardGate": null,
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "RecallC Plus",
+   "flags": {
+    "signedInGate": false,
+    "guestIntro": false,
+    "plusHome": false,
+    "expiredHome": false,
+    "haltedHome": false,
+    "signedAdd": false,
+    "plusAdd": false,
+    "expiredAdd": false
+   }
+  },
+  {
+   "cohort": "pro",
+   "key": "playground",
+   "route": "/playground",
+   "hardGate": null,
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "Free account",
+   "flags": {
+    "signedInGate": false,
+    "guestIntro": false,
+    "plusHome": false,
+    "expiredHome": false,
+    "haltedHome": false,
+    "signedAdd": false,
+    "plusAdd": false,
+    "expiredAdd": false
+   }
+  },
+  {
+   "cohort": "pro",
+   "key": "plans",
+   "route": "/playground?stage=plans",
+   "hardGate": null,
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "Free account",
+   "flags": {
+    "signedInGate": false,
+    "guestIntro": false,
+    "plusHome": false,
+    "expiredHome": false,
+    "haltedHome": false,
+    "signedAdd": false,
+    "plusAdd": false,
+    "expiredAdd": false
+   }
+  },
+  {
+   "cohort": "pro",
+   "key": "plans-plus",
+   "route": "/playground?stage=plans&tier=plus",
+   "hardGate": null,
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "Free account",
+   "flags": {
+    "signedInGate": false,
+    "guestIntro": false,
+    "plusHome": false,
+    "expiredHome": false,
+    "haltedHome": false,
+    "signedAdd": false,
+    "plusAdd": false,
+    "expiredAdd": false
+   }
+  },
+  {
+   "cohort": "pro",
+   "key": "add-ndps",
+   "route": "/playground/laws/ndps/add",
+   "hardGate": null,
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "RecallC Pro",
+   "flags": {
+    "signedInGate": false,
+    "guestIntro": false,
+    "plusHome": false,
+    "expiredHome": false,
+    "haltedHome": false,
+    "signedAdd": false,
+    "plusAdd": false,
+    "expiredAdd": false
+   }
+  },
+  {
+   "cohort": "pro",
+   "key": "add-uapa",
+   "route": "/playground/laws/uapa/add",
+   "hardGate": null,
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "RecallC Pro",
+   "flags": {
+    "signedInGate": false,
+    "guestIntro": false,
+    "plusHome": false,
+    "expiredHome": false,
+    "haltedHome": false,
+    "signedAdd": false,
+    "plusAdd": false,
+    "expiredAdd": false
+   }
+  },
+  {
+   "cohort": "max",
+   "key": "playground",
+   "route": "/playground",
+   "hardGate": null,
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "Free account",
+   "flags": {
+    "signedInGate": false,
+    "guestIntro": false,
+    "plusHome": false,
+    "expiredHome": false,
+    "haltedHome": false,
+    "signedAdd": false,
+    "plusAdd": false,
+    "expiredAdd": false
+   }
+  },
+  {
+   "cohort": "max",
+   "key": "plans",
+   "route": "/playground?stage=plans",
+   "hardGate": null,
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "Free account",
+   "flags": {
+    "signedInGate": false,
+    "guestIntro": false,
+    "plusHome": false,
+    "expiredHome": false,
+    "haltedHome": false,
+    "signedAdd": false,
+    "plusAdd": false,
+    "expiredAdd": false
+   }
+  },
+  {
+   "cohort": "max",
+   "key": "plans-plus",
+   "route": "/playground?stage=plans&tier=plus",
+   "hardGate": null,
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "Free account",
+   "flags": {
+    "signedInGate": false,
+    "guestIntro": false,
+    "plusHome": false,
+    "expiredHome": false,
+    "haltedHome": false,
+    "signedAdd": false,
+    "plusAdd": false,
+    "expiredAdd": false
+   }
+  },
+  {
+   "cohort": "max",
+   "key": "add-ndps",
+   "route": "/playground/laws/ndps/add",
+   "hardGate": null,
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "RecallC Max",
+   "flags": {
+    "signedInGate": false,
+    "guestIntro": false,
+    "plusHome": false,
+    "expiredHome": false,
+    "haltedHome": false,
+    "signedAdd": false,
+    "plusAdd": false,
+    "expiredAdd": false
+   }
+  },
+  {
+   "cohort": "max",
+   "key": "add-uapa",
+   "route": "/playground/laws/uapa/add",
+   "hardGate": null,
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "RecallC Max",
+   "flags": {
+    "signedInGate": false,
+    "guestIntro": false,
+    "plusHome": false,
+    "expiredHome": false,
+    "haltedHome": false,
+    "signedAdd": false,
+    "plusAdd": false,
+    "expiredAdd": false
+   }
+  },
+  {
+   "cohort": "paused",
+   "key": "playground",
+   "route": "/playground",
+   "hardGate": null,
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "Free account",
+   "flags": {
+    "signedInGate": false,
+    "guestIntro": false,
+    "plusHome": false,
+    "expiredHome": false,
+    "haltedHome": false,
+    "signedAdd": false,
+    "plusAdd": false,
+    "expiredAdd": false
+   }
+  },
+  {
+   "cohort": "paused",
+   "key": "plans",
+   "route": "/playground?stage=plans",
+   "hardGate": null,
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "Free account",
+   "flags": {
+    "signedInGate": false,
+    "guestIntro": false,
+    "plusHome": false,
+    "expiredHome": false,
+    "haltedHome": false,
+    "signedAdd": false,
+    "plusAdd": false,
+    "expiredAdd": false
+   }
+  },
+  {
+   "cohort": "paused",
+   "key": "plans-plus",
+   "route": "/playground?stage=plans&tier=plus",
+   "hardGate": null,
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "Free account",
+   "flags": {
+    "signedInGate": false,
+    "guestIntro": false,
+    "plusHome": false,
+    "expiredHome": false,
+    "haltedHome": false,
+    "signedAdd": false,
+    "plusAdd": false,
+    "expiredAdd": false
+   }
+  },
+  {
+   "cohort": "paused",
+   "key": "add-ndps",
+   "route": "/playground/laws/ndps/add",
+   "hardGate": null,
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "Free account",
+   "flags": {
+    "signedInGate": false,
+    "guestIntro": false,
+    "plusHome": false,
+    "expiredHome": false,
+    "haltedHome": false,
+    "signedAdd": false,
+    "plusAdd": false,
+    "expiredAdd": false
+   }
+  },
+  {
+   "cohort": "paused",
+   "key": "add-uapa",
+   "route": "/playground/laws/uapa/add",
+   "hardGate": null,
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "Free account",
+   "flags": {
+    "signedInGate": false,
+    "guestIntro": false,
+    "plusHome": false,
+    "expiredHome": false,
+    "haltedHome": false,
+    "signedAdd": false,
+    "plusAdd": false,
+    "expiredAdd": false
+   }
+  },
+  {
+   "cohort": "pending",
+   "key": "playground",
+   "route": "/playground",
+   "hardGate": null,
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "Free account",
+   "flags": {
+    "signedInGate": false,
+    "guestIntro": false,
+    "plusHome": false,
+    "expiredHome": false,
+    "haltedHome": false,
+    "signedAdd": false,
+    "plusAdd": false,
+    "expiredAdd": false
+   }
+  },
+  {
+   "cohort": "pending",
+   "key": "plans",
+   "route": "/playground?stage=plans",
+   "hardGate": null,
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "Free account",
+   "flags": {
+    "signedInGate": false,
+    "guestIntro": false,
+    "plusHome": false,
+    "expiredHome": false,
+    "haltedHome": false,
+    "signedAdd": false,
+    "plusAdd": false,
+    "expiredAdd": false
+   }
+  },
+  {
+   "cohort": "pending",
+   "key": "plans-plus",
+   "route": "/playground?stage=plans&tier=plus",
+   "hardGate": null,
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "Free account",
+   "flags": {
+    "signedInGate": false,
+    "guestIntro": false,
+    "plusHome": false,
+    "expiredHome": false,
+    "haltedHome": false,
+    "signedAdd": false,
+    "plusAdd": false,
+    "expiredAdd": false
+   }
+  },
+  {
+   "cohort": "pending",
+   "key": "add-ndps",
+   "route": "/playground/laws/ndps/add",
+   "hardGate": null,
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "RecallC Plus",
+   "flags": {
+    "signedInGate": false,
+    "guestIntro": false,
+    "plusHome": false,
+    "expiredHome": false,
+    "haltedHome": false,
+    "signedAdd": false,
+    "plusAdd": false,
+    "expiredAdd": false
+   }
+  },
+  {
+   "cohort": "pending",
+   "key": "add-uapa",
+   "route": "/playground/laws/uapa/add",
+   "hardGate": null,
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "RecallC Plus",
+   "flags": {
+    "signedInGate": false,
+    "guestIntro": false,
+    "plusHome": false,
+    "expiredHome": false,
+    "haltedHome": false,
+    "signedAdd": false,
+    "plusAdd": false,
+    "expiredAdd": false
+   }
+  },
+  {
+   "cohort": "expired",
+   "key": "playground",
+   "route": "/playground",
+   "hardGate": null,
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "Your Playground is paused",
+   "flags": {
+    "signedInGate": false,
+    "guestIntro": false,
+    "plusHome": false,
+    "expiredHome": true,
+    "haltedHome": false,
+    "signedAdd": false,
+    "plusAdd": false,
+    "expiredAdd": false
+   }
+  },
+  {
+   "cohort": "expired",
+   "key": "plans",
+   "route": "/playground?stage=plans",
+   "hardGate": null,
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "Your Playground is paused",
+   "flags": {
+    "signedInGate": false,
+    "guestIntro": false,
+    "plusHome": false,
+    "expiredHome": true,
+    "haltedHome": false,
+    "signedAdd": false,
+    "plusAdd": false,
+    "expiredAdd": false
+   }
+  },
+  {
+   "cohort": "expired",
+   "key": "plans-plus",
+   "route": "/playground?stage=plans&tier=plus",
+   "hardGate": null,
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "Your Playground is paused",
+   "flags": {
+    "signedInGate": false,
+    "guestIntro": false,
+    "plusHome": false,
+    "expiredHome": true,
+    "haltedHome": false,
+    "signedAdd": false,
+    "plusAdd": false,
+    "expiredAdd": false
+   }
+  },
+  {
+   "cohort": "expired",
+   "key": "add-ndps",
+   "route": "/playground/laws/ndps/add",
+   "hardGate": null,
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "Free account",
+   "flags": {
+    "signedInGate": false,
+    "guestIntro": false,
+    "plusHome": false,
+    "expiredHome": false,
+    "haltedHome": false,
+    "signedAdd": false,
+    "plusAdd": false,
+    "expiredAdd": true
+   }
+  },
+  {
+   "cohort": "expired",
+   "key": "add-uapa",
+   "route": "/playground/laws/uapa/add",
+   "hardGate": null,
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "Free account",
+   "flags": {
+    "signedInGate": false,
+    "guestIntro": false,
+    "plusHome": false,
+    "expiredHome": false,
+    "haltedHome": false,
+    "signedAdd": false,
+    "plusAdd": false,
+    "expiredAdd": true
+   }
+  },
+  {
+   "cohort": "halted",
+   "key": "playground",
+   "route": "/playground",
+   "hardGate": null,
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "Payment retries have stopped",
+   "flags": {
+    "signedInGate": false,
+    "guestIntro": false,
+    "plusHome": false,
+    "expiredHome": false,
+    "haltedHome": true,
+    "signedAdd": false,
+    "plusAdd": false,
+    "expiredAdd": false
+   }
+  },
+  {
+   "cohort": "halted",
+   "key": "plans",
+   "route": "/playground?stage=plans",
+   "hardGate": null,
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "Payment retries have stopped",
+   "flags": {
+    "signedInGate": false,
+    "guestIntro": false,
+    "plusHome": false,
+    "expiredHome": false,
+    "haltedHome": true,
+    "signedAdd": false,
+    "plusAdd": false,
+    "expiredAdd": false
+   }
+  },
+  {
+   "cohort": "halted",
+   "key": "plans-plus",
+   "route": "/playground?stage=plans&tier=plus",
+   "hardGate": null,
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "Payment retries have stopped",
+   "flags": {
+    "signedInGate": false,
+    "guestIntro": false,
+    "plusHome": false,
+    "expiredHome": false,
+    "haltedHome": true,
+    "signedAdd": false,
+    "plusAdd": false,
+    "expiredAdd": false
+   }
+  },
+  {
+   "cohort": "halted",
+   "key": "add-ndps",
+   "route": "/playground/laws/ndps/add",
+   "hardGate": null,
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "Free account",
+   "flags": {
+    "signedInGate": false,
+    "guestIntro": false,
+    "plusHome": false,
+    "expiredHome": false,
+    "haltedHome": false,
+    "signedAdd": false,
+    "plusAdd": false,
+    "expiredAdd": true
+   }
+  },
+  {
+   "cohort": "halted",
+   "key": "add-uapa",
+   "route": "/playground/laws/uapa/add",
+   "hardGate": null,
+   "topNavVis": true,
+   "topNavDisplay": "flex",
+   "topLabels": [
+    "Today",
+    "Browse",
+    "Playground",
+    "Calendar",
+    "Profile"
+   ],
+   "status": "Free account",
+   "flags": {
+    "signedInGate": false,
+    "guestIntro": false,
+    "plusHome": false,
+    "expiredHome": false,
+    "haltedHome": false,
+    "signedAdd": false,
+    "plusAdd": false,
+    "expiredAdd": true
+   }
+  }
+ ],
+ "captures": [
+  {
+   "file": "nonguest_free_playground_1280x900.png",
+   "bytes": 56535,
+   "sha256": "7e0e84c2fe27c8307da43df58e6fec4996924557eba891c08bd35e03266bc87e"
+  },
+  {
+   "file": "nonguest_plus_playground_1280x900.png",
+   "bytes": 78348,
+   "sha256": "aef2fae24f832e85c5cb97c551fd43f6e8ccfc7df1dc95f69f8ee59dbed9e1cb"
+  },
+  {
+   "file": "nonguest_pro_add-ndps_1280x900.png",
+   "bytes": 58570,
+   "sha256": "99d8795fa27c6c9681ed1004e6a6a93a2cfb0956462295c5a1d7a35793d19d6e"
+  },
+  {
+   "file": "nonguest_max_playground_1280x900.png",
+   "bytes": 85084,
+   "sha256": "0ded01e7cad3e9daae9e3f316b0bc010544d458f401b25c82702c0543b8df51b"
+  },
+  {
+   "file": "nonguest_paused_playground_1280x900.png",
+   "bytes": 73752,
+   "sha256": "f5fae51a960545672fd312fcdac8b2521d63d580e7fb219b80ef62c34a00c9bf"
+  },
+  {
+   "file": "nonguest_pending_playground_1280x900.png",
+   "bytes": 101791,
+   "sha256": "8e09ee25d3b5c2999515181ea48cf626a2773374f91b99a840c88d2c9ec79d00"
+  },
+  {
+   "file": "nonguest_expired_playground_1280x900.png",
+   "bytes": 45884,
+   "sha256": "7feb4b3d00847514d3d2f2961f6723db746d354601296c6e019c1d9b64e7c9ba"
+  },
+  {
+   "file": "nonguest_halted_playground_1280x900.png",
+   "bytes": 44913,
+   "sha256": "193705664e6e5715073dda2acb50fcc027a7a9215fe760b3c0eb7291f64decb7"
+  },
+  {
+   "file": "nonguest_plus_add-ndps_1280x900.png",
+   "bytes": 50919,
+   "sha256": "f8d56ab21bc746cc8297afaa2b63e3b3edcda905d7c9426971cf0c6ad0181891"
+  },
+  {
+   "file": "nonguest_free_add-uapa_1280x900.png",
+   "bytes": 48359,
+   "sha256": "225c9cec911d8b7886f509d47a42934f815dbe2cd25f98c4b9fe2ff6f9d8b4d3"
+  }
+ ],
+ "note": "Computed-style CDP. M1 not accepted. Guest is on Claude's hosted matrix."
+}

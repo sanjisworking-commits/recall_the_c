@@ -121,8 +121,8 @@
 
 
   /* ── Tab bar (all designs that show one) ────────────────────────────────
-     Four icons + 10.5px/600 labels. Active is ink; no top-rule. Guest bar
-     stays text-only (prototype never redesigned it). */
+     Five icons + 10.5px/600 labels. Active is ink; no top-rule. Guests
+     share the same bar (M1). */
   body[data-mscreen] .mobile-tabbar {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
@@ -135,10 +135,6 @@
     backdrop-filter: saturate(1.1) blur(16px);
     border-top: 1px solid var(--rc-hairline);
     padding-bottom: env(safe-area-inset-bottom, 0);
-  }
-
-  body[data-mscreen] .mobile-tabbar.is-guest {
-    grid-template-columns: repeat(4, 1fr);
   }
 
   body[data-mscreen] .mobile-tab {
@@ -161,16 +157,6 @@
     flex: 0 0 auto;
   }
 
-  body[data-mscreen] .mobile-tabbar.is-guest .mobile-tab-icon {
-    display: none;
-  }
-
-  body[data-mscreen] .mobile-tabbar.is-guest .mobile-tab {
-    flex-direction: row;
-    font-size: 11.5px;
-    font-weight: 400;
-  }
-
   body[data-mscreen] .mobile-tab.is-active {
     color: var(--ink);
   }
@@ -188,6 +174,23 @@
   body[data-mscreen="expired"] .mobile-tabbar,
   body[data-mscreen="settings"] .mobile-tabbar {
     display: none;
+  }
+
+  /* M1-A02 (guest shell only): inactive labels at 4.5:1 (--muted 5.33:1 light, 5.93:1 dark)
+     instead of --mid (3.24:1 light). Signed-in bars keep --mid pending the owner's decision. */
+  body.is-guest[data-mscreen] .mobile-tab {
+    color: var(--muted);
+  }
+
+  body.is-guest[data-mscreen] .mobile-tab.is-active {
+    color: var(--ink);
+  }
+
+  /* M1 guest shell: guests keep the five tabs on Settings and Search
+     (signed-in screens keep their frozen behaviour above). */
+  body.is-guest[data-mscreen="settings"] .mobile-tabbar,
+  body.is-guest[data-mscreen="search"] .mobile-tabbar {
+    display: grid;
   }
 
   /* ── Shared phone furniture ─────────────────────────────────────────────*/

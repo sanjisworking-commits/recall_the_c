@@ -92,14 +92,11 @@ def test_screen4_guest_ndps_uses_screen2_header(tmp_path: Path) -> None:
     header = _header(html)
     nav = _primary_nav(html)
     assert "data-guest-bareact-desktop" in html
-    assert "<span class=\"brand\"" in header
-    assert 'class="brand" href=' not in header
+    assert '<a class="brand" href="/"' in header  # M1: one brand link
     assert 'src="/static/main_logo.png"' in header
     assert "Recall the C" in header
-    assert "data-guest-account-menu" in header
-    assert 'account-menu-btn-name">Guest<' in header
-    assert "Not signed in" in header
-    assert "nav-signin" not in header
+    assert "data-guest-account-menu" not in header
+    assert '<a class="nav-signin" href="/login">Sign in</a>' in header  # M1 shell
     assert ">Home<" not in nav
     assert ">Search<" not in nav
     assert ">Learn<" not in nav

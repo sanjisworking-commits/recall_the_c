@@ -470,7 +470,7 @@ def test_halted_laws_uses_shared_predicate() -> None:
     assert "data-halted-laws" not in PG_CSS.read_text(encoding="utf-8")
     assert "data-halted-laws" not in STYLES.read_text(encoding="utf-8")
     assert "data-halted-laws" not in MOBILE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg48" in BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg49" in BASE.read_text(encoding="utf-8")
 
 
 def test_plus_expired_and_halted_01_02_untouched() -> None:

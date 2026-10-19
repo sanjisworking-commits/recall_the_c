@@ -614,10 +614,10 @@ def test_phone_expired_css_scope_pins_banner_once_and_desktop_06_untouched() -> 
     assert "require_playground_home" in routes
     assert '"expired_playground": expired_playground' in routes
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg48" in base
+    assert "playground.css?v=pg49" in base
     assert "playground.css?v=pg42" not in base
-    assert "styles.css?v=main86" in base
-    assert "mobile.css?v=mob105" in base
+    assert "styles.css?v=main87" in base
+    assert "mobile.css?v=mob106" in base
     assert "data-expired-pg-phone-tabs" not in base
     assert "data-expired-bareact-phone-tabs" in base
 
