@@ -76,7 +76,19 @@ Read-only probe of `https://recallthec-production.up.railway.app`:
 - Live `alembic_version` on the staging DSN (read-only, 2026-10-19): `20260927_0027`.
 - Last recorded flags (M1-evidence §10, not re-read from Railway vars): `APP_ENV=staging`, `PLAYGROUND_ENABLED=true`, `PRICING_ENABLED=false`, `ADMIN_ENABLED=false`.
 
-**M1:** hosted signed-in Free matrix for `sanjisworking@gmail.com` is recorded in `docs/design/milestones/M1-evidence.md` §10.5 on `cursor/hosted-free-m1-matrix-7c6d` (`70f036d7ab11a36877f504624e6cfb3fb701054c`), against staging SHA `3b37f8947c05577b57af93a2a53f1ac5539c4e3a`. The account was still Free during that capture. Recording the matrix does not accept M1.
+**M1:** hosted signed-in Free matrix for `sanjisworking@gmail.com` is recorded in `docs/design/milestones/M1-evidence.md` §10.5 on `cursor/hosted-free-m1-matrix-7c6d` (`70f036d7ab11a36877f504624e6cfb3fb701054c`), against staging SHA `3b37f8947c05577b57af93a2a53f1ac5539c4e3a`. Recording the matrix does not accept M1. The 561 px duplicate navigation and overlapping avatar stay open.
+
+## Gate B grants (2026-10-19)
+
+Applied with `apply --all --commit` after a fresh eligibility check. Operator `2093aa58-b6ac-4373-9382-30a66ad17d45`. Database `aws-0-ap-northeast-1.pooler.supabase.com:5432` / `postgres` / `postgres.tvygwasuqvtnzjyjtqrq`. Alembic `20260927_0027`. Three current rows, no charge rows, device and roster counts still 0.
+
+| Cohort | Account | Subscription | Period (UTC) | Audit |
+|---|---|---|---|---|
+| Plus | `2093aa58-b6ac-4373-9382-30a66ad17d45` | `2f967e11-fdd8-45b7-bec6-6421ad425109` | `2026-10-18T20:30:29Z` – `2026-11-16T20:30:29Z` | `bd77491a-fd60-42ea-99ab-8add6df75df9` |
+| Pro | `50cc6c08-beaa-4f21-8bd8-ef7d73c0c47d` | `4b0aaa22-c151-498e-897b-627f5c93dede` | `2026-10-18T20:30:30Z` – `2026-11-16T20:30:30Z` | `cd627b19-ba98-4436-bca6-3349f170a916` |
+| Max | `1134a7d0-8d9c-4e12-8d4d-9803f909b24c` | `a04780d7-fe86-4670-a6ca-350208519e5c` | `2026-10-18T20:30:31Z` – `2026-11-16T20:30:31Z` | `41603461-2e6f-4f9f-8a1b-a774f5af775c` |
+
+Each row is `active`, `is_current`, helper-owned, and resolves to its own tier with Playground open. Live profile shows RecallC Plus (10 laws), RecallC Pro (30 laws), and RecallC Max (unlimited), each Active through 17 November in the page's local date. Pro and Max Playground headers still say "Free account"; that copy fallback is unchanged. No expired, halted, or renewal fixtures.
 
 **M2 (UI-fidelity Act heads):** no `docs/design/milestones/M2.md`. Open playground-stack PRs on 2026-10-19: #218 M0 audit, #219 M1 guest shell, #217 admin paywall bypass (do not use), #210 study calendar, #188 UI redesign. None is an M2 Act-heads milestone PR. Absence of a milestone file is not the only check; this branch/PR scan is. Confirm again at Gate B.
 
