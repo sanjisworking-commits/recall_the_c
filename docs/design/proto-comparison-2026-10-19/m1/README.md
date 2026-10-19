@@ -1,10 +1,12 @@
 # M1 local evidence — captures
 
-Candidate `5a03044c1bdbdec21f9581cc0bd8e3db162be894` vs frozen `5d89fbd`, local server on port 8912, Google Chrome 155.0.8059.82, DPR 1.
+Candidate `7f78992b257ad223603a99bc286be8bb622be310` vs frozen `5d89fbd`, local server on port 8912, Google Chrome 155.0.8059.82, DPR 1.
 
 Committed here: light-theme captures (candidate: guest + signed-in Free, 390×844 and 1280×900; frozen: guest). Every capture of the full set — both themes, the responsive widths, frozen and candidate — is hashed in `manifests/*.json` and preserved in the archive below.
 
-Archive: `m1-local-evidence-5a03044.zip` (outside the repo, 27,214,507 bytes), SHA-256 `2dbfea572bf7795a0bdc581e27e8178f786ab06f97435a1272cf70e8794ae46e`.
+Archive: `m1-local-evidence-7f78992.zip` (outside the repo, 28,939,927 bytes), SHA-256 `92178bc091b246331d26b29043e33eadff958b5767b255eee99202c8e46d1ad1`.
+
+Reviewable gallery of every capture (frozen vs candidate side by side, both themes, responsive, zoom and focus): https://claude.ai/artifact/1gkWC3z1VfZEwbFryyR2va
 
 Regenerate: `tools/capture_local.py --base http://127.0.0.1:8912 --out DIR --label candidate [--signin]` against the dev launcher; `tools/compare_manifests.py frozen.json candidate.json` renders the diff tables; `tools/manifest_table.py` renders one manifest.
 
@@ -58,54 +60,102 @@ Regenerate: `tools/capture_local.py --base http://127.0.0.1:8912 --out DIR --lab
 | `frozen/frozen_guest_tables_390x844_light.png` | `6f523420628918c13103b6aeecd5747bf0437620671abbad8f4c77e70ed1d131` |
 | `frozen/frozen_guest_terms_1280x900_light.png` | `db0d17d16b6d4029f4875ccd94a9787698214fbbd0e282214de01c2d6ff502c2` |
 | `frozen/frozen_guest_terms_390x844_light.png` | `f97a0ac2a6738cfc5f52dba2e8e9a5b506a904311c145ccb3472dada1043dd81` |
-| `candidate/candidate_guest_article-14_1280x900_light.png` | `022bf920177138a2e7d100f48233b395ea0a59dcb6b073755998f29c5307d7fa` |
+| `frozen/frozen_signedin-free_article-14_1280x900_light.png` | `8e69d850ee4a1cc316eba278c70abca115553ec821bbd81da202153087d34c3c` |
+| `frozen/frozen_signedin-free_article-14_390x844_light.png` | `4fafccb32332b5fcf71b3384e78540479d4d5febc82ff6ac3803f16e8da0c0e1` |
+| `frozen/frozen_signedin-free_browse-part-iii_1280x900_light.png` | `0b4920d2c411642d9a041e62322f8c4adf0bfd3841c11bbb2574e90bdb6093b9` |
+| `frozen/frozen_signedin-free_browse-part-iii_390x844_light.png` | `0743ea116b1bdb4b144a991ce4e40fa8bd18079e572072022e38214cf8d3f40b` |
+| `frozen/frozen_signedin-free_browse_1280x900_light.png` | `394c96362cc3af048c61d7d25f62cde182ea03457caac6890a1b821aa7516dc0` |
+| `frozen/frozen_signedin-free_browse_390x844_light.png` | `9a0307e1539631034a60fdf4060e2f2d71fb01e0eb00856fb08b2b78fc7a0f62` |
+| `frozen/frozen_signedin-free_calendar_1280x900_light.png` | `dd5bcecb1a6a93324943c533433eb44890f0089e28cfc09a6837a8c0f88673dc` |
+| `frozen/frozen_signedin-free_calendar_390x844_light.png` | `e74481cfc45a5a9db8e928e3c17b8b382481549715157bf4b8b826644f387dd4` |
+| `frozen/frozen_signedin-free_dashboard_1280x900_light.png` | `173c5afed2e35b2aa012dba53e94b677270bb6fa414fd20e8ade0ea953867acb` |
+| `frozen/frozen_signedin-free_dashboard_390x844_light.png` | `165c3df2b91ac7f57d49fa2aad59403adb8c99d6e5daf7979d9863a702d2436a` |
+| `frozen/frozen_signedin-free_devices_1280x900_light.png` | `1c8bbbdd0e4da842edb5e4d3e83568b1e89d09d0913719dfacc16215c9ee2de7` |
+| `frozen/frozen_signedin-free_devices_390x844_light.png` | `81ebabcba141e62d0189d10a5d12ed0727a9b7c9eec4d0cd33bc8de971d5c4af` |
+| `frozen/frozen_signedin-free_grievance_1280x900_light.png` | `267b3fe8e04096b1ceb66ca7ec9ca9651e38b18164eca1ce42101547d610276c` |
+| `frozen/frozen_signedin-free_grievance_390x844_light.png` | `488ba05ee66af1add0608ededff0684be20399a888d744f8a21b8f4142a9fb38` |
+| `frozen/frozen_signedin-free_landing_1280x900_light.png` | `0c5cbd284b0ac46b4340e7e1bfbf06c7fde0c1481183cdab8fe5c02f9498f355` |
+| `frozen/frozen_signedin-free_landing_390x844_light.png` | `157730a8ee76bd9546514346a1bdd72928a8c4eaf1441d22a1ccf49f0f3c69f6` |
+| `frozen/frozen_signedin-free_laws-bns_1280x900_light.png` | `4745bbc873b36f2b57516034407f31df00f0431eb0dc1fdd8ef7e8ef12a11383` |
+| `frozen/frozen_signedin-free_laws-bns_390x844_light.png` | `00fc4f41f963487f2b3decafd136e97867e17e76544de5d971ca1b7ba5873324` |
+| `frozen/frozen_signedin-free_laws-mtp_1280x900_light.png` | `9ba554e5ad59fb14e8990fdfd54a4613f4999c0133f324474b699d70368eb705` |
+| `frozen/frozen_signedin-free_laws-mtp_390x844_light.png` | `6dac1d671883062a453d1c2b9db19ae47371b231e3e58211656cdcbc868397e1` |
+| `frozen/frozen_signedin-free_laws-ndps_1280x900_light.png` | `f40535af57ecf19995e6a5ff1645b97f6aee9ea901fa38618372460e4643ec56` |
+| `frozen/frozen_signedin-free_laws-ndps_390x844_light.png` | `4f4db282b691b7fc47e2250f61248ffabb6d0d80403bfbf796a56bfcc6001ccd` |
+| `frozen/frozen_signedin-free_laws-uapa_1280x900_light.png` | `c4a62d2b2f7265e0cde4f9d1db4f89d0358f5d673ecc4b984172db291f9552d0` |
+| `frozen/frozen_signedin-free_laws-uapa_390x844_light.png` | `ee2663849569d544b9555f41b7d8f0ebf172c1b847fb6de59f2061ab76868504` |
+| `frozen/frozen_signedin-free_laws_1280x900_light.png` | `bafd11aeab7ccf09cecc5bb0b65c508ba18452ac8cbab36946fce86254c5c433` |
+| `frozen/frozen_signedin-free_laws_390x844_light.png` | `2ed46bd1ca32aff25292dd48c4d877711050e8b2b9660cd4ca2827b6b3aca248` |
+| `frozen/frozen_signedin-free_ndps-section-8_1280x900_light.png` | `d8487bb9b1ff0a7aa7350b3c573bfc33b0465425b813507408b4771cbced1581` |
+| `frozen/frozen_signedin-free_ndps-section-8_390x844_light.png` | `dcbc2b744aeb0f875180ca836e197ab318f265a0f55cb1cf9389d804e323e993` |
+| `frozen/frozen_signedin-free_playground-add-uapa_1280x900_light.png` | `543569036e06f1650c7b19b51a0a182d4a6eeb14c9bb2dbf9d1bc43c5a7d5082` |
+| `frozen/frozen_signedin-free_playground-add-uapa_390x844_light.png` | `fe4053fb6ec4d2ede06ed1c5b738a4a2e2975f2022240dbacb973063abfd30ae` |
+| `frozen/frozen_signedin-free_playground-plans-plus_1280x900_light.png` | `bbfe41a7037a9e00bc1435e7c020cfb49767ae4fbb36e0b97c7a06dbb82a0757` |
+| `frozen/frozen_signedin-free_playground-plans-plus_390x844_light.png` | `02d2ee74862a9537d28f2f0badd5190f115ea8340b9b1fe2a1382a9841c82368` |
+| `frozen/frozen_signedin-free_playground-plans_1280x900_light.png` | `4e3dfb8272cb888325bd4462208699851fc5d0048c6275d38263999abfca7e58` |
+| `frozen/frozen_signedin-free_playground-plans_390x844_light.png` | `5dff4fa0dba408695ac656450ca433cecf0aef12338478ef2c876ad672050893` |
+| `frozen/frozen_signedin-free_playground_1280x900_light.png` | `0c6a953be5eda99fd46ad9d764b05af47fb5cc3a69055e47b2860fd46b911053` |
+| `frozen/frozen_signedin-free_playground_390x844_light.png` | `15ed1035bb0b871ef10d87586726a7d84c8012799417d182d9b3d805c890d990` |
+| `frozen/frozen_signedin-free_privacy_1280x900_light.png` | `092e17554bcfe3974546fae798cedc5eedd1f09354c50b0f1809eeb9266bbf40` |
+| `frozen/frozen_signedin-free_privacy_390x844_light.png` | `3cc7e3a45f390eecf61a5d0b00a4184425afc9ee0a3091014f36dab33b1dcd1c` |
+| `frozen/frozen_signedin-free_profile_1280x900_light.png` | `7864357a4a071cb2c4037d24c2bb58f2ac27ce7b99b9efa160d96b48f747f72c` |
+| `frozen/frozen_signedin-free_profile_390x844_light.png` | `34cb305b0ce7b8c6cecc3b8fc20a15c3026faadd930e9c40c2853eb031f6dba6` |
+| `frozen/frozen_signedin-free_search_1280x900_light.png` | `74ebf6998dc87b90ea96b640c92b8e7e26a5b2ac0ca18ec63c9f0a45884a9a32` |
+| `frozen/frozen_signedin-free_search_390x844_light.png` | `e7ab261c14644289905910ec24c09c08c17bd45fc65156e40c45c9e93e735299` |
+| `frozen/frozen_signedin-free_settings_1280x900_light.png` | `1996a3faebd7f3d6201ad564cbda9b964c3ccf2f8670f18222a72ee01508a9fd` |
+| `frozen/frozen_signedin-free_settings_390x844_light.png` | `da494da62b8262772be275e23e5f4dd451f0aceb4c56f6167723117115b0dd00` |
+| `frozen/frozen_signedin-free_tables_1280x900_light.png` | `c091841450bce01f999a2306c116701b22b65799e2c5dab477e4f1914c9cb7c5` |
+| `frozen/frozen_signedin-free_tables_390x844_light.png` | `635b3a20ca23e02edb145169b3b3b89c3c0c3c38005a38aa8584d61250f7197b` |
+| `frozen/frozen_signedin-free_terms_1280x900_light.png` | `df91ead47f5ccae4161197b7d89dafc152566d6019c7273bbeb3e41cf87c3f49` |
+| `frozen/frozen_signedin-free_terms_390x844_light.png` | `954b4e098356dd22921f96859b25c9bcbf7f69d1dfdfc061d64f39ca2cf1044e` |
+| `candidate/candidate_guest_article-14_1280x900_light.png` | `27482533643cde1f8dfbfeb9b691c5675025095cc396903dc15a61b1bae138d8` |
 | `candidate/candidate_guest_article-14_390x844_light.png` | `4fafccb32332b5fcf71b3384e78540479d4d5febc82ff6ac3803f16e8da0c0e1` |
-| `candidate/candidate_guest_browse-part-iii_1280x900_light.png` | `25f7b675e15359a15df50486e9479e0d183787fd8cf86a7d7b389c3c4709cb62` |
-| `candidate/candidate_guest_browse-part-iii_390x844_light.png` | `0743ea116b1bdb4b144a991ce4e40fa8bd18079e572072022e38214cf8d3f40b` |
-| `candidate/candidate_guest_browse_1280x900_light.png` | `b31457d1a813338781342e6ad800758d31a43b0cd9e11805e518a7ec2d86c54a` |
-| `candidate/candidate_guest_browse_390x844_light.png` | `628e1881eab1ee93b38fdb2be055d55d6740590603c62db2bf9d8bbac8f7293b` |
+| `candidate/candidate_guest_browse-part-iii_1280x900_light.png` | `eb2cf7a777fdddea097fa973fb6667faa3d508bbbfb44f0d2354e174076401a5` |
+| `candidate/candidate_guest_browse-part-iii_390x844_light.png` | `87c2c5257cf9bb8bd34230799f9e48a59b5c2c027d1bfef821338d1c841b66d3` |
+| `candidate/candidate_guest_browse_1280x900_light.png` | `aac5316ae481acdbf6e6008b53f2d6b03251036845e22a976692359afe267c54` |
+| `candidate/candidate_guest_browse_390x844_light.png` | `1f78196e08cef4dba3677dda8360bcb6206862b8670c7dc36e7bba5f21a8bf3a` |
 | `candidate/candidate_guest_calendar_1280x900_light.png` | `e87d40508b3aca67107da8da33f6098ac908621b7f357f70488b6519a2778cf1` |
 | `candidate/candidate_guest_calendar_390x844_light.png` | `7d99e3483204e116a71d7b84b5bb660ac055ee2b3f2d756ed62230c7ee22b53f` |
-| `candidate/candidate_guest_dashboard_1280x900_light.png` | `545c2b4928342daba2f235ae9c3cf55e953f5bd24ffd83f770ffe2b5ee02a90a` |
-| `candidate/candidate_guest_dashboard_390x844_light.png` | `79cb538b0df6e574fa57476f727d691d5baf3fe4a0cd16998499475ef4a54dc8` |
+| `candidate/candidate_guest_dashboard_1280x900_light.png` | `6ec43d69cbec90176518f6e8a07e6e03217a4b9f5c927a43248f2030dbde2838` |
+| `candidate/candidate_guest_dashboard_390x844_light.png` | `41fe10de3aacf75644e51e2776417a98bc71885d634bc157ba8c9519f39e69ff` |
 | `candidate/candidate_guest_devices_1280x900_light.png` | `e87d40508b3aca67107da8da33f6098ac908621b7f357f70488b6519a2778cf1` |
 | `candidate/candidate_guest_devices_390x844_light.png` | `7d99e3483204e116a71d7b84b5bb660ac055ee2b3f2d756ed62230c7ee22b53f` |
-| `candidate/candidate_guest_grievance_1280x900_light.png` | `e3a4ee2a39d0c33cdc5eeec875d208eaa0c3765e3ef6720a0d98afb93d6c50e7` |
-| `candidate/candidate_guest_grievance_390x844_light.png` | `488ba05ee66af1add0608ededff0684be20399a888d744f8a21b8f4142a9fb38` |
+| `candidate/candidate_guest_grievance_1280x900_light.png` | `bc004189aaaa8eb665ca611c7bc36fa5f11712072bf1bde7bcae5757fc5c1c8c` |
+| `candidate/candidate_guest_grievance_390x844_light.png` | `1ad267fb245e39bd6e62b8975165e1cf2d96685a3fbd858ca5a81f591891ee94` |
 | `candidate/candidate_guest_landing_1280x900_light.png` | `0c5cbd284b0ac46b4340e7e1bfbf06c7fde0c1481183cdab8fe5c02f9498f355` |
-| `candidate/candidate_guest_landing_390x844_light.png` | `2314ff890eda56f1dc28e2e3c300228663204b004c4c0e0e1b77e6c66299c2bc` |
-| `candidate/candidate_guest_laws-bns_1280x900_light.png` | `30e51d08300bf49b689deb56d17df3da29f822e9c7222cfe6966b684df85ecb6` |
-| `candidate/candidate_guest_laws-bns_390x844_light.png` | `be9f6cc21036000d68e166b1d6ad927be179471b360febe67581642f48187447` |
-| `candidate/candidate_guest_laws-mtp_1280x900_light.png` | `c02c317cd2c4e42042586f4a4dc1e1032467db22bdefdc1f6b4f53972a036d9f` |
-| `candidate/candidate_guest_laws-mtp_390x844_light.png` | `b39a75208dd854ccf8bda4762b018257cf96f44966723ff4bfd2560685b908bc` |
-| `candidate/candidate_guest_laws-ndps_1280x900_light.png` | `868d39d074c32a8d052d82f2a67b336bb0d628ec46d5202f3eb8218831a6e9fb` |
-| `candidate/candidate_guest_laws-ndps_390x844_light.png` | `797af70e0c1741e34caddd827b0f1a46eb9967785e0cb118419668c041278792` |
-| `candidate/candidate_guest_laws-uapa_1280x900_light.png` | `c951b97710f3839381006cad30b17f0c923bc5abfc43b18efe610fe1ce1458fa` |
-| `candidate/candidate_guest_laws-uapa_390x844_light.png` | `4538268adbcc77e65e30bf514fa44eaa22e8ae6ad77feba12aab1a40e495cf2e` |
-| `candidate/candidate_guest_laws_1280x900_light.png` | `c9e9fd9b9e3cdf9f571e7bde08e41d72dba81516a5d059a610b9cc2fa4129ca0` |
-| `candidate/candidate_guest_laws_390x844_light.png` | `716dd8dadf8a4621e163a625bc49feb0eca724730d7abbac3108562617c37feb` |
-| `candidate/candidate_guest_ndps-section-8_1280x900_light.png` | `65dd8586ea75a4cb5b4874779c379d93d7af0083ed2b86a8880d9b0ee39294ff` |
-| `candidate/candidate_guest_ndps-section-8_390x844_light.png` | `4e6418f38b7381e2e2a410f2cffdcda28d69c3e160e4ccfde3cbd4a2db3ba167` |
-| `candidate/candidate_guest_playground-add-uapa_1280x900_light.png` | `3fa067dddf33603f47948015cb315030bcc46e93c1a25249ddcd45c1bdd6a5b3` |
+| `candidate/candidate_guest_landing_390x844_light.png` | `2598e1717ffac650d7139f9a1b5171d30462f30b3dcff235e8b26e30061522d2` |
+| `candidate/candidate_guest_laws-bns_1280x900_light.png` | `6a1646736f67e91b5c05470b0ff14b0877eaf0fd292b377da4d19a9cd7854ade` |
+| `candidate/candidate_guest_laws-bns_390x844_light.png` | `f5f4923422a77df5e5015f58da0225639b692430b2ec635d7e622f55101a18d0` |
+| `candidate/candidate_guest_laws-mtp_1280x900_light.png` | `27943eece1ba2312ae526eeff3b97ca16821c18170d4f2222abbea390990731c` |
+| `candidate/candidate_guest_laws-mtp_390x844_light.png` | `1880d35af0ff017a2bc6e325dfc7ba22f7fdd519b5762c689de25e15fd90711c` |
+| `candidate/candidate_guest_laws-ndps_1280x900_light.png` | `e755f093e6e9b06fc08ae443561f8f9ed61a918ce034e91aa8f22a4a88e75e1b` |
+| `candidate/candidate_guest_laws-ndps_390x844_light.png` | `34d8823127f90f0bebc91a52e652cbd2f1291314b6336c22d5c4ef175ab99db3` |
+| `candidate/candidate_guest_laws-uapa_1280x900_light.png` | `9e9d5e6ab6a1eb32a2bd34e732a0783b9ce443dfb3005e6b472c98b46b01b51c` |
+| `candidate/candidate_guest_laws-uapa_390x844_light.png` | `ee52d353df6264fd656d9ecf6ebcac98596c697dd4f4f83facd2a0b49371e920` |
+| `candidate/candidate_guest_laws_1280x900_light.png` | `ce0c295f81be843b15c00ddbb7acf1947112b9d353e10ab9d52e55fb5d65aed2` |
+| `candidate/candidate_guest_laws_390x844_light.png` | `f783e318e5cd2c68cf673480f7a81a876867b61200182357022eac205b04871d` |
+| `candidate/candidate_guest_ndps-section-8_1280x900_light.png` | `e17b64f193652ec4806783ce086cced0da8dae0d1405901aff71dad128fdceb9` |
+| `candidate/candidate_guest_ndps-section-8_390x844_light.png` | `8644635cff25164c60d96402faec9792cc85507763a216e6d3a3564ef7ec4126` |
+| `candidate/candidate_guest_playground-add-uapa_1280x900_light.png` | `db78d0314eeb60a7a789ee8b9bbc6b7bb73c978e9fb1362ae63d6a185b84c4c1` |
 | `candidate/candidate_guest_playground-add-uapa_390x844_light.png` | `a36006835bb48033b882ee850f6de5d37ffb7675e7fc5bbbfee130dd9d5769b9` |
-| `candidate/candidate_guest_playground-plans-plus_1280x900_light.png` | `e97be93b9b9d58b6c5cbf51636a7275368605138d630cad03d9811b4a62fe64f` |
-| `candidate/candidate_guest_playground-plans-plus_390x844_light.png` | `61ea0255f9038b6e82e648219042236a1afaf3299566789439c7fe944b2d0aa7` |
-| `candidate/candidate_guest_playground-plans_1280x900_light.png` | `e97be93b9b9d58b6c5cbf51636a7275368605138d630cad03d9811b4a62fe64f` |
-| `candidate/candidate_guest_playground-plans_390x844_light.png` | `61ea0255f9038b6e82e648219042236a1afaf3299566789439c7fe944b2d0aa7` |
-| `candidate/candidate_guest_playground_1280x900_light.png` | `e97be93b9b9d58b6c5cbf51636a7275368605138d630cad03d9811b4a62fe64f` |
-| `candidate/candidate_guest_playground_390x844_light.png` | `61ea0255f9038b6e82e648219042236a1afaf3299566789439c7fe944b2d0aa7` |
-| `candidate/candidate_guest_privacy_1280x900_light.png` | `b142db6a9c8824d2b48bcf9800fc918bf14ed2cc534004df802a6ab6efe2191f` |
-| `candidate/candidate_guest_privacy_390x844_light.png` | `3cc7e3a45f390eecf61a5d0b00a4184425afc9ee0a3091014f36dab33b1dcd1c` |
-| `candidate/candidate_guest_profile_1280x900_light.png` | `887d374e1b01714c1176c1854cbaf17dc7bb81921e107ad63de763a8904b86fe` |
-| `candidate/candidate_guest_profile_390x844_light.png` | `22eda707542d0c9d3a3ef5fd88f8399b3fa34604f9345d7673287e2f4892cc9a` |
-| `candidate/candidate_guest_search_1280x900_light.png` | `c3e10c4039d237963f5819bfb8accbcf3a4e328f04f67bb20def8ac92225c1ab` |
-| `candidate/candidate_guest_search_390x844_light.png` | `a32bf38d333cef9f7d1a254e6c948d8f26b53de75459f983dc09d0211912d34e` |
-| `candidate/candidate_guest_settings_1280x900_light.png` | `75e6d0ca7e2a7b7aebf52a0e35a59a3331468192b1df2a5495a6e05164ca3bc4` |
-| `candidate/candidate_guest_settings_390x844_light.png` | `636dcbd84a00be8e08ff682482b5f46479f04f8c7807f60b40b3874c2fe761fa` |
-| `candidate/candidate_guest_tables_1280x900_light.png` | `2fdc22ddd03af76e7f14655999cd28f63e140a2fc856099fa0e1dd87c4f9fdbc` |
-| `candidate/candidate_guest_tables_390x844_light.png` | `90b22ccd23da861dbebce0d2e056b79bd5f565182006c910789dab2488044fcf` |
-| `candidate/candidate_guest_terms_1280x900_light.png` | `91aa1334c67d0b29118e926825935320eadb94a2b212387f8eac0b59ef471d27` |
-| `candidate/candidate_guest_terms_390x844_light.png` | `954b4e098356dd22921f96859b25c9bcbf7f69d1dfdfc061d64f39ca2cf1044e` |
+| `candidate/candidate_guest_playground-plans-plus_1280x900_light.png` | `7bbde198e4831f17589271b0fec0e90f7ec44a3c86bda2c06b9284c603ffc5fe` |
+| `candidate/candidate_guest_playground-plans-plus_390x844_light.png` | `7c799d5139e82d17d06a7c0d779236d33233a92394eb5efeffd8d47885791339` |
+| `candidate/candidate_guest_playground-plans_1280x900_light.png` | `7bbde198e4831f17589271b0fec0e90f7ec44a3c86bda2c06b9284c603ffc5fe` |
+| `candidate/candidate_guest_playground-plans_390x844_light.png` | `7c799d5139e82d17d06a7c0d779236d33233a92394eb5efeffd8d47885791339` |
+| `candidate/candidate_guest_playground_1280x900_light.png` | `7bbde198e4831f17589271b0fec0e90f7ec44a3c86bda2c06b9284c603ffc5fe` |
+| `candidate/candidate_guest_playground_390x844_light.png` | `7c799d5139e82d17d06a7c0d779236d33233a92394eb5efeffd8d47885791339` |
+| `candidate/candidate_guest_privacy_1280x900_light.png` | `f8da7b0100466675bdd5a4e3db3bc8d48e9345140a2d1084781eeef04d152281` |
+| `candidate/candidate_guest_privacy_390x844_light.png` | `cc2075a33473dcbfbab450937a9b11287cc76f57ba0445c7b473e8bc1182088c` |
+| `candidate/candidate_guest_profile_1280x900_light.png` | `8c959d3ad68dfc2da588fcbe4d495a10507e85d18c8f27a633fb20562b8a3004` |
+| `candidate/candidate_guest_profile_390x844_light.png` | `cef3aa4750551ebb6b977b65237ece57356fec41eee81e084ff260d83f76e969` |
+| `candidate/candidate_guest_search_1280x900_light.png` | `b4c23300780a7d1e7b5fdb599932f191a54efda9337fed903956be25736fc3c5` |
+| `candidate/candidate_guest_search_390x844_light.png` | `528dcd8b362b00385bdd4b75701451fa88baecd599bbdd58fbfd633e8d647d15` |
+| `candidate/candidate_guest_settings_1280x900_light.png` | `f1e273b4cf338e627f7c559859d18e73be0f94afd2bf370630fbddbb232b7e1a` |
+| `candidate/candidate_guest_settings_390x844_light.png` | `ed44bf4e31fc6a1c18a1d2368656d4646d288b7b90c4113011d8b0052f9b2dcf` |
+| `candidate/candidate_guest_tables_1280x900_light.png` | `fe88882651d7b814aa97114ff5089e420bd2ffb6aa62dce4d516172b235bf0f2` |
+| `candidate/candidate_guest_tables_390x844_light.png` | `20e93640dc28031bc3c92a6986c0b4bf4a0d307ca2f1091141dbbca22499e9b1` |
+| `candidate/candidate_guest_terms_1280x900_light.png` | `12ad1e257d350d1faed2cd0b562fdd460d1f762e4315b492ebf5d4e6779f46bc` |
+| `candidate/candidate_guest_terms_390x844_light.png` | `bb21918e3a4ff4b19e66047dda1114bd42908383fd9428ca08dac4b08b4dbef5` |
 | `candidate/candidate_signedin-free_article-14_1280x900_light.png` | `2712b74122155a9d32134940cacd487ca67a2b215c00fe7cb7cd7b88a05e7578` |
 | `candidate/candidate_signedin-free_article-14_390x844_light.png` | `4fafccb32332b5fcf71b3384e78540479d4d5febc82ff6ac3803f16e8da0c0e1` |
 | `candidate/candidate_signedin-free_browse-part-iii_1280x900_light.png` | `aa0c303b3f708689da26eed7b9d6282f2fd1ad3d1f2c48eaca3c8ddeb5896167` |

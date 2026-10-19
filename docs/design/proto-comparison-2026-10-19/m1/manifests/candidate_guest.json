@@ -2,7 +2,7 @@
  "label": "candidate",
  "base": "http://127.0.0.1:8912",
  "viewer": "guest",
- "captured_at": "2026-10-19T11:19:29+0530",
+ "captured_at": "2026-10-19T11:46:24+0530",
  "chrome": "Google Chrome 155.0.8059.82",
  "rows": [
   {
@@ -12,7 +12,7 @@
    "height": 844,
    "theme": "light",
    "file": "candidate_guest_landing_390x844_light.png",
-   "sha256": "2314ff890eda56f1dc28e2e3c300228663204b004c4c0e0e1b77e6c66299c2bc",
+   "sha256": "2598e1717ffac650d7139f9a1b5171d30462f30b3dcff235e8b26e30061522d2",
    "status_chain": [
     [
      "/",
@@ -144,7 +144,7 @@
    "height": 844,
    "theme": "light",
    "file": "candidate_guest_browse_390x844_light.png",
-   "sha256": "628e1881eab1ee93b38fdb2be055d55d6740590603c62db2bf9d8bbac8f7293b",
+   "sha256": "1f78196e08cef4dba3677dda8360bcb6206862b8670c7dc36e7bba5f21a8bf3a",
    "status_chain": [
     [
      "/browse",
@@ -217,7 +217,7 @@
    "height": 844,
    "theme": "dark",
    "file": "candidate_guest_browse_390x844_dark.png",
-   "sha256": "e7dfe8def49eb89dbfcd43f2fbd5e41e6e5635a3c316d3c688919d71986bc1bf",
+   "sha256": "49792942ec3f05caaafa06e778b9bd84b4b864bec2a0ad444047e5825fdf4687",
    "status_chain": [
     [
      "/browse",
@@ -290,7 +290,7 @@
    "height": 900,
    "theme": "light",
    "file": "candidate_guest_browse_1280x900_light.png",
-   "sha256": "b31457d1a813338781342e6ad800758d31a43b0cd9e11805e518a7ec2d86c54a",
+   "sha256": "aac5316ae481acdbf6e6008b53f2d6b03251036845e22a976692359afe267c54",
    "status_chain": [
     [
      "/browse",
@@ -368,7 +368,7 @@
    "height": 900,
    "theme": "dark",
    "file": "candidate_guest_browse_1280x900_dark.png",
-   "sha256": "30fa93148bf2d813df3b0e920c7b678381a2dbe4355bab92b16ea4f15088683b",
+   "sha256": "91a605121f12e90cf216e63bfea1c223fe2dce12bf8b1e2f20eb9d50ba5d88d3",
    "status_chain": [
     [
      "/browse",
@@ -446,7 +446,7 @@
    "height": 844,
    "theme": "light",
    "file": "candidate_guest_browse-part-iii_390x844_light.png",
-   "sha256": "0743ea116b1bdb4b144a991ce4e40fa8bd18079e572072022e38214cf8d3f40b",
+   "sha256": "87c2c5257cf9bb8bd34230799f9e48a59b5c2c027d1bfef821338d1c841b66d3",
    "status_chain": [
     [
      "/browse/part/iii",
@@ -519,7 +519,7 @@
    "height": 844,
    "theme": "dark",
    "file": "candidate_guest_browse-part-iii_390x844_dark.png",
-   "sha256": "a5b0d35aa5d3d242759cb11b8db3927765a98926f8fd08628f8cb3debd7a4b5d",
+   "sha256": "e123aefc5c449960b68024e9843d7a42c4e54ee34497ec2b798226c93cac992f",
    "status_chain": [
     [
      "/browse/part/iii",
@@ -592,7 +592,7 @@
    "height": 900,
    "theme": "light",
    "file": "candidate_guest_browse-part-iii_1280x900_light.png",
-   "sha256": "25f7b675e15359a15df50486e9479e0d183787fd8cf86a7d7b389c3c4709cb62",
+   "sha256": "eb2cf7a777fdddea097fa973fb6667faa3d508bbbfb44f0d2354e174076401a5",
    "status_chain": [
     [
      "/browse/part/iii",
@@ -670,7 +670,7 @@
    "height": 900,
    "theme": "dark",
    "file": "candidate_guest_browse-part-iii_1280x900_dark.png",
-   "sha256": "a0ab25cc66e854f29606c312da34a9931e9589f4f45d4ff143d5a6d0cadb643d",
+   "sha256": "28f25e5d1d99c3af9dfb98f1f2001c40de765d5e76a0874c72c7b746f9a0c5f0",
    "status_chain": [
     [
      "/browse/part/iii",
@@ -822,7 +822,7 @@
    "height": 900,
    "theme": "light",
    "file": "candidate_guest_article-14_1280x900_light.png",
-   "sha256": "022bf920177138a2e7d100f48233b395ea0a59dcb6b073755998f29c5307d7fa",
+   "sha256": "27482533643cde1f8dfbfeb9b691c5675025095cc396903dc15a61b1bae138d8",
    "status_chain": [
     [
      "/browse/article/14",
@@ -900,7 +900,7 @@
    "height": 900,
    "theme": "dark",
    "file": "candidate_guest_article-14_1280x900_dark.png",
-   "sha256": "7597bb9387221ee764128f09976d4b03b7bb4c2a6185248df540c88d61db89cd",
+   "sha256": "4202053eae43ad7c9d19e4cad8d56923d78ac951eb419c40ec1b37806f7d62e4",
    "status_chain": [
     [
      "/browse/article/14",
@@ -978,7 +978,7 @@
    "height": 844,
    "theme": "light",
    "file": "candidate_guest_laws_390x844_light.png",
-   "sha256": "716dd8dadf8a4621e163a625bc49feb0eca724730d7abbac3108562617c37feb",
+   "sha256": "f783e318e5cd2c68cf673480f7a81a876867b61200182357022eac205b04871d",
    "status_chain": [
     [
      "/laws",
@@ -1051,7 +1051,7 @@
    "height": 844,
    "theme": "dark",
    "file": "candidate_guest_laws_390x844_dark.png",
-   "sha256": "f033af267471ed6931a4df7a287c4d4d0938b189548b9d8d6a8641cd2fd334cd",
+   "sha256": "2acc909f4fe40a726cd35e43f110715d7ab56afb2fa27b180dc3eb5154b2142f",
    "status_chain": [
     [
      "/laws",
@@ -1124,7 +1124,7 @@
    "height": 900,
    "theme": "light",
    "file": "candidate_guest_laws_1280x900_light.png",
-   "sha256": "c9e9fd9b9e3cdf9f571e7bde08e41d72dba81516a5d059a610b9cc2fa4129ca0",
+   "sha256": "ce0c295f81be843b15c00ddbb7acf1947112b9d353e10ab9d52e55fb5d65aed2",
    "status_chain": [
     [
      "/laws",
@@ -1197,7 +1197,7 @@
    "height": 900,
    "theme": "dark",
    "file": "candidate_guest_laws_1280x900_dark.png",
-   "sha256": "c76a140c87352121d3ce8631728bd1291bbee40635ffaadd095c8d87c8ebe83b",
+   "sha256": "ff8c30c32eab354cb65379af9525c5d051e47f612d2cc35ead7adca3ec44c3ab",
    "status_chain": [
     [
      "/laws",
@@ -1270,7 +1270,7 @@
    "height": 844,
    "theme": "light",
    "file": "candidate_guest_laws-ndps_390x844_light.png",
-   "sha256": "797af70e0c1741e34caddd827b0f1a46eb9967785e0cb118419668c041278792",
+   "sha256": "34d8823127f90f0bebc91a52e652cbd2f1291314b6336c22d5c4ef175ab99db3",
    "status_chain": [
     [
      "/laws/ndps",
@@ -1343,7 +1343,7 @@
    "height": 844,
    "theme": "dark",
    "file": "candidate_guest_laws-ndps_390x844_dark.png",
-   "sha256": "ceb4f4c21aff5e733e56bdb135627f80b8502fcfd17ff40ff0e90222f3cde4ca",
+   "sha256": "5e6790860079e68ecff3a04bb36493abf6b8a81769709a6f17b5b0b300cd92b2",
    "status_chain": [
     [
      "/laws/ndps",
@@ -1416,7 +1416,7 @@
    "height": 900,
    "theme": "light",
    "file": "candidate_guest_laws-ndps_1280x900_light.png",
-   "sha256": "868d39d074c32a8d052d82f2a67b336bb0d628ec46d5202f3eb8218831a6e9fb",
+   "sha256": "e755f093e6e9b06fc08ae443561f8f9ed61a918ce034e91aa8f22a4a88e75e1b",
    "status_chain": [
     [
      "/laws/ndps",
@@ -1489,7 +1489,7 @@
    "height": 900,
    "theme": "dark",
    "file": "candidate_guest_laws-ndps_1280x900_dark.png",
-   "sha256": "0eadd172f90b18d9775cc894e7d2b44c256bc5ca77a972f8fafc4cd1cd9db9d9",
+   "sha256": "d3c49a2f71e274056d078e8e8117e32b65b4395457127c14d4d01812228c4edd",
    "status_chain": [
     [
      "/laws/ndps",
@@ -1562,7 +1562,7 @@
    "height": 844,
    "theme": "light",
    "file": "candidate_guest_laws-uapa_390x844_light.png",
-   "sha256": "4538268adbcc77e65e30bf514fa44eaa22e8ae6ad77feba12aab1a40e495cf2e",
+   "sha256": "ee52d353df6264fd656d9ecf6ebcac98596c697dd4f4f83facd2a0b49371e920",
    "status_chain": [
     [
      "/laws/uapa",
@@ -1635,7 +1635,7 @@
    "height": 844,
    "theme": "dark",
    "file": "candidate_guest_laws-uapa_390x844_dark.png",
-   "sha256": "26d6d24e0f59daabd6078b0afedd5a672b46dda7a21269995c6395686a43be31",
+   "sha256": "12f3afb57d28860e0133171bbcca180e52c0e20061fdbdd3575916508e62a184",
    "status_chain": [
     [
      "/laws/uapa",
@@ -1708,7 +1708,7 @@
    "height": 900,
    "theme": "light",
    "file": "candidate_guest_laws-uapa_1280x900_light.png",
-   "sha256": "c951b97710f3839381006cad30b17f0c923bc5abfc43b18efe610fe1ce1458fa",
+   "sha256": "9e9d5e6ab6a1eb32a2bd34e732a0783b9ce443dfb3005e6b472c98b46b01b51c",
    "status_chain": [
     [
      "/laws/uapa",
@@ -1786,7 +1786,7 @@
    "height": 900,
    "theme": "dark",
    "file": "candidate_guest_laws-uapa_1280x900_dark.png",
-   "sha256": "f11b3bf21b9e26788c6c8a80a06b4748d8acda0c3ebe294681a55840bf8873d9",
+   "sha256": "e505e65209ada65169840d85c6954209c32792705dae1f688f06464c622f5987",
    "status_chain": [
     [
      "/laws/uapa",
@@ -1864,7 +1864,7 @@
    "height": 844,
    "theme": "light",
    "file": "candidate_guest_laws-bns_390x844_light.png",
-   "sha256": "be9f6cc21036000d68e166b1d6ad927be179471b360febe67581642f48187447",
+   "sha256": "f5f4923422a77df5e5015f58da0225639b692430b2ec635d7e622f55101a18d0",
    "status_chain": [
     [
      "/laws/bns",
@@ -1937,7 +1937,7 @@
    "height": 844,
    "theme": "dark",
    "file": "candidate_guest_laws-bns_390x844_dark.png",
-   "sha256": "6a5e2f57b9fe860358c997524728905f935b1ae2dd3d834ceea5203af2960068",
+   "sha256": "688e7ee4a4fb78b351646478fb4310d90c8e68eb9f67d98de8f8522014a693f0",
    "status_chain": [
     [
      "/laws/bns",
@@ -2010,7 +2010,7 @@
    "height": 900,
    "theme": "light",
    "file": "candidate_guest_laws-bns_1280x900_light.png",
-   "sha256": "30e51d08300bf49b689deb56d17df3da29f822e9c7222cfe6966b684df85ecb6",
+   "sha256": "6a1646736f67e91b5c05470b0ff14b0877eaf0fd292b377da4d19a9cd7854ade",
    "status_chain": [
     [
      "/laws/bns",
@@ -2088,7 +2088,7 @@
    "height": 900,
    "theme": "dark",
    "file": "candidate_guest_laws-bns_1280x900_dark.png",
-   "sha256": "03d840a8867fdb52e3afbc875771945e5c534943150d4ce9667f6b0356a0cb46",
+   "sha256": "236fd87a470235f795119ce1aca665bd096757539e2d5d2d2ff5735d1235f0ac",
    "status_chain": [
     [
      "/laws/bns",
@@ -2166,7 +2166,7 @@
    "height": 844,
    "theme": "light",
    "file": "candidate_guest_laws-mtp_390x844_light.png",
-   "sha256": "b39a75208dd854ccf8bda4762b018257cf96f44966723ff4bfd2560685b908bc",
+   "sha256": "1880d35af0ff017a2bc6e325dfc7ba22f7fdd519b5762c689de25e15fd90711c",
    "status_chain": [
     [
      "/laws/mtp",
@@ -2239,7 +2239,7 @@
    "height": 844,
    "theme": "dark",
    "file": "candidate_guest_laws-mtp_390x844_dark.png",
-   "sha256": "f84113cba6905959bd5154688703a489d531ff237c4ad63f63be699afaf9a097",
+   "sha256": "44d22c687deef7a23e6888830cedd7fef769e3f14f13d40f6ba8b3f4ade59cdf",
    "status_chain": [
     [
      "/laws/mtp",
@@ -2312,7 +2312,7 @@
    "height": 900,
    "theme": "light",
    "file": "candidate_guest_laws-mtp_1280x900_light.png",
-   "sha256": "c02c317cd2c4e42042586f4a4dc1e1032467db22bdefdc1f6b4f53972a036d9f",
+   "sha256": "27943eece1ba2312ae526eeff3b97ca16821c18170d4f2222abbea390990731c",
    "status_chain": [
     [
      "/laws/mtp",
@@ -2390,7 +2390,7 @@
    "height": 900,
    "theme": "dark",
    "file": "candidate_guest_laws-mtp_1280x900_dark.png",
-   "sha256": "5f92d3318de0b6d3b56b69b672f52781e849410e58df732487e8f8870a3c5d9e",
+   "sha256": "94ce354e5ac8b4db90a53df45cb1890f2049ba9cb6b1fd2d8146fff4a487ae41",
    "status_chain": [
     [
      "/laws/mtp",
@@ -2468,7 +2468,7 @@
    "height": 844,
    "theme": "light",
    "file": "candidate_guest_ndps-section-8_390x844_light.png",
-   "sha256": "4e6418f38b7381e2e2a410f2cffdcda28d69c3e160e4ccfde3cbd4a2db3ba167",
+   "sha256": "8644635cff25164c60d96402faec9792cc85507763a216e6d3a3564ef7ec4126",
    "status_chain": [
     [
      "/laws/ndps/section/8",
@@ -2541,7 +2541,7 @@
    "height": 844,
    "theme": "dark",
    "file": "candidate_guest_ndps-section-8_390x844_dark.png",
-   "sha256": "17e1c75891f93945d6088cc50b1e47b97bfe31add7a53d3b366ce9aaababff4e",
+   "sha256": "e8bb657315da73a6df64dcce58fd1593e6cf29443176b7939199d58b249809a4",
    "status_chain": [
     [
      "/laws/ndps/section/8",
@@ -2614,7 +2614,7 @@
    "height": 900,
    "theme": "light",
    "file": "candidate_guest_ndps-section-8_1280x900_light.png",
-   "sha256": "65dd8586ea75a4cb5b4874779c379d93d7af0083ed2b86a8880d9b0ee39294ff",
+   "sha256": "e17b64f193652ec4806783ce086cced0da8dae0d1405901aff71dad128fdceb9",
    "status_chain": [
     [
      "/laws/ndps/section/8",
@@ -2692,7 +2692,7 @@
    "height": 900,
    "theme": "dark",
    "file": "candidate_guest_ndps-section-8_1280x900_dark.png",
-   "sha256": "e33fd06338264d8040b7a99c356990e8be9a4a883bd33552c27bc920a5c5d4c9",
+   "sha256": "6ae112221441a1905c33df0eddccaa46a52292b57e6b628276d3675444d482d9",
    "status_chain": [
     [
      "/laws/ndps/section/8",
@@ -2770,7 +2770,7 @@
    "height": 844,
    "theme": "light",
    "file": "candidate_guest_playground_390x844_light.png",
-   "sha256": "61ea0255f9038b6e82e648219042236a1afaf3299566789439c7fe944b2d0aa7",
+   "sha256": "7c799d5139e82d17d06a7c0d779236d33233a92394eb5efeffd8d47885791339",
    "status_chain": [
     [
      "/playground",
@@ -2843,7 +2843,7 @@
    "height": 844,
    "theme": "dark",
    "file": "candidate_guest_playground_390x844_dark.png",
-   "sha256": "96251465f321f78e52e7340e69ebabf0ff9689882e472001e02ad96db6e4a203",
+   "sha256": "b470b98e01a786148a3e16d9653fcccaf330a48f6fb250b1c29bd7c39375be89",
    "status_chain": [
     [
      "/playground",
@@ -2916,7 +2916,7 @@
    "height": 900,
    "theme": "light",
    "file": "candidate_guest_playground_1280x900_light.png",
-   "sha256": "e97be93b9b9d58b6c5cbf51636a7275368605138d630cad03d9811b4a62fe64f",
+   "sha256": "7bbde198e4831f17589271b0fec0e90f7ec44a3c86bda2c06b9284c603ffc5fe",
    "status_chain": [
     [
      "/playground",
@@ -2989,7 +2989,7 @@
    "height": 900,
    "theme": "dark",
    "file": "candidate_guest_playground_1280x900_dark.png",
-   "sha256": "a9dfdaf837c623873f0e2e2cf9bfc08fd463fa239de857c665849fe38d99746a",
+   "sha256": "2bc78f381d59030fa7c8a2cdf3d1e4cae6a4ae770d206d0010cd499c18b10651",
    "status_chain": [
     [
      "/playground",
@@ -3062,7 +3062,7 @@
    "height": 844,
    "theme": "light",
    "file": "candidate_guest_playground-plans_390x844_light.png",
-   "sha256": "61ea0255f9038b6e82e648219042236a1afaf3299566789439c7fe944b2d0aa7",
+   "sha256": "7c799d5139e82d17d06a7c0d779236d33233a92394eb5efeffd8d47885791339",
    "status_chain": [
     [
      "/playground?stage=plans",
@@ -3135,7 +3135,7 @@
    "height": 844,
    "theme": "dark",
    "file": "candidate_guest_playground-plans_390x844_dark.png",
-   "sha256": "96251465f321f78e52e7340e69ebabf0ff9689882e472001e02ad96db6e4a203",
+   "sha256": "b470b98e01a786148a3e16d9653fcccaf330a48f6fb250b1c29bd7c39375be89",
    "status_chain": [
     [
      "/playground?stage=plans",
@@ -3208,7 +3208,7 @@
    "height": 900,
    "theme": "light",
    "file": "candidate_guest_playground-plans_1280x900_light.png",
-   "sha256": "e97be93b9b9d58b6c5cbf51636a7275368605138d630cad03d9811b4a62fe64f",
+   "sha256": "7bbde198e4831f17589271b0fec0e90f7ec44a3c86bda2c06b9284c603ffc5fe",
    "status_chain": [
     [
      "/playground?stage=plans",
@@ -3281,7 +3281,7 @@
    "height": 900,
    "theme": "dark",
    "file": "candidate_guest_playground-plans_1280x900_dark.png",
-   "sha256": "a9dfdaf837c623873f0e2e2cf9bfc08fd463fa239de857c665849fe38d99746a",
+   "sha256": "2bc78f381d59030fa7c8a2cdf3d1e4cae6a4ae770d206d0010cd499c18b10651",
    "status_chain": [
     [
      "/playground?stage=plans",
@@ -3354,7 +3354,7 @@
    "height": 844,
    "theme": "light",
    "file": "candidate_guest_playground-plans-plus_390x844_light.png",
-   "sha256": "61ea0255f9038b6e82e648219042236a1afaf3299566789439c7fe944b2d0aa7",
+   "sha256": "7c799d5139e82d17d06a7c0d779236d33233a92394eb5efeffd8d47885791339",
    "status_chain": [
     [
      "/playground?stage=plans&tier=plus",
@@ -3427,7 +3427,7 @@
    "height": 844,
    "theme": "dark",
    "file": "candidate_guest_playground-plans-plus_390x844_dark.png",
-   "sha256": "96251465f321f78e52e7340e69ebabf0ff9689882e472001e02ad96db6e4a203",
+   "sha256": "b470b98e01a786148a3e16d9653fcccaf330a48f6fb250b1c29bd7c39375be89",
    "status_chain": [
     [
      "/playground?stage=plans&tier=plus",
@@ -3500,7 +3500,7 @@
    "height": 900,
    "theme": "light",
    "file": "candidate_guest_playground-plans-plus_1280x900_light.png",
-   "sha256": "e97be93b9b9d58b6c5cbf51636a7275368605138d630cad03d9811b4a62fe64f",
+   "sha256": "7bbde198e4831f17589271b0fec0e90f7ec44a3c86bda2c06b9284c603ffc5fe",
    "status_chain": [
     [
      "/playground?stage=plans&tier=plus",
@@ -3573,7 +3573,7 @@
    "height": 900,
    "theme": "dark",
    "file": "candidate_guest_playground-plans-plus_1280x900_dark.png",
-   "sha256": "a9dfdaf837c623873f0e2e2cf9bfc08fd463fa239de857c665849fe38d99746a",
+   "sha256": "2bc78f381d59030fa7c8a2cdf3d1e4cae6a4ae770d206d0010cd499c18b10651",
    "status_chain": [
     [
      "/playground?stage=plans&tier=plus",
@@ -3720,7 +3720,7 @@
    "height": 900,
    "theme": "light",
    "file": "candidate_guest_playground-add-uapa_1280x900_light.png",
-   "sha256": "3fa067dddf33603f47948015cb315030bcc46e93c1a25249ddcd45c1bdd6a5b3",
+   "sha256": "db78d0314eeb60a7a789ee8b9bbc6b7bb73c978e9fb1362ae63d6a185b84c4c1",
    "status_chain": [
     [
      "/playground/laws/uapa/add",
@@ -3798,7 +3798,7 @@
    "height": 900,
    "theme": "dark",
    "file": "candidate_guest_playground-add-uapa_1280x900_dark.png",
-   "sha256": "f745b999a192f3ba1213023d65ef1847e951c1e6fb8ae022815cb375a46e8ff5",
+   "sha256": "f5956abb42ed67b4047d14f1636d6f77bf3812852d96960a193ecdcbf514e86c",
    "status_chain": [
     [
      "/playground/laws/uapa/add",
@@ -3876,7 +3876,7 @@
    "height": 844,
    "theme": "light",
    "file": "candidate_guest_dashboard_390x844_light.png",
-   "sha256": "79cb538b0df6e574fa57476f727d691d5baf3fe4a0cd16998499475ef4a54dc8",
+   "sha256": "41fe10de3aacf75644e51e2776417a98bc71885d634bc157ba8c9519f39e69ff",
    "status_chain": [
     [
      "/dashboard",
@@ -3949,7 +3949,7 @@
    "height": 844,
    "theme": "dark",
    "file": "candidate_guest_dashboard_390x844_dark.png",
-   "sha256": "e8c531715fdb42d93f0fdd718e2dd3a2915985bb44f3a07d065837a6d4c3bf84",
+   "sha256": "57e008209b2e00b138239559c2453ffb55eaf0f83b5e899513159075980fdc32",
    "status_chain": [
     [
      "/dashboard",
@@ -4022,7 +4022,7 @@
    "height": 900,
    "theme": "light",
    "file": "candidate_guest_dashboard_1280x900_light.png",
-   "sha256": "545c2b4928342daba2f235ae9c3cf55e953f5bd24ffd83f770ffe2b5ee02a90a",
+   "sha256": "6ec43d69cbec90176518f6e8a07e6e03217a4b9f5c927a43248f2030dbde2838",
    "status_chain": [
     [
      "/dashboard",
@@ -4100,7 +4100,7 @@
    "height": 900,
    "theme": "dark",
    "file": "candidate_guest_dashboard_1280x900_dark.png",
-   "sha256": "01b7dd4f4a5674cc9b2cfea7ea10b2940eb805e80d84683b7231aaf51404f27d",
+   "sha256": "387e46e289f624d6c4af4367a47ac8c071a894fc9d8a42b103e5b8e3ce4c531c",
    "status_chain": [
     [
      "/dashboard",
@@ -4326,7 +4326,7 @@
    "height": 844,
    "theme": "light",
    "file": "candidate_guest_profile_390x844_light.png",
-   "sha256": "22eda707542d0c9d3a3ef5fd88f8399b3fa34604f9345d7673287e2f4892cc9a",
+   "sha256": "cef3aa4750551ebb6b977b65237ece57356fec41eee81e084ff260d83f76e969",
    "status_chain": [
     [
      "/profile",
@@ -4399,7 +4399,7 @@
    "height": 844,
    "theme": "dark",
    "file": "candidate_guest_profile_390x844_dark.png",
-   "sha256": "3b47b53df8dcaf31eee6153024bff2e11e2ca5a198d24e58310cccd07b4fe12f",
+   "sha256": "aa35da291cf6e308e737ba00f67eec532d0a257f32200d989aa254e32c54d95c",
    "status_chain": [
     [
      "/profile",
@@ -4472,7 +4472,7 @@
    "height": 900,
    "theme": "light",
    "file": "candidate_guest_profile_1280x900_light.png",
-   "sha256": "887d374e1b01714c1176c1854cbaf17dc7bb81921e107ad63de763a8904b86fe",
+   "sha256": "8c959d3ad68dfc2da588fcbe4d495a10507e85d18c8f27a633fb20562b8a3004",
    "status_chain": [
     [
      "/profile",
@@ -4545,7 +4545,7 @@
    "height": 900,
    "theme": "dark",
    "file": "candidate_guest_profile_1280x900_dark.png",
-   "sha256": "14a3392551c052616932fd56ec6a5a4a16664e1d8d2de2b9f8019ca2b387ea8a",
+   "sha256": "b3160744c243645854c6ae0ae9ac854a3bcdd7c76b13f0a41c40b810284416a9",
    "status_chain": [
     [
      "/profile",
@@ -4618,7 +4618,7 @@
    "height": 844,
    "theme": "light",
    "file": "candidate_guest_settings_390x844_light.png",
-   "sha256": "636dcbd84a00be8e08ff682482b5f46479f04f8c7807f60b40b3874c2fe761fa",
+   "sha256": "ed44bf4e31fc6a1c18a1d2368656d4646d288b7b90c4113011d8b0052f9b2dcf",
    "status_chain": [
     [
      "/settings",
@@ -4691,7 +4691,7 @@
    "height": 844,
    "theme": "dark",
    "file": "candidate_guest_settings_390x844_dark.png",
-   "sha256": "7a5436b0ae8efe1e15708d12d7502f35045c193aa87f789a280f6b13b63dacd5",
+   "sha256": "3b9f20098cfe9893235d05bbf209db65f957b894a2300246fbb014b26f12a7fb",
    "status_chain": [
     [
      "/settings",
@@ -4764,7 +4764,7 @@
    "height": 900,
    "theme": "light",
    "file": "candidate_guest_settings_1280x900_light.png",
-   "sha256": "75e6d0ca7e2a7b7aebf52a0e35a59a3331468192b1df2a5495a6e05164ca3bc4",
+   "sha256": "f1e273b4cf338e627f7c559859d18e73be0f94afd2bf370630fbddbb232b7e1a",
    "status_chain": [
     [
      "/settings",
@@ -4842,7 +4842,7 @@
    "height": 900,
    "theme": "dark",
    "file": "candidate_guest_settings_1280x900_dark.png",
-   "sha256": "2a28efba957cc801beedf8abad88c144dee3e1a710ed08d00b89ed9544b7f9aa",
+   "sha256": "fe5162f08238a4832265504f5337fdeb47f44110c6b9261ed3c6b2d40be798f0",
    "status_chain": [
     [
      "/settings",
@@ -5068,7 +5068,7 @@
    "height": 844,
    "theme": "light",
    "file": "candidate_guest_tables_390x844_light.png",
-   "sha256": "90b22ccd23da861dbebce0d2e056b79bd5f565182006c910789dab2488044fcf",
+   "sha256": "20e93640dc28031bc3c92a6986c0b4bf4a0d307ca2f1091141dbbca22499e9b1",
    "status_chain": [
     [
      "/tables",
@@ -5141,7 +5141,7 @@
    "height": 844,
    "theme": "dark",
    "file": "candidate_guest_tables_390x844_dark.png",
-   "sha256": "b825cc3c300148c5bba5f5cb617638198fae57f3bfc3f0df24bc28df250fb6fe",
+   "sha256": "61fe9c0ea74a444b78f1274ad3b1c9045288752917eeb9db94a9c0e54f8116cf",
    "status_chain": [
     [
      "/tables",
@@ -5214,7 +5214,7 @@
    "height": 900,
    "theme": "light",
    "file": "candidate_guest_tables_1280x900_light.png",
-   "sha256": "2fdc22ddd03af76e7f14655999cd28f63e140a2fc856099fa0e1dd87c4f9fdbc",
+   "sha256": "fe88882651d7b814aa97114ff5089e420bd2ffb6aa62dce4d516172b235bf0f2",
    "status_chain": [
     [
      "/tables",
@@ -5292,7 +5292,7 @@
    "height": 900,
    "theme": "dark",
    "file": "candidate_guest_tables_1280x900_dark.png",
-   "sha256": "18e286c5c1d16759b3ec20285e079d0a5298f80fe951e03397b46be8a6c46bfa",
+   "sha256": "4eba1754f6c36f9c9d1e332a5967d4194fb6304c489d7699ccdc32ea6dd70717",
    "status_chain": [
     [
      "/tables",
@@ -5370,7 +5370,7 @@
    "height": 844,
    "theme": "light",
    "file": "candidate_guest_search_390x844_light.png",
-   "sha256": "a32bf38d333cef9f7d1a254e6c948d8f26b53de75459f983dc09d0211912d34e",
+   "sha256": "528dcd8b362b00385bdd4b75701451fa88baecd599bbdd58fbfd633e8d647d15",
    "status_chain": [
     [
      "/search",
@@ -5443,7 +5443,7 @@
    "height": 844,
    "theme": "dark",
    "file": "candidate_guest_search_390x844_dark.png",
-   "sha256": "f102bab473ac0d0bc04f8d9744667112d8e3161c44ae0b59d72d56ec97a1af8d",
+   "sha256": "6eb1a428f644a841d540fc9998dde7d8eefa50789639d5385cd8f5fbae334273",
    "status_chain": [
     [
      "/search",
@@ -5516,7 +5516,7 @@
    "height": 900,
    "theme": "light",
    "file": "candidate_guest_search_1280x900_light.png",
-   "sha256": "c3e10c4039d237963f5819bfb8accbcf3a4e328f04f67bb20def8ac92225c1ab",
+   "sha256": "b4c23300780a7d1e7b5fdb599932f191a54efda9337fed903956be25736fc3c5",
    "status_chain": [
     [
      "/search",
@@ -5594,7 +5594,7 @@
    "height": 900,
    "theme": "dark",
    "file": "candidate_guest_search_1280x900_dark.png",
-   "sha256": "46f8deac5ffc688ec52be8b3334f56a5db144d574287413ea06552e8aaf79d9e",
+   "sha256": "cb942b555b676e443b44baf77244f4ca6b9b9cc1bcbc2db6df61112cbe101a0b",
    "status_chain": [
     [
      "/search",
@@ -5672,7 +5672,7 @@
    "height": 844,
    "theme": "light",
    "file": "candidate_guest_terms_390x844_light.png",
-   "sha256": "954b4e098356dd22921f96859b25c9bcbf7f69d1dfdfc061d64f39ca2cf1044e",
+   "sha256": "bb21918e3a4ff4b19e66047dda1114bd42908383fd9428ca08dac4b08b4dbef5",
    "status_chain": [
     [
      "/terms",
@@ -5745,7 +5745,7 @@
    "height": 844,
    "theme": "dark",
    "file": "candidate_guest_terms_390x844_dark.png",
-   "sha256": "e88592fc45490eeda5cd9e75fa840bb3a4bcf9ca48a765285dd92adcac812778",
+   "sha256": "92b8fb5fb12db921585f2be66e7eb633035db7728ccad7f3c8f964752d8b4ef0",
    "status_chain": [
     [
      "/terms",
@@ -5818,7 +5818,7 @@
    "height": 900,
    "theme": "light",
    "file": "candidate_guest_terms_1280x900_light.png",
-   "sha256": "91aa1334c67d0b29118e926825935320eadb94a2b212387f8eac0b59ef471d27",
+   "sha256": "12ad1e257d350d1faed2cd0b562fdd460d1f762e4315b492ebf5d4e6779f46bc",
    "status_chain": [
     [
      "/terms",
@@ -5896,7 +5896,7 @@
    "height": 900,
    "theme": "dark",
    "file": "candidate_guest_terms_1280x900_dark.png",
-   "sha256": "3b63346efb2266c60dd2eb02721e296f49df7717d1a4d6f8c14b682d54e6d9e1",
+   "sha256": "df28f820f6be0b4bb76188ceedd0c7ce8753ffca95229df411685b1a64ee051a",
    "status_chain": [
     [
      "/terms",
@@ -5974,7 +5974,7 @@
    "height": 844,
    "theme": "light",
    "file": "candidate_guest_privacy_390x844_light.png",
-   "sha256": "3cc7e3a45f390eecf61a5d0b00a4184425afc9ee0a3091014f36dab33b1dcd1c",
+   "sha256": "cc2075a33473dcbfbab450937a9b11287cc76f57ba0445c7b473e8bc1182088c",
    "status_chain": [
     [
      "/privacy",
@@ -6047,7 +6047,7 @@
    "height": 844,
    "theme": "dark",
    "file": "candidate_guest_privacy_390x844_dark.png",
-   "sha256": "9d103c18fe00e8ea38be5c9a5650273c8b04c30667130c5bcb51e6af41ae4e5f",
+   "sha256": "6fca3470242279af23be97fbc7e90eaefc9eba21fb861c93c0c2e3b3d33400d6",
    "status_chain": [
     [
      "/privacy",
@@ -6120,7 +6120,7 @@
    "height": 900,
    "theme": "light",
    "file": "candidate_guest_privacy_1280x900_light.png",
-   "sha256": "b142db6a9c8824d2b48bcf9800fc918bf14ed2cc534004df802a6ab6efe2191f",
+   "sha256": "f8da7b0100466675bdd5a4e3db3bc8d48e9345140a2d1084781eeef04d152281",
    "status_chain": [
     [
      "/privacy",
@@ -6198,7 +6198,7 @@
    "height": 900,
    "theme": "dark",
    "file": "candidate_guest_privacy_1280x900_dark.png",
-   "sha256": "77aef7d143e346cf0ddbaa9f085e8bfa15da65750a3496bc4ee6dc41a8383f0b",
+   "sha256": "e5ae1fbfc2ba1ea5a51dba07727cc623d10c98e023cbf4fd93320e6642b18f3f",
    "status_chain": [
     [
      "/privacy",
@@ -6276,7 +6276,7 @@
    "height": 844,
    "theme": "light",
    "file": "candidate_guest_grievance_390x844_light.png",
-   "sha256": "488ba05ee66af1add0608ededff0684be20399a888d744f8a21b8f4142a9fb38",
+   "sha256": "1ad267fb245e39bd6e62b8975165e1cf2d96685a3fbd858ca5a81f591891ee94",
    "status_chain": [
     [
      "/grievance",
@@ -6349,7 +6349,7 @@
    "height": 844,
    "theme": "dark",
    "file": "candidate_guest_grievance_390x844_dark.png",
-   "sha256": "cdbb8ca9695da17d293baeabfe1236e11b262bcbe3ad8030c0414ebe89176871",
+   "sha256": "9edde470440e00ffa86faf55fc391bfb8c5203a60cd2dddf5b635921956e5c34",
    "status_chain": [
     [
      "/grievance",
@@ -6422,7 +6422,7 @@
    "height": 900,
    "theme": "light",
    "file": "candidate_guest_grievance_1280x900_light.png",
-   "sha256": "e3a4ee2a39d0c33cdc5eeec875d208eaa0c3765e3ef6720a0d98afb93d6c50e7",
+   "sha256": "bc004189aaaa8eb665ca611c7bc36fa5f11712072bf1bde7bcae5757fc5c1c8c",
    "status_chain": [
     [
      "/grievance",
@@ -6500,7 +6500,7 @@
    "height": 900,
    "theme": "dark",
    "file": "candidate_guest_grievance_1280x900_dark.png",
-   "sha256": "ffcbefa0e9208219a3711327e9598613f9ed1c94d0817d4dc01f8837141a2591",
+   "sha256": "b8889e0f773f0f5e1d48c08b74f0956701831b9f0b5af5d1b94b336f7770fec4",
    "status_chain": [
     [
      "/grievance",
