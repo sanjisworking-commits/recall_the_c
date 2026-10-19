@@ -535,9 +535,13 @@ def test_halted_playground_uses_shared_predicate_and_gate_view() -> None:
     assert ".halted-pg-desk" not in css
     assert ".halted-pg-title" not in css
     styles = STYLES.read_text(encoding="utf-8")
-    assert ":has([data-halted-playground])" in styles
-    assert ":has([data-expired-playground])" in styles
-    assert "playground.css?v=pg48" in base
+    # M1 (DV-20): styles.css no longer hides the account subtitle on Playground pages;
+    # the predicate is exercised by playground.css (asserted above).
+    assert ":has([data-halted-playground])" not in styles
+    # M1 (DV-20): styles.css no longer hides the account subtitle on Playground pages;
+    # the predicate is exercised by playground.css (asserted above).
+    assert ":has([data-expired-playground])" not in styles
+    assert "playground.css?v=pg49" in base
     assert "data-halted-playground" not in MOBILE.read_text(encoding="utf-8")
     assert "data-halted-playground" not in GATE.read_text(encoding="utf-8")
 

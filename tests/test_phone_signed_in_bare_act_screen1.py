@@ -336,8 +336,8 @@ def test_phone_signed_in_markers_and_pins() -> None:
     assert 'data-pg-kind="subscribe"' in bare
     base = BASE.read_text(encoding="utf-8")
     assert "data-signed-in-bareact-phone-tabs" in base
-    assert "styles.css?v=main86" in base
-    assert "mobile.css?v=mob105" in base
+    assert "styles.css?v=main87" in base
+    assert "mobile.css?v=mob106" in base
     assert "mobile.css?v=mob99" not in base
     assert "styles.css?v=main85" not in base
     styles = STYLES.read_text(encoding="utf-8")

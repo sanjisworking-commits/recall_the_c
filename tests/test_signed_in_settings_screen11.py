@@ -132,8 +132,11 @@ def test_signed_in_settings_desktop_surface(tmp_path: Path) -> None:
     assert "← Today" in html
     assert "Sanjay" in html
     assert "Signed in with Google" in html
+    # M1 (DV-20): the header account slot now carries "Free account" on every
+    # shared-shell page, so the mock-copy check is scoped to the page body.
+    body = html.split("<main", 1)[1]
     for phrase in MOCK_SCREEN_COPY:
-        assert phrase not in html, phrase
+        assert phrase not in body, phrase
     assert "Appearance, your learning plan, and your revision calendar." in html
     assert 'data-settings-group="study"' in html
     assert "Learning plan" in html

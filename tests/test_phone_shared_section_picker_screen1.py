@@ -610,10 +610,10 @@ def test_phone_shared_picker_css_is_breakpoint_scoped() -> None:
     assert ".pg-pick-footer" in aside
     assert "display: none" in aside
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg48" in base
+    assert "playground.css?v=pg49" in base
     assert "playground.css?v=pg47" not in base
-    assert "styles.css?v=main86" in base
-    assert "mobile.css?v=mob105" in base
+    assert "styles.css?v=main87" in base
+    assert "mobile.css?v=mob106" in base
     assert "playground-select.js?v=pg1" in base
     select = SELECT.read_text(encoding="utf-8")
     assert "data-pg-picker" in select

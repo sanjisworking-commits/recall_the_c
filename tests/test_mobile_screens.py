@@ -842,11 +842,13 @@ def test_action_bar_reclaims_the_safe_area_when_the_keyboard_is_up(tmp_path: Pat
     assert "transition: transform" in bar
 
 
-def test_zoom_is_disabled_on_the_app_shell_only(tmp_path: Path):
+def test_zoom_is_allowed_on_the_app_shell(tmp_path: Path):
+    # M1 (accessibility, owner-accepted checklist): the shared shell no longer
+    # blocks pinch/zoom. Login keeps its own restriction (disclosed, out of scope).
     client, _, _ = _client(tmp_path)
     html = client.get("/browse").text
-    assert "user-scalable=no" in html
-    assert "maximum-scale=1" in html
+    assert "user-scalable=no" not in html
+    assert "maximum-scale=1" not in html
     # viewport-fit=cover keeps env(safe-area-inset-*) meaningful.
     assert "viewport-fit=cover" in html
 

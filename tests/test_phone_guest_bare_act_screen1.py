@@ -151,7 +151,7 @@ def _phone_guest(html: str) -> str:
 
 
 def _tabs(html: str) -> str:
-    return html.split("data-guest-bareact-phone-tabs", 1)[1].split("</nav>", 1)[0]
+    return html.split("data-guest-phone-tabs", 1)[1].split("</nav>", 1)[0]
 
 
 def _facts(client: TestClient) -> dict:
@@ -216,7 +216,7 @@ def test_phone_guest_ndps_uses_live_head_and_primary(tmp_path: Path) -> None:
 
 def test_phone_guest_five_tabs_browse_active(tmp_path: Path) -> None:
     html = _guest_client(tmp_path).get("/laws/ndps").text
-    assert "data-guest-bareact-phone-tabs" in html
+    assert "data-guest-phone-tabs" in html  # M1: shared guest bar
     assert "mobile-tabbar is-guest" not in html
     tabs = _tabs(html)
     labels = []
@@ -232,8 +232,8 @@ def test_phone_guest_five_tabs_browse_active(tmp_path: Path) -> None:
         chunk = tabs.split(f'href="{href}"', 1)[1].split("</a>", 1)[0]
         assert "is-active" not in chunk
     browse_page = _guest_client(tmp_path / "browse").get("/browse").text
-    assert "data-guest-bareact-phone-tabs" not in browse_page
-    assert "mobile-tabbar is-guest" in browse_page
+    assert "data-guest-phone-tabs" in browse_page  # M1: Browse shares the bar
+    assert "mobile-tabbar is-guest" not in browse_page
 
 
 def test_phone_guest_add_sheet_is_existing_guest_kind(tmp_path: Path) -> None:
@@ -339,9 +339,9 @@ def test_phone_guest_markers_and_pins() -> None:
     assert "← Laws" in bare
     assert 'data-pg-kind="guest"' in bare
     base = BASE.read_text(encoding="utf-8")
-    assert "data-guest-bareact-phone-tabs" in base
-    assert "styles.css?v=main86" in base
-    assert "mobile.css?v=mob105" in base
+    assert "data-guest-phone-tabs" in base
+    assert "styles.css?v=main87" in base
+    assert "mobile.css?v=mob106" in base
     assert "mobile.css?v=mob99" not in base
     styles = STYLES.read_text(encoding="utf-8")
     hide_phone = styles.split("[data-guest-bareact-phone] {", 1)[1].split("}", 1)[0]

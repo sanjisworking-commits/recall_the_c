@@ -119,8 +119,8 @@ def test_guest_landing_and_browse_learn(tmp_path: Path):
     assert 'class="nav-link is-active"' in browse.text
     assert ">Browse" in browse.text
     assert ">Today<" in browse.text or ">Today</a>" in browse.text
-    assert "Not signed in" in browse.text
-    assert 'data-guest-account-menu' in browse.text
+    assert '<a class="nav-signin" href="/login">Sign in</a>' in browse.text  # M1 shell
+    assert "data-guest-account-menu" not in browse.text
     assert 'data-guest-gate' in browse.text
     assert 'href="/login"' in browse.text
 

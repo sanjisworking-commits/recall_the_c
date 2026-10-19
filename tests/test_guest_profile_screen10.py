@@ -91,26 +91,21 @@ def test_screen10_header_is_profile_selected_guest_chrome(tmp_path: Path) -> Non
     html = _guest_client(tmp_path).get("/profile").text
     header = _header(html)
     assert "data-guest-profile-desktop" in html
-    assert "data-guest-profile-brand" in header
-    assert "<span class=\"brand\"" in header
+    # M1 shell: one brand link, five product links with Profile current, Sign in button
+    assert '<a class="brand" href="/"' in header
     assert 'src="/static/main_logo.png"' in header
     assert "Recall the C" in header
-    assert "data-guest-profile-account" in header
-    assert 'account-menu-btn-name">Guest<' in header
-    assert "Not signed in" in header
-    assert "data-guest-profile-nav" in header
-    assert ">Today<" in header
-    assert ">Browse<" in header
-    assert ">Playground<" in header
-    assert ">Calendar<" in header
-    assert ">Profile<" in header
-    assert 'data-guest-profile-nav aria-current="page"' in header
+    assert "data-guest-profile-account" not in header
+    assert "data-guest-profile-nav" not in header
+    for label in ("Today", "Browse", "Playground", "Calendar", "Profile"):
+        assert label in header
+    profile = header.split('href="/profile"', 1)[1].split("</a>", 1)[0]
+    assert "is-active" in profile and 'aria-current="page"' in profile
     assert 'href="/playground"' in header
-    assert "data-guest-profile-phone-nav" in header
-    assert ">Home<" in header
-    assert ">Search<" in header
-    assert ">Learn<" in header
-    assert "nav-signin" in header
+    assert ">Home<" not in header
+    assert ">Search<" not in header
+    assert ">Learn<" not in header
+    assert '<a class="nav-signin" href="/login">Sign in</a>' in header
     css = (ROOT / "src/constitution_memorizer/web/static/styles.css").read_text(
         encoding="utf-8"
     )

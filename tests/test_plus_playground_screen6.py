@@ -318,7 +318,7 @@ def test_plus_playground_marker_uses_shared_predicate() -> None:
     assert "plus_playground" in base
     assert "path.rstrip('/') == '/playground'" in base
     assert "RecallC Plus" in base
-    assert "playground.css?v=pg48" in base
+    assert "playground.css?v=pg49" in base
     deps = DEPS.read_text(encoding="utf-8")
     assert "def request_is_active_plus" in deps
     assert 'snapshot.tier == "plus"' in deps
@@ -333,7 +333,9 @@ def test_plus_playground_marker_uses_shared_predicate() -> None:
     assert "plus-pg-month" in css
     assert "plus-pg-desk-only" in css
     styles = STYLES.read_text(encoding="utf-8")
-    assert ":has([data-plus-playground])" in styles
+    # M1 (DV-20): styles.css no longer hides the account subtitle on Playground pages;
+    # the predicate is exercised by playground.css (asserted above).
+    assert ":has([data-plus-playground])" not in styles
     assert "data-plus-playground" not in GATE.read_text(encoding="utf-8")
     assert "data-plus-playground" not in ADD.read_text(encoding="utf-8")
     assert "data-plus-playground" not in LANDING.read_text(encoding="utf-8")

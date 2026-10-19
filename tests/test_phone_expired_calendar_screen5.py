@@ -715,10 +715,10 @@ def test_phone_expired_calendar_css_scope_pins_and_desktop_09_untouched() -> Non
         assert "expired_calendar" not in text
         assert "data-expired-calendar" not in text
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg48" in base
+    assert "playground.css?v=pg49" in base
     assert "playground.css?v=pg44" not in base
-    assert "styles.css?v=main86" in base
-    assert "mobile.css?v=mob105" in base
+    assert "styles.css?v=main87" in base
+    assert "mobile.css?v=mob106" in base
     assert "data-expired-calendar-phone-tabs" not in base
     first_bar = base.split(
         'class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom"', 2

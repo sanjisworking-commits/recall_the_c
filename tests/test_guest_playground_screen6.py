@@ -88,18 +88,17 @@ def test_screen6_header_is_brand_and_guest_chip(tmp_path: Path) -> None:
     html = _guest_client(tmp_path).get("/playground").text
     header = _header(html)
     assert "data-guest-pg-intro" in html
-    assert 'data-guest-pg-brand' in header
-    assert "<span class=\"brand\"" in header
+    # M1 shell (DV-21): the gate keeps the full top nav with Playground current
+    assert '<a class="brand" href="/"' in header
     assert 'src="/static/main_logo.png"' in header
     assert "Recall the C" in header
-    assert "data-guest-pg-account" in header
-    assert 'account-menu-btn-name">Guest<' in header
-    assert "Not signed in" in header
+    assert "data-guest-pg-account" not in header
+    assert '<a class="nav-signin" href="/login">Sign in</a>' in header
     nav = header.split('aria-label="Primary"', 1)[1].split("</nav>", 1)[0]
-    assert ">Today<" not in nav
-    assert ">Playground<" not in nav
-    assert ">Calendar<" not in nav
-    assert ">Profile<" not in nav
+    for label in (">Today<", ">Browse<", ">Playground<", ">Calendar<", ">Profile<"):
+        assert label.strip("<>") in nav, label
+    playground = nav.split('href="/playground"', 1)[1].split("</a>", 1)[0]
+    assert "is-active" in playground and 'aria-current="page"' in playground
     css = (ROOT / "src/constitution_memorizer/web/static/styles.css").read_text(
         encoding="utf-8"
     )

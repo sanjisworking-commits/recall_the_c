@@ -2360,8 +2360,13 @@ html:has(.pg-surface--fixed-dark) .sheet {
 }
 
 /* R3 — Act-head, Add, home, gates */
-body:has(.PlaygroundShell[data-hard-gate="true"]) .PrimaryTabs--top,
-body:has(.PlaygroundShell[data-hard-gate="true"]) .mobile-tabbar:not([data-guest-pg-phone-tabs]) {
+/* M1 (DV-21): the desktop nav stays on hard-gated pages; only phone bars hide,
+   and the shared guest bar keeps the gate page's tabs as before. */
+body:has(.PlaygroundShell[data-hard-gate="true"]) .mobile-tabbar:not([data-guest-phone-tabs]) {
+  display: none;
+}
+
+body:has(.PlaygroundShell[data-hard-gate="true"] [data-pg-add]) .mobile-tabbar[data-guest-phone-tabs] {
   display: none;
 }
 
@@ -3833,7 +3838,6 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
 
 @media (min-width: 561px) {
   [data-phone-pg-gate="guest"],
-  [data-guest-pg-phone-tabs],
   [data-pg-gate-phone] {
     display: none !important;
   }
@@ -4520,8 +4524,7 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
 /* Guest desktop Profile (CTA map guest/10-screen). Phone guest /profile
    is guest/06-screen. */
 @media (min-width: 561px) {
-  [data-phone-profile="guest"],
-  [data-guest-profile-phone-tabs] {
+  [data-phone-profile="guest"] {
     display: none !important;
   }
 

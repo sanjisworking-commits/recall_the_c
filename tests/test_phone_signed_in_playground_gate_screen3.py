@@ -54,9 +54,10 @@ INTRO_TITLE = "Your RecallC account already includes the complete Constitution."
 INTRO_BODY = "Playground adds structured learning for laws."
 INTRO_CTA = "View Playground plans"
 HARD_GATE_HIDE = (
-    'body:has(.PlaygroundShell[data-hard-gate="true"]) .PrimaryTabs--top,\n'
+    # M1 (DV-21): the desktop nav is no longer hidden on hard-gated pages;
+    # only phone bars hide, and the shared guest bar is exempt.
     'body:has(.PlaygroundShell[data-hard-gate="true"]) '
-    ".mobile-tabbar:not([data-guest-pg-phone-tabs]) {\n"
+    ".mobile-tabbar:not([data-guest-phone-tabs]) {\n"
     "  display: none;\n"
     "}"
 )
@@ -529,13 +530,13 @@ def test_phone_free_gate_css_is_breakpoint_scoped() -> None:
     hide = css.split(
         'body:has(.PlaygroundShell[data-hard-gate="true"]) .mobile-tabbar', 1
     )[1].split("}", 1)[0]
-    assert ":not([data-guest-pg-phone-tabs])" in hide
+    assert ":not([data-guest-phone-tabs])" in hide
     assert "data-signed-in-pg-gate" not in hide
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg48" in base
+    assert "playground.css?v=pg49" in base
     assert "playground.css?v=pg33" not in base
-    assert "styles.css?v=main86" in base
-    assert "mobile.css?v=mob105" in base
+    assert "styles.css?v=main87" in base
+    assert "mobile.css?v=mob106" in base
     assert "data-signed-in-pg-gate" not in MOBILE.read_text(encoding="utf-8")
     js = PG_JS.read_text(encoding="utf-8")
     assert "data-pg-plan-continue" not in js

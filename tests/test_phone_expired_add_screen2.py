@@ -446,9 +446,9 @@ def test_phone_expired_add_css_scope_pins_and_no_clone() -> None:
     assert 'primary_label="Resume Playground"' in view
     assert "kind == \"expired\"" not in view
     base = BASE.read_text(encoding="utf-8")
-    assert "styles.css?v=main86" in base
-    assert "mobile.css?v=mob105" in base
-    assert "playground.css?v=pg48" in base
+    assert "styles.css?v=main87" in base
+    assert "mobile.css?v=mob106" in base
+    assert "playground.css?v=pg49" in base
     assert "playground.css?v=pg41" not in base
 
 
