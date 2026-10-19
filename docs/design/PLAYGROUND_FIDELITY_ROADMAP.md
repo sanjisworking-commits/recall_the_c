@@ -100,7 +100,7 @@ are written as `phone:<query>` / `desktop:<query>`.
 | M | Name | Screen family | Depends on | Owner decisions needed first | Status |
 |---|---|---|---|---|---|
 | M0 | Audit baseline | all | — | — | **ACCEPTED as planning baseline** (PR #218, draft; limitations §0.4) |
-| M1 | Guest shell parity | shell only: tab bar, top nav | — | direction approved; checklist `milestones/M1.md` awaiting approval | **checklist drafted** |
+| M1 | Guest shell parity (+ DV-20 account slot, DV-21 nav on gate/plans/Add) | shell only: tab bar, top nav, account slot | — | checklist accepted 2026-10-19; implementation authorization pending | **accepted, not started** |
 | M2 | Bare Act head family (content + in-page navigation) | `/laws/{id}` for every eligible Act, Add sheet | M1 (shell) | direction approved (data-driven head, 8 NDPS entries, About/Schedules preserved) | proposed |
 | M3 | Browse and Laws index (phone) | `/browse`, `/laws`, `/browse/part/*` phone | M1 | — | proposed |
 | M4 | Today / dashboard | `/dashboard` guest + signed-in, both widths | M1 | §4.1 item 8 | proposed |
