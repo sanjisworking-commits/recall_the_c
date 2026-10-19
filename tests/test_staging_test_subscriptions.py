@@ -143,14 +143,26 @@ def test_dsn_identity_exact_and_redacted() -> None:
         helper.parse_dsn("sqlite:///tmp/progress.db")
     with pytest.raises(helper.StagingTestSubscriptionError, match="unknown"):
         helper.parse_dsn("postgres://postgres@localhost/postgres")
-    with pytest.raises(helper.StagingTestSubscriptionError, match="approved"):
-        helper.require_operational_context(
-            {
-                "APP_ENV": "staging",
-                "STAGING_TEST_SUBSCRIPTIONS_ENABLED": "true",
-            },
-            "postgresql://postgres.tvygwasuqvtnzjyjtqrq:secret@aws-0-ap-south-1.pooler.supabase.com:6543/postgres",
-        )
+    staging_env = {
+        "APP_ENV": "staging",
+        "STAGING_TEST_SUBSCRIPTIONS_ENABLED": "true",
+    }
+    pooler = helper.require_operational_context(
+        staging_env,
+        "postgresql://postgres.tvygwasuqvtnzjyjtqrq:secret@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres",
+    )
+    assert pooler.host == "aws-0-ap-northeast-1.pooler.supabase.com"
+    assert pooler.port == 5432
+    assert pooler.database == "postgres"
+    assert pooler.user == "postgres.tvygwasuqvtnzjyjtqrq"
+    assert "secret" not in str(pooler)
+    for rejected in (
+        "postgresql://postgres.tvygwasuqvtnzjyjtqrq:secret@aws-0-ap-south-1.pooler.supabase.com:6543/postgres",
+        "postgresql://postgres.tvygwasuqvtnzjyjtqrq:secret@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres",
+        "postgresql://postgres:secret@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres",
+    ):
+        with pytest.raises(helper.StagingTestSubscriptionError, match="approved"):
+            helper.require_operational_context(staging_env, rejected)
 
 
 def test_apply_all_plus_pro_max_through_resolver(tmp_path: Path) -> None:

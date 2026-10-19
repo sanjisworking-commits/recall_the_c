@@ -38,6 +38,17 @@ AUDIT_RESET = "staging_test_subscription_reset"
 DIRECT_STAGING = (
     ("db.tvygwasuqvtnzjyjtqrq.supabase.co", 5432, "postgres", "postgres"),
 )
+# Session pooler (port 5432) for the same Supabase project. Transaction-mode
+# port 6543 and every other region stay rejected.
+SESSION_POOLER_STAGING = (
+    (
+        "aws-0-ap-northeast-1.pooler.supabase.com",
+        5432,
+        "postgres",
+        "postgres.tvygwasuqvtnzjyjtqrq",
+    ),
+)
+APPROVED_STAGING = DIRECT_STAGING + SESSION_POOLER_STAGING
 ALLOWED_SSLMODES = frozenset({"prefer", "require", "verify-ca", "verify-full"})
 # Unspecified libpq parameters fall through to the process environment.
 # Scrub these around connect so PGHOSTADDR and the rest cannot retarget it.
@@ -230,7 +241,7 @@ def require_operational_context(
     if not (dsn or "").strip():
         raise StagingTestSubscriptionError("DATABASE_URL is not set")
     target = parse_target(dsn)
-    if _approved_candidate(target) not in tuple(DIRECT_STAGING):
+    if _approved_candidate(target) not in APPROVED_STAGING:
         raise StagingTestSubscriptionError(
             "database identity is not the approved staging target"
         )
@@ -1331,7 +1342,7 @@ def _load_operational(
 def _connect_postgres(dsn: str) -> Any:
     """Connect with explicit keywords. Never pass the raw URL to libpq."""
     target = parse_target(dsn)
-    if _approved_candidate(target) not in tuple(DIRECT_STAGING):
+    if _approved_candidate(target) not in APPROVED_STAGING:
         raise StagingTestSubscriptionError(
             "database identity is not the approved staging target"
         )

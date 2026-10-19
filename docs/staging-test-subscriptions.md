@@ -49,13 +49,15 @@ Operational `main()` refuses unless **all** hold:
 
 - `APP_ENV=staging` (never `test`, `development`, or `production`)
 - `STAGING_TEST_SUBSCRIPTIONS_ENABLED` true
-- DSN identity exactly `{host: db.tvygwasuqvtnzjyjtqrq.supabase.co, port: 5432, database: postgres, user: postgres}`
+- DSN identity is one of these exact tuples:
+  - direct `{host: db.tvygwasuqvtnzjyjtqrq.supabase.co, port: 5432, database: postgres, user: postgres}`
+  - session pooler `{host: aws-0-ap-northeast-1.pooler.supabase.com, port: 5432, database: postgres, user: postgres.tvygwasuqvtnzjyjtqrq}`
 - target UUID allowlisted (`inspect` is the exception: it discovers UUIDs)
 - no admin role, no provider-backed row, no unrelated subscription history
 
 `inspect` does not require a pre-existing UUID allowlist. `preview` and every mutation do.
 
-Pooler hostnames fail closed until an exact pooler tuple is recorded. Unknown DSN formats fail closed. A query string may contain only `sslmode` of `prefer`, `require`, `verify-ca`, or `verify-full`. `host`, `hostaddr`, `port`, `dbname`, `options`, and fragments are rejected so they cannot retarget the approved identity. Connect passes explicit host, port, database, user, and password keywords and strips libpq override variables (`PGHOST`, `PGHOSTADDR`, `PGOPTIONS`, and the rest) for that call. Credentials and the raw DSN are never printed.
+Any other pooler hostname, user, or port (including transaction-mode `6543`) fails closed. Unknown DSN formats fail closed. A query string may contain only `sslmode` of `prefer`, `require`, `verify-ca`, or `verify-full`. `host`, `hostaddr`, `port`, `dbname`, `options`, and fragments are rejected so they cannot retarget the approved identity. Connect passes explicit host, port, database, user, and password keywords and strips libpq override variables (`PGHOST`, `PGHOSTADDR`, `PGOPTIONS`, and the rest) for that call. Credentials and the raw DSN are never printed.
 
 Reset deletes each verified helper row with `WHERE id = … AND user_id = …` and requires that exact row to disappear. It does not delete by user id alone.
 
