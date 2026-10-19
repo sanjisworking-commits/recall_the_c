@@ -713,10 +713,41 @@ Light captures: `hosted/hosted_signedin-free_playground_1280x900_light.png`,
 (`hosted/hosted_signedin-free_playground_390x844_light.png`). Manifest:
 `manifests/hosted_signedin-free_dv21_b6ad47b0.json`.
 
-Other non-guest cohorts (not present on this staging account; local
-TestClient only, CSS is shared): Plus, Pro, Max, expired and halted
-Playground pages are **not** hard-gated and still render the five-link
-top nav on `/playground`, the plans query-string and Add. Pinned by
-`test_dv21_plus_expired_and_halted_keep_the_top_nav`. Subscribed/paid
-hosted states remain unverified (DV-17 / DV-18; `PRICING_ENABLED=false`,
-`ADMIN_ENABLED=false`).
+Other non-guest cohorts are recorded in §10.4 (local computed-style).
+Subscribed/paid **hosted** states remain unverified (DV-17 / DV-18;
+`PRICING_ENABLED=false`, `ADMIN_ENABLED=false`).
+
+### 10.4 Non-guest cohorts besides the staging Free account (local CDP)
+
+Guest is Claude's hosted matrix. This pass covers every other signed-in
+disposition the fixtures can build, at 1280×900, clock frozen to
+`PLAYGROUND_TEST_NOW` (2026-09-16). Chrome headless over CDP; nav
+visibility is **computed style**, not HTML presence. **M1 remains
+unaccepted.**
+
+Routes per cohort: `/playground`, `/playground?stage=plans`,
+`/playground?stage=plans&tier=plus`, `/playground/laws/ndps/add`,
+`/playground/laws/uapa/add`.
+
+| Cohort | `/playground` body | Hard-gate | Top nav (all five routes) |
+|---|---|---|---|
+| Free | signed-in gate | yes | visible, Playground current |
+| Plus | subscriber home | no | visible |
+| Pro | subscriber home | no | visible |
+| Max | subscriber home | no | visible |
+| Paused | paused home + Resume | no | visible |
+| Pending | home + payment-retry banner | no | visible |
+| Expired | read-only expired home | no | visible |
+| Halted | read-only halted home | no | visible |
+
+40/40 rows PASS. Manifest:
+`manifests/local_nonguest_dv21.json`. Representative PNGs in `nonguest/`.
+
+Only Free hits the hard-gate CSS that used to hide `.PrimaryTabs--top`
+(DV-21). The other cohorts never used that hide; this pass confirms they
+did not lose the nav as a side effect.
+
+Not DV-21 (recorded, not acted on; account copy is M5): Pro / Max /
+paused / pending `/playground` still show the fallback subtitle
+"Free account" in the account slot. Expired uses "Your Playground is
+paused"; Halted uses "Payment retries have stopped".
