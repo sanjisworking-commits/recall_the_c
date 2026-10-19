@@ -130,7 +130,7 @@ are written as `phone:<query>` / `desktop:<query>`.
 | M0 | Audit baseline | all | — | — | **ACCEPTED as planning baseline** (PR #218, draft; limitations §0.4) |
 | M1 | Guest shell parity (+ DV-20 account slot, DV-21 nav on gate/plans/Add) | shell only: tab bar, top nav, account slot | — | checklist accepted; implemented locally as PR #219 (`7f78992`); review corrections applied | **under review, not accepted** |
 | M1b | Signed-in shell accessibility and double-nav correction (follow-up to the M1-only exception granted 2026-10-19: 44 px targets, 4.5:1 labels, no top nav + phone bar together at 561–720 px, brand-mark consistency with DV-22 if not batched into M9) | signed-in shell | M1 accepted | — (exception granted 2026-10-19; this milestone must close before final redesign acceptance) | queued |
-| M2 | Bare Act head family (content + in-page navigation) | `/laws/{id}` for every eligible Act, Add sheet | M1 (shell) | direction approved (data-driven head, 8 NDPS entries, About/Schedules preserved) | proposed |
+| M2 | Bare Act head family (content + in-page navigation) | `/laws/{id}` for every eligible Act, Add sheet | M1 (shell) | checklist drafted `milestones/M2.md` (2026-10-19) — needs §4 answers: chapter-count rule, About placement, chapter-row navigation, direct-URL Add presentation | **checklist drafted, awaiting approval** |
 | M3 | Browse and Laws index (phone) | `/browse`, `/laws`, `/browse/part/*` phone | M1 | — | proposed |
 | M4 | Today / dashboard | `/dashboard` guest + signed-in, both widths | M1 | §4.1 item 8 | proposed |
 | M5 | Account family | `/profile`, `/settings`, `/profile/security/devices`, `/playground` gate + plans | M1 | DV-9 (one or two gate buttons), DV-14 (plan select control) | proposed |
