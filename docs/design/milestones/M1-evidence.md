@@ -429,13 +429,13 @@ Evidence files: `docs/design/proto-comparison-2026-10-19/m1/a11y/` (`a11y.json`,
 | Criterion | Guest shell (M1 scope) | Signed-in shell (regression-only) | Evidence |
 |---|---|---|---|
 | M1-A01 landmarks and names | **PASS** — AX tree exposes `navigation "Primary"` (desktop) / `navigation "Mobile"` (phone) with link names Today, Browse, Playground, Calendar, Profile; footer `navigation "Tools"` and `"Legal"`; no SVG exposed (all `aria-hidden`); exactly one `aria-current="page"` per nav per page (template tests). | unchanged | `a11y.json → axtree` |
-| M1-A01 focus order and visible focus | **PASS with one recorded finding** — desktop order: brand → Today → Browse → Playground → Calendar → Sign in → page content; every stop shows the browser's `solid 2px` ink outline. Phone: the tab bar sits after `<main>` in DOM order, so it is reached after the page content (frozen signed-in bar has the same placement). No focus trap. **No skip-to-content link exists** in the frozen shell; none was added (scope). | unchanged | `a11y.json → keyboard`, `focus_*.png` |
+| M1-A01 focus order and visible focus | **PASS with one recorded finding** — desktop trace (`a11y.json → keyboard`, `/browse` and `/settings` at 1280): brand → Today → Browse → Playground → Calendar → Profile → Sign in (account slot) → page content (on `/browse` the next stop is the strip's own Sign in, then Laws); every stop shows the browser's `solid 2px` ink outline. Phone: the tab bar sits after `<main>` in DOM order, so it is reached after the page content (frozen signed-in bar has the same placement). No focus trap. **No skip-to-content link exists** in the frozen shell; none was added (scope). | unchanged | `a11y.json → keyboard`, `focus_*.png` |
 | M1-A02 text contrast (light) | **FIXED → PASS** — inactive labels now `--muted` `#6b6b6b` on `#ffffff` = **5.33:1** (guest-scoped rules in `styles.css` / `mobile.css`); active 18.4:1; Sign in 18.4:1. | **FAIL, unchanged (exception requested)** — `--mid` `#8f8f8d` = 3.24:1 on the signed-in bars; the same rule could be extended to `body.is-authed` on the owner's say-so. | token arithmetic in §6.1 |
 | M1-A02 text contrast (dark) | **PASS** — inactive 5.93:1, active 14.9:1, Sign in 16.4:1. | PASS (5.15:1) | §6.1 |
 | M1-A02 UI/focus contrast ≥ 3:1 | **PASS** — focus outline `#141414` on paper 18.4:1; the hairline (1.37:1) is decorative, the bar is distinguished by position/background. | same | — |
 | M1-A02 targets ≥ 44×44 CSS px | **FIXED → PASS at 1× zoom** — desktop nav links 80–111 × 44, Sign in 77 × 44 (was 38 tall); phone tabs 78 × 60 at 390. | **FAIL, unchanged (exception requested)** — signed-in desktop links stay 38 px tall. | `a11y.json → zoom[*].targets` |
 | M1-A03 zoom allowed | **PASS** — shared viewport meta no longer sets `maximum-scale` / `user-scalable=no` (test). Login keeps its own restriction (disclosed, out of scope). | same meta | HTML |
-| M1-A03 200 % zoom / reflow | **PASS (emulated)** — 200 % zoom emulated as the CSS viewport halved at DSF 2 (1280 → 640×450; 390 → 195×422): no horizontal scroll, nav/bar present and usable on `/browse`, `/settings`, `/playground`, `/terms`. Finding: at 195 CSS px the five phone tabs are 34 CSS px wide (68 device px) — below 44 CSS px at that extreme; recorded, not treated as a failure of the 1× contract. A real browser-zoom pass (⌘+) is **NOT RUN** here. | same emulation applies | `zoom_*.png` |
+| M1-A03 200 % zoom / reflow | **Supporting evidence only (emulated); the real check is NOT RUN, see §7b** — 200 % zoom emulated as the CSS viewport halved at DSF 2 (1280 → 640×450; 390 → 195×422): no horizontal scroll, nav/bar present and usable on `/browse`, `/settings`, `/playground`, `/terms`. Finding: at 195 CSS px the five phone tabs are 34 CSS px wide (68 device px) — below 44 CSS px at that extreme; recorded, not treated as a failure of the 1× contract. A real browser-zoom pass (⌘+) is **NOT RUN** here. | same emulation applies | `zoom_*.png` |
 | M1-A03 reduced motion | NOT RUN (no shell animation was added or removed) | — | — |
 | M1-A04 automated scan | **BLOCKED** — no axe/Lighthouse runner is available in this environment and installing one (npm packages) was not authorised; the ARIA contract is covered by template tests and the AX-tree dump above. Must run in the hosted pass. | BLOCKED | — |
 | M1-A01 screen-reader smoke | **NOT RUN** (manual VoiceOver pass not performed in this session); the AX tree is the proxy. | NOT RUN | — |
@@ -457,8 +457,8 @@ Evidence files: `docs/design/proto-comparison-2026-10-19/m1/a11y/` (`a11y.json`,
 
 | Surface | Prototype (`viewer=guest`) | Candidate | Verdict |
 |---|---|---|---|
-| Phone bar | five tabs, icon + 10.5 px label, active ink, inactive grey, 60 px, hairline top | same structure and geometry (shared with the signed-in bar) | MATCH, except the Playground icon glyph (app grid vs prototype brain) which is the app's existing icon set — G minor, not M1 |
-| Desktop top nav | brand · Today/Browse/Playground/Calendar/Profile pill nav · black "Sign in" button right | same; Sign in is a 38 px black rounded button in the account slot | MATCH |
+| Phone bar | five tabs, icon + 10.5 px label, active ink, inactive grey, 60 px, hairline top | same structure and geometry (shared with the signed-in bar); inactive labels **`--muted`** instead of the prototype grey (accessibility-driven, see §6) | MATCH in structure; **recorded intentional deviation**: accessible grey; the Playground icon glyph (app grid vs prototype brain) is the app's icon set — G minor, not M1 |
+| Desktop top nav | brand · Today/Browse/Playground/Calendar/Profile pill nav · black "Sign in" button right; inactive labels in the prototype's grey | same structure; Sign in is a **44 px** black rounded button in the account slot; nav links **44 px** tall (prototype ≈38 px); inactive labels **`--muted #6b6b6b`** instead of the prototype grey (accessibility-driven, see §6) | MATCH in structure; **recorded intentional deviations**: 44 px targets and accessible grey |
 | Brand mark | filled black square "C" on every page | filled square on Browse/Laws/NDPS/gate/Profile; outlined glyph on legacy pages (UAPA/BNS heads, Today, Settings, legal, readers) because the invert rule is per-screen | **G (shell, open)** — DV-22 proposed: unify the brand mark; not changed in M1 (the same rules style signed-in pages) |
 | Guest gate (desktop) | full nav + Sign in | now full nav + Sign in, Playground current | MATCH (was: brand + guest menu only) |
 | Legal pages | not drawn | inherited shell, no current tab | per checklist |
@@ -481,6 +481,26 @@ The prototype guides appearance only. This table lists every working control or 
 | Google-only sign-in | `/login` standalone | unchanged | **enforced** |
 | Zoom | blocked on shared shell | allowed | **enabled** (was a restriction the application did not need) |
 | Signed-in account menu (Profile, Settings, Learn, Progress, Calendar, Memory log, Admin, Sign out) | account slot | unchanged markup | **kept** |
+
+## 7b. Required accessibility checks still outstanding
+
+Viewport/DPR emulation and the AX-tree inspection are supporting evidence only. These checklist items are **not complete** and M1 cannot be labelled "accessibility accepted" until they run (locally or in the hosted pass):
+
+| Check | State | What would close it |
+|---|---|---|
+| Real browser zoom to 200 % (⌘+ / Ctrl+) | NOT RUN — attempted 2026-10-19 in Chrome via the automation tools, which refuse page-zoom shortcuts; the §6 emulation is supporting evidence only | a zoom pass in a real browser at 200 % on the §4 routes, recorded with the resulting CSS viewport and overflow result |
+| Screen-reader smoke pass | NOT RUN | VoiceOver (macOS) or NVDA pass over the shell: landmarks announced, link names, current-page state |
+| Automated accessibility scan | BLOCKED | an axe-core or Lighthouse run per distinct shell state; needs a runner this environment lacks (installing one requires authorisation) |
+
+## 7c. Reviewer recommendations recorded (2026-10-19) — pending the owner's decision
+
+| Item | Recommendation | Owner decision |
+|---|---|---|
+| Expanded guest-shell scope (§1.1) | approve **chrome only** for the four families; reader bar suppression, page bodies and access gates preserved (they are: the `article` suppression rule and the guest Add bar rule are untouched, bodies unchanged, gates tested) | pending |
+| Accessible guest grey | keep; record as an intentional prototype deviation (recorded in §7) | pending |
+| Signed-in accessibility (38 px, `--mid`) | temporary **M1-only exception** with a named follow-up milestone; not accessibility acceptance | pending — proposed follow-up: a signed-in shell milestone (roadmap M1b) |
+| DV-22 brand mark | batch into M9 polish | pending |
+| Signed-in double nav at 561–720 px | track explicitly for correction before final acceptance | pending — same M1b |
 
 ## 8. Deviations still open after M1 (for the owner)
 
