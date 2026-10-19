@@ -306,7 +306,7 @@ def test_phone_guest_profile_css_is_breakpoint_scoped() -> None:
     hide = css.split('@media (min-width: 561px) {\n  [data-phone-profile="guest"] {', 1)[1].split("}", 1)[0]
     assert "display: none" in hide
     assert "data-guest-profile-phone-tabs" not in css  # M1 removed the per-screen bar
-    assert "playground.css?v=pg49" in BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg50" in BASE.read_text(encoding="utf-8")
     assert "playground.css?v=pg31" not in BASE.read_text(encoding="utf-8")
     assert "playground.css?v=pg30" not in BASE.read_text(encoding="utf-8")
     guest_title = css.split(".guest-profile-title {", 1)[1].split("}", 1)[0]
@@ -547,7 +547,7 @@ def test_phone_guest_profile_screen06_390x844(tmp_path: Path) -> None:
     assert not any("/login" in item for item in extra)
     assert not any(item.startswith("POST ") for item in extra)
     assert "/laws/ndps" in ndps_url
-    assert "data-guest-bareact-phone" in ndps_html
+    assert 'data-act-head="ndps"' in ndps_html
     assert shot_path.is_file()
     assert shot_path.stat().st_size > 1000
 

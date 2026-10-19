@@ -46,7 +46,7 @@ APP = ROOT / "src/constitution_memorizer/web/app.py"
 LANDING = ROOT / "src/constitution_memorizer/web/templates/landing.html"
 LAWS = ROOT / "src/constitution_memorizer/web/templates/laws.html"
 BARE = ROOT / "src/constitution_memorizer/web/templates/bare_act.html"
-ADD = ROOT / "src/constitution_memorizer/web/templates/playground_add.html"
+ADD = ROOT / "src/constitution_memorizer/web/templates/partials/playground_add_panel.html"  # M2: panel partial
 HOME = ROOT / "src/constitution_memorizer/web/templates/playground.html"
 GATE = ROOT / "src/constitution_memorizer/web/templates/playground_gate.html"
 MANAGE = ROOT / "src/constitution_memorizer/web/templates/subscription_manage.html"
@@ -470,7 +470,7 @@ def test_halted_laws_uses_shared_predicate() -> None:
     assert "data-halted-laws" not in PG_CSS.read_text(encoding="utf-8")
     assert "data-halted-laws" not in STYLES.read_text(encoding="utf-8")
     assert "data-halted-laws" not in MOBILE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg49" in BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg50" in BASE.read_text(encoding="utf-8")
 
 
 def test_plus_expired_and_halted_01_02_untouched() -> None:
@@ -482,10 +482,10 @@ def test_plus_expired_and_halted_01_02_untouched() -> None:
     assert "data-halted-laws" not in browse
     assert 'data-plus-laws="desktop"' in LAWS.read_text(encoding="utf-8")
     assert 'data-expired-laws="desktop"' in LAWS.read_text(encoding="utf-8")
-    assert 'data-plus-bareact="desktop"' in BARE.read_text(encoding="utf-8")
-    assert 'data-expired-bareact="desktop"' in BARE.read_text(encoding="utf-8")
-    assert 'data-plus-add="desktop"' in ADD.read_text(encoding="utf-8")
-    assert 'data-expired-add="desktop"' in ADD.read_text(encoding="utf-8")
+    assert 'data-plus-bareact' in BARE.read_text(encoding="utf-8")
+    assert 'data-expired-bareact' in BARE.read_text(encoding="utf-8")
+    assert 'data-add-step="confirm"' in ADD.read_text(encoding="utf-8")
+    assert 'data-expired-add' in ADD.read_text(encoding="utf-8")
     assert 'data-plus-playground="desktop"' in HOME.read_text(encoding="utf-8")
     assert 'data-expired-playground="desktop"' in HOME.read_text(encoding="utf-8")
     assert 'data-plus-subscription="desktop"' in MANAGE.read_text(encoding="utf-8")

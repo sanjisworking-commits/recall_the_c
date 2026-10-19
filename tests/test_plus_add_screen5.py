@@ -1,13 +1,17 @@
 """Plus cohort desktop NDPS Add-dialog Screen 05 (CTA map plus/05-screen).
 
 Authorized: ChatGPT. Authenticated multiuser GET /playground/laws/ndps/add
-with a real active Plus EntitlementSnapshot. Overlay from accepted Screen 04
-Add CTA. Guest and signed-in Free Screen 05 stay on their own wrappers.
-Choose sections continues to the existing playground_select route.
+with a real active Plus EntitlementSnapshot. M2: one Add sheet per state
+for every Act and both widths — a direct URL is the Act page with the sheet
+open in a <dialog> (M2 Q4); the in-page fetch and the no-JS POST re-render
+ship the panel on its own. Guest / Free / Pro / expired / halted get the
+same sheet with their own state. Choose sections continues to the existing
+playground_select route.
 """
 
 from __future__ import annotations
 
+import re
 import socket
 import threading
 import time
@@ -25,33 +29,43 @@ from constitution_memorizer.multiuser.settings import (
     MultiUserSettings,
     clear_settings_cache,
 )
+from constitution_memorizer.playground.eligibility import playground_bare_act_spec
 from constitution_memorizer.playground.roster.period import (
     playground_month_bounds,
     playground_month_name,
 )
 from constitution_memorizer.playground.urls import add_path, law_path, remove_path, sections_path
-from constitution_memorizer.playground.view import plus_add_confirm_copy
 from constitution_memorizer.web.app import create_app
-from constitution_memorizer.web.guest_bareact_head import NDPS_GUEST_READING_NAME
 from tests.conftest import PLAYGROUND_TEST_NOW
 
 MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
 ROOT = Path(__file__).resolve().parents[1]
 ADD_TPL = ROOT / "src/constitution_memorizer/web/templates/playground_add.html"
+PANEL_TPL = ROOT / "src/constitution_memorizer/web/templates/partials/playground_add_panel.html"
 SELECT_TPL = ROOT / "src/constitution_memorizer/web/templates/playground_select.html"
 BARE = ROOT / "src/constitution_memorizer/web/templates/bare_act.html"
 BASE = ROOT / "src/constitution_memorizer/web/templates/base.html"
 DEPS = ROOT / "src/constitution_memorizer/entitlements/dependencies.py"
 ROUTES = ROOT / "src/constitution_memorizer/playground/routes.py"
-VIEW = ROOT / "src/constitution_memorizer/playground/view.py"
 PG_CSS = ROOT / "src/constitution_memorizer/web/static/playground.css"
+PG_JS = ROOT / "src/constitution_memorizer/web/static/playground.js"
 USER = UUID("11111111-1111-4111-8111-111111111111")
 MONTH = playground_month_name(playground_month_bounds(PLAYGROUND_TEST_NOW)[0])
-LEDE = (
-    f"{NDPS_GUEST_READING_NAME} joins this month's Playground — learnable, verbatim. "
-    "The reader itself never changes."
-)
-SPACE = f"This will use 1 of your 10 law spaces in {MONTH}. 9 will remain."
+NDPS_READING_NAME = playground_bare_act_spec("ndps").short_name
+BNS_READING_NAME = playground_bare_act_spec("bns").short_name
+TITLE = "Add to Playground"
+
+
+def _lede(reading_name: str) -> str:
+    return (
+        f"{reading_name} joins this month's Playground — learnable, verbatim. "
+        "The reader itself never changes."
+    )
+
+
+LEDE = _lede(NDPS_READING_NAME)
+SPACE = f"This will use 1 of your 10 law spaces for {MONTH}."
+REMAIN = "You'll have 9 spaces remaining."
 FOOTER = "Already yours this month — reopening it never uses another space."
 INVENTED = (
     "Premium",
@@ -61,6 +75,20 @@ INVENTED = (
     "Free plan",
     "device limit",
     "replacement",
+)
+LEGACY_MARKERS = (
+    "data-plus-add",
+    "data-guest-add-desktop",
+    "data-guest-add-phone",
+    "data-signed-in-add-desktop",
+    "data-signed-in-add-phone",
+    'data-expired-add="desktop"',
+    'data-halted-add="desktop"',
+    "plus-add-",
+    "guest-add-(?!gate)",
+    "signed-add-",
+    "expired-add-",
+    "halted-add-",
 )
 
 
@@ -143,79 +171,169 @@ def _plus_client(tmp_path: Path) -> TestClient:
     return client
 
 
-def _desk(html: str) -> str:
-    return html.split("data-plus-add-desktop", 1)[1].split(
-        "data-plus-add-phone", 1
-    )[0]
+def _panel_attrs(html: str) -> str:
+    match = re.search(r'<section\s+class="pg-sheet-panel"[^>]*>', html, re.S)
+    assert match, "no Add sheet panel on the page"
+    return re.sub(r"\s+", " ", match.group(0))
 
 
-def _phone(html: str) -> str:
-    return html.split("data-plus-add-phone", 1)[1].split(
+def _sheet(html: str) -> str:
+    """The one panel, whichever wrapper served it."""
+    return unescape(
+        html.split('class="pg-sheet-panel"', 1)[1].split("</section>", 1)[0]
+    )
+
+
+def _confirm(html: str) -> str:
+    sheet = _sheet(html)
+    assert 'data-add-step="confirm"' in sheet, "no confirm step in the sheet"
+    return sheet.split('data-add-step="confirm"', 1)[1].split(
         'data-add-step="scope"', 1
     )[0]
 
 
 def _scope(html: str) -> str:
-    return html.split('data-add-step="scope"', 1)[1]
+    return unescape(html.split('data-add-step="scope"', 1)[1])
 
 
-def test_plus_add_confirm_copy_uses_roster_remaining() -> None:
-    title, lede, space, footer = plus_add_confirm_copy(
-        reading_name=NDPS_GUEST_READING_NAME,
-        month_name=MONTH,
-        law_limit=10,
-        remaining_after=9,
+def _assert_no_legacy(html: str) -> None:
+    """No per-surface twins or classes; `data-guest-add-gate` is a kept hook."""
+    for marker in LEGACY_MARKERS:
+        assert re.search(marker, html) is None, marker
+
+
+def _assert_act_page_underneath(html: str, law_id: str) -> None:
+    """A direct Add URL is the Act page with the dialog open (M2 Q4)."""
+    assert f'data-act-head="{law_id}"' in html
+    assert 'class="panel ActHead' in html
+    assert 'data-mscreen="bareact"' in html
+    assert "PlaygroundShell" not in html
+    assert "data-hard-gate" not in html
+    dialog = re.search(r"<dialog[^>]*>", html)
+    assert dialog, "no dialog on the page"
+    for attr in (
+        'class="pg-sheet"',
+        "data-pg-sheet-host",
+        "data-pg-sheet-direct",
+        f'data-pg-sheet-return="/laws/{law_id}"',
+        'aria-labelledby="pg-add-title"',
+        " open",
+    ):
+        assert attr in dialog.group(0), attr
+    assert html.count("<dialog") == 1
+    assert html.count('class="pg-sheet-panel"') == 1
+
+
+def _assert_subscriber_confirm(
+    html: str, *, law_id: str, reading_name: str, law_limit: int, remaining: int
+) -> None:
+    confirm = _confirm(html)
+    assert f'<p class="pg-eyebrow">{MONTH}</p>' in confirm
+    assert f'<h1 id="pg-add-title" class="pg-add-title">{TITLE}</h1>' in confirm
+    assert confirm.count(TITLE) == 2
+    assert f'<p class="pg-add-lede">{_lede(reading_name)}</p>' in confirm
+    assert (
+        f'<p class="pg-add-note pg-add-note--left">This will use 1 of your {law_limit} law spaces for {MONTH}.</p>'
+        in confirm
     )
-    assert title == "Add to Playground"
-    assert lede == LEDE
-    assert space == SPACE
-    assert footer == ""
-    _title, _lede, _space, reopen_footer = plus_add_confirm_copy(
-        reading_name=NDPS_GUEST_READING_NAME,
-        month_name=MONTH,
-        law_limit=10,
-        remaining_after=9,
-        reopen=True,
+    assert (
+        f'<p class="pg-add-note pg-add-note--left">You\'ll have {remaining} spaces remaining.</p>'
+        in confirm
     )
-    assert reopen_footer == FOOTER
+    assert f'<form method="post" action="{add_path(law_id)}" data-pg-add-confirm>' in confirm
+    assert 'name="csrf_token"' in confirm
+    assert 'name="confirm" value="add"' in confirm
+    assert f'<button type="submit" class="pg-add-primary">{TITLE}</button>' in confirm
+    assert f'<a class="pg-add-secondary" href="/laws/{law_id}" data-pg-sheet-close>Cancel</a>' in confirm
+    assert FOOTER not in confirm
+    assert "reopening it never uses another space" not in confirm
 
 
-def test_plus_add_desktop_is_subscriber_confirm_only(tmp_path: Path) -> None:
+def test_plus_add_sheet_copy_is_shared_m2_lede_not_plus_variant(tmp_path: Path) -> None:
+    """The NDPS-only plus_add copy variant is no longer rendered: Plus and
+    Pro get the one lede with the roster's own numbers."""
+    plus = _plus_client(tmp_path / "plus")
+    plus_html = unescape(plus.get(add_path("ndps")).text)
+    _assert_subscriber_confirm(
+        plus_html, law_id="ndps", reading_name=NDPS_READING_NAME, law_limit=10, remaining=9
+    )
+    assert f"in {MONTH}. 9 will remain." not in plus_html
+    assert "plus_add" not in plus_html
+    pro = TestClient(_mu_app(tmp_path / "pro"))
+    _sign_in(pro)
+    _subscribe(pro, tier="pro")
+    pro_html = unescape(pro.get(add_path("ndps")).text)
+    _assert_subscriber_confirm(
+        pro_html, law_id="ndps", reading_name=NDPS_READING_NAME, law_limit=30, remaining=29
+    )
+    assert _confirm(plus_html).replace("10 law", "").replace(" 9 spaces", "") == _confirm(
+        pro_html
+    ).replace("30 law", "").replace(" 29 spaces", "").replace(
+        re.search(r'name="csrf_token" value="([^"]*)"', _confirm(pro_html)).group(1),
+        re.search(r'name="csrf_token" value="([^"]*)"', _confirm(plus_html)).group(1),
+    )
+
+
+def test_plus_add_is_subscriber_confirm_only(tmp_path: Path) -> None:
     client = _plus_client(tmp_path)
-    html = client.get(add_path("ndps")).text
-    assert 'data-plus-add="desktop"' in html
-    assert 'data-pg-kind="eligible_to_add"' in html
-    assert "data-plus-add-desktop" in html
-    assert "data-plus-add-phone" in html
-    assert "data-guest-add-desktop" not in html
-    assert "data-signed-in-add-desktop" not in html
-    desk = unescape(_desk(html))
-    assert ">Add to Playground<" in desk
-    assert desk.count("Add to Playground") == 2
-    assert LEDE in desk
-    assert SPACE in desk
-    assert FOOTER not in desk
-    assert "plus-add-footer" not in desk
-    assert "reopening it never uses another space" not in desk
-    assert 'name="csrf_token"' in desk
-    assert 'name="confirm" value="add"' in desk
-    assert 'data-pg-add-confirm' in desk
-    assert 'class="plus-add-submit"' in desk
-    assert 'data-pg-sheet-close' in desk
-    assert ">Cancel<" in desk
-    assert "Sign in" not in desk
-    assert "Create an account" not in desk
-    assert "Unlock Playground" not in desk
-    assert "Resume Playground" not in desk
-    assert "Playground full this month" not in desk
-    assert "temporarily unavailable" not in desk
-    assert "Device limit" not in desk
-    assert "Subscribe to use Playground" not in desk
-    assert "Already in Playground" not in desk
+    page = client.get(add_path("ndps"))
+    assert page.status_code == 200
+    html = unescape(page.text)
+    _assert_no_legacy(html)
+    _assert_act_page_underneath(html, "ndps")
+    attrs = _panel_attrs(html)
+    assert 'data-pg-kind="eligible_to_add"' in attrs
+    assert 'data-step="confirm"' in attrs
+    assert 'data-skip-confirm="false"' in attrs
+    assert 'data-roster-confirm="ndps"' in attrs
+    assert 'role="dialog"' in attrs
+    assert "data-expired-add" not in attrs
+    assert "data-halted-add" not in attrs
+    _assert_subscriber_confirm(
+        html, law_id="ndps", reading_name=NDPS_READING_NAME, law_limit=10, remaining=9
+    )
+    sheet = _sheet(html)
+    assert 'data-add-step="confirm" >' in sheet or 'data-add-step="confirm">' in sheet
+    assert 'data-add-step="scope" hidden' in sheet
+    assert "Sign in" not in sheet
+    assert "Create an account" not in sheet
+    assert "Unlock Playground" not in sheet
+    assert "Resume Playground" not in sheet
+    assert "Playground full this month" not in sheet
+    assert "temporarily unavailable" not in sheet
+    assert "Device limit" not in sheet
+    assert "Subscribe to use Playground" not in sheet
+    assert "Already in Playground" not in sheet
     for phrase in INVENTED:
-        assert phrase not in desk, phrase
+        assert phrase not in sheet, phrase
     assert client.app.state.roster.is_law_active_this_period(USER, "ndps") is False
     assert client.app.state.playground.get_item(USER, "ndps") is None
+
+
+def test_plus_add_in_page_fetch_and_post_ship_the_panel_alone(tmp_path: Path) -> None:
+    client = _plus_client(tmp_path)
+    fetched = client.get(add_path("ndps"), headers={"X-Requested-With": "pg-sheet"})
+    assert fetched.status_code == 200
+    html = unescape(fetched.text)
+    _assert_no_legacy(html)
+    assert "<dialog" not in html
+    assert 'class="panel ActHead' not in html
+    assert 'data-pg-kind="eligible_to_add"' in _panel_attrs(html)
+    _assert_subscriber_confirm(
+        html, law_id="ndps", reading_name=NDPS_READING_NAME, law_limit=10, remaining=9
+    )
+    assert client.app.state.roster.is_law_active_this_period(USER, "ndps") is False
+
+    payload = dict(_csrf(client))
+    payload["confirm"] = "add"
+    posted = client.post(add_path("ndps"), data=payload, follow_redirects=False)
+    assert posted.status_code == 200
+    posted_html = unescape(posted.text)
+    assert "<dialog" not in posted_html
+    assert 'class="panel ActHead' not in posted_html
+    assert 'data-step="scope"' in _panel_attrs(posted_html)
+    assert 'data-add-step="confirm" hidden' in _sheet(posted_html)
+    assert client.app.state.roster.is_law_active_this_period(USER, "ndps") is False
 
 
 def test_plus_re_add_keeps_no_extra_space_copy(tmp_path: Path) -> None:
@@ -229,56 +347,58 @@ def test_plus_re_add_keeps_no_extra_space_copy(tmp_path: Path) -> None:
     removed = client.post(remove_path("ndps"), data=_csrf(client), follow_redirects=False)
     assert removed.status_code == 303
     html = unescape(client.get(add_path("ndps")).text)
-    assert 'data-pg-kind="re_add"' in html
-    assert "data-plus-add-desktop" not in html
-    assert "No extra space used." in html
-    assert "Your progress will be saved." in html
-    assert "Add back" in html
-    assert SPACE not in html
-    assert "joins this month" not in html
-    assert plus_add_confirm_copy(
-        reading_name=NDPS_GUEST_READING_NAME,
-        month_name=MONTH,
-        law_limit=10,
-        remaining_after=9,
-        reopen=True,
-    )[3] == FOOTER
+    _assert_no_legacy(html)
+    _assert_act_page_underneath(html, "ndps")
+    assert 'data-pg-kind="re_add"' in _panel_attrs(html)
+    confirm = _confirm(html)
+    assert f'<h1 id="pg-add-title" class="pg-add-title">{TITLE}</h1>' in confirm
+    assert f'<p class="pg-add-lede">{LEDE}</p>' in confirm
+    assert '<p class="pg-add-note pg-add-note--left">Your progress will be saved.</p>' in confirm
+    assert '<p class="pg-add-note pg-add-note--left">No extra space used.</p>' in confirm
+    assert '<button type="submit" class="pg-add-primary">Add back</button>' in confirm
+    assert SPACE not in confirm
+    assert REMAIN not in confirm
+    assert FOOTER not in html
 
 
-def test_plus_add_phone_keeps_existing_subscriber_confirm(tmp_path: Path) -> None:
+def test_plus_add_is_one_sheet_for_both_widths(tmp_path: Path) -> None:
     client = _plus_client(tmp_path)
-    phone = unescape(_phone(client.get(add_path("ndps")).text))
-    assert f'class="plus-add-title">Add to Playground<' in phone
-    assert LEDE in phone
-    assert SPACE in phone
-    assert 'data-pg-add-confirm' in phone
-    assert 'name="confirm" value="add"' in phone
-    assert f'class="plus-add-submit">Add to Playground<' in phone
-    assert ">Cancel<" not in phone
-    assert 'href="/laws/ndps"' not in phone
-    assert 'data-pg-sheet-close' not in phone
-    assert FOOTER not in phone
-    assert "plus-add-footer" not in phone
-    assert f"Add NDPS Act to {MONTH}?" not in phone
-    assert "Unlock Playground" not in phone
-    assert "Create an account" not in phone
+    html = unescape(client.get(add_path("ndps")).text)
+    _assert_no_legacy(html)
+    assert html.count('class="pg-sheet-panel"') == 1
+    assert html.count("data-pg-add ") + html.count("data-pg-add\n") == 1
+    assert html.count('id="pg-add-title"') == 1
+    assert html.count("data-pg-add-confirm") == 1
+    assert html.count('data-add-step="confirm"') == 1
+    assert html.count('data-add-step="scope"') == 1
+    assert html.count(f'<p class="pg-add-lede">{LEDE}</p>') == 1
+    assert html.count("data-pg-sheet-close>Cancel</a>") == 2
+    assert f"Add NDPS Act to {MONTH}?" not in html
 
 
 def test_plus_add_scope_choice_is_existing_machine(tmp_path: Path) -> None:
     client = _plus_client(tmp_path)
     html = client.get(add_path("ndps")).text
-    scope = unescape(_scope(html))
-    assert "Add NDPS Act" in scope
-    assert "Choose how much of NDPS Act enters your recall schedule." in scope
+    scope = _scope(html)
+    assert f'<h1 id="pg-add-scope-title" class="pg-add-title">Add {NDPS_READING_NAME}</h1>' in scope
+    assert (
+        f'<p class="pg-add-lede">Choose how much of {NDPS_READING_NAME} enters your recall schedule.</p>'
+        in scope
+    )
+    assert "Add NDPS Act" not in scope
     assert ">Entire Act<" in scope
     assert ">Choose sections<" in scope
     assert "Pick sections — or open one and pick single clauses" in scope
-    assert "Nothing is scheduled yet — provisions activate the first time you learn them." in scope
+    assert (
+        '<p class="pg-add-note pg-add-note--left">Nothing is scheduled yet — provisions activate the first time you learn them.</p>'
+        in scope
+    )
+    assert f'<form method="post" action="{add_path("ndps")}">' in scope
     assert 'name="scope" value="entire"' in scope
     assert 'name="scope" value="sections"' in scope
     assert 'name="csrf_token"' in scope
     assert 'name="confirm" value="add"' in scope
-    assert ">Cancel<" in scope
+    assert '<a class="pg-add-secondary" href="/laws/ndps" data-pg-sheet-close>Cancel</a>' in scope
     assert "Unlock Playground" not in scope
     assert "Create an account" not in scope
 
@@ -318,7 +438,8 @@ def test_plus_add_confirm_post_then_choose_sections(tmp_path: Path) -> None:
     assert "Choose what to learn" in select.text
     assert 'data-pg-picker' in select.text
     assert 'name="csrf_token"' in select.text
-    assert "data-plus-add-desktop" not in select.text
+    assert "data-pg-add" not in select.text
+    assert "pg-add-title" not in select.text
     empty = client.post(
         sections_path("ndps"), data=_csrf(client), follow_redirects=False
     )
@@ -343,96 +464,160 @@ def test_plus_add_entire_act_uses_existing_endpoint(tmp_path: Path) -> None:
 def test_plus_add_does_not_open_from_bare_act_without_sheet_cta(tmp_path: Path) -> None:
     client = _plus_client(tmp_path)
     html = client.get("/laws/ndps").text
-    assert 'data-plus-bareact="desktop"' in html
-    assert "+ Add to Playground" in html
-    assert f'href="{add_path("ndps")}"' in html
-    assert "data-pg-sheet" in html
-    assert 'data-pg-kind="eligible_to_add"' in html
-    assert "Already in Playground" not in html.split(
-        "data-signed-in-bareact-desktop", 1
-    )[1].split("data-bareact-phone", 1)[0]
+    head = re.search(r'<section\s+class="panel ActHead[^>]*>', html, re.S).group(0)
+    assert "data-plus-bareact" in head
+    assert 'data-pg-kind="eligible_to_add"' in head
+    cta = html.split('class="ActHead-cta LawPlaygroundCta"', 1)[1].split("</div>", 1)[0]
+    assert "+ Add to Playground" in cta
+    assert f'href="{add_path("ndps")}"' in cta
+    assert "data-pg-sheet" in cta
+    assert 'data-pg-kind="eligible_to_add"' in cta
+    assert "Already in Playground" not in cta
+    # The sheet is not in the Act page; it opens from the CTA or by URL.
+    assert "<dialog" not in html
+    assert "data-pg-add" not in html
 
 
-def test_halted_expired_pro_free_guest_are_not_plus_add(tmp_path: Path) -> None:
+def test_halted_expired_pro_free_guest_get_the_same_sheet_with_own_state(
+    tmp_path: Path,
+) -> None:
     halted = TestClient(_mu_app(tmp_path / "halted"))
     _sign_in(halted)
     _subscribe(halted, status="halted")
-    halted_html = halted.get(add_path("ndps")).text
-    assert "data-plus-add-desktop" not in halted_html
-    assert 'data-plus-add="desktop"' not in halted_html
-    assert 'data-halted-add="desktop"' in halted_html
+    halted_html = unescape(halted.get(add_path("ndps")).text)
+    _assert_no_legacy(halted_html)
+    _assert_act_page_underneath(halted_html, "ndps")
+    halted_attrs = _panel_attrs(halted_html)
+    assert "data-halted-add" in halted_attrs
+    assert 'data-pg-kind="resume"' in halted_attrs
+    halted_sheet = _sheet(halted_html)
+    assert 'class="pg-add-primary" href="/billing/subscriptions">Manage subscription<' in halted_sheet
+    assert '<a class="pg-add-secondary" href="/laws/ndps" data-pg-sheet-close>Cancel</a>' in halted_sheet
+    assert LEDE not in halted_sheet
+    assert "data-pg-add-confirm" not in halted_sheet
 
     expired = TestClient(_mu_app(tmp_path / "expired"))
     _sign_in(expired)
     _subscribe(expired, status="expired")
-    expired_html = expired.get(add_path("ndps")).text
-    assert "data-plus-add-desktop" not in expired_html
+    expired_html = unescape(expired.get(add_path("ndps")).text)
+    _assert_no_legacy(expired_html)
+    _assert_act_page_underneath(expired_html, "ndps")
+    assert LEDE not in _sheet(expired_html)
+    assert "data-pg-add-confirm" not in _sheet(expired_html)
 
     pro = TestClient(_mu_app(tmp_path / "pro"))
     _sign_in(pro)
     _subscribe(pro, tier="pro")
-    pro_html = pro.get(add_path("ndps")).text
-    assert "data-plus-add-desktop" not in pro_html
-    assert 'data-pg-kind="eligible_to_add"' in pro_html
+    pro_html = unescape(pro.get(add_path("ndps")).text)
+    _assert_no_legacy(pro_html)
+    _assert_act_page_underneath(pro_html, "ndps")
+    assert 'data-pg-kind="eligible_to_add"' in _panel_attrs(pro_html)
+    _assert_subscriber_confirm(
+        pro_html, law_id="ndps", reading_name=NDPS_READING_NAME, law_limit=30, remaining=29
+    )
 
     free = TestClient(_mu_app(tmp_path / "free"))
     _sign_in(free)
-    free_html = free.get(add_path("ndps")).text
-    assert "data-plus-add-desktop" not in free_html
-    assert "data-signed-in-add-desktop" in free_html
-    assert 'data-pg-kind="subscribe"' in free_html
-    assert "Unlock Playground" in free_html
+    free_html = unescape(free.get(add_path("ndps")).text)
+    _assert_no_legacy(free_html)
+    _assert_act_page_underneath(free_html, "ndps")
+    assert 'data-pg-kind="subscribe"' in _panel_attrs(free_html)
+    free_sheet = _sheet(free_html)
+    assert f'<h1 id="pg-add-title" class="pg-add-title">{TITLE}</h1>' in free_sheet
+    assert (
+        f'<p class="pg-add-lede">Turning {NDPS_READING_NAME} into a learning experience needs a plan. Reading it stays free.</p>'
+        in free_sheet
+    )
+    assert '<a class="pg-add-primary" href="/playground">Unlock Playground</a>' in free_sheet
+    assert '<p class="pg-add-note">Plus · Pro · Max — ' in free_sheet
+    assert "/ month. Constitution learning stays free.</p>" in free_sheet
+    assert ">Cancel<" not in free_sheet
+    assert "data-pg-add-confirm" not in free_sheet
 
-    guest_html = TestClient(_mu_app(tmp_path / "guest")).get(add_path("ndps")).text
-    assert "data-plus-add-desktop" not in guest_html
-    assert "data-guest-add-desktop" in guest_html
-    assert "Create an account" in guest_html
+    guest_html = unescape(TestClient(_mu_app(tmp_path / "guest")).get(add_path("ndps")).text)
+    _assert_no_legacy(guest_html)
+    _assert_act_page_underneath(guest_html, "ndps")
+    assert 'data-pg-kind="guest"' in _panel_attrs(guest_html)
+    guest_sheet = _sheet(guest_html)
+    assert f'<h1 id="pg-add-title" class="pg-add-title">{TITLE}</h1>' in guest_sheet
+    assert (
+        f"Playground needs an account. Reading {NDPS_READING_NAME} stays free — sign in and you’ll come right back here."
+        in guest_sheet
+    )
+    login_href = f"/login?next={add_path('ndps')}"
+    assert f'<a class="pg-add-primary" href="{login_href}" data-guest-add-gate>Sign in</a>' in guest_sheet
+    assert (
+        f'<a class="pg-add-secondary" href="{login_href}" data-guest-add-gate>Create an account</a>'
+        in guest_sheet
+    )
+    assert "data-pg-add-confirm" not in guest_sheet
 
 
-def test_plus_add_is_ndps_tied_not_other_laws(tmp_path: Path) -> None:
+def test_plus_add_serves_other_laws_with_their_own_reading_name(tmp_path: Path) -> None:
     client = _plus_client(tmp_path)
-    bns = client.get(add_path("bns")).text
-    assert "data-plus-add-desktop" not in bns
-    assert 'data-plus-add="desktop"' not in bns
-    assert 'data-pg-kind="eligible_to_add"' in bns
-    assert f"Add BNS to {MONTH}?" in bns or "Add Bharatiya" in bns
-    assert "joins this month" not in bns
+    bns = unescape(client.get(add_path("bns")).text)
+    _assert_no_legacy(bns)
+    _assert_act_page_underneath(bns, "bns")
+    assert 'data-pg-kind="eligible_to_add"' in _panel_attrs(bns)
+    _assert_subscriber_confirm(
+        bns, law_id="bns", reading_name=BNS_READING_NAME, law_limit=10, remaining=9
+    )
+    assert NDPS_READING_NAME not in _sheet(bns)
+    assert f'<h1 id="pg-add-scope-title" class="pg-add-title">Add {BNS_READING_NAME}</h1>' in bns
+    assert f"Add BNS to {MONTH}?" not in bns
+    assert "Add Bharatiya" not in bns
 
 
 def test_plus_add_marker_uses_shared_predicate() -> None:
     add_src = ADD_TPL.read_text(encoding="utf-8")
-    assert "plus_add" in add_src
-    assert "data-plus-add-desktop" in add_src
-    assert 'data-plus-add="desktop"' in add_src
-    assert "data-pg-add-confirm" in add_src
-    assert ">Entire Act<" in add_src
-    assert ">Choose sections<" in add_src
-    assert "Pick sections — or open one and pick single clauses" in add_src
-    assert "provisions activate the first time you learn them." in add_src
-    assert "Unlock Playground" not in add_src.split("{% else %}", 1)[-1]
+    assert '{% extends "bare_act.html" if act is defined and act else "playground_base.html" %}' in add_src
+    assert "{% block act_dialog %}" in add_src
+    assert "data-pg-sheet-direct" in add_src
+    assert 'data-pg-sheet-return="{{ cancel_href }}"' in add_src
+    assert add_src.count('{% include "partials/playground_add_panel.html" %}') == 2
+    panel_src = PANEL_TPL.read_text(encoding="utf-8")
+    assert "data-pg-add-confirm" in panel_src
+    assert ">Entire Act<" in panel_src
+    assert ">Choose sections<" in panel_src
+    assert "Pick sections — or open one and pick single clauses" in panel_src
+    assert "provisions activate the first time you learn them." in panel_src
+    assert "reading_name|default(short_title) }} joins this month's Playground" in panel_src
+    assert "Unlock Playground" not in panel_src.split("{% else %}", 1)[-1]
+    for src in (add_src, panel_src):
+        _assert_no_legacy(src)
+        assert "plus_add" not in src
+        for phrase in ("Premium", "Unlimited", "renews"):
+            assert phrase not in src
     select = SELECT_TPL.read_text(encoding="utf-8")
     assert "data-pg-picker" in select
     assert "Choose what to learn" in select
-    assert "data-plus-add-desktop" not in select
+    assert "data-pg-add" not in select
     routes = ROUTES.read_text(encoding="utf-8")
-    assert "request_is_active_plus" in routes
-    assert "plus_add_confirm_copy" in routes
-    assert 'law_id == "ndps"' in routes
-    view = VIEW.read_text(encoding="utf-8")
-    assert "def plus_add_confirm_copy" in view
-    assert "PLUS_ADD_REOPEN_NOTE" in view
-    assert "reopen=False" in routes
+    assert "playground_bare_act_spec(law_id)" in routes
+    assert '"reading_name": reading_name' in routes
+    assert "bare_act_page_context(request, bare)" in routes
+    assert '== "pg-sheet"' in routes
     assert "def request_is_active_plus" in DEPS.read_text(encoding="utf-8")
     css = PG_CSS.read_text(encoding="utf-8")
-    assert "[data-plus-add-desktop]" in css
-    assert "plus-add-submit" in css
-    assert "playground.css?v=pg49" in BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg34" not in BASE.read_text(encoding="utf-8")
+    assert "Add sheet (M2)" in css
+    sheet_css = css.split("Add sheet (M2)", 1)[1].split("Guest desktop Playground intro", 1)[0]
+    assert "min-height: 50px" in sheet_css.split(".pg-add-primary {", 1)[1].split("}", 1)[0]
+    assert "padding: 26px 28px 26px" in sheet_css.split(".pg-sheet-panel[data-pg-add] {", 1)[1].split("}", 1)[0]
+    assert "[data-plus-add-desktop]" not in css
+    assert "plus-add-submit" not in css
+    js = PG_JS.read_text(encoding="utf-8")
+    assert "data-pg-sheet-direct" in js
+    assert "data-pg-sheet-return" in js
+    assert "pg-sheet" in js.split("X-Requested-With", 1)[1][:40]
+    base = BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg50" in base
+    assert "playground.css?v=pg49" not in base
+    assert "playground.css?v=pg34" not in base
     bare = BARE.read_text(encoding="utf-8")
+    assert "{% block act_dialog %}{% endblock %}" in bare
     assert "data-plus-add-desktop" not in bare
-    assert 'data-plus-bareact="desktop"' in bare
-    for phrase in ("Premium", "Unlimited", "renews"):
-        assert phrase not in add_src
+    assert "data-plus-bareact" in bare
+    assert 'data-plus-bareact="desktop"' not in bare
 
 
 def _serve(app, host: str = "127.0.0.1") -> tuple[int, object]:
@@ -515,67 +700,61 @@ def test_plus_add_1280_dialog_scope_and_select(tmp_path: Path) -> None:
             page.evaluate(
                 """() => { document.documentElement.setAttribute('data-theme', 'light'); }"""
             )
-            page.locator('[data-plus-bareact="desktop"] [data-pg-sheet]').click()
-            page.wait_for_selector("[data-plus-add-desktop]", timeout=8000)
+            page.locator(".ActHead[data-plus-bareact] [data-pg-sheet]").click()
+            page.wait_for_selector("[data-pg-add]", timeout=8000)
 
         open_dialog()
         geo = page.evaluate(
             """() => {
               const dialog = document.querySelector('dialog.pg-sheet');
               const panel = document.querySelector('[data-pg-add]');
-              const desk = panel.querySelector('[data-plus-add-desktop]');
-              const phone = panel.querySelector('[data-plus-add-phone]');
-              const submit = desk.querySelector('.plus-add-submit');
-              const cancel = desk.querySelector('.plus-add-cancel');
+              const confirmStep = panel.querySelector("[data-add-step='confirm']");
+              const scopeStep = panel.querySelector("[data-add-step='scope']");
+              const submit = confirmStep.querySelector('.pg-add-primary');
+              const cancel = confirmStep.querySelector('.pg-add-secondary[data-pg-sheet-close]');
               const closeBtn = panel.querySelector('[data-pg-sheet-close].pg-sheet-close');
-              const head = document.querySelector('[data-plus-bareact="desktop"]');
+              const head = document.querySelector('.ActHead[data-plus-bareact]');
               const box = panel.getBoundingClientRect();
-              const titleEl = desk.querySelector('.plus-add-title');
-              const ledeEl = desk.querySelector('.plus-add-lede');
-              const spaceEl = desk.querySelector('.plus-add-space');
-              const footerEl = desk.querySelector('.plus-add-footer');
+              const eyebrow = confirmStep.querySelector('.pg-eyebrow');
+              const titleEl = confirmStep.querySelector('.pg-add-title');
+              const ledeEl = confirmStep.querySelector('.pg-add-lede');
+              const notes = [...confirmStep.querySelectorAll('.pg-add-note--left')];
               const closeStyle = closeBtn && getComputedStyle(closeBtn);
               const panelStyle = getComputedStyle(panel);
               const backdrop = getComputedStyle(dialog, '::backdrop');
-              const confirmStep = panel.querySelector("[data-add-step='confirm']");
-              const scopeStep = panel.querySelector("[data-add-step='scope']");
               return {
                 open: dialog && dialog.open,
                 kind: panel.getAttribute('data-pg-kind'),
-                plus: panel.getAttribute('data-plus-add'),
-                deskDisplay: getComputedStyle(desk).display,
-                phoneDisplay: getComputedStyle(phone).display,
-                eyebrowDisplay: getComputedStyle(panel.querySelector('.pg-eyebrow')).display,
+                panels: document.querySelectorAll('[data-pg-add]').length,
+                twins: panel.querySelectorAll('[data-plus-add-desktop], [data-plus-add-phone]').length,
+                eyebrow: eyebrow && eyebrow.textContent.trim(),
+                eyebrowDisplay: eyebrow && getComputedStyle(eyebrow).display,
                 title: titleEl.textContent.trim(),
                 titleSize: getComputedStyle(titleEl).fontSize,
                 titleWeight: getComputedStyle(titleEl).fontWeight,
                 lede: ledeEl.textContent.trim(),
-                space: spaceEl && spaceEl.textContent.trim(),
-                footer: footerEl && footerEl.textContent.trim(),
+                notes: notes.map((el) => el.textContent.trim()),
                 submitText: submit.textContent.trim(),
                 submitH: submit.getBoundingClientRect().height,
                 cancelDisplay: cancel ? getComputedStyle(cancel).display : null,
-                cancelCloses: cancel && cancel.hasAttribute('data-pg-sheet-close'),
+                cancelHref: cancel && cancel.getAttribute('href'),
                 hasClose: Boolean(closeBtn),
                 closeLabel: closeBtn && closeBtn.getAttribute('aria-label'),
                 closeTop: closeStyle && closeStyle.top,
                 closeRight: closeStyle && closeStyle.right,
                 panelW: box.width,
-                panelRadius: panelStyle.borderRadius,
                 panelPad: panelStyle.padding,
                 scrim: backdrop.backgroundColor,
-                guestAdd: Boolean(panel.querySelector('[data-guest-add-desktop]')),
-                signedAdd: Boolean(panel.querySelector('[data-signed-in-add-desktop]')),
                 confirmHidden: Boolean(confirmStep && confirmStep.hidden),
                 scopeHidden: Boolean(scopeStep && scopeStep.hidden),
                 leaked: {
-                  already: desk.innerText.includes('Already in Playground'),
-                  resume: desk.innerText.includes('Resume Playground'),
-                  full: desk.innerText.includes('Playground full'),
-                  pending: desk.innerText.includes('temporarily unavailable'),
-                  signin: desk.innerText.includes('Create an account'),
-                  unlock: desk.innerText.includes('Unlock Playground'),
-                  reopen: desk.innerText.includes('reopening it never uses another space'),
+                  already: confirmStep.innerText.includes('Already in Playground'),
+                  resume: confirmStep.innerText.includes('Resume Playground'),
+                  full: confirmStep.innerText.includes('Playground full'),
+                  pending: confirmStep.innerText.includes('temporarily unavailable'),
+                  signin: confirmStep.innerText.includes('Create an account'),
+                  unlock: confirmStep.innerText.includes('Unlock Playground'),
+                  reopen: confirmStep.innerText.includes('reopening it never uses another space'),
                 },
                 background: Boolean(head),
                 addCta: head && head.querySelector('[data-pg-sheet]') &&
@@ -586,7 +765,7 @@ def test_plus_add_1280_dialog_scope_and_select(tmp_path: Path) -> None:
         page.evaluate("() => document.activeElement && document.activeElement.blur()")
         page.screenshot(path=str(shot_path), full_page=False)
 
-        page.locator("[data-plus-add-desktop] .plus-add-submit").click()
+        page.locator("[data-pg-add] [data-add-step='confirm'] .pg-add-primary").click()
         scope_geo = page.evaluate(
             """() => {
               const panel = document.querySelector('[data-pg-add]');
@@ -605,8 +784,8 @@ def test_plus_add_1280_dialog_scope_and_select(tmp_path: Path) -> None:
                 title: scopeStep.querySelector('h1') && scopeStep.querySelector('h1').textContent.trim(),
                 entire: entire && entire.innerText,
                 sections: sections && sections.innerText,
-                note: scopeStep.querySelector('.pg-note') &&
-                  scopeStep.querySelector('.pg-note').textContent.trim(),
+                note: scopeStep.querySelector('.pg-add-note--left') &&
+                  scopeStep.querySelector('.pg-add-note--left').textContent.trim(),
               };
             }"""
         )
@@ -620,7 +799,7 @@ def test_plus_add_1280_dialog_scope_and_select(tmp_path: Path) -> None:
               return {
                 open: Boolean(dialog && dialog.open),
                 path: location.pathname,
-                head: Boolean(document.querySelector('[data-plus-bareact="desktop"]')),
+                head: Boolean(document.querySelector('.ActHead[data-plus-bareact]')),
                 focused: document.activeElement &&
                   document.activeElement.hasAttribute('data-pg-sheet'),
               };
@@ -629,7 +808,7 @@ def test_plus_add_1280_dialog_scope_and_select(tmp_path: Path) -> None:
 
         open_dialog()
         page.evaluate(
-            """() => document.querySelector('[data-plus-add-desktop] .plus-add-cancel').click()"""
+            """() => document.querySelector("[data-pg-add] [data-add-step='confirm'] .pg-add-secondary[data-pg-sheet-close]").click()"""
         )
         closed_cancel = page.evaluate(
             """() => {
@@ -652,35 +831,33 @@ def test_plus_add_1280_dialog_scope_and_select(tmp_path: Path) -> None:
 
         page.set_viewport_size({"width": 390, "height": 844})
         page.goto(f"{origin}/laws/ndps", wait_until="networkidle")
-        page.locator("[data-plus-bareact-phone] [data-pg-sheet]").first.click()
+        page.locator(".ActHead[data-plus-bareact] [data-pg-sheet]").first.click()
         page.wait_for_selector("[data-pg-add]", timeout=8000)
         phone_geo = page.evaluate(
             """() => {
               const panel = document.querySelector('[data-pg-add]');
-              const desk = panel.querySelector('[data-plus-add-desktop]');
-              const phoneBlock = panel.querySelector('[data-plus-add-phone]');
-              const title = phoneBlock && phoneBlock.querySelector('h1');
-              const cancel = phoneBlock && [...phoneBlock.querySelectorAll('a')].find(
-                (a) => a.textContent.trim() === 'Cancel'
-              );
+              const confirmStep = panel.querySelector("[data-add-step='confirm']");
+              const title = confirmStep.querySelector('.pg-add-title');
+              const cancel = confirmStep.querySelector('.pg-add-secondary[data-pg-sheet-close]');
               return {
                 kind: panel.getAttribute('data-pg-kind'),
-                deskDisplay: desk ? getComputedStyle(desk).display : null,
-                phoneDisplay: phoneBlock ? getComputedStyle(phoneBlock).display : null,
+                panels: document.querySelectorAll('[data-pg-add]').length,
+                twins: panel.querySelectorAll('[data-plus-add-desktop], [data-plus-add-phone]').length,
+                panelDisplay: getComputedStyle(panel).display,
                 title: title && title.textContent.trim(),
-                lede: phoneBlock && phoneBlock.querySelector('.plus-add-lede')
-                  && phoneBlock.querySelector('.plus-add-lede').textContent.trim(),
-                space: phoneBlock && phoneBlock.querySelector('.plus-add-space')
-                  && phoneBlock.querySelector('.plus-add-space').textContent.trim(),
+                lede: confirmStep.querySelector('.pg-add-lede')
+                  && confirmStep.querySelector('.pg-add-lede').textContent.trim(),
+                notes: [...confirmStep.querySelectorAll('.pg-add-note--left')].map(
+                  (el) => el.textContent.trim()
+                ),
                 cancelHref: cancel && cancel.getAttribute('href'),
-                plusChrome: Boolean(phoneBlock && phoneBlock.querySelector('.plus-add-title')),
               };
             }"""
         )
 
         page.set_viewport_size({"width": 1280, "height": 800})
         open_dialog()
-        page.locator("[data-plus-add-desktop] .plus-add-submit").click()
+        page.locator("[data-pg-add] [data-add-step='confirm'] .pg-add-primary").click()
         page.locator('button[name="scope"][value="sections"]').click()
         page.wait_for_url("**/playground/laws/ndps/sections", timeout=8000)
         select_geo = page.evaluate(
@@ -693,7 +870,7 @@ def test_plus_add_1280_dialog_scope_and_select(tmp_path: Path) -> None:
                 title: document.querySelector('h1') && document.querySelector('h1').textContent.trim(),
                 submitDisabled: submit ? submit.disabled : null,
                 submitText: submit && submit.textContent.trim(),
-                plusDialog: Boolean(document.querySelector('[data-plus-add-desktop]')),
+                addSheet: Boolean(document.querySelector('[data-pg-add]')),
               };
             }"""
         )
@@ -702,31 +879,27 @@ def test_plus_add_1280_dialog_scope_and_select(tmp_path: Path) -> None:
 
     assert geo["open"] is True
     assert geo["kind"] == "eligible_to_add"
-    assert geo["plus"] == "desktop"
-    assert geo["deskDisplay"] != "none"
-    assert geo["phoneDisplay"] == "none"
-    assert geo["eyebrowDisplay"] == "none"
-    assert geo["title"] == "Add to Playground"
+    assert geo["panels"] == 1
+    assert geo["twins"] == 0
+    assert geo["eyebrow"] == MONTH
+    assert geo["eyebrowDisplay"] != "none"
+    assert geo["title"] == TITLE
     assert geo["titleSize"] == "22px"
     assert geo["titleWeight"] in ("500", "bold")
     assert geo["lede"] == LEDE
-    assert geo["space"] == SPACE
-    assert geo["footer"] in (None, "")
-    assert geo["submitText"] == "Add to Playground"
+    assert geo["notes"] == [SPACE, REMAIN]
+    assert geo["submitText"] == TITLE
     assert geo["submitH"] == pytest.approx(50, abs=2)
-    assert geo["cancelDisplay"] == "none"
-    assert geo["cancelCloses"] is True
+    assert geo["cancelDisplay"] != "none"
+    assert geo["cancelHref"] == "/laws/ndps"
     assert geo["hasClose"] is True
     assert geo["closeLabel"] == "Close"
     assert geo["closeTop"] == "14px"
     assert geo["closeRight"] == "14px"
     assert geo["panelW"] == pytest.approx(460, abs=8)
-    assert "16px" in geo["panelRadius"]
     assert "26px" in geo["panelPad"]
     assert "28px" in geo["panelPad"]
     assert "0.35" in (geo["scrim"] or "") or "rgba(20, 20, 20, 0.35)" in (geo["scrim"] or "")
-    assert geo["guestAdd"] is False
-    assert geo["signedAdd"] is False
     assert geo["confirmHidden"] is False
     assert geo["scopeHidden"] is True
     assert geo["leaked"]["already"] is False
@@ -741,7 +914,7 @@ def test_plus_add_1280_dialog_scope_and_select(tmp_path: Path) -> None:
     assert scope_geo["path"] == "/laws/ndps"
     assert scope_geo["confirmHidden"] is True
     assert scope_geo["scopeHidden"] is False
-    assert scope_geo["title"] == "Add NDPS Act"
+    assert scope_geo["title"] == f"Add {NDPS_READING_NAME}"
     assert scope_geo["entire"] and "Entire Act" in scope_geo["entire"]
     assert scope_geo["sections"] and "Choose sections" in scope_geo["sections"]
     assert "provisions activate the first time you learn them" in (scope_geo["note"] or "")
@@ -750,7 +923,7 @@ def test_plus_add_1280_dialog_scope_and_select(tmp_path: Path) -> None:
     assert select_geo["title"] == "Choose what to learn"
     assert select_geo["submitDisabled"] is True
     assert select_geo["submitText"] == "Select sections to add"
-    assert select_geo["plusDialog"] is False
+    assert select_geo["addSheet"] is False
     assert closed_x["open"] is False
     assert closed_x["path"] == "/laws/ndps"
     assert closed_x["head"] is True
@@ -759,13 +932,13 @@ def test_plus_add_1280_dialog_scope_and_select(tmp_path: Path) -> None:
     assert closed_cancel["path"] == "/laws/ndps"
     assert closed_esc is False
     assert phone_geo["kind"] == "eligible_to_add"
-    assert phone_geo["deskDisplay"] == "none"
-    assert phone_geo["phoneDisplay"] != "none"
-    assert phone_geo["title"] == "Add to Playground"
+    assert phone_geo["panels"] == 1
+    assert phone_geo["twins"] == 0
+    assert phone_geo["panelDisplay"] != "none"
+    assert phone_geo["title"] == TITLE
     assert phone_geo["lede"] == LEDE
-    assert phone_geo["space"] == SPACE
-    assert phone_geo["cancelHref"] is None
-    assert phone_geo["plusChrome"] is True
+    assert phone_geo["notes"] == [SPACE, REMAIN]
+    assert phone_geo["cancelHref"] == "/laws/ndps"
     assert shot_path.is_file()
     assert shot_path.stat().st_size > 1000
     assert select_path.is_file()

@@ -1,0 +1,115 @@
+{# The Add sheet panel: one markup per state, both widths. Included by
+   playground_add.html inside an open <dialog> over the Act page (direct
+   URL) or on its own (the in-page fetch lifts it into the live dialog). #}
+<section
+  class="pg-sheet-panel"
+  data-pg-add
+  data-pg-kind="{{ kind }}"
+  data-step="{{ step }}"
+  data-skip-confirm="{{ 'true' if skip_confirm else 'false' }}"
+  data-roster-confirm="{{ law_id }}"
+  {% if expired_add|default(false) %}data-expired-add{% endif %}
+  {% if halted_add|default(false) %}data-halted-add{% endif %}
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="pg-add-title"
+>
+  {% if kind == "guest" %}
+  <h1 id="pg-add-title" class="pg-add-title">Add to Playground</h1>
+  <p class="pg-add-lede">Playground needs an account. Reading {{ reading_name|default(short_title) }} stays free — sign in and you’ll come right back here.</p>
+  <a class="pg-add-primary" href="{{ login_href }}" data-guest-add-gate>Sign in</a>
+  <a class="pg-add-secondary" href="{{ login_href }}" data-guest-add-gate>Create an account</a>
+
+  {% elif kind == "subscribe" %}
+  <h1 id="pg-add-title" class="pg-add-title">Add to Playground</h1>
+  <p class="pg-add-lede">Turning {{ reading_name|default(short_title) }} into a learning experience needs a plan. Reading it stays free.</p>
+  <a class="pg-add-primary" href="/playground">Unlock Playground</a>
+  <p class="pg-add-note">{% for plan in catalogue_plans %}{{ plan.tier|capitalize }}{% if not loop.last %} · {% endif %}{% endfor %}{% if catalogue_plans and from_price %} — {% endif %}{% if from_price %}{{ from_price }} / month.{% endif %} Constitution learning stays free.</p>
+
+  {% elif kind == "resume" %}
+  <h1 id="pg-add-title" class="pg-add-title">{{ title }}</h1>
+  {% for line in lines %}
+  <p class="pg-add-lede">{{ line }}</p>
+  {% endfor %}
+  {% if halted_add|default(false) %}
+  <a class="pg-add-primary" href="{{ resume_cta_href }}">{{ resume_cta_label }}</a>
+  {% elif expired_add|default(false) %}
+  <a class="pg-add-primary" href="{{ state.primary_href }}">{{ state.primary_label }}</a>
+  {% else %}
+  <a class="pg-add-primary" href="/billing/subscriptions">Resume Playground</a>
+  {% endif %}
+  <a class="pg-add-secondary" href="{{ cancel_href }}" data-pg-sheet-close>Cancel</a>
+
+  {% elif kind == "device_blocked" %}
+  <h1 id="pg-add-title" class="pg-add-title">{{ title }}</h1>
+  {% for line in lines %}
+  <p class="pg-add-lede">{{ line }}</p>
+  {% endfor %}
+  <a class="pg-add-primary" href="{{ state.primary_href }}">{{ state.primary_label }}</a>
+  <a class="pg-add-secondary" href="{{ cancel_href }}" data-pg-sheet-close>Cancel</a>
+
+  {% elif blocked_pending or kind == "pending" %}
+  <h1 id="pg-add-title" class="pg-add-title">Adding new laws is temporarily unavailable</h1>
+  <p class="pg-note" data-playground-gate="new_law_temporarily_unavailable">Adding new laws is temporarily unavailable</p>
+  <p class="pg-add-lede">You can continue your current Playground.</p>
+  <a class="pg-add-primary" href="/billing/subscriptions">Manage subscription</a>
+  <a class="pg-add-secondary" href="/playground">Cancel</a>
+
+  {% elif blocked_full or kind == "roster_full" %}
+  <h1 id="pg-add-title" class="pg-add-title">Playground full this month</h1>
+  <p class="pg-note" data-playground-gate="roster_full">Playground full this month</p>
+  <p class="pg-add-lede">Existing laws remain fully usable. Removing a law does not free a space this month.</p>
+  {% if catalogue_plans %}
+  <div class="pg-plan-list">
+    {% for plan in catalogue_plans %}
+    <a class="pg-btn" href="{{ plan.href }}">{{ plan.cta_label }} · {{ plan.price_label }}</a>
+    {% endfor %}
+  </div>
+  {% endif %}
+  <p class="pg-actions">
+    <a class="pg-btn pg-btn--ghost" href="/playground/roster/next">Plan next month</a>
+    <a class="pg-btn pg-btn--ghost" href="/playground">Back to Playground</a>
+  </p>
+
+  {% else %}
+  <div data-add-step="confirm" {% if step == "scope" or skip_confirm %}hidden{% endif %}>
+    <p class="pg-eyebrow">{{ month_name }}</p>
+    <h1 id="pg-add-title" class="pg-add-title">Add to Playground</h1>
+    <p class="pg-add-lede">{{ reading_name|default(short_title) }} joins this month's Playground — learnable, verbatim. The reader itself never changes.</p>
+    {% for line in lines %}
+    <p class="pg-add-note pg-add-note--left">{{ line }}</p>
+    {% endfor %}
+    <form method="post" action="/playground/laws/{{ law_id }}/add" data-pg-add-confirm>
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <input type="hidden" name="confirm" value="{{ confirm_value }}">
+      <button type="submit" class="pg-add-primary">{{ action_label }}</button>
+    </form>
+    <a class="pg-add-secondary" href="{{ cancel_href }}" data-pg-sheet-close>Cancel</a>
+  </div>
+
+  <div data-add-step="scope" {% if step != "scope" and not skip_confirm %}hidden{% endif %}>
+    <h1 id="pg-add-scope-title" class="pg-add-title">Add {{ reading_name|default(short_title) }}</h1>
+    <p class="pg-add-lede">Choose how much of {{ reading_name|default(short_title) }} enters your recall schedule.</p>
+    <form method="post" action="/playground/laws/{{ law_id }}/add">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <input type="hidden" name="confirm" value="{{ confirm_value }}">
+      <button type="submit" class="pg-add-choice" name="scope" value="entire">
+        <span>
+          <strong>Entire Act</strong>
+          {% if entire_meta %}<span class="pg-lede">{{ entire_meta }}</span>{% endif %}
+        </span>
+        <span aria-hidden="true">›</span>
+      </button>
+      <button type="submit" class="pg-add-choice" name="scope" value="sections">
+        <span>
+          <strong>Choose sections</strong>
+          <span class="pg-lede">Pick sections — or open one and pick single clauses</span>
+        </span>
+        <span aria-hidden="true">›</span>
+      </button>
+    </form>
+    <p class="pg-add-note pg-add-note--left">Nothing is scheduled yet — provisions activate the first time you learn them.</p>
+    <a class="pg-add-secondary" href="{{ cancel_href }}" data-pg-sheet-close>Cancel</a>
+  </div>
+  {% endif %}
+</section>

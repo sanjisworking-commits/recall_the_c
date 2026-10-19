@@ -409,10 +409,10 @@ def test_phone_plus_settings_css_is_breakpoint_scoped() -> None:
     assert 'action="/logout"' in src
     assert "data-plan-autosubmit" in src
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg49" in base
+    assert "playground.css?v=pg50" in base
     assert "playground.css?v=pg39" not in base
-    assert "styles.css?v=main87" in base
-    assert "mobile.css?v=mob106" in base
+    assert "styles.css?v=main88" in base
+    assert "mobile.css?v=mob107" in base
     assert "data-plus-settings-phone-tabs" not in base
     # M1: the per-screen guest branches are gone; guests share one bar.
     assert "{% elif guest_settings %}" not in base

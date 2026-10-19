@@ -44,7 +44,7 @@ VIEW = ROOT / "src/constitution_memorizer/playground/view.py"
 LANDING = ROOT / "src/constitution_memorizer/web/templates/landing.html"
 LAWS = ROOT / "src/constitution_memorizer/web/templates/laws.html"
 BARE = ROOT / "src/constitution_memorizer/web/templates/bare_act.html"
-ADD = ROOT / "src/constitution_memorizer/web/templates/playground_add.html"
+ADD = ROOT / "src/constitution_memorizer/web/templates/partials/playground_add_panel.html"  # M2: panel partial
 HOME = ROOT / "src/constitution_memorizer/web/templates/playground.html"
 MANAGE = ROOT / "src/constitution_memorizer/web/templates/subscription_manage.html"
 DASH = ROOT / "src/constitution_memorizer/web/templates/dashboard.html"
@@ -377,8 +377,8 @@ def test_plus_screens_and_expired_01_02_untouched() -> None:
     assert 'data-plus-browse="desktop"' in BROWSE.read_text(encoding="utf-8")
     assert 'data-expired-browse="desktop"' in BROWSE.read_text(encoding="utf-8")
     assert 'data-plus-laws="desktop"' in LAWS.read_text(encoding="utf-8")
-    assert 'data-plus-bareact="desktop"' in BARE.read_text(encoding="utf-8")
-    assert 'data-plus-add="desktop"' in ADD.read_text(encoding="utf-8")
+    assert 'data-plus-bareact' in BARE.read_text(encoding="utf-8")
+    assert 'data-add-step="confirm"' in ADD.read_text(encoding="utf-8")
     assert 'data-plus-playground="desktop"' in HOME.read_text(encoding="utf-8")
     assert 'data-plus-subscription="desktop"' in MANAGE.read_text(encoding="utf-8")
     assert 'data-plus-today="desktop"' in DASH.read_text(encoding="utf-8")

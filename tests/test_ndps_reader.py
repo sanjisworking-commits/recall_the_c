@@ -392,16 +392,16 @@ def test_laws_lists_bare_acts_above_mapped_articles(tmp_path: Path):
     assert "Mapped to Articles" not in html
 
 
-def test_chapter_list_opens_on_chapter_one(tmp_path: Path):
+def test_chapter_list_starts_closed_and_lists_chapter_one_first(tmp_path: Path):
     client, _ = _client(tmp_path)
     html = client.get("/laws/ndps").text
     assert 'data-mscreen="bareact"' in html
     assert html.count("<details") == 8
-    # Exactly one chapter starts open, and it is the first.
-    assert html.count('<details class="bareact-chapter" open>') == 1
-    assert html.index('<details class="bareact-chapter" open>') < html.index(
-        "Authorities and Officers"
-    )
+    # M2: every chapter row starts closed and expands into its section links
+    # (prototype head; decision Q3). Chapter I is listed first, not opened.
+    assert html.count('<details class="bareact-chapter" open>') == 0
+    assert html.count('<details class="bareact-chapter">') == 8
+    assert html.index("Preliminary") < html.index("Authorities and Officers")
     assert "Chapter IIA" in html
     assert "7A–7B" in html
     assert 'href="/laws/ndps/section/68-I"' in html

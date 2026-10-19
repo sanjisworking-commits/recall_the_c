@@ -141,6 +141,7 @@ R1 T41 re-check (this file): **81 active templates, 0 unclassified.** The four c
 | `profile.html` | `GET /profile` | R5 | D107–D110 |
 | `settings.html` | `GET /settings` | R5 | D111–D114 |
 | `partials/playground.html` | Public-law / catalogue CTA partial | R3 | D26–D28, T18 |
+| `partials/playground_add_panel.html` | Add sheet panel (M2): one markup per state, included by `playground_add.html` inside the dialog over the Act page and alone for the in-page fetch | R3 | D31–D40 |
 
 ### 2.3 Class A, verify only (2)
 

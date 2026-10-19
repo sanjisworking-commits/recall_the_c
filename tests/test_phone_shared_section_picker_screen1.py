@@ -76,13 +76,13 @@ INVENTED = (
     "View Playground plans",
 )
 COHORT_MARKERS = (
-    "data-plus-add-desktop",
-    "data-plus-add-phone",
+    "data-pg-add",
+    "data-add-step",
     "data-plus-playground-phone",
     "data-expired-playground",
     "data-expired-pg-phone",
     "data-halted-playground",
-    "data-guest-add-phone",
+    "data-guest-add-gate",
     "data-signed-in-pg-gate",
     "data-plus-picker",
     "data-shared-picker-phone",
@@ -610,10 +610,10 @@ def test_phone_shared_picker_css_is_breakpoint_scoped() -> None:
     assert ".pg-pick-footer" in aside
     assert "display: none" in aside
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg49" in base
+    assert "playground.css?v=pg50" in base
     assert "playground.css?v=pg47" not in base
-    assert "styles.css?v=main87" in base
-    assert "mobile.css?v=mob106" in base
+    assert "styles.css?v=main88" in base
+    assert "mobile.css?v=mob107" in base
     assert "playground-select.js?v=pg1" in base
     select = SELECT.read_text(encoding="utf-8")
     assert "data-pg-picker" in select
@@ -777,7 +777,7 @@ def test_phone_shared_section_picker_screen01_captures(tmp_path: Path) -> None:
                 tabHrefs: tabs.map((el) => el.getAttribute('href')),
                 activeTab: active && active.textContent.replace(/\\s+/g, ' ').trim(),
                 tabDisplay: tabsEl ? getComputedStyle(tabsEl).display : 'missing',
-                plusDialog: Boolean(document.querySelector('[data-plus-add-desktop]')),
+                plusDialog: Boolean(document.querySelector('[data-pg-add]')),
                 mastered: Boolean([...document.querySelectorAll('.pg-pick-status')].some(
                   (el) => el.textContent.includes('Mastered')
                 )),
@@ -919,7 +919,7 @@ def test_phone_shared_section_picker_screen01_captures(tmp_path: Path) -> None:
                 submitDisabled: submit ? submit.disabled : null,
                 submitText: submit && submit.textContent.trim(),
                 phoneSubmitDisabled: phoneSubmit ? phoneSubmit.disabled : null,
-                plusDialog: Boolean(document.querySelector('[data-plus-add-desktop]')),
+                plusDialog: Boolean(document.querySelector('[data-pg-add]')),
                 title: document.querySelector('h1') && document.querySelector('h1').textContent.trim(),
               };
             }"""

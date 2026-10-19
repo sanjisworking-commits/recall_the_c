@@ -187,7 +187,7 @@
       event.preventDefault();
       var href = link.getAttribute("href");
       lastOpener = link;
-      fetch(href, { credentials: "same-origin", headers: { Accept: "text/html" } })
+      fetch(href, { credentials: "same-origin", headers: { Accept: "text/html", "X-Requested-With": "pg-sheet" } })
         .then(function (response) {
           return response.text().then(function (html) {
             return { ok: response.ok, html: html, url: response.url };
@@ -255,7 +255,33 @@
         lastOpener.focus();
       }
       lastOpener = null;
+      // A dialog the server opened (direct URL) closes back onto the Act it
+      // was drawn over: same page, the Act's own address.
+      var back = dialog.getAttribute("data-pg-sheet-return");
+      if (back && window.history && typeof window.history.replaceState === "function") {
+        window.history.replaceState(null, "", back);
+        dialog.removeAttribute("data-pg-sheet-return");
+      }
     });
+
+    // Direct URL: the panel is already in the document inside an open
+    // <dialog>. Re-open it as a modal so the scrim, focus trap and Escape
+    // behave exactly as for an in-page open.
+    var served = dialog.querySelector(".pg-sheet-panel");
+    if (served && dialog.hasAttribute("data-pg-sheet-direct")) {
+      ensureCloseButton(served);
+      labelledBy(served);
+      if (typeof dialog.showModal === "function") {
+        if (dialog.open) {
+          dialog.close();
+        }
+        dialog.showModal();
+        var first = focusables(dialog);
+        if (first[0]) {
+          first[0].focus();
+        }
+      }
+    }
   }
 
   function enhanceAddFlow() {

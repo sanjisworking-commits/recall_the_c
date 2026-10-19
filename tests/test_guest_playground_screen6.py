@@ -153,7 +153,7 @@ def test_screen6_does_not_change_other_screens(tmp_path: Path) -> None:
     laws = client.get("/laws").text
     assert "data-guest-laws-desktop" in laws
     ndps = client.get("/laws/ndps").text
-    assert "data-guest-bareact-desktop" in ndps
+    assert 'data-act-head="ndps"' in ndps
     assert "data-guest-pg-intro" not in ndps
     css = (ROOT / "src/constitution_memorizer/web/static/styles.css").read_text(
         encoding="utf-8"

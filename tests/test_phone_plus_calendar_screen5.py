@@ -593,10 +593,10 @@ def test_phone_plus_calendar_css_scope_pins_and_desktop_09_untouched() -> None:
         assert "plus_calendar" not in text
         assert "data-plus-calendar" not in text
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg49" in base
+    assert "playground.css?v=pg50" in base
     assert "playground.css?v=pg37" not in base
-    assert "styles.css?v=main87" in base
-    assert "mobile.css?v=mob106" in base
+    assert "styles.css?v=main88" in base
+    assert "mobile.css?v=mob107" in base
     assert "data-plus-calendar-phone-tabs" not in base
     first_bar = base.split(
         'class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom"', 2

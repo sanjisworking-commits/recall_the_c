@@ -11097,377 +11097,493 @@ body.is-admin-previewing { padding-top: 40px; }
   }
 }
 
-/* Guest NDPS Bare Act head (desktop CTA map guest/04-screen). Phone guest
-   Screen 01 uses [data-guest-bareact-phone] in mobile.css. Signed-in Free
-   phone Screen 01 uses [data-signed-in-bareact-phone] in mobile.css.
-   Plus / Expired / Halted phone keep the production accordion. */
-@media (max-width: 560px) {
-  [data-guest-bareact-desktop] {
-    display: none !important;
-  }
+/* ── Bare Act head (M2) ──────────────────────────────────────────────────
+   One head for every Bare Act and every viewer, generated from the Act:
+   band (back link, kicker, title, meta, the Playground action, About), then
+   one list of chapter rows — each expands into its section links — followed
+   by the schedule rows. The row markup reuses the legacy .bareact-* classes
+   so the reader contract and the BNS division rules carry over unchanged.
+   Greys are the accessible pair (--muted ≥ 4.5:1), not the prototype's
+   #8f8f8d / #9a9a9a; recorded as an intentional deviation. */
+
+.panel.ActHead {
+  max-width: none;
+  padding: 0;
+  background: var(--paper);
 }
 
-@media (min-width: 561px) {
-  [data-guest-bareact-phone] {
-    display: none !important;
-  }
+body[data-mscreen="bareact"] .page-wrap,
+body[data-mscreen="bareact"] .sheet,
+body[data-mscreen="bareact"] .main {
+  background: var(--paper);
+}
 
-  [data-signed-in-bareact-phone] {
-    display: none !important;
-  }
+.ActHead-band {
+  padding: 16px 40px 22px;
+  background: var(--page);
+  border-bottom: 1px solid var(--hairline);
+}
 
-  body.is-guest[data-mscreen="bareact"]:has([data-guest-bareact-desktop]) .brand-mark {
-    filter: invert(1);
-  }
+.ActHead-back {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  margin: 0;
+  padding: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  text-decoration: none;
+}
 
-  body.is-guest[data-mscreen="bareact"]:has([data-guest-bareact-desktop]) .page-wrap,
-  body.is-guest[data-mscreen="bareact"]:has([data-guest-bareact-desktop]) .sheet,
-  body.is-guest[data-mscreen="bareact"]:has([data-guest-bareact-desktop]) .main {
-    background: var(--paper);
-  }
+.ActHead-back:hover {
+  color: var(--ink);
+}
 
-  body.is-guest[data-mscreen="bareact"] [data-bareact-phone] {
-    display: none !important;
-  }
+.ActHead-back:focus-visible,
+.ActHead-about:focus-visible,
+.ActHead-link:focus-visible,
+.ActHead .bareact-schedule-row-link:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 2px;
+}
 
-  body.is-guest[data-mscreen="bareact"]:has([data-guest-bareact-desktop]) .site-footer,
-  body.is-guest[data-mscreen="bareact"]:has([data-guest-bareact-desktop]) .sheet-footnote {
-    display: none;
-  }
+.ActHead-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 16px 32px;
+}
 
-  body.is-guest[data-mscreen="bareact"] .panel.guest-bareact {
-    max-width: none;
-    padding: 0;
-    background: var(--paper);
-  }
+.ActHead-copy {
+  flex: 1 1 420px;
+  min-width: 0;
+}
 
-  .guest-bareact-headband {
-    padding: 22px 40px 22px;
-    background: var(--page);
-    border-bottom: 1px solid var(--hairline);
-  }
+.ActHead-kicker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 4px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
 
-  .guest-bareact-back {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    height: 32px;
-    margin: 0;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--muted);
-    text-decoration: none;
-  }
+.ActHead-kicker .bareact-status {
+  margin-left: 0;
+}
 
-  .guest-bareact-back:hover {
-    color: var(--ink);
-  }
+.ActHead-title {
+  margin: 0 0 4px;
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 1.2;
+  text-wrap: pretty;
+  overflow-wrap: anywhere;
+}
 
-  .guest-bareact-head {
-    display: flex;
-    align-items: flex-end;
-    gap: 32px;
-    margin-top: 6px;
-  }
+.ActHead-meta {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
 
-  .guest-bareact-copy {
-    flex: 1 1 auto;
-    min-width: 0;
-  }
+.ActHead .bareact-status-note {
+  margin-top: 6px;
+}
 
-  .guest-bareact-kicker {
-    margin: 0 0 4px;
-    font-size: 10.5px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--mid);
-  }
+/* The action column: 380px beside the title, dropping under it when the
+   band is too narrow for both — the title is never covered. */
+.ActHead-cta,
+.ActHead-cta.LawPlaygroundCta {
+  display: flex;
+  flex: 0 1 380px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  width: 380px;
+  min-width: 240px;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
 
-  .guest-bareact-title {
-    margin: 0 0 4px;
-    font-family: var(--font-display);
-    font-size: 28px;
-    font-weight: 500;
-    line-height: 1.2;
-  }
+.ActHead-cta .LawStatusBadge {
+  align-self: flex-start;
+}
 
-  .guest-bareact-meta {
-    margin: 0;
-    font-size: 13px;
-    color: var(--mid);
-  }
+.ActHead-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 48px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 12px;
+  background: var(--ink);
+  color: var(--on-accent);
+  font: inherit;
+  font-size: 14.5px;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.28);
+  box-sizing: border-box;
+}
 
-  .guest-bareact-cta {
-    display: flex;
-    flex: 0 0 380px;
-    align-items: center;
-    justify-content: center;
-    width: 380px;
-    max-width: 100%;
-    height: 48px;
-    padding: 0 16px;
-    border: none;
-    border-radius: 12px;
-    background: var(--ink);
-    color: var(--on-accent);
-    font-size: 14.5px;
-    font-weight: 600;
-    text-decoration: none;
-    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.28);
-  }
+.ActHead-btn:active {
+  transform: translateY(1px);
+}
 
-  .guest-bareact-cta:active {
-    transform: translateY(1px);
-  }
+.ActHead-btn--ghost {
+  border: 1px solid var(--hairline);
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: none;
+}
 
-  .guest-bareact-rows {
-    max-width: 960px;
-    padding: 8px 40px 60px;
-  }
+.ActHead-link {
+  display: inline-flex;
+  align-items: center;
+  align-self: center;
+  min-height: 44px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
 
-  .guest-bareact-row {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    min-height: 56px;
-    padding: 12px 16px;
-    margin: 0 -16px;
-    border-bottom: 1px solid var(--page);
-  }
+.ActHead-note {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--muted);
+  text-wrap: pretty;
+}
 
-  .guest-bareact-row-tag {
-    flex: 0 0 110px;
-    font-size: 10.5px;
-    font-weight: 600;
-    letter-spacing: 0.09em;
-    color: var(--mid);
-    white-space: nowrap;
-  }
+/* In Playground: the chip with Sections and Continue. */
+.ActHead-inpg {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 12px;
+  border: 1px solid var(--pg-teal-border, #bcd8d2);
+  border-radius: 12px;
+  background: var(--pg-teal-tint, #e7f1ef);
+  box-sizing: border-box;
+}
 
-  .guest-bareact-row-title {
-    flex: 1 1 auto;
-    font-size: 15.5px;
-    font-weight: 500;
-  }
+.ActHead-inpg-mark {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--pg-teal, #0e7569);
+  color: var(--on-accent);
+}
 
-  .guest-bareact-row-range {
-    font-size: 12px;
-    color: var(--faint);
-    white-space: nowrap;
-  }
+.ActHead-inpg .LawStatusBadge {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: auto;
+  gap: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--pg-teal-dark, #0e5b52);
+  font-size: 13.5px;
+  font-weight: 600;
+  letter-spacing: 0;
+  line-height: 1.2;
+  text-transform: none;
+  white-space: normal;
+}
 
-  .guest-bareact-row-chevron {
-    font-size: 14px;
-    color: var(--control-border);
-  }
+.ActHead-inpg .LawStatusBadge-mark {
+  display: none;
+}
+
+.ActHead-inpg-sections,
+.ActHead-inpg-continue {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 12px;
+  border-radius: 9px;
+  font-size: 12.5px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+.ActHead-inpg-sections {
+  border: 1px solid var(--pg-teal-border, #a9cdc6);
+  background: var(--paper);
+  color: var(--pg-teal-dark, #0e5b52);
+}
+
+.ActHead-inpg-continue {
+  padding: 0 13px;
+  border: 0;
+  background: var(--pg-teal, #0e7569);
+  color: var(--on-accent);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.18);
+}
+
+.ActHead-inpg-continue:active {
+  transform: translateY(1px);
+}
+
+/* The About toggle keeps its text-link look; its box is padded to a 44px
+   band (M2-A02) and the band's excess is pulled back with margins, so the
+   layout below it does not move. The underline moves from the box's border
+   to the text so it stays on the text, not on the padded box. */
+.ActHead-about {
+  min-height: 44px;
+  margin: 0 0 -10px;
+  padding: 10px 0;
+  border-bottom: 0;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+.ActHead .bareact-info {
+  max-width: 720px;
+  margin: 10px 0 0;
+}
+
+/* The list: chapters, then schedules. */
+.ActHead .bareact-chapters {
+  max-width: 960px;
+  padding: 8px 40px 60px;
+}
+
+.ActHead .bareact-chapter-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 56px;
+  padding: 12px 16px;
+  margin: 0 -16px;
+  border-bottom: 1px solid var(--page);
+  border-radius: 10px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.ActHead .bareact-chapter-row:hover {
+  background: var(--wash);
+}
+
+.ActHead .bareact-chapter-row:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: -2px;
+}
+
+.ActHead .bareact-chapter-tag {
+  flex: 0 0 110px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.ActHead .bareact-chapter-name {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 15.5px;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+.ActHead .bareact-chapter-range {
+  font-size: 12px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.ActHead .bareact-chapter-caret {
+  width: auto;
+  font-size: 14px;
+  color: var(--control-border, var(--faint));
+  transition: transform 0.15s ease;
+}
+
+.ActHead .bareact-chapter-caret::before {
+  content: "\203A";
+}
+
+.ActHead .bareact-chapter[open] .bareact-chapter-caret {
+  transform: rotate(90deg);
+}
+
+.ActHead .bareact-chapter[open] > .bareact-chapter-row {
+  background: var(--wash);
+  border-bottom-color: transparent;
+  border-radius: 10px 10px 0 0;
+}
+
+/* Section links under an open chapter sit in the name column. */
+.ActHead .bareact-chapter .bareact-section-list {
+  padding: 2px 0 10px 126px;
+  border-bottom: 1px solid var(--page);
+}
+
+.ActHead .bareact-schedule-row {
+  gap: 16px;
+  min-height: 56px;
+  padding: 12px 16px;
+  margin: 0 -16px;
+  border-bottom: 1px solid var(--page);
+  border-radius: 10px;
+  background: transparent;
+}
+
+.ActHead .bareact-schedule-row:hover {
+  background: var(--wash);
+}
+
+.ActHead .bareact-schedule-row.is-unavailable:hover {
+  background: transparent;
+}
+
+.ActHead .bareact-schedule-name {
+  font-size: 15.5px;
+}
+
+.ActHead .bareact-schedule-row .bareact-section-chevron {
+  font-size: 14px;
+  color: var(--control-border, var(--faint));
 }
 
 @media (min-width: 561px) and (max-width: 1279px) {
-  .guest-bareact-headband,
-  .guest-bareact-rows {
+  .ActHead-band,
+  .ActHead .bareact-chapters {
     padding-left: max(28px, calc((100% - 1180px) / 2));
     padding-right: max(28px, calc((100% - 1180px) / 2));
   }
 }
 
-/* Signed-in NDPS Bare Act head (CTA map signedIn/04-screen). Desktop only;
-   phone Bare Act keeps the production accordion, About card, and CTA. */
 @media (max-width: 560px) {
-  [data-signed-in-bareact-desktop] {
-    display: none !important;
-  }
-}
-
-@media (min-width: 561px) {
-  body.is-authed[data-mscreen="bareact"]:has([data-signed-in-bareact-desktop]) .brand-mark {
-    filter: invert(1);
+  .ActHead-band {
+    padding: 2px var(--m-gutter, 18px) 16px;
   }
 
-  body.is-authed[data-mscreen="bareact"]:has([data-signed-in-bareact-desktop]) .page-wrap,
-  body.is-authed[data-mscreen="bareact"]:has([data-signed-in-bareact-desktop]) .sheet,
-  body.is-authed[data-mscreen="bareact"]:has([data-signed-in-bareact-desktop]) .main {
-    background: var(--paper);
+  .ActHead-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
   }
 
-  body.is-authed[data-mscreen="bareact"] [data-bareact-phone] {
-    display: none !important;
+  .ActHead-copy {
+    flex: none;
   }
 
-  body.is-authed[data-mscreen="bareact"]:has([data-signed-in-bareact-desktop]) .site-footer,
-  body.is-authed[data-mscreen="bareact"]:has([data-signed-in-bareact-desktop]) .sheet-footnote {
-    display: none;
+  .ActHead-kicker {
+    margin: 2px 0;
   }
 
-  body.is-authed[data-mscreen="bareact"] .panel.guest-bareact {
+  .ActHead-title {
+    margin: 0 0 3px;
+    font-size: 19px;
+    line-height: 1.25;
+  }
+
+  .ActHead-meta {
+    font-size: 12px;
+  }
+
+  /* Same specificity as the desktop rule, or the 380px basis would become
+     the column's height. */
+  .ActHead-cta,
+  .ActHead-cta.LawPlaygroundCta {
+    flex: none;
+    width: 100%;
+    min-width: 0;
+  }
+
+  .ActHead-inpg {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 11px 13px;
+  }
+
+  .ActHead-inpg-sections,
+  .ActHead-inpg-continue {
+    min-height: 44px;
+  }
+
+  .ActHead-about {
+    margin-top: 10px;
+  }
+
+  .ActHead .bareact-chapters {
     max-width: none;
     padding: 0;
-    background: var(--paper);
   }
 
-  body.is-authed[data-mscreen="bareact"]:has([data-signed-in-bareact-desktop]) .account-avatar,
-  body.is-authed[data-mscreen="bareact"]:has([data-signed-in-bareact-desktop]) .account-avatar-fallback {
-    width: 36px;
-    height: 36px;
-    border-radius: 11px;
-  }
-
-  body.is-authed[data-mscreen="bareact"]:has([data-signed-in-bareact-desktop]) .account-avatar-fallback {
-    background: var(--ink);
-    color: var(--on-accent);
-    border-color: var(--ink);
-    font-family: var(--font-display);
-    font-size: 15px;
-    font-weight: 600;
-  }
-
-  [data-signed-in-bareact-desktop] .guest-bareact-headband {
-    padding: 12px 40px 14px;
-  }
-
-  [data-signed-in-bareact-desktop] .guest-bareact-back {
-    height: 24px;
-  }
-
-  [data-signed-in-bareact-desktop] .guest-bareact-head {
-    align-items: center;
-    gap: 24px;
-    margin-top: 2px;
-  }
-
-  [data-signed-in-bareact-desktop] .guest-bareact-kicker {
-    margin-bottom: 2px;
-  }
-
-  [data-signed-in-bareact-desktop] .guest-bareact-title {
-    margin-bottom: 2px;
-    line-height: 1.15;
-  }
-
-  [data-signed-in-bareact-desktop] .guest-bareact-cta {
-    flex: 0 0 auto;
-    width: auto;
-    height: 40px;
-    padding: 0 16px;
-    white-space: nowrap;
-  }
-
-  body.is-authed[data-mscreen="bareact"] [data-signed-in-bareact-desktop] .LawPlaygroundCta {
-    display: flex;
-    flex: 0 0 380px;
-    align-items: stretch;
-    justify-content: center;
-    width: 380px;
-    max-width: 100%;
-    margin: 0;
-    padding: 0;
-    border: none;
-    background: transparent;
-  }
-
-  body.is-authed[data-mscreen="bareact"] [data-signed-in-bareact-desktop] .LawPlaygroundCta .LawStatusBadge,
-  body.is-authed[data-mscreen="bareact"] [data-signed-in-bareact-desktop] .LawPlaygroundCta .pg-lede,
-  body.is-authed[data-mscreen="bareact"] [data-signed-in-bareact-desktop] .LawPlaygroundCta .pg-actions,
-  body.is-authed[data-mscreen="bareact"] [data-signed-in-bareact-desktop] .LawPlaygroundCta .pg-btn--ghost {
-    display: none;
-  }
-
-  body.is-authed[data-mscreen="bareact"] [data-signed-in-bareact-desktop] .LawPlaygroundCta .pg-btn {
-    display: flex;
-    flex: 1 1 auto;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 48px;
+  .ActHead .bareact-chapter-row,
+  .ActHead .bareact-schedule-row {
+    gap: 10px;
     min-height: 48px;
-    padding: 0 16px;
-    border: none;
-    border-radius: 12px;
-    background: var(--ink);
-    color: var(--on-accent);
+    padding: 10px var(--m-gutter, 18px);
+    margin: 0;
+    border-bottom: 1px solid var(--hairline);
+    border-radius: 0;
+    background: var(--wash);
+  }
+
+  .ActHead .bareact-chapter[open] > .bareact-chapter-row {
+    border-bottom-color: var(--hairline);
+    border-radius: 0;
+  }
+
+  .ActHead .bareact-chapter-tag {
+    flex: 0 0 100px;
+  }
+
+  .ActHead .bareact-schedule-row .bareact-chapter-tag {
+    flex: 0 0 auto;
+  }
+
+  .ActHead .bareact-chapter-name,
+  .ActHead .bareact-schedule-name {
     font-size: 14.5px;
-    font-weight: 600;
-    text-decoration: none;
-    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.28);
   }
 
-  [data-signed-in-bareact-desktop] .signed-bareact-in-pg {
-    display: flex;
-    flex: 0 0 380px;
-    align-items: center;
-    gap: 11px;
-    width: 380px;
-    max-width: 100%;
-    padding: 10px 12px;
-    border: 1px solid var(--pg-teal-border);
-    border-radius: 12px;
-    background: var(--pg-teal-tint);
-    box-sizing: border-box;
+  .ActHead .bareact-chapter-range {
+    font-size: 11.5px;
   }
 
-  [data-signed-in-bareact-desktop] .signed-bareact-in-pg-mark {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 26px;
-    height: 26px;
-    flex: none;
-    border-radius: 50%;
-    background: var(--pg-teal);
-    color: var(--on-accent);
-  }
-
-  [data-signed-in-bareact-desktop] .signed-bareact-in-pg .LawStatusBadge {
-    flex: 1 1 auto;
-    height: auto;
-    gap: 0;
-    padding: 0;
-    border: 0;
-    background: transparent;
-    color: var(--pg-teal-dark);
-    font-size: 13.5px;
-    font-weight: 600;
-    letter-spacing: 0;
-    text-transform: none;
-  }
-
-  [data-signed-in-bareact-desktop] .signed-bareact-in-pg .LawStatusBadge-mark {
+  .ActHead-range-word {
     display: none;
   }
 
-  [data-signed-in-bareact-desktop] .signed-bareact-sections {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    height: 34px;
-    padding: 0 12px;
-    border: 1px solid var(--pg-teal-border);
-    border-radius: 9px;
-    background: var(--paper);
-    color: var(--pg-teal-dark);
-    font-size: 12.5px;
-    font-weight: 600;
-    text-decoration: none;
+  .ActHead .bareact-chapter-caret::before {
+    content: "\25B8";
   }
 
-  [data-signed-in-bareact-desktop] .signed-bareact-continue {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    height: 34px;
-    padding: 0 13px;
-    border: none;
-    border-radius: 9px;
-    background: var(--pg-teal);
-    color: var(--on-accent);
-    font-size: 12.5px;
-    font-weight: 600;
-    text-decoration: none;
-    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.18);
-  }
-
-  [data-signed-in-bareact-desktop] .signed-bareact-continue:active {
-    transform: translateY(1px);
+  .ActHead .bareact-chapter .bareact-section-list {
+    padding: 0;
+    border-bottom: 0;
   }
 }
 

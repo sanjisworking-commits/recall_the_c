@@ -7,11 +7,18 @@ presentation follows pg.kind == already_active, not pg.subscribed.
 Workspace Continue is not hard-coded: live primary is the paid-period-ended
 lifecycle CTA because /playground/laws/ndps is not allowed. Guest, Free,
 Plus, halted, phone, Plus 01–11, and Expired 01–03 stay unchanged.
+
+M2: the head is the one generated ``section.ActHead`` for every Act and
+every viewer (same markup on both widths; CSS does the layout), so the
+assertions read the live Act model (``get_bare_act``) instead of the deleted
+NDPS fixture head, and the retained chip's Continue carries the live
+``LawPlaygroundState`` destination (M2-F04).
 """
 
 from __future__ import annotations
 
 from datetime import datetime, timezone
+from html import unescape
 from pathlib import Path
 import socket
 import threading
@@ -28,15 +35,15 @@ from constitution_memorizer.multiuser.settings import (
     MultiUserSettings,
     clear_settings_cache,
 )
+from constitution_memorizer.playground.access import PlaygroundAccess
 from constitution_memorizer.playground.urls import add_path, home_path, law_path, sections_path
-from constitution_memorizer.playground.view import PLAYGROUND_BILLING_PATH, gate_view
-from constitution_memorizer.web.app import create_app
-from constitution_memorizer.web.guest_bareact_head import (
-    NDPS_GUEST_KICKER,
-    NDPS_GUEST_META,
-    NDPS_GUEST_ROWS,
-    NDPS_GUEST_TITLE,
+from constitution_memorizer.playground.view import (
+    PLAYGROUND_BILLING_PATH,
+    gate_view,
+    law_membership,
 )
+from constitution_memorizer.web.app import create_app
+from constitution_memorizer.web.bare_acts import get_bare_act
 
 MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
 ROOT = Path(__file__).resolve().parents[1]
@@ -45,11 +52,13 @@ BROWSE = ROOT / "src/constitution_memorizer/web/templates/browse_index.html"
 BASE = ROOT / "src/constitution_memorizer/web/templates/base.html"
 DEPS = ROOT / "src/constitution_memorizer/entitlements/dependencies.py"
 APP = ROOT / "src/constitution_memorizer/web/app.py"
+BARE_PAGE = ROOT / "src/constitution_memorizer/web/bare_act_page.py"
 VIEW = ROOT / "src/constitution_memorizer/playground/view.py"
 LANDING = ROOT / "src/constitution_memorizer/web/templates/landing.html"
 LAWS = ROOT / "src/constitution_memorizer/web/templates/laws.html"
 BARE = ROOT / "src/constitution_memorizer/web/templates/bare_act.html"
 ADD = ROOT / "src/constitution_memorizer/web/templates/playground_add.html"
+ADD_PANEL = ROOT / "src/constitution_memorizer/web/templates/partials/playground_add_panel.html"
 HOME = ROOT / "src/constitution_memorizer/web/templates/playground.html"
 MANAGE = ROOT / "src/constitution_memorizer/web/templates/subscription_manage.html"
 DASH = ROOT / "src/constitution_memorizer/web/templates/dashboard.html"
@@ -57,12 +66,14 @@ CAL = ROOT / "src/constitution_memorizer/web/templates/calendar.html"
 PROFILE = ROOT / "src/constitution_memorizer/web/templates/profile.html"
 SETTINGS = ROOT / "src/constitution_memorizer/web/templates/settings.html"
 MOBILE = ROOT / "src/constitution_memorizer/web/static/mobile.css"
+STYLES = ROOT / "src/constitution_memorizer/web/static/styles.css"
 USER = UUID("11111111-1111-4111-8111-111111111111")
 EXPIRED_START = datetime(2026, 8, 16, tzinfo=timezone.utc)
 EXPIRED_END = datetime(2026, 9, 15, tzinfo=timezone.utc)
 ACTIVE_START = datetime(2026, 9, 15, tzinfo=timezone.utc)
 ACTIVE_END = datetime(2026, 10, 15, tzinfo=timezone.utc)
 LIVE_EXPIRED_STATUS = gate_view(reason=BLOCK_PAID_PERIOD_ENDED).title
+KICKER = "Bare Act · India Code"
 INVENTED = (
     "Your plan expired",
     "Resume subscription",
@@ -186,10 +197,35 @@ def _header(html: str) -> str:
     return html.split("<header", 1)[1].split("</header>", 1)[0]
 
 
-def _desk(html: str) -> str:
-    return html.split("data-signed-in-bareact-desktop", 1)[1].split(
-        "data-bareact-phone", 1
-    )[0]
+def _head(html: str) -> str:
+    """The generated Act head (M2): the ``section.ActHead`` tag attributes
+    and its band (back link, kicker, title, meta, Playground action, About),
+    up to the chapter list."""
+    return html.split('class="panel ActHead', 1)[1].split("data-bareact-accordion", 1)[0]
+
+
+def _act_list(html: str) -> str:
+    """The one chapter + schedule list under the head."""
+    return html.split("data-bareact-accordion", 1)[1].split("</section>", 1)[0]
+
+
+def _live_state(client: TestClient, law_id: str = "ndps"):
+    """The live LawPlaygroundState the head renders from (M2-F04)."""
+    snap = client.app.state.entitlement_service.resolve(USER)
+    access = PlaygroundAccess(
+        user_id=USER,
+        snapshot=snap,
+        can_open=snap.can_open_playground,
+        can_consume_new_law=snap.can_consume_new_playground_law,
+        local_owner=False,
+        can_view_home=True,
+    )
+    return law_membership(
+        law_id=law_id,
+        access=access,
+        roster=client.app.state.roster,
+        overlay=client.app.state.playground,
+    )
 
 
 def test_expired_retained_ndps_uses_live_already_active_not_subscribed(
@@ -204,39 +240,64 @@ def test_expired_retained_ndps_uses_live_already_active_not_subscribed(
     assert snap.is_subscribed is False
     assert snap.can_open_playground is False
     assert snap.can_consume_new_playground_law is False
-    html = client.get("/laws/ndps").text
+    html = unescape(client.get("/laws/ndps").text)
     header = _header(html)
-    desk = _desk(html)
-    assert 'data-expired-bareact="desktop"' in html
-    assert 'data-plus-bareact="desktop"' not in html
-    assert "data-signed-in-bareact-desktop" in html
-    assert "data-guest-bareact-desktop" not in html
-    assert NDPS_GUEST_KICKER in desk
-    assert f">{NDPS_GUEST_TITLE}<" in desk
-    assert NDPS_GUEST_META in desk
-    assert 'class="guest-bareact-back" href="/laws"' in desk
-    assert "Already in Playground" in desk
-    assert 'data-pg-kind="already_active"' in desk
-    assert 'class="signed-bareact-in-pg"' in desk
-    assert ">Sections<" in desk
-    assert f'href="{sections_path("ndps")}"' in desk
-    assert f'class="signed-bareact-continue" href="{PLAYGROUND_BILLING_PATH}"' in desk
-    assert ">Resume Playground<" in desk
-    assert f'class="signed-bareact-continue" href="{home_path()}"' not in desk
-    assert ">Continue<" not in desk
-    assert "+ Add to Playground" not in desk
-    assert 'data-pg-kind="eligible_to_add"' not in desk
-    assert "Subscribe to use Playground" not in desk
-    assert "Sign in to use Playground" not in desk
+    head = _head(html)
+    act = get_bare_act("ndps")
+    assert act is not None
+    # One generated head, no desktop/phone twins (M2 §2.1).
+    assert html.count('class="panel ActHead') == 1
+    assert 'data-act-head="ndps"' in head
+    assert "data-expired-bareact" in head
+    assert "data-plus-bareact" not in head
+    assert "data-halted-bareact" not in head
+    assert KICKER in head
+    assert f'<h1 class="ActHead-title">{act.title}</h1>' in head
+    assert f'<p class="ActHead-meta">{act.head_meta_label}</p>' in head
+    assert 'class="ActHead-back" href="/laws"' in head
+    assert "Already in Playground" in head
+    assert 'data-pg-kind="already_active"' in head
+    assert 'data-membership="in_playground"' in head
+    assert 'class="ActHead-cta LawPlaygroundCta"' in head
+    assert 'class="ActHead-inpg"' in head
+    assert ">Sections</a>" in head
+    assert f'class="ActHead-inpg-sections" href="{sections_path("ndps")}">Sections</a>' in head
+    assert (
+        f'class="ActHead-inpg-continue" href="{PLAYGROUND_BILLING_PATH}">Resume Playground</a>'
+        in head
+    )
+    assert ">Resume Playground<" in head
+    assert f'href="{home_path()}"' not in head
+    assert ">Continue<" not in head
+    assert ">Start learning<" not in head
+    assert "+ Add to Playground" not in head
+    assert 'data-pg-kind="eligible_to_add"' not in head
+    assert "data-pg-sheet" not in head
+    assert "Subscribe to use Playground" not in head
+    assert "Sign in to use Playground" not in head
     assert LIVE_EXPIRED_STATUS in header
     assert "Free account" not in header
     assert "RecallC Plus" not in header
     assert "Sanjay" in header
     for phrase in INVENTED:
-        assert phrase not in desk, phrase
-    for row in NDPS_GUEST_ROWS:
-        assert row.title in desk
-    assert 'href="/laws/ndps/section/' not in desk
+        assert phrase not in head, phrase
+    # The list is generated from the canonical Act: eight NDPS chapters
+    # (M2 §4 Q1), none open, each a <summary> that expands into its section
+    # links (Q3); one schedule row.
+    listing = _act_list(html)
+    assert act.chapter_count == 8
+    assert listing.count('<details class="bareact-chapter">') == act.chapter_count
+    assert (
+        listing.count('<summary class="bareact-chapter-row" aria-expanded="false">')
+        == act.chapter_count
+    )
+    assert '<details class="bareact-chapter" open' not in listing
+    assert listing.count('<div class="bareact-schedule-row') == len(act.schedules) == 1
+    for chapter in act.chapters:
+        assert f"Chapter {chapter.number}</span>" in listing
+        assert f'<span class="bareact-chapter-name">{chapter.title}</span>' in listing
+    assert 'href="/laws/ndps/section/' not in head
+    assert 'href="/laws/ndps/section/' in listing
     workspace = client.get(law_path("ndps"))
     assert workspace.status_code == 200
     assert f'data-playground-gate="{BLOCK_PAID_PERIOD_ENDED}"' in workspace.text
@@ -256,49 +317,65 @@ def test_never_added_law_does_not_get_retained_treatment(tmp_path: Path) -> None
     client = TestClient(_mu_app(tmp_path))
     _sign_in(client)
     _seed_ndps_then_expire(client)
-    bns = client.get("/laws/bns").text
-    assert 'data-expired-bareact="desktop"' not in bns
-    assert "data-signed-in-bareact-desktop" not in bns
-    assert "Already in Playground" not in bns
-    assert 'data-pg-kind="already_active"' not in bns
-    assert 'class="signed-bareact-continue"' not in bns
-    assert "+ Add to Playground" not in bns
-    assert 'data-pg-kind="eligible_to_add"' not in bns
-    assert 'data-pg-kind="resume"' in bns
+    bns = unescape(client.get("/laws/bns").text)
+    bns_head = _head(bns)
+    bns_act = get_bare_act("bns")
+    assert bns_act is not None
+    assert bns.count('class="panel ActHead') == 1
+    assert 'data-act-head="bns"' in bns_head
+    # The expired marker is the viewer's, carried by every Act's head (M2).
+    assert "data-expired-bareact" in bns_head
+    assert f'<p class="ActHead-meta">{bns_act.head_meta_label}</p>' in bns_head
+    assert _act_list(bns).count('<details class="bareact-chapter">') == bns_act.chapter_count
+    assert "Already in Playground" not in bns_head
+    assert 'data-pg-kind="already_active"' not in bns_head
+    assert 'class="ActHead-inpg"' not in bns_head
+    assert 'class="ActHead-inpg-continue"' not in bns_head
+    assert "+ Add to Playground" not in bns_head
+    assert 'data-pg-kind="eligible_to_add"' not in bns_head
+    assert 'data-pg-kind="resume"' in bns_head
+    assert 'class="ActHead-btn"' in bns_head
+    assert f'href="{PLAYGROUND_BILLING_PATH}"' in bns_head
+    assert ">Resume Playground<" in bns_head
 
     fresh = TestClient(_mu_app(tmp_path / "none"))
     _sign_in(fresh)
     _subscribe(fresh)
     _expire(fresh)
-    ndps = fresh.get("/laws/ndps").text
-    desk = _desk(ndps)
-    assert 'data-expired-bareact="desktop"' in ndps
-    assert "Already in Playground" not in desk
-    assert 'class="signed-bareact-in-pg"' not in desk
-    assert 'class="signed-bareact-continue"' not in desk
-    assert ">Continue<" not in desk
-    assert "+ Add to Playground" not in desk
-    assert 'data-pg-kind="resume"' in desk
-    assert "Resume Playground" in desk
+    ndps = unescape(fresh.get("/laws/ndps").text)
+    head = _head(ndps)
+    assert "data-expired-bareact" in head
+    assert "Already in Playground" not in head
+    assert 'class="ActHead-inpg"' not in head
+    assert 'class="ActHead-inpg-continue"' not in head
+    assert ">Continue<" not in head
+    assert "+ Add to Playground" not in head
+    assert 'data-pg-kind="resume"' in head
+    assert 'class="ActHead-btn"' in head
+    assert f'href="{PLAYGROUND_BILLING_PATH}"' in head
+    assert "Resume Playground" in head
 
 
 def test_free_plus_guest_halted_stay_separate_from_expired(tmp_path: Path) -> None:
     guest = TestClient(_mu_app(tmp_path / "guest"))
     guest_html = guest.get("/laws/ndps").text
-    assert 'data-expired-bareact="desktop"' not in guest_html
-    assert "data-guest-bareact-desktop" in guest_html
-    assert "data-signed-in-bareact-desktop" not in guest_html
-    assert "Sign in to use Playground" in guest_html
+    guest_head = _head(guest_html)
+    assert "data-expired-bareact" not in guest_head
+    assert 'data-pg-kind="guest"' in guest_head
+    assert 'class="ActHead-btn"' in guest_head
+    assert "Sign in to use Playground" in guest_head
+    assert "Already in Playground" not in guest_head
     assert "RecallC Plus" not in guest_html
 
     free = TestClient(_mu_app(tmp_path / "free"))
     _sign_in(free)
     free_html = free.get("/laws/ndps").text
-    assert 'data-expired-bareact="desktop"' not in free_html
-    assert 'data-plus-bareact="desktop"' not in free_html
-    free_desk = _desk(free_html)
-    assert "Subscribe to use Playground" in free_desk
-    assert "Already in Playground" not in free_desk
+    free_head = _head(free_html)
+    assert "data-expired-bareact" not in free_head
+    assert "data-plus-bareact" not in free_head
+    assert 'data-pg-kind="subscribe"' in free_head
+    assert "Subscribe to use Playground" in free_head
+    assert "Already in Playground" not in free_head
     assert "Free account" in _header(free_html)
     assert LIVE_EXPIRED_STATUS not in _header(free_html)
 
@@ -308,12 +385,24 @@ def test_free_plus_guest_halted_stay_separate_from_expired(tmp_path: Path) -> No
     added = _confirm_add(plus, "ndps")
     assert added.status_code in {200, 303}
     plus_html = plus.get("/laws/ndps").text
-    assert 'data-plus-bareact="desktop"' in plus_html
-    assert 'data-expired-bareact="desktop"' not in plus_html
-    plus_desk = _desk(plus_html)
-    assert "Already in Playground" in plus_desk
-    assert f'class="signed-bareact-continue" href="{home_path()}"' in plus_desk
-    assert ">Continue<" in plus_desk
+    plus_head = _head(plus_html)
+    assert "data-plus-bareact" in plus_head
+    assert "data-expired-bareact" not in plus_head
+    assert "Already in Playground" in plus_head
+    assert 'data-pg-kind="already_active"' in plus_head
+    # A subscriber's Continue is the live state's own destination, never the
+    # expired lifecycle CTA (M2-F04).
+    plus_state = _live_state(plus)
+    assert plus_state.kind == "already_active"
+    assert plus_state.primary_href != PLAYGROUND_BILLING_PATH
+    assert plus_state.primary_label != "Resume Playground"
+    assert plus_state.primary_label in {"Continue", "Start learning"}
+    assert (
+        f'class="ActHead-inpg-continue" href="{plus_state.primary_href}">{plus_state.primary_label}</a>'
+        in plus_head
+    )
+    assert f'href="{PLAYGROUND_BILLING_PATH}"' not in plus_head
+    assert "Resume Playground" not in plus_head
     assert "RecallC Plus" in _header(plus_html)
     assert LIVE_EXPIRED_STATUS not in _header(plus_html)
 
@@ -327,31 +416,46 @@ def test_free_plus_guest_halted_stay_separate_from_expired(tmp_path: Path) -> No
         USER, stored.id, status="halted"
     )
     halted_html = halted.get("/laws/ndps").text
-    assert 'data-expired-bareact="desktop"' not in halted_html
-    assert 'data-plus-bareact="desktop"' not in halted_html
-    assert 'data-halted-bareact="desktop"' in halted_html
+    halted_head = _head(halted_html)
+    assert "data-expired-bareact" not in halted_head
+    assert "data-plus-bareact" not in halted_head
+    assert "data-halted-bareact" in halted_head
     assert LIVE_EXPIRED_STATUS not in _header(halted_html)
     halted_snap = halted.app.state.entitlement_service.resolve(USER)
     assert halted_snap.subscription_status == "halted"
     assert halted_snap.playground_block_reason != BLOCK_PAID_PERIOD_ENDED
-    halted_desk = _desk(halted_html)
-    assert ">Continue<" not in halted_desk
-    assert ">Resume Playground<" not in halted_desk
-    assert "Subscribe to use Playground" not in halted_desk
+    assert ">Continue<" not in halted_head
+    assert ">Resume Playground<" not in halted_head
+    assert "Subscribe to use Playground" not in halted_head
 
 
 def test_expired_bareact_uses_shared_predicate_not_subscribed_gate() -> None:
     bare = BARE.read_text(encoding="utf-8")
     assert "expired_bareact" in bare
-    assert 'data-expired-bareact="desktop"' in bare
+    assert "data-expired-bareact" in bare
+    assert 'data-expired-bareact="desktop"' not in bare
     assert "plus_bareact" in bare
-    assert 'data-plus-bareact="desktop"' in bare
-    assert "data-signed-in-bareact-desktop" in bare
-    assert "data-guest-bareact-desktop" in bare
+    assert "data-plus-bareact" in bare
+    assert 'data-plus-bareact="desktop"' not in bare
+    assert "halted_bareact" in bare
+    assert "data-halted-bareact" in bare
+    # One head: the per-surface twins and their fixture classes are gone.
+    assert "data-signed-in-bareact-desktop" not in bare
+    assert "data-guest-bareact-desktop" not in bare
+    assert "data-bareact-phone" not in bare
+    assert "guest-bareact-" not in bare
+    assert "signed-bareact-" not in bare
+    assert 'class="panel ActHead' in bare
     assert "pg.kind == 'already_active'" in bare
     assert "pg_subscribed and pg.kind" not in bare
-    assert 'href="/playground">Continue</a>' in bare
-    assert "pg_subscribed" in bare
+    assert "pg_subscribed" not in bare
+    # Continue is the live state's destination, not a hard-coded /playground
+    # (M2-F04).
+    assert 'href="/playground">Continue</a>' not in bare
+    assert (
+        'class="ActHead-inpg-continue" href="{{ pg.primary_href }}">{{ pg.primary_label }}</a>'
+        in bare
+    )
     assert "Your Playground is paused" not in bare
     assert "Playground paused" not in bare
     assert LIVE_EXPIRED_STATUS not in bare
@@ -364,11 +468,15 @@ def test_expired_bareact_uses_shared_predicate_not_subscribed_gate() -> None:
     page = app.split("async def law_detail_page", 1)[1].split(
         "async def bare_act_section_page", 1
     )[0]
-    assert "request_is_expired_subscriber" in page
-    assert "request_is_active_plus" in page
-    assert '"plus_bareact": request_is_active_plus(request)' in page
-    assert '"expired_bareact": expired_bareact' in page
+    assert "bare_act_page_context(request, bare)" in page
     assert "def snapshot_is_expired_subscriber" not in page
+    bare_page = BARE_PAGE.read_text(encoding="utf-8")
+    assert "def bare_act_page_context" in bare_page
+    assert "request_is_expired_subscriber" in bare_page
+    assert "request_is_active_plus" in bare_page
+    assert '"plus_bareact": request_is_active_plus(request)' in bare_page
+    assert '"expired_bareact": expired_bareact' in bare_page
+    assert "def snapshot_is_expired_subscriber" not in bare_page
     deps = DEPS.read_text(encoding="utf-8")
     assert "def request_is_expired_subscriber" in deps
     assert "BLOCK_PAID_PERIOD_ENDED" in deps
@@ -384,8 +492,10 @@ def test_plus_screens_and_expired_01_02_03_untouched() -> None:
     assert 'data-expired-browse="desktop"' in BROWSE.read_text(encoding="utf-8")
     assert 'data-plus-laws="desktop"' in LAWS.read_text(encoding="utf-8")
     assert 'data-expired-laws="desktop"' in LAWS.read_text(encoding="utf-8")
-    assert 'data-plus-bareact="desktop"' in BARE.read_text(encoding="utf-8")
-    assert 'data-plus-add="desktop"' in ADD.read_text(encoding="utf-8")
+    assert "data-plus-bareact" in BARE.read_text(encoding="utf-8")
+    assert "playground_add_panel.html" in ADD.read_text(encoding="utf-8")
+    assert 'data-add-step="confirm"' in ADD_PANEL.read_text(encoding="utf-8")
+    assert "data-pg-add-confirm" in ADD_PANEL.read_text(encoding="utf-8")
     assert 'data-plus-playground="desktop"' in HOME.read_text(encoding="utf-8")
     assert 'data-plus-subscription="desktop"' in MANAGE.read_text(encoding="utf-8")
     assert 'data-plus-today="desktop"' in DASH.read_text(encoding="utf-8")
@@ -398,13 +508,14 @@ def test_plus_screens_and_expired_01_02_03_untouched() -> None:
     assert "data-expired-bareact" not in browse
     laws = LAWS.read_text(encoding="utf-8")
     assert "data-expired-bareact" not in laws
-    for path in (ADD, HOME, MANAGE, DASH, CAL, PROFILE, SETTINGS):
+    for path in (ADD, ADD_PANEL, HOME, MANAGE, DASH, CAL, PROFILE, SETTINGS):
         text = path.read_text(encoding="utf-8")
         assert "data-expired-bareact" not in text
         assert "expired_bareact" not in text
         assert "data-expired-landing" not in text
     mobile = MOBILE.read_text(encoding="utf-8")
     assert "data-expired-bareact" not in mobile
+    assert "data-expired-bareact" not in STYLES.read_text(encoding="utf-8")
     assert "def request_is_active_plus" in DEPS.read_text(encoding="utf-8")
     assert 'snapshot.tier == "plus"' in DEPS.read_text(encoding="utf-8")
 
@@ -442,6 +553,8 @@ def test_expired_phone_bareact_unchanged(tmp_path: Path) -> None:
     _seed_ndps_then_expire(client)
     session = client.cookies.get(SESSION_COOKIE_NAME)
     assert session
+    act = get_bare_act("ndps")
+    assert act is not None
 
     port, _server = _serve(app)
     origin = f"http://127.0.0.1:{port}"
@@ -466,28 +579,27 @@ def test_expired_phone_bareact_unchanged(tmp_path: Path) -> None:
         page.goto(f"{origin}/laws/ndps", wait_until="networkidle")
         phone = page.evaluate(
             """() => {
-              const desk = document.querySelector('[data-signed-in-bareact-desktop]');
-              const expired = document.querySelector('[data-expired-bareact="desktop"]');
-              const prod = document.querySelector('[data-bareact-phone]');
-              const cont = desk && desk.querySelector('.signed-bareact-continue');
+              const head = document.querySelector('.ActHead[data-expired-bareact]');
+              const list = head && head.querySelector('[data-act-list]');
+              const cont = head && head.querySelector('.ActHead-inpg-continue');
               return {
-                expiredPresent: Boolean(expired),
-                deskDisplay: desk ? getComputedStyle(desk).display : null,
-                expiredDisplay: expired ? getComputedStyle(expired).display : null,
-                prodDisplay: prod ? getComputedStyle(prod).display : null,
-                details: prod ? prod.querySelectorAll('details').length : 0,
+                expiredPresent: Boolean(head),
+                headCount: document.querySelectorAll('.ActHead').length,
+                headDisplay: head ? getComputedStyle(head).display : null,
+                details: list ? list.querySelectorAll('details.bareact-chapter').length : 0,
+                openDetails: list ? list.querySelectorAll('details[open]').length : 0,
                 resumeText: cont && cont.textContent.trim(),
                 resumeHref: cont && cont.getAttribute('href'),
-                continueShown: desk ? desk.innerText.includes('Continue') : false,
+                continueShown: head ? head.innerText.includes('Continue') : false,
               };
             }"""
         )
         browser.close()
     assert phone["expiredPresent"] is True
-    assert phone["deskDisplay"] != "none"
-    assert phone["expiredDisplay"] != "none"
-    assert phone["prodDisplay"] == "none"
-    assert phone["details"] > 0
+    assert phone["headCount"] == 1
+    assert phone["headDisplay"] != "none"
+    assert phone["details"] == act.chapter_count
+    assert phone["openDetails"] == 0
     assert phone["resumeText"] == "Resume Playground"
     assert phone["resumeHref"] == PLAYGROUND_BILLING_PATH
     assert phone["continueShown"] is False
@@ -503,6 +615,8 @@ def test_expired_bareact_1280(tmp_path: Path) -> None:
     _seed_ndps_then_expire(client)
     session = client.cookies.get(SESSION_COOKIE_NAME)
     assert session
+    act = get_bare_act("ndps")
+    assert act is not None
 
     port, _server = _serve(app)
     artifact_dir = Path("/opt/cursor/artifacts")
@@ -538,31 +652,34 @@ def test_expired_bareact_1280(tmp_path: Path) -> None:
         )
         geo = page.evaluate(
             """() => {
-              const expired = document.querySelector('[data-expired-bareact="desktop"]');
-              const desk = document.querySelector('[data-signed-in-bareact-desktop]');
-              const plus = document.querySelector('[data-plus-bareact="desktop"]');
-              const guest = document.querySelector('[data-guest-bareact-desktop]');
-              const phone = document.querySelector('[data-bareact-phone]');
+              const head = document.querySelector('.ActHead[data-expired-bareact]');
+              const plus = document.querySelector('.ActHead[data-plus-bareact]');
               const brand = document.querySelector('.brand');
               const mark = document.querySelector('.brand-mark');
-              const back = desk && desk.querySelector('.guest-bareact-back');
-              const cluster = desk && desk.querySelector('.signed-bareact-in-pg');
-              const sections = desk && desk.querySelector('.signed-bareact-sections');
-              const cont = desk && desk.querySelector('.signed-bareact-continue');
-              const rows = desk ? [...desk.querySelectorAll('.guest-bareact-row')] : [];
-              const panelText = desk ? desk.innerText : '';
+              const band = head && head.querySelector('.ActHead-band');
+              const back = head && head.querySelector('.ActHead-back');
+              const cluster = head && head.querySelector('.ActHead-inpg');
+              const sections = head && head.querySelector('.ActHead-inpg-sections');
+              const cont = head && head.querySelector('.ActHead-inpg-continue');
+              const rows = head
+                ? [...head.querySelectorAll('[data-act-list] summary.bareact-chapter-row')]
+                : [];
+              const schedules = head
+                ? head.querySelectorAll('[data-act-list] .bareact-schedule-row').length
+                : 0;
+              const panelText = band ? band.innerText : '';
               return {
-                present: Boolean(expired),
+                present: Boolean(head),
                 plusPresent: Boolean(plus),
-                deskDisplay: desk && getComputedStyle(desk).display,
-                phoneDisplay: phone ? getComputedStyle(phone).display : null,
-                guestPresent: !!guest,
+                headCount: document.querySelectorAll('.ActHead').length,
+                headDisplay: head && getComputedStyle(head).display,
+                kind: head && head.getAttribute('data-pg-kind'),
                 brandHref: brand.getAttribute('href'),
                 markFilter: getComputedStyle(mark).filter,
                 backHref: back && back.getAttribute('href'),
-                kicker: desk && desk.querySelector('.guest-bareact-kicker').textContent.trim(),
-                title: desk && desk.querySelector('.guest-bareact-title').textContent.trim(),
-                meta: desk && desk.querySelector('.guest-bareact-meta').textContent.trim(),
+                kicker: head && head.querySelector('.ActHead-kicker').textContent.trim(),
+                title: head && head.querySelector('.ActHead-title').textContent.trim(),
+                meta: head && head.querySelector('.ActHead-meta').textContent.trim(),
                 already: panelText.includes('Already in Playground'),
                 clusterPresent: !!cluster,
                 sectionsHref: sections && sections.getAttribute('href'),
@@ -575,8 +692,9 @@ def test_expired_bareact_1280(tmp_path: Path) -> None:
                 invented: /Your plan expired|Resume subscription|Premium|Unlimited|Unlock all|Free plan|All 3 slots/.test(panelText),
                 rowCount: rows.length,
                 rowTitles: rows.map((el) =>
-                  el.querySelector('.guest-bareact-row-title').textContent.trim()
+                  el.querySelector('.bareact-chapter-name').textContent.trim()
                 ),
+                scheduleCount: schedules,
                 accountName: document.querySelector('.account-menu-btn-name').textContent.trim(),
                 accountStatus: document.querySelector('.account-menu-btn-status').textContent.trim(),
                 navLabels: [...document.querySelectorAll('.PrimaryTabs--top .nav-link')].map(
@@ -590,22 +708,22 @@ def test_expired_bareact_1280(tmp_path: Path) -> None:
         page.evaluate("() => document.activeElement && document.activeElement.blur()")
         page.screenshot(path=str(shot_path), full_page=False)
 
-        page.locator('[data-expired-bareact="desktop"] .guest-bareact-back').click()
+        page.locator(".ActHead[data-expired-bareact] .ActHead-back").click()
         page.wait_for_function("() => location.pathname === '/laws'", timeout=8000)
         laws_path = page.evaluate("() => location.pathname")
         browser.close()
 
     assert geo["present"] is True
     assert geo["plusPresent"] is False
-    assert geo["deskDisplay"] != "none"
-    assert geo["phoneDisplay"] == "none"
-    assert geo["guestPresent"] is False
+    assert geo["headCount"] == 1
+    assert geo["headDisplay"] != "none"
+    assert geo["kind"] == "already_active"
     assert geo["brandHref"] == "/dashboard"
     assert "invert" in geo["markFilter"]
     assert geo["backHref"] == "/laws"
-    assert geo["kicker"] == NDPS_GUEST_KICKER
-    assert geo["title"] == NDPS_GUEST_TITLE
-    assert geo["meta"] == NDPS_GUEST_META
+    assert geo["kicker"] == KICKER
+    assert geo["title"] == act.title
+    assert geo["meta"] == act.head_meta_label
     assert geo["already"] is True
     assert geo["clusterPresent"] is True
     assert geo["sectionsText"] == "Sections"
@@ -616,8 +734,9 @@ def test_expired_bareact_1280(tmp_path: Path) -> None:
     assert geo["subscribe"] is False
     assert geo["signIn"] is False
     assert geo["invented"] is False
-    assert geo["rowCount"] == 4
-    assert geo["rowTitles"] == [row.title for row in NDPS_GUEST_ROWS]
+    assert geo["rowCount"] == act.chapter_count
+    assert geo["rowTitles"] == [chapter.title for chapter in act.chapters]
+    assert geo["scheduleCount"] == len(act.schedules)
     assert geo["accountName"] == "Sanjay"
     assert geo["accountStatus"] == LIVE_EXPIRED_STATUS
     assert geo["navLabels"] == [
@@ -645,6 +764,11 @@ def test_plus_bareact_regression_1280(tmp_path: Path) -> None:
     assert added.status_code in {200, 303}
     session = client.cookies.get(SESSION_COOKIE_NAME)
     assert session
+    act = get_bare_act("ndps")
+    assert act is not None
+    state = _live_state(client)
+    assert state.kind == "already_active"
+    assert state.primary_href != PLAYGROUND_BILLING_PATH
 
     port, _server = _serve(app)
     artifact_dir = Path("/opt/cursor/artifacts")
@@ -680,22 +804,21 @@ def test_plus_bareact_regression_1280(tmp_path: Path) -> None:
         )
         geo = page.evaluate(
             """() => {
-              const expired = document.querySelector('[data-expired-bareact="desktop"]');
-              const plus = document.querySelector('[data-plus-bareact="desktop"]');
-              const desk = document.querySelector('[data-signed-in-bareact-desktop]');
-              const cluster = desk && desk.querySelector('.signed-bareact-in-pg');
-              const sections = desk && desk.querySelector('.signed-bareact-sections');
-              const cont = desk && desk.querySelector('.signed-bareact-continue');
+              const expired = document.querySelector('.ActHead[data-expired-bareact]');
+              const plus = document.querySelector('.ActHead[data-plus-bareact]');
+              const cluster = plus && plus.querySelector('.ActHead-inpg');
+              const sections = plus && plus.querySelector('.ActHead-inpg-sections');
+              const cont = plus && plus.querySelector('.ActHead-inpg-continue');
               return {
                 expiredPresent: Boolean(expired),
                 plusPresent: Boolean(plus),
-                already: desk && desk.innerText.includes('Already in Playground'),
+                already: plus && plus.innerText.includes('Already in Playground'),
                 clusterPresent: !!cluster,
                 sectionsHref: sections && sections.getAttribute('href'),
                 continueHref: cont && cont.getAttribute('href'),
                 continueText: cont && cont.textContent.trim(),
                 accountStatus: document.querySelector('.account-menu-btn-status').textContent.trim(),
-                title: desk && desk.querySelector('.guest-bareact-title').textContent.trim(),
+                title: plus && plus.querySelector('.ActHead-title').textContent.trim(),
               };
             }"""
         )
@@ -708,9 +831,9 @@ def test_plus_bareact_regression_1280(tmp_path: Path) -> None:
     assert geo["already"] is True
     assert geo["clusterPresent"] is True
     assert geo["sectionsHref"] == sections_path("ndps")
-    assert geo["continueHref"] == home_path()
-    assert geo["continueText"] == "Continue"
+    assert geo["continueHref"] == state.primary_href
+    assert geo["continueText"] == state.primary_label
     assert geo["accountStatus"] == "RecallC Plus"
-    assert geo["title"] == NDPS_GUEST_TITLE
+    assert geo["title"] == act.title
     assert shot_path.is_file()
     assert shot_path.stat().st_size > 1000

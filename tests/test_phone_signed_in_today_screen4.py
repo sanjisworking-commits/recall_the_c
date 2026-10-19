@@ -35,7 +35,7 @@ BASE = ROOT / "src/constitution_memorizer/web/templates/base.html"
 STYLES = ROOT / "src/constitution_memorizer/web/static/styles.css"
 MOBILE = ROOT / "src/constitution_memorizer/web/static/mobile.css"
 PG_CSS = ROOT / "src/constitution_memorizer/web/static/playground.css"
-ADD = ROOT / "src/constitution_memorizer/web/templates/playground_add.html"
+ADD = ROOT / "src/constitution_memorizer/web/templates/partials/playground_add_panel.html"  # M2: panel partial
 GATE = ROOT / "src/constitution_memorizer/web/templates/playground_gate.html"
 USER = UUID("11111111-1111-4111-8111-111111111111")
 TAB_HREFS = (
@@ -430,9 +430,9 @@ def test_phone_free_today_css_is_breakpoint_scoped() -> None:
     )[1]
     assert "@media (min-width: 561px)" in desk
     assert "minmax(260px, 380px)" in desk
-    assert "playground.css?v=pg49" in BASE.read_text(encoding="utf-8")
-    assert "styles.css?v=main87" in BASE.read_text(encoding="utf-8")
-    assert "mobile.css?v=mob106" in BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg50" in BASE.read_text(encoding="utf-8")
+    assert "styles.css?v=main88" in BASE.read_text(encoding="utf-8")
+    assert "mobile.css?v=mob107" in BASE.read_text(encoding="utf-8")
     assert "mobile.css?v=mob104" not in BASE.read_text(encoding="utf-8")
     assert "action=\"/revision/start\"" in DASH.read_text(encoding="utf-8")
     assert "data-signed-in-today-phone" not in DASH.read_text(encoding="utf-8")

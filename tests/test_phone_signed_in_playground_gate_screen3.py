@@ -43,7 +43,7 @@ from constitution_memorizer.web.guest_playground_intro import GUEST_PG_STEPS
 MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
 ROOT = Path(__file__).resolve().parents[1]
 GATE = ROOT / "src/constitution_memorizer/web/templates/playground_gate.html"
-ADD = ROOT / "src/constitution_memorizer/web/templates/playground_add.html"
+ADD = ROOT / "src/constitution_memorizer/web/templates/partials/playground_add_panel.html"  # M2: panel partial
 BASE = ROOT / "src/constitution_memorizer/web/templates/base.html"
 ACCESS = ROOT / "src/constitution_memorizer/playground/access.py"
 PG_CSS = ROOT / "src/constitution_memorizer/web/static/playground.css"
@@ -303,10 +303,11 @@ def test_phone_free_gate_intro_is_live_not_subscribed_copy(tmp_path: Path) -> No
 def test_signed_in_01_02_unlock_lands_on_intro(tmp_path: Path) -> None:
     client = _free_client(tmp_path)
     ndps = unescape(client.get("/laws/ndps").text)
-    phone_head = ndps.split("data-signed-in-bareact-phone", 1)[1]
+    # M2: one generated head and one Add sheet serve both widths.
+    phone_head = ndps.split('class="ActHead-cta LawPlaygroundCta"', 1)[1].split("</div>", 1)[0]
     assert f'href="{add_path("ndps")}"' in phone_head
     add = unescape(client.get(add_path("ndps")).text)
-    phone_add = add.split("data-signed-in-add-phone", 1)[1]
+    phone_add = add.split("data-pg-add", 1)[1]
     assert 'href="/playground">Unlock Playground</a>' in phone_add
     gate = unescape(client.get("/playground").text)
     assert 'data-pg-gate-stage="intro"' in gate
@@ -533,10 +534,10 @@ def test_phone_free_gate_css_is_breakpoint_scoped() -> None:
     assert ":not([data-guest-phone-tabs])" in hide
     assert "data-signed-in-pg-gate" not in hide
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg49" in base
+    assert "playground.css?v=pg50" in base
     assert "playground.css?v=pg33" not in base
-    assert "styles.css?v=main87" in base
-    assert "mobile.css?v=mob106" in base
+    assert "styles.css?v=main88" in base
+    assert "mobile.css?v=mob107" in base
     assert "data-signed-in-pg-gate" not in MOBILE.read_text(encoding="utf-8")
     js = PG_JS.read_text(encoding="utf-8")
     assert "data-pg-plan-continue" not in js

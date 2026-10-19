@@ -1,7 +1,9 @@
 """Guest NDPS Bare Act head Screen 4 (desktop CTA map guest/04-screen).
 
-Authorized: ChatGPT plan. Guest `/laws/ndps` desktop only. Phone Bare Act,
-Landing, Browse, Laws index, and subscriber heads stay unchanged.
+M2: one generated Bare Act head for every Act and every viewer (§2.1). The
+desktop and phone twins are gone; the same markup is laid out by CSS at both
+widths. Guest `/laws/ndps` is checked here at 1280. Landing, Browse, Laws
+index, and subscriber heads stay unchanged.
 """
 
 from __future__ import annotations
@@ -22,17 +24,15 @@ from constitution_memorizer.multiuser.settings import (
 )
 from constitution_memorizer.playground.urls import add_path
 from constitution_memorizer.web.app import create_app
-from constitution_memorizer.web.guest_bareact_head import (
-    NDPS_GUEST_KICKER,
-    NDPS_GUEST_META,
-    NDPS_GUEST_ROWS,
-    NDPS_GUEST_TITLE,
-    ndps_guest_head,
-)
+from constitution_memorizer.web.bare_acts import get_bare_act
 
 MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
-FIXTURE = Path(__file__).parent / "fixtures" / "guest_bareact" / "04-screen.jpg"
 ROOT = Path(__file__).resolve().parents[1]
+NDPS = get_bare_act("ndps")
+KICKER = "Bare Act · India Code"  # uppercased by CSS, printed in title case
+TITLE = NDPS.title
+META = NDPS.head_meta_label
+PRIMARY = "Sign in to use Playground"
 
 
 @pytest.fixture(autouse=True)
@@ -77,21 +77,26 @@ def _primary_nav(html: str) -> str:
     return html.split('aria-label="Primary"', 1)[1].split("</nav>", 1)[0]
 
 
-def _guest_desk(html: str) -> str:
-    return html.split("data-guest-bareact-desktop", 1)[1].split(
-        "data-guest-bareact-phone", 1
-    )[0]
+def _head(html: str) -> str:
+    """The one generated Act head: `<section class="panel ActHead …">`."""
+    return html.split('class="panel ActHead', 1)[1].split("</section>", 1)[0]
 
 
-def _phone_index(html: str) -> str:
-    return html.split("data-bareact-phone", 1)[1]
+def _band(html: str) -> str:
+    """Back link, kicker, title, meta, CTA and About — above the list."""
+    return _head(html).split("data-act-list", 1)[0]
+
+
+def _act_list(html: str) -> str:
+    return _head(html).split("data-act-list", 1)[1]
 
 
 def test_screen4_guest_ndps_uses_screen2_header(tmp_path: Path) -> None:
     html = _guest_client(tmp_path).get("/laws/ndps").text
     header = _header(html)
     nav = _primary_nav(html)
-    assert "data-guest-bareact-desktop" in html
+    assert 'data-act-head="ndps"' in html
+    assert 'data-mscreen="bareact"' in html
     assert '<a class="brand" href="/"' in header  # M1: one brand link
     assert 'src="/static/main_logo.png"' in header
     assert "Recall the C" in header
@@ -107,73 +112,124 @@ def test_screen4_guest_ndps_uses_screen2_header(tmp_path: Path) -> None:
     css = (ROOT / "src/constitution_memorizer/web/static/styles.css").read_text(
         encoding="utf-8"
     )
-    guest_mark = css.split(
-        'body.is-guest[data-mscreen="bareact"]:has([data-guest-bareact-desktop]) .brand-mark {',
-        1,
+    # M2: the per-surface guest block is gone; the page wash comes from the
+    # one "Bare Act head (M2)" block for every viewer.
+    assert "Bare Act head (M2)" in css
+    assert "data-guest-bareact-desktop" not in css
+    page_wash = css.split(
+        'body[data-mscreen="bareact"] .page-wrap,', 1
     )[1].split("}", 1)[0]
-    assert "invert(1)" in guest_mark
+    assert "var(--paper)" in page_wash
 
 
 def test_screen4_back_returns_to_laws(tmp_path: Path) -> None:
     client = _guest_client(tmp_path)
-    desk = _guest_desk(client.get("/laws/ndps").text)
-    assert 'class="guest-bareact-back" href="/laws"' in desk
+    band = _band(client.get("/laws/ndps").text)
+    assert '<a class="ActHead-back" href="/laws">← Laws</a>' in band
     laws = client.get("/laws", follow_redirects=False)
     assert laws.status_code == 200
     assert "data-guest-laws-desktop" in laws.text
 
 
 def test_screen4_copy_and_single_playground_cta(tmp_path: Path) -> None:
-    desk = _guest_desk(_guest_client(tmp_path).get("/laws/ndps").text)
-    assert NDPS_GUEST_KICKER in desk
-    assert f">{NDPS_GUEST_TITLE}<" in desk
-    assert NDPS_GUEST_META in desk
-    assert "Sign in to use Playground" in desk
-    assert desk.count("Sign in to use Playground") == 1
-    assert f'href="{add_path("ndps")}"' in desk
-    assert "data-pg-sheet" in desk
-    assert "Already in Playground" not in desk
-    assert ">Sections<" not in desk
-    assert ">Continue<" not in desk
-    assert "LawPlaygroundCta" not in desk
-    assert "About this act" not in desk
-    assert "data-bareact-tabs" not in desk
+    html = _guest_client(tmp_path).get("/laws/ndps").text
+    band = _band(html)
+    assert f'<p class="ActHead-kicker">{KICKER}</p>' in band
+    assert f'<h1 class="ActHead-title">{TITLE}</h1>' in band
+    assert f'<p class="ActHead-meta">{META}</p>' in band
+    assert META == "8 Chapters · Sections 1–83 · Schedule"
+    assert PRIMARY in band
+    assert html.count(PRIMARY) == 1
+    assert html.count('class="ActHead-cta LawPlaygroundCta"') == 1
+    cta = band.split('<div class="ActHead-cta', 1)[1].split("</div>", 1)[0]
+    assert 'data-law-id="ndps"' in cta
+    assert 'data-pg-kind="guest"' in cta
+    assert 'class="ActHead-btn"' in cta
+    assert "ActHead-btn--ghost" not in cta
+    assert f'href="{add_path("ndps")}"' in cta
+    assert "data-pg-sheet" in cta
+    assert "ActHead-link" not in cta
+    assert "LawStatusBadge" not in cta  # a guest has no status chip
+    assert '<p class="ActHead-note">Sign in to add this law to Playground.</p>' in cta
+    assert cta.count("<a") == 1
+    # No in-Playground chip for a guest: no badge, no Sections / Continue
+    # links. (The About card's "Sections" <dt> is statutory metadata, not a
+    # link, so the check is on anchors and the chip classes.)
+    assert "Already in Playground" not in band
+    assert "ActHead-inpg" not in band
+    assert ">Sections</a>" not in band
+    assert ">Continue</a>" not in band
+    assert "data-bareact-tabs" not in html
+    assert "This Act has no Schedules" not in html
+    # M2 Q2: About this act stays, collapsed, BELOW the title/CTA row.
+    about = band.index('class="bareact-info-toggle ActHead-about"')
+    assert about > band.index('class="ActHead-cta LawPlaygroundCta"')
+    assert 'aria-expanded="false"' in band
+    assert 'id="bareact-info" data-bareact-info hidden' in band
 
 
-def test_screen4_visible_rows_match_the_prototype(tmp_path: Path) -> None:
-    desk = _guest_desk(_guest_client(tmp_path).get("/laws/ndps").text)
-    for row in NDPS_GUEST_ROWS:
-        assert row.tag in desk
-        assert row.title in desk
-        assert row.range_label in desk
-    assert "CHAPTER IIA" not in desk
-    assert "NATIONAL FUND" not in desk.upper()
-    assert 'href="/laws/ndps/section/' not in desk
-    assert 'href="/laws/ndps/schedule/' not in desk
-    assert "<details" not in desk
-    assert 'role="button"' not in desk
-    assert ndps_guest_head().rows == NDPS_GUEST_ROWS
+def test_screen4_rows_are_generated_from_the_act(tmp_path: Path) -> None:
+    html = _guest_client(tmp_path).get("/laws/ndps").text
+    rows = _act_list(html)
+    # M2 §4 Q1: eight NDPS chapters from canonical data, every row a
+    # <summary> that expands into its section links (Q3), none open.
+    assert NDPS.chapter_count == 8
+    assert [c.number for c in NDPS.chapters] == [
+        "I", "II", "IIA", "III", "IV", "V", "VA", "VI"
+    ]
+    assert rows.count('<details class="bareact-chapter">') == NDPS.chapter_count
+    assert rows.count('<summary class="bareact-chapter-row" aria-expanded="false">') == (
+        NDPS.chapter_count
+    )
+    assert "<details open" not in rows
+    assert "<details class=\"bareact-chapter\" open" not in rows
+    for chapter in NDPS.chapters:
+        assert f'<span class="bareact-chapter-tag">Chapter {chapter.number}</span>' in rows
+        assert f'<span class="bareact-chapter-name">{chapter.title}</span>' in rows
+        assert (
+            '<span class="bareact-chapter-range">'
+            f'<span class="ActHead-range-word">Sections </span>{chapter.range_label}</span>'
+        ) in rows
+    assert "Chapter IIA" in rows
+    section_rows = rows.count('<a class="bareact-section-row" href="/laws/ndps/section/')
+    assert section_rows == len(NDPS.section_order)
+    assert rows.count('<div class="bareact-schedule-row') == len(NDPS.schedules) == 1
+    assert rows.count('href="/laws/ndps/schedule/') == sum(
+        1 for schedule in NDPS.schedules if schedule.is_navigable
+    )
+    assert '<span class="ActHead-range-word">Entries </span>' in rows
+    assert 'role="button"' not in rows
+    assert "<button" not in rows
 
 
-def test_screen4_does_not_change_phone_or_other_screens(tmp_path: Path) -> None:
+def test_screen4_one_head_serves_both_widths_and_other_screens(tmp_path: Path) -> None:
     client = _guest_client(tmp_path)
     html = client.get("/laws/ndps").text
-    phone = _phone_index(html)
-    assert "<details" in phone
-    assert 'href="/laws/ndps/section/' in phone
-    assert 'href="/laws/ndps/schedule/' in phone
-    assert "LawPlaygroundCta" in phone
+    # M2 §2.1: one head; no desktop/phone twins and no legacy phone block.
+    assert html.count('class="panel ActHead') == 1
+    for gone in (
+        "data-guest-bareact-desktop",
+        "data-guest-bareact-phone",
+        "data-bareact-phone",
+        "guest-bareact-",
+        "signed-bareact-",
+    ):
+        assert gone not in html, gone
     landing = client.get("/").text
     assert 'data-guest-landing="desktop"' in landing
     browse = client.get("/browse").text
     assert "Browse the Constitution" in browse
     laws = client.get("/laws").text
     assert "data-guest-laws-desktop" in laws
-    assert "data-guest-bareact-desktop" not in laws
+    assert "ActHead" not in laws
     bns = client.get("/laws/bns").text
-    assert "data-guest-bareact-desktop" not in bns
+    bns_act = get_bare_act("bns")
+    assert 'data-act-head="bns"' in bns
+    assert f'<p class="ActHead-meta">{bns_act.head_meta_label}</p>' in bns
+    assert bns.count('<details class="bareact-chapter">') == bns_act.chapter_count == 20
+    assert PRIMARY in bns  # the guest CTA is generated for every Act
     section = client.get("/laws/ndps/section/1").text
-    assert "data-guest-bareact-desktop" not in section
+    assert "ActHead" not in section
     css = (ROOT / "src/constitution_memorizer/web/static/styles.css").read_text(
         encoding="utf-8"
     )
@@ -189,8 +245,11 @@ def test_single_user_and_authed_ndps_heads_are_unchanged(tmp_path: Path) -> None
     ).get("/laws/ndps").text
     assert "data-guest-bareact-desktop" not in html
     assert "data-bareact-phone" not in html
-    assert html.count("<details") == 8
+    assert html.count("<details") == NDPS.chapter_count == 8
     assert 'href="/laws/ndps/section/' in html
+    assert PRIMARY not in html
+    assert 'data-pg-kind="guest"' not in html
+    assert f'<h1 class="ActHead-title">{TITLE}</h1>' in html
 
 
 def _serve(app, host: str = "127.0.0.1") -> tuple[int, object]:
@@ -216,7 +275,7 @@ def _serve(app, host: str = "127.0.0.1") -> tuple[int, object]:
     return port, server
 
 
-def test_screen4_1280_cta_opens_add_dialog_and_rows_are_inert(tmp_path: Path) -> None:
+def test_screen4_1280_cta_opens_add_dialog_and_rows_stay_closed(tmp_path: Path) -> None:
     pytest.importorskip("playwright")
     from playwright.sync_api import sync_playwright
 
@@ -241,32 +300,39 @@ def test_screen4_1280_cta_opens_add_dialog_and_rows_are_inert(tmp_path: Path) ->
         )
         geo = page.evaluate(
             """() => {
-              const desk = document.querySelector('[data-guest-bareact-desktop]');
-              const phoneGuest = document.querySelector('[data-guest-bareact-phone]');
-              const phone = document.querySelector('[data-bareact-phone]');
+              const heads = document.querySelectorAll('.ActHead');
+              const head = heads[0];
               const brand = document.querySelector('.brand');
-              const mark = document.querySelector('.brand-mark');
-              const back = desk.querySelector('.guest-bareact-back');
-              const cta = desk.querySelector('.guest-bareact-cta');
-              const rows = [...desk.querySelectorAll('.guest-bareact-row')];
-              const rowLinks = desk.querySelectorAll('a:not(.guest-bareact-back):not(.guest-bareact-cta)');
+              const back = head.querySelector('.ActHead-back');
+              const cta = head.querySelector('.ActHead-btn');
+              const rows = [...head.querySelectorAll('.bareact-chapter-row')];
+              const openChapters = head.querySelectorAll('details.bareact-chapter[open]');
+              const sectionLinks = [...head.querySelectorAll('a.bareact-section-row')];
+              const visibleSectionLinks = sectionLinks.filter((a) => a.offsetParent !== null);
+              const about = head.querySelector('.ActHead-about');
               return {
+                heads: heads.length,
                 brandTag: brand.tagName,
-                markFilter: getComputedStyle(mark).filter,
-                deskDisplay: getComputedStyle(desk).display,
-                phoneGuestDisplay: phoneGuest ? getComputedStyle(phoneGuest).display : null,
-                phoneDisplay: phone ? getComputedStyle(phone).display : null,
+                headDisplay: getComputedStyle(head).display,
+                rangeWordDisplay: getComputedStyle(head.querySelector('.ActHead-range-word')).display,
                 backHref: back.getAttribute('href'),
-                kicker: desk.querySelector('.guest-bareact-kicker').textContent.trim(),
-                title: desk.querySelector('.guest-bareact-title').textContent.trim(),
-                meta: desk.querySelector('.guest-bareact-meta').textContent.trim(),
+                kicker: head.querySelector('.ActHead-kicker').textContent.trim(),
+                kickerTransform: getComputedStyle(head.querySelector('.ActHead-kicker')).textTransform,
+                title: head.querySelector('.ActHead-title').textContent.trim(),
+                meta: head.querySelector('.ActHead-meta').textContent.trim(),
                 ctaText: cta.textContent.trim(),
                 ctaHref: cta.getAttribute('href'),
                 ctaSheet: cta.hasAttribute('data-pg-sheet'),
+                ctaCount: head.querySelectorAll('.ActHead-btn, .ActHead-inpg').length,
+                aboutBelowCta: Boolean(about) && about.getBoundingClientRect().top > cta.getBoundingClientRect().bottom,
+                aboutExpanded: about && about.getAttribute('aria-expanded'),
                 rowCount: rows.length,
-                rowTitles: rows.map((el) => el.querySelector('.guest-bareact-row-title').textContent.trim()),
-                rowTags: rows.map((el) => el.querySelector('.guest-bareact-row-tag').textContent.trim()),
-                extraLinks: rowLinks.length,
+                rowTags: rows.map((el) => el.querySelector('.bareact-chapter-tag').textContent.trim()),
+                rowTitles: rows.map((el) => el.querySelector('.bareact-chapter-name').textContent.trim()),
+                openChapters: openChapters.length,
+                sectionLinks: sectionLinks.length,
+                visibleSectionLinks: visibleSectionLinks.length,
+                scheduleRows: head.querySelectorAll('.bareact-schedule-row').length,
                 navLabels: [...document.querySelectorAll('.PrimaryTabs--top .nav-link')].map(
                   (el) => el.textContent.replace(/\\s+/g, ' ').trim()
                 ),
@@ -276,63 +342,16 @@ def test_screen4_1280_cta_opens_add_dialog_and_rows_are_inert(tmp_path: Path) ->
         )
         page.evaluate("() => document.activeElement && document.activeElement.blur()")
         page.screenshot(path=str(shot_path), full_page=False)
-        diff = None
-        if FIXTURE.is_file():
-            import base64
-
-            b64 = base64.b64encode(FIXTURE.read_bytes()).decode("ascii")
-            live = base64.b64encode(page.screenshot(type="png")).decode("ascii")
-            diff = page.evaluate(
-                """async ({ fixture, live }) => {
-                  function load(src) {
-                    return new Promise((resolve, reject) => {
-                      const img = new Image();
-                      img.onload = () => resolve(img);
-                      img.onerror = reject;
-                      img.src = src;
-                    });
-                  }
-                  const a = await load('data:image/jpeg;base64,' + fixture);
-                  const b = await load('data:image/png;base64,' + live);
-                  const w = Math.min(a.naturalWidth, b.naturalWidth, 1280);
-                  const h = Math.min(a.naturalHeight, b.naturalHeight, 800);
-                  const ca = document.createElement('canvas');
-                  const cb = document.createElement('canvas');
-                  ca.width = cb.width = w;
-                  ca.height = cb.height = h;
-                  const xa = ca.getContext('2d');
-                  const xb = cb.getContext('2d');
-                  xa.drawImage(a, 0, 0, w, h);
-                  xb.drawImage(b, 0, 0, w, h);
-                  const pa = xa.getImageData(0, 0, w, h).data;
-                  const pb = xb.getImageData(0, 0, w, h).data;
-                  let acc = 0;
-                  let n = 0;
-                  const step = 8;
-                  for (let y = 0; y < h; y += step) {
-                    for (let x = 0; x < w; x += step) {
-                      const i = (y * w + x) * 4;
-                      const dr = pa[i] - pb[i];
-                      const dg = pa[i + 1] - pb[i + 1];
-                      const db = pa[i + 2] - pb[i + 2];
-                      acc += dr * dr + dg * dg + db * db;
-                      n += 1;
-                    }
-                  }
-                  return { rms: Math.sqrt(acc / (n * 3)), w, h, n };
-                }""",
-                {"fixture": b64, "live": live},
-            )
-        page.locator("[data-guest-bareact-desktop] .guest-bareact-cta").click()
+        page.locator(".ActHead .ActHead-btn").click()
         page.wait_for_selector("[data-pg-add]", timeout=8000)
         dialog = page.evaluate(
             """() => {
               const panel = document.querySelector('[data-pg-add]');
-              const desk = panel && panel.querySelector('[data-guest-add-desktop]');
-              const titleEl = desk && desk.querySelector('.guest-add-title');
+              const titleEl = panel && panel.querySelector('.pg-add-title');
               return {
                 kind: panel && panel.getAttribute('data-pg-kind'),
                 title: titleEl && titleEl.textContent.trim(),
+                panels: document.querySelectorAll('.pg-sheet-panel').length,
               };
             }"""
         )
@@ -344,34 +363,43 @@ def test_screen4_1280_cta_opens_add_dialog_and_rows_are_inert(tmp_path: Path) ->
         phone.goto(f"http://127.0.0.1:{port}/laws/ndps", wait_until="networkidle")
         phone_geo = phone.evaluate(
             """() => {
-              const desk = document.querySelector('[data-guest-bareact-desktop]');
-              const phoneGuest = document.querySelector('[data-guest-bareact-phone]');
-              const prod = document.querySelector('[data-bareact-phone]');
+              const heads = document.querySelectorAll('.ActHead');
+              const head = heads[0];
+              const cta = head.querySelector('.ActHead-btn');
               return {
-                deskDisplay: desk ? getComputedStyle(desk).display : null,
-                phoneGuestDisplay: phoneGuest ? getComputedStyle(phoneGuest).display : null,
-                prodDisplay: prod ? getComputedStyle(prod).display : null,
+                heads: heads.length,
+                headDisplay: getComputedStyle(head).display,
+                rangeWordDisplay: getComputedStyle(head.querySelector('.ActHead-range-word')).display,
+                ctaText: cta.textContent.trim(),
+                ctaWidth: cta.getBoundingClientRect().width,
+                overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
               };
             }"""
         )
         browser.close()
 
+    assert geo["heads"] == 1
     assert geo["brandTag"] == "SPAN"
-    assert "invert" in geo["markFilter"]
-    assert geo["deskDisplay"] != "none"
-    assert geo["phoneGuestDisplay"] == "none"
-    assert geo["phoneDisplay"] == "none"
+    assert geo["headDisplay"] != "none"
+    assert geo["rangeWordDisplay"] != "none"
     assert geo["backHref"] == "/laws"
-    assert geo["kicker"] == NDPS_GUEST_KICKER
-    assert geo["title"] == NDPS_GUEST_TITLE
-    assert geo["meta"] == NDPS_GUEST_META
-    assert geo["ctaText"] == "Sign in to use Playground"
+    assert geo["kicker"] == KICKER
+    assert geo["kickerTransform"] == "uppercase"
+    assert geo["title"] == TITLE
+    assert geo["meta"] == META
+    assert geo["ctaText"] == PRIMARY
     assert geo["ctaHref"] == add_path("ndps")
     assert geo["ctaSheet"] is True
-    assert geo["rowCount"] == 4
-    assert geo["rowTags"] == [row.tag for row in NDPS_GUEST_ROWS]
-    assert geo["rowTitles"] == [row.title for row in NDPS_GUEST_ROWS]
-    assert geo["extraLinks"] == 0
+    assert geo["ctaCount"] == 1
+    assert geo["aboutBelowCta"] is True
+    assert geo["aboutExpanded"] == "false"
+    assert geo["rowCount"] == NDPS.chapter_count == 8
+    assert geo["rowTags"] == [f"Chapter {c.number}" for c in NDPS.chapters]
+    assert geo["rowTitles"] == [c.title for c in NDPS.chapters]
+    assert geo["openChapters"] == 0
+    assert geo["sectionLinks"] == len(NDPS.section_order)
+    assert geo["visibleSectionLinks"] == 0
+    assert geo["scheduleRows"] == len(NDPS.schedules)
     assert geo["navLabels"] == [
         "Today",
         "Browse",
@@ -382,11 +410,13 @@ def test_screen4_1280_cta_opens_add_dialog_and_rows_are_inert(tmp_path: Path) ->
     assert geo["browseActive"] == "Browse"
     assert dialog["kind"] == "guest"
     assert dialog["title"] == "Add to Playground"
+    assert dialog["panels"] == 1
     assert still_on_ndps is True
-    assert phone_geo["deskDisplay"] == "none"
-    assert phone_geo["phoneGuestDisplay"] != "none"
-    assert phone_geo["prodDisplay"] == "none"
-    assert FIXTURE.is_file(), "guest/04-screen.jpg fixture missing"
-    assert diff is not None
-    assert diff["w"] == 1280
-    assert diff["rms"] < 32
+    assert phone_geo["heads"] == 1
+    assert phone_geo["headDisplay"] != "none"
+    assert phone_geo["rangeWordDisplay"] == "none"
+    assert phone_geo["ctaText"] == PRIMARY
+    assert phone_geo["ctaWidth"] >= 300
+    assert phone_geo["overflow"] is False
+    assert shot_path.is_file()
+    assert shot_path.stat().st_size > 1000

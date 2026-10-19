@@ -45,7 +45,7 @@ from constitution_memorizer.web.guest_playground_intro import GUEST_PG_STEPS
 MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
 ROOT = Path(__file__).resolve().parents[1]
 GATE = ROOT / "src/constitution_memorizer/web/templates/playground_gate.html"
-ADD = ROOT / "src/constitution_memorizer/web/templates/playground_add.html"
+ADD = ROOT / "src/constitution_memorizer/web/templates/partials/playground_add_panel.html"  # M2: panel partial
 BROWSE = ROOT / "src/constitution_memorizer/web/templates/browse_index.html"
 HOME = ROOT / "src/constitution_memorizer/web/templates/playground.html"
 BASE = ROOT / "src/constitution_memorizer/web/templates/base.html"
@@ -457,12 +457,10 @@ def test_desktop_entry_points_open_playground_gate(tmp_path: Path) -> None:
     assert ">Playground<" in header
     add = client.get("/playground/laws/ndps/add")
     assert add.status_code == 200
-    desk = add.text.split("data-signed-in-add-desktop", 1)[1].split(
-        "data-signed-in-add-phone", 1
-    )[0]
-    assert 'href="/playground">Unlock Playground</a>' in desk
-    phone = add.text.split("data-signed-in-add-phone", 1)[1]
-    assert 'href="/playground">Unlock Playground</a>' in phone
+    # M2: one Add sheet for both widths, rendered over the Act page.
+    sheet = add.text.split("data-pg-add", 1)[1]
+    assert 'href="/playground">Unlock Playground</a>' in sheet
+    assert add.text.count('href="/playground">Unlock Playground</a>') == 1
     gate = client.get("/playground")
     assert 'data-pg-gate-stage="intro"' in gate.text
     assert INTRO_TITLE in unescape(gate.text)
@@ -515,7 +513,7 @@ def test_free_gate_marker_and_parser_are_presentation_only() -> None:
     assert parse_playground_gate_stage("plans", "gold") == (GATE_STAGE_PLANS, None)
     assert FREE_GATE_HOW_STEPS == GUEST_PG_STEPS
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg49" in base
+    assert "playground.css?v=pg50" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert "signedIn/07-screen" in css
     assert 'data-pg-gate-stage="plans"' in css
@@ -523,12 +521,9 @@ def test_free_gate_marker_and_parser_are_presentation_only() -> None:
     assert "data-signed-in-pg-gate" not in MOBILE.read_text(encoding="utf-8")
     assert 'href="/playground">Unlock all</a>' in BROWSE.read_text(encoding="utf-8")
     add = ADD.read_text(encoding="utf-8")
-    desk = add.split("data-signed-in-add-desktop", 1)[1].split(
-        "data-signed-in-add-phone", 1
-    )[0]
-    assert 'href="/playground">Unlock Playground</a>' in desk
-    phone = add.split("data-signed-in-add-phone", 1)[1]
-    assert 'href="/playground">Unlock Playground</a>' in phone
+    sheet = add.split("data-pg-add", 1)[1]
+    assert 'href="/playground">Unlock Playground</a>' in sheet
+    assert add.count('href="/playground">Unlock Playground</a>') == 1
     assert "data-signed-in-pg-gate" not in HOME.read_text(encoding="utf-8")
 
 

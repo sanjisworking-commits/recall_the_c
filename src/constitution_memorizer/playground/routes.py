@@ -43,8 +43,10 @@ from constitution_memorizer.playground.eligibility import (
     PlaygroundLawError,
     playground_catalogue_law,
     playground_law_source_identity,
+    playground_bare_act_spec,
 )
-from constitution_memorizer.web.guest_bareact_head import guest_add_reading_name
+from constitution_memorizer.web.bare_act_page import bare_act_page_context
+from constitution_memorizer.web.bare_acts import get_bare_act
 from constitution_memorizer.playground.http import (
     local_next_path,
     playground_login_href,
@@ -395,7 +397,10 @@ def _add_page_context(
     plans = catalogue_plan_views(
         current_tier=getattr(access.snapshot, "tier", None) if access.snapshot else None
     )
-    reading_name = guest_add_reading_name(law_id, short)
+    # The Act's reading name from the registry ("The UAPA, 1967"), the same
+    # name the catalogue back-link prints; never a per-law constant.
+    spec = playground_bare_act_spec(law_id)
+    reading_name = (spec.short_name if spec is not None else "") or short
     plus_add = bool(
         law_id == "ndps"
         and kind == "eligible_to_add"
@@ -430,7 +435,21 @@ def _add_page_context(
         gate = gate_view(reason=reason)
         title = gate.title
         lines = gate.lines
+    # The Add sheet is a dialog over the Act page, so every render of it —
+    # direct URL or the in-page fetch that lifts the panel out — carries the
+    # Act head's own context underneath (M2 Q4: deterministic presentation).
+    # The in-page open (playground.js, X-Requested-With: pg-sheet) only
+    # lifts the panel out, so it carries no Act context and hydrates no Act.
+    # A POST re-render (the no-JS confirm → scope step) is the panel on its
+    # own too, exactly as before M2, so adding a law never reads the Act.
+    sheet_only = (
+        request.headers.get("x-requested-with", "").lower() == "pg-sheet"
+        or request.method.upper() == "POST"
+    )
+    bare = None if sheet_only else get_bare_act(law_id)
+    act_context = bare_act_page_context(request, bare) if bare is not None else {}
     return {
+        **act_context,
         "law_id": law_id,
         "kind": kind,
         "state": state,

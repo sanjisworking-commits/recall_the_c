@@ -151,29 +151,35 @@ def test_the_reader_lists_the_sections_flat(tmp_path: Path):
     html = client.get("/laws/mtp").text
     assert '<details class="bareact-chapter"' not in html
     assert "Chapter I" not in html
-    panel = html.split('data-bareact-panel="chapters"', 1)[1].split(
-        'data-bareact-panel="schedules"', 1
-    )[0]
+    # M2: one list under the generated head (data-act-list); the flat
+    # sections are the whole of it, and an Act with no Schedules simply
+    # lists none (the prototype prints no empty-state sentence).
+    panel = html.split("data-act-list", 1)[1].split("</section>", 1)[0]
     assert '<div class="bareact-section-list">' in panel
     for number in SECTION_IDS:
         assert f'href="/laws/mtp/section/{number}"' in panel
     assert panel.count('class="bareact-section-row"') == len(SECTION_IDS)
     # The chapter rows' own clothes, nothing new to style.
     assert 'class="bareact-chapters"' in html
-    assert "This Act has no Schedules." in html
+    assert "bareact-schedule-row" not in panel
+    assert "This Act has no Schedules." not in html
+    assert "0 Chapters" not in html
 
 
-def test_the_first_tab_is_called_sections_here_and_chapters_elsewhere(tmp_path: Path):
+def test_the_head_meta_says_sections_here_and_chapters_elsewhere(tmp_path: Path):
+    # M2 removed the Chapters/Schedules tab row: the head's meta line is now
+    # the only place the structure is named, and it never invents a
+    # "Chapters" word for an Act that prints none.
     client, _ = _client(tmp_path)
     mtp = client.get("/laws/mtp").text
-    assert 'data-bareact-tab="chapters"\n      >Sections</button>' in mtp
-    assert ">Chapters</button>" not in mtp
+    assert "data-bareact-tab=" not in mtp
+    assert '<p class="ActHead-meta">Sections 1–8</p>' in mtp
+    assert "Chapters" not in mtp.split("data-act-head", 1)[1].split("data-act-list", 1)[0]
     for slug in CHAPTERED:
         html = client.get(f"/laws/{slug}").text
-        assert 'data-bareact-tab="chapters"\n      >Chapters</button>' in html, slug
+        assert "data-bareact-tab=" not in html, slug
+        assert " Chapters · Sections " in html.split('<p class="ActHead-meta">', 1)[1][:60], slug
         assert '<details class="bareact-chapter"' in html, slug
-    # The controller's panel key is unchanged, so the tab JS needs no branch.
-    assert mtp.count('data-bareact-panel="') == 2
 
 
 def test_the_section_page_draws_no_eyebrow_over_nothing(tmp_path: Path):

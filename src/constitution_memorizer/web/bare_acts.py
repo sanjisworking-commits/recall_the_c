@@ -949,6 +949,18 @@ class BareAct:
             f"Sections {self.section_range}"
         )
 
+    @property
+    def head_meta_label(self) -> str:
+        """``meta_label`` plus the Schedule word the Act head prints.
+
+        "8 Chapters · Sections 1–83 · Schedule" for one Schedule, "· Schedules"
+        for several, nothing for none — read off ``schedules``, never typed.
+        """
+        count = len(self.schedules)
+        if count == 0:
+            return self.meta_label
+        return f"{self.meta_label} · {'Schedule' if count == 1 else 'Schedules'}"
+
     def section(self, number: str) -> ActSection | None:
         return self._by_number.get(str(number))
 

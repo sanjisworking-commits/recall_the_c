@@ -318,9 +318,9 @@ def test_phone_free_settings_css_is_breakpoint_scoped() -> None:
     assert "@media (min-width: 561px)" in desk
     assert "max-width: 720px" in desk
     assert "font-size: 30px" in desk
-    assert "playground.css?v=pg49" in BASE.read_text(encoding="utf-8")
-    assert "styles.css?v=main87" in BASE.read_text(encoding="utf-8")
-    assert "mobile.css?v=mob106" in BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg50" in BASE.read_text(encoding="utf-8")
+    assert "styles.css?v=main88" in BASE.read_text(encoding="utf-8")
+    assert "mobile.css?v=mob107" in BASE.read_text(encoding="utf-8")
     assert "mobile.css?v=mob104" not in BASE.read_text(encoding="utf-8")
     src = SETTINGS.read_text(encoding="utf-8")
     for phrase in MOCK_SCREEN_COPY:
