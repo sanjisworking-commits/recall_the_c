@@ -100,6 +100,16 @@ Production Railway and Supabase are never used.
   (DV-18) are unverified. `ADMIN_ENABLED=false` and `PRICING_ENABLED=false`
   on staging, so neither an admin grant nor a checkout is available there
   today; reaching those states is an owner decision.
+- **Other user types need payment configured on staging (owner, 2026-10-19).**
+  Plus/Pro/Max, expired, halted and device-limit states (M7, M8) can only be
+  reached on staging once checkout works there: `PRICING_ENABLED=true` plus
+  Razorpay **test-mode** keys on `recallc-playground-staging` (never live
+  keys), so the test account can subscribe through the real flow with
+  Razorpay's published test cards. The alternative is `ADMIN_ENABLED=true`
+  on staging and an admin grant, which bypasses checkout and therefore does
+  not exercise it. Either is an owner-performed staging configuration
+  change; neither touches production. Until one is in place those states
+  stay U.
 - DV-14 is **resolved, not a defect** (S14, 2026-10-19): the plans page is
   a two-step selector and "Continue with Plus" appears once a tier is
   selected; checkout behind it stays U (`PRICING_ENABLED=false`).
