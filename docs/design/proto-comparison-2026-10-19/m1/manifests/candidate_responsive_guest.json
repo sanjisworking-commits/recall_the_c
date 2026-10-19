@@ -1,0 +1,2717 @@
+{
+ "label": "candidate",
+ "base": "http://127.0.0.1:8912",
+ "viewer": "guest",
+ "captured_at": "2026-10-19T11:21:45+0530",
+ "chrome": "Google Chrome 155.0.8059.82",
+ "rows": [
+  {
+   "key": "browse",
+   "route": "/browse",
+   "width": 320,
+   "height": 568,
+   "theme": "light",
+   "file": "candidate_guest_browse_320x568_light.png",
+   "sha256": "cf1ac1b2837e329739009ea7731d29d32c43dafc7b1437b29be47f1aa23e1d8c",
+   "status_chain": [
+    [
+     "/browse",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/browse",
+    "title": "Browse the Constitution \u00b7 Recall the C",
+    "mscreen": "browse",
+    "bodyClass": "is-guest",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarVisible": true,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "active": true,
+      "current": "page",
+      "vis": true
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "active": false,
+      "current": null,
+      "vis": true
+     }
+    ],
+    "phoneBarClass": "mobile-tabbar PrimaryTabs PrimaryTabs--bottom",
+    "account": {
+     "cls": "nav-signin",
+     "text": "Sign in",
+     "vis": false
+    },
+    "guestPill": false,
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false,
+    "footerTools": []
+   }
+  },
+  {
+   "key": "browse",
+   "route": "/browse",
+   "width": 560,
+   "height": 800,
+   "theme": "light",
+   "file": "candidate_guest_browse_560x800_light.png",
+   "sha256": "6477622d14a9f5784d60c5a773df81cc3f067f1d207a2147f7779975bc37eb93",
+   "status_chain": [
+    [
+     "/browse",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/browse",
+    "title": "Browse the Constitution \u00b7 Recall the C",
+    "mscreen": "browse",
+    "bodyClass": "is-guest",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarVisible": true,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "active": true,
+      "current": "page",
+      "vis": true
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "active": false,
+      "current": null,
+      "vis": true
+     }
+    ],
+    "phoneBarClass": "mobile-tabbar PrimaryTabs PrimaryTabs--bottom",
+    "account": {
+     "cls": "nav-signin",
+     "text": "Sign in",
+     "vis": false
+    },
+    "guestPill": false,
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false,
+    "footerTools": []
+   }
+  },
+  {
+   "key": "browse",
+   "route": "/browse",
+   "width": 561,
+   "height": 800,
+   "theme": "light",
+   "file": "candidate_guest_browse_561x800_light.png",
+   "sha256": "2e39be4e5944fac5b9d6602f79734e6fd78b8a7d48f7d91451ef9f9cfea3ff21",
+   "status_chain": [
+    [
+     "/browse",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/browse",
+    "title": "Browse the Constitution \u00b7 Recall the C",
+    "mscreen": "browse",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "active": true,
+      "current": "page",
+      "vis": true
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "active": false,
+      "current": null,
+      "vis": true
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarVisible": false,
+    "phoneBar": [],
+    "phoneBarClass": null,
+    "account": {
+     "cls": "nav-signin",
+     "text": "Sign in",
+     "vis": true
+    },
+    "guestPill": false,
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false,
+    "footerTools": [
+     "Tables",
+     "Relevant laws",
+     "Settings",
+     "Contact us"
+    ]
+   }
+  },
+  {
+   "key": "browse",
+   "route": "/browse",
+   "width": 720,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_guest_browse_720x900_light.png",
+   "sha256": "602cb97766f1a539f90469104f88eaa5d66f038e86a3cda1e7bddb3b9b8d7f12",
+   "status_chain": [
+    [
+     "/browse",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/browse",
+    "title": "Browse the Constitution \u00b7 Recall the C",
+    "mscreen": "browse",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "active": true,
+      "current": "page",
+      "vis": true
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "active": false,
+      "current": null,
+      "vis": true
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarVisible": false,
+    "phoneBar": [],
+    "phoneBarClass": null,
+    "account": {
+     "cls": "nav-signin",
+     "text": "Sign in",
+     "vis": true
+    },
+    "guestPill": false,
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false,
+    "footerTools": [
+     "Tables",
+     "Relevant laws",
+     "Settings",
+     "Contact us"
+    ]
+   }
+  },
+  {
+   "key": "browse",
+   "route": "/browse",
+   "width": 768,
+   "height": 1024,
+   "theme": "light",
+   "file": "candidate_guest_browse_768x1024_light.png",
+   "sha256": "ae2797e9e9b21c4ee37ce39823a77bf1b5b5801cf8681a109ff4e6f73ab20daa",
+   "status_chain": [
+    [
+     "/browse",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/browse",
+    "title": "Browse the Constitution \u00b7 Recall the C",
+    "mscreen": "browse",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "active": true,
+      "current": "page",
+      "vis": true
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "active": false,
+      "current": null,
+      "vis": true
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarVisible": false,
+    "phoneBar": [],
+    "phoneBarClass": null,
+    "account": {
+     "cls": "nav-signin",
+     "text": "Sign in",
+     "vis": true
+    },
+    "guestPill": false,
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false,
+    "footerTools": [
+     "Tables",
+     "Relevant laws",
+     "Settings",
+     "Contact us"
+    ]
+   }
+  },
+  {
+   "key": "browse",
+   "route": "/browse",
+   "width": 844,
+   "height": 390,
+   "theme": "light",
+   "file": "candidate_guest_browse_844x390_light.png",
+   "sha256": "ea78961a07a22b2a87a77442ae08fb3f4052fc6a6e9ec558a90ed16dad0502a1",
+   "status_chain": [
+    [
+     "/browse",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/browse",
+    "title": "Browse the Constitution \u00b7 Recall the C",
+    "mscreen": "browse",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "active": true,
+      "current": "page",
+      "vis": true
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "active": false,
+      "current": null,
+      "vis": true
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarVisible": false,
+    "phoneBar": [],
+    "phoneBarClass": null,
+    "account": {
+     "cls": "nav-signin",
+     "text": "Sign in",
+     "vis": true
+    },
+    "guestPill": false,
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false,
+    "footerTools": [
+     "Tables",
+     "Relevant laws",
+     "Settings",
+     "Contact us"
+    ]
+   }
+  },
+  {
+   "key": "laws-ndps",
+   "route": "/laws/ndps",
+   "width": 320,
+   "height": 568,
+   "theme": "light",
+   "file": "candidate_guest_laws-ndps_320x568_light.png",
+   "sha256": "d43b19df2f807a61830159204e391f70709bf331513c2a3963bb783bd9f5ef22",
+   "status_chain": [
+    [
+     "/laws/ndps",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/laws/ndps",
+    "title": "The Narcotic Drugs and Psychotropic Substances Act, 1985 | Recall the C",
+    "mscreen": "bareact",
+    "bodyClass": "is-guest",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarVisible": true,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "active": true,
+      "current": "page",
+      "vis": true
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "active": false,
+      "current": null,
+      "vis": true
+     }
+    ],
+    "phoneBarClass": "mobile-tabbar PrimaryTabs PrimaryTabs--bottom",
+    "account": {
+     "cls": "nav-signin",
+     "text": "Sign in",
+     "vis": false
+    },
+    "guestPill": false,
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false,
+    "footerTools": []
+   }
+  },
+  {
+   "key": "laws-ndps",
+   "route": "/laws/ndps",
+   "width": 560,
+   "height": 800,
+   "theme": "light",
+   "file": "candidate_guest_laws-ndps_560x800_light.png",
+   "sha256": "1f1060a0364e1f7918fe6a47c796827ecc2f0d96ad1428b5c5eef145436ba85b",
+   "status_chain": [
+    [
+     "/laws/ndps",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/laws/ndps",
+    "title": "The Narcotic Drugs and Psychotropic Substances Act, 1985 | Recall the C",
+    "mscreen": "bareact",
+    "bodyClass": "is-guest",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarVisible": true,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "active": true,
+      "current": "page",
+      "vis": true
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "active": false,
+      "current": null,
+      "vis": true
+     }
+    ],
+    "phoneBarClass": "mobile-tabbar PrimaryTabs PrimaryTabs--bottom",
+    "account": {
+     "cls": "nav-signin",
+     "text": "Sign in",
+     "vis": false
+    },
+    "guestPill": false,
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false,
+    "footerTools": []
+   }
+  },
+  {
+   "key": "laws-ndps",
+   "route": "/laws/ndps",
+   "width": 561,
+   "height": 800,
+   "theme": "light",
+   "file": "candidate_guest_laws-ndps_561x800_light.png",
+   "sha256": "e8589c0cf3a9dbb62fc173964a02d57df45dce146fecec5a743d25d3f324c643",
+   "status_chain": [
+    [
+     "/laws/ndps",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/laws/ndps",
+    "title": "The Narcotic Drugs and Psychotropic Substances Act, 1985 | Recall the C",
+    "mscreen": "bareact",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "active": true,
+      "current": "page",
+      "vis": true
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "active": false,
+      "current": null,
+      "vis": true
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarVisible": false,
+    "phoneBar": [],
+    "phoneBarClass": null,
+    "account": {
+     "cls": "nav-signin",
+     "text": "Sign in",
+     "vis": true
+    },
+    "guestPill": false,
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false,
+    "footerTools": []
+   }
+  },
+  {
+   "key": "laws-ndps",
+   "route": "/laws/ndps",
+   "width": 720,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_guest_laws-ndps_720x900_light.png",
+   "sha256": "55cac023e54fbba0adaeb770c2b1d1988b7b812542a32626aed87a6b80dafa0e",
+   "status_chain": [
+    [
+     "/laws/ndps",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/laws/ndps",
+    "title": "The Narcotic Drugs and Psychotropic Substances Act, 1985 | Recall the C",
+    "mscreen": "bareact",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "active": true,
+      "current": "page",
+      "vis": true
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "active": false,
+      "current": null,
+      "vis": true
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarVisible": false,
+    "phoneBar": [],
+    "phoneBarClass": null,
+    "account": {
+     "cls": "nav-signin",
+     "text": "Sign in",
+     "vis": true
+    },
+    "guestPill": false,
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false,
+    "footerTools": []
+   }
+  },
+  {
+   "key": "laws-ndps",
+   "route": "/laws/ndps",
+   "width": 768,
+   "height": 1024,
+   "theme": "light",
+   "file": "candidate_guest_laws-ndps_768x1024_light.png",
+   "sha256": "f09d5beadd3d6cfa147cc2c7ac9f4dfafa6445aa8daf8a38f203789054a6090a",
+   "status_chain": [
+    [
+     "/laws/ndps",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/laws/ndps",
+    "title": "The Narcotic Drugs and Psychotropic Substances Act, 1985 | Recall the C",
+    "mscreen": "bareact",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "active": true,
+      "current": "page",
+      "vis": true
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "active": false,
+      "current": null,
+      "vis": true
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarVisible": false,
+    "phoneBar": [],
+    "phoneBarClass": null,
+    "account": {
+     "cls": "nav-signin",
+     "text": "Sign in",
+     "vis": true
+    },
+    "guestPill": false,
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false,
+    "footerTools": []
+   }
+  },
+  {
+   "key": "laws-ndps",
+   "route": "/laws/ndps",
+   "width": 844,
+   "height": 390,
+   "theme": "light",
+   "file": "candidate_guest_laws-ndps_844x390_light.png",
+   "sha256": "e1c4502fb25405aedea01369124ed743548d9aaa56f980bf88fbab630dfcbb42",
+   "status_chain": [
+    [
+     "/laws/ndps",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/laws/ndps",
+    "title": "The Narcotic Drugs and Psychotropic Substances Act, 1985 | Recall the C",
+    "mscreen": "bareact",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "active": true,
+      "current": "page",
+      "vis": true
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "active": false,
+      "current": null,
+      "vis": true
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarVisible": false,
+    "phoneBar": [],
+    "phoneBarClass": null,
+    "account": {
+     "cls": "nav-signin",
+     "text": "Sign in",
+     "vis": true
+    },
+    "guestPill": false,
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false,
+    "footerTools": []
+   }
+  },
+  {
+   "key": "playground",
+   "route": "/playground",
+   "width": 320,
+   "height": 568,
+   "theme": "light",
+   "file": "candidate_guest_playground_320x568_light.png",
+   "sha256": "0a366f0f4fdbeb2691d39230b25dcc7e4e950b5c9660ef52c9ec8c6edd4862f5",
+   "status_chain": [
+    [
+     "/playground",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/playground",
+    "title": "Sign in to use Playground \u00b7 Playground \u00b7 Recall the C",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-guest",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarVisible": true,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "active": true,
+      "current": "page",
+      "vis": true
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "active": false,
+      "current": null,
+      "vis": true
+     }
+    ],
+    "phoneBarClass": "mobile-tabbar PrimaryTabs PrimaryTabs--bottom",
+    "account": {
+     "cls": "nav-signin",
+     "text": "Sign in",
+     "vis": false
+    },
+    "guestPill": false,
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false,
+    "footerTools": []
+   }
+  },
+  {
+   "key": "playground",
+   "route": "/playground",
+   "width": 560,
+   "height": 800,
+   "theme": "light",
+   "file": "candidate_guest_playground_560x800_light.png",
+   "sha256": "a11be693ca18a07a18b46d4ae380e7278bbf3832ee9de1e69dc6b44e67ad62ba",
+   "status_chain": [
+    [
+     "/playground",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/playground",
+    "title": "Sign in to use Playground \u00b7 Playground \u00b7 Recall the C",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-guest",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarVisible": true,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "active": true,
+      "current": "page",
+      "vis": true
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "active": false,
+      "current": null,
+      "vis": true
+     }
+    ],
+    "phoneBarClass": "mobile-tabbar PrimaryTabs PrimaryTabs--bottom",
+    "account": {
+     "cls": "nav-signin",
+     "text": "Sign in",
+     "vis": false
+    },
+    "guestPill": false,
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false,
+    "footerTools": []
+   }
+  },
+  {
+   "key": "playground",
+   "route": "/playground",
+   "width": 561,
+   "height": 800,
+   "theme": "light",
+   "file": "candidate_guest_playground_561x800_light.png",
+   "sha256": "a0b605a322fa3045d79e3bcc17df21288f5f08487d616c93c7cce51a45fca307",
+   "status_chain": [
+    [
+     "/playground",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/playground",
+    "title": "Sign in to use Playground \u00b7 Playground \u00b7 Recall the C",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "active": true,
+      "current": "page",
+      "vis": true
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "active": false,
+      "current": null,
+      "vis": true
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarVisible": false,
+    "phoneBar": [],
+    "phoneBarClass": null,
+    "account": {
+     "cls": "nav-signin",
+     "text": "Sign in",
+     "vis": true
+    },
+    "guestPill": false,
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false,
+    "footerTools": []
+   }
+  },
+  {
+   "key": "playground",
+   "route": "/playground",
+   "width": 720,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_guest_playground_720x900_light.png",
+   "sha256": "c07ea7d75e043e1d54dd751dea023b524903b85ab9c73b67566ba51569c6f96e",
+   "status_chain": [
+    [
+     "/playground",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/playground",
+    "title": "Sign in to use Playground \u00b7 Playground \u00b7 Recall the C",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "active": true,
+      "current": "page",
+      "vis": true
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "active": false,
+      "current": null,
+      "vis": true
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarVisible": false,
+    "phoneBar": [],
+    "phoneBarClass": null,
+    "account": {
+     "cls": "nav-signin",
+     "text": "Sign in",
+     "vis": true
+    },
+    "guestPill": false,
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false,
+    "footerTools": []
+   }
+  },
+  {
+   "key": "playground",
+   "route": "/playground",
+   "width": 768,
+   "height": 1024,
+   "theme": "light",
+   "file": "candidate_guest_playground_768x1024_light.png",
+   "sha256": "49e48bf0fc972ea09d268b3588dd7f3a08948f4063f123dd6ee071e68e84494c",
+   "status_chain": [
+    [
+     "/playground",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/playground",
+    "title": "Sign in to use Playground \u00b7 Playground \u00b7 Recall the C",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "active": true,
+      "current": "page",
+      "vis": true
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "active": false,
+      "current": null,
+      "vis": true
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarVisible": false,
+    "phoneBar": [],
+    "phoneBarClass": null,
+    "account": {
+     "cls": "nav-signin",
+     "text": "Sign in",
+     "vis": true
+    },
+    "guestPill": false,
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false,
+    "footerTools": []
+   }
+  },
+  {
+   "key": "playground",
+   "route": "/playground",
+   "width": 844,
+   "height": 390,
+   "theme": "light",
+   "file": "candidate_guest_playground_844x390_light.png",
+   "sha256": "9487feea631e5ee99ce6cf588196244aa307bdfb3bb7134d423255d49c4383e6",
+   "status_chain": [
+    [
+     "/playground",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/playground",
+    "title": "Sign in to use Playground \u00b7 Playground \u00b7 Recall the C",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "active": true,
+      "current": "page",
+      "vis": true
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "active": false,
+      "current": null,
+      "vis": true
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarVisible": false,
+    "phoneBar": [],
+    "phoneBarClass": null,
+    "account": {
+     "cls": "nav-signin",
+     "text": "Sign in",
+     "vis": true
+    },
+    "guestPill": false,
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false,
+    "footerTools": []
+   }
+  },
+  {
+   "key": "settings",
+   "route": "/settings",
+   "width": 320,
+   "height": 568,
+   "theme": "light",
+   "file": "candidate_guest_settings_320x568_light.png",
+   "sha256": "299eeb22635f1fb6bdc15d617454fc34c101c430e91b84a8e5f9a331a6702869",
+   "status_chain": [
+    [
+     "/settings",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/settings",
+    "title": "Settings \u00b7 Recall the C",
+    "mscreen": "settings",
+    "bodyClass": "is-guest",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarVisible": true,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "active": true,
+      "current": "page",
+      "vis": true
+     }
+    ],
+    "phoneBarClass": "mobile-tabbar PrimaryTabs PrimaryTabs--bottom",
+    "account": {
+     "cls": "nav-signin",
+     "text": "Sign in",
+     "vis": false
+    },
+    "guestPill": false,
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false,
+    "footerTools": []
+   }
+  },
+  {
+   "key": "settings",
+   "route": "/settings",
+   "width": 560,
+   "height": 800,
+   "theme": "light",
+   "file": "candidate_guest_settings_560x800_light.png",
+   "sha256": "0cd62a9e04fb19ed63b5d89154f436eb76f2155af41f55b44325a5e1f1fe8291",
+   "status_chain": [
+    [
+     "/settings",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/settings",
+    "title": "Settings \u00b7 Recall the C",
+    "mscreen": "settings",
+    "bodyClass": "is-guest",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarVisible": true,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "active": true,
+      "current": "page",
+      "vis": true
+     }
+    ],
+    "phoneBarClass": "mobile-tabbar PrimaryTabs PrimaryTabs--bottom",
+    "account": {
+     "cls": "nav-signin",
+     "text": "Sign in",
+     "vis": false
+    },
+    "guestPill": false,
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false,
+    "footerTools": []
+   }
+  },
+  {
+   "key": "settings",
+   "route": "/settings",
+   "width": 561,
+   "height": 800,
+   "theme": "light",
+   "file": "candidate_guest_settings_561x800_light.png",
+   "sha256": "fda9f2cb0a3180cb395f4a7c4500fe7030fe90127fc2f659586040a0a62c46f2",
+   "status_chain": [
+    [
+     "/settings",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/settings",
+    "title": "Settings \u00b7 Recall the C",
+    "mscreen": "settings",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "active": true,
+      "current": "page",
+      "vis": true
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarVisible": false,
+    "phoneBar": [],
+    "phoneBarClass": null,
+    "account": {
+     "cls": "nav-signin",
+     "text": "Sign in",
+     "vis": true
+    },
+    "guestPill": false,
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false,
+    "footerTools": [
+     "Tables",
+     "Relevant laws",
+     "Settings",
+     "Contact us"
+    ]
+   }
+  },
+  {
+   "key": "settings",
+   "route": "/settings",
+   "width": 720,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_guest_settings_720x900_light.png",
+   "sha256": "7c4381be43354a5305b045033fc32ff4e831d2544d6453cf4c18d84aeac18fbe",
+   "status_chain": [
+    [
+     "/settings",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/settings",
+    "title": "Settings \u00b7 Recall the C",
+    "mscreen": "settings",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "active": true,
+      "current": "page",
+      "vis": true
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarVisible": false,
+    "phoneBar": [],
+    "phoneBarClass": null,
+    "account": {
+     "cls": "nav-signin",
+     "text": "Sign in",
+     "vis": true
+    },
+    "guestPill": false,
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false,
+    "footerTools": [
+     "Tables",
+     "Relevant laws",
+     "Settings",
+     "Contact us"
+    ]
+   }
+  },
+  {
+   "key": "settings",
+   "route": "/settings",
+   "width": 768,
+   "height": 1024,
+   "theme": "light",
+   "file": "candidate_guest_settings_768x1024_light.png",
+   "sha256": "ef5a2dea730c14ec01babf2f05a4ff9130e4f5e6db1a08d668d965befecd5f60",
+   "status_chain": [
+    [
+     "/settings",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/settings",
+    "title": "Settings \u00b7 Recall the C",
+    "mscreen": "settings",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "active": true,
+      "current": "page",
+      "vis": true
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarVisible": false,
+    "phoneBar": [],
+    "phoneBarClass": null,
+    "account": {
+     "cls": "nav-signin",
+     "text": "Sign in",
+     "vis": true
+    },
+    "guestPill": false,
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false,
+    "footerTools": [
+     "Tables",
+     "Relevant laws",
+     "Settings",
+     "Contact us"
+    ]
+   }
+  },
+  {
+   "key": "settings",
+   "route": "/settings",
+   "width": 844,
+   "height": 390,
+   "theme": "light",
+   "file": "candidate_guest_settings_844x390_light.png",
+   "sha256": "c0858540c60b4438777cffdf4845c16daca090a42a05de2e44bd20ff0e9405b6",
+   "status_chain": [
+    [
+     "/settings",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/settings",
+    "title": "Settings \u00b7 Recall the C",
+    "mscreen": "settings",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "active": true,
+      "current": "page",
+      "vis": true
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarVisible": false,
+    "phoneBar": [],
+    "phoneBarClass": null,
+    "account": {
+     "cls": "nav-signin",
+     "text": "Sign in",
+     "vis": true
+    },
+    "guestPill": false,
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false,
+    "footerTools": [
+     "Tables",
+     "Relevant laws",
+     "Settings",
+     "Contact us"
+    ]
+   }
+  },
+  {
+   "key": "search",
+   "route": "/search",
+   "width": 320,
+   "height": 568,
+   "theme": "light",
+   "file": "candidate_guest_search_320x568_light.png",
+   "sha256": "7f12abac72be227f0747f88583b90e94c437d56bb12e6089784fa7d3e83b5a3c",
+   "status_chain": [
+    [
+     "/search",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/search",
+    "title": "Search \u00b7 Recall the C",
+    "mscreen": "search",
+    "bodyClass": "is-guest",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarVisible": true,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "active": true,
+      "current": "page",
+      "vis": true
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "active": false,
+      "current": null,
+      "vis": true
+     }
+    ],
+    "phoneBarClass": "mobile-tabbar PrimaryTabs PrimaryTabs--bottom",
+    "account": {
+     "cls": "nav-signin",
+     "text": "Sign in",
+     "vis": false
+    },
+    "guestPill": false,
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false,
+    "footerTools": []
+   }
+  },
+  {
+   "key": "search",
+   "route": "/search",
+   "width": 560,
+   "height": 800,
+   "theme": "light",
+   "file": "candidate_guest_search_560x800_light.png",
+   "sha256": "c3d7284dc5bd1e85a28953cf699389a44baf32d71989f0f249194af3ccc6338d",
+   "status_chain": [
+    [
+     "/search",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/search",
+    "title": "Search \u00b7 Recall the C",
+    "mscreen": "search",
+    "bodyClass": "is-guest",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarVisible": true,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "active": true,
+      "current": "page",
+      "vis": true
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "active": false,
+      "current": null,
+      "vis": true
+     }
+    ],
+    "phoneBarClass": "mobile-tabbar PrimaryTabs PrimaryTabs--bottom",
+    "account": {
+     "cls": "nav-signin",
+     "text": "Sign in",
+     "vis": false
+    },
+    "guestPill": false,
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false,
+    "footerTools": []
+   }
+  },
+  {
+   "key": "search",
+   "route": "/search",
+   "width": 561,
+   "height": 800,
+   "theme": "light",
+   "file": "candidate_guest_search_561x800_light.png",
+   "sha256": "e9122723f295b20f3ce900b8b96a8519cf23d90b765210ee6e70b7f59206974f",
+   "status_chain": [
+    [
+     "/search",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/search",
+    "title": "Search \u00b7 Recall the C",
+    "mscreen": "search",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "active": true,
+      "current": "page",
+      "vis": true
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "active": false,
+      "current": null,
+      "vis": true
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarVisible": false,
+    "phoneBar": [],
+    "phoneBarClass": null,
+    "account": {
+     "cls": "nav-signin",
+     "text": "Sign in",
+     "vis": true
+    },
+    "guestPill": false,
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false,
+    "footerTools": [
+     "Tables",
+     "Relevant laws",
+     "Settings",
+     "Contact us"
+    ]
+   }
+  },
+  {
+   "key": "search",
+   "route": "/search",
+   "width": 720,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_guest_search_720x900_light.png",
+   "sha256": "3e36ed2b5458a3f9910bd6a8aee983aa91c91f547540ec37fbaae36515e24e3a",
+   "status_chain": [
+    [
+     "/search",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/search",
+    "title": "Search \u00b7 Recall the C",
+    "mscreen": "search",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "active": true,
+      "current": "page",
+      "vis": true
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "active": false,
+      "current": null,
+      "vis": true
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarVisible": false,
+    "phoneBar": [],
+    "phoneBarClass": null,
+    "account": {
+     "cls": "nav-signin",
+     "text": "Sign in",
+     "vis": true
+    },
+    "guestPill": false,
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false,
+    "footerTools": [
+     "Tables",
+     "Relevant laws",
+     "Settings",
+     "Contact us"
+    ]
+   }
+  },
+  {
+   "key": "search",
+   "route": "/search",
+   "width": 768,
+   "height": 1024,
+   "theme": "light",
+   "file": "candidate_guest_search_768x1024_light.png",
+   "sha256": "0254d19f669c381a83b08b4be51b364cfe3edbd013a9f1c9f7f3b798b0c9b4ac",
+   "status_chain": [
+    [
+     "/search",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/search",
+    "title": "Search \u00b7 Recall the C",
+    "mscreen": "search",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "active": true,
+      "current": "page",
+      "vis": true
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "active": false,
+      "current": null,
+      "vis": true
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarVisible": false,
+    "phoneBar": [],
+    "phoneBarClass": null,
+    "account": {
+     "cls": "nav-signin",
+     "text": "Sign in",
+     "vis": true
+    },
+    "guestPill": false,
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false,
+    "footerTools": [
+     "Tables",
+     "Relevant laws",
+     "Settings",
+     "Contact us"
+    ]
+   }
+  },
+  {
+   "key": "search",
+   "route": "/search",
+   "width": 844,
+   "height": 390,
+   "theme": "light",
+   "file": "candidate_guest_search_844x390_light.png",
+   "sha256": "072e9d7403fbbb68975070e3044f8b84f2d5906b7f084b3a15ec08e43531ed9b",
+   "status_chain": [
+    [
+     "/search",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/search",
+    "title": "Search \u00b7 Recall the C",
+    "mscreen": "search",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "active": true,
+      "current": "page",
+      "vis": true
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "active": false,
+      "current": null,
+      "vis": true
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarVisible": false,
+    "phoneBar": [],
+    "phoneBarClass": null,
+    "account": {
+     "cls": "nav-signin",
+     "text": "Sign in",
+     "vis": true
+    },
+    "guestPill": false,
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false,
+    "footerTools": [
+     "Tables",
+     "Relevant laws",
+     "Settings",
+     "Contact us"
+    ]
+   }
+  },
+  {
+   "key": "terms",
+   "route": "/terms",
+   "width": 320,
+   "height": 568,
+   "theme": "light",
+   "file": "candidate_guest_terms_320x568_light.png",
+   "sha256": "e037ed473b88d64be94212a5f6dd46ef45fd2b2b250b3db2aeb50f60aaa4b970",
+   "status_chain": [
+    [
+     "/terms",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/terms",
+    "title": "Terms & Conditions \u00b7 Recall the C",
+    "mscreen": null,
+    "bodyClass": "is-guest",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarVisible": true,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "active": false,
+      "current": null,
+      "vis": true
+     }
+    ],
+    "phoneBarClass": "mobile-tabbar PrimaryTabs PrimaryTabs--bottom",
+    "account": {
+     "cls": "nav-signin",
+     "text": "Sign in",
+     "vis": false
+    },
+    "guestPill": false,
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false,
+    "footerTools": []
+   }
+  },
+  {
+   "key": "terms",
+   "route": "/terms",
+   "width": 560,
+   "height": 800,
+   "theme": "light",
+   "file": "candidate_guest_terms_560x800_light.png",
+   "sha256": "73ee47786e6ac2392af7020e3cace4d01ae06d2a33d8e825e366431d29c79f56",
+   "status_chain": [
+    [
+     "/terms",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/terms",
+    "title": "Terms & Conditions \u00b7 Recall the C",
+    "mscreen": null,
+    "bodyClass": "is-guest",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarVisible": true,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "active": false,
+      "current": null,
+      "vis": true
+     }
+    ],
+    "phoneBarClass": "mobile-tabbar PrimaryTabs PrimaryTabs--bottom",
+    "account": {
+     "cls": "nav-signin",
+     "text": "Sign in",
+     "vis": false
+    },
+    "guestPill": false,
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false,
+    "footerTools": []
+   }
+  },
+  {
+   "key": "terms",
+   "route": "/terms",
+   "width": 561,
+   "height": 800,
+   "theme": "light",
+   "file": "candidate_guest_terms_561x800_light.png",
+   "sha256": "e1601aabfdee0e609a2274c27fc69b6ee7d08becdb69accab0d69368cdfc3db4",
+   "status_chain": [
+    [
+     "/terms",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/terms",
+    "title": "Terms & Conditions \u00b7 Recall the C",
+    "mscreen": null,
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "active": false,
+      "current": null,
+      "vis": true
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarVisible": false,
+    "phoneBar": [],
+    "phoneBarClass": null,
+    "account": {
+     "cls": "nav-signin",
+     "text": "Sign in",
+     "vis": true
+    },
+    "guestPill": false,
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false,
+    "footerTools": [
+     "Tables",
+     "Relevant laws",
+     "Settings",
+     "Contact us"
+    ]
+   }
+  },
+  {
+   "key": "terms",
+   "route": "/terms",
+   "width": 720,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_guest_terms_720x900_light.png",
+   "sha256": "200636b4dc94832e682bf52a105f0fa51a3068696b1cc41dbb35e76650cb655e",
+   "status_chain": [
+    [
+     "/terms",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/terms",
+    "title": "Terms & Conditions \u00b7 Recall the C",
+    "mscreen": null,
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "active": false,
+      "current": null,
+      "vis": true
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarVisible": false,
+    "phoneBar": [],
+    "phoneBarClass": null,
+    "account": {
+     "cls": "nav-signin",
+     "text": "Sign in",
+     "vis": true
+    },
+    "guestPill": false,
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false,
+    "footerTools": [
+     "Tables",
+     "Relevant laws",
+     "Settings",
+     "Contact us"
+    ]
+   }
+  },
+  {
+   "key": "terms",
+   "route": "/terms",
+   "width": 768,
+   "height": 1024,
+   "theme": "light",
+   "file": "candidate_guest_terms_768x1024_light.png",
+   "sha256": "b36a986c9510fe85ec5b0680835c4983d4d62e7ee6401423680cf6734f3f9df5",
+   "status_chain": [
+    [
+     "/terms",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/terms",
+    "title": "Terms & Conditions \u00b7 Recall the C",
+    "mscreen": null,
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "active": false,
+      "current": null,
+      "vis": true
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarVisible": false,
+    "phoneBar": [],
+    "phoneBarClass": null,
+    "account": {
+     "cls": "nav-signin",
+     "text": "Sign in",
+     "vis": true
+    },
+    "guestPill": false,
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false,
+    "footerTools": [
+     "Tables",
+     "Relevant laws",
+     "Settings",
+     "Contact us"
+    ]
+   }
+  },
+  {
+   "key": "terms",
+   "route": "/terms",
+   "width": 844,
+   "height": 390,
+   "theme": "light",
+   "file": "candidate_guest_terms_844x390_light.png",
+   "sha256": "40144b49d6a716563ac02b8d9901d6f3d00e870f99f9824c8eea97e461ceeba1",
+   "status_chain": [
+    [
+     "/terms",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/terms",
+    "title": "Terms & Conditions \u00b7 Recall the C",
+    "mscreen": null,
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "active": false,
+      "current": null,
+      "vis": true
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "active": false,
+      "current": null,
+      "vis": true
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarVisible": false,
+    "phoneBar": [],
+    "phoneBarClass": null,
+    "account": {
+     "cls": "nav-signin",
+     "text": "Sign in",
+     "vis": true
+    },
+    "guestPill": false,
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false,
+    "footerTools": [
+     "Tables",
+     "Relevant laws",
+     "Settings",
+     "Contact us"
+    ]
+   }
+  }
+ ]
+}
