@@ -82,9 +82,9 @@ Production Railway and Supabase are never used.
   (DV-18) are unverified. `ADMIN_ENABLED=false` and `PRICING_ENABLED=false`
   on staging, so neither an admin grant nor a checkout is available there
   today; reaching those states is an owner decision.
-- DV-14 is **provisional**: the plans page is a two-step selector (card
-  selects a tier, then "Continue with <plan>" appears); checkout is gated
-  by `PRICING_ENABLED` and billing keys. See the M0 report §4.
+- DV-14 is **resolved, not a defect** (S14, 2026-10-19): the plans page is
+  a two-step selector and "Continue with Plus" appears once a tier is
+  selected; checkout behind it stays U (`PRICING_ENABLED=false`).
 - Dark fidelity cannot be judged against a design (no dark prototype).
 
 ### 0.5 How to produce a prototype reference

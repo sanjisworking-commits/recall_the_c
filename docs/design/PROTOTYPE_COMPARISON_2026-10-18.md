@@ -133,6 +133,38 @@ were not re-scored against them.
 | S12 | Act progress, picker, Learn, Playground home/empty, roster, rollover, section learned, Act mastered | `/playground/laws/{law}`, `…/sections`, `…/learned`, `…/mastered`, `/playground/roster`, `/playground/roster/next` | UNVERIFIED | Require an active Playground subscription. Not reached: no payment was simulated and no entitlement was changed. An admin grant route exists in the code (`POST /admin/users/{id}/grants`) but `ADMIN_ENABLED=false` on staging, so even a staging-only grant would first need that flag changed — an owner decision, not something this pass did. |
 | S13 | Subscription states (expired, halted, paused), device limit / revoked / replacement limit, notices (pending, cancel at end, upgrade, downgrade, resubscribed), checkout | various | UNVERIFIED | Not reachable safely; staging has no Razorpay keys. |
 
+### 3.1 Desktop visual re-score (19 October 2026)
+
+Scored from the 14 full-resolution 1280×900 staging captures in
+`desktop-signedin/` (S01–S14, signed-in Free account, deployment
+`32971cbf…` = `5d89fbd`) against the desktop prototype at
+`viewer=signedIn` (`proto_desk_*_signedin.png` in the same folder). This
+replaces the "structural only" qualification for the desktop rows; the
+phone verdicts in §3 are unchanged.
+
+| Capture | Route | Prototype reference | Desktop verdict | Visible differences |
+|---|---|---|---|---|
+| S01 | `/` | `screen=landing` | MATCH (DV-11 minor) | Signed-in landing is the same centred composition; footer line absent (as guest). |
+| S02 | `/browse` | `screen=browse` | MATCH | Nav, avatar slot, free-plan banner ("Free plan — pick any 3 Articles… Unlock all"), Laws/Tables, article grid all present. MARKS legend uses icons where the prototype uses colour squares. |
+| S03 | `/laws` | `screen=laws` | MATCH | Search field, chips, two-column cards, no card CTAs. Chip set differs by catalogue content (staging has Health, no Commercial). NDPS card reads "8 Chapters" when signed in but "6 Chapters" for guests (§2.2 D3) — the guest Laws page is fixture-fed; folded into DV-8. |
+| S04 | `/laws/ndps` | `screen=act&law=ndps` | DEVIATION DV-2 | Fixture head (6 Chapters, three rows + Schedule). Prototype: eight rows. (The prototype's NDPS CTA always reads "Already in Playground"; use UAPA for CTA-state references.) |
+| S05 | `/playground/laws/ndps/add` | `…&sheet=1` (UAPA) | DEVIATION DV-15, DV-21 | Rendered as a standalone page: header is brand + account only, legacy footer (Tables / Relevant laws / Playground / Settings / Contact us / theme chip) directly under the card. Prototype: centred modal over the Act page with the full nav. |
+| S06 | `/playground` | `screen=gate` | PARTIAL DV-21 | Body matches the prototype gate exactly; header lacks the main nav that the prototype keeps. |
+| S07 | `/playground?stage=plans` | — | N/A (no prototype) | The desktop prototype has no plans stage (its gate stops at "View Playground plans"). Unselected state; see S14. |
+| S08 | `/dashboard` | `screen=today` | DEVIATION DV-5 | New nav and greeting row ("Welcome, Sanjali." + date + streak chip) but the body is unstyled list content (TODAY'S RECALL block, inline links). Prototype: two-column cards with ring and TODAY'S PATH. Account slot shows the name without the "Free account" subtitle (DV-20). |
+| S09 | `/calendar` | `calDesign=classic&screen=calendar` | PARTIAL (needs decision) | Title "October 2026", Month/Week, ←/Today/→ match. Legend differs (My material / Due today / Overdue / Memorized / Scheduled vs Memorized / Review done / Review due / Scheduled / New / Overdue). Staging shows Study-archive controls: "Show" filter, "Only you", "Add task", day-cell "+", side panel with "+ Add study material for this day". The classic prototype has none; Stage 2 is parked. For M6 scope review. |
+| S10 | `/profile` | `screen=profile` | PARTIAL DV-13 | Two-column layout matches. Copy: "Signed in with Google" vs "Free account · Constitution learning included"; SUBSCRIPTION "Playground / Subscribe" vs "No plan yet / See plans ›". Account slot without subtitle (DV-20). |
+| S11 | `/settings` | `screen=settings` | MATCH (minor) | Account card, STUDY Learning plan (Pace, Daily target, Save), APP Appearance, Experience present. Prototype adds the "Unlock every Article →" note and a CALENDAR section (env-gated on staging, U). |
+| S12 | `/laws/uapa` | `screen=act&law=uapa` | DEVIATION DV-3 | Legacy Bare Act page (ABOUT THIS ACT, Chapters/Schedules tabs, accordion, legacy footer) under the new nav; CTA card "Unlock Playground · from ₹199 / month. / Subscribe to use Playground". Prototype: new head with meta line and a single CTA. |
+| S13 | `/profile/security/devices` | `screen=devices` | DEVIATION DV-16 | Prose page ("SECURITY / Your devices / 0 of 2 devices / Active devices / No active devices…") with legacy footer. Prototype: "Devices" title, lede, REGISTERED card. Empty state not drawn in the prototype. Account slot without subtitle (DV-20). |
+| S14 | `/playground?stage=plans&tier=plus` | — | RESOLVED (DV-14 not a defect) | Plus card outlined as selected; right card shows "Continue with Plus". Two-step selector confirmed. Checkout behind it remains U (`PRICING_ENABLED=false`). Header still brand + account only (DV-21). |
+
+New IDs from this pass: **DV-20** account-slot inconsistency (subtitle
+"Free account" shown on S02–S04, S06, S07, S12, S14 but not on S08–S11,
+S13); **DV-21** signed-in gate, plans and Add pages render without the
+main nav. Both are shell-level and belong to M1's scope review if the
+owner agrees, otherwise M5.
+
 ## 4. Consolidated deviation matrix (M0)
 
 Classes: **F** = functional defect (works incorrectly regardless of design
@@ -144,7 +176,7 @@ by this audit) · **U** = unverified state.
 | ID | Where | Guest | Signed-in | Class | Summary |
 |---|---|---|---|---|---|
 | DV-2 | `/laws/ndps` head, both widths | ✓ | ✓ | **F** | Hard-coded head from `web/guest_bareact_head.py`: "6 Chapters", three unlinked rows; Act has eight chapters. Verified functional limitation; **design decision required** before any fix (owner's instruction). |
-| DV-14 | Plans page `/playground?stage=plans` | — | ✓ | **Provisional** (likely not a defect) | Code review after the capture: the page is a two-step selector — each card is a link to `?stage=plans&tier=<tier>` with `aria-pressed`, and `gate_plan_continue_label()` renders "Continue with <plan>" only once a tier is selected. The M0 capture was the unselected state. Checkout behind it is gated by `PRICING_ENABLED` (false on staging) and billing keys, so the selected state and checkout stay **U** on staging. The selected-state render was not re-captured because the pane session had ended; verify in M5. |
+| DV-14 | Plans page `/playground?stage=plans` | — | ✓ | **Resolved — not a defect** (S14) | Code review after the capture: the page is a two-step selector — each card is a link to `?stage=plans&tier=<tier>` with `aria-pressed`, and `gate_plan_continue_label()` renders "Continue with <plan>" only once a tier is selected. The M0 capture was the unselected state. Checkout behind it is gated by `PRICING_ENABLED` (false on staging) and billing keys, so the selected state and checkout stay **U** on staging. The selected-state render was not re-captured because the pane session had ended; verify in M5. |
 | DV-1 | Phone shell on guest pages | ✓ | — | **G** | Legacy four-tab bar on `/browse`, `/laws`, `/dashboard`, `/laws/uapa`, `/laws/bns`; none on `/settings`. Signed-in pages already carry the five-tab bar everywhere. Conflicts with tracker D20 (see §4.1). |
 | DV-3 | UAPA/BNS Act heads | ✓ | ✓ | **G** | New head exists only for NDPS; other Acts use the legacy Bare Act page at both widths and for both viewers. |
 | DV-4 | Desktop shell on guest pages | ✓ | — | **G** | Legacy top nav on `/laws/uapa`, `/laws/bns`, `/dashboard`, `/settings`, `/login`. Signed-in desktop pages already use the new top nav. |
@@ -162,6 +194,8 @@ by this audit) · **U** = unverified state.
 | DV-17 | Subscribed Playground flows | — | — | **U** | Playground home/empty, picker, Learn, roster, rollover, progress, learned, mastered: not reachable without an entitlement. |
 | DV-18 | Subscription edge states and checkout | — | — | **U** | Expired/halted/paused, device limit/revoked/replacement, notices, checkout. |
 | DV-19 | Dark theme | ✓ | — | **U** (prototype side) | Staging dark palette is consistent; the export exposes no dark prototype, so dark fidelity cannot be judged against a design. |
+| DV-20 | Header account slot (desktop, signed-in) | — | ✓ | **G** (minor, shell) | "Free account" subtitle appears on some pages (Browse, Laws, NDPS, gate, plans, UAPA) and not others (Today, Calendar, Profile, Settings, Devices). Prototype: always name + "Free account". |
+| DV-21 | Gate, plans and Add pages (desktop, signed-in) | — | ✓ | **G** (shell) | Header is brand + account only; the main nav is absent. Prototype keeps the full top nav on the gate and renders Add as a modal over the Act page. |
 
 Prototype-side issues (not code): phone gate typo "offical"; phone
 Playground month "12 Aug – 11 Sep"; phone plan placeholders Core/Deep/
