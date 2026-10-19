@@ -280,3 +280,24 @@ def test_dv21_gate_plans_and_add_no_longer_hide_the_top_nav() -> None:
 def test_asset_pins_were_bumped_for_shell_css(tmp_path: Path) -> None:
     html = _guest(tmp_path).get("/browse").text
     assert "styles.css?v=main86" not in html and "mobile.css?v=mob105" not in html
+
+
+# ───────────────────────── M1-A02: guest-shell targets and label contrast ─────────────────────────
+
+
+def test_guest_shell_accessibility_rules_are_scoped_to_guests() -> None:
+    styles = (STATIC / "styles.css").read_text(encoding="utf-8")
+    mobile = (STATIC / "mobile.css").read_text(encoding="utf-8")
+    # desktop: 44 px targets for the guest nav links and the Sign in button
+    nav_rule = styles.split("body.is-guest .PrimaryTabs--top .nav-link {", 1)[1].split("}", 1)[0]
+    assert "height: 44px" in nav_rule and "color: var(--muted)" in nav_rule
+    signin_rule = styles.split(".site-header > .nav-signin {", 1)[1].split("}", 1)[0]
+    assert "min-height: 44px" in signin_rule
+    # phone: inactive labels use --muted (5.33:1 light / 5.93:1 dark) for guests only
+    tab_rule = mobile.split("body.is-guest[data-mscreen] .mobile-tab {", 1)[1].split("}", 1)[0]
+    assert "color: var(--muted)" in tab_rule
+    # the shared (signed-in) rules are untouched: still 38 px and --mid
+    shared_nav = styles.split("  .PrimaryTabs--top .nav-link {\n    display: inline-flex;", 1)[1].split("}", 1)[0]
+    assert "height: 38px" in shared_nav
+    shared_tab = mobile.split("body[data-mscreen] .mobile-tab {", 1)[1].split("}", 1)[0]
+    assert "color: var(--mid)" in shared_tab

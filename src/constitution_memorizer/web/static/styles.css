@@ -10414,16 +10414,27 @@ body.is-admin-previewing { padding-top: 40px; }
     display: none !important;
   }
 
-  /* M1 guest shell: the account slot holds a single Sign in button. */
+  /* M1 guest shell: the account slot holds a single Sign in button (44 px target, M1-A02). */
   .site-header > .nav-signin {
     justify-self: end;
     display: inline-flex;
     align-items: center;
-    height: 38px;
+    min-height: 44px;
     padding: 0 18px;
     border-radius: 10px;
     font-size: 14px;
     font-weight: 600;
+  }
+
+  /* M1-A02 (guest shell only): 44 px targets and 4.5:1 inactive labels. The signed-in
+     shell keeps its frozen 38 px / --mid treatment pending the owner's decision. */
+  body.is-guest .PrimaryTabs--top .nav-link {
+    height: 44px;
+    color: var(--muted);
+  }
+
+  body.is-guest .PrimaryTabs--top .nav-link.is-active {
+    color: var(--on-accent);
   }
 
   .account-menu {
