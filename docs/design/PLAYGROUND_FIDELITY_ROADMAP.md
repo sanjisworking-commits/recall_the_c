@@ -74,10 +74,10 @@ Production Railway and Supabase are never used.
 ### 0.4 Evidence limitations carried from M0
 
 - Signed-in **desktop** comparison in M0 was structural (DOM) only. Full-
-  resolution 1280×900 staging captures for 11 states were added on
-  2026-10-19 (`desktop-signedin/README.md`); UAPA head, Devices and the
-  selected-plan state are still missing, and no visual acceptance has been
-  recorded against them yet.
+  resolution 1280×900 staging captures for 14 states (S01–S11 plus UAPA
+  head, Devices and plans with Plus selected) are in
+  `desktop-signedin/README.md`; no visual acceptance has been recorded
+  against them yet, and the S-row verdicts were not re-scored.
 - Subscribed Playground flows (DV-17) and subscription/device edge states
   (DV-18) are unverified. `ADMIN_ENABLED=false` and `PRICING_ENABLED=false`
   on staging, so neither an admin grant nor a checkout is available there
@@ -318,7 +318,7 @@ run in parallel on separate branches. M2 is independent of M3–M6.
 | M | Checklist approved | Implemented (SHA) | Tests | Evidence folder | Deviations open | Accepted on |
 |---|---|---|---|---|---|---|
 | M0 | n/a (audit) | 2866ede, b4a0517 | n/a | `proto-comparison-2026-10-18/` | DV-1…DV-19 classified; desktop signed-in visual pass incomplete | accepted as planning baseline 2026-10-18 |
-| M1 | revised after independent review (`milestones/M1.md`, Appendix A verifies findings); awaiting owner approval. Prerequisites: hosted deployment verified (deployment `32971cbf…` = `5d89fbd`, 2026-10-18); full-resolution signed-in desktop baseline captured for 11 states (Cursor, 2026-10-18, verified); UAPA head, Devices and selected-plan state still outstanding | — | — | — | — | — |
+| M1 | revised after independent review (`milestones/M1.md`, Appendix A verifies findings); awaiting owner approval. Prerequisites: hosted deployment verified (deployment `32971cbf…` = `5d89fbd`, 2026-10-18); full-resolution signed-in desktop baseline captured for 14 states (Cursor, 2026-10-18/19) including UAPA head, Devices and selected-plan | — | — | — | — | — |
 | M2 | — | — | — | — | — | — |
 | M3 | — | — | — | — | — | — |
 | M4 | — | — | — | — | — | — |

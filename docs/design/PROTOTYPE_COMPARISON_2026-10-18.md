@@ -112,9 +112,10 @@ Evidence: `phone-signedin/stg_phone_*_signedin.png` (375×812 crops) against
 `desktop-signedin/`. Desktop staging rows were verified structurally from
 the DOM (shell, headings, sections, CTAs) at an emulated 1280×900 because
 the browser pane was too narrow for a legible desktop capture during this
-pass. Full-resolution 1280×900 captures for 11 signed-in states were added
-on 2026-10-19 (`desktop-signedin/README.md`); the S-row verdicts below were
-not re-scored against them.
+pass. Full-resolution 1280×900 captures for 14 signed-in states were added
+on 2026-10-19 (`desktop-signedin/README.md`), including `/laws/uapa`,
+Devices and `/playground?stage=plans&tier=plus`; the S-row verdicts below
+were not re-scored against them.
 
 | # | Prototype screen (`viewer=signedIn`) | Staging route | Verdict | Notes |
 |---|---|---|---|---|
