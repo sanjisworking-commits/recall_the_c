@@ -4,9 +4,11 @@ These rows are ordinary user_subscription records for designated test
 accounts. They are not purchases and do not prove billing.
 
 Operational ``main()`` refuses every APP_ENV except staging and refuses
-any DSN that is not an exact approved staging identity. Local tests call
-``apply_on_connection`` on an injected connection; they do not make
-``APP_ENV=test`` a valid operational environment.
+any DSN that is not an exact approved staging identity. ``inspect``
+discovers UUIDs without a pre-existing UUID allowlist. Dry-run reads
+those rows and does not write. Local tests call ``apply_on_connection``
+on an injected connection; they do not make ``APP_ENV=test`` a valid
+operational environment.
 
 Never print credentials or the raw DSN.
 """
@@ -21,7 +23,7 @@ import uuid
 from dataclasses import asdict, dataclass
 from datetime import datetime, timedelta, timezone
 from typing import Any, Mapping
-from urllib.parse import unquote, urlparse
+from urllib.parse import parse_qsl, unquote, urlparse
 
 TRUE_TOKENS = frozenset({"1", "true", "yes", "on"})
 COHORTS = ("plus", "pro", "max")
@@ -36,6 +38,29 @@ AUDIT_RESET = "staging_test_subscription_reset"
 DIRECT_STAGING = (
     ("db.tvygwasuqvtnzjyjtqrq.supabase.co", 5432, "postgres", "postgres"),
 )
+ALLOWED_SSLMODES = frozenset({"prefer", "require", "verify-ca", "verify-full"})
+# Unspecified libpq parameters fall through to the process environment.
+# Scrub these around connect so PGHOSTADDR and the rest cannot retarget it.
+LIBPQ_OVERRIDE_ENV = (
+    "PGHOST",
+    "PGHOSTADDR",
+    "PGPORT",
+    "PGDATABASE",
+    "PGUSER",
+    "PGPASSWORD",
+    "PGPASSFILE",
+    "PGSERVICE",
+    "PGSERVICEFILE",
+    "PGOPTIONS",
+    "PGSSLMODE",
+    "PGREQUIRESSL",
+    "PGSSLROOTCERT",
+    "PGSSLCERT",
+    "PGSSLKEY",
+    "PGCHANNELBINDING",
+    "PGAPPNAME",
+    "PGTARGETSESSIONATTRS",
+)
 
 
 class StagingTestSubscriptionError(Exception):
@@ -48,6 +73,33 @@ class DsnIdentity:
     port: int
     database: str
     user: str
+
+
+@dataclass(frozen=True)
+class ApprovedTarget:
+    """Parsed connection target. ``repr`` omits the password."""
+
+    host: str
+    port: int
+    database: str
+    user: str
+    password: str
+    sslmode: str | None
+
+    def identity(self) -> DsnIdentity:
+        return DsnIdentity(
+            host=self.host,
+            port=self.port,
+            database=self.database,
+            user=self.user,
+        )
+
+    def __repr__(self) -> str:
+        mode = f", sslmode={self.sslmode!r}" if self.sslmode else ""
+        return (
+            f"ApprovedTarget(host={self.host!r}, port={self.port}, "
+            f"database={self.database!r}, user={self.user!r}{mode})"
+        )
 
 
 @dataclass(frozen=True)
@@ -92,26 +144,76 @@ def parse_dt(value: Any) -> datetime | None:
     return datetime.fromisoformat(stamp)
 
 
-def parse_dsn(url: str) -> DsnIdentity:
+def _sslmode_from_query(query: str) -> str | None:
+    if not query:
+        return None
+    try:
+        pairs = parse_qsl(query, keep_blank_values=True, strict_parsing=True)
+    except ValueError as exc:
+        raise StagingTestSubscriptionError(
+            "connection parameter override is not allowed"
+        ) from exc
+    if len(pairs) != 1 or pairs[0][0].lower() != "sslmode":
+        raise StagingTestSubscriptionError(
+            "connection parameter override is not allowed"
+        )
+    mode = pairs[0][1].strip().lower()
+    if mode not in ALLOWED_SSLMODES:
+        raise StagingTestSubscriptionError(
+            "connection parameter override is not allowed"
+        )
+    return mode
+
+
+def parse_target(url: str) -> ApprovedTarget:
+    """Parse a URL into host/port/database/user plus a non-logged password.
+
+    Query parameters other than a strengthening ``sslmode`` are rejected.
+    libpq would otherwise let ``?host=`` or ``?hostaddr=`` replace the host
+    that the authority section appears to name.
+    """
     raw = (url or "").strip()
+    if not raw or any(ch.isspace() for ch in raw):
+        raise StagingTestSubscriptionError("unknown connection format")
     if raw.startswith("postgresql+psycopg://"):
         raw = "postgresql://" + raw[len("postgresql+psycopg://") :]
-    parsed = urlparse(raw)
-    if parsed.scheme != "postgresql" or not parsed.hostname:
+    if "#" in raw or raw.startswith("postgres://"):
         raise StagingTestSubscriptionError("unknown connection format")
+    parsed = urlparse(raw)
+    if parsed.scheme != "postgresql" or not parsed.hostname or parsed.fragment:
+        raise StagingTestSubscriptionError("unknown connection format")
+    if "," in (parsed.netloc or ""):
+        raise StagingTestSubscriptionError(
+            "connection parameter override is not allowed"
+        )
     database = (parsed.path or "").lstrip("/")
     if not database or "/" in database:
         raise StagingTestSubscriptionError("unknown connection format")
     user = unquote(parsed.username or "")
     if not user:
         raise StagingTestSubscriptionError("unknown connection format")
+    password = unquote(parsed.password or "")
+    if password == "":
+        raise StagingTestSubscriptionError(
+            "connection password must be in the URL"
+        )
     port = parsed.port if parsed.port is not None else 5432
-    return DsnIdentity(
+    return ApprovedTarget(
         host=parsed.hostname.lower(),
         port=int(port),
         database=database,
         user=user,
+        password=password,
+        sslmode=_sslmode_from_query(parsed.query),
     )
+
+
+def parse_dsn(url: str) -> DsnIdentity:
+    return parse_target(url).identity()
+
+
+def _approved_candidate(target: ApprovedTarget) -> tuple[str, int, str, str]:
+    return (target.host, target.port, target.database, target.user)
 
 
 def require_operational_context(
@@ -125,14 +227,14 @@ def require_operational_context(
         raise StagingTestSubscriptionError(
             "STAGING_TEST_SUBSCRIPTIONS_ENABLED is off"
         )
-    identity = parse_dsn(dsn)
-    approved = tuple(DIRECT_STAGING)
-    candidate = (identity.host, identity.port, identity.database, identity.user)
-    if candidate not in approved:
+    if not (dsn or "").strip():
+        raise StagingTestSubscriptionError("DATABASE_URL is not set")
+    target = parse_target(dsn)
+    if _approved_candidate(target) not in tuple(DIRECT_STAGING):
         raise StagingTestSubscriptionError(
             "database identity is not the approved staging target"
         )
-    return identity
+    return target.identity()
 
 
 def parse_cohort_map(raw: str, *, kind: str) -> dict[str, str]:
@@ -256,9 +358,13 @@ class Store:
         self.conn = conn
         self.postgres = postgres
         self._pg_cur: Any = None
+        self._tx_open = False
         if postgres:
             from psycopg.rows import dict_row
 
+            # Explicit BEGIN/COMMIT. Autocommit avoids an implicit transaction
+            # that would make a leading BEGIN a no-op.
+            conn.autocommit = True
             self._pg_cur = conn.cursor(row_factory=dict_row)
 
     def execute(self, sql: str, params: tuple[Any, ...] = ()) -> Any:
@@ -304,13 +410,31 @@ class Store:
     def begin(self) -> None:
         if self.postgres:
             self.execute("BEGIN")
-        else:
-            self.execute("BEGIN IMMEDIATE")
+            self._tx_open = True
+            return
+        self.execute("BEGIN IMMEDIATE")
+
+    def begin_read_only(self) -> None:
+        """Read transaction so a dry-run write fails instead of autocommitting."""
+        if self.postgres:
+            self.execute("BEGIN READ ONLY")
+            self._tx_open = True
+            return
+        self.execute("BEGIN")
 
     def commit(self) -> None:
+        if self.postgres:
+            self.execute("COMMIT")
+            self._tx_open = False
+            return
         self.conn.commit()
 
     def rollback(self) -> None:
+        if self.postgres:
+            if self._tx_open:
+                self.execute("ROLLBACK")
+                self._tx_open = False
+            return
         self.conn.rollback()
 
     def table_exists(self, name: str) -> bool:
@@ -369,17 +493,46 @@ def _charge_count(store: Store, subscription_id: str) -> int:
     return int(row["n"]) if row is not None else 0
 
 
-def _history(store: Store, user_id: str) -> list[dict[str, Any]]:
-    return store.fetchall(
-        "SELECT * FROM user_subscription WHERE user_id = %s ORDER BY created_at",
+def _history(
+    store: Store, user_id: str, *, lock: bool = False
+) -> list[dict[str, Any]]:
+    sql = "SELECT * FROM user_subscription WHERE user_id = %s ORDER BY created_at"
+    if lock and store.postgres:
+        sql += " FOR UPDATE"
+    return store.fetchall(sql, (user_id,))
+
+
+def _select_current(
+    store: Store, user_id: str, *, lock: bool
+) -> dict[str, Any] | None:
+    if lock:
+        return store.lock_current(user_id)
+    if store.postgres:
+        return store.fetchone(
+            """
+            SELECT * FROM user_subscription
+            WHERE user_id = %s AND is_current IS TRUE
+            """,
+            (user_id,),
+        )
+    return store.fetchone(
+        """
+        SELECT * FROM user_subscription
+        WHERE user_id = %s AND is_current = 1
+        """,
         (user_id,),
     )
 
 
-def _require_clean_or_helper(store: Store, user_id: str) -> dict[str, Any] | None:
+def _require_clean_or_helper(
+    store: Store,
+    user_id: str,
+    rows: list[dict[str, Any]] | None = None,
+) -> dict[str, Any] | None:
     if _is_admin(store, user_id):
         raise StagingTestSubscriptionError("account has admin role")
-    rows = _history(store, user_id)
+    if rows is None:
+        rows = _history(store, user_id)
     current = None
     for row in rows:
         if row.get("provider_subscription_id"):
@@ -495,12 +648,23 @@ def inspect_on_connection(conn: Any, *, email: str, postgres: bool = False) -> d
         else "SELECT * FROM user_subscription WHERE user_id = %s AND is_current IS TRUE",
         (user_id,),
     )
+    history = _history(store, user_id)
+    try:
+        _require_clean_or_helper(store, user_id, history)
+    except StagingTestSubscriptionError as exc:
+        eligible = False
+        reason: str | None = str(exc)
+    else:
+        eligible = True
+        reason = None
     return {
         "email": row["email"],
         "user_id": user_id,
         "admin": _is_admin(store, user_id),
         "current": snapshot_row(current) if current is not None else None,
-        "history_count": len(_history(store, user_id)),
+        "history_count": len(history),
+        "eligible": eligible,
+        "ineligible_reason": reason,
     }
 
 
@@ -654,20 +818,14 @@ def apply_on_connection(
         "cohort": cohort,
         "state": state,
         "label": allowlist.labels.get(cohort) or None,
+        "eligible": True,
     }
-    if not commit:
-        start, end = period_for(state if state in TEMPORARY_STATES else cohort, clock)
-        preview["intended"] = {
-            "tier": cohort,
-            "status": status_for(state),
-            "billing_period_start": iso(start),
-            "billing_period_end": iso(end),
-        }
-        return preview
-
-    store.begin()
     try:
-        current = store.lock_current(user_id)
+        if commit:
+            store.begin()
+        else:
+            store.begin_read_only()
+        current = _select_current(store, user_id, lock=commit)
         _require_clean_or_helper(store, user_id)
         if current is not None:
             if not helper_owned(current):
@@ -683,8 +841,12 @@ def apply_on_connection(
                     raise StagingTestSubscriptionError("use restore for a temporary fixture")
                 preview["result"] = "unchanged"
                 preview["row_id"] = str(current["id"])
+                preview["before"] = comparable(current)
                 preview["after"] = comparable(current)
-                store.commit()
+                if commit:
+                    store.commit()
+                else:
+                    store.rollback()
                 return preview
             if fixture != cohort:
                 raise StagingTestSubscriptionError(
@@ -723,6 +885,12 @@ def apply_on_connection(
                 last_helper_state=last,
             )
             before = comparable(current)
+            if not commit:
+                preview["row_id"] = str(current["id"])
+                preview["before"] = before
+                preview["after"] = last
+                store.rollback()
+                return preview
             stored = _update_row(
                 store,
                 row_id=str(current["id"]),
@@ -787,6 +955,14 @@ def apply_on_connection(
             baseline=dict(last),
             last_helper_state=last,
         )
+        if not commit:
+            proposed = dict(last)
+            proposed["id"] = None
+            proposed["created_at"] = None
+            preview["before"] = None
+            preview["after"] = proposed
+            store.rollback()
+            return preview
         stored = _insert_row(
             store,
             row_id=row_id,
@@ -812,6 +988,7 @@ def apply_on_connection(
         )
         store.commit()
         preview["row_id"] = row_id
+        preview["before"] = None
         preview["after"] = after
         return preview
     except Exception:
@@ -838,14 +1015,15 @@ def restore_on_connection(
         "run_id": run,
         "user_id": user_id,
         "cohort": cohort,
+        "eligible": True,
     }
-    if not commit:
-        preview["intended"] = "exact baseline"
-        return preview
     store = Store(conn, postgres=postgres)
-    store.begin()
     try:
-        current = store.lock_current(user_id)
+        if commit:
+            store.begin()
+        else:
+            store.begin_read_only()
+        current = _select_current(store, user_id, lock=commit)
         if current is None:
             raise StagingTestSubscriptionError("no current helper row")
         _require_clean_or_helper(store, user_id)
@@ -894,6 +1072,12 @@ def restore_on_connection(
             last_helper_state=last,
         )
         before = comparable(current)
+        if not commit:
+            preview["row_id"] = str(current["id"])
+            preview["before"] = before
+            preview["after"] = last
+            store.rollback()
+            return preview
         stored = _update_row(
             store,
             row_id=str(current["id"]),
@@ -954,13 +1138,15 @@ def renew_on_connection(
             "billing_period_start": iso(start),
             "billing_period_end": iso(end),
         },
+        "eligible": True,
     }
-    if not commit:
-        return preview
     store = Store(conn, postgres=postgres)
-    store.begin()
     try:
-        current = store.lock_current(user_id)
+        if commit:
+            store.begin()
+        else:
+            store.begin_read_only()
+        current = _select_current(store, user_id, lock=commit)
         if current is None:
             raise StagingTestSubscriptionError("no current helper row")
         _require_clean_or_helper(store, user_id)
@@ -995,6 +1181,12 @@ def renew_on_connection(
             last_helper_state=last,
         )
         before = comparable(current)
+        if not commit:
+            preview["row_id"] = str(current["id"])
+            preview["before"] = before
+            preview["after"] = last
+            store.rollback()
+            return preview
         stored = _update_row(
             store,
             row_id=str(current["id"]),
@@ -1049,25 +1241,32 @@ def reset_on_connection(
         "user_id": user_id,
         "cohort": cohort,
         "intended": "delete helper-owned rows",
+        "eligible": True,
     }
-    if not commit:
-        return preview
     store = Store(conn, postgres=postgres)
-    store.begin()
     try:
-        current = store.lock_current(user_id)
-        _require_clean_or_helper(store, user_id)
-        rows = _history(store, user_id)
+        if commit:
+            store.begin()
+        else:
+            store.begin_read_only()
+        rows = _history(store, user_id, lock=commit)
+        current = _require_clean_or_helper(store, user_id, rows)
         if current is None and not rows:
             preview["result"] = "already_free"
-            store.commit()
+            preview["before"] = None
+            preview["after"] = None
+            preview["row_ids"] = []
+            if commit:
+                store.commit()
+            else:
+                store.rollback()
             return preview
         if current is not None:
             if not helper_owned(current):
                 raise StagingTestSubscriptionError("current row is not helper-owned")
             _assert_no_drift(current)
         before = comparable(current) if current is not None else None
-        row_ids = []
+        row_ids: list[str] = []
         for row in rows:
             row_id = str(row["id"])
             if _charge_count(store, row_id):
@@ -1075,10 +1274,29 @@ def reset_on_connection(
                     "subscription_charge rows exist for this helper row"
                 )
             row_ids.append(row_id)
-        store.execute(
-            "DELETE FROM user_subscription WHERE user_id = %s",
+        preview["row_ids"] = row_ids
+        preview["before"] = before
+        preview["after"] = None
+        if not commit:
+            store.rollback()
+            return preview
+        for row_id in row_ids:
+            deleted = store.execute(
+                "DELETE FROM user_subscription WHERE id = %s AND user_id = %s",
+                (row_id, user_id),
+            )
+            if deleted.rowcount != 1:
+                raise StagingTestSubscriptionError(
+                    "reset did not delete the exact helper row"
+                )
+        remaining = store.fetchone(
+            "SELECT COUNT(*) AS n FROM user_subscription WHERE user_id = %s",
             (user_id,),
         )
+        if remaining is None or int(remaining["n"]) != 0:
+            raise StagingTestSubscriptionError(
+                "reset left subscription rows behind"
+            )
         _write_audit(
             store,
             operator_uuid=allowlist.operator_uuid,
@@ -1091,8 +1309,6 @@ def reset_on_connection(
             now=clock,
         )
         store.commit()
-        preview["row_ids"] = row_ids
-        preview["before"] = before
         return preview
     except Exception:
         store.rollback()
@@ -1103,18 +1319,47 @@ def _print_json(payload: Any) -> None:
     print(json.dumps(payload, indent=2, sort_keys=True, default=str))
 
 
-def _load_operational(env: Mapping[str, str]) -> tuple[DsnIdentity, Allowlist, str]:
+def _load_operational(
+    env: Mapping[str, str], *, need_allowlist: bool
+) -> tuple[DsnIdentity, Allowlist | None, str]:
     dsn = (env.get("DATABASE_URL") or "").strip()
     identity = require_operational_context(env, dsn)
-    allowlist = load_allowlist(env)
+    allowlist = load_allowlist(env) if need_allowlist else None
     return identity, allowlist, dsn
 
 
 def _connect_postgres(dsn: str) -> Any:
+    """Connect with explicit keywords. Never pass the raw URL to libpq."""
+    target = parse_target(dsn)
+    if _approved_candidate(target) not in tuple(DIRECT_STAGING):
+        raise StagingTestSubscriptionError(
+            "database identity is not the approved staging target"
+        )
     import psycopg
 
-    url = dsn.replace("postgresql+psycopg://", "postgresql://")
-    return psycopg.connect(url)
+    saved = {
+        key: os.environ.pop(key) for key in LIBPQ_OVERRIDE_ENV if key in os.environ
+    }
+    try:
+        kwargs: dict[str, Any] = {
+            "host": target.host,
+            "port": target.port,
+            "dbname": target.database,
+            "user": target.user,
+            "password": target.password,
+            "options": "-c default_transaction_read_only=off",
+        }
+        if target.sslmode:
+            kwargs["sslmode"] = target.sslmode
+        try:
+            return psycopg.connect(**kwargs)
+        except Exception as exc:
+            raise StagingTestSubscriptionError(
+                "could not connect to the approved staging database "
+                f"({type(exc).__name__})"
+            ) from None
+    finally:
+        os.environ.update(saved)
 
 
 def main(argv: list[str] | None = None, env: Mapping[str, str] | None = None) -> int:
@@ -1139,7 +1384,9 @@ def main(argv: list[str] | None = None, env: Mapping[str, str] | None = None) ->
     args = parser.parse_args(argv)
     environ = env if env is not None else os.environ
     try:
-        identity, allowlist, dsn = _load_operational(environ)
+        identity, allowlist, dsn = _load_operational(
+            environ, need_allowlist=args.command != "inspect"
+        )
     except StagingTestSubscriptionError as exc:
         print(str(exc), file=sys.stderr)
         return 2
@@ -1150,18 +1397,20 @@ def main(argv: list[str] | None = None, env: Mapping[str, str] | None = None) ->
         args.commit = False
 
     commit = bool(args.commit)
-    targets: list[str]
-    if args.all:
-        targets = [allowlist.uuids[cohort] for cohort in COHORTS]
-    elif args.uuid:
-        try:
-            targets = [str(uuid.UUID(args.uuid))]
-        except ValueError:
-            print("not a UUID", file=sys.stderr)
-            return 1
-        allowlist.cohort_for(targets[0])
-    else:
-        targets = []
+    targets: list[str] = []
+    if args.command != "inspect":
+        if allowlist is None:
+            print("allowlist is required", file=sys.stderr)
+            return 2
+        if args.all:
+            targets = [allowlist.uuids[cohort] for cohort in COHORTS]
+        elif args.uuid:
+            try:
+                targets = [str(uuid.UUID(args.uuid))]
+            except ValueError:
+                print("not a UUID", file=sys.stderr)
+                return 1
+            allowlist.cohort_for(targets[0])
 
     conn = None
     try:
@@ -1179,67 +1428,84 @@ def main(argv: list[str] | None = None, env: Mapping[str, str] | None = None) ->
                 }
             )
             return 0
+        if allowlist is None:
+            print("allowlist is required", file=sys.stderr)
+            return 2
         if not targets:
             print("--uuid or --all is required", file=sys.stderr)
             return 1
         results = []
         for user_id in targets:
-            if args.command == "inventory":
-                results.append(
-                    inventory_on_connection(conn, user_id, postgres=True)
-                )
-                continue
-            if args.command == "apply":
-                state = args.state
-                if args.all:
-                    state = allowlist.cohort_for(user_id)
-                if not state:
-                    print("--state is required unless --all", file=sys.stderr)
-                    return 1
-                results.append(
-                    apply_on_connection(
-                        conn,
-                        allowlist=allowlist,
-                        user_id=user_id,
-                        state=state,
-                        commit=commit,
-                        postgres=True,
+            try:
+                if args.command == "inventory":
+                    results.append(
+                        inventory_on_connection(conn, user_id, postgres=True)
                     )
-                )
-                continue
-            if args.command == "restore":
-                results.append(
-                    restore_on_connection(
-                        conn,
-                        allowlist=allowlist,
-                        user_id=user_id,
-                        commit=commit,
-                        postgres=True,
+                    continue
+                if args.command == "apply":
+                    state = args.state
+                    if args.all:
+                        state = allowlist.cohort_for(user_id)
+                    if not state:
+                        print("--state is required unless --all", file=sys.stderr)
+                        return 1
+                    results.append(
+                        apply_on_connection(
+                            conn,
+                            allowlist=allowlist,
+                            user_id=user_id,
+                            state=state,
+                            commit=commit,
+                            postgres=True,
+                        )
                     )
-                )
-                continue
-            if args.command == "renew":
-                results.append(
-                    renew_on_connection(
-                        conn,
-                        allowlist=allowlist,
-                        user_id=user_id,
-                        commit=commit,
-                        postgres=True,
+                    continue
+                if args.command == "restore":
+                    results.append(
+                        restore_on_connection(
+                            conn,
+                            allowlist=allowlist,
+                            user_id=user_id,
+                            commit=commit,
+                            postgres=True,
+                        )
                     )
-                )
-                continue
-            if args.command == "reset":
-                results.append(
-                    reset_on_connection(
-                        conn,
-                        allowlist=allowlist,
-                        user_id=user_id,
-                        commit=commit,
-                        postgres=True,
+                    continue
+                if args.command == "renew":
+                    results.append(
+                        renew_on_connection(
+                            conn,
+                            allowlist=allowlist,
+                            user_id=user_id,
+                            commit=commit,
+                            postgres=True,
+                        )
                     )
+                    continue
+                if args.command == "reset":
+                    results.append(
+                        reset_on_connection(
+                            conn,
+                            allowlist=allowlist,
+                            user_id=user_id,
+                            commit=commit,
+                            postgres=True,
+                        )
+                    )
+            except StagingTestSubscriptionError as exc:
+                if commit:
+                    raise
+                results.append(
+                    {
+                        "user_id": user_id,
+                        "commit": False,
+                        "eligible": False,
+                        "error": str(exc),
+                    }
                 )
         _print_json({"database": redacted, "results": results, "commit": commit})
+        if any(isinstance(item, dict) and item.get("error") for item in results):
+            return 2
         return 0
     except StagingTestSubscriptionError as exc:
         print(str(exc), file=sys.stderr)

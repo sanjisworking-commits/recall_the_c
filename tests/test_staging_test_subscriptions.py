@@ -435,9 +435,9 @@ def test_inventory_does_not_delete(tmp_path: Path) -> None:
     assert still == 1
 
 
-def test_dry_run_does_not_write(tmp_path: Path) -> None:
+def test_dry_run_reads_database_and_does_not_write(tmp_path: Path) -> None:
     conn = _conn(tmp_path)
-    helper.apply_on_connection(
+    preview = helper.apply_on_connection(
         conn,
         allowlist=_allowlist(),
         user_id=str(PLUS),
@@ -445,8 +445,199 @@ def test_dry_run_does_not_write(tmp_path: Path) -> None:
         now=NOW,
         commit=False,
     )
+    assert preview["commit"] is False
+    assert preview["eligible"] is True
+    assert preview["before"] is None
+    assert preview["after"]["tier"] == "plus"
+    assert preview["after"]["status"] == "active"
+    assert preview["after"]["id"] is None
     count = conn.execute("SELECT COUNT(*) AS n FROM user_subscription").fetchone()["n"]
     assert count == 0
+    helper.apply_on_connection(
+        conn,
+        allowlist=_allowlist(),
+        user_id=str(PLUS),
+        state="plus",
+        now=NOW,
+        commit=True,
+    )
+    expired = helper.apply_on_connection(
+        conn,
+        allowlist=_allowlist(),
+        user_id=str(PLUS),
+        state="expired",
+        now=NOW,
+        commit=False,
+    )
+    assert expired["before"]["status"] == "active"
+    assert expired["after"]["status"] == "expired"
+    assert expired["after"]["tier"] == "plus"
+    live = conn.execute(
+        "SELECT status FROM user_subscription WHERE user_id = ?",
+        (str(PLUS),),
+    ).fetchone()["status"]
+    assert live == "active"
+
+
+def test_dry_run_refuses_ineligible_account(tmp_path: Path) -> None:
+    conn = _conn(tmp_path)
+    conn.execute(
+        "INSERT INTO user_roles (user_id, role, created_at) VALUES (?, 'admin', ?)",
+        (str(PLUS), NOW.isoformat()),
+    )
+    conn.commit()
+    with pytest.raises(helper.StagingTestSubscriptionError, match="admin"):
+        helper.apply_on_connection(
+            conn,
+            allowlist=_allowlist(),
+            user_id=str(PLUS),
+            state="plus",
+            now=NOW,
+            commit=False,
+        )
+    count = conn.execute("SELECT COUNT(*) AS n FROM user_subscription").fetchone()["n"]
+    assert count == 0
+
+
+def test_dsn_rejects_parameter_overrides() -> None:
+    base = DIRECT_DSN
+    for suffix in (
+        "?host=evil.example",
+        "?hostaddr=127.0.0.1",
+        "?port=5433",
+        "?dbname=other",
+        "?user=attacker",
+        "?options=-c%20search_path%3Dpublic",
+        "?sslmode=disable",
+        "#frag",
+    ):
+        with pytest.raises(helper.StagingTestSubscriptionError):
+            helper.parse_target(base + suffix)
+    allowed = helper.parse_target(base + "?sslmode=require")
+    assert allowed.identity().host == "db.tvygwasuqvtnzjyjtqrq.supabase.co"
+    assert allowed.sslmode == "require"
+    assert "secret" not in repr(allowed)
+    with pytest.raises(helper.StagingTestSubscriptionError, match="override"):
+        helper.parse_target(
+            "postgresql://postgres:secret@db.tvygwasuqvtnzjyjtqrq.supabase.co,"
+            "evil.example:5432/postgres"
+        )
+
+
+def test_connect_strips_libpq_overrides(monkeypatch: pytest.MonkeyPatch) -> None:
+    import sys
+    import types
+
+    seen: dict[str, object] = {}
+
+    def connect(**kwargs: object) -> object:
+        seen["kwargs"] = kwargs
+        seen["pghostaddr"] = __import__("os").environ.get("PGHOSTADDR")
+        seen["pgoptions"] = __import__("os").environ.get("PGOPTIONS")
+        raise RuntimeError("postgresql://postgres:secret@should-not-leak")
+
+    module = types.ModuleType("psycopg")
+    module.connect = connect  # type: ignore[attr-defined]
+    monkeypatch.setitem(sys.modules, "psycopg", module)
+    monkeypatch.setenv("PGHOSTADDR", "203.0.113.9")
+    monkeypatch.setenv("PGOPTIONS", "-c default_transaction_read_only=on")
+    with pytest.raises(helper.StagingTestSubscriptionError, match="could not connect") as raised:
+        helper._connect_postgres(DIRECT_DSN + "?sslmode=require")
+    assert "secret" not in str(raised.value)
+    assert seen["pghostaddr"] is None
+    assert seen["pgoptions"] is None
+    kwargs = seen["kwargs"]
+    assert isinstance(kwargs, dict)
+    assert kwargs["host"] == "db.tvygwasuqvtnzjyjtqrq.supabase.co"
+    assert kwargs["port"] == 5432
+    assert kwargs["dbname"] == "postgres"
+    assert kwargs["user"] == "postgres"
+    assert kwargs["sslmode"] == "require"
+    assert "203.0.113.9" not in str(kwargs)
+    assert __import__("os").environ["PGHOSTADDR"] == "203.0.113.9"
+
+
+def test_inspect_does_not_require_uuid_allowlist(
+    monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    def fail_closed(_dsn: str) -> object:
+        raise helper.StagingTestSubscriptionError("stop-after-guards")
+
+    monkeypatch.setattr(helper, "_connect_postgres", fail_closed)
+    code = helper.main(
+        ["inspect", "--email", "sanjisworking@gmail.com"],
+        env={
+            "APP_ENV": "staging",
+            "STAGING_TEST_SUBSCRIPTIONS_ENABLED": "true",
+            "DATABASE_URL": DIRECT_DSN,
+        },
+    )
+    assert code == 2
+    assert "stop-after-guards" in capsys.readouterr().err
+
+
+def test_preview_still_requires_uuid_allowlist(capsys: pytest.CaptureFixture[str]) -> None:
+    code = helper.main(
+        ["preview", "--all"],
+        env={
+            "APP_ENV": "staging",
+            "STAGING_TEST_SUBSCRIPTIONS_ENABLED": "true",
+            "DATABASE_URL": DIRECT_DSN,
+        },
+    )
+    assert code == 2
+    assert "STAGING_TEST_SUBSCRIPTION_UUIDS" in capsys.readouterr().err
+
+
+class _Tracing:
+    def __init__(self, inner: object) -> None:
+        self.inner = inner
+        self.sql: list[str] = []
+
+    def execute(self, sql: str, params: tuple = ()) -> object:
+        self.sql.append(sql)
+        return self.inner.execute(sql, params)  # type: ignore[attr-defined]
+
+    def commit(self) -> None:
+        self.inner.commit()  # type: ignore[attr-defined]
+
+    def rollback(self) -> None:
+        self.inner.rollback()  # type: ignore[attr-defined]
+
+
+def test_reset_deletes_exact_row_only(tmp_path: Path) -> None:
+    conn = _conn(tmp_path)
+    allowlist = _allowlist()
+    applied = helper.apply_on_connection(
+        conn, allowlist=allowlist, user_id=str(PLUS), state="plus", now=NOW, commit=True
+    )
+    helper.apply_on_connection(
+        conn, allowlist=allowlist, user_id=str(PRO), state="pro", now=NOW, commit=True
+    )
+    dry = helper.reset_on_connection(
+        conn, allowlist=allowlist, user_id=str(PLUS), now=NOW, commit=False
+    )
+    assert dry["row_ids"] == [applied["row_id"]]
+    assert dry["before"]["tier"] == "plus"
+    assert conn.execute("SELECT COUNT(*) AS n FROM user_subscription").fetchone()["n"] == 2
+    tracer = _Tracing(conn)
+    helper.reset_on_connection(
+        tracer, allowlist=allowlist, user_id=str(PLUS), now=NOW, commit=True
+    )
+    deletes = [sql for sql in tracer.sql if "DELETE" in sql.upper()]
+    assert deletes == [
+        "DELETE FROM user_subscription WHERE id = ? AND user_id = ?"
+    ]
+    plus = conn.execute(
+        "SELECT COUNT(*) AS n FROM user_subscription WHERE user_id = ?",
+        (str(PLUS),),
+    ).fetchone()["n"]
+    pro = conn.execute(
+        "SELECT COUNT(*) AS n FROM user_subscription WHERE user_id = ?",
+        (str(PRO),),
+    ).fetchone()["n"]
+    assert plus == 0
+    assert pro == 1
 
 
 def test_inspect_email(tmp_path: Path) -> None:
@@ -454,3 +645,5 @@ def test_inspect_email(tmp_path: Path) -> None:
     found = helper.inspect_on_connection(conn, email="sanjisworking@gmail.com")
     assert found["user_id"] == str(PLUS)
     assert found["admin"] is False
+    assert found["eligible"] is True
+    assert found["ineligible_reason"] is None

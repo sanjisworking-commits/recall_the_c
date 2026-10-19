@@ -12,7 +12,7 @@ Gate A (this branch) implements the helper and local tests only. **Gate B is not
 | Pro | `sanj.ritz@gmail.com` | No |
 | Max | `sanjali.suryawanshi192@gmail.com` | No |
 
-Allowlist **UUIDs**, not emails. Each account must sign in once on [staging](https://recallthec-production.up.railway.app) so `user_profile` exists. Then `inspect --email` records the UUID.
+Allowlist **UUIDs**, not emails. Each account must sign in once on [staging](https://recallthec-production.up.railway.app) so `user_profile` exists. `inspect --email` discovers the UUID and eligibility without `STAGING_TEST_SUBSCRIPTION_UUIDS` or the operator UUID. Record those UUIDs in an operator-local allowlist (`.staging-test-subscriptions.local.env`, gitignored) before `preview`.
 
 Do not add these users to `/admin/admins`. Do not enable `ADMIN_ENABLED`. Do not merge PR #217.
 
@@ -20,7 +20,7 @@ Do not add these users to `/admin/admins`. Do not enable `ADMIN_ENABLED`. Do not
 
 ## Commands
 
-Dry-run is the default. `--commit` is Gate B only.
+Dry-run is the default. It reads the live rows and reports before/after. It does not insert, update, or delete. `--commit` is Gate B only.
 
 ```bash
 APP_ENV=staging
@@ -50,10 +50,14 @@ Operational `main()` refuses unless **all** hold:
 - `APP_ENV=staging` (never `test`, `development`, or `production`)
 - `STAGING_TEST_SUBSCRIPTIONS_ENABLED` true
 - DSN identity exactly `{host: db.tvygwasuqvtnzjyjtqrq.supabase.co, port: 5432, database: postgres, user: postgres}`
-- target UUID allowlisted
+- target UUID allowlisted (`inspect` is the exception: it discovers UUIDs)
 - no admin role, no provider-backed row, no unrelated subscription history
 
-Pooler hostnames fail closed until an exact pooler tuple is recorded. Unknown DSN formats fail closed. Credentials and the raw DSN are never printed.
+`inspect` does not require a pre-existing UUID allowlist. `preview` and every mutation do.
+
+Pooler hostnames fail closed until an exact pooler tuple is recorded. Unknown DSN formats fail closed. A query string may contain only `sslmode` of `prefer`, `require`, `verify-ca`, or `verify-full`. `host`, `hostaddr`, `port`, `dbname`, `options`, and fragments are rejected so they cannot retarget the approved identity. Connect passes explicit host, port, database, user, and password keywords and strips libpq override variables (`PGHOST`, `PGHOSTADDR`, `PGOPTIONS`, and the rest) for that call. Credentials and the raw DSN are never printed.
+
+Reset deletes each verified helper row with `WHERE id = … AND user_id = …` and requires that exact row to disappear. It does not delete by user id alone.
 
 Railway environment name `production` is ignored; it is not `APP_ENV`.
 
