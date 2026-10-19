@@ -496,11 +496,11 @@ Viewport/DPR emulation and the AX-tree inspection are supporting evidence only. 
 
 | Item | Recommendation | Owner decision |
 |---|---|---|
-| Expanded guest-shell scope (§1.1) | approve **chrome only** for the four families; reader bar suppression, page bodies and access gates preserved (they are: the `article` suppression rule and the guest Add bar rule are untouched, bodies unchanged, gates tested) | pending |
-| Accessible guest grey | keep; record as an intentional prototype deviation (recorded in §7) | pending |
-| Signed-in accessibility (38 px, `--mid`) | temporary **M1-only exception** with a named follow-up milestone; not accessibility acceptance | pending — proposed follow-up: a signed-in shell milestone (roadmap M1b) |
-| DV-22 brand mark | batch into M9 polish | pending |
-| Signed-in double nav at 561–720 px | track explicitly for correction before final acceptance | pending — same M1b |
+| Expanded guest-shell scope (§1.1) | approve **chrome only** for the four families; reader bar suppression, page bodies and access gates preserved (they are: the `article` suppression rule and the guest Add bar rule are untouched, bodies unchanged, gates tested) | **Approved 2026-10-19** (chrome only) |
+| Accessible guest grey and 44 px guest targets | keep; record as intentional prototype deviations (recorded in §7) | **Approved 2026-10-19** |
+| Signed-in accessibility (38 px, `--mid`) | temporary **M1-only exception** with a named follow-up milestone; not accessibility acceptance | **Granted 2026-10-19** as an M1-only exception, tracked in M1b before final redesign acceptance |
+| DV-22 brand mark | batch into M9 polish | **Deferred to M9, 2026-10-19** |
+| Signed-in double nav at 561–720 px | track explicitly for correction before final acceptance | **Exception granted 2026-10-19**, tracked in M1b |
 
 ## 8. Deviations still open after M1 (for the owner)
 
@@ -521,6 +521,6 @@ Viewport/DPR emulation and the AX-tree inspection are supporting evidence only. 
 | Implementation authorisation | Granted 2026-10-19 (local only) |
 | Branch / PR | `pg-m1-guest-shell` from `5d89fbd`; draft PR into `cursor/playground-220d` |
 | Local validation | see §2–§7 — LOCAL/PRELIMINARY |
-| Staging deployment authorisation | **Not granted** |
+| Staging deployment authorisation | **Granted 2026-10-19 for validation only** — the owner performs the deploy of `pg-m1-guest-shell` to `recallc-playground-staging`; no merge; deployment does not accept M1 |
 | Hosted acceptance | **Not run** |
 | Owner milestone decision | Pending |
