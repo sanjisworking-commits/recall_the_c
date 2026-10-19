@@ -2,6 +2,8 @@
 
 This package does **not** accept M1. Four ZIPs are evidence for review. They are not a pass.
 
+The `.zip` files are binary. A direct download of `plus.zip`, `pro.zip`, or `max.zip` can arrive as 0 KB even though the stored archive is several megabytes. Rebuild them from the text parts with `python3 docs/m1-handover/restore.py "$HOME/Downloads"`. Expected sizes and SHA-256 values are in `HOW-TO-DOWNLOAD.md`.
+
 Deployed SHA: `3b37f8947c05577b57af93a2a53f1ac5539c4e3a` (`recallc-playground-staging / production`, GitHub deployment `7168307529`). Payment integration was not exercised and is **not** verified.
 
 Please assess the four reviews separately, then give one **pass / changes required** decision against the existing M1 checklist (`docs/design/milestones/M1.md`: M1-F01–F11, M1-V01–V05, M1-A01–A04). Do not expand M1 into every paid feature. Do not treat these ZIPs as acceptance.
