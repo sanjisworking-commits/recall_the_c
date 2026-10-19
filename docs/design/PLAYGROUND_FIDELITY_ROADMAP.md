@@ -62,6 +62,24 @@ account surfaces on Profile stay · the NDPS fixture head is replaced only
 after the owner's design decision (M2 asks for it) · no production or
 deployment change.
 
+### 0.2a Prototype guides appearance, not function (owner, 2026-10-19)
+
+The 18 Oct prototypes define how screens look. They do not define which
+implemented features should work. For M1 and every later milestone:
+
+- Prototype placeholders, disabled links and missing interactions become
+  functional wherever the application already supports them.
+- Existing working pages and controls stay available even when the
+  prototype omits them.
+- Genuine application restrictions stay enforced: Google sign-in, the
+  guest Calendar gate, subscription entitlements and device limits.
+- Parked features (Study Archive) stay out of scope until authorised.
+
+Acceptance therefore assesses two things separately: **visual fidelity to
+the prototype** and **functional correctness against the application's
+approved behaviour**. A disabled prototype control never justifies
+disabling its working counterpart. Milestone files carry both columns.
+
 ### 0.3 Deployment and comparison gates
 
 Staging serves the frozen commit `5d89fbd`. A milestone's implementation
