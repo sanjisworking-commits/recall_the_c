@@ -677,8 +677,7 @@ Status chains, screen keys, nav/bar visibility, current tab and account slot are
 ### 10.3 Signed-in Free — DV-21 on staging (2026-10-19)
 
 **M1 remains unaccepted.** This subsection only answers the reported missing
-top nav on Playground. The full signed-in matrix (every §4 route, dark,
-responsive widths) is still outstanding.
+top nav on Playground. The full signed-in matrix is recorded in §10.5.
 
 Reported state, identified from the open browser pane:
 
@@ -751,3 +750,155 @@ Not DV-21 (recorded, not acted on; account copy is M5): Pro / Max /
 paused / pending `/playground` still show the fallback subtitle
 "Free account" in the account slot. Expired uses "Your Playground is
 paused"; Halted uses "Payment retries have stopped".
+
+
+### 10.5 Signed-in Free matrix on staging (2026-10-19)
+
+Captured on `https://recallthec-production.up.railway.app` while `sanjisworking@gmail.com` (Sanjali) was still Free: no `user_subscription` row before or after. Railway deployment metadata for `recallc-playground-staging / production` was still GitHub deployment `7168307529`, SHA `3b37f8947c05577b57af93a2a53f1ac5539c4e3a`. App-shell pages served `styles.css?v=main87`, `mobile.css?v=mob106`, and `playground.css?v=pg49`. The public landing page uses `styles.css?v=main85` and stays dark. **This records the matrix. It does not accept M1.**
+
+96 route rows (24 §4 routes × 390 and 1280 × light and dark) and 36 responsive rows (the §5 widths, light, on `/browse`, `/laws/ndps`, `/playground`, `/settings`, `/search`, `/terms`). Manifest: `manifests/hosted_signedin-free_matrix_3b37f89.json`. PNGs: `hosted-free-matrix/`. Viewport zoom is `free` on every row. No horizontal scroll on the responsive set. Every app-shell row is `body.is-authed` and the account slot is Sanjali · Free account.
+
+`/` is the public landing page for this login as well: no app header, no phone bar, theme stays dark.
+
+Phone Settings and Search keep the frozen signed-in bar-less shell (`none` at 390). Article 14 and the Playground Add sheet also keep the phone bar hidden. At 561–720 px the signed-in shell still shows the desktop header and the phone bar together on Browse, NDPS, Settings, Search, and Terms. Playground does not: its phone bar is hidden from 561 px up. That overlap was already recorded as a pre-existing signed-in gap.
+
+| Route | W | Theme | Status | Screen | Top nav | Phone bar | Current | Account |
+|---|---|---|---|---|---|---|---|---|
+| `/` | 390 | light | / 200 | None | hidden | none | — | — |
+| `/` | 390 | dark | / 200 | None | hidden | none | — | — |
+| `/` | 1280 | light | / 200 | None | hidden | none | — | — |
+| `/` | 1280 | dark | / 200 | None | hidden | none | — | — |
+| `/browse` | 390 | light | /browse 200 | browse | hidden | 5-tab | /browse | Sanjali · Free account |
+| `/browse` | 390 | dark | /browse 200 | browse | hidden | 5-tab | /browse | Sanjali · Free account |
+| `/browse` | 1280 | light | /browse 200 | browse | visible | none | /browse | Sanjali · Free account |
+| `/browse` | 1280 | dark | /browse 200 | browse | visible | none | /browse | Sanjali · Free account |
+| `/browse/part/iii` | 390 | light | /browse/part/iii 200 | part | hidden | 5-tab | /browse | Sanjali · Free account |
+| `/browse/part/iii` | 390 | dark | /browse/part/iii 200 | part | hidden | 5-tab | /browse | Sanjali · Free account |
+| `/browse/part/iii` | 1280 | light | /browse/part/iii 200 | part | visible | none | /browse | Sanjali · Free account |
+| `/browse/part/iii` | 1280 | dark | /browse/part/iii 200 | part | visible | none | /browse | Sanjali · Free account |
+| `/browse/article/14` | 390 | light | /browse/article/14 200 | article | hidden | none | — | Sanjali · Free account |
+| `/browse/article/14` | 390 | dark | /browse/article/14 200 | article | hidden | none | — | Sanjali · Free account |
+| `/browse/article/14` | 1280 | light | /browse/article/14 200 | article | visible | none | /browse | Sanjali · Free account |
+| `/browse/article/14` | 1280 | dark | /browse/article/14 200 | article | visible | none | /browse | Sanjali · Free account |
+| `/laws` | 390 | light | /laws 200 | laws | hidden | 5-tab | — | Sanjali · Free account |
+| `/laws` | 390 | dark | /laws 200 | laws | hidden | 5-tab | — | Sanjali · Free account |
+| `/laws` | 1280 | light | /laws 200 | laws | visible | none | /browse | Sanjali · Free account |
+| `/laws` | 1280 | dark | /laws 200 | laws | visible | none | /browse | Sanjali · Free account |
+| `/laws/ndps` | 390 | light | /laws/ndps 200 | bareact | hidden | 5-tab | /browse | Sanjali · Free account |
+| `/laws/ndps` | 390 | dark | /laws/ndps 200 | bareact | hidden | 5-tab | /browse | Sanjali · Free account |
+| `/laws/ndps` | 1280 | light | /laws/ndps 200 | bareact | visible | none | /browse | Sanjali · Free account |
+| `/laws/ndps` | 1280 | dark | /laws/ndps 200 | bareact | visible | none | /browse | Sanjali · Free account |
+| `/laws/uapa` | 390 | light | /laws/uapa 200 | bareact | hidden | 5-tab | — | Sanjali · Free account |
+| `/laws/uapa` | 390 | dark | /laws/uapa 200 | bareact | hidden | 5-tab | — | Sanjali · Free account |
+| `/laws/uapa` | 1280 | light | /laws/uapa 200 | bareact | visible | none | /browse | Sanjali · Free account |
+| `/laws/uapa` | 1280 | dark | /laws/uapa 200 | bareact | visible | none | /browse | Sanjali · Free account |
+| `/laws/bns` | 390 | light | /laws/bns 200 | bareact | hidden | 5-tab | — | Sanjali · Free account |
+| `/laws/bns` | 390 | dark | /laws/bns 200 | bareact | hidden | 5-tab | — | Sanjali · Free account |
+| `/laws/bns` | 1280 | light | /laws/bns 200 | bareact | visible | none | /browse | Sanjali · Free account |
+| `/laws/bns` | 1280 | dark | /laws/bns 200 | bareact | visible | none | /browse | Sanjali · Free account |
+| `/laws/mtp` | 390 | light | /laws/mtp 200 | bareact | hidden | 5-tab | — | Sanjali · Free account |
+| `/laws/mtp` | 390 | dark | /laws/mtp 200 | bareact | hidden | 5-tab | — | Sanjali · Free account |
+| `/laws/mtp` | 1280 | light | /laws/mtp 200 | bareact | visible | none | /browse | Sanjali · Free account |
+| `/laws/mtp` | 1280 | dark | /laws/mtp 200 | bareact | visible | none | /browse | Sanjali · Free account |
+| `/laws/ndps/section/8` | 390 | light | /laws/ndps/section/8 200 | bareactsection | hidden | 5-tab | — | Sanjali · Free account |
+| `/laws/ndps/section/8` | 390 | dark | /laws/ndps/section/8 200 | bareactsection | hidden | 5-tab | — | Sanjali · Free account |
+| `/laws/ndps/section/8` | 1280 | light | /laws/ndps/section/8 200 | bareactsection | visible | none | /browse | Sanjali · Free account |
+| `/laws/ndps/section/8` | 1280 | dark | /laws/ndps/section/8 200 | bareactsection | visible | none | /browse | Sanjali · Free account |
+| `/playground` | 390 | light | /playground 200 | playground | hidden | 5-tab | /playground | Sanjali · Free account |
+| `/playground` | 390 | dark | /playground 200 | playground | hidden | 5-tab | /playground | Sanjali · Free account |
+| `/playground` | 1280 | light | /playground 200 | playground | visible | none | /playground | Sanjali · Free account |
+| `/playground` | 1280 | dark | /playground 200 | playground | visible | none | /playground | Sanjali · Free account |
+| `/playground?stage=plans` | 390 | light | /playground?stage=plans 200 | playground | hidden | 5-tab | /playground | Sanjali · Free account |
+| `/playground?stage=plans` | 390 | dark | /playground?stage=plans 200 | playground | hidden | 5-tab | /playground | Sanjali · Free account |
+| `/playground?stage=plans` | 1280 | light | /playground?stage=plans 200 | playground | visible | none | /playground | Sanjali · Free account |
+| `/playground?stage=plans` | 1280 | dark | /playground?stage=plans 200 | playground | visible | none | /playground | Sanjali · Free account |
+| `/playground?stage=plans&tier=plus` | 390 | light | /playground?stage=plans&tier=plus 200 | playground | hidden | 5-tab | /playground | Sanjali · Free account |
+| `/playground?stage=plans&tier=plus` | 390 | dark | /playground?stage=plans&tier=plus 200 | playground | hidden | 5-tab | /playground | Sanjali · Free account |
+| `/playground?stage=plans&tier=plus` | 1280 | light | /playground?stage=plans&tier=plus 200 | playground | visible | none | /playground | Sanjali · Free account |
+| `/playground?stage=plans&tier=plus` | 1280 | dark | /playground?stage=plans&tier=plus 200 | playground | visible | none | /playground | Sanjali · Free account |
+| `/playground/laws/uapa/add` | 390 | light | /playground/laws/uapa/add 200 | playground | hidden | none | — | Sanjali · Free account |
+| `/playground/laws/uapa/add` | 390 | dark | /playground/laws/uapa/add 200 | playground | hidden | none | — | Sanjali · Free account |
+| `/playground/laws/uapa/add` | 1280 | light | /playground/laws/uapa/add 200 | playground | visible | none | /playground | Sanjali · Free account |
+| `/playground/laws/uapa/add` | 1280 | dark | /playground/laws/uapa/add 200 | playground | visible | none | /playground | Sanjali · Free account |
+| `/dashboard` | 390 | light | /dashboard 200 | today | hidden | 5-tab | /dashboard | Sanjali · Free account |
+| `/dashboard` | 390 | dark | /dashboard 200 | today | hidden | 5-tab | /dashboard | Sanjali · Free account |
+| `/dashboard` | 1280 | light | /dashboard 200 | today | visible | none | /dashboard | Sanjali · Free account |
+| `/dashboard` | 1280 | dark | /dashboard 200 | today | visible | none | /dashboard | Sanjali · Free account |
+| `/calendar` | 390 | light | /calendar 200 | revisions | hidden | 5-tab | /calendar | Sanjali · Free account |
+| `/calendar` | 390 | dark | /calendar 200 | revisions | hidden | 5-tab | /calendar | Sanjali · Free account |
+| `/calendar` | 1280 | light | /calendar 200 | revisions | visible | none | /calendar | Sanjali · Free account |
+| `/calendar` | 1280 | dark | /calendar 200 | revisions | visible | none | /calendar | Sanjali · Free account |
+| `/profile` | 390 | light | /profile 200 | account | hidden | 5-tab | /profile | Sanjali · Free account |
+| `/profile` | 390 | dark | /profile 200 | account | hidden | 5-tab | /profile | Sanjali · Free account |
+| `/profile` | 1280 | light | /profile 200 | account | visible | none | /profile | Sanjali · Free account |
+| `/profile` | 1280 | dark | /profile 200 | account | visible | none | /profile | Sanjali · Free account |
+| `/settings` | 390 | light | /settings 200 | settings | hidden | none | — | Sanjali · Free account |
+| `/settings` | 390 | dark | /settings 200 | settings | hidden | none | — | Sanjali · Free account |
+| `/settings` | 1280 | light | /settings 200 | settings | visible | none | — | Sanjali · Free account |
+| `/settings` | 1280 | dark | /settings 200 | settings | visible | none | — | Sanjali · Free account |
+| `/profile/security/devices` | 390 | light | /profile/security/devices 200 | account | hidden | 5-tab | /profile | Sanjali · Free account |
+| `/profile/security/devices` | 390 | dark | /profile/security/devices 200 | account | hidden | 5-tab | /profile | Sanjali · Free account |
+| `/profile/security/devices` | 1280 | light | /profile/security/devices 200 | account | visible | none | /profile | Sanjali · Free account |
+| `/profile/security/devices` | 1280 | dark | /profile/security/devices 200 | account | visible | none | /profile | Sanjali · Free account |
+| `/tables` | 390 | light | /tables 200 | tables | hidden | 5-tab | — | Sanjali · Free account |
+| `/tables` | 390 | dark | /tables 200 | tables | hidden | 5-tab | — | Sanjali · Free account |
+| `/tables` | 1280 | light | /tables 200 | tables | visible | none | — | Sanjali · Free account |
+| `/tables` | 1280 | dark | /tables 200 | tables | visible | none | — | Sanjali · Free account |
+| `/search` | 390 | light | /search 200 | search | hidden | none | — | Sanjali · Free account |
+| `/search` | 390 | dark | /search 200 | search | hidden | none | — | Sanjali · Free account |
+| `/search` | 1280 | light | /search 200 | search | visible | none | — | Sanjali · Free account |
+| `/search` | 1280 | dark | /search 200 | search | visible | none | — | Sanjali · Free account |
+| `/terms` | 390 | light | /terms 200 | None | hidden | 5-tab | — | Sanjali · Free account |
+| `/terms` | 390 | dark | /terms 200 | None | hidden | 5-tab | — | Sanjali · Free account |
+| `/terms` | 1280 | light | /terms 200 | None | visible | none | — | Sanjali · Free account |
+| `/terms` | 1280 | dark | /terms 200 | None | visible | none | — | Sanjali · Free account |
+| `/privacy` | 390 | light | /privacy 200 | None | hidden | 5-tab | — | Sanjali · Free account |
+| `/privacy` | 390 | dark | /privacy 200 | None | hidden | 5-tab | — | Sanjali · Free account |
+| `/privacy` | 1280 | light | /privacy 200 | None | visible | none | — | Sanjali · Free account |
+| `/privacy` | 1280 | dark | /privacy 200 | None | visible | none | — | Sanjali · Free account |
+| `/grievance` | 390 | light | /grievance 200 | None | hidden | 5-tab | — | Sanjali · Free account |
+| `/grievance` | 390 | dark | /grievance 200 | None | hidden | 5-tab | — | Sanjali · Free account |
+| `/grievance` | 1280 | light | /grievance 200 | None | visible | none | — | Sanjali · Free account |
+| `/grievance` | 1280 | dark | /grievance 200 | None | visible | none | — | Sanjali · Free account |
+
+### 10.6 Responsive widths — signed-in Free, light
+
+| Route | W×H | Top nav | Phone bar | Current | H-scroll |
+|---|---|---|---|---|---|
+| `/browse` | 320×568 | hidden | 5-tab | /browse | no |
+| `/browse` | 560×800 | hidden | 5-tab | /browse | no |
+| `/browse` | 561×800 | visible | 5-tab | /browse | no |
+| `/browse` | 720×900 | visible | 5-tab | /browse | no |
+| `/browse` | 768×1024 | visible | none | /browse | no |
+| `/browse` | 844×390 | visible | none | /browse | no |
+| `/laws/ndps` | 320×568 | hidden | 5-tab | /browse | no |
+| `/laws/ndps` | 560×800 | hidden | 5-tab | /browse | no |
+| `/laws/ndps` | 561×800 | visible | 5-tab | /browse | no |
+| `/laws/ndps` | 720×900 | visible | 5-tab | /browse | no |
+| `/laws/ndps` | 768×1024 | visible | none | /browse | no |
+| `/laws/ndps` | 844×390 | visible | none | /browse | no |
+| `/playground` | 320×568 | hidden | 5-tab | /playground | no |
+| `/playground` | 560×800 | hidden | 5-tab | /playground | no |
+| `/playground` | 561×800 | visible | none | /playground | no |
+| `/playground` | 720×900 | visible | none | /playground | no |
+| `/playground` | 768×1024 | visible | none | /playground | no |
+| `/playground` | 844×390 | visible | none | /playground | no |
+| `/settings` | 320×568 | hidden | none | — | no |
+| `/settings` | 560×800 | hidden | none | — | no |
+| `/settings` | 561×800 | visible | 5-tab | — | no |
+| `/settings` | 720×900 | visible | 5-tab | — | no |
+| `/settings` | 768×1024 | visible | none | — | no |
+| `/settings` | 844×390 | visible | none | — | no |
+| `/search` | 320×568 | hidden | none | — | no |
+| `/search` | 560×800 | hidden | none | — | no |
+| `/search` | 561×800 | visible | 5-tab | — | no |
+| `/search` | 720×900 | visible | 5-tab | — | no |
+| `/search` | 768×1024 | visible | none | — | no |
+| `/search` | 844×390 | visible | none | — | no |
+| `/terms` | 320×568 | hidden | 5-tab | — | no |
+| `/terms` | 560×800 | hidden | 5-tab | — | no |
+| `/terms` | 561×800 | visible | 5-tab | — | no |
+| `/terms` | 720×900 | visible | 5-tab | — | no |
+| `/terms` | 768×1024 | visible | none | — | no |
+| `/terms` | 844×390 | visible | none | — | no |
+
