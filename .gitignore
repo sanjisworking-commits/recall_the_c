@@ -63,6 +63,7 @@ data/progress/*
 .env
 .env.*
 !.env.example
+.staging-test-subscriptions.local.env
 config.local.json
 *.local.json
 
