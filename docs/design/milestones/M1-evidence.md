@@ -524,3 +524,156 @@ Viewport/DPR emulation and the AX-tree inspection are supporting evidence only. 
 | Staging deployment authorisation | **Granted 2026-10-19 for validation only** — the owner performs the deploy of `pg-m1-guest-shell` to `recallc-playground-staging`; no merge; deployment does not accept M1 |
 | Hosted acceptance | **Not run** |
 | Owner milestone decision | Pending |
+
+## 10. Hosted validation — staging deployment `b6ad47b0-01bb-4ec5-8137-f4837b402e00` (2026-10-19)
+
+Deployment verified read-only before capture: active SUCCESS build of `pg-m1-guest-shell` @ `3b37f8947c05577b57af93a2a53f1ac5539c4e3a` (shell code identical to `7f78992`; later commits are documentation), `/health` 200, live pins `main87` / `mob106` / `pg49`, variables unchanged (`APP_ENV=staging`, `PLAYGROUND_ENABLED=true`, `PRICING_ENABLED=false`, `ADMIN_ENABLED=false`), database still the staging Supabase ref. Captured 2026-10-19T13:12:46+0530 with Google Chrome 155.0.8059.82. **This section validates the deployment; it is not M1 acceptance.**
+
+### 10.1 Guest matrix — local candidate → hosted (same tool, same routes, 390 and 1280, light and dark)
+
+Status chains, screen keys, nav/bar visibility, current tab and account slot are identical between the local candidate and staging on every row below; PNGs differ only by environment (font rasterisation, staging data). Manifest: `manifests/hosted_guest_b6ad47b0.json`; light captures in `hosted/`.
+
+| Route | W | Theme | Status chain (local → hosted) | Screen key | Top nav | Phone bar | Current | Account slot | Zoom | PNG identical |
+|---|---|---|---|---|---|---|---|---|---|---|
+| `/` | 390 | light | / 200 | None | hidden | none | — | — | free | yes |
+| `/` | 390 | dark | / 200 | None | hidden | none | — | — | free | yes |
+| `/` | 1280 | light | / 200 | None | hidden | none | — | — | free | yes |
+| `/` | 1280 | dark | / 200 | None | hidden | none | — | — | free | yes |
+| `/browse` | 390 | light | /browse 200 | browse | hidden | 5-tab | /browse | Sign in | free | yes |
+| `/browse` | 390 | dark | /browse 200 | browse | hidden | 5-tab | /browse | Sign in | free | yes |
+| `/browse` | 1280 | light | /browse 200 | browse | visible | none | /browse | Sign in | free | yes |
+| `/browse` | 1280 | dark | /browse 200 | browse | visible | none | /browse | Sign in | free | yes |
+| `/browse/part/iii` | 390 | light | /browse/part/iii 200 | part | hidden | 5-tab | /browse | Sign in | free | yes |
+| `/browse/part/iii` | 390 | dark | /browse/part/iii 200 | part | hidden | 5-tab | /browse | Sign in | free | yes |
+| `/browse/part/iii` | 1280 | light | /browse/part/iii 200 | part | visible | none | /browse | Sign in | free | yes |
+| `/browse/part/iii` | 1280 | dark | /browse/part/iii 200 | part | visible | none | /browse | Sign in | free | yes |
+| `/browse/article/14` | 390 | light | /browse/article/14 200 | article | hidden | none | — | Sign in | free | yes |
+| `/browse/article/14` | 390 | dark | /browse/article/14 200 | article | hidden | none | — | Sign in | free | yes |
+| `/browse/article/14` | 1280 | light | /browse/article/14 200 | article | visible | none | /browse | Sign in | free | yes |
+| `/browse/article/14` | 1280 | dark | /browse/article/14 200 | article | visible | none | /browse | Sign in | free | yes |
+| `/laws` | 390 | light | /laws 200 | laws | hidden | 5-tab | /browse | Sign in | free | yes |
+| `/laws` | 390 | dark | /laws 200 | laws | hidden | 5-tab | /browse | Sign in | free | yes |
+| `/laws` | 1280 | light | /laws 200 | laws | visible | none | /browse | Sign in | free | yes |
+| `/laws` | 1280 | dark | /laws 200 | laws | visible | none | /browse | Sign in | free | yes |
+| `/laws/ndps` | 390 | light | /laws/ndps 200 | bareact | hidden | 5-tab | /browse | Sign in | free | yes |
+| `/laws/ndps` | 390 | dark | /laws/ndps 200 | bareact | hidden | 5-tab | /browse | Sign in | free | yes |
+| `/laws/ndps` | 1280 | light | /laws/ndps 200 | bareact | visible | none | /browse | Sign in | free | yes |
+| `/laws/ndps` | 1280 | dark | /laws/ndps 200 | bareact | visible | none | /browse | Sign in | free | yes |
+| `/laws/uapa` | 390 | light | /laws/uapa 200 | bareact | hidden | 5-tab | /browse | Sign in | free | yes |
+| `/laws/uapa` | 390 | dark | /laws/uapa 200 | bareact | hidden | 5-tab | /browse | Sign in | free | yes |
+| `/laws/uapa` | 1280 | light | /laws/uapa 200 | bareact | visible | none | /browse | Sign in | free | yes |
+| `/laws/uapa` | 1280 | dark | /laws/uapa 200 | bareact | visible | none | /browse | Sign in | free | yes |
+| `/laws/bns` | 390 | light | /laws/bns 200 | bareact | hidden | 5-tab | /browse | Sign in | free | yes |
+| `/laws/bns` | 390 | dark | /laws/bns 200 | bareact | hidden | 5-tab | /browse | Sign in | free | yes |
+| `/laws/bns` | 1280 | light | /laws/bns 200 | bareact | visible | none | /browse | Sign in | free | yes |
+| `/laws/bns` | 1280 | dark | /laws/bns 200 | bareact | visible | none | /browse | Sign in | free | yes |
+| `/laws/mtp` | 390 | light | /laws/mtp 200 | bareact | hidden | 5-tab | /browse | Sign in | free | yes |
+| `/laws/mtp` | 390 | dark | /laws/mtp 200 | bareact | hidden | 5-tab | /browse | Sign in | free | yes |
+| `/laws/mtp` | 1280 | light | /laws/mtp 200 | bareact | visible | none | /browse | Sign in | free | yes |
+| `/laws/mtp` | 1280 | dark | /laws/mtp 200 | bareact | visible | none | /browse | Sign in | free | yes |
+| `/laws/ndps/section/8` | 390 | light | /laws/ndps/section/8 200 | bareactsection | hidden | 5-tab | /browse | Sign in | free | yes |
+| `/laws/ndps/section/8` | 390 | dark | /laws/ndps/section/8 200 | bareactsection | hidden | 5-tab | /browse | Sign in | free | yes |
+| `/laws/ndps/section/8` | 1280 | light | /laws/ndps/section/8 200 | bareactsection | visible | none | /browse | Sign in | free | yes |
+| `/laws/ndps/section/8` | 1280 | dark | /laws/ndps/section/8 200 | bareactsection | visible | none | /browse | Sign in | free | yes |
+| `/playground` | 390 | light | /playground 200 | playground | hidden | 5-tab | /playground | Sign in | free | yes |
+| `/playground` | 390 | dark | /playground 200 | playground | hidden | 5-tab | /playground | Sign in | free | yes |
+| `/playground` | 1280 | light | /playground 200 | playground | visible | none | /playground | Sign in | free | yes |
+| `/playground` | 1280 | dark | /playground 200 | playground | visible | none | /playground | Sign in | free | yes |
+| `/playground?stage=plans` | 390 | light | /playground?stage=plans 200 | playground | hidden | 5-tab | /playground | Sign in | free | yes |
+| `/playground?stage=plans` | 390 | dark | /playground?stage=plans 200 | playground | hidden | 5-tab | /playground | Sign in | free | yes |
+| `/playground?stage=plans` | 1280 | light | /playground?stage=plans 200 | playground | visible | none | /playground | Sign in | free | yes |
+| `/playground?stage=plans` | 1280 | dark | /playground?stage=plans 200 | playground | visible | none | /playground | Sign in | free | yes |
+| `/playground?stage=plans&tier=plus` | 390 | light | /playground?stage=plans&tier=plus 200 | playground | hidden | 5-tab | /playground | Sign in | free | yes |
+| `/playground?stage=plans&tier=plus` | 390 | dark | /playground?stage=plans&tier=plus 200 | playground | hidden | 5-tab | /playground | Sign in | free | yes |
+| `/playground?stage=plans&tier=plus` | 1280 | light | /playground?stage=plans&tier=plus 200 | playground | visible | none | /playground | Sign in | free | yes |
+| `/playground?stage=plans&tier=plus` | 1280 | dark | /playground?stage=plans&tier=plus 200 | playground | visible | none | /playground | Sign in | free | yes |
+| `/playground/laws/uapa/add` | 390 | light | /playground/laws/uapa/add 200 | playground | hidden | none | — | Sign in | free | yes |
+| `/playground/laws/uapa/add` | 390 | dark | /playground/laws/uapa/add 200 | playground | hidden | none | — | Sign in | free | yes |
+| `/playground/laws/uapa/add` | 1280 | light | /playground/laws/uapa/add 200 | playground | visible | none | /playground | Sign in | free | yes |
+| `/playground/laws/uapa/add` | 1280 | dark | /playground/laws/uapa/add 200 | playground | visible | none | /playground | Sign in | free | yes |
+| `/dashboard` | 390 | light | /dashboard 200 | today | hidden | 5-tab | /dashboard | Sign in | free | yes |
+| `/dashboard` | 390 | dark | /dashboard 200 | today | hidden | 5-tab | /dashboard | Sign in | free | yes |
+| `/dashboard` | 1280 | light | /dashboard 200 | today | visible | none | /dashboard | Sign in | free | yes |
+| `/dashboard` | 1280 | dark | /dashboard 200 | today | visible | none | /dashboard | Sign in | free | yes |
+| `/calendar` | 390 | light | /calendar 303 → /login?next=%2Fcalendar&reason=default 200 | None | hidden | none | — | — | locked | no |
+| `/calendar` | 390 | dark | /calendar 303 → /login?next=%2Fcalendar&reason=default 200 | None | hidden | none | — | — | locked | no |
+| `/calendar` | 1280 | light | /calendar 303 → /login?next=%2Fcalendar&reason=default 200 | None | hidden | none | — | — | locked | no |
+| `/calendar` | 1280 | dark | /calendar 303 → /login?next=%2Fcalendar&reason=default 200 | None | hidden | none | — | — | locked | no |
+| `/profile` | 390 | light | /profile 200 | account | hidden | 5-tab | /profile | Sign in | free | yes |
+| `/profile` | 390 | dark | /profile 200 | account | hidden | 5-tab | /profile | Sign in | free | yes |
+| `/profile` | 1280 | light | /profile 200 | account | visible | none | /profile | Sign in | free | yes |
+| `/profile` | 1280 | dark | /profile 200 | account | visible | none | /profile | Sign in | free | yes |
+| `/settings` | 390 | light | /settings 200 | settings | hidden | 5-tab | /profile | Sign in | free | yes |
+| `/settings` | 390 | dark | /settings 200 | settings | hidden | 5-tab | /profile | Sign in | free | yes |
+| `/settings` | 1280 | light | /settings 200 | settings | visible | none | /profile | Sign in | free | yes |
+| `/settings` | 1280 | dark | /settings 200 | settings | visible | none | /profile | Sign in | free | yes |
+| `/profile/security/devices` | 390 | light | /profile/security/devices 303 → /login?next=%2Fprofile%2Fsecurity%2Fdevices&reason=default 200 | None | hidden | none | — | — | locked | no |
+| `/profile/security/devices` | 390 | dark | /profile/security/devices 303 → /login?next=%2Fprofile%2Fsecurity%2Fdevices&reason=default 200 | None | hidden | none | — | — | locked | no |
+| `/profile/security/devices` | 1280 | light | /profile/security/devices 303 → /login?next=%2Fprofile%2Fsecurity%2Fdevices&reason=default 200 | None | hidden | none | — | — | locked | no |
+| `/profile/security/devices` | 1280 | dark | /profile/security/devices 303 → /login?next=%2Fprofile%2Fsecurity%2Fdevices&reason=default 200 | None | hidden | none | — | — | locked | no |
+| `/tables` | 390 | light | /tables 200 | tables | hidden | 5-tab | /browse | Sign in | free | yes |
+| `/tables` | 390 | dark | /tables 200 | tables | hidden | 5-tab | /browse | Sign in | free | yes |
+| `/tables` | 1280 | light | /tables 200 | tables | visible | none | /browse | Sign in | free | yes |
+| `/tables` | 1280 | dark | /tables 200 | tables | visible | none | /browse | Sign in | free | yes |
+| `/search` | 390 | light | /search 200 | search | hidden | 5-tab | /browse | Sign in | free | yes |
+| `/search` | 390 | dark | /search 200 | search | hidden | 5-tab | /browse | Sign in | free | yes |
+| `/search` | 1280 | light | /search 200 | search | visible | none | /browse | Sign in | free | yes |
+| `/search` | 1280 | dark | /search 200 | search | visible | none | /browse | Sign in | free | yes |
+| `/terms` | 390 | light | /terms 200 | None | hidden | 5-tab | — | Sign in | free | yes |
+| `/terms` | 390 | dark | /terms 200 | None | hidden | 5-tab | — | Sign in | free | yes |
+| `/terms` | 1280 | light | /terms 200 | None | visible | none | — | Sign in | free | yes |
+| `/terms` | 1280 | dark | /terms 200 | None | visible | none | — | Sign in | free | yes |
+| `/privacy` | 390 | light | /privacy 200 | None | hidden | 5-tab | — | Sign in | free | yes |
+| `/privacy` | 390 | dark | /privacy 200 | None | hidden | 5-tab | — | Sign in | free | yes |
+| `/privacy` | 1280 | light | /privacy 200 | None | visible | none | — | Sign in | free | yes |
+| `/privacy` | 1280 | dark | /privacy 200 | None | visible | none | — | Sign in | free | yes |
+| `/grievance` | 390 | light | /grievance 200 | None | hidden | 5-tab | — | Sign in | free | yes |
+| `/grievance` | 390 | dark | /grievance 200 | None | hidden | 5-tab | — | Sign in | free | yes |
+| `/grievance` | 1280 | light | /grievance 200 | None | visible | none | — | Sign in | free | yes |
+| `/grievance` | 1280 | dark | /grievance 200 | None | visible | none | — | Sign in | free | yes |
+
+
+### 10.2 Responsive widths on staging (guest, light)
+
+| Route | W×H | Top nav | Phone bar | Current | H-scroll |
+|---|---|---|---|---|---|
+| `/browse` | 320×568 | hidden | 5-tab | /browse | no |
+| `/browse` | 560×800 | hidden | 5-tab | /browse | no |
+| `/browse` | 561×800 | visible | none | /browse | no |
+| `/browse` | 720×900 | visible | none | /browse | no |
+| `/browse` | 768×1024 | visible | none | /browse | no |
+| `/browse` | 844×390 | visible | none | /browse | no |
+| `/laws/ndps` | 320×568 | hidden | 5-tab | /browse | no |
+| `/laws/ndps` | 560×800 | hidden | 5-tab | /browse | no |
+| `/laws/ndps` | 561×800 | visible | none | /browse | no |
+| `/laws/ndps` | 720×900 | visible | none | /browse | no |
+| `/laws/ndps` | 768×1024 | visible | none | /browse | no |
+| `/laws/ndps` | 844×390 | visible | none | /browse | no |
+| `/playground` | 320×568 | hidden | 5-tab | /playground | no |
+| `/playground` | 560×800 | hidden | 5-tab | /playground | no |
+| `/playground` | 561×800 | visible | none | /playground | no |
+| `/playground` | 720×900 | visible | none | /playground | no |
+| `/playground` | 768×1024 | visible | none | /playground | no |
+| `/playground` | 844×390 | visible | none | /playground | no |
+| `/settings` | 320×568 | hidden | 5-tab | /profile | no |
+| `/settings` | 560×800 | hidden | 5-tab | /profile | no |
+| `/settings` | 561×800 | visible | none | /profile | no |
+| `/settings` | 720×900 | visible | none | /profile | no |
+| `/settings` | 768×1024 | visible | none | /profile | no |
+| `/settings` | 844×390 | visible | none | /profile | no |
+| `/search` | 320×568 | hidden | 5-tab | /browse | no |
+| `/search` | 560×800 | hidden | 5-tab | /browse | no |
+| `/search` | 561×800 | visible | none | /browse | no |
+| `/search` | 720×900 | visible | none | /browse | no |
+| `/search` | 768×1024 | visible | none | /browse | no |
+| `/search` | 844×390 | visible | none | /browse | no |
+| `/terms` | 320×568 | hidden | 5-tab | — | no |
+| `/terms` | 560×800 | hidden | 5-tab | — | no |
+| `/terms` | 561×800 | visible | none | — | no |
+| `/terms` | 720×900 | visible | none | — | no |
+| `/terms` | 768×1024 | visible | none | — | no |
+| `/terms` | 844×390 | visible | none | — | no |
+
+### 10.3 Signed-in Free regression on staging
+
+Pending: needs the owner signed in on staging in the browser pane (Google-only; no session is copied anywhere). Rows to run: §4 routes at 390 and 1280, light and dark, with the DOM probe; DV-20 subtitle and DV-21 nav on `/playground`, `/playground?stage=plans[&tier=plus]`, `/playground/laws/{id}/add` at 1280.
