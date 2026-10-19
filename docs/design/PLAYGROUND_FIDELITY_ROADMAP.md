@@ -100,7 +100,7 @@ are written as `phone:<query>` / `desktop:<query>`.
 | M | Name | Screen family | Depends on | Owner decisions needed first | Status |
 |---|---|---|---|---|---|
 | M0 | Audit baseline | all | — | — | **ACCEPTED as planning baseline** (PR #218, draft; limitations §0.4) |
-| M1 | Guest shell parity (+ DV-20 account slot, DV-21 nav on gate/plans/Add) | shell only: tab bar, top nav, account slot | — | checklist accepted 2026-10-19; implemented locally as PR #219 (`5a03044`) | **local evidence delivered — awaiting owner review** |
+| M1 | Guest shell parity (+ DV-20 account slot, DV-21 nav on gate/plans/Add) | shell only: tab bar, top nav, account slot | — | checklist accepted; implemented locally as PR #219 (`7f78992`); review corrections applied | **under review, not accepted** |
 | M2 | Bare Act head family (content + in-page navigation) | `/laws/{id}` for every eligible Act, Add sheet | M1 (shell) | direction approved (data-driven head, 8 NDPS entries, About/Schedules preserved) | proposed |
 | M3 | Browse and Laws index (phone) | `/browse`, `/laws`, `/browse/part/*` phone | M1 | — | proposed |
 | M4 | Today / dashboard | `/dashboard` guest + signed-in, both widths | M1 | §4.1 item 8 | proposed |
@@ -318,7 +318,7 @@ run in parallel on separate branches. M2 is independent of M3–M6.
 | M | Checklist approved | Implemented (SHA) | Tests | Evidence folder | Deviations open | Accepted on |
 |---|---|---|---|---|---|---|
 | M0 | n/a (audit) | 2866ede, b4a0517 | n/a | `proto-comparison-2026-10-18/` | DV-1…DV-19 classified; desktop signed-in visual pass incomplete | accepted as planning baseline 2026-10-18 |
-| M1 | accepted 2026-10-19 with DV-20 and DV-21 (`milestones/M1.md`); prerequisites met (deployment `32971cbf…` = `5d89fbd`; desktop baseline S01–S14) | `5a03044` on `pg-m1-guest-shell` — draft PR #219 | full suite on `5a03044`: 3 failed (pre-existing `test_devices_m4c`), 3903 passed, 163 skipped; +54 shell-parity tests | `proto-comparison-2026-10-19/m1/` + `milestones/M1-evidence.md` (LOCAL/PRELIMINARY) | A02 contrast (inactive label 3.24:1, light); DV-22 brand mark; signed-in 561–720 double nav (pre-existing) | **pending owner review**; staging deployment and merge not authorized |
+| M1 | accepted 2026-10-19 with DV-20 and DV-21 (`milestones/M1.md`); prerequisites met (deployment `32971cbf…` = `5d89fbd`; desktop baseline S01–S14) | `7f78992` on `pg-m1-guest-shell` (`5a03044` shell + review corrections) — draft PR #219 | full suite on `7f78992`: **not green — 3 documented exceptions** (`test_devices_m4c`, pre-existing), 3904 passed, 163 skipped; +55 shell-parity tests; Playwright tests NOT RUN | `proto-comparison-2026-10-19/m1/` + `milestones/M1-evidence.md` v2 (LOCAL/PRELIMINARY); gallery of every capture linked in the folder README | signed-in A02 exception (38 px, `--mid`); scope expansion §1.1 (Browse Part, readers, guest Add); DV-22 brand mark; signed-in 561–720 double nav; automated a11y scan BLOCKED, SR pass NOT RUN | **under review, not accepted** (review 2026-10-19 → corrections applied); staging deployment and merge not authorized |
 | M2 | — | — | — | — | — | — |
 | M3 | — | — | — | — | — | — |
 | M4 | — | — | — | — | — | — |
