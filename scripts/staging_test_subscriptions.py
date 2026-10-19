@@ -35,6 +35,7 @@ AUDIT_APPLY = "staging_test_subscription_apply"
 AUDIT_RESTORE = "staging_test_subscription_restore"
 AUDIT_RENEW = "staging_test_subscription_renew"
 AUDIT_RESET = "staging_test_subscription_reset"
+NIL_UUID = "00000000-0000-0000-0000-000000000000"
 DIRECT_STAGING = (
     ("db.tvygwasuqvtnzjyjtqrq.supabase.co", 5432, "postgres", "postgres"),
 )
@@ -295,6 +296,10 @@ def load_allowlist(env: Mapping[str, str]) -> Allowlist:
         raise StagingTestSubscriptionError(
             "STAGING_TEST_SUBSCRIPTION_OPERATOR_UUID is required"
         ) from exc
+    if operator_uuid == NIL_UUID:
+        raise StagingTestSubscriptionError(
+            "STAGING_TEST_SUBSCRIPTION_OPERATOR_UUID must be a real account UUID"
+        )
     return Allowlist(uuids=uuids, labels=labels, operator_uuid=operator_uuid)
 
 

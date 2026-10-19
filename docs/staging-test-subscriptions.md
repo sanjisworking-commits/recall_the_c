@@ -63,17 +63,20 @@ Reset deletes each verified helper row with `WHERE id = … AND user_id = …` a
 
 Railway environment name `production` is ignored; it is not `APP_ENV`.
 
-## Staging pin (re-verify at Gate B dry-run)
+The operator UUID is a real staging account. The nil UUID is rejected for every command that loads the allowlist, including `--commit`.
 
-Read-only probe 2026-10-19T12:50Z of `https://recallthec-production.up.railway.app`:
+## Staging pin (recorded 2026-10-19 before any grant)
 
-- `GET /health` → `{"status":"ok"}`
-- Guest `/playground` pins `main87` / `mob106` / `pg49` with M1 guest chrome
-- `/health` does not expose git SHA. Last documented hosted SHA: `pg-m1-guest-shell` @ `3b37f8947c05577b57af93a2a53f1ac5539c4e3a` (M1-evidence §10). Confirm the live Railway SHA before any `--commit`.
-- Repo Alembic head: `20260927_0027`. Confirm live `alembic_version` on the staging DSN at Gate B (read-only).
-- Last recorded flags (M1-evidence §10, not re-read from Railway vars in Gate A): `APP_ENV=staging`, `PLAYGROUND_ENABLED=true`, `PRICING_ENABLED=false`, `ADMIN_ENABLED=false`.
+Read-only probe of `https://recallthec-production.up.railway.app`:
 
-**M1:** hosted guest-shell validation exists; not accepted. Open PR #219 (`pg-m1-guest-shell`).
+- `GET /health` → `{"status":"ok"}`. That body does not carry a git SHA.
+- Guest `/playground` still serves `styles.css?v=main87`, `mobile.css?v=mob106`, `playground.css?v=pg49`.
+- Railway deployment metadata (GitHub deployment created by Railway, not `/health`): environment `recallc-playground-staging / production`, Railway environment id `2943667e-f8e2-4967-b59b-489ad6543d78`, deployment `7168307529`, state `success` at `2026-10-19T07:41:49Z`, SHA `3b37f8947c05577b57af93a2a53f1ac5539c4e3a`. No newer deployment exists for that environment. `empathetic-delight / production` is an older SHA (`0c0a8d555748cb5fa63a5fbe0a43998ee5c1d942`, 2026-10-17) and is not this host.
+- Helper pooler-identity commit: `fd44d6283fe3cde7ee2772ea2acbcc7d56bd5be0`. That commit is not the hosted web SHA. The helper runs against the database; it is not deployed with this pin.
+- Live `alembic_version` on the staging DSN (read-only, 2026-10-19): `20260927_0027`.
+- Last recorded flags (M1-evidence §10, not re-read from Railway vars): `APP_ENV=staging`, `PLAYGROUND_ENABLED=true`, `PRICING_ENABLED=false`, `ADMIN_ENABLED=false`.
+
+**M1:** `origin/pg-m1-guest-shell` @ `9281f273ecd39a3a12def28321ab2a4f570ce4de`, `docs/design/milestones/M1-evidence.md` §10.3. Hosted signed-in Free DV-21 on Playground is recorded for Sanjali · Free account. The full signed-in matrix (every §4 route, dark, and responsive widths) is still outstanding, and the file says M1 remains unaccepted. That account must stay Free until those checks are complete. Guest evidence does not substitute.
 
 **M2 (UI-fidelity Act heads):** no `docs/design/milestones/M2.md`. Open playground-stack PRs on 2026-10-19: #218 M0 audit, #219 M1 guest shell, #217 admin paywall bypass (do not use), #210 study calendar, #188 UI redesign. None is an M2 Act-heads milestone PR. Absence of a milestone file is not the only check; this branch/PR scan is. Confirm again at Gate B.
 

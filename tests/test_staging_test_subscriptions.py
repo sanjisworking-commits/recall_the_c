@@ -588,6 +588,16 @@ def test_inspect_does_not_require_uuid_allowlist(
     assert "stop-after-guards" in capsys.readouterr().err
 
 
+def test_nil_operator_uuid_is_rejected() -> None:
+    with pytest.raises(helper.StagingTestSubscriptionError, match="real account"):
+        helper.load_allowlist(
+            {
+                "STAGING_TEST_SUBSCRIPTION_UUIDS": f"plus:{PLUS},pro:{PRO},max:{MAX}",
+                "STAGING_TEST_SUBSCRIPTION_OPERATOR_UUID": "00000000-0000-0000-0000-000000000000",
+            }
+        )
+
+
 def test_preview_still_requires_uuid_allowlist(capsys: pytest.CaptureFixture[str]) -> None:
     code = helper.main(
         ["preview", "--all"],
