@@ -463,6 +463,25 @@ Evidence files: `docs/design/proto-comparison-2026-10-19/m1/a11y/` (`a11y.json`,
 | Guest gate (desktop) | full nav + Sign in | now full nav + Sign in, Playground current | MATCH (was: brand + guest menu only) |
 | Legal pages | not drawn | inherited shell, no current tab | per checklist |
 
+## 7a. Functional correctness, assessed separately from visual fidelity (owner rule, 2026-10-19)
+
+The prototype guides appearance only. This table lists every working control or page the M1 shell change touched and what happened to it; nothing was disabled because the prototype draws it disabled or omits it.
+
+| Function (frozen) | Where it lived | Candidate | Status |
+|---|---|---|---|
+| Sign in entry for guests (desktop) | guest account menu on Browse/Laws/NDPS/gate/Profile; `Sign in` link in the legacy nav elsewhere | one `Sign in` button in the account slot on every shared-shell page; the Browse strip's own Sign in link is unchanged | **kept, unified** |
+| Settings route for guests (desktop) | "Settings" item inside the guest account menu | footer "Settings" link now shown to guests; `/settings` itself unchanged | **kept** (moved; test `test_guest_footer_keeps_functions_and_a_route_to_settings`) |
+| Guest "Sign out" item | guest account menu (no-op for guests: closed the menu) | removed with the menu | **removed, no-op** — it performed no action for a guest |
+| Today / Browse / Playground / Calendar / Profile tabs (phone) | five tabs only on NDPS head, gate, Profile; legacy Browse/Search/Learn/Sign in elsewhere | five tabs everywhere for guests | **kept and extended**; every tab is a real link |
+| Search and Learn entries for guests (phone) | legacy bar tabs | not in the five-tab bar; `/search` reachable from the Browse page's search control and by URL; `/learn/*` reachable from Articles | **kept as pages**, no longer bar tabs (prototype omits them; the pages still work — see guest `/search` captures) |
+| Calendar gate for guests | `/calendar` → 303 to `/login?next=%2Fcalendar&reason=default` | identical (test `test_guest_gates_are_preserved`) | **enforced** |
+| Devices gate for guests | 303 to login | identical | **enforced** |
+| Playground gate (guest, sign-in required) | `/playground` 200 with the sign-in gate | identical body; nav added | **enforced** |
+| Footer: Tables, Relevant laws, Contact us, theme chip, legal links | all pages | unchanged (plus Settings for guests) | **kept** |
+| Google-only sign-in | `/login` standalone | unchanged | **enforced** |
+| Zoom | blocked on shared shell | allowed | **enabled** (was a restriction the application did not need) |
+| Signed-in account menu (Profile, Settings, Learn, Progress, Calendar, Memory log, Admin, Sign out) | account slot | unchanged markup | **kept** |
+
 ## 8. Deviations still open after M1 (for the owner)
 
 | ID | Where | Class | Proposal |
