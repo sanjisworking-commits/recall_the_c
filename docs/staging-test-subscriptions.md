@@ -76,7 +76,7 @@ Read-only probe of `https://recallthec-production.up.railway.app`:
 - Live `alembic_version` on the staging DSN (read-only, 2026-10-19): `20260927_0027`.
 - Last recorded flags (M1-evidence §10, not re-read from Railway vars): `APP_ENV=staging`, `PLAYGROUND_ENABLED=true`, `PRICING_ENABLED=false`, `ADMIN_ENABLED=false`.
 
-**M1:** `origin/pg-m1-guest-shell` @ `9281f273ecd39a3a12def28321ab2a4f570ce4de`, `docs/design/milestones/M1-evidence.md` §10.3. Hosted signed-in Free DV-21 on Playground is recorded for Sanjali · Free account. The full signed-in matrix (every §4 route, dark, and responsive widths) is still outstanding, and the file says M1 remains unaccepted. That account must stay Free until those checks are complete. Guest evidence does not substitute.
+**M1:** hosted signed-in Free matrix for `sanjisworking@gmail.com` is recorded in `docs/design/milestones/M1-evidence.md` §10.5 on `cursor/hosted-free-m1-matrix-7c6d` (`70f036d7ab11a36877f504624e6cfb3fb701054c`), against staging SHA `3b37f8947c05577b57af93a2a53f1ac5539c4e3a`. The account was still Free during that capture. Recording the matrix does not accept M1.
 
 **M2 (UI-fidelity Act heads):** no `docs/design/milestones/M2.md`. Open playground-stack PRs on 2026-10-19: #218 M0 audit, #219 M1 guest shell, #217 admin paywall bypass (do not use), #210 study calendar, #188 UI redesign. None is an M2 Act-heads milestone PR. Absence of a milestone file is not the only check; this branch/PR scan is. Confirm again at Gate B.
 
