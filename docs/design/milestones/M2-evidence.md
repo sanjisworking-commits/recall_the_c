@@ -367,3 +367,27 @@ Verification (headless Chrome, `manifests/dialog_verification_max.json`, `dialog
 | Plus (confirm → scope) | 1280, 390 | "Add to Playground" (visible confirm title); Enter on the primary → scope step relabels to "Add The UAPA, 1967", focus "Entire Act" | "Add to Playground" | as above |
 
 Full suite on this tree: 3,951 passed, 163 skipped, 3 failed (the documented device exceptions) — `manifests/pytest_full_run5_label_fix.log`. Test: `test_the_standalone_panel_is_labelled_by_the_heading_of_its_initial_step` (Max → scope title, Plus → confirm title, on the standalone panel and the served host; the script labels only after `showModal()`).
+
+## 10. Hosted validation — staging deployment `0eb35808-b852-4555-97fd-019122411de1` (= `e2ac903`, 2026-10-20)
+
+Deployment verified from Railway metadata (`SUCCESS`, branch `pg-m2-act-head`, commit `e2ac903aa542f154c6b148f9505e53a5cf6c779b`) and from the served page (`main88` / `mob107` / `pg51` / `pg11`, `data-act-head`, `/health` 200) before any capture. Nothing was deployed, granted or revoked by Claude; no roster write was made on staging.
+
+### 10.1 Guest matrix (headless Chrome, `tools/capture_m2.py`, 390 and 1280, light and dark)
+
+All 44 hosted rows match the local candidate probe for probe (status, meta, CTA label/href/sheet, row types and hrefs, About, sheet open state, no horizontal scroll): `manifests/hosted_guest_0eb35808.json`, light captures in `hosted/guest/`. NDPS 8 chapters + 1 schedule; UAPA 7 + 4; BNS 20 + 0; BNSS 39 + 2; PSS 8 + 0; MTP "Sections 1–8" with 9 flat section links; the guest sheet opens in-page (kind `guest`, 460 px modal / bottom sheet) and by URL over the Act; readers and the 404 unchanged.
+
+States (`hosted/states/`, `manifests/hosted_states_0eb35808.json`): chapter expanded, About open, focused row and focused schedule link on both widths. Keyboard (`hosted/keyboard/`, `manifests/hosted_keyboard_trace_0eb35808.json`): Enter on a chapter row sets `aria-expanded="true"` on both widths; Enter on the CTA opens the sheet with focus on the Close button; Tab cycles inside the dialog (Sign in → Create an account → Close); Escape closes it and focus returns to the CTA.
+
+### 10.2 Signed-in rows from the owner's session (browser pane) — **Pro, not Free**
+
+The session the owner signed in with is the Pro-granted staging account ("RecallC Pro" on Today and Profile, Devices 2 of 2), so these are **Pro rows**; the **Free hosted rows remain unverified**. Method and every probe: `manifests/hosted_signedin_pro_pane_0eb35808.json` (DOM probes from the pane; pointer clicks for the in-page open; no POST).
+
+| Route | Width | Result |
+|---|---|---|
+| `/laws/ndps`, `/laws/uapa`, `/laws/mtp` | 1280 | generated head, kind `eligible_to_add`, CTA "+ Add to Playground" → `/playground/laws/{id}/add` (sheet); row counts and schedule hrefs as local; MTP flat (no `<details>`, no "Chapter"); About present; no horizontal scroll. Account subtitle reads "Free account" on these path-gated pages for the Pro login — the known DV-20 limitation recorded in the M1 paid-pack review (M5), not M2 |
+| `/laws/uapa` in-page open | 1280 | pointer click → dialog open, labelled by the visible "Add to Playground", one landmark, lede "The UAPA, 1967 joins this month's Playground …", Close 44×44 focused; Close click → closed, URL unchanged, focus back on the CTA; Escape likewise |
+| `/laws/uapa` chapter row | 1280 | click → `open`, `aria-expanded="true"`, section links visible, no other chapter open |
+| `/playground/laws/uapa/add` by URL | 1280, 375 | Act head underneath, served dialog open (`data-pg-sheet-direct`, return `/laws/uapa`), one open dialog, label "Add to Playground" visible, focus on Close; Escape / Close → closed, URL rewritten to `/laws/uapa`, label removed |
+| `/laws/ndps` | 375 | head (CTA 48 px, rows 48–59 px, five-tab bar), schedule link; pointer click opens the bottom sheet (about 3 s on staging), label visible, Close 44×44 at the sheet's top-right; Close → focus back on the CTA |
+
+Not covered on staging: Free rows (no Free session), the subscriber Playground/plans routes (device cap 2 of 2 — needs the separately authorised device revocation), the roster write itself (not sent), dark theme for the signed-in session, Plus/Max/expired/halted. M2 acceptance is the owner's decision on this record.
