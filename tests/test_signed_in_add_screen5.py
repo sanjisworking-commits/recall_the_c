@@ -119,6 +119,9 @@ def _sign_in(client: TestClient) -> None:
     assert client.cookies.get(SESSION_COOKIE_NAME)
 
 
+ROLE_ATTRS = 'role="dialog" aria-modal="true" aria-labelledby="pg-add-title"'
+
+
 def _sheet(html: str) -> str:
     """The one `.pg-sheet-panel` (the Add sheet) in the page."""
     return html.split('class="pg-sheet-panel"', 1)[1].split("</section>", 1)[0]
@@ -143,8 +146,10 @@ def test_signed_in_add_sheet_is_subscribe_only(tmp_path: Path) -> None:
     assert 'data-pg-kind="subscribe"' in sheet
     assert "data-pg-add\n" in sheet
     assert 'data-roster-confirm="ndps"' in sheet
-    assert 'role="dialog"' in sheet
-    assert 'aria-labelledby="pg-add-title"' in sheet
+    # One dialog landmark (owner review of b828b85): inside the host <dialog>
+    # the panel carries no role/aria-modal/label; the host does.
+    assert 'role="dialog"' not in sheet and "aria-modal" not in sheet
+    assert 'aria-labelledby="pg-add-title"' in html.split("<dialog ", 1)[1].split(">", 1)[0]
     assert "data-expired-add" not in sheet
     assert "data-halted-add" not in sheet
     assert f'<h1 id="pg-add-title" class="pg-add-title">{TITLE}</h1>' in sheet
@@ -233,7 +238,11 @@ def test_signed_in_add_in_page_fetch_returns_bare_panel(tmp_path: Path) -> None:
     assert "data-pg-sheet-close" not in sheet
     assert "/billing/subscriptions" not in sheet
     assert "data-guest-add-gate" not in sheet
-    assert sheet == _sheet(client.get(add_path("ndps")).text)
+    # Alone, the panel is its own dialog (as before M2); inside the host
+    # <dialog> it is not. Otherwise byte-identical.
+    assert 'role="dialog" aria-modal="true" aria-labelledby="pg-add-title"' in sheet
+    direct = _sheet(client.get(add_path("ndps")).text)
+    assert sheet.replace(ROLE_ATTRS, "") == direct
 
 
 def test_signed_in_add_unlock_opens_existing_gate(tmp_path: Path) -> None:

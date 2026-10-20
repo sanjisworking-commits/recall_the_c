@@ -715,7 +715,7 @@ def test_phone_expired_calendar_css_scope_pins_and_desktop_09_untouched() -> Non
         assert "expired_calendar" not in text
         assert "data-expired-calendar" not in text
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg50" in base
+    assert "playground.css?v=pg51" in base
     assert "playground.css?v=pg44" not in base
     assert "styles.css?v=main88" in base
     assert "mobile.css?v=mob107" in base

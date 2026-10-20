@@ -310,8 +310,8 @@ def test_guest_add_css_is_one_block_with_phone_overrides() -> None:
     )[0]
     assert "width: calc(100% - (2 * var(--pg-shell-pad)))" in generic
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg50" in base
-    assert "playground.js?v=pg9" in base
+    assert "playground.css?v=pg51" in base
+    assert "playground.js?v=pg10" in base
     assert "playground.css?v=pg49" not in base
     assert "playground.css?v=pg31" not in base
     assert "playground.css?v=pg30" not in base

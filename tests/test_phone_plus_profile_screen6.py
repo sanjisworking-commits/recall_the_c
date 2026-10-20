@@ -554,7 +554,7 @@ def test_phone_plus_profile_css_is_breakpoint_scoped() -> None:
     assert "reset_learning_progress" in post
     assert "delete_account" in post
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg50" in base
+    assert "playground.css?v=pg51" in base
     assert "playground.css?v=pg38" not in base
     assert "styles.css?v=main88" in base
     assert "mobile.css?v=mob107" in base

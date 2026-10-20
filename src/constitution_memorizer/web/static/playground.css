@@ -2929,6 +2929,15 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     padding: 12px 18px calc(30px + env(safe-area-inset-bottom, 0px));
   }
 
+  /* The sheet keeps its no-Cancel presentation, but touch and assistive
+     technology still get an explicit Close: the 44px ✕ stays visible on the
+     phone sheet (the generic rule hides it elsewhere). */
+  .pg-sheet-panel[data-pg-add] > .pg-sheet-close {
+    display: inline-flex;
+    top: 8px;
+    right: 8px;
+  }
+
   .pg-add-title {
     margin-bottom: 2px;
     padding-right: 0;

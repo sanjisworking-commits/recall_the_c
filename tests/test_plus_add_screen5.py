@@ -286,7 +286,9 @@ def test_plus_add_is_subscriber_confirm_only(tmp_path: Path) -> None:
     assert 'data-step="confirm"' in attrs
     assert 'data-skip-confirm="false"' in attrs
     assert 'data-roster-confirm="ndps"' in attrs
-    assert 'role="dialog"' in attrs
+    # One dialog landmark: the host <dialog> carries role/aria-modal/label.
+    assert 'role="dialog"' not in attrs
+    assert 'aria-labelledby="pg-add-title"' in html.split("<dialog ", 1)[1].split(">", 1)[0]
     assert "data-expired-add" not in attrs
     assert "data-halted-add" not in attrs
     _assert_subscriber_confirm(
@@ -610,7 +612,7 @@ def test_plus_add_marker_uses_shared_predicate() -> None:
     assert "data-pg-sheet-return" in js
     assert "pg-sheet" in js.split("X-Requested-With", 1)[1][:40]
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg50" in base
+    assert "playground.css?v=pg51" in base
     assert "playground.css?v=pg49" not in base
     assert "playground.css?v=pg34" not in base
     bare = BARE.read_text(encoding="utf-8")

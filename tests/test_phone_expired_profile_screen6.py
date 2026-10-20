@@ -629,7 +629,7 @@ def test_phone_expired_profile_css_is_breakpoint_scoped() -> None:
     assert "reset_learning_progress" not in get
     assert "def request_is_expired_subscriber" in DEPS.read_text(encoding="utf-8")
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg50" in base
+    assert "playground.css?v=pg51" in base
     assert "playground.css?v=pg45" not in base
     assert "styles.css?v=main88" in base
     assert "mobile.css?v=mob107" in base

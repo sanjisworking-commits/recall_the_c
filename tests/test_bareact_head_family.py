@@ -400,5 +400,38 @@ def test_head_and_sheet_styles_replaced_the_per_surface_blocks():
         ):
             assert stale not in sheet, stale
     base = (TEMPLATES / "base.html").read_text(encoding="utf-8")
-    for pin in ("styles.css?v=main88", "mobile.css?v=mob107", "playground.css?v=pg50", "playground.js?v=pg9", "mobile.js?v=mob30"):
+    for pin in ("styles.css?v=main88", "mobile.css?v=mob107", "playground.css?v=pg51", "playground.js?v=pg10", "mobile.js?v=mob30"):
         assert pin in base, pin
+
+
+# ── Add dialog corrections (owner review of b828b85, 2026-10-20) ─────────
+
+
+def test_one_dialog_landmark_the_host_owns_role_and_label(tmp_path):
+    client = TestClient(_app(tmp_path))
+    _sign_in(client)
+    direct = client.get(add_path("uapa")).text
+    dialog = direct.split("<dialog ", 1)[1].split("</dialog>", 1)[0]
+    head = dialog.split(">", 1)[0]
+    assert 'aria-modal="true"' in head and 'aria-labelledby="pg-add-title"' in head
+    panel_tag = dialog.split("<section", 1)[1].split(">", 1)[0]
+    assert 'role="dialog"' not in panel_tag and "aria-modal" not in panel_tag
+    assert dialog.count('role="dialog"') == 0  # the <dialog> element is the landmark
+    # Alone (the fetch before the script lifts it, or the no-JS POST re-render)
+    # the panel is the dialog, as before M2.
+    alone = client.get(add_path("uapa"), headers={"X-Requested-With": "pg-sheet"}).text
+    panel_tag = alone.split("<section", 1)[1].split(">", 1)[0]
+    assert 'role="dialog"' in panel_tag and 'aria-modal="true"' in panel_tag and 'aria-labelledby="pg-add-title"' in panel_tag
+    assert "<dialog" not in alone
+
+
+def test_the_script_opens_a_served_dialog_without_dismissing_it_and_relabels_on_the_scope_step():
+    js = (STATIC / "playground.js").read_text(encoding="utf-8")
+    direct = js.split('dialog.hasAttribute("data-pg-sheet-direct")', 1)[1].split("dialog.showModal();", 1)[0]
+    assert 'dialog.removeAttribute("open")' in direct
+    assert "dialog.close()" not in direct
+    assert "demoteToPanel(" in js and 'panel.removeAttribute("role")' in js
+    assert "pg-sheet:relabel" in js and "visibleHeading(" in js
+    css = (STATIC / "playground.css").read_text(encoding="utf-8")
+    phone = css.split("@media (max-width: 560px) {\n  .pg-sheet-panel[data-pg-add] {", 1)[1].split("\n}\n", 1)[0]
+    assert ".pg-sheet-panel[data-pg-add] > .pg-sheet-close {" in phone and "display: inline-flex" in phone

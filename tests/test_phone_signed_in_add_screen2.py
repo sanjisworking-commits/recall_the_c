@@ -281,7 +281,10 @@ def test_phone_signed_in_add_sheet_unlocks_via_playground(tmp_path: Path) -> Non
     assert fetched.text.count('class="pg-sheet-panel"') == 1
     assert "<dialog" not in fetched.text
     assert "data-act-head" not in fetched.text
-    assert _sheet(unescape(fetched.text)) == panel
+    # Alone, the panel is its own dialog; inside the host <dialog> it is not.
+    alone = _sheet(unescape(fetched.text))
+    assert 'role="dialog" aria-modal="true" aria-labelledby="pg-add-title"' in alone
+    assert alone.replace('role="dialog" aria-modal="true" aria-labelledby="pg-add-title"', "") == panel
     assert _facts(client) == before
 
 
@@ -356,12 +359,12 @@ def test_phone_signed_in_add_css_is_breakpoint_scoped() -> None:
     assert ":has([data-guest-add-phone])" not in css
     assert ":has([data-plus-add-phone])" not in css
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg50" in base
+    assert "playground.css?v=pg51" in base
     assert "playground.css?v=pg49" not in base
     assert "playground.css?v=pg32" not in base
     assert "styles.css?v=main88" in base
     assert "mobile.css?v=mob107" in base
-    assert "playground.js?v=pg9" in base
+    assert "playground.js?v=pg10" in base
     assert "mobile.js?v=mob30" in base
 
 

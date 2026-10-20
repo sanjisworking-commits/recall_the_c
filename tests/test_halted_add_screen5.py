@@ -301,8 +301,9 @@ def test_halted_add_is_existing_resume_not_confirm(tmp_path: Path) -> None:
     assert 'data-pg-kind="resume"' in tag
     assert " data-halted-add " in tag
     assert 'data-roster-confirm="ndps"' in tag
-    assert 'role="dialog"' in tag and 'aria-modal="true"' in tag
-    assert 'aria-labelledby="pg-add-title"' in tag
+    # One dialog landmark: the host <dialog> carries role/aria-modal/label.
+    assert 'role="dialog"' not in tag and "aria-modal" not in tag
+    assert 'aria-labelledby="pg-add-title"' in html.split("<dialog ", 1)[1].split(">", 1)[0]
     assert "data-expired-add" not in html
     assert "data-halted-add-desktop" not in html
     assert "data-halted-add-phone" not in html
@@ -376,7 +377,8 @@ def test_halted_add_is_existing_resume_not_confirm(tmp_path: Path) -> None:
     fetched_tag = _sheet_tag(fetched)
     assert 'data-pg-kind="resume"' in fetched_tag
     assert " data-halted-add " in fetched_tag
-    assert _sheet(fetched) == desk
+    # Alone the panel is its own dialog; inside the host <dialog> it is not.
+    assert _sheet(fetched).replace('role="dialog" aria-modal="true" aria-labelledby="pg-add-title"', "") == desk
     assert _facts(client) == before
     assert client.get("/laws/ndps").status_code == 200
     assert "data-halted-bareact" in client.get("/laws/ndps").text
@@ -610,8 +612,8 @@ def test_halted_add_uses_shared_predicate_existing_resume_route() -> None:
     assert "[data-halted-add-desktop]" not in css
     assert "[data-expired-add-desktop]" not in css
     assert "data-halted-add" not in css
-    assert "playground.css?v=pg50" in BASE.read_text(encoding="utf-8")
-    assert "playground.js?v=pg9" in BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg51" in BASE.read_text(encoding="utf-8")
+    assert "playground.js?v=pg10" in BASE.read_text(encoding="utf-8")
     assert "data-halted-add" not in MOBILE.read_text(encoding="utf-8")
 
 

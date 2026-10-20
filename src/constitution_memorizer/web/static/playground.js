@@ -160,8 +160,26 @@
       panel.insertBefore(btn, panel.firstChild);
     }
 
+    // One dialog landmark: the host <dialog> owns role/aria-modal/label, so a
+    // panel lifted into it must not announce a second modal dialog.
+    function demoteToPanel(panel) {
+      panel.removeAttribute("role");
+      panel.removeAttribute("aria-modal");
+      panel.removeAttribute("aria-labelledby");
+    }
+
+    function visibleHeading(panel) {
+      var headings = panel.querySelectorAll("h1, h2");
+      for (var i = 0; i < headings.length; i += 1) {
+        if (headings[i].offsetParent !== null) {
+          return headings[i];
+        }
+      }
+      return headings[0] || panel.querySelector("[id]");
+    }
+
     function labelledBy(panel) {
-      var heading = panel.querySelector("h1, h2, [id]");
+      var heading = visibleHeading(panel);
       if (heading) {
         if (!heading.id) {
           heading.id = "pg-sheet-title";
@@ -169,6 +187,12 @@
         dialog.setAttribute("aria-labelledby", heading.id);
       }
     }
+    dialog.addEventListener("pg-sheet:relabel", function () {
+      var panel = dialog.querySelector(".pg-sheet-panel");
+      if (panel) {
+        labelledBy(panel);
+      }
+    });
 
     document.addEventListener("click", function (event) {
       var closeBtn = event.target.closest("[data-pg-sheet-close]");
@@ -206,6 +230,7 @@
             return;
           }
           ensureCloseButton(panel);
+          demoteToPanel(panel);
           labelledBy(panel);
           dialog.replaceChildren(panel);
           if (typeof dialog.showModal === "function") {
@@ -270,10 +295,14 @@
     var served = dialog.querySelector(".pg-sheet-panel");
     if (served && dialog.hasAttribute("data-pg-sheet-direct")) {
       ensureCloseButton(served);
+      demoteToPanel(served);
       labelledBy(served);
       if (typeof dialog.showModal === "function") {
+        // Drop the server's `open` attribute without close(): close() would
+        // queue the dismissal handler, which strips the label and rewrites
+        // the URL while the modal is still showing.
         if (dialog.open) {
-          dialog.close();
+          dialog.removeAttribute("open");
         }
         dialog.showModal();
         var first = focusables(dialog);
@@ -306,6 +335,17 @@
       }
       if (scopeStep) {
         scopeStep.hidden = false;
+        // The accessible name follows the step: the host dialog (in-page or
+        // direct) or the standalone panel is now labelled by the scope title.
+        var scopeTitle = scopeStep.querySelector("h1, h2");
+        var host = root.closest("dialog");
+        if (scopeTitle && scopeTitle.id) {
+          if (host) {
+            host.dispatchEvent(new Event("pg-sheet:relabel"));
+          } else if (root.hasAttribute("aria-labelledby")) {
+            root.setAttribute("aria-labelledby", scopeTitle.id);
+          }
+        }
         var focus = scopeStep.querySelector("button, [href]");
         if (focus) {
           focus.focus();

@@ -10,9 +10,10 @@
   data-roster-confirm="{{ law_id }}"
   {% if expired_add|default(false) %}data-expired-add{% endif %}
   {% if halted_add|default(false) %}data-halted-add{% endif %}
-  role="dialog"
-  aria-modal="true"
-  aria-labelledby="pg-add-title"
+  {# Standalone (no-JS POST re-render, or the sheet fetch before the script
+     lifts it): the panel is the dialog. Inside the host <dialog> the host
+     carries role, aria-modal and the label, so the panel carries none. #}
+  {% if not (act is defined and act) %}role="dialog" aria-modal="true" aria-labelledby="pg-add-title"{% endif %}
 >
   {% if kind == "guest" %}
   <h1 id="pg-add-title" class="pg-add-title">Add to Playground</h1>
