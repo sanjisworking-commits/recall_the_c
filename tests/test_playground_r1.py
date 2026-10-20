@@ -133,7 +133,7 @@ def test_t33_r1_asset_versions_are_pinned():
     assert "styles.css?v=main88" in html
     assert "mobile.css?v=mob107" in html
     assert "playground.css?v=pg51" in html
-    assert "playground.js?v=pg10" in html
+    assert "playground.js?v=pg11" in html
     assert "playground-select.js?v=pg1" in html
     assert "playground.css?v=pg37" not in html
     assert "playground.css?v=pg31" not in html

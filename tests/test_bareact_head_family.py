@@ -400,7 +400,7 @@ def test_head_and_sheet_styles_replaced_the_per_surface_blocks():
         ):
             assert stale not in sheet, stale
     base = (TEMPLATES / "base.html").read_text(encoding="utf-8")
-    for pin in ("styles.css?v=main88", "mobile.css?v=mob107", "playground.css?v=pg51", "playground.js?v=pg10", "mobile.js?v=mob30"):
+    for pin in ("styles.css?v=main88", "mobile.css?v=mob107", "playground.css?v=pg51", "playground.js?v=pg11", "mobile.js?v=mob30"):
         assert pin in base, pin
 
 
@@ -435,3 +435,24 @@ def test_the_script_opens_a_served_dialog_without_dismissing_it_and_relabels_on_
     css = (STATIC / "playground.css").read_text(encoding="utf-8")
     phone = css.split("@media (max-width: 560px) {\n  .pg-sheet-panel[data-pg-add] {", 1)[1].split("\n}\n", 1)[0]
     assert ".pg-sheet-panel[data-pg-add] > .pg-sheet-close {" in phone and "display: inline-flex" in phone
+
+
+def test_the_standalone_panel_is_labelled_by_the_heading_of_its_initial_step(tmp_path):
+    # Max skips confirmation and opens at the scope step: the label must be
+    # the visible scope title, on the standalone panel and on the served
+    # dialog alike; Plus opens at the confirm step and keeps the confirm title.
+    for tier, title_id in (("max", "pg-add-scope-title"), ("plus", "pg-add-title")):
+        client = TestClient(_app(tmp_path / tier))
+        _sign_in(client)
+        _subscribe(client, tier=tier)
+        alone = client.get(add_path("uapa"), headers={"X-Requested-With": "pg-sheet"}).text
+        panel_tag = alone.split("<section", 1)[1].split(">", 1)[0]
+        assert f'aria-labelledby="{title_id}"' in panel_tag, tier
+        direct = client.get(add_path("uapa")).text
+        host = direct.split("<dialog ", 1)[1].split(">", 1)[0]
+        assert f'aria-labelledby="{title_id}"' in host, tier
+    js = (STATIC / "playground.js").read_text(encoding="utf-8")
+    inpage = js.split("dialog.replaceChildren(panel);", 1)[1].split(".catch(", 1)[0]
+    assert "labelledBy(panel)" in inpage and inpage.index("dialog.showModal();") < inpage.index("labelledBy(panel)")
+    before = js.split("dialog.replaceChildren(panel);", 1)[0].split("fetch(href", 1)[1]
+    assert "labelledBy(panel)" not in before

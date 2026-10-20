@@ -231,7 +231,6 @@
           }
           ensureCloseButton(panel);
           demoteToPanel(panel);
-          labelledBy(panel);
           dialog.replaceChildren(panel);
           if (typeof dialog.showModal === "function") {
             dialog.showModal();
@@ -239,6 +238,10 @@
             window.location.href = href;
             return;
           }
+          // Label after the panel is attached and shown: a detached heading
+          // has no offsetParent, so a panel that opens at the scope step
+          // (confirmation skipped) would otherwise take the hidden heading.
+          labelledBy(panel);
           var nodes = focusables(dialog);
           if (nodes[0]) {
             nodes[0].focus();
@@ -296,7 +299,6 @@
     if (served && dialog.hasAttribute("data-pg-sheet-direct")) {
       ensureCloseButton(served);
       demoteToPanel(served);
-      labelledBy(served);
       if (typeof dialog.showModal === "function") {
         // Drop the server's `open` attribute without close(): close() would
         // queue the dismissal handler, which strips the label and rewrites
@@ -305,6 +307,7 @@
           dialog.removeAttribute("open");
         }
         dialog.showModal();
+        labelledBy(served);
         var first = focusables(dialog);
         if (first[0]) {
           first[0].focus();

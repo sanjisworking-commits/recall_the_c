@@ -354,3 +354,16 @@ Owner review 2026-10-20: M2 is **under review, not accepted**; the six deviation
 | 3 | Phone sheets for guest/Free had no explicit close control (✕ hidden ≤560 px, no Cancel by decision D5) | `playground.css` keeps the 44×44 ✕ (`aria-label="Close"`) visible on the Add panel at ≤560 px; D5's no-Cancel presentation is unchanged | close button `display: flex`, 44×44 at 390 px on direct and in-page opens; clicking it closes the dialog and returns focus to the head's CTA (`A.ActHead-btn`); the rule is kind-independent, so guest and Free sheets get it too |
 
 Also verified: in-page open from the head's CTA labels the host "Add to Playground" and focuses the Close button; after closing, focus returns to the opener on both widths. Direct-URL Escape leaves focus on `<body>` (there is no opener on that page), recorded as expected. Full suite on this tree: 3,950 passed, 163 skipped, 3 failed (the documented device exceptions) — `manifests/pytest_full_run4_dialog_fix.log`. Tests: two new tests in `test_bareact_head_family.py`; five cohort assertions re-pointed to the single landmark (the standalone fetch/POST panel keeps `role="dialog"`, byte-identical otherwise); pins `pg50→pg51`, `playground.js pg9→pg10`.
+
+### 9.1 Follow-up (2026-10-20) — initial label on a panel that opens at the scope step
+
+Owner's source review of `9996c9b`: `labelledBy(panel)` ran before the fetched panel was attached, so every heading had no `offsetParent` and the first (hidden) heading won; Max skips confirmation and opens at the scope step, so its in-page dialog was labelled "Add to Playground" instead of the visible "Add The UAPA, 1967". Fix: the in-page path labels after `replaceChildren()` and `showModal()`, the direct path after `showModal()`; the standalone panel's server-rendered `aria-labelledby` and the served host dialog's label follow the initial step (`pg-add-scope-title` when confirmation is skipped, else `pg-add-title`). Pin `playground.js pg10→pg11`.
+
+Verification (headless Chrome, `manifests/dialog_verification_max.json`, `dialog_verification_plus.json`, `dialog-fix/max/`, `dialog-fix/plus/`):
+
+| Fixture | Width | Direct URL | In-page from the head | Close / Escape |
+|---|---|---|---|---|
+| Max (opens at scope) | 1280, 390 | host labelled `pg-add-scope-title` → "Add The UAPA, 1967", visible; one landmark; focus on Close | same label; focus on Close | ✕ → closed, focus back on the CTA; Escape on direct → `/laws/uapa` |
+| Plus (confirm → scope) | 1280, 390 | "Add to Playground" (visible confirm title); Enter on the primary → scope step relabels to "Add The UAPA, 1967", focus "Entire Act" | "Add to Playground" | as above |
+
+Full suite on this tree: 3,951 passed, 163 skipped, 3 failed (the documented device exceptions) — `manifests/pytest_full_run5_label_fix.log`. Test: `test_the_standalone_panel_is_labelled_by_the_heading_of_its_initial_step` (Max → scope title, Plus → confirm title, on the standalone panel and the served host; the script labels only after `showModal()`).

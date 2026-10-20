@@ -1,6 +1,10 @@
 {# The Add sheet panel: one markup per state, both widths. Included by
    playground_add.html inside an open <dialog> over the Act page (direct
-   URL) or on its own (the in-page fetch lifts it into the live dialog). #}
+   URL) or on its own (the in-page fetch lifts it into the live dialog).
+   The accessible name is the visible heading: the scope title when the
+   panel opens at the scope step (confirmation skipped), else the confirm
+   title. #}
+{% set add_title_id = 'pg-add-scope-title' if (step == 'scope' or skip_confirm) and kind not in ('guest', 'subscribe', 'resume', 'device_blocked', 'pending', 'roster_full') and not blocked_pending and not blocked_full else 'pg-add-title' %}
 <section
   class="pg-sheet-panel"
   data-pg-add
@@ -13,7 +17,7 @@
   {# Standalone (no-JS POST re-render, or the sheet fetch before the script
      lifts it): the panel is the dialog. Inside the host <dialog> the host
      carries role, aria-modal and the label, so the panel carries none. #}
-  {% if not (act is defined and act) %}role="dialog" aria-modal="true" aria-labelledby="pg-add-title"{% endif %}
+  {% if not (act is defined and act) %}role="dialog" aria-modal="true" aria-labelledby="{{ add_title_id }}"{% endif %}
 >
   {% if kind == "guest" %}
   <h1 id="pg-add-title" class="pg-add-title">Add to Playground</h1>

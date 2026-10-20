@@ -40,8 +40,12 @@ async def main():
                 # 1. direct URL (Plus, UAPA addable): opened as modal, label kept, URL unchanged while open
                 await nav("/playground/laws/uapa/add"); L["direct_open"] = await state(ws, st); await shot(ws, st, f"direct_open_{w}.png")
                 # 2. scope step via the confirm button (Enter on the focused primary)
-                await cdp(ws, st, "Runtime.evaluate", {"expression": "document.querySelector('dialog.pg-sheet .pg-add-primary').focus()"}); await key(ws, st, "Enter"); await asyncio.sleep(0.4)
-                L["direct_scope_step"] = await state(ws, st); await shot(ws, st, f"direct_scope_{w}.png")
+                has_confirm = (await cdp(ws, st, "Runtime.evaluate", {"expression": "(() => { const b = document.querySelector('dialog.pg-sheet .pg-add-primary'); if (!b || b.offsetParent === null) return false; b.focus(); return true; })()", "returnByValue": True}))["result"]["value"]
+                if has_confirm:
+                    await key(ws, st, "Enter"); await asyncio.sleep(0.4)
+                    L["direct_scope_step"] = await state(ws, st); await shot(ws, st, f"direct_scope_{w}.png")
+                else:
+                    L["direct_opens_at_scope"] = await state(ws, st); await shot(ws, st, f"direct_scope_{w}.png")
                 # 3. Escape → closed, URL back to the Act, focus somewhere sensible
                 await key(ws, st, "Escape"); await asyncio.sleep(0.5); L["direct_after_escape"] = await state(ws, st)
                 # 4. in-page open from the Act head (Enter on the CTA), label, then ✕ click, focus returns to the CTA

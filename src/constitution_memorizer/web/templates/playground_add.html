@@ -6,7 +6,8 @@
 {% extends "bare_act.html" if act is defined and act else "playground_base.html" %}
 {% block title %}Add to Playground · {{ act.title if act is defined and act else short_title }}{% endblock %}
 {% block act_dialog %}
-<dialog class="pg-sheet" data-pg-sheet-host data-pg-sheet-direct data-pg-sheet-return="{{ cancel_href }}" aria-modal="true" aria-labelledby="pg-add-title" open>
+{% set add_title_id = 'pg-add-scope-title' if (step == 'scope' or skip_confirm) and kind not in ('guest', 'subscribe', 'resume', 'device_blocked', 'pending', 'roster_full') and not blocked_pending and not blocked_full else 'pg-add-title' %}
+<dialog class="pg-sheet" data-pg-sheet-host data-pg-sheet-direct data-pg-sheet-return="{{ cancel_href }}" aria-modal="true" aria-labelledby="{{ add_title_id }}" open>
 {% include "partials/playground_add_panel.html" %}
 </dialog>
 {% endblock %}

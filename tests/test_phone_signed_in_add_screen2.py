@@ -364,7 +364,7 @@ def test_phone_signed_in_add_css_is_breakpoint_scoped() -> None:
     assert "playground.css?v=pg32" not in base
     assert "styles.css?v=main88" in base
     assert "mobile.css?v=mob107" in base
-    assert "playground.js?v=pg10" in base
+    assert "playground.js?v=pg11" in base
     assert "mobile.js?v=mob30" in base
 
 

@@ -99,7 +99,7 @@ def test_t33_r7_asset_pins() -> None:
     assert "styles.css?v=main88" in html
     assert "mobile.css?v=mob107" in html
     assert "playground.css?v=pg51" in html
-    assert "playground.js?v=pg10" in html
+    assert "playground.js?v=pg11" in html
     assert "playground.css?v=pg37" not in html
     assert "styles.css?v=main76" not in html
     assert "styles.css?v=main84" not in html

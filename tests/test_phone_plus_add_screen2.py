@@ -558,7 +558,7 @@ def test_phone_plus_add_css_is_breakpoint_scoped() -> None:
     assert "playground.css?v=pg34" not in base
     assert "styles.css?v=main88" in base
     assert "mobile.css?v=mob107" in base
-    assert "playground.js?v=pg10" in base
+    assert "playground.js?v=pg11" in base
 
 
 def test_guest_free_expired_halted_pro_other_law_get_the_same_sheet(
