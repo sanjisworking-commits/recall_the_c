@@ -1,6 +1,6 @@
 # M1 — review of the hosted paid-tier evidence pack (Cursor, 2026-10-19)
 
-Reviewer: Claude, 2026-10-20. Requested by `CLAUDE-REVIEW.md` (SHA-256 `369366b3…9529c85`): four reviews assessed separately, then one pass / changes-required decision against `M1.md` (M1-F01–F11, M1-V01–V05, M1-A01–A04). The pack is evidence for M1's hosted validation on staging deployment `3b37f8947c05577b57af93a2a53f1ac5539c4e3a` (`recallc-playground-staging`, GitHub deployment `7168307529`). It is not payment validation and does not expand M1 into paid features.
+Reviewer: Claude, 2026-10-20 (revised the same day after the three paid archives were re-supplied). Requested by `CLAUDE-REVIEW.md` (SHA-256 `369366b3…9529c85`): four reviews assessed separately, then one pass / changes-required decision against `M1.md` (M1-F01–F11, M1-V01–V05, M1-A01–A04). The pack is evidence for M1's hosted validation on staging deployment `3b37f8947c05577b57af93a2a53f1ac5539c4e3a` (`recallc-playground-staging`, GitHub deployment `7168307529`). It is not payment validation and does not expand M1 into paid features.
 
 ## 0. What was actually reviewable
 
@@ -8,9 +8,9 @@ Reviewer: Claude, 2026-10-20. Requested by `CLAUDE-REVIEW.md` (SHA-256 `369366b3
 |---|---|---|
 | `manifest.json` (SHA-256 `e2aa3beb…91ed94`) | 288 rows: deployed SHA, capture time, account label and UUID, tier, route, viewport, theme, filename, SHA-256, `top_nav` / `phone_bar` booleans, result, known defects; `device_readback`, `accounts` with subscription ids | yes — the row log is the basis of this review |
 | `free-pre-grant.zip` (SHA-256 `ff090fbf…0358c4`) | 132 PNGs, every file's hash matches its manifest row | yes |
-| `plus.zip`, `pro.zip`, `max.zip` | **0 bytes each** (SHA-256 of the empty string). The 156 paid rows in the manifest have filenames and hashes, but no image reached this machine | **no** — the paid screenshots could not be looked at |
+| `plus.zip` (SHA-256 `ec751fb1…279c6574`), `pro.zip` (`92395f11…42fc3ffc`), `max.zip` (`4a9dbed5…c24258a`) | first delivery was 0 bytes each; re-supplied 2026-10-20: 52 PNGs per tier, every file's SHA-256 matches its manifest row, no file outside the manifest | yes |
 
-Consequence: the paid-tier reviews below rest on the manifest's recorded results and the code on the deployed branch, not on inspected images. M1-V01 makes the original PNGs authoritative, so **no pass can be given on the paid rows until the three archives are re-supplied**. The review of each row's *classification* is complete; the review of each row's *image* is not.
+All 420 files are hash-verified. Images inspected directly: Free `browse_1280`, `dashboard_1280`, `dashboard_390`, `playground-add-uapa_1280`, `browse_561`; Plus `browse_1280`, `dashboard_1280`, `settings_1280`, `calendar_1280`, `profile_390`, `browse_561`, `before-device-cap/playground_1280`; Pro `dashboard_1280`, `browse_390`, `playground_1280` (device gate), `before-device-cap/playground_1280`, `before-device-cap/profile_1280`; Max `dashboard_1280`, `dashboard_390_dark`, `laws-ndps_390`, `before-device-cap/playground_1280`. The remaining rows were checked through the manifest's `top_nav` / `phone_bar` / result fields, which the inspected images agree with in every case.
 
 Two statements in the pack are stale and should be corrected before it is filed: `m1_accepted: false` / "M1 is still unaccepted" — the owner accepted M1 on 2026-10-19 with documented exceptions (M1.md §8); and "the hosted paid states remain unverified" is exactly what this pack addresses.
 
@@ -21,10 +21,10 @@ Against M1-F01–F03, F07 (as far as captures show it), F10, F11 and V04:
 | Evidence | Finding |
 |---|---|
 | Free pre-grant, 132 PNGs, 24 §4 routes × 390/1280 × light/dark + responsive set | Shell as accepted locally and in the hosted guest matrix: five-tab phone bar on the phone routes that carry it (Settings/Search/Landing/Add without, as approved), top nav with the current tab marked at 1280, account slot "Sanjali · Free account" on every shared-shell page (M1-F10 holds; checked on Browse, Dashboard, Add). Spot-checked images: `browse_1280_light`, `dashboard_390_light`, `playground-add-uapa_1280_light`, `browse_561_light`. |
-| Paid rows at 1280 (33 per tier) and 390 (22 per tier), light and dark | Manifest: `top_nav=True, phone_bar=False` on every 1280 row; `phone_bar=True` on the 390 shell routes, `pass_phone_shell` ×72. DV-21 holds for subscribers on `/playground` where captured (device-gated rows still show `top_nav=True`). Consistent with M1's local non-guest cohort pass (M1-evidence §10.4). **Images not inspected (empty archives).** |
+| Paid rows at 1280 (33 per tier) and 390 (22 per tier), light and dark | Inspected: the M1 desktop shell (brand, five-tab top nav with the current tab filled, account slot with avatar, name and subtitle) on Plus Browse/Today/Settings/Calendar, Pro Today/Playground, Max Today; the five-tab phone bar on Pro Browse 390, Max NDPS 390 and Max Today 390 dark; no phone bar at 1280. DV-21 holds for subscribers on `/playground`, including the device-gated page (top nav visible, Playground current). Manifest agrees on every other row (`top_nav=True, phone_bar=False` at 1280; `pass_phone_shell` ×72 at 390). Consistent with M1's local non-guest cohort pass (M1-evidence §10.4). |
 | Pins | Free pack `main87 / mob106 / pg49` = the M1 deployment. |
 
-Verdict A: **shell PASS on the Free pack; paid rows consistent with PASS on the manifest, image check outstanding.**
+Verdict A: **shell PASS for Free, Plus, Pro and Max.**
 
 ## 2. Review B — known M1 defects
 
@@ -43,11 +43,13 @@ Verdict B: **no new M1 defect; every open item is an approved, recorded deferral
 |---|---|---|
 | Desktop account slot says "Free account" on Browse, Laws, NDPS, Article 14, Devices, Search, Terms for Plus, Pro and Max (`fail_tier_label` ×48, + 3 at 561/768/844) | **M5 (account copy)**, flagged for M1b's shell pass | Already recorded in M1-evidence §10.4 for Pro/Max/paused/pending as "the fallback subtitle 'Free account' — account copy is M5". Cause on the deployed branch: on `/browse`, `/laws*` and `/playground` the subtitle uses the frozen path-gated chain, which prints "RecallC Plus" only when the active-Plus predicate holds and "Free account" otherwise; Pro and Max never match it. That the **Plus** login also reads "Free account" there means the predicate (`is_subscribed and tier == "plus" and can_open_playground and subscription_status == "active"`) did not hold for the granted account on those routes — most likely the grant does not present as `subscription_status == "active"`, which the Today/Calendar/Profile/Settings chrome does not require. The grant method and the account's subscription row would settle it. This is **not** an M1-F10 failure: F10 is written for the Free account. It is a DV-20 follow-up: the plan name once subscribed. |
 | Pro `/playground` capacity indicator extends beyond the sidebar card (`fail_layout`) | **M7 (Playground home)** | layout defect, not payment proof |
-| Pro `/profile` reads "30 30 laws / month" (`fail_duplicate_count`) | **M5 (Profile)** | cause: the subscription card sets `stat_big` to the limit and `stat_label` to `catalogue_limit_label(limit)`, which already begins with the limit (`playground/view.py`); the card prints both. Max shows "Unlimited laws / month" without a big figure, so only tiers with a numeric limit duplicate it. |
+| Pro `/profile` reads "30 30 laws / month" (`fail_duplicate_count`) | **M5 (Profile)** | cause: the subscription card sets `stat_big` to the limit and `stat_label` to `catalogue_limit_label(limit)`, which already begins with the limit (`playground/view.py`); the card prints both. Plus shows the same shape ("10 · 10 laws / month", `profile_390`); Max prints "Unlimited laws / month" with no big figure. Every numeric tier is affected, not only Pro. |
+| Browse body for subscribers still prints the Free plan banner "Free plan — pick any 3 Articles to learn. All 3 slots free. · Unlock all" (Plus `browse_1280`; the manifest did not flag it) | **M3 (Browse)** | page copy keyed to the Free disposition; not shell, not M1 |
+| Desktop Today body renders as unstyled text for Free, Plus and Max (`dashboard_1280`): no cards, bare links | **M4 (Today)** | the frozen signed-in desktop Today, identical in the Free pre-grant capture; Pro shows the plan-prompt variant styled as a card. Not a paid-tier regression and not M1 |
 | Max `/playground` header "Free account" while the body shows the Unlimited home (`fail_tier_label`) | M5 / M1b (same subtitle rule) | same cause as the first row |
 | Plus `/playground` captured with a free device slot: subscriber home, 0 of 10, header "RecallC Plus" | M7 reference | recorded as pass |
 
-Verdict C: **four defects recorded under M5/M7; none is an M1 criterion.**
+Verdict C: **six items recorded under M3/M4/M5/M7; none is an M1 criterion.**
 
 ## 4. Review D — entitlements (which tier was signed in)
 
@@ -58,14 +60,15 @@ Verdict C: **four defects recorded under M5/M7; none is an M1 criterion.**
 | `device_readback`: 0 devices after the grants; two active web devices per account registered 20:32:08–20:33:53Z (Chrome on Linux + "Web browser"); still 2/2/2 after the shell pass; nothing revoked | the Playground device gate on a third browser (`blocked_device_limit` ×3) is the device entitlement enforcing its cap; it is neither an M1 defect nor a pass |
 | `payment_integration_verified: false` | correct: grants are not payments. Nothing here validates Razorpay, renewal, expiry, pause or halt |
 
-Verdict D: **the intended tier was signed in on each account, on the manifest's evidence; the paid images are still needed to confirm the labels as displayed.**
+Verdict D: **the intended tier was signed in on each account** — confirmed on the images: "RecallC Plus" (Plus Today/Settings/Calendar), "RecallC Pro" (Pro Today/Profile, card "Active · 30 laws / month"), "RecallC Max" (Max Today), Profile periods "ends 17 November", Devices "2 of 2".
 
 ## 5. Decision against the M1 checklist
 
-**Changes required — on the pack, not on M1.**
+**PASS** (hosted paid-tier evidence for the M1 shell), with the following recorded and nothing else changed:
 
-- M1 criteria: nothing in this pack fails a criterion that M1 was accepted on. The shell holds for Free (images) and for Plus/Pro/Max (manifest), the signed-in exceptions reproduced are the ones already approved for M1b, and the paid-page findings belong to M5 and M7.
-- What blocks a **pass** on the paid rows: `plus.zip`, `pro.zip` and `max.zip` arrived empty. Re-supply the three archives (the manifest already carries each file's SHA-256, so they can be verified on arrival), and this review's §1 and §4 image checks can be completed. Correct `m1_accepted` and the two stale sentences in `CLAUDE-REVIEW.md`.
-- Recommended records: the "Free account" subtitle for subscribers on the path-gated pages as the DV-20 follow-up under M5 (with the grant-vs-subscription question answered); the Pro capacity overflow under M7; the Profile "30 30" duplication under M5; the device-cap recapture only if the owner wants the Playground/plans/Add paid rows re-shot — that needs one device revoked per account, which is a staging write and was not done.
+- No M1 criterion fails. The shell holds for Free, Plus, Pro and Max on the inspected images and the verified manifest; the signed-in exceptions reproduced (561–720 px duplicate navigation, avatar overlap; zoom, screen reader and scan not run) are the deferrals the owner approved on 2026-10-19 for M1b.
+- Recorded under their owning milestones (§3): the subscriber "Free account" subtitle on the path-gated pages (DV-20 follow-up, M5; answer the grant-vs-subscription question first), the Browse Free-plan banner for subscribers (M3), the unstyled desktop Today body (M4, frozen state), the Profile limit duplication for every numeric tier (M5), the Pro Playground capacity overflow (M7).
+- Corrections to the pack before filing: `m1_accepted: false` and "M1 is still unaccepted" are stale (accepted 2026-10-19 with exceptions); the first delivery's three empty archives are superseded by the verified re-delivery (hashes in §0).
+- Not covered and still open: Playground, plans and Add for paid tiers at every theme and width (blocked by the device cap; a recapture needs one device revoked per account — a staging write, not done); expired, halted, paused, renewal and Razorpay — none of which this pack claims.
 
-Nothing in this review changes M1's acceptance of 2026-10-19 or authorises any merge, deployment, grant or recapture.
+This is the reviewer's decision against the checklist. It changes nothing about M1's acceptance of 2026-10-19 and authorises no merge, deployment, grant, device revocation or recapture.
