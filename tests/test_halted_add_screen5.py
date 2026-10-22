@@ -612,8 +612,8 @@ def test_halted_add_uses_shared_predicate_existing_resume_route() -> None:
     assert "[data-halted-add-desktop]" not in css
     assert "[data-expired-add-desktop]" not in css
     assert "data-halted-add" not in css
-    assert "playground.css?v=pg51" in BASE.read_text(encoding="utf-8")
-    assert "playground.js?v=pg11" in BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg52" in BASE.read_text(encoding="utf-8")
+    assert "playground.js?v=pg12" in BASE.read_text(encoding="utf-8")
     assert "data-halted-add" not in MOBILE.read_text(encoding="utf-8")
 
 

@@ -513,7 +513,7 @@ def test_free_gate_marker_and_parser_are_presentation_only() -> None:
     assert parse_playground_gate_stage("plans", "gold") == (GATE_STAGE_PLANS, None)
     assert FREE_GATE_HOW_STEPS == GUEST_PG_STEPS
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg51" in base
+    assert "playground.css?v=pg52" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert "signedIn/07-screen" in css
     assert 'data-pg-gate-stage="plans"' in css

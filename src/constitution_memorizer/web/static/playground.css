@@ -2833,6 +2833,22 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
 }
 
 /* Guest desktop Add dialog (CTA map guest/05-screen). Phone guest sheet
+/* ── Sheet trigger while its panel is fetched (M2, PF-2) ────────────────
+   The trigger keeps its size and place; it dims, shows a progress cursor
+   and reads "Opening…" (set by playground.js) until the dialog shows. */
+[data-pg-sheet][aria-busy="true"],
+[data-pg-sheet].is-opening {
+  opacity: 0.72;
+  cursor: progress;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  [data-pg-sheet][aria-busy="true"] {
+    transition: opacity 0.15s ease;
+  }
+}
+
 /* ── Add sheet (M2): one panel per state, both widths ──────────────────
    Desktop centres it as a modal over the Act page, phone raises it as a
    bottom sheet (the dialog geometry is above). Title, lede, primary,

@@ -446,16 +446,15 @@ Candidate `e2ac903aa542f154c6b148f9505e53a5cf6c779b` (PR #221, draft); staging d
 |---|---|---|
 | Signed-in hosted rows at **390 px** (Free, Pro were run at the pane's 375 preset) | untested | run the same pane pass at a custom 390×844 viewport (10 min), or accept 375 as the phone check (375 is narrower, and the local 390 captures pass) — **exception candidate** |
 | Signed-in hosted **dark theme** | untested | emulate `prefers-color-scheme: dark` in the pane for Free (one pass), or accept on the strength of the local dark captures for every cohort (V04 is palette-consistency only) — **exception candidate** |
-| **Plus / Max** on staging | not run (accounts device-capped; no Plus/Max session in the pane) | after the separately authorised device revocation, repeat §10.2 on the Plus and Max accounts (Max must open at the scope step, §9.1); until then the local fixtures (§3) are the only evidence — **exception if the owner accepts local-only for paid tiers**, as M1 did |
-| **Expired / halted** on staging | not run (no such staging account) | would need a staging-only subscription-state change (owner-performed); otherwise **exception: local fixtures only** |
-| **Roster write** (confirm → scope → add) on staging | not sent | a single Add on a paid staging account after the device revocation, then remove the law; the write path is unchanged by M2 and covered by the suite — **exception candidate** |
+| **Plus / Max / expired / halted** on staging | not run (Plus/Max accounts device-capped; no expired/halted staging account) | **proposed explicit M2 exception: local fixture coverage (§3, §9.1) stands in for the hosted check**, with the hosted Plus/Max/expired/halted checks **due before final redesign acceptance** (Plus/Max after the separately authorised device revocation; expired/halted need an owner-performed staging subscription-state change) |
+| **Roster write** (confirm → scope → add) on staging | not sent | the write path is unchanged by M2 and covered by the suite; if the owner wants it exercised, run one Add on a **designated staging test account** — note that removing the law afterwards does **not** restore that month's quota, so it is not a clean rollback — otherwise **exception** |
 | Real 200 % zoom, automated scan, screen reader | as M1 | carried exceptions (M1b) |
 
 ### 11.4 Performance finding (new, requires a decision)
 
 | # | Finding | Measurement (2026-10-22, staging) | Attribution | Proposed action |
 |---|---|---|---|---|
-| PF-1 | The in-page Add sheet appears 3–8 s after the click for signed-in users; instantly for guests and locally | signed-in fetch of `/playground/laws/uapa/add` (sheet header): TTFB 5.8 / 6.1 / 6.5 s; signed-in `/laws/uapa` 4.7 s, `/dashboard` 3.2 s, page navigation TTFB 5.0 s; guest TTFB 0.39–0.56 s for the same URLs; `/health` 0.26–0.55 s | **server-side latency of every signed-in request on staging**, not the sheet: the sheet fetch skips the Act (§1) and the Act page itself is as slow. Consistent with the entitlement/roster look-ups making many round trips to the isolated staging database (~215 ms each). Pre-existing (M1's signed-in routes go through the same path), but M2's new in-page opener makes it visible. | investigate under the hardening programme (request timing for signed-in routes: count the DB round trips per request on staging); not an M2 code change |
+| PF-1 | The in-page Add sheet appears 3–8 s after the click for signed-in users; instantly for guests and locally | signed-in fetch of `/playground/laws/uapa/add` (sheet header): TTFB 5.8 / 6.1 / 6.5 s; signed-in `/laws/uapa` 4.7 s, `/dashboard` 3.2 s, page navigation TTFB 5.0 s; guest TTFB 0.39–0.56 s for the same URLs; `/health` 0.26–0.55 s | **Measured:** every signed-in request on staging is slow, not only the sheet (the sheet fetch skips the Act, §1, and the Act page itself is as slow); guest requests are fast. **Cause — hypothesis, not established:** the entitlement/roster look-ups on signed-in routes may be making many round trips to the isolated staging database; tracing has not confirmed this. Pre-existing path (M1's signed-in routes use it), made visible by M2's in-page opener. | **tracked under the hardening programme** (trace signed-in request timing on staging and count DB round trips before attributing); not an M2 code change |
 | PF-2 | No in-flight feedback while the sheet is fetched: the CTA keeps focus, nothing shows "opening" (no `aria-busy`, no state class in `playground.js`) | handler inspected | **M2 scope** (the opener is M2's) | add an opening state to the trigger (`aria-busy="true"` + a visible pressed/loading style, cleared on open or failure), a few lines of JS/CSS; owner to say whether it is required before acceptance or logged as an M2 follow-up |
 
 ### 11.5 Not M2 criteria (regression context only; must not widen acceptance)
@@ -467,3 +466,19 @@ Subscriber Playground home, plans and device-limit pages (blocked by the device 
 - **Accept with named exceptions**: 11.3 rows (390 signed-in, signed-in dark, Plus/Max/expired/halted hosted, roster write, zoom/scan/SR) plus a decision on PF-2 (require before acceptance, or follow-up).
 - **Require remaining checks**: name which 11.3 rows must run first; the Plus/Max rows additionally need the device revocation.
 Merge is a separate decision in either case.
+
+## 12. PF-2 correction (2026-10-22) — opening feedback on the sheet trigger
+
+Owner's direction: fix PF-2 before acceptance. `playground.js` now marks the trigger busy the moment it is clicked (`aria-busy="true"`, class `is-opening`, visible text "Opening…", original label kept in `data-pg-label` and restored), ignores further clicks while the request is in flight (one request per open), and clears the state on success and on every failure path before the existing link fallback (`window.location.href = href`) runs; the `href` is never altered, so the trigger stays a usable link without the script. `playground.css` dims the busy trigger (opacity 0.72), shows a progress cursor and blocks pointer events on it. Pins `pg51→pg52`, `playground.js pg11→pg12`.
+
+Verification (headless Chrome, Free fixture, network latency emulated at 2.5 s; `manifests/busy_verification.json`, `busy/busy_during_{1280,390}.png`):
+
+| Step | 1280 | 390 |
+|---|---|---|
+| before click | "Subscribe to use Playground", no `aria-busy`, cursor pointer | same |
+| 0.3 s after three rapid clicks | "Opening…", `aria-busy="true"`, `is-opening`, opacity 0.72, cursor progress, pointer-events none, href unchanged | same |
+| `/add` requests sent for the three clicks | **1** | **1** |
+| after the dialog opens | label restored, `aria-busy` removed, dialog open, focus on Close | same |
+| after Close | dialog closed, focus back on the trigger with its original label | same |
+
+Full suite on this tree: 3,952 passed, 163 skipped, 3 failed (the documented device exceptions) — `manifests/pytest_full_run6_pf2.log`. Test: `test_the_sheet_trigger_shows_an_opening_state_and_sends_one_request`.

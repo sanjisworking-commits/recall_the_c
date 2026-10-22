@@ -400,7 +400,7 @@ def test_head_and_sheet_styles_replaced_the_per_surface_blocks():
         ):
             assert stale not in sheet, stale
     base = (TEMPLATES / "base.html").read_text(encoding="utf-8")
-    for pin in ("styles.css?v=main88", "mobile.css?v=mob107", "playground.css?v=pg51", "playground.js?v=pg11", "mobile.js?v=mob30"):
+    for pin in ("styles.css?v=main88", "mobile.css?v=mob107", "playground.css?v=pg52", "playground.js?v=pg12", "mobile.js?v=mob30"):
         assert pin in base, pin
 
 
@@ -456,3 +456,25 @@ def test_the_standalone_panel_is_labelled_by_the_heading_of_its_initial_step(tmp
     assert "labelledBy(panel)" in inpage and inpage.index("dialog.showModal();") < inpage.index("labelledBy(panel)")
     before = js.split("dialog.replaceChildren(panel);", 1)[0].split("fetch(href", 1)[1]
     assert "labelledBy(panel)" not in before
+
+
+def test_the_sheet_trigger_shows_an_opening_state_and_sends_one_request():
+    # PF-2 (owner review 2026-10-22): immediate feedback while the sheet is
+    # fetched, no duplicate request, state cleared on success and failure,
+    # the link itself untouched (href kept) so the fallback navigation works.
+    js = (STATIC / "playground.js").read_text(encoding="utf-8")
+    handler = js.split('var link = event.target.closest("[data-pg-sheet]")', 1)[1].split("dialog.addEventListener(\"keydown\"", 1)[0]
+    assert 'if (link.getAttribute("aria-busy") === "true") {' in handler and "return;" in handler
+    assert "setOpening(link, true);" in handler
+    assert handler.count("setOpening(link, false);") >= 4  # not ok, no panel, no showModal, success, catch
+    helper = js.split("function setOpening(trigger, on) {", 1)[1].split("function ensureCloseButton", 1)[0]
+    assert 'trigger.setAttribute("aria-busy", "true")' in helper
+    assert 'trigger.classList.add("is-opening")' in helper
+    assert 'trigger.textContent = "Opening\\u2026"' in helper
+    assert 'trigger.removeAttribute("aria-busy")' in helper and "data-pg-label" in helper
+    assert "href" not in helper  # the link's destination is never altered
+    css = (STATIC / "playground.css").read_text(encoding="utf-8")
+    busy = css.split('[data-pg-sheet][aria-busy="true"],', 1)[1].split("}", 1)[0]
+    assert "cursor: progress" in busy and "pointer-events: none" in busy
+    base = (TEMPLATES / "base.html").read_text(encoding="utf-8")
+    assert "playground.css?v=pg52" in base and "playground.js?v=pg12" in base

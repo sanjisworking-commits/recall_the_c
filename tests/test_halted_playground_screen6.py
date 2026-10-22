@@ -541,7 +541,7 @@ def test_halted_playground_uses_shared_predicate_and_gate_view() -> None:
     # M1 (DV-20): styles.css no longer hides the account subtitle on Playground pages;
     # the predicate is exercised by playground.css (asserted above).
     assert ":has([data-expired-playground])" not in styles
-    assert "playground.css?v=pg51" in base
+    assert "playground.css?v=pg52" in base
     assert "data-halted-playground" not in MOBILE.read_text(encoding="utf-8")
     assert "data-halted-playground" not in GATE.read_text(encoding="utf-8")
 
