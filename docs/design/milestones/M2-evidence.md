@@ -404,3 +404,66 @@ The owner signed out of the earlier Pro session and of Google inside the pane, t
 | `/playground/laws/uapa/add` by URL | 1280, 375 | Act head underneath, served dialog open (`data-pg-sheet-direct`), one open dialog, label visible, Free copy as above, focus on Close; Escape → closed, URL rewritten to `/laws/uapa`, label and return attribute removed; phone bar present at 375 |
 
 With §10.1 (guest) and §10.2 (Pro), the hosted record now covers guest, Free and one paid tier for the Act heads, chapter expansion, schedule links and the Add dialog (in-page and by URL, both widths). Still unverified on staging: subscriber Playground/plans routes (device cap), Plus/Max/expired/halted, the roster write, dark theme for signed-in sessions.
+
+## 11. Consolidated acceptance table (2026-10-22) — for the owner's decision
+
+Candidate `e2ac903aa542f154c6b148f9505e53a5cf6c779b` (PR #221, draft); staging deployment `0eb35808`. Acceptance and merge are separate decisions; nothing below authorises either.
+
+### 11.1 Coverage by cohort (what was actually run)
+
+| Cohort | Local (candidate, fixtures) | Hosted (staging `0eb35808`) | Phone width on hosted | Themes on hosted |
+|---|---|---|---|---|
+| Guest | 390 + 1280, light + dark, every §3 route, states, keyboard | headless matrix, all 44 rows match local probe-for-probe; states; keyboard | 390 | light + dark |
+| Free | 390 + 1280, light + dark (dev fixture) | owner's fresh Free session in the browser pane: NDPS/UAPA/MTP heads, chapter expansion, schedule links, Add dialog in-page and by URL (§10.3) | **375** (pane preset); **390 untested** | light only |
+| Pro | 390 + 1280, light + dark (dev fixture `--tier pro`) | owner's Pro-granted session in the pane: same set as Free (§10.2) | **375**; **390 untested** | light only |
+| Plus | 390 + 1280, light + dark (dev fixture, incl. NDPS retained) | **not run** | — | — |
+| Max | 390 + 1280, light + dark (dev fixture; Max opens at the scope step, §9.1) | **not run** | — | — |
+| Expired, halted | 390 + 1280, light + dark (dev fixtures) | **not run** | — | — |
+
+### 11.2 M2 requirements — verdict per criterion
+
+| Criterion | Guest | Free | Pro | Evidence |
+|---|---|---|---|---|
+| F01 generated head for every eligible Act (meta == `head_meta_label`, rows == counts; fixture gone) | PASS local + hosted (6 Acts) | PASS local; hosted NDPS/UAPA/MTP | PASS local; hosted NDPS/UAPA/MTP | §3, §10.1–10.3, `test_bareact_head_family` |
+| F02 chapter rows are real controls; every section reachable | PASS local + hosted (keyboard Enter → `aria-expanded`) | PASS hosted (click) | PASS hosted (click) | §5.4, §10 |
+| F03 schedule rows open their readers; undrawable stays listed/unlinked | PASS local + hosted | PASS hosted | PASS hosted | §10 |
+| F04 CTA destinations = live state; only §4a wording changed | PASS local + hosted (`guest` kind) | PASS hosted (`subscribe` → Add sheet, Unlock → `/playground`) | PASS hosted (`eligible_to_add`; live hrefs) | §4, B5, §10 |
+| F05 sheet opens in-page and by URL; confirm/scope/roster unchanged; direct URL 200 | PASS local + hosted | PASS hosted (no POST) | PASS hosted dialog; roster write **not sent** (see 11.3) | §9, §10 |
+| F06 About reachable below the action (Q2) | PASS local + hosted | PASS hosted | PASS hosted | §10 |
+| F07 chapterless Act flat (MTP) | PASS local + hosted | PASS hosted | PASS hosted | §10 |
+| F08 readers unchanged | PASS local + hosted (guest) | not repeated (readers are not viewer-dependent) | — | §4 |
+| F09 full suite; drift 0 | PASS with the 3 documented device exceptions (CI 39375517921) | — | — | §2, M2.md |
+| V01–V03 captures, geometry, responsive 320–844 | PASS local (all cohorts); hosted guest responsive not repeated (M1 established the shell; M2 changed no breakpoint) | — | — | §5.1–5.3 |
+| V04 dark = palette consistency only | PASS local (all cohorts); hosted guest dark matches | **hosted dark not run** | **hosted dark not run** | 11.3 |
+| A01 keyboard, one dialog landmark, label, focus return | PASS local + hosted guest (trace); Free/Pro hosted: label, landmark, focus return by pointer + Escape | — | — | §5.4, §9, §10 |
+| A02 contrast ≥ 4.5:1; targets | PASS (computed; D1/D2 owner-kept) | — | — | §5.5, §6 |
+| A03 reduced motion; 200 % zoom | reduced motion PASS; real zoom **NOT RUN** (tooling) | — | — | §5.6 |
+| A04 automated scan; screen reader | **BLOCKED** / **NOT RUN** (same as M1) | — | — | §5.6 |
+
+### 11.3 Unverified items — proposed test or exception
+
+| Item | Status | Proposed |
+|---|---|---|
+| Signed-in hosted rows at **390 px** (Free, Pro were run at the pane's 375 preset) | untested | run the same pane pass at a custom 390×844 viewport (10 min), or accept 375 as the phone check (375 is narrower, and the local 390 captures pass) — **exception candidate** |
+| Signed-in hosted **dark theme** | untested | emulate `prefers-color-scheme: dark` in the pane for Free (one pass), or accept on the strength of the local dark captures for every cohort (V04 is palette-consistency only) — **exception candidate** |
+| **Plus / Max** on staging | not run (accounts device-capped; no Plus/Max session in the pane) | after the separately authorised device revocation, repeat §10.2 on the Plus and Max accounts (Max must open at the scope step, §9.1); until then the local fixtures (§3) are the only evidence — **exception if the owner accepts local-only for paid tiers**, as M1 did |
+| **Expired / halted** on staging | not run (no such staging account) | would need a staging-only subscription-state change (owner-performed); otherwise **exception: local fixtures only** |
+| **Roster write** (confirm → scope → add) on staging | not sent | a single Add on a paid staging account after the device revocation, then remove the law; the write path is unchanged by M2 and covered by the suite — **exception candidate** |
+| Real 200 % zoom, automated scan, screen reader | as M1 | carried exceptions (M1b) |
+
+### 11.4 Performance finding (new, requires a decision)
+
+| # | Finding | Measurement (2026-10-22, staging) | Attribution | Proposed action |
+|---|---|---|---|---|
+| PF-1 | The in-page Add sheet appears 3–8 s after the click for signed-in users; instantly for guests and locally | signed-in fetch of `/playground/laws/uapa/add` (sheet header): TTFB 5.8 / 6.1 / 6.5 s; signed-in `/laws/uapa` 4.7 s, `/dashboard` 3.2 s, page navigation TTFB 5.0 s; guest TTFB 0.39–0.56 s for the same URLs; `/health` 0.26–0.55 s | **server-side latency of every signed-in request on staging**, not the sheet: the sheet fetch skips the Act (§1) and the Act page itself is as slow. Consistent with the entitlement/roster look-ups making many round trips to the isolated staging database (~215 ms each). Pre-existing (M1's signed-in routes go through the same path), but M2's new in-page opener makes it visible. | investigate under the hardening programme (request timing for signed-in routes: count the DB round trips per request on staging); not an M2 code change |
+| PF-2 | No in-flight feedback while the sheet is fetched: the CTA keeps focus, nothing shows "opening" (no `aria-busy`, no state class in `playground.js`) | handler inspected | **M2 scope** (the opener is M2's) | add an opening state to the trigger (`aria-busy="true"` + a visible pressed/loading style, cleared on open or failure), a few lines of JS/CSS; owner to say whether it is required before acceptance or logged as an M2 follow-up |
+
+### 11.5 Not M2 criteria (regression context only; must not widen acceptance)
+
+Subscriber Playground home, plans and device-limit pages (blocked by the device cap; M7/M5), the "Free account" subtitle for subscribers on path-gated pages (DV-20 follow-up, M5), the Browse Free-plan banner for subscribers (M3), Profile limit duplication (M5), Pro capacity overflow (M7), the never-enrolled expired head's billing button marked as a sheet opener (B12, pre-existing), the 561–768 px floating avatar (M1b). These were observed during M1/M2 validation and are recorded where they belong; none is an M2 acceptance criterion.
+
+### 11.6 Decision options
+
+- **Accept with named exceptions**: 11.3 rows (390 signed-in, signed-in dark, Plus/Max/expired/halted hosted, roster write, zoom/scan/SR) plus a decision on PF-2 (require before acceptance, or follow-up).
+- **Require remaining checks**: name which 11.3 rows must run first; the Plus/Max rows additionally need the device revocation.
+Merge is a separate decision in either case.
