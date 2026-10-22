@@ -391,3 +391,16 @@ The session the owner signed in with is the Pro-granted staging account ("Recall
 | `/laws/ndps` | 375 | head (CTA 48 px, rows 48–59 px, five-tab bar), schedule link; pointer click opens the bottom sheet (about 3 s on staging), label visible, Close 44×44 at the sheet's top-right; Close → focus back on the CTA |
 
 Not covered on staging: Free rows (no Free session), the subscriber Playground/plans routes (device cap 2 of 2 — needs the separately authorised device revocation), the roster write itself (not sent), dark theme for the signed-in session, Plus/Max/expired/halted. M2 acceptance is the owner's decision on this record.
+
+### 10.3 Signed-in Free rows from the owner's session (browser pane, 2026-10-22)
+
+The owner signed out of the earlier Pro session and of Google inside the pane, then signed in with a fresh **Free** account (Today subtitle "Free account"). Method and every probe: `manifests/hosted_signedin_free_pane_0eb35808.json` (DOM probes; pointer clicks for the in-page open — the sheet fetch takes 3–8 s on staging; no POST; no entitlement change).
+
+| Route | Width | Result |
+|---|---|---|
+| `/laws/ndps`, `/laws/uapa`, `/laws/mtp` | 1280 | generated head, kind `subscribe`, CTA "Subscribe to use Playground" → `/playground/laws/{id}/add` (sheet), note "Unlock Playground · from ₹199 / month."; row counts and schedule hrefs as local; MTP flat; About present; no horizontal scroll; subtitle "Free account" (M1-F10 holds for Free) |
+| `/laws/uapa` chapter row | 1280 | click → `open`, `aria-expanded="true"`, section links visible, no other chapter open |
+| `/laws/ndps` in-page open | 1280, 375 | pointer click → dialog open, one landmark, labelled by the visible "Add to Playground"; lede "Turning The NDPS Act, 1985 into a learning experience needs a plan. Reading it stays free."; "Unlock Playground" → `/playground`; footnote "Plus · Pro · Max — from ₹199 / month. Constitution learning stays free."; **no Cancel (D5)**; Close 44×44 focused (phone: bottom sheet at y=573, Close at its top-right); Close click → closed, URL unchanged, focus back on the CTA |
+| `/playground/laws/uapa/add` by URL | 1280, 375 | Act head underneath, served dialog open (`data-pg-sheet-direct`), one open dialog, label visible, Free copy as above, focus on Close; Escape → closed, URL rewritten to `/laws/uapa`, label and return attribute removed; phone bar present at 375 |
+
+With §10.1 (guest) and §10.2 (Pro), the hosted record now covers guest, Free and one paid tier for the Act heads, chapter expansion, schedule links and the Add dialog (in-page and by URL, both widths). Still unverified on staging: subscriber Playground/plans routes (device cap), Plus/Max/expired/halted, the roster write, dark theme for signed-in sessions.
