@@ -1,0 +1,1231 @@
+{
+ "label": "frozen-active",
+ "base": "http://127.0.0.1:8913",
+ "viewer": "plus",
+ "captured_at": "2026-10-19T18:11:02+0530",
+ "chrome": "Google Chrome 155.0.8059.82",
+ "rows": [
+  {
+   "key": "laws-ndps",
+   "route": "/laws/ndps",
+   "viewer": "plus",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "file": "frozen-active_plus_laws-ndps_390x844_light.png",
+   "sha256": "fbbfd47761fef7454de595847d3785a4ed8df4571cde88e802c1a455c546d1f5",
+   "status_chain": [
+    [
+     "/laws/ndps",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/laws/ndps",
+    "title": "The Narcotic Drugs and Psychotropic Substances Act, 1985 | Recall the C",
+    "mscreen": "bareact",
+    "bodyClass": "is-authed",
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarVisible": true,
+    "phoneBar": [
+     "Today",
+     "Browse",
+     "Playground",
+     "Calendar",
+     "Profile"
+    ],
+    "panels": [
+     {
+      "attrs": [
+       "data-signed-in-bareact-desktop",
+       "data-plus-bareact=desktop"
+      ],
+      "cls": "panel guest-bareact",
+      "vis": false
+     },
+     {
+      "attrs": [
+       "data-bareact-phone"
+      ],
+      "cls": "panel bareact bareact-page is-ndps",
+      "vis": false
+     },
+     {
+      "attrs": [
+       "data-plus-bareact-phone"
+      ],
+      "cls": "panel guest-bareact",
+      "vis": true
+     }
+    ],
+    "head": {
+     "cls": "panel guest-bareact",
+     "attrs": [
+      "data-plus-bareact-phone"
+     ]
+    },
+    "h1": "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+    "h1Font": "22px/Fraunces",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "6 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule",
+    "cta": [
+     {
+      "t": "Continue",
+      "href": "/playground",
+      "sheet": false,
+      "kind": "already_active",
+      "box": {
+       "x": 280,
+       "y": 195,
+       "w": 79,
+       "h": 44
+      }
+     }
+    ],
+    "badge": [
+     "Already in Playground Sections Continue",
+     "Already in Playground"
+    ],
+    "rows": [
+     {
+      "cls": "guest-bareact-row",
+      "tag": "div",
+      "t": "CHAPTER I Preliminary Sections 1\u20133 \u203a",
+      "href": null,
+      "control": false,
+      "expanded": null,
+      "h": 52
+     },
+     {
+      "cls": "guest-bareact-row",
+      "tag": "div",
+      "t": "CHAPTER II Authorities and Officers Sections 4\u20137A \u203a",
+      "href": null,
+      "control": false,
+      "expanded": null,
+      "h": 52
+     },
+     {
+      "cls": "guest-bareact-row",
+      "tag": "div",
+      "t": "CHAPTER III Prohibition, Control and Regulation Sections 8\u201314 \u203a",
+      "href": null,
+      "control": false,
+      "expanded": null,
+      "h": 63
+     },
+     {
+      "cls": "guest-bareact-row",
+      "tag": "div",
+      "t": "SCHEDULE List of Psychotropic Substances Entries 1\u2013110 \u203a",
+      "href": null,
+      "control": false,
+      "expanded": null,
+      "h": 52
+     }
+    ],
+    "rowCount": 4,
+    "about": {
+     "vis": false,
+     "expanded": "false"
+    },
+    "tabsHidden": false,
+    "dialog": {
+     "open": false,
+     "cls": "pg-sheet",
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "panelKind": null,
+     "title": null,
+     "closeBtn": false,
+     "active": "BODY. is-authed"
+    },
+    "addPage": null,
+    "hScroll": false,
+    "docH": 844
+   },
+   "full_file": "frozen-active_plus_laws-ndps_390x844_light_full.png",
+   "full_sha256": "fbbfd47761fef7454de595847d3785a4ed8df4571cde88e802c1a455c546d1f5",
+   "sheet": {
+    "trigger": "no-trigger",
+    "file": "frozen-active_plus_laws-ndps_390x844_light_sheet.png",
+    "sha256": "fbbfd47761fef7454de595847d3785a4ed8df4571cde88e802c1a455c546d1f5",
+    "probe": {
+     "url": "/laws/ndps",
+     "dialog": {
+      "open": false,
+      "cls": "pg-sheet",
+      "box": {
+       "x": 0,
+       "y": 0,
+       "w": 0,
+       "h": 0
+      },
+      "panelKind": null,
+      "title": null,
+      "closeBtn": false,
+      "active": "BODY. is-authed"
+     },
+     "addPage": null,
+     "hScroll": false
+    }
+   }
+  },
+  {
+   "key": "laws-ndps",
+   "route": "/laws/ndps",
+   "viewer": "plus",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "file": "frozen-active_plus_laws-ndps_390x844_dark.png",
+   "sha256": "c88d9d3b036afc06c965874926959d304a216748aba15f9ffb586d80a3d15618",
+   "status_chain": [
+    [
+     "/laws/ndps",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/laws/ndps",
+    "title": "The Narcotic Drugs and Psychotropic Substances Act, 1985 | Recall the C",
+    "mscreen": "bareact",
+    "bodyClass": "is-authed",
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarVisible": true,
+    "phoneBar": [
+     "Today",
+     "Browse",
+     "Playground",
+     "Calendar",
+     "Profile"
+    ],
+    "panels": [
+     {
+      "attrs": [
+       "data-signed-in-bareact-desktop",
+       "data-plus-bareact=desktop"
+      ],
+      "cls": "panel guest-bareact",
+      "vis": false
+     },
+     {
+      "attrs": [
+       "data-bareact-phone"
+      ],
+      "cls": "panel bareact bareact-page is-ndps",
+      "vis": false
+     },
+     {
+      "attrs": [
+       "data-plus-bareact-phone"
+      ],
+      "cls": "panel guest-bareact",
+      "vis": true
+     }
+    ],
+    "head": {
+     "cls": "panel guest-bareact",
+     "attrs": [
+      "data-plus-bareact-phone"
+     ]
+    },
+    "h1": "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+    "h1Font": "22px/Fraunces",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "6 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule",
+    "cta": [
+     {
+      "t": "Continue",
+      "href": "/playground",
+      "sheet": false,
+      "kind": "already_active",
+      "box": {
+       "x": 280,
+       "y": 195,
+       "w": 79,
+       "h": 44
+      }
+     }
+    ],
+    "badge": [
+     "Already in Playground Sections Continue",
+     "Already in Playground"
+    ],
+    "rows": [
+     {
+      "cls": "guest-bareact-row",
+      "tag": "div",
+      "t": "CHAPTER I Preliminary Sections 1\u20133 \u203a",
+      "href": null,
+      "control": false,
+      "expanded": null,
+      "h": 52
+     },
+     {
+      "cls": "guest-bareact-row",
+      "tag": "div",
+      "t": "CHAPTER II Authorities and Officers Sections 4\u20137A \u203a",
+      "href": null,
+      "control": false,
+      "expanded": null,
+      "h": 52
+     },
+     {
+      "cls": "guest-bareact-row",
+      "tag": "div",
+      "t": "CHAPTER III Prohibition, Control and Regulation Sections 8\u201314 \u203a",
+      "href": null,
+      "control": false,
+      "expanded": null,
+      "h": 63
+     },
+     {
+      "cls": "guest-bareact-row",
+      "tag": "div",
+      "t": "SCHEDULE List of Psychotropic Substances Entries 1\u2013110 \u203a",
+      "href": null,
+      "control": false,
+      "expanded": null,
+      "h": 52
+     }
+    ],
+    "rowCount": 4,
+    "about": {
+     "vis": false,
+     "expanded": "false"
+    },
+    "tabsHidden": false,
+    "dialog": {
+     "open": false,
+     "cls": "pg-sheet",
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "panelKind": null,
+     "title": null,
+     "closeBtn": false,
+     "active": "BODY. is-authed"
+    },
+    "addPage": null,
+    "hScroll": false,
+    "docH": 844
+   },
+   "full_file": "frozen-active_plus_laws-ndps_390x844_dark_full.png",
+   "full_sha256": "c88d9d3b036afc06c965874926959d304a216748aba15f9ffb586d80a3d15618",
+   "sheet": {
+    "trigger": "no-trigger",
+    "file": "frozen-active_plus_laws-ndps_390x844_dark_sheet.png",
+    "sha256": "c88d9d3b036afc06c965874926959d304a216748aba15f9ffb586d80a3d15618",
+    "probe": {
+     "url": "/laws/ndps",
+     "dialog": {
+      "open": false,
+      "cls": "pg-sheet",
+      "box": {
+       "x": 0,
+       "y": 0,
+       "w": 0,
+       "h": 0
+      },
+      "panelKind": null,
+      "title": null,
+      "closeBtn": false,
+      "active": "BODY. is-authed"
+     },
+     "addPage": null,
+     "hScroll": false
+    }
+   }
+  },
+  {
+   "key": "laws-ndps",
+   "route": "/laws/ndps",
+   "viewer": "plus",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "file": "frozen-active_plus_laws-ndps_1280x900_light.png",
+   "sha256": "3420233fa564f22ca9628c442b3c2651097677a413c2eb6c2b8ab9a9097867fa",
+   "status_chain": [
+    [
+     "/laws/ndps",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/laws/ndps",
+    "title": "The Narcotic Drugs and Psychotropic Substances Act, 1985 | Recall the C",
+    "mscreen": "bareact",
+    "bodyClass": "is-authed",
+    "topNavVisible": true,
+    "topNav": [
+     "Today",
+     "Browse",
+     "Playground",
+     "Calendar",
+     "Profile",
+     "Pricing"
+    ],
+    "phoneBarVisible": false,
+    "phoneBar": [],
+    "panels": [
+     {
+      "attrs": [
+       "data-signed-in-bareact-desktop",
+       "data-plus-bareact=desktop"
+      ],
+      "cls": "panel guest-bareact",
+      "vis": true
+     },
+     {
+      "attrs": [
+       "data-bareact-phone"
+      ],
+      "cls": "panel bareact bareact-page is-ndps",
+      "vis": false
+     },
+     {
+      "attrs": [
+       "data-plus-bareact-phone"
+      ],
+      "cls": "panel guest-bareact",
+      "vis": false
+     }
+    ],
+    "head": {
+     "cls": "panel guest-bareact",
+     "attrs": [
+      "data-signed-in-bareact-desktop",
+      "data-plus-bareact"
+     ]
+    },
+    "h1": "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+    "h1Font": "28px/Fraunces",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "6 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule",
+    "cta": [
+     {
+      "t": "Continue",
+      "href": "/playground",
+      "sheet": false,
+      "kind": "already_active",
+      "box": {
+       "x": 1152,
+       "y": 118,
+       "w": 75,
+       "h": 34
+      }
+     }
+    ],
+    "badge": [
+     "Already in Playground Sections Continue",
+     "Already in Playground"
+    ],
+    "rows": [
+     {
+      "cls": "guest-bareact-row",
+      "tag": "div",
+      "t": "CHAPTER I Preliminary Sections 1\u20133 \u203a",
+      "href": null,
+      "control": false,
+      "expanded": null,
+      "h": 56
+     },
+     {
+      "cls": "guest-bareact-row",
+      "tag": "div",
+      "t": "CHAPTER II Authorities and Officers Sections 4\u20137A \u203a",
+      "href": null,
+      "control": false,
+      "expanded": null,
+      "h": 56
+     },
+     {
+      "cls": "guest-bareact-row",
+      "tag": "div",
+      "t": "CHAPTER III Prohibition, Control and Regulation Sections 8\u201314 \u203a",
+      "href": null,
+      "control": false,
+      "expanded": null,
+      "h": 56
+     },
+     {
+      "cls": "guest-bareact-row",
+      "tag": "div",
+      "t": "SCHEDULE List of Psychotropic Substances Entries 1\u2013110 \u203a",
+      "href": null,
+      "control": false,
+      "expanded": null,
+      "h": 56
+     }
+    ],
+    "rowCount": 4,
+    "about": {
+     "vis": false,
+     "expanded": "false"
+    },
+    "tabsHidden": false,
+    "dialog": {
+     "open": false,
+     "cls": "pg-sheet",
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "panelKind": null,
+     "title": null,
+     "closeBtn": false,
+     "active": "BODY. is-authed"
+    },
+    "addPage": null,
+    "hScroll": false,
+    "docH": 900
+   },
+   "full_file": "frozen-active_plus_laws-ndps_1280x900_light_full.png",
+   "full_sha256": "192a95df5329edf7e61954ea4e62f9cab988421d0aba59f1634ec2703a0d0d74",
+   "sheet": {
+    "trigger": "no-trigger",
+    "file": "frozen-active_plus_laws-ndps_1280x900_light_sheet.png",
+    "sha256": "3420233fa564f22ca9628c442b3c2651097677a413c2eb6c2b8ab9a9097867fa",
+    "probe": {
+     "url": "/laws/ndps",
+     "dialog": {
+      "open": false,
+      "cls": "pg-sheet",
+      "box": {
+       "x": 0,
+       "y": 0,
+       "w": 0,
+       "h": 0
+      },
+      "panelKind": null,
+      "title": null,
+      "closeBtn": false,
+      "active": "BODY. is-authed"
+     },
+     "addPage": null,
+     "hScroll": false
+    }
+   }
+  },
+  {
+   "key": "laws-ndps",
+   "route": "/laws/ndps",
+   "viewer": "plus",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "file": "frozen-active_plus_laws-ndps_1280x900_dark.png",
+   "sha256": "35c6139fe0190cb9dae022be4e0ca89c7eaa65764c20281f9d6acb5fa112a9bc",
+   "status_chain": [
+    [
+     "/laws/ndps",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/laws/ndps",
+    "title": "The Narcotic Drugs and Psychotropic Substances Act, 1985 | Recall the C",
+    "mscreen": "bareact",
+    "bodyClass": "is-authed",
+    "topNavVisible": true,
+    "topNav": [
+     "Today",
+     "Browse",
+     "Playground",
+     "Calendar",
+     "Profile",
+     "Pricing"
+    ],
+    "phoneBarVisible": false,
+    "phoneBar": [],
+    "panels": [
+     {
+      "attrs": [
+       "data-signed-in-bareact-desktop",
+       "data-plus-bareact=desktop"
+      ],
+      "cls": "panel guest-bareact",
+      "vis": true
+     },
+     {
+      "attrs": [
+       "data-bareact-phone"
+      ],
+      "cls": "panel bareact bareact-page is-ndps",
+      "vis": false
+     },
+     {
+      "attrs": [
+       "data-plus-bareact-phone"
+      ],
+      "cls": "panel guest-bareact",
+      "vis": false
+     }
+    ],
+    "head": {
+     "cls": "panel guest-bareact",
+     "attrs": [
+      "data-signed-in-bareact-desktop",
+      "data-plus-bareact"
+     ]
+    },
+    "h1": "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+    "h1Font": "28px/Fraunces",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "6 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule",
+    "cta": [
+     {
+      "t": "Continue",
+      "href": "/playground",
+      "sheet": false,
+      "kind": "already_active",
+      "box": {
+       "x": 1152,
+       "y": 118,
+       "w": 75,
+       "h": 34
+      }
+     }
+    ],
+    "badge": [
+     "Already in Playground Sections Continue",
+     "Already in Playground"
+    ],
+    "rows": [
+     {
+      "cls": "guest-bareact-row",
+      "tag": "div",
+      "t": "CHAPTER I Preliminary Sections 1\u20133 \u203a",
+      "href": null,
+      "control": false,
+      "expanded": null,
+      "h": 56
+     },
+     {
+      "cls": "guest-bareact-row",
+      "tag": "div",
+      "t": "CHAPTER II Authorities and Officers Sections 4\u20137A \u203a",
+      "href": null,
+      "control": false,
+      "expanded": null,
+      "h": 56
+     },
+     {
+      "cls": "guest-bareact-row",
+      "tag": "div",
+      "t": "CHAPTER III Prohibition, Control and Regulation Sections 8\u201314 \u203a",
+      "href": null,
+      "control": false,
+      "expanded": null,
+      "h": 56
+     },
+     {
+      "cls": "guest-bareact-row",
+      "tag": "div",
+      "t": "SCHEDULE List of Psychotropic Substances Entries 1\u2013110 \u203a",
+      "href": null,
+      "control": false,
+      "expanded": null,
+      "h": 56
+     }
+    ],
+    "rowCount": 4,
+    "about": {
+     "vis": false,
+     "expanded": "false"
+    },
+    "tabsHidden": false,
+    "dialog": {
+     "open": false,
+     "cls": "pg-sheet",
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "panelKind": null,
+     "title": null,
+     "closeBtn": false,
+     "active": "BODY. is-authed"
+    },
+    "addPage": null,
+    "hScroll": false,
+    "docH": 900
+   },
+   "full_file": "frozen-active_plus_laws-ndps_1280x900_dark_full.png",
+   "full_sha256": "b0f277901ee1b6f7bc3a41726d4261047f4814b9a1aa510491cf251aed182433",
+   "sheet": {
+    "trigger": "no-trigger",
+    "file": "frozen-active_plus_laws-ndps_1280x900_dark_sheet.png",
+    "sha256": "35c6139fe0190cb9dae022be4e0ca89c7eaa65764c20281f9d6acb5fa112a9bc",
+    "probe": {
+     "url": "/laws/ndps",
+     "dialog": {
+      "open": false,
+      "cls": "pg-sheet",
+      "box": {
+       "x": 0,
+       "y": 0,
+       "w": 0,
+       "h": 0
+      },
+      "panelKind": null,
+      "title": null,
+      "closeBtn": false,
+      "active": "BODY. is-authed"
+     },
+     "addPage": null,
+     "hScroll": false
+    }
+   }
+  },
+  {
+   "key": "add-ndps-direct",
+   "route": "/playground/laws/ndps/add",
+   "viewer": "plus",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "file": "frozen-active_plus_add-ndps-direct_390x844_light.png",
+   "sha256": "bccafe349921c306e3ef9788892a246f3d4ebaa2ece68c6978cf7fc85e9c1cf1",
+   "status_chain": [
+    [
+     "/playground/laws/ndps/add",
+     303
+    ],
+    [
+     "http://127.0.0.1:8913/playground/laws/ndps",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/playground/laws/ndps",
+    "title": "The NDPS Act, 1985 \u00b7 Playground",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarVisible": true,
+    "phoneBar": [
+     "Today",
+     "Browse",
+     "Playground",
+     "Calendar",
+     "Profile"
+    ],
+    "panels": [],
+    "head": null,
+    "h1": "The NDPS Act, 1985",
+    "h1Font": "32px/Fraunces",
+    "kicker": null,
+    "meta": null,
+    "cta": [],
+    "badge": [
+     "IN OCTOBER PLAYGROUND"
+    ],
+    "rows": [],
+    "rowCount": 0,
+    "about": null,
+    "tabsHidden": null,
+    "dialog": {
+     "open": false,
+     "cls": "pg-sheet",
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "panelKind": null,
+     "title": null,
+     "closeBtn": false,
+     "active": "BODY. playground-app is-authed"
+    },
+    "addPage": null,
+    "hScroll": false,
+    "docH": 906
+   },
+   "full_file": "frozen-active_plus_add-ndps-direct_390x844_light_full.png",
+   "full_sha256": "5cdae66a7832bfb097a295b024cd087cd728cfdf28cf847ad1cabdf5e28024ae"
+  },
+  {
+   "key": "add-ndps-direct",
+   "route": "/playground/laws/ndps/add",
+   "viewer": "plus",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "file": "frozen-active_plus_add-ndps-direct_390x844_dark.png",
+   "sha256": "495f3bc6c1f912e559dea8b8896038bc39b7d8d6c53d532ac38365030f7bc8c6",
+   "status_chain": [
+    [
+     "/playground/laws/ndps/add",
+     303
+    ],
+    [
+     "http://127.0.0.1:8913/playground/laws/ndps",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/playground/laws/ndps",
+    "title": "The NDPS Act, 1985 \u00b7 Playground",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarVisible": true,
+    "phoneBar": [
+     "Today",
+     "Browse",
+     "Playground",
+     "Calendar",
+     "Profile"
+    ],
+    "panels": [],
+    "head": null,
+    "h1": "The NDPS Act, 1985",
+    "h1Font": "32px/Fraunces",
+    "kicker": null,
+    "meta": null,
+    "cta": [],
+    "badge": [
+     "IN OCTOBER PLAYGROUND"
+    ],
+    "rows": [],
+    "rowCount": 0,
+    "about": null,
+    "tabsHidden": null,
+    "dialog": {
+     "open": false,
+     "cls": "pg-sheet",
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "panelKind": null,
+     "title": null,
+     "closeBtn": false,
+     "active": "BODY. playground-app is-authed"
+    },
+    "addPage": null,
+    "hScroll": false,
+    "docH": 906
+   },
+   "full_file": "frozen-active_plus_add-ndps-direct_390x844_dark_full.png",
+   "full_sha256": "99cc31659f75c4fc426489916edb4bdbdfb758e4942513c9873b0fea0ef396bb"
+  },
+  {
+   "key": "add-ndps-direct",
+   "route": "/playground/laws/ndps/add",
+   "viewer": "plus",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "file": "frozen-active_plus_add-ndps-direct_1280x900_light.png",
+   "sha256": "3f1b5ea9a88a6224b2594bd68c1de19265b297164d84a6010de5a00e583eaccb",
+   "status_chain": [
+    [
+     "/playground/laws/ndps/add",
+     303
+    ],
+    [
+     "http://127.0.0.1:8913/playground/laws/ndps",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/playground/laws/ndps",
+    "title": "The NDPS Act, 1985 \u00b7 Playground",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "topNavVisible": true,
+    "topNav": [
+     "Today",
+     "Browse",
+     "Playground",
+     "Calendar",
+     "Profile",
+     "Pricing"
+    ],
+    "phoneBarVisible": false,
+    "phoneBar": [],
+    "panels": [],
+    "head": null,
+    "h1": "The NDPS Act, 1985",
+    "h1Font": "44px/Fraunces",
+    "kicker": null,
+    "meta": null,
+    "cta": [],
+    "badge": [
+     "IN OCTOBER PLAYGROUND",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED"
+    ],
+    "rows": [],
+    "rowCount": 0,
+    "about": null,
+    "tabsHidden": null,
+    "dialog": {
+     "open": false,
+     "cls": "pg-sheet",
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "panelKind": null,
+     "title": null,
+     "closeBtn": false,
+     "active": "BODY. playground-app is-authed"
+    },
+    "addPage": null,
+    "hScroll": false,
+    "docH": 15515
+   },
+   "full_file": "frozen-active_plus_add-ndps-direct_1280x900_light_full.png",
+   "full_sha256": "7eee2d16a979f286caef89af78325362b088610e8e8ba05f9a49df0b3fabfebe"
+  },
+  {
+   "key": "add-ndps-direct",
+   "route": "/playground/laws/ndps/add",
+   "viewer": "plus",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "file": "frozen-active_plus_add-ndps-direct_1280x900_dark.png",
+   "sha256": "57df1d0fefd3cbdf5bac83bbec7930c52bb88453b099adf5bfb787229079e6ab",
+   "status_chain": [
+    [
+     "/playground/laws/ndps/add",
+     303
+    ],
+    [
+     "http://127.0.0.1:8913/playground/laws/ndps",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/playground/laws/ndps",
+    "title": "The NDPS Act, 1985 \u00b7 Playground",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "topNavVisible": true,
+    "topNav": [
+     "Today",
+     "Browse",
+     "Playground",
+     "Calendar",
+     "Profile",
+     "Pricing"
+    ],
+    "phoneBarVisible": false,
+    "phoneBar": [],
+    "panels": [],
+    "head": null,
+    "h1": "The NDPS Act, 1985",
+    "h1Font": "44px/Fraunces",
+    "kicker": null,
+    "meta": null,
+    "cta": [],
+    "badge": [
+     "IN OCTOBER PLAYGROUND",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED",
+     "NOT STARTED"
+    ],
+    "rows": [],
+    "rowCount": 0,
+    "about": null,
+    "tabsHidden": null,
+    "dialog": {
+     "open": false,
+     "cls": "pg-sheet",
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "panelKind": null,
+     "title": null,
+     "closeBtn": false,
+     "active": "BODY. playground-app is-authed"
+    },
+    "addPage": null,
+    "hScroll": false,
+    "docH": 15515
+   },
+   "full_file": "frozen-active_plus_add-ndps-direct_1280x900_dark_full.png",
+   "full_sha256": "0b4c048283074c0d86a9d28c1fe3ea63721e5d8b3e9adffa4279437c157c0bb3"
+  }
+ ]
+}

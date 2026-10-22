@@ -1,0 +1,13 @@
+[
+  {"key": "laws-ndps", "path": "/laws/ndps", "sheet": true},
+  {"key": "laws-uapa", "path": "/laws/uapa", "sheet": true},
+  {"key": "laws-bns", "path": "/laws/bns"},
+  {"key": "laws-bnss", "path": "/laws/bnss"},
+  {"key": "laws-pss", "path": "/laws/pss"},
+  {"key": "laws-mtp", "path": "/laws/mtp"},
+  {"key": "add-ndps-direct", "path": "/playground/laws/ndps/add"},
+  {"key": "add-uapa-direct", "path": "/playground/laws/uapa/add"},
+  {"key": "ndps-section-8", "path": "/laws/ndps/section/8"},
+  {"key": "ndps-schedule", "path": "/laws/ndps/schedule/psychotropic-substances"},
+  {"key": "laws-unknown", "path": "/laws/not-an-act"}
+]

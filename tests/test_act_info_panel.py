@@ -188,17 +188,18 @@ def test_the_shipped_seed_still_parses():
 # ── The page ──────────────────────────────────────────────────────────────
 
 
-def test_the_card_ships_collapsed_and_the_tab_row_ships_hidden(tmp_path):
-    # Without JS the page is what it was before either existed: chapters,
-    # then schedules, and no tab row pretending to be a control.
+def test_the_card_ships_collapsed_below_the_action_and_there_is_no_tab_row(tmp_path):
+    # M2: the About card sits under the title/CTA row inside the head band
+    # (decision Q2) and ships collapsed; the Chapters/Schedules tab row is
+    # gone — chapters and schedules are one list, all of it readable
+    # without JS and every schedule link in the document for a crawler.
     html = _client(tmp_path).get("/laws/ndps").text
-    assert 'aria-expanded="false"' in html
+    toggle = html.index("data-bareact-info-toggle")
+    assert html.index('class="ActHead-cta LawPlaygroundCta"') < toggle < html.index("data-act-list")
     assert 'data-bareact-info hidden' in html
-    assert 'data-bareact-tabs hidden' in html
-    assert html.count('data-bareact-panel="') == 2
-    # Neither panel is hidden in the markup, so both are readable and the
-    # schedule link is still in the document for a crawler.
-    assert 'data-bareact-panel="schedules"\n  >' in html
+    assert "data-bareact-tabs" not in html
+    assert html.count('data-bareact-panel="') == 0
+    assert "/laws/ndps/schedule/psychotropic-substances" in html
 
 
 def test_the_card_renders_its_rows_on_the_page(tmp_path):
@@ -210,22 +211,27 @@ def test_the_card_renders_its_rows_on_the_page(tmp_path):
     assert "Act No. 61 OF 1985" in html
 
 
-def test_the_schedule_row_moved_into_the_schedules_panel(tmp_path):
+def test_the_schedule_row_follows_the_last_chapter_in_the_one_list(tmp_path):
+    # M2: no panels; the schedule row is the last row of the single list,
+    # after Chapter VI, and never inside a chapter's section list.
     html = _client(tmp_path).get("/laws/ndps").text
-    panel = html.split('data-bareact-panel="schedules"', 1)[1]
-    assert "/laws/ndps/schedule/" in panel
-    # and is no longer in the chapters panel
-    chapters = html.split('data-bareact-panel="chapters"', 1)[1].split(
-        'data-bareact-panel="schedules"', 1
-    )[0]
-    assert "/laws/ndps/schedule/" not in chapters
+    listing = html.split("data-act-list", 1)[1]
+    assert "/laws/ndps/schedule/" in listing
+    assert listing.rindex("</details>") < listing.index('class="bareact-schedule-row')
 
 
-def test_an_act_with_no_schedules_says_so(tmp_path):
+def test_an_act_with_no_schedules_lists_none_and_says_nothing(tmp_path):
+    # M2: the empty-state sentence went with the Schedules panel; an Act
+    # without Schedules simply ends its list at the last chapter, and its
+    # head meta carries no Schedule word.
     client = _client(tmp_path)
-    assert "This Act has no Schedules." in client.get("/laws/bns").text
-    assert "This Act has no Schedules." in client.get("/laws/pss").text
-    assert "This Act has no Schedules." not in client.get("/laws/uapa").text
+    for slug in ("bns", "pss"):
+        html = client.get(f"/laws/{slug}").text
+        assert "This Act has no Schedules." not in html
+        assert "bareact-schedule-row" not in html
+        assert "· Schedule" not in html.split('<p class="ActHead-meta">', 1)[1].split("</p>", 1)[0]
+    uapa = client.get("/laws/uapa").text
+    assert "· Schedules</p>" in uapa
 
 
 def test_every_schedule_the_act_prints_is_listed(tmp_path):

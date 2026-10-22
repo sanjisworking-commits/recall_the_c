@@ -1,0 +1,1740 @@
+{
+ "base": "http://127.0.0.1:8911",
+ "rows": [
+  {
+   "key": "act-ndps-guest",
+   "surface": "phone",
+   "query": "screen=act&law=ndps&viewer=guest&pin=1",
+   "file": "proto_act-ndps-guest_phone.png",
+   "sha256": "a69989d0c5c5a86144c273747c5b376622e3ce8e7532322a9fdbcd92d507ceb0",
+   "probe": {
+    "h2": "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+    "h2Font": "19px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "Sign in to use Playground"
+    ],
+    "rows": [],
+    "dialog": null,
+    "text": "Recall the C \u2014 Playground\n\nAdditive overlay on the verbatim Bare Acts. Add from an Act's head \u2014 the whole Act, sections, or single clauses \u2014 then it appears in Playground with the usual recall ladder.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd sheet \u2014 act vs sections\nSection picker \u2014 clause depth\nPlayground \u2014 activated laws\nPlayground \u2014 empty\nLearn \u2014 6 recall modes\nToday \u2014 playground in the queue\nCalendar \u2014 saved recall\nRoster \u2014 manage this month\nDevices\n\nReaders stay untouched \u2014 Add lives above the chapter list. /playground shows only activated laws. Selection persists against the source version, shown on each card.\n\n9:41\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Narcotic Drugs and Psychotropic Substances Act, 1985\n\n8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule\n\nSign in to use Playground\nCHAPTER I\nPreliminary\n1\u20133\n\u25b8\nCHAPTER II\nAuthorities and Officers\n4\u20137\n\u25b8\nCHAPTER IIA\nNational Fund for Control of Drug Abuse\n7A\u20137B\n\u25b8\nCHAPTER III\nProhibition, Control and Regulation\n8\u201314\n\u25b8\nCHAPTER IV\nOffences and Penalties\n15\u201340\n\u25b8\nCHAPTER V\nProcedure\n41\u201368\n\u25b8\nCHAPTER VA\nForfeiture of Illegally Acquired Property\n68A\u201368Z\n\u25b8\nCHAPTER VI\nMiscellaneous\n6"
+   }
+  },
+  {
+   "key": "act-ndps-guest",
+   "surface": "desktop",
+   "query": "screen=act&law=ndps&viewer=guest&pin=1",
+   "file": "proto_act-ndps-guest_desktop.png",
+   "sha256": "1696cf4ba50ec151448b65be6ef888eb8bb99eef1a8a2bb07eab31a97619f8e4",
+   "probe": {
+    "h2": "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+    "h2Font": "28px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "Sections",
+     "Continue"
+    ],
+    "rows": [
+     "CHAPTER I Preliminary Sections 1\u20133 \u203a",
+     "CHAPTER II Authorities and Officers Sections 4\u20137 \u203a",
+     "CHAPTER IIA National Fund for Control of Drug Abuse Sections 7A\u20137B \u203a",
+     "CHAPTER III Prohibition, Control and Regulation Sections 8\u201314 \u203a",
+     "CHAPTER IV Offences and Penalties Sections 15\u201340 \u203a",
+     "CHAPTER V Procedure Sections 41\u201368 \u203a",
+     "CHAPTER VA Forfeiture of Illegally Acquired Property Sections 68A\u201368Z \u203a",
+     "CHAPTER VI Miscellaneous Sections 69\u201383 \u203a",
+     "SCHEDULE List of Psychotropic Substances Entries 1\u2013110 \u203a"
+    ],
+    "dialog": null,
+    "text": "Playground \u2014 Desktop\n\nSame flow as the phone design, laid out for a 1280px browser window. Left nav replaces the tab bar; sheets become centred dialogs; long screens use two columns.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nSettings\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd dialog\nSection picker\nPlayground home\nPlayground \u2014 empty\nAct progress\nLearn \u2014 6 modes\nRoster \u2014 manage September\nRoster \u2014 next month\nGate \u2014 sign in / plans\nSign in\nToday\nCalendar\nProfile\nSection learned\nMastered\n\nUses locked branch values: Plus / Pro / Max at \u20b9199 / 399 / 1,199, calendar months, sections only, explicit Keep on rollover. Use the Tweaks panel to switch viewer state.\n\nC\nRecall the C\nToday\nBrowse\nPlayground\nCalendar\nProfile\nSign in\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Narcotic Drugs and Psychotropic Substances Act, 1985\n\n8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule\n\nAlready in Playground\nSections\nContinue\nCHAPTER I\nPreliminary\nSections 1\u20133\n\u203a\nCHAPTER II\nAuthorities and Officers\nSections 4\u20137\n\u203a\nCHAPTER IIA\nNational Fund for Control of Drug Abuse\nSections 7A\u20137B\n\u203a\nCHAPTER III\nProhibition, Control and Regulation\nSections 8\u201314\n\u203a\nCHAPTER IV\nOffences and Penalties\nSections 15\u201340\n\u203a\nCHAPTE"
+   }
+  },
+  {
+   "key": "act-uapa-guest",
+   "surface": "phone",
+   "query": "screen=act&law=uapa&viewer=guest&pin=1",
+   "file": "proto_act-uapa-guest_phone.png",
+   "sha256": "5bab96ca5e61fb4e12798c061b52d2c9f54218c64c680598f609c41f49aeb424",
+   "probe": {
+    "h2": "The Unlawful Activities (Prevention) Act, 1967",
+    "h2Font": "19px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "Sign in to use Playground"
+    ],
+    "rows": [],
+    "dialog": null,
+    "text": "Recall the C \u2014 Playground\n\nAdditive overlay on the verbatim Bare Acts. Add from an Act's head \u2014 the whole Act, sections, or single clauses \u2014 then it appears in Playground with the usual recall ladder.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd sheet \u2014 act vs sections\nSection picker \u2014 clause depth\nPlayground \u2014 activated laws\nPlayground \u2014 empty\nLearn \u2014 6 recall modes\nToday \u2014 playground in the queue\nCalendar \u2014 saved recall\nRoster \u2014 manage this month\nDevices\n\nReaders stay untouched \u2014 Add lives above the chapter list. /playground shows only activated laws. Selection persists against the source version, shown on each card.\n\n9:41\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Unlawful Activities (Prevention) Act, 1967\n\n7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule\n\nSign in to use Playground\nCHAPTER I\nPreliminary\n1\u20132\n\u25b8\nCHAPTER II\nUnlawful Associations\n3\u20139\n\u25b8\nCHAPTER III\nOffences and Penalties\n10\u201314\n\u25b8\nCHAPTER IV\nPunishment for Terrorist Activities\n15\u201323\n\u25b8\nCHAPTER V\nForfeiture of Proceeds of Terrorism\n24\u201334\n\u25b8\nCHAPTER VI\nTerrorist Organisations\n35\u201340\n\u25b8\nCHAPTER VII\nMiscellaneous\n41\u201353\n\u25b8\nSCHEDULE\nTerrorist Organisations\n1\u201344\n\u203a\nToday\nBrowse\nPlayg"
+   }
+  },
+  {
+   "key": "act-uapa-guest",
+   "surface": "desktop",
+   "query": "screen=act&law=uapa&viewer=guest&pin=1",
+   "file": "proto_act-uapa-guest_desktop.png",
+   "sha256": "4ada0a304b6f1a1199b376cf4889bb82e6d3ff58db28b875a9e311cca0683880",
+   "probe": {
+    "h2": "The Unlawful Activities (Prevention) Act, 1967",
+    "h2Font": "28px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "Sign in to use Playground"
+    ],
+    "rows": [
+     "CHAPTER I Preliminary Sections 1\u20132 \u203a",
+     "CHAPTER II Unlawful Associations Sections 3\u20139 \u203a",
+     "CHAPTER III Offences and Penalties Sections 10\u201314 \u203a",
+     "CHAPTER IV Punishment for Terrorist Activities Sections 15\u201323 \u203a",
+     "CHAPTER V Forfeiture of Proceeds of Terrorism Sections 24\u201334 \u203a",
+     "CHAPTER VI Terrorist Organisations Sections 35\u201340 \u203a",
+     "CHAPTER VII Miscellaneous Sections 41\u201353 \u203a",
+     "SCHEDULE Terrorist Organisations Entries 1\u201344 \u203a"
+    ],
+    "dialog": null,
+    "text": "Playground \u2014 Desktop\n\nSame flow as the phone design, laid out for a 1280px browser window. Left nav replaces the tab bar; sheets become centred dialogs; long screens use two columns.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nSettings\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd dialog\nSection picker\nPlayground home\nPlayground \u2014 empty\nAct progress\nLearn \u2014 6 modes\nRoster \u2014 manage September\nRoster \u2014 next month\nGate \u2014 sign in / plans\nSign in\nToday\nCalendar\nProfile\nSection learned\nMastered\n\nUses locked branch values: Plus / Pro / Max at \u20b9199 / 399 / 1,199, calendar months, sections only, explicit Keep on rollover. Use the Tweaks panel to switch viewer state.\n\nC\nRecall the C\nToday\nBrowse\nPlayground\nCalendar\nProfile\nSign in\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Unlawful Activities (Prevention) Act, 1967\n\n7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule\n\nSign in to use Playground\nCHAPTER I\nPreliminary\nSections 1\u20132\n\u203a\nCHAPTER II\nUnlawful Associations\nSections 3\u20139\n\u203a\nCHAPTER III\nOffences and Penalties\nSections 10\u201314\n\u203a\nCHAPTER IV\nPunishment for Terrorist Activities\nSections 15\u201323\n\u203a\nCHAPTER V\nForfeiture of Proceeds of Terrorism\nSections 24\u201334\n\u203a\nCHAPTER VI\nTerrorist Organisations\nSec"
+   }
+  },
+  {
+   "key": "act-bns-guest",
+   "surface": "phone",
+   "query": "screen=act&law=bns&viewer=guest&pin=1",
+   "file": "proto_act-bns-guest_phone.png",
+   "sha256": "b3d4141a5316ca81878e160af7d72b65c1a5aa07b4c9d206d5ac6539c68a978d",
+   "probe": {
+    "h2": "The Bharatiya Nyaya Sanhita, 2023",
+    "h2Font": "19px",
+    "kicker": "BARE ACT \u00b7 GAZETTE",
+    "meta": "20 Chapters \u00b7 Sections 1\u2013358",
+    "buttons": [
+     "\u2190 Laws",
+     "Sign in to use Playground"
+    ],
+    "rows": [],
+    "dialog": null,
+    "text": "Recall the C \u2014 Playground\n\nAdditive overlay on the verbatim Bare Acts. Add from an Act's head \u2014 the whole Act, sections, or single clauses \u2014 then it appears in Playground with the usual recall ladder.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd sheet \u2014 act vs sections\nSection picker \u2014 clause depth\nPlayground \u2014 activated laws\nPlayground \u2014 empty\nLearn \u2014 6 recall modes\nToday \u2014 playground in the queue\nCalendar \u2014 saved recall\nRoster \u2014 manage this month\nDevices\n\nReaders stay untouched \u2014 Add lives above the chapter list. /playground shows only activated laws. Selection persists against the source version, shown on each card.\n\n9:41\n\u2190 Laws\n\nBARE ACT \u00b7 GAZETTE\n\nThe Bharatiya Nyaya Sanhita, 2023\n\n20 Chapters \u00b7 Sections 1\u2013358\n\nSign in to use Playground\nCHAPTER I\nPreliminary\n1\u20133\n\u25b8\nCHAPTER VI\nOf Offences Affecting the Human Body\n100\u2013146\n\u25b8\nToday\nBrowse\nPlayground\nCalendar\nProfile"
+   }
+  },
+  {
+   "key": "act-bns-guest",
+   "surface": "desktop",
+   "query": "screen=act&law=bns&viewer=guest&pin=1",
+   "file": "proto_act-bns-guest_desktop.png",
+   "sha256": "82a1fed3549f6265faa5bb9a28ad020661dd273ccdf95f1e689fe5e1c7cc44d1",
+   "probe": {
+    "h2": "The Bharatiya Nyaya Sanhita, 2023",
+    "h2Font": "28px",
+    "kicker": "BARE ACT \u00b7 GAZETTE",
+    "meta": "20 Chapters \u00b7 Sections 1\u2013358",
+    "buttons": [
+     "\u2190 Laws",
+     "Sections",
+     "Continue"
+    ],
+    "rows": [
+     "CHAPTER I Preliminary Sections 1\u20133 \u203a",
+     "CHAPTER VI Of Offences Affecting the Human Body Sections 100\u2013146 \u203a"
+    ],
+    "dialog": null,
+    "text": "Playground \u2014 Desktop\n\nSame flow as the phone design, laid out for a 1280px browser window. Left nav replaces the tab bar; sheets become centred dialogs; long screens use two columns.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nSettings\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd dialog\nSection picker\nPlayground home\nPlayground \u2014 empty\nAct progress\nLearn \u2014 6 modes\nRoster \u2014 manage September\nRoster \u2014 next month\nGate \u2014 sign in / plans\nSign in\nToday\nCalendar\nProfile\nSection learned\nMastered\n\nUses locked branch values: Plus / Pro / Max at \u20b9199 / 399 / 1,199, calendar months, sections only, explicit Keep on rollover. Use the Tweaks panel to switch viewer state.\n\nC\nRecall the C\nToday\nBrowse\nPlayground\nCalendar\nProfile\nSign in\n\u2190 Laws\n\nBARE ACT \u00b7 GAZETTE\n\nThe Bharatiya Nyaya Sanhita, 2023\n\n20 Chapters \u00b7 Sections 1\u2013358\n\nAlready in Playground\nSections\nContinue\nCHAPTER I\nPreliminary\nSections 1\u20133\n\u203a\nCHAPTER VI\nOf Offences Affecting the Human Body\nSections 100\u2013146\n\u203a"
+   }
+  },
+  {
+   "key": "act-uapa-guest-sheet",
+   "surface": "phone",
+   "query": "screen=act&law=uapa&viewer=guest&sheet=1&pin=1",
+   "file": "proto_act-uapa-guest-sheet_phone.png",
+   "sha256": "e18797eeccb79013654aff85705f98b48460caae6a213e67d8efd4f7eccab209",
+   "probe": {
+    "h2": "The Unlawful Activities (Prevention) Act, 1967",
+    "h2Font": "19px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "Sign in to use Playground"
+    ],
+    "rows": [],
+    "dialog": null,
+    "text": "Recall the C \u2014 Playground\n\nAdditive overlay on the verbatim Bare Acts. Add from an Act's head \u2014 the whole Act, sections, or single clauses \u2014 then it appears in Playground with the usual recall ladder.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd sheet \u2014 act vs sections\nSection picker \u2014 clause depth\nPlayground \u2014 activated laws\nPlayground \u2014 empty\nLearn \u2014 6 recall modes\nToday \u2014 playground in the queue\nCalendar \u2014 saved recall\nRoster \u2014 manage this month\nDevices\n\nReaders stay untouched \u2014 Add lives above the chapter list. /playground shows only activated laws. Selection persists against the source version, shown on each card.\n\n9:41\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Unlawful Activities (Prevention) Act, 1967\n\n7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule\n\nSign in to use Playground\nCHAPTER I\nPreliminary\n1\u20132\n\u25b8\nCHAPTER II\nUnlawful Associations\n3\u20139\n\u25b8\nCHAPTER III\nOffences and Penalties\n10\u201314\n\u25b8\nCHAPTER IV\nPunishment for Terrorist Activities\n15\u201323\n\u25b8\nCHAPTER V\nForfeiture of Proceeds of Terrorism\n24\u201334\n\u25b8\nCHAPTER VI\nTerrorist Organisations\n35\u201340\n\u25b8\nCHAPTER VII\nMiscellaneous\n41\u201353\n\u25b8\nSCHEDULE\nTerrorist Organisations\n1\u201344\n\u203a\nToday\nBrowse\nPlayg"
+   }
+  },
+  {
+   "key": "act-uapa-guest-sheet",
+   "surface": "desktop",
+   "query": "screen=act&law=uapa&viewer=guest&sheet=1&pin=1",
+   "file": "proto_act-uapa-guest-sheet_desktop.png",
+   "sha256": "a0ea27553b8081ae4bfd7ff4600346dacd4cfb26a6316abab718e01b44dd3b99",
+   "probe": {
+    "h2": "The Unlawful Activities (Prevention) Act, 1967",
+    "h2Font": "28px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "Sign in to use Playground"
+    ],
+    "rows": [
+     "CHAPTER I Preliminary Sections 1\u20132 \u203a",
+     "CHAPTER II Unlawful Associations Sections 3\u20139 \u203a",
+     "CHAPTER III Offences and Penalties Sections 10\u201314 \u203a",
+     "CHAPTER IV Punishment for Terrorist Activities Sections 15\u201323 \u203a",
+     "CHAPTER V Forfeiture of Proceeds of Terrorism Sections 24\u201334 \u203a",
+     "CHAPTER VI Terrorist Organisations Sections 35\u201340 \u203a",
+     "CHAPTER VII Miscellaneous Sections 41\u201353 \u203a",
+     "SCHEDULE Terrorist Organisations Entries 1\u201344 \u203a"
+    ],
+    "dialog": {
+     "text": "\u2715 Add to Playground Playground needs an account. Reading The UAPA, 1967 stays free \u2014 sign in and you\u2019ll come right back here. Sign in Create an account",
+     "w": 516
+    },
+    "text": "Playground \u2014 Desktop\n\nSame flow as the phone design, laid out for a 1280px browser window. Left nav replaces the tab bar; sheets become centred dialogs; long screens use two columns.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nSettings\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd dialog\nSection picker\nPlayground home\nPlayground \u2014 empty\nAct progress\nLearn \u2014 6 modes\nRoster \u2014 manage September\nRoster \u2014 next month\nGate \u2014 sign in / plans\nSign in\nToday\nCalendar\nProfile\nSection learned\nMastered\n\nUses locked branch values: Plus / Pro / Max at \u20b9199 / 399 / 1,199, calendar months, sections only, explicit Keep on rollover. Use the Tweaks panel to switch viewer state.\n\nC\nRecall the C\nToday\nBrowse\nPlayground\nCalendar\nProfile\nSign in\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Unlawful Activities (Prevention) Act, 1967\n\n7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule\n\nSign in to use Playground\nCHAPTER I\nPreliminary\nSections 1\u20132\n\u203a\nCHAPTER II\nUnlawful Associations\nSections 3\u20139\n\u203a\nCHAPTER III\nOffences and Penalties\nSections 10\u201314\n\u203a\nCHAPTER IV\nPunishment for Terrorist Activities\nSections 15\u201323\n\u203a\nCHAPTER V\nForfeiture of Proceeds of Terrorism\nSections 24\u201334\n\u203a\nCHAPTER VI\nTerrorist Organisations\nSec"
+   }
+  },
+  {
+   "key": "act-ndps-guest-sheet",
+   "surface": "phone",
+   "query": "screen=act&law=ndps&viewer=guest&sheet=1&pin=1",
+   "file": "proto_act-ndps-guest-sheet_phone.png",
+   "sha256": "8450f3cf9be3947df37f8385ae826f7a2bc7199d462bca28b870b9445e010d2d",
+   "probe": {
+    "h2": "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+    "h2Font": "19px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "Sign in to use Playground"
+    ],
+    "rows": [],
+    "dialog": null,
+    "text": "Recall the C \u2014 Playground\n\nAdditive overlay on the verbatim Bare Acts. Add from an Act's head \u2014 the whole Act, sections, or single clauses \u2014 then it appears in Playground with the usual recall ladder.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd sheet \u2014 act vs sections\nSection picker \u2014 clause depth\nPlayground \u2014 activated laws\nPlayground \u2014 empty\nLearn \u2014 6 recall modes\nToday \u2014 playground in the queue\nCalendar \u2014 saved recall\nRoster \u2014 manage this month\nDevices\n\nReaders stay untouched \u2014 Add lives above the chapter list. /playground shows only activated laws. Selection persists against the source version, shown on each card.\n\n9:41\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Narcotic Drugs and Psychotropic Substances Act, 1985\n\n8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule\n\nSign in to use Playground\nCHAPTER I\nPreliminary\n1\u20133\n\u25b8\nCHAPTER II\nAuthorities and Officers\n4\u20137\n\u25b8\nCHAPTER IIA\nNational Fund for Control of Drug Abuse\n7A\u20137B\n\u25b8\nCHAPTER III\nProhibition, Control and Regulation\n8\u201314\n\u25b8\nCHAPTER IV\nOffences and Penalties\n15\u201340\n\u25b8\nCHAPTER V\nProcedure\n41\u201368\n\u25b8\nCHAPTER VA\nForfeiture of Illegally Acquired Property\n68A\u201368Z\n\u25b8\nCHAPTER VI\nMiscellaneous\n6"
+   }
+  },
+  {
+   "key": "act-ndps-guest-sheet",
+   "surface": "desktop",
+   "query": "screen=act&law=ndps&viewer=guest&sheet=1&pin=1",
+   "file": "proto_act-ndps-guest-sheet_desktop.png",
+   "sha256": "2611ebc35951a7aa88f28e1a37d9a93c3b767047456f530d3c924569b92c1e25",
+   "probe": {
+    "h2": "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+    "h2Font": "28px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "Sections",
+     "Continue"
+    ],
+    "rows": [
+     "CHAPTER I Preliminary Sections 1\u20133 \u203a",
+     "CHAPTER II Authorities and Officers Sections 4\u20137 \u203a",
+     "CHAPTER IIA National Fund for Control of Drug Abuse Sections 7A\u20137B \u203a",
+     "CHAPTER III Prohibition, Control and Regulation Sections 8\u201314 \u203a",
+     "CHAPTER IV Offences and Penalties Sections 15\u201340 \u203a",
+     "CHAPTER V Procedure Sections 41\u201368 \u203a",
+     "CHAPTER VA Forfeiture of Illegally Acquired Property Sections 68A\u201368Z \u203a",
+     "CHAPTER VI Miscellaneous Sections 69\u201383 \u203a",
+     "SCHEDULE List of Psychotropic Substances Entries 1\u2013110 \u203a"
+    ],
+    "dialog": {
+     "text": "\u2715 Add to Playground Playground needs an account. Reading The NDPS Act, 1985 stays free \u2014 sign in and you\u2019ll come right back here. Sign in Create an account",
+     "w": 516
+    },
+    "text": "Playground \u2014 Desktop\n\nSame flow as the phone design, laid out for a 1280px browser window. Left nav replaces the tab bar; sheets become centred dialogs; long screens use two columns.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nSettings\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd dialog\nSection picker\nPlayground home\nPlayground \u2014 empty\nAct progress\nLearn \u2014 6 modes\nRoster \u2014 manage September\nRoster \u2014 next month\nGate \u2014 sign in / plans\nSign in\nToday\nCalendar\nProfile\nSection learned\nMastered\n\nUses locked branch values: Plus / Pro / Max at \u20b9199 / 399 / 1,199, calendar months, sections only, explicit Keep on rollover. Use the Tweaks panel to switch viewer state.\n\nC\nRecall the C\nToday\nBrowse\nPlayground\nCalendar\nProfile\nSign in\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Narcotic Drugs and Psychotropic Substances Act, 1985\n\n8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule\n\nAlready in Playground\nSections\nContinue\nCHAPTER I\nPreliminary\nSections 1\u20133\n\u203a\nCHAPTER II\nAuthorities and Officers\nSections 4\u20137\n\u203a\nCHAPTER IIA\nNational Fund for Control of Drug Abuse\nSections 7A\u20137B\n\u203a\nCHAPTER III\nProhibition, Control and Regulation\nSections 8\u201314\n\u203a\nCHAPTER IV\nOffences and Penalties\nSections 15\u201340\n\u203a\nCHAPTE"
+   }
+  },
+  {
+   "key": "act-ndps-signedIn",
+   "surface": "phone",
+   "query": "screen=act&law=ndps&viewer=signedIn&pin=1",
+   "file": "proto_act-ndps-signedIn_phone.png",
+   "sha256": "b31a9080bf49a73d69bf820241ad72be4ba4c1c55aa05a1f844c38eb47a93051",
+   "probe": {
+    "h2": "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+    "h2Font": "19px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "Subscribe to use Playground"
+    ],
+    "rows": [],
+    "dialog": null,
+    "text": "Recall the C \u2014 Playground\n\nAdditive overlay on the verbatim Bare Acts. Add from an Act's head \u2014 the whole Act, sections, or single clauses \u2014 then it appears in Playground with the usual recall ladder.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd sheet \u2014 act vs sections\nSection picker \u2014 clause depth\nPlayground \u2014 activated laws\nPlayground \u2014 empty\nLearn \u2014 6 recall modes\nToday \u2014 playground in the queue\nCalendar \u2014 saved recall\nRoster \u2014 manage this month\nDevices\n\nReaders stay untouched \u2014 Add lives above the chapter list. /playground shows only activated laws. Selection persists against the source version, shown on each card.\n\n9:41\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Narcotic Drugs and Psychotropic Substances Act, 1985\n\n8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule\n\nSubscribe to use Playground\nCHAPTER I\nPreliminary\n1\u20133\n\u25b8\nCHAPTER II\nAuthorities and Officers\n4\u20137\n\u25b8\nCHAPTER IIA\nNational Fund for Control of Drug Abuse\n7A\u20137B\n\u25b8\nCHAPTER III\nProhibition, Control and Regulation\n8\u201314\n\u25b8\nCHAPTER IV\nOffences and Penalties\n15\u201340\n\u25b8\nCHAPTER V\nProcedure\n41\u201368\n\u25b8\nCHAPTER VA\nForfeiture of Illegally Acquired Property\n68A\u201368Z\n\u25b8\nCHAPTER VI\nMiscellaneous"
+   }
+  },
+  {
+   "key": "act-ndps-signedIn",
+   "surface": "desktop",
+   "query": "screen=act&law=ndps&viewer=signedIn&pin=1",
+   "file": "proto_act-ndps-signedIn_desktop.png",
+   "sha256": "27f0517876f54a7b5976df436b92df8ee4384b45e50dbe6e28a261f023196e44",
+   "probe": {
+    "h2": "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+    "h2Font": "28px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "Sections",
+     "Continue"
+    ],
+    "rows": [
+     "CHAPTER I Preliminary Sections 1\u20133 \u203a",
+     "CHAPTER II Authorities and Officers Sections 4\u20137 \u203a",
+     "CHAPTER IIA National Fund for Control of Drug Abuse Sections 7A\u20137B \u203a",
+     "CHAPTER III Prohibition, Control and Regulation Sections 8\u201314 \u203a",
+     "CHAPTER IV Offences and Penalties Sections 15\u201340 \u203a",
+     "CHAPTER V Procedure Sections 41\u201368 \u203a",
+     "CHAPTER VA Forfeiture of Illegally Acquired Property Sections 68A\u201368Z \u203a",
+     "CHAPTER VI Miscellaneous Sections 69\u201383 \u203a",
+     "SCHEDULE List of Psychotropic Substances Entries 1\u2013110 \u203a"
+    ],
+    "dialog": null,
+    "text": "Playground \u2014 Desktop\n\nSame flow as the phone design, laid out for a 1280px browser window. Left nav replaces the tab bar; sheets become centred dialogs; long screens use two columns.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nSettings\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd dialog\nSection picker\nPlayground home\nPlayground \u2014 empty\nAct progress\nLearn \u2014 6 modes\nRoster \u2014 manage September\nRoster \u2014 next month\nGate \u2014 sign in / plans\nSign in\nToday\nCalendar\nProfile\nSection learned\nMastered\n\nUses locked branch values: Plus / Pro / Max at \u20b9199 / 399 / 1,199, calendar months, sections only, explicit Keep on rollover. Use the Tweaks panel to switch viewer state.\n\nC\nRecall the C\nToday\nBrowse\nPlayground\nCalendar\nProfile\nS\nSanjay\nFree account\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Narcotic Drugs and Psychotropic Substances Act, 1985\n\n8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule\n\nAlready in Playground\nSections\nContinue\nCHAPTER I\nPreliminary\nSections 1\u20133\n\u203a\nCHAPTER II\nAuthorities and Officers\nSections 4\u20137\n\u203a\nCHAPTER IIA\nNational Fund for Control of Drug Abuse\nSections 7A\u20137B\n\u203a\nCHAPTER III\nProhibition, Control and Regulation\nSections 8\u201314\n\u203a\nCHAPTER IV\nOffences and Penalties\nSections "
+   }
+  },
+  {
+   "key": "act-uapa-signedIn",
+   "surface": "phone",
+   "query": "screen=act&law=uapa&viewer=signedIn&pin=1",
+   "file": "proto_act-uapa-signedIn_phone.png",
+   "sha256": "c00cbf044dc3e27481c8bad9a9c29ce282913658ad0416f7644268086480011e",
+   "probe": {
+    "h2": "The Unlawful Activities (Prevention) Act, 1967",
+    "h2Font": "19px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "Subscribe to use Playground"
+    ],
+    "rows": [],
+    "dialog": null,
+    "text": "Recall the C \u2014 Playground\n\nAdditive overlay on the verbatim Bare Acts. Add from an Act's head \u2014 the whole Act, sections, or single clauses \u2014 then it appears in Playground with the usual recall ladder.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd sheet \u2014 act vs sections\nSection picker \u2014 clause depth\nPlayground \u2014 activated laws\nPlayground \u2014 empty\nLearn \u2014 6 recall modes\nToday \u2014 playground in the queue\nCalendar \u2014 saved recall\nRoster \u2014 manage this month\nDevices\n\nReaders stay untouched \u2014 Add lives above the chapter list. /playground shows only activated laws. Selection persists against the source version, shown on each card.\n\n9:41\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Unlawful Activities (Prevention) Act, 1967\n\n7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule\n\nSubscribe to use Playground\nCHAPTER I\nPreliminary\n1\u20132\n\u25b8\nCHAPTER II\nUnlawful Associations\n3\u20139\n\u25b8\nCHAPTER III\nOffences and Penalties\n10\u201314\n\u25b8\nCHAPTER IV\nPunishment for Terrorist Activities\n15\u201323\n\u25b8\nCHAPTER V\nForfeiture of Proceeds of Terrorism\n24\u201334\n\u25b8\nCHAPTER VI\nTerrorist Organisations\n35\u201340\n\u25b8\nCHAPTER VII\nMiscellaneous\n41\u201353\n\u25b8\nSCHEDULE\nTerrorist Organisations\n1\u201344\n\u203a\nToday\nBrowse\nPla"
+   }
+  },
+  {
+   "key": "act-uapa-signedIn",
+   "surface": "desktop",
+   "query": "screen=act&law=uapa&viewer=signedIn&pin=1",
+   "file": "proto_act-uapa-signedIn_desktop.png",
+   "sha256": "1b29e6fbde45cf5d061229e05cc72a102cdb43a85e411563fa85b224c8d01765",
+   "probe": {
+    "h2": "The Unlawful Activities (Prevention) Act, 1967",
+    "h2Font": "28px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "Subscribe to use Playground"
+    ],
+    "rows": [
+     "CHAPTER I Preliminary Sections 1\u20132 \u203a",
+     "CHAPTER II Unlawful Associations Sections 3\u20139 \u203a",
+     "CHAPTER III Offences and Penalties Sections 10\u201314 \u203a",
+     "CHAPTER IV Punishment for Terrorist Activities Sections 15\u201323 \u203a",
+     "CHAPTER V Forfeiture of Proceeds of Terrorism Sections 24\u201334 \u203a",
+     "CHAPTER VI Terrorist Organisations Sections 35\u201340 \u203a",
+     "CHAPTER VII Miscellaneous Sections 41\u201353 \u203a",
+     "SCHEDULE Terrorist Organisations Entries 1\u201344 \u203a"
+    ],
+    "dialog": null,
+    "text": "Playground \u2014 Desktop\n\nSame flow as the phone design, laid out for a 1280px browser window. Left nav replaces the tab bar; sheets become centred dialogs; long screens use two columns.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nSettings\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd dialog\nSection picker\nPlayground home\nPlayground \u2014 empty\nAct progress\nLearn \u2014 6 modes\nRoster \u2014 manage September\nRoster \u2014 next month\nGate \u2014 sign in / plans\nSign in\nToday\nCalendar\nProfile\nSection learned\nMastered\n\nUses locked branch values: Plus / Pro / Max at \u20b9199 / 399 / 1,199, calendar months, sections only, explicit Keep on rollover. Use the Tweaks panel to switch viewer state.\n\nC\nRecall the C\nToday\nBrowse\nPlayground\nCalendar\nProfile\nS\nSanjay\nFree account\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Unlawful Activities (Prevention) Act, 1967\n\n7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule\n\nSubscribe to use Playground\nCHAPTER I\nPreliminary\nSections 1\u20132\n\u203a\nCHAPTER II\nUnlawful Associations\nSections 3\u20139\n\u203a\nCHAPTER III\nOffences and Penalties\nSections 10\u201314\n\u203a\nCHAPTER IV\nPunishment for Terrorist Activities\nSections 15\u201323\n\u203a\nCHAPTER V\nForfeiture of Proceeds of Terrorism\nSections 24\u201334\n\u203a\nCHAPTER VI\nTerrorist O"
+   }
+  },
+  {
+   "key": "act-bns-signedIn",
+   "surface": "phone",
+   "query": "screen=act&law=bns&viewer=signedIn&pin=1",
+   "file": "proto_act-bns-signedIn_phone.png",
+   "sha256": "1d2c68792edbec02470f7ea3d150499071e25be019f8a6789e4c378746ba829c",
+   "probe": {
+    "h2": "The Bharatiya Nyaya Sanhita, 2023",
+    "h2Font": "19px",
+    "kicker": "BARE ACT \u00b7 GAZETTE",
+    "meta": "20 Chapters \u00b7 Sections 1\u2013358",
+    "buttons": [
+     "\u2190 Laws",
+     "Subscribe to use Playground"
+    ],
+    "rows": [],
+    "dialog": null,
+    "text": "Recall the C \u2014 Playground\n\nAdditive overlay on the verbatim Bare Acts. Add from an Act's head \u2014 the whole Act, sections, or single clauses \u2014 then it appears in Playground with the usual recall ladder.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd sheet \u2014 act vs sections\nSection picker \u2014 clause depth\nPlayground \u2014 activated laws\nPlayground \u2014 empty\nLearn \u2014 6 recall modes\nToday \u2014 playground in the queue\nCalendar \u2014 saved recall\nRoster \u2014 manage this month\nDevices\n\nReaders stay untouched \u2014 Add lives above the chapter list. /playground shows only activated laws. Selection persists against the source version, shown on each card.\n\n9:41\n\u2190 Laws\n\nBARE ACT \u00b7 GAZETTE\n\nThe Bharatiya Nyaya Sanhita, 2023\n\n20 Chapters \u00b7 Sections 1\u2013358\n\nSubscribe to use Playground\nCHAPTER I\nPreliminary\n1\u20133\n\u25b8\nCHAPTER VI\nOf Offences Affecting the Human Body\n100\u2013146\n\u25b8\nToday\nBrowse\nPlayground\nCalendar\nProfile"
+   }
+  },
+  {
+   "key": "act-bns-signedIn",
+   "surface": "desktop",
+   "query": "screen=act&law=bns&viewer=signedIn&pin=1",
+   "file": "proto_act-bns-signedIn_desktop.png",
+   "sha256": "c403e24450dbc4c3c58f15f69de22661b4d94abe0cfff9df02e629409f5dbf0c",
+   "probe": {
+    "h2": "The Bharatiya Nyaya Sanhita, 2023",
+    "h2Font": "28px",
+    "kicker": "BARE ACT \u00b7 GAZETTE",
+    "meta": "20 Chapters \u00b7 Sections 1\u2013358",
+    "buttons": [
+     "\u2190 Laws",
+     "Sections",
+     "Continue"
+    ],
+    "rows": [
+     "CHAPTER I Preliminary Sections 1\u20133 \u203a",
+     "CHAPTER VI Of Offences Affecting the Human Body Sections 100\u2013146 \u203a"
+    ],
+    "dialog": null,
+    "text": "Playground \u2014 Desktop\n\nSame flow as the phone design, laid out for a 1280px browser window. Left nav replaces the tab bar; sheets become centred dialogs; long screens use two columns.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nSettings\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd dialog\nSection picker\nPlayground home\nPlayground \u2014 empty\nAct progress\nLearn \u2014 6 modes\nRoster \u2014 manage September\nRoster \u2014 next month\nGate \u2014 sign in / plans\nSign in\nToday\nCalendar\nProfile\nSection learned\nMastered\n\nUses locked branch values: Plus / Pro / Max at \u20b9199 / 399 / 1,199, calendar months, sections only, explicit Keep on rollover. Use the Tweaks panel to switch viewer state.\n\nC\nRecall the C\nToday\nBrowse\nPlayground\nCalendar\nProfile\nS\nSanjay\nFree account\n\u2190 Laws\n\nBARE ACT \u00b7 GAZETTE\n\nThe Bharatiya Nyaya Sanhita, 2023\n\n20 Chapters \u00b7 Sections 1\u2013358\n\nAlready in Playground\nSections\nContinue\nCHAPTER I\nPreliminary\nSections 1\u20133\n\u203a\nCHAPTER VI\nOf Offences Affecting the Human Body\nSections 100\u2013146\n\u203a"
+   }
+  },
+  {
+   "key": "act-uapa-signedIn-sheet",
+   "surface": "phone",
+   "query": "screen=act&law=uapa&viewer=signedIn&sheet=1&pin=1",
+   "file": "proto_act-uapa-signedIn-sheet_phone.png",
+   "sha256": "1f2dbadd6c5a07decceb22b5323496ae76802565ac07c4a1a58502f51114fdde",
+   "probe": {
+    "h2": "The Unlawful Activities (Prevention) Act, 1967",
+    "h2Font": "19px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "Subscribe to use Playground"
+    ],
+    "rows": [],
+    "dialog": null,
+    "text": "Recall the C \u2014 Playground\n\nAdditive overlay on the verbatim Bare Acts. Add from an Act's head \u2014 the whole Act, sections, or single clauses \u2014 then it appears in Playground with the usual recall ladder.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd sheet \u2014 act vs sections\nSection picker \u2014 clause depth\nPlayground \u2014 activated laws\nPlayground \u2014 empty\nLearn \u2014 6 recall modes\nToday \u2014 playground in the queue\nCalendar \u2014 saved recall\nRoster \u2014 manage this month\nDevices\n\nReaders stay untouched \u2014 Add lives above the chapter list. /playground shows only activated laws. Selection persists against the source version, shown on each card.\n\n9:41\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Unlawful Activities (Prevention) Act, 1967\n\n7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule\n\nSubscribe to use Playground\nCHAPTER I\nPreliminary\n1\u20132\n\u25b8\nCHAPTER II\nUnlawful Associations\n3\u20139\n\u25b8\nCHAPTER III\nOffences and Penalties\n10\u201314\n\u25b8\nCHAPTER IV\nPunishment for Terrorist Activities\n15\u201323\n\u25b8\nCHAPTER V\nForfeiture of Proceeds of Terrorism\n24\u201334\n\u25b8\nCHAPTER VI\nTerrorist Organisations\n35\u201340\n\u25b8\nCHAPTER VII\nMiscellaneous\n41\u201353\n\u25b8\nSCHEDULE\nTerrorist Organisations\n1\u201344\n\u203a\nToday\nBrowse\nPla"
+   }
+  },
+  {
+   "key": "act-uapa-signedIn-sheet",
+   "surface": "desktop",
+   "query": "screen=act&law=uapa&viewer=signedIn&sheet=1&pin=1",
+   "file": "proto_act-uapa-signedIn-sheet_desktop.png",
+   "sha256": "7254adcd0978a2517422e958f66c4c21b79f6393cda8eca9eb82d1ce7178c635",
+   "probe": {
+    "h2": "The Unlawful Activities (Prevention) Act, 1967",
+    "h2Font": "28px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "Subscribe to use Playground"
+    ],
+    "rows": [
+     "CHAPTER I Preliminary Sections 1\u20132 \u203a",
+     "CHAPTER II Unlawful Associations Sections 3\u20139 \u203a",
+     "CHAPTER III Offences and Penalties Sections 10\u201314 \u203a",
+     "CHAPTER IV Punishment for Terrorist Activities Sections 15\u201323 \u203a",
+     "CHAPTER V Forfeiture of Proceeds of Terrorism Sections 24\u201334 \u203a",
+     "CHAPTER VI Terrorist Organisations Sections 35\u201340 \u203a",
+     "CHAPTER VII Miscellaneous Sections 41\u201353 \u203a",
+     "SCHEDULE Terrorist Organisations Entries 1\u201344 \u203a"
+    ],
+    "dialog": {
+     "text": "\u2715 Add to Playground Turning The UAPA, 1967 into a learning experience needs a plan. Reading it stays free. Unlock Playground Plus \u00b7 Pro \u00b7 Max \u2014 from \u20b9199 / month. Constitution learning stays free.",
+     "w": 516
+    },
+    "text": "Playground \u2014 Desktop\n\nSame flow as the phone design, laid out for a 1280px browser window. Left nav replaces the tab bar; sheets become centred dialogs; long screens use two columns.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nSettings\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd dialog\nSection picker\nPlayground home\nPlayground \u2014 empty\nAct progress\nLearn \u2014 6 modes\nRoster \u2014 manage September\nRoster \u2014 next month\nGate \u2014 sign in / plans\nSign in\nToday\nCalendar\nProfile\nSection learned\nMastered\n\nUses locked branch values: Plus / Pro / Max at \u20b9199 / 399 / 1,199, calendar months, sections only, explicit Keep on rollover. Use the Tweaks panel to switch viewer state.\n\nC\nRecall the C\nToday\nBrowse\nPlayground\nCalendar\nProfile\nS\nSanjay\nFree account\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Unlawful Activities (Prevention) Act, 1967\n\n7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule\n\nSubscribe to use Playground\nCHAPTER I\nPreliminary\nSections 1\u20132\n\u203a\nCHAPTER II\nUnlawful Associations\nSections 3\u20139\n\u203a\nCHAPTER III\nOffences and Penalties\nSections 10\u201314\n\u203a\nCHAPTER IV\nPunishment for Terrorist Activities\nSections 15\u201323\n\u203a\nCHAPTER V\nForfeiture of Proceeds of Terrorism\nSections 24\u201334\n\u203a\nCHAPTER VI\nTerrorist O"
+   }
+  },
+  {
+   "key": "act-ndps-signedIn-sheet",
+   "surface": "phone",
+   "query": "screen=act&law=ndps&viewer=signedIn&sheet=1&pin=1",
+   "file": "proto_act-ndps-signedIn-sheet_phone.png",
+   "sha256": "30f5dda8de880aa9d2b2a6a13149afd4aa5460131464e9963c4b2e67c5c639b3",
+   "probe": {
+    "h2": "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+    "h2Font": "19px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "Subscribe to use Playground"
+    ],
+    "rows": [],
+    "dialog": null,
+    "text": "Recall the C \u2014 Playground\n\nAdditive overlay on the verbatim Bare Acts. Add from an Act's head \u2014 the whole Act, sections, or single clauses \u2014 then it appears in Playground with the usual recall ladder.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd sheet \u2014 act vs sections\nSection picker \u2014 clause depth\nPlayground \u2014 activated laws\nPlayground \u2014 empty\nLearn \u2014 6 recall modes\nToday \u2014 playground in the queue\nCalendar \u2014 saved recall\nRoster \u2014 manage this month\nDevices\n\nReaders stay untouched \u2014 Add lives above the chapter list. /playground shows only activated laws. Selection persists against the source version, shown on each card.\n\n9:41\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Narcotic Drugs and Psychotropic Substances Act, 1985\n\n8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule\n\nSubscribe to use Playground\nCHAPTER I\nPreliminary\n1\u20133\n\u25b8\nCHAPTER II\nAuthorities and Officers\n4\u20137\n\u25b8\nCHAPTER IIA\nNational Fund for Control of Drug Abuse\n7A\u20137B\n\u25b8\nCHAPTER III\nProhibition, Control and Regulation\n8\u201314\n\u25b8\nCHAPTER IV\nOffences and Penalties\n15\u201340\n\u25b8\nCHAPTER V\nProcedure\n41\u201368\n\u25b8\nCHAPTER VA\nForfeiture of Illegally Acquired Property\n68A\u201368Z\n\u25b8\nCHAPTER VI\nMiscellaneous"
+   }
+  },
+  {
+   "key": "act-ndps-signedIn-sheet",
+   "surface": "desktop",
+   "query": "screen=act&law=ndps&viewer=signedIn&sheet=1&pin=1",
+   "file": "proto_act-ndps-signedIn-sheet_desktop.png",
+   "sha256": "ee5ef915af071b6630466a88cab9785bb0030c2c5335da818e0432ae720dfebb",
+   "probe": {
+    "h2": "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+    "h2Font": "28px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "Sections",
+     "Continue"
+    ],
+    "rows": [
+     "CHAPTER I Preliminary Sections 1\u20133 \u203a",
+     "CHAPTER II Authorities and Officers Sections 4\u20137 \u203a",
+     "CHAPTER IIA National Fund for Control of Drug Abuse Sections 7A\u20137B \u203a",
+     "CHAPTER III Prohibition, Control and Regulation Sections 8\u201314 \u203a",
+     "CHAPTER IV Offences and Penalties Sections 15\u201340 \u203a",
+     "CHAPTER V Procedure Sections 41\u201368 \u203a",
+     "CHAPTER VA Forfeiture of Illegally Acquired Property Sections 68A\u201368Z \u203a",
+     "CHAPTER VI Miscellaneous Sections 69\u201383 \u203a",
+     "SCHEDULE List of Psychotropic Substances Entries 1\u2013110 \u203a"
+    ],
+    "dialog": {
+     "text": "\u2715 Add to Playground Turning The NDPS Act, 1985 into a learning experience needs a plan. Reading it stays free. Unlock Playground Plus \u00b7 Pro \u00b7 Max \u2014 from \u20b9199 / month. Constitution learning stays free.",
+     "w": 516
+    },
+    "text": "Playground \u2014 Desktop\n\nSame flow as the phone design, laid out for a 1280px browser window. Left nav replaces the tab bar; sheets become centred dialogs; long screens use two columns.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nSettings\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd dialog\nSection picker\nPlayground home\nPlayground \u2014 empty\nAct progress\nLearn \u2014 6 modes\nRoster \u2014 manage September\nRoster \u2014 next month\nGate \u2014 sign in / plans\nSign in\nToday\nCalendar\nProfile\nSection learned\nMastered\n\nUses locked branch values: Plus / Pro / Max at \u20b9199 / 399 / 1,199, calendar months, sections only, explicit Keep on rollover. Use the Tweaks panel to switch viewer state.\n\nC\nRecall the C\nToday\nBrowse\nPlayground\nCalendar\nProfile\nS\nSanjay\nFree account\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Narcotic Drugs and Psychotropic Substances Act, 1985\n\n8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule\n\nAlready in Playground\nSections\nContinue\nCHAPTER I\nPreliminary\nSections 1\u20133\n\u203a\nCHAPTER II\nAuthorities and Officers\nSections 4\u20137\n\u203a\nCHAPTER IIA\nNational Fund for Control of Drug Abuse\nSections 7A\u20137B\n\u203a\nCHAPTER III\nProhibition, Control and Regulation\nSections 8\u201314\n\u203a\nCHAPTER IV\nOffences and Penalties\nSections "
+   }
+  },
+  {
+   "key": "act-ndps-plus",
+   "surface": "phone",
+   "query": "screen=act&law=ndps&viewer=plus&pin=1",
+   "file": "proto_act-ndps-plus_phone.png",
+   "sha256": "034a90b34fb77d574c2a064dbbd7457a7288b61dbdca472262ac0854c31b3831",
+   "probe": {
+    "h2": "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+    "h2Font": "19px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "+ Add to Playground"
+    ],
+    "rows": [],
+    "dialog": null,
+    "text": "Recall the C \u2014 Playground\n\nAdditive overlay on the verbatim Bare Acts. Add from an Act's head \u2014 the whole Act, sections, or single clauses \u2014 then it appears in Playground with the usual recall ladder.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd sheet \u2014 act vs sections\nSection picker \u2014 clause depth\nPlayground \u2014 activated laws\nPlayground \u2014 empty\nLearn \u2014 6 recall modes\nToday \u2014 playground in the queue\nCalendar \u2014 saved recall\nRoster \u2014 manage this month\nDevices\n\nReaders stay untouched \u2014 Add lives above the chapter list. /playground shows only activated laws. Selection persists against the source version, shown on each card.\n\n9:41\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Narcotic Drugs and Psychotropic Substances Act, 1985\n\n8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule\n\n+ Add to Playground\nCHAPTER I\nPreliminary\n1\u20133\n\u25b8\nCHAPTER II\nAuthorities and Officers\n4\u20137\n\u25b8\nCHAPTER IIA\nNational Fund for Control of Drug Abuse\n7A\u20137B\n\u25b8\nCHAPTER III\nProhibition, Control and Regulation\n8\u201314\n\u25b8\nCHAPTER IV\nOffences and Penalties\n15\u201340\n\u25b8\nCHAPTER V\nProcedure\n41\u201368\n\u25b8\nCHAPTER VA\nForfeiture of Illegally Acquired Property\n68A\u201368Z\n\u25b8\nCHAPTER VI\nMiscellaneous\n69\u201383\n\u25b8"
+   }
+  },
+  {
+   "key": "act-ndps-plus",
+   "surface": "desktop",
+   "query": "screen=act&law=ndps&viewer=plus&pin=1",
+   "file": "proto_act-ndps-plus_desktop.png",
+   "sha256": "76da680a734572d3df43add5920adbcb4be6cc425d251ae5729fcd89ca58ac28",
+   "probe": {
+    "h2": "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+    "h2Font": "28px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "Sections",
+     "Continue"
+    ],
+    "rows": [
+     "CHAPTER I Preliminary Sections 1\u20133 \u203a",
+     "CHAPTER II Authorities and Officers Sections 4\u20137 \u203a",
+     "CHAPTER IIA National Fund for Control of Drug Abuse Sections 7A\u20137B \u203a",
+     "CHAPTER III Prohibition, Control and Regulation Sections 8\u201314 \u203a",
+     "CHAPTER IV Offences and Penalties Sections 15\u201340 \u203a",
+     "CHAPTER V Procedure Sections 41\u201368 \u203a",
+     "CHAPTER VA Forfeiture of Illegally Acquired Property Sections 68A\u201368Z \u203a",
+     "CHAPTER VI Miscellaneous Sections 69\u201383 \u203a",
+     "SCHEDULE List of Psychotropic Substances Entries 1\u2013110 \u203a"
+    ],
+    "dialog": null,
+    "text": "Playground \u2014 Desktop\n\nSame flow as the phone design, laid out for a 1280px browser window. Left nav replaces the tab bar; sheets become centred dialogs; long screens use two columns.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nSettings\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd dialog\nSection picker\nPlayground home\nPlayground \u2014 empty\nAct progress\nLearn \u2014 6 modes\nRoster \u2014 manage September\nRoster \u2014 next month\nGate \u2014 sign in / plans\nSign in\nToday\nCalendar\nProfile\nSection learned\nMastered\n\nUses locked branch values: Plus / Pro / Max at \u20b9199 / 399 / 1,199, calendar months, sections only, explicit Keep on rollover. Use the Tweaks panel to switch viewer state.\n\nC\nRecall the C\nToday\nBrowse\nPlayground\nCalendar\nProfile\nS\nSanjay\nRecallC Plus\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Narcotic Drugs and Psychotropic Substances Act, 1985\n\n8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule\n\nAlready in Playground\nSections\nContinue\nCHAPTER I\nPreliminary\nSections 1\u20133\n\u203a\nCHAPTER II\nAuthorities and Officers\nSections 4\u20137\n\u203a\nCHAPTER IIA\nNational Fund for Control of Drug Abuse\nSections 7A\u20137B\n\u203a\nCHAPTER III\nProhibition, Control and Regulation\nSections 8\u201314\n\u203a\nCHAPTER IV\nOffences and Penalties\nSections "
+   }
+  },
+  {
+   "key": "act-uapa-plus",
+   "surface": "phone",
+   "query": "screen=act&law=uapa&viewer=plus&pin=1",
+   "file": "proto_act-uapa-plus_phone.png",
+   "sha256": "323287ce56b06ea5a1108c6a25823b669a9184617d645c6a6d8ab4984e2d9448",
+   "probe": {
+    "h2": "The Unlawful Activities (Prevention) Act, 1967",
+    "h2Font": "19px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "+ Add to Playground"
+    ],
+    "rows": [],
+    "dialog": null,
+    "text": "Recall the C \u2014 Playground\n\nAdditive overlay on the verbatim Bare Acts. Add from an Act's head \u2014 the whole Act, sections, or single clauses \u2014 then it appears in Playground with the usual recall ladder.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd sheet \u2014 act vs sections\nSection picker \u2014 clause depth\nPlayground \u2014 activated laws\nPlayground \u2014 empty\nLearn \u2014 6 recall modes\nToday \u2014 playground in the queue\nCalendar \u2014 saved recall\nRoster \u2014 manage this month\nDevices\n\nReaders stay untouched \u2014 Add lives above the chapter list. /playground shows only activated laws. Selection persists against the source version, shown on each card.\n\n9:41\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Unlawful Activities (Prevention) Act, 1967\n\n7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule\n\n+ Add to Playground\nCHAPTER I\nPreliminary\n1\u20132\n\u25b8\nCHAPTER II\nUnlawful Associations\n3\u20139\n\u25b8\nCHAPTER III\nOffences and Penalties\n10\u201314\n\u25b8\nCHAPTER IV\nPunishment for Terrorist Activities\n15\u201323\n\u25b8\nCHAPTER V\nForfeiture of Proceeds of Terrorism\n24\u201334\n\u25b8\nCHAPTER VI\nTerrorist Organisations\n35\u201340\n\u25b8\nCHAPTER VII\nMiscellaneous\n41\u201353\n\u25b8\nSCHEDULE\nTerrorist Organisations\n1\u201344\n\u203a\nToday\nBrowse\nPlayground\n"
+   }
+  },
+  {
+   "key": "act-uapa-plus",
+   "surface": "desktop",
+   "query": "screen=act&law=uapa&viewer=plus&pin=1",
+   "file": "proto_act-uapa-plus_desktop.png",
+   "sha256": "27735fe19e9d8b0a3bb9fcb3d258c898b415ee25599bd5787c316020809fe6ce",
+   "probe": {
+    "h2": "The Unlawful Activities (Prevention) Act, 1967",
+    "h2Font": "28px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "+ Add to Playground"
+    ],
+    "rows": [
+     "CHAPTER I Preliminary Sections 1\u20132 \u203a",
+     "CHAPTER II Unlawful Associations Sections 3\u20139 \u203a",
+     "CHAPTER III Offences and Penalties Sections 10\u201314 \u203a",
+     "CHAPTER IV Punishment for Terrorist Activities Sections 15\u201323 \u203a",
+     "CHAPTER V Forfeiture of Proceeds of Terrorism Sections 24\u201334 \u203a",
+     "CHAPTER VI Terrorist Organisations Sections 35\u201340 \u203a",
+     "CHAPTER VII Miscellaneous Sections 41\u201353 \u203a",
+     "SCHEDULE Terrorist Organisations Entries 1\u201344 \u203a"
+    ],
+    "dialog": null,
+    "text": "Playground \u2014 Desktop\n\nSame flow as the phone design, laid out for a 1280px browser window. Left nav replaces the tab bar; sheets become centred dialogs; long screens use two columns.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nSettings\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd dialog\nSection picker\nPlayground home\nPlayground \u2014 empty\nAct progress\nLearn \u2014 6 modes\nRoster \u2014 manage September\nRoster \u2014 next month\nGate \u2014 sign in / plans\nSign in\nToday\nCalendar\nProfile\nSection learned\nMastered\n\nUses locked branch values: Plus / Pro / Max at \u20b9199 / 399 / 1,199, calendar months, sections only, explicit Keep on rollover. Use the Tweaks panel to switch viewer state.\n\nC\nRecall the C\nToday\nBrowse\nPlayground\nCalendar\nProfile\nS\nSanjay\nRecallC Plus\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Unlawful Activities (Prevention) Act, 1967\n\n7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule\n\n+ Add to Playground\nCHAPTER I\nPreliminary\nSections 1\u20132\n\u203a\nCHAPTER II\nUnlawful Associations\nSections 3\u20139\n\u203a\nCHAPTER III\nOffences and Penalties\nSections 10\u201314\n\u203a\nCHAPTER IV\nPunishment for Terrorist Activities\nSections 15\u201323\n\u203a\nCHAPTER V\nForfeiture of Proceeds of Terrorism\nSections 24\u201334\n\u203a\nCHAPTER VI\nTerrorist Organisat"
+   }
+  },
+  {
+   "key": "act-bns-plus",
+   "surface": "phone",
+   "query": "screen=act&law=bns&viewer=plus&pin=1",
+   "file": "proto_act-bns-plus_phone.png",
+   "sha256": "ffbb6eb668706604443a51df48d48ea9c40245f29a7712cb45928ac04bd0adb5",
+   "probe": {
+    "h2": "The Bharatiya Nyaya Sanhita, 2023",
+    "h2Font": "19px",
+    "kicker": "BARE ACT \u00b7 GAZETTE",
+    "meta": "20 Chapters \u00b7 Sections 1\u2013358",
+    "buttons": [
+     "\u2190 Laws",
+     "+ Add to Playground"
+    ],
+    "rows": [],
+    "dialog": null,
+    "text": "Recall the C \u2014 Playground\n\nAdditive overlay on the verbatim Bare Acts. Add from an Act's head \u2014 the whole Act, sections, or single clauses \u2014 then it appears in Playground with the usual recall ladder.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd sheet \u2014 act vs sections\nSection picker \u2014 clause depth\nPlayground \u2014 activated laws\nPlayground \u2014 empty\nLearn \u2014 6 recall modes\nToday \u2014 playground in the queue\nCalendar \u2014 saved recall\nRoster \u2014 manage this month\nDevices\n\nReaders stay untouched \u2014 Add lives above the chapter list. /playground shows only activated laws. Selection persists against the source version, shown on each card.\n\n9:41\n\u2190 Laws\n\nBARE ACT \u00b7 GAZETTE\n\nThe Bharatiya Nyaya Sanhita, 2023\n\n20 Chapters \u00b7 Sections 1\u2013358\n\n+ Add to Playground\nCHAPTER I\nPreliminary\n1\u20133\n\u25b8\nCHAPTER VI\nOf Offences Affecting the Human Body\n100\u2013146\n\u25b8\nToday\nBrowse\nPlayground\nCalendar\nProfile"
+   }
+  },
+  {
+   "key": "act-bns-plus",
+   "surface": "desktop",
+   "query": "screen=act&law=bns&viewer=plus&pin=1",
+   "file": "proto_act-bns-plus_desktop.png",
+   "sha256": "b915a48dfc75c8b8f00bd9bac057c7431035c24418725daec09282fa4f88ccef",
+   "probe": {
+    "h2": "The Bharatiya Nyaya Sanhita, 2023",
+    "h2Font": "28px",
+    "kicker": "BARE ACT \u00b7 GAZETTE",
+    "meta": "20 Chapters \u00b7 Sections 1\u2013358",
+    "buttons": [
+     "\u2190 Laws",
+     "Sections",
+     "Continue"
+    ],
+    "rows": [
+     "CHAPTER I Preliminary Sections 1\u20133 \u203a",
+     "CHAPTER VI Of Offences Affecting the Human Body Sections 100\u2013146 \u203a"
+    ],
+    "dialog": null,
+    "text": "Playground \u2014 Desktop\n\nSame flow as the phone design, laid out for a 1280px browser window. Left nav replaces the tab bar; sheets become centred dialogs; long screens use two columns.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nSettings\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd dialog\nSection picker\nPlayground home\nPlayground \u2014 empty\nAct progress\nLearn \u2014 6 modes\nRoster \u2014 manage September\nRoster \u2014 next month\nGate \u2014 sign in / plans\nSign in\nToday\nCalendar\nProfile\nSection learned\nMastered\n\nUses locked branch values: Plus / Pro / Max at \u20b9199 / 399 / 1,199, calendar months, sections only, explicit Keep on rollover. Use the Tweaks panel to switch viewer state.\n\nC\nRecall the C\nToday\nBrowse\nPlayground\nCalendar\nProfile\nS\nSanjay\nRecallC Plus\n\u2190 Laws\n\nBARE ACT \u00b7 GAZETTE\n\nThe Bharatiya Nyaya Sanhita, 2023\n\n20 Chapters \u00b7 Sections 1\u2013358\n\nAlready in Playground\nSections\nContinue\nCHAPTER I\nPreliminary\nSections 1\u20133\n\u203a\nCHAPTER VI\nOf Offences Affecting the Human Body\nSections 100\u2013146\n\u203a"
+   }
+  },
+  {
+   "key": "act-uapa-plus-sheet",
+   "surface": "phone",
+   "query": "screen=act&law=uapa&viewer=plus&sheet=1&pin=1",
+   "file": "proto_act-uapa-plus-sheet_phone.png",
+   "sha256": "98eaa3a34d286cbe0d89d94e7030cf902f921e92b6d4e741dad78d8da02d26dd",
+   "probe": {
+    "h2": "The Unlawful Activities (Prevention) Act, 1967",
+    "h2Font": "19px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "+ Add to Playground"
+    ],
+    "rows": [],
+    "dialog": null,
+    "text": "Recall the C \u2014 Playground\n\nAdditive overlay on the verbatim Bare Acts. Add from an Act's head \u2014 the whole Act, sections, or single clauses \u2014 then it appears in Playground with the usual recall ladder.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd sheet \u2014 act vs sections\nSection picker \u2014 clause depth\nPlayground \u2014 activated laws\nPlayground \u2014 empty\nLearn \u2014 6 recall modes\nToday \u2014 playground in the queue\nCalendar \u2014 saved recall\nRoster \u2014 manage this month\nDevices\n\nReaders stay untouched \u2014 Add lives above the chapter list. /playground shows only activated laws. Selection persists against the source version, shown on each card.\n\n9:41\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Unlawful Activities (Prevention) Act, 1967\n\n7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule\n\n+ Add to Playground\nCHAPTER I\nPreliminary\n1\u20132\n\u25b8\nCHAPTER II\nUnlawful Associations\n3\u20139\n\u25b8\nCHAPTER III\nOffences and Penalties\n10\u201314\n\u25b8\nCHAPTER IV\nPunishment for Terrorist Activities\n15\u201323\n\u25b8\nCHAPTER V\nForfeiture of Proceeds of Terrorism\n24\u201334\n\u25b8\nCHAPTER VI\nTerrorist Organisations\n35\u201340\n\u25b8\nCHAPTER VII\nMiscellaneous\n41\u201353\n\u25b8\nSCHEDULE\nTerrorist Organisations\n1\u201344\n\u203a\nToday\nBrowse\nPlayground\n"
+   }
+  },
+  {
+   "key": "act-uapa-plus-sheet",
+   "surface": "desktop",
+   "query": "screen=act&law=uapa&viewer=plus&sheet=1&pin=1",
+   "file": "proto_act-uapa-plus-sheet_desktop.png",
+   "sha256": "4d116238ad3c15001b421cca38050888f110dd69330491e6fecf8043fd2dba21",
+   "probe": {
+    "h2": "The Unlawful Activities (Prevention) Act, 1967",
+    "h2Font": "28px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "+ Add to Playground"
+    ],
+    "rows": [
+     "CHAPTER I Preliminary Sections 1\u20132 \u203a",
+     "CHAPTER II Unlawful Associations Sections 3\u20139 \u203a",
+     "CHAPTER III Offences and Penalties Sections 10\u201314 \u203a",
+     "CHAPTER IV Punishment for Terrorist Activities Sections 15\u201323 \u203a",
+     "CHAPTER V Forfeiture of Proceeds of Terrorism Sections 24\u201334 \u203a",
+     "CHAPTER VI Terrorist Organisations Sections 35\u201340 \u203a",
+     "CHAPTER VII Miscellaneous Sections 41\u201353 \u203a",
+     "SCHEDULE Terrorist Organisations Entries 1\u201344 \u203a"
+    ],
+    "dialog": {
+     "text": "\u2715 Add to Playground The UAPA, 1967 joins this month\u2019s Playground \u2014 learnable, verbatim. The reader itself never changes. This will use 1 of your 10 law spaces in September. 1 will remain. Add to Playground Already yours this month \u2014 reopening it never uses another space.",
+     "w": 516
+    },
+    "text": "Playground \u2014 Desktop\n\nSame flow as the phone design, laid out for a 1280px browser window. Left nav replaces the tab bar; sheets become centred dialogs; long screens use two columns.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nSettings\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd dialog\nSection picker\nPlayground home\nPlayground \u2014 empty\nAct progress\nLearn \u2014 6 modes\nRoster \u2014 manage September\nRoster \u2014 next month\nGate \u2014 sign in / plans\nSign in\nToday\nCalendar\nProfile\nSection learned\nMastered\n\nUses locked branch values: Plus / Pro / Max at \u20b9199 / 399 / 1,199, calendar months, sections only, explicit Keep on rollover. Use the Tweaks panel to switch viewer state.\n\nC\nRecall the C\nToday\nBrowse\nPlayground\nCalendar\nProfile\nS\nSanjay\nRecallC Plus\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Unlawful Activities (Prevention) Act, 1967\n\n7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule\n\n+ Add to Playground\nCHAPTER I\nPreliminary\nSections 1\u20132\n\u203a\nCHAPTER II\nUnlawful Associations\nSections 3\u20139\n\u203a\nCHAPTER III\nOffences and Penalties\nSections 10\u201314\n\u203a\nCHAPTER IV\nPunishment for Terrorist Activities\nSections 15\u201323\n\u203a\nCHAPTER V\nForfeiture of Proceeds of Terrorism\nSections 24\u201334\n\u203a\nCHAPTER VI\nTerrorist Organisat"
+   }
+  },
+  {
+   "key": "act-ndps-plus-sheet",
+   "surface": "phone",
+   "query": "screen=act&law=ndps&viewer=plus&sheet=1&pin=1",
+   "file": "proto_act-ndps-plus-sheet_phone.png",
+   "sha256": "04d25d10fb77f337a6ac8f548e31af73687dc28a80baaef74e7808596024a898",
+   "probe": {
+    "h2": "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+    "h2Font": "19px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "+ Add to Playground"
+    ],
+    "rows": [],
+    "dialog": null,
+    "text": "Recall the C \u2014 Playground\n\nAdditive overlay on the verbatim Bare Acts. Add from an Act's head \u2014 the whole Act, sections, or single clauses \u2014 then it appears in Playground with the usual recall ladder.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd sheet \u2014 act vs sections\nSection picker \u2014 clause depth\nPlayground \u2014 activated laws\nPlayground \u2014 empty\nLearn \u2014 6 recall modes\nToday \u2014 playground in the queue\nCalendar \u2014 saved recall\nRoster \u2014 manage this month\nDevices\n\nReaders stay untouched \u2014 Add lives above the chapter list. /playground shows only activated laws. Selection persists against the source version, shown on each card.\n\n9:41\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Narcotic Drugs and Psychotropic Substances Act, 1985\n\n8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule\n\n+ Add to Playground\nCHAPTER I\nPreliminary\n1\u20133\n\u25b8\nCHAPTER II\nAuthorities and Officers\n4\u20137\n\u25b8\nCHAPTER IIA\nNational Fund for Control of Drug Abuse\n7A\u20137B\n\u25b8\nCHAPTER III\nProhibition, Control and Regulation\n8\u201314\n\u25b8\nCHAPTER IV\nOffences and Penalties\n15\u201340\n\u25b8\nCHAPTER V\nProcedure\n41\u201368\n\u25b8\nCHAPTER VA\nForfeiture of Illegally Acquired Property\n68A\u201368Z\n\u25b8\nCHAPTER VI\nMiscellaneous\n69\u201383\n\u25b8"
+   }
+  },
+  {
+   "key": "act-ndps-plus-sheet",
+   "surface": "desktop",
+   "query": "screen=act&law=ndps&viewer=plus&sheet=1&pin=1",
+   "file": "proto_act-ndps-plus-sheet_desktop.png",
+   "sha256": "88fec2f34645e8200a758a7c4ebeb8e53ba5801439d3b0d85be7a43433cef12a",
+   "probe": {
+    "h2": "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+    "h2Font": "28px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "Sections",
+     "Continue"
+    ],
+    "rows": [
+     "CHAPTER I Preliminary Sections 1\u20133 \u203a",
+     "CHAPTER II Authorities and Officers Sections 4\u20137 \u203a",
+     "CHAPTER IIA National Fund for Control of Drug Abuse Sections 7A\u20137B \u203a",
+     "CHAPTER III Prohibition, Control and Regulation Sections 8\u201314 \u203a",
+     "CHAPTER IV Offences and Penalties Sections 15\u201340 \u203a",
+     "CHAPTER V Procedure Sections 41\u201368 \u203a",
+     "CHAPTER VA Forfeiture of Illegally Acquired Property Sections 68A\u201368Z \u203a",
+     "CHAPTER VI Miscellaneous Sections 69\u201383 \u203a",
+     "SCHEDULE List of Psychotropic Substances Entries 1\u2013110 \u203a"
+    ],
+    "dialog": {
+     "text": "\u2715 Add to Playground The NDPS Act, 1985 joins this month\u2019s Playground \u2014 learnable, verbatim. The reader itself never changes. This will use 1 of your 10 law spaces in September. 1 will remain. Add to Playground Already yours this month \u2014 reopening it never uses another space.",
+     "w": 516
+    },
+    "text": "Playground \u2014 Desktop\n\nSame flow as the phone design, laid out for a 1280px browser window. Left nav replaces the tab bar; sheets become centred dialogs; long screens use two columns.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nSettings\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd dialog\nSection picker\nPlayground home\nPlayground \u2014 empty\nAct progress\nLearn \u2014 6 modes\nRoster \u2014 manage September\nRoster \u2014 next month\nGate \u2014 sign in / plans\nSign in\nToday\nCalendar\nProfile\nSection learned\nMastered\n\nUses locked branch values: Plus / Pro / Max at \u20b9199 / 399 / 1,199, calendar months, sections only, explicit Keep on rollover. Use the Tweaks panel to switch viewer state.\n\nC\nRecall the C\nToday\nBrowse\nPlayground\nCalendar\nProfile\nS\nSanjay\nRecallC Plus\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Narcotic Drugs and Psychotropic Substances Act, 1985\n\n8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule\n\nAlready in Playground\nSections\nContinue\nCHAPTER I\nPreliminary\nSections 1\u20133\n\u203a\nCHAPTER II\nAuthorities and Officers\nSections 4\u20137\n\u203a\nCHAPTER IIA\nNational Fund for Control of Drug Abuse\nSections 7A\u20137B\n\u203a\nCHAPTER III\nProhibition, Control and Regulation\nSections 8\u201314\n\u203a\nCHAPTER IV\nOffences and Penalties\nSections "
+   }
+  },
+  {
+   "key": "act-ndps-pro",
+   "surface": "phone",
+   "query": "screen=act&law=ndps&viewer=pro&pin=1",
+   "file": "proto_act-ndps-pro_phone.png",
+   "sha256": "034a90b34fb77d574c2a064dbbd7457a7288b61dbdca472262ac0854c31b3831",
+   "probe": {
+    "h2": "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+    "h2Font": "19px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "+ Add to Playground"
+    ],
+    "rows": [],
+    "dialog": null,
+    "text": "Recall the C \u2014 Playground\n\nAdditive overlay on the verbatim Bare Acts. Add from an Act's head \u2014 the whole Act, sections, or single clauses \u2014 then it appears in Playground with the usual recall ladder.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd sheet \u2014 act vs sections\nSection picker \u2014 clause depth\nPlayground \u2014 activated laws\nPlayground \u2014 empty\nLearn \u2014 6 recall modes\nToday \u2014 playground in the queue\nCalendar \u2014 saved recall\nRoster \u2014 manage this month\nDevices\n\nReaders stay untouched \u2014 Add lives above the chapter list. /playground shows only activated laws. Selection persists against the source version, shown on each card.\n\n9:41\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Narcotic Drugs and Psychotropic Substances Act, 1985\n\n8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule\n\n+ Add to Playground\nCHAPTER I\nPreliminary\n1\u20133\n\u25b8\nCHAPTER II\nAuthorities and Officers\n4\u20137\n\u25b8\nCHAPTER IIA\nNational Fund for Control of Drug Abuse\n7A\u20137B\n\u25b8\nCHAPTER III\nProhibition, Control and Regulation\n8\u201314\n\u25b8\nCHAPTER IV\nOffences and Penalties\n15\u201340\n\u25b8\nCHAPTER V\nProcedure\n41\u201368\n\u25b8\nCHAPTER VA\nForfeiture of Illegally Acquired Property\n68A\u201368Z\n\u25b8\nCHAPTER VI\nMiscellaneous\n69\u201383\n\u25b8"
+   }
+  },
+  {
+   "key": "act-ndps-pro",
+   "surface": "desktop",
+   "query": "screen=act&law=ndps&viewer=pro&pin=1",
+   "file": "proto_act-ndps-pro_desktop.png",
+   "sha256": "7ee07e6ba8928fcd6d6a50ae5849e2fee39cdf65c1a8e7cfb0bad5d089b3fafb",
+   "probe": {
+    "h2": "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+    "h2Font": "28px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "Sections",
+     "Continue"
+    ],
+    "rows": [
+     "CHAPTER I Preliminary Sections 1\u20133 \u203a",
+     "CHAPTER II Authorities and Officers Sections 4\u20137 \u203a",
+     "CHAPTER IIA National Fund for Control of Drug Abuse Sections 7A\u20137B \u203a",
+     "CHAPTER III Prohibition, Control and Regulation Sections 8\u201314 \u203a",
+     "CHAPTER IV Offences and Penalties Sections 15\u201340 \u203a",
+     "CHAPTER V Procedure Sections 41\u201368 \u203a",
+     "CHAPTER VA Forfeiture of Illegally Acquired Property Sections 68A\u201368Z \u203a",
+     "CHAPTER VI Miscellaneous Sections 69\u201383 \u203a",
+     "SCHEDULE List of Psychotropic Substances Entries 1\u2013110 \u203a"
+    ],
+    "dialog": null,
+    "text": "Playground \u2014 Desktop\n\nSame flow as the phone design, laid out for a 1280px browser window. Left nav replaces the tab bar; sheets become centred dialogs; long screens use two columns.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nSettings\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd dialog\nSection picker\nPlayground home\nPlayground \u2014 empty\nAct progress\nLearn \u2014 6 modes\nRoster \u2014 manage September\nRoster \u2014 next month\nGate \u2014 sign in / plans\nSign in\nToday\nCalendar\nProfile\nSection learned\nMastered\n\nUses locked branch values: Plus / Pro / Max at \u20b9199 / 399 / 1,199, calendar months, sections only, explicit Keep on rollover. Use the Tweaks panel to switch viewer state.\n\nC\nRecall the C\nToday\nBrowse\nPlayground\nCalendar\nProfile\nS\nSanjay\nRecallC Pro\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Narcotic Drugs and Psychotropic Substances Act, 1985\n\n8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule\n\nAlready in Playground\nSections\nContinue\nCHAPTER I\nPreliminary\nSections 1\u20133\n\u203a\nCHAPTER II\nAuthorities and Officers\nSections 4\u20137\n\u203a\nCHAPTER IIA\nNational Fund for Control of Drug Abuse\nSections 7A\u20137B\n\u203a\nCHAPTER III\nProhibition, Control and Regulation\nSections 8\u201314\n\u203a\nCHAPTER IV\nOffences and Penalties\nSections 1"
+   }
+  },
+  {
+   "key": "act-uapa-pro",
+   "surface": "phone",
+   "query": "screen=act&law=uapa&viewer=pro&pin=1",
+   "file": "proto_act-uapa-pro_phone.png",
+   "sha256": "323287ce56b06ea5a1108c6a25823b669a9184617d645c6a6d8ab4984e2d9448",
+   "probe": {
+    "h2": "The Unlawful Activities (Prevention) Act, 1967",
+    "h2Font": "19px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "+ Add to Playground"
+    ],
+    "rows": [],
+    "dialog": null,
+    "text": "Recall the C \u2014 Playground\n\nAdditive overlay on the verbatim Bare Acts. Add from an Act's head \u2014 the whole Act, sections, or single clauses \u2014 then it appears in Playground with the usual recall ladder.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd sheet \u2014 act vs sections\nSection picker \u2014 clause depth\nPlayground \u2014 activated laws\nPlayground \u2014 empty\nLearn \u2014 6 recall modes\nToday \u2014 playground in the queue\nCalendar \u2014 saved recall\nRoster \u2014 manage this month\nDevices\n\nReaders stay untouched \u2014 Add lives above the chapter list. /playground shows only activated laws. Selection persists against the source version, shown on each card.\n\n9:41\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Unlawful Activities (Prevention) Act, 1967\n\n7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule\n\n+ Add to Playground\nCHAPTER I\nPreliminary\n1\u20132\n\u25b8\nCHAPTER II\nUnlawful Associations\n3\u20139\n\u25b8\nCHAPTER III\nOffences and Penalties\n10\u201314\n\u25b8\nCHAPTER IV\nPunishment for Terrorist Activities\n15\u201323\n\u25b8\nCHAPTER V\nForfeiture of Proceeds of Terrorism\n24\u201334\n\u25b8\nCHAPTER VI\nTerrorist Organisations\n35\u201340\n\u25b8\nCHAPTER VII\nMiscellaneous\n41\u201353\n\u25b8\nSCHEDULE\nTerrorist Organisations\n1\u201344\n\u203a\nToday\nBrowse\nPlayground\n"
+   }
+  },
+  {
+   "key": "act-uapa-pro",
+   "surface": "desktop",
+   "query": "screen=act&law=uapa&viewer=pro&pin=1",
+   "file": "proto_act-uapa-pro_desktop.png",
+   "sha256": "86b2359f8db7d252863bd4071b03465a4a960dc975e29d66f8b681f273147529",
+   "probe": {
+    "h2": "The Unlawful Activities (Prevention) Act, 1967",
+    "h2Font": "28px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "+ Add to Playground"
+    ],
+    "rows": [
+     "CHAPTER I Preliminary Sections 1\u20132 \u203a",
+     "CHAPTER II Unlawful Associations Sections 3\u20139 \u203a",
+     "CHAPTER III Offences and Penalties Sections 10\u201314 \u203a",
+     "CHAPTER IV Punishment for Terrorist Activities Sections 15\u201323 \u203a",
+     "CHAPTER V Forfeiture of Proceeds of Terrorism Sections 24\u201334 \u203a",
+     "CHAPTER VI Terrorist Organisations Sections 35\u201340 \u203a",
+     "CHAPTER VII Miscellaneous Sections 41\u201353 \u203a",
+     "SCHEDULE Terrorist Organisations Entries 1\u201344 \u203a"
+    ],
+    "dialog": null,
+    "text": "Playground \u2014 Desktop\n\nSame flow as the phone design, laid out for a 1280px browser window. Left nav replaces the tab bar; sheets become centred dialogs; long screens use two columns.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nSettings\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd dialog\nSection picker\nPlayground home\nPlayground \u2014 empty\nAct progress\nLearn \u2014 6 modes\nRoster \u2014 manage September\nRoster \u2014 next month\nGate \u2014 sign in / plans\nSign in\nToday\nCalendar\nProfile\nSection learned\nMastered\n\nUses locked branch values: Plus / Pro / Max at \u20b9199 / 399 / 1,199, calendar months, sections only, explicit Keep on rollover. Use the Tweaks panel to switch viewer state.\n\nC\nRecall the C\nToday\nBrowse\nPlayground\nCalendar\nProfile\nS\nSanjay\nRecallC Pro\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Unlawful Activities (Prevention) Act, 1967\n\n7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule\n\n+ Add to Playground\nCHAPTER I\nPreliminary\nSections 1\u20132\n\u203a\nCHAPTER II\nUnlawful Associations\nSections 3\u20139\n\u203a\nCHAPTER III\nOffences and Penalties\nSections 10\u201314\n\u203a\nCHAPTER IV\nPunishment for Terrorist Activities\nSections 15\u201323\n\u203a\nCHAPTER V\nForfeiture of Proceeds of Terrorism\nSections 24\u201334\n\u203a\nCHAPTER VI\nTerrorist Organisati"
+   }
+  },
+  {
+   "key": "act-bns-pro",
+   "surface": "phone",
+   "query": "screen=act&law=bns&viewer=pro&pin=1",
+   "file": "proto_act-bns-pro_phone.png",
+   "sha256": "ffbb6eb668706604443a51df48d48ea9c40245f29a7712cb45928ac04bd0adb5",
+   "probe": {
+    "h2": "The Bharatiya Nyaya Sanhita, 2023",
+    "h2Font": "19px",
+    "kicker": "BARE ACT \u00b7 GAZETTE",
+    "meta": "20 Chapters \u00b7 Sections 1\u2013358",
+    "buttons": [
+     "\u2190 Laws",
+     "+ Add to Playground"
+    ],
+    "rows": [],
+    "dialog": null,
+    "text": "Recall the C \u2014 Playground\n\nAdditive overlay on the verbatim Bare Acts. Add from an Act's head \u2014 the whole Act, sections, or single clauses \u2014 then it appears in Playground with the usual recall ladder.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd sheet \u2014 act vs sections\nSection picker \u2014 clause depth\nPlayground \u2014 activated laws\nPlayground \u2014 empty\nLearn \u2014 6 recall modes\nToday \u2014 playground in the queue\nCalendar \u2014 saved recall\nRoster \u2014 manage this month\nDevices\n\nReaders stay untouched \u2014 Add lives above the chapter list. /playground shows only activated laws. Selection persists against the source version, shown on each card.\n\n9:41\n\u2190 Laws\n\nBARE ACT \u00b7 GAZETTE\n\nThe Bharatiya Nyaya Sanhita, 2023\n\n20 Chapters \u00b7 Sections 1\u2013358\n\n+ Add to Playground\nCHAPTER I\nPreliminary\n1\u20133\n\u25b8\nCHAPTER VI\nOf Offences Affecting the Human Body\n100\u2013146\n\u25b8\nToday\nBrowse\nPlayground\nCalendar\nProfile"
+   }
+  },
+  {
+   "key": "act-bns-pro",
+   "surface": "desktop",
+   "query": "screen=act&law=bns&viewer=pro&pin=1",
+   "file": "proto_act-bns-pro_desktop.png",
+   "sha256": "e398a23ffb3e1d83f8ad35f6a3ea09ef81125d1962f5f4b158e27aaffe9b375e",
+   "probe": {
+    "h2": "The Bharatiya Nyaya Sanhita, 2023",
+    "h2Font": "28px",
+    "kicker": "BARE ACT \u00b7 GAZETTE",
+    "meta": "20 Chapters \u00b7 Sections 1\u2013358",
+    "buttons": [
+     "\u2190 Laws",
+     "Sections",
+     "Continue"
+    ],
+    "rows": [
+     "CHAPTER I Preliminary Sections 1\u20133 \u203a",
+     "CHAPTER VI Of Offences Affecting the Human Body Sections 100\u2013146 \u203a"
+    ],
+    "dialog": null,
+    "text": "Playground \u2014 Desktop\n\nSame flow as the phone design, laid out for a 1280px browser window. Left nav replaces the tab bar; sheets become centred dialogs; long screens use two columns.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nSettings\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd dialog\nSection picker\nPlayground home\nPlayground \u2014 empty\nAct progress\nLearn \u2014 6 modes\nRoster \u2014 manage September\nRoster \u2014 next month\nGate \u2014 sign in / plans\nSign in\nToday\nCalendar\nProfile\nSection learned\nMastered\n\nUses locked branch values: Plus / Pro / Max at \u20b9199 / 399 / 1,199, calendar months, sections only, explicit Keep on rollover. Use the Tweaks panel to switch viewer state.\n\nC\nRecall the C\nToday\nBrowse\nPlayground\nCalendar\nProfile\nS\nSanjay\nRecallC Pro\n\u2190 Laws\n\nBARE ACT \u00b7 GAZETTE\n\nThe Bharatiya Nyaya Sanhita, 2023\n\n20 Chapters \u00b7 Sections 1\u2013358\n\nAlready in Playground\nSections\nContinue\nCHAPTER I\nPreliminary\nSections 1\u20133\n\u203a\nCHAPTER VI\nOf Offences Affecting the Human Body\nSections 100\u2013146\n\u203a"
+   }
+  },
+  {
+   "key": "act-uapa-pro-sheet",
+   "surface": "phone",
+   "query": "screen=act&law=uapa&viewer=pro&sheet=1&pin=1",
+   "file": "proto_act-uapa-pro-sheet_phone.png",
+   "sha256": "6691d56766b14c2ae6f4703e618deb2e0530454c395dd5cb1745246364048146",
+   "probe": {
+    "h2": "The Unlawful Activities (Prevention) Act, 1967",
+    "h2Font": "19px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "+ Add to Playground"
+    ],
+    "rows": [],
+    "dialog": null,
+    "text": "Recall the C \u2014 Playground\n\nAdditive overlay on the verbatim Bare Acts. Add from an Act's head \u2014 the whole Act, sections, or single clauses \u2014 then it appears in Playground with the usual recall ladder.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd sheet \u2014 act vs sections\nSection picker \u2014 clause depth\nPlayground \u2014 activated laws\nPlayground \u2014 empty\nLearn \u2014 6 recall modes\nToday \u2014 playground in the queue\nCalendar \u2014 saved recall\nRoster \u2014 manage this month\nDevices\n\nReaders stay untouched \u2014 Add lives above the chapter list. /playground shows only activated laws. Selection persists against the source version, shown on each card.\n\n9:41\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Unlawful Activities (Prevention) Act, 1967\n\n7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule\n\n+ Add to Playground\nCHAPTER I\nPreliminary\n1\u20132\n\u25b8\nCHAPTER II\nUnlawful Associations\n3\u20139\n\u25b8\nCHAPTER III\nOffences and Penalties\n10\u201314\n\u25b8\nCHAPTER IV\nPunishment for Terrorist Activities\n15\u201323\n\u25b8\nCHAPTER V\nForfeiture of Proceeds of Terrorism\n24\u201334\n\u25b8\nCHAPTER VI\nTerrorist Organisations\n35\u201340\n\u25b8\nCHAPTER VII\nMiscellaneous\n41\u201353\n\u25b8\nSCHEDULE\nTerrorist Organisations\n1\u201344\n\u203a\nToday\nBrowse\nPlayground\n"
+   }
+  },
+  {
+   "key": "act-uapa-pro-sheet",
+   "surface": "desktop",
+   "query": "screen=act&law=uapa&viewer=pro&sheet=1&pin=1",
+   "file": "proto_act-uapa-pro-sheet_desktop.png",
+   "sha256": "b6161efc8692c1a36d22afb3230c7d2b67b0df6be5c4b51b5b2c5875e34744f9",
+   "probe": {
+    "h2": "The Unlawful Activities (Prevention) Act, 1967",
+    "h2Font": "28px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "+ Add to Playground"
+    ],
+    "rows": [
+     "CHAPTER I Preliminary Sections 1\u20132 \u203a",
+     "CHAPTER II Unlawful Associations Sections 3\u20139 \u203a",
+     "CHAPTER III Offences and Penalties Sections 10\u201314 \u203a",
+     "CHAPTER IV Punishment for Terrorist Activities Sections 15\u201323 \u203a",
+     "CHAPTER V Forfeiture of Proceeds of Terrorism Sections 24\u201334 \u203a",
+     "CHAPTER VI Terrorist Organisations Sections 35\u201340 \u203a",
+     "CHAPTER VII Miscellaneous Sections 41\u201353 \u203a",
+     "SCHEDULE Terrorist Organisations Entries 1\u201344 \u203a"
+    ],
+    "dialog": {
+     "text": "\u2715 Add to Playground The UAPA, 1967 joins this month\u2019s Playground \u2014 learnable, verbatim. The reader itself never changes. This will use 1 of your 30 law spaces in September. 21 will remain. Add to Playground Already yours this month \u2014 reopening it never uses another space.",
+     "w": 516
+    },
+    "text": "Playground \u2014 Desktop\n\nSame flow as the phone design, laid out for a 1280px browser window. Left nav replaces the tab bar; sheets become centred dialogs; long screens use two columns.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nSettings\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd dialog\nSection picker\nPlayground home\nPlayground \u2014 empty\nAct progress\nLearn \u2014 6 modes\nRoster \u2014 manage September\nRoster \u2014 next month\nGate \u2014 sign in / plans\nSign in\nToday\nCalendar\nProfile\nSection learned\nMastered\n\nUses locked branch values: Plus / Pro / Max at \u20b9199 / 399 / 1,199, calendar months, sections only, explicit Keep on rollover. Use the Tweaks panel to switch viewer state.\n\nC\nRecall the C\nToday\nBrowse\nPlayground\nCalendar\nProfile\nS\nSanjay\nRecallC Pro\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Unlawful Activities (Prevention) Act, 1967\n\n7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule\n\n+ Add to Playground\nCHAPTER I\nPreliminary\nSections 1\u20132\n\u203a\nCHAPTER II\nUnlawful Associations\nSections 3\u20139\n\u203a\nCHAPTER III\nOffences and Penalties\nSections 10\u201314\n\u203a\nCHAPTER IV\nPunishment for Terrorist Activities\nSections 15\u201323\n\u203a\nCHAPTER V\nForfeiture of Proceeds of Terrorism\nSections 24\u201334\n\u203a\nCHAPTER VI\nTerrorist Organisati"
+   }
+  },
+  {
+   "key": "act-ndps-pro-sheet",
+   "surface": "phone",
+   "query": "screen=act&law=ndps&viewer=pro&sheet=1&pin=1",
+   "file": "proto_act-ndps-pro-sheet_phone.png",
+   "sha256": "13fd371befbac8841b40d95f7a6ef488a99a65adaa9dff7dd9207795e947791b",
+   "probe": {
+    "h2": "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+    "h2Font": "19px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "+ Add to Playground"
+    ],
+    "rows": [],
+    "dialog": null,
+    "text": "Recall the C \u2014 Playground\n\nAdditive overlay on the verbatim Bare Acts. Add from an Act's head \u2014 the whole Act, sections, or single clauses \u2014 then it appears in Playground with the usual recall ladder.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd sheet \u2014 act vs sections\nSection picker \u2014 clause depth\nPlayground \u2014 activated laws\nPlayground \u2014 empty\nLearn \u2014 6 recall modes\nToday \u2014 playground in the queue\nCalendar \u2014 saved recall\nRoster \u2014 manage this month\nDevices\n\nReaders stay untouched \u2014 Add lives above the chapter list. /playground shows only activated laws. Selection persists against the source version, shown on each card.\n\n9:41\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Narcotic Drugs and Psychotropic Substances Act, 1985\n\n8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule\n\n+ Add to Playground\nCHAPTER I\nPreliminary\n1\u20133\n\u25b8\nCHAPTER II\nAuthorities and Officers\n4\u20137\n\u25b8\nCHAPTER IIA\nNational Fund for Control of Drug Abuse\n7A\u20137B\n\u25b8\nCHAPTER III\nProhibition, Control and Regulation\n8\u201314\n\u25b8\nCHAPTER IV\nOffences and Penalties\n15\u201340\n\u25b8\nCHAPTER V\nProcedure\n41\u201368\n\u25b8\nCHAPTER VA\nForfeiture of Illegally Acquired Property\n68A\u201368Z\n\u25b8\nCHAPTER VI\nMiscellaneous\n69\u201383\n\u25b8"
+   }
+  },
+  {
+   "key": "act-ndps-pro-sheet",
+   "surface": "desktop",
+   "query": "screen=act&law=ndps&viewer=pro&sheet=1&pin=1",
+   "file": "proto_act-ndps-pro-sheet_desktop.png",
+   "sha256": "29356a34c0e839c030c17106b420d3ac9cf75e7a502d2b2227b9c5704b1f8ac3",
+   "probe": {
+    "h2": "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+    "h2Font": "28px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "Sections",
+     "Continue"
+    ],
+    "rows": [
+     "CHAPTER I Preliminary Sections 1\u20133 \u203a",
+     "CHAPTER II Authorities and Officers Sections 4\u20137 \u203a",
+     "CHAPTER IIA National Fund for Control of Drug Abuse Sections 7A\u20137B \u203a",
+     "CHAPTER III Prohibition, Control and Regulation Sections 8\u201314 \u203a",
+     "CHAPTER IV Offences and Penalties Sections 15\u201340 \u203a",
+     "CHAPTER V Procedure Sections 41\u201368 \u203a",
+     "CHAPTER VA Forfeiture of Illegally Acquired Property Sections 68A\u201368Z \u203a",
+     "CHAPTER VI Miscellaneous Sections 69\u201383 \u203a",
+     "SCHEDULE List of Psychotropic Substances Entries 1\u2013110 \u203a"
+    ],
+    "dialog": {
+     "text": "\u2715 Add to Playground The NDPS Act, 1985 joins this month\u2019s Playground \u2014 learnable, verbatim. The reader itself never changes. This will use 1 of your 30 law spaces in September. 21 will remain. Add to Playground Already yours this month \u2014 reopening it never uses another space.",
+     "w": 516
+    },
+    "text": "Playground \u2014 Desktop\n\nSame flow as the phone design, laid out for a 1280px browser window. Left nav replaces the tab bar; sheets become centred dialogs; long screens use two columns.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nSettings\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd dialog\nSection picker\nPlayground home\nPlayground \u2014 empty\nAct progress\nLearn \u2014 6 modes\nRoster \u2014 manage September\nRoster \u2014 next month\nGate \u2014 sign in / plans\nSign in\nToday\nCalendar\nProfile\nSection learned\nMastered\n\nUses locked branch values: Plus / Pro / Max at \u20b9199 / 399 / 1,199, calendar months, sections only, explicit Keep on rollover. Use the Tweaks panel to switch viewer state.\n\nC\nRecall the C\nToday\nBrowse\nPlayground\nCalendar\nProfile\nS\nSanjay\nRecallC Pro\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Narcotic Drugs and Psychotropic Substances Act, 1985\n\n8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule\n\nAlready in Playground\nSections\nContinue\nCHAPTER I\nPreliminary\nSections 1\u20133\n\u203a\nCHAPTER II\nAuthorities and Officers\nSections 4\u20137\n\u203a\nCHAPTER IIA\nNational Fund for Control of Drug Abuse\nSections 7A\u20137B\n\u203a\nCHAPTER III\nProhibition, Control and Regulation\nSections 8\u201314\n\u203a\nCHAPTER IV\nOffences and Penalties\nSections 1"
+   }
+  },
+  {
+   "key": "act-ndps-max",
+   "surface": "phone",
+   "query": "screen=act&law=ndps&viewer=max&pin=1",
+   "file": "proto_act-ndps-max_phone.png",
+   "sha256": "034a90b34fb77d574c2a064dbbd7457a7288b61dbdca472262ac0854c31b3831",
+   "probe": {
+    "h2": "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+    "h2Font": "19px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "+ Add to Playground"
+    ],
+    "rows": [],
+    "dialog": null,
+    "text": "Recall the C \u2014 Playground\n\nAdditive overlay on the verbatim Bare Acts. Add from an Act's head \u2014 the whole Act, sections, or single clauses \u2014 then it appears in Playground with the usual recall ladder.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd sheet \u2014 act vs sections\nSection picker \u2014 clause depth\nPlayground \u2014 activated laws\nPlayground \u2014 empty\nLearn \u2014 6 recall modes\nToday \u2014 playground in the queue\nCalendar \u2014 saved recall\nRoster \u2014 manage this month\nDevices\n\nReaders stay untouched \u2014 Add lives above the chapter list. /playground shows only activated laws. Selection persists against the source version, shown on each card.\n\n9:41\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Narcotic Drugs and Psychotropic Substances Act, 1985\n\n8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule\n\n+ Add to Playground\nCHAPTER I\nPreliminary\n1\u20133\n\u25b8\nCHAPTER II\nAuthorities and Officers\n4\u20137\n\u25b8\nCHAPTER IIA\nNational Fund for Control of Drug Abuse\n7A\u20137B\n\u25b8\nCHAPTER III\nProhibition, Control and Regulation\n8\u201314\n\u25b8\nCHAPTER IV\nOffences and Penalties\n15\u201340\n\u25b8\nCHAPTER V\nProcedure\n41\u201368\n\u25b8\nCHAPTER VA\nForfeiture of Illegally Acquired Property\n68A\u201368Z\n\u25b8\nCHAPTER VI\nMiscellaneous\n69\u201383\n\u25b8"
+   }
+  },
+  {
+   "key": "act-ndps-max",
+   "surface": "desktop",
+   "query": "screen=act&law=ndps&viewer=max&pin=1",
+   "file": "proto_act-ndps-max_desktop.png",
+   "sha256": "2aa7a2c42756bce981e1e724b6b60c498fa09d991f216974b457e8c4d97ee8af",
+   "probe": {
+    "h2": "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+    "h2Font": "28px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "Sections",
+     "Continue"
+    ],
+    "rows": [
+     "CHAPTER I Preliminary Sections 1\u20133 \u203a",
+     "CHAPTER II Authorities and Officers Sections 4\u20137 \u203a",
+     "CHAPTER IIA National Fund for Control of Drug Abuse Sections 7A\u20137B \u203a",
+     "CHAPTER III Prohibition, Control and Regulation Sections 8\u201314 \u203a",
+     "CHAPTER IV Offences and Penalties Sections 15\u201340 \u203a",
+     "CHAPTER V Procedure Sections 41\u201368 \u203a",
+     "CHAPTER VA Forfeiture of Illegally Acquired Property Sections 68A\u201368Z \u203a",
+     "CHAPTER VI Miscellaneous Sections 69\u201383 \u203a",
+     "SCHEDULE List of Psychotropic Substances Entries 1\u2013110 \u203a"
+    ],
+    "dialog": null,
+    "text": "Playground \u2014 Desktop\n\nSame flow as the phone design, laid out for a 1280px browser window. Left nav replaces the tab bar; sheets become centred dialogs; long screens use two columns.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nSettings\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd dialog\nSection picker\nPlayground home\nPlayground \u2014 empty\nAct progress\nLearn \u2014 6 modes\nRoster \u2014 manage September\nRoster \u2014 next month\nGate \u2014 sign in / plans\nSign in\nToday\nCalendar\nProfile\nSection learned\nMastered\n\nUses locked branch values: Plus / Pro / Max at \u20b9199 / 399 / 1,199, calendar months, sections only, explicit Keep on rollover. Use the Tweaks panel to switch viewer state.\n\nC\nRecall the C\nToday\nBrowse\nPlayground\nCalendar\nProfile\nS\nSanjay\nRecallC Max\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Narcotic Drugs and Psychotropic Substances Act, 1985\n\n8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule\n\nAlready in Playground\nSections\nContinue\nCHAPTER I\nPreliminary\nSections 1\u20133\n\u203a\nCHAPTER II\nAuthorities and Officers\nSections 4\u20137\n\u203a\nCHAPTER IIA\nNational Fund for Control of Drug Abuse\nSections 7A\u20137B\n\u203a\nCHAPTER III\nProhibition, Control and Regulation\nSections 8\u201314\n\u203a\nCHAPTER IV\nOffences and Penalties\nSections 1"
+   }
+  },
+  {
+   "key": "act-uapa-max",
+   "surface": "phone",
+   "query": "screen=act&law=uapa&viewer=max&pin=1",
+   "file": "proto_act-uapa-max_phone.png",
+   "sha256": "323287ce56b06ea5a1108c6a25823b669a9184617d645c6a6d8ab4984e2d9448",
+   "probe": {
+    "h2": "The Unlawful Activities (Prevention) Act, 1967",
+    "h2Font": "19px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "+ Add to Playground"
+    ],
+    "rows": [],
+    "dialog": null,
+    "text": "Recall the C \u2014 Playground\n\nAdditive overlay on the verbatim Bare Acts. Add from an Act's head \u2014 the whole Act, sections, or single clauses \u2014 then it appears in Playground with the usual recall ladder.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd sheet \u2014 act vs sections\nSection picker \u2014 clause depth\nPlayground \u2014 activated laws\nPlayground \u2014 empty\nLearn \u2014 6 recall modes\nToday \u2014 playground in the queue\nCalendar \u2014 saved recall\nRoster \u2014 manage this month\nDevices\n\nReaders stay untouched \u2014 Add lives above the chapter list. /playground shows only activated laws. Selection persists against the source version, shown on each card.\n\n9:41\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Unlawful Activities (Prevention) Act, 1967\n\n7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule\n\n+ Add to Playground\nCHAPTER I\nPreliminary\n1\u20132\n\u25b8\nCHAPTER II\nUnlawful Associations\n3\u20139\n\u25b8\nCHAPTER III\nOffences and Penalties\n10\u201314\n\u25b8\nCHAPTER IV\nPunishment for Terrorist Activities\n15\u201323\n\u25b8\nCHAPTER V\nForfeiture of Proceeds of Terrorism\n24\u201334\n\u25b8\nCHAPTER VI\nTerrorist Organisations\n35\u201340\n\u25b8\nCHAPTER VII\nMiscellaneous\n41\u201353\n\u25b8\nSCHEDULE\nTerrorist Organisations\n1\u201344\n\u203a\nToday\nBrowse\nPlayground\n"
+   }
+  },
+  {
+   "key": "act-uapa-max",
+   "surface": "desktop",
+   "query": "screen=act&law=uapa&viewer=max&pin=1",
+   "file": "proto_act-uapa-max_desktop.png",
+   "sha256": "6b0be1eb92d9666929bc7fa3b04c83601a6cb4b5df9b50ec96bdab9eaef68edc",
+   "probe": {
+    "h2": "The Unlawful Activities (Prevention) Act, 1967",
+    "h2Font": "28px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "+ Add to Playground"
+    ],
+    "rows": [
+     "CHAPTER I Preliminary Sections 1\u20132 \u203a",
+     "CHAPTER II Unlawful Associations Sections 3\u20139 \u203a",
+     "CHAPTER III Offences and Penalties Sections 10\u201314 \u203a",
+     "CHAPTER IV Punishment for Terrorist Activities Sections 15\u201323 \u203a",
+     "CHAPTER V Forfeiture of Proceeds of Terrorism Sections 24\u201334 \u203a",
+     "CHAPTER VI Terrorist Organisations Sections 35\u201340 \u203a",
+     "CHAPTER VII Miscellaneous Sections 41\u201353 \u203a",
+     "SCHEDULE Terrorist Organisations Entries 1\u201344 \u203a"
+    ],
+    "dialog": null,
+    "text": "Playground \u2014 Desktop\n\nSame flow as the phone design, laid out for a 1280px browser window. Left nav replaces the tab bar; sheets become centred dialogs; long screens use two columns.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nSettings\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd dialog\nSection picker\nPlayground home\nPlayground \u2014 empty\nAct progress\nLearn \u2014 6 modes\nRoster \u2014 manage September\nRoster \u2014 next month\nGate \u2014 sign in / plans\nSign in\nToday\nCalendar\nProfile\nSection learned\nMastered\n\nUses locked branch values: Plus / Pro / Max at \u20b9199 / 399 / 1,199, calendar months, sections only, explicit Keep on rollover. Use the Tweaks panel to switch viewer state.\n\nC\nRecall the C\nToday\nBrowse\nPlayground\nCalendar\nProfile\nS\nSanjay\nRecallC Max\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Unlawful Activities (Prevention) Act, 1967\n\n7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule\n\n+ Add to Playground\nCHAPTER I\nPreliminary\nSections 1\u20132\n\u203a\nCHAPTER II\nUnlawful Associations\nSections 3\u20139\n\u203a\nCHAPTER III\nOffences and Penalties\nSections 10\u201314\n\u203a\nCHAPTER IV\nPunishment for Terrorist Activities\nSections 15\u201323\n\u203a\nCHAPTER V\nForfeiture of Proceeds of Terrorism\nSections 24\u201334\n\u203a\nCHAPTER VI\nTerrorist Organisati"
+   }
+  },
+  {
+   "key": "act-bns-max",
+   "surface": "phone",
+   "query": "screen=act&law=bns&viewer=max&pin=1",
+   "file": "proto_act-bns-max_phone.png",
+   "sha256": "ffbb6eb668706604443a51df48d48ea9c40245f29a7712cb45928ac04bd0adb5",
+   "probe": {
+    "h2": "The Bharatiya Nyaya Sanhita, 2023",
+    "h2Font": "19px",
+    "kicker": "BARE ACT \u00b7 GAZETTE",
+    "meta": "20 Chapters \u00b7 Sections 1\u2013358",
+    "buttons": [
+     "\u2190 Laws",
+     "+ Add to Playground"
+    ],
+    "rows": [],
+    "dialog": null,
+    "text": "Recall the C \u2014 Playground\n\nAdditive overlay on the verbatim Bare Acts. Add from an Act's head \u2014 the whole Act, sections, or single clauses \u2014 then it appears in Playground with the usual recall ladder.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd sheet \u2014 act vs sections\nSection picker \u2014 clause depth\nPlayground \u2014 activated laws\nPlayground \u2014 empty\nLearn \u2014 6 recall modes\nToday \u2014 playground in the queue\nCalendar \u2014 saved recall\nRoster \u2014 manage this month\nDevices\n\nReaders stay untouched \u2014 Add lives above the chapter list. /playground shows only activated laws. Selection persists against the source version, shown on each card.\n\n9:41\n\u2190 Laws\n\nBARE ACT \u00b7 GAZETTE\n\nThe Bharatiya Nyaya Sanhita, 2023\n\n20 Chapters \u00b7 Sections 1\u2013358\n\n+ Add to Playground\nCHAPTER I\nPreliminary\n1\u20133\n\u25b8\nCHAPTER VI\nOf Offences Affecting the Human Body\n100\u2013146\n\u25b8\nToday\nBrowse\nPlayground\nCalendar\nProfile"
+   }
+  },
+  {
+   "key": "act-bns-max",
+   "surface": "desktop",
+   "query": "screen=act&law=bns&viewer=max&pin=1",
+   "file": "proto_act-bns-max_desktop.png",
+   "sha256": "759d24a88f6936440486dde61c1feac878eca22a564366450569d3d626932b57",
+   "probe": {
+    "h2": "The Bharatiya Nyaya Sanhita, 2023",
+    "h2Font": "28px",
+    "kicker": "BARE ACT \u00b7 GAZETTE",
+    "meta": "20 Chapters \u00b7 Sections 1\u2013358",
+    "buttons": [
+     "\u2190 Laws",
+     "Sections",
+     "Continue"
+    ],
+    "rows": [
+     "CHAPTER I Preliminary Sections 1\u20133 \u203a",
+     "CHAPTER VI Of Offences Affecting the Human Body Sections 100\u2013146 \u203a"
+    ],
+    "dialog": null,
+    "text": "Playground \u2014 Desktop\n\nSame flow as the phone design, laid out for a 1280px browser window. Left nav replaces the tab bar; sheets become centred dialogs; long screens use two columns.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nSettings\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd dialog\nSection picker\nPlayground home\nPlayground \u2014 empty\nAct progress\nLearn \u2014 6 modes\nRoster \u2014 manage September\nRoster \u2014 next month\nGate \u2014 sign in / plans\nSign in\nToday\nCalendar\nProfile\nSection learned\nMastered\n\nUses locked branch values: Plus / Pro / Max at \u20b9199 / 399 / 1,199, calendar months, sections only, explicit Keep on rollover. Use the Tweaks panel to switch viewer state.\n\nC\nRecall the C\nToday\nBrowse\nPlayground\nCalendar\nProfile\nS\nSanjay\nRecallC Max\n\u2190 Laws\n\nBARE ACT \u00b7 GAZETTE\n\nThe Bharatiya Nyaya Sanhita, 2023\n\n20 Chapters \u00b7 Sections 1\u2013358\n\nAlready in Playground\nSections\nContinue\nCHAPTER I\nPreliminary\nSections 1\u20133\n\u203a\nCHAPTER VI\nOf Offences Affecting the Human Body\nSections 100\u2013146\n\u203a"
+   }
+  },
+  {
+   "key": "act-uapa-max-sheet",
+   "surface": "phone",
+   "query": "screen=act&law=uapa&viewer=max&sheet=1&pin=1",
+   "file": "proto_act-uapa-max-sheet_phone.png",
+   "sha256": "68193558f628849fc0b7876b472628796623e5ceccea1508672f175df7e7556e",
+   "probe": {
+    "h2": "The Unlawful Activities (Prevention) Act, 1967",
+    "h2Font": "19px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "+ Add to Playground"
+    ],
+    "rows": [],
+    "dialog": null,
+    "text": "Recall the C \u2014 Playground\n\nAdditive overlay on the verbatim Bare Acts. Add from an Act's head \u2014 the whole Act, sections, or single clauses \u2014 then it appears in Playground with the usual recall ladder.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd sheet \u2014 act vs sections\nSection picker \u2014 clause depth\nPlayground \u2014 activated laws\nPlayground \u2014 empty\nLearn \u2014 6 recall modes\nToday \u2014 playground in the queue\nCalendar \u2014 saved recall\nRoster \u2014 manage this month\nDevices\n\nReaders stay untouched \u2014 Add lives above the chapter list. /playground shows only activated laws. Selection persists against the source version, shown on each card.\n\n9:41\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Unlawful Activities (Prevention) Act, 1967\n\n7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule\n\n+ Add to Playground\nCHAPTER I\nPreliminary\n1\u20132\n\u25b8\nCHAPTER II\nUnlawful Associations\n3\u20139\n\u25b8\nCHAPTER III\nOffences and Penalties\n10\u201314\n\u25b8\nCHAPTER IV\nPunishment for Terrorist Activities\n15\u201323\n\u25b8\nCHAPTER V\nForfeiture of Proceeds of Terrorism\n24\u201334\n\u25b8\nCHAPTER VI\nTerrorist Organisations\n35\u201340\n\u25b8\nCHAPTER VII\nMiscellaneous\n41\u201353\n\u25b8\nSCHEDULE\nTerrorist Organisations\n1\u201344\n\u203a\nToday\nBrowse\nPlayground\n"
+   }
+  },
+  {
+   "key": "act-uapa-max-sheet",
+   "surface": "desktop",
+   "query": "screen=act&law=uapa&viewer=max&sheet=1&pin=1",
+   "file": "proto_act-uapa-max-sheet_desktop.png",
+   "sha256": "350f08bc55c5359c3131d5cb7760df2b10a75f82065d74e96afe64a89072c0ff",
+   "probe": {
+    "h2": "The Unlawful Activities (Prevention) Act, 1967",
+    "h2Font": "28px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "+ Add to Playground"
+    ],
+    "rows": [
+     "CHAPTER I Preliminary Sections 1\u20132 \u203a",
+     "CHAPTER II Unlawful Associations Sections 3\u20139 \u203a",
+     "CHAPTER III Offences and Penalties Sections 10\u201314 \u203a",
+     "CHAPTER IV Punishment for Terrorist Activities Sections 15\u201323 \u203a",
+     "CHAPTER V Forfeiture of Proceeds of Terrorism Sections 24\u201334 \u203a",
+     "CHAPTER VI Terrorist Organisations Sections 35\u201340 \u203a",
+     "CHAPTER VII Miscellaneous Sections 41\u201353 \u203a",
+     "SCHEDULE Terrorist Organisations Entries 1\u201344 \u203a"
+    ],
+    "dialog": {
+     "text": "\u2715 Add to Playground Choose how much of The UAPA, 1967 enters your recall schedule. Entire Act 7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule \u00b7 nothing scheduled yet \u203a Choose sections Pick the sections you want to learn \u203a Nothing is scheduled yet \u2014 sections activate the first time you learn them.",
+     "w": 516
+    },
+    "text": "Playground \u2014 Desktop\n\nSame flow as the phone design, laid out for a 1280px browser window. Left nav replaces the tab bar; sheets become centred dialogs; long screens use two columns.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nSettings\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd dialog\nSection picker\nPlayground home\nPlayground \u2014 empty\nAct progress\nLearn \u2014 6 modes\nRoster \u2014 manage September\nRoster \u2014 next month\nGate \u2014 sign in / plans\nSign in\nToday\nCalendar\nProfile\nSection learned\nMastered\n\nUses locked branch values: Plus / Pro / Max at \u20b9199 / 399 / 1,199, calendar months, sections only, explicit Keep on rollover. Use the Tweaks panel to switch viewer state.\n\nC\nRecall the C\nToday\nBrowse\nPlayground\nCalendar\nProfile\nS\nSanjay\nRecallC Max\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Unlawful Activities (Prevention) Act, 1967\n\n7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule\n\n+ Add to Playground\nCHAPTER I\nPreliminary\nSections 1\u20132\n\u203a\nCHAPTER II\nUnlawful Associations\nSections 3\u20139\n\u203a\nCHAPTER III\nOffences and Penalties\nSections 10\u201314\n\u203a\nCHAPTER IV\nPunishment for Terrorist Activities\nSections 15\u201323\n\u203a\nCHAPTER V\nForfeiture of Proceeds of Terrorism\nSections 24\u201334\n\u203a\nCHAPTER VI\nTerrorist Organisati"
+   }
+  },
+  {
+   "key": "act-ndps-max-sheet",
+   "surface": "phone",
+   "query": "screen=act&law=ndps&viewer=max&sheet=1&pin=1",
+   "file": "proto_act-ndps-max-sheet_phone.png",
+   "sha256": "dc609190bae698e2161643a4f207d89056f5ad99071b3b2e7edf94bf3f5bcc8f",
+   "probe": {
+    "h2": "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+    "h2Font": "19px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "+ Add to Playground"
+    ],
+    "rows": [],
+    "dialog": null,
+    "text": "Recall the C \u2014 Playground\n\nAdditive overlay on the verbatim Bare Acts. Add from an Act's head \u2014 the whole Act, sections, or single clauses \u2014 then it appears in Playground with the usual recall ladder.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd sheet \u2014 act vs sections\nSection picker \u2014 clause depth\nPlayground \u2014 activated laws\nPlayground \u2014 empty\nLearn \u2014 6 recall modes\nToday \u2014 playground in the queue\nCalendar \u2014 saved recall\nRoster \u2014 manage this month\nDevices\n\nReaders stay untouched \u2014 Add lives above the chapter list. /playground shows only activated laws. Selection persists against the source version, shown on each card.\n\n9:41\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Narcotic Drugs and Psychotropic Substances Act, 1985\n\n8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule\n\n+ Add to Playground\nCHAPTER I\nPreliminary\n1\u20133\n\u25b8\nCHAPTER II\nAuthorities and Officers\n4\u20137\n\u25b8\nCHAPTER IIA\nNational Fund for Control of Drug Abuse\n7A\u20137B\n\u25b8\nCHAPTER III\nProhibition, Control and Regulation\n8\u201314\n\u25b8\nCHAPTER IV\nOffences and Penalties\n15\u201340\n\u25b8\nCHAPTER V\nProcedure\n41\u201368\n\u25b8\nCHAPTER VA\nForfeiture of Illegally Acquired Property\n68A\u201368Z\n\u25b8\nCHAPTER VI\nMiscellaneous\n69\u201383\n\u25b8"
+   }
+  },
+  {
+   "key": "act-ndps-max-sheet",
+   "surface": "desktop",
+   "query": "screen=act&law=ndps&viewer=max&sheet=1&pin=1",
+   "file": "proto_act-ndps-max-sheet_desktop.png",
+   "sha256": "9db22a231f0b38fae837b769898d60534fbf273a1f947a146259ce0890678e4a",
+   "probe": {
+    "h2": "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+    "h2Font": "28px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "Sections",
+     "Continue"
+    ],
+    "rows": [
+     "CHAPTER I Preliminary Sections 1\u20133 \u203a",
+     "CHAPTER II Authorities and Officers Sections 4\u20137 \u203a",
+     "CHAPTER IIA National Fund for Control of Drug Abuse Sections 7A\u20137B \u203a",
+     "CHAPTER III Prohibition, Control and Regulation Sections 8\u201314 \u203a",
+     "CHAPTER IV Offences and Penalties Sections 15\u201340 \u203a",
+     "CHAPTER V Procedure Sections 41\u201368 \u203a",
+     "CHAPTER VA Forfeiture of Illegally Acquired Property Sections 68A\u201368Z \u203a",
+     "CHAPTER VI Miscellaneous Sections 69\u201383 \u203a",
+     "SCHEDULE List of Psychotropic Substances Entries 1\u2013110 \u203a"
+    ],
+    "dialog": {
+     "text": "\u2715 Add to Playground Choose how much of The NDPS Act, 1985 enters your recall schedule. Entire Act 8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule \u00b7 nothing scheduled yet \u203a Choose sections Pick the sections you want to learn \u203a Nothing is scheduled yet \u2014 sections activate the first time you learn them.",
+     "w": 516
+    },
+    "text": "Playground \u2014 Desktop\n\nSame flow as the phone design, laid out for a 1280px browser window. Left nav replaces the tab bar; sheets become centred dialogs; long screens use two columns.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nSettings\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd dialog\nSection picker\nPlayground home\nPlayground \u2014 empty\nAct progress\nLearn \u2014 6 modes\nRoster \u2014 manage September\nRoster \u2014 next month\nGate \u2014 sign in / plans\nSign in\nToday\nCalendar\nProfile\nSection learned\nMastered\n\nUses locked branch values: Plus / Pro / Max at \u20b9199 / 399 / 1,199, calendar months, sections only, explicit Keep on rollover. Use the Tweaks panel to switch viewer state.\n\nC\nRecall the C\nToday\nBrowse\nPlayground\nCalendar\nProfile\nS\nSanjay\nRecallC Max\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Narcotic Drugs and Psychotropic Substances Act, 1985\n\n8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule\n\nAlready in Playground\nSections\nContinue\nCHAPTER I\nPreliminary\nSections 1\u20133\n\u203a\nCHAPTER II\nAuthorities and Officers\nSections 4\u20137\n\u203a\nCHAPTER IIA\nNational Fund for Control of Drug Abuse\nSections 7A\u20137B\n\u203a\nCHAPTER III\nProhibition, Control and Regulation\nSections 8\u201314\n\u203a\nCHAPTER IV\nOffences and Penalties\nSections 1"
+   }
+  },
+  {
+   "key": "act-ndps-expired",
+   "surface": "phone",
+   "query": "screen=act&law=ndps&viewer=expired&pin=1",
+   "file": "proto_act-ndps-expired_phone.png",
+   "sha256": "1cf840b3bc31adf02b33d0c0da4fa7d76b7334d377c7fd2f28430a4edf5170b0",
+   "probe": {
+    "h2": "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+    "h2Font": "19px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "Resume Playground"
+    ],
+    "rows": [],
+    "dialog": null,
+    "text": "Recall the C \u2014 Playground\n\nAdditive overlay on the verbatim Bare Acts. Add from an Act's head \u2014 the whole Act, sections, or single clauses \u2014 then it appears in Playground with the usual recall ladder.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd sheet \u2014 act vs sections\nSection picker \u2014 clause depth\nPlayground \u2014 activated laws\nPlayground \u2014 empty\nLearn \u2014 6 recall modes\nToday \u2014 playground in the queue\nCalendar \u2014 saved recall\nRoster \u2014 manage this month\nDevices\n\nReaders stay untouched \u2014 Add lives above the chapter list. /playground shows only activated laws. Selection persists against the source version, shown on each card.\n\n9:41\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Narcotic Drugs and Psychotropic Substances Act, 1985\n\n8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule\n\nResume Playground\nCHAPTER I\nPreliminary\n1\u20133\n\u25b8\nCHAPTER II\nAuthorities and Officers\n4\u20137\n\u25b8\nCHAPTER IIA\nNational Fund for Control of Drug Abuse\n7A\u20137B\n\u25b8\nCHAPTER III\nProhibition, Control and Regulation\n8\u201314\n\u25b8\nCHAPTER IV\nOffences and Penalties\n15\u201340\n\u25b8\nCHAPTER V\nProcedure\n41\u201368\n\u25b8\nCHAPTER VA\nForfeiture of Illegally Acquired Property\n68A\u201368Z\n\u25b8\nCHAPTER VI\nMiscellaneous\n69\u201383\n\u25b8\nS"
+   }
+  },
+  {
+   "key": "act-ndps-expired",
+   "surface": "desktop",
+   "query": "screen=act&law=ndps&viewer=expired&pin=1",
+   "file": "proto_act-ndps-expired_desktop.png",
+   "sha256": "f1ae5c4ab124b27841c0b6de7fa47bc5dbdb088a0b0d774c1a82491b7d7246d6",
+   "probe": {
+    "h2": "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+    "h2Font": "28px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "Sections",
+     "Continue"
+    ],
+    "rows": [
+     "CHAPTER I Preliminary Sections 1\u20133 \u203a",
+     "CHAPTER II Authorities and Officers Sections 4\u20137 \u203a",
+     "CHAPTER IIA National Fund for Control of Drug Abuse Sections 7A\u20137B \u203a",
+     "CHAPTER III Prohibition, Control and Regulation Sections 8\u201314 \u203a",
+     "CHAPTER IV Offences and Penalties Sections 15\u201340 \u203a",
+     "CHAPTER V Procedure Sections 41\u201368 \u203a",
+     "CHAPTER VA Forfeiture of Illegally Acquired Property Sections 68A\u201368Z \u203a",
+     "CHAPTER VI Miscellaneous Sections 69\u201383 \u203a",
+     "SCHEDULE List of Psychotropic Substances Entries 1\u2013110 \u203a"
+    ],
+    "dialog": null,
+    "text": "Playground \u2014 Desktop\n\nSame flow as the phone design, laid out for a 1280px browser window. Left nav replaces the tab bar; sheets become centred dialogs; long screens use two columns.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nSettings\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd dialog\nSection picker\nPlayground home\nPlayground \u2014 empty\nAct progress\nLearn \u2014 6 modes\nRoster \u2014 manage September\nRoster \u2014 next month\nGate \u2014 sign in / plans\nSign in\nToday\nCalendar\nProfile\nSection learned\nMastered\n\nUses locked branch values: Plus / Pro / Max at \u20b9199 / 399 / 1,199, calendar months, sections only, explicit Keep on rollover. Use the Tweaks panel to switch viewer state.\n\nC\nRecall the C\nToday\nBrowse\nPlayground\nCalendar\nProfile\nS\nSanjay\nPlayground paused\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Narcotic Drugs and Psychotropic Substances Act, 1985\n\n8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule\n\nAlready in Playground\nSections\nContinue\nCHAPTER I\nPreliminary\nSections 1\u20133\n\u203a\nCHAPTER II\nAuthorities and Officers\nSections 4\u20137\n\u203a\nCHAPTER IIA\nNational Fund for Control of Drug Abuse\nSections 7A\u20137B\n\u203a\nCHAPTER III\nProhibition, Control and Regulation\nSections 8\u201314\n\u203a\nCHAPTER IV\nOffences and Penalties\nSect"
+   }
+  },
+  {
+   "key": "act-uapa-expired",
+   "surface": "phone",
+   "query": "screen=act&law=uapa&viewer=expired&pin=1",
+   "file": "proto_act-uapa-expired_phone.png",
+   "sha256": "8f1df65e073b18b35929731630708dd814628016d5347e7553141aae609e6e95",
+   "probe": {
+    "h2": "The Unlawful Activities (Prevention) Act, 1967",
+    "h2Font": "19px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "Resume Playground"
+    ],
+    "rows": [],
+    "dialog": null,
+    "text": "Recall the C \u2014 Playground\n\nAdditive overlay on the verbatim Bare Acts. Add from an Act's head \u2014 the whole Act, sections, or single clauses \u2014 then it appears in Playground with the usual recall ladder.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd sheet \u2014 act vs sections\nSection picker \u2014 clause depth\nPlayground \u2014 activated laws\nPlayground \u2014 empty\nLearn \u2014 6 recall modes\nToday \u2014 playground in the queue\nCalendar \u2014 saved recall\nRoster \u2014 manage this month\nDevices\n\nReaders stay untouched \u2014 Add lives above the chapter list. /playground shows only activated laws. Selection persists against the source version, shown on each card.\n\n9:41\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Unlawful Activities (Prevention) Act, 1967\n\n7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule\n\nResume Playground\nCHAPTER I\nPreliminary\n1\u20132\n\u25b8\nCHAPTER II\nUnlawful Associations\n3\u20139\n\u25b8\nCHAPTER III\nOffences and Penalties\n10\u201314\n\u25b8\nCHAPTER IV\nPunishment for Terrorist Activities\n15\u201323\n\u25b8\nCHAPTER V\nForfeiture of Proceeds of Terrorism\n24\u201334\n\u25b8\nCHAPTER VI\nTerrorist Organisations\n35\u201340\n\u25b8\nCHAPTER VII\nMiscellaneous\n41\u201353\n\u25b8\nSCHEDULE\nTerrorist Organisations\n1\u201344\n\u203a\nToday\nBrowse\nPlayground\nCa"
+   }
+  },
+  {
+   "key": "act-uapa-expired",
+   "surface": "desktop",
+   "query": "screen=act&law=uapa&viewer=expired&pin=1",
+   "file": "proto_act-uapa-expired_desktop.png",
+   "sha256": "ff5e5c8d722c681d953dc4a260629d590cee7c2073595b999b30ea295cbc8d49",
+   "probe": {
+    "h2": "The Unlawful Activities (Prevention) Act, 1967",
+    "h2Font": "28px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "Resume Playground"
+    ],
+    "rows": [
+     "CHAPTER I Preliminary Sections 1\u20132 \u203a",
+     "CHAPTER II Unlawful Associations Sections 3\u20139 \u203a",
+     "CHAPTER III Offences and Penalties Sections 10\u201314 \u203a",
+     "CHAPTER IV Punishment for Terrorist Activities Sections 15\u201323 \u203a",
+     "CHAPTER V Forfeiture of Proceeds of Terrorism Sections 24\u201334 \u203a",
+     "CHAPTER VI Terrorist Organisations Sections 35\u201340 \u203a",
+     "CHAPTER VII Miscellaneous Sections 41\u201353 \u203a",
+     "SCHEDULE Terrorist Organisations Entries 1\u201344 \u203a"
+    ],
+    "dialog": null,
+    "text": "Playground \u2014 Desktop\n\nSame flow as the phone design, laid out for a 1280px browser window. Left nav replaces the tab bar; sheets become centred dialogs; long screens use two columns.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nSettings\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd dialog\nSection picker\nPlayground home\nPlayground \u2014 empty\nAct progress\nLearn \u2014 6 modes\nRoster \u2014 manage September\nRoster \u2014 next month\nGate \u2014 sign in / plans\nSign in\nToday\nCalendar\nProfile\nSection learned\nMastered\n\nUses locked branch values: Plus / Pro / Max at \u20b9199 / 399 / 1,199, calendar months, sections only, explicit Keep on rollover. Use the Tweaks panel to switch viewer state.\n\nC\nRecall the C\nToday\nBrowse\nPlayground\nCalendar\nProfile\nS\nSanjay\nPlayground paused\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Unlawful Activities (Prevention) Act, 1967\n\n7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule\n\nResume Playground\nCHAPTER I\nPreliminary\nSections 1\u20132\n\u203a\nCHAPTER II\nUnlawful Associations\nSections 3\u20139\n\u203a\nCHAPTER III\nOffences and Penalties\nSections 10\u201314\n\u203a\nCHAPTER IV\nPunishment for Terrorist Activities\nSections 15\u201323\n\u203a\nCHAPTER V\nForfeiture of Proceeds of Terrorism\nSections 24\u201334\n\u203a\nCHAPTER VI\nTerrorist Organi"
+   }
+  },
+  {
+   "key": "act-bns-expired",
+   "surface": "phone",
+   "query": "screen=act&law=bns&viewer=expired&pin=1",
+   "file": "proto_act-bns-expired_phone.png",
+   "sha256": "64f85a0e248e4434c2ccd101c40556f3c1d95b8b862d18b8c703c1ee12faa232",
+   "probe": {
+    "h2": "The Bharatiya Nyaya Sanhita, 2023",
+    "h2Font": "19px",
+    "kicker": "BARE ACT \u00b7 GAZETTE",
+    "meta": "20 Chapters \u00b7 Sections 1\u2013358",
+    "buttons": [
+     "\u2190 Laws",
+     "Resume Playground"
+    ],
+    "rows": [],
+    "dialog": null,
+    "text": "Recall the C \u2014 Playground\n\nAdditive overlay on the verbatim Bare Acts. Add from an Act's head \u2014 the whole Act, sections, or single clauses \u2014 then it appears in Playground with the usual recall ladder.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd sheet \u2014 act vs sections\nSection picker \u2014 clause depth\nPlayground \u2014 activated laws\nPlayground \u2014 empty\nLearn \u2014 6 recall modes\nToday \u2014 playground in the queue\nCalendar \u2014 saved recall\nRoster \u2014 manage this month\nDevices\n\nReaders stay untouched \u2014 Add lives above the chapter list. /playground shows only activated laws. Selection persists against the source version, shown on each card.\n\n9:41\n\u2190 Laws\n\nBARE ACT \u00b7 GAZETTE\n\nThe Bharatiya Nyaya Sanhita, 2023\n\n20 Chapters \u00b7 Sections 1\u2013358\n\nResume Playground\nCHAPTER I\nPreliminary\n1\u20133\n\u25b8\nCHAPTER VI\nOf Offences Affecting the Human Body\n100\u2013146\n\u25b8\nToday\nBrowse\nPlayground\nCalendar\nProfile"
+   }
+  },
+  {
+   "key": "act-bns-expired",
+   "surface": "desktop",
+   "query": "screen=act&law=bns&viewer=expired&pin=1",
+   "file": "proto_act-bns-expired_desktop.png",
+   "sha256": "8c0d292d32e32effc486607885845684c60d231128481106ee981bc65ea5f506",
+   "probe": {
+    "h2": "The Bharatiya Nyaya Sanhita, 2023",
+    "h2Font": "28px",
+    "kicker": "BARE ACT \u00b7 GAZETTE",
+    "meta": "20 Chapters \u00b7 Sections 1\u2013358",
+    "buttons": [
+     "\u2190 Laws",
+     "Sections",
+     "Continue"
+    ],
+    "rows": [
+     "CHAPTER I Preliminary Sections 1\u20133 \u203a",
+     "CHAPTER VI Of Offences Affecting the Human Body Sections 100\u2013146 \u203a"
+    ],
+    "dialog": null,
+    "text": "Playground \u2014 Desktop\n\nSame flow as the phone design, laid out for a 1280px browser window. Left nav replaces the tab bar; sheets become centred dialogs; long screens use two columns.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nSettings\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd dialog\nSection picker\nPlayground home\nPlayground \u2014 empty\nAct progress\nLearn \u2014 6 modes\nRoster \u2014 manage September\nRoster \u2014 next month\nGate \u2014 sign in / plans\nSign in\nToday\nCalendar\nProfile\nSection learned\nMastered\n\nUses locked branch values: Plus / Pro / Max at \u20b9199 / 399 / 1,199, calendar months, sections only, explicit Keep on rollover. Use the Tweaks panel to switch viewer state.\n\nC\nRecall the C\nToday\nBrowse\nPlayground\nCalendar\nProfile\nS\nSanjay\nPlayground paused\n\u2190 Laws\n\nBARE ACT \u00b7 GAZETTE\n\nThe Bharatiya Nyaya Sanhita, 2023\n\n20 Chapters \u00b7 Sections 1\u2013358\n\nAlready in Playground\nSections\nContinue\nCHAPTER I\nPreliminary\nSections 1\u20133\n\u203a\nCHAPTER VI\nOf Offences Affecting the Human Body\nSections 100\u2013146\n\u203a"
+   }
+  },
+  {
+   "key": "act-uapa-expired-sheet",
+   "surface": "phone",
+   "query": "screen=act&law=uapa&viewer=expired&sheet=1&pin=1",
+   "file": "proto_act-uapa-expired-sheet_phone.png",
+   "sha256": "ab40c913564468d799d5839e23abe63a36453cc5c39a749383869815f4a78b83",
+   "probe": {
+    "h2": "The Unlawful Activities (Prevention) Act, 1967",
+    "h2Font": "19px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "Resume Playground"
+    ],
+    "rows": [],
+    "dialog": null,
+    "text": "Recall the C \u2014 Playground\n\nAdditive overlay on the verbatim Bare Acts. Add from an Act's head \u2014 the whole Act, sections, or single clauses \u2014 then it appears in Playground with the usual recall ladder.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd sheet \u2014 act vs sections\nSection picker \u2014 clause depth\nPlayground \u2014 activated laws\nPlayground \u2014 empty\nLearn \u2014 6 recall modes\nToday \u2014 playground in the queue\nCalendar \u2014 saved recall\nRoster \u2014 manage this month\nDevices\n\nReaders stay untouched \u2014 Add lives above the chapter list. /playground shows only activated laws. Selection persists against the source version, shown on each card.\n\n9:41\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Unlawful Activities (Prevention) Act, 1967\n\n7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule\n\nResume Playground\nCHAPTER I\nPreliminary\n1\u20132\n\u25b8\nCHAPTER II\nUnlawful Associations\n3\u20139\n\u25b8\nCHAPTER III\nOffences and Penalties\n10\u201314\n\u25b8\nCHAPTER IV\nPunishment for Terrorist Activities\n15\u201323\n\u25b8\nCHAPTER V\nForfeiture of Proceeds of Terrorism\n24\u201334\n\u25b8\nCHAPTER VI\nTerrorist Organisations\n35\u201340\n\u25b8\nCHAPTER VII\nMiscellaneous\n41\u201353\n\u25b8\nSCHEDULE\nTerrorist Organisations\n1\u201344\n\u203a\nToday\nBrowse\nPlayground\nCa"
+   }
+  },
+  {
+   "key": "act-uapa-expired-sheet",
+   "surface": "desktop",
+   "query": "screen=act&law=uapa&viewer=expired&sheet=1&pin=1",
+   "file": "proto_act-uapa-expired-sheet_desktop.png",
+   "sha256": "5db1e10962874ef0c6887e9d66dbe0a48207baf8848f9626184e92c42a7bd379",
+   "probe": {
+    "h2": "The Unlawful Activities (Prevention) Act, 1967",
+    "h2Font": "28px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "Resume Playground"
+    ],
+    "rows": [
+     "CHAPTER I Preliminary Sections 1\u20132 \u203a",
+     "CHAPTER II Unlawful Associations Sections 3\u20139 \u203a",
+     "CHAPTER III Offences and Penalties Sections 10\u201314 \u203a",
+     "CHAPTER IV Punishment for Terrorist Activities Sections 15\u201323 \u203a",
+     "CHAPTER V Forfeiture of Proceeds of Terrorism Sections 24\u201334 \u203a",
+     "CHAPTER VI Terrorist Organisations Sections 35\u201340 \u203a",
+     "CHAPTER VII Miscellaneous Sections 41\u201353 \u203a",
+     "SCHEDULE Terrorist Organisations Entries 1\u201344 \u203a"
+    ],
+    "dialog": {
+     "text": "\u2715 Add to Playground Your Playground is paused. Resume a plan and The UAPA, 1967 joins it straight away \u2014 everything you learned before is still there. Resume Playground Plus \u00b7 Pro \u00b7 Max \u2014 from \u20b9199 / month. Constitution learning stays free.",
+     "w": 516
+    },
+    "text": "Playground \u2014 Desktop\n\nSame flow as the phone design, laid out for a 1280px browser window. Left nav replaces the tab bar; sheets become centred dialogs; long screens use two columns.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nSettings\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd dialog\nSection picker\nPlayground home\nPlayground \u2014 empty\nAct progress\nLearn \u2014 6 modes\nRoster \u2014 manage September\nRoster \u2014 next month\nGate \u2014 sign in / plans\nSign in\nToday\nCalendar\nProfile\nSection learned\nMastered\n\nUses locked branch values: Plus / Pro / Max at \u20b9199 / 399 / 1,199, calendar months, sections only, explicit Keep on rollover. Use the Tweaks panel to switch viewer state.\n\nC\nRecall the C\nToday\nBrowse\nPlayground\nCalendar\nProfile\nS\nSanjay\nPlayground paused\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Unlawful Activities (Prevention) Act, 1967\n\n7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule\n\nResume Playground\nCHAPTER I\nPreliminary\nSections 1\u20132\n\u203a\nCHAPTER II\nUnlawful Associations\nSections 3\u20139\n\u203a\nCHAPTER III\nOffences and Penalties\nSections 10\u201314\n\u203a\nCHAPTER IV\nPunishment for Terrorist Activities\nSections 15\u201323\n\u203a\nCHAPTER V\nForfeiture of Proceeds of Terrorism\nSections 24\u201334\n\u203a\nCHAPTER VI\nTerrorist Organi"
+   }
+  },
+  {
+   "key": "act-ndps-expired-sheet",
+   "surface": "phone",
+   "query": "screen=act&law=ndps&viewer=expired&sheet=1&pin=1",
+   "file": "proto_act-ndps-expired-sheet_phone.png",
+   "sha256": "933b70576abf8a13ebabf583ea2d42a20aa1d4db9222d3873f385b4f81de61c3",
+   "probe": {
+    "h2": "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+    "h2Font": "19px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "Resume Playground"
+    ],
+    "rows": [],
+    "dialog": null,
+    "text": "Recall the C \u2014 Playground\n\nAdditive overlay on the verbatim Bare Acts. Add from an Act's head \u2014 the whole Act, sections, or single clauses \u2014 then it appears in Playground with the usual recall ladder.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd sheet \u2014 act vs sections\nSection picker \u2014 clause depth\nPlayground \u2014 activated laws\nPlayground \u2014 empty\nLearn \u2014 6 recall modes\nToday \u2014 playground in the queue\nCalendar \u2014 saved recall\nRoster \u2014 manage this month\nDevices\n\nReaders stay untouched \u2014 Add lives above the chapter list. /playground shows only activated laws. Selection persists against the source version, shown on each card.\n\n9:41\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Narcotic Drugs and Psychotropic Substances Act, 1985\n\n8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule\n\nResume Playground\nCHAPTER I\nPreliminary\n1\u20133\n\u25b8\nCHAPTER II\nAuthorities and Officers\n4\u20137\n\u25b8\nCHAPTER IIA\nNational Fund for Control of Drug Abuse\n7A\u20137B\n\u25b8\nCHAPTER III\nProhibition, Control and Regulation\n8\u201314\n\u25b8\nCHAPTER IV\nOffences and Penalties\n15\u201340\n\u25b8\nCHAPTER V\nProcedure\n41\u201368\n\u25b8\nCHAPTER VA\nForfeiture of Illegally Acquired Property\n68A\u201368Z\n\u25b8\nCHAPTER VI\nMiscellaneous\n69\u201383\n\u25b8\nS"
+   }
+  },
+  {
+   "key": "act-ndps-expired-sheet",
+   "surface": "desktop",
+   "query": "screen=act&law=ndps&viewer=expired&sheet=1&pin=1",
+   "file": "proto_act-ndps-expired-sheet_desktop.png",
+   "sha256": "73df7fc853464ef132052365f724c0025686ee8f375afb339e787120ecffae0a",
+   "probe": {
+    "h2": "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+    "h2Font": "28px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "Sections",
+     "Continue"
+    ],
+    "rows": [
+     "CHAPTER I Preliminary Sections 1\u20133 \u203a",
+     "CHAPTER II Authorities and Officers Sections 4\u20137 \u203a",
+     "CHAPTER IIA National Fund for Control of Drug Abuse Sections 7A\u20137B \u203a",
+     "CHAPTER III Prohibition, Control and Regulation Sections 8\u201314 \u203a",
+     "CHAPTER IV Offences and Penalties Sections 15\u201340 \u203a",
+     "CHAPTER V Procedure Sections 41\u201368 \u203a",
+     "CHAPTER VA Forfeiture of Illegally Acquired Property Sections 68A\u201368Z \u203a",
+     "CHAPTER VI Miscellaneous Sections 69\u201383 \u203a",
+     "SCHEDULE List of Psychotropic Substances Entries 1\u2013110 \u203a"
+    ],
+    "dialog": {
+     "text": "\u2715 Add to Playground Your Playground is paused. Resume a plan and The NDPS Act, 1985 joins it straight away \u2014 everything you learned before is still there. Resume Playground Plus \u00b7 Pro \u00b7 Max \u2014 from \u20b9199 / month. Constitution learning stays free.",
+     "w": 516
+    },
+    "text": "Playground \u2014 Desktop\n\nSame flow as the phone design, laid out for a 1280px browser window. Left nav replaces the tab bar; sheets become centred dialogs; long screens use two columns.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nSettings\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd dialog\nSection picker\nPlayground home\nPlayground \u2014 empty\nAct progress\nLearn \u2014 6 modes\nRoster \u2014 manage September\nRoster \u2014 next month\nGate \u2014 sign in / plans\nSign in\nToday\nCalendar\nProfile\nSection learned\nMastered\n\nUses locked branch values: Plus / Pro / Max at \u20b9199 / 399 / 1,199, calendar months, sections only, explicit Keep on rollover. Use the Tweaks panel to switch viewer state.\n\nC\nRecall the C\nToday\nBrowse\nPlayground\nCalendar\nProfile\nS\nSanjay\nPlayground paused\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Narcotic Drugs and Psychotropic Substances Act, 1985\n\n8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule\n\nAlready in Playground\nSections\nContinue\nCHAPTER I\nPreliminary\nSections 1\u20133\n\u203a\nCHAPTER II\nAuthorities and Officers\nSections 4\u20137\n\u203a\nCHAPTER IIA\nNational Fund for Control of Drug Abuse\nSections 7A\u20137B\n\u203a\nCHAPTER III\nProhibition, Control and Regulation\nSections 8\u201314\n\u203a\nCHAPTER IV\nOffences and Penalties\nSect"
+   }
+  },
+  {
+   "key": "act-ndps-halted",
+   "surface": "phone",
+   "query": "screen=act&law=ndps&viewer=halted&pin=1",
+   "file": "proto_act-ndps-halted_phone.png",
+   "sha256": "b85f3fe76b474aeec4739c1722ea030168a29bea887dbe27652387da65d37157",
+   "probe": {
+    "h2": null,
+    "h2Font": null,
+    "kicker": null,
+    "meta": null,
+    "buttons": [],
+    "rows": [],
+    "dialog": null,
+    "text": "phone.renderVals(): Cannot read properties of null (reading 'name')\nRecall the C \u2014 Playground\n\nAdditive overlay on the verbatim Bare Acts. Add from an Act's head \u2014 the whole Act, sections, or single clauses \u2014 then it appears in Playground with the usual recall ladder.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd sheet \u2014 act vs sections\nSection picker \u2014 clause depth\nPlayground \u2014 activated laws\nPlayground \u2014 empty\nLearn \u2014 6 recall modes\nToday \u2014 playground in the queue\nCalendar \u2014 saved recall\nRoster \u2014 manage this month\nDevices\n\nReaders stay untouched \u2014 Add lives above the chapter list. /playground shows only activated laws. Selection persists against the source version, shown on each card.\n\n9:41\nToday\nBrowse\nPlayground\nCalendar\nProfile"
+   }
+  },
+  {
+   "key": "act-ndps-halted",
+   "surface": "desktop",
+   "query": "screen=act&law=ndps&viewer=halted&pin=1",
+   "file": "proto_act-ndps-halted_desktop.png",
+   "sha256": "f1ae5c4ab124b27841c0b6de7fa47bc5dbdb088a0b0d774c1a82491b7d7246d6",
+   "probe": {
+    "h2": "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+    "h2Font": "28px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "Sections",
+     "Continue"
+    ],
+    "rows": [
+     "CHAPTER I Preliminary Sections 1\u20133 \u203a",
+     "CHAPTER II Authorities and Officers Sections 4\u20137 \u203a",
+     "CHAPTER IIA National Fund for Control of Drug Abuse Sections 7A\u20137B \u203a",
+     "CHAPTER III Prohibition, Control and Regulation Sections 8\u201314 \u203a",
+     "CHAPTER IV Offences and Penalties Sections 15\u201340 \u203a",
+     "CHAPTER V Procedure Sections 41\u201368 \u203a",
+     "CHAPTER VA Forfeiture of Illegally Acquired Property Sections 68A\u201368Z \u203a",
+     "CHAPTER VI Miscellaneous Sections 69\u201383 \u203a",
+     "SCHEDULE List of Psychotropic Substances Entries 1\u2013110 \u203a"
+    ],
+    "dialog": null,
+    "text": "Playground \u2014 Desktop\n\nSame flow as the phone design, laid out for a 1280px browser window. Left nav replaces the tab bar; sheets become centred dialogs; long screens use two columns.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nSettings\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd dialog\nSection picker\nPlayground home\nPlayground \u2014 empty\nAct progress\nLearn \u2014 6 modes\nRoster \u2014 manage September\nRoster \u2014 next month\nGate \u2014 sign in / plans\nSign in\nToday\nCalendar\nProfile\nSection learned\nMastered\n\nUses locked branch values: Plus / Pro / Max at \u20b9199 / 399 / 1,199, calendar months, sections only, explicit Keep on rollover. Use the Tweaks panel to switch viewer state.\n\nC\nRecall the C\nToday\nBrowse\nPlayground\nCalendar\nProfile\nS\nSanjay\nPlayground paused\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Narcotic Drugs and Psychotropic Substances Act, 1985\n\n8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule\n\nAlready in Playground\nSections\nContinue\nCHAPTER I\nPreliminary\nSections 1\u20133\n\u203a\nCHAPTER II\nAuthorities and Officers\nSections 4\u20137\n\u203a\nCHAPTER IIA\nNational Fund for Control of Drug Abuse\nSections 7A\u20137B\n\u203a\nCHAPTER III\nProhibition, Control and Regulation\nSections 8\u201314\n\u203a\nCHAPTER IV\nOffences and Penalties\nSect"
+   }
+  },
+  {
+   "key": "act-uapa-halted",
+   "surface": "phone",
+   "query": "screen=act&law=uapa&viewer=halted&pin=1",
+   "file": "proto_act-uapa-halted_phone.png",
+   "sha256": "b85f3fe76b474aeec4739c1722ea030168a29bea887dbe27652387da65d37157",
+   "probe": {
+    "h2": null,
+    "h2Font": null,
+    "kicker": null,
+    "meta": null,
+    "buttons": [],
+    "rows": [],
+    "dialog": null,
+    "text": "phone.renderVals(): Cannot read properties of null (reading 'name')\nRecall the C \u2014 Playground\n\nAdditive overlay on the verbatim Bare Acts. Add from an Act's head \u2014 the whole Act, sections, or single clauses \u2014 then it appears in Playground with the usual recall ladder.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd sheet \u2014 act vs sections\nSection picker \u2014 clause depth\nPlayground \u2014 activated laws\nPlayground \u2014 empty\nLearn \u2014 6 recall modes\nToday \u2014 playground in the queue\nCalendar \u2014 saved recall\nRoster \u2014 manage this month\nDevices\n\nReaders stay untouched \u2014 Add lives above the chapter list. /playground shows only activated laws. Selection persists against the source version, shown on each card.\n\n9:41\nToday\nBrowse\nPlayground\nCalendar\nProfile"
+   }
+  },
+  {
+   "key": "act-uapa-halted",
+   "surface": "desktop",
+   "query": "screen=act&law=uapa&viewer=halted&pin=1",
+   "file": "proto_act-uapa-halted_desktop.png",
+   "sha256": "edf31e1f5fdce245a3fe98611bda07baa1dc0d8de4edb4a86d8f9704c6b7e8bd",
+   "probe": {
+    "h2": "The Unlawful Activities (Prevention) Act, 1967",
+    "h2Font": "28px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "+ Add to Playground"
+    ],
+    "rows": [
+     "CHAPTER I Preliminary Sections 1\u20132 \u203a",
+     "CHAPTER II Unlawful Associations Sections 3\u20139 \u203a",
+     "CHAPTER III Offences and Penalties Sections 10\u201314 \u203a",
+     "CHAPTER IV Punishment for Terrorist Activities Sections 15\u201323 \u203a",
+     "CHAPTER V Forfeiture of Proceeds of Terrorism Sections 24\u201334 \u203a",
+     "CHAPTER VI Terrorist Organisations Sections 35\u201340 \u203a",
+     "CHAPTER VII Miscellaneous Sections 41\u201353 \u203a",
+     "SCHEDULE Terrorist Organisations Entries 1\u201344 \u203a"
+    ],
+    "dialog": null,
+    "text": "Playground \u2014 Desktop\n\nSame flow as the phone design, laid out for a 1280px browser window. Left nav replaces the tab bar; sheets become centred dialogs; long screens use two columns.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nSettings\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd dialog\nSection picker\nPlayground home\nPlayground \u2014 empty\nAct progress\nLearn \u2014 6 modes\nRoster \u2014 manage September\nRoster \u2014 next month\nGate \u2014 sign in / plans\nSign in\nToday\nCalendar\nProfile\nSection learned\nMastered\n\nUses locked branch values: Plus / Pro / Max at \u20b9199 / 399 / 1,199, calendar months, sections only, explicit Keep on rollover. Use the Tweaks panel to switch viewer state.\n\nC\nRecall the C\nToday\nBrowse\nPlayground\nCalendar\nProfile\nS\nSanjay\nPlayground paused\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Unlawful Activities (Prevention) Act, 1967\n\n7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule\n\n+ Add to Playground\nCHAPTER I\nPreliminary\nSections 1\u20132\n\u203a\nCHAPTER II\nUnlawful Associations\nSections 3\u20139\n\u203a\nCHAPTER III\nOffences and Penalties\nSections 10\u201314\n\u203a\nCHAPTER IV\nPunishment for Terrorist Activities\nSections 15\u201323\n\u203a\nCHAPTER V\nForfeiture of Proceeds of Terrorism\nSections 24\u201334\n\u203a\nCHAPTER VI\nTerrorist Orga"
+   }
+  },
+  {
+   "key": "act-bns-halted",
+   "surface": "phone",
+   "query": "screen=act&law=bns&viewer=halted&pin=1",
+   "file": "proto_act-bns-halted_phone.png",
+   "sha256": "b85f3fe76b474aeec4739c1722ea030168a29bea887dbe27652387da65d37157",
+   "probe": {
+    "h2": null,
+    "h2Font": null,
+    "kicker": null,
+    "meta": null,
+    "buttons": [],
+    "rows": [],
+    "dialog": null,
+    "text": "phone.renderVals(): Cannot read properties of null (reading 'name')\nRecall the C \u2014 Playground\n\nAdditive overlay on the verbatim Bare Acts. Add from an Act's head \u2014 the whole Act, sections, or single clauses \u2014 then it appears in Playground with the usual recall ladder.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd sheet \u2014 act vs sections\nSection picker \u2014 clause depth\nPlayground \u2014 activated laws\nPlayground \u2014 empty\nLearn \u2014 6 recall modes\nToday \u2014 playground in the queue\nCalendar \u2014 saved recall\nRoster \u2014 manage this month\nDevices\n\nReaders stay untouched \u2014 Add lives above the chapter list. /playground shows only activated laws. Selection persists against the source version, shown on each card.\n\n9:41\nToday\nBrowse\nPlayground\nCalendar\nProfile"
+   }
+  },
+  {
+   "key": "act-bns-halted",
+   "surface": "desktop",
+   "query": "screen=act&law=bns&viewer=halted&pin=1",
+   "file": "proto_act-bns-halted_desktop.png",
+   "sha256": "8c0d292d32e32effc486607885845684c60d231128481106ee981bc65ea5f506",
+   "probe": {
+    "h2": "The Bharatiya Nyaya Sanhita, 2023",
+    "h2Font": "28px",
+    "kicker": "BARE ACT \u00b7 GAZETTE",
+    "meta": "20 Chapters \u00b7 Sections 1\u2013358",
+    "buttons": [
+     "\u2190 Laws",
+     "Sections",
+     "Continue"
+    ],
+    "rows": [
+     "CHAPTER I Preliminary Sections 1\u20133 \u203a",
+     "CHAPTER VI Of Offences Affecting the Human Body Sections 100\u2013146 \u203a"
+    ],
+    "dialog": null,
+    "text": "Playground \u2014 Desktop\n\nSame flow as the phone design, laid out for a 1280px browser window. Left nav replaces the tab bar; sheets become centred dialogs; long screens use two columns.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nSettings\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd dialog\nSection picker\nPlayground home\nPlayground \u2014 empty\nAct progress\nLearn \u2014 6 modes\nRoster \u2014 manage September\nRoster \u2014 next month\nGate \u2014 sign in / plans\nSign in\nToday\nCalendar\nProfile\nSection learned\nMastered\n\nUses locked branch values: Plus / Pro / Max at \u20b9199 / 399 / 1,199, calendar months, sections only, explicit Keep on rollover. Use the Tweaks panel to switch viewer state.\n\nC\nRecall the C\nToday\nBrowse\nPlayground\nCalendar\nProfile\nS\nSanjay\nPlayground paused\n\u2190 Laws\n\nBARE ACT \u00b7 GAZETTE\n\nThe Bharatiya Nyaya Sanhita, 2023\n\n20 Chapters \u00b7 Sections 1\u2013358\n\nAlready in Playground\nSections\nContinue\nCHAPTER I\nPreliminary\nSections 1\u20133\n\u203a\nCHAPTER VI\nOf Offences Affecting the Human Body\nSections 100\u2013146\n\u203a"
+   }
+  },
+  {
+   "key": "act-uapa-halted-sheet",
+   "surface": "phone",
+   "query": "screen=act&law=uapa&viewer=halted&sheet=1&pin=1",
+   "file": "proto_act-uapa-halted-sheet_phone.png",
+   "sha256": "b85f3fe76b474aeec4739c1722ea030168a29bea887dbe27652387da65d37157",
+   "probe": {
+    "h2": null,
+    "h2Font": null,
+    "kicker": null,
+    "meta": null,
+    "buttons": [],
+    "rows": [],
+    "dialog": null,
+    "text": "phone.renderVals(): Cannot read properties of null (reading 'name')\nRecall the C \u2014 Playground\n\nAdditive overlay on the verbatim Bare Acts. Add from an Act's head \u2014 the whole Act, sections, or single clauses \u2014 then it appears in Playground with the usual recall ladder.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd sheet \u2014 act vs sections\nSection picker \u2014 clause depth\nPlayground \u2014 activated laws\nPlayground \u2014 empty\nLearn \u2014 6 recall modes\nToday \u2014 playground in the queue\nCalendar \u2014 saved recall\nRoster \u2014 manage this month\nDevices\n\nReaders stay untouched \u2014 Add lives above the chapter list. /playground shows only activated laws. Selection persists against the source version, shown on each card.\n\n9:41\nToday\nBrowse\nPlayground\nCalendar\nProfile"
+   }
+  },
+  {
+   "key": "act-uapa-halted-sheet",
+   "surface": "desktop",
+   "query": "screen=act&law=uapa&viewer=halted&sheet=1&pin=1",
+   "file": "proto_act-uapa-halted-sheet_desktop.png",
+   "sha256": "7ccce7ab5957b07ae776fa15b6ed1ca1d0069b76aadd59330e9572aac6c40f3e",
+   "probe": {
+    "h2": "The Unlawful Activities (Prevention) Act, 1967",
+    "h2Font": "28px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "+ Add to Playground"
+    ],
+    "rows": [
+     "CHAPTER I Preliminary Sections 1\u20132 \u203a",
+     "CHAPTER II Unlawful Associations Sections 3\u20139 \u203a",
+     "CHAPTER III Offences and Penalties Sections 10\u201314 \u203a",
+     "CHAPTER IV Punishment for Terrorist Activities Sections 15\u201323 \u203a",
+     "CHAPTER V Forfeiture of Proceeds of Terrorism Sections 24\u201334 \u203a",
+     "CHAPTER VI Terrorist Organisations Sections 35\u201340 \u203a",
+     "CHAPTER VII Miscellaneous Sections 41\u201353 \u203a",
+     "SCHEDULE Terrorist Organisations Entries 1\u201344 \u203a"
+    ],
+    "dialog": {
+     "text": "\u2715 Add to Playground",
+     "w": 516
+    },
+    "text": "Playground \u2014 Desktop\n\nSame flow as the phone design, laid out for a 1280px browser window. Left nav replaces the tab bar; sheets become centred dialogs; long screens use two columns.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nSettings\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd dialog\nSection picker\nPlayground home\nPlayground \u2014 empty\nAct progress\nLearn \u2014 6 modes\nRoster \u2014 manage September\nRoster \u2014 next month\nGate \u2014 sign in / plans\nSign in\nToday\nCalendar\nProfile\nSection learned\nMastered\n\nUses locked branch values: Plus / Pro / Max at \u20b9199 / 399 / 1,199, calendar months, sections only, explicit Keep on rollover. Use the Tweaks panel to switch viewer state.\n\nC\nRecall the C\nToday\nBrowse\nPlayground\nCalendar\nProfile\nS\nSanjay\nPlayground paused\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Unlawful Activities (Prevention) Act, 1967\n\n7 Chapters \u00b7 Sections 1\u201353 \u00b7 Schedule\n\n+ Add to Playground\nCHAPTER I\nPreliminary\nSections 1\u20132\n\u203a\nCHAPTER II\nUnlawful Associations\nSections 3\u20139\n\u203a\nCHAPTER III\nOffences and Penalties\nSections 10\u201314\n\u203a\nCHAPTER IV\nPunishment for Terrorist Activities\nSections 15\u201323\n\u203a\nCHAPTER V\nForfeiture of Proceeds of Terrorism\nSections 24\u201334\n\u203a\nCHAPTER VI\nTerrorist Orga"
+   }
+  },
+  {
+   "key": "act-ndps-halted-sheet",
+   "surface": "phone",
+   "query": "screen=act&law=ndps&viewer=halted&sheet=1&pin=1",
+   "file": "proto_act-ndps-halted-sheet_phone.png",
+   "sha256": "b85f3fe76b474aeec4739c1722ea030168a29bea887dbe27652387da65d37157",
+   "probe": {
+    "h2": null,
+    "h2Font": null,
+    "kicker": null,
+    "meta": null,
+    "buttons": [],
+    "rows": [],
+    "dialog": null,
+    "text": "phone.renderVals(): Cannot read properties of null (reading 'name')\nRecall the C \u2014 Playground\n\nAdditive overlay on the verbatim Bare Acts. Add from an Act's head \u2014 the whole Act, sections, or single clauses \u2014 then it appears in Playground with the usual recall ladder.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd sheet \u2014 act vs sections\nSection picker \u2014 clause depth\nPlayground \u2014 activated laws\nPlayground \u2014 empty\nLearn \u2014 6 recall modes\nToday \u2014 playground in the queue\nCalendar \u2014 saved recall\nRoster \u2014 manage this month\nDevices\n\nReaders stay untouched \u2014 Add lives above the chapter list. /playground shows only activated laws. Selection persists against the source version, shown on each card.\n\n9:41\nToday\nBrowse\nPlayground\nCalendar\nProfile"
+   }
+  },
+  {
+   "key": "act-ndps-halted-sheet",
+   "surface": "desktop",
+   "query": "screen=act&law=ndps&viewer=halted&sheet=1&pin=1",
+   "file": "proto_act-ndps-halted-sheet_desktop.png",
+   "sha256": "4405fb61e383c2182e87c17698722baf05a5e26bd800f3e8eb1b8767efa29da0",
+   "probe": {
+    "h2": "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+    "h2Font": "28px",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule",
+    "buttons": [
+     "\u2190 Laws",
+     "Sections",
+     "Continue"
+    ],
+    "rows": [
+     "CHAPTER I Preliminary Sections 1\u20133 \u203a",
+     "CHAPTER II Authorities and Officers Sections 4\u20137 \u203a",
+     "CHAPTER IIA National Fund for Control of Drug Abuse Sections 7A\u20137B \u203a",
+     "CHAPTER III Prohibition, Control and Regulation Sections 8\u201314 \u203a",
+     "CHAPTER IV Offences and Penalties Sections 15\u201340 \u203a",
+     "CHAPTER V Procedure Sections 41\u201368 \u203a",
+     "CHAPTER VA Forfeiture of Illegally Acquired Property Sections 68A\u201368Z \u203a",
+     "CHAPTER VI Miscellaneous Sections 69\u201383 \u203a",
+     "SCHEDULE List of Psychotropic Substances Entries 1\u2013110 \u203a"
+    ],
+    "dialog": {
+     "text": "\u2715 Add to Playground",
+     "w": 516
+    },
+    "text": "Playground \u2014 Desktop\n\nSame flow as the phone design, laid out for a 1280px browser window. Left nav replaces the tab bar; sheets become centred dialogs; long screens use two columns.\n\nFLOW\n\nLanding\nBrowse \u2014 Constitution\nLaws index\nSettings\nBare Act head \u2014 NDPS\nBare Act head \u2014 BNS\nBare Act head \u2014 UAPA\nAdd dialog\nSection picker\nPlayground home\nPlayground \u2014 empty\nAct progress\nLearn \u2014 6 modes\nRoster \u2014 manage September\nRoster \u2014 next month\nGate \u2014 sign in / plans\nSign in\nToday\nCalendar\nProfile\nSection learned\nMastered\n\nUses locked branch values: Plus / Pro / Max at \u20b9199 / 399 / 1,199, calendar months, sections only, explicit Keep on rollover. Use the Tweaks panel to switch viewer state.\n\nC\nRecall the C\nToday\nBrowse\nPlayground\nCalendar\nProfile\nS\nSanjay\nPlayground paused\n\u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n\nThe Narcotic Drugs and Psychotropic Substances Act, 1985\n\n8 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule\n\nAlready in Playground\nSections\nContinue\nCHAPTER I\nPreliminary\nSections 1\u20133\n\u203a\nCHAPTER II\nAuthorities and Officers\nSections 4\u20137\n\u203a\nCHAPTER IIA\nNational Fund for Control of Drug Abuse\nSections 7A\u20137B\n\u203a\nCHAPTER III\nProhibition, Control and Regulation\nSections 8\u201314\n\u203a\nCHAPTER IV\nOffences and Penalties\nSect"
+   }
+  }
+ ]
+}

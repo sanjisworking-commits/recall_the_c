@@ -72,7 +72,11 @@ def test_shared_seo_helpers_are_the_only_engine():
     assert "law_canonical_url(" in app_src
     assert "provision_canonical_url(" in app_src
     assert "schedule_canonical_url(" in app_src
-    assert "build_law_seo(" in app_src
+    # M2: the Act page's context (and its SEO call) lives in bare_act_page.py.
+    from constitution_memorizer.web import bare_act_page
+
+    assert "build_law_seo(" in inspect.getsource(bare_act_page)
+    assert "build_law_seo(" not in app_src
     assert "build_provision_seo(" in app_src
     assert "build_schedule_seo(" in app_src
     assert "apply_private_robots_headers(" in app_src

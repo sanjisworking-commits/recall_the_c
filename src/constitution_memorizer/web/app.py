@@ -190,10 +190,12 @@ from constitution_memorizer.web.judicial_evolution import (
     get_judicial_evolution,
     load_judicial_evolution,
 )
-from constitution_memorizer.web.act_info import build_act_info
 from constitution_memorizer.web.bare_acts import get_bare_act
 from constitution_memorizer.web.law_catalog import load_catalog
-from constitution_memorizer.web.guest_bareact_head import ndps_guest_head
+from constitution_memorizer.web.bare_act_page import (
+    bare_act_page_context,
+    halted_law_presentation,
+)
 from constitution_memorizer.web.guest_laws_index import GUEST_LAWS_CARDS, GUEST_LAWS_CHIPS
 from constitution_memorizer.web.laws_data import get_law
 from constitution_memorizer.web.memory_calendar import build_memory_month, schedule_chip_states
@@ -207,7 +209,6 @@ from constitution_memorizer.web.seo import (
     apply_private_robots_headers,
     build_article_seo,
     build_breadcrumb_schema,
-    build_law_seo,
     build_laws_hub_seo,
     build_provision_seo,
     build_schedule_seo,
@@ -339,74 +340,11 @@ def _sniff_photo(content: bytes, filename: str) -> tuple[str, str]:
     return suffix, media_types.get(suffix, "application/octet-stream")
 
 
-def _halted_law_presentation(request: Request, law_id: str, state):
-    """Halted law CTA overlay for Laws index and Bare Act.
-
-    Open-period Halted membership is KIND_RESUME without a badge. Retained
-    roster laws reuse the Expired already_active presentation; the primary
-    action is the Halted recovery CTA from gate_view(BLOCK_PAYMENT_HALTED).
-    """
-
-    from dataclasses import replace
-
-    from constitution_memorizer.entitlements.models import BLOCK_PAYMENT_HALTED
-    from constitution_memorizer.playground.http import playground_user_id
-    from constitution_memorizer.playground.urls import sections_path
-    from constitution_memorizer.playground.view import (
-        PLAYGROUND_BILLING_PATH,
-        gate_view,
-    )
-
-    if state is None:
-        return None
-    gate = gate_view(reason=BLOCK_PAYMENT_HALTED)
-    billed = gate.cta_href or PLAYGROUND_BILLING_PATH
-    recover = gate.cta_label
-    uid = playground_user_id(request)
-    roster = getattr(request.app.state, "roster", None)
-    hrefs = (state.primary_href or "", state.secondary_href or "")
-    learn = any("/learn" in href for href in hrefs)
-    active = bool(state.active_this_period)
-    if not active and uid is not None and roster is not None:
-        active = roster.is_law_active_this_period(uid, law_id)
-    if active:
-        return replace(
-            state,
-            kind="already_active",
-            active_this_period=True,
-            badge="in_playground",
-            badge_label="Already in Playground",
-            primary_label=recover,
-            primary_href=billed,
-            secondary_label="Sections",
-            secondary_href=sections_path(law_id),
-            secondary_copy="",
-            opens_sheet=False,
-        )
-    if learn:
-        primary_is_learn = "/learn" in (state.primary_href or "")
-        secondary_is_learn = "/learn" in (state.secondary_href or "")
-        return replace(
-            state,
-            primary_label=recover if primary_is_learn else state.primary_label,
-            primary_href=billed if primary_is_learn else state.primary_href,
-            secondary_href="" if secondary_is_learn else state.secondary_href,
-            secondary_label="" if secondary_is_learn else state.secondary_label,
-            opens_sheet=False,
-        )
-    return replace(
-        state,
-        primary_label=recover,
-        primary_href=billed,
-        opens_sheet=False,
-    )
-
-
 def _halted_laws_index_states(request: Request, states: dict) -> dict:
     """Laws-index overlay: live IN PLAYGROUND tags, no Playground learn hrefs."""
 
     return {
-        law_id: _halted_law_presentation(request, law_id, state)
+        law_id: halted_law_presentation(request, law_id, state)
         for law_id, state in states.items()
     }
 
@@ -3301,89 +3239,13 @@ def create_app(
         # Articles, so it keeps the page it has always had.
         bare = get_bare_act(law_id)
         if bare is not None:
-            from constitution_memorizer.entitlements.dependencies import (  # noqa: PLC0415
-                get_entitlement_snapshot,
-                request_is_active_plus,
-                request_is_expired_subscriber,
-                request_is_halted_subscriber,
-            )
-            from constitution_memorizer.playground.access import (  # noqa: PLC0415
-                public_law_states,
-            )
-            from constitution_memorizer.playground.eligibility import (  # noqa: PLC0415
-                is_playground_eligible_law,
-            )
-
-            playground_state = None
-            if is_playground_eligible_law(bare.slug):
-                playground_state = public_law_states(request, (bare.slug,)).get(bare.slug)
-            expired_bareact = request_is_expired_subscriber(request)
-            halted_bareact = request_is_halted_subscriber(request)
-            expired_header_status = ""
-            halted_header_status = ""
-            if expired_bareact or halted_bareact:
-                from constitution_memorizer.playground.view import gate_view
-
-                if expired_bareact:
-                    snap = get_entitlement_snapshot(request)
-                    expired_header_status = gate_view(
-                        reason=str(snap.playground_block_reason or "")
-                    ).title
-                if halted_bareact:
-                    from constitution_memorizer.entitlements.models import (
-                        BLOCK_PAYMENT_HALTED,
-                    )
-
-                    # Presentation only: elapsed Halted keeps paid_period_ended
-                    # as the block reason, but the header stays Halted-family.
-                    halted_header_status = gate_view(
-                        reason=BLOCK_PAYMENT_HALTED
-                    ).title
-                    playground_state = _halted_law_presentation(
-                        request, bare.slug, playground_state
-                    )
             started = time.perf_counter()
-            seo_title, seo_description = build_law_seo(
-                law_name=bare.title, meta_label=bare.meta_label
-            )
-            breadcrumb = build_breadcrumb_schema(
-                [
-                    ("Laws", laws_hub_canonical_url()),
-                    (bare.short_title, law_canonical_url(bare.slug)),
-                ]
-            )
-            # The catalogue entry travels alongside the Act, not inside it:
-            # lifecycle is editorial metadata and the statutory model stays
-            # statutory. load_catalog() is a cached read of the static seed
-            # and hydrates no Act JSON.
-            catalog_law = load_catalog().by_full_act(law_id)
+            # One generated head for every Bare Act and every viewer; the
+            # Playground Add route draws its dialog over this same context.
             response = templates.TemplateResponse(
                 request,
                 "bare_act.html",
-                {
-                    "act": bare,
-                    "catalog_law": catalog_law,
-                    # Built per request from two already-loaded objects. It
-                    # holds no state and reads no file of its own.
-                    "act_info": build_act_info(bare, catalog_law),
-                    "seo_title": seo_title,
-                    "seo_description": seo_description,
-                    "canonical_url": law_canonical_url(bare.slug),
-                    "structured_data_json": serialize_structured_data(breadcrumb),
-                    "playground_eligible": is_playground_eligible_law(bare.slug),
-                    "playground_state": playground_state,
-                    "in_playground": bool(
-                        playground_state and playground_state.active_this_period
-                    ),
-                    "guest_screen4": (
-                        ndps_guest_head() if bare.slug == "ndps" else None
-                    ),
-                    "plus_bareact": request_is_active_plus(request),
-                    "expired_bareact": expired_bareact,
-                    "halted_bareact": halted_bareact,
-                    "expired_header_status": expired_header_status,
-                    "halted_header_status": halted_header_status,
-                },
+                bare_act_page_context(request, bare),
             )
             record_request_timing("template", started)
             return response

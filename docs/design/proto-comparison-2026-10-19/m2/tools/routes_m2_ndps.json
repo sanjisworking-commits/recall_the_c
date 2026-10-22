@@ -1,0 +1,11 @@
+[
+ {
+  "key": "laws-ndps",
+  "path": "/laws/ndps",
+  "sheet": true
+ },
+ {
+  "key": "add-ndps-direct",
+  "path": "/playground/laws/ndps/add"
+ }
+]

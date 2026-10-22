@@ -1,0 +1,1665 @@
+{
+ "label": "frozen",
+ "base": "http://127.0.0.1:8912",
+ "viewer": "m1server",
+ "captured_at": "2026-10-19T18:44:57+0530",
+ "chrome": "Google Chrome 155.0.8059.82",
+ "rows": [
+  {
+   "key": "laws-ndps",
+   "route": "/laws/ndps",
+   "viewer": "m1server",
+   "width": 561,
+   "height": 800,
+   "theme": "light",
+   "file": "frozen_m1server_laws-ndps_561x800_light.png",
+   "sha256": "dc8545ed80fcbaa375065a3177c5a38b13a773f368e1d34c8dae9cc554748117",
+   "status_chain": [
+    [
+     "/laws/ndps",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/laws/ndps",
+    "title": "The Narcotic Drugs and Psychotropic Substances Act, 1985 | Recall the C",
+    "mscreen": "bareact",
+    "bodyClass": "is-authed",
+    "topNavVisible": true,
+    "topNav": [
+     "Today",
+     "Browse",
+     "Playground",
+     "Calendar",
+     "Profile",
+     "Pricing"
+    ],
+    "phoneBarVisible": true,
+    "phoneBar": [
+     "Today",
+     "Browse",
+     "Playground",
+     "Calendar",
+     "Profile"
+    ],
+    "panels": [
+     {
+      "attrs": [
+       "data-signed-in-bareact-desktop"
+      ],
+      "cls": "panel guest-bareact",
+      "vis": true
+     },
+     {
+      "attrs": [
+       "data-bareact-phone"
+      ],
+      "cls": "panel bareact bareact-page is-ndps",
+      "vis": false
+     },
+     {
+      "attrs": [
+       "data-signed-in-bareact-phone"
+      ],
+      "cls": "panel guest-bareact",
+      "vis": false
+     }
+    ],
+    "head": {
+     "cls": "panel guest-bareact",
+     "attrs": [
+      "data-signed-in-bareact-desktop"
+     ]
+    },
+    "h1": "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+    "h1Font": "28px/Fraunces",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "6 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule",
+    "cta": [
+     {
+      "t": "Subscribe to use Playground",
+      "href": "/playground/laws/ndps/add",
+      "sheet": true,
+      "kind": "subscribe",
+      "box": {
+       "x": 312,
+       "y": 179,
+       "w": 209,
+       "h": 40
+      }
+     }
+    ],
+    "badge": [],
+    "rows": [
+     {
+      "cls": "guest-bareact-row",
+      "tag": "div",
+      "t": "CHAPTER I Preliminary Sections 1\u20133 \u203a",
+      "href": null,
+      "control": false,
+      "expanded": null,
+      "h": 56
+     },
+     {
+      "cls": "guest-bareact-row",
+      "tag": "div",
+      "t": "CHAPTER II Authorities and Officers Sections 4\u20137A \u203a",
+      "href": null,
+      "control": false,
+      "expanded": null,
+      "h": 56
+     },
+     {
+      "cls": "guest-bareact-row",
+      "tag": "div",
+      "t": "CHAPTER III Prohibition, Control and Regulation Sections 8\u201314 \u203a",
+      "href": null,
+      "control": false,
+      "expanded": null,
+      "h": 56
+     },
+     {
+      "cls": "guest-bareact-row",
+      "tag": "div",
+      "t": "SCHEDULE List of Psychotropic Substances Entries 1\u2013110 \u203a",
+      "href": null,
+      "control": false,
+      "expanded": null,
+      "h": 56
+     }
+    ],
+    "rowCount": 4,
+    "about": {
+     "vis": false,
+     "expanded": "false"
+    },
+    "tabsHidden": false,
+    "dialog": {
+     "open": false,
+     "cls": "pg-sheet",
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "panelKind": null,
+     "title": null,
+     "closeBtn": false,
+     "active": "BODY. is-authed"
+    },
+    "addPage": null,
+    "hScroll": false,
+    "docH": 800
+   }
+  },
+  {
+   "key": "laws-ndps",
+   "route": "/laws/ndps",
+   "viewer": "m1server",
+   "width": 768,
+   "height": 1024,
+   "theme": "light",
+   "file": "frozen_m1server_laws-ndps_768x1024_light.png",
+   "sha256": "856c39712d5a8f85f6ea5820e51622299aea478274b5ae03f383caeddcac0eb6",
+   "status_chain": [
+    [
+     "/laws/ndps",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/laws/ndps",
+    "title": "The Narcotic Drugs and Psychotropic Substances Act, 1985 | Recall the C",
+    "mscreen": "bareact",
+    "bodyClass": "is-authed",
+    "topNavVisible": true,
+    "topNav": [
+     "Today",
+     "Browse",
+     "Playground",
+     "Calendar",
+     "Profile",
+     "Pricing"
+    ],
+    "phoneBarVisible": false,
+    "phoneBar": [],
+    "panels": [
+     {
+      "attrs": [
+       "data-signed-in-bareact-desktop"
+      ],
+      "cls": "panel guest-bareact",
+      "vis": true
+     },
+     {
+      "attrs": [
+       "data-bareact-phone"
+      ],
+      "cls": "panel bareact bareact-page is-ndps",
+      "vis": false
+     },
+     {
+      "attrs": [
+       "data-signed-in-bareact-phone"
+      ],
+      "cls": "panel guest-bareact",
+      "vis": false
+     }
+    ],
+    "head": {
+     "cls": "panel guest-bareact",
+     "attrs": [
+      "data-signed-in-bareact-desktop"
+     ]
+    },
+    "h1": "The Narcotic Drugs and Psychotropic Substances Act, 1985",
+    "h1Font": "28px/Fraunces",
+    "kicker": "BARE ACT \u00b7 INDIA CODE",
+    "meta": "6 Chapters \u00b7 Sections 1\u201383 \u00b7 Schedule",
+    "cta": [
+     {
+      "t": "Subscribe to use Playground",
+      "href": "/playground/laws/ndps/add",
+      "sheet": true,
+      "kind": "subscribe",
+      "box": {
+       "x": 519,
+       "y": 131,
+       "w": 209,
+       "h": 40
+      }
+     }
+    ],
+    "badge": [],
+    "rows": [
+     {
+      "cls": "guest-bareact-row",
+      "tag": "div",
+      "t": "CHAPTER I Preliminary Sections 1\u20133 \u203a",
+      "href": null,
+      "control": false,
+      "expanded": null,
+      "h": 56
+     },
+     {
+      "cls": "guest-bareact-row",
+      "tag": "div",
+      "t": "CHAPTER II Authorities and Officers Sections 4\u20137A \u203a",
+      "href": null,
+      "control": false,
+      "expanded": null,
+      "h": 56
+     },
+     {
+      "cls": "guest-bareact-row",
+      "tag": "div",
+      "t": "CHAPTER III Prohibition, Control and Regulation Sections 8\u201314 \u203a",
+      "href": null,
+      "control": false,
+      "expanded": null,
+      "h": 56
+     },
+     {
+      "cls": "guest-bareact-row",
+      "tag": "div",
+      "t": "SCHEDULE List of Psychotropic Substances Entries 1\u2013110 \u203a",
+      "href": null,
+      "control": false,
+      "expanded": null,
+      "h": 56
+     }
+    ],
+    "rowCount": 4,
+    "about": {
+     "vis": false,
+     "expanded": "false"
+    },
+    "tabsHidden": false,
+    "dialog": {
+     "open": false,
+     "cls": "pg-sheet",
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "panelKind": null,
+     "title": null,
+     "closeBtn": false,
+     "active": "BODY. is-authed"
+    },
+    "addPage": null,
+    "hScroll": false,
+    "docH": 1024
+   }
+  },
+  {
+   "key": "laws-uapa",
+   "route": "/laws/uapa",
+   "viewer": "m1server",
+   "width": 561,
+   "height": 800,
+   "theme": "light",
+   "file": "frozen_m1server_laws-uapa_561x800_light.png",
+   "sha256": "c3c64154f17756503d8b3658e4e0ca7c20f3f57877b8cc1ffbf64928d1c747b8",
+   "status_chain": [
+    [
+     "/laws/uapa",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/laws/uapa",
+    "title": "The Unlawful Activities (Prevention) Act, 1967 | Recall the C",
+    "mscreen": "bareact",
+    "bodyClass": "is-authed",
+    "topNavVisible": true,
+    "topNav": [
+     "Today",
+     "Browse",
+     "Playground",
+     "Calendar",
+     "Profile",
+     "Pricing"
+    ],
+    "phoneBarVisible": true,
+    "phoneBar": [
+     "Today",
+     "Browse",
+     "Playground",
+     "Calendar",
+     "Profile"
+    ],
+    "panels": [
+     {
+      "attrs": [],
+      "cls": "panel bareact bareact-page is-bns",
+      "vis": true
+     }
+    ],
+    "head": {
+     "cls": "panel bareact bareact-page is-bns",
+     "attrs": []
+    },
+    "h1": "The Unlawful Activities (Prevention) Act, 1967",
+    "h1Font": "22px/Fraunces",
+    "kicker": "BARE ACT",
+    "meta": null,
+    "cta": [
+     {
+      "t": "Subscribe to use Playground",
+      "href": "/playground/laws/uapa/add",
+      "sheet": true,
+      "kind": "subscribe",
+      "box": {
+       "x": 272,
+       "y": 155,
+       "w": 215,
+       "h": 44
+      }
+     }
+    ],
+    "badge": [],
+    "rows": [
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER I Preliminary 1\u20132",
+      "href": null,
+      "control": true,
+      "expanded": "true",
+      "h": 48
+     },
+     {
+      "cls": "bareact-section-row",
+      "tag": "a",
+      "t": "SECTION 1 Short title, extent and application \u203a",
+      "href": "/laws/uapa/section/1",
+      "control": true,
+      "expanded": "true",
+      "h": 61
+     },
+     {
+      "cls": "bareact-section-row",
+      "tag": "a",
+      "t": "SECTION 2 Definitions \u203a",
+      "href": "/laws/uapa/section/2",
+      "control": true,
+      "expanded": "true",
+      "h": 61
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER II Unlawful Associations 3\u20139",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER III Offences and Penalties 10\u201314",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER IV Punishment for Terrorist Activities 15\u201323",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER V Forfeiture of Proceeds of Terrorism or Any Property Intended to Be Used for Terr",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 66
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER VI Terrorist Organisations and Individuals 35\u201340",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER VII Miscellaneous 41\u201353",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     }
+    ],
+    "rowCount": 9,
+    "about": {
+     "vis": true,
+     "expanded": "false"
+    },
+    "tabsHidden": false,
+    "dialog": {
+     "open": false,
+     "cls": "pg-sheet",
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "panelKind": null,
+     "title": null,
+     "closeBtn": false,
+     "active": "BODY. is-authed"
+    },
+    "addPage": null,
+    "hScroll": false,
+    "docH": 1029
+   },
+   "sheet": {
+    "trigger": "/playground/laws/uapa/add",
+    "file": "frozen_m1server_laws-uapa_561x800_light_sheet.png",
+    "sha256": "3e2029ea67eb6a8e7ae156bce3b75c88087e778d803298fc5e0f059b5f5eb84d",
+    "probe": {
+     "url": "/laws/uapa",
+     "dialog": {
+      "open": true,
+      "cls": "pg-sheet",
+      "box": {
+       "x": 51,
+       "y": 305,
+       "w": 460,
+       "h": 190
+      },
+      "panelKind": "subscribe",
+      "title": "Unlock Playground",
+      "closeBtn": true,
+      "active": "BUTTON.pg-sheet-close"
+     },
+     "addPage": null,
+     "hScroll": false
+    }
+   }
+  },
+  {
+   "key": "laws-uapa",
+   "route": "/laws/uapa",
+   "viewer": "m1server",
+   "width": 768,
+   "height": 1024,
+   "theme": "light",
+   "file": "frozen_m1server_laws-uapa_768x1024_light.png",
+   "sha256": "eab0e400ecd165c26d59d30da55091ac51a1d0c4db1c05035680159d4165ca8e",
+   "status_chain": [
+    [
+     "/laws/uapa",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/laws/uapa",
+    "title": "The Unlawful Activities (Prevention) Act, 1967 | Recall the C",
+    "mscreen": "bareact",
+    "bodyClass": "is-authed",
+    "topNavVisible": true,
+    "topNav": [
+     "Today",
+     "Browse",
+     "Playground",
+     "Calendar",
+     "Profile",
+     "Pricing"
+    ],
+    "phoneBarVisible": false,
+    "phoneBar": [],
+    "panels": [
+     {
+      "attrs": [],
+      "cls": "panel bareact bareact-page is-bns",
+      "vis": true
+     }
+    ],
+    "head": {
+     "cls": "panel bareact bareact-page is-bns",
+     "attrs": []
+    },
+    "h1": "The Unlawful Activities (Prevention) Act, 1967",
+    "h1Font": "22px/Fraunces",
+    "kicker": "BARE ACT",
+    "meta": null,
+    "cta": [
+     {
+      "t": "Subscribe to use Playground",
+      "href": "/playground/laws/uapa/add",
+      "sheet": true,
+      "kind": "subscribe",
+      "box": {
+       "x": 296,
+       "y": 155,
+       "w": 215,
+       "h": 44
+      }
+     }
+    ],
+    "badge": [],
+    "rows": [
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER I Preliminary 1\u20132",
+      "href": null,
+      "control": true,
+      "expanded": "true",
+      "h": 48
+     },
+     {
+      "cls": "bareact-section-row",
+      "tag": "a",
+      "t": "SECTION 1 Short title, extent and application \u203a",
+      "href": "/laws/uapa/section/1",
+      "control": true,
+      "expanded": "true",
+      "h": 61
+     },
+     {
+      "cls": "bareact-section-row",
+      "tag": "a",
+      "t": "SECTION 2 Definitions \u203a",
+      "href": "/laws/uapa/section/2",
+      "control": true,
+      "expanded": "true",
+      "h": 61
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER II Unlawful Associations 3\u20139",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER III Offences and Penalties 10\u201314",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER IV Punishment for Terrorist Activities 15\u201323",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER V Forfeiture of Proceeds of Terrorism or Any Property Intended to Be Used for Terr",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 66
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER VI Terrorist Organisations and Individuals 35\u201340",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER VII Miscellaneous 41\u201353",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     }
+    ],
+    "rowCount": 9,
+    "about": {
+     "vis": true,
+     "expanded": "false"
+    },
+    "tabsHidden": false,
+    "dialog": {
+     "open": false,
+     "cls": "pg-sheet",
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "panelKind": null,
+     "title": null,
+     "closeBtn": false,
+     "active": "BODY. is-authed"
+    },
+    "addPage": null,
+    "hScroll": false,
+    "docH": 1024
+   },
+   "sheet": {
+    "trigger": "/playground/laws/uapa/add",
+    "file": "frozen_m1server_laws-uapa_768x1024_light_sheet.png",
+    "sha256": "c028a6f06349438915bd5ff96c094fadf4feeb402b8fe5db81977ec8f36dd4de",
+    "probe": {
+     "url": "/laws/uapa",
+     "dialog": {
+      "open": true,
+      "cls": "pg-sheet",
+      "box": {
+       "x": 154,
+       "y": 417,
+       "w": 460,
+       "h": 190
+      },
+      "panelKind": "subscribe",
+      "title": "Unlock Playground",
+      "closeBtn": true,
+      "active": "BUTTON.pg-sheet-close"
+     },
+     "addPage": null,
+     "hScroll": false
+    }
+   }
+  },
+  {
+   "key": "laws-bnss",
+   "route": "/laws/bnss",
+   "viewer": "m1server",
+   "width": 561,
+   "height": 800,
+   "theme": "light",
+   "file": "frozen_m1server_laws-bnss_561x800_light.png",
+   "sha256": "aae651cd29846d17e015099fd75aff7d59e160fddfaa95bdac811a4948941770",
+   "status_chain": [
+    [
+     "/laws/bnss",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/laws/bnss",
+    "title": "The Bharatiya Nagarik Suraksha Sanhita, 2023 | Recall the C",
+    "mscreen": "bareact",
+    "bodyClass": "is-authed",
+    "topNavVisible": true,
+    "topNav": [
+     "Today",
+     "Browse",
+     "Playground",
+     "Calendar",
+     "Profile",
+     "Pricing"
+    ],
+    "phoneBarVisible": true,
+    "phoneBar": [
+     "Today",
+     "Browse",
+     "Playground",
+     "Calendar",
+     "Profile"
+    ],
+    "panels": [
+     {
+      "attrs": [],
+      "cls": "panel bareact bareact-page is-bns",
+      "vis": true
+     }
+    ],
+    "head": {
+     "cls": "panel bareact bareact-page is-bns",
+     "attrs": []
+    },
+    "h1": "The Bharatiya Nagarik Suraksha Sanhita, 2023",
+    "h1Font": "22px/Fraunces",
+    "kicker": "BARE ACT",
+    "meta": null,
+    "cta": [
+     {
+      "t": "Subscribe to use Playground",
+      "href": "/playground/laws/bnss/add",
+      "sheet": true,
+      "kind": "subscribe",
+      "box": {
+       "x": 272,
+       "y": 155,
+       "w": 215,
+       "h": 44
+      }
+     }
+    ],
+    "badge": [],
+    "rows": [
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER I Preliminary 1\u20135",
+      "href": null,
+      "control": true,
+      "expanded": "true",
+      "h": 48
+     },
+     {
+      "cls": "bareact-section-row",
+      "tag": "a",
+      "t": "SECTION 1 Short title, extent and commencement \u203a",
+      "href": "/laws/bnss/section/1",
+      "control": true,
+      "expanded": "true",
+      "h": 61
+     },
+     {
+      "cls": "bareact-section-row",
+      "tag": "a",
+      "t": "SECTION 2 Definitions \u203a",
+      "href": "/laws/bnss/section/2",
+      "control": true,
+      "expanded": "true",
+      "h": 61
+     },
+     {
+      "cls": "bareact-section-row",
+      "tag": "a",
+      "t": "SECTION 3 Construction of references \u203a",
+      "href": "/laws/bnss/section/3",
+      "control": true,
+      "expanded": "true",
+      "h": 61
+     },
+     {
+      "cls": "bareact-section-row",
+      "tag": "a",
+      "t": "SECTION 4 Trial of offences under Bharatiya Nyaya Sanhita, 2023 and other laws \u203a",
+      "href": "/laws/bnss/section/4",
+      "control": true,
+      "expanded": "true",
+      "h": 61
+     },
+     {
+      "cls": "bareact-section-row",
+      "tag": "a",
+      "t": "SECTION 5 Saving \u203a",
+      "href": "/laws/bnss/section/5",
+      "control": true,
+      "expanded": "true",
+      "h": 61
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER II Constitution of Criminal Courts and Offices 6\u201320",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER III Power of Courts 21\u201329",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER IV Powers of Superior Officers of Police and Aid to the Magistrates and the Police",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 66
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER V Arrest of Persons 35\u201362",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER VI Processes to Compel Appearance 63\u201393",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER VII Processes to Compel the Production of Things 94\u2013110",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER VIII Reciprocal Arrangements for Assistance in Certain Matters and Procedure for A",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 89
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER IX Security for Keeping the Peace and for Good Behaviour 125\u2013143",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER X Order for Maintenance of Wives, Children and Parents 144\u2013147",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XI Maintenance of Public Order and Tranquillity 148\u2013167",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XII Preventive Action of the Police 168\u2013172",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XIII Information to the Police and Their Powers to Investigate 173\u2013196",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 66
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XIV Jurisdiction of the Criminal Courts in Inquiries and Trials 197\u2013209",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 66
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XV Conditions Requisite for Initiation of Proceedings 210\u2013222",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XVI Complaints to Magistrates 223\u2013226",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XVII Commencement of Proceedings Before Magistrates 227\u2013233",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XVIII The Charge 234\u2013247",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XIX Trial Before A Court of Session 248\u2013260",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XX Trial of Warrant-Cases By Magistrates 261\u2013273",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXI Trial of Summons-Cases By Magistrates 274\u2013282",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXII Summary Trials 283\u2013288",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXIII Plea Bargaining 289\u2013300",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXIV Attendance of Persons Confined or Detained in Prisons 301\u2013306",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 66
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXV Evidence in Inquiries and Trials 307\u2013336",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXVI General Provisions As to Inquiries and Trials 337\u2013366",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXVII Provisions As to Accused Persons of Unsound Mind 367\u2013378",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXVIII Provisions As to Offences Affecting the Administration of Justice 379\u2013391",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 66
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXIX The Judgment 392\u2013406",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXX Submission of Death Sentences for Confirmation 407\u2013412",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXXI Appeals 413\u2013435",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXXII Reference and Revision 436\u2013445",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXXIII Transfer of Criminal Cases 446\u2013452",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXXIV Execution, Suspension, Remission and Commutation of Sentences 453\u2013477",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 66
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXXV Provisions As to Bail and Bonds 478\u2013496",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXXVI Disposal of Property 497\u2013505",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXXVII Irregular Proceedings 506\u2013512",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXXVIII Limitation for Taking Cognizance of Certain Offences 513\u2013519",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 66
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXXIX Miscellaneous 520\u2013531",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     }
+    ],
+    "rowCount": 44,
+    "about": {
+     "vis": true,
+     "expanded": "false"
+    },
+    "tabsHidden": false,
+    "dialog": {
+     "open": false,
+     "cls": "pg-sheet",
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "panelKind": null,
+     "title": null,
+     "closeBtn": false,
+     "active": "BODY. is-authed"
+    },
+    "addPage": null,
+    "hScroll": false,
+    "docH": 2896
+   }
+  },
+  {
+   "key": "laws-bnss",
+   "route": "/laws/bnss",
+   "viewer": "m1server",
+   "width": 768,
+   "height": 1024,
+   "theme": "light",
+   "file": "frozen_m1server_laws-bnss_768x1024_light.png",
+   "sha256": "4cd2db62be85039cd27e7760040067dd08319a5981733a2e659ed7fc09821e40",
+   "status_chain": [
+    [
+     "/laws/bnss",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/laws/bnss",
+    "title": "The Bharatiya Nagarik Suraksha Sanhita, 2023 | Recall the C",
+    "mscreen": "bareact",
+    "bodyClass": "is-authed",
+    "topNavVisible": true,
+    "topNav": [
+     "Today",
+     "Browse",
+     "Playground",
+     "Calendar",
+     "Profile",
+     "Pricing"
+    ],
+    "phoneBarVisible": false,
+    "phoneBar": [],
+    "panels": [
+     {
+      "attrs": [],
+      "cls": "panel bareact bareact-page is-bns",
+      "vis": true
+     }
+    ],
+    "head": {
+     "cls": "panel bareact bareact-page is-bns",
+     "attrs": []
+    },
+    "h1": "The Bharatiya Nagarik Suraksha Sanhita, 2023",
+    "h1Font": "22px/Fraunces",
+    "kicker": "BARE ACT",
+    "meta": null,
+    "cta": [
+     {
+      "t": "Subscribe to use Playground",
+      "href": "/playground/laws/bnss/add",
+      "sheet": true,
+      "kind": "subscribe",
+      "box": {
+       "x": 296,
+       "y": 155,
+       "w": 215,
+       "h": 44
+      }
+     }
+    ],
+    "badge": [],
+    "rows": [
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER I Preliminary 1\u20135",
+      "href": null,
+      "control": true,
+      "expanded": "true",
+      "h": 48
+     },
+     {
+      "cls": "bareact-section-row",
+      "tag": "a",
+      "t": "SECTION 1 Short title, extent and commencement \u203a",
+      "href": "/laws/bnss/section/1",
+      "control": true,
+      "expanded": "true",
+      "h": 61
+     },
+     {
+      "cls": "bareact-section-row",
+      "tag": "a",
+      "t": "SECTION 2 Definitions \u203a",
+      "href": "/laws/bnss/section/2",
+      "control": true,
+      "expanded": "true",
+      "h": 61
+     },
+     {
+      "cls": "bareact-section-row",
+      "tag": "a",
+      "t": "SECTION 3 Construction of references \u203a",
+      "href": "/laws/bnss/section/3",
+      "control": true,
+      "expanded": "true",
+      "h": 61
+     },
+     {
+      "cls": "bareact-section-row",
+      "tag": "a",
+      "t": "SECTION 4 Trial of offences under Bharatiya Nyaya Sanhita, 2023 and other laws \u203a",
+      "href": "/laws/bnss/section/4",
+      "control": true,
+      "expanded": "true",
+      "h": 61
+     },
+     {
+      "cls": "bareact-section-row",
+      "tag": "a",
+      "t": "SECTION 5 Saving \u203a",
+      "href": "/laws/bnss/section/5",
+      "control": true,
+      "expanded": "true",
+      "h": 61
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER II Constitution of Criminal Courts and Offices 6\u201320",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER III Power of Courts 21\u201329",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER IV Powers of Superior Officers of Police and Aid to the Magistrates and the Police",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER V Arrest of Persons 35\u201362",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER VI Processes to Compel Appearance 63\u201393",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER VII Processes to Compel the Production of Things 94\u2013110",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER VIII Reciprocal Arrangements for Assistance in Certain Matters and Procedure for A",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 66
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER IX Security for Keeping the Peace and for Good Behaviour 125\u2013143",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER X Order for Maintenance of Wives, Children and Parents 144\u2013147",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XI Maintenance of Public Order and Tranquillity 148\u2013167",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XII Preventive Action of the Police 168\u2013172",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XIII Information to the Police and Their Powers to Investigate 173\u2013196",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XIV Jurisdiction of the Criminal Courts in Inquiries and Trials 197\u2013209",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XV Conditions Requisite for Initiation of Proceedings 210\u2013222",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XVI Complaints to Magistrates 223\u2013226",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XVII Commencement of Proceedings Before Magistrates 227\u2013233",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XVIII The Charge 234\u2013247",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XIX Trial Before A Court of Session 248\u2013260",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XX Trial of Warrant-Cases By Magistrates 261\u2013273",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXI Trial of Summons-Cases By Magistrates 274\u2013282",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXII Summary Trials 283\u2013288",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXIII Plea Bargaining 289\u2013300",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXIV Attendance of Persons Confined or Detained in Prisons 301\u2013306",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXV Evidence in Inquiries and Trials 307\u2013336",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXVI General Provisions As to Inquiries and Trials 337\u2013366",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXVII Provisions As to Accused Persons of Unsound Mind 367\u2013378",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXVIII Provisions As to Offences Affecting the Administration of Justice 379\u2013391",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXIX The Judgment 392\u2013406",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXX Submission of Death Sentences for Confirmation 407\u2013412",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXXI Appeals 413\u2013435",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXXII Reference and Revision 436\u2013445",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXXIII Transfer of Criminal Cases 446\u2013452",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXXIV Execution, Suspension, Remission and Commutation of Sentences 453\u2013477",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXXV Provisions As to Bail and Bonds 478\u2013496",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXXVI Disposal of Property 497\u2013505",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXXVII Irregular Proceedings 506\u2013512",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXXVIII Limitation for Taking Cognizance of Certain Offences 513\u2013519",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     },
+     {
+      "cls": "bareact-chapter-row",
+      "tag": "summary",
+      "t": "CHAPTER XXXIX Miscellaneous 520\u2013531",
+      "href": null,
+      "control": true,
+      "expanded": "false",
+      "h": 48
+     }
+    ],
+    "rowCount": 44,
+    "about": {
+     "vis": true,
+     "expanded": "false"
+    },
+    "tabsHidden": false,
+    "dialog": {
+     "open": false,
+     "cls": "pg-sheet",
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "panelKind": null,
+     "title": null,
+     "closeBtn": false,
+     "active": "BODY. is-authed"
+    },
+    "addPage": null,
+    "hScroll": false,
+    "docH": 2652
+   }
+  }
+ ]
+}

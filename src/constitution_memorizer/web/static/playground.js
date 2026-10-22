@@ -147,6 +147,28 @@
       dialog.setAttribute("role", "dialog");
     }
 
+    // Immediate feedback while the sheet is fetched: the trigger announces
+    // itself busy and reads "Opening…" until the dialog is shown or the
+    // request falls back to a plain navigation. The href is untouched, so
+    // the link still works as a link.
+    function setOpening(trigger, on) {
+      if (on) {
+        if (!trigger.hasAttribute("data-pg-label")) {
+          trigger.setAttribute("data-pg-label", trigger.textContent);
+        }
+        trigger.setAttribute("aria-busy", "true");
+        trigger.classList.add("is-opening");
+        trigger.textContent = "Opening\u2026";
+      } else {
+        trigger.removeAttribute("aria-busy");
+        trigger.classList.remove("is-opening");
+        if (trigger.hasAttribute("data-pg-label")) {
+          trigger.textContent = trigger.getAttribute("data-pg-label");
+          trigger.removeAttribute("data-pg-label");
+        }
+      }
+    }
+
     function ensureCloseButton(panel) {
       if (panel.querySelector(".pg-sheet-close")) {
         return;
@@ -160,8 +182,26 @@
       panel.insertBefore(btn, panel.firstChild);
     }
 
+    // One dialog landmark: the host <dialog> owns role/aria-modal/label, so a
+    // panel lifted into it must not announce a second modal dialog.
+    function demoteToPanel(panel) {
+      panel.removeAttribute("role");
+      panel.removeAttribute("aria-modal");
+      panel.removeAttribute("aria-labelledby");
+    }
+
+    function visibleHeading(panel) {
+      var headings = panel.querySelectorAll("h1, h2");
+      for (var i = 0; i < headings.length; i += 1) {
+        if (headings[i].offsetParent !== null) {
+          return headings[i];
+        }
+      }
+      return headings[0] || panel.querySelector("[id]");
+    }
+
     function labelledBy(panel) {
-      var heading = panel.querySelector("h1, h2, [id]");
+      var heading = visibleHeading(panel);
       if (heading) {
         if (!heading.id) {
           heading.id = "pg-sheet-title";
@@ -169,6 +209,12 @@
         dialog.setAttribute("aria-labelledby", heading.id);
       }
     }
+    dialog.addEventListener("pg-sheet:relabel", function () {
+      var panel = dialog.querySelector(".pg-sheet-panel");
+      if (panel) {
+        labelledBy(panel);
+      }
+    });
 
     document.addEventListener("click", function (event) {
       var closeBtn = event.target.closest("[data-pg-sheet-close]");
@@ -185,9 +231,15 @@
         return;
       }
       event.preventDefault();
+      // One request per trigger: a second click while the sheet is being
+      // fetched does nothing (the first request will open it).
+      if (link.getAttribute("aria-busy") === "true") {
+        return;
+      }
       var href = link.getAttribute("href");
       lastOpener = link;
-      fetch(href, { credentials: "same-origin", headers: { Accept: "text/html" } })
+      setOpening(link, true);
+      fetch(href, { credentials: "same-origin", headers: { Accept: "text/html", "X-Requested-With": "pg-sheet" } })
         .then(function (response) {
           return response.text().then(function (html) {
             return { ok: response.ok, html: html, url: response.url };
@@ -195,6 +247,7 @@
         })
         .then(function (out) {
           if (!out.ok) {
+            setOpening(link, false);
             window.location.href = href;
             return;
           }
@@ -202,24 +255,32 @@
           parsed.innerHTML = out.html;
           var panel = parsed.querySelector(".pg-sheet-panel");
           if (!panel) {
+            setOpening(link, false);
             window.location.href = href;
             return;
           }
           ensureCloseButton(panel);
-          labelledBy(panel);
+          demoteToPanel(panel);
           dialog.replaceChildren(panel);
           if (typeof dialog.showModal === "function") {
             dialog.showModal();
           } else {
+            setOpening(link, false);
             window.location.href = href;
             return;
           }
+          setOpening(link, false);
+          // Label after the panel is attached and shown: a detached heading
+          // has no offsetParent, so a panel that opens at the scope step
+          // (confirmation skipped) would otherwise take the hidden heading.
+          labelledBy(panel);
           var nodes = focusables(dialog);
           if (nodes[0]) {
             nodes[0].focus();
           }
         })
         .catch(function () {
+          setOpening(link, false);
           window.location.href = href;
         });
     });
@@ -255,7 +316,37 @@
         lastOpener.focus();
       }
       lastOpener = null;
+      // A dialog the server opened (direct URL) closes back onto the Act it
+      // was drawn over: same page, the Act's own address.
+      var back = dialog.getAttribute("data-pg-sheet-return");
+      if (back && window.history && typeof window.history.replaceState === "function") {
+        window.history.replaceState(null, "", back);
+        dialog.removeAttribute("data-pg-sheet-return");
+      }
     });
+
+    // Direct URL: the panel is already in the document inside an open
+    // <dialog>. Re-open it as a modal so the scrim, focus trap and Escape
+    // behave exactly as for an in-page open.
+    var served = dialog.querySelector(".pg-sheet-panel");
+    if (served && dialog.hasAttribute("data-pg-sheet-direct")) {
+      ensureCloseButton(served);
+      demoteToPanel(served);
+      if (typeof dialog.showModal === "function") {
+        // Drop the server's `open` attribute without close(): close() would
+        // queue the dismissal handler, which strips the label and rewrites
+        // the URL while the modal is still showing.
+        if (dialog.open) {
+          dialog.removeAttribute("open");
+        }
+        dialog.showModal();
+        labelledBy(served);
+        var first = focusables(dialog);
+        if (first[0]) {
+          first[0].focus();
+        }
+      }
+    }
   }
 
   function enhanceAddFlow() {
@@ -280,6 +371,17 @@
       }
       if (scopeStep) {
         scopeStep.hidden = false;
+        // The accessible name follows the step: the host dialog (in-page or
+        // direct) or the standalone panel is now labelled by the scope title.
+        var scopeTitle = scopeStep.querySelector("h1, h2");
+        var host = root.closest("dialog");
+        if (scopeTitle && scopeTitle.id) {
+          if (host) {
+            host.dispatchEvent(new Event("pg-sheet:relabel"));
+          } else if (root.hasAttribute("aria-labelledby")) {
+            root.setAttribute("aria-labelledby", scopeTitle.id);
+          }
+        }
         var focus = scopeStep.querySelector("button, [href]");
         if (focus) {
           focus.focus();
