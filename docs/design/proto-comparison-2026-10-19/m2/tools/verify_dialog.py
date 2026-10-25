@@ -20,13 +20,16 @@ async def shot(ws, st, name):
 async def main():
     prof = OUT / ".chrome-profile"; shutil.rmtree(prof, ignore_errors=True); port = 9431
     client = httpx.Client(base_url=BASE, timeout=20); cookies = signin(client)
-    proc = subprocess.Popen([CHROME, "--headless=new", "--disable-gpu", "--hide-scrollbars", "--no-first-run", f"--remote-debugging-port={port}", f"--user-data-dir={prof}", "--window-size=1280,900", "about:blank"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if ATTACH:
+        port = ATTACH; proc = None
+    else:
+        proc = subprocess.Popen([CHROME, "--headless=new", "--disable-gpu", "--hide-scrollbars", "--no-first-run", f"--remote-debugging-port={port}", f"--user-data-dir={prof}", "--window-size=1280,900", "about:blank"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     log = {}
     try:
         for _ in range(50):
             try: targets = json.load(urllib.request.urlopen(f"http://127.0.0.1:{port}/json")); break
             except Exception: time.sleep(0.2)
-        page = next(t for t in targets if t["type"] == "page")
+        page = json.load(urllib.request.urlopen(urllib.request.Request(f"http://127.0.0.1:{port}/json/new?about:blank", method="PUT"))) if ATTACH else next(t for t in targets if t["type"] == "page")
         async with websockets.connect(page["webSocketDebuggerUrl"], max_size=80_000_000) as ws:
             st = {"id": 0, "events": []}; await cdp(ws, st, "Page.enable"); await cdp(ws, st, "Network.enable"); await cdp(ws, st, "Runtime.enable")
             for c in cookies: await cdp(ws, st, "Network.setCookie", c)
@@ -57,5 +60,9 @@ async def main():
             for w, L in log.items():
                 print(f"=== {w}px")
                 for k, v in L.items(): print(f"  {k}: url={v['url']} open={v['dialogOpen']} label={v['labelledby']}→{v['labelText']!r} vis={v['labelVisible']} panelRole={v['panelRole']} roleDialogsInHost={v['roleDialogsInsideHost']} active={v['active']!r} close={v['closeBtn']}")
-    finally: proc.terminate(); shutil.rmtree(prof, ignore_errors=True)
+    finally:
+        if proc: proc.terminate(); shutil.rmtree(prof, ignore_errors=True)
+        elif ATTACH:
+            try: urllib.request.urlopen(f"http://127.0.0.1:{port}/json/close/{page['id']}")
+            except Exception: pass
 asyncio.run(main())

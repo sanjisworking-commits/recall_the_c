@@ -114,6 +114,7 @@ async def run(args):
     widths = [tuple(map(int, w.split("x"))) for w in args.widths.split(",")]; themes = args.themes.split(",")
     client = httpx.Client(base_url=args.base, timeout=20)
     cookies = signin(client) if args.signin else []
+    attach = getattr(args, "attach_port", 0)
     if args.add_law:
         # Local throwaway DB only: the same roster add the halted test cohort performs (confirm, then scope).
         for law in args.add_law.split(","):
@@ -121,21 +122,21 @@ async def run(args):
             first = client.post(f"/playground/laws/{law}/add", data=csrf, follow_redirects=False)
             second = client.post(f"/playground/laws/{law}/add", data={**csrf, "confirm": "add", "scope": "entire"}, follow_redirects=False)
             print(f"add {law}: {first.status_code} -> {second.status_code} {second.headers.get('location')}", flush=True)
-    viewer = args.tier if args.signin else "guest"
-    prof = out / ".chrome-profile"; shutil.rmtree(prof, ignore_errors=True); port = args.debug_port
-    proc = subprocess.Popen([CHROME, "--headless=new", "--disable-gpu", "--hide-scrollbars", "--no-first-run", f"--remote-debugging-port={port}", f"--user-data-dir={prof}", "--window-size=1280,900", "about:blank"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    viewer = args.tier if (args.signin or attach) else "guest"
+    prof = out / ".chrome-profile"; shutil.rmtree(prof, ignore_errors=True); port = attach or args.debug_port
+    proc = None if attach else subprocess.Popen([CHROME, "--headless=new", "--disable-gpu", "--hide-scrollbars", "--no-first-run", f"--remote-debugging-port={port}", f"--user-data-dir={prof}", "--window-size=1280,900", "about:blank"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     try:
         for _ in range(50):
             try: targets = json.load(urllib.request.urlopen(f"http://127.0.0.1:{port}/json")); break
             except Exception: time.sleep(0.2)
-        page = next(t for t in targets if t["type"] == "page")
+        page = json.load(urllib.request.urlopen(urllib.request.Request(f"http://127.0.0.1:{port}/json/new?about:blank", method="PUT"))) if attach else next(t for t in targets if t["type"] == "page")
         manifest = {"label": args.label, "base": args.base, "viewer": viewer, "captured_at": time.strftime("%Y-%m-%dT%H:%M:%S%z"), "chrome": subprocess.run([CHROME, "--version"], capture_output=True, text=True).stdout.strip(), "rows": []}
         async with websockets.connect(page["webSocketDebuggerUrl"], max_size=80_000_000) as ws:
             st = {"id": 0, "events": []}
             await cdp(ws, st, "Page.enable"); await cdp(ws, st, "Network.enable"); await cdp(ws, st, "Runtime.enable")
             for c in cookies: await cdp(ws, st, "Network.setCookie", c)
             for route in routes:
-                key, path = route["key"], route["path"]; chain = status_chain(client, path)
+                key, path = route["key"], route["path"]; chain = [] if attach else status_chain(client, path)
                 for (w, h) in widths:
                     for theme in themes:
                         await cdp(ws, st, "Emulation.setDeviceMetricsOverride", {"width": w, "height": h, "deviceScaleFactor": 1, "mobile": w < 561})
@@ -146,6 +147,9 @@ async def run(args):
                         await asyncio.sleep(0.6)
                         await cdp(ws, st, "Runtime.evaluate", {"expression": "document.fonts && document.fonts.ready", "awaitPromise": True})
                         probe = (await cdp(ws, st, "Runtime.evaluate", {"expression": PROBE, "returnByValue": True}))["result"]["value"]
+                        if attach:
+                            resp = [e for e in st["events"] if e.get("method") == "Network.responseReceived" and e["params"].get("type") == "Document"]
+                            chain = [(args.base + path, resp[-1]["params"]["response"]["status"] if resp else None)] + ([(probe["url"], 200)] if probe["url"] != path else [])
                         stem = f"{args.label}_{viewer}_{key}_{w}x{h}_{theme}"
                         sha = await shot(ws, st, out, stem + ".png")
                         row = {"key": key, "route": path, "viewer": viewer, "width": w, "height": h, "theme": theme, "file": stem + ".png", "sha256": sha, "status_chain": chain, "probe": probe}
@@ -153,18 +157,27 @@ async def run(args):
                             row["full_file"] = stem + "_full.png"; row["full_sha256"] = await shot(ws, st, out, stem + "_full.png", full=True)
                         if route.get("sheet"):
                             opened = (await cdp(ws, st, "Runtime.evaluate", {"expression": "(() => { const a = [...document.querySelectorAll('[data-pg-sheet]')].find(e => e.getBoundingClientRect().width > 0); if (!a) return 'no-trigger'; a.click(); return a.getAttribute('href'); })()", "returnByValue": True}))["result"]["value"]
-                            await asyncio.sleep(1.0)
+                            # Staging answers signed-in fetches in 3–8 s: poll for the dialog up to 15 s.
+                            for _ in range(30):
+                                await asyncio.sleep(0.5)
+                                if (await cdp(ws, st, "Runtime.evaluate", {"expression": "!!(document.querySelector('dialog.pg-sheet') && document.querySelector('dialog.pg-sheet').open)", "returnByValue": True}))["result"]["value"]:
+                                    break
+                            await asyncio.sleep(0.4)
                             sprobe = (await cdp(ws, st, "Runtime.evaluate", {"expression": PROBE, "returnByValue": True}))["result"]["value"]
                             row["sheet"] = {"trigger": opened, "file": stem + "_sheet.png", "sha256": await shot(ws, st, out, stem + "_sheet.png"), "probe": {k: sprobe[k] for k in ("url", "dialog", "addPage", "hScroll")}}
                         manifest["rows"].append(row)
                         print(f"{stem:60s} {chain[-1][1]} meta={probe['meta']!r} cta={[c['t'] for c in probe['cta']]} rows={probe['rowCount']} dlg={(row.get('sheet') or {}).get('probe', {}).get('dialog', {}) and (row['sheet']['probe']['dialog'] or {}).get('open')}", flush=True)
         (out / "manifest.json").write_text(json.dumps(manifest, indent=1))
     finally:
-        proc.terminate(); shutil.rmtree(prof, ignore_errors=True)
+        if proc:
+            proc.terminate(); shutil.rmtree(prof, ignore_errors=True)
+        elif attach:
+            try: urllib.request.urlopen(f"http://127.0.0.1:{port}/json/close/{page['id']}")
+            except Exception: pass
     return 0
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(); ap.add_argument("--base", required=True); ap.add_argument("--out", required=True); ap.add_argument("--label", required=True); ap.add_argument("--tier", default="free")
     ap.add_argument("--signin", action="store_true"); ap.add_argument("--widths", default="390x844,1280x900"); ap.add_argument("--themes", default="light,dark")
-    ap.add_argument("--routes", required=True); ap.add_argument("--debug-port", type=int, default=9343); ap.add_argument("--full-page", action="store_true"); ap.add_argument("--add-law", default="")
+    ap.add_argument("--routes", required=True); ap.add_argument("--debug-port", type=int, default=9343); ap.add_argument("--full-page", action="store_true"); ap.add_argument("--add-law", default=""); ap.add_argument("--attach-port", type=int, default=0)
     sys.exit(asyncio.run(run(ap.parse_args())))

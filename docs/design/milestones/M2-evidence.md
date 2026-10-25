@@ -407,15 +407,15 @@ With §10.1 (guest) and §10.2 (Pro), the hosted record now covers guest, Free a
 
 ## 11. Consolidated acceptance table (2026-10-22) — for the owner's decision
 
-Candidate `e2ac903aa542f154c6b148f9505e53a5cf6c779b` (PR #221, draft); staging deployment `0eb35808`. Acceptance and merge are separate decisions; nothing below authorises either.
+Candidate `e2ac903aa542f154c6b148f9505e53a5cf6c779b` (PR #221, draft); staging deployment `0eb35808`. **Updated 2026-10-25** for `3719b9f` / deployment `dd04a5a2` (§13): the Free 390 px and dark rows below are now verified; Pro is device-capped on that deployment. Acceptance and merge are separate decisions; nothing below authorises either.
 
 ### 11.1 Coverage by cohort (what was actually run)
 
 | Cohort | Local (candidate, fixtures) | Hosted (staging `0eb35808`) | Phone width on hosted | Themes on hosted |
 |---|---|---|---|---|
 | Guest | 390 + 1280, light + dark, every §3 route, states, keyboard | headless matrix, all 44 rows match local probe-for-probe; states; keyboard | 390 | light + dark |
-| Free | 390 + 1280, light + dark (dev fixture) | owner's fresh Free session in the browser pane: NDPS/UAPA/MTP heads, chapter expansion, schedule links, Add dialog in-page and by URL (§10.3) | **375** (pane preset); **390 untested** | light only |
-| Pro | 390 + 1280, light + dark (dev fixture `--tier pro`) | owner's Pro-granted session in the pane: same set as Free (§10.2) | **375**; **390 untested** | light only |
+| Free | 390 + 1280, light + dark (dev fixture) | owner's fresh Free session in the browser pane: NDPS/UAPA/MTP heads, chapter expansion, schedule links, Add dialog in-page and by URL (§10.3); **`dd04a5a2`: headless matrix through the Free profile, 44 rows match local, states, keyboard, PF-2 (§13.2)** | 375 (pane) and **390** (§13.2) | **light + dark** (§13.2) |
+| Pro | 390 + 1280, light + dark (dev fixture `--tier pro`) | owner's Pro-granted session in the pane: same set as Free (§10.2); `dd04a5a2`: heads/rows/schedules/About/states at 390 + 1280, light + dark, but **device-capped (`device_blocked` kind)** — eligible Add rows not reached (§13.3) | **375** (eligible rows); 390 (device-blocked kind only) | light (eligible rows); dark (device-blocked kind only) |
 | Plus | 390 + 1280, light + dark (dev fixture, incl. NDPS retained) | **not run** | — | — |
 | Max | 390 + 1280, light + dark (dev fixture; Max opens at the scope step, §9.1) | **not run** | — | — |
 | Expired, halted | 390 + 1280, light + dark (dev fixtures) | **not run** | — | — |
@@ -434,7 +434,7 @@ Candidate `e2ac903aa542f154c6b148f9505e53a5cf6c779b` (PR #221, draft); staging d
 | F08 readers unchanged | PASS local + hosted (guest) | not repeated (readers are not viewer-dependent) | — | §4 |
 | F09 full suite; drift 0 | PASS with the 3 documented device exceptions (CI 39375517921) | — | — | §2, M2.md |
 | V01–V03 captures, geometry, responsive 320–844 | PASS local (all cohorts); hosted guest responsive not repeated (M1 established the shell; M2 changed no breakpoint) | — | — | §5.1–5.3 |
-| V04 dark = palette consistency only | PASS local (all cohorts); hosted guest dark matches | **hosted dark not run** | **hosted dark not run** | 11.3 |
+| V04 dark = palette consistency only | PASS local (all cohorts); hosted guest dark matches | PASS hosted (`dd04a5a2`, §13.2) | hosted dark: device-blocked kind only (§13.3) | §13 |
 | A01 keyboard, one dialog landmark, label, focus return | PASS local + hosted guest (trace); Free/Pro hosted: label, landmark, focus return by pointer + Escape | — | — | §5.4, §9, §10 |
 | A02 contrast ≥ 4.5:1; targets | PASS (computed; D1/D2 owner-kept) | — | — | §5.5, §6 |
 | A03 reduced motion; 200 % zoom | reduced motion PASS; real zoom **NOT RUN** (tooling) | — | — | §5.6 |
@@ -444,8 +444,8 @@ Candidate `e2ac903aa542f154c6b148f9505e53a5cf6c779b` (PR #221, draft); staging d
 
 | Item | Status | Proposed |
 |---|---|---|
-| Signed-in hosted rows at **390 px** (Free, Pro were run at the pane's 375 preset) | untested | run the same pane pass at a custom 390×844 viewport (10 min), or accept 375 as the phone check (375 is narrower, and the local 390 captures pass) — **exception candidate** |
-| Signed-in hosted **dark theme** | untested | emulate `prefers-color-scheme: dark` in the pane for Free (one pass), or accept on the strength of the local dark captures for every cohort (V04 is palette-consistency only) — **exception candidate** |
+| Signed-in hosted rows at **390 px** | **Free: done** (`dd04a5a2`, §13.2). Pro eligible rows: still 375 only (device cap, §13.3) | Pro 390 folds into the device-revocation item below — **exception candidate** for Pro only |
+| Signed-in hosted **dark theme** | **Free: done** (`dd04a5a2`, §13.2). Pro: device-blocked kind only | Pro dark folds into the device-revocation item below — **exception candidate** for Pro only |
 | **Plus / Max / expired / halted** on staging | not run (Plus/Max accounts device-capped; no expired/halted staging account) | **proposed explicit M2 exception: local fixture coverage (§3, §9.1) stands in for the hosted check**, with the hosted Plus/Max/expired/halted checks **due before final redesign acceptance** (Plus/Max after the separately authorised device revocation; expired/halted need an owner-performed staging subscription-state change) |
 | **Roster write** (confirm → scope → add) on staging | not sent | the write path is unchanged by M2 and covered by the suite; if the owner wants it exercised, run one Add on a **designated staging test account** — note that removing the law afterwards does **not** restore that month's quota, so it is not a clean rollback — otherwise **exception** |
 | Real 200 % zoom, automated scan, screen reader | as M1 | carried exceptions (M1b) |
@@ -454,8 +454,8 @@ Candidate `e2ac903aa542f154c6b148f9505e53a5cf6c779b` (PR #221, draft); staging d
 
 | # | Finding | Measurement (2026-10-22, staging) | Attribution | Proposed action |
 |---|---|---|---|---|
-| PF-1 | The in-page Add sheet appears 3–8 s after the click for signed-in users; instantly for guests and locally | signed-in fetch of `/playground/laws/uapa/add` (sheet header): TTFB 5.8 / 6.1 / 6.5 s; signed-in `/laws/uapa` 4.7 s, `/dashboard` 3.2 s, page navigation TTFB 5.0 s; guest TTFB 0.39–0.56 s for the same URLs; `/health` 0.26–0.55 s | **Measured:** every signed-in request on staging is slow, not only the sheet (the sheet fetch skips the Act, §1, and the Act page itself is as slow); guest requests are fast. **Cause — hypothesis, not established:** the entitlement/roster look-ups on signed-in routes may be making many round trips to the isolated staging database; tracing has not confirmed this. Pre-existing path (M1's signed-in routes use it), made visible by M2's in-page opener. | **tracked under the hardening programme** (trace signed-in request timing on staging and count DB round trips before attributing); not an M2 code change |
-| PF-2 | No in-flight feedback while the sheet is fetched: the CTA keeps focus, nothing shows "opening" (no `aria-busy`, no state class in `playground.js`) | handler inspected | **M2 scope** (the opener is M2's) | add an opening state to the trigger (`aria-busy="true"` + a visible pressed/loading style, cleared on open or failure), a few lines of JS/CSS; owner to say whether it is required before acceptance or logged as an M2 follow-up |
+| PF-1 | The in-page Add sheet appears 3–8 s after the click for signed-in users; instantly for guests and locally (2026-10-25 on `dd04a5a2`, Free: 5.8–7.1 s in every run, §13.2) | signed-in fetch of `/playground/laws/uapa/add` (sheet header): TTFB 5.8 / 6.1 / 6.5 s; signed-in `/laws/uapa` 4.7 s, `/dashboard` 3.2 s, page navigation TTFB 5.0 s; guest TTFB 0.39–0.56 s for the same URLs; `/health` 0.26–0.55 s | **Measured:** every signed-in request on staging is slow, not only the sheet (the sheet fetch skips the Act, §1, and the Act page itself is as slow); guest requests are fast. **Cause — hypothesis, not established:** the entitlement/roster look-ups on signed-in routes may be making many round trips to the isolated staging database; tracing has not confirmed this. Pre-existing path (M1's signed-in routes use it), made visible by M2's in-page opener. | **tracked under the hardening programme** (trace signed-in request timing on staging and count DB round trips before attributing); not an M2 code change |
+| PF-2 | No in-flight feedback while the sheet is fetched: the CTA keeps focus, nothing shows "opening" (no `aria-busy`, no state class in `playground.js`) | handler inspected | **M2 scope** (the opener is M2's) | add an opening state to the trigger (`aria-busy="true"` + a visible pressed/loading style, cleared on open or failure), a few lines of JS/CSS; owner to say whether it is required before acceptance or logged as an M2 follow-up. **Done (owner required it):** fixed in `3719b9f` (§12), verified on staging `dd04a5a2` for guest and Free (§13) |
 
 ### 11.5 Not M2 criteria (regression context only; must not widen acceptance)
 
@@ -463,7 +463,7 @@ Subscriber Playground home, plans and device-limit pages (blocked by the device 
 
 ### 11.6 Decision options
 
-- **Accept with named exceptions**: 11.3 rows (390 signed-in, signed-in dark, Plus/Max/expired/halted hosted, roster write, zoom/scan/SR) plus a decision on PF-2 (require before acceptance, or follow-up).
+- **Accept with named exceptions**: 11.3 rows as they stand after §13 — Pro eligible rows at 390/dark (device cap), Plus/Max/expired/halted hosted, roster write, zoom/scan/SR, the three device-test exceptions. PF-2 is done; the Free 390/dark rows are done.
 - **Require remaining checks**: name which 11.3 rows must run first; the Plus/Max rows additionally need the device revocation.
 Merge is a separate decision in either case.
 
@@ -482,3 +482,42 @@ Verification (headless Chrome, Free fixture, network latency emulated at 2.5 s; 
 | after Close | dialog closed, focus back on the trigger with its original label | same |
 
 Full suite on this tree: 3,952 passed, 163 skipped, 3 failed (the documented device exceptions) — `manifests/pytest_full_run6_pf2.log`. Test: `test_the_sheet_trigger_shows_an_opening_state_and_sends_one_request`.
+
+## 13. Hosted validation — staging deployment `dd04a5a2-9451-48b6-a391-ec5ab02835da` (= `3719b9f`, 2026-10-25)
+
+The owner deployed `3719b9f0d3ec3f7fe5a9e0d885a13e7f03ce0ce4` (PR #221) to `recallc-playground-staging` and reported the deployment SUCCESS; the served page was checked for the PF-2 pins (`pg52` / `pg12`, `data-act-head`) before capture. Nothing was deployed, granted or revoked by Claude; no roster write was made; no POST was sent.
+
+**Method (session-reuse policy, 2026-10-22).** One persistent headed Chrome profile per tier, signed in once by the owner (Google); the capture tools attach to the profile's debugging port and open their own tab — they set no cookies and the manifests hold DOM probes, screenshots and hashes only (no session material; grep-checked before staging). The tier was verified from the Today/Profile chrome before each run (`tools/tier.py`): the Free profile shows "Free account", Devices 0 of 2; the Pro profile shows "RecallC Pro · ACTIVE", **Devices 2 of 2**. The matrix tool polls the sheet for up to 15 s; the states/keyboard/busy tools were given the same poll (up to 20 s, time to open recorded) after their first Free run probed at fixed 1–4 s waits and reported the sheet "not open" — that first output was discarded and both runs repeated; the tools in `tools/` are the patched ones.
+
+### 13.1 Guest (headless, `tools/capture_m2.py`)
+
+All 44 rows (390 and 1280, light and dark) match the local candidate probe-for-probe: `manifests/hosted2_guest_dd04a5a2.json`, `hosted2/guest/`. PF-2 on staging for the guest trigger (`manifests/hosted2_busy_guest_dd04a5a2.json`, `hosted2/busy_guest/`): "Opening…" with `aria-busy` within 0.3 s of the click, one `/add` request for three clicks, label restored and Close focused when the sheet opens, focus back on the trigger after Close.
+
+### 13.2 Free (profile port 9461 — the owner's Free staging account)
+
+| Check | 390 × 844 | 1280 × 900 | Files |
+|---|---|---|---|
+| Matrix: NDPS, UAPA, BNS, BNSS, PSS, MTP heads; NDPS §8 and Schedule readers; `/laws/unknown`; `/playground/laws/{ndps,uapa}/add` by URL; in-page sheet on NDPS and UAPA | light + dark: **22/22 rows match the local Free candidate** (status, meta, CTA label/href/sheet, row types and hrefs, About, sheet open state, no horizontal scroll) | light + dark: **22/22 match** | `manifests/hosted2_free_dd04a5a2.json`, `hosted2/free/` (light + dark PNGs) |
+| Head content | kind `subscribe`; CTA "Subscribe to use Playground" → `/playground/laws/{id}/add` (sheet opener); note "Unlock Playground · from ₹199 / month."; NDPS 8 chapters + 1 schedule, UAPA 7 + 4, BNS 20, BNSS 39 + 2, PSS 8, MTP flat (9 section links, no `<details>`); About present; phone bar present; subtitle "Free account" | same (five-tab bar hidden, top nav) | as above |
+| In-page sheet | opens (polled), title "Add to Playground", lede "Turning The NDPS Act, 1985 into a learning experience needs a plan. Reading it stays free.", "Unlock Playground" → `/playground`, footnote "Plus · Pro · Max — from ₹199 / month …", **no Cancel (D5)**, Close ✕ at the sheet's top-right, bottom sheet | opens, 460 px centred dialog, same copy | `hosted2_free_*_sheet_*.png` |
+| Dark theme (V04, palette consistency only) | head, rows, schedule row, phone bar, bottom sheet all on the dark palette; no light-palette leak (inspected `hosted2_free_laws-ndps_390x844_dark.png`, `hosted2_free_add-ndps-direct_390x844_dark.png`) | same | `hosted2/free/*_dark.png` |
+| States (`tools/capture_states.py`) | chapter expanded, About open, focused chapter row, focused schedule link | same | `hosted2/free_states/`, `manifests/hosted2_states_free_dd04a5a2.json` |
+| Keyboard (`tools/capture_keyboard.py`) | Tab order Back → CTA → About → rows; Enter on each of four chapter rows sets `aria-expanded="true"`; Enter on the CTA shows "Opening…" and the sheet opens after **5.8 s** with focus on Close; Tab cycles Unlock Playground ↔ Close inside the dialog; Escape closes it and focus returns to the CTA with its label | same; sheet after **7.1 s** | `hosted2/free_keyboard/`, `manifests/hosted2_keyboard_free_dd04a5a2.json` |
+| PF-2 (`tools/verify_busy.py`, 2.5 s emulated latency) | before: label, no `aria-busy`; 0.3 s after three rapid clicks: "Opening…", `aria-busy="true"`, `is-opening`, opacity 0.72, cursor progress, pointer-events none, href unchanged; **1** `/add` request; sheet open after **5.82 s**, label restored, `aria-busy` removed, Close focused; after Close: dialog closed, focus on the trigger with its original label | same; open after **6.08 s** | `hosted2/free_busy/busy_during_{390,1280}.png`, `manifests/hosted2_busy_free_dd04a5a2.json` |
+
+PF-1 measurement on this deployment (signed-in Free): the sheet opened 5.8–7.1 s after the click in every run (the matrix poll, the keyboard run without throttling, the busy run with 2.5 s added latency), against an instant open for the guest. Consistent with §11.4; the cause stays a hypothesis for the hardening programme.
+
+### 13.3 Pro (profile port 9463 — the owner's Pro-granted staging account, device-capped)
+
+The persistent Pro profile counts as a further registered device, and the account is at its 2-device cap, so on this deployment every Act head serves kind **`device_blocked`**: CTA "Manage devices" → `/profile/security/devices` (a plain ghost link, not a sheet opener), note "Device limit reached. Your subscription supports Playground on up to 2 registered devices." Within that kind the hosted rows match the local Pro candidate for everything except the CTA/kind (meta, row types and hrefs, schedules, About, no horizontal scroll) at 390 and 1280, light and dark: `manifests/hosted2_pro_dd04a5a2.json`, `hosted2/pro/`; states captured on both widths (`hosted2/pro_states/`, `manifests/hosted2_states_pro_dd04a5a2.json`). The in-page sheet does not open from this CTA (correct for the kind). `/playground/laws/{ndps,uapa}/add` by URL returns 200 with the served dialog open over the head (panel kind `device_blocked`: title "Add NDPS Act to October?", lines "This will use 1 of your 30 law spaces for October." / "You'll have 29 spaces remaining.", primary "Manage devices", Cancel, Close focused). That composition — the confirm title and capacity lines with the device-limit primary — is the frozen template's (`5d89fbd`, same title/lines/primary/Cancel for `kind == "device_blocked"`), restyled by M2's panel; it is recorded here as an observation, not an M2 defect.
+
+**Consequence for acceptance.** The Pro `eligible_to_add` rows at 390 px and in dark mode are **not verified on staging** by this run; the Pro eligible evidence remains §10.2 (deployment `0eb35808`, 375 px, light). Reaching them needs the separately authorised device revocation on the staging account (not Claude's action), after which the Pro profile pass is a 10-minute rerun of the same tools.
+
+### 13.4 Hosted record after this deployment
+
+| Cohort | 390 | 1280 | Dark | States | Keyboard | PF-2 | Add dialog |
+|---|---|---|---|---|---|---|---|
+| Guest | ✓ | ✓ | ✓ | ✓ | ✓ (§10.1 on `0eb35808`) | ✓ | in-page + URL ✓ |
+| Free | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | in-page + URL ✓ |
+| Pro | device-blocked kind only | device-blocked kind only | device-blocked kind only | ✓ | — | — | eligible rows at 375 light only (§10.2); device-blocked panel by URL ✓ |
+| Plus, Max, expired, halted | not run (local fixtures only) | | | | | | |
