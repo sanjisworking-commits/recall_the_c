@@ -1,0 +1,536 @@
+[
+ {
+  "width": 1280,
+  "tab_order": [
+   {
+    "tag": "A",
+    "cls": "ActHead-back",
+    "text": "\u2190 Laws",
+    "outline": "none 3px",
+    "box": [
+     40,
+     76,
+     43,
+     44
+    ],
+    "expanded": null,
+    "inDialog": false
+   },
+   {
+    "tag": "A",
+    "cls": "ActHead-btn",
+    "text": "+ Add to Playground",
+    "outline": "solid 2px",
+    "box": [
+     860,
+     149,
+     380,
+     48
+    ],
+    "expanded": null,
+    "inDialog": false
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "bareact-info-toggle ActHead-about",
+    "text": "ABOUT THIS ACT",
+    "outline": "solid 2px",
+    "box": [
+     40,
+     197,
+     91,
+     44
+    ],
+    "expanded": "false",
+    "inDialog": false
+   },
+   {
+    "tag": "SUMMARY",
+    "cls": "bareact-chapter-row",
+    "text": "CHAPTER I Preliminary Sections 1\u20132",
+    "outline": "solid 2px",
+    "box": [
+     24,
+     262,
+     912,
+     56
+    ],
+    "expanded": "false",
+    "inDialog": false
+   },
+   {
+    "after": "Enter",
+    "tag": "SUMMARY",
+    "cls": "bareact-chapter-row",
+    "text": "CHAPTER I Preliminary Sections 1\u20132",
+    "outline": "solid 2px",
+    "box": [
+     24,
+     262,
+     912,
+     56
+    ],
+    "expanded": "true",
+    "inDialog": false
+   },
+   {
+    "tag": "SUMMARY",
+    "cls": "bareact-chapter-row",
+    "text": "CHAPTER II Unlawful Associations Sections 3\u20139",
+    "outline": "solid 2px",
+    "box": [
+     24,
+     318,
+     912,
+     56
+    ],
+    "expanded": "false",
+    "inDialog": false
+   },
+   {
+    "after": "Enter",
+    "tag": "SUMMARY",
+    "cls": "bareact-chapter-row",
+    "text": "CHAPTER II Unlawful Associations Sections 3\u20139",
+    "outline": "solid 2px",
+    "box": [
+     24,
+     318,
+     912,
+     56
+    ],
+    "expanded": "true",
+    "inDialog": false
+   },
+   {
+    "tag": "SUMMARY",
+    "cls": "bareact-chapter-row",
+    "text": "CHAPTER III Offences and Penalties Sections 10\u201314",
+    "outline": "solid 2px",
+    "box": [
+     24,
+     374,
+     912,
+     56
+    ],
+    "expanded": "false",
+    "inDialog": false
+   },
+   {
+    "after": "Enter",
+    "tag": "SUMMARY",
+    "cls": "bareact-chapter-row",
+    "text": "CHAPTER III Offences and Penalties Sections 10\u201314",
+    "outline": "solid 2px",
+    "box": [
+     24,
+     374,
+     912,
+     56
+    ],
+    "expanded": "true",
+    "inDialog": false
+   },
+   {
+    "tag": "SUMMARY",
+    "cls": "bareact-chapter-row",
+    "text": "CHAPTER IV Punishment for Terrorist Activities Sec",
+    "outline": "solid 2px",
+    "box": [
+     24,
+     430,
+     912,
+     56
+    ],
+    "expanded": "false",
+    "inDialog": false
+   },
+   {
+    "after": "Enter",
+    "tag": "SUMMARY",
+    "cls": "bareact-chapter-row",
+    "text": "CHAPTER IV Punishment for Terrorist Activities Sec",
+    "outline": "solid 2px",
+    "box": [
+     24,
+     430,
+     912,
+     56
+    ],
+    "expanded": "true",
+    "inDialog": false
+   }
+  ],
+  "sheet_focus_on_open": {
+   "tag": "BUTTON",
+   "cls": "pg-sheet-close",
+   "text": "\u2715",
+   "outline": "solid 2px",
+   "box": [
+    811,
+    300,
+    44,
+    44
+   ],
+   "expanded": null,
+   "inDialog": true
+  },
+  "sheet_tab_cycle": [
+   {
+    "tag": "BUTTON",
+    "cls": "pg-add-primary",
+    "text": "Add to Playground",
+    "outline": "solid 2px",
+    "box": [
+     439,
+     483,
+     402,
+     50
+    ],
+    "expanded": null,
+    "inDialog": true
+   },
+   {
+    "tag": "A",
+    "cls": "pg-add-secondary",
+    "text": "Cancel",
+    "outline": "solid 2px",
+    "box": [
+     439,
+     542,
+     402,
+     46
+    ],
+    "expanded": null,
+    "inDialog": true
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "pg-sheet-close",
+    "text": "\u2715",
+    "outline": "solid 2px",
+    "box": [
+     811,
+     300,
+     44,
+     44
+    ],
+    "expanded": null,
+    "inDialog": true
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "pg-add-primary",
+    "text": "Add to Playground",
+    "outline": "solid 2px",
+    "box": [
+     439,
+     483,
+     402,
+     50
+    ],
+    "expanded": null,
+    "inDialog": true
+   },
+   {
+    "tag": "A",
+    "cls": "pg-add-secondary",
+    "text": "Cancel",
+    "outline": "solid 2px",
+    "box": [
+     439,
+     542,
+     402,
+     46
+    ],
+    "expanded": null,
+    "inDialog": true
+   }
+  ],
+  "after_escape": {
+   "dialog_open": false,
+   "focus": {
+    "tag": "A",
+    "cls": "ActHead-btn",
+    "text": "+ Add to Playground",
+    "outline": "solid 2px",
+    "box": [
+     860,
+     149,
+     380,
+     48
+    ],
+    "expanded": null,
+    "inDialog": false
+   }
+  },
+  "sheet_open_after_s": 11.65
+ },
+ {
+  "width": 390,
+  "tab_order": [
+   {
+    "tag": "A",
+    "cls": "ActHead-back",
+    "text": "\u2190 Laws",
+    "outline": "none 3px",
+    "box": [
+     18,
+     2,
+     43,
+     44
+    ],
+    "expanded": null,
+    "inDialog": false
+   },
+   {
+    "tag": "A",
+    "cls": "ActHead-btn",
+    "text": "+ Add to Playground",
+    "outline": "solid 2px",
+    "box": [
+     18,
+     146,
+     354,
+     48
+    ],
+    "expanded": null,
+    "inDialog": false
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "bareact-info-toggle ActHead-about",
+    "text": "ABOUT THIS ACT",
+    "outline": "solid 2px",
+    "box": [
+     18,
+     204,
+     91,
+     44
+    ],
+    "expanded": "false",
+    "inDialog": false
+   },
+   {
+    "tag": "SUMMARY",
+    "cls": "bareact-chapter-row",
+    "text": "CHAPTER I Preliminary 1\u20132",
+    "outline": "solid 2px",
+    "box": [
+     0,
+     255,
+     390,
+     48
+    ],
+    "expanded": "false",
+    "inDialog": false
+   },
+   {
+    "after": "Enter",
+    "tag": "SUMMARY",
+    "cls": "bareact-chapter-row",
+    "text": "CHAPTER I Preliminary 1\u20132",
+    "outline": "solid 2px",
+    "box": [
+     0,
+     255,
+     390,
+     48
+    ],
+    "expanded": "true",
+    "inDialog": false
+   },
+   {
+    "tag": "SUMMARY",
+    "cls": "bareact-chapter-row",
+    "text": "CHAPTER II Unlawful Associations 3\u20139",
+    "outline": "solid 2px",
+    "box": [
+     0,
+     303,
+     390,
+     48
+    ],
+    "expanded": "false",
+    "inDialog": false
+   },
+   {
+    "after": "Enter",
+    "tag": "SUMMARY",
+    "cls": "bareact-chapter-row",
+    "text": "CHAPTER II Unlawful Associations 3\u20139",
+    "outline": "solid 2px",
+    "box": [
+     0,
+     303,
+     390,
+     48
+    ],
+    "expanded": "true",
+    "inDialog": false
+   },
+   {
+    "tag": "SUMMARY",
+    "cls": "bareact-chapter-row",
+    "text": "CHAPTER III Offences and Penalties 10\u201314",
+    "outline": "solid 2px",
+    "box": [
+     0,
+     351,
+     390,
+     48
+    ],
+    "expanded": "false",
+    "inDialog": false
+   },
+   {
+    "after": "Enter",
+    "tag": "SUMMARY",
+    "cls": "bareact-chapter-row",
+    "text": "CHAPTER III Offences and Penalties 10\u201314",
+    "outline": "solid 2px",
+    "box": [
+     0,
+     351,
+     390,
+     48
+    ],
+    "expanded": "true",
+    "inDialog": false
+   },
+   {
+    "tag": "SUMMARY",
+    "cls": "bareact-chapter-row",
+    "text": "CHAPTER IV Punishment for Terrorist Activities 15\u2013",
+    "outline": "solid 2px",
+    "box": [
+     0,
+     399,
+     390,
+     59
+    ],
+    "expanded": "false",
+    "inDialog": false
+   },
+   {
+    "after": "Enter",
+    "tag": "SUMMARY",
+    "cls": "bareact-chapter-row",
+    "text": "CHAPTER IV Punishment for Terrorist Activities 15\u2013",
+    "outline": "solid 2px",
+    "box": [
+     0,
+     399,
+     390,
+     59
+    ],
+    "expanded": "true",
+    "inDialog": false
+   }
+  ],
+  "sheet_focus_on_open": {
+   "tag": "BUTTON",
+   "cls": "pg-sheet-close",
+   "text": "\u2715",
+   "outline": "solid 2px",
+   "box": [
+    322,
+    527,
+    44,
+    44
+   ],
+   "expanded": null,
+   "inDialog": true
+  },
+  "sheet_tab_cycle": [
+   {
+    "tag": "BUTTON",
+    "cls": "pg-add-primary",
+    "text": "Add to Playground",
+    "outline": "solid 2px",
+    "box": [
+     34,
+     709,
+     322,
+     50
+    ],
+    "expanded": null,
+    "inDialog": true
+   },
+   {
+    "tag": "A",
+    "cls": "pg-add-secondary",
+    "text": "Cancel",
+    "outline": "solid 2px",
+    "box": [
+     34,
+     768,
+     322,
+     46
+    ],
+    "expanded": null,
+    "inDialog": true
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "pg-sheet-close",
+    "text": "\u2715",
+    "outline": "solid 2px",
+    "box": [
+     322,
+     527,
+     44,
+     44
+    ],
+    "expanded": null,
+    "inDialog": true
+   },
+   {
+    "tag": "BUTTON",
+    "cls": "pg-add-primary",
+    "text": "Add to Playground",
+    "outline": "solid 2px",
+    "box": [
+     34,
+     709,
+     322,
+     50
+    ],
+    "expanded": null,
+    "inDialog": true
+   },
+   {
+    "tag": "A",
+    "cls": "pg-add-secondary",
+    "text": "Cancel",
+    "outline": "solid 2px",
+    "box": [
+     34,
+     768,
+     322,
+     46
+    ],
+    "expanded": null,
+    "inDialog": true
+   }
+  ],
+  "after_escape": {
+   "dialog_open": false,
+   "focus": {
+    "tag": "A",
+    "cls": "ActHead-btn",
+    "text": "+ Add to Playground",
+    "outline": "solid 2px",
+    "box": [
+     18,
+     146,
+     354,
+     48
+    ],
+    "expanded": null,
+    "inDialog": false
+   }
+  },
+  "sheet_open_after_s": 11.63
+ }
+]
