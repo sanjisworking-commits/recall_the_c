@@ -12,6 +12,7 @@ from fastapi.responses import RedirectResponse
 ROOT_ASSET_PATHS = frozenset(
     {
         "/health",
+        "/healthz",
         "/sitemap.xml",
         "/robots.txt",
         "/sw.js",

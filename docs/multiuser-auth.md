@@ -127,7 +127,7 @@ the redirect URI host.
 ## Access control (multi-user)
 
 **Public (GET):** `/`, `/browse*`, `/search`, `/learn*` (try modes), `/tables`, `/laws*`,
-`/login`, `/auth/*`, `/static/*`, `/health`, `/signed-out`, `/session-expired`
+`/login`, `/auth/*`, `/static/*`, `/health`, `/healthz`, `/signed-out`, `/session-expired`
 
 **Auth required:** `/dashboard`, `/progress`, `/calendar`, `/memory*`, `/settings`,
 `/profile` (writes), `/api/theme`, and progress-mutating POSTs
