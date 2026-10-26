@@ -72,7 +72,7 @@
         {% endif %}
         <span class="browse-article-num">Article {{ card.article_number }}</span>
         {% if card.title %}
-        <span class="browse-article-title">{{ card.title }}</span>
+        <span class="browse-article-title{% if card.title|length > 78 %} is-compact{% elif card.title|length > 48 %} is-tight{% endif %}">{{ card.title }}</span>
         {% endif %}
         {% if card.due_count %}
         <span class="browse-due-count is-{{ card.due_kind or 'due' }}">

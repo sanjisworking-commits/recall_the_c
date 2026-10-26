@@ -1940,6 +1940,14 @@
     text-overflow: clip;
   }
 
+  .part-row-sub.is-tight {
+    font-size: 10.5px;
+  }
+
+  .part-row-sub.is-compact {
+    font-size: 10px;
+  }
+
   .part-row-meta {
     display: flex;
     align-items: center;

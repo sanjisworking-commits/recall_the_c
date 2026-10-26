@@ -55,7 +55,7 @@
     </span>
     <span class="part-row-main">
       <span class="part-row-title">Article {{ card.article_number }}</span>
-      <span class="part-row-sub">{{ card.title }}</span>
+      <span class="part-row-sub{% if card.title|length > 78 %} is-compact{% elif card.title|length > 48 %} is-tight{% endif %}">{{ card.title }}</span>
       <span class="part-row-num">Art. {{ card.article_number }}</span>
       {% if marker_state or card.marks %}
       <span class="part-row-meta">

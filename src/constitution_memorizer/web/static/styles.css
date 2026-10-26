@@ -3712,6 +3712,14 @@ code {
   text-overflow: clip;
 }
 
+.browse-article-title.is-tight {
+  font-size: 11px;
+}
+
+.browse-article-title.is-compact {
+  font-size: 10px;
+}
+
 .tables-tab-rail {
   display: flex;
   flex-wrap: wrap;

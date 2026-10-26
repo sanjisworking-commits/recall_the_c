@@ -127,12 +127,16 @@ def test_browse_chapters_and_card_titles_without_reviewed(tmp_path: Path):
     assert "election of a President or Vice-President" in html
     assert "Discharge of President" in html
     assert "functions…" not in html
+    assert "browse-article-title is-tight" in html
+    assert "browse-article-title is-compact" in html
 
     part_html = client.get("/browse/part/v").text
     assert "part-row-sub" in part_html
     assert "functions in other contingencies" in part_html
     assert "election of a President or Vice-President" in part_html
     assert "functions…" not in part_html
+    assert "part-row-sub is-tight" in part_html
+    assert "part-row-sub is-compact" in part_html
 
 
 def test_article_card_title_keeps_the_full_heading():
