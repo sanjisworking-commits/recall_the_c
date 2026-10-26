@@ -353,7 +353,7 @@ def test_create_app_wires_postgres_repo_from_database_url(tmp_path: Path):
     ctor.assert_called_once()
     pool = ctor.call_args.args[0]
     assert pool is app.state.db_pool
-    assert pool.min_size == 1
+    assert pool.min_size == 0
     assert pool.max_size == 5
     assert pool.closed is True
     assert app.state.issue_report_repo is sentinel

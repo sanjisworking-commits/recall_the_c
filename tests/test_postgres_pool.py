@@ -15,11 +15,15 @@ from fastapi.testclient import TestClient
 from constitution_memorizer.auth.fake_provider import FakeAuthProvider
 from constitution_memorizer.auth.sessions import InMemorySessionStore, PostgresSessionStore
 from constitution_memorizer.multiuser.settings import MultiUserSettings, clear_settings_cache
+from psycopg_pool import PoolTimeout
+
 from constitution_memorizer.progress.pg_pool import (
     POOL_MAX_SIZE,
     POOL_MIN_SIZE,
     POOL_OPEN_TIMEOUT_SECONDS,
+    connection_kwargs,
     make_connection_pool,
+    normalize_pool_dsn,
 )
 from constitution_memorizer.progress.postgres_repository import PostgresProgressRepository
 from constitution_memorizer.reports.contact_repository import PostgresContactMessageRepository
@@ -123,7 +127,7 @@ class SharedFakePool:
 def test_make_connection_pool_starts_closed_with_tuple_defaults():
     pool = make_connection_pool("postgresql://user:pass@127.0.0.1:1/db")
     assert pool.closed is True
-    assert pool.min_size == POOL_MIN_SIZE == 1
+    assert pool.min_size == POOL_MIN_SIZE == 0
     assert pool.max_size == POOL_MAX_SIZE == 5
     assert inspect.signature(pool.open).parameters["wait"]
     source = inspect.getsource(make_connection_pool)
@@ -237,7 +241,7 @@ def test_create_app_shares_one_closed_pool_across_postgres_repos(tmp_path: Path)
     pool = app.state.db_pool
     assert pool is not None
     assert pool.closed is True
-    assert pool.min_size == 1
+    assert pool.min_size == 0
     assert pool.max_size == 5
     assert app.state.engine.repo._pool is pool
     assert app.state.session_store._pool is pool
@@ -353,3 +357,60 @@ def test_request_timing_uses_uvicorn_error_logger():
 
 def test_pool_open_timeout_is_fifteen_seconds():
     assert POOL_OPEN_TIMEOUT_SECONDS == 15.0
+
+
+def test_normalize_pool_dsn_rewrites_supabase_session_pooler():
+    raw = (
+        "postgresql://user:p%40ss@aws-0-ap-northeast-1.pooler.supabase.com:5432"
+        "/postgres?sslmode=require"
+    )
+    out = normalize_pool_dsn(raw)
+    assert ":6543/" in out
+    assert ":5432" not in out
+    assert "p%40ss" in out
+    assert "sslmode=require" in out
+
+
+def test_normalize_pool_dsn_leaves_transaction_and_direct_urls():
+    already = "postgresql://user:pass@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres"
+    assert normalize_pool_dsn(already) == already
+    local = "postgresql://user:pass@127.0.0.1:5432/db"
+    assert normalize_pool_dsn(local) == local
+    direct = "postgresql://user:pass@db.abcdefghijk.supabase.co:5432/postgres"
+    assert normalize_pool_dsn(direct) == direct
+
+
+def test_make_connection_pool_uses_transaction_mode_and_disables_prepares():
+    pool = make_connection_pool(
+        "postgresql://user:pass@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres"
+    )
+    assert pool.conninfo.endswith("pooler.supabase.com:6543/postgres") or (
+        ":6543/" in pool.conninfo
+    )
+    assert pool.kwargs == {"prepare_threshold": 0}
+    assert connection_kwargs(pool.conninfo) == {"prepare_threshold": 0}
+    local = make_connection_pool("postgresql://user:pass@127.0.0.1:5432/db")
+    assert local.kwargs in (None, {})
+
+
+def test_lifespan_survives_pool_timeout_and_serves_healthz(tmp_path: Path):
+    clear_settings_cache()
+    app = create_app(
+        units_path=MINI_UNITS,
+        db_path=tmp_path / "progress.db",
+        multiuser=False,
+        multiuser_settings=_settings(DATABASE_URL="", MULTIUSER_ENABLED="false"),
+    )
+    fake_pool = MagicMock()
+    fake_pool.open.side_effect = PoolTimeout(
+        "pool initialization incomplete after 15.0 sec"
+    )
+    app.state.db_pool = fake_pool
+    with TestClient(app) as client:
+        fake_pool.open.assert_called_once_with(
+            wait=True, timeout=POOL_OPEN_TIMEOUT_SECONDS
+        )
+        assert client.get("/healthz").status_code == 200
+        assert client.get("/health").status_code == 200
+    fake_pool.close.assert_called_once()
+    clear_settings_cache()

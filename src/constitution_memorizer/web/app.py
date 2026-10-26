@@ -32,6 +32,7 @@ from fastapi.responses import (
 )
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from psycopg_pool import PoolTimeout
 
 from constitution_memorizer.admin.dependencies import admin_hint
 from constitution_memorizer.admin.routes import create_admin_router
@@ -286,11 +287,23 @@ STATIC_DIR = WEB_DIR / "static"
 
 @asynccontextmanager
 async def _app_lifespan(app: FastAPI):
-    """Open the shared Postgres pool before traffic; close it on shutdown."""
+    """Open the shared Postgres pool before traffic; close it on shutdown.
+
+    A warm-up timeout must not kill the process: Railway only stops the old
+    replica after /healthz succeeds, and a full session-mode pooler would
+    otherwise deadlock the deploy in a crash loop.
+    """
     pool = getattr(app.state, "db_pool", None)
     try:
         if pool is not None:
-            pool.open(wait=True, timeout=POOL_OPEN_TIMEOUT_SECONDS)
+            try:
+                pool.open(wait=True, timeout=POOL_OPEN_TIMEOUT_SECONDS)
+            except PoolTimeout:
+                logger.error(
+                    "Postgres pool warm-up timed out after %.0fs; "
+                    "serving /healthz and retrying connections on demand",
+                    POOL_OPEN_TIMEOUT_SECONDS,
+                )
         yield
     finally:
         if pool is not None:
