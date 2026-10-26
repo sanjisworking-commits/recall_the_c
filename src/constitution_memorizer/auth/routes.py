@@ -70,7 +70,9 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
     router = APIRouter()
 
     @router.get("/health")
+    @router.get("/healthz")
     async def health() -> dict[str, str]:
+        # Railway's dashboard probe is /healthz; keep /health for docs and tests.
         return {"status": "ok"}
 
     @router.get("/login", response_class=HTMLResponse)

@@ -259,6 +259,7 @@ def test_wants_request_breakdown_paths():
     assert wants_request_breakdown("/calendar/google/disconnect") is True
     assert wants_request_breakdown("/calendar/google/retry") is False
     assert wants_request_breakdown("/health") is False
+    assert wants_request_breakdown("/healthz") is False
     assert wants_request_breakdown("/static/styles.css") is False
 
 

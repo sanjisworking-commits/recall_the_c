@@ -152,6 +152,10 @@ def test_the_three_exempt_lists_share_one_definition():
         assert path in ROOT_ASSET_PATHS
         assert not guest.requires_auth(path, "GET")
         assert guest.is_guest_public_get(path, "GET")
+    for path in ("/health", "/healthz"):
+        assert path in ROOT_ASSET_PATHS
+        assert not guest.requires_auth(path, "GET")
+        assert guest.is_guest_public_get(path, "GET")
     for module in (routes, web_app):
         text = Path(module.__file__).read_text(encoding="utf-8")
         assert "ROOT_ASSET_PATHS" in text, module.__name__

@@ -310,6 +310,10 @@ def test_request_timing_logs_skip_health_and_static(
             assert _timing_messages(caplog) == []
 
             caplog.clear()
+            assert client.get("/healthz").status_code == 200
+            assert _timing_messages(caplog) == []
+
+            caplog.clear()
             static = client.get("/static/styles.css")
             assert static.status_code == 200
             assert _timing_messages(caplog) == []
