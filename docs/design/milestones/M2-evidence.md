@@ -1,6 +1,6 @@
 # M2 — Bare Act head family · LOCAL / PRELIMINARY evidence
 
-Status: **LOCAL/PRELIMINARY — under owner review (2026-10-20), not accepted.** Produced from a local run of this branch; it does
+Status: **ACCEPTED WITH DOCUMENTED EXCEPTIONS (owner, 2026-10-26) on deployed candidate `3719b9f` — see §14.** Earlier sections keep their original LOCAL/PRELIMINARY and hosted labels as written at the time.
 **not** close hosted acceptance. No staging deployment has been made for M2
 (that needs the owner's separate authorisation, checklist §7); the hosted
 paid states (Plus/Pro/Max, expired, halted) stay **unverified** until a
@@ -370,7 +370,7 @@ Full suite on this tree: 3,951 passed, 163 skipped, 3 failed (the documented dev
 
 ## 10. Hosted validation — staging deployment `0eb35808-b852-4555-97fd-019122411de1` (= `e2ac903`, 2026-10-20)
 
-Deployment verified from Railway metadata (`SUCCESS`, branch `pg-m2-act-head`, commit `e2ac903aa542f154c6b148f9505e53a5cf6c779b`) and from the served page (`main88` / `mob107` / `pg51` / `pg11`, `data-act-head`, `/health` 200) before any capture. Nothing was deployed, granted or revoked by Claude; no roster write was made on staging.
+Deployment verified from Railway metadata (`SUCCESS`, branch `pg-m2-act-head`, commit `e2ac903aa542f154c6b148f9505e53a5cf6c779b`) and from the served page (`main88` / `mob107` / `pg51` / `pg11`, `data-act-head`, `/health` 200) before any capture. Nothing was deployed, granted or revoked by Claude; no Playground roster write was made on staging.
 
 ### 10.1 Guest matrix (headless Chrome, `tools/capture_m2.py`, 390 and 1280, light and dark)
 
@@ -485,7 +485,7 @@ Full suite on this tree: 3,952 passed, 163 skipped, 3 failed (the documented dev
 
 ## 13. Hosted validation — staging deployment `dd04a5a2-9451-48b6-a391-ec5ab02835da` (= `3719b9f`, 2026-10-25)
 
-The owner deployed `3719b9f0d3ec3f7fe5a9e0d885a13e7f03ce0ce4` (PR #221) to `recallc-playground-staging` and reported the deployment SUCCESS; the served page was checked for the PF-2 pins (`pg52` / `pg12`, `data-act-head`) before capture. Nothing was deployed, granted or revoked by Claude; no roster write was made; no POST was sent.
+The owner deployed `3719b9f0d3ec3f7fe5a9e0d885a13e7f03ce0ce4` (PR #221) to `recallc-playground-staging` and reported the deployment SUCCESS; the served page was checked for the PF-2 pins (`pg52` / `pg12`, `data-act-head`) before capture. Nothing was deployed, granted or revoked by Claude; no Playground roster write was made; no POST was sent.
 
 **Method (session-reuse policy, 2026-10-22).** One persistent headed Chrome profile per tier, signed in once by the owner (Google); the capture tools attach to the profile's debugging port and open their own tab — they set no cookies and the manifests hold DOM probes, screenshots and hashes only (no session material; grep-checked before staging). The tier was verified from the Today/Profile chrome before each run (`tools/tier.py`): the Free profile shows "Free account", Devices 0 of 2; the Pro profile shows "RecallC Pro · ACTIVE", **Devices 2 of 2**. The matrix tool polls the sheet for up to 15 s; the states/keyboard/busy tools were given the same poll (up to 20 s, time to open recorded) after their first Free run probed at fixed 1–4 s waits and reported the sheet "not open" — that first output was discarded and both runs repeated; the tools in `tools/` are the patched ones.
 
@@ -529,7 +529,7 @@ The persistent Pro profile (port 9463, created 2026-10-25) is **not** in the lis
 
 ### 13.6 Pro eligible rows after the authorised device removal (2026-10-26, deployment `dd04a5a2` = `3719b9f`)
 
-**Removal (one POST, authorised):** through the Pro profile, the Remove form for `f419faa3-fb4e-462a-b2a5-3a56f830aa22` was submitted from `/profile/security/devices`; the page returned `?removed=1` with "1 of 2 devices", Chrome on macOS `2135f78c…` still active, "Web browser" listed under Removed devices. The next Act-head request already served kind `eligible_to_add`; the persistent profile registered itself on the first Playground-gated request of the rerun (roster afterwards: "2 of 2 devices" — Chrome on macOS "This device", registered 26 Oct 2026, and the owner's Chrome on macOS of 20 Oct). Log: `manifests/hosted3_device_revocation_dd04a5a2.log` (device ids and roster text only). No roster write, subscription change, deployment or merge; the Add button was never submitted.
+**Removal (one POST, authorised):** through the Pro profile, the Remove form for `f419faa3-fb4e-462a-b2a5-3a56f830aa22` was submitted from `/profile/security/devices`; the page returned `?removed=1` with "1 of 2 devices", Chrome on macOS `2135f78c…` still active, "Web browser" listed under Removed devices. The next Act-head request already served kind `eligible_to_add`; the persistent profile registered itself on the first Playground-gated request of the rerun (roster afterwards: "2 of 2 devices" — Chrome on macOS "This device", registered 26 Oct 2026, and the owner's Chrome on macOS of 20 Oct). Log: `manifests/hosted3_device_revocation_dd04a5a2.log` (device ids and roster text only). No Playground roster write, subscription change, deployment or merge (the device roster did change: one removal, one registration); the Add button was never submitted.
 
 | Check | 390 × 844 | 1280 × 900 | Files |
 |---|---|---|---|
@@ -552,3 +552,7 @@ PF-1 on this run: the Pro sheet opened 11.4–11.7 s after the click in every ru
 | Free | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | in-page + URL ✓ |
 | Pro | ✓ (§13.6) | ✓ | ✓ | ✓ | ✓ | ✓ | in-page + URL ✓ (§13.6); device-blocked panel by URL also seen (§13.3) |
 | Plus, Max, expired, halted | not run (local fixtures only) | | | | | | |
+
+## 14. Acceptance record (owner, 2026-10-26)
+
+M2 accepted on deployed candidate `3719b9f0d3ec3f7fe5a9e0d885a13e7f03ce0ce4` (staging deployment `dd04a5a2`) with the exceptions and deadlines recorded in `M2.md` §8: Plus/Max/expired/halted hosted checks and an actual Add submission (before final redesign acceptance); real zoom, automated scan and screen reader (M1b, before final redesign acceptance); the three device-test failures (documented baseline, suite remains failed); PF-1 (hardening; the Pro wait investigated before production release). The 12 Pro rows that differ from the local Pro candidate in §13.6 are **reconciled differences** (BNS on staging vs NDPS in the fixture), not exact matches. "No roster write" throughout this record means no **Playground** roster write; the device roster changed by one authorised removal and one registration (§13.5–13.6). Acceptance authorises the M3 acceptance checklist only — no M3 implementation, merge or deployment.
