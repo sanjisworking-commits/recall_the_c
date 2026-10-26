@@ -203,6 +203,14 @@
       "body_text": "Every Vice-President shall, before entering upon his office, make and subscribe before the President, or some person appointed in that behalf by him, an oath or affirmation in the following form, that is to say—\n\"I, A.B., do swear in the name of God / solemnly affirm that I will bear true faith and allegiance to the Constitution of India as by law established and that I will faithfully discharge the duty upon which I am about to enter.\"",
       "manual_review_status": "approved"
     },
+    "article-70": {
+      "title": "Discharge of President's functions in other contingencies",
+      "part_number": "V",
+      "chapter_number": "I",
+      "opening_text": "",
+      "body_text": "Parliament may make such provision as it thinks fit for the discharge of the functions of the President in any contingency not provided for in this Chapter.",
+      "manual_review_status": "approved"
+    },
     "article-168": {
       "title": "Constitution of Legislatures in States",
       "part_number": "VI",
@@ -2617,6 +2625,7 @@
     "article-3b / 12a / 12aa / 12b: Sixth Schedule paragraphs mis-parsed as Articles; excluded.",
     "article-92a / 92b: Seventh Schedule List I entries mis-parsed as Articles; excluded.",
     "article-71 / 131 / 150 / 230: schedule list entries had overwritten real Articles; restored Bare Act text and Part placement.",
+    "article-70: substituted Art 71 leftover clauses (2)–(4) were attached to Art 70; restored the single Bare Act sentence. Art 71 keeps its four election-dispute clauses.",
     "article-257a: Ninth Schedule entry had overwritten omitted Art 257A; restored as omitted.",
     "article-7: stripped diglot Part II running header; proviso kept only in body (scrub drops duplicate provisos array entries across corpus).",
     "article-19: diglot parse left only the (1) stem; restored full Bare Act clauses (1)–(6), omitting repealed (1)(f).",
