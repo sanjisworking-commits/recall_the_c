@@ -1,9 +1,12 @@
-"""Signed-in desktop subscribe Add dialog (CTA map signedIn/05-screen).
+"""Signed-in subscribe Add sheet (CTA map signedIn/05-screen).
 
 Authorized: ChatGPT. Authenticated multiuser non-subscriber GET
-/playground/laws/ndps/add desktop overlay only. Phone subscribe sheet,
-guest Add, Bare Act head, Landing, Browse, and Laws stay unchanged.
-Unlock Playground opens the existing Gate. X / Cancel / Close dismiss only.
+/playground/laws/ndps/add. Since M2 there is ONE sheet per state (no
+desktop/phone twins): title "Add to Playground", lede, primary "Unlock
+Playground" → the existing /playground Gate, and the tiers/price footnote.
+No Cancel in the Free sheet — the ✕ / Escape / scrim close it. The direct
+URL returns the full Act page with the sheet inside an open <dialog>
+(M2 Q4). Guest Add, Bare Act head, Landing, Browse, and Laws stay unchanged.
 """
 
 from __future__ import annotations
@@ -30,16 +33,40 @@ MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
 ROOT = Path(__file__).resolve().parents[1]
 STYLES = ROOT / "src/constitution_memorizer/web/static/styles.css"
 MOBILE = ROOT / "src/constitution_memorizer/web/static/mobile.css"
+PG_CSS = ROOT / "src/constitution_memorizer/web/static/playground.css"
 LANDING = ROOT / "src/constitution_memorizer/web/templates/landing.html"
 BROWSE = ROOT / "src/constitution_memorizer/web/templates/browse_index.html"
 LAWS = ROOT / "src/constitution_memorizer/web/templates/laws.html"
 BARE = ROOT / "src/constitution_memorizer/web/templates/bare_act.html"
+ADD = ROOT / "src/constitution_memorizer/web/templates/playground_add.html"
+ADD_PANEL = ROOT / "src/constitution_memorizer/web/templates/partials/playground_add_panel.html"
 USER = UUID("11111111-1111-4111-8111-111111111111")
+TITLE = "Add to Playground"
+PRIMARY = "Unlock Playground"
 LEDE = (
-    "Turning NDPS Act into a learning experience needs a plan. "
+    "Turning The NDPS Act, 1985 into a learning experience needs a plan. "
     "Reading it stays free."
 )
-NOTE = "from ₹199 / month. Constitution learning stays included with your account."
+NOTE = "Plus · Pro · Max — from ₹199 / month. Constitution learning stays free."
+OLD_MARKERS = (
+    "data-signed-in-add-desktop",
+    "data-signed-in-add-phone",
+    "data-guest-add-desktop",
+    "data-guest-add-phone",
+    "data-plus-add-desktop",
+    "data-plus-add-phone",
+    'data-plus-add="desktop"',
+    'data-expired-add="desktop"',
+    'data-halted-add="desktop"',
+    'class="guest-add-',
+    "guest-add-title",
+    "guest-add-lede",
+    "guest-add-signin",
+    "signed-add-",
+    "plus-add-",
+    "expired-add-",
+    "halted-add-",
+)
 
 
 @pytest.fixture(autouse=True)
@@ -92,64 +119,137 @@ def _sign_in(client: TestClient) -> None:
     assert client.cookies.get(SESSION_COOKIE_NAME)
 
 
-def _desk(html: str) -> str:
-    return html.split("data-signed-in-add-desktop", 1)[1].split(
-        "data-signed-in-add-phone", 1
-    )[0]
+ROLE_ATTRS = 'role="dialog" aria-modal="true" aria-labelledby="pg-add-title"'
 
 
-def _phone(html: str) -> str:
-    return html.split("data-signed-in-add-phone", 1)[1].split("</div>", 1)[0]
+def _sheet(html: str) -> str:
+    """The one `.pg-sheet-panel` (the Add sheet) in the page."""
+    return html.split('class="pg-sheet-panel"', 1)[1].split("</section>", 1)[0]
 
 
-def test_signed_in_add_desktop_is_subscribe_only(tmp_path: Path) -> None:
+def _band(html: str, slug: str = "ndps") -> str:
+    return html.split(f'data-act-head="{slug}"', 1)[1].split("data-act-list", 1)[0]
+
+
+def _assert_no_old_markers(text: str) -> None:
+    for marker in OLD_MARKERS:
+        assert marker not in text, marker
+
+
+def test_signed_in_add_sheet_is_subscribe_only(tmp_path: Path) -> None:
     client = TestClient(_mu_app(tmp_path))
     _sign_in(client)
     html = client.get(add_path("ndps")).text
-    assert 'data-pg-kind="subscribe"' in html
-    assert "data-signed-in-add-desktop" in html
-    assert "data-guest-add-desktop" not in html
-    desk = _desk(html)
-    assert ">Unlock Playground<" in desk
-    assert desk.count("Unlock Playground") == 2
-    assert LEDE in desk
-    assert NOTE in desk
-    assert f'href="{home_path()}"' in desk
-    assert 'class="signed-add-unlock"' in desk
-    assert 'data-pg-sheet-close' in desk
-    assert ">Cancel<" in desk
-    assert "/billing/subscriptions" not in desk
-    assert "Sign in to use Playground" not in desk
-    assert "Create an account" not in desk
-    assert "Resume Playground" not in desk
-    assert "Playground full this month" not in desk
-    assert "temporarily unavailable" not in desk
-    assert "Device limit" not in desk
-    assert "Entire Act" not in desk
-    assert "Choose sections" not in desk
-    assert "Already in Playground" not in desk
-    assert ">Sections<" not in desk
-    assert ">Continue<" not in desk
+    _assert_no_old_markers(html)
+    assert html.count('class="pg-sheet-panel"') == 1
+    sheet = _sheet(html)
+    assert 'data-pg-kind="subscribe"' in sheet
+    assert "data-pg-add\n" in sheet
+    assert 'data-roster-confirm="ndps"' in sheet
+    # One dialog landmark (owner review of b828b85): inside the host <dialog>
+    # the panel carries no role/aria-modal/label; the host does.
+    assert 'role="dialog"' not in sheet and "aria-modal" not in sheet
+    assert 'aria-labelledby="pg-add-title"' in html.split("<dialog ", 1)[1].split(">", 1)[0]
+    assert "data-expired-add" not in sheet
+    assert "data-halted-add" not in sheet
+    assert f'<h1 id="pg-add-title" class="pg-add-title">{TITLE}</h1>' in sheet
+    assert f'<p class="pg-add-lede">{LEDE}</p>' in sheet
+    assert f'<a class="pg-add-primary" href="{home_path()}">{PRIMARY}</a>' in sheet
+    assert sheet.count(PRIMARY) == 1
+    assert f'<p class="pg-add-note">{NOTE}</p>' in sheet
+    # No Cancel in the Free sheet: ✕ / Escape / scrim close it.
+    assert "data-pg-sheet-close" not in sheet
+    assert ">Cancel<" not in sheet
+    assert "pg-add-secondary" not in sheet
+    assert "/billing/subscriptions" not in sheet
+    assert "stage=plans" not in sheet
+    assert "<form" not in sheet
+    assert "data-pg-add-confirm" not in sheet
+    assert "data-guest-add-gate" not in sheet
+    assert "Sign in to use Playground" not in sheet
+    assert "Create an account" not in sheet
+    assert "Resume Playground" not in sheet
+    assert "Playground full this month" not in sheet
+    assert "temporarily unavailable" not in sheet
+    assert "Device limit" not in sheet
+    assert "Entire Act" not in sheet
+    assert "Choose sections" not in sheet
+    assert "Already in Playground" not in sheet
+    assert ">Sections<" not in sheet
+    assert ">Continue<" not in sheet
+    assert "included with your account" not in sheet
 
 
-def test_signed_in_add_phone_keeps_billing_and_cancel_href(tmp_path: Path) -> None:
+def test_signed_in_add_direct_url_is_act_page_with_open_dialog(tmp_path: Path) -> None:
     client = TestClient(_mu_app(tmp_path))
     _sign_in(client)
-    phone = _phone(client.get(add_path("ndps")).text)
-    assert ">Unlock Playground<" in phone
-    assert f'href="{home_path()}"' in phone
-    assert 'href="/billing/subscriptions"' not in phone
-    assert f'href="/laws/ndps"' not in phone
-    assert ">Cancel<" not in phone
-    assert 'data-pg-sheet-close' not in phone
-    assert "Create an account" not in phone
+    page = client.get(add_path("ndps"))
+    assert page.status_code == 200
+    html = page.text
+    # M2 Q4: the direct URL is the Act page with the sheet in an open
+    # <dialog>; closing returns to /laws/ndps. The same one panel serves
+    # both widths — there is no second copy for the phone.
+    assert (
+        '<dialog class="pg-sheet" data-pg-sheet-host data-pg-sheet-direct '
+        'data-pg-sheet-return="/laws/ndps" aria-modal="true" '
+        'aria-labelledby="pg-add-title" open>' in html
+    )
+    assert html.count("<dialog") == 1
+    assert html.count('class="pg-sheet-panel"') == 1
+    assert 'data-mscreen="bareact"' in html
+    assert "PlaygroundShell" not in html
+    assert "data-hard-gate" not in html
+    assert html.count('data-act-head="ndps"') == 1
+    band = _band(html)
+    assert "Subscribe to use Playground" in band
+    assert f'href="{add_path("ndps")}"' in band
+    assert "data-act-list" in html
+    assert '<details class="bareact-chapter">' in html
+    sheet = _sheet(html)
+    assert f'href="{home_path()}"' in sheet
+    assert 'href="/billing/subscriptions"' not in sheet
+    assert 'href="/laws/ndps"' not in sheet
+    assert ">Cancel<" not in sheet
+    assert "data-pg-sheet-close" not in sheet
+
+
+def test_signed_in_add_in_page_fetch_returns_bare_panel(tmp_path: Path) -> None:
+    """playground.js fetches the URL with X-Requested-With: pg-sheet and lifts
+    `.pg-sheet-panel` into the live dialog: the same subscribe panel, no Act
+    head and no server-rendered dialog around it."""
+    client = TestClient(_mu_app(tmp_path))
+    _sign_in(client)
+    page = client.get(add_path("ndps"), headers={"X-Requested-With": "pg-sheet"})
+    assert page.status_code == 200
+    html = page.text
+    _assert_no_old_markers(html)
+    assert html.count('class="pg-sheet-panel"') == 1
+    assert "<dialog" not in html
+    assert "data-pg-sheet-direct" not in html
+    assert "data-act-head" not in html
+    assert 'data-mscreen="playground"' in html
+    sheet = _sheet(html)
+    assert 'data-pg-kind="subscribe"' in sheet
+    assert f'<h1 id="pg-add-title" class="pg-add-title">{TITLE}</h1>' in sheet
+    assert f'<p class="pg-add-lede">{LEDE}</p>' in sheet
+    assert f'<a class="pg-add-primary" href="{home_path()}">{PRIMARY}</a>' in sheet
+    assert f'<p class="pg-add-note">{NOTE}</p>' in sheet
+    assert ">Cancel<" not in sheet
+    assert "data-pg-sheet-close" not in sheet
+    assert "/billing/subscriptions" not in sheet
+    assert "data-guest-add-gate" not in sheet
+    # Alone, the panel is its own dialog (as before M2); inside the host
+    # <dialog> it is not. Otherwise byte-identical.
+    assert 'role="dialog" aria-modal="true" aria-labelledby="pg-add-title"' in sheet
+    direct = _sheet(client.get(add_path("ndps")).text)
+    assert sheet.replace(ROLE_ATTRS, "") == direct
 
 
 def test_signed_in_add_unlock_opens_existing_gate(tmp_path: Path) -> None:
     client = TestClient(_mu_app(tmp_path))
     _sign_in(client)
-    desk = _desk(client.get(add_path("ndps")).text)
-    assert f'href="{home_path()}"' in desk
+    sheet = _sheet(client.get(add_path("ndps")).text)
+    assert f'<a class="pg-add-primary" href="{home_path()}">{PRIMARY}</a>' in sheet
     gate = client.get(home_path(), follow_redirects=False)
     assert gate.status_code == 200
     assert 'class="EntitlementGate"' in gate.text
@@ -158,8 +258,24 @@ def test_signed_in_add_unlock_opens_existing_gate(tmp_path: Path) -> None:
 
 
 def test_signed_in_add_does_not_touch_accepted_screens() -> None:
-    assert "data-signed-in-add-desktop" not in BARE.read_text(encoding="utf-8")
-    assert 'data-signed-in-bareact-desktop' in BARE.read_text(encoding="utf-8")
+    bare = BARE.read_text(encoding="utf-8")
+    _assert_no_old_markers(bare)
+    assert 'data-act-head="{{ act.slug }}"' in bare
+    assert "{% block act_dialog %}{% endblock %}" in bare
+    add = ADD.read_text(encoding="utf-8")
+    _assert_no_old_markers(add)
+    # Over the Act when the Act context is present; the plain Playground
+    # shell for the in-page fetch (X-Requested-With: pg-sheet) and POSTs.
+    assert (
+        '{% extends "bare_act.html" if act is defined and act else "playground_base.html" %}'
+        in add
+    )
+    assert "{% block act_dialog %}" in add
+    assert "{% block playground %}" in add
+    assert add.count('{% include "partials/playground_add_panel.html" %}') == 2
+    panel_src = ADD_PANEL.read_text(encoding="utf-8")
+    _assert_no_old_markers(panel_src)
+    assert panel_src.count('class="pg-sheet-panel"') == 1
     landing = LANDING.read_text(encoding="utf-8")
     assert 'data-guest-landing="desktop"' in landing
     browse = BROWSE.read_text(encoding="utf-8")
@@ -167,45 +283,64 @@ def test_signed_in_add_does_not_touch_accepted_screens() -> None:
     laws = LAWS.read_text(encoding="utf-8")
     assert "data-signed-in-laws-desktop" in laws
     css = STYLES.read_text(encoding="utf-8")
-    headband = css.split(
-        "[data-signed-in-bareact-desktop] .guest-bareact-headband {", 1
-    )[1].split("}", 1)[0]
-    assert "12px 40px 14px" in headband
+    band = css.split("Bare Act head (M2)", 1)[1].split(".ActHead-band {", 1)[1].split("}", 1)[0]
+    assert "padding: 16px 40px 22px" in band
     mobile = MOBILE.read_text(encoding="utf-8")
-    assert "data-signed-in-add-desktop" not in mobile
-    pg_css = (
-        ROOT / "src/constitution_memorizer/web/static/playground.css"
-    ).read_text(encoding="utf-8")
-    guest_block = pg_css.split("[data-guest-add-desktop] .guest-add-title {", 1)[1].split(
-        "[data-guest-add-desktop] .guest-add-lede {", 1
-    )[0]
-    assert "font-size: 22px" in guest_block
-    assert "font-weight: 500" in guest_block
-    guest_btn = pg_css.split("[data-guest-add-desktop] .guest-add-signin {", 1)[1].split(
-        ".PlaygroundShell [data-guest-add-desktop] .guest-add-signin {", 1
-    )[0]
-    assert "height: 50px" in guest_btn
-    signed_title = pg_css.split(
-        "[data-signed-in-add-desktop] .signed-add-title {", 1
-    )[1].split("}", 1)[0]
-    assert "font-size: 20px" in signed_title
-    assert "font-weight: 400" in signed_title
-    assert "font-size: 22px" not in signed_title
+    _assert_no_old_markers(mobile)
+    pg_css = PG_CSS.read_text(encoding="utf-8")
+    _assert_no_old_markers(pg_css)
+    m2 = pg_css.split("Add sheet (M2)", 1)[1]
+    title = m2.split(".pg-add-title {", 1)[1].split("}", 1)[0]
+    assert "font-size: 22px" in title
+    assert "font-weight: 500" in title
+    lede = m2.split(".pg-add-lede {", 1)[1].split("}", 1)[0]
+    assert "margin: 0 0 18px" in lede
+    primary = m2.split(".pg-add-primary {", 1)[1].split("}", 1)[0]
+    assert "min-height: 50px" in primary
+    assert "width: 100%" in primary
+    note = m2.split(".pg-add-note {", 1)[1].split("}", 1)[0]
+    assert "text-align: center" in note
+    assert "margin: 12px 0 0" in note
+    panel = m2.split(".pg-sheet-panel[data-pg-add] {", 1)[1].split("}", 1)[0]
+    assert "padding: 26px 28px 26px" in panel
+    dialog = pg_css.split("dialog.pg-sheet {", 1)[1].split("}", 1)[0]
+    assert "max-width: 460px" in dialog
+    close = pg_css.split(".pg-sheet-close {", 1)[1].split("}", 1)[0]
+    assert "top: 14px" in close
+    assert "right: 14px" in close
 
 
 def test_signed_in_add_does_not_change_guest_or_other_kinds(tmp_path: Path) -> None:
     guest = TestClient(_mu_app(tmp_path / "guest"))
     guest_html = guest.get(add_path("ndps")).text
-    assert "data-guest-add-desktop" in guest_html
-    assert "data-signed-in-add-desktop" not in guest_html
-    assert "Create an account" in guest_html
+    _assert_no_old_markers(guest_html)
+    guest_sheet = _sheet(guest_html)
+    assert 'data-pg-kind="guest"' in guest_sheet
+    assert f'<h1 id="pg-add-title" class="pg-add-title">{TITLE}</h1>' in guest_sheet
+    assert "Playground needs an account. Reading The NDPS Act, 1985 stays free" in guest_sheet
+    assert 'class="pg-add-primary" href="/login?next=' in guest_sheet
+    assert "data-guest-add-gate>Sign in</a>" in guest_sheet
+    assert "data-guest-add-gate>Create an account</a>" in guest_sheet
+    assert PRIMARY not in guest_sheet
+    assert NOTE not in guest_sheet
     client = TestClient(_mu_app(tmp_path))
     _sign_in(client)
     bns = client.get(add_path("bns")).text
-    assert "data-signed-in-add-desktop" in bns
-    assert 'data-pg-kind="subscribe"' in bns
-    resume = client.get("/playground").text
-    assert "Resume Playground" not in _desk(client.get(add_path("ndps")).text)
+    _assert_no_old_markers(bns)
+    bns_sheet = _sheet(bns)
+    assert 'data-pg-kind="subscribe"' in bns_sheet
+    assert 'data-roster-confirm="bns"' in bns_sheet
+    assert (
+        '<p class="pg-add-lede">Turning The BNS, 2023 into a learning experience '
+        "needs a plan. Reading it stays free.</p>" in bns_sheet
+    )
+    assert f'<a class="pg-add-primary" href="{home_path()}">{PRIMARY}</a>' in bns_sheet
+    assert 'data-pg-sheet-return="/laws/bns"' in bns
+    assert 'data-act-head="bns"' in bns
+    ndps_sheet = _sheet(client.get(add_path("ndps")).text)
+    assert "Resume Playground" not in ndps_sheet
+    assert "Manage subscription" not in ndps_sheet
+    assert "data-guest-add-gate" not in ndps_sheet
 
 
 def _serve(app, host: str = "127.0.0.1") -> tuple[int, object]:
@@ -275,7 +410,7 @@ def test_signed_in_add_1280_gate_and_close(tmp_path: Path) -> None:
             page.evaluate(
                 """() => { document.documentElement.setAttribute('data-theme', 'light'); }"""
             )
-            page.locator("[data-signed-in-bareact-desktop] .guest-bareact-cta").click()
+            page.locator('[data-act-head="ndps"] .ActHead-btn').click()
             page.wait_for_selector("[data-pg-add][data-pg-kind='subscribe']", timeout=8000)
 
         open_dialog()
@@ -283,25 +418,22 @@ def test_signed_in_add_1280_gate_and_close(tmp_path: Path) -> None:
             """() => {
               const dialog = document.querySelector('dialog.pg-sheet');
               const panel = document.querySelector('[data-pg-add]');
-              const desk = panel.querySelector('[data-signed-in-add-desktop]');
-              const phone = panel.querySelector('[data-signed-in-add-phone]');
-              const unlock = desk.querySelector('.signed-add-unlock');
-              const cancel = desk.querySelector('.signed-add-cancel');
+              const unlock = panel.querySelector('.pg-add-primary');
+              const cancel = panel.querySelector('.pg-add-secondary');
               const closeBtn = panel.querySelector('[data-pg-sheet-close].pg-sheet-close');
-              const head = document.querySelector('[data-signed-in-bareact-desktop]');
+              const head = document.querySelector('[data-act-head="ndps"]');
               const box = panel.getBoundingClientRect();
-              const note = desk.querySelector('.signed-add-note');
-              const titleEl = desk.querySelector('.signed-add-title');
-              const ledeEl = desk.querySelector('.signed-add-lede');
+              const note = panel.querySelector('.pg-add-note');
+              const titleEl = panel.querySelector('#pg-add-title');
+              const ledeEl = panel.querySelector('.pg-add-lede');
               const closeStyle = closeBtn && getComputedStyle(closeBtn);
               const panelStyle = getComputedStyle(panel);
               const backdrop = getComputedStyle(dialog, '::backdrop');
               return {
                 open: dialog && dialog.open,
                 kind: panel.getAttribute('data-pg-kind'),
-                deskDisplay: getComputedStyle(desk).display,
-                phoneDisplay: getComputedStyle(phone).display,
-                eyebrowDisplay: getComputedStyle(panel.querySelector('.pg-eyebrow')).display,
+                panels: document.querySelectorAll('.pg-sheet-panel').length,
+                eyebrow: Boolean(panel.querySelector('.pg-eyebrow')),
                 title: titleEl.textContent.trim(),
                 titleSize: getComputedStyle(titleEl).fontSize,
                 titleWeight: getComputedStyle(titleEl).fontWeight,
@@ -310,22 +442,19 @@ def test_signed_in_add_1280_gate_and_close(tmp_path: Path) -> None:
                 unlockText: unlock.textContent.trim(),
                 unlockHref: unlock.getAttribute('href'),
                 unlockH: unlock.getBoundingClientRect().height,
-                unlockShadow: getComputedStyle(unlock).boxShadow,
                 note: note && note.textContent.trim(),
                 noteAlign: note && getComputedStyle(note).textAlign,
                 noteMarginTop: note && getComputedStyle(note).marginTop,
-                cancelDisplay: cancel ? getComputedStyle(cancel).display : null,
-                cancelCloses: cancel && cancel.hasAttribute('data-pg-sheet-close'),
+                cancel: Boolean(cancel),
                 hasClose: Boolean(closeBtn),
                 closeLabel: closeBtn && closeBtn.getAttribute('aria-label'),
                 closeTop: closeStyle && closeStyle.top,
                 closeRight: closeStyle && closeStyle.right,
                 panelW: box.width,
                 panelH: box.height,
-                panelRadius: panelStyle.borderRadius,
                 panelPad: panelStyle.padding,
                 scrim: backdrop.backgroundColor,
-                guestAdd: Boolean(panel.querySelector('[data-guest-add-desktop]')),
+                guestGate: Boolean(panel.querySelector('[data-guest-add-gate]')),
                 leaked: {
                   already: panel.innerText.includes('Already in Playground'),
                   resume: panel.innerText.includes('Resume Playground'),
@@ -333,17 +462,18 @@ def test_signed_in_add_1280_gate_and_close(tmp_path: Path) -> None:
                   pending: panel.innerText.includes('temporarily unavailable'),
                   entire: panel.innerText.includes('Entire Act'),
                   signin: panel.innerText.includes('Create an account'),
+                  cancel: panel.innerText.includes('Cancel'),
                 },
                 background: Boolean(head),
-                subscribeCta: head && head.querySelector('.guest-bareact-cta') &&
-                  head.querySelector('.guest-bareact-cta').textContent.trim(),
+                subscribeCta: head && head.querySelector('.ActHead-btn') &&
+                  head.querySelector('.ActHead-btn').textContent.trim(),
               };
             }"""
         )
         page.evaluate("() => document.activeElement && document.activeElement.blur()")
         page.screenshot(path=str(shot_path), full_page=False)
 
-        page.locator("[data-signed-in-add-desktop] .signed-add-unlock").click()
+        page.locator("[data-pg-add] .pg-add-primary").click()
         page.wait_for_url("**/playground**", timeout=8000)
         gate = page.evaluate(
             """() => {
@@ -365,23 +495,9 @@ def test_signed_in_add_1280_gate_and_close(tmp_path: Path) -> None:
               return {
                 open: Boolean(dialog && dialog.open),
                 path: location.pathname,
-                head: Boolean(document.querySelector('[data-signed-in-bareact-desktop]')),
+                head: Boolean(document.querySelector('[data-act-head="ndps"]')),
                 focused: document.activeElement &&
-                  document.activeElement.classList.contains('guest-bareact-cta'),
-              };
-            }"""
-        )
-
-        open_dialog()
-        page.evaluate(
-            """() => document.querySelector('[data-signed-in-add-desktop] .signed-add-cancel').click()"""
-        )
-        closed_cancel = page.evaluate(
-            """() => {
-              const dialog = document.querySelector('dialog.pg-sheet');
-              return {
-                open: Boolean(dialog && dialog.open),
-                path: location.pathname,
+                  document.activeElement.classList.contains('ActHead-btn'),
               };
             }"""
         )
@@ -391,31 +507,46 @@ def test_signed_in_add_1280_gate_and_close(tmp_path: Path) -> None:
         closed_esc = page.evaluate(
             """() => {
               const dialog = document.querySelector('dialog.pg-sheet');
-              return Boolean(dialog && dialog.open);
+              return {
+                open: Boolean(dialog && dialog.open),
+                path: location.pathname,
+              };
             }"""
         )
 
+        page.goto(f"{origin}{add_path('ndps')}", wait_until="networkidle")
+        direct = page.evaluate(
+            """() => {
+              const dialog = document.querySelector('dialog.pg-sheet[data-pg-sheet-direct]');
+              const panel = document.querySelector('[data-pg-add]');
+              return {
+                open: Boolean(dialog && dialog.open),
+                kind: panel && panel.getAttribute('data-pg-kind'),
+                head: Boolean(document.querySelector('[data-act-head="ndps"]')),
+                path: location.pathname,
+              };
+            }"""
+        )
+        page.keyboard.press("Escape")
+        page.wait_for_function("() => location.pathname === '/laws/ndps'", timeout=8000)
+        direct_closed = page.evaluate("() => location.pathname")
+
         page.set_viewport_size({"width": 390, "height": 844})
         page.goto(f"{origin}/laws/ndps", wait_until="networkidle")
-        page.locator("[data-signed-in-bareact-phone] [data-pg-sheet]").first.click()
+        page.locator('[data-act-head="ndps"] [data-pg-sheet]').first.click()
         page.wait_for_selector("[data-pg-add]", timeout=8000)
         phone_geo = page.evaluate(
             """() => {
               const panel = document.querySelector('[data-pg-add]');
-              const desk = panel.querySelector('[data-signed-in-add-desktop]');
-              const phoneBlock = panel.querySelector('[data-signed-in-add-phone]');
-              const unlock = phoneBlock && phoneBlock.querySelector('.signed-add-unlock');
-              const cancel = phoneBlock && [...phoneBlock.querySelectorAll('a')].find(
-                (a) => a.textContent.trim() === 'Cancel'
-              );
+              const unlock = panel.querySelector('.pg-add-primary');
+              const cancel = panel.querySelector('.pg-add-secondary');
               return {
-                deskDisplay: desk ? getComputedStyle(desk).display : null,
-                phoneDisplay: phoneBlock ? getComputedStyle(phoneBlock).display : null,
-                title: phoneBlock && phoneBlock.querySelector('h1') &&
-                  phoneBlock.querySelector('h1').textContent.trim(),
+                panels: document.querySelectorAll('.pg-sheet-panel').length,
+                title: panel.querySelector('#pg-add-title').textContent.trim(),
+                titleSize: getComputedStyle(panel.querySelector('#pg-add-title')).fontSize,
                 unlockHref: unlock && unlock.getAttribute('href'),
-                cancelHref: cancel && cancel.getAttribute('href'),
-                cancelCloses: cancel && cancel.hasAttribute('data-pg-sheet-close'),
+                unlockW: unlock && unlock.getBoundingClientRect().width,
+                cancel: Boolean(cancel),
               };
             }"""
         )
@@ -423,39 +554,36 @@ def test_signed_in_add_1280_gate_and_close(tmp_path: Path) -> None:
 
     assert geo["open"] is True
     assert geo["kind"] == "subscribe"
-    assert geo["deskDisplay"] != "none"
-    assert geo["phoneDisplay"] == "none"
-    assert geo["eyebrowDisplay"] == "none"
-    assert geo["title"] == "Unlock Playground"
-    assert geo["titleSize"] == "20px"
-    assert geo["titleWeight"] in ("400", "normal")
+    assert geo["panels"] == 1
+    assert geo["eyebrow"] is False
+    assert geo["title"] == TITLE
+    assert geo["titleSize"] == "22px"
+    assert geo["titleWeight"] in ("500",)
     assert geo["lede"] == LEDE
-    assert geo["ledeMarginBottom"] == "14px"
-    assert geo["unlockText"] == "Unlock Playground"
+    assert geo["ledeMarginBottom"] == "18px"
+    assert geo["unlockText"] == PRIMARY
     assert geo["unlockHref"] == home_path()
-    assert geo["unlockH"] == pytest.approx(44, abs=2)
-    assert NOTE in (geo["note"] or "")
+    assert geo["unlockH"] == pytest.approx(50, abs=2)
+    assert geo["note"] == NOTE
     assert geo["noteAlign"] == "center"
-    assert geo["noteMarginTop"] == "8px"
-    assert geo["cancelDisplay"] == "none"
-    assert geo["cancelCloses"] is True
+    assert geo["noteMarginTop"] == "12px"
+    assert geo["cancel"] is False
     assert geo["hasClose"] is True
     assert geo["closeLabel"] == "Close"
     assert geo["closeTop"] == "14px"
     assert geo["closeRight"] == "14px"
     assert geo["panelW"] == pytest.approx(460, abs=8)
-    assert "14px" in geo["panelRadius"]
-    assert "16px" not in geo["panelRadius"]
-    assert "20px" in geo["panelPad"]
-    assert "24px" in geo["panelPad"]
-    assert "0.28" in (geo["scrim"] or "") or "rgba(20, 20, 20, 0.28)" in (geo["scrim"] or "")
-    assert geo["guestAdd"] is False
+    assert "26px" in geo["panelPad"]
+    assert "28px" in geo["panelPad"]
+    assert geo["scrim"] not in ("", "rgba(0, 0, 0, 0)")
+    assert geo["guestGate"] is False
     assert geo["leaked"]["already"] is False
     assert geo["leaked"]["resume"] is False
     assert geo["leaked"]["full"] is False
     assert geo["leaked"]["pending"] is False
     assert geo["leaked"]["entire"] is False
     assert geo["leaked"]["signin"] is False
+    assert geo["leaked"]["cancel"] is False
     assert geo["background"] is True
     assert geo["subscribeCta"] == "Subscribe to use Playground"
     assert gate["path"] == home_path()
@@ -466,14 +594,18 @@ def test_signed_in_add_1280_gate_and_close(tmp_path: Path) -> None:
     assert closed_x["path"] == "/laws/ndps"
     assert closed_x["head"] is True
     assert closed_x["focused"] is True
-    assert closed_cancel["open"] is False
-    assert closed_cancel["path"] == "/laws/ndps"
-    assert closed_esc is False
-    assert phone_geo["deskDisplay"] == "none"
-    assert phone_geo["phoneDisplay"] != "none"
-    assert phone_geo["title"] == "Unlock Playground"
+    assert closed_esc["open"] is False
+    assert closed_esc["path"] == "/laws/ndps"
+    assert direct["open"] is True
+    assert direct["kind"] == "subscribe"
+    assert direct["head"] is True
+    assert direct["path"] == add_path("ndps")
+    assert direct_closed == "/laws/ndps"
+    assert phone_geo["panels"] == 1
+    assert phone_geo["title"] == TITLE
+    assert phone_geo["titleSize"] == "19px"
     assert phone_geo["unlockHref"] == home_path()
-    assert phone_geo["cancelHref"] is None
-    assert phone_geo["cancelCloses"] is None
+    assert phone_geo["unlockW"] >= 300
+    assert phone_geo["cancel"] is False
     assert shot_path.is_file()
     assert shot_path.stat().st_size > 1000

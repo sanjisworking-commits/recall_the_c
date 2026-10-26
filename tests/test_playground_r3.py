@@ -524,7 +524,11 @@ def test_d35_guest_add_sheet_preserves_next(tmp_path: Path):
     assert 'data-pg-kind="guest"' in page.text
     assert "Add to Playground" in page.text
     assert f"/login?next={add_path('ndps')}" in page.text
-    assert 'data-hard-gate="true"' in page.text
+    # M2 Q4: opened by URL, the guest sheet is a dialog over the Act page
+    # (no hard-gated shell of its own); the in-page fetch keeps the gate.
+    assert "data-pg-sheet-direct" in page.text and 'data-act-head="ndps"' in page.text
+    fetched = client.get(add_path("ndps"), headers={"X-Requested-With": "pg-sheet"})
+    assert 'data-hard-gate="true"' in fetched.text
 
 
 def test_t20_guest_json_stays_401_on_home_and_learn(tmp_path: Path):
@@ -606,7 +610,8 @@ def test_d22_d29_d40_assets(tmp_path: Path):
     js = PLAYGROUND_JS.read_text()
     assert "function enhanceAddFlow" in js
     assert "[data-pg-add-confirm]" in js
-    add = (ROOT / "src/constitution_memorizer/web/templates/playground_add.html").read_text()
+    # M2: the panel markup lives in its partial; the page wraps it in a dialog.
+    add = (ROOT / "src/constitution_memorizer/web/templates/partials/playground_add_panel.html").read_text()
     assert 'role="dialog"' in add
     assert 'name="scope" value="entire"' in add
     assert 'name="scope" value="sections"' in add

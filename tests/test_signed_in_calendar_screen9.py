@@ -36,7 +36,7 @@ LANDING = ROOT / "src/constitution_memorizer/web/templates/landing.html"
 BROWSE = ROOT / "src/constitution_memorizer/web/templates/browse_index.html"
 LAWS = ROOT / "src/constitution_memorizer/web/templates/laws.html"
 BARE = ROOT / "src/constitution_memorizer/web/templates/bare_act.html"
-ADD = ROOT / "src/constitution_memorizer/web/templates/playground_add.html"
+ADD = ROOT / "src/constitution_memorizer/web/templates/partials/playground_add_panel.html"  # M2: panel partial
 HOME = ROOT / "src/constitution_memorizer/web/templates/playground.html"
 GATE = ROOT / "src/constitution_memorizer/web/templates/playground_gate.html"
 DASH = ROOT / "src/constitution_memorizer/web/templates/dashboard.html"
@@ -258,7 +258,7 @@ def test_signed_in_calendar_does_not_touch_accepted_screens() -> None:
     assert 'data-guest-landing="desktop"' in landing
     assert "data-signed-in-browse-strip" in BROWSE.read_text(encoding="utf-8")
     assert "data-signed-in-laws-desktop" in LAWS.read_text(encoding="utf-8")
-    assert "data-signed-in-bareact-desktop" in BARE.read_text(encoding="utf-8")
+    assert "data-act-head" in BARE.read_text(encoding="utf-8")
 
     mobile = MOBILE.read_text(encoding="utf-8")
     generic, _, rest = mobile.partition("is signedIn/05-screen:")

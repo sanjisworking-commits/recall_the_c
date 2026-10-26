@@ -222,7 +222,10 @@ def test_home_and_roster_hydrate_zero_acts(
     client.get("/playground")
     client.get("/playground/roster")
     client.get(roster_next_path())
-    client.get(add_path("bns"))
+    # M2 Q4: a plain GET of the Add URL is the Act page with the sheet open
+    # (it reads the Act by design); the in-page open sends this header and
+    # lifts the panel out without touching the Act.
+    client.get(add_path("bns"), headers={"X-Requested-With": "pg-sheet"})
     assert hydrated == []
 
 
@@ -300,8 +303,10 @@ def test_add_confirm_get_does_not_write_and_requires_post(tmp_path: Path):
     assert preview.status_code == 200
     assert "Add to Playground" in preview.text
     assert "joins this month's Playground" in unescape(preview.text)
-    assert "This will use 1 of your 10 law spaces in September." in preview.text
-    assert "9 will remain." in unescape(preview.text)
+    # M2: one Add sheet for every Act — the generic space-accounting lines
+    # (formerly NDPS printed a Plus-only variant of the same facts).
+    assert "This will use 1 of your 10 law spaces for September." in preview.text
+    assert "You'll have 9 spaces remaining." in unescape(preview.text)
     assert 'name="csrf_token"' in preview.text
     assert 'role="dialog"' in preview.text
     assert 'aria-modal="true"' in preview.text

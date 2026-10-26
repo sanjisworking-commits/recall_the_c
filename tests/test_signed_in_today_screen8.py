@@ -36,7 +36,7 @@ LANDING = ROOT / "src/constitution_memorizer/web/templates/landing.html"
 BROWSE = ROOT / "src/constitution_memorizer/web/templates/browse_index.html"
 LAWS = ROOT / "src/constitution_memorizer/web/templates/laws.html"
 BARE = ROOT / "src/constitution_memorizer/web/templates/bare_act.html"
-ADD = ROOT / "src/constitution_memorizer/web/templates/playground_add.html"
+ADD = ROOT / "src/constitution_memorizer/web/templates/partials/playground_add_panel.html"  # M2: panel partial
 HOME = ROOT / "src/constitution_memorizer/web/templates/playground.html"
 GATE = ROOT / "src/constitution_memorizer/web/templates/playground_gate.html"
 DASH = ROOT / "src/constitution_memorizer/web/templates/dashboard.html"
@@ -195,7 +195,7 @@ def test_signed_in_today_does_not_touch_accepted_screens() -> None:
     assert "4-day streak" not in dash
 
     assert "data-signed-in-today" not in ADD.read_text(encoding="utf-8")
-    assert "data-signed-in-add-desktop" in ADD.read_text(encoding="utf-8")
+    assert "data-pg-add" in ADD.read_text(encoding="utf-8")
     assert "data-signed-in-today" not in HOME.read_text(encoding="utf-8")
     assert "data-signed-in-today" not in GATE.read_text(encoding="utf-8")
     assert "data-signed-in-pg-gate" in GATE.read_text(encoding="utf-8")
@@ -203,7 +203,7 @@ def test_signed_in_today_does_not_touch_accepted_screens() -> None:
     assert 'data-guest-landing="desktop"' in landing
     assert "data-signed-in-browse-strip" in BROWSE.read_text(encoding="utf-8")
     assert "data-signed-in-laws-desktop" in LAWS.read_text(encoding="utf-8")
-    assert "data-signed-in-bareact-desktop" in BARE.read_text(encoding="utf-8")
+    assert "data-act-head" in BARE.read_text(encoding="utf-8")
 
     mobile = MOBILE.read_text(encoding="utf-8")
     generic_today, _, phone_free = mobile.partition("is signedIn/04-screen:")
@@ -230,15 +230,18 @@ def test_signed_in_today_does_not_touch_accepted_screens() -> None:
     r1 = css.split("/* R1 desktop shell", 1)[1].split(
         "/* Signed-in desktop Today", 1
     )[0]
+    # M2: the About toggle's hit area is an absolutely placed pseudo-element
+    # inside the Bare Act head; the shell block itself positions nothing.
+    r1 = r1.split("/* ── Bare Act head (M2)", 1)[0]
     assert "position: absolute" not in r1
     signed = css.split("/* Signed-in desktop Today", 1)[1]
     assert "minmax(260px, 380px)" in signed
     assert "height: 48px" in signed
     assert "width: 72px" in signed
     headband = css.split(
-        "[data-signed-in-bareact-desktop] .guest-bareact-headband {", 1
+        ".ActHead-band {", 1
     )[1].split("}", 1)[0]
-    assert "12px 40px 14px" in headband
+    assert "16px 40px 22px" in headband  # M2 head band
 
 
 def _serve(app, host: str = "127.0.0.1") -> tuple[int, object]:

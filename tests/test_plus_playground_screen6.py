@@ -45,7 +45,7 @@ ROUTES = ROOT / "src/constitution_memorizer/playground/routes.py"
 VIEW = ROOT / "src/constitution_memorizer/playground/view.py"
 PG_CSS = ROOT / "src/constitution_memorizer/web/static/playground.css"
 STYLES = ROOT / "src/constitution_memorizer/web/static/styles.css"
-ADD = ROOT / "src/constitution_memorizer/web/templates/playground_add.html"
+ADD = ROOT / "src/constitution_memorizer/web/templates/partials/playground_add_panel.html"  # M2: panel partial
 LANDING = ROOT / "src/constitution_memorizer/web/templates/landing.html"
 BROWSE = ROOT / "src/constitution_memorizer/web/templates/browse_index.html"
 LAWS = ROOT / "src/constitution_memorizer/web/templates/laws.html"
@@ -318,7 +318,7 @@ def test_plus_playground_marker_uses_shared_predicate() -> None:
     assert "plus_playground" in base
     assert "path.rstrip('/') == '/playground'" in base
     assert "RecallC Plus" in base
-    assert "playground.css?v=pg49" in base
+    assert "playground.css?v=pg52" in base
     deps = DEPS.read_text(encoding="utf-8")
     assert "def request_is_active_plus" in deps
     assert 'snapshot.tier == "plus"' in deps
@@ -347,8 +347,8 @@ def test_plus_playground_marker_uses_shared_predicate() -> None:
 
 
 def test_plus_playground_does_not_touch_accepted_screens() -> None:
-    assert 'data-plus-add="desktop"' in ADD.read_text(encoding="utf-8")
-    assert 'data-plus-bareact="desktop"' in BARE.read_text(encoding="utf-8")
+    assert 'data-add-step="confirm"' in ADD.read_text(encoding="utf-8")
+    assert 'data-plus-bareact' in BARE.read_text(encoding="utf-8")
     assert 'data-plus-laws="desktop"' in LAWS.read_text(encoding="utf-8")
     assert "data-plus-browse" in BROWSE.read_text(encoding="utf-8")
     assert "data-plus-landing" in LANDING.read_text(encoding="utf-8")

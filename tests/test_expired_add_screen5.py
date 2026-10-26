@@ -7,6 +7,12 @@ Heading/copy come from gate_view; primary comes from live LawPlaygroundState.
 Opening, closing, and reopening is read-only. Guest, Free, Plus, halted,
 pending, full, device-blocked, phone, Plus 01–11, and Expired 01–04 stay
 unchanged. Sections remains require_playground_open (full gate, not modal).
+
+M2: one sheet per state (no desktop/phone twins). A direct GET of the Add
+URL is the full Act page with the ``.pg-sheet-panel[data-pg-add]`` inside an
+open ``<dialog>`` over the generated Act head (M2 Q4); the in-page fetch
+(``X-Requested-With: pg-sheet``) returns the panel on its own for
+playground.js to lift into the live dialog.
 """
 
 from __future__ import annotations
@@ -37,7 +43,7 @@ from constitution_memorizer.playground.access import PlaygroundAccess
 from constitution_memorizer.playground.urls import add_path, home_path, law_path, remove_path, sections_path
 from constitution_memorizer.playground.view import PLAYGROUND_BILLING_PATH, gate_view, law_membership
 from constitution_memorizer.web.app import create_app
-from constitution_memorizer.web.guest_bareact_head import NDPS_GUEST_TITLE
+from constitution_memorizer.web.bare_acts import get_bare_act
 from tests.conftest import PLAYGROUND_TEST_NOW
 
 MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
@@ -48,6 +54,7 @@ BROWSE = ROOT / "src/constitution_memorizer/web/templates/browse_index.html"
 LAWS = ROOT / "src/constitution_memorizer/web/templates/laws.html"
 BARE = ROOT / "src/constitution_memorizer/web/templates/bare_act.html"
 ADD = ROOT / "src/constitution_memorizer/web/templates/playground_add.html"
+ADD_PANEL = ROOT / "src/constitution_memorizer/web/templates/partials/playground_add_panel.html"
 HOME = ROOT / "src/constitution_memorizer/web/templates/playground.html"
 MANAGE = ROOT / "src/constitution_memorizer/web/templates/subscription_manage.html"
 DASH = ROOT / "src/constitution_memorizer/web/templates/dashboard.html"
@@ -58,6 +65,7 @@ DEPS = ROOT / "src/constitution_memorizer/entitlements/dependencies.py"
 ROUTES = ROOT / "src/constitution_memorizer/playground/routes.py"
 VIEW = ROOT / "src/constitution_memorizer/playground/view.py"
 APP = ROOT / "src/constitution_memorizer/web/app.py"
+BARE_PAGE = ROOT / "src/constitution_memorizer/web/bare_act_page.py"
 PG_CSS = ROOT / "src/constitution_memorizer/web/static/playground.css"
 PG_JS = ROOT / "src/constitution_memorizer/web/static/playground.js"
 MOBILE = ROOT / "src/constitution_memorizer/web/static/mobile.css"
@@ -69,6 +77,7 @@ ACTIVE_END = datetime(2026, 10, 15, tzinfo=timezone.utc)
 LIVE_GATE = gate_view(reason=BLOCK_PAID_PERIOD_ENDED)
 LIVE_HEADING = LIVE_GATE.title
 LIVE_COPY = LIVE_GATE.lines
+SHEET_FETCH = {"X-Requested-With": "pg-sheet"}
 INVENTED = (
     "Your plan expired",
     "Resume subscription",
@@ -214,10 +223,14 @@ def _facts(client: TestClient) -> dict:
     }
 
 
-def _desk(html: str) -> str:
-    return html.split("data-expired-add-desktop", 1)[1].split(
-        "data-expired-add-phone", 1
-    )[0]
+def _sheet(html: str) -> str:
+    """The Add sheet (M2): the open <dialog> and its one `.pg-sheet-panel`."""
+    return html.split("<dialog", 1)[1].split("</dialog>", 1)[0]
+
+
+def _head(html: str) -> str:
+    """The generated Act head the sheet is drawn over (M2 Q4)."""
+    return html.split('class="panel ActHead', 1)[1].split("data-bareact-accordion", 1)[0]
 
 
 def _expired_client(tmp_path: Path, *, units: Path | None = None) -> TestClient:
@@ -237,39 +250,76 @@ def test_expired_retained_add_is_existing_resume_not_confirm(tmp_path: Path) -> 
     req_html = client.get(add_path("ndps"))
     assert req_html.status_code == 200
     html = unescape(req_html.text)
-    assert 'data-pg-kind="resume"' in html
-    assert 'data-expired-add="desktop"' in html
-    assert "data-expired-add-desktop" in html
-    assert "data-expired-add-phone" in html
-    assert 'data-pg-kind="already_active"' not in html
-    assert 'data-pg-kind="eligible_to_add"' not in html
+    # One sheet inside one open dialog over the one Act head (M2 Q4), no
+    # desktop/phone twins, no hard-gate shell.
+    assert html.count("<dialog") == 1
+    assert html.count('class="pg-sheet-panel"') == 1
+    assert html.count('class="panel ActHead') == 1
+    assert 'data-mscreen="bareact"' in html
+    assert "data-hard-gate" not in html
+    assert "PlaygroundShell" not in html
+    assert 'data-expired-add="desktop"' not in html
+    assert "data-expired-add-desktop" not in html
+    assert "data-expired-add-phone" not in html
+    assert "expired-add-" not in html
     assert 'data-plus-add="desktop"' not in html
     assert "data-plus-add-desktop" not in html
     assert "data-guest-add-desktop" not in html
     assert "data-signed-in-add-desktop" not in html
+    dialog = _sheet(html)
+    assert 'class="pg-sheet" data-pg-sheet-host data-pg-sheet-direct' in dialog
+    assert 'data-pg-sheet-return="/laws/ndps"' in dialog
+    assert " open>" in dialog.split(">", 1)[0] + ">"
+    assert 'data-pg-kind="resume"' in dialog
+    assert "data-expired-add" in dialog
+    assert "data-halted-add" not in dialog
+    assert 'data-roster-confirm="ndps"' in dialog
+    assert 'data-pg-kind="already_active"' not in dialog
+    assert 'data-pg-kind="eligible_to_add"' not in html
     assert 'data-pg-add-confirm' not in html
     assert 'action="/playground/laws/ndps/add"' not in html
     assert 'name="confirm"' not in html
     assert 'name="scope"' not in html
     assert ">Entire Act<" not in html
     assert ">Choose sections<" not in html
-    desk = _desk(html)
-    assert f">{LIVE_HEADING}<" in desk
+    assert f'<h1 id="pg-add-title" class="pg-add-title">{LIVE_HEADING}</h1>' in dialog
     for line in LIVE_COPY:
-        assert line in desk
-    assert ">Resume Playground<" in desk
-    assert f'href="{PLAYGROUND_BILLING_PATH}"' in desk
-    assert "Add to Playground" not in desk
-    assert "+ Add to Playground" not in desk
-    assert "Unlock Playground" not in desk
-    assert "Sign in" not in desk
-    assert "Create an account" not in desk
-    assert "Already in Playground" not in desk
-    assert "Playground full this month" not in desk
-    assert "temporarily unavailable" not in desk
-    assert "Resume a plan to add" not in desk
+        assert f'<p class="pg-add-lede">{line}</p>' in dialog
+    assert ">Resume Playground<" in dialog
+    assert f'class="pg-add-primary" href="{PLAYGROUND_BILLING_PATH}">Resume Playground</a>' in dialog
+    assert 'class="pg-add-secondary" href="/laws/ndps" data-pg-sheet-close>Cancel</a>' in dialog
+    assert "Add to Playground" not in dialog
+    assert "+ Add to Playground" not in dialog
+    assert "Unlock Playground" not in dialog
+    assert "Sign in" not in dialog
+    assert "Create an account" not in dialog
+    assert "Already in Playground" not in dialog
+    assert "Playground full this month" not in dialog
+    assert "temporarily unavailable" not in dialog
+    assert "Resume a plan to add" not in dialog
     for phrase in INVENTED:
-        assert phrase not in desk, phrase
+        assert phrase not in dialog, phrase
+    # The Act page underneath is the retained Expired 04 head, unchanged.
+    head = _head(html)
+    assert "data-expired-bareact" in head
+    assert 'data-pg-kind="already_active"' in head
+    assert "Already in Playground" in head
+    assert (
+        f'class="ActHead-inpg-continue" href="{PLAYGROUND_BILLING_PATH}">Resume Playground</a>'
+        in head
+    )
+    assert "data-pg-sheet" not in head
+    # The in-page open fetches the same panel on its own (no Act context).
+    fetched = client.get(add_path("ndps"), headers=SHEET_FETCH)
+    assert fetched.status_code == 200
+    fetched_html = unescape(fetched.text)
+    assert "<dialog" not in fetched_html
+    assert 'class="panel ActHead' not in fetched_html
+    assert fetched_html.count('class="pg-sheet-panel"') == 1
+    assert 'data-pg-kind="resume"' in fetched_html
+    assert "data-expired-add" in fetched_html
+    assert f'class="pg-add-primary" href="{PLAYGROUND_BILLING_PATH}">Resume Playground</a>' in fetched_html
+    assert 'data-pg-add-confirm' not in fetched_html
     assert client.app.state.roster.is_law_active_this_period(USER, "ndps") is True
 
 
@@ -292,16 +342,15 @@ def test_expired_add_primary_is_live_state_not_post(tmp_path: Path) -> None:
     )
     live_gate = gate_view(reason=str(snap.playground_block_reason or ""))
     html = unescape(client.get(add_path("ndps")).text)
-    desk = _desk(html)
+    dialog = _sheet(html)
     assert state.kind == "already_active"
     assert state.primary_label == "Resume Playground"
     assert state.primary_href == PLAYGROUND_BILLING_PATH
     assert live_gate.title == LIVE_HEADING
-    assert f">{live_gate.title}<" in desk
+    assert f">{live_gate.title}<" in dialog
     for line in live_gate.lines:
-        assert line in desk
-    assert f">{state.primary_label}<" in desk
-    assert f'href="{state.primary_href}"' in desk
+        assert line in dialog
+    assert f'class="pg-add-primary" href="{state.primary_href}">{state.primary_label}</a>' in dialog
     assert 'action="/playground/laws/ndps/add"' not in html
     posted = client.post(
         add_path("ndps"),
@@ -319,7 +368,7 @@ def test_expired_add_mutation_safety_open_close_reopen(tmp_path: Path) -> None:
     assert "ndps" in before["active"]
     first = client.get(add_path("ndps"))
     assert first.status_code == 200
-    assert 'data-pg-kind="resume"' in first.text
+    assert 'data-pg-kind="resume"' in _sheet(first.text)
     after_open = _facts(client)
     posted = client.post(
         add_path("ndps"),
@@ -331,11 +380,16 @@ def test_expired_add_mutation_safety_open_close_reopen(tmp_path: Path) -> None:
     after_post = _facts(client)
     second = client.get(add_path("ndps"))
     assert second.status_code == 200
-    assert 'data-pg-kind="resume"' in second.text
+    assert 'data-pg-kind="resume"' in _sheet(second.text)
     after_reopen = _facts(client)
+    fetched = client.get(add_path("ndps"), headers=SHEET_FETCH)
+    assert fetched.status_code == 200
+    assert 'data-pg-kind="resume"' in fetched.text
+    after_fetch = _facts(client)
     assert after_open == before
     assert after_post == before
     assert after_reopen == before
+    assert after_fetch == before
     assert client.get("/laws/ndps").status_code == 200
     assert _facts(client) == before
 
@@ -358,17 +412,23 @@ def test_expired_sections_stay_gated_not_picker(tmp_path: Path) -> None:
 def test_non_retained_expired_law_cannot_add(tmp_path: Path) -> None:
     client = _expired_client(tmp_path)
     html = unescape(client.get(add_path("bns")).text)
-    assert 'data-pg-kind="resume"' in html
-    assert 'data-expired-add="desktop"' in html
+    dialog = _sheet(html)
+    assert html.count("<dialog") == 1
+    assert 'data-act-head="bns"' in _head(html)
+    assert 'data-pg-sheet-return="/laws/bns"' in dialog
+    assert 'data-pg-kind="resume"' in dialog
+    assert "data-expired-add" in dialog
     assert 'data-pg-kind="eligible_to_add"' not in html
+    assert 'data-pg-kind="already_active"' not in html
     assert 'data-pg-add-confirm' not in html
     assert 'name="confirm"' not in html
     assert 'name="scope"' not in html
-    assert f">{LIVE_HEADING}<" in html
+    assert f">{LIVE_HEADING}<" in dialog
     for line in LIVE_COPY:
-        assert line in html
-    assert ">Resume Playground<" in html
-    assert PLAYGROUND_BILLING_PATH in html
+        assert line in dialog
+    assert ">Resume Playground<" in dialog
+    assert f'class="pg-add-primary" href="{PLAYGROUND_BILLING_PATH}">Resume Playground</a>' in dialog
+    assert 'class="pg-add-secondary" href="/laws/bns" data-pg-sheet-close>Cancel</a>' in dialog
     posted = client.post(
         add_path("bns"),
         data={**_csrf(client), "confirm": "add", "scope": "sections"},
@@ -381,19 +441,23 @@ def test_non_retained_expired_law_cannot_add(tmp_path: Path) -> None:
 
 def test_guest_free_plus_halted_pending_stay_separate(tmp_path: Path) -> None:
     guest_html = TestClient(_mu_app(tmp_path / "guest")).get(add_path("ndps")).text
-    assert "data-guest-add-desktop" in guest_html
-    assert 'data-pg-kind="guest"' in guest_html
-    assert "Create an account" in guest_html
-    assert 'data-expired-add="desktop"' not in guest_html
+    guest_sheet = _sheet(guest_html)
+    assert 'data-pg-kind="guest"' in guest_sheet
+    assert "data-guest-add-gate" in guest_sheet
+    assert ">Sign in<" in guest_sheet
+    assert "Create an account" in guest_sheet
+    assert "data-expired-add" not in guest_sheet
+    assert "data-expired-bareact" not in _head(guest_html)
     assert LIVE_HEADING not in guest_html
 
     free = TestClient(_mu_app(tmp_path / "free"))
     _sign_in(free)
     free_html = free.get(add_path("ndps")).text
-    assert "data-signed-in-add-desktop" in free_html
-    assert 'data-pg-kind="subscribe"' in free_html
-    assert "Unlock Playground" in free_html
-    assert 'data-expired-add="desktop"' not in free_html
+    free_sheet = _sheet(free_html)
+    assert 'data-pg-kind="subscribe"' in free_sheet
+    assert "Unlock Playground" in free_sheet
+    assert "data-expired-add" not in free_sheet
+    assert "data-expired-bareact" not in _head(free_html)
     assert LIVE_HEADING not in free_html
     assert "Resume Playground" not in free_html
 
@@ -401,21 +465,24 @@ def test_guest_free_plus_halted_pending_stay_separate(tmp_path: Path) -> None:
     _sign_in(plus)
     _subscribe(plus)
     plus_html = plus.get(add_path("ndps")).text
-    assert 'data-plus-add="desktop"' in plus_html
-    assert "data-plus-add-desktop" in plus_html
-    assert 'data-pg-kind="eligible_to_add"' in plus_html
-    assert 'data-pg-add-confirm' in plus_html
-    assert 'data-expired-add="desktop"' not in plus_html
+    plus_sheet = _sheet(plus_html)
+    assert "data-plus-bareact" in _head(plus_html)
+    assert 'data-pg-kind="eligible_to_add"' in plus_sheet
+    assert 'data-pg-add-confirm' in plus_sheet
+    assert 'data-add-step="confirm"' in plus_sheet
+    assert '<button type="submit" class="pg-add-primary">Add to Playground</button>' in plus_sheet
+    assert "data-expired-add" not in plus_sheet
+    assert "data-expired-bareact" not in _head(plus_html)
     assert LIVE_HEADING not in plus_html
     assert "Resume Playground" not in plus_html
     added = _confirm_add(plus, "ndps")
     assert added.status_code in {200, 303}
     plus.post(remove_path("ndps"), data=_csrf(plus), follow_redirects=False)
     readd = plus.get(add_path("ndps")).text
-    assert 'data-pg-kind="re_add"' in readd
-    assert "Add back" in readd
-    assert 'data-plus-add="desktop"' not in readd
-    assert 'data-expired-add="desktop"' not in readd
+    readd_sheet = _sheet(readd)
+    assert 'data-pg-kind="re_add"' in readd_sheet
+    assert "Add back" in readd_sheet
+    assert "data-expired-add" not in readd_sheet
 
     halted = TestClient(_mu_app(tmp_path / "halted"))
     _sign_in(halted)
@@ -426,9 +493,12 @@ def test_guest_free_plus_halted_pending_stay_separate(tmp_path: Path) -> None:
         USER, stored.id, status="halted"
     )
     halted_html = halted.get(add_path("ndps")).text
-    assert 'data-pg-kind="resume"' in halted_html
-    assert 'data-expired-add="desktop"' not in halted_html
-    assert 'data-halted-add="desktop"' in halted_html
+    halted_sheet = _sheet(halted_html)
+    assert 'data-pg-kind="resume"' in halted_sheet
+    assert "data-expired-add" not in halted_sheet
+    assert "data-halted-add" in halted_sheet
+    assert "data-halted-bareact" in _head(halted_html)
+    assert "data-expired-bareact" not in _head(halted_html)
     assert LIVE_HEADING not in halted_html
     assert "Resume a plan to add" not in halted_html
     assert ">Resume Playground<" not in halted_html
@@ -440,35 +510,57 @@ def test_guest_free_plus_halted_pending_stay_separate(tmp_path: Path) -> None:
     _sign_in(pending)
     _subscribe(pending, status="pending")
     pending_html = pending.get(add_path("ndps")).text
-    assert 'data-expired-add="desktop"' not in pending_html
+    assert "data-expired-add" not in _sheet(pending_html)
     assert LIVE_HEADING not in pending_html
     assert "temporarily unavailable" in pending_html.lower() or 'data-pg-kind="pending"' in pending_html
 
 
 def test_expired_add_uses_shared_predicate_existing_resume_route() -> None:
     add_src = ADD.read_text(encoding="utf-8")
-    assert 'kind == "resume"' in add_src
-    assert 'kind == "expired"' not in add_src
-    assert "expired_add" in add_src
-    assert 'data-expired-add="desktop"' in add_src
-    assert "data-expired-add-desktop" in add_src
-    assert "data-expired-add-phone" in add_src
-    assert "state.primary_href" in add_src
-    assert "state.primary_label" in add_src
-    assert 'data-plus-add="desktop"' in add_src
-    assert "data-plus-add-desktop" in add_src
-    assert "data-guest-add-desktop" in add_src
-    assert "data-signed-in-add-desktop" in add_src
-    assert 'kind == "device_blocked"' in add_src
-    assert "blocked_pending or kind == " in add_src
-    assert "blocked_full or kind == " in add_src
-    assert 'action="/playground/laws/{{ law_id }}/add"' in add_src
-    resume_branch = add_src.split("{% elif kind == \"resume\" %}", 1)[1].split(
+    # One sheet over the Act page (M2 Q4): the dialog wraps the shared panel
+    # partial; the per-surface twins are gone.
+    assert '{% extends "bare_act.html" if act is defined and act else "playground_base.html" %}' in add_src
+    assert "{% block act_dialog %}" in add_src
+    assert "data-pg-sheet-direct" in add_src
+    assert 'data-pg-sheet-return="{{ cancel_href }}"' in add_src
+    assert add_src.count('{% include "partials/playground_add_panel.html" %}') == 2
+    assert "data-expired-bareact" not in add_src
+    for src in (add_src, ADD_PANEL.read_text(encoding="utf-8")):
+        assert 'kind == "expired"' not in src
+        assert 'data-expired-add="desktop"' not in src
+        assert "data-expired-add-desktop" not in src
+        assert "data-expired-add-phone" not in src
+        assert 'data-plus-add="desktop"' not in src
+        assert "data-plus-add-desktop" not in src
+        assert "data-guest-add-desktop" not in src
+        assert "data-signed-in-add-desktop" not in src
+        assert "expired-add-" not in src
+        assert "plus-add-" not in src
+    panel = ADD_PANEL.read_text(encoding="utf-8")
+    assert 'kind == "resume"' in panel
+    assert "expired_add" in panel
+    assert "data-expired-add" in panel
+    assert "halted_add" in panel
+    assert "state.primary_href" in panel
+    assert "state.primary_label" in panel
+    assert 'kind == "device_blocked"' in panel
+    assert "blocked_pending or kind == " in panel
+    assert "blocked_full or kind == " in panel
+    assert 'action="/playground/laws/{{ law_id }}/add"' in panel
+    resume_branch = panel.split("{% elif kind == \"resume\" %}", 1)[1].split(
         "{% elif kind == \"device_blocked\" %}", 1
     )[0]
     assert 'method="post"' not in resume_branch
     assert "data-pg-add-confirm" not in resume_branch
     assert "name=\"scope\"" not in resume_branch
+    assert (
+        '<a class="pg-add-primary" href="{{ state.primary_href }}">{{ state.primary_label }}</a>'
+        in resume_branch
+    )
+    assert (
+        '<a class="pg-add-secondary" href="{{ cancel_href }}" data-pg-sheet-close>Cancel</a>'
+        in resume_branch
+    )
     routes = ROUTES.read_text(encoding="utf-8")
     ctx = routes.split("def _add_page_context", 1)[1].split("def _rollover_ids", 1)[0]
     assert "request_is_expired_subscriber" in ctx
@@ -479,6 +571,8 @@ def test_expired_add_uses_shared_predicate_existing_resume_route() -> None:
     assert "expired_add" in ctx
     assert 'law_id == "ndps"' in ctx
     assert "plus_add_confirm_copy" in ctx
+    assert "bare_act_page_context(request, bare)" in ctx
+    assert '"pg-sheet"' in ctx
     add_route = routes.split('"/laws/{law_id}/add"', 1)[1].split(
         "@router.post", 1
     )[0]
@@ -495,12 +589,19 @@ def test_expired_add_uses_shared_predicate_existing_resume_route() -> None:
     assert "function enhanceSheets" in js
     assert "[data-pg-sheet]" in js
     assert "dialog.pg-sheet" in js
+    assert "data-pg-sheet-direct" in js
+    assert "data-pg-sheet-return" in js
+    assert "showModal" in js
+    assert "replaceState" in js
     css = PG_CSS.read_text(encoding="utf-8")
-    assert "[data-expired-add-desktop]" in css
-    assert "[data-plus-add-desktop]" in css
-    assert "[data-guest-add-desktop]" in css
-    assert "[data-signed-in-add-desktop]" in css
-    assert "data-expired-bareact" not in add_src
+    assert "Add sheet (M2)" in css
+    assert ".pg-sheet-panel[data-pg-add]" in css
+    assert ".pg-add-primary" in css
+    assert ".pg-add-secondary" in css
+    assert "[data-expired-add" not in css
+    assert "[data-plus-add-desktop]" not in css
+    assert "[data-guest-add-desktop]" not in css
+    assert "[data-signed-in-add-desktop]" not in css
 
 
 def test_plus_screens_and_expired_01_04_untouched() -> None:
@@ -510,9 +611,9 @@ def test_plus_screens_and_expired_01_04_untouched() -> None:
     assert 'data-expired-browse="desktop"' in BROWSE.read_text(encoding="utf-8")
     assert 'data-plus-laws="desktop"' in LAWS.read_text(encoding="utf-8")
     assert 'data-expired-laws="desktop"' in LAWS.read_text(encoding="utf-8")
-    assert 'data-plus-bareact="desktop"' in BARE.read_text(encoding="utf-8")
-    assert 'data-expired-bareact="desktop"' in BARE.read_text(encoding="utf-8")
-    assert 'data-plus-add="desktop"' in ADD.read_text(encoding="utf-8")
+    assert "data-plus-bareact" in BARE.read_text(encoding="utf-8")
+    assert "data-expired-bareact" in BARE.read_text(encoding="utf-8")
+    assert 'data-add-step="confirm"' in ADD_PANEL.read_text(encoding="utf-8")
     assert 'data-plus-playground="desktop"' in HOME.read_text(encoding="utf-8")
     assert 'data-plus-subscription="desktop"' in MANAGE.read_text(encoding="utf-8")
     assert 'data-plus-today="desktop"' in DASH.read_text(encoding="utf-8")
@@ -524,13 +625,19 @@ def test_plus_screens_and_expired_01_04_untouched() -> None:
         assert "data-expired-add" not in text
     bare = BARE.read_text(encoding="utf-8")
     assert "pg.kind == 'already_active'" in bare
-    assert 'href="/playground">Continue</a>' in bare
+    assert 'href="/playground">Continue</a>' not in bare
+    assert (
+        'class="ActHead-inpg-continue" href="{{ pg.primary_href }}">{{ pg.primary_label }}</a>'
+        in bare
+    )
     app = APP.read_text(encoding="utf-8")
     page = app.split("async def law_detail_page", 1)[1].split(
         "async def bare_act_section_page", 1
     )[0]
-    assert "request_is_expired_subscriber" in page
-    assert '"plus_bareact": request_is_active_plus(request)' in page
+    assert "bare_act_page_context(request, bare)" in page
+    bare_page = BARE_PAGE.read_text(encoding="utf-8")
+    assert "request_is_expired_subscriber" in bare_page
+    assert '"plus_bareact": request_is_active_plus(request)' in bare_page
     assert "def request_is_active_plus" in DEPS.read_text(encoding="utf-8")
     assert 'snapshot.tier == "plus"' in DEPS.read_text(encoding="utf-8")
     mobile = MOBILE.read_text(encoding="utf-8")
@@ -571,11 +678,11 @@ def test_expired_phone_add_uses_resume_not_confirm(tmp_path: Path) -> None:
     _sign_in(client)
     _seed_ndps_then_expire(client)
     html = unescape(client.get(add_path("ndps")).text)
-    phone = html.split("data-expired-add-phone", 1)[1]
-    assert LIVE_HEADING in phone
-    assert "Resume Playground" in phone
-    assert PLAYGROUND_BILLING_PATH in phone
-    assert 'data-pg-add-confirm' not in phone
+    dialog = _sheet(html)
+    assert LIVE_HEADING in dialog
+    assert "Resume Playground" in dialog
+    assert PLAYGROUND_BILLING_PATH in dialog
+    assert 'data-pg-add-confirm' not in dialog
     session = client.cookies.get(SESSION_COOKIE_NAME)
     assert session
     port, _server = _serve(app)
@@ -601,25 +708,28 @@ def test_expired_phone_add_uses_resume_not_confirm(tmp_path: Path) -> None:
         page.goto(f"{origin}{add_path('ndps')}", wait_until="networkidle")
         geo = page.evaluate(
             """() => {
+              const dialog = document.querySelector('dialog.pg-sheet');
               const panel = document.querySelector('[data-pg-add]');
-              const desk = panel && panel.querySelector('[data-expired-add-desktop]');
-              const phoneBlock = panel && panel.querySelector('[data-expired-add-phone]');
+              const title = panel && panel.querySelector('.pg-add-title');
               return {
+                open: Boolean(dialog && dialog.open),
+                panels: document.querySelectorAll('[data-pg-add]').length,
                 kind: panel && panel.getAttribute('data-pg-kind'),
-                expired: panel && panel.getAttribute('data-expired-add'),
-                deskDisplay: desk ? getComputedStyle(desk).display : null,
-                phoneDisplay: phoneBlock ? getComputedStyle(phoneBlock).display : null,
-                title: phoneBlock && phoneBlock.querySelector('h1') &&
-                  phoneBlock.querySelector('h1').textContent.trim(),
+                expired: Boolean(panel && panel.hasAttribute('data-expired-add')),
+                panelDisplay: panel ? getComputedStyle(panel).display : null,
+                title: title && title.textContent.trim(),
+                head: Boolean(document.querySelector('.ActHead[data-expired-bareact]')),
               };
             }"""
         )
         browser.close()
+    assert geo["open"] is True
+    assert geo["panels"] == 1
     assert geo["kind"] == "resume"
-    assert geo["expired"] == "desktop"
-    assert geo["deskDisplay"] == "none"
-    assert geo["phoneDisplay"] != "none"
+    assert geo["expired"] is True
+    assert geo["panelDisplay"] != "none"
     assert geo["title"] == LIVE_HEADING
+    assert geo["head"] is True
 
 
 def test_expired_add_screen05_1280(tmp_path: Path) -> None:
@@ -632,6 +742,8 @@ def test_expired_add_screen05_1280(tmp_path: Path) -> None:
     _seed_ndps_then_expire(client)
     session = client.cookies.get(SESSION_COOKIE_NAME)
     assert session
+    act = get_bare_act("ndps")
+    assert act is not None
 
     port, _server = _serve(app)
     artifact_dir = Path("/opt/cursor/artifacts")
@@ -675,37 +787,35 @@ def test_expired_add_screen05_1280(tmp_path: Path) -> None:
               a.click();
             }"""
         )
-        page.wait_for_selector("[data-expired-add-desktop]", timeout=8000)
+        page.wait_for_selector("[data-pg-add][data-expired-add]", timeout=8000)
         geo = page.evaluate(
             """() => {
               const dialog = document.querySelector('dialog.pg-sheet');
               const panel = document.querySelector('[data-pg-add]');
-              const desk = panel && panel.querySelector('[data-expired-add-desktop]');
-              const phoneBlock = panel && panel.querySelector('[data-expired-add-phone]');
-              const resume = desk && desk.querySelector('.expired-add-resume');
-              const cancel = desk && desk.querySelector('.expired-add-cancel');
+              const resume = panel && panel.querySelector('.pg-add-primary');
+              const cancel = panel && panel.querySelector('.pg-add-secondary');
               const closeBtn = panel && panel.querySelector('[data-pg-sheet-close].pg-sheet-close');
-              const expiredBare = document.querySelector('[data-expired-bareact="desktop"]');
-              const cluster = document.querySelector('.signed-bareact-in-pg');
-              const titleEl = desk && desk.querySelector('.expired-add-title');
-              const ledeEl = desk && desk.querySelector('.expired-add-lede');
+              const expiredBare = document.querySelector('.ActHead[data-expired-bareact]');
+              const cluster = document.querySelector('.ActHead-inpg');
+              const titleEl = panel && panel.querySelector('.pg-add-title');
+              const ledeEl = panel && panel.querySelector('.pg-add-lede');
               const backdrop = dialog ? getComputedStyle(dialog, '::backdrop') : null;
               const confirmForm = panel && panel.querySelector('[data-pg-add-confirm]');
               const scope = panel && panel.querySelector("[data-add-step='scope']");
               return {
                 open: Boolean(dialog && dialog.open),
+                panels: document.querySelectorAll('[data-pg-add]').length,
                 kind: panel && panel.getAttribute('data-pg-kind'),
-                expiredAdd: panel && panel.getAttribute('data-expired-add'),
-                plus: panel && panel.getAttribute('data-plus-add'),
-                deskDisplay: desk ? getComputedStyle(desk).display : null,
-                phoneDisplay: phoneBlock ? getComputedStyle(phoneBlock).display : null,
-                eyebrowDisplay: panel && panel.querySelector('.pg-eyebrow')
-                  ? getComputedStyle(panel.querySelector('.pg-eyebrow')).display
-                  : null,
+                expiredAdd: Boolean(panel && panel.hasAttribute('data-expired-add')),
+                haltedAdd: Boolean(panel && panel.hasAttribute('data-halted-add')),
+                panelDisplay: panel ? getComputedStyle(panel).display : null,
+                eyebrow: Boolean(panel && panel.querySelector('.pg-eyebrow')),
                 title: titleEl && titleEl.textContent.trim(),
                 lede: ledeEl && ledeEl.textContent.trim(),
                 resumeText: resume && resume.textContent.trim(),
                 resumeHref: resume && resume.getAttribute('href'),
+                cancelText: cancel && cancel.textContent.trim(),
+                cancelHref: cancel && cancel.getAttribute('href'),
                 cancelDisplay: cancel ? getComputedStyle(cancel).display : null,
                 hasClose: Boolean(closeBtn),
                 closeLabel: closeBtn && closeBtn.getAttribute('aria-label'),
@@ -713,13 +823,10 @@ def test_expired_add_screen05_1280(tmp_path: Path) -> None:
                 already: Boolean(cluster && cluster.innerText.includes('Already in Playground')),
                 header: document.querySelector('.account-menu-btn-status') &&
                   document.querySelector('.account-menu-btn-status').textContent.trim(),
-                actTitle: expiredBare && expiredBare.querySelector('.guest-bareact-title') &&
-                  expiredBare.querySelector('.guest-bareact-title').textContent.trim(),
+                actTitle: expiredBare && expiredBare.querySelector('.ActHead-title') &&
+                  expiredBare.querySelector('.ActHead-title').textContent.trim(),
                 confirmForm: Boolean(confirmForm),
                 scope: Boolean(scope),
-                guestAdd: Boolean(panel && panel.querySelector('[data-guest-add-desktop]')),
-                signedAdd: Boolean(panel && panel.querySelector('[data-signed-in-add-desktop]')),
-                plusAdd: Boolean(panel && panel.querySelector('[data-plus-add-desktop]')),
                 path: location.pathname,
                 scrim: backdrop && backdrop.backgroundColor,
               };
@@ -735,35 +842,34 @@ def test_expired_add_screen05_1280(tmp_path: Path) -> None:
               return {
                 open: Boolean(dialog && dialog.open),
                 path: location.pathname,
-                head: Boolean(document.querySelector('[data-expired-bareact="desktop"]')),
+                head: Boolean(document.querySelector('.ActHead[data-expired-bareact]')),
               };
             }"""
         )
         browser.close()
 
     assert geo["open"] is True
+    assert geo["panels"] == 1
     assert geo["kind"] == "resume"
-    assert geo["expiredAdd"] == "desktop"
-    assert geo["plus"] in (None, "")
-    assert geo["deskDisplay"] != "none"
-    assert geo["phoneDisplay"] == "none"
-    assert geo["eyebrowDisplay"] == "none"
+    assert geo["expiredAdd"] is True
+    assert geo["haltedAdd"] is False
+    assert geo["panelDisplay"] != "none"
+    assert geo["eyebrow"] is False
     assert geo["title"] == LIVE_HEADING
     assert geo["lede"] == LIVE_COPY[0]
     assert geo["resumeText"] == "Resume Playground"
     assert geo["resumeHref"] == PLAYGROUND_BILLING_PATH
-    assert geo["cancelDisplay"] == "none"
+    assert geo["cancelText"] == "Cancel"
+    assert geo["cancelHref"] == "/laws/ndps"
+    assert geo["cancelDisplay"] != "none"
     assert geo["hasClose"] is True
     assert geo["closeLabel"] == "Close"
     assert geo["background"] is True
     assert geo["already"] is True
     assert geo["header"] == LIVE_HEADING
-    assert geo["actTitle"] == NDPS_GUEST_TITLE
+    assert geo["actTitle"] == act.title
     assert geo["confirmForm"] is False
     assert geo["scope"] is False
-    assert geo["guestAdd"] is False
-    assert geo["signedAdd"] is False
-    assert geo["plusAdd"] is False
     assert geo["path"] == "/laws/ndps"
     assert closed["open"] is False
     assert closed["path"] == "/laws/ndps"
@@ -826,20 +932,18 @@ def test_expired_add_plus_regression_1280(tmp_path: Path) -> None:
         page.evaluate(
             """() => { document.documentElement.setAttribute('data-theme', 'light'); }"""
         )
-        page.locator('[data-plus-bareact="desktop"] [data-pg-sheet]').click()
-        page.wait_for_selector("[data-plus-add-desktop]", timeout=8000)
+        page.locator(".ActHead[data-plus-bareact] [data-pg-sheet]").click()
+        page.wait_for_selector("[data-pg-add][data-pg-kind='eligible_to_add']", timeout=8000)
         geo = page.evaluate(
             """() => {
               const panel = document.querySelector('[data-pg-add]');
-              const desk = panel && panel.querySelector('[data-plus-add-desktop]');
-              const expired = panel && panel.querySelector('[data-expired-add-desktop]');
-              const title = desk && desk.querySelector('.plus-add-title');
-              const submit = desk && desk.querySelector('.plus-add-submit');
+              const title = panel && panel.querySelector("[data-add-step='confirm'] .pg-add-title");
+              const submit = panel && panel.querySelector("[data-add-step='confirm'] button.pg-add-primary");
               return {
                 kind: panel && panel.getAttribute('data-pg-kind'),
-                plus: panel && panel.getAttribute('data-plus-add'),
-                expiredAttr: panel && panel.getAttribute('data-expired-add'),
-                expiredPresent: Boolean(expired),
+                plusHead: Boolean(document.querySelector('.ActHead[data-plus-bareact]')),
+                expiredHead: Boolean(document.querySelector('.ActHead[data-expired-bareact]')),
+                expiredAttr: Boolean(panel && panel.hasAttribute('data-expired-add')),
                 title: title && title.textContent.trim(),
                 submit: submit && submit.textContent.trim(),
                 confirm: Boolean(panel && panel.querySelector('[data-pg-add-confirm]')),
@@ -853,9 +957,9 @@ def test_expired_add_plus_regression_1280(tmp_path: Path) -> None:
         browser.close()
 
     assert geo["kind"] == "eligible_to_add"
-    assert geo["plus"] == "desktop"
-    assert geo["expiredAttr"] in (None, "")
-    assert geo["expiredPresent"] is False
+    assert geo["plusHead"] is True
+    assert geo["expiredHead"] is False
+    assert geo["expiredAttr"] is False
     assert geo["title"] == "Add to Playground"
     assert geo["submit"] == "Add to Playground"
     assert geo["confirm"] is True

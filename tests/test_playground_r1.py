@@ -120,7 +120,7 @@ def test_t41_every_active_template_is_classified():
     }
     unclassified = sorted(disk - named)
     missing = sorted(named - disk)
-    assert len(disk) == 81, f"active templates changed: {len(disk)}"
+    assert len(disk) == 82, f"active templates changed: {len(disk)}"  # M2: + partials/playground_add_panel.html
     assert unclassified == [], f"unclassified templates: {unclassified}"
     assert missing == [], f"inventory names missing on disk: {missing}"
     assert "Unclassified templates" in inventory
@@ -130,10 +130,10 @@ def test_t41_every_active_template_is_classified():
 
 def test_t33_r1_asset_versions_are_pinned():
     html = BASE.read_text()
-    assert "styles.css?v=main87" in html
-    assert "mobile.css?v=mob106" in html
-    assert "playground.css?v=pg49" in html
-    assert "playground.js?v=pg8" in html
+    assert "styles.css?v=main88" in html
+    assert "mobile.css?v=mob107" in html
+    assert "playground.css?v=pg52" in html
+    assert "playground.js?v=pg12" in html
     assert "playground-select.js?v=pg1" in html
     assert "playground.css?v=pg37" not in html
     assert "playground.css?v=pg31" not in html
@@ -300,7 +300,8 @@ def test_t38_sheet_enhancement_focus_trap_and_fallback():
     assert "dialog.close()" in js
     assert 'event.key !== "Tab"' in js
     assert "window.location.href = href" in js
-    add = (TEMPLATES / "playground_add.html").read_text()
+    # M2: the panel lives in its partial; playground_add.html wraps it in a dialog.
+    add = (TEMPLATES / "partials" / "playground_add_panel.html").read_text()
     assert 'role="dialog"' in add
     assert "pg-sheet-panel" in add
     css = _css()
@@ -357,9 +358,9 @@ def test_d21_playground_learn_hides_tabbar_without_touching_constitution(tmp_pat
     assert 'data-mscreen="playground"' in home.text
     assert "PlaygroundShell" in home.text
     assert "class=\"pg-learn\"" not in home.text
-    css = client.get("/static/playground.css?v=pg49").text
+    css = client.get("/static/playground.css?v=pg52").text
     assert "--pg-teal:" in css
-    mobile = client.get("/static/mobile.css?v=mob106").text
+    mobile = client.get("/static/mobile.css?v=mob107").text
     assert 'body[data-mscreen="playground"] .mobile-tab.is-active' in mobile
 
 

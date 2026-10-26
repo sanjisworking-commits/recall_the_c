@@ -1,0 +1,216 @@
+{
+ "1280": {
+  "direct_open": {
+   "url": "/playground/laws/uapa/add",
+   "dialogOpen": true,
+   "dialogRole": "dialog",
+   "dialogModal": "true",
+   "labelledby": "pg-add-scope-title",
+   "labelText": "Add The UAPA, 1967",
+   "labelVisible": true,
+   "panelRole": null,
+   "panelModal": null,
+   "dialogsInPage": 3,
+   "roleDialogsInsideHost": 0,
+   "active": "BUTTON.pg-sheet-close \u2715",
+   "closeBtn": {
+    "display": "flex",
+    "w": 44,
+    "h": 44,
+    "label": "Close"
+   },
+   "returnAttr": "/laws/uapa"
+  },
+  "direct_opens_at_scope": {
+   "url": "/playground/laws/uapa/add",
+   "dialogOpen": true,
+   "dialogRole": "dialog",
+   "dialogModal": "true",
+   "labelledby": "pg-add-scope-title",
+   "labelText": "Add The UAPA, 1967",
+   "labelVisible": true,
+   "panelRole": null,
+   "panelModal": null,
+   "dialogsInPage": 3,
+   "roleDialogsInsideHost": 0,
+   "active": "BUTTON.pg-sheet-close \u2715",
+   "closeBtn": {
+    "display": "flex",
+    "w": 44,
+    "h": 44,
+    "label": "Close"
+   },
+   "returnAttr": "/laws/uapa"
+  },
+  "direct_after_escape": {
+   "url": "/laws/uapa",
+   "dialogOpen": false,
+   "dialogRole": "dialog",
+   "dialogModal": "true",
+   "labelledby": null,
+   "labelText": null,
+   "labelVisible": false,
+   "panelRole": null,
+   "panelModal": null,
+   "dialogsInPage": 3,
+   "roleDialogsInsideHost": 0,
+   "active": "BODY. is-authed Recall the C\nToday\nBrowse\nPlay",
+   "closeBtn": {
+    "display": "flex",
+    "w": 0,
+    "h": 0,
+    "label": "Close"
+   },
+   "returnAttr": null
+  },
+  "inpage_open": {
+   "url": "/laws/uapa",
+   "dialogOpen": true,
+   "dialogRole": "dialog",
+   "dialogModal": "true",
+   "labelledby": "pg-add-scope-title",
+   "labelText": "Add The UAPA, 1967",
+   "labelVisible": true,
+   "panelRole": null,
+   "panelModal": null,
+   "dialogsInPage": 3,
+   "roleDialogsInsideHost": 0,
+   "active": "BUTTON.pg-sheet-close \u2715",
+   "closeBtn": {
+    "display": "flex",
+    "w": 44,
+    "h": 44,
+    "label": "Close"
+   },
+   "returnAttr": null
+  },
+  "inpage_after_close_click": {
+   "url": "/laws/uapa",
+   "dialogOpen": false,
+   "dialogRole": "dialog",
+   "dialogModal": "true",
+   "labelledby": null,
+   "labelText": null,
+   "labelVisible": false,
+   "panelRole": null,
+   "panelModal": null,
+   "dialogsInPage": 3,
+   "roleDialogsInsideHost": 0,
+   "active": "A.ActHead-btn + Add to Playground",
+   "closeBtn": {
+    "display": "flex",
+    "w": 0,
+    "h": 0,
+    "label": "Close"
+   },
+   "returnAttr": null
+  }
+ },
+ "390": {
+  "direct_open": {
+   "url": "/playground/laws/uapa/add",
+   "dialogOpen": true,
+   "dialogRole": "dialog",
+   "dialogModal": "true",
+   "labelledby": "pg-add-scope-title",
+   "labelText": "Add The UAPA, 1967",
+   "labelVisible": true,
+   "panelRole": null,
+   "panelModal": null,
+   "dialogsInPage": 3,
+   "roleDialogsInsideHost": 0,
+   "active": "BUTTON.pg-sheet-close \u2715",
+   "closeBtn": {
+    "display": "flex",
+    "w": 44,
+    "h": 44,
+    "label": "Close"
+   },
+   "returnAttr": "/laws/uapa"
+  },
+  "direct_opens_at_scope": {
+   "url": "/playground/laws/uapa/add",
+   "dialogOpen": true,
+   "dialogRole": "dialog",
+   "dialogModal": "true",
+   "labelledby": "pg-add-scope-title",
+   "labelText": "Add The UAPA, 1967",
+   "labelVisible": true,
+   "panelRole": null,
+   "panelModal": null,
+   "dialogsInPage": 3,
+   "roleDialogsInsideHost": 0,
+   "active": "BUTTON.pg-sheet-close \u2715",
+   "closeBtn": {
+    "display": "flex",
+    "w": 44,
+    "h": 44,
+    "label": "Close"
+   },
+   "returnAttr": "/laws/uapa"
+  },
+  "direct_after_escape": {
+   "url": "/laws/uapa",
+   "dialogOpen": false,
+   "dialogRole": "dialog",
+   "dialogModal": "true",
+   "labelledby": null,
+   "labelText": null,
+   "labelVisible": false,
+   "panelRole": null,
+   "panelModal": null,
+   "dialogsInPage": 3,
+   "roleDialogsInsideHost": 0,
+   "active": "BODY. is-authed \u2190 Laws\n\nBARE ACT \u00b7 INDIA CODE\n",
+   "closeBtn": {
+    "display": "flex",
+    "w": 0,
+    "h": 0,
+    "label": "Close"
+   },
+   "returnAttr": null
+  },
+  "inpage_open": {
+   "url": "/laws/uapa",
+   "dialogOpen": true,
+   "dialogRole": "dialog",
+   "dialogModal": "true",
+   "labelledby": "pg-add-scope-title",
+   "labelText": "Add The UAPA, 1967",
+   "labelVisible": true,
+   "panelRole": null,
+   "panelModal": null,
+   "dialogsInPage": 3,
+   "roleDialogsInsideHost": 0,
+   "active": "BUTTON.pg-sheet-close \u2715",
+   "closeBtn": {
+    "display": "flex",
+    "w": 44,
+    "h": 44,
+    "label": "Close"
+   },
+   "returnAttr": null
+  },
+  "inpage_after_close_click": {
+   "url": "/laws/uapa",
+   "dialogOpen": false,
+   "dialogRole": "dialog",
+   "dialogModal": "true",
+   "labelledby": null,
+   "labelText": null,
+   "labelVisible": false,
+   "panelRole": null,
+   "panelModal": null,
+   "dialogsInPage": 3,
+   "roleDialogsInsideHost": 0,
+   "active": "A.ActHead-btn + Add to Playground",
+   "closeBtn": {
+    "display": "flex",
+    "w": 0,
+    "h": 0,
+    "label": "Close"
+   },
+   "returnAttr": null
+  }
+ }
+}

@@ -1,8 +1,11 @@
 """Phone Guest Add sheet Screen 02 (CTA map guest/02-screen, 390x844).
 
-Authorized: ChatGPT. Guest GET /playground/laws/ndps/add overlay on accepted
-Guest 01 /laws/ndps. Desktop 1280 guest Add dialog, signed-in Unlock,
-Plus confirm, Expired/Halted recovery, and Guest 03 stay unchanged.
+M2: one Add sheet per state (§2.1), drawn over the generated Act head and
+raised as a bottom sheet at phone width by CSS alone; the phone twin with its
+inert buttons is gone, so Sign in / Create an account are real links to the
+login gate on both widths. Guest GET /playground/laws/ndps/add is checked
+here. Signed-in Unlock, Plus confirm, Expired/Halted recovery, and Guest 03
+stay unchanged.
 """
 
 from __future__ import annotations
@@ -24,26 +27,26 @@ from constitution_memorizer.multiuser.settings import (
     MultiUserSettings,
     clear_settings_cache,
 )
+from constitution_memorizer.playground.eligibility import playground_bare_act_spec
 from constitution_memorizer.playground.urls import add_path
 from constitution_memorizer.playground.view import KIND_GUEST
 from constitution_memorizer.web.app import create_app
-from constitution_memorizer.web.guest_bareact_head import (
-    GUEST_ADD_TITLE,
-    NDPS_GUEST_READING_NAME,
-    NDPS_GUEST_TITLE,
-    guest_add_reading_name,
-)
+from constitution_memorizer.web.bare_acts import get_bare_act
 
 MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
 ROOT = Path(__file__).resolve().parents[1]
 ADD = ROOT / "src/constitution_memorizer/web/templates/playground_add.html"
+PANEL = ROOT / "src/constitution_memorizer/web/templates/partials/playground_add_panel.html"
 BASE = ROOT / "src/constitution_memorizer/web/templates/base.html"
 PG_CSS = ROOT / "src/constitution_memorizer/web/static/playground.css"
 PG_JS = ROOT / "src/constitution_memorizer/web/static/playground.js"
 USER = UUID("11111111-1111-4111-8111-111111111111")
 LOGIN_NEXT = f"/login?next={add_path('ndps')}"
+NDPS = get_bare_act("ndps")
+GUEST_ADD_TITLE = "Add to Playground"
+READING_NAME = playground_bare_act_spec("ndps").short_name
 GUEST_LEDE = (
-    f"Playground needs an account. Reading {NDPS_GUEST_READING_NAME} "
+    f"Playground needs an account. Reading {READING_NAME} "
     "stays free — sign in and you’ll come right back here."
 )
 MAP_LEDE_LOWER_THE = (
@@ -145,14 +148,9 @@ def _subscribe(
     )
 
 
-def _desk(html: str) -> str:
-    return html.split("data-guest-add-desktop", 1)[1].split(
-        "data-guest-add-phone", 1
-    )[0]
-
-
-def _phone(html: str) -> str:
-    return html.split("data-guest-add-phone", 1)[1].split("</div>", 1)[0]
+def _sheet(html: str) -> str:
+    """The one Add panel: `<section class="pg-sheet-panel" data-pg-add …>`."""
+    return html.split('class="pg-sheet-panel"', 1)[1].split("</section>", 1)[0]
 
 
 def _facts(client: TestClient) -> dict:
@@ -184,88 +182,139 @@ def _facts(client: TestClient) -> dict:
 def test_phone_guest_add_sheet_is_guest_kind_with_source_copy(tmp_path: Path) -> None:
     client = _guest_client(tmp_path)
     before = _facts(client)
-    sheet = client.get(add_path("ndps"))
-    assert sheet.status_code == 200
-    html = unescape(sheet.text)
+    sheet_page = client.get(add_path("ndps"))
+    assert sheet_page.status_code == 200
+    html = unescape(sheet_page.text)
     assert 'data-pg-kind="guest"' in html
     assert KIND_GUEST == "guest"
     assert "data-pg-add" in html
-    phone = _phone(html)
-    assert GUEST_ADD_TITLE in phone
-    assert phone.count(GUEST_ADD_TITLE) == 1
-    assert NDPS_GUEST_READING_NAME in phone
-    assert guest_add_reading_name("ndps", "NDPS Act") == NDPS_GUEST_READING_NAME
-    assert GUEST_LEDE in phone
-    assert MAP_LEDE_LOWER_THE not in phone
-    assert ">Sign in<" in phone
-    assert "Create an account" in phone
-    assert ">Cancel<" not in phone
-    assert "Sign in to use Playground" not in phone
-    assert 'data-guest-add-gate' not in phone
-    assert LOGIN_NEXT not in phone
-    assert 'href="' not in phone
-    assert "<form" not in phone
-    assert "<a " not in phone
-    assert 'type="button"' in phone
-    assert phone.count('type="button"') == 2
-    assert 'class="guest-add-signin"' in phone
-    assert 'class="guest-add-create"' in phone
+    assert html.count('class="pg-sheet-panel"') == 1  # M2: one sheet, both widths
+    assert "data-guest-add-phone" not in html
+    assert "data-guest-add-desktop" not in html
+    sheet = _sheet(html)
+    assert f'<h1 id="pg-add-title" class="pg-add-title">{GUEST_ADD_TITLE}</h1>' in sheet
+    assert sheet.count(GUEST_ADD_TITLE) == 1
+    assert READING_NAME == "The NDPS Act, 1985"
+    assert READING_NAME == NDPS.short_name
+    assert GUEST_LEDE in sheet
+    assert f'<p class="pg-add-lede">{GUEST_LEDE}</p>' in sheet
+    assert MAP_LEDE_LOWER_THE not in sheet
+    assert ">Sign in<" in sheet
+    assert "Create an account" in sheet
+    assert ">Cancel<" not in sheet
+    assert "data-pg-sheet-close" not in sheet
+    assert "Sign in to use Playground" not in sheet
+    # Both gates are real links to the login gate (the phone twin's inert
+    # buttons are gone) and nothing on the sheet can write.
+    assert sheet.count("data-guest-add-gate") == 2
+    assert sheet.count(f'href="{LOGIN_NEXT}"') == 2
+    assert f'<a class="pg-add-primary" href="{LOGIN_NEXT}" data-guest-add-gate>Sign in</a>' in sheet
+    assert (
+        f'<a class="pg-add-secondary" href="{LOGIN_NEXT}" data-guest-add-gate>Create an account</a>'
+    ) in sheet
+    assert sheet.count("<a ") == 2
+    assert "<form" not in sheet
+    assert "<button" not in sheet
+    assert 'type="button"' not in sheet
     for phrase in SUBSCRIBER_CONTROLS:
-        assert phrase not in phone, phrase
-    desk = _desk(html)
-    assert GUEST_ADD_TITLE in desk
-    assert GUEST_LEDE in desk
-    assert desk.count('data-guest-add-gate') == 2
-    assert desk.count(f'href="{LOGIN_NEXT}"') == 2
+        assert phrase not in sheet, phrase
+    assert _facts(client) == before
+    # The in-page fetch (X-Requested-With: pg-sheet) returns the same panel
+    # on its own for playground.js to lift into the live dialog.
+    fetched = unescape(
+        client.get(add_path("ndps"), headers={"X-Requested-With": "pg-sheet"}).text
+    )
+    assert fetched.count('class="pg-sheet-panel"') == 1
+    assert "<dialog" not in fetched
+    assert "ActHead" not in fetched
+    fetched_sheet = _sheet(fetched)
+    assert 'data-pg-kind="guest"' in fetched_sheet
+    assert f'<p class="pg-add-lede">{GUEST_LEDE}</p>' in fetched_sheet
+    assert fetched_sheet.count(f'href="{LOGIN_NEXT}"') == 2
+    assert fetched_sheet.count("data-guest-add-gate") == 2
+    assert "<form" not in fetched_sheet
     assert _facts(client) == before
 
 
-def test_phone_guest_add_buttons_are_handlerless_in_source() -> None:
+def test_guest_add_sheet_source_is_one_block_with_real_links() -> None:
     src = ADD.read_text(encoding="utf-8")
-    phone = src.split("data-guest-add-phone", 1)[1].split("</div>", 1)[0]
-    assert 'class="guest-add-title">Add to Playground<' in phone
-    assert "reading_name|default(short_title)" in phone
-    assert 'type="button" class="guest-add-signin">Sign in<' in phone
-    assert 'type="button" class="guest-add-create">Create an account<' in phone
-    assert "login_href" not in phone
-    assert "data-guest-add-gate" not in phone
-    assert "cancel_href" not in phone
-    assert "<form" not in phone
-    assert "<a " not in phone
-    desk = src.split("data-guest-add-desktop", 1)[1].split(
-        "data-guest-add-phone", 1
-    )[0]
-    assert "data-guest-add-gate" in desk
-    assert "login_href" in desk
+    assert (
+        '{% extends "bare_act.html" if act is defined and act else "playground_base.html" %}'
+        in src
+    )
+    assert "{% block act_dialog %}" in src
+    assert "data-pg-sheet-direct" in src
+    assert 'data-pg-sheet-return="{{ cancel_href }}"' in src
+    assert src.count('{% include "partials/playground_add_panel.html" %}') == 2
+    panel = PANEL.read_text(encoding="utf-8")
+    assert panel.lstrip("{#").lstrip().startswith("The Add sheet panel")
+    for gone in (
+        "data-guest-add-phone",
+        "data-guest-add-desktop",
+        "guest-add-signin",
+        "guest-add-create",
+        "guest-add-title",
+        'type="button"',
+    ):
+        assert gone not in src, gone
+        assert gone not in panel, gone
+    guest = panel.split('{% if kind == "guest" %}', 1)[1].split("{% elif", 1)[0]
+    assert 'class="pg-add-title">Add to Playground<' in guest
+    assert "reading_name|default(short_title)" in guest
+    assert guest.count("login_href") == 2
+    assert guest.count("data-guest-add-gate") == 2
+    assert '<a class="pg-add-primary" href="{{ login_href }}" data-guest-add-gate>Sign in</a>' in guest
+    assert (
+        '<a class="pg-add-secondary" href="{{ login_href }}" data-guest-add-gate>Create an account</a>'
+    ) in guest
+    assert "cancel_href" not in guest
+    assert "data-pg-sheet-close" not in guest
+    assert "<form" not in guest
+    assert "<button" not in guest
     js = PG_JS.read_text(encoding="utf-8")
     assert "guest-add-signin" not in js
     assert "guest-add-create" not in js
     assert "data-guest-add-phone" not in js
     assert "event.target === dialog" in js
+    # M2 Q4: a server-opened dialog is re-opened as a modal and closes back
+    # onto the Act's own address.
+    assert 'dialog.hasAttribute("data-pg-sheet-direct")' in js
+    assert 'dialog.getAttribute("data-pg-sheet-return")' in js
+    assert "window.history.replaceState(null, \"\", back)" in js
 
 
-def test_phone_guest_add_css_is_breakpoint_scoped() -> None:
+def test_guest_add_css_is_one_block_with_phone_overrides() -> None:
     css = PG_CSS.read_text(encoding="utf-8")
-    phone_block = css.split("is guest/02-screen:", 1)[1].split(
-        "@media (min-width: 561px)", 1
-    )[0]
-    assert "@media (max-width: 560px)" in phone_block
-    assert ":has([data-guest-add-phone])" in phone_block
-    assert "width: 100%" in phone_block
-    assert "justify-content: flex-end" in phone_block
-    assert "[data-guest-add-phone] .guest-add-signin" in phone_block
-    assert "[data-guest-add-phone] .guest-add-create" in phone_block
+    for gone in (
+        "guest/02-screen:",
+        "data-guest-add-phone",
+        "data-guest-add-desktop",
+        ".guest-add-signin",
+        ".guest-add-create",
+    ):
+        assert gone not in css, gone
+    assert "Add sheet (M2)" in css
+    m2 = css.split("Add sheet (M2)", 1)[1]
+    primary = m2.split(".pg-add-primary {", 1)[1].split("}", 1)[0]
+    assert "width: 100%" in primary
+    assert "min-height: 50px" in primary
+    secondary = m2.split(".pg-add-secondary {", 1)[1].split("}", 1)[0]
+    assert "width: 100%" in secondary
+    phone_block = m2.split("@media (max-width: 560px) {", 1)[1].split("\n}\n", 1)[0]
+    assert ".pg-sheet-panel[data-pg-add] {" in phone_block
+    assert ".pg-add-title {" in phone_block
+    assert ".pg-add-lede {" in phone_block
+    # The dialog itself is still the shared bottom sheet at phone width.
     generic = css.split("@media (max-width: 560px)", 1)[1].split(
         "/* R2 section/clause picker */", 1
     )[0]
     assert "width: calc(100% - (2 * var(--pg-shell-pad)))" in generic
-    guest_signin = css.split("[data-guest-add-desktop] .guest-add-signin {", 1)[1].split(
-        "}", 1
-    )[0]
-    assert "height: 50px" in guest_signin
-    assert "playground.css?v=pg49" in BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg31" not in BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg30" not in BASE.read_text(encoding="utf-8")
+    base = BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg52" in base
+    assert "playground.js?v=pg12" in base
+    assert "playground.css?v=pg49" not in base
+    assert "playground.css?v=pg31" not in base
+    assert "playground.css?v=pg30" not in base
 
 
 def test_signed_in_plus_expired_halted_add_sheets_stay_separate(
@@ -274,21 +323,29 @@ def test_signed_in_plus_expired_halted_add_sheets_stay_separate(
     free = TestClient(_mu_app(tmp_path / "free"))
     _sign_in(free)
     free_html = free.get(add_path("ndps")).text
-    assert "data-guest-add-phone" not in free_html
-    assert "data-signed-in-add-phone" in free_html
-    assert 'data-pg-kind="subscribe"' in free_html
-    assert "Unlock Playground" in free_html
+    assert free_html.count('class="pg-sheet-panel"') == 1
+    free_sheet = _sheet(free_html)
+    assert 'data-pg-kind="subscribe"' in free_sheet
+    assert "Unlock Playground" in free_sheet
+    assert '<a class="pg-add-primary" href="/playground">Unlock Playground</a>' in free_sheet
     assert "Create an account" not in free_html
+    assert "data-guest-add-gate" not in free_html
+    assert "data-expired-add" not in free_sheet
+    assert "data-halted-add" not in free_sheet
 
     plus = TestClient(_mu_app(tmp_path / "plus"))
     _sign_in(plus)
     _subscribe(plus)
     plus_html = plus.get(add_path("ndps")).text
-    assert "data-guest-add-phone" not in plus_html
-    assert "data-plus-add-phone" in plus_html
-    assert "data-pg-add-confirm" in plus_html
+    assert plus_html.count('class="pg-sheet-panel"') == 1
+    plus_sheet = _sheet(plus_html)
+    assert 'data-pg-kind="eligible_to_add"' in plus_sheet
+    assert "data-pg-add-confirm" in plus_sheet
+    assert f'action="{add_path("ndps")}"' in plus_sheet
+    assert 'name="csrf_token"' in plus_sheet
     assert "Create an account" not in plus_html
-    assert "Unlock Playground" not in plus_html.split("data-plus-add-phone", 1)[1]
+    assert "data-guest-add-gate" not in plus_html
+    assert "Unlock Playground" not in plus_sheet
 
     expired = TestClient(_mu_app(tmp_path / "expired"))
     _sign_in(expired)
@@ -302,20 +359,23 @@ def test_signed_in_plus_expired_halted_add_sheets_stay_separate(
         billing_period_end=datetime(2026, 9, 15, tzinfo=timezone.utc),
     )
     expired_html = expired.get(add_path("ndps")).text
-    assert "data-guest-add-phone" not in expired_html
-    assert "data-expired-add-phone" in expired_html
+    expired_sheet = _sheet(expired_html)
+    assert "data-expired-add" in expired_sheet
+    assert 'data-pg-kind="resume"' in expired_sheet
+    assert "Resume Playground" in expired_sheet
     assert "Create an account" not in expired_html
-    assert "guest-add-signin" not in expired_html
+    assert "data-guest-add-gate" not in expired_html
 
     halted = TestClient(_mu_app(tmp_path / "halted"))
     _sign_in(halted)
     _subscribe(halted, status="halted")
     halted_html = halted.get(add_path("ndps")).text
-    assert "data-guest-add-phone" not in halted_html
-    assert "data-halted-add-phone" in halted_html
-    assert "Payment retries have stopped" in halted_html
+    halted_sheet = _sheet(halted_html)
+    assert "data-halted-add" in halted_sheet
+    assert "Payment retries have stopped" in halted_sheet
+    assert "Manage subscription" in halted_sheet
     assert "Create an account" not in halted_html
-    assert "Manage subscription" in halted_html
+    assert "data-guest-add-gate" not in halted_html
 
 
 def test_phone_guest_gets_are_mutation_free(tmp_path: Path) -> None:
@@ -383,69 +443,57 @@ def test_phone_guest_add_screen02_390x844(tmp_path: Path) -> None:
         )
         background = page.evaluate(
             """() => {
-              const phone = document.querySelector('[data-guest-bareact-phone]');
+              const head = document.querySelector('.ActHead');
               return {
-                title: phone && phone.querySelector('.guest-bareact-title').textContent.trim(),
-                tabs: Boolean(document.querySelector('[data-guest-bareact-phone-tabs]')),
+                title: head && head.querySelector('.ActHead-title').textContent.trim(),
+                tabs: Boolean(document.querySelector('[data-guest-phone-tabs]')),
               };
             }"""
         )
-        page.locator("[data-guest-bareact-phone] .guest-bareact-cta").click()
+        page.locator(".ActHead .ActHead-btn").click()
         page.wait_for_selector("[data-pg-add][data-pg-kind='guest']", timeout=8000)
         page.wait_for_timeout(400)
         geo = page.evaluate(
             """() => {
               const dialog = document.querySelector('dialog.pg-sheet');
               const panel = document.querySelector('[data-pg-add]');
-              const desk = panel.querySelector('[data-guest-add-desktop]');
-              const phoneBlock = panel.querySelector('[data-guest-add-phone]');
-              const signin = phoneBlock && phoneBlock.querySelector('.guest-add-signin');
-              const create = phoneBlock && phoneBlock.querySelector('.guest-add-create');
-              const closeBtn = panel.querySelector('.pg-sheet-close');
-              const tabs = document.querySelector('[data-guest-bareact-phone-tabs]');
-              const handle = getComputedStyle(panel, '::before');
+              const signin = panel.querySelector('.pg-add-primary');
+              const create = panel.querySelector('.pg-add-secondary');
+              const tabs = document.querySelector('[data-guest-phone-tabs]');
               const d = dialog.getBoundingClientRect();
               const p = panel.getBoundingClientRect();
               return {
                 open: Boolean(dialog && dialog.open),
                 kind: panel.getAttribute('data-pg-kind'),
                 url: location.pathname,
-                deskDisplay: getComputedStyle(desk).display,
-                phoneDisplay: getComputedStyle(phoneBlock).display,
-                title: phoneBlock.querySelector('.guest-add-title').textContent.trim(),
-                lede: phoneBlock.querySelector('.guest-add-lede').textContent.trim(),
+                panels: document.querySelectorAll('.pg-sheet-panel').length,
+                panelDisplay: getComputedStyle(panel).display,
+                title: panel.querySelector('.pg-add-title').textContent.trim(),
+                lede: panel.querySelector('.pg-add-lede').textContent.trim(),
                 signin: {
                   tag: signin.tagName,
-                  type: signin.getAttribute('type'),
                   href: signin.getAttribute('href'),
                   text: signin.textContent.trim(),
                   gate: signin.hasAttribute('data-guest-add-gate'),
                   form: Boolean(signin.closest('form')),
                   width: signin.getBoundingClientRect().width,
-                  bg: getComputedStyle(signin).backgroundColor,
                 },
                 create: {
                   tag: create.tagName,
-                  type: create.getAttribute('type'),
                   href: create.getAttribute('href'),
                   text: create.textContent.trim(),
                   gate: create.hasAttribute('data-guest-add-gate'),
                   form: Boolean(create.closest('form')),
                   width: create.getBoundingClientRect().width,
-                  bg: getComputedStyle(create).backgroundColor,
-                  border: getComputedStyle(create).borderTopWidth,
                 },
-                closeDisplay: closeBtn ? getComputedStyle(closeBtn).display : 'missing',
-                handleDisplay: handle.display,
-                handleHeight: handle.height,
+                cancel: [...panel.querySelectorAll('a, button')].some((a) => a.textContent.trim() === 'Cancel'),
                 dialog: { top: d.top, left: d.left, width: d.width, height: d.height },
                 panel: { top: p.top, left: p.left, width: p.width, bottom: p.bottom },
                 overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
                 tabsDisplay: tabs ? getComputedStyle(tabs).display : null,
-                backgroundTitle: document.querySelector('[data-guest-bareact-phone] .guest-bareact-title')
-                  && document.querySelector('[data-guest-bareact-phone] .guest-bareact-title').textContent.trim(),
+                backgroundTitle: document.querySelector('.ActHead .ActHead-title')
+                  && document.querySelector('.ActHead .ActHead-title').textContent.trim(),
                 confirm: Boolean(panel.querySelector('[data-pg-add-confirm]')),
-                radius: getComputedStyle(panel).borderTopLeftRadius,
               };
             }"""
         )
@@ -453,19 +501,25 @@ def test_phone_guest_add_screen02_390x844(tmp_path: Path) -> None:
         page.screenshot(path=str(shot_path), full_page=False)
 
         n_before_click = len(requests)
-        page.locator("[data-guest-add-phone] .guest-add-signin").click()
-        page.wait_for_timeout(250)
-        after_signin = page.evaluate(
-            "() => ({ url: location.pathname, open: document.querySelector('dialog.pg-sheet').open })"
-        )
-        page.locator("[data-guest-add-phone] .guest-add-create").click()
-        page.wait_for_timeout(250)
-        after_create = page.evaluate(
-            "() => ({ url: location.pathname, open: document.querySelector('dialog.pg-sheet').open })"
-        )
+        page.locator("[data-pg-add] .pg-add-primary").click()
+        page.wait_for_url("**/login**", timeout=8000)
+        signin_url = page.url
         extra = requests[n_before_click:]
 
-        panel_top = geo["panel"]["top"]
+        page.goto(f"{origin}/laws/ndps", wait_until="networkidle")
+        page.locator(".ActHead .ActHead-btn").click()
+        page.wait_for_selector("[data-pg-add][data-pg-kind='guest']", timeout=8000)
+        page.locator("[data-pg-add] .pg-add-secondary").click()
+        page.wait_for_url("**/login**", timeout=8000)
+        create_url = page.url
+
+        page.goto(f"{origin}/laws/ndps", wait_until="networkidle")
+        page.locator(".ActHead .ActHead-btn").click()
+        page.wait_for_selector("[data-pg-add][data-pg-kind='guest']", timeout=8000)
+        page.wait_for_timeout(250)
+        panel_top = page.evaluate(
+            "() => document.querySelector('[data-pg-add]').getBoundingClientRect().top"
+        )
         page.mouse.click(195, max(20, panel_top - 40))
         page.wait_for_timeout(250)
         closed = page.evaluate(
@@ -474,14 +528,14 @@ def test_phone_guest_add_screen02_390x844(tmp_path: Path) -> None:
               return {
                 open: Boolean(dialog && dialog.open),
                 url: location.pathname,
-                title: document.querySelector('[data-guest-bareact-phone] .guest-bareact-title')
-                  && document.querySelector('[data-guest-bareact-phone] .guest-bareact-title').textContent.trim(),
+                title: document.querySelector('.ActHead .ActHead-title')
+                  && document.querySelector('.ActHead .ActHead-title').textContent.trim(),
                 scroll: window.scrollY,
               };
             }"""
         )
 
-        page.locator("[data-guest-bareact-phone] .guest-bareact-cta").click()
+        page.locator(".ActHead .ActHead-btn").click()
         page.wait_for_selector("[data-pg-add][data-pg-kind='guest']", timeout=8000)
         page.keyboard.press("Escape")
         page.wait_for_timeout(200)
@@ -493,50 +547,43 @@ def test_phone_guest_add_screen02_390x844(tmp_path: Path) -> None:
         )
         browser.close()
 
-    assert background["title"] == NDPS_GUEST_TITLE
+    assert background["title"] == NDPS.title
     assert background["tabs"] is True
     assert geo["open"] is True
     assert geo["kind"] == KIND_GUEST
     assert geo["url"] == "/laws/ndps"
-    assert geo["deskDisplay"] == "none"
-    assert geo["phoneDisplay"] != "none"
+    assert geo["panels"] == 1
+    assert geo["panelDisplay"] != "none"
     assert geo["title"] == GUEST_ADD_TITLE
     assert geo["lede"] == GUEST_LEDE
-    assert geo["signin"]["tag"] == "BUTTON"
-    assert geo["signin"]["type"] == "button"
-    assert geo["signin"]["href"] is None
+    assert geo["signin"]["tag"] == "A"
+    assert geo["signin"]["href"] == LOGIN_NEXT
     assert geo["signin"]["text"] == "Sign in"
-    assert geo["signin"]["gate"] is False
+    assert geo["signin"]["gate"] is True
     assert geo["signin"]["form"] is False
     assert geo["signin"]["width"] >= 300
-    assert geo["create"]["tag"] == "BUTTON"
-    assert geo["create"]["type"] == "button"
-    assert geo["create"]["href"] is None
+    assert geo["create"]["tag"] == "A"
+    assert geo["create"]["href"] == LOGIN_NEXT
     assert geo["create"]["text"] == "Create an account"
-    assert geo["create"]["gate"] is False
+    assert geo["create"]["gate"] is True
     assert geo["create"]["form"] is False
     assert geo["create"]["width"] >= 300
-    assert geo["closeDisplay"] == "none"
-    assert geo["handleDisplay"] == "block"
-    assert geo["dialog"]["width"] >= 389
-    assert geo["dialog"]["left"] <= 1
-    assert geo["dialog"]["top"] <= 1
-    assert geo["panel"]["left"] <= 1
-    assert geo["panel"]["width"] >= 389
+    assert geo["cancel"] is False
+    assert geo["dialog"]["width"] >= 300
+    assert geo["panel"]["width"] >= 300
     assert geo["panel"]["bottom"] >= 840
     assert geo["panel"]["top"] > 400
     assert geo["overflow"] is False
-    assert geo["backgroundTitle"] == NDPS_GUEST_TITLE
+    assert geo["backgroundTitle"] == NDPS.title
     assert geo["confirm"] is False
-    assert after_signin["url"] == "/laws/ndps"
-    assert after_signin["open"] is True
-    assert after_create["url"] == "/laws/ndps"
-    assert after_create["open"] is True
-    assert not any("/login" in item for item in extra)
+    assert "/login" in signin_url
+    assert add_path("ndps") in signin_url
+    assert "/login" in create_url
+    assert add_path("ndps") in create_url
     assert not any(item.startswith("POST ") for item in extra)
     assert closed["open"] is False
     assert closed["url"] == "/laws/ndps"
-    assert closed["title"] == NDPS_GUEST_TITLE
+    assert closed["title"] == NDPS.title
     assert escaped["open"] is False
     assert escaped["url"] == "/laws/ndps"
     assert shot_path.is_file()
@@ -566,32 +613,27 @@ def test_phone_guest_add_screen02_desktop_regression_1280(tmp_path: Path) -> Non
         page.evaluate(
             """() => { document.documentElement.setAttribute('data-theme', 'light'); }"""
         )
-        page.locator("[data-guest-bareact-desktop] .guest-bareact-cta").click()
+        page.locator(".ActHead .ActHead-btn").click()
         page.wait_for_selector("[data-pg-add][data-pg-kind='guest']", timeout=8000)
         page.wait_for_timeout(300)
         geo = page.evaluate(
             """() => {
               const dialog = document.querySelector('dialog.pg-sheet');
               const panel = document.querySelector('[data-pg-add]');
-              const desk = panel.querySelector('[data-guest-add-desktop]');
-              const phoneBlock = panel.querySelector('[data-guest-add-phone]');
-              const gates = [...desk.querySelectorAll('[data-guest-add-gate]')];
+              const gates = [...panel.querySelectorAll('[data-guest-add-gate]')];
               const d = dialog.getBoundingClientRect();
-              const p = panel.getBoundingClientRect();
               const closeBtn = panel.querySelector('.pg-sheet-close');
               return {
                 open: Boolean(dialog && dialog.open),
-                deskDisplay: getComputedStyle(desk).display,
-                phoneDisplay: getComputedStyle(phoneBlock).display,
-                title: desk.querySelector('.guest-add-title').textContent.trim(),
-                lede: desk.querySelector('.guest-add-lede').textContent.trim(),
+                panels: document.querySelectorAll('.pg-sheet-panel').length,
+                panelDisplay: getComputedStyle(panel).display,
+                title: panel.querySelector('.pg-add-title').textContent.trim(),
+                lede: panel.querySelector('.pg-add-lede').textContent.trim(),
                 labels: gates.map((el) => el.textContent.trim()),
                 tags: gates.map((el) => el.tagName),
                 hrefs: gates.map((el) => el.getAttribute('href')),
                 closeDisplay: closeBtn ? getComputedStyle(closeBtn).display : 'missing',
                 dialogWidth: d.width,
-                panelBottom: p.bottom,
-                panelTop: p.top,
                 notFullBleed: d.width < 800 && d.left > 100,
                 centered: Math.abs((d.top + d.bottom) / 2 - 400) < 120,
               };
@@ -602,8 +644,8 @@ def test_phone_guest_add_screen02_desktop_regression_1280(tmp_path: Path) -> Non
         browser.close()
 
     assert geo["open"] is True
-    assert geo["deskDisplay"] != "none"
-    assert geo["phoneDisplay"] == "none"
+    assert geo["panels"] == 1
+    assert geo["panelDisplay"] != "none"
     assert geo["title"] == GUEST_ADD_TITLE
     assert geo["lede"] == GUEST_LEDE
     assert geo["labels"] == ["Sign in", "Create an account"]

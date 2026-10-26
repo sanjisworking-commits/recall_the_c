@@ -170,7 +170,7 @@ def test_screen10_does_not_change_other_screens(tmp_path: Path) -> None:
     laws = client.get("/laws").text
     assert "data-guest-laws-desktop" in laws
     ndps = client.get("/laws/ndps").text
-    assert "data-guest-bareact-desktop" in ndps
+    assert 'data-act-head="ndps"' in ndps
     playground = client.get("/playground").text
     assert "data-guest-pg-intro" in playground
     assert "data-guest-profile-desktop" not in playground
@@ -362,7 +362,7 @@ def test_screen10_1280_signin_ndps_report_and_phone(tmp_path: Path) -> None:
     assert "next=/profile" in signin_url
     assert "data-auth-grid" in signin_html
     assert "/laws/ndps" in ndps_url
-    assert "data-guest-bareact-desktop" in ndps_html
+    assert 'data-act-head="ndps"' in ndps_html
     assert "data-guest-pg-intro" in playground_html
     assert phone_geo["deskDisplay"] == "none"
     assert phone_geo["prodDisplay"] == "none"

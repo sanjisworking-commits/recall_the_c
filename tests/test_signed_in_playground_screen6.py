@@ -36,7 +36,7 @@ LANDING = ROOT / "src/constitution_memorizer/web/templates/landing.html"
 BROWSE = ROOT / "src/constitution_memorizer/web/templates/browse_index.html"
 LAWS = ROOT / "src/constitution_memorizer/web/templates/laws.html"
 BARE = ROOT / "src/constitution_memorizer/web/templates/bare_act.html"
-ADD = ROOT / "src/constitution_memorizer/web/templates/playground_add.html"
+ADD = ROOT / "src/constitution_memorizer/web/templates/partials/playground_add_panel.html"  # M2: panel partial
 HOME = ROOT / "src/constitution_memorizer/web/templates/playground.html"
 GATE = ROOT / "src/constitution_memorizer/web/templates/playground_gate.html"
 USER = UUID("11111111-1111-4111-8111-111111111111")
@@ -167,7 +167,7 @@ def test_guest_playground_intro_is_unchanged(tmp_path: Path) -> None:
 
 def test_signed_in_pg_gate_does_not_touch_accepted_screens() -> None:
     assert "data-signed-in-pg-gate" not in ADD.read_text(encoding="utf-8")
-    assert "data-signed-in-add-desktop" in ADD.read_text(encoding="utf-8")
+    assert "data-pg-add" in ADD.read_text(encoding="utf-8")
     assert "data-signed-in-pg-gate" not in HOME.read_text(encoding="utf-8")
     assert "pg-home-title" in HOME.read_text(encoding="utf-8")
     landing = LANDING.read_text(encoding="utf-8")
@@ -177,20 +177,23 @@ def test_signed_in_pg_gate_does_not_touch_accepted_screens() -> None:
     laws = LAWS.read_text(encoding="utf-8")
     assert "data-signed-in-laws-desktop" in laws
     bare = BARE.read_text(encoding="utf-8")
-    assert "data-signed-in-bareact-desktop" in bare
+    assert "data-act-head" in bare
     css = STYLES.read_text(encoding="utf-8")
     headband = css.split(
-        "[data-signed-in-bareact-desktop] .guest-bareact-headband {", 1
+        ".ActHead-band {", 1
     )[1].split("}", 1)[0]
-    assert "12px 40px 14px" in headband
-    assert "position: absolute" not in css.split("/* R1 desktop shell", 1)[1]
+    assert "16px 40px 22px" in headband  # M2 head band
+    # M2: the About toggle's 44px hit area is an absolutely placed
+    # pseudo-element inside the head; the shell itself still positions nothing.
+    shell_css = css.split("/* R1 desktop shell", 1)[1].split("/* ── Bare Act head (M2)", 1)[0]
+    assert "position: absolute" not in shell_css
     mobile = MOBILE.read_text(encoding="utf-8")
     assert "data-signed-in-pg-gate" not in mobile
     pg_css = PG_CSS.read_text(encoding="utf-8")
     signed_title = pg_css.split(
-        "[data-signed-in-add-desktop] .signed-add-title {", 1
+        ".pg-add-title {", 1
     )[1].split("}", 1)[0]
-    assert "font-size: 20px" in signed_title
+    assert "font-size: 22px" in signed_title  # M2 sheet title
     guest_title = pg_css.split(".guest-pg-title {", 1)[1].split("}", 1)[0]
     assert "font-size: 34px" in guest_title
     signed_gate_title = pg_css.split(

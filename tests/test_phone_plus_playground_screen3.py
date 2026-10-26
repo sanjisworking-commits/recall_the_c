@@ -405,8 +405,13 @@ def test_phone_plus_01_continue_and_saved_and_full(tmp_path: Path) -> None:
     client = _plus_client(tmp_path)
     _seed_roster(client, "ndps")
     bare = client.get("/laws/ndps").text
-    assert 'href="/playground"' in bare
-    assert "Continue" in bare
+    # M2 (F04): the head's chip links the live state — Continue to the law
+    # page once a selection exists, Start learning to Sections before one.
+    chip = bare.split('class="ActHead-inpg"', 1)[1].split("</div>", 1)[0]
+    assert "Already in Playground" in chip
+    assert ("Continue" in chip and f'href="{law_path("ndps")}"' in chip) or (
+        "Start learning" in chip and f'href="{sections_path("ndps")}"' in chip
+    )
     home = unescape(client.get("/playground").text)
     assert "data-plus-playground-phone" in home
     assert "data-signed-in-pg-gate" not in home
@@ -551,10 +556,10 @@ def test_phone_plus_css_scope_pins_and_desktop_06_untouched() -> None:
     routes = ROUTES.read_text(encoding="utf-8")
     assert '"plus_playground": request_is_active_plus(request)' in routes
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg49" in base
+    assert "playground.css?v=pg52" in base
     assert "playground.css?v=pg35" not in base
-    assert "styles.css?v=main87" in base
-    assert "mobile.css?v=mob106" in base
+    assert "styles.css?v=main88" in base
+    assert "mobile.css?v=mob107" in base
     assert "data-plus-playground-phone-tabs" not in base
 
 

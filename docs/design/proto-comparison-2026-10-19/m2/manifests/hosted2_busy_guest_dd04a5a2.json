@@ -1,0 +1,96 @@
+{
+ "1280": {
+  "before": {
+   "text": "Sign in to use Playground",
+   "busy": null,
+   "cls": "ActHead-btn",
+   "href": "/playground/laws/uapa/add",
+   "pe": "auto",
+   "cursor": "pointer",
+   "opacity": "1",
+   "open": false,
+   "active": "BODY. is-guest"
+  },
+  "during": {
+   "text": "Opening\u2026",
+   "busy": "true",
+   "cls": "ActHead-btn is-opening",
+   "href": "/playground/laws/uapa/add",
+   "pe": "none",
+   "cursor": "progress",
+   "opacity": "0.72",
+   "open": false,
+   "active": "BODY. is-guest"
+  },
+  "add_requests_sent": 1,
+  "after_open": {
+   "text": "Sign in to use Playground",
+   "busy": null,
+   "cls": "ActHead-btn",
+   "href": "/playground/laws/uapa/add",
+   "pe": "auto",
+   "cursor": "pointer",
+   "opacity": "1",
+   "open": true,
+   "active": "BUTTON.pg-sheet-close"
+  },
+  "after_close": {
+   "text": "Sign in to use Playground",
+   "busy": null,
+   "cls": "ActHead-btn",
+   "href": "/playground/laws/uapa/add",
+   "pe": "auto",
+   "cursor": "pointer",
+   "opacity": "1",
+   "open": false,
+   "active": "A.ActHead-btn"
+  }
+ },
+ "390": {
+  "before": {
+   "text": "Sign in to use Playground",
+   "busy": null,
+   "cls": "ActHead-btn",
+   "href": "/playground/laws/uapa/add",
+   "pe": "auto",
+   "cursor": "pointer",
+   "opacity": "1",
+   "open": false,
+   "active": "BODY. is-guest"
+  },
+  "during": {
+   "text": "Opening\u2026",
+   "busy": "true",
+   "cls": "ActHead-btn is-opening",
+   "href": "/playground/laws/uapa/add",
+   "pe": "none",
+   "cursor": "progress",
+   "opacity": "0.72",
+   "open": false,
+   "active": "BODY. is-guest"
+  },
+  "add_requests_sent": 1,
+  "after_open": {
+   "text": "Sign in to use Playground",
+   "busy": null,
+   "cls": "ActHead-btn",
+   "href": "/playground/laws/uapa/add",
+   "pe": "auto",
+   "cursor": "pointer",
+   "opacity": "1",
+   "open": true,
+   "active": "BUTTON.pg-sheet-close"
+  },
+  "after_close": {
+   "text": "Sign in to use Playground",
+   "busy": null,
+   "cls": "ActHead-btn",
+   "href": "/playground/laws/uapa/add",
+   "pe": "auto",
+   "cursor": "pointer",
+   "opacity": "1",
+   "open": false,
+   "active": "A.ActHead-btn"
+  }
+ }
+}

@@ -1,0 +1,146 @@
+[
+ {
+  "state": "chapter-open",
+  "width": 390,
+  "result": "false",
+  "focus": {
+   "tag": "SUMMARY",
+   "cls": "bareact-chapter-row",
+   "outline": "none 3px rgb(20, 20, 20)",
+   "box": [
+    0,
+    282,
+    390,
+    48
+   ]
+  },
+  "file": "state_chapter-open_390x844.png",
+  "sha256": "053b1e6838dcf5542b730901d838f10b072e741067c38df6f0414f09952862ed"
+ },
+ {
+  "state": "about-open",
+  "width": 390,
+  "result": "true",
+  "focus": {
+   "tag": "BODY",
+   "cls": " is-guest",
+   "outline": "none 3px rgb(20, 20, 20)",
+   "box": [
+    0,
+    0,
+    390,
+    1317
+   ]
+  },
+  "file": "state_about-open_390x844.png",
+  "sha256": "c1f1d3d780766ff9ed409a19da3d2f230868337cd03dfa5a3ee21e8a6eb4d9a7"
+ },
+ {
+  "state": "row-focus",
+  "width": 390,
+  "result": true,
+  "focus": {
+   "tag": "SUMMARY",
+   "cls": "bareact-chapter-row",
+   "outline": "none 3px rgb(20, 20, 20)",
+   "box": [
+    0,
+    378,
+    390,
+    59
+   ]
+  },
+  "file": "state_row-focus_390x844.png",
+  "sha256": "9f02122c4e9a95d8243b6b77fb5736d7ca590391a02a5e866e16529d8f9c5910"
+ },
+ {
+  "state": "schedule-focus",
+  "width": 390,
+  "result": true,
+  "focus": {
+   "tag": "A",
+   "cls": "bareact-schedule-row-link",
+   "outline": "none 3px rgb(20, 20, 20)",
+   "box": [
+    0,
+    698,
+    390,
+    60
+   ]
+  },
+  "file": "state_schedule-focus_390x844.png",
+  "sha256": "9f02122c4e9a95d8243b6b77fb5736d7ca590391a02a5e866e16529d8f9c5910"
+ },
+ {
+  "state": "chapter-open",
+  "width": 1280,
+  "result": "false",
+  "focus": {
+   "tag": "SUMMARY",
+   "cls": "bareact-chapter-row",
+   "outline": "none 3px rgb(20, 20, 20)",
+   "box": [
+    24,
+    262,
+    912,
+    56
+   ]
+  },
+  "file": "state_chapter-open_1280x900.png",
+  "sha256": "4e5dfa3abc5c00f771620eee66f758033e38f61e2ed7604ee96351bf9382f691"
+ },
+ {
+  "state": "about-open",
+  "width": 1280,
+  "result": "true",
+  "focus": {
+   "tag": "BODY",
+   "cls": " is-guest",
+   "outline": "none 3px rgb(20, 20, 20)",
+   "box": [
+    0,
+    0,
+    1280,
+    1235
+   ]
+  },
+  "file": "state_about-open_1280x900.png",
+  "sha256": "cc581dfd58584c133cbaf010bfebd3821be416180d9909c4543cc718a6d1e1d2"
+ },
+ {
+  "state": "row-focus",
+  "width": 1280,
+  "result": true,
+  "focus": {
+   "tag": "SUMMARY",
+   "cls": "bareact-chapter-row",
+   "outline": "none 3px rgb(20, 20, 20)",
+   "box": [
+    24,
+    374,
+    912,
+    56
+   ]
+  },
+  "file": "state_row-focus_1280x900.png",
+  "sha256": "cf9297614e0b75d17f6e5cc2b0c9e1642b07cf3ba0e292e13819ad1e47d3fdd4"
+ },
+ {
+  "state": "schedule-focus",
+  "width": 1280,
+  "result": true,
+  "focus": {
+   "tag": "A",
+   "cls": "bareact-schedule-row-link",
+   "outline": "none 3px rgb(20, 20, 20)",
+   "box": [
+    24,
+    710,
+    912,
+    66
+   ]
+  },
+  "file": "state_schedule-focus_1280x900.png",
+  "sha256": "cf9297614e0b75d17f6e5cc2b0c9e1642b07cf3ba0e292e13819ad1e47d3fdd4"
+ }
+]

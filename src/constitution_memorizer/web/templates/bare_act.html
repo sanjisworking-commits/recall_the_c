@@ -2,150 +2,86 @@
 {% block title %}{{ seo_title|default(act.title ~ ' · ' ~ app_name|default('Recall the C'), true) }}{% endblock %}
 {% block mobile_screen %}bareact{% endblock %}
 {% block content %}
-{% set guest_bareact_head = multiuser_enabled|default(false) and not current_user and guest_screen4|default(none) %}
-{% set signed_in_bareact_desktop = multiuser_enabled|default(false) and current_user and guest_screen4|default(none) %}
-{% from "partials/playground.html" import playground_cta, status_badge %}
-{% set pg = playground_state %}
-{% set pg_subscribed = pg and pg.subscribed %}
-{% set pg_in_playground = pg and pg.kind == 'already_active' %}
-{% if guest_bareact_head %}
-<section class="panel guest-bareact" data-guest-bareact-desktop>
-  <div class="guest-bareact-headband">
-    <a class="guest-bareact-back" href="/laws"><svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M12.2 4.2 6.4 10l5.8 5.8"></path></svg>Laws</a>
-    <div class="guest-bareact-head">
-      <div class="guest-bareact-copy">
-        <p class="guest-bareact-kicker">{{ guest_screen4.kicker }}</p>
-        <h1 class="guest-bareact-title">{{ guest_screen4.title }}</h1>
-        <p class="guest-bareact-meta">{{ guest_screen4.meta }}</p>
+{% from "partials/playground.html" import status_badge %}
+{% set pg = playground_state if playground_enabled|default(true) and playground_state and playground_state.eligible and playground_state.kind != 'unavailable' else none %}
+{# One Act head for every Bare Act and every viewer, generated from the Act
+   model (M2). Kicker, title and meta come off `act`; the Playground action
+   comes off the live `playground_state` and switches on its `kind` only —
+   never on a tier string, never on a per-law constant. #}
+<section
+  class="panel ActHead bareact-page is-{{ act.render_profile }}"
+  data-act-head="{{ act.slug }}"
+  {% if pg %}data-pg-kind="{{ pg.kind }}" data-membership="{{ pg.badge }}"{% endif %}
+  {% if plus_bareact|default(false) %}data-plus-bareact{% endif %}
+  {% if expired_bareact|default(false) %}data-expired-bareact{% endif %}
+  {% if halted_bareact|default(false) %}data-halted-bareact{% endif %}
+>
+  <div class="ActHead-band">
+    <a class="ActHead-back" href="/laws">← Laws</a>
+    <div class="ActHead-row">
+      <div class="ActHead-copy">
+        <p class="ActHead-kicker">Bare Act · India Code{% if catalog_law and catalog_law.status_label %}<span class="bareact-status">{{ catalog_law.status_label }}</span>{% endif %}</p>
+        <h1 class="ActHead-title">{{ act.title }}</h1>
+        <p class="ActHead-meta">{{ act.head_meta_label }}</p>
+        {# Editorial, not statutory: this sentence is nowhere in the Act's own
+           text, and must never be written into its canonical JSON. #}
+        {% if catalog_law and catalog_law.status_note %}
+        <p class="bareact-status-note">{{ catalog_law.status_note }}</p>
+        {% endif %}
       </div>
-      <a
-        class="guest-bareact-cta"
-        href="{{ guest_screen4.add_href }}"
-        data-pg-sheet
-        data-pg-kind="guest"
-      >Sign in to use Playground</a>
-    </div>
-  </div>
-  <div class="guest-bareact-rows" role="list">
-    {% for row in guest_screen4.rows %}
-    <div class="guest-bareact-row" role="listitem">
-      <span class="guest-bareact-row-tag">{{ row.tag }}</span>
-      <span class="guest-bareact-row-title">{{ row.title }}</span>
-      <span class="guest-bareact-row-range">{{ row.range_label }}</span>
-      <span class="guest-bareact-row-chevron" aria-hidden="true">›</span>
-    </div>
-    {% endfor %}
-  </div>
-</section>
-<section class="panel guest-bareact" data-guest-bareact-phone>
-  <div class="guest-bareact-headband">
-    <a class="guest-bareact-back" href="/laws">← Laws</a>
-    <div class="guest-bareact-head">
-      <div class="guest-bareact-copy">
-        <p class="guest-bareact-kicker">{{ guest_screen4.kicker }}</p>
-        <h1 class="guest-bareact-title">{{ guest_screen4.title }}</h1>
-        <p class="guest-bareact-meta">{{ guest_screen4.meta }}</p>
-      </div>
-      <a
-        class="guest-bareact-cta"
-        href="{{ guest_screen4.add_href }}"
-        data-pg-sheet
-        data-pg-kind="guest"
-      >Sign in to use Playground</a>
-    </div>
-  </div>
-  <div class="guest-bareact-rows" role="list">
-    {% for row in guest_screen4.rows %}
-    <div class="guest-bareact-row" role="listitem">
-      <span class="guest-bareact-row-tag">{{ row.tag }}</span>
-      <span class="guest-bareact-row-title">{{ row.title }}</span>
-      <span class="guest-bareact-row-range">{{ row.range_label }}</span>
-      <span class="guest-bareact-row-chevron" aria-hidden="true">›</span>
-    </div>
-    {% endfor %}
-  </div>
-</section>
-{% endif %}
-{% if signed_in_bareact_desktop %}
-<section class="panel guest-bareact" data-signed-in-bareact-desktop{% if plus_bareact|default(false) %} data-plus-bareact="desktop"{% endif %}{% if expired_bareact|default(false) %} data-expired-bareact="desktop"{% endif %}{% if halted_bareact|default(false) %} data-halted-bareact="desktop"{% endif %}>
-  <div class="guest-bareact-headband">
-    <a class="guest-bareact-back" href="/laws"><svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M12.2 4.2 6.4 10l5.8 5.8"></path></svg>Laws</a>
-    <div class="guest-bareact-head">
-      <div class="guest-bareact-copy">
-        <p class="guest-bareact-kicker">{{ guest_screen4.kicker }}</p>
-        <h1 class="guest-bareact-title">{{ guest_screen4.title }}</h1>
-        <p class="guest-bareact-meta">{{ guest_screen4.meta }}</p>
-      </div>
-      {% if pg_in_playground %}
-      <div class="signed-bareact-in-pg" data-pg-kind="already_active">
-        <span class="signed-bareact-in-pg-mark" aria-hidden="true">
-          <svg width="13" height="13" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6.5 4.8 9.2 10 3.2"></path></svg>
-        </span>
+      {% if pg %}
+      <div class="ActHead-cta LawPlaygroundCta" data-law-id="{{ pg.law_id }}" data-pg-kind="{{ pg.kind }}" data-membership="{{ pg.badge }}">
+        {% if pg.kind == 'already_active' %}
+        {# In Playground: the chip with its two actions. Labels and
+           destinations are the live state's own — "Continue" / "Start
+           learning" for a subscriber, the lifecycle CTA when the plan has
+           ended or payment has halted. #}
+        <div class="ActHead-inpg">
+          <span class="ActHead-inpg-mark" aria-hidden="true">
+            <svg width="13" height="13" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6.5 4.8 9.2 10 3.2"></path></svg>
+          </span>
+          {{ status_badge(pg.badge, pg.badge_label) }}
+          {% if pg.secondary_href and pg.secondary_label %}
+          <a class="ActHead-inpg-sections" href="{{ pg.secondary_href }}">{{ pg.secondary_label }}</a>
+          {% endif %}
+          {% if pg.primary_href and pg.primary_label %}
+          <a class="ActHead-inpg-continue" href="{{ pg.primary_href }}">{{ pg.primary_label }}</a>
+          {% endif %}
+        </div>
+        {% else %}
+        {# The state's own chip when it has one — "Progress saved", "Removed
+           this month", "Playground full this month" — above the action. #}
         {{ status_badge(pg.badge, pg.badge_label) }}
-        {% if pg.secondary_href and pg.secondary_label %}
-        <a class="signed-bareact-sections" href="{{ pg.secondary_href }}">{{ pg.secondary_label }}</a>
+        {% if pg.primary_href and pg.primary_label %}
+        <a
+          class="ActHead-btn{% if pg.kind in ('roster_full', 'pending', 'device_blocked') %} ActHead-btn--ghost{% endif %}"
+          href="{{ pg.primary_href }}"
+          {% if pg.opens_sheet %}data-pg-sheet{% endif %}
+          data-pg-kind="{{ pg.kind }}"
+        >{{ pg.primary_label }}</a>
         {% endif %}
-        {% if pg_subscribed %}
-        <a class="signed-bareact-continue" href="/playground">Continue</a>
-        {% elif pg.primary_href and pg.primary_label %}
-        <a class="signed-bareact-continue" href="{{ pg.primary_href }}">{{ pg.primary_label }}</a>
+        {% if pg.secondary_href and pg.secondary_label %}
+        <a class="ActHead-link" href="{{ pg.secondary_href }}">{{ pg.secondary_label }}</a>
+        {% endif %}
+        {# The state's explanatory line, when it says something the button
+           does not: the plan price, a device limit, a pending change, a
+           saved history. #}
+        {% if pg.secondary_copy and pg.secondary_copy != pg.secondary_label %}
+        <p class="ActHead-note">{{ pg.secondary_copy }}</p>
+        {% endif %}
         {% endif %}
       </div>
-      {% elif pg_subscribed %}
-      {{ playground_cta(pg) }}
-      {% elif expired_bareact|default(false) and pg %}
-      {{ playground_cta(pg) }}
-      {% elif halted_bareact|default(false) and pg %}
-      {{ playground_cta(pg) }}
-      {% else %}
-      <a
-        class="guest-bareact-cta"
-        href="{{ pg.primary_href if pg and pg.primary_href else guest_screen4.add_href }}"
-        data-pg-sheet
-        data-pg-kind="subscribe"
-      >Subscribe to use Playground</a>
       {% endif %}
     </div>
-  </div>
-  <div class="guest-bareact-rows" role="list">
-    {% for row in guest_screen4.rows %}
-    <div class="guest-bareact-row" role="listitem">
-      <span class="guest-bareact-row-tag">{{ row.tag }}</span>
-      <span class="guest-bareact-row-title">{{ row.title }}</span>
-      <span class="guest-bareact-row-range">{{ row.range_label }}</span>
-      <span class="guest-bareact-row-chevron" aria-hidden="true">›</span>
-    </div>
-    {% endfor %}
-  </div>
-</section>
-{% endif %}
-<section class="panel bareact bareact-page is-{{ act.render_profile }}"{% if guest_bareact_head or signed_in_bareact_desktop %} data-bareact-phone{% endif %}>
-  <div class="bareact-head">
-    <div class="mobile-topbar">
-      <a class="mobile-back" href="/laws">← Laws</a>
-    </div>
-    <p class="bareact-tag">Bare Act{% if catalog_law and catalog_law.status_label %}<span class="bareact-status">{{ catalog_law.status_label }}</span>{% endif %}</p>
-    <h1 class="bareact-title">{{ act.title }}</h1>
-    {# Editorial, not statutory: this sentence is nowhere in the Act's own
-       text, and must never be written into its canonical JSON. #}
-    {% if catalog_law and catalog_law.status_note %}
-    <p class="bareact-status-note">{{ catalog_law.status_note }}</p>
-    {% endif %}
-
-    {# Playground entry point. Sits with the Act's identity, above the
-       About card and the tabs, so it is the first action under the title. #}
-    {% from "partials/playground.html" import playground_cta %}
-    {% if playground_state %}
-    {{ playground_cta(playground_state) }}
-    {% endif %}
 
     {# Statutory rows read off the Act, editorial rows off the catalogue, the
        span derived. A row we do not hold is absent, not blank — POTA prints
-       no enactment date anywhere, so it simply has no Enacted line. #}
+       no enactment date anywhere, so it simply has no Enacted line. Kept
+       below the action (M2 Q2), collapsed until asked for. #}
     {% if act_info and act_info.has_content %}
     <button
       type="button"
-      class="bareact-info-toggle"
+      class="bareact-info-toggle ActHead-about"
       data-bareact-info-toggle
       aria-expanded="false"
       aria-controls="bareact-info"
@@ -167,48 +103,50 @@
       {% endif %}
     </div>
     {% endif %}
-
-    {# Hidden until the controller claims it. Without JS both panels stay
-       open and the page is exactly what it was before the tabs existed —
-       chapters, then schedules — rather than a tab row that does nothing. #}
-    <div class="bareact-tabs" role="tablist" aria-label="Act contents" data-bareact-tabs hidden>
-      <button
-        type="button"
-        class="bareact-tab is-active"
-        role="tab"
-        id="bareact-tab-chapters"
-        aria-selected="true"
-        aria-controls="bareact-panel-chapters"
-        data-bareact-tab="chapters"
-      >{# The panel key stays "chapters" for the controller; only the word the
-         reader sees changes. An Act with no chapters lists its sections flat,
-         so a tab called "Chapters" would name a thing that is not there. #}{% if act.chapters %}Chapters{% else %}Sections{% endif %}</button>
-      <button
-        type="button"
-        class="bareact-tab"
-        role="tab"
-        id="bareact-tab-schedules"
-        aria-selected="false"
-        aria-controls="bareact-panel-schedules"
-        data-bareact-tab="schedules"
-      >Schedules</button>
-    </div>
   </div>
 
-  <div
-    class="bareact-panel"
-    id="bareact-panel-chapters"
-    role="tabpanel"
-    aria-labelledby="bareact-tab-chapters"
-    data-bareact-panel="chapters"
-  >
-    <div class="bareact-chapters" data-bareact-accordion>
-      {# An Act that prints no chapters (MTP) gets its sections as one flat
-         list in the chapter rows' own clothes: no accordion, no invented
-         "Chapter I" over sections the statute never grouped. #}
-      {% if not act.chapters %}
+  {# Chapters, then Schedules, in one list. A chapter row expands into its
+     section links (M2 Q3: chapters have no page of their own); a schedule row
+     opens its reader. Without JS every <details> still opens and closes, and
+     every section link is in the document for a crawler to follow. #}
+  <div class="bareact-chapters" data-bareact-accordion data-act-list>
+    {# An Act that prints no chapters (MTP) gets its sections as one flat
+       list in the chapter rows' own clothes: no accordion, no invented
+       "Chapter I" over sections the statute never grouped. #}
+    {% if not act.chapters %}
+    <div class="bareact-section-list">
+      {% for section in act.unchaptered_sections %}
+      <a class="bareact-section-row" href="/laws/{{ act.slug }}/section/{{ section.number }}">
+        <span class="bareact-section-node" aria-hidden="true"></span>
+        <span class="bareact-section-copy">
+          <span class="bareact-section-tag">Section {{ section.number }}</span>
+          <span class="bareact-section-name{% if section.is_omitted %} is-omitted{% endif %}">{{ section.list_title }}</span>
+        </span>
+        <span class="bareact-section-chevron" aria-hidden="true">›</span>
+      </a>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% for chapter in act.chapters %}
+    <details class="bareact-chapter">
+      <summary class="bareact-chapter-row" aria-expanded="false">
+        {# A whole chapter can be an amendment span: PSS prints "2[CHAPTER II"
+           and closes inside its only section. Reuses the same bracket span as
+           sections and provisions, so no new styling. #}
+        <span class="bareact-chapter-tag">{% if chapter.bracket_prefix %}<span class="bareact-amendment-open">{{ chapter.bracket_prefix }}</span>{% endif %}Chapter {{ chapter.number }}</span>
+        <span class="bareact-chapter-name">{{ chapter.title }}</span>
+        <span class="bareact-chapter-range"><span class="ActHead-range-word">Sections </span>{{ chapter.range_label }}</span>
+        <span class="bareact-chapter-caret" aria-hidden="true"></span>
+      </summary>
       <div class="bareact-section-list">
-        {% for section in act.unchaptered_sections %}
+        {% for section in chapter.sections %}
+        {# Divisions sit between chapter and section in some Acts. The heading
+           is drawn above the first section carrying a new division id, so the
+           sections a chapter opens with before its first division stay
+           ungrouped. #}
+        {% if section.starts_division %}
+        <p class="bareact-division">{{ section.division_title }}</p>
+        {% endif %}
         <a class="bareact-section-row" href="/laws/{{ act.slug }}/section/{{ section.number }}">
           <span class="bareact-section-node" aria-hidden="true"></span>
           <span class="bareact-section-copy">
@@ -219,177 +157,46 @@
         </a>
         {% endfor %}
       </div>
-      {% endif %}
-      {% for chapter in act.chapters %}
-      <details class="bareact-chapter"{% if loop.first %} open{% endif %}>
-        <summary class="bareact-chapter-row">
-          {# A whole chapter can be an amendment span: PSS prints "2[CHAPTER II"
-             and closes inside its only section. Reuses the same bracket span as
-             sections and provisions, so no new styling. #}
-          <span class="bareact-chapter-tag">{% if chapter.bracket_prefix %}<span class="bareact-amendment-open">{{ chapter.bracket_prefix }}</span>{% endif %}Chapter {{ chapter.number }}</span>
-          <span class="bareact-chapter-name">{{ chapter.title }}</span>
-          <span class="bareact-chapter-range">{{ chapter.range_label }}</span>
-          <span class="bareact-chapter-caret" aria-hidden="true"></span>
-        </summary>
-        <div class="bareact-section-list">
-          {% for section in chapter.sections %}
-          {# Divisions sit between chapter and section in some Acts. The heading
-             is drawn above the first section carrying a new division id, so the
-             sections a chapter opens with before its first division stay
-             ungrouped. #}
-          {% if section.starts_division %}
-          <p class="bareact-division">{{ section.division_title }}</p>
-          {% endif %}
-          <a class="bareact-section-row" href="/laws/{{ act.slug }}/section/{{ section.number }}">
-            <span class="bareact-section-node" aria-hidden="true"></span>
-            <span class="bareact-section-copy">
-              <span class="bareact-section-tag">Section {{ section.number }}</span>
-              <span class="bareact-section-name{% if section.is_omitted %} is-omitted{% endif %}">{{ section.list_title }}</span>
-            </span>
-            <span class="bareact-section-chevron" aria-hidden="true">›</span>
-          </a>
-          {% endfor %}
-        </div>
-      </details>
-      {% endfor %}
-    </div>
-  </div>
-
-  {# Schedules are part of the Act, not an appendix to it — so they keep the
-     chapter row's own clothes, and only move out of the chapter list. #}
-  <div
-    class="bareact-panel"
-    id="bareact-panel-schedules"
-    role="tabpanel"
-    aria-labelledby="bareact-tab-schedules"
-    data-bareact-panel="schedules"
-  >
-    <div class="bareact-chapters">
-      {# Every schedule the Act prints is listed, including one we cannot draw.
-         BNSS s.522 sends the reader to the Second Schedule by name, and that
-         Schedule cross-references s.522 back — so omitting it would put the app
-         in contradiction with the statute, and read as missing data rather than
-         as a renderer limit. Listed, but not linked: no href, no overlay anchor
-         and no chevron, so it cannot promise a page that does not exist. #}
-      {% for schedule in act.schedules %}
-      <div class="bareact-schedule-row{% if not schedule.is_navigable %} is-unavailable{% endif %}">
-        {% if schedule.is_navigable %}
-        {# A div, not an anchor: the reference carries its own section links, and
-           an anchor cannot legally contain another. Nesting them made the parser
-           truncate the row at the first inner link. The row-wide tap target is an
-           overlay anchor instead, so the whole row still navigates. #}
-        <a
-          class="bareact-schedule-row-link"
-          href="/laws/{{ act.slug }}/schedule/{{ schedule.slug }}"
-          aria-label="{{ schedule.label }} — {{ schedule.display_heading }}"
-        ></a>
-        {% endif %}
-        <span class="bareact-chapter-tag">{% if schedule.bracket_prefix %}<span class="bareact-amendment-open">{{ schedule.bracket_prefix }}</span>{% endif %}{{ schedule.label }}</span>
-        <span class="bareact-schedule-copy">
-          <span class="bareact-schedule-name">{{ schedule.display_heading }}</span>
-          <span class="bareact-schedule-ref">{% for segment in act.reference_segments(schedule.reference) %}{% if segment.is_link %}<a class="bareact-reference-link" href="{{ segment.href }}">{{ segment.text }}</a>{% else %}{{ segment.text }}{% endif %}{% endfor %}</span>
-          {% if not schedule.is_navigable %}
-          {# Our limitation, stated as ours — the Act is complete, the renderer is
-             not. `unsupported_reason` is developer copy and stays out of the UI. #}
-          <span class="bareact-schedule-unavailable">Not yet browsable in the app</span>
-          {% endif %}
-        </span>
-        <span class="bareact-chapter-range">{{ schedule.range_label }}</span>
-        {% if schedule.is_navigable %}
-        <span class="bareact-section-chevron" aria-hidden="true">›</span>
-        {% endif %}
-      </div>
-      {% endfor %}
-      {# Keyed off every schedule the Act prints, not the drawable subset: an
-         Act whose only schedules were undrawable would otherwise print "no
-         Schedules" directly above a row listing one. #}
-      {% if not act.schedules %}
-      <p class="bareact-schedules-empty">This Act has no Schedules.</p>
-      {% endif %}
-    </div>
-  </div>
-</section>
-{% if signed_in_bareact_desktop and plus_bareact|default(false) %}
-<section class="panel guest-bareact" data-plus-bareact-phone>
-  <div class="guest-bareact-headband">
-    <a class="guest-bareact-back" href="/laws">← Laws</a>
-    <div class="guest-bareact-head">
-      <div class="guest-bareact-copy">
-        <p class="guest-bareact-kicker">{{ guest_screen4.kicker }}</p>
-        <h1 class="guest-bareact-title">{{ guest_screen4.title }}</h1>
-        <p class="guest-bareact-meta">{{ guest_screen4.meta }}</p>
-      </div>
-      {% if pg_in_playground %}
-      <div class="signed-bareact-in-pg" data-pg-kind="already_active">
-        <span class="signed-bareact-in-pg-mark" aria-hidden="true">
-          <svg width="13" height="13" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6.5 4.8 9.2 10 3.2"></path></svg>
-        </span>
-        {{ status_badge(pg.badge, pg.badge_label) }}
-        {% if pg.secondary_href and pg.secondary_label %}
-        <a class="signed-bareact-sections" href="{{ pg.secondary_href }}">{{ pg.secondary_label }}</a>
-        {% endif %}
-        {% if pg_subscribed %}
-        <a class="signed-bareact-continue" href="/playground">Continue</a>
-        {% elif pg.primary_href and pg.primary_label %}
-        <a class="signed-bareact-continue" href="{{ pg.primary_href }}">{{ pg.primary_label }}</a>
-        {% endif %}
-      </div>
-      {% elif pg_subscribed %}
-      {{ playground_cta(pg) }}
-      {% elif expired_bareact|default(false) and pg %}
-      {{ playground_cta(pg) }}
-      {% elif halted_bareact|default(false) and pg %}
-      {{ playground_cta(pg) }}
-      {% else %}
+    </details>
+    {% endfor %}
+    {# Schedules are part of the Act, not an appendix to it — so they keep the
+       chapter row's own clothes and follow the last chapter. Every schedule
+       the Act prints is listed, including one we cannot draw: BNSS s.522 sends
+       the reader to the Second Schedule by name, and that Schedule
+       cross-references s.522 back — so omitting it would put the app in
+       contradiction with the statute, and read as missing data rather than
+       as a renderer limit. Listed, but not linked: no href, no overlay anchor
+       and no chevron, so it cannot promise a page that does not exist. #}
+    {% for schedule in act.schedules %}
+    <div class="bareact-schedule-row{% if not schedule.is_navigable %} is-unavailable{% endif %}">
+      {% if schedule.is_navigable %}
+      {# A div, not an anchor: the reference carries its own section links, and
+         an anchor cannot legally contain another. Nesting them made the parser
+         truncate the row at the first inner link. The row-wide tap target is an
+         overlay anchor instead, so the whole row still navigates. #}
       <a
-        class="guest-bareact-cta"
-        href="{{ pg.primary_href if pg and pg.primary_href else guest_screen4.add_href }}"
-        data-pg-sheet
-        data-pg-kind="subscribe"
-      >Subscribe to use Playground</a>
+        class="bareact-schedule-row-link"
+        href="/laws/{{ act.slug }}/schedule/{{ schedule.slug }}"
+        aria-label="{{ schedule.label }} — {{ schedule.display_heading }}"
+      ></a>
       {% endif %}
-    </div>
-  </div>
-  <div class="guest-bareact-rows" role="list">
-    {% for row in guest_screen4.rows %}
-    <div class="guest-bareact-row" role="listitem">
-      <span class="guest-bareact-row-tag">{{ row.tag }}</span>
-      <span class="guest-bareact-row-title">{{ row.title }}</span>
-      <span class="guest-bareact-row-range">{{ row.range_label }}</span>
-      <span class="guest-bareact-row-chevron" aria-hidden="true">›</span>
+      <span class="bareact-chapter-tag">{% if schedule.bracket_prefix %}<span class="bareact-amendment-open">{{ schedule.bracket_prefix }}</span>{% endif %}{{ schedule.label }}</span>
+      <span class="bareact-schedule-copy">
+        <span class="bareact-schedule-name">{{ schedule.display_heading }}</span>
+        <span class="bareact-schedule-ref">{% for segment in act.reference_segments(schedule.reference) %}{% if segment.is_link %}<a class="bareact-reference-link" href="{{ segment.href }}">{{ segment.text }}</a>{% else %}{{ segment.text }}{% endif %}{% endfor %}</span>
+        {% if not schedule.is_navigable %}
+        {# Our limitation, stated as ours — the Act is complete, the renderer is
+           not. `unsupported_reason` is developer copy and stays out of the UI. #}
+        <span class="bareact-schedule-unavailable">Not yet browsable in the app</span>
+        {% endif %}
+      </span>
+      <span class="bareact-chapter-range">{% if schedule.range_label and 'entr' not in schedule.range_label|lower %}<span class="ActHead-range-word">Entries </span>{% endif %}{{ schedule.range_label }}</span>
+      {% if schedule.is_navigable %}
+      <span class="bareact-section-chevron" aria-hidden="true">›</span>
+      {% endif %}
     </div>
     {% endfor %}
   </div>
 </section>
-{% endif %}
-{% if signed_in_bareact_desktop and not plus_bareact|default(false) and not expired_bareact|default(false) and not halted_bareact|default(false) and not pg_subscribed %}
-<section class="panel guest-bareact" data-signed-in-bareact-phone>
-  <div class="guest-bareact-headband">
-    <a class="guest-bareact-back" href="/laws">← Laws</a>
-    <div class="guest-bareact-head">
-      <div class="guest-bareact-copy">
-        <p class="guest-bareact-kicker">{{ guest_screen4.kicker }}</p>
-        <h1 class="guest-bareact-title">{{ guest_screen4.title }}</h1>
-        <p class="guest-bareact-meta">{{ guest_screen4.meta }}</p>
-      </div>
-      <a
-        class="guest-bareact-cta"
-        href="{{ pg.primary_href if pg and pg.primary_href else guest_screen4.add_href }}"
-        data-pg-sheet
-        data-pg-kind="subscribe"
-      >Subscribe to use Playground</a>
-    </div>
-  </div>
-  <div class="guest-bareact-rows" role="list">
-    {% for row in guest_screen4.rows %}
-    <div class="guest-bareact-row" role="listitem">
-      <span class="guest-bareact-row-tag">{{ row.tag }}</span>
-      <span class="guest-bareact-row-title">{{ row.title }}</span>
-      <span class="guest-bareact-row-range">{{ row.range_label }}</span>
-      <span class="guest-bareact-row-chevron" aria-hidden="true">›</span>
-    </div>
-    {% endfor %}
-  </div>
-</section>
-{% endif %}
+{% block act_dialog %}{% endblock %}
 {% endblock %}

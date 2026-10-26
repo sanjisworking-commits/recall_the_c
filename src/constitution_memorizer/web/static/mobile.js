@@ -759,11 +759,20 @@
     var chapters = Array.prototype.slice.call(
       root.querySelectorAll(".bareact-chapter")
     );
+    function sync(chapter) {
+      var row = chapter.querySelector("summary");
+      if (row) row.setAttribute("aria-expanded", chapter.open ? "true" : "false");
+    }
     chapters.forEach(function (chapter) {
+      sync(chapter);
       chapter.addEventListener("toggle", function () {
+        sync(chapter);
         if (!chapter.open) return;
         chapters.forEach(function (other) {
-          if (other !== chapter) other.open = false;
+          if (other !== chapter) {
+            other.open = false;
+            sync(other);
+          }
         });
       });
     });
