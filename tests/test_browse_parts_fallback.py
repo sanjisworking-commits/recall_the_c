@@ -10,6 +10,7 @@ from fastapi.testclient import TestClient
 from constitution_memorizer.progress.scheduler import ReminderEngine
 from constitution_memorizer.web.app import create_app
 from constitution_memorizer.web.browse import (
+    _article_card_title,
     browse_parts_from_units,
     load_browse_chapters_seed,
     load_browse_parts_seed,
@@ -122,3 +123,23 @@ def test_browse_chapters_and_card_titles_without_reviewed(tmp_path: Path):
     assert "Chapter I" not in part_iii_html
     assert "browse-article-title" in html
     assert "Name and territory" in html or "Union" in html
+    assert "functions in other contingencies" in html
+    assert "election of a President or Vice-President" in html
+    assert "Discharge of President" in html
+    assert "functions…" not in html
+
+    part_html = client.get("/browse/part/v").text
+    assert "part-row-sub" in part_html
+    assert "functions in other contingencies" in part_html
+    assert "election of a President or Vice-President" in part_html
+    assert "functions…" not in part_html
+
+
+def test_article_card_title_keeps_the_full_heading():
+    long_title = (
+        "Matters relating to, or connected with, the election of a "
+        "President or Vice-President"
+    )
+    assert len(long_title) > 42
+    assert _article_card_title(long_title) == long_title
+    assert "…" not in _article_card_title(long_title)

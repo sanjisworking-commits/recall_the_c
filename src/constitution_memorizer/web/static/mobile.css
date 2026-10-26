@@ -1935,6 +1935,9 @@
     margin-top: 1px;
     font-size: 11.5px;
     color: var(--mid);
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
   }
 
   .part-row-meta {

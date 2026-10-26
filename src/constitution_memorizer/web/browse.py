@@ -259,13 +259,9 @@ def list_article_numbers(
     return numbers
 
 
-def _short_article_title(title: str | None, *, limit: int = 42) -> str:
-    text = (title or "").strip()
-    if not text:
-        return ""
-    if len(text) <= limit:
-        return text
-    return text[: limit - 1].rsplit(" ", 1)[0] + "…"
+def _article_card_title(title: str | None) -> str:
+    """Full Bare Act heading for a Browse card — never ellipsized."""
+    return (title or "").strip()
 
 
 def _article_is_tracked(engine: ReminderEngine, article_number: str) -> bool:
@@ -429,13 +425,13 @@ def _article_labels_from_units(engine: ReminderEngine) -> dict[str, str]:
         number = unit.article_number
         if not number:
             continue
-        short = _short_article_title(unit.title or "")
-        if not short:
+        heading = _article_card_title(unit.title or "")
+        if not heading:
             continue
         if unit.type == LearningUnitType.ARTICLE:
-            labels[number] = short
+            labels[number] = heading
         elif number not in labels:
-            labels[number] = short
+            labels[number] = heading
     return labels
 
 
@@ -688,7 +684,7 @@ def _build_reviewed_skeleton(
         if not articles:
             continue
         loose = tuple(
-            _CardSpec(a.article_number, _short_article_title(a.title))
+            _CardSpec(a.article_number, _article_card_title(a.title))
             for a in part.articles
         )
         chapters: list[_ChapterSpec] = []
@@ -702,7 +698,7 @@ def _build_reviewed_skeleton(
                     chapter_title=_display_part_title(chapter.title),
                     article_range=_article_range_label(ch_numbers),
                     cards=tuple(
-                        _CardSpec(a.article_number, _short_article_title(a.title))
+                        _CardSpec(a.article_number, _article_card_title(a.title))
                         for a in chapter.articles
                     ),
                 )
