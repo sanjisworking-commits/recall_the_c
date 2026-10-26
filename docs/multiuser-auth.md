@@ -74,6 +74,12 @@ Python is pinned to **3.12.11** in `.python-version` and `railpack.json`. Do not
 
 `MULTIUSER_ENABLED=true`, Postgres `DATABASE_URL`, and Supabase secrets must be set on the service. Do not set `MULTIUSER_ENABLED` on the local 8001 launcher.
 
+Hosted Supabase should use the **transaction** pooler (`*.pooler.supabase.com:6543`).
+Session mode (`:5432` on the same host) is capped at the project's `pool_size`
+(15 on free/small plans). The app rewrites a session-mode pooler URL to port 6543
+and disables prepared statements so a Railway rolling deploy cannot deadlock
+waiting for a free session slot.
+
 ## Supabase dashboard
 
 1. Create a Supabase project.
