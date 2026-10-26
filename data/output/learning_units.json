@@ -1,7 +1,7 @@
 {
   "schema_version": "1.0.0",
   "source_document": "constitution.reviewed.json",
-  "unit_count": 1705,
+  "unit_count": 1703,
   "units": [
     {
       "id": "part-i-overview",
@@ -5706,7 +5706,7 @@
       "difficulty": 2,
       "estimated_learning_time": 30,
       "revision_order": 166,
-      "next_unit": "article-70-clause-2",
+      "next_unit": "article-70",
       "previous_unit": "article-68-clause-2",
       "tags": [
         "Part V",
@@ -5719,64 +5719,18 @@
       "letter_sequence_prev": null
     },
     {
-      "id": "article-70-clause-2",
-      "type": "CLAUSE",
-      "parent_id": "article-70",
+      "id": "article-70",
+      "type": "ARTICLE",
+      "parent_id": "part-v",
       "article_number": "70",
-      "display_title": "Article 70(2)",
+      "display_title": "Article 70",
       "title": "Discharge of President's functions in other contingencies",
-      "text": "(2) If the election of a person as President or Vice-President is declared void by the Supreme Court, acts done by him in the exercise and performance of the powers and duties of the office of President or Vice-President, as the case may be, on or before the date of the decision of the Supreme Court shall not be invalidated by reason of that declaration.",
-      "difficulty": 3,
+      "text": "Parliament may make such provision as it thinks fit for the discharge of the functions of the President in any contingency not provided for in this Chapter.",
+      "difficulty": 1,
       "estimated_learning_time": 30,
       "revision_order": 167,
-      "next_unit": "article-70-clause-3",
-      "previous_unit": "article-69",
-      "tags": [
-        "Part V",
-        "THE UNION"
-      ],
-      "allows_letter_split": false,
-      "child_unit_ids": [],
-      "parent_clause_id": null,
-      "letter_sequence_next": null,
-      "letter_sequence_prev": null
-    },
-    {
-      "id": "article-70-clause-3",
-      "type": "CLAUSE",
-      "parent_id": "article-70",
-      "article_number": "70",
-      "display_title": "Article 70(3)",
-      "title": "Discharge of President's functions in other contingencies",
-      "text": "(3) Subject to the provisions of this Constitution, Parliament may by law regulate any matter relating to or connected with the election of a President or Vice-President.",
-      "difficulty": 3,
-      "estimated_learning_time": 30,
-      "revision_order": 168,
-      "next_unit": "article-70-clause-4",
-      "previous_unit": "article-70-clause-2",
-      "tags": [
-        "Part V",
-        "THE UNION"
-      ],
-      "allows_letter_split": false,
-      "child_unit_ids": [],
-      "parent_clause_id": null,
-      "letter_sequence_next": null,
-      "letter_sequence_prev": null
-    },
-    {
-      "id": "article-70-clause-4",
-      "type": "CLAUSE",
-      "parent_id": "article-70",
-      "article_number": "70",
-      "display_title": "Article 70(4)",
-      "title": "Discharge of President's functions in other contingencies",
-      "text": "(4) The election of a person as President or Vice-President shall not be called in question on the ground of the existence of any vacancy for whatever reason among the members of the electoral college electing him.]",
-      "difficulty": 3,
-      "estimated_learning_time": 30,
-      "revision_order": 169,
       "next_unit": "article-71-clause-1",
-      "previous_unit": "article-70-clause-3",
+      "previous_unit": "article-69",
       "tags": [
         "Part V",
         "THE UNION"
@@ -5799,7 +5753,7 @@
       "estimated_learning_time": 30,
       "revision_order": 170,
       "next_unit": "article-71-clause-2",
-      "previous_unit": "article-70-clause-4",
+      "previous_unit": "article-70",
       "tags": [
         "Part V",
         "THE UNION"
