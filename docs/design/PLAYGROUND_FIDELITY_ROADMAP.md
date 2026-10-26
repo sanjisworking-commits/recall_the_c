@@ -130,8 +130,8 @@ are written as `phone:<query>` / `desktop:<query>`.
 | M0 | Audit baseline | all | — | — | **ACCEPTED as planning baseline** (PR #218, draft; limitations §0.4) |
 | M1 | Guest shell parity (+ DV-20 account slot, DV-21 nav on gate/plans/Add) | shell only: tab bar, top nav, account slot | — | PR #219 (`7f78992`) | **ACCEPTED 2026-10-19 with documented exceptions** (→ M1b, M9); not merged |
 | M1b | Signed-in shell accessibility and double-nav correction (follow-up to the M1-only exception granted 2026-10-19: 44 px targets, 4.5:1 labels, no top nav + phone bar together at 561–720 px, brand-mark consistency with DV-22 if not batched into M9) | signed-in shell | M1 accepted | — (exception granted 2026-10-19; this milestone must close before final redesign acceptance) | queued |
-| M2 | Bare Act head family (content + in-page navigation) | `/laws/{id}` for every eligible Act, Add sheet | M1 accepted ✓ | decisions approved 2026-10-19; implemented locally 2026-10-20 as draft PR #221 (`a146dff`, evidence `04f3fbd`); full suite green bar the 3 device exceptions; local evidence LOCAL/PRELIMINARY | **under owner review** (6 open deviations in M2-evidence §6; staging not authorised) |
-| M3 | Browse and Laws index (phone) | `/browse`, `/laws`, `/browse/part/*` phone | M1 | — | proposed |
+| M2 | Bare Act head family (content + in-page navigation) | `/laws/{id}` for every eligible Act, Add sheet | M1 accepted ✓ | decisions approved 2026-10-19 | **ACCEPTED 2026-10-26 with documented exceptions** on `3719b9f` (draft PR #221, staging `dd04a5a2`; `milestones/M2.md` §8); not merged |
+| M3 | Browse and Laws index (phone) | `/browse`, `/laws`, `/browse/part/*` phone | M1 | §4 of `milestones/M3.md` | **checklist drafted 2026-10-26** (`milestones/M3.md`, PROPOSED); implementation not authorised |
 | M4 | Today / dashboard | `/dashboard` guest + signed-in, both widths | M1 | §4.1 item 8 | proposed |
 | M5 | Account family | `/profile`, `/settings`, `/profile/security/devices`, `/playground` gate + plans | M1 | DV-9 (one or two gate buttons), DV-14 (plan select control) | proposed |
 | M6 | Calendar (classic) | `/calendar` signed-in, month/week, day panel | M1 | — | proposed |
@@ -348,7 +348,7 @@ run in parallel on separate branches. M2 is independent of M3–M6.
 |---|---|---|---|---|---|---|
 | M0 | n/a (audit) | 2866ede, b4a0517 | n/a | `proto-comparison-2026-10-18/` | DV-1…DV-19 classified; desktop signed-in visual pass incomplete | accepted as planning baseline 2026-10-18 |
 | M1 | accepted 2026-10-19 with DV-20 and DV-21 (`milestones/M1.md`) | `7f78992` code; branch head `9281f27` — draft PR #219 | suite not green: 3 documented exceptions (`test_devices_m4c`, pre-existing), 3904 passed; +56 shell tests | local evidence v2 + hosted guest matrix on `b6ad47b0` + hosted signed-in DV-21 | exceptions → M1b (signed-in a11y, double nav, real zoom / SR / scan not performed); DV-22 → M9 | **ACCEPTED with documented exceptions 2026-10-19**; merge not authorised (E3 pin) |
-| M2 | — | — | — | — | — | — |
+| M2 | approved 2026-10-19 with Q1–Q4 (`milestones/M2.md`) | `3719b9f` — draft PR #221 stacked on `pg-m1-guest-shell` | suite not green: the same 3 documented device exceptions, 3,952 passed; +44 head-family tests | `proto-comparison-2026-10-19/m2/` (local, hosted, hosted2, hosted3) + `milestones/M2-evidence.md` §1–§14 | D1–D6 owner-kept; exceptions: Plus/Max/expired/halted hosted + Add submission, zoom/scan/SR (M1b), PF-1 (hardening) | accepted 2026-10-26 with documented exceptions |
 | M3 | — | — | — | — | — | — |
 | M4 | — | — | — | — | — | — |
 | M5 | — | — | — | — | — | — |
