@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://recall.local/schemas/explain-pro-30.json",
+  "title": "Playground WS8 EXPLAIN summary (schema sample)",
+  "description": "Shape written by scripts/explain_playground_queries.py and scripts/benchmark_playground.py --explain after a disposable PostgreSQL run. Machine-specific actual times are a disposable PostgreSQL baseline, not an SLA.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "label",
+    "alembic_head",
+    "postgres_version",
+    "database_backend",
+    "fixture",
+    "scenario",
+    "dataset",
+    "queries"
+  ],
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "label": {
+      "type": "string",
+      "const": "disposable PostgreSQL baseline, not an SLA"
+    },
+    "alembic_head": { "type": "string", "const": "20260927_0027" },
+    "postgres_version": {
+      "type": "string",
+      "description": "SELECT version() from the disposable database."
+    },
+    "database_backend": { "type": "string", "const": "postgresql" },
+    "fixture": { "type": "string", "const": "pro-30+source-review" },
+    "scenario": { "type": "string", "const": "pro-30" },
+    "app_env": { "type": "string" },
+    "disposable_db_name_prefix": { "type": "string" },
+    "disposable_host_class": { "type": "string" },
+    "t7_note": { "type": "string" },
+    "dataset": {
+      "type": "object",
+      "additionalProperties": { "type": "integer" },
+      "properties": {
+        "roster_items": { "type": "integer" },
+        "overlay_items": { "type": "integer" },
+        "selection_rows": { "type": "integer" },
+        "progress_rows": { "type": "integer" },
+        "mode_progress_rows": { "type": "integer" },
+        "revision_mode_rows": { "type": "integer" },
+        "source_change_rows": { "type": "integer" },
+        "device_rows": { "type": "integer" },
+        "current_subscription_rows": { "type": "integer" }
+      }
+    },
+    "queries": {
+      "type": "array",
+      "minItems": 9,
+      "maxItems": 9,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "label",
+          "row_volume",
+          "plan_shape",
+          "scan_types",
+          "index_names",
+          "actual_time_ms",
+          "plan_rows",
+          "actual_rows",
+          "buffers_shared_hit",
+          "buffers_shared_read",
+          "planning_time_ms",
+          "execution_time_ms",
+          "n_plus_one_hint",
+          "plan_file"
+        ],
+        "properties": {
+          "label": {
+            "type": "string",
+            "enum": [
+              "current_roster_lookup",
+              "roster_capacity_count",
+              "home_summary_aggregate",
+              "due_revisions",
+              "calendar_schedule",
+              "device_count",
+              "device_lookup",
+              "current_subscription",
+              "source_review_aggregate"
+            ]
+          },
+          "row_volume": { "type": "integer" },
+          "plan_shape": { "type": "string" },
+          "scan_types": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "index_names": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "actual_time_ms": { "type": "number" },
+          "plan_rows": { "type": "integer" },
+          "actual_rows": { "type": "integer" },
+          "buffers_shared_hit": { "type": "integer" },
+          "buffers_shared_read": { "type": "integer" },
+          "planning_time_ms": { "type": "number" },
+          "execution_time_ms": { "type": "number" },
+          "n_plus_one_hint": { "type": "boolean" },
+          "t16_note": { "type": ["string", "null"] },
+          "plan_file": { "type": "string" }
+        }
+      }
+    }
+  }
+}

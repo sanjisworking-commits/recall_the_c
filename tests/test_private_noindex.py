@@ -223,12 +223,10 @@ def test_authenticated_private_pages_carry_noindex(authed_admin: TestClient, pat
     assert _has_noindex(resp.text), f"authenticated {path} missing noindex meta"
 
 
-# NB: "/" is intentionally excluded — an authenticated user hitting "/" is
-# redirected (303) to their private /dashboard, so its final page is noindexed
-# by design. The public *content* surfaces below must stay indexable regardless
-# of who is signed in.
+# "/" stays public for signed-in viewers too: multiuser GET / serves the same
+# landing as guests, not a private dashboard redirect.
 @pytest.mark.parametrize(
-    "path", ["/laws", "/laws/ndps", "/browse/article/20"]
+    "path", ["/", "/laws", "/laws/ndps", "/browse/article/20"]
 )
 def test_authenticated_public_pages_stay_indexable(authed_admin: TestClient, path: str):
     resp = authed_admin.get(path, follow_redirects=True)
@@ -294,7 +292,7 @@ def guest_client(tmp_path: Path) -> TestClient:
         clear_settings_cache()
 
 
-@pytest.mark.parametrize("path", ["/calendar", "/admin", "/profile"])
+@pytest.mark.parametrize("path", ["/calendar", "/admin"])
 def test_guest_gated_pages_still_redirect_to_login(guest_client: TestClient, path: str):
     # Auth gating is unchanged by the noindex work: these still bounce to login.
     resp = guest_client.get(path, follow_redirects=False)
@@ -302,12 +300,13 @@ def test_guest_gated_pages_still_redirect_to_login(guest_client: TestClient, pat
     assert "/login" in resp.headers.get("location", "")
 
 
-@pytest.mark.parametrize("path", ["/dashboard", "/progress", "/settings"])
+@pytest.mark.parametrize("path", ["/dashboard", "/progress", "/settings", "/profile"])
 def test_guest_gate_pages_are_still_served_and_noindexed(
     guest_client: TestClient, path: str
 ):
     # These serve an inline guest gate (200) rather than redirecting; that
     # unchanged behavior must still be kept out of the index.
+    # D110: GET /profile is HTML 200 (guest card), not a login redirect.
     resp = guest_client.get(path, follow_redirects=False)
     assert resp.status_code == 200
     assert _has_noindex(resp.text), f"guest {path} gate missing noindex meta"

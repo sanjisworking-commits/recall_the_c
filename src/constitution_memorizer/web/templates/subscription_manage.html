@@ -1,0 +1,273 @@
+{% extends "base.html" %}
+{% block title %}{% if plus_subscription|default(false) %}Change your plan · {{ app_name|default('Recall the C') }}{% else %}Playground plans · {{ app_name|default('Recall the C') }}{% endif %}{% endblock %}
+{% block mobile_screen %}purchase{% endblock %}
+{% block content %}
+{% if plus_subscription|default(false) %}
+<section class="plus-sub-desk" data-plus-subscription="desktop">
+  <p class="pg-eyebrow plus-sub-eyebrow">Playground · Your plan</p>
+  <h1 class="plus-sub-title">Change your plan</h1>
+  <p class="plus-sub-lede">{{ plus_plan_lede }}</p>
+  {% if error_message %}
+  <p class="plus-sub-error" role="alert">{{ error_message }}</p>
+  {% endif %}
+  <div class="plus-sub-cards" role="list">
+    {% for product in products %}
+    <article
+      class="plus-sub-card{% if product.is_current %} is-current{% endif %}"
+      data-tier="{{ product.tier }}"
+      {% if product.is_current %}data-plus-sub-current{% endif %}
+      role="listitem"
+    >
+      <p class="plus-sub-name">RecallC {{ product.display_name }}</p>
+      <p class="plus-sub-price">{{ product.price_display }}<span> / month</span></p>
+      <p class="plus-sub-limit">{{ product.card_limit_label }}</p>
+      {% if product.description %}
+      <p class="plus-sub-tag">{{ product.description }}</p>
+      {% endif %}
+      {% if product.is_current %}
+      <button type="button" class="plus-sub-cta is-current" disabled>Current plan</button>
+      {% elif product.is_upgrade %}
+      <form method="post" action="/billing/subscriptions/change">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <input type="hidden" name="tier" value="{{ product.tier }}">
+        <button type="submit" class="plus-sub-cta">Switch to {{ product.display_name }}</button>
+      </form>
+      {% endif %}
+    </article>
+    {% endfor %}
+  </div>
+  <p class="plus-sub-gst">{{ plus_plan_gst }}</p>
+  <div class="plus-sub-foot">
+    <div class="plus-sub-life">
+      <p class="plus-sub-explain">{{ plus_plan_explain }}</p>
+      {% if current and current.billing_period_end %}
+      <div class="plus-sub-life-row">
+        <span>Current paid period ends</span>
+        <span>{{ current.billing_period_end }}</span>
+      </div>
+      {% endif %}
+      {% if current and current.cancel_at_period_end %}
+      <div class="plus-sub-life-row">
+        <span>Cancellation</span>
+        <span>Ends after the current paid cycle</span>
+      </div>
+      {% endif %}
+      {% if current and current.scheduled_tier %}
+      <div class="plus-sub-life-row">
+        <span>Scheduled change</span>
+        <span>{{ current.scheduled_tier }} at cycle end</span>
+      </div>
+      {% endif %}
+      {% if current and current.lifecycle_message %}
+      <p class="plus-sub-note">{{ current.lifecycle_message }}</p>
+      {% endif %}
+      {% if can_checkout %}
+      <a class="plus-sub-checkout" href="/billing/subscriptions/checkout">Continue checkout →</a>
+      {% endif %}
+      {% if can_cancel and current and not current.cancel_at_period_end %}
+      <form method="post" action="/billing/subscriptions/cancel">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button type="submit" class="plus-sub-cancel">Cancel at cycle end</button>
+      </form>
+      {% endif %}
+    </div>
+    <aside class="plus-sub-included" data-pg-included>
+      <p class="pg-eyebrow">Included with your account</p>
+      <p class="plus-sub-included-title">The complete Constitution</p>
+      <p class="plus-sub-included-lede">{{ plus_included_lede }}</p>
+    </aside>
+  </div>
+</section>
+{% endif %}
+{% set halted_sub = halted_subscription|default(false) %}
+{% if halted_sub %}
+<section class="plus-sub-desk" data-halted-subscription="desktop">
+  <p class="pg-eyebrow plus-sub-eyebrow">Playground · Your plan</p>
+  <h1 class="plus-sub-title">Playground plans</h1>
+  {% if error_message %}
+  <p class="plus-sub-error" role="alert">{{ error_message }}</p>
+  {% endif %}
+  <div class="plus-sub-cards" role="list">
+    {% for product in products %}
+    {% if current and product.tier == current.tier %}
+    <article
+      class="plus-sub-card is-current"
+      data-tier="{{ product.tier }}"
+      data-halted-sub-current
+      role="listitem"
+    >
+      <p class="plus-sub-name">RecallC {{ product.display_name }}</p>
+      <p class="plus-sub-price">{{ product.price_display }}<span> / month</span></p>
+      <p class="plus-sub-limit">{{ product.card_limit_label }}</p>
+      {% if product.description %}
+      <p class="plus-sub-tag">{{ product.description }}</p>
+      {% endif %}
+      <button type="button" class="plus-sub-cta is-current" disabled>Current plan</button>
+    </article>
+    {% endif %}
+    {% endfor %}
+  </div>
+  {% if current %}
+  <div class="plus-sub-life">
+    {% if current.lifecycle_message %}
+    <p class="plus-sub-note">{{ current.lifecycle_message }}</p>
+    {% endif %}
+    {% if current.billing_period_end %}
+    <div class="plus-sub-life-row">
+      <span>Current paid period ends</span>
+      <span>{{ current.billing_period_end }}</span>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+</section>
+{% endif %}
+{% set expired_sub = expired_subscription|default(false) %}
+{% if expired_sub %}
+<section class="expired-sub-desk" data-expired-subscription="desktop">
+  <p class="pg-eyebrow plus-sub-eyebrow">Playground</p>
+  <h1 class="plus-sub-title">Playground plans</h1>
+  {% if ended_message %}
+  <p class="plus-sub-lede">{{ ended_message }}</p>
+  {% endif %}
+  {% if error_message %}
+  <p class="plus-sub-error" role="alert">{{ error_message }}</p>
+  {% endif %}
+  <div class="plus-sub-cards" role="list">
+    {% for product in products %}
+    <article class="plus-sub-card" data-tier="{{ product.tier }}" role="listitem">
+      <p class="plus-sub-name">{{ product.display_name }}</p>
+      <p class="plus-sub-price">{{ product.price_display }}<span> / month</span></p>
+      <p class="plus-sub-limit">{{ product.card_limit_label }}</p>
+      {% if product.description %}
+      <p class="plus-sub-tag">{{ product.description }}</p>
+      {% endif %}
+      {% if signed_in %}
+      <form method="post" action="/billing/subscriptions/create">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <input type="hidden" name="tier" value="{{ product.tier }}">
+        <button type="submit" class="plus-sub-cta expired-sub-cta">Subscribe to {{ product.display_name }}</button>
+      </form>
+      {% else %}
+      <a class="plus-sub-cta expired-sub-cta" href="/login?next=/billing/subscriptions">Sign in to subscribe</a>
+      {% endif %}
+    </article>
+    {% endfor %}
+  </div>
+  <p class="plus-sub-gst">Monthly. GST included. Cancel at the end of the current paid cycle.</p>
+</section>
+{% endif %}
+<section class="panel purchase">
+  <p class="purchase-card-title">Playground plans</p>
+  <p class="purchase-note">Monthly. GST included. Cancel at the end of the current paid cycle.</p>
+  {% if error_message %}
+  <p class="purchase-error" role="alert">{{ error_message }}</p>
+  {% endif %}
+
+  {% if current and not expired_sub %}
+  <div class="purchase-card purchase-confirm">
+    <p class="purchase-card-title">Current plan</p>
+    <div class="purchase-row">
+      <span class="purchase-row-k">{{ current.display_name }}</span>
+      <span class="purchase-row-price">{{ current.price_label }}</span>
+    </div>
+    <div class="purchase-row">
+      <span class="purchase-row-k">Status</span>
+      <span class="purchase-row-v">{{ current.status }}</span>
+    </div>
+    {% if current.billing_period_end %}
+    <div class="purchase-row">
+      <span class="purchase-row-k">Current paid period ends</span>
+      <span class="purchase-row-v">{{ current.billing_period_end }}</span>
+    </div>
+    {% endif %}
+    <div class="purchase-row{% if not current.cancel_at_period_end and not current.scheduled_tier %} is-last{% endif %}">
+      <span class="purchase-row-k">GST</span>
+      <span class="purchase-row-v">included</span>
+    </div>
+    {% if current.cancel_at_period_end %}
+    <div class="purchase-row{% if not current.scheduled_tier %} is-last{% endif %}">
+      <span class="purchase-row-k">Cancellation</span>
+      <span class="purchase-row-v">Ends after the current paid cycle</span>
+    </div>
+    {% endif %}
+    {% if current.scheduled_tier %}
+    <div class="purchase-row is-last">
+      <span class="purchase-row-k">Scheduled change</span>
+      <span class="purchase-row-v">{{ current.scheduled_tier }} at cycle end</span>
+    </div>
+    {% endif %}
+    {% if current.lifecycle_message %}
+    <p class="purchase-note">{{ current.lifecycle_message }}</p>
+    {% endif %}
+
+    <div class="purchase-actions">
+      {% if can_checkout %}
+      <a class="btn btn-accent" href="/billing/subscriptions/checkout">Continue checkout →</a>
+      {% endif %}
+      {% if can_cancel and not current.cancel_at_period_end %}
+      <form method="post" action="/billing/subscriptions/cancel">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <button type="submit" class="btn btn-ghost">Cancel at cycle end</button>
+      </form>
+      {% endif %}
+    </div>
+
+    {% if upgrades %}
+    <p class="purchase-note">Upgrade applies immediately.</p>
+    {% for product in upgrades %}
+    <form method="post" action="/billing/subscriptions/change">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <input type="hidden" name="tier" value="{{ product.tier }}">
+      <button type="submit" class="btn btn-accent">Upgrade to {{ product.display_name }} · {{ product.price_label }}</button>
+    </form>
+    {% endfor %}
+    {% endif %}
+    {% if downgrades %}
+    <p class="purchase-note">Downgrade takes effect at the end of the current paid cycle. Your current plan stays active until then.</p>
+    {% for product in downgrades %}
+    <form method="post" action="/billing/subscriptions/change">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <input type="hidden" name="tier" value="{{ product.tier }}">
+      <button type="submit" class="btn btn-ghost">Schedule {{ product.display_name }} · {{ product.price_label }}</button>
+    </form>
+    {% endfor %}
+    {% endif %}
+  </div>
+  {% endif %}
+
+  {% if not current or expired_sub %}
+  {% if ended_message %}
+  <p class="purchase-note">{{ ended_message }}</p>
+  {% endif %}
+  {% for product in products %}
+  <div class="purchase-card purchase-confirm">
+    <p class="purchase-card-title">{{ product.display_name }}</p>
+    <div class="purchase-row">
+      <span class="purchase-row-k">{{ product.display_name }}</span>
+      <span class="purchase-row-price">{{ product.price_label }}</span>
+    </div>
+    <div class="purchase-row">
+      <span class="purchase-row-k">GST</span>
+      <span class="purchase-row-v">included</span>
+    </div>
+    <div class="purchase-row is-last">
+      <span class="purchase-row-k">Playground</span>
+      <span class="purchase-row-v">{{ product.limit_label }}</span>
+    </div>
+    <div class="purchase-actions">
+      {% if signed_in %}
+      <form method="post" action="/billing/subscriptions/create">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+        <input type="hidden" name="tier" value="{{ product.tier }}">
+        <button type="submit" class="btn btn-accent">Subscribe to {{ product.display_name }}</button>
+      </form>
+      {% else %}
+      <a class="btn btn-accent" href="/login?next=/billing/subscriptions">Sign in to subscribe</a>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+  {% endif %}
+</section>
+{% endblock %}

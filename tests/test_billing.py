@@ -236,7 +236,11 @@ def test_verified_payment_grants_subscribed_access(
     learn = client.get("/learn/clause-1")
     assert "🔒" not in learn.text
     profile = client.get("/profile")
-    assert "Recall active · 180 days" in profile.text
+    assert profile.status_code == 200
+    # Duration-pass lifecycle is retired from Profile. The grant still
+    # unlocks learning; Playground SUBSCRIPTION is the commercial surface.
+    assert "Recall active · 180 days" not in profile.text
+    assert "3 Free Articles" not in profile.text
     receipt = client.get("/subscribe/result?order=" + order["order_id"])
     assert receipt.status_code == 200
     assert "Recall is active." in receipt.text

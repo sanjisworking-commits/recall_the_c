@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://recall.local/schemas/playground-cold-start.json",
+  "title": "Playground WS11 T21 cold-start and import hydration (schema sample)",
+  "description": "Machine JSON written by scripts/benchmark_playground.py --cold-start. Fresh-interpreter subprocess times factory import and create_app separately with a loader spy on get_bare_act and _load_cached. Durations are report-only; there is no startup SLA. Incomplete or late-spy captures set complete=false and a nonzero process exit. Unexpected hydration sets complete=true, contract_passed=false, and a nonzero process exit. first_request is null in the T21 default (import + factory only).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "kind",
+    "measurement_mode",
+    "app_env",
+    "database_backend",
+    "client_shape",
+    "spy_targets",
+    "spy_installed",
+    "spy_installed_too_late",
+    "hook_installed_before_web_app_import",
+    "preimport_web_app",
+    "preimport_web_asgi",
+    "preimport_bare_acts",
+    "alembic_head",
+    "git_head",
+    "aborted",
+    "complete",
+    "contract_passed",
+    "import",
+    "create_app",
+    "first_request",
+    "startup",
+    "failures",
+    "incidental_stdout",
+    "incidental_stderr"
+  ],
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "kind": { "type": "string", "const": "cold-start" },
+    "measurement_mode": {
+      "type": "string",
+      "const": "fresh_interpreter_subprocess"
+    },
+    "app_env": { "type": "string" },
+    "database_backend": { "type": "string", "const": "sqlite" },
+    "client_shape": { "type": "string", "const": "fresh_child_python" },
+    "spy_targets": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "prefixItems": [
+        { "type": "string", "const": "get_bare_act" },
+        { "type": "string", "const": "_load_cached" }
+      ],
+      "items": { "type": "string" }
+    },
+    "spy_installed": { "type": "boolean" },
+    "spy_installed_too_late": { "type": "boolean" },
+    "hook_installed": { "type": "boolean" },
+    "hook_installed_before_web_app_import": { "type": "boolean" },
+    "wrap_applied": { "type": "boolean" },
+    "too_late_reason": { "type": ["string", "null"] },
+    "web_app_in_sys_modules_at_wrap": { "type": "boolean" },
+    "cache_info_at_wrap": {
+      "type": ["object", "null"],
+      "additionalProperties": true
+    },
+    "preimport_web_app": { "type": "boolean" },
+    "preimport_web_asgi": { "type": "boolean" },
+    "preimport_bare_acts": { "type": "boolean" },
+    "asgi_imported": { "type": "boolean" },
+    "alembic_head": { "type": "string", "const": "20260927_0027" },
+    "git_head": { "type": ["string", "null"] },
+    "aborted": { "type": "boolean" },
+    "aborted_reason": { "type": ["string", "null"] },
+    "complete": { "type": "boolean" },
+    "contract_passed": { "type": "boolean" },
+    "import": { "$ref": "#/$defs/phase" },
+    "create_app": { "$ref": "#/$defs/phase" },
+    "first_request": {
+      "type": "null",
+      "description": "T21 default is import + factory only."
+    },
+    "startup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "sqlite_existed_before",
+        "sqlite_exists_after",
+        "sqlite_bytes_after",
+        "sqlite_tables_after",
+        "units_json_path",
+        "units_json_bytes",
+        "postgres_pool_created",
+        "asgi_imported",
+        "browse_imported_during_create_app",
+        "lifespan_ran"
+      ],
+      "properties": {
+        "sqlite_existed_before": { "type": ["boolean", "null"] },
+        "sqlite_exists_after": { "type": ["boolean", "null"] },
+        "sqlite_bytes_after": { "type": ["integer", "null"] },
+        "sqlite_tables_after": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "units_json_path": { "type": ["string", "null"] },
+        "units_json_bytes": { "type": ["integer", "null"] },
+        "postgres_pool_created": { "type": ["boolean", "null"] },
+        "asgi_imported": { "type": "boolean" },
+        "browse_imported_during_create_app": { "type": ["boolean", "null"] },
+        "lifespan_ran": { "type": "boolean" }
+      }
+    },
+    "failures": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": [
+              "incomplete_capture",
+              "child_timeout",
+              "child_exit",
+              "malformed_result",
+              "missing_result",
+              "spy_installed_too_late",
+              "hydration_contract"
+            ]
+          },
+          "detail": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "incidental_stdout": { "type": "string" },
+    "incidental_stderr": { "type": "string" },
+    "child_returncode": { "type": ["integer", "null"] }
+  },
+  "$defs": {
+    "phase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "duration_ms",
+        "get_bare_act_calls",
+        "load_cached_calls",
+        "cache_hits",
+        "cache_misses",
+        "hydrated_slugs",
+        "cache_currsize"
+      ],
+      "properties": {
+        "duration_ms": { "type": "number" },
+        "get_bare_act_calls": { "type": "integer" },
+        "load_cached_calls": { "type": "integer" },
+        "cache_hits": { "type": "integer" },
+        "cache_misses": { "type": "integer" },
+        "hydrated_slugs": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "cache_currsize": { "type": "integer" }
+      }
+    }
+  }
+}

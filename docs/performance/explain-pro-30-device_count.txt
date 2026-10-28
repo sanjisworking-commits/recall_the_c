@@ -1,0 +1,14 @@
+# disposable PostgreSQL baseline, not an SLA
+# query: device_count
+# alembic_head: 20260927_0027
+# fixture: pro-30+source-review
+# database_name_prefix: s2_
+Aggregate  (cost=1.01..1.02 rows=1 width=8) (actual time=0.004..0.004 rows=1 loops=1)
+  Buffers: shared hit=1
+  ->  Seq Scan on user_device  (cost=0.00..1.01 rows=1 width=0) (actual time=0.003..0.003 rows=1 loops=1)
+        Filter: ((revoked_at IS NULL) AND (user_id = '11111111-1111-4111-8111-111111111111'::uuid))
+        Buffers: shared hit=1
+Planning:
+  Buffers: shared hit=38
+Planning Time: 0.082 ms
+Execution Time: 0.011 ms

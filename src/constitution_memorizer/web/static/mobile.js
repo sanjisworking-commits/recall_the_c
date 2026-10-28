@@ -1146,7 +1146,25 @@
   }
 
   function initLawsIndex() {
-    var root = document.querySelector("[data-laws-index]");
+    var nodes = document.querySelectorAll("[data-laws-index]");
+    if (!nodes.length) return;
+    var desktopGuest =
+      document.body.classList.contains("is-guest") &&
+      document.body.getAttribute("data-mscreen") === "laws" &&
+      window.matchMedia &&
+      window.matchMedia("(min-width: 561px)").matches;
+    var root = nodes[0];
+    for (var i = 0; i < nodes.length; i++) {
+      var guestDesk = nodes[i].hasAttribute("data-guest-laws-desktop");
+      if (desktopGuest && guestDesk) {
+        root = nodes[i];
+        break;
+      }
+      if (!desktopGuest && !guestDesk) {
+        root = nodes[i];
+        break;
+      }
+    }
     if (!root) return;
 
     var cards = Array.prototype.slice.call(root.querySelectorAll("[data-law-id]"));
@@ -1156,7 +1174,7 @@
     var empty = root.querySelector("[data-laws-empty]");
     var toggle = root.querySelector("[data-laws-search-toggle]");
     var searchWrap = root.querySelector("[data-laws-search]");
-    var input = root.querySelector("#laws-q");
+    var input = root.querySelector("input.laws-search-input") || root.querySelector("#laws-q");
     var knownSubjects = {};
     chips.forEach(function (chip) {
       var id = chip.getAttribute("data-laws-chip") || "";

@@ -38,7 +38,7 @@ GUEST_PUBLIC_PREFIXES = (
     "/terms",
     "/privacy",
     "/grievance",
-    "/profile",  # GET redirects to login in handler; POST requires auth
+    "/profile",  # GET is the D110 guest card; POST requires auth
 )
 
 # Personal surfaces — unauthenticated users see a gate or redirect to sign-in.
@@ -82,6 +82,8 @@ def is_guest_public_get(path: str, method: str) -> bool:
 def requires_auth(path: str, method: str) -> bool:
     """Return True when an unauthenticated request must be blocked."""
     m = method.upper()
+    if path.startswith("/api/billing/subscriptions/webhook/"):
+        return False
     if path.startswith("/auth/") or path in ROOT_ASSET_PATHS or path in {
         "/login",
         "/signed-out",
@@ -115,6 +117,11 @@ def requires_auth(path: str, method: str) -> bool:
         return True
     if path.startswith("/profile") and m == "POST":
         return True
+    if path == "/billing" or path.startswith("/billing/"):
+        if m != "GET":
+            return True
+        if path.startswith("/billing/subscriptions/checkout"):
+            return True
     return False
 
 

@@ -1,0 +1,1829 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..600;1,9..144,400..600&amp;family=Source+Sans+3:ital,wght@0,400..700;1,400..700&amp;family=Martel+Sans:wght@400;600;700&amp;display=swap" rel="stylesheet">
+<style>
+  body{margin:0;background:#f6f6f4;font-family:'Source Sans 3','Martel Sans',system-ui,sans-serif;color:#141414;-webkit-font-smoothing:antialiased}
+  a{color:#0e7569}a:hover{color:#0b5d53}
+  @keyframes rcRise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes rcGrowY{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+  @keyframes rcPop{0%{transform:scale(0.5);opacity:0}70%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+  @keyframes rcSheet{from{transform:translateY(100%)}to{transform:translateY(0)}}
+  @keyframes rcBar{0%,100%{transform:scaleY(0.35)}50%{transform:scaleY(1)}}
+  @keyframes rcFade{from{opacity:0}to{opacity:1}}
+  @media (prefers-reduced-motion: reduce){*,*::before,*::after{animation-duration:0.001s !important;transition-duration:0.001s !important}}
+</style>
+</helmet>
+
+<div style="display:flex;align-items:flex-start;gap:40px;padding:38px 46px 70px;">
+
+  <div style="flex:0 0 252px;display:flex;flex-direction:column;gap:22px;position:sticky;top:38px;">
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <h1 style="margin:0;font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:25px;font-weight:500;line-height:1.15;">Recall the C — Playground</h1>
+      <p style="margin:0;font-size:13px;line-height:1.6;color:#6b6b6b;text-wrap:pretty;">Additive overlay on the verbatim Bare Acts. Add from an Act's head — the whole Act, sections, or single clauses — then it appears in Playground with the usual recall ladder.</p>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:6px;">
+      <p style="margin:0 0 2px;font-size:10.5px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#8f8f8d;">Flow</p>
+      <button type="button" onClick="{{ jump.ndps }}" style="font:inherit;font-size:13px;text-align:left;padding:8px 12px;border:1px solid #dcdcdc;border-radius:8px;background:#fff;cursor:pointer;" style-hover="background:#f2f2f0;">Bare Act head — NDPS</button>
+      <button type="button" onClick="{{ jump.bns }}" style="font:inherit;font-size:13px;text-align:left;padding:8px 12px;border:1px solid #dcdcdc;border-radius:8px;background:#fff;cursor:pointer;" style-hover="background:#f2f2f0;">Bare Act head — BNS</button>
+      <button type="button" onClick="{{ jump.sheet }}" style="font:inherit;font-size:13px;text-align:left;padding:8px 12px;border:1px solid #dcdcdc;border-radius:8px;background:#fff;cursor:pointer;" style-hover="background:#f2f2f0;">Add sheet — act vs sections</button>
+      <button type="button" onClick="{{ jump.picker }}" style="font:inherit;font-size:13px;text-align:left;padding:8px 12px;border:1px solid #dcdcdc;border-radius:8px;background:#fff;cursor:pointer;" style-hover="background:#f2f2f0;">Section picker — clause depth</button>
+      <button type="button" onClick="{{ jump.playground }}" style="font:inherit;font-size:13px;text-align:left;padding:8px 12px;border:1px solid #dcdcdc;border-radius:8px;background:#fff;cursor:pointer;" style-hover="background:#f2f2f0;">Playground — activated laws</button>
+      <button type="button" onClick="{{ jump.empty }}" style="font:inherit;font-size:13px;text-align:left;padding:8px 12px;border:1px solid #dcdcdc;border-radius:8px;background:#fff;cursor:pointer;" style-hover="background:#f2f2f0;">Playground — empty</button>
+      <button type="button" onClick="{{ jump.learn }}" style="font:inherit;font-size:13px;text-align:left;padding:8px 12px;border:1px solid #dcdcdc;border-radius:8px;background:#fff;cursor:pointer;" style-hover="background:#f2f2f0;">Learn — 6 recall modes</button>
+      <button type="button" onClick="{{ jump.today }}" style="font:inherit;font-size:13px;text-align:left;padding:8px 12px;border:1px solid #dcdcdc;border-radius:8px;background:#fff;cursor:pointer;" style-hover="background:#f2f2f0;">Today — playground in the queue</button>
+      <button type="button" onClick="{{ jump.calendar }}" style="font:inherit;font-size:13px;text-align:left;padding:8px 12px;border:1px solid #dcdcdc;border-radius:8px;background:#fff;cursor:pointer;" style-hover="background:#f2f2f0;">Calendar — saved recall</button>
+    </div>
+    <p style="margin:0;font-size:11.5px;line-height:1.6;color:#9a9a9a;text-wrap:pretty;">Readers stay untouched — Add lives above the chapter list. /playground shows only activated laws. Selection persists against the source version, shown on each card.</p>
+  </div>
+
+  <div data-screen-label="Prototype phone" style="position:relative;flex:0 0 390px;width:390px;height:844px;border-radius:46px;border:1px solid #c9c9c7;background:#ececea;box-shadow:0 30px 70px rgba(20,20,20,0.16);overflow:hidden;">
+
+    <div style="position:absolute;top:0;left:0;right:0;z-index:50;display:flex;align-items:center;justify-content:space-between;height:44px;padding:0 26px;font-size:12px;font-weight:600;color:#141414;pointer-events:none;">9:41
+      <span style="display:flex;align-items:center;gap:3px;"><span style="display:flex;align-items:center;width:22px;height:11px;padding:1.5px;border:1px solid currentColor;border-radius:3px;"><span style="display:block;width:70%;height:100%;background:currentColor;border-radius:1px;"></span></span><span style="display:block;width:2px;height:4px;background:currentColor;"></span></span>
+    </div>
+
+    <sc-if value="{{ isAct }}" hint-placeholder-val="{{ true }}">
+      <div data-screen-label="Bare Act head" style="position:absolute;inset:0;padding:44px 0 96px;overflow:auto;background:#fff;">
+        <div style="padding:2px 18px 16px;background:#ececea;border-bottom:1px solid #dcdcdc;">
+          <button type="button" style="display:inline-flex;align-items:center;height:44px;border:none;background:transparent;font:inherit;font-size:13px;color:#6b6b6b;cursor:pointer;padding:0;">← Laws</button>
+          <p style="margin:2px 0 2px;font-size:10.5px;font-weight:600;letter-spacing:0.1em;color:#8f8f8d;">BARE ACT · {{ actProvenance }}</p>
+          <h2 style="margin:0 0 3px;font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:19px;font-weight:500;line-height:1.25;text-wrap:pretty;">{{ actTitle }}</h2>
+          <p style="margin:0 0 12px;font-size:12px;color:#8f8f8d;">{{ actMeta }}</p>
+          <sc-if value="{{ actNotAdded }}" hint-placeholder-val="{{ true }}">
+            <button type="button" onClick="{{ openAddSheet }}" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:48px;border:none;border-radius:12px;background:#141414;color:#fff;font:inherit;font-size:14.5px;font-weight:600;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,0.28);" style-active="transform:translateY(1px);">{{ actCtaLabel }}</button>
+          </sc-if>
+          <sc-if value="{{ actAdded }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;align-items:center;gap:11px;padding:11px 13px;background:#e7f1ef;border:1px solid #bcd8d2;border-radius:12px;animation:rcRise 0.3s ease both;">
+              <span style="display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:#0e7569;color:#fff;flex:none;"><svg width="13" height="13" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6.5 4.8 9.2 10 3.2"></path></svg></span>
+              <span style="flex:1;display:flex;flex-direction:column;gap:0;"><span style="font-size:13.5px;font-weight:600;color:#0e5b52;">Already in Playground</span></span>
+              <button type="button" onClick="{{ goPicker }}" style="height:34px;padding:0 12px;border:1px solid #a9cdc6;border-radius:9px;background:#fff;font:inherit;font-size:12.5px;font-weight:600;color:#0e5b52;cursor:pointer;">Sections</button>
+              <button type="button" onClick="{{ goPlayground }}" style="height:34px;padding:0 13px;border:none;border-radius:9px;background:#0e7569;color:#fff;font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,0.18);" style-active="transform:translateY(1px);">Continue</button>
+            </div>
+          </sc-if>
+        </div>
+        <sc-for list="{{ actChapters }}" as="ac" hint-placeholder-count="4">
+          <div style="display:flex;align-items:center;gap:10px;min-height:48px;padding:10px 18px;background:#fafaf9;border-bottom:1px solid #dcdcdc;">
+            <span style="flex:0 0 100px;font-size:10.5px;font-weight:600;letter-spacing:0.09em;color:#8f8f8d;white-space:nowrap;">CHAPTER {{ ac.num }}</span>
+            <span style="flex:1;font-size:14.5px;font-weight:500;">{{ ac.title }}</span>
+            <span style="font-size:11.5px;color:#9a9a9a;white-space:nowrap;">{{ ac.range }}</span>
+            <span style="font-size:13px;color:#9a9a9a;">▸</span>
+          </div>
+        </sc-for>
+        <sc-if value="{{ actHasSchedule }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;gap:10px;min-height:48px;padding:10px 18px;background:#fafaf9;border-bottom:1px solid #dcdcdc;">
+            <span style="font-size:10.5px;font-weight:600;letter-spacing:0.09em;color:#8f8f8d;white-space:nowrap;">SCHEDULE</span>
+            <span style="flex:1;font-size:14.5px;font-weight:500;">List of Psychotropic Substances</span>
+            <span style="font-size:11.5px;color:#9a9a9a;white-space:nowrap;">1–110</span>
+            <span style="font-size:14px;color:#c9c9c7;">›</span>
+          </div>
+        </sc-if>
+        
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isPicker }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Section picker" style="position:absolute;inset:0;padding:44px 0 0;background:#fff;">
+        <div style="padding:2px 18px 12px;background:#ececea;border-bottom:1px solid #dcdcdc;">
+          <button type="button" onClick="{{ goAct }}" style="display:inline-flex;align-items:center;height:44px;border:none;background:transparent;font:inherit;font-size:13px;color:#6b6b6b;cursor:pointer;padding:0;">{{ backActLabel }}</button>
+          <h2 style="margin:0 0 3px;font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:21px;font-weight:500;">Choose what to learn</h2>
+          <p style="margin:0;font-size:12.5px;line-height:1.5;color:#6b6b6b;">Whole sections, or open one and pick clauses.</p>
+        </div>
+        <div style="position:absolute;top:158px;bottom:0;left:0;right:0;overflow:auto;padding:0 0 120px;">
+          <sc-for list="{{ pickChapters }}" as="pc" hint-placeholder-count="2">
+            <div>
+              <p style="margin:0;padding:14px 18px 7px;font-size:10.5px;font-weight:600;letter-spacing:0.09em;color:#8f8f8d;background:#fafaf9;border-bottom:1px solid #ececea;">CHAPTER {{ pc.num }} · {{ pc.titleUpper }}</p>
+              <sc-for list="{{ pc.rows }}" as="r" hint-placeholder-count="3">
+                <div>
+                  <div style="display:flex;align-items:center;gap:12px;min-height:52px;padding:10px 18px;border-bottom:1px solid #ececea;">
+                    <span role="checkbox" aria-checked="{{ r.ariaChecked }}" tabindex="0" onClick="{{ r.toggle }}" style="{{ r.boxStyle }}">{{ r.mark }}</span>
+                    <span role="button" tabindex="0" onClick="{{ r.rowTap }}" style="flex:1;display:flex;flex-direction:column;gap:1px;cursor:pointer;"><span style="font-size:11px;font-weight:600;letter-spacing:0.07em;color:#8f8f8d;">SECTION {{ r.num }}</span><span style="font-size:14px;line-height:1.4;">{{ r.title }}</span><span style="{{ r.statusStyle }}">{{ r.status }}</span></span>
+                    <sc-if value="{{ r.hasSubs }}" hint-placeholder-val="{{ false }}">
+                      <button type="button" onClick="{{ r.rowTap }}" aria-label="Show clauses" style="display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border:none;background:transparent;font-size:13px;color:#9a9a9a;cursor:pointer;padding:0;">{{ r.caret }}</button>
+                    </sc-if>
+                  </div>
+                  <sc-if value="{{ r.expanded }}" hint-placeholder-val="{{ false }}">
+                    <sc-for list="{{ r.subs }}" as="sb" hint-placeholder-count="2">
+                      <div style="display:flex;align-items:center;gap:12px;min-height:46px;padding:8px 18px 8px 50px;background:#fafaf9;border-bottom:1px solid #ececea;animation:rcFade 0.2s ease both;">
+                        <span role="checkbox" aria-checked="{{ sb.ariaChecked }}" tabindex="0" onClick="{{ sb.toggle }}" style="{{ sb.boxStyle }}">{{ sb.mark }}</span>
+                        <span style="flex:1;display:flex;gap:8px;align-items:baseline;"><span style="font-size:12px;font-weight:600;color:#6b6b6b;white-space:nowrap;">{{ sb.label }}</span><span style="font-size:12.5px;line-height:1.45;color:#3a3a38;">{{ sb.text }}</span></span>
+                      </div>
+                    </sc-for>
+                  </sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </sc-for>
+        </div>
+        <div style="position:absolute;left:0;right:0;bottom:0;z-index:20;padding:12px 18px 28px;border-top:1px solid #ececea;background:rgba(255,255,255,0.95);backdrop-filter:blur(8px);">
+          <button type="button" onClick="{{ confirmAdd }}" disabled="{{ addDisabled }}" style="{{ addBtnStyle }}" style-active="transform:translateY(1px);">{{ addBtnLabel }}</button>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isPlayground }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Playground" style="position:absolute;inset:0;padding:44px 0 96px;overflow:auto;background:#ececea;">
+        <div style="display:flex;align-items:baseline;gap:8px;padding:8px 18px 4px;">
+          <h2 style="margin:0;font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:23px;font-weight:500;">Playground</h2>
+          <sc-if value="{{ hasLaws }}" hint-placeholder-val="{{ true }}"><span style="font-size:12px;color:#8f8f8d;">{{ lawCountLabel }}</span></sc-if>
+          
+        </div>
+        <sc-if value="{{ pgPaused }}" hint-placeholder-val="{{ false }}">
+          <div style="margin:6px 18px 8px;padding:14px 16px;background:#fff;border:1.5px solid #141414;border-radius:14px;animation:rcRise 0.3s ease both;">
+            <p style="margin:0 0 3px;font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:16px;font-weight:500;">Your Playground is paused</p>
+            <p style="margin:0 0 12px;font-size:12.5px;line-height:1.55;color:#6b6b6b;text-wrap:pretty;">Plan ended 12 August. Every law, ladder position and mode is saved — resume to continue learning.</p>
+            <button type="button" onClick="{{ goGate }}" style="display:inline-flex;align-items:center;justify-content:center;height:40px;padding:0 16px;border:none;border-radius:10px;background:#141414;color:#fff;font:inherit;font-size:13.5px;font-weight:600;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,0.28);" style-active="transform:translateY(1px);">Resume Playground</button>
+          </div>
+        </sc-if>
+        <sc-if value="{{ pgActive }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;align-items:center;gap:10px;margin:6px 18px 0;padding:10px 14px;background:#fff;border:1px solid #dcdcdc;border-radius:12px;">
+            <span style="flex:1;display:flex;flex-direction:column;gap:1px;"><span style="font-size:12.5px;font-weight:600;">{{ pgMonth }}</span></span>
+            <button type="button" onClick="{{ goRollover }}" style="margin-left:auto;height:32px;padding:0 12px;border:1px solid #dcdcdc;border-radius:9px;background:#fff;font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;" style-hover="background:#fafaf9;">Manage</button><button type="button" onClick="{{ jump.ndps }}" style="height:34px;padding:0 13px;border:1px solid #dcdcdc;border-radius:9px;background:#fff;font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;flex:none;" style-hover="background:#fafaf9;">Add a law</button>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin:6px 18px 8px;padding:0 2px;">
+            
+            <button type="button" onClick="{{ goRollover }}" style="border:none;background:transparent;font:inherit;font-size:11.5px;font-weight:600;color:#0e7569;cursor:pointer;white-space:nowrap;padding:0;">Manage next month ›</button>
+          </div>
+        </sc-if>
+        <sc-if value="{{ hasLaws }}" hint-placeholder-val="{{ true }}">
+          
+          <div style="display:flex;flex-direction:column;gap:12px;padding:0 14px;">
+            <sc-for list="{{ pgCards }}" as="c" hint-placeholder-count="2">
+              <div style="background:#fff;border:1px solid #dcdcdc;border-radius:16px;padding:15px 16px;animation:rcRise 0.35s ease both;">
+                <h3 style="margin:0 0 12px;font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:18px;font-weight:500;line-height:1.25;">{{ c.name }}</h3>
+                <div style="margin-bottom:12px;">
+                  <div style="display:flex;height:4px;border-radius:2px;background:#ececea;overflow:hidden;" aria-hidden="true">
+                    <sc-for list="{{ c.segs }}" as="sg" hint-placeholder-count="2"><span style="{{ sg.style }}"></span></sc-for>
+                  </div>
+                  
+                </div>
+                <div style="display:flex;align-items:center;gap:9px;">
+                  <button type="button" onClick="{{ c.learn }}" style="flex:1;display:flex;align-items:center;justify-content:center;height:44px;border:none;border-radius:11px;background:#141414;color:#fff;font:inherit;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,0.28);" style-active="transform:translateY(1px);">{{ c.cta }}</button>
+                  
+                </div>
+                <sc-if value="{{ showSourceStamp }}" hint-placeholder-val="{{ true }}">
+                  
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+          
+        </sc-if>
+        <sc-if value="{{ noLaws }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;flex-direction:column;align-items:flex-start;padding:52px 24px 0;">
+            <span style="display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border:1.5px solid #141414;border-radius:14px;font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:20px;font-weight:500;margin-bottom:16px;">P</span>
+            <h3 style="margin:0 0 8px;font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:24px;font-weight:500;line-height:1.2;">Nothing here yet</h3>
+            <p style="margin:0 0 18px;font-size:14px;line-height:1.6;color:#6b6b6b;text-wrap:pretty;">Open any Bare Act and tap “Add to Playground” — the whole Act, a few sections, or a single clause. It shows up here, ready to learn.</p>
+            <button type="button" onClick="{{ jump.ndps }}" style="display:flex;align-items:center;justify-content:center;width:100%;height:50px;border:none;border-radius:12px;background:#141414;color:#fff;font:inherit;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,0.28);" style-active="transform:translateY(1px);">Browse Laws</button>
+          </div>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isProgress }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Act progress" style="position:absolute;inset:0;padding:44px 0 96px;overflow:auto;background:#fff;">
+        <div style="padding:2px 18px 14px;background:#ececea;border-bottom:1px solid #dcdcdc;">
+          <button type="button" onClick="{{ goPlayground }}" style="display:inline-flex;align-items:center;height:44px;border:none;background:transparent;font:inherit;font-size:13px;color:#6b6b6b;cursor:pointer;padding:0;">← Playground</button>
+          <p style="margin:2px 0 2px;font-size:10.5px;font-weight:600;letter-spacing:0.1em;color:#8f8f8d;">PLAYGROUND · {{ progScope }}</p>
+          <h2 style="margin:0;font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:21px;font-weight:500;line-height:1.25;text-wrap:pretty;">{{ progName }}</h2>
+        </div>
+        <div style="display:flex;align-items:center;gap:16px;padding:18px 18px 4px;animation:rcRise 0.35s ease both;">
+          <span style="position:relative;display:inline-flex;align-items:center;justify-content:center;flex:none;">
+            <svg width="84" height="84" viewBox="0 0 64 64" aria-hidden="true">
+              <circle cx="32" cy="32" r="26" fill="none" stroke="#ececea" stroke-width="5"></circle>
+              <circle cx="32" cy="32" r="26" fill="none" stroke="#0e7569" stroke-width="5" stroke-dasharray="{{ progDash }} 163.36" stroke-linecap="round" transform="rotate(-90 32 32)" style="transition:stroke-dasharray 0.6s ease;"></circle>
+            </svg>
+            <span style="position:absolute;font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:17px;font-weight:500;">{{ progFrac }}</span>
+          </span>
+          <span style="min-width:0;">
+            <span style="display:block;font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:24px;font-weight:500;line-height:1.2;">{{ progHeadline }}</span>
+            <span style="display:block;margin-top:2px;font-size:12.5px;color:#6b6b6b;">{{ progSub }}</span>
+          </span>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;padding:10px 18px 0;">
+          <span style="display:inline-flex;align-items:center;gap:4px;padding:4px 9px;border:1px solid #dcdcdc;border-radius:999px;font-size:12px;font-weight:600;color:#141414;">
+            <svg width="13" height="15" viewBox="0 0 14 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M7 1.2c.6 2.6-2.9 3.9-2.9 7a3.4 3.4 0 0 0 6.8 0c0-1.4-.7-2.4-1.3-3.3-.5 1-1.1 1.4-1.1 1.4C8.9 4.4 8.6 2.4 7 1.2Z"></path></svg>4-day streak
+          </span>
+          <span style="display:inline-flex;align-items:center;padding:4px 9px;border:1px solid #bcd8d2;border-radius:999px;background:#e7f1ef;font-size:12px;font-weight:600;color:#0e5b52;">{{ progNext }}</span>
+        </div>
+        <p style="margin:20px 0 8px;padding:0 18px;font-size:10.5px;font-weight:600;letter-spacing:0.09em;text-transform:uppercase;color:#8f8f8d;">{{ progWaffleHead }}</p>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;padding:0 18px;">
+          <sc-for list="{{ progCells }}" as="w" hint-placeholder-count="24"><span title="{{ w.tip }}" style="{{ w.style }}"></span></sc-for>
+        </div>
+        <p style="margin:20px 0 8px;padding:0 18px;font-size:10.5px;font-weight:600;letter-spacing:0.09em;text-transform:uppercase;color:#8f8f8d;">On the ladder</p>
+        <div style="display:flex;align-items:flex-end;gap:10px;padding:0 18px;height:72px;">
+          <sc-for list="{{ progRungs }}" as="rg" hint-placeholder-count="6">
+            <span style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0;">
+              <span style="font-size:11px;font-weight:600;color:{{ rg.countColor }};">{{ rg.count }}</span>
+              <span style="{{ rg.barStyle }}"></span>
+              <span style="font-size:10px;color:#8f8f8d;">day {{ rg.day }}</span>
+            </span>
+          </sc-for>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:9px;margin:24px 18px 0;">
+          <button type="button" onClick="{{ progLearn }}" style="display:flex;align-items:center;justify-content:center;width:100%;height:50px;border:none;border-radius:12px;background:#141414;color:#fff;font:inherit;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,0.28);" style-active="transform:translateY(1px);">{{ progCta }}</button>
+          <button type="button" onClick="{{ progManage }}" style="display:flex;align-items:center;justify-content:center;width:100%;height:44px;border:1px solid #dcdcdc;border-radius:12px;background:#fff;font:inherit;font-size:13.5px;font-weight:600;color:#141414;cursor:pointer;" style-hover="background:#fafaf9;">Manage sections</button>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isToday }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Today" style="position:absolute;inset:0;padding:44px 0 96px;overflow:auto;background:#ececea;">
+        <div style="display:flex;align-items:center;gap:10px;padding:10px 18px 0;">
+          <span aria-hidden="true" style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:#141414;color:#fff;font-size:14px;font-weight:600;flex:none;">L</span>
+          <span style="flex:1;min-width:0;">
+            <span style="display:block;font-size:15px;font-weight:600;">Good morning.</span>
+            <span style="display:block;margin-top:1px;font-size:12px;color:#6b6b6b;">Sunday 6 September</span>
+          </span>
+          <span title="Days the daily goal was completed" style="display:inline-flex;align-items:center;gap:4px;padding:4px 9px;border:1px solid #dcdcdc;border-radius:999px;background:#fff;font-size:12px;font-weight:600;color:#141414;">
+            <svg width="13" height="15" viewBox="0 0 14 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M7 1.2c.6 2.6-2.9 3.9-2.9 7a3.4 3.4 0 0 0 6.8 0c0-1.4-.7-2.4-1.3-3.3-.5 1-1.1 1.4-1.1 1.4C8.9 4.4 8.6 2.4 7 1.2Z"></path></svg>4
+          </span>
+          <button type="button" aria-label="Settings" onClick="{{ jump.settings }}" style="display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;border:none;background:transparent;color:#6b6b6b;cursor:pointer;padding:0;">
+            <svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="10" cy="10" r="2.6"></circle><path d="M10 1.8v2.4M10 15.8v2.4M18.2 10h-2.4M4.2 10H1.8M15.8 4.2l-1.7 1.7M5.9 14.1l-1.7 1.7M15.8 15.8l-1.7-1.7M5.9 5.9 4.2 4.2"></path></svg>
+          </button>
+        </div>
+        <div style="margin:14px 18px 0;padding:16px;background:#fff;border:1px solid #dcdcdc;border-radius:16px;">
+          <p style="margin:0 0 12px;font-size:10.5px;font-weight:600;letter-spacing:0.09em;text-transform:uppercase;color:#8f8f8d;">Today’s Recall</p>
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:10px;" aria-label="Today's goal 1 of 3">
+            <span style="position:relative;display:inline-flex;align-items:center;justify-content:center;flex:none;">
+              <svg width="64" height="64" viewBox="0 0 64 64" aria-hidden="true">
+                <circle cx="32" cy="32" r="26" fill="none" stroke="#dcdcdc" stroke-width="5"></circle>
+                <circle cx="32" cy="32" r="26" fill="none" stroke="#0e7569" stroke-width="5" stroke-dasharray="54.45 163.36" stroke-linecap="round" transform="rotate(-90 32 32)"></circle>
+              </svg>
+              <span style="position:absolute;font-size:13.5px;font-weight:600;">1/3</span>
+            </span>
+            <p style="margin:0;display:flex;align-items:baseline;gap:7px;">
+              <span style="font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:30px;font-weight:500;line-height:1;">3</span>
+              <span style="font-size: 19.5px; color: #6b6b6b">revisions due</span>
+            </p>
+          </div>
+          
+          
+          <button type="button" onClick="{{ startRevision }}" style="display:flex;align-items:center;justify-content:center;width:100%;height:48px;border:none;border-radius:12px;background:#141414;color:#fff;font:inherit;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,0.28);" style-active="transform:translateY(1px);box-shadow:0 1px 0 rgba(0,0,0,0.14);">Continue revision · 2 left</button>
+        </div>
+        <p style="margin:24px 20px 10px;font-size:10.5px;font-weight:600;letter-spacing:0.09em;text-transform:uppercase;color:#8f8f8d;">Today’s path</p>
+        <div style="padding:0 18px;">
+          <sc-for list="{{ todayPath }}" as="n" hint-placeholder-count="4">
+            <div style="{{ n.nodeStyle }}">
+              <span aria-hidden="true" style="{{ n.markStyle }}">{{ n.mark }}</span>
+              <span style="{{ n.copyStyle }}">
+                <sc-if value="{{ n.isCurrent }}" hint-placeholder-val="{{ false }}">
+                  
+                  <span style="display: block; font-family: 'Fraunces','Martel Sans',Georgia,serif; font-size: 15px; font-weight: 500; line-height: 1.3">{{ n.title }}</span>
+                  <span style="display:block;margin:2px 0 0;font-size:12.5px;color:#6b6b6b;">{{ n.sub }}</span>
+                  <button type="button" onClick="{{ n.go }}" style="display:flex;align-items:center;justify-content:center;width:100%;height:44px;margin-top:12px;border:none;border-radius:12px;background:#141414;color:#fff;font:inherit;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,0.28);" style-active="transform:translateY(1px);box-shadow:0 1px 0 rgba(0,0,0,0.28);">{{ n.cta }}</button>
+                </sc-if>
+                <sc-if value="{{ n.isPlain }}" hint-placeholder-val="{{ true }}">
+                  <span style="display:flex;align-items:baseline;gap:8px;">
+                    <span style="display:block;font-size:14.5px;font-weight:500;">{{ n.title }}</span>
+                    <span style="margin-left:auto;flex:none;font-size:11.5px;color:#8f8f8d;">{{ n.meta }}</span>
+                  </span>
+                  
+                </sc-if>
+              </span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isCalendar }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Calendar" style="position:absolute;inset:0;padding:44px 0 96px;overflow:auto;background:#fff;">
+        <div style="display:flex;align-items:baseline;gap:8px;padding:6px 18px 0;">
+          <h2 style="margin:0;font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:22px;font-weight:500;">Calendar</h2>
+          <nav style="display:flex;align-items:center;gap:8px;margin-left:auto;" aria-label="Month navigation">
+            <button type="button" onClick="{{ calPrev }}" aria-label="Previous month" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;flex:none;border:1px solid #dcdcdc;background:#fff;color:#6b6b6b;font-size:13px;cursor:pointer;padding:0;">←</button>
+            <p style="margin:0;font-size:12px;color:#8f8f8d;">{{ calTitle }}</p>
+            <button type="button" onClick="{{ calNext }}" aria-label="Next month" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;flex:none;border:1px solid #dcdcdc;background:#fff;color:#6b6b6b;font-size:13px;cursor:pointer;padding:0;">→</button>
+          </nav>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin:12px 18px 0;" role="grid" aria-label="{{ calTitle }}">
+          <sc-for list="{{ calDows }}" as="d" hint-placeholder-count="7"><span role="columnheader" style="padding:2px 0 4px;text-align:center;font-size:10px;letter-spacing:0.06em;color:#8f8f8d;">{{ d.t }}</span></sc-for>
+          <sc-for list="{{ calCells }}" as="c" hint-placeholder-count="35">
+            <button type="button" onClick="{{ c.tap }}" role="gridcell" aria-label="{{ c.aria }}" style="{{ c.style }}"><span style="{{ c.numStyle }}">{{ c.num }}</span><span aria-hidden="true" style="{{ c.markStyle }}"></span></button>
+          </sc-for>
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:10px 14px;margin:12px 18px 0;" aria-label="Legend">
+          <span style="display:inline-flex;align-items:center;gap:5px;font-size:10.5px;color:#8f8f8d;"><span style="width:10px;height:10px;border-radius:3px;background:#141414;" aria-hidden="true"></span>Today</span>
+          <span style="display:inline-flex;align-items:center;gap:5px;font-size:10.5px;color:#8f8f8d;"><span style="width:12px;height:2px;border-radius:1px;background:#b45309;" aria-hidden="true"></span>Overdue</span>
+          <span style="display:inline-flex;align-items:center;gap:5px;font-size:10.5px;color:#8f8f8d;"><span style="width:12px;height:2px;border-radius:1px;background:#0e7569;" aria-hidden="true"></span>Scheduled</span>
+          <span style="display:inline-flex;align-items:center;gap:5px;font-size:10.5px;color:#8f8f8d;"><span style="width:12px;height:2px;border-radius:1px;background:#b7d6d0;" aria-hidden="true"></span>Done</span>
+          <span style="display:inline-flex;align-items:center;gap:5px;font-size:10.5px;color:#8f8f8d;"><span style="width:12px;height:2px;border-radius:1px;background:#141414;" aria-hidden="true"></span>New</span>
+        </div>
+        <sc-if value="{{ calSheetClosed }}" hint-placeholder-val="{{ true }}">
+          <div style="margin:18px 18px 0;background:#fff;border:1px solid #dcdcdc;border-radius:14px;overflow:hidden;">
+            <p style="margin:0;padding:14px 16px 8px;font-size:10.5px;font-weight:600;letter-spacing:0.09em;text-transform:uppercase;color:#8f8f8d;">{{ todayLabel }}</p>
+            <sc-for list="{{ todayRows }}" as="r" hint-placeholder-count="3">
+              <div role="button" tabindex="0" onClick="{{ r.tap }}" style="{{ r.rowStyle }}">
+                <span aria-hidden="true" style="{{ r.dotStyle }}"></span>
+                <span style="flex:1;min-width:0;">
+                  <span style="display:block;font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:15px;font-weight:500;">{{ r.title }}</span>
+                  <span style="display:block;margin-top:3px;font-size:12px;color:{{ r.metaColor }};">{{ r.meta }}</span>
+                </span>
+                <span aria-hidden="true" style="font-size:13px;color:{{ r.markColor }};">{{ r.mark }}</span>
+              </div>
+            </sc-for>
+            <button type="button" onClick="{{ jump.playground }}" style="display:flex;align-items:center;justify-content:center;gap:6px;width:100%;height:46px;border:0;border-top:1px solid #ececea;background:transparent;font:inherit;font-size:13.5px;font-weight:600;color:#141414;cursor:pointer;">Continue today’s Recall →</button>
+          </div>
+        </sc-if>
+        <p style="margin:12px 18px 0;font-size:11.5px;line-height:1.6;color:#9a9a9a;text-wrap:pretty;">Recall schedules revision for you — 1 → 3 → 7 → 15 → 30 → 60 days. With Google Calendar on in Settings, these land in your calendar too.</p>
+      </div>
+      <sc-if value="{{ calSheetOpen }}" hint-placeholder-val="{{ false }}">
+        <div onClick="{{ closeDaySheet }}" style="position:absolute;inset:0 0 84px 0;z-index:29;"></div>
+        <div style="position:absolute;left:0;right:0;bottom:84px;z-index:30;max-height:52%;overflow:auto;padding:8px 0 12px;background:#fff;border-radius:22px 22px 0 0;box-shadow:0 -10px 40px rgba(20,20,20,0.18);animation:rcSheet 0.28s ease both;">
+          <span style="display:block;width:36px;height:4px;margin:6px auto 8px;border-radius:2px;background:#dcdcdc;" aria-hidden="true"></span>
+          <p style="margin:0;padding:6px 18px 8px;font-size:10.5px;font-weight:600;letter-spacing:0.09em;text-transform:uppercase;color:#8f8f8d;">{{ daySheetLabel }}</p>
+          <sc-if value="{{ dayHasRows }}" hint-placeholder-val="{{ true }}">
+            <sc-for list="{{ dayRows }}" as="r" hint-placeholder-count="2">
+              <div role="button" tabindex="0" onClick="{{ r.tap }}" style="{{ r.rowStyle }}">
+                <span aria-hidden="true" style="{{ r.dotStyle }}"></span>
+                <span style="flex:1;min-width:0;">
+                  <span style="display:block;font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:15px;font-weight:500;">{{ r.title }}</span>
+                  <span style="display:block;margin-top:3px;font-size:12px;color:{{ r.metaColor }};">{{ r.meta }}</span>
+                </span>
+                <span aria-hidden="true" style="font-size:13px;color:{{ r.markColor }};">{{ r.mark }}</span>
+              </div>
+            </sc-for>
+          </sc-if>
+          <sc-if value="{{ dayEmpty }}" hint-placeholder-val="{{ false }}">
+            <p style="margin:0;padding:0 18px 8px;font-size:13.5px;color:#6b6b6b;">No revision falls on this day.</p>
+          </sc-if>
+        </div>
+      </sc-if>
+    </sc-if>
+
+    <sc-if value="{{ lnMode }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Learn mode" style="position:absolute;inset:0;z-index:45;display:flex;flex-direction:column;padding-top:44px;background:#fff;">
+        <div style="display:flex;align-items:center;gap:8px;padding:2px 12px 8px;">
+          <button type="button" onClick="{{ exitLearn }}" aria-label="Exit Recall" style="display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border:none;background:transparent;font-size:16px;color:#141414;cursor:pointer;padding:0;">✕</button>
+          <div style="display:flex;flex:1;align-items:center;gap:6px;" aria-hidden="true">
+            <sc-for list="{{ steps }}" as="st" hint-placeholder-count="6"><span style="{{ st.style }}"></span></sc-for>
+          </div>
+          <span style="flex:0 0 auto;font-size:12px;font-weight:600;color:#8f8f8d;">{{ stepLabel }}</span>
+          <button type="button" aria-label="How to use this mode" style="display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;border:1px solid #dcdcdc;border-radius:50%;background:transparent;font-size:13px;font-weight:600;color:#8f8f8d;cursor:pointer;padding:0;">?</button>
+        </div>
+        <div style="padding:0 18px;">
+          <p style="display:flex;align-items:baseline;gap:5px;margin:0 0 4px;font-size:10.5px;font-weight:600;letter-spacing:0.09em;text-transform:uppercase;color:#8f8f8d;">{{ modeEyebrow }}<span style="margin-left:auto;display:inline-flex;align-items:center;height:18px;padding:0 7px;border:1px solid #dcdcdc;border-radius:9px;font-size:9px;letter-spacing:0.08em;color:#8f8f8d;white-space:nowrap;">VERBATIM BARE ACT</span></p>
+          <h2 style="margin:0 0 16px;font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:22px;font-weight:500;line-height:1.25;text-wrap:pretty;">{{ modeTask }}</h2>
+        </div>
+        <div style="flex:1;overflow:auto;padding:0 18px 130px;">
+          <sc-if value="{{ mRead }}" hint-placeholder-val="{{ true }}">
+            <article style="margin:0;font-size:19px;line-height:1.7;color:#141414;">{{ unitText }}</article>
+          </sc-if>
+          <sc-if value="{{ mCloze }}" hint-placeholder-val="{{ false }}">
+            <div style="display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 0 16px;" role="group" aria-label="Cloze density">
+              <span style="font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:#6b6b6b;margin-right:4px;">Density</span>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;">
+                <button type="button" onClick="{{ setDensityLight }}" style="{{ densityLightStyle }}">Light</button>
+                <button type="button" onClick="{{ setDensityMedium }}" style="{{ densityMediumStyle }}">Medium</button>
+                <button type="button" onClick="{{ setDensityHeavy }}" style="{{ densityHeavyStyle }}">Heavy</button>
+              </div>
+            </div>
+            <p style="margin:0;font-family:'Fraunces','Martel Sans',Georgia,serif;font-weight:400;font-size:20px;line-height:2.2;color:#141414;text-wrap:pretty;" aria-live="polite"><sc-for list="{{ clozeWords }}" as="w" hint-placeholder-count="12"><span tabindex="{{ w.tab }}" onClick="{{ w.tap }}" style="{{ w.style }}">{{ w.text }}</span>{{ w.sp }}</sc-for></p>
+          </sc-if>
+          <sc-if value="{{ mLetters }}" hint-placeholder-val="{{ false }}">
+            <div style="display:inline-flex;width:fit-content;margin:0 0 16px;border:1px solid #dcdcdc;border-radius:999px;overflow:hidden;" role="group" aria-label="Letters practice style">
+              <button type="button" onClick="{{ setLettersVoice }}" style="{{ lettersVoiceBtnStyle }}">Speak it</button>
+              <button type="button" onClick="{{ setLettersPlain }}" style="{{ lettersPlainBtnStyle }}">Just read</button>
+            </div>
+            <p style="{{ lettersTextStyle }}"><sc-for list="{{ lettersWords }}" as="lw" hint-placeholder-count="12"><span style="{{ lw.style }}">{{ lw.text }}</span>{{ lw.sp }}</sc-for></p>
+            <sc-if value="{{ lettersStatusOn }}" hint-placeholder-val="{{ false }}">
+              <p style="margin:12px 0 0;font-size:13px;color:{{ lettersStatusColor }};font-weight:{{ lettersStatusWeight }};" role="status">{{ lettersStatus }}</p>
+            </sc-if>
+            <div style="display:flex;align-items:center;gap:10px;margin-top:14px;">
+              <button type="button" onClick="{{ toggleFull }}" style="border:0;padding:0;background:transparent;font:inherit;font-size:13.5px;font-weight:600;color:#8f8f8d;cursor:pointer;">{{ lettersBtnLabel }}</button>
+            </div>
+          </sc-if>
+          <sc-if value="{{ mType }}" hint-placeholder-val="{{ false }}">
+            <div style="display:grid;box-sizing:border-box;width:100%;border:1px solid #141414;background:#fff;">
+              <div aria-hidden="true" style="grid-area:1/1;box-sizing:border-box;width:100%;min-height:100px;margin:0;padding:14px;border:0;font-family:'Source Sans 3','Segoe UI',sans-serif;font-size:16px;font-weight:400;line-height:26px;letter-spacing:normal;white-space:pre-wrap;overflow-wrap:break-word;text-align:left;position:relative;pointer-events:none;user-select:none;color:#141414;"><sc-for list="{{ typedWords }}" as="tw" hint-placeholder-count="3"><span style="{{ tw.style }}">{{ tw.text }}</span>{{ tw.sp }}</sc-for></div>
+              <textarea rows="4" placeholder="Start typing…" autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck="false" value="{{ typed }}" onChange="{{ onType }}" aria-label="Type the Bare Act text from memory" style="grid-area:1/1;box-sizing:border-box;width:100%;min-height:100px;margin:0;padding:14px;border:0;font-family:'Source Sans 3','Segoe UI',sans-serif;font-size:16px;font-weight:400;line-height:26px;letter-spacing:normal;white-space:pre-wrap;overflow-wrap:break-word;text-align:left;position:relative;display:block;height:100%;resize:none;overflow:hidden;background:transparent;color:transparent;-webkit-text-fill-color:transparent;caret-color:#141414;outline:none;"></textarea>
+            </div>
+            <p style="margin:6px 0 0;font-size:13px;color:#6b6b6b;">{{ typeStats }}</p>
+            <sc-if value="{{ typeChecked }}" hint-placeholder-val="{{ false }}">
+              <div style="{{ typeResultStyle }}">
+                <p style="display:flex;align-items:baseline;gap:10px;margin:0;">
+                  <span style="font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:34px;font-weight:500;line-height:1;color:{{ typeScoreColor }};">{{ typeScoreNum }}</span>
+                  <span style="font-size:20px;color:#8f8f8d;">/ {{ typeScoreOf }}</span>
+                  <span style="font-size:13.5px;">{{ typeScoreLabel }}</span>
+                </p>
+              </div>
+            </sc-if>
+          </sc-if>
+          <sc-if value="{{ mRecite }}" hint-placeholder-val="{{ false }}">
+            <p style="{{ reciteTextStyle }}">{{ unitText }}</p>
+            <div style="display:flex;align-items:flex-end;justify-content:center;gap:5px;height:62px;margin:14px 0 4px;" aria-hidden="true">
+              <sc-for list="{{ reciteBars }}" as="b" hint-placeholder-count="12"><span style="{{ b.style }}"></span></sc-for>
+            </div>
+            <sc-if value="{{ reciting }}" hint-placeholder-val="{{ false }}">
+              <p style="margin:0;font-size:13px;font-weight:600;color:#141414;text-align:center;" role="status">Listening… speak the Bare Act aloud.</p>
+            </sc-if>
+            <div style="display:flex;align-items:center;gap:10px;margin-top:14px;">
+              <button type="button" onMouseDown="{{ peekOn }}" onMouseUp="{{ peekOff }}" onMouseLeave="{{ peekOff }}" onTouchStart="{{ peekOn }}" onTouchEnd="{{ peekOff }}" style="background:none;border:1px solid #c9c9c7;padding:8px 14px;font:inherit;font-size:13.5px;font-weight:600;color:#141414;cursor:pointer;user-select:none;touch-action:none;">Hold to peek</button>
+            </div>
+            <sc-if value="{{ reciteDone }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:18px;font-size:18px;line-height:1.8;" aria-live="polite"><sc-for list="{{ mapWords }}" as="mw" hint-placeholder-count="12"><span style="{{ mw.style }}">{{ mw.text }}</span>{{ mw.sp }}</sc-for></div>
+              <p style="margin:8px 0 0;font-size:13px;color:#6b6b6b;">{{ reciteStats }}</p>
+              <p style="margin:6px 0 0;font-size:14px;line-height:1.5;color:#6b6b6b;">{{ reciteTranscript }}</p>
+            </sc-if>
+          </sc-if>
+          <sc-if value="{{ mTest }}" hint-placeholder-val="{{ false }}">
+            <p style="margin:0 0 14px;font-size:12.5px;color:#8f8f8d;">Quick check — 2 questions on Section 8 · new questions every revision</p>
+            <p style="margin:0 0 16px;font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:19px;font-weight:400;line-height:1.5;text-wrap:pretty;">Section 8 prohibits the cultivation of which of these?</p>
+            <sc-for list="{{ testOpts }}" as="o" hint-placeholder-count="3">
+              <div role="radio" aria-checked="{{ o.aria }}" tabindex="0" onClick="{{ o.pick }}" style="{{ o.style }}">
+                <span style="flex:1;">{{ o.text }}</span>
+                <span style="flex:0 0 auto;font-weight:700;">{{ o.mark }}</span>
+              </div>
+            </sc-for>
+            <p style="margin:24px 0 0;font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:19px;font-weight:400;line-height:1.5;text-wrap:pretty;">“No person shall … possess, sell, purchase, transport, ______, use, consume …”</p>
+            <input type="text" value="{{ testFill }}" onChange="{{ onTestFill }}" placeholder="Missing word…" autoComplete="off" autoCorrect="off" autoCapitalize="off" spellCheck="false" aria-label="Missing word" style="box-sizing:border-box;width:100%;max-width:320px;margin-top:10px;padding:8px 10px;font:inherit;font-size:16px;color:#141414;background:#fff;border:1px solid #141414;">
+            <sc-if value="{{ testChecked }}" hint-placeholder-val="{{ false }}">
+              <p style="{{ q2VerdictStyle }}">{{ q2Verdict }}</p>
+              <div style="{{ testScoreStyle }}" aria-live="polite">{{ testScore }}</div>
+            </sc-if>
+          </sc-if>
+        </div>
+        <sc-if value="{{ navVisible }}" hint-placeholder-val="{{ true }}">
+          <div style="position:absolute;left:0;right:0;bottom:0;z-index:25;display:flex;align-items:center;gap:9px;padding:12px 16px 20px;background:#fff;border-top:1px solid #dcdcdc;">
+            <sc-if value="{{ mCloze }}" hint-placeholder-val="{{ false }}">
+              <button type="button" onClick="{{ revealAll }}" style="display:block;flex:0 1 auto;min-width:0;height:48px;padding:0 14px;border:1px solid #c9c9c7;border-radius:12px;background:#fff;font:inherit;font-size:13.5px;font-weight:600;color:#141414;cursor:pointer;white-space:nowrap;">{{ revealAllLabel }}</button>
+              <span style="flex:0 1 auto;min-width:0;font-size:12.5px;color:#6b6b6b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ clozeStatus }}</span>
+            </sc-if>
+            <sc-if value="{{ showNextBtn }}" hint-placeholder-val="{{ true }}">
+              <button type="button" onClick="{{ nextMode }}" disabled="{{ nextDisabled }}" style="{{ nextBtnStyle }}" style-active="transform:translateY(1px);box-shadow:0 1px 0 rgba(0,0,0,0.14);">{{ nextLabel }}</button>
+            </sc-if>
+            <sc-if value="{{ soloLetters }}" hint-placeholder-val="{{ false }}">
+              <button type="button" onClick="{{ lettersSoloTap }}" style="{{ soloBtnStyle }}" style-active="transform:translateY(1px);box-shadow:0 1px 0 rgba(0,0,0,0.14);">{{ lettersSoloLabel }}</button>
+            </sc-if>
+            <sc-if value="{{ soloType }}" hint-placeholder-val="{{ false }}">
+              <button type="button" onClick="{{ typeSoloTap }}" style="{{ soloBtnStyle }}" style-active="transform:translateY(1px);box-shadow:0 1px 0 rgba(0,0,0,0.14);">{{ typeSoloLabel }}</button>
+            </sc-if>
+            <sc-if value="{{ soloRecite }}" hint-placeholder-val="{{ false }}">
+              <button type="button" onClick="{{ reciteSoloTap }}" style="{{ reciteSoloStyle }}" style-active="transform:translateY(1px);box-shadow:0 1px 0 rgba(0,0,0,0.14);">{{ reciteSoloLabel }}</button>
+            </sc-if>
+            <sc-if value="{{ soloTest }}" hint-placeholder-val="{{ false }}">
+              <button type="button" onClick="{{ testSoloTap }}" style="{{ soloBtnStyle }}" style-active="transform:translateY(1px);box-shadow:0 1px 0 rgba(0,0,0,0.14);">{{ testSoloLabel }}</button>
+            </sc-if>
+          </div>
+        </sc-if>
+        <sc-if value="{{ hasFb }}" hint-placeholder-val="{{ false }}">
+          <div style="{{ fbStyle }}" aria-live="polite">
+            <p style="margin:0;font-size:16px;font-weight:600;line-height:1.35;text-wrap:pretty;">{{ fbMsg }}</p>
+            <p style="margin:4px 0 0;font-size:13px;line-height:1.45;">{{ fbSub }}</p>
+            <button type="button" onClick="{{ fbGo }}" style="{{ fbGoStyle }}" style-active="transform:translateY(1px);box-shadow:0 1px 0 rgba(0,0,0,0.22);">Continue</button>
+          </div>
+        </sc-if>
+      </div>
+    </sc-if>
+
+    <div style="position:absolute;left:0;right:0;bottom:0;z-index:40;display:flex;padding:6px 8px 22px;background:rgba(255,255,255,0.94);border-top:1px solid #dcdcdc;backdrop-filter:blur(8px);">
+      <button type="button" onClick="{{ jump.today }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 0 2px;border:none;background:transparent;font:inherit;font-size:10.5px;font-weight:600;color:{{ tabTodayColor }};cursor:pointer;">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M3 9.4 10 3l7 6.4V17h-4.6v-4.6H7.6V17H3V9.4Z"></path></svg>
+        Today
+      </button>
+      <button type="button" onClick="{{ jump.ndps }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 0 2px;border:none;background:transparent;font:inherit;font-size:10.5px;font-weight:600;color:{{ tabBrowseColor }};cursor:pointer;">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><path d="M10 4.2C8.6 3 6.8 2.6 4.6 2.6c-.9 0-1.6.1-1.6.1v13s.7-.1 1.6-.1c2.2 0 4 .4 5.4 1.6 1.4-1.2 3.2-1.6 5.4-1.6.9 0 1.6.1 1.6.1v-13s-.7-.1-1.6-.1c-2.2 0-4 .4-5.4 1.6Zm0 0v13"></path></svg>
+        Browse
+      </button>
+      <button type="button" onClick="{{ jump.playground }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 0 2px;border:none;background:transparent;font:inherit;font-size:10.5px;font-weight:600;color:{{ tabPlaygroundColor }};cursor:pointer;">
+        <span aria-hidden="true" style="display:inline-block;width:20px;height:20px;background:currentColor;-webkit-mask:url('uploads/noun_GeodesicDome_11999.svg') center/contain no-repeat;mask:url('uploads/noun_GeodesicDome_11999.svg') center/contain no-repeat;"></span>
+        Playground
+      </button>
+      <button type="button" onClick="{{ jump.calendar }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 0 2px;border:none;background:transparent;font:inherit;font-size:10.5px;font-weight:600;color:{{ tabCalendarColor }};cursor:pointer;">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><rect x="2.6" y="4" width="14.8" height="13" rx="2"></rect><path d="M2.6 8.2h14.8M6.6 2.2v3M13.4 2.2v3"></path></svg>
+        Calendar
+      </button>
+      <button type="button" onClick="{{ jump.profile }}" style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 0 2px;border:none;background:transparent;font:inherit;font-size:10.5px;font-weight:600;color:{{ tabProfileColor }};cursor:pointer;">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="6.6" r="3.4"></circle><path d="M3.4 17.4c.8-3.1 3.4-4.8 6.6-4.8s5.8 1.7 6.6 4.8"></path></svg>
+        Profile
+      </button>
+    </div>
+
+    <sc-if value="{{ sheetAdd }}" hint-placeholder-val="{{ false }}">
+      <div style="position:absolute;inset:0;z-index:60;">
+        <div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgba(20,20,20,0.35);animation:rcFade 0.2s ease both;"></div>
+        <div style="position:absolute;left:0;right:0;bottom:0;padding:18px 18px 30px;background:#fff;border-radius:22px 22px 0 0;box-shadow:0 -10px 40px rgba(20,20,20,0.18);animation:rcSheet 0.28s ease both;">
+          <span style="display:block;width:36px;height:4px;margin:0 auto 14px;border-radius:2px;background:#dcdcdc;"></span>
+          <p style="margin:0 0 2px;font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:19px;font-weight:500;">Add to Playground</p>
+          <sc-if value="{{ sheetConfirm }}" hint-placeholder-val="{{ false }}">
+            <p style="margin:0 0 6px;font-size:13px;line-height:1.55;color:#6b6b6b;text-wrap:pretty;">{{ sheetActName }} joins this month’s Playground — learnable, verbatim. The reader itself never changes.</p>
+            <p style="margin:0 0 16px;font-size:13.5px;font-weight:600;line-height:1.5;">{{ sheetConfirmLine }}</p>
+            <button type="button" onClick="{{ sheetConfirmTap }}" style="display:flex;align-items:center;justify-content:center;width:100%;height:50px;border:none;border-radius:12px;background:#141414;color:#fff;font:inherit;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,0.28);" style-active="transform:translateY(1px);">Add to Playground</button>
+            <p style="margin:12px 0 0;text-align:center;font-size:11.5px;line-height:1.5;color:#9a9a9a;">Already yours this month — reopening it never uses another space.</p>
+          </sc-if>
+          <sc-if value="{{ sheetOptions }}" hint-placeholder-val="{{ true }}">
+            <p style="margin:0 0 14px;font-size:13px;line-height:1.55;color:#6b6b6b;text-wrap:pretty;">Choose how much of {{ sheetActName }} enters your recall schedule.</p>
+            <div role="button" tabindex="0" onClick="{{ addEntireAct }}" style="display:flex;align-items:center;gap:12px;padding:13px 14px;margin-bottom:9px;border:1.5px solid #141414;border-radius:14px;cursor:pointer;" style-hover="background:#fafaf9;">
+              <span style="flex:1;display:flex;flex-direction:column;gap:1px;"><span style="font-size:15px;font-weight:600;">Entire Act</span><span style="font-size:12.5px;color:#6b6b6b;">{{ sheetActMeta }}</span></span>
+              <span style="font-size:15px;color:#9a9a9a;">›</span>
+            </div>
+            <div role="button" tabindex="0" onClick="{{ goPicker }}" style="display:flex;align-items:center;gap:12px;padding:13px 14px;border:1px solid #dcdcdc;border-radius:14px;cursor:pointer;" style-hover="background:#fafaf9;">
+              <span style="flex:1;display:flex;flex-direction:column;gap:1px;"><span style="font-size:15px;font-weight:600;">Choose sections</span><span style="font-size:12.5px;color:#6b6b6b;">Pick sections — or open one and pick single clauses</span></span>
+              <span style="font-size:15px;color:#9a9a9a;">›</span>
+            </div>
+            <p style="margin:12px 0 0;font-size:11.5px;line-height:1.55;color:#9a9a9a;">Nothing is scheduled yet — provisions activate the first time you learn them.</p>
+          </sc-if>
+          <sc-if value="{{ sheetSignIn }}" hint-placeholder-val="{{ false }}">
+            <p style="margin:0 0 16px;font-size:13px;line-height:1.55;color:#6b6b6b;text-wrap:pretty;">Playground needs an account. Reading {{ sheetActName }} stays free — sign in and you’ll come right back here.</p>
+            <button type="button" style="display:flex;align-items:center;justify-content:center;width:100%;height:50px;border:none;border-radius:12px;background:#141414;color:#fff;font:inherit;font-size:15px;font-weight:600;cursor:pointer;" style-active="transform:translateY(1px);">Sign in</button>
+            <button type="button" style="display:flex;align-items:center;justify-content:center;width:100%;height:46px;margin-top:9px;border:1px solid #dcdcdc;border-radius:12px;background:#fff;font:inherit;font-size:14.5px;font-weight:600;color:#141414;cursor:pointer;" style-hover="background:#fafaf9;">Create an account</button>
+          </sc-if>
+          <sc-if value="{{ sheetSubscribe }}" hint-placeholder-val="{{ false }}">
+            <p style="margin:0 0 16px;font-size:13px;line-height:1.55;color:#6b6b6b;text-wrap:pretty;">Turning {{ sheetActName }} into a learning experience needs a plan. Reading it stays free.</p>
+            <button type="button" onClick="{{ goGate }}" style="display:flex;align-items:center;justify-content:center;width:100%;height:50px;border:none;border-radius:12px;background:#141414;color:#fff;font:inherit;font-size:15px;font-weight:600;cursor:pointer;" style-active="transform:translateY(1px);">Unlock Playground</button>
+            <p style="margin:12px 0 0;text-align:center;font-size:11.5px;line-height:1.5;color:#9a9a9a;">Core · Deep · Infinite — from ₹149 / month. Constitution learning stays free.</p>
+          </sc-if>
+          <sc-if value="{{ sheetLimit }}" hint-placeholder-val="{{ false }}">
+            <p style="margin:0 0 6px;font-size:14.5px;font-weight:600;line-height:1.45;text-wrap:pretty;">{{ sheetLimitTitle }}</p>
+            <p style="margin:0 0 16px;font-size:13px;line-height:1.55;color:#6b6b6b;text-wrap:pretty;">New spaces open 12 September, when your next Playground month starts. Every law already in your Playground stays fully learnable and revisable.</p>
+            <sc-for list="{{ sheetUpgrades }}" as="u" hint-placeholder-count="2">
+              <button type="button" onClick="{{ u.tap }}" style="display:flex;align-items:center;justify-content:center;width:100%;height:48px;margin-bottom:9px;border:none;border-radius:12px;background:#141414;color:#fff;font:inherit;font-size:14.5px;font-weight:600;cursor:pointer;" style-active="transform:translateY(1px);">{{ u.label }}</button>
+            </sc-for>
+          </sc-if>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isGate }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Playground gate" style="position:absolute;inset:0;padding:44px 0 96px;overflow:auto;background:#fff;">
+        <div style="padding:14px 22px 40px;">
+          <sc-if value="{{ gateGuest }}" hint-placeholder-val="{{ false }}">
+            <p style="margin:0 0 6px;font-size:10.5px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:#0e7569;">Playground</p>
+            <h2 style="margin:0 0 8px;font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:26px;font-weight:500;line-height:1.12;text-wrap:balance;">Sign in to use Playground</h2>
+            <p style="margin:0 0 20px;font-size:13.5px;line-height:1.55;color:#6b6b6b;text-wrap:pretty;">Turns any Act into a learning experience. Sign in to view plans.</p>
+            <div style="display:flex;flex-direction:column;gap:13px;margin-bottom:22px;">
+              <sc-for list="{{ gateBullets }}" as="b" hint-placeholder-count="3">
+                <div style="display:flex;gap:11px;">
+                  <span style="display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#e7f1ef;color:#0e7569;flex:none;margin-top:1px;"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6.5 4.8 9.2 10 3.2"></path></svg></span>
+                  <span style="display:flex;flex-direction:column;gap:1px;"><span style="font-size:14px;font-weight:600;">{{ b.t }}</span><span style="font-size:12.5px;line-height:1.5;color:#6b6b6b;">{{ b.d }}</span></span>
+                </div>
+              </sc-for>
+            </div>
+            <button type="button" style="display:flex;align-items:center;justify-content:center;width:100%;height:50px;border:none;border-radius:12px;background:#141414;color:#fff;font:inherit;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,0.28);" style-active="transform:translateY(1px);">Sign in</button>
+            <button type="button" style="display:flex;align-items:center;justify-content:center;width:100%;height:46px;margin-top:9px;border:1px solid #dcdcdc;border-radius:12px;background:#fff;font:inherit;font-size:14.5px;font-weight:600;color:#141414;cursor:pointer;" style-hover="background:#fafaf9;">Create an account</button>
+            <p style="margin:12px 0 0;text-align:center;font-size:11.5px;line-height:1.55;color:#9a9a9a;text-wrap:pretty;">Signing in also unlocks the full Constitution learning experience, free. Reading the Bare Acts stays free for everyone.</p>
+          </sc-if>
+          <sc-if value="{{ gateTiers }}" hint-placeholder-val="{{ false }}">
+            <p style="margin:0 0 6px;font-size:10.5px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:#0e7569;">{{ gateEyebrow }}</p>
+            <h2 style="margin:0 0 8px;font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:26px;font-weight:500;line-height:1.12;text-wrap:balance;">{{ gateTitle }}</h2>
+            <p style="margin:0 0 16px;font-size:13.5px;line-height:1.55;color:#6b6b6b;text-wrap:pretty;">{{ gateSub }}</p>
+            <div role="radiogroup" aria-label="Plan" style="display:flex;gap:7px;">
+              <sc-for list="{{ gatePills }}" as="p" hint-placeholder-count="3">
+                <span role="radio" tabindex="0" onClick="{{ p.tap }}" style="{{ p.style }}">
+                  <span style="font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:19px;font-weight:600;line-height:1;">{{ p.name }}</span>
+                  <span style="font-size:9.5px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;opacity:0.65;white-space:nowrap;">{{ p.sub }}</span>
+                </span>
+              </sc-for>
+            </div>
+            <div style="margin-top:16px;border:1.5px solid #141414;border-radius:16px;overflow:hidden;">
+              <div style="padding:18px;background:#fafaf9;border-bottom:1px solid #ececea;">
+                <p style="margin:0 0 4px;font-size:10.5px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#8f8f8d;">{{ gateTierName }}</p>
+                <p style="margin:0;font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:44px;font-weight:600;line-height:1;letter-spacing:-0.02em;">{{ gatePrice }}<span style="font-size:15px;font-weight:500;letter-spacing:0;color:#6b6b6b;"> / month</span></p>
+                <p style="margin:8px 0 0;font-size:13px;color:#6b6b6b;">{{ gatePer }}</p>
+              </div>
+              <div style="padding:18px;">
+                <p style="margin:0 0 14px;font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:16.5px;line-height:1.45;font-weight:500;text-wrap:pretty;">{{ gateTag }}</p>
+                <button type="button" style="display:flex;align-items:center;justify-content:center;width:100%;height:50px;border:none;border-radius:12px;background:#141414;color:#fff;font:inherit;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,0.28);" style-active="transform:translateY(1px);">{{ gateCta }}</button>
+                <p style="margin:10px 0 0;font-size:12px;color:#9a9a9a;">Renews monthly until you cancel. Your Playground progress is never deleted.</p>
+              </div>
+            </div>
+            <p style="margin:12px 0 0;font-size:12px;line-height:1.55;color:#9a9a9a;text-wrap:pretty;">The plan only sets how many laws can be active in your Playground each month. Your Playground month follows the month you subscribed in: subscribe on 12 August and it runs 12 Aug – 11 Sep, the next from 12 Sep. Laws already in your Playground keep working, and your progress is never deleted.</p>
+            <div style="margin-top:22px;padding:16px 17px;background:#fafaf9;border:1px solid #dcdcdc;border-radius:14px;">
+              <p style="margin:0 0 6px;font-size:10.5px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#0e7569;">Included with your account</p>
+              <p style="margin:0 0 4px;font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:17px;font-weight:500;">The complete Constitution</p>
+              <p style="margin:0;font-size:13px;line-height:1.55;color:#6b6b6b;">Every Article · All six recall methods · Free.</p>
+            </div>
+          </sc-if>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isRollover }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="October roster" style="position:absolute;inset:0;padding:44px 0 0;overflow:auto;background:#ececea;">
+        <div style="padding:2px 18px 0;">
+          <button type="button" onClick="{{ goPlayground }}" style="display:inline-flex;align-items:center;height:44px;border:none;background:transparent;font:inherit;font-size:13px;color:#6b6b6b;cursor:pointer;padding:0;">← Playground</button>
+          <h2 style="margin:0 0 6px;font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:24px;font-weight:500;line-height:1.15;">Your next Playground month</h2>
+          <p style="margin:0 0 14px;font-size:13px;line-height:1.55;color:#6b6b6b;text-wrap:pretty;">Starts 12 September — the day your subscription began. Continue with these laws, or make room for something new.</p>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px;padding:0 14px 170px;">
+          <sc-for list="{{ rollRows }}" as="rr" hint-placeholder-count="2">
+            <div style="display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #dcdcdc;border-radius:14px;padding:14px 15px;">
+              <span style="flex:1;display:flex;flex-direction:column;gap:2px;"><span style="font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:16px;font-weight:500;">{{ rr.name }}</span><span style="font-size:12px;color:#6b6b6b;">{{ rr.meta }}</span><span style="font-size:11.5px;color:#8f8f8d;">{{ rr.sub }}</span></span>
+              <button type="button" onClick="{{ rr.tap }}" style="{{ rr.toggleStyle }}">{{ rr.toggleLabel }}</button>
+            </div>
+          </sc-for>
+          <p style="margin:8px 4px 2px;font-size:10.5px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#8f8f8d;">Previously in Playground</p>
+          <div style="display:flex;align-items:center;gap:12px;background:#fafaf9;border:1px dashed #c9c9c7;border-radius:14px;padding:14px 15px;">
+            <span style="flex:1;display:flex;flex-direction:column;gap:2px;"><span style="font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:16px;font-weight:500;color:#3a3a38;">RTI Act</span><span style="font-size:12px;color:#6b6b6b;">36% learned · Progress saved</span></span>
+            <button type="button" style="height:32px;padding:0 12px;border:1px solid #dcdcdc;border-radius:9px;background:#fff;font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;flex:none;" style-hover="background:#fafaf9;">Add to this month</button>
+          </div>
+          <p style="margin:6px 4px 0;font-size:11.5px;line-height:1.55;color:#9a9a9a;text-wrap:pretty;">Removing a law won’t restore a space this month, and never deletes progress — everything is saved for whenever it returns.</p>
+        </div>
+        <div style="position:absolute;left:0;right:0;bottom:0;padding:12px 18px 28px;border-top:1px solid #dcdcdc;background:rgba(255,255,255,0.95);backdrop-filter:blur(8px);">
+          <p style="margin:0 0 10px;font-size:12px;font-weight:600;text-align:center;">{{ rollCount }}</p>
+          <button type="button" onClick="{{ rollDone }}" style="display:flex;align-items:center;justify-content:center;width:100%;height:50px;border:none;border-radius:12px;background:#141414;color:#fff;font:inherit;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,0.28);" style-active="transform:translateY(1px);">Continue with these</button>
+          <button type="button" onClick="{{ jump.ndps }}" style="display:flex;align-items:center;justify-content:center;width:100%;height:44px;margin-top:8px;border:1px solid #dcdcdc;border-radius:12px;background:#fff;font:inherit;font-size:14px;font-weight:600;cursor:pointer;" style-hover="background:#fafaf9;">Add more laws</button>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Settings" style="position:absolute;inset:0;z-index:44;padding:44px 0 0;overflow:auto;background:#ececea;">
+        <div style="padding:2px 18px 40px;">
+          <button type="button" onClick="{{ jump.today }}" style="display:inline-flex;align-items:center;height:44px;border:none;background:transparent;font:inherit;font-size:13px;color:#6b6b6b;cursor:pointer;padding:0;">← Today</button>
+          <h2 style="margin:0 0 12px;font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:23px;font-weight:500;">Settings</h2>
+          <button type="button" onClick="{{ jump.profile }}" style="display:flex;align-items:center;gap:12px;width:100%;padding:12px 14px;background:#fff;border:1px solid #dcdcdc;border-radius:14px;font:inherit;text-align:left;color:inherit;cursor:pointer;">
+            <span style="{{ profBadgeStyle }}">{{ profBadge }}</span>
+            <span style="flex:1;min-width:0;"><span style="display:block;font-size:15px;font-weight:600;">{{ profName }}</span><span style="display:block;margin-top:1px;font-size:12px;color:#8f8f8d;">{{ stStatusLine }}</span></span>
+            <sc-if value="{{ profIsGuest }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;font-weight:600;color:#0e7569;">Sign in</span></sc-if>
+            <sc-if value="{{ profNotGuest }}" hint-placeholder-val="{{ true }}"><span aria-hidden="true" style="font-size:15px;color:#9a9a9a;">›</span></sc-if>
+          </button>
+          <p style="margin:10px 2px 0;font-size:12.5px;line-height:1.55;color:#6b6b6b;">Appearance, your learning plan, and your revision calendar.</p>
+
+          <sc-if value="{{ profNotGuest }}" hint-placeholder-val="{{ true }}">
+            <p style="margin:22px 2px 8px;font-size:10.5px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#8f8f8d;">Study</p>
+            <div style="background:#fff;border:1px solid #dcdcdc;border-radius:14px;overflow:hidden;">
+              <div style="display:flex;align-items:center;gap:12px;min-height:56px;padding:10px 14px;border-bottom:1px solid #ececea;">
+                <span style="flex:1;min-width:0;"><span style="display:block;font-size:14.5px;font-weight:500;">Pace</span><span style="display:block;margin-top:1px;font-size:11.5px;color:#8f8f8d;">Auto fills revision-free days.</span></span>
+                <div role="group" aria-label="Pace" style="{{ stSegWrap }}">
+                  <sc-for list="{{ stPaceOpts }}" as="o" hint-placeholder-count="2"><button type="button" onClick="{{ o.onClick }}" aria-pressed="{{ o.on }}" style="{{ o.style }}">{{ o.label }}</button></sc-for>
+                </div>
+              </div>
+              <sc-if value="{{ stCanAuto }}" hint-placeholder-val="{{ true }}">
+                <div style="{{ stTargetRowStyle }}">
+                  <span style="display:block;"><span style="display:block;font-size:14.5px;font-weight:500;">Daily target</span><span style="display:block;margin-top:1px;font-size:11.5px;color:#8f8f8d;">New clauses placed on each learning day.</span></span>
+                  <div role="group" aria-label="Daily target" style="{{ stSegWrapFull }}">
+                    <sc-for list="{{ stTargetOpts }}" as="o" hint-placeholder-count="3"><button type="button" onClick="{{ o.onClick }}" aria-pressed="{{ o.on }}" style="{{ o.style }}">{{ o.label }}</button></sc-for>
+                  </div>
+                </div>
+              </sc-if>
+              <sc-if value="{{ stPlanLocked }}" hint-placeholder-val="{{ false }}">
+                <p style="margin:0;padding:12px 14px;font-size:12.5px;line-height:1.5;color:#6b6b6b;">Part of unlocking every Article — your saved history is never deleted. <button type="button" onClick="{{ goGate }}" style="border:none;background:transparent;padding:0;font:inherit;font-size:12.5px;font-weight:600;color:#0e7569;cursor:pointer;">Unlock every Article →</button></p>
+              </sc-if>
+            </div>
+            <p style="margin:8px 2px 0;font-size:11.5px;line-height:1.5;color:#8f8f8d;">Changing the pace rebuilds future days from tomorrow — today's plan holds.</p>
+
+            <p style="margin:22px 2px 8px;font-size:10.5px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#8f8f8d;">Calendar</p>
+            <div style="background:#fff;border:1px solid #dcdcdc;border-radius:14px;overflow:hidden;">
+              <div style="display:flex;align-items:center;gap:12px;min-height:56px;padding:10px 14px;">
+                <span style="flex:1;min-width:0;"><span style="display:flex;align-items:center;gap:8px;font-size:14.5px;font-weight:500;">Google Calendar<sc-if value="{{ stGcalOn }}" hint-placeholder-val="{{ false }}"><span style="{{ stGcalBadgeStyle }}">{{ stGcalBadge }}</span></sc-if></span><span style="display:block;margin-top:1px;font-size:11.5px;color:#8f8f8d;">{{ stGcalDesc }}</span></span>
+                <button type="button" role="switch" aria-checked="{{ stGcalOn }}" aria-label="Google Calendar" onClick="{{ stGcalToggle }}" style="{{ stGcalSwitchStyle }}"><span aria-hidden="true" style="{{ stGcalKnobStyle }}"></span></button>
+              </div>
+              <sc-if value="{{ stGcalSyncError }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-top:1px solid #ececea;">
+                  <span style="flex:1;font-size:12px;line-height:1.45;color:#b42318;">Google refused the last update. Your progress is safe.</span>
+                  <button type="button" onClick="{{ stGcalRetry }}" style="height:32px;padding:0 12px;border:1px solid #dcdcdc;border-radius:9px;background:#fff;font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;">Try again</button>
+                </div>
+              </sc-if>
+            </div>
+          </sc-if>
+
+          <p style="margin:22px 2px 8px;font-size:10.5px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#8f8f8d;">App</p>
+          <div style="background:#fff;border:1px solid #dcdcdc;border-radius:14px;overflow:hidden;">
+            <div style="padding:12px 14px;border-bottom:1px solid #ececea;">
+              <span style="display:block;margin-bottom:8px;font-size:14.5px;font-weight:500;">Appearance</span>
+              <div role="group" aria-label="Theme" style="{{ stSegWrapFull }}">
+                <sc-for list="{{ stThemeOpts }}" as="o" hint-placeholder-count="3"><button type="button" onClick="{{ o.onClick }}" aria-pressed="{{ o.on }}" style="{{ o.style }}">{{ o.label }}</button></sc-for>
+              </div>
+            </div>
+            <sc-if value="{{ profNotGuest }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;align-items:center;gap:12px;min-height:56px;padding:10px 14px;border-bottom:1px solid #ececea;">
+                <span style="flex:1;min-width:0;"><span style="display:block;font-size:14.5px;font-weight:500;">Bare Act text size</span><span style="display:block;margin-top:1px;font-size:11.5px;color:#8f8f8d;">Applies to Articles and sessions</span></span>
+                <div style="display:inline-flex;align-items:center;gap:2px;border:1px solid #dcdcdc;border-radius:10px;background:#fafaf9;padding:2px;">
+                  <button type="button" onClick="{{ stTextDown }}" aria-label="Smaller text" style="width:34px;height:32px;border:none;border-radius:8px;background:transparent;font:inherit;font-size:16px;cursor:pointer;">−</button>
+                  <span style="min-width:44px;text-align:center;font-size:12.5px;font-weight:600;">{{ stTextSize }}</span>
+                  <button type="button" onClick="{{ stTextUp }}" aria-label="Larger text" style="width:34px;height:32px;border:none;border-radius:8px;background:transparent;font:inherit;font-size:16px;cursor:pointer;">+</button>
+                </div>
+              </div>
+            </sc-if>
+            <div style="display:flex;align-items:center;gap:12px;min-height:56px;padding:10px 14px;">
+              <span style="flex:1;min-width:0;"><span style="display:block;font-size:14.5px;font-weight:500;">Motion</span><span style="display:block;margin-top:1px;font-size:11.5px;color:#8f8f8d;">Transitions between cards and sessions</span></span>
+              <button type="button" role="switch" aria-checked="{{ stMotionOn }}" aria-label="Motion" onClick="{{ stMotionToggle }}" style="{{ stMotionSwitchStyle }}"><span aria-hidden="true" style="{{ stMotionKnobStyle }}"></span></button>
+            </div>
+          </div>
+
+          <p style="margin:22px 2px 8px;font-size:10.5px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#8f8f8d;">Account</p>
+          <div style="background:#fff;border:1px solid #dcdcdc;border-radius:14px;overflow:hidden;">
+            <sc-if value="{{ profNotGuest }}" hint-placeholder-val="{{ true }}">
+              <button type="button" onClick="{{ jump.profile }}" style="display:flex;align-items:center;width:100%;min-height:52px;padding:0 14px;border:none;border-bottom:1px solid #ececea;background:transparent;font:inherit;font-size:14.5px;text-align:left;color:inherit;cursor:pointer;">Profile<span style="margin-left:auto;font-size:12px;color:#8f8f8d;">{{ profName }}</span><span aria-hidden="true" style="margin-left:10px;font-size:15px;color:#9a9a9a;">›</span></button>
+            </sc-if>
+            <sc-if value="{{ profIsGuest }}" hint-placeholder-val="{{ false }}">
+              <button type="button" onClick="{{ goGate }}" style="display:flex;align-items:center;width:100%;min-height:52px;padding:0 14px;border:none;border-bottom:1px solid #ececea;background:transparent;font:inherit;font-size:14.5px;text-align:left;color:inherit;cursor:pointer;">Sign in<span aria-hidden="true" style="margin-left:auto;font-size:15px;color:#9a9a9a;">›</span></button>
+            </sc-if>
+            <div role="button" tabindex="0" style="display:flex;align-items:center;min-height:52px;padding:0 14px;font-size:14.5px;cursor:pointer;">Report an issue<span aria-hidden="true" style="margin-left:auto;font-size:15px;color:#9a9a9a;">›</span></div>
+            <sc-if value="{{ profNotGuest }}" hint-placeholder-val="{{ true }}">
+              <div role="button" tabindex="0" style="display:flex;align-items:center;min-height:52px;padding:0 14px;border-top:1px solid #ececea;font-size:14.5px;color:#b42318;cursor:pointer;">Sign out</div>
+            </sc-if>
+          </div>
+
+          <p style="margin:22px 2px 0;font-size:11px;letter-spacing:0.02em;color:#9a9a9a;text-align:center;">Bare Act text verbatim · Day 1 · 3 · 7 · 15 · 30 · 60</p>
+          <p style="margin:14px 2px 0;font-size:12px;color:#6b6b6b;text-align:center;"><span style="text-decoration:underline;">Terms &amp; Conditions</span> · <span style="text-decoration:underline;">Privacy Policy</span> · <span style="text-decoration:underline;">Grievance Redressal</span></p>
+        </div>
+      </div>
+      <sc-if value="{{ stCadenceModal }}" hint-placeholder-val="{{ false }}">
+        <div role="dialog" aria-modal="true" aria-labelledby="m-gcal-reminder-title" style="position:absolute;inset:0;z-index:60;display:flex;align-items:flex-end;background:rgba(20,20,20,0.35);">
+          <div style="width:100%;padding:8px 18px 30px;background:#fff;border-top:1px solid #dcdcdc;border-radius:22px 22px 0 0;box-shadow:0 -10px 40px rgba(20,20,20,0.18);">
+            <span aria-hidden="true" style="display:block;width:36px;height:4px;margin:6px auto 16px;border-radius:2px;background:#dcdcdc;"></span>
+            <h3 id="m-gcal-reminder-title" style="margin:0 0 8px;font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:22px;font-weight:500;line-height:1.15;">Never miss a revision</h3>
+            <p style="margin:0 0 16px;font-size:13.5px;line-height:1.55;color:#6b6b6b;text-wrap:pretty;">Your calendar is connected. How many reminders should each revision day’s event pop up? You can change this any time in Settings.</p>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <sc-for list="{{ stCadenceOpts }}" as="o" hint-placeholder-count="3">
+                <button type="button" onClick="{{ o.onClick }}" style="display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:100%;min-height:56px;padding:10px 14px;border:1px solid #dcdcdc;border-radius:12px;background:#fff;font:inherit;text-align:left;cursor:pointer;" style-active="border-color:#141414;"><span style="font-size:15px;font-weight:600;color:#141414;">{{ o.name }}</span><span style="font-size:12px;color:#6b6b6b;">{{ o.desc }}</span></button>
+              </sc-for>
+            </div>
+            <button type="button" onClick="{{ stCadenceDismiss }}" style="display:flex;align-items:center;justify-content:center;width:100%;height:44px;margin-top:8px;border:none;background:transparent;font:inherit;font-size:13.5px;color:#6b6b6b;cursor:pointer;">Maybe later — I’ll get one, 10 minutes before</button>
+          </div>
+        </div>
+      </sc-if>
+    </sc-if>
+
+    <sc-if value="{{ isProfile }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Profile" style="position:absolute;inset:0;padding:44px 0 96px;overflow:auto;background:#ececea;">
+        <div style="padding:8px 18px 24px;">
+          <h2 style="margin:0;font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:23px;font-weight:500;">Profile</h2>
+          <div style="display:flex;align-items:center;gap:12px;margin-top:14px;padding:14px 16px;background:#fff;border:1px solid #dcdcdc;border-radius:14px;">
+            <span style="{{ profBadgeStyle }}">{{ profBadge }}</span>
+            <span style="flex:1;"><span style="display:block;font-size:15px;font-weight:500;">{{ profName }}</span><span style="display:block;margin-top:1px;font-size:12px;color:#8f8f8d;">{{ profMeta }}</span></span>
+            <sc-if value="{{ profIsGuest }}" hint-placeholder-val="{{ false }}">
+              <button type="button" style="border:1px solid #dcdcdc;border-radius:10px;background:#fff;font:inherit;font-size:12.5px;font-weight:600;height:34px;padding:0 12px;cursor:pointer;" style-hover="background:#fafaf9;">Sign in</button>
+            </sc-if>
+          </div>
+          <sc-if value="{{ profIsGuest }}" hint-placeholder-val="{{ false }}">
+            <div style="margin-top:14px;padding:13px 16px;background:#fff;border:1px solid #dcdcdc;border-radius:14px;">
+              <p style="margin:0;font-size:12.5px;line-height:1.55;color:#6b6b6b;text-wrap:pretty;">Sign in to save progress.</p>
+              <button type="button" onClick="{{ jump.ndps }}" style="display:inline-flex;align-items:center;justify-content:center;height:40px;margin-top:12px;padding:0 15px;border:1px solid #dcdcdc;border-radius:11px;background:#fff;font:inherit;font-size:13px;font-weight:600;cursor:pointer;" style-hover="background:#fafaf9;">Browse the Bare Acts →</button>
+            </div>
+          </sc-if>
+          <sc-if value="{{ profHasPlan }}" hint-placeholder-val="{{ false }}">
+            <p style="margin:20px 2px 8px;font-size:10.5px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#8f8f8d;">Subscription</p>
+            <div style="background:#fff;border:1px solid #dcdcdc;border-radius:14px;padding:16px;">
+              <div style="display:flex;align-items:center;gap:8px;margin:0 0 5px;">
+                <p style="margin:0;font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:17px;font-weight:500;">{{ profPlanTitle }}</p>
+                <sc-if value="{{ profHasChip }}" hint-placeholder-val="{{ false }}"><span style="{{ profChipStyle }}">{{ profChip }}</span></sc-if>
+              </div>
+              <sc-if value="{{ profPlanHasBody }}" hint-placeholder-val="{{ true }}">
+                <p style="margin:0 0 12px;font-size:12.5px;line-height:1.55;color:#6b6b6b;text-wrap:pretty;">{{ profPlanBody }}</p>
+              </sc-if>
+              <sc-if value="{{ profPlanHasPoints }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-direction:column;gap:8px;margin:2px 0 14px;">
+                  <sc-for list="{{ profPlanPoints }}" as="pt" hint-placeholder-count="2">
+                    <div style="display:flex;align-items:baseline;gap:8px;">
+                      <span style="font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:21px;font-weight:600;line-height:1;color:#0e5b52;">{{ pt.big }}</span>
+                      <span style="font-size:12.5px;color:#6b6b6b;">{{ pt.txt }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+              <button type="button" onClick="{{ goGate }}" style="display:inline-flex;align-items:center;justify-content:center;height:38px;padding:0 14px;border:1px solid #dcdcdc;border-radius:10px;background:#fff;font:inherit;font-size:13px;font-weight:600;color:#0e7569;cursor:pointer;" style-hover="background:#fafaf9;">{{ profPlanCta }}</button>
+            </div>
+          </sc-if>
+          <p style="margin:20px 2px 8px;font-size:10.5px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:#8f8f8d;">Account</p>
+          <div style="background:#fff;border:1px solid #dcdcdc;border-radius:14px;overflow:hidden;">
+            <sc-if value="{{ profNotGuest }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;align-items:center;min-height:52px;padding:0 16px;border-bottom:1px solid #ececea;font-size:14.5px;">Profile<span style="margin-left:auto;font-size:12px;color:#8f8f8d;">{{ profName }}</span></div>
+            </sc-if>
+            <div style="display:flex;align-items:center;min-height:52px;padding:0 16px;font-size:14.5px;">Report an issue</div>
+            <sc-if value="{{ profNotGuest }}" hint-placeholder-val="{{ true }}">
+              <div role="button" tabindex="0" style="display:flex;align-items:center;min-height:52px;padding:0 16px;border-top:1px solid #ececea;font-size:14.5px;color:#b42318;cursor:pointer;">Sign out</div>
+            </sc-if>
+          </div>
+          
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isMilestone }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Milestone" style="position:absolute;inset:0;z-index:46;padding:44px 0 0;overflow:auto;background:#141414;color:#f2f2f0;">
+        <div style="display:flex;flex-direction:column;justify-content:center;min-height:700px;padding:10px 28px 40px;">
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:60px;height:60px;border-radius:50%;background:#0e7569;color:#fff;margin-bottom:20px;animation:rcPop 0.5s ease both;"><svg width="24" height="24" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 2.6l2.2 4.5 4.9.7-3.6 3.5.9 4.9L10 13.9l-4.4 2.3.9-4.9-3.6-3.5 4.9-.7Z"></path></svg></span>
+          <p style="margin:0 0 8px;font-size:10.5px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#9a9a9a;animation:rcRise 0.4s ease 0.1s both;">{{ mUnitLabel }}</p>
+          <h2 style="margin:0 0 6px;font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:28px;font-weight:500;line-height:1.15;text-wrap:balance;animation:rcRise 0.4s ease 0.15s both;">{{ mTitle }}</h2>
+          <p style="margin:0 0 20px;font-size:14px;line-height:1.5;color:#9a9a9a;text-wrap:pretty;animation:rcRise 0.4s ease 0.2s both;">{{ mSub }}</p>
+          <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:20px;animation:rcRise 0.4s ease 0.3s both;">
+            <sc-for list="{{ mLadder }}" as="l" hint-placeholder-count="6"><span style="display:inline-flex;align-items:center;height:28px;padding:0 11px;border-radius:14px;font-size:12px;font-weight:600;background:#0e7569;color:#fff;">{{ l.d }}</span></sc-for>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;padding:14px 0 0;border-top:1px solid #333;animation:rcRise 0.4s ease 0.35s both;">
+            <sc-for list="{{ mStats }}" as="st" hint-placeholder-count="3">
+              <div style="display:flex;align-items:baseline;gap:9px;">
+                <span style="font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:22px;font-weight:600;line-height:1;color:#7fc4ba;">{{ st.big }}</span>
+                <span style="font-size:13px;color:#c9c9c7;">{{ st.txt }}</span>
+              </div>
+            </sc-for>
+          </div>
+          <p style="margin:22px 0 0;font-size:13px;line-height:1.55;color:#9a9a9a;text-wrap:pretty;animation:rcRise 0.4s ease 0.45s both;">{{ mNote }}</p>
+          <button type="button" onClick="{{ mPrimaryGo }}" style="display:flex;align-items:center;justify-content:center;width:100%;height:52px;margin-top:20px;border:none;border-radius:12px;background:#f2f2f0;color:#141414;font:inherit;font-size:15.5px;font-weight:600;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,0.4);animation:rcRise 0.4s ease 0.5s both;" style-active="transform:translateY(1px);">{{ mPrimary }}</button>
+          <button type="button" onClick="{{ finishComplete }}" style="display:flex;align-items:center;justify-content:center;width:100%;height:46px;margin-top:9px;border:1px solid #3a3a3a;border-radius:12px;background:transparent;color:#f2f2f0;font:inherit;font-size:14px;font-weight:600;cursor:pointer;animation:rcRise 0.4s ease 0.55s both;" style-hover="background:#1d1d1d;">Back to Playground</button>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isComplete }}" hint-placeholder-val="{{ false }}">
+      <div data-screen-label="Recall complete" style="position:absolute;inset:0;z-index:46;padding:44px 0 0;overflow:auto;background:#141414;color:#f2f2f0;">
+        <div style="display:flex;flex-direction:column;justify-content:center;min-height:700px;padding:10px 28px 40px;">
+          <span style="display:inline-flex;align-items:center;justify-content:center;width:60px;height:60px;border-radius:50%;background:#0e7569;color:#fff;margin-bottom:20px;animation:rcPop 0.5s ease both;"><svg width="26" height="26" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 6.5 4.8 9.2 10 3.2"></path></svg></span>
+          <p style="margin:0 0 8px;font-size:10.5px;font-weight:600;letter-spacing:0.12em;text-transform:uppercase;color:#9a9a9a;animation:rcRise 0.4s ease 0.1s both;">{{ cUnitLabel }}</p>
+          <h2 style="margin:0 0 6px;font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:28px;font-weight:500;line-height:1.15;animation:rcRise 0.4s ease 0.15s both;">Section learned.</h2>
+          <p style="margin:0 0 20px;font-size:14px;line-height:1.5;color:#9a9a9a;animation:rcRise 0.4s ease 0.2s both;">{{ cSub }}</p>
+          <div style="display:flex;flex-wrap:wrap;gap:7px;margin-bottom:20px;animation:rcRise 0.4s ease 0.3s both;">
+            <sc-for list="{{ cLadder }}" as="l" hint-placeholder-count="6"><span style="{{ l.style }}">{{ l.d }}</span></sc-for>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;padding:14px 0 0;border-top:1px solid #333;animation:rcRise 0.4s ease 0.35s both;">
+            <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="#9a9a9a" stroke-width="1.5" stroke-linejoin="round" aria-hidden="true"><rect x="2.6" y="4" width="14.8" height="13" rx="2"></rect><path d="M2.6 8.2h14.8M6.6 2.2v3M13.4 2.2v3"></path></svg>
+            <p style="margin:0;font-size:13px;color:#c9c9c7;">{{ cSchedule }}</p>
+          </div>
+          <blockquote style="margin:22px 0 0;font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:20px;font-weight:400;line-height:1.45;text-wrap:pretty;animation:rcRise 0.4s ease 0.4s both;">Constitution is not a mere lawyers’ document, it is a vehicle of Life.</blockquote>
+          <p style="margin:8px 0 0;font-size:12.5px;color:#9a9a9a;animation:rcRise 0.4s ease 0.45s both;">— B. R. Ambedkar</p>
+          <p style="margin:22px 0 0;font-size:13px;color:#9a9a9a;animation:rcRise 0.4s ease 0.5s both;">{{ cCount }}</p>
+          <button type="button" onClick="{{ finishComplete }}" style="display:flex;align-items:center;justify-content:center;width:100%;height:52px;margin-top:18px;border:none;border-radius:12px;background:#f2f2f0;color:#141414;font:inherit;font-size:15.5px;font-weight:600;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,0.4);animation:rcRise 0.4s ease 0.55s both;" style-active="transform:translateY(1px);">Back to Playground</button>
+        </div>
+      </div>
+    </sc-if>
+
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1400,&quot;height&quot;:960},&quot;viewer&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;guest&quot;,&quot;signedIn&quot;,&quot;plus&quot;,&quot;pro&quot;,&quot;max&quot;,&quot;expired&quot;],&quot;default&quot;:&quot;plus&quot;,&quot;tsType&quot;:&quot;'guest' | 'signedIn' | 'plus' | 'pro' | 'max' | 'expired'&quot;,&quot;section&quot;:&quot;Start state&quot;},&quot;atLimit&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Start state&quot;},&quot;endState&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;none&quot;,&quot;sectionMastered&quot;,&quot;actMastered&quot;],&quot;default&quot;:&quot;none&quot;,&quot;tsType&quot;:&quot;'none' | 'sectionMastered' | 'actMastered'&quot;,&quot;section&quot;:&quot;Start state&quot;},&quot;defaultLaw&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;ndps&quot;,&quot;bns&quot;],&quot;default&quot;:&quot;ndps&quot;,&quot;tsType&quot;:&quot;'ndps' | 'bns'&quot;,&quot;section&quot;:&quot;Start state&quot;},&quot;showSourceStamp&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Playground cards&quot;},&quot;gcalSyncState&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;ok&quot;,&quot;syncing&quot;,&quot;error&quot;],&quot;default&quot;:&quot;ok&quot;,&quot;tsType&quot;:&quot;'ok' | 'syncing' | 'error'&quot;,&quot;section&quot;:&quot;Settings&quot;}}">
+class Component extends DCLogic {
+  state = { screen: 'act', law: 'ndps', sheet: false, added: {}, sel: {}, expanded: {}, ln: this.lnInit(), calMonth: 9, calDay: null, st: { pace: 'self_paced', target: 5, theme: 'auto', motion: true, text: 19, gcal: false, gsync: '', grem: 'once', gcad: false, gcadChosen: false } };
+
+  stVals(s, viewer) {
+    const ST = s.st;
+    const setSt = patch => this.setState(prev => ({ st: { ...prev.st, ...patch } }));
+    const canAuto = !(viewer === 'guest' || viewer === 'signedIn' || viewer === 'expired');
+    const stAuto = ST.pace === 'auto';
+    const btn = on => 'flex:1;display:inline-flex;align-items:center;justify-content:center;height:32px;padding:0 10px;border-radius:8px;font:inherit;font-size:12.5px;white-space:nowrap;cursor:pointer;border:none;' + (on ? 'background:#141414;color:#fff;font-weight:600;' : 'background:transparent;color:#141414;font-weight:500;');
+    const seg = (opts, cur, key) => opts.map(([v, label]) => ({ label, on: cur === v, style: btn(cur === v), onClick: () => setSt({ [key]: v }) }));
+    const sw = on => 'position:relative;flex:none;width:46px;height:28px;border:none;border-radius:14px;cursor:pointer;padding:0;background:' + (on ? '#0e7569' : '#c9c9c7') + ';';
+    const knob = on => 'position:absolute;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,0.25);left:' + (on ? '21px' : '3px') + ';';
+    const sync = ST.gsync || this.props.gcalSyncState || 'ok';
+    const badge = 'padding:1px 7px;border-radius:999px;font-size:10px;font-weight:700;letter-spacing:0.04em;border:1px solid ';
+    const pick = c => () => setSt({ grem: c, gcad: false, gcadChosen: true });
+    return {
+      isSettings: s.screen === 'settings',
+      stStatusLine: viewer === 'guest' ? 'Guest · Reading only' : viewer === 'signedIn' ? 'Free account' : viewer === 'expired' ? 'Plan ended 12 August' : 'Recall access · active',
+      stSegWrap: 'display:inline-flex;gap:2px;padding:3px;border:1px solid #dcdcdc;border-radius:10px;background:#fafaf9;',
+      stSegWrapFull: 'display:flex;gap:2px;padding:3px;border:1px solid #dcdcdc;border-radius:10px;background:#fafaf9;',
+      stPaceOpts: canAuto ? seg([['self_paced', 'Self-paced'], ['auto', 'Auto Plan']], ST.pace, 'pace') : [{ label: 'Self-paced', on: true, style: btn(true), onClick: () => {} }, { label: 'Auto Plan', on: false, style: btn(false) + 'opacity:0.45;cursor:not-allowed;', onClick: () => {} }],
+      stCanAuto: canAuto, stPlanLocked: !canAuto,
+      stTargetRowStyle: 'display:flex;flex-direction:column;gap:10px;padding:12px 14px;' + (stAuto ? '' : 'opacity:0.5;'),
+      stTargetOpts: seg([[3, 'Steady · 3'], [5, 'Balanced · 5'], [7, 'Intensive · 7']], ST.target, 'target'),
+      stThemeOpts: seg([['auto', 'Auto'], ['light', 'Light'], ['dark', 'Dark']], ST.theme, 'theme'),
+      stMotionOn: !!ST.motion, stMotionToggle: () => setSt({ motion: !ST.motion }), stMotionSwitchStyle: sw(!!ST.motion), stMotionKnobStyle: knob(!!ST.motion),
+      stTextSize: ST.text + ' px', stTextDown: () => setSt({ text: Math.max(15, ST.text - 1) }), stTextUp: () => setSt({ text: Math.min(25, ST.text + 1) }),
+      stGcalOn: !!ST.gcal, stGcalSwitchStyle: sw(!!ST.gcal), stGcalKnobStyle: knob(!!ST.gcal),
+      stGcalDesc: ST.gcal ? (sync === 'syncing' ? 'Syncing your revision schedule…' : sync === 'error' ? 'Recall the C — Revision Schedule' : 'Recall the C — Revision Schedule · last synced 25 Sep') : 'Scheduled revisions appear in your calendar',
+      stGcalToggle: () => ST.gcal ? setSt({ gcal: false, gcad: false }) : setSt({ gcal: true, gsync: 'syncing', gcad: !ST.gcadChosen }),
+      stGcalSyncError: !!ST.gcal && sync === 'error',
+      stGcalBadge: sync === 'error' ? '⚠ Sync issue' : sync === 'syncing' ? 'Syncing' : '✓ Connected',
+      stGcalBadgeStyle: badge + (sync === 'error' ? '#e6b8b1;background:#fbf1ef;color:#8a1f16;' : sync === 'syncing' ? '#dcdcdc;background:#fafaf9;color:#6b6b6b;' : '#bcd8d2;background:#e7f1ef;color:#0e5b52;'),
+      stGcalRetry: () => setSt({ gsync: 'syncing' }),
+      stCadenceModal: !!ST.gcad,
+      stCadenceOpts: [['once', 'Once', '10 minutes before your revision time'], ['twice', 'Twice', 'One in the morning, one 10 minutes before'], ['thrice', 'Thrice', 'Spread across the day — 8 h, 4 h and 10 min before']].map(([v, name, desc]) => ({ name, desc, onClick: pick(v) })),
+      stCadenceDismiss: () => setSt({ gcad: false, gcadChosen: true }),
+    };
+  }
+
+  componentDidMount() {
+    if (this.props.endState && this.props.endState !== 'none') {
+      this.setState({ screen: 'milestone', milestoneKind: this.props.endState, ...this.seedDemo() });
+    }
+  }
+
+  lnInit() {
+    return { mode: 'read', seen: ['read'], fb: null, density: 'medium', revealed: {}, tapped: {}, lettersView: 'voice', lettersFull: false, lettersListening: false, lettersDone: false, typed: '', typeChecked: false, reciting: false, recited: false, peek: false, testPicked: null, testFill: '', testChecked: false, clockSec: 0 };
+  }
+
+  startClock() {
+    this._t0 = Date.now();
+    clearInterval(this._clk);
+    this._clk = setInterval(() => this.setLn({ clockSec: Math.floor((Date.now() - this._t0) / 1000) }), 1000);
+    this.setLn({ clockSec: 0 });
+  }
+
+  stopClock() { clearInterval(this._clk); }
+
+  componentWillUnmount() { clearInterval(this._clk); }
+
+  setLn(patch) { this.setState(prev => ({ ln: { ...prev.ln, ...(typeof patch === 'function' ? patch(prev.ln) : patch) } })); }
+
+  unitText() {
+    return 'No person shall — (a) cultivate any coca plant or gather any portion of coca plant; or (b) cultivate the opium poppy or any cannabis plant; or (c) produce, manufacture, possess, sell, purchase, transport, warehouse, use, consume, import inter-State, export inter-State, import into India, export from India or tranship any narcotic drug or psychotropic substance, except for medical or scientific purposes and in the manner and to the extent provided by the provisions of this Act.';
+  }
+
+  calMonths() {
+    const s8 = 'Section 8 — NDPS Act';
+    return {
+      8: { title: 'August 2026', blanks: 6, days: 31, sched: {
+        28: [{ state: 'done', title: 'Article 19', meta: 'Review done · ladder 7 → 15' }],
+        31: [{ state: 'done', title: 'Article 21', meta: 'Review done · ladder 3 → 7' }],
+      } },
+      9: { title: 'September 2026', blanks: 2, days: 30, sched: {
+        4: [{ state: 'done', title: 'Article 19', meta: 'Review done · ladder 15 → 30' }],
+        5: [{ state: 'overdue', title: 'Article 14', meta: 'Overdue — was due yesterday' }],
+        6: [
+          { state: 'due', title: s8, meta: 'Due today · first revision · Playground' },
+          { state: 'due', title: 'Article 21', meta: 'Due today · ladder 7 → 15' },
+          { state: 'done', title: 'Article 19(1)(a)', meta: 'Review done this morning' },
+        ],
+        7: [{ state: 'scheduled', title: s8, meta: 'Ladder 1 → 3 · Playground' }],
+        9: [
+          { state: 'scheduled', title: s8, meta: 'Ladder 3 → 7 · Playground' },
+          { state: 'new', title: 'Section 9 — NDPS Act', meta: 'New · Steady plan' },
+        ],
+        13: [{ state: 'scheduled', title: s8, meta: 'Ladder 7 → 15 · Playground' }],
+        15: [{ state: 'scheduled', title: 'Article 21', meta: 'Ladder 15 → 30' }],
+        21: [{ state: 'scheduled', title: s8, meta: 'Ladder 15 → 30 · Playground' }],
+      } },
+      10: { title: 'October 2026', blanks: 4, days: 31, sched: {
+        6: [{ state: 'scheduled', title: s8, meta: 'Ladder 30 → 60 · Playground' }],
+        15: [{ state: 'scheduled', title: 'Article 21', meta: 'Ladder 30 → 60' }],
+      } },
+    };
+  }
+
+  calRow(e, tap) {
+    const dots = { overdue: 'background:#b45309;', due: 'background:#0e7569;', scheduled: 'background:#0e7569;', done: 'background:#b7d6d0;', new: 'background:#fff;border:1px solid #0e7569;' };
+    return {
+      title: e.title, meta: e.meta, tap,
+      rowStyle: 'display:flex;align-items:center;gap:10px;padding:10px 18px;border-bottom:1px solid #ececea;cursor:pointer;' + (e.state === 'done' ? 'opacity:0.55;' : ''),
+      dotStyle: 'display:block;width:5px;height:5px;border-radius:50%;flex:none;' + (dots[e.state] || dots.scheduled),
+      metaColor: e.state === 'overdue' ? '#b45309' : e.state === 'done' ? '#0e7569' : '#6b6b6b',
+      mark: e.state === 'done' ? '✓' : '›',
+      markColor: e.state === 'done' ? '#0e7569' : '#c9c9c7',
+    };
+  }
+
+  lnModes() {
+    return [
+      { id: 'read', label: 'Read', task: 'First, read it once.', title: 'Read it closely', lede: 'Bare Act wording, verbatim.' },
+      { id: 'cloze', label: 'Cloze', task: 'Fill the gaps from memory.', title: 'Fill the gaps', lede: 'Tap a blank when you have the word.' },
+      { id: 'letters', label: 'Letters', task: 'Rebuild it from first letters.', title: 'First letters only', lede: 'Rebuild the clause from initials.' },
+      { id: 'type', label: 'Type', task: 'Write it out, word for word.', title: 'Write it out', lede: 'Type it from memory — checked as you go.' },
+      { id: 'recite', label: 'Recite', task: 'Now recall it without looking.', title: 'Say it aloud', lede: 'Speak the clause; stop for your accuracy map.' },
+      { id: 'test', label: 'Test', task: 'A short checkpoint.', title: 'Quick check', lede: 'New questions every revision.' },
+    ];
+  }
+
+  data() {
+    return {
+      ndps: {
+        title: 'The Narcotic Drugs and Psychotropic Substances Act, 1985',
+        short: 'The NDPS Act, 1985',
+        meta: '6 Chapters · Sections 1–83 · Schedule',
+        provenance: 'INDIA CODE',
+        source: 'Source: India Code · ndps_act_final.json · schema 2.5',
+        hasSchedule: true,
+        chapters: [
+          { num: 'I', title: 'Preliminary', range: '1–3', sections: [
+            { num: '1', title: 'Short title, extent and commencement' },
+            { num: '2', title: 'Definitions' },
+            { num: '3', title: 'Power to add to or omit from the list of psychotropic substances' },
+          ]},
+          { num: 'II', title: 'Authorities and Officers', range: '4–7A', sections: [
+            { num: '4', title: 'Central Government to take measures' },
+            { num: '5', title: 'Officers of Central Government' },
+            { num: '7A', title: 'National Fund for Control of Drug Abuse' },
+          ]},
+          { num: 'III', title: 'Prohibition, Control and Regulation', range: '8–14', sections: [
+            { num: '8', title: 'Prohibition of certain operations', subs: [
+              { label: '(a)', text: 'cultivate any coca plant or gather any portion of coca plant; or' },
+              { label: '(b)', text: 'cultivate the opium poppy or any cannabis plant; or' },
+              { label: '(c)', text: 'produce, manufacture, possess, sell, purchase, transport, warehouse, use, consume…' },
+            ]},
+            { num: '9', title: 'Power of Central Government to permit, control and regulate', subs: [
+              { label: '(1)', text: 'Subject to the provisions of section 8, the Central Government may…' },
+              { label: '(2)', text: 'In particular and without prejudice to the generality of the foregoing…' },
+            ]},
+            { num: '10', title: 'Power of State Government to permit, control and regulate' },
+          ]},
+        ],
+      },
+      bns: {
+        title: 'The Bharatiya Nyaya Sanhita, 2023',
+        short: 'The BNS, 2023',
+        meta: '20 Chapters · Sections 1–358',
+        provenance: 'GAZETTE',
+        source: 'Source: Gazette (as enacted) · bns_runtime_v1.json · schema 1.0',
+        hasSchedule: false,
+        chapters: [
+          { num: 'I', title: 'Preliminary', range: '1–3', sections: [
+            { num: '1', title: 'Short title, commencement and application' },
+            { num: '2', title: 'Definitions' },
+            { num: '3', title: 'General explanations' },
+          ]},
+          { num: 'VI', title: 'Of Offences Affecting the Human Body', range: '100–146', sections: [
+            { num: '100', title: 'Culpable homicide' },
+            { num: '101', title: 'Murder' },
+            { num: '103', title: 'Punishment for murder', subs: [
+              { label: '(1)', text: 'Whoever commits murder shall be punished with death or imprisonment for life…' },
+              { label: '(2)', text: 'When a group of five or more persons acting in concert commits murder…' },
+            ]},
+          ]},
+        ],
+      },
+    };
+  }
+
+  key(num) { return this.state.law + ':' + num; }
+
+  sectionState(sec) {
+    const v = this.state.sel[this.key(sec.num)];
+    if (v === true) return 'all';
+    if (Array.isArray(v) && v.length) {
+      if (sec.subs && v.length === sec.subs.length) return 'all';
+      return 'some';
+    }
+    return 'none';
+  }
+
+  toggleSection(sec) {
+    this.setState(s => {
+      const sel = { ...s.sel };
+      const k = s.law + ':' + sec.num;
+      const st = this.sectionState(sec);
+      if (st === 'none') sel[k] = true; else delete sel[k];
+      return { sel };
+    });
+  }
+
+  toggleSub(sec, label) {
+    this.setState(s => {
+      const sel = { ...s.sel };
+      const k = s.law + ':' + sec.num;
+      let arr = sel[k] === true ? sec.subs.map(x => x.label) : (sel[k] || []).slice();
+      arr = arr.includes(label) ? arr.filter(l => l !== label) : arr.concat(label);
+      if (!arr.length) delete sel[k];
+      else if (sec.subs && arr.length === sec.subs.length) sel[k] = true;
+      else sel[k] = arr;
+      return { sel };
+    });
+  }
+
+  countSel(law) {
+    let n = 0;
+    for (const k of Object.keys(this.state.sel)) {
+      if (!k.startsWith(law + ':')) continue;
+      const v = this.state.sel[k];
+      n += v === true ? 1 : (v.length ? 1 : 0);
+    }
+    return n;
+  }
+
+  clauseCount(law) {
+    let n = 0;
+    for (const k of Object.keys(this.state.sel)) {
+      if (!k.startsWith(law + ':')) continue;
+      const v = this.state.sel[k];
+      if (Array.isArray(v)) n += v.length;
+    }
+    return n;
+  }
+
+  boxStyle(st, small) {
+    const size = small ? 18 : 20;
+    const base = 'flex:none;display:inline-flex;align-items:center;justify-content:center;width:' + size + 'px;height:' + size + 'px;border-radius:6px;font-size:' + (small ? 11 : 12) + 'px;font-weight:700;cursor:pointer;line-height:1;';
+    if (st === 'all') return base + 'border:1.5px solid #0e7569;background:#0e7569;color:#fff;';
+    if (st === 'some') return base + 'border:1.5px solid #0e7569;background:#e7f1ef;color:#0e5b52;';
+    return base + 'border:1.5px solid #c9c9c7;background:#fff;color:transparent;';
+  }
+
+  seedDemo() {
+    return {
+      added: {
+        ndps: { mode: 'act' },
+        bns: { mode: 'sections', sections: 2, clauses: 1 },
+      },
+    };
+  }
+
+  renderVals() {
+    const laws = this.data();
+    const s = this.state;
+    const law = (this.props.defaultLaw && !this._lawTouched) ? this.props.defaultLaw : s.law;
+    const act = laws[law] || laws.ndps;
+    const added = s.added[law];
+    const selCount = this.countSel(law);
+    const clauses = this.clauseCount(law);
+
+    const go = (patch) => () => this.setState(patch);
+    const jump = {
+      ndps: () => { this._lawTouched = true; this.setState({ screen: 'act', law: 'ndps', sheet: false }); },
+      bns: () => { this._lawTouched = true; this.setState({ screen: 'act', law: 'bns', sheet: false }); },
+      sheet: () => { this._lawTouched = true; this.setState({ screen: 'act', law: s.law, sheet: true }); },
+      picker: () => { this._lawTouched = true; this.setState({ screen: 'picker', sheet: false }); },
+      playground: () => {
+        const viewer = this.props.viewer ?? 'plus';
+        if (viewer === 'guest' || viewer === 'signedIn') { this.setState({ screen: 'gate', sheet: false }); return; }
+        const patch = { screen: 'playground', sheet: false };
+        if (!Object.keys(s.added).length) Object.assign(patch, this.seedDemo());
+        this.setState(patch);
+      },
+      empty: () => this.setState({ screen: 'playground', sheet: false, added: {} }),
+      today: () => {
+        const patch = { screen: 'today', sheet: false };
+        if (!Object.keys(s.added).length) Object.assign(patch, this.seedDemo());
+        this.setState(patch);
+      },
+      profile: () => this.setState({ screen: 'profile', sheet: false }),
+      settings: () => this.setState({ screen: 'settings', sheet: false }),
+      calendar: () => {
+        const patch = { screen: 'calendar', sheet: false, calMonth: 9, calDay: null };
+        if (!Object.keys(s.added).length) Object.assign(patch, this.seedDemo());
+        this.setState(patch);
+      },
+      learn: () => {
+        const patch = { screen: 'learn', sheet: false, ln: this.lnInit() };
+        if (!Object.keys(s.added).length) Object.assign(patch, this.seedDemo());
+        this.setState(patch);
+      },
+    };
+
+    const SEC_STATUS = { '8': { t: 'Learning · 4 of 6 modes', c: '#0e7569' }, '2': { t: 'Due · Day 3', c: '#7c4a12' }, '1': { t: 'Mastered', c: '#141414' }, '4': { t: 'Learned · first revision tomorrow', c: '#0e5b52' } };
+    const pickChapters = act.chapters.map(ch => ({
+      num: ch.num,
+      titleUpper: ch.title.toUpperCase(),
+      rows: ch.sections.map(sec => {
+        const st = this.sectionState(sec);
+        const expanded = !!s.expanded[this.key(sec.num)] && !!sec.subs;
+        return {
+          num: sec.num, title: sec.title,
+          status: (SEC_STATUS[String(sec.num)] || { t: 'Not started' }).t,
+          statusStyle: 'font-size:11px;font-weight:600;margin-top:1px;color:' + (SEC_STATUS[String(sec.num)] || { c: '#9a9a9a' }).c + ';',
+          hasSubs: !!sec.subs, expanded,
+          caret: expanded ? '▾' : '▸',
+          ariaChecked: st === 'all' ? 'true' : (st === 'some' ? 'mixed' : 'false'),
+          boxStyle: this.boxStyle(st, false),
+          mark: st === 'all' ? '✓' : (st === 'some' ? '–' : ''),
+          toggle: () => this.toggleSection(sec),
+          rowTap: sec.subs
+            ? () => this.setState(prev => ({ expanded: { ...prev.expanded, [prev.law + ':' + sec.num]: !prev.expanded[prev.law + ':' + sec.num] } }))
+            : () => this.toggleSection(sec),
+          subs: (sec.subs || []).map(sb => {
+            const v = s.sel[this.key(sec.num)];
+            const on = v === true || (Array.isArray(v) && v.includes(sb.label));
+            return {
+              label: sb.label, text: sb.text,
+              ariaChecked: on ? 'true' : 'false',
+              boxStyle: this.boxStyle(on ? 'all' : 'none', true),
+              mark: on ? '✓' : '',
+              toggle: () => this.toggleSub(sec, sb.label),
+            };
+          }),
+        };
+      }),
+    }));
+
+    const addLabel = selCount === 0 ? 'Select sections to add'
+      : 'Add ' + selCount + (selCount === 1 ? ' section' : ' sections')
+        + (clauses ? ' (' + clauses + ' clause' + (clauses === 1 ? '' : 's') + ' partial)' : '')
+        + ' →';
+
+    const cardOrder = ['ndps', 'bns'].filter(l => s.added[l]);
+    const pgCards = cardOrder.map((l, i) => {
+      const a = laws[l]; const ad = s.added[l];
+      const scopeTag = ad.mode === 'act' ? 'FULL ACT' : 'SELECTED SECTIONS';
+      const meta = ad.mode === 'act'
+        ? a.meta + ' · everything selected'
+        : (ad.sections || this.countSel(l)) + ' sections selected' + ((ad.clauses || this.clauseCount(l)) ? ' · clause-level picks' : '');
+      return {
+        tag: 'PLAYGROUND · ' + scopeTag,
+        name: a.short,
+        meta,
+        cta: (this.props.viewer ?? 'plus') === 'expired' ? 'Resume Playground' : 'Learn',
+        learn: (this.props.viewer ?? 'plus') === 'expired'
+          ? () => this.setState({ screen: 'gate', sheet: false })
+          : () => this.setState({ screen: 'progress', progLaw: l, sheet: false }),
+        manage: () => { this._lawTouched = true; this.setState({ screen: 'picker', law: l, sheet: false }); },
+        source: a.source,
+        segs: (() => {
+          // Scope-aware progress: mastered / in ladder / untouched, over the
+          // provisions this card actually covers (whole Act vs chosen sections).
+          const total = ad.mode === 'act' ? (l === 'ndps' ? 83 : 358) : (ad.sections || this.countSel(l)) || 1;
+          const active = i === 0 ? 1 : total; // demo: Section 8 in the ladder; BNS picks all at day 1
+          const seg = (n, color) => ({ style: 'display:block;height:4px;flex:none;width:' + Math.max(3, Math.round(n / total * 100)) + '%;background:' + color + ';' });
+          return active >= total ? [seg(total, '#b7d6d0')] : [seg(active, '#0e7569')];
+        })(),
+        progress: ad.mode === 'act'
+          ? (i === 0 ? '1 of 83 sections in the ladder · Section 8 at day 1 · 82 not started' : 'Nothing started yet')
+          : ((ad.sections || this.countSel(l)) + ' of ' + (ad.sections || this.countSel(l)) + ' chosen sections in the ladder · all at day 1' + ((ad.clauses || this.clauseCount(l)) ? ' · clause-level picks' : '')),
+      };
+    });
+
+    const confirmAdd = () => {
+      if (!selCount) return;
+      this.setState(prev => ({
+        added: { ...prev.added, [law]: { mode: 'sections', sections: selCount, clauses } },
+        screen: 'playground', sheet: false,
+      }));
+    };
+
+    const ln = s.ln;
+    const modes = this.lnModes();
+    const order = modes.map(m => m.id);
+    const unitText = this.unitText();
+    const words = unitText.split(' ');
+    const nw = w => w.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const letterLen = w => w.replace(/[^A-Za-z]/g, '').length;
+    const structural = w => !/[A-Za-z]/.test(w) || /^[\(\[]?\d+[A-Za-z]?[\)\]]?\.?$/.test(w) || /^\([A-Za-z]\)$/.test(w) || /^\([ivxlcdm]+\)$/i.test(w);
+    const seen = ln.seen;
+    const mi = Math.max(0, order.indexOf(ln.mode));
+    const cur = modes[mi];
+    const ADV = { read: 'I\u2019ve read this \u2192', cloze: 'I\u2019ve filled the gaps \u2192', letters: 'I\u2019ve heard this \u2192', type: 'I\u2019ve typed this \u2192', recite: 'I\u2019ve recited this \u2192', test: 'I\u2019ve checked this \u2192' };
+    const allSeen = order.every(id => seen.includes(id));
+    const pendingIds = order.filter(id => id !== ln.mode && !seen.includes(id));
+    const target = pendingIds.length ? (pendingIds.find(id => order.indexOf(id) > mi) || pendingIds[0]) : null;
+    const remaining = order.filter(id => !seen.includes(id)).length;
+    const doneLabel = allSeen ? 'Mark it Done' : (remaining === 1 ? '1 method left' : remaining + ' methods left');
+    const clockStr = Math.floor(ln.clockSec / 60) + ':' + String(ln.clockSec % 60).padStart(2, '0');
+    const goMode = m => this.setLn(p => {
+      const sn = p.seen.slice();
+      if (m === 'read' && !sn.includes('read')) sn.push('read');
+      if (m === 'letters' && p.lettersView === 'plain' && !sn.includes('letters')) sn.push('letters');
+      return { mode: m, fb: null, seen: sn, peek: false };
+    });
+    const advance = () => {
+      this.stopClock();
+      if (target === null) { if (allSeen) this.setState({ screen: 'complete' }); return; }
+      goMode(target);
+    };
+    const advLabel = mode => target === null ? doneLabel : ADV[mode];
+    const primary = bg => 'flex:2 1 auto;display:flex;align-items:center;justify-content:center;height:52px;min-width:8.5rem;padding:0 16px;white-space:nowrap;border:1px solid ' + bg + ';border-radius:12px;background:' + bg + ';color:#fff;font:inherit;font-size:15.5px;font-weight:600;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,0.28);';
+    const primaryLocked = 'flex:2 1 auto;display:flex;align-items:center;justify-content:center;height:52px;min-width:8.5rem;padding:0 16px;white-space:nowrap;border:1px solid #e5e5e4;border-radius:12px;background:#e5e5e4;color:#9a9a9a;font:inherit;font-size:15.5px;font-weight:600;cursor:default;';
+
+    const thresh = { light: 8, medium: 6, heavy: 4 }[ln.density] || 6;
+    const blankIdx = [];
+    words.forEach((w, i) => { if (letterLen(w) >= thresh) blankIdx.push(i); });
+    let revealedCount = 0;
+    blankIdx.forEach(i => { if (ln.revealed[ln.density + ':' + i]) revealedCount++; });
+    const allShown = blankIdx.length > 0 && revealedCount === blankIdx.length;
+    const clozeWords = words.map((w, i) => {
+      if (letterLen(w) < thresh) return { text: w, sp: ' ', style: '' };
+      const key = ln.density + ':' + i;
+      const revealed = !!ln.revealed[key];
+      return {
+        text: w, sp: ' ', tab: revealed ? undefined : '0',
+        tap: revealed ? undefined : () => this.setLn(p => {
+          const revealed2 = { ...p.revealed, [key]: true };
+          const tapped2 = { ...p.tapped, [key]: true };
+          const done = blankIdx.every(j => tapped2[p.density + ':' + j]);
+          const patch = { revealed: revealed2, tapped: tapped2 };
+          if (done && !p.seen.includes('cloze')) {
+            patch.seen = p.seen.concat('cloze');
+            patch.fb = { msg: 'You remembered it.', sub: blankIdx.length + ' of ' + blankIdx.length + ' recalled' };
+          }
+          return patch;
+        }),
+        style: revealed
+          ? 'padding:0 3px;border-bottom:2px solid #0e7569;color:#0e7569;animation:rcPop 0.3s ease both;'
+          : 'display:inline-block;min-width:2.5em;height:24px;margin:0 1px;padding:0 8px;border-bottom:2px solid #141414;border-radius:6px 6px 0 0;background:#e6e8e7;vertical-align:-4px;line-height:24px;color:transparent;cursor:pointer;user-select:none;',
+      };
+    });
+    const densityBtn = d => 'display:inline-flex;align-items:center;justify-content:center;padding:8px 16px;border-radius:999px;font:inherit;font-size:13.5px;cursor:pointer;'
+      + (ln.density === d ? 'border:1px solid #141414;background:#141414;color:#fff;font-weight:600;' : 'border:1px solid #dcdcdc;background:#fff;color:#141414;font-weight:500;');
+    const setDensity = d => () => this.setLn({ density: d, revealed: {}, tapped: {} });
+
+    const initialsFor = w => {
+      const m0 = w.match(/^[A-Za-z]/);
+      if (!m0) return w;
+      const punct = w.replace(/[A-Za-z]+/g, '').replace(/[^.,;\u2014()]/g, '');
+      return m0[0] + punct;
+    };
+    const windowSet = new Set();
+    if (ln.lettersListening) {
+      let marked = 0;
+      for (let i = 0; i < words.length && marked < 8; i++) {
+        if (structural(words[i])) continue;
+        windowSet.add(i); marked++;
+      }
+    }
+    const lettersWords = words.map((w, i) => {
+      const t = ln.lettersFull ? w : initialsFor(w);
+      let style = '';
+      if (structural(w)) style = 'color:#8f8f8d;';
+      else if (ln.lettersDone) style = 'color:#4c63b6;font-weight:700;';
+      else if (windowSet.has(i)) style = 'color:#6b6b6b;';
+      return { text: t, sp: ln.lettersFull ? ' ' : '\u2002', style };
+    });
+    const segBtn = (on, second) => 'flex:1 1 0;min-width:5.5rem;padding:6px 18px;border:0;' + (second ? 'border-left:1px solid #dcdcdc;' : '')
+      + 'background:' + (on ? '#141414' : 'transparent') + ';color:' + (on ? '#fff' : '#6b6b6b') + ';font:inherit;font-size:13.5px;text-align:center;cursor:pointer;';
+    const lettersVoice = ln.lettersView === 'voice';
+
+    const typeTargets = words.filter(w => !structural(w));
+    const rawTokens = ln.typed.split(/\s+/).filter(Boolean);
+    const endsSpace = /\s$/.test(ln.typed);
+    let correct = 0, settledCount = 0, wordIndex = 0;
+    const typedWords = rawTokens.map((tw, i) => {
+      const isLast = i === rawTokens.length - 1;
+      const settled = !isLast || endsSpace || ln.typeChecked;
+      if (structural(tw)) return { text: tw, sp: ' ', style: 'color:#8f8f8d;' };
+      const idx = wordIndex;
+      if (settled) wordIndex++;
+      const ok = idx < typeTargets.length && nw(tw) === nw(typeTargets[idx]);
+      if (settled) { settledCount++; if (ok) correct++; }
+      let style = '';
+      if (ln.typeChecked) style = ok ? 'color:#141414;' : 'color:#b45309;';
+      else if (settled) style = ok
+        ? 'text-decoration:underline;text-decoration-color:#0e7569;text-decoration-thickness:2px;text-underline-offset:4px;'
+        : 'text-decoration:underline;text-decoration-style:wavy;text-decoration-color:#b45309;text-decoration-thickness:2px;text-underline-offset:4px;';
+      return { text: tw, sp: ' ', style };
+    });
+    const typePerfect = correct === typeTargets.length && settledCount === correct;
+    const typeWrong = settledCount - correct;
+
+    const barH = [22, 51, 40, 29, 58, 47, 36, 25, 54, 43, 32, 61];
+    const durs = [0.70, 0.82, 0.94, 1.06];
+    const reciteBars = barH.map((h, i) => ({
+      style: 'display:block;width:5px;height:' + h + 'px;border-radius:3px;background:#0e7569;transform-origin:bottom;'
+        + (ln.reciting ? 'opacity:1;animation:rcBar ' + durs[i % 4] + 's ease ' + (i * 0.07).toFixed(2) + 's infinite;' : 'transform:scaleY(0.3);opacity:0.35;'),
+    }));
+    const missAt = i => i % 9 === 5 && !structural(words[i]);
+    const mapWords = words.map((w, i) => missAt(i)
+      ? { text: w, sp: ' ', style: 'color:#9a9a9a;' }
+      : { text: w, sp: ' ', style: 'color:#141414;font-weight:600;' });
+    const speakable = words.filter(w => !structural(w)).length;
+    const hits = words.filter((w, i) => !structural(w) && !missAt(i)).length;
+    const heard = words.filter((w, i) => !missAt(i)).slice(0, 18).join(' ');
+
+    const q1Correct = ln.testPicked === 0;
+    const q2Correct = nw(ln.testFill) === 'warehouse';
+    const testScoreN = (q1Correct ? 1 : 0) + (q2Correct ? 1 : 0);
+    const testOpts = ['The opium poppy and any cannabis plant', 'Tobacco and the areca palm', 'Sandalwood and red sanders'].map((t, i) => {
+      const picked = ln.testPicked === i;
+      let border = '1px solid #dcdcdc', bg = '#fff', mark = '';
+      if (ln.testChecked) {
+        if (i === 0) { border = '1.5px solid #0e7569'; bg = '#e7f1ef'; mark = '✓'; }
+        else if (picked) { border = '1.5px solid #b45309'; bg = '#f6efe4'; mark = '✗'; }
+      } else if (picked) { border = '1.5px solid #141414'; mark = '●'; }
+      return {
+        text: t, aria: picked ? 'true' : 'false', mark,
+        pick: ln.testChecked ? undefined : () => this.setLn({ testPicked: i }),
+        style: 'display:flex;align-items:flex-start;gap:11px;margin:0 0 9px;padding:14px;border:' + border + ';border-radius:12px;background:' + bg + ';font-size:15px;line-height:1.45;cursor:pointer;'
+          + (picked && !ln.testChecked ? 'box-shadow:0 2px 6px rgba(20,20,20,0.06);' : ''),
+      };
+    });
+
+    const calM = this.calMonths()[s.calMonth] || this.calMonths()[9];
+    const today = s.calMonth === 9 ? 6 : null;
+    const priority = { overdue: 0, due: 1, scheduled: 2, new: 3, done: 4 };
+    const markBg = { overdue: '#b45309', due: '#0e7569', scheduled: '#0e7569', new: '#141414', done: '#b7d6d0' };
+    const dowNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+    const monthName = calM.title.split(' ')[0];
+    const goLearnFromCal = () => this.setState({ screen: 'learn', calDay: null, ln: this.lnInit() });
+    const calCells = [];
+    for (let b = 0; b < calM.blanks; b++) calCells.push({ num: '', aria: '', style: 'background:none;border:0;padding:6px 0 5px;', numStyle: '', markStyle: '' });
+    for (let d = 1; d <= calM.days; d++) {
+      const entries = calM.sched[d] || [];
+      const dominant = entries.length ? entries.slice().sort((a, b) => priority[a.state] - priority[b.state])[0].state : null;
+      const isToday = today === d;
+      const isPast = s.calMonth < 9 || (s.calMonth === 9 && d < 6);
+      const isSel = s.calDay === d;
+      calCells.push({
+        num: String(d),
+        aria: dowNames[(calM.blanks + d - 1) % 7] + ' ' + d + ' ' + monthName + (entries.length ? ' — ' + entries.length + (entries.length === 1 ? ' unit' : ' units') : ''),
+        tap: () => this.setState(p => ({ calDay: p.calDay === d ? null : d })),
+        style: 'display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0 5px;border-radius:10px;font:inherit;cursor:pointer;'
+          + (isToday ? 'background:#141414;border:1px solid #141414;' : 'background:#fff;border:1px solid #ececea;')
+          + (isSel ? 'border-color:#141414;box-shadow:inset 0 0 0 1px #141414;' : ''),
+        numStyle: "font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:13.5px;color:"
+          + (isToday ? '#fff' : dominant === 'overdue' ? '#b45309' : isPast ? '#c9c9c7' : '#141414') + ';',
+        markStyle: 'width:12px;height:2px;border-radius:1px;background:' + (dominant ? (isToday ? '#fff' : markBg[dominant]) : 'transparent') + ';',
+      });
+    }
+    const todaySched = this.calMonths()[9].sched[6] || [];
+    const todayRows = todaySched.map(e => this.calRow(e, goLearnFromCal));
+    const dayEntries = s.calDay !== null ? (calM.sched[s.calDay] || []) : [];
+    const dayRows = dayEntries.map(e => this.calRow(e, goLearnFromCal));
+    const dayLabel = s.calDay !== null
+      ? dowNames[(calM.blanks + s.calDay - 1) % 7] + ' ' + s.calDay + ' ' + monthName
+        + (dayEntries.length ? ' · ' + dayEntries.length + (dayEntries.length === 1 ? ' unit' : ' units') : ' · Nothing scheduled')
+      : '';
+
+    const pgLaw = s.progLaw || 'ndps';
+    const pgA = laws[pgLaw] || laws.ndps;
+    const pgAd = s.added[pgLaw] || { mode: 'act' };
+    const pgFull = pgAd.mode === 'act';
+    const pgTotal = pgFull ? (pgLaw === 'ndps' ? 83 : 358) : ((pgAd.sections || this.countSel(pgLaw)) || 1);
+    const pgActive = pgLaw === 'ndps' ? 1 : pgTotal;
+    const pgWaffleN = Math.min(pgTotal, 96);
+    const progCells = [];
+    for (let i = 0; i < pgWaffleN; i++) {
+      const on = pgLaw === 'ndps' ? i === 7 : true;
+      progCells.push({
+        tip: pgFull ? 'Section ' + (i + 1) : 'Chosen section ' + (i + 1),
+        style: 'display:block;width:12px;height:12px;border-radius:3px;background:' + (on ? '#0e7569' : '#ececea') + ';' + (on ? 'animation:rcPop 0.4s ease both;' : ''),
+      });
+    }
+    const rungCounts = pgLaw === 'ndps' ? [1, 0, 0, 0, 0, 0] : [pgTotal, 0, 0, 0, 0, 0];
+    const rungMax = Math.max.apply(null, rungCounts.concat(1));
+    const progRungs = ['1', '3', '7', '15', '30', '60'].map((day, j) => ({
+      day,
+      count: rungCounts[j] ? String(rungCounts[j]) : '·',
+      countColor: rungCounts[j] ? '#0e5b52' : '#c9c9c7',
+      barStyle: 'display:block;width:100%;max-width:34px;border-radius:4px 4px 0 0;transform-origin:bottom;animation:rcGrowY 0.55s cubic-bezier(0.22,1,0.36,1) ' + (0.15 + j * 0.07).toFixed(2) + 's both;background:' + (rungCounts[j] ? '#0e7569' : '#ececea') + ';height:' + (rungCounts[j] ? Math.max(10, Math.round(rungCounts[j] / rungMax * 34)) : 4) + 'px;transition:height 0.4s ease;',
+    }));
+
+    const fb = ln.fb;
+    const showNextBtn = ln.mode === 'read' || ln.mode === 'cloze' || (ln.mode === 'letters' && !lettersVoice);
+    const nextDisabled = target === null && !allSeen;
+    const nextLbl = ln.mode === 'letters' && !lettersVoice ? advLabel('read') : advLabel(ln.mode);
+
+    return {
+      jump,
+      ...this.stVals(s, this.props.viewer ?? 'plus'),
+      lnMode: s.screen === 'learn',
+      exitLearn: () => { this.stopClock(); this.setState({ screen: 'playground' }); },
+      steps: modes.map(m => ({
+        style: 'display:block;height:4px;border-radius:2px;transition:all 0.3s ease;flex:' + (m.id === ln.mode ? '1.6 1 0%' : '1 1 0%')
+          + ';background:' + (m.id === ln.mode ? '#141414' : seen.includes(m.id) ? '#0e7569' : '#dcdcdc') + ';',
+      })),
+      stepLabel: 'Step ' + (mi + 1) + ' of 6',
+      modeEyebrow: cur.label + ' · Section 8 — The NDPS Act, 1985',
+      modeTask: cur.task,
+      unitText,
+      mRead: ln.mode === 'read',
+      mCloze: ln.mode === 'cloze',
+      mLetters: ln.mode === 'letters',
+      mType: ln.mode === 'type',
+      mRecite: ln.mode === 'recite',
+      mTest: ln.mode === 'test',
+      navVisible: !fb,
+      showNextBtn,
+      nextDisabled,
+      nextBtnStyle: nextDisabled ? primaryLocked : primary('#141414'),
+      nextLabel: nextLbl,
+      nextMode: advance,
+      hasFb: !!fb,
+      fbMsg: fb ? fb.msg : '',
+      fbSub: fb ? fb.sub : '',
+      fbStyle: 'position:absolute;left:0;right:0;bottom:0;z-index:30;padding:18px 18px 30px;border-radius:22px 22px 0 0;box-shadow:0 -8px 30px rgba(20,20,20,0.12);animation:rcSheet 0.28s ease both;background:#e7f1ef;color:#0e5b52;',
+      fbGoStyle: 'display:flex;align-items:center;justify-content:center;width:100%;height:50px;margin-top:14px;border:0;border-radius:12px;font:inherit;font-size:15px;font-weight:600;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,0.22);color:#fff;background:#0e7569;',
+      fbGo: () => { this.setLn({ fb: null }); advance(); },
+      setDensityLight: setDensity('light'),
+      setDensityMedium: setDensity('medium'),
+      setDensityHeavy: setDensity('heavy'),
+      densityLightStyle: densityBtn('light'),
+      densityMediumStyle: densityBtn('medium'),
+      densityHeavyStyle: densityBtn('heavy'),
+      clozeWords,
+      clozeStatus: revealedCount + ' of ' + blankIdx.length + ' revealed — tap a blank',
+      revealAllLabel: allShown ? 'Hide again' : 'Reveal all',
+      revealAll: () => this.setLn(p => {
+        const shown = blankIdx.every(j => p.revealed[p.density + ':' + j]);
+        if (shown) return { revealed: { ...p.tapped } };
+        const r = { ...p.revealed };
+        blankIdx.forEach(j => { r[p.density + ':' + j] = true; });
+        return { revealed: r };
+      }),
+      setLettersVoice: () => this.setLn({ lettersView: 'voice' }),
+      setLettersPlain: () => { this.stopClock(); this.setLn(p => ({ lettersView: 'plain', lettersListening: false, seen: p.seen.includes('letters') ? p.seen : p.seen.concat('letters') })); },
+      lettersVoiceBtnStyle: segBtn(lettersVoice, false),
+      lettersPlainBtnStyle: segBtn(!lettersVoice, true),
+      lettersWords,
+      lettersTextStyle: 'margin:0;white-space:pre-wrap;color:#141414;'
+        + (ln.lettersFull
+          ? "font-family:'Fraunces','Martel Sans',Georgia,serif;font-weight:400;font-size:20px;line-height:1.7;letter-spacing:normal;"
+          : "font-family:ui-monospace,'SF Mono',Menlo,monospace;font-weight:400;font-size:22px;line-height:1.9;letter-spacing:0.24em;"),
+      toggleFull: () => this.setLn(p => ({ lettersFull: !p.lettersFull })),
+      lettersBtnLabel: ln.lettersFull ? 'Back to initials' : 'Full text',
+      lettersStatusOn: lettersVoice && (ln.lettersListening || ln.lettersDone),
+      lettersStatus: ln.lettersListening ? 'Listening — correct letters turn blue as you speak.' : 'All letters recalled.',
+      lettersStatusColor: ln.lettersListening ? '#141414' : '#6b6b6b',
+      lettersStatusWeight: ln.lettersListening ? '600' : '400',
+      soloLetters: ln.mode === 'letters' && lettersVoice,
+      lettersSoloLabel: ln.lettersDone ? advLabel('letters') : (ln.lettersListening ? '\u25aa Stop \u00b7 ' + clockStr : '\u25b8 Speak'),
+      lettersSoloTap: () => {
+        if (ln.lettersDone) { advance(); return; }
+        if (ln.lettersListening) {
+          this.stopClock();
+          this.setLn(p => ({ lettersListening: false, lettersDone: true, seen: p.seen.includes('letters') ? p.seen : p.seen.concat('letters') }));
+          return;
+        }
+        this.startClock();
+        this.setLn({ lettersListening: true });
+      },
+      soloBtnStyle: primary('#141414'),
+      typed: ln.typed,
+      onType: e => this.setLn({ typed: e.target.value, typeChecked: false }),
+      typedWords,
+      typeStats: settledCount + ' of ' + typeTargets.length + ' words · ' + correct + ' correct' + (typeWrong > 0 ? ' · ' + typeWrong + ' to fix' : ''),
+      typeChecked: ln.typeChecked,
+      soloType: ln.mode === 'type',
+      typeSoloLabel: ln.typeChecked ? advLabel('type') : 'Check my attempt',
+      typeSoloTap: () => {
+        if (ln.typeChecked) { advance(); return; }
+        if (!ln.typed.trim()) return;
+        this.setLn(p => ({ typeChecked: true, seen: p.seen.includes('type') ? p.seen : p.seen.concat('type') }));
+      },
+      typeResultStyle: 'margin-top:14px;padding:16px 16px 18px;border-radius:22px 22px 12px 12px;'
+        + (typePerfect ? 'background:#e7f1ef;color:#0e5b52;' : 'background:#f6efe4;color:#7c4a12;'),
+      typeScoreNum: String(correct),
+      typeScoreOf: String(typeTargets.length),
+      typeScoreColor: typePerfect ? '#0e7569' : '#141414',
+      typeScoreLabel: typePerfect ? 'All correct \u2713' : 'words correct' + (typeWrong > 0 ? ' \u00b7 ' + typeWrong + (typeWrong === 1 ? ' word to fix' : ' words to fix') : ''),
+      reciteTextStyle: "margin:0;font-family:'Fraunces','Martel Sans',Georgia,serif;font-size:20px;line-height:1.7;white-space:pre-wrap;color:#141414;transition:filter 0.25s ease;"
+        + (ln.peek ? '' : 'filter:blur(5px);user-select:none;'),
+      reciteBars,
+      reciting: ln.reciting,
+      reciteDone: ln.recited && !ln.reciting,
+      soloRecite: ln.mode === 'recite',
+      reciteSoloLabel: ln.recited ? advLabel('recite') : (ln.reciting ? '\u25aa Stop \u00b7 ' + clockStr : '\u25b8 Start reciting'),
+      reciteSoloStyle: primary(ln.reciting ? '#b42318' : '#141414'),
+      reciteSoloTap: () => {
+        if (ln.recited && !ln.reciting) { advance(); return; }
+        if (ln.reciting) {
+          this.stopClock();
+          this.setLn(p => ({ reciting: false, recited: true, seen: p.seen.includes('recite') ? p.seen : p.seen.concat('recite') }));
+          return;
+        }
+        this.startClock();
+        this.setLn({ reciting: true, recited: false });
+      },
+      peekOn: () => this.setLn({ peek: true }),
+      peekOff: () => this.setLn({ peek: false }),
+      mapWords,
+      reciteStats: hits + ' of ' + speakable + ' words \u00b7 ' + Math.round(hits / speakable * 100) + '% match',
+      reciteTranscript: 'Heard: ' + heard + '\u2026',
+      testOpts,
+      testFill: ln.testFill,
+      onTestFill: e => this.setLn({ testFill: e.target.value, testChecked: false }),
+      testChecked: ln.testChecked,
+      soloTest: ln.mode === 'test',
+      testSoloLabel: ln.testChecked ? advLabel('test') : 'Check answers',
+      testSoloTap: () => {
+        if (ln.testChecked) { advance(); return; }
+        this.setLn(p => ({ testChecked: true, seen: p.seen.includes('test') ? p.seen : p.seen.concat('test') }));
+      },
+      q2Verdict: q2Correct ? '\u2713 warehouse' : '\u2717 The word is \u201cwarehouse\u201d.',
+      q2VerdictStyle: 'margin:10px 0 0;font-size:13.5px;font-weight:700;color:' + (q2Correct ? '#0e7569' : '#b45309') + ';',
+      testScore: testScoreN + ' of 2 correct',
+      testScoreStyle: 'margin-top:16px;padding:16px;border-radius:22px 22px 12px 12px;font-size:15px;font-weight:700;'
+        + (testScoreN === 2 ? 'background:#e7f1ef;color:#0e5b52;' : 'background:#f6efe4;color:#7c4a12;'),
+      ...(() => {
+        const viewer = this.props.viewer ?? 'plus';
+        const subscribed = viewer === 'plus' || viewer === 'pro' || viewer === 'max';
+        const TIERS = {
+          plus: { name: 'Core', price: '₹149', limit: 10, per: '10 laws active per month', tag: 'A steady pace — enough for one exam’s syllabus of Acts.' },
+          pro: { name: 'Deep', price: '₹299', limit: 30, per: '30 laws active per month', tag: 'Broad preparation across many Acts at once.' },
+          max: { name: 'Infinite', price: '₹499', limit: null, per: 'Unlimited Playground', tag: 'The whole law library, whenever you want it.' },
+        };
+        const gt = s.gateTier || (subscribed ? viewer : 'plus');
+        const T = TIERS[gt];
+        const my = subscribed ? TIERS[viewer] : null;
+        const used = Object.keys(s.added).length;
+        const limitHit = subscribed && (this.props.atLimit ?? false) && viewer !== 'max';
+        const pill = on => 'display:inline-flex;flex-direction:column;align-items:center;gap:2px;flex:1;padding:11px 8px;border-radius:14px;cursor:pointer;box-sizing:border-box;'
+          + (on ? 'border:1.5px solid #141414;background:#fafaf9;' : 'border:1px solid #dcdcdc;background:#fff;');
+        const goGate = tier => () => this.setState({ screen: 'gate', gateTier: tier, sheet: false });
+        const quotaLine = !my ? '' : (my.limit === null ? 'Unlimited Playground' : used + ' of ' + my.limit + ' laws this month · ' + (my.limit - used) + ' spaces available');
+        const meterLine = !my ? '' : (my.limit === null ? 'Unlimited Playground' : (my.limit - used) + ' law unlocks left this month');
+        const subv = this.props.subState ?? 'active';
+        const SUBVAR = {
+          active: { chip: 'ACTIVE', c: '#0e7569', body: 'Playground: ' + quotaLine + (my && my.limit !== null ? ' · next month 12 Sep' : '') + '. Articles never count against your Playground.', cta: 'Change plan ›' },
+          cancelAtEnd: { chip: 'ENDS 12 SEP', c: '#7c4a12', body: 'Auto-renew is off. Your Playground stays active until 12 September, then pauses — all progress stays saved.', cta: 'Keep my plan ›' },
+          pastDue: { chip: 'PAYMENT FAILED', c: '#b42318', body: 'We couldn’t renew your plan. Update your payment method by 15 September to keep the Playground active. Nothing is deleted either way.', cta: 'Update payment ›' },
+          paused: { chip: 'PAUSED', c: '#8f8f8d', body: 'Your Playground is paused. Laws, ladder and progress are saved — resume anytime.', cta: 'Resume Playground ›' },
+          downgrade: { chip: 'CHANGES 12 SEP', c: '#7c4a12', body: 'Moving to Core on 12 September. Laws already in your Playground stay usable; from then each month holds 10 active laws.', cta: 'Review change ›' },
+          upgrade: { chip: 'UPGRADED', c: '#0e7569', body: 'Now on ' + (my ? my.name : '') + ' — effective immediately. This month’s usage carried over: ' + quotaLine + '.', cta: 'Change plan ›' },
+          resubscribed: { chip: 'WELCOME BACK', c: '#0e7569', body: 'Your Playground is back exactly as you left it — laws, ladder and revision history restored.', cta: 'Change plan ›' },
+        };
+        const V = SUBVAR[subv] || SUBVAR.active;
+        const P = {
+          guest: { badge: '?', badgeBg: 'background:#e2e2e0;color:#8f8f8d;', name: 'Guest', meta: 'Read mode.' },
+          signedIn: { badge: 'S', name: 'Sanjay', meta: 'Free account · Constitution learning included' },
+          expired: { badge: 'S', name: 'Sanjay', meta: 'Plan ended 12 August · progress saved' },
+          plus: { badge: 'S', name: 'Sanjay', meta: 'RecallC Core · renews 12 September' },
+          pro: { badge: 'S', name: 'Sanjay', meta: 'RecallC Deep · renews 12 September' },
+          max: { badge: 'S', name: 'Sanjay', meta: 'RecallC Infinite · renews 12 September' },
+        }[viewer];
+        const plan = viewer === 'guest' ? null
+          : viewer === 'signedIn' ? { title: 'No plan yet', body: 'Playground learning is locked. Constitution learning is included with your account — every Article, every mode.', cta: 'See plans ›' }
+          : viewer === 'expired' ? { title: 'Plan ended 12 August', body: 'Your Playground — laws, ladder and progress — is saved exactly as you left it. Resume anytime; nothing resets.', cta: 'Resume your Playground ›', chip: 'PAUSED', chipColor: '#8f8f8d' }
+          : { title: 'RecallC ' + my.name, body: subv === 'active' ? '' : V.body, cta: V.cta, chip: V.chip, chipColor: V.c };
+        const planPoints = (subscribed && plan && subv === 'active') ? (my.limit === null
+          ? [{ big: '∞', txt: 'Unlimited Playground' }]
+          : [{ big: used + '/' + my.limit, txt: 'laws this Playground month · next month starts 12 Sep' }]) : [];
+        return {
+          isGate: s.screen === 'gate',
+          gateGuest: viewer === 'guest',
+          gateTiers: viewer !== 'guest',
+          gateEyebrow: viewer === 'expired' ? 'Subscription ended' : 'Playground · Subscription',
+          gateTitle: viewer === 'expired' ? 'Resume your Playground' : 'Unlock Playground',
+          gateSub: viewer === 'expired'
+            ? 'Your laws, ladder and progress are saved exactly as you left them. Learning resumes the moment a plan is active.'
+            : 'Turning a law into a learning experience needs a plan. Reading every Bare Act stays free.',
+          gateBullets: [
+            { t: 'Six recall methods', d: 'Read, cloze, first letters, type, recite and test — one section at a time.' },
+            { t: 'A spaced ladder', d: 'Reviews on day 1, 3, 7, 15, 30 and 60. The app tells you what is due.' },
+            { t: 'Verbatim, always', d: 'You learn the Bare Act text itself from the offical Gazette source.' },
+          ],
+          gatePills: ['plus', 'pro', 'max'].map(id => ({
+            name: TIERS[id].name,
+            sub: TIERS[id].limit ? TIERS[id].limit + ' laws / mo' : 'Unlimited',
+            tap: () => this.setState({ gateTier: id }),
+            style: pill(id === gt),
+          })),
+          gateTierName: 'RecallC ' + T.name,
+          gatePrice: T.price,
+          gatePer: T.per,
+          gateTag: T.tag,
+          gateCta: (viewer === 'expired' ? 'Resume with ' : 'Continue with ') + T.name,
+          pgMonth: my && my.limit === null ? 'Unlimited Playground' : 'Playground month · 12 Aug – 11 Sep',
+          pgMeter: my && my.limit !== null ? meterLine + ' · Next month starts 12 Sep' : 'Every law, whenever you want it',
+          pgPaused: viewer === 'expired',
+          pgActive: subscribed,
+          goRollover: () => this.setState({ screen: 'rollover', sheet: false }),
+          sheetConfirm: subscribed && !limitHit && !s.sheetConfirmed && !!my && my.limit !== null,
+          sheetOptions: subscribed && !limitHit && (s.sheetConfirmed || (!!my && my.limit === null)),
+          sheetConfirmLine: my && my.limit !== null ? 'This will use 1 of your ' + my.limit + ' law unlocks this month. ' + (my.limit - used - 1) + ' will remain.' : '',
+          sheetConfirmTap: () => this.setState({ sheetConfirmed: true }),
+          isRollover: s.screen === 'rollover',
+          rollRows: ['ndps', 'bns'].filter(l => s.added[l]).map(l => {
+            const kept = (s.rollKeep || {})[l] !== false;
+            return {
+              name: l === 'ndps' ? 'NDPS Act' : 'Bharatiya Nyaya Sanhita',
+              meta: l === 'ndps' ? '42% learned · Day 15' : '12% learned · Day 3',
+              sub: kept ? 'Carries into next month' : 'Progress saved',
+              toggleLabel: kept ? '✓ Keep' : '○ Remove',
+              toggleStyle: 'height:32px;padding:0 12px;border-radius:9px;font:inherit;font-size:12.5px;font-weight:600;cursor:pointer;flex:none;'
+                + (kept ? 'border:1px solid #0e7569;background:#e7f1ef;color:#0e5b52;' : 'border:1px solid #dcdcdc;background:#fff;color:#6b6b6b;'),
+              tap: () => this.setState(p => ({ rollKeep: { ...(p.rollKeep || {}), [l]: (p.rollKeep || {})[l] === false } })),
+            };
+          }),
+          rollCount: (() => {
+            const ls = ['ndps', 'bns'].filter(l => s.added[l]);
+            const kept = ls.filter(l => (s.rollKeep || {})[l] !== false).length;
+            return kept + ' / ' + (my && my.limit !== null ? my.limit : '∞') + ' selected';
+          })(),
+          rollDone: () => this.setState({ screen: 'playground' }),
+          actCtaLabel: viewer === 'guest' ? 'Sign in to use Playground'
+            : viewer === 'signedIn' ? 'Subscribe to use Playground'
+            : viewer === 'expired' ? 'Resume Playground'
+            : (limitHit ? 'Playground full this month' : '+  Add to Playground'),
+          sheetSignIn: viewer === 'guest',
+          sheetSubscribe: viewer === 'signedIn' || viewer === 'expired',
+          sheetLimit: limitHit,
+          sheetLimitTitle: 'Playground full this month — ' + (my ? my.limit : 10) + ' of ' + (my ? my.limit : 10) + ' laws selected.',
+          sheetUpgrades: (viewer === 'plus' ? ['pro', 'max'] : ['max']).map(id => ({
+            label: 'Upgrade to ' + TIERS[id].name + ' · ' + (TIERS[id].limit ? TIERS[id].limit + ' laws / mo' : 'Unlimited'),
+            tap: goGate(id),
+          })),
+          goGate: goGate(subscribed ? viewer : 'plus'),
+          isProfile: s.screen === 'profile',
+          profBadge: P.badge,
+          profBadgeStyle: 'display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:12px;font-family:\'Fraunces\',\'Martel Sans\',Georgia,serif;font-size:16px;' + (P.badgeBg || 'background:#141414;color:#fff;'),
+          profName: P.name,
+          profMeta: P.meta,
+          profIsGuest: viewer === 'guest',
+          profNotGuest: viewer !== 'guest',
+          profHasPlan: !!plan,
+          profPlanTitle: plan ? plan.title : '',
+          profPlanBody: plan ? plan.body : '',
+          profPlanHasBody: !!(plan && plan.body),
+          profPlanPoints: planPoints,
+          profPlanHasPoints: planPoints.length > 0,
+          profPlanCta: plan ? plan.cta : '',
+          profChip: plan && plan.chip ? plan.chip : '',
+          profHasChip: !!(plan && plan.chip),
+          profChipStyle: 'display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:10px;font-size:10px;font-weight:700;letter-spacing:0.08em;border:1px solid currentColor;color:' + (plan && plan.chipColor ? plan.chipColor : '#0e7569') + ';',
+          tabProfileColor: s.screen === 'profile' ? '#141414' : '#8f8f8d',
+        };
+      })(),
+      ...(() => {
+        const kind = s.milestoneKind || this.props.endState || 'sectionMastered';
+        const sect = kind === 'sectionMastered';
+        return {
+          isMilestone: s.screen === 'milestone',
+          mUnitLabel: sect ? 'Section 8 · NDPS Act' : 'NDPS Act, 1985',
+          mTitle: sect ? 'Mastered, verbatim.' : 'The whole Act. By heart.',
+          mSub: sect
+            ? 'Section 8 has climbed the full ladder — six reviews over sixty days, recalled correctly every time.'
+            : 'All 83 sections have climbed the full ladder. Every provision recalled verbatim through day 60.',
+          mLadder: [1, 3, 7, 15, 30, 60].map(d => ({ d: 'Day ' + d })),
+          mStats: sect
+            ? [
+                { big: '6', txt: 'reviews completed' },
+                { big: '60', txt: 'days on the ladder' },
+                { big: '97%', txt: 'average recall accuracy' },
+              ]
+            : [
+                { big: '83', txt: 'sections mastered' },
+                { big: '498', txt: 'reviews completed' },
+                { big: '94%', txt: 'average recall accuracy' },
+              ],
+          mNote: sect
+            ? 'It leaves the daily queue now. A light refresher will appear every few months so it stays sharp.'
+            : 'The Act leaves your daily queue. Occasional refreshers keep it sharp — or add a new law with the unlocks you have left.',
+          mPrimary: sect ? 'Next: Section 9' : 'Add another law',
+          mPrimaryGo: sect ? (() => this.setState({ screen: 'learn', ln: this.lnInit() })) : (() => this.setState({ screen: 'act', law: 'ndps' })),
+        };
+      })(),
+      isComplete: s.screen === 'complete',
+      cUnitLabel: 'Section 8 · NDPS Act',
+      cSub: 'All six modes complete, verbatim. Your first revision is scheduled for tomorrow.',
+      cLadder: ['Learned ✓', 'Day 1', 'Day 3', 'Day 7', 'Day 15', 'Day 30', 'Day 60', 'Mastered'].map((d, i) => ({
+        d,
+        style: 'display:inline-flex;align-items:center;height:28px;padding:0 11px;border-radius:14px;font-size:12px;font-weight:600;'
+          + (i === 0 ? 'background:#0e7569;color:#fff;' : 'border:1px solid #333;color:#9a9a9a;'),
+      })),
+      cSchedule: 'First revision: tomorrow · Day 1',
+      cCount: '1 of 83 sections learned · 82 not started',
+      finishComplete: () => this.setState({ screen: 'playground' }),
+      isProgress: s.screen === 'progress',
+      progScope: pgFull ? 'FULL ACT' : 'SELECTED SECTIONS',
+      progName: pgA.short,
+      progDash: Math.max(4, 163.36 * pgActive / pgTotal).toFixed(1),
+      progFrac: pgActive + '/' + pgTotal,
+      progHeadline: pgActive + ' of ' + pgTotal,
+      progSub: pgFull ? 'sections in the ladder' : 'chosen sections in the ladder',
+      progNext: pgLaw === 'ndps' ? 'Next: Section 8 · tomorrow' : 'Next: tomorrow',
+      progWaffleHead: pgFull ? 'Sections 1–' + pgWaffleN + (pgTotal > pgWaffleN ? ' of ' + pgTotal : '') : 'Your sections',
+      progCells,
+      progRungs,
+      progLearn: () => this.setState({ screen: 'learn', sheet: false, ln: this.lnInit() }),
+      progManage: () => { this._lawTouched = true; this.setState({ screen: 'picker', law: pgLaw, sheet: false }); },
+      progCta: pgLaw === 'ndps' ? 'Learn · next up Section 8' : 'Learn',
+      isToday: s.screen === 'today',
+      startRevision: () => this.setState({ screen: 'learn', ln: this.lnInit() }),
+      todayPath: (() => {
+        const mark = kind => 'display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;flex:none;font-size:12px;'
+          + (kind === 'done' ? 'background:#0e7569;border:1px solid #0e7569;color:#fff;' : kind === 'current' ? 'background:#fff;border:1.5px solid #141414;color:#141414;' : 'background:#fff;border:1px solid #c9c9c7;color:transparent;');
+        const node = current => 'display:grid;grid-template-columns:26px 1fr;gap:0 10px;align-items:' + (current ? 'start' : 'center') + ';padding:' + (current ? '4px 0 10px' : '7px 0') + ';';
+        const copy = current => current ? 'display:block;min-width:0;padding:14px 15px;background:#fff;border:1px solid #dcdcdc;border-radius:14px;' : 'display:block;min-width:0;';
+        return [
+          { isPlain: true, isCurrent: false, mark: '✓', title: 'Article 19(1)(a)', meta: 'Day 15 → 30', sub: 'Reviewed this morning', nodeStyle: node(false), markStyle: mark('done'), copyStyle: copy(false) },
+          { isPlain: false, isCurrent: true, mark: '•', eyebrow: 'Day 1 → 3 · Playground', title: 'Section 8 — NDPS Act', sub: 'Prohibition of certain operations · Bare Act, verbatim', cta: 'Learn', go: () => this.setState({ screen: 'learn', ln: this.lnInit() }), nodeStyle: node(true), markStyle: mark('current'), copyStyle: copy(true) },
+          { isPlain: true, isCurrent: false, mark: '', title: 'Article 21', meta: 'Day 7 → 15', sub: 'Protection of life and personal liberty', nodeStyle: node(false), markStyle: mark('todo'), copyStyle: copy(false) },
+          { isPlain: true, isCurrent: false, mark: '', title: 'Section 9 — NDPS Act', meta: 'New', sub: 'New · Steady plan · Playground', nodeStyle: node(false), markStyle: mark('todo'), copyStyle: copy(false) },
+        ];
+      })(),
+      tabTodayColor: s.screen === 'today' ? '#141414' : '#8f8f8d',
+      isCalendar: s.screen === 'calendar',
+      calTitle: calM.title,
+      calPrev: () => this.setState(p => ({ calMonth: Math.max(8, p.calMonth - 1), calDay: null })),
+      calNext: () => this.setState(p => ({ calMonth: Math.min(10, p.calMonth + 1), calDay: null })),
+      calDows: ['S', 'M', 'T', 'W', 'T', 'F', 'S'].map(t => ({ t })),
+      calCells,
+      calSheetOpen: s.calDay !== null,
+      calSheetClosed: s.calDay === null,
+      closeDaySheet: () => this.setState({ calDay: null }),
+      daySheetLabel: dayLabel,
+      dayRows,
+      dayHasRows: dayRows.length > 0,
+      dayEmpty: s.calDay !== null && dayRows.length === 0,
+      todayLabel: 'Today · Sunday 6 September · ' + todaySched.length + (todaySched.length === 1 ? ' unit' : ' units'),
+      todayRows,
+      tabCalendarColor: s.screen === 'calendar' ? '#141414' : '#8f8f8d',
+      isAct: s.screen === 'act',
+      isPicker: s.screen === 'picker',
+      isPlayground: s.screen === 'playground',
+      sheetAdd: s.sheet && s.screen === 'act',
+      actTitle: act.title,
+      actMeta: act.meta,
+      actProvenance: act.provenance,
+      actHasSchedule: act.hasSchedule,
+      actChapters: act.chapters.map(ch => ({ num: ch.num, title: ch.title, range: ch.range })),
+      actNotAdded: !added,
+      actAdded: !!added,
+      addedScopeLabel: added
+        ? (added.mode === 'act' ? 'Entire Act' : (added.sections + ' sections' + (added.clauses ? ' · clause picks' : '')))
+        : '',
+      openAddSheet: () => this.setState({ sheet: true, sheetConfirmed: false }),
+      closeSheet: go({ sheet: false }),
+      goPicker: () => this.setState({ screen: 'picker', sheet: false }),
+      goAct: go({ screen: 'act', sheet: false }),
+      goPlayground: go({ screen: 'playground', sheet: false }),
+      backActLabel: '← ' + act.short,
+      sheetActName: act.short,
+      sheetActMeta: act.meta + ' · nothing scheduled yet',
+      addEntireAct: () => this.setState(prev => ({
+        added: { ...prev.added, [law]: { mode: 'act' } }, sheet: false,
+      })),
+      pickChapters,
+      addDisabled: selCount === 0,
+      addBtnLabel: addLabel,
+      addBtnStyle: 'display:flex;align-items:center;justify-content:center;width:100%;height:52px;border:none;border-radius:12px;font:inherit;font-size:15px;font-weight:600;'
+        + (selCount ? 'background:#141414;color:#fff;cursor:pointer;box-shadow:0 2px 0 rgba(0,0,0,0.28);' : 'background:#e2e2e0;color:#9a9a9a;cursor:default;'),
+      confirmAdd,
+      hasLaws: cardOrder.length > 0,
+      noLaws: cardOrder.length === 0,
+      lawCountLabel: cardOrder.length + (cardOrder.length === 1 ? ' law' : ' laws'),
+      pgCards,
+      showSourceStamp: this.props.showSourceStamp ?? true,
+      tabBrowseColor: s.screen === 'act' || s.screen === 'picker' ? '#141414' : '#8f8f8d',
+      tabPlaygroundColor: s.screen === 'playground' || s.screen === 'gate' ? '#141414' : '#8f8f8d',
+    };
+  }
+}
+</script>
+</body>
+</html>

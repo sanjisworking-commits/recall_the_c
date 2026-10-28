@@ -95,6 +95,7 @@ def build_projection(
     *,
     today: date,
     horizon_days: int = PROJECTION_HORIZON_DAYS,
+    extra: dict[date, list[DayItem]] | None = None,
 ) -> dict[date, DayProjection]:
     """Group each unit's FULL remaining revision ladder by local date.
 
@@ -104,6 +105,9 @@ def build_projection(
     pending rung rolls INTO today when due/overdue — matching the dashboard —
     while later rungs that would land in the past are skipped, never
     re-materialized. Dates beyond the horizon are ignored.
+
+    ``extra`` merges additional day items (Playground pending rung) into the
+    same buckets. Constitution projection is unchanged when extra is empty.
     """
     end = today + timedelta(days=horizon_days)
     buckets: dict[date, list[DayItem]] = {}
@@ -135,6 +139,11 @@ def build_projection(
                     label=_day_label(unit.display_title, rung),
                 )
             )
+    if extra:
+        for extra_date, extra_items in extra.items():
+            if extra_date > end:
+                continue
+            buckets.setdefault(extra_date, []).extend(extra_items)
     return {
         d: DayProjection(local_date=d, items=sorted(items, key=lambda i: i.label))
         for d, items in buckets.items()

@@ -114,6 +114,13 @@ def test_the_gate_did_not_widen_to_everything():
     assert not wants_request_breakdown("/")
     assert not wants_request_breakdown("/tables")
     assert not wants_request_breakdown("/lawsuit")
+    assert not wants_request_breakdown("/admin")
+    assert not wants_request_breakdown("/admin/users")
+    assert not wants_request_breakdown(
+        "/admin/users/11111111-1111-4111-8111-111111111111/grants"
+    )
+    assert not wants_request_breakdown("/login")
+    assert not wants_request_breakdown("/api/theme")
 
 
 # ── Guest vs authenticated ────────────────────────────────────────────────

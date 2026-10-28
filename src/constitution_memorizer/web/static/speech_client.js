@@ -284,24 +284,31 @@
       if (options.text) {
         body.append("text", options.text);
       }
+      if (options.csrf) {
+        body.append("csrf_token", options.csrf);
+      }
       if (options.blob && options.blob.size) {
         const type = options.blob.type || "audio/webm";
         const name = type.indexOf("mp4") >= 0 ? "utterance.mp4" : "utterance.webm";
         body.append("audio", options.blob, name);
       }
-      const response = await fetch(
-        "/learn/" + encodeURIComponent(unitId) + "/speech/transcribe",
-        {
-          method: "POST",
-          credentials: "same-origin",
-          headers: {
-            Accept: "application/json",
-            "X-Requested-With": "XMLHttpRequest",
-          },
-          body,
-          signal: options.signal,
-        },
-      );
+      const headers = {
+        Accept: "application/json",
+        "X-Requested-With": "XMLHttpRequest",
+      };
+      if (options.csrf) {
+        headers["X-CSRF-Token"] = options.csrf;
+      }
+      const endpoint =
+        options.url ||
+        "/learn/" + encodeURIComponent(unitId) + "/speech/transcribe";
+      const response = await fetch(endpoint, {
+        method: "POST",
+        credentials: "same-origin",
+        headers,
+        body,
+        signal: options.signal,
+      });
       const contentType = response.headers.get("content-type") || "";
       if (!contentType.includes("application/json")) {
         const error = new Error("speech-failed");

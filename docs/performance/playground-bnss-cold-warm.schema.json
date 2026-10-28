@@ -1,0 +1,194 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://recall.local/schemas/playground-bnss-cold-warm.json",
+  "title": "Playground WS7 BNSS cold/warm baseline (schema sample)",
+  "description": "Machine-specific timings are not committed. Shape written by scripts/benchmark_playground.py --protocol bnss-cold-warm. Cold and warm cells are separate objects. Warm cells must not include a bare_act_load series; a 0.0 stage contribution means the stage did not execute, not a measured 0 ms.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "protocol",
+    "scenario",
+    "app_env",
+    "database_backend",
+    "largest_act",
+    "learn_route",
+    "selection",
+    "runs"
+  ],
+  "properties": {
+    "schema_version": { "type": "integer", "const": 1 },
+    "protocol": { "type": "string", "const": "bnss-cold-warm" },
+    "scenario": { "type": "string", "const": "law-workspace" },
+    "app_env": { "type": "string" },
+    "database_backend": { "type": "string", "enum": ["sqlite", "postgresql"] },
+    "largest_act": { "$ref": "#/$defs/largest_act" },
+    "learn_route": { "$ref": "#/$defs/learn_route" },
+    "selection": { "$ref": "#/$defs/selection" },
+    "runs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "playground_workspace",
+        "playground_learn",
+        "public_bare_act"
+      ],
+      "properties": {
+        "playground_workspace": { "$ref": "#/$defs/route_run" },
+        "playground_learn": { "$ref": "#/$defs/route_run" },
+        "public_bare_act": { "$ref": "#/$defs/route_run" }
+      }
+    }
+  },
+  "$defs": {
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["count", "min", "mean", "p50", "p95", "p99", "max"],
+      "properties": {
+        "count": { "type": "integer", "minimum": 1 },
+        "min": { "type": "number" },
+        "mean": { "type": "number" },
+        "p50": { "type": "number" },
+        "p95": { "type": "number" },
+        "p99": { "type": "number" },
+        "max": { "type": "number" }
+      }
+    },
+    "largest_act": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "slug",
+        "filename",
+        "bytes",
+        "confirmed_largest_eligible"
+      ],
+      "properties": {
+        "slug": { "type": "string", "const": "bnss" },
+        "filename": { "type": "string" },
+        "bytes": { "type": "integer", "minimum": 1 },
+        "confirmed_largest_eligible": { "type": "boolean", "const": true }
+      }
+    },
+    "learn_route": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["method", "path", "locator", "mode", "path_group"],
+      "properties": {
+        "method": { "type": "string", "const": "GET" },
+        "path": {
+          "type": "string",
+          "const": "/playground/laws/bnss/sections/1/learn/read"
+        },
+        "locator": { "type": "string", "const": "bnss:section:1" },
+        "mode": { "type": "string", "const": "read" },
+        "path_group": {
+          "type": "string",
+          "const": "/playground/laws/{law_id}/sections/{number}/learn/{mode}"
+        }
+      }
+    },
+    "selection": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["law_id", "selected_count", "status", "complete_modes"],
+      "properties": {
+        "law_id": { "type": "string", "const": "bnss" },
+        "selected_count": { "type": "integer", "minimum": 1 },
+        "status": { "type": "string" },
+        "complete_modes": { "type": "boolean" }
+      }
+    },
+    "cache_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "cache_class",
+        "samples",
+        "bare_act_cache_values",
+        "bare_act_cache_misses_min",
+        "bare_act_cache_misses_max",
+        "bare_act_load_present_count",
+        "bare_act_load_absent_count"
+      ],
+      "properties": {
+        "cache_class": { "type": "string", "enum": ["miss", "hit"] },
+        "samples": { "type": "integer", "minimum": 1 },
+        "bare_act_cache_values": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["hit", "miss"] }
+        },
+        "bare_act_cache_misses_min": { "type": "integer", "minimum": 0 },
+        "bare_act_cache_misses_max": { "type": "integer", "minimum": 0 },
+        "bare_act_load_present_count": { "type": "integer", "minimum": 0 },
+        "bare_act_load_absent_count": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "cell": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "schema_version",
+        "scenario",
+        "app_env",
+        "database_backend",
+        "warmup_discarded",
+        "iterations",
+        "path_group",
+        "method",
+        "status_counts",
+        "metrics",
+        "stages_present",
+        "cache_evidence"
+      ],
+      "properties": {
+        "schema_version": { "type": "integer", "const": 1 },
+        "scenario": { "type": "string", "const": "law-workspace" },
+        "app_env": { "type": "string" },
+        "database_backend": { "type": "string", "enum": ["sqlite", "postgresql"] },
+        "warmup_discarded": { "type": "integer", "minimum": 0 },
+        "iterations": { "type": "integer", "minimum": 1 },
+        "path_group": { "type": "string" },
+        "method": { "type": "string", "enum": ["GET"] },
+        "status_counts": {
+          "type": "object",
+          "additionalProperties": { "type": "integer", "minimum": 0 }
+        },
+        "metrics": {
+          "type": "object",
+          "description": "Distributions for total_ms, playground_repo_round_trips, playground_db_reads, and each unioned timing stage present on every sample in this cell. Warm cells omit bare_act_load rather than zero-filling it.",
+          "required": [
+            "total_ms",
+            "playground_repo_round_trips",
+            "playground_db_reads"
+          ],
+          "additionalProperties": { "$ref": "#/$defs/summary" }
+        },
+        "stages_present": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "notes_observed": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        },
+        "cache_evidence": { "$ref": "#/$defs/cache_evidence" }
+      }
+    },
+    "route_run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "path_group", "cold", "warm"],
+      "properties": {
+        "path": { "type": "string" },
+        "path_group": { "type": "string" },
+        "cold": { "$ref": "#/$defs/cell" },
+        "warm": { "$ref": "#/$defs/cell" }
+      }
+    }
+  }
+}

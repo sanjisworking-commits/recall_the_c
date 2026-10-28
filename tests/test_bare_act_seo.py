@@ -219,11 +219,28 @@ def test_laws_hub_declares_self_canonical(client: TestClient):
     html = client.get("/laws").text
     assert _canonical(html) == f"{CANONICAL_ORIGIN}/laws"
     assert _canonical(html) == laws_hub_canonical_url()
+    from constitution_memorizer.web.seo import (
+        DEFAULT_SEO_TITLE,
+        build_laws_hub_seo,
+    )
+
+    title, description = build_laws_hub_seo()
+    assert _title(html) == title
+    assert title != DEFAULT_SEO_TITLE
+    assert _meta(html, name="description") == description
+    assert _meta(html, name="description") != DEFAULT_SEO_DESCRIPTION
 
 
 @pytest.mark.parametrize(
     "query",
-    ["?q=ndps", "?subject=criminal-law", "?q=bail&subject=criminal-law"],
+    [
+        "?q=ndps",
+        "?q=bail",
+        "?subject=criminal-law",
+        "?subject=criminal",
+        "?q=bail&subject=criminal",
+        "?q=bail&subject=criminal-law",
+    ],
 )
 def test_laws_hub_query_variants_canonicalize_to_bare_hub(
     client: TestClient, query: str

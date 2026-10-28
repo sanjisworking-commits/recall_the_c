@@ -1,19 +1,22 @@
-"""Central access / entitlement service.
+"""Constitution Learn adapter around the user-type entitlement truth.
 
-Single source of truth for *who* a request belongs to (``guest`` / ``free`` /
-``subscribed``) and, for a given parent Article, *what they may do* (which Learn
-modes are open, what Done requires, whether pressing Done should claim a Free
-Article or hit the subscription gate).
+Commercial Playground state lives in ``constitution_memorizer.entitlements``.
+This module must not query ``user_subscription`` / ``subscription_charge`` /
+``access_grants`` / ``user_free_articles`` to allow or deny Constitution Learn
+for a signed-in account.
 
-Every surface — Learn routes, Done, templates, and JS payloads — consumes the
-result of :func:`compute_learn_access` / :func:`access_summary` rather than
-re-deriving quota or mode rules. Feature code asks a capability; it never
-branches on a specific paid duration.
+Milestone 3A inversion:
 
-Roadmap note: this module is pure logic + light request/engine resolvers. The
-Learn locks (step 3) and Article-aware Done (step 4) wire it into the routes;
-here (step 1) it powers only read-only status surfaces. ``is_subscribed`` is the
-billing seam filled in step 6 — until then it is always ``False``.
+* Guest — existing explore behaviour (flag on: four open modes, no persist;
+  flag off: legacy full access). Unchanged.
+* Authenticated account — full Constitution (all Articles, all six modes,
+  persistent Learn) regardless of Playground subscription, claims, or
+  ``ARTICLE_ENTITLEMENTS_ENABLED``.
+* ``is_subscribed()`` stays ``False`` so Auto Plan is not silently broadened.
+
+``compute_learn_access`` still documents the historical guest/free matrix used
+by admin Entitlement Preview. Authenticated ``resolve_learn_access`` does not
+consult it.
 """
 
 from __future__ import annotations
@@ -63,12 +66,15 @@ def _multiuser_enabled(request: object) -> bool:
 
 
 def entitlements_active(request: object) -> bool:
-    """Whether the 3-Free-Article boundary is switched on for this app.
+    """Whether guest explore + historical status surfaces are switched on.
 
-    ``ARTICLE_ENTITLEMENTS_ENABLED`` defaults to false everywhere; steps 1–4 of
-    the entitlement roadmap land progressively but stay dormant behind it. With
-    the flag off, every caller sees legacy behavior (all six modes, no claim
-    prompts, no gates, no status surfaces) and no entitlement DB reads happen.
+    After Milestone 3A this flag no longer restores the 3-Article cap or
+    Type/Recite premium lock for **signed-in** accounts. Authenticated Learn
+    is always full Constitution.
+
+    With the flag off, guests also see legacy full access (all six modes, no
+    claim UI, no status surfaces) and Learn resolution performs no claim-store
+    reads. With the flag on, **guest** behaviour stays the four open modes.
     """
     app_state = getattr(getattr(request, "app", None), "state", None)
     return bool(getattr(app_state, "article_entitlements_enabled", False))
@@ -131,25 +137,19 @@ def resolve_level(*, multiuser_enabled: bool, has_user: bool, subscribed: bool) 
 
 
 def access_level(request: object) -> str:
-    """Resolve the access level for a FastAPI request.
+    """Resolve the Constitution access *label* for a FastAPI request.
 
-    Still returns only guest/free/subscribed. An admin role or an active
-    manual grant resolves to ``subscribed`` (effective capabilities); the
-    result objects carry ``access_source`` to say why. The override lookup
-    only runs while the entitlement boundary is active, preserving the
-    zero-DB-reads property of the dormant flag.
+    Returns only guest/free/subscribed. Milestone 3A: any signed-in account
+    is ``subscribed`` capability (full Constitution). That label is not a
+    Playground purchase — :func:`is_subscribed` stays ``False`` and
+    Playground commerce lives on EntitlementSnapshot.
     """
     app_state = getattr(getattr(request, "app", None), "state", None)
     multiuser_enabled = bool(getattr(app_state, "multiuser_enabled", False))
     user = getattr(getattr(request, "state", None), "current_user", None)
-    subscribed = user is not None and is_subscribed(user)
-    if (
-        multiuser_enabled
-        and user is not None
-        and not subscribed
-        and entitlements_active(request)
-    ):
-        subscribed = has_active_recall_access(request)
+    # Authenticated = full Constitution. Do not consult claims, grants, or
+    # Playground subscription to choose the Constitution label.
+    subscribed = user is not None
     return resolve_level(
         multiuser_enabled=multiuser_enabled,
         has_user=user is not None,
@@ -185,13 +185,18 @@ def can_use_auto_plan(request: object) -> bool:
 
 
 def learning_entitlement_args(request: object, engine: object) -> dict:
-    """Claimed-Article mix args. Full-access users skip the Free slot cap.
+    """Claimed-Article mix args. Authenticated accounts skip the Free slot cap.
 
-    Preview is not consulted. Feature code (mix generation, Dashboard
-    new-learning availability) should ask this once rather than re-deriving
-    Free vs full-access from ``is_subscribed``.
+    Milestone 3A: signed-in Constitution Learn is full, so mix generation must
+    not consult ``user_free_articles``. Auto Plan *eligibility* still uses
+    :func:`can_use_auto_plan` and is not broadened.
     """
-    if not entitlements_active(request) or can_use_auto_plan(request):
+    user = getattr(getattr(request, "state", None), "current_user", None)
+    if (
+        not entitlements_active(request)
+        or can_use_auto_plan(request)
+        or user is not None
+    ):
         return {
             "claimed": set(),
             "remaining_slots": None,
@@ -391,23 +396,32 @@ def _preview_learn_access(state: str) -> LearnAccess:
 def resolve_learn_access(request: object, engine: object, article_number: object) -> LearnAccess:
     """Resolve :class:`LearnAccess` from a request + the per-user engine.
 
-    While ``ARTICLE_ENTITLEMENTS_ENABLED`` is off, every request resolves to
-    full legacy access (all six modes, everything persists, no prompts) and no
-    entitlement store reads happen.
+    Authenticated accounts always receive full Constitution capability: all
+    six modes, persistent Done / ``modes_seen``, no claim prompt, no 3-Article
+    cap. ``engine.claimed_articles()`` is not consulted.
 
-    Order of authority once active: entitlement preview (verified admins
-    only, checked before everything so gates can be tested even where the
-    flag is off), then admin role, then active manual grant — both full
-    access without reading the claim store, never consuming a free slot —
-    then the normal guest/free/subscribed matrix.
+    Guests keep the pre-inversion product: flag off → legacy full access and
+    no claim-store reads; flag on → four open modes, Type/Recite locked, no
+    persist. Admin Entitlement Preview still synthesizes the historical free
+    matrix without writing progress.
     """
+    del article_number  # Article identity is not an authorization input.
+    del engine  # Claim rows are historical; they are not authorization input.
     previewed = preview_state(request)
     if previewed is not None:
         return _preview_learn_access(previewed)
+    level = access_level(request)
+    if level == GUEST:
+        if not entitlements_active(request):
+            return _full_access(GUEST, article_claimed=False, slots=FREE_ARTICLE_LIMIT)
+        return compute_learn_access(GUEST)
+    # Signed-in (or local single-user owner): full Constitution. The flag
+    # must not restore the 3-Article / Type-Recite account gates.
     if not entitlements_active(request):
-        return _full_access(
-            access_level(request), article_claimed=False, slots=FREE_ARTICLE_LIMIT
-        )
+        access = _full_access(level, article_claimed=False, slots=FREE_ARTICLE_LIMIT)
+        if level == SUBSCRIBED and not _multiuser_enabled(request):
+            access = replace(access, access_source="local_owner")
+        return access
     override = _request_override(request)
     if override.is_admin:
         return _full_access(
@@ -424,19 +438,10 @@ def resolve_learn_access(request: object, engine: object, article_number: object
             slots=0,
             access_source=override.effective_grant.source,
         )
-    level = access_level(request)
-    if level != FREE:
-        access = compute_learn_access(level)
-        if level == SUBSCRIBED and not _multiuser_enabled(request):
-            access = replace(access, access_source="local_owner")
-        return access
-    claimed = _claimed_articles(engine)
-    key = article_key(article_number)
-    return compute_learn_access(
-        FREE,
-        article_claimed=key is not None and key in claimed,
-        free_slots_remaining=max(0, FREE_ARTICLE_LIMIT - len(claimed)),
-    )
+    access = _full_access(SUBSCRIBED, article_claimed=False, slots=FREE_ARTICLE_LIMIT)
+    if not _multiuser_enabled(request):
+        access = replace(access, access_source="local_owner")
+    return access
 
 
 # --------------------------------------------------------------------------- #
@@ -555,10 +560,13 @@ def access_summary(request: object, engine: object) -> AccessSummary:
                 f"{ends.day} {ends:%B %Y}" if ends is not None else None
             ),
         )
+    # Constitution capability is full for every signed-in account. Do not
+    # mark AccessSummary.is_subscribed from that label — that flag is the
+    # old Recall-purchase seam and must not open Auto Plan.
     summary = build_access_summary(
-        level, claimed_articles=claimed, subscribed=(level == SUBSCRIBED)
+        SUBSCRIBED, claimed_articles=claimed, subscribed=False
     )
-    if level == SUBSCRIBED and not _multiuser_enabled(request):
+    if not _multiuser_enabled(request):
         summary = replace(summary, access_source="local_owner")
     return summary
 

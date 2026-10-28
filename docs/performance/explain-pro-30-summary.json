@@ -1,0 +1,211 @@
+{
+  "alembic_head": "20260927_0027",
+  "app_env": "test",
+  "database_backend": "postgresql",
+  "dataset": {
+    "current_subscription_rows": 1,
+    "device_rows": 1,
+    "mode_progress_rows": 3120,
+    "overlay_items": 30,
+    "progress_rows": 520,
+    "revision_mode_rows": 960,
+    "roster_items": 30,
+    "selection_rows": 520,
+    "source_change_rows": 24
+  },
+  "disposable_db_name_prefix": "s2_",
+  "disposable_host_class": "unix-peer",
+  "fixture": "pro-30+source-review",
+  "label": "disposable PostgreSQL baseline, not an SLA",
+  "postgres_version": "PostgreSQL 16.15 (Ubuntu 16.15-0ubuntu0.24.04.1) on x86_64-pc-linux-gnu, compiled by gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0, 64-bit",
+  "queries": [
+    {
+      "actual_rows": 30,
+      "actual_time_ms": 0.022,
+      "buffers_shared_hit": 1,
+      "buffers_shared_read": 0,
+      "execution_time_ms": 0.034,
+      "index_names": [],
+      "label": "current_roster_lookup",
+      "n_plus_one_hint": false,
+      "plan_file": "docs/performance/explain-pro-30-current_roster_lookup.txt",
+      "plan_rows": 30,
+      "plan_shape": "Sort; Seq Scan",
+      "planning_time_ms": 0.108,
+      "row_volume": 30,
+      "scan_types": [
+        "Sort",
+        "Seq Scan"
+      ],
+      "t16_note": "Seq Scan present; not treated as N+1 without Nested Loop inner correlation on progress/selection. T16 may revisit scaling."
+    },
+    {
+      "actual_rows": 1,
+      "actual_time_ms": 0.033,
+      "buffers_shared_hit": 1,
+      "buffers_shared_read": 0,
+      "execution_time_ms": 0.042,
+      "index_names": [],
+      "label": "roster_capacity_count",
+      "n_plus_one_hint": false,
+      "plan_file": "docs/performance/explain-pro-30-roster_capacity_count.txt",
+      "plan_rows": 1,
+      "plan_shape": "Aggregate; Sort; Seq Scan",
+      "planning_time_ms": 0.049,
+      "row_volume": 30,
+      "scan_types": [
+        "Aggregate",
+        "Sort",
+        "Seq Scan"
+      ],
+      "t16_note": "Seq Scan present; not treated as N+1 without Nested Loop inner correlation on progress/selection. T16 may revisit scaling."
+    },
+    {
+      "actual_rows": 30,
+      "actual_time_ms": 3.911,
+      "buffers_shared_hit": 81,
+      "buffers_shared_read": 0,
+      "execution_time_ms": 3.969,
+      "index_names": [],
+      "label": "home_summary_aggregate",
+      "n_plus_one_hint": false,
+      "plan_file": "docs/performance/explain-pro-30-home_summary_aggregate.txt",
+      "plan_rows": 30,
+      "plan_shape": "Sort; Hash Right Join; GroupAggregate; Hash Left Join; Seq Scan; HashAggregate",
+      "planning_time_ms": 0.459,
+      "row_volume": 30,
+      "scan_types": [
+        "Sort",
+        "Hash Right Join",
+        "GroupAggregate",
+        "Hash Left Join",
+        "Seq Scan",
+        "HashAggregate"
+      ],
+      "t16_note": "Seq Scan present; not treated as N+1 without Nested Loop inner correlation on progress/selection. T16 may revisit scaling."
+    },
+    {
+      "actual_rows": 480,
+      "actual_time_ms": 0.663,
+      "buffers_shared_hit": 16,
+      "buffers_shared_read": 0,
+      "execution_time_ms": 0.69,
+      "index_names": [],
+      "label": "due_revisions",
+      "n_plus_one_hint": false,
+      "plan_file": "docs/performance/explain-pro-30-due_revisions.txt",
+      "plan_rows": 12,
+      "plan_shape": "Sort; Hash Join; Seq Scan",
+      "planning_time_ms": 0.185,
+      "row_volume": 520,
+      "scan_types": [
+        "Sort",
+        "Hash Join",
+        "Seq Scan"
+      ],
+      "t16_note": "Seq Scan present; not treated as N+1 without Nested Loop inner correlation on progress/selection. T16 may revisit scaling."
+    },
+    {
+      "actual_rows": 480,
+      "actual_time_ms": 0.523,
+      "buffers_shared_hit": 16,
+      "buffers_shared_read": 0,
+      "execution_time_ms": 0.547,
+      "index_names": [],
+      "label": "calendar_schedule",
+      "n_plus_one_hint": false,
+      "plan_file": "docs/performance/explain-pro-30-calendar_schedule.txt",
+      "plan_rows": 12,
+      "plan_shape": "Sort; Hash Join; Seq Scan",
+      "planning_time_ms": 0.142,
+      "row_volume": 520,
+      "scan_types": [
+        "Sort",
+        "Hash Join",
+        "Seq Scan"
+      ],
+      "t16_note": "Seq Scan present; not treated as N+1 without Nested Loop inner correlation on progress/selection. T16 may revisit scaling."
+    },
+    {
+      "actual_rows": 1,
+      "actual_time_ms": 0.004,
+      "buffers_shared_hit": 1,
+      "buffers_shared_read": 0,
+      "execution_time_ms": 0.011,
+      "index_names": [],
+      "label": "device_count",
+      "n_plus_one_hint": false,
+      "plan_file": "docs/performance/explain-pro-30-device_count.txt",
+      "plan_rows": 1,
+      "plan_shape": "Aggregate; Seq Scan",
+      "planning_time_ms": 0.082,
+      "row_volume": 1,
+      "scan_types": [
+        "Aggregate",
+        "Seq Scan"
+      ],
+      "t16_note": "Seq Scan present; not treated as N+1 without Nested Loop inner correlation on progress/selection. T16 may revisit scaling."
+    },
+    {
+      "actual_rows": 1,
+      "actual_time_ms": 0.002,
+      "buffers_shared_hit": 1,
+      "buffers_shared_read": 0,
+      "execution_time_ms": 0.005,
+      "index_names": [],
+      "label": "device_lookup",
+      "n_plus_one_hint": false,
+      "plan_file": "docs/performance/explain-pro-30-device_lookup.txt",
+      "plan_rows": 1,
+      "plan_shape": "Seq Scan",
+      "planning_time_ms": 0.037,
+      "row_volume": 1,
+      "scan_types": [
+        "Seq Scan"
+      ],
+      "t16_note": "Seq Scan present; not treated as N+1 without Nested Loop inner correlation on progress/selection. T16 may revisit scaling."
+    },
+    {
+      "actual_rows": 1,
+      "actual_time_ms": 0.003,
+      "buffers_shared_hit": 1,
+      "buffers_shared_read": 0,
+      "execution_time_ms": 0.007,
+      "index_names": [],
+      "label": "current_subscription",
+      "n_plus_one_hint": false,
+      "plan_file": "docs/performance/explain-pro-30-current_subscription.txt",
+      "plan_rows": 1,
+      "plan_shape": "Seq Scan",
+      "planning_time_ms": 0.107,
+      "row_volume": 1,
+      "scan_types": [
+        "Seq Scan"
+      ],
+      "t16_note": "Seq Scan present; not treated as N+1 without Nested Loop inner correlation on progress/selection. T16 may revisit scaling."
+    },
+    {
+      "actual_rows": 24,
+      "actual_time_ms": 0.024,
+      "buffers_shared_hit": 1,
+      "buffers_shared_read": 0,
+      "execution_time_ms": 0.03,
+      "index_names": [],
+      "label": "source_review_aggregate",
+      "n_plus_one_hint": false,
+      "plan_file": "docs/performance/explain-pro-30-source_review_aggregate.txt",
+      "plan_rows": 24,
+      "plan_shape": "Sort; Seq Scan",
+      "planning_time_ms": 0.074,
+      "row_volume": 24,
+      "scan_types": [
+        "Sort",
+        "Seq Scan"
+      ],
+      "t16_note": "Seq Scan present; not treated as N+1 without Nested Loop inner correlation on progress/selection. T16 may revisit scaling."
+    }
+  ],
+  "scenario": "pro-30",
+  "schema_version": 1,
+  "t7_note": "T15 physical SQL statements are not T7 outermost-method round-trip counters. Nested Loop / seq scan is not inferred as N+1 from plan shape alone."
+}

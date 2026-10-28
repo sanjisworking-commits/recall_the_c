@@ -1,0 +1,58 @@
+{% extends "playground_base.html" %}
+{% from "partials/playground.html" import trust_mark, status_badge %}
+{% block title %}Section {{ provision.number }} · Source update{% endblock %}
+{% block playground %}
+<section class="pg-workspace">
+  <p class="pg-eyebrow">
+    <a href="{{ list_href }}">Source review</a>
+    · {{ provision.citation or ('Section ' ~ provision.number) }}
+  </p>
+  <h1>{{ provision.citation or ('Section ' ~ provision.number) }}</h1>
+  {% if provision.current_title %}<p class="pg-lede">{{ provision.current_title }}</p>{% endif %}
+  {{ status_badge('updated', change_copy) }}
+  {% if provision.lifecycle_status == 'mastered' %}{{ status_badge('mastered', 'Mastered') }}
+  {% elif provision.lifecycle_status in ('learned', 'review') %}{{ status_badge('learned', 'Learned') }}
+  {% endif %}
+  {% if provision.interval_days %}
+  <p class="pg-methods-count">Day {{ provision.interval_days }}</p>
+  {% endif %}
+  {{ trust_mark("This provision has changed since your recorded learning source.") }}
+  {% if provenance %}
+  <p class="pg-lede">{% for line in provenance %}{{ line }}{% if not loop.last %} · {% endif %}{% endfor %}</p>
+  {% endif %}
+
+  {% if record.change_kind == 'missing' %}
+  <p class="pg-lede">No longer present in the current source. Historical progress is kept.</p>
+  {% elif record.change_kind == 'omitted' %}
+  <p class="pg-lede">This provision is omitted in the current source. Historical progress is kept.</p>
+  {% else %}
+  <p class="pg-lede">This provision has changed since your recorded learning source.</p>
+  {% if provision.current_body %}
+  <div class="CanonicalText">
+    <div class="VerbatimText" data-verbatim data-open="true">
+      <p class="VerbatimText-kicker">VERBATIM TEXT</p>
+      <p>{{ provision.citation or ('Section ' ~ provision.number) }}{% if provision.current_title %} — {{ provision.current_title }}{% endif %}</p>
+      <blockquote>{{ provision.current_body }}</blockquote>
+    </div>
+  </div>
+  {% endif %}
+  {% endif %}
+
+  {% if reviewed %}
+  <p class="pg-note">Update reviewed</p>
+  {% else %}
+  <form method="post" action="{{ reviewed_href }}" class="pg-actions">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+    <input type="hidden" name="detected_source_version" value="{{ record.detected_source_version }}">
+    <input type="hidden" name="detected_law_source_hash" value="{{ record.detected_law_source_hash }}">
+    <button type="submit" class="pg-btn">Mark reviewed</button>
+  </form>
+  {% endif %}
+
+  <p class="pg-actions">
+    <a class="pg-btn pg-btn--quiet" href="{{ list_href }}">← Affected provisions</a>
+    <a class="pg-btn pg-btn--quiet" href="{{ read_href }}">Read current Act</a>
+    <a class="pg-btn pg-btn--quiet" href="{{ workspace_href }}">Law workspace</a>
+  </p>
+</section>
+{% endblock %}
