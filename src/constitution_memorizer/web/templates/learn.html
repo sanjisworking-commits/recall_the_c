@@ -256,7 +256,8 @@
   {% endif %}
 
   <div class="learn-body learn-panel-read" data-learn-panel="read">
-    <article class="unit-text learn-read-text rc-rise">{% if has_text_annotations %}{{ annotated_text }}{% else %}{{ unit.text }}{% endif %}</article>
+    <article class="unit-text learn-read-text rc-rise">{% if has_text_annotations %}{{ annotated_text.html }}{% else %}{{ unit.text }}{% endif %}</article>
+    {% if has_text_annotations %}{% with footnotes = annotated_text.footnotes %}{% include "partials/bare_act_footnotes.html" %}{% endwith %}{% endif %}
     <p class="learn-hint">{{ read_hint }}</p>
     <div class="learn-read-controls">
       <button type="button" class="learn-read-done" data-deck-back data-done-mode="read">Mark as read</button>

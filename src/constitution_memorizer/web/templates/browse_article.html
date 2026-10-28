@@ -81,9 +81,12 @@
   {# Keep body flush against the tag: .unit-text uses white-space:pre-wrap, so
      indented Jinja would show as a leading blank line / indent before "(1)". #}
   <div class="article-bare" data-bare-preview>
-    <article class="unit-text browse-article-text"{% if has_text_annotations %} data-bare-fn-root{% endif %}>{% if has_text_annotations %}{{ annotated_text }}{% else %}{{ article.full_text }}{% endif %}</article>
+    <article class="unit-text browse-article-text">{% if has_text_annotations %}{{ annotated_text.html }}{% else %}{{ article.full_text }}{% endif %}</article>
     <button type="button" class="article-bare-more" data-bare-expand>Read the full Article</button>
   </div>
+  {# Outside .article-bare on purpose: the preview clips to a few lines, and a
+     note rendered inside it was being cut off mid-sentence on phone. #}
+  {% if has_text_annotations %}{% with footnotes = annotated_text.footnotes %}{% include "partials/bare_act_footnotes.html" %}{% endwith %}{% endif %}
 
   {% if article.amendments is not none and article.amendments|length > 0 %}
   <section class="amendment-history" id="amendment-history" aria-label="Amendment history">

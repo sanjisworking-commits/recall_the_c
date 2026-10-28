@@ -679,8 +679,9 @@
      design sets the marker in a grey column beside the clause, which needs
      real elements — so build them here rather than reshaping the corpus.
 
-     Annotation spans (.bare-fn) are moved, never rebuilt, so the listeners
-     app.js already bound to them survive. */
+     Annotation spans (.bareact-fn) are moved rather than rebuilt so the text
+     inside them is never re-escaped; app.js reaches them by delegation, so
+     they would survive a rebuild too. */
 
   var CLAUSE_MARKER = /^\s*(\((?:\d{1,3}[A-Za-z]?|[A-Za-z]{1,4})\))\s+/;
 
