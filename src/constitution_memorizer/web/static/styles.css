@@ -3707,6 +3707,17 @@ code {
   font-size: 12.5px;
   line-height: 1.35;
   color: var(--ink);
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+.browse-article-title.is-tight {
+  font-size: 11px;
+}
+
+.browse-article-title.is-compact {
+  font-size: 10px;
 }
 
 .tables-tab-rail {

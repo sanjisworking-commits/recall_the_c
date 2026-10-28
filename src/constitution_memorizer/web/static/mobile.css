@@ -1935,6 +1935,17 @@
     margin-top: 1px;
     font-size: 11.5px;
     color: var(--mid);
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+  }
+
+  .part-row-sub.is-tight {
+    font-size: 10.5px;
+  }
+
+  .part-row-sub.is-compact {
+    font-size: 10px;
   }
 
   .part-row-meta {

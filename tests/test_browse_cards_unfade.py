@@ -33,3 +33,12 @@ def test_browse_cards_share_ink_chrome(tmp_path: Path):
     title_rule = css.split(".browse-article-title {")[1].split("}")[0]
     assert "var(--ink)" in title_rule
     assert "var(--muted)" not in title_rule
+    assert "ellipsis" not in title_rule
+    assert "line-clamp" not in title_rule
+    assert "white-space: normal" in title_rule
+    assert ".browse-article-title.is-tight" in css
+    assert ".browse-article-title.is-compact" in css
+    tight = css.split(".browse-article-title.is-tight {")[1].split("}")[0]
+    compact = css.split(".browse-article-title.is-compact {")[1].split("}")[0]
+    assert "11px" in tight
+    assert "10px" in compact
