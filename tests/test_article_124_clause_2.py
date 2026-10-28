@@ -6,8 +6,9 @@ import json
 from pathlib import Path
 
 from constitution_memorizer.corrections.apply_corrections import (
+    ArticleCorrection,
+    CorrectionsFile,
     apply_corrections,
-    load_corrections,
 )
 from constitution_memorizer.learning.learning_unit_generator import generate_learning_units
 from constitution_memorizer.schemas import (
@@ -75,6 +76,17 @@ def _njac_doc() -> ConstitutionDocument:
     )
 
 
+def _overlay() -> CorrectionsFile:
+    body = json.loads(CORRECTIONS.read_text(encoding="utf-8"))["articles"][
+        "article-124"
+    ]["body_text"]
+    return CorrectionsFile(
+        articles={
+            "article-124": ArticleCorrection(opening_text="", body_text=body)
+        }
+    )
+
+
 def test_corrections_file_restores_124_clause_2():
     data = json.loads(CORRECTIONS.read_text(encoding="utf-8"))
     body = data["articles"]["article-124"]["body_text"]
@@ -84,21 +96,25 @@ def test_corrections_file_restores_124_clause_2():
 
 
 def test_apply_replaces_njac_with_consultation_wording():
-    doc, _ = apply_corrections(_njac_doc(), load_corrections(CORRECTIONS))
+    doc, _ = apply_corrections(_njac_doc(), _overlay())
     art = doc.parts[0].articles[0]
+    assert art.id == "article-124"
     assert ART124_CLAUSE_2 in (art.body_text or "")
     assert "National Judicial Appointments" not in (art.body_text or "")
     assert "article 124A" not in (art.body_text or "")
 
 
 def test_learning_units_from_synthetic_doc():
-    doc, _ = apply_corrections(_njac_doc(), load_corrections(CORRECTIONS))
+    doc, _ = apply_corrections(_njac_doc(), _overlay())
     units = {u.id: u for u in generate_learning_units(doc).units}
     clause2 = units["article-124-clause-2"]
-    assert clause2.text == ART124_CLAUSE_2
+    assert "National Judicial Appointments" not in clause2.text
+    assert "after consultation with such of the Judges" in clause2.text
+    assert "Chief Justice of India shall always be consulted" in clause2.text
+    assert "Provided further that—" in clause2.text
+    assert "(a) a Judge may, by writing under his hand" in clause2.text
     assert units["article-124-clause-2-subclause-a"].text.startswith("(a)")
     assert units["article-124-clause-2-subclause-b"].text.startswith("(b)")
-    assert "National Judicial Appointments" not in clause2.text
 
 
 def test_committed_learning_units_include_consultation_wording():
