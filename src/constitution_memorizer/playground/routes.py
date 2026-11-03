@@ -1258,15 +1258,6 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         """
 
         roster = require_roster_service(request)
-        if not getattr(roster, "choices_model", False):
-            # ``monthly``: the membership gate exactly as at 3719b9f.
-            access = require_law_active_this_period(
-                request, templates, overlay, law_id, next_url=next_url
-            )
-            blocked = _denied(access)
-            if blocked is not None:
-                return blocked
-            return access, False
         opened = require_playground_open(request, templates, next_url=next_url)
         blocked = _denied(opened)
         if blocked is not None:
@@ -1287,13 +1278,26 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
     @router.get("/laws/{law_id}/sections", response_class=HTMLResponse)
     async def playground_select_page(request: Request, law_id: str) -> HTMLResponse:
         overlay = require_playground_repo(request)
-        gated = _member_or_selection_mode(
-            request, overlay, law_id, next_url=sections_path(law_id)
-        )
-        blocked = _denied(gated)
-        if blocked is not None:
-            return blocked  # type: ignore[return-value]
-        access, _selection_mode = gated
+        if not getattr(require_roster_service(request), "choices_model", False):
+            # ``monthly``: the membership gate exactly as at 3719b9f.
+            access = require_law_active_this_period(
+                request,
+                templates,
+                overlay,
+                law_id,
+                next_url=sections_path(law_id),
+            )
+            blocked = _denied(access)
+            if blocked is not None:
+                return blocked  # type: ignore[return-value]
+        else:
+            gated = _member_or_selection_mode(
+                request, overlay, law_id, next_url=sections_path(law_id)
+            )
+            blocked = _denied(gated)
+            if blocked is not None:
+                return blocked  # type: ignore[return-value]
+            access, _selection_mode = gated
         try:
             act = require_playground_law(law_id)
         except PlaygroundLawError:
@@ -1362,13 +1366,22 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         law_id: str,
     ) -> RedirectResponse:
         overlay = require_playground_repo(request)
-        gated = _member_or_selection_mode(
-            request, overlay, law_id, next_url=sections_path(law_id)
-        )
-        blocked = _denied(gated)
-        if blocked is not None:
-            return blocked  # type: ignore[return-value]
-        opened, selection_mode = gated
+        selection_mode = False
+        if not getattr(require_roster_service(request), "choices_model", False):
+            opened = require_law_active_this_period(
+                request, templates, overlay, law_id, next_url=sections_path(law_id)
+            )
+            blocked = _denied(opened)
+            if blocked is not None:
+                return blocked  # type: ignore[return-value]
+        else:
+            gated = _member_or_selection_mode(
+                request, overlay, law_id, next_url=sections_path(law_id)
+            )
+            blocked = _denied(gated)
+            if blocked is not None:
+                return blocked  # type: ignore[return-value]
+            opened, selection_mode = gated
         form = await request.form()
         csrf_token = str(form.get("csrf_token") or "")
         _require_csrf(request, csrf_token)

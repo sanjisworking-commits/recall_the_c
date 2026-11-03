@@ -49,7 +49,7 @@ from tests.test_roster_m5a import (
 )
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED_HEAD = "20260927_0027"
+EXPECTED_HEAD = "20261103_0028"  # B1 (2026-11-03): 0028 adds the permanent-choice ledger; earlier revisions unchanged.
 MODES = PLAYGROUND_LEARN_MODES
 TODAY = date(2026, 9, 25)
 

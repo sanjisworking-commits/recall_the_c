@@ -947,7 +947,7 @@ from constitution_memorizer.web.request_context import (
 
 _T22_ROOT = Path(__file__).resolve().parents[1]
 _T22_TRACKER = _T22_ROOT / "docs" / "PLAYGROUND_DELIVERY_TRACKER.md"
-_T22_ALEMBIC_HEAD = "20260927_0027"
+_T22_ALEMBIC_HEAD = "20261103_0028"  # B1 (2026-11-03): 0028 adds the permanent-choice ledger; earlier revisions unchanged.
 _T22_UUID_RE = re.compile(
     r"[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}"
 )

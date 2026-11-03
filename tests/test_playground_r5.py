@@ -5,7 +5,7 @@ Closes U3 leftover D93–D100, D130 and U7 D107–D114, D137–D138, T26–T27.
 Restyle only for roster/rollover: Keep / Remove / Undecided and slot
 consumption stay Stage 1. Entitlement snapshot is the subscription
 authority; device counts come from the device service. No Razorpay calls
-at render time. Alembic head remains 20260927_0027.
+at render time. Alembic head remains 20261103_0028 (B1 ledger; R5 added no migration).
 
 Does not start R6, reopen R4, or touch T22–T25 / T42.
 """
@@ -61,7 +61,7 @@ def _rollover_cta_labels(html: str) -> list[str]:
     return findall(r"data-rollover-submit[^>]*>([^<]+)<", html)
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED_HEAD = "20260927_0027"
+EXPECTED_HEAD = "20261103_0028"  # B1 (2026-11-03): 0028 adds the permanent-choice ledger; earlier revisions unchanged.
 TEMPLATES = ROOT / "src/constitution_memorizer/web/templates"
 STATIC = ROOT / "src/constitution_memorizer/web/static"
 

@@ -1,7 +1,7 @@
 """R4 — Act progress, six-mode Learn, speech, completion, source-review T42.
 
 Closes U4 (28) and U5 (13, including T42). Stage 1 engines stay authoritative.
-No R5/R6 work. Alembic head remains 20260927_0027.
+No R5/R6 work. Alembic head remains 20261103_0028 (B1 ledger; R4 added no migration).
 """
 
 from __future__ import annotations
@@ -58,7 +58,7 @@ from tests.test_roster_m5a import USER, _authed_client, _confirm_add, _csrf, _su
 from tests.test_speech_routes import FakeSpeechProvider
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED_HEAD = "20260927_0027"
+EXPECTED_HEAD = "20261103_0028"  # B1 (2026-11-03): 0028 adds the permanent-choice ledger; earlier revisions unchanged.
 STATIC = ROOT / "src/constitution_memorizer/web/static"
 TEMPLATES = ROOT / "src/constitution_memorizer/web/templates"
 MODES = PLAYGROUND_LEARN_MODES

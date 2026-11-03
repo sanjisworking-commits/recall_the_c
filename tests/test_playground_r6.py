@@ -1,6 +1,6 @@
 """R6 — Today path merge, Calendar Playground chips, Google pending rung, T32.
 
-Closes U6 D115–D124 and T28–T32. Alembic head remains 20260927_0027.
+Closes U6 D115–D124 and T28–T32. Alembic head remains 20261103_0028 (B1 ledger; R6 added no migration).
 Does not start R7 or reopen R5.
 """
 
@@ -35,7 +35,7 @@ from tests.test_playground_m8 import TODAY, _seed_progress
 from tests.test_roster_m5a import USER, _authed_client, _confirm_add, _csrf, _subscribe
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED_HEAD = "20260927_0027"
+EXPECTED_HEAD = "20261103_0028"  # B1 (2026-11-03): 0028 adds the permanent-choice ledger; earlier revisions unchanged.
 TEMPLATES = ROOT / "src/constitution_memorizer/web/templates"
 STATIC = ROOT / "src/constitution_memorizer/web/static"
 MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
