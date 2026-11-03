@@ -120,6 +120,8 @@ from constitution_memorizer.web.browse import (
     parse_news_articles,
     browse_due_total,
     browse_parts_sections,
+    browse_schedule_cards,
+    build_schedule_view,
     find_part_section,
     part_href,
     part_progress_summary,
@@ -2283,6 +2285,7 @@ def create_app(
             }
             for section in sections
         ]
+        schedule_cards = browse_schedule_cards(eng)
         started = time.perf_counter()
         response = templates.TemplateResponse(
             request,
@@ -2290,6 +2293,7 @@ def create_app(
             {
                 "sections": sections,
                 "part_cards": part_cards,
+                "schedule_cards": schedule_cards,
                 "has_reviewed": app.state.reviewed is not None,
                 "parts_source": parts_source,
                 "present_marks": present_browse_marks(sections),
@@ -2331,6 +2335,34 @@ def create_app(
                 "present_marks": present_browse_marks([section]),
                 "access": access,
                 "claimed_articles": claimed,
+            },
+        )
+        record_request_timing("template", started)
+        return response
+
+    @app.get("/browse/schedule/{slug}", response_class=HTMLResponse)
+    async def browse_schedule(request: Request, slug: str) -> HTMLResponse:
+        """One Constitution Schedule — title, Bare Act body, Tables, Learn units."""
+        eng = _engine()
+        if not getattr(request.state, "is_guest", False):
+            eng.bootstrap_request(
+                include_news=True,
+                include_account=entitlements_active(request),
+            )
+        started = time.perf_counter()
+        view = build_schedule_view(eng, slug)
+        record_request_timing("browse_build", started)
+        if view is None:
+            raise HTTPException(status_code=404, detail="Schedule not found")
+        access = access_summary(request, eng)
+        started = time.perf_counter()
+        response = templates.TemplateResponse(
+            request,
+            "browse_schedule.html",
+            {
+                "schedule": view,
+                "access": access,
+                "row_is_muted": row_is_muted,
             },
         )
         record_request_timing("template", started)

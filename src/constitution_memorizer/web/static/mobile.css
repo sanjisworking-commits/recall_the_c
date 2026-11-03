@@ -1555,6 +1555,11 @@
     gap: 10px;
   }
 
+  .browse-schedule-grid,
+  .browse-schedules-label-desktop {
+    display: none;
+  }
+
   .part-card {
     display: flex;
     flex-direction: column;
@@ -5481,6 +5486,7 @@
   .mobile-sheet,
   .dash-upcoming,
   .browse-part-rail,
+  .browse-schedules-label-phone,
   .browse-rail-note,
   .revisions-mobile,
   .settings-account-row,

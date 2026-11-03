@@ -112,7 +112,7 @@
 
   <h1 class="display">Browse the Constitution</h1>
   <p class="lede">
-    The Constitution, Part by Part. Open an Article, then learn any clause from inside it.
+    The Constitution, Part by Part, then the twelve Schedules. Open an Article or a Schedule, then learn from inside it.
   </p>
 
   {% if access and access.enabled and is_guest|default(false) %}
@@ -208,6 +208,25 @@
   </div>
   {% endif %}
 
+  {% if schedule_cards %}
+  <p class="browse-constitution-label browse-schedules-label-phone">The Schedules</p>
+  <div class="browse-part-rail browse-schedule-rail">
+    {% for card in schedule_cards %}
+    <a class="part-card" href="{{ card.href }}">
+      <span class="part-card-top">
+        <span class="part-card-roman">Schedule {{ card.roman }}</span>
+        <span class="part-card-chevron" aria-hidden="true">›</span>
+      </span>
+      <span class="part-card-name">{{ card.title }}</span>
+      <span class="part-card-foot">
+        <span class="part-card-range">{{ card.articles }}</span>
+      </span>
+    </a>
+    {% endfor %}
+    <p class="browse-rail-note">{{ schedule_cards|length }} Schedules of the Constitution.</p>
+  </div>
+  {% endif %}
+
   {% for section in sections %}
   <section class="browse-part" aria-label="Part {{ section.part_number }}">
     <div class="browse-part-header">
@@ -233,6 +252,18 @@
   {% else %}
   <p class="empty">No articles available to browse.</p>
   {% endfor %}
+
+  {% if schedule_cards %}
+  <p class="browse-constitution-label browse-schedules-label-desktop">The Schedules</p>
+  <div class="browse-article-grid browse-schedule-grid">
+    {% for card in schedule_cards %}
+    <a class="browse-article-card" href="{{ card.href }}">
+      <span class="browse-article-num">Schedule {{ card.roman }}</span>
+      <span class="browse-article-title">{{ card.title }}</span>
+    </a>
+    {% endfor %}
+  </div>
+  {% endif %}
 
   {% if present_marks %}
   {# Design 15: marks live in a sheet on the phone so they cost the Articles

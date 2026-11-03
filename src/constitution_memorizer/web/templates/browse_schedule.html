@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Schedule {{ schedule.roman }} · {{ schedule.title }} · Browse{% endblock %}
+{% block mobile_screen %}part{% endblock %}
+{% block content %}
+<section class="panel browse-article browse-schedule-page">
+  <div class="mobile-topbar">
+    <a class="mobile-back" href="/browse">← All Schedules</a>
+  </div>
+
+  <p class="eyebrow">
+    <span class="eyebrow-desktop">Browse · The Schedules</span>
+    <span class="eyebrow-phone">The Schedules</span>
+  </p>
+  <h1 class="display">Schedule {{ schedule.roman }}</h1>
+  <p class="lede">{{ schedule.title }}</p>
+  {% if schedule.articles %}
+  <p class="browse-article-meta">{{ schedule.articles }}</p>
+  {% endif %}
+
+  <nav class="article-adjacent" aria-label="Adjacent schedules">
+    {% if schedule.prev_slug %}
+    <a class="article-adjacent-link is-prev" href="/browse/schedule/{{ schedule.prev_slug }}">← Schedule {{ schedule.prev_roman }}</a>
+    {% else %}
+    <span class="article-adjacent-link is-disabled">← First Schedule</span>
+    {% endif %}
+    <a class="article-adjacent-index" href="/browse">All Schedules</a>
+    {% if schedule.next_slug %}
+    <a class="article-adjacent-link is-next" href="/browse/schedule/{{ schedule.next_slug }}">Schedule {{ schedule.next_roman }} →</a>
+    {% else %}
+    <span class="article-adjacent-link is-disabled">Last Schedule →</span>
+    {% endif %}
+  </nav>
+
+  {% if schedule.learn_units %}
+  <h2 class="section-title">Learn</h2>
+  <p class="article-clause-label">Units</p>
+  <ul class="checklist article-clause-list">
+    {% for unit in schedule.learn_units %}
+    <li>
+      <a class="checklist-item" href="/learn/{{ unit.id }}">
+        <span class="article-clause-node" aria-hidden="true"></span>
+        <span class="checklist-title">{{ unit.display_title }}</span>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  {% if schedule.full_text %}
+  <p class="article-clause-label">Bare Act</p>
+  <div class="article-bare" data-bare-preview>
+    <article class="unit-text browse-article-text">{{ schedule.full_text }}</article>
+    <button type="button" class="article-bare-more" data-bare-expand>Read the full Schedule</button>
+  </div>
+  {% elif not schedule.table_payload %}
+  <p class="empty">Full Bare Act wording for this Schedule is still being restored. The title and article references are current.</p>
+  {% endif %}
+
+  {% if schedule.table_payload %}
+  <p class="article-clause-label">{{ schedule.table_payload.title or 'Reference table' }}</p>
+  {% if schedule.table_payload.note %}
+  <p class="tables-note">{{ schedule.table_payload.note }}</p>
+  {% endif %}
+  {% for block in schedule.table_payload.tables %}
+  {% if block.label %}
+  <h3 class="tables-block-label">{{ block.label }}</h3>
+  {% endif %}
+  <div class="tables-frame">
+    <div
+      class="tables-grid tables-head"
+      style="grid-template-columns: {{ schedule.table_payload.grid }}"
+    >
+      {% for h in block.head %}
+      <div class="tables-cell">{{ h }}</div>
+      {% endfor %}
+    </div>
+    {% for row in block.rows %}
+    <div
+      class="tables-grid tables-row{% if row_is_muted(block, row) %} is-muted{% endif %}"
+      style="grid-template-columns: {{ schedule.table_payload.grid }}"
+    >
+      {% for cell in row %}
+      <div class="tables-cell">{{ cell }}</div>
+      {% endfor %}
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+  {% endif %}
+</section>
+{% if is_guest|default(false) %}
+{% include "partials/guest_modal.html" %}
+{% endif %}
+{% endblock %}
