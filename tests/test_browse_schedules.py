@@ -85,6 +85,9 @@ def test_browse_schedule_page_first_and_seventh(tmp_path: Path):
     assert "Schedule I" in first.text
     assert "Andhra Pradesh" in first.text
     assert 'href="/browse/schedule/second"' in first.text
+    css = client.get("/static/mobile.css").text
+    hide = css.split(".browse-schedule-page .eyebrow-desktop", 1)[1].split("}", 1)[0]
+    assert "display: none" in hide
 
     seventh = client.get("/browse/schedule/seventh")
     assert seventh.status_code == 200

@@ -1740,6 +1740,10 @@
     min-height: 36px;
   }
 
+  body[data-mscreen="part"] .browse-schedule-page .eyebrow-desktop {
+    display: none;
+  }
+
   body[data-mscreen="part"] .part-head {
     padding-top: 4px;
     margin-top: 0;
