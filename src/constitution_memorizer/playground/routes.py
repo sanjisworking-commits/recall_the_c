@@ -10,6 +10,7 @@ from fastapi.templating import Jinja2Templates
 from starlette.responses import Response
 
 from constitution_memorizer.playground.access import (
+    save_failed_response,
     SCOPE_ENTIRE,
     SCOPE_SECTIONS,
     add_scope_value,
@@ -41,9 +42,10 @@ from constitution_memorizer.playground.source_review import (
 )
 from constitution_memorizer.playground.eligibility import (
     PlaygroundLawError,
+    is_playground_eligible_law,
+    playground_bare_act_spec,
     playground_catalogue_law,
     playground_law_source_identity,
-    playground_bare_act_spec,
 )
 from constitution_memorizer.web.bare_act_page import bare_act_page_context
 from constitution_memorizer.web.bare_acts import get_bare_act
@@ -56,6 +58,7 @@ from constitution_memorizer.playground.http import (
 )
 from constitution_memorizer.playground.locators import LocatorError, UnitLocator, parse_locator
 from constitution_memorizer.playground.roster.models import (
+    RESULT_FREE_CHOICES_EXHAUSTED,
     RESULT_ALREADY_ACTIVE,
     RESULT_INVALID_CANDIDATE,
     RESULT_INELIGIBLE,
@@ -135,6 +138,7 @@ from constitution_memorizer.playground.progress import (
     choose_next_workspace_row,
 )
 from constitution_memorizer.entitlements.dependencies import (
+    record_roster_access_outcome,
     request_is_active_plus,
     request_is_expired_subscriber,
     request_is_halted_subscriber,
@@ -325,6 +329,42 @@ def _after_active_redirect(overlay, user_id, law_id: str) -> RedirectResponse:
     return RedirectResponse(url=sections_path(law_id), status_code=303)
 
 
+def _consume_or_rolled_back(request: Request, templates: Jinja2Templates, fn, *, json_mode: bool = False):
+    """B1-F07(a). Run one save-point write; if the repository raised inside
+    its transaction (it rolls back before re-raising), answer 503 with
+    ``outcome=rolled_back`` instead of an opaque 500. Errors *after* the
+    commit are not caught here: they are potentially committed and the
+    client must re-read membership (B1-F07(b))."""
+
+    try:
+        return fn(), None
+    except HTTPException:
+        raise
+    except Exception:  # noqa: BLE001 — the repository has rolled back
+        logger.exception("playground save rolled back")
+        return None, save_failed_response(request, templates, json_mode=json_mode)
+
+
+def _selection_mode_allowed(request: Request, access, roster, law_id: str) -> bool:
+    """``choices`` model (5-19 B′): the sections picker opens for a law that
+    is not yet a member when the account could add it. Nothing is written
+    until at least one section is saved."""
+
+    if not getattr(roster, "choices_model", False):
+        return False
+    if access.user_id is None or not is_playground_eligible_law(law_id):
+        return False
+    preview = roster.preview_add_law(
+        access.user_id,
+        law_id,
+        access.snapshot,
+        local_owner=access.local_owner,
+        can_consume_new_law=access.can_consume_new_law,
+        mutate=False,
+    )
+    return preview.status in {RESULT_NEEDS_CONFIRM, RESULT_RE_ADD_CONFIRM}
+
+
 def _add_page_context(
     *,
     request: Request,
@@ -345,6 +385,7 @@ def _add_page_context(
     law_limit = None
     preview = None
     historical = False
+    permanent = False
     if access.user_id is not None and roster is not None:
         capacity = roster.peek_capacity(
             access.user_id, access.snapshot, local_owner=access.local_owner
@@ -352,14 +393,24 @@ def _add_page_context(
         month = playground_month_name(capacity.period_start)
         remaining_after = capacity.remaining
         law_limit = capacity.law_limit
-        preview = roster.preview_add_law(
-            access.user_id,
-            law_id,
-            access.snapshot,
-            local_owner=access.local_owner,
-            can_consume_new_law=access.can_consume_new_law,
-        )
-        if preview.status == RESULT_NEEDS_CONFIRM and remaining_after is not None:
+        permanent = bool(getattr(capacity, "permanent", False))
+        # Read-only (B1-F06/F15): no period for an account that cannot open
+        # the Playground (§4.10), and never a write from a GET or a
+        # scope-step render under ``choices`` (``mutate=False``).
+        if access.can_open or access.local_owner:
+            preview = roster.preview_add_law(
+                access.user_id,
+                law_id,
+                access.snapshot,
+                local_owner=access.local_owner,
+                can_consume_new_law=access.can_consume_new_law,
+                mutate=False,
+            )
+        if (
+            preview is not None
+            and preview.status == RESULT_NEEDS_CONFIRM
+            and remaining_after is not None
+        ):
             remaining_after = max(0, remaining_after - 1)
     if access.user_id is not None and overlay is not None:
         historical = overlay.get_item(access.user_id, law_id) is not None
@@ -378,6 +429,7 @@ def _add_page_context(
         remaining_after=remaining_after,
         historical=historical and not re_add,
         re_add=re_add,
+        permanent=permanent,
     )
     entire_meta = ""
     if hydrate_scope and show_scope and state.kind in {"eligible_to_add", "re_add"}:
@@ -466,6 +518,10 @@ def _add_page_context(
         "blocked_full": kind == "roster_full" or (
             preview is not None and preview.status == RESULT_ROSTER_FULL
         ),
+        "blocked_free_limit": kind == "free_limit" or (
+            preview is not None and preview.status == RESULT_FREE_CHOICES_EXHAUSTED
+        ),
+        "permanent_choices": permanent,
         "step": "scope" if show_scope else "confirm",
         "skip_confirm": skip,
         "re_add": re_add,
@@ -593,16 +649,17 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                 access.snapshot,
                 local_owner=access.local_owner,
                 can_consume_new_law=access.can_consume_new_law,
+                mutate=False,
             )
             if preview.status == RESULT_ALREADY_ACTIVE:
                 overlay = require_playground_repo(request)
                 return _after_active_redirect(overlay, access.user_id, add_id)
-            if preview.status == RESULT_NEW_BLOCKED:
+            if preview.status in {RESULT_NEW_BLOCKED, RESULT_FREE_CHOICES_EXHAUSTED}:
                 denied = consume_blocked_response(
-                    request, templates, access, RESULT_NEW_BLOCKED
+                    request, templates, access, preview.status
                 )
                 return denied  # type: ignore[return-value]
-        capacity = roster.capacity(
+        capacity = roster.capacity_for_request(
             access.user_id,
             access.snapshot,
             local_owner=access.local_owner,
@@ -648,6 +705,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             used=capacity.used,
             law_limit=capacity.law_limit,
             remaining=capacity.remaining,
+            permanent=bool(getattr(capacity, "permanent", False)),
             active_count=len(active_cards),
             removed_consumed_count=len(removed_cards),
             surface="roster",
@@ -698,6 +756,10 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             return blocked  # type: ignore[return-value]
         overlay = require_playground_repo(request)
         roster = require_roster_service(request)
+        if getattr(roster, "choices_model", False):
+            # 5-23: memberships continue automatically; the mandatory monthly
+            # Keep/decline step is retired. Route kept, unlinked, redirects.
+            return RedirectResponse(url=roster_path(), status_code=303)  # type: ignore[return-value]
         with time_playground_stage("playground_rollover_build"):
             plan = roster.get_rollover_plan(
                 access.user_id,
@@ -771,6 +833,8 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         keep_ids, decline_ids = _rollover_ids(form)
         overlay = require_playground_repo(request)
         roster = require_roster_service(request)
+        if getattr(roster, "choices_model", False):
+            return RedirectResponse(url=roster_path(), status_code=303)
         with time_playground_stage("playground_rollover_write"):
             result = roster.confirm_carry_forward(
                 opened.user_id,
@@ -807,6 +871,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                 access.snapshot,
                 local_owner=access.local_owner,
                 can_consume_new_law=access.can_consume_new_law,
+                mutate=False,
             )
             if preview.status == RESULT_ALREADY_ACTIVE:
                 return _after_active_redirect(overlay, access.user_id, law_id)
@@ -841,16 +906,20 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         require_eligible_law(law_id)
         overlay = require_playground_repo(request)
         roster = require_roster_service(request)
+        scope_value = add_scope_value(scope)
+        choices_model = bool(getattr(roster, "choices_model", False))
+        # Under ``choices`` only a POST that carries a save-point scope may
+        # materialise the period; the scope-step re-render stays read-only.
         preview = roster.preview_add_law(
             opened.user_id,
             law_id,
             opened.snapshot,
             local_owner=opened.local_owner,
             can_consume_new_law=opened.can_consume_new_law,
+            mutate=(not choices_model) or scope_value == SCOPE_ENTIRE,
         )
         if preview.status == RESULT_INELIGIBLE:
             raise HTTPException(status_code=404, detail="Law not found")
-        scope_value = add_scope_value(scope)
         re_add = preview.status == RESULT_RE_ADD_CONFIRM
         skip = skips_add_confirm(opened)
         confirmed = is_add_confirmed(confirm) or skip
@@ -865,6 +934,13 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                 except Exception:
                     raise
             return _after_active_redirect(overlay, opened.user_id, law_id)
+
+        if preview.status == RESULT_FREE_CHOICES_EXHAUSTED:
+            # Free account at three permanent choices, law outside its ledger:
+            # the free-limit sheet, not the pending redirect (B1-F02).
+            return consume_blocked_response(
+                request, templates, opened, RESULT_FREE_CHOICES_EXHAUSTED
+            )
 
         if not re_add:
             gated = require_playground_new_law(
@@ -907,14 +983,20 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                 raise HTTPException(status_code=404, detail="Law not found")
             except LocatorError:
                 raise HTTPException(status_code=400, detail="invalid_selection")
-            result = roster.confirm_add_law(
-                opened.user_id,
-                law_id,
-                opened.snapshot,
-                local_owner=opened.local_owner,
-                can_consume_new_law=opened.can_consume_new_law,
-                has_historical_overlay=overlay.get_item(opened.user_id, law_id) is not None,
+            result, failed = _consume_or_rolled_back(
+                request,
+                templates,
+                lambda: roster.confirm_add_law(
+                    opened.user_id,
+                    law_id,
+                    opened.snapshot,
+                    local_owner=opened.local_owner,
+                    can_consume_new_law=opened.can_consume_new_law,
+                    has_historical_overlay=overlay.get_item(opened.user_id, law_id) is not None,
+                ),
             )
+            if failed is not None:
+                return failed
             if result.status == RESULT_INELIGIBLE:
                 raise HTTPException(status_code=404, detail="Law not found")
             if not result.ok:
@@ -935,14 +1017,25 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
 
         if scope_value != SCOPE_SECTIONS:
             raise HTTPException(status_code=400, detail="invalid_selection")
-        result = roster.confirm_add_law(
-            opened.user_id,
-            law_id,
-            opened.snapshot,
-            local_owner=opened.local_owner,
-            can_consume_new_law=opened.can_consume_new_law,
-            has_historical_overlay=overlay.get_item(opened.user_id, law_id) is not None,
+        if choices_model:
+            # 5-19 (approved): "Choose sections" consumes nothing here. The
+            # choice and the membership are written by the sections save
+            # point once at least one section is saved (B′).
+            return RedirectResponse(url=sections_path(law_id), status_code=303)
+        result, failed = _consume_or_rolled_back(
+            request,
+            templates,
+            lambda: roster.confirm_add_law(
+                opened.user_id,
+                law_id,
+                opened.snapshot,
+                local_owner=opened.local_owner,
+                can_consume_new_law=opened.can_consume_new_law,
+                has_historical_overlay=overlay.get_item(opened.user_id, law_id) is not None,
+            ),
         )
+        if failed is not None:
+            return failed
         if result.status == RESULT_INELIGIBLE:
             raise HTTPException(status_code=404, detail="Law not found")
         if not result.ok:
@@ -971,7 +1064,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         roster = require_roster_service(request)
         if not roster.is_law_active_this_period(opened.user_id, law_id):
             return RedirectResponse(url=roster_path(), status_code=303)
-        capacity = roster.capacity(
+        capacity = roster.capacity_for_request(
             opened.user_id,
             opened.snapshot,
             local_owner=opened.local_owner,
@@ -1083,7 +1176,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             if access.snapshot is not None and access.snapshot.playground_period_start is not None:
                 month = playground_month_name(access.snapshot.playground_period_start)
             else:
-                cap = require_roster_service(request).capacity(
+                cap = require_roster_service(request).capacity_for_request(
                     access.user_id, access.snapshot, local_owner=access.local_owner
                 )
                 month = playground_month_name(cap.period_start)
@@ -1156,19 +1249,51 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             },
         )
 
-    @router.get("/laws/{law_id}/sections", response_class=HTMLResponse)
-    async def playground_select_page(request: Request, law_id: str) -> HTMLResponse:
-        overlay = require_playground_repo(request)
+    def _member_or_selection_mode(request: Request, overlay, law_id: str, *, next_url: str):
+        """Membership gate with the ``choices`` selection mode (5-19 B′).
+
+        Returns ``(access, selection_mode)`` or a denial ``Response``.
+        ``selection_mode`` is True only for a not-yet-member law the account
+        may add; nothing has been written for it.
+        """
+
+        roster = require_roster_service(request)
+        if not getattr(roster, "choices_model", False):
+            # ``monthly``: the membership gate exactly as at 3719b9f.
+            access = require_law_active_this_period(
+                request, templates, overlay, law_id, next_url=next_url
+            )
+            blocked = _denied(access)
+            if blocked is not None:
+                return blocked
+            return access, False
+        opened = require_playground_open(request, templates, next_url=next_url)
+        blocked = _denied(opened)
+        if blocked is not None:
+            return blocked
+        if roster.is_law_active_this_period(opened.user_id, law_id):
+            record_roster_access_outcome(source="membership", membership_active=True)
+            return opened, False
+        if _selection_mode_allowed(request, opened, roster, law_id):
+            return opened, True
         access = require_law_active_this_period(
-            request,
-            templates,
-            overlay,
-            law_id,
-            next_url=sections_path(law_id),
+            request, templates, overlay, law_id, next_url=next_url
         )
         blocked = _denied(access)
         if blocked is not None:
+            return blocked
+        return access, False
+
+    @router.get("/laws/{law_id}/sections", response_class=HTMLResponse)
+    async def playground_select_page(request: Request, law_id: str) -> HTMLResponse:
+        overlay = require_playground_repo(request)
+        gated = _member_or_selection_mode(
+            request, overlay, law_id, next_url=sections_path(law_id)
+        )
+        blocked = _denied(gated)
+        if blocked is not None:
             return blocked  # type: ignore[return-value]
+        access, _selection_mode = gated
         try:
             act = require_playground_law(law_id)
         except PlaygroundLawError:
@@ -1237,12 +1362,13 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         law_id: str,
     ) -> RedirectResponse:
         overlay = require_playground_repo(request)
-        opened = require_law_active_this_period(
-            request, templates, overlay, law_id, next_url=sections_path(law_id)
+        gated = _member_or_selection_mode(
+            request, overlay, law_id, next_url=sections_path(law_id)
         )
-        blocked = _denied(opened)
+        blocked = _denied(gated)
         if blocked is not None:
             return blocked  # type: ignore[return-value]
+        opened, selection_mode = gated
         form = await request.form()
         csrf_token = str(form.get("csrf_token") or "")
         _require_csrf(request, csrf_token)
@@ -1260,6 +1386,33 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             )
         except SelectionRejected:
             raise HTTPException(status_code=400, detail="invalid_selection") from None
+        if selection_mode:
+            # 5-19 B′ save point: at least one section, then the choice and
+            # the membership are written together; the selection follows in
+            # this same request. An abandoned picker writes nothing.
+            if not rows:
+                return RedirectResponse(url=sections_path(law_id), status_code=303)
+            roster = require_roster_service(request)
+            result, failed = _consume_or_rolled_back(
+                request,
+                templates,
+                lambda: roster.confirm_add_law(
+                    opened.user_id,
+                    law_id,
+                    opened.snapshot,
+                    local_owner=opened.local_owner,
+                    can_consume_new_law=opened.can_consume_new_law,
+                    has_historical_overlay=overlay.get_item(opened.user_id, law_id) is not None,
+                ),
+            )
+            if failed is not None:
+                return failed  # type: ignore[return-value]
+            if result.status == RESULT_INELIGIBLE:
+                raise HTTPException(status_code=404, detail="Law not found")
+            if not result.ok:
+                return consume_blocked_response(  # type: ignore[return-value]
+                    request, templates, opened, result.status
+                )
         if overlay.get_item(opened.user_id, law_id) is None:
             activate_law(overlay, opened.user_id, law_id)
         overlay.replace_selection(opened.user_id, law_id, rows)

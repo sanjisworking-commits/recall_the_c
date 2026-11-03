@@ -336,7 +336,25 @@ def install_study_archive(app, root: Path):
     def detail(request: Request, entry_id: str):
         return get(request, entry_id)
 
+    def require_personal_task_write(request: Request) -> None:
+        """B1-F11: create and edit of personal material need
+        ``can_add_personal_calendar_tasks`` (Plus and above under the
+        ``choices`` model; every signed-in account under ``monthly``).
+        Read, complete, download, export and delete are not gated here
+        (decision 5-6a: unchanged)."""
+
+        if not bool(getattr(app.state, "multiuser_enabled", False)):
+            return
+        from constitution_memorizer.entitlements.dependencies import (  # noqa: PLC0415
+            get_entitlement_snapshot,
+        )
+
+        snapshot = get_entitlement_snapshot(request)
+        if not snapshot.can_add_personal_calendar_tasks:
+            raise HTTPException(403, "Personal tasks are part of Plus.")
+
     async def save(request, title, studied_on, notes, activity, files, links, entry_id=None):
+        require_personal_task_write(request)
         store = archive(request)
         try:
             if entry_id:

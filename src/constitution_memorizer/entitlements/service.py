@@ -18,6 +18,7 @@ from typing import Any
 from uuid import UUID
 
 from constitution_memorizer.entitlements.models import (
+    BLOCK_FREE_CHOICES_EXHAUSTED,
     BLOCK_NOT_SUBSCRIBED,
     BLOCK_PAID_PERIOD_ENDED,
     BLOCK_PAYMENT_HALTED,
@@ -29,7 +30,16 @@ from constitution_memorizer.entitlements.models import (
     LEGACY_STATUS_EXPIRED,
     EntitlementSnapshot,
 )
-from constitution_memorizer.subscriptions.catalog import get_subscription_product
+from constitution_memorizer.entitlements.tier_model import (
+    FREE_CHOICE_LIMIT,
+    TIER_MODEL_MONTHLY,
+    is_choice_model,
+    normalize_tier_model,
+)
+from constitution_memorizer.subscriptions.catalog import (
+    catalogue_law_limit,
+    get_subscription_product,
+)
 from constitution_memorizer.subscriptions.legacy import classify_legacy_paid_access
 from constitution_memorizer.subscriptions.policy import (
     ACCESS_EFFECT_PERIOD_ENDED,
@@ -76,11 +86,21 @@ class EntitlementService:
         charges: Any = None,
         access_store: Any = None,
         legacy_store: Any = None,
+        choices: Any = None,
+        tier_model: str = TIER_MODEL_MONTHLY,
     ) -> None:
         self._subscriptions = subscriptions
         self._charges = charges
         self._access_store = access_store
         self._legacy_store = legacy_store
+        # Permanent-choice ledger reader (``count_choices``). Read only for a
+        # Free account under ``choices``; never for paid, admin or guests.
+        self._choices = choices
+        self._tier_model = normalize_tier_model(tier_model)
+
+    @property
+    def tier_model(self) -> str:
+        return self._tier_model
 
     def resolve(
         self,
@@ -107,6 +127,10 @@ class EntitlementService:
             legacy=legacy,
             now=clock,
         )
+        if is_choice_model(self._tier_model):
+            snapshot = self._apply_choice_model(
+                snapshot, user_id=user_id, subscription=subscription
+            )
         if admin_override:
             snapshot = EntitlementSnapshot(
                 is_authenticated=True,
@@ -126,6 +150,12 @@ class EntitlementService:
                 legacy_status=snapshot.legacy_status,
                 cancel_at_period_end=snapshot.cancel_at_period_end,
                 scheduled_tier=snapshot.scheduled_tier,
+                tier_model=self._tier_model,
+                playground_choice_limit=None,
+                playground_choices_used=0,
+                playground_consume_block_reason=None,
+                can_add_personal_calendar_tasks=True,
+                can_open_visual_explainers=True,
             )
         return snapshot
 
@@ -176,6 +206,70 @@ class EntitlementService:
             legacy_status=legacy_status,
             now=now,
         )
+
+    def _apply_choice_model(
+        self,
+        snapshot: EntitlementSnapshot,
+        *,
+        user_id: UUID | str,
+        subscription: Any,
+    ) -> EntitlementSnapshot:
+        """Overlay the ``choices`` model on a commercial snapshot (B1-F01/F02/F16).
+
+        * Account with **no subscription row** → Free: opens the Playground,
+          three permanent choices (ledger count), new law allowed while
+          ``used < 3``; at 3 the consume block is ``free_choices_exhausted``.
+        * Paid rows keep their dispositions; the law limit is ``None`` for
+          every paid tier (no monthly cap). Calendar create/edit for Plus and
+          above; Visualize for Pro and above (Max unchanged, 5-7).
+        * Rows in an ended or interrupted state (paid-period-ended, halted,
+          paused, pending, cancelled/expired/completed) keep **today's**
+          dispositions exactly: decision 5-20 is unresolved, so no Free
+          capability is granted to an account that holds a subscription row.
+        """
+
+        from dataclasses import replace  # noqa: PLC0415
+
+        if subscription is None:
+            used = self._count_choices(user_id)
+            consume = used < FREE_CHOICE_LIMIT
+            return replace(
+                snapshot,
+                can_open_playground=True,
+                can_consume_new_playground_law=consume,
+                playground_law_limit=None,
+                playground_block_reason=None,
+                tier_model=self._tier_model,
+                playground_choice_limit=FREE_CHOICE_LIMIT,
+                playground_choices_used=used,
+                playground_consume_block_reason=(
+                    None if consume else BLOCK_FREE_CHOICES_EXHAUSTED
+                ),
+                can_add_personal_calendar_tasks=False,
+                can_open_visual_explainers=False,
+            )
+        tier = str(getattr(subscription, "tier", "") or "")
+        product = get_subscription_product(tier)
+        paid = bool(snapshot.is_subscribed)
+        return replace(
+            snapshot,
+            playground_law_limit=catalogue_law_limit(tier, self._tier_model),
+            tier_model=self._tier_model,
+            playground_choice_limit=None,
+            playground_choices_used=0,
+            playground_consume_block_reason=None,
+            can_add_personal_calendar_tasks=bool(paid and product.personal_calendar_tasks),
+            can_open_visual_explainers=bool(paid and product.visual_explainers),
+        )
+
+    def _count_choices(self, user_id: UUID | str) -> int:
+        repo = self._choices
+        if repo is None:
+            return 0
+        getter = getattr(repo, "count_choices", None)
+        if getter is None:
+            return 0
+        return int(getter(user_id) or 0)
 
     def _current_period_effect(self, subscription: Any) -> str | None:
         repo = self._charges

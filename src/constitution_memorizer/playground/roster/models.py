@@ -32,6 +32,11 @@ RESULT_RE_ADD_CONFIRM = "re_add"
 RESULT_INVALID_CANDIDATE = "invalid_candidate"
 RESULT_SLOT_LOCKED = "active_slot_locked"
 RESULT_ADJUSTMENT_REQUIRED = "rollover_adjustment_required"
+# ``choices`` model: a Free account has spent its three permanent choices and
+# the law is not in its ledger. Existing laws stay usable (B1-F02).
+RESULT_FREE_CHOICES_EXHAUSTED = "free_choices_exhausted"
+
+CHOICE_SOURCE_FREE_ADD = "free_add"
 
 DECISION_KEEP = "keep"
 DECISION_DECLINE = "decline"
@@ -111,6 +116,12 @@ class ConsumeResult:
     remaining: int | None
     period: PlaygroundPeriod | None = None
 
+    # Permanent choices after this call (``choices`` model, Free only).
+    choices_used: int | None = None
+    choice_limit: int | None = None
+    # True when this call appended a ledger row (a new distinct Free choice).
+    choice_recorded: bool = False
+
     @property
     def ok(self) -> bool:
         return self.status in {RESULT_OK, RESULT_ALREADY_ACTIVE, RESULT_RE_ADDED}
@@ -128,6 +139,10 @@ class AddPreview:
     period: PlaygroundPeriod | None
     item: RosterItem | None
     confirmation_copy: str = ""
+    # ``choices`` model, Free only: ledger facts behind the decision.
+    choices_used: int | None = None
+    choice_limit: int | None = None
+    in_ledger: bool = False
 
 
 @dataclass(frozen=True)
@@ -138,6 +153,9 @@ class RosterCapacity:
     used: int
     remaining: int | None
     tier_snapshot: str | None
+    # ``choices`` model: True when ``used``/``remaining`` count permanent
+    # Free choices (ledger) rather than this month's consumed laws.
+    permanent: bool = False
 
 
 @dataclass(frozen=True)

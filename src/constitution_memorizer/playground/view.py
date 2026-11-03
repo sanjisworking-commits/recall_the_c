@@ -15,6 +15,7 @@ from constitution_memorizer.entitlements.models import (
     BLOCK_DEVICE_LIMIT,
     BLOCK_DEVICE_REPLACEMENT_LIMIT,
     BLOCK_DEVICE_REVOKED,
+    BLOCK_FREE_CHOICES_EXHAUSTED,
     BLOCK_NOT_SUBSCRIBED,
     BLOCK_PAID_PERIOD_ENDED,
     BLOCK_PAYMENT_HALTED,
@@ -60,10 +61,16 @@ from constitution_memorizer.playground.urls import (
     source_review_path_for_locator,
     source_review_section_path,
 )
+from constitution_memorizer.entitlements.tier_model import (
+    current_tier_model,
+    is_choice_model,
+)
 from constitution_memorizer.subscriptions.catalog import (
     TIER_RANK,
     UnknownSubscriptionTier,
+    catalogue_law_limit,
     get_subscription_product,
+    list_purchasable_products,
     list_subscription_products,
 )
 from constitution_memorizer.web.guest_playground_intro import GUEST_PG_STEPS
@@ -137,6 +144,9 @@ KIND_ROSTER_FULL = "roster_full"
 KIND_ALREADY_ACTIVE = "already_active"
 KIND_RE_ADD = "re_add"
 KIND_ELIGIBLE_TO_ADD = "eligible_to_add"
+# ``choices`` model: a Free account at three permanent choices looking at a
+# law outside its ledger (M2R-F01 ``free_limit``).
+KIND_FREE_LIMIT = "free_limit"
 
 ACT_HEAD_KINDS = frozenset(
     {
@@ -150,6 +160,7 @@ ACT_HEAD_KINDS = frozenset(
         KIND_ALREADY_ACTIVE,
         KIND_RE_ADD,
         KIND_ELIGIBLE_TO_ADD,
+        KIND_FREE_LIMIT,
     }
 )
 
@@ -179,6 +190,10 @@ class MembershipIndex:
     overlay_ids: frozenset[str]
     remaining: int | None
     month_name: str = ""
+    # ``choices`` model: permanent Free choices (ledger) and whether
+    # ``remaining`` counts choices rather than this month's spaces.
+    ledger_ids: frozenset[str] = frozenset()
+    permanent: bool = False
 
 
 @dataclass(frozen=True)
@@ -269,6 +284,7 @@ class RosterCapacityView:
     legend_removed: str
     legend_available: str
     aria_label: str
+    permanent: bool = False
 
 
 @dataclass(frozen=True)
@@ -419,11 +435,20 @@ def capacity_view(
     removed_consumed_count: int,
     planned: bool = False,
     surface: str = "home",
+    permanent: bool = False,
 ) -> RosterCapacityView:
     month = playground_month_name(period_start)
     unlimited = law_limit is None
     full = (not unlimited) and remaining == 0
-    if unlimited:
+    if permanent and not unlimited:
+        used_label = f"{used} of {law_limit} law choices used"
+        spaces = remaining or 0
+        remaining_label = (
+            "All choices used"
+            if full
+            else f"{spaces} choice{'s' if spaces != 1 else ''} remaining"
+        )
+    elif unlimited:
         noun = "law" if used == 1 else "laws"
         used_label = f"{used} {noun} this month" if planned is False else f"{used} planned"
         remaining_label = "Unlimited"
@@ -451,13 +476,16 @@ def capacity_view(
         if removed_consumed_count
         else ""
     )
+    if permanent and removed_consumed_count:
+        legend_removed = f"{removed_consumed_count} removed · choice kept"
     avail = remaining if remaining is not None else 0
     legend_available = f"{avail} available" if not unlimited else "Unlimited"
-    aria = (
-        f"{used} laws this month, unlimited."
-        if unlimited
-        else f"{used} of {law_limit} {month} law spaces used. {remaining_label}."
-    )
+    if permanent and not unlimited:
+        aria = f"{used} of {law_limit} permanent law choices used. {remaining_label}."
+    elif unlimited:
+        aria = f"{used} laws this month, unlimited."
+    else:
+        aria = f"{used} of {law_limit} {month} law spaces used. {remaining_label}."
     return RosterCapacityView(
         month_name=month,
         period_start=period_start,
@@ -474,6 +502,7 @@ def capacity_view(
         legend_removed=legend_removed,
         legend_available=legend_available,
         aria_label=aria,
+        permanent=permanent,
     )
 
 
@@ -485,7 +514,23 @@ def add_confirm_copy(
     remaining_after: int | None,
     historical: bool,
     re_add: bool,
+    permanent: bool = False,
 ) -> tuple[str, tuple[str, ...]]:
+    if permanent:
+        # ``choices`` model, Free account: permanent choices, no month.
+        if re_add:
+            return (
+                f"Add {short_title} back to your Playground?",
+                ("Your progress will be saved.", "No choice is used."),
+            )
+        remaining = 0 if remaining_after is None else remaining_after
+        lines = [
+            f"This will use 1 of your {law_limit} permanent Playground law choices.",
+            f"You'll have {remaining} choice{'s' if remaining != 1 else ''} remaining. Choices do not reset.",
+        ]
+        if historical:
+            lines.append("Your saved progress comes with it.")
+        return f"Add {short_title} to your Playground?", tuple(lines)
     if re_add:
         title = f"Add {short_title} back to {month_name}?"
         lines = (
@@ -494,6 +539,8 @@ def add_confirm_copy(
         )
         return title, lines
     if law_limit is None:
+        if is_choice_model(current_tier_model()):
+            return f"Add {short_title} to your Playground?", ()
         return f"Add {short_title} to {month_name} Playground?", ()
     remaining = 0 if remaining_after is None else remaining_after
     title = f"Add {short_title} to {month_name}?"
@@ -682,6 +729,22 @@ def playground_subscription_card(snapshot: Any | None) -> PlaygroundSubscription
                 cta_label="Manage Playground",
                 cta_href=home_path(),
             )
+        choice_limit = getattr(snapshot, "playground_choice_limit", None)
+        if choice_limit is not None:
+            used_choices = int(getattr(snapshot, "playground_choices_used", 0) or 0)
+            return PlaygroundSubscriptionCard(
+                title="Playground",
+                chip="FREE",
+                chip_kind="none",
+                body=(
+                    f"{used_choices} of {choice_limit} permanent law choices used. "
+                    "Plus and Pro add laws without limit."
+                ),
+                stat_big=f"{used_choices}/{choice_limit}",
+                stat_label="law choices",
+                cta_label="View Playground plans",
+                cta_href=PLAYGROUND_PLANS_PATH,
+            )
         return PlaygroundSubscriptionCard(
             title="Playground",
             chip="",
@@ -842,9 +905,17 @@ def catalogue_from_price() -> str:
 
 def catalogue_limit_label(limit: int | None) -> str:
     if limit is None:
+        if is_choice_model(current_tier_model()):
+            return "Unlimited laws"
         return "Unlimited laws / month"
     noun = "law" if limit == 1 else "laws"
     return f"{limit} {noun} / month"
+
+
+def product_limit_label(product: Any) -> str:
+    """Plan-card limit for a product under the request's tier model."""
+
+    return catalogue_limit_label(catalogue_law_limit(product.tier))
 
 
 def catalogue_plan_views(
@@ -854,7 +925,7 @@ def catalogue_plan_views(
 ) -> tuple[CataloguePlanView, ...]:
     current_rank = TIER_RANK.get(str(current_tier or ""), 0)
     plans: list[CataloguePlanView] = []
-    for product in list_subscription_products():
+    for product in list_purchasable_products():
         rank = TIER_RANK.get(product.tier, 0)
         if current_rank and rank <= current_rank:
             continue
@@ -869,7 +940,7 @@ def catalogue_plan_views(
                 display_name=product.display_name,
                 price_inr=product.price_inr,
                 price_label=f"₹{product.price_inr}",
-                limit_label=catalogue_limit_label(product.playground_law_limit),
+                limit_label=product_limit_label(product),
                 cta_label=cta,
                 href=href,
             )
@@ -903,14 +974,14 @@ def gate_selector_plan_views() -> tuple[CataloguePlanView, ...]:
     """In-Gate plan selectors. Does not change ``catalogue_plan_views()`` hrefs."""
 
     plans: list[CataloguePlanView] = []
-    for product in list_subscription_products():
+    for product in list_purchasable_products():
         plans.append(
             CataloguePlanView(
                 tier=product.tier,
                 display_name=product.display_name,
                 price_inr=product.price_inr,
                 price_label=f"₹{product.price_inr}",
-                limit_label=catalogue_limit_label(product.playground_law_limit),
+                limit_label=product_limit_label(product),
                 cta_label="",
                 href=f"{home_path()}?stage={GATE_STAGE_PLANS}&tier={product.tier}",
             )
@@ -947,6 +1018,10 @@ def skips_add_confirm(access: Any) -> bool:
         return False
     if getattr(snapshot, "admin_override", False):
         return True
+    if is_choice_model(getattr(snapshot, "tier_model", None)):
+        # Under ``choices`` every paid tier is unlimited; the confirm step for
+        # Plus/Pro is unchanged until 5-14 (M2R-F04). Max keeps today's skip.
+        return str(getattr(snapshot, "tier", None) or "") == "max"
     return snapshot.playground_law_limit is None
 
 
@@ -986,12 +1061,18 @@ def load_membership_index(access: Any, roster: Any, overlay: Any) -> MembershipI
     cap = roster.peek_capacity(
         access.user_id, access.snapshot, local_owner=access.local_owner
     )
+    ledger_ids: frozenset[str] = frozenset()
+    getter = getattr(roster, "choice_law_ids", None)
+    if getter is not None and getattr(cap, "permanent", False):
+        ledger_ids = frozenset(getter(access.user_id))
     return MembershipIndex(
         active_ids=active_ids,
         removed_ids=removed_ids,
         overlay_ids=overlay_ids,
         remaining=cap.remaining,
         month_name=playground_month_name(cap.period_start),
+        ledger_ids=ledger_ids,
+        permanent=bool(getattr(cap, "permanent", False)),
     )
 
 
@@ -1028,9 +1109,16 @@ def law_membership(
     guest = bool(access.user_id is None)
     eligible = is_playground_eligible_law(law_id)
     snapshot = access.snapshot
+    free_choices = bool(
+        snapshot is not None
+        and is_choice_model(getattr(snapshot, "tier_model", None))
+        and getattr(snapshot, "playground_choice_limit", None) is not None
+        and bool(getattr(access, "can_open", False))
+    )
     subscribed = bool(
         access.local_owner
         or (snapshot is not None and (snapshot.is_subscribed or snapshot.admin_override))
+        or free_choices
     )
     can_consume = bool(access.can_consume_new_law or access.local_owner)
     skip = skips_add_confirm(access)
@@ -1150,12 +1238,14 @@ def law_membership(
             secondary_copy=" ".join(part for part in (gate.title,) + gate.lines if part),
         )
 
+    in_ledger = False
     if index is not None:
         active = law_id in index.active_ids
         removed = law_id in index.removed_ids
         historical = law_id in index.overlay_ids
         remaining = index.remaining
         month = index.month_name or "this month"
+        in_ledger = law_id in index.ledger_ids
     else:
         active = False
         removed = False
@@ -1174,11 +1264,18 @@ def law_membership(
                 )
                 remaining = cap.remaining
                 month = playground_month_name(cap.period_start)
+            if free_choices:
+                checker = getattr(roster, "is_choice_law", None)
+                in_ledger = bool(checker(access.user_id, law_id)) if checker else False
         if snapshot is not None and snapshot.playground_period_start is not None:
             month = playground_month_name(snapshot.playground_period_start)
         historical = False
         if access.user_id is not None and overlay is not None:
             historical = overlay.get_item(access.user_id, law_id) is not None
+    if free_choices and in_ledger and not active:
+        # Eligibility is permanent (B1-F03/F17): a chosen law outside the
+        # current membership re-adds at no cost, whatever ``remaining`` says.
+        removed = True
     roster_full = remaining == 0 and not (active or removed)
     if active:
         if not subscribed:
@@ -1210,6 +1307,18 @@ def law_membership(
             secondary_href=sections_href,
         )
     if removed:
+        if free_choices:
+            return _state(
+                KIND_RE_ADD,
+                removed=True,
+                historical=historical or in_ledger,
+                primary_label="Add again",
+                primary_href=add_path(law_id),
+                badge=MEMBERSHIP_REMOVED,
+                badge_label="Previously chosen",
+                secondary_copy="One of your chosen laws. No choice is used.",
+                opens_sheet=True,
+            )
         return _state(
             KIND_RE_ADD,
             removed=True,
@@ -1219,6 +1328,19 @@ def law_membership(
             badge=MEMBERSHIP_REMOVED,
             badge_label="Removed this month",
             secondary_copy="No extra space used.",
+            opens_sheet=True,
+        )
+    if roster_full and free_choices:
+        return _state(
+            KIND_FREE_LIMIT,
+            historical=historical,
+            roster_full=True,
+            consume=False,
+            primary_label="All 3 law choices used",
+            primary_href=add_path(law_id),
+            badge=MEMBERSHIP_FULL,
+            badge_label="Choices used",
+            secondary_copy="Your three Playground laws are chosen. Plus and Pro add laws without limit.",
             opens_sheet=True,
         )
     if roster_full:
@@ -1406,6 +1528,22 @@ def gate_view(
             secondary_label="Back to Constitution",
             secondary_href=CONSTITUTION_HOME_PATH,
             show_saved=True,
+        )
+    if reason == BLOCK_FREE_CHOICES_EXHAUSTED:
+        return PlaygroundGateView(
+            reason=reason,
+            eyebrow="Playground",
+            title="All three law choices used",
+            lines=(
+                "Your chosen laws stay fully usable, and any of them can be added again at no cost.",
+                "Plus and Pro add laws without limit.",
+            ),
+            cta_label="View Playground plans",
+            cta_href=cta_href or PLAYGROUND_PLANS_PATH,
+            secondary_label="Back to Playground",
+            secondary_href=home_path(),
+            hard_gate=False,
+            consume_blocked=True,
         )
     if reason == BLOCK_ROSTER_FULL:
         month = month_name or "this month"
@@ -1656,7 +1794,9 @@ def build_home_view(
             access.user_id, access.snapshot, local_owner=access.local_owner
         )
     else:
-        cap = roster.capacity(
+        # ``monthly``: mutating capacity as at 3719b9f. ``choices``: read-only
+        # (GET /playground never creates or rewrites a period, B1-F06/F15).
+        cap = roster.capacity_for_request(
             access.user_id, access.snapshot, local_owner=access.local_owner
         )
     active_items = roster.active_roster_items(access.user_id)
@@ -1824,13 +1964,17 @@ def build_home_view(
     sections_learned = sum(card.learned_count for card in active_cards)
     sections_selected = sum(card.selected_count for card in active_cards)
     to_learn = max(0, sections_selected - sections_learned)
+    permanent = bool(getattr(cap, "permanent", False))
     capacity = capacity_view(
         period_start=cap.period_start,
         used=cap.used,
         law_limit=cap.law_limit,
         remaining=cap.remaining,
         active_count=len(active_cards),
-        removed_consumed_count=max(0, cap.used - len(active_cards)),
+        removed_consumed_count=(
+            max(0, cap.used - len(active_cards)) if not permanent else len(removed_cards)
+        ),
+        permanent=permanent,
     )
     next_start, _end = next_playground_month_bounds()
     next_month = playground_month_name(next_start)

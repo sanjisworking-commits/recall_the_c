@@ -4,7 +4,7 @@
    The accessible name is the visible heading: the scope title when the
    panel opens at the scope step (confirmation skipped), else the confirm
    title. #}
-{% set add_title_id = 'pg-add-scope-title' if (step == 'scope' or skip_confirm) and kind not in ('guest', 'subscribe', 'resume', 'device_blocked', 'pending', 'roster_full') and not blocked_pending and not blocked_full else 'pg-add-title' %}
+{% set add_title_id = 'pg-add-scope-title' if (step == 'scope' or skip_confirm) and kind not in ('guest', 'subscribe', 'resume', 'device_blocked', 'pending', 'roster_full', 'free_limit') and not blocked_pending and not blocked_full and not blocked_free_limit else 'pg-add-title' %}
 <section
   class="pg-sheet-panel"
   data-pg-add
@@ -59,6 +59,21 @@
   <p class="pg-add-lede">You can continue your current Playground.</p>
   <a class="pg-add-primary" href="/billing/subscriptions">Manage subscription</a>
   <a class="pg-add-secondary" href="/playground">Cancel</a>
+
+  {% elif blocked_free_limit or kind == "free_limit" %}
+  <h1 id="pg-add-title" class="pg-add-title">All three law choices used</h1>
+  <p class="pg-note" data-playground-gate="free_choices_exhausted">All three law choices used</p>
+  <p class="pg-add-lede">Your chosen laws stay fully usable, and any of them can be added again at no cost. Plus and Pro add laws without limit.</p>
+  {% if catalogue_plans %}
+  <div class="pg-plan-list">
+    {% for plan in catalogue_plans %}
+    <a class="pg-btn" href="{{ plan.href }}">{{ plan.cta_label }} · {{ plan.price_label }}</a>
+    {% endfor %}
+  </div>
+  {% endif %}
+  <p class="pg-actions">
+    <a class="pg-btn pg-btn--ghost" href="/playground">Back to Playground</a>
+  </p>
 
   {% elif blocked_full or kind == "roster_full" %}
   <h1 id="pg-add-title" class="pg-add-title">Playground full this month</h1>

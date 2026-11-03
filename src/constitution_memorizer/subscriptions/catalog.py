@@ -14,6 +14,18 @@ class UnknownSubscriptionTier(LookupError):
 
 SUBSCRIPTION_TIERS: frozenset[str] = frozenset({"plus", "pro", "max"})
 TIER_RANK: dict[str, int] = {"plus": 1, "pro": 2, "max": 3}
+
+# Tiers a client may buy. ``max`` stays a recognised, reconcilable tier for
+# legacy rows (B1-F10) but is absent from every purchase offer under the
+# ``choices`` model (B1-F09). Under ``monthly`` the offer is unchanged.
+PURCHASABLE_TIERS: frozenset[str] = frozenset({"plus", "pro"})
+_PURCHASABLE_TIERS_MONTHLY: frozenset[str] = frozenset({"plus", "pro", "max"})
+
+
+class TierNotPurchasable(LookupError):
+    """A recognised tier that is not offered for purchase under this model."""
+
+
 BILLING_INTERVAL_MONTHLY = "monthly"
 CURRENCY_INR = "INR"
 
@@ -29,7 +41,12 @@ class SubscriptionProduct:
     currency: str
     billing_interval: str
     gst_inclusive: bool
+    # Monthly-model cap (10 / 30 / None). Under ``choices`` every paid tier
+    # is unlimited; read :func:`catalogue_law_limit` instead of this field.
     playground_law_limit: int | None
+    # ``choices``-model capabilities. Inert under ``monthly``.
+    personal_calendar_tasks: bool = True
+    visual_explainers: bool = True
 
 
 def _product(
@@ -38,6 +55,8 @@ def _product(
     display_name: str,
     price_inr: int,
     playground_law_limit: int | None,
+    personal_calendar_tasks: bool = True,
+    visual_explainers: bool = True,
 ) -> SubscriptionProduct:
     amount_paise = price_inr * 100
     return SubscriptionProduct(
@@ -49,13 +68,39 @@ def _product(
         billing_interval=BILLING_INTERVAL_MONTHLY,
         gst_inclusive=True,
         playground_law_limit=playground_law_limit,
+        personal_calendar_tasks=personal_calendar_tasks,
+        visual_explainers=visual_explainers,
     )
 
 
 PRODUCTS: tuple[SubscriptionProduct, ...] = (
-    _product(tier="plus", display_name="Plus", price_inr=199, playground_law_limit=10),
-    _product(tier="pro", display_name="Pro", price_inr=399, playground_law_limit=30),
-    _product(tier="max", display_name="Max", price_inr=1199, playground_law_limit=None),
+    _product(
+        tier="plus",
+        display_name="Plus",
+        price_inr=199,
+        playground_law_limit=10,
+        personal_calendar_tasks=True,
+        visual_explainers=False,
+    ),
+    _product(
+        tier="pro",
+        display_name="Pro",
+        price_inr=399,
+        playground_law_limit=30,
+        personal_calendar_tasks=True,
+        visual_explainers=True,
+    ),
+    # Legacy Max: recognised, not purchasable under ``choices``; access
+    # unchanged from 3719b9f until decision 5-7 (no new benefit by assumption,
+    # nothing removed either).
+    _product(
+        tier="max",
+        display_name="Max",
+        price_inr=1199,
+        playground_law_limit=None,
+        personal_calendar_tasks=True,
+        visual_explainers=True,
+    ),
 )
 
 ANNUAL_PRODUCTS: tuple[SubscriptionProduct, ...] = ()
@@ -74,6 +119,51 @@ def get_subscription_product(tier: str) -> SubscriptionProduct:
 
 def list_subscription_products() -> tuple[SubscriptionProduct, ...]:
     return PRODUCTS
+
+
+def purchasable_tiers(tier_model: str | None = None) -> frozenset[str]:
+    """Tiers offered for purchase under ``tier_model`` (request model when None)."""
+
+    from constitution_memorizer.entitlements.tier_model import (  # noqa: PLC0415
+        current_tier_model,
+        is_choice_model,
+    )
+
+    model = tier_model if tier_model is not None else current_tier_model()
+    return PURCHASABLE_TIERS if is_choice_model(model) else _PURCHASABLE_TIERS_MONTHLY
+
+
+def list_purchasable_products(
+    tier_model: str | None = None,
+) -> tuple[SubscriptionProduct, ...]:
+    allowed = purchasable_tiers(tier_model)
+    return tuple(row for row in PRODUCTS if row.tier in allowed)
+
+
+def require_purchasable_tier(tier: str, tier_model: str | None = None) -> str:
+    """Unknown tiers raise :class:`UnknownSubscriptionTier`; known-but-closed
+    tiers raise :class:`TierNotPurchasable`. Never falls back."""
+
+    product = get_subscription_product(tier)
+    if product.tier not in purchasable_tiers(tier_model):
+        raise TierNotPurchasable(product.tier)
+    return product.tier
+
+
+def catalogue_law_limit(tier: str, tier_model: str | None = None) -> int | None:
+    """Monthly cap under ``monthly``; ``None`` (unlimited) for every paid tier
+    under ``choices`` (B1-F16 check 1)."""
+
+    from constitution_memorizer.entitlements.tier_model import (  # noqa: PLC0415
+        current_tier_model,
+        is_choice_model,
+    )
+
+    product = get_subscription_product(tier)
+    model = tier_model if tier_model is not None else current_tier_model()
+    if is_choice_model(model):
+        return None
+    return product.playground_law_limit
 
 
 def tier_rank(tier: str) -> int:

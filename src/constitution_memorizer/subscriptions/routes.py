@@ -17,10 +17,14 @@ from constitution_memorizer.entitlements.models import (
 )
 from constitution_memorizer.playground.view import gate_view
 from constitution_memorizer.subscriptions.catalog import (
+    TierNotPurchasable,
     UnknownSubscriptionTier,
+    catalogue_law_limit,
     is_downgrade,
     is_upgrade,
+    list_purchasable_products,
     list_subscription_products,
+    require_purchasable_tier,
 )
 from constitution_memorizer.subscriptions.errors import (
     ChangePlanRequiredError,
@@ -121,8 +125,8 @@ def create_subscription_router(templates: Jinja2Templates) -> APIRouter:
                 "display_name": product.display_name,
                 "price_label": _price_label(product.price_inr),
                 "price_display": f"₹{product.price_inr:,}",
-                "limit_label": _limit_label(product.playground_law_limit),
-                "card_limit_label": _card_limit_label(product.playground_law_limit),
+                "limit_label": _limit_label(catalogue_law_limit(product.tier)),
+                "card_limit_label": _card_limit_label(catalogue_law_limit(product.tier)),
                 "description": _card_description(product.tier),
                 "is_current": bool(
                     current is not None
@@ -131,7 +135,7 @@ def create_subscription_router(templates: Jinja2Templates) -> APIRouter:
                 ),
                 "is_upgrade": product.tier in upgrade_tiers,
             }
-            for product in list_subscription_products()
+            for product in list_purchasable_products()
         ]
         return templates.TemplateResponse(
             request,
@@ -178,8 +182,11 @@ def create_subscription_router(templates: Jinja2Templates) -> APIRouter:
         require_csrf_token(request, csrf_token)
         service = require_subscription_service(request)
         try:
+            # B1-F09: ``max`` is not offered under ``choices``; unknown or
+            # closed tiers never fall back to another product.
+            require_purchasable_tier(tier)
             service.start_subscription(uid, tier)
-        except UnknownSubscriptionTier:
+        except (UnknownSubscriptionTier, TierNotPurchasable):
             return _manage_error("invalid_tier")
         except InvalidSubscriptionValue:
             return _manage_error("invalid_tier")
@@ -315,8 +322,9 @@ def create_subscription_router(templates: Jinja2Templates) -> APIRouter:
         require_csrf_token(request, csrf_token)
         service = require_subscription_service(request)
         try:
+            require_purchasable_tier(tier)
             service.change_plan(uid, tier)
-        except UnknownSubscriptionTier:
+        except (UnknownSubscriptionTier, TierNotPurchasable):
             return _manage_error("invalid_tier")
         except InvalidSubscriptionValue:
             return _manage_error("invalid_tier")
@@ -382,7 +390,7 @@ def _change_targets(
     if current is None or current.status != "active":
         return []
     rows = []
-    for product in list_subscription_products():
+    for product in list_purchasable_products():
         if upgrade and is_upgrade(current.tier, product.tier):
             rows.append(
                 {
