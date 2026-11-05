@@ -6,12 +6,14 @@ the roster item and re-counts consumed rows before insert.
 
 from __future__ import annotations
 
+import hashlib
 from datetime import date, datetime, timezone
-from typing import Any
+from typing import Any, Callable
 from uuid import UUID, uuid4
 
 from constitution_memorizer.playground.roster.decisions import plan_rollover_batch
 from constitution_memorizer.playground.roster.models import (
+    CHOICE_SOURCE_FREE_ADD,
     ORIGIN_CARRY_FORWARD,
     ORIGIN_NEW,
     ORIGIN_RE_ADD,
@@ -19,6 +21,7 @@ from constitution_memorizer.playground.roster.models import (
     PERIOD_STATUS_CLOSED,
     PERIOD_STATUS_DRAFT,
     RESULT_ALREADY_ACTIVE,
+    RESULT_FREE_CHOICES_EXHAUSTED,
     RESULT_NEW_BLOCKED,
     RESULT_OK,
     RESULT_RE_ADDED,
@@ -27,6 +30,7 @@ from constitution_memorizer.playground.roster.models import (
     PlaygroundPeriod,
     RolloverResult,
     RosterItem,
+    mark_save_rolled_back,
     remaining_capacity,
 )
 from constitution_memorizer.playground.roster.repository import (
@@ -54,6 +58,49 @@ def _utc_now(now: datetime | None = None) -> datetime:
     if clock.tzinfo is None:
         clock = clock.replace(tzinfo=timezone.utc)
     return clock.replace(microsecond=0)
+
+
+# Namespace for pg_advisory_xact_lock(namespace, key) around the per-account
+# permanent-choice ledger. Not a secret.
+_CHOICE_LOCK_NS = 872012
+
+
+class _SaveTransaction:
+    """B1-F07 rollback evidence for one consume transaction.
+
+    ``commit()`` records that commit has begun before calling the
+    connection. On an exception: a failure *before* commit began, followed
+    by a successful ``rollback()`` of that active transaction, marks the
+    exception as an observed rollback. Once commit has started nothing is
+    marked — a later ``rollback()`` returning normally proves nothing, so the
+    HTTP layer must re-read the exact requested state."""
+
+    def __init__(self, conn: Any) -> None:
+        self._conn = conn
+        self.commit_started = False
+
+    def commit(self) -> None:
+        self.commit_started = True
+        self._conn.commit()
+
+    def __enter__(self) -> "_SaveTransaction":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> bool:
+        if exc is None:
+            return False
+        try:
+            self._conn.rollback()
+        except Exception:  # noqa: BLE001 — connection gone: no evidence
+            return False
+        if not self.commit_started:
+            mark_save_rolled_back(exc)
+        return False
+
+
+def _choice_lock_key(user_id: str) -> int:
+    digest = hashlib.sha256(user_id.encode("utf-8")).digest()[:4]
+    return int.from_bytes(digest, "big", signed=True)
 
 
 class PostgresRosterRepository:
@@ -101,6 +148,7 @@ class PostgresRosterRepository:
         tier_snapshot: str | None,
         law_limit: int | None,
         now: datetime | None = None,
+        carry_from_latest_active: bool = False,
     ) -> PlaygroundPeriod:
         uid = as_user_id(user_id)
         clock = _utc_now(now)
@@ -114,9 +162,129 @@ class PostgresRosterRepository:
                     tier_snapshot=tier_snapshot,
                     law_limit=law_limit,
                     clock=clock,
+                    carry=carry_from_latest_active,
                 )
                 conn.commit()
                 return period
+
+    @count_playground_repo_call(kind="read", domain="roster")
+    def latest_active_period(self, user_id: UUID | str) -> PlaygroundPeriod | None:
+        uid = as_user_id(user_id)
+        with self._pool.connection() as conn:
+            with conn.cursor(row_factory=self._dict_row) as cur:
+                cur.execute(
+                    _PERIOD_SELECT
+                    + " WHERE user_id = %s AND status = %s"
+                    " ORDER BY period_start DESC LIMIT 1",
+                    (uid, PERIOD_STATUS_ACTIVE),
+                )
+                row = cur.fetchone()
+        return period_from_mapping(row) if row is not None else None
+
+    @count_playground_repo_call(kind="read", domain="roster")
+    def count_choices(self, user_id: UUID | str) -> int:
+        uid = as_user_id(user_id)
+        with self._pool.connection() as conn:
+            with conn.cursor(row_factory=self._dict_row) as cur:
+                return self._count_choices_locked(cur, uid)
+
+    @count_playground_repo_call(kind="read", domain="roster")
+    def has_choice(self, user_id: UUID | str, law_id: str) -> bool:
+        uid = as_user_id(user_id)
+        with self._pool.connection() as conn:
+            with conn.cursor(row_factory=self._dict_row) as cur:
+                return self._has_choice_locked(cur, uid, law_id)
+
+    @count_playground_repo_call(kind="read", domain="roster")
+    def list_choices(self, user_id: UUID | str) -> list[str]:
+        uid = as_user_id(user_id)
+        with self._pool.connection() as conn:
+            with conn.cursor(row_factory=self._dict_row) as cur:
+                cur.execute(
+                    "SELECT law_id FROM user_playground_choice WHERE user_id = %s"
+                    " ORDER BY chosen_at ASC, law_id ASC",
+                    (uid,),
+                )
+                rows = cur.fetchall()
+        return [str(row["law_id"]) for row in rows]
+
+    def _count_choices_locked(self, cur: Any, uid: str) -> int:
+        cur.execute(
+            "SELECT COUNT(DISTINCT law_id) AS n FROM user_playground_choice WHERE user_id = %s",
+            (uid,),
+        )
+        row = cur.fetchone()
+        return int(row["n"] if row is not None else 0)
+
+    def _has_choice_locked(self, cur: Any, uid: str, law_id: str) -> bool:
+        cur.execute(
+            "SELECT 1 AS one FROM user_playground_choice WHERE user_id = %s AND law_id = %s LIMIT 1",
+            (uid, law_id),
+        )
+        return cur.fetchone() is not None
+
+    def _record_choice_locked(
+        self, cur: Any, uid: str, law_id: str, *, source: str, clock: datetime
+    ) -> bool:
+        """Append one ledger row. Never updates or deletes. Returns True if new."""
+
+        if self._has_choice_locked(cur, uid, law_id):
+            return False
+        cur.execute(
+            """
+            INSERT INTO user_playground_choice (id, user_id, law_id, chosen_at, source)
+            VALUES (%s, %s, %s, %s, %s)
+            ON CONFLICT (user_id, law_id) DO NOTHING
+            """,
+            (str(uuid4()), uid, law_id, clock, source),
+        )
+        return True
+
+    def _carry_active_items_locked(
+        self, cur: Any, uid: str, period_start: date, clock: datetime
+    ) -> None:
+        """Copy every *active* item of the latest earlier active period into
+        ``period_start`` as ``carry_forward`` (decision 5-23). Removed laws
+        are not carried (B1-F17). Caller holds the period lock."""
+
+        cur.execute(
+            _PERIOD_SELECT
+            + " WHERE user_id = %s AND status = %s AND period_start < %s"
+            " ORDER BY period_start DESC LIMIT 1",
+            (uid, PERIOD_STATUS_ACTIVE, period_start),
+        )
+        source = cur.fetchone()
+        if source is None:
+            return
+        source_start = period_from_mapping(source).period_start
+        cur.execute(
+            _ITEM_SELECT
+            + " WHERE user_id = %s AND period_start = %s"
+            " AND consumed_at IS NOT NULL AND removed_at IS NULL",
+            (uid, source_start),
+        )
+        rows = cur.fetchall()
+        for row in rows:
+            cur.execute(
+                """
+                INSERT INTO user_playground_roster_item (
+                    id, user_id, period_start, law_id, origin,
+                    carried_from_previous_period, consumed_at, removed_at,
+                    declined_at, created_at, updated_at
+                ) VALUES (%s, %s, %s, %s, %s, true, %s, NULL, NULL, %s, %s)
+                ON CONFLICT (user_id, period_start, law_id) DO NOTHING
+                """,
+                (
+                    str(uuid4()),
+                    uid,
+                    period_start,
+                    str(row["law_id"]),
+                    ORIGIN_CARRY_FORWARD,
+                    clock,
+                    clock,
+                    clock,
+                ),
+            )
 
     @count_playground_repo_call(kind="read", domain="roster")
     def get_item(
@@ -179,13 +347,34 @@ class PostgresRosterRepository:
         allow_new: bool,
         origin_for_new: str = ORIGIN_NEW,
         now: datetime | None = None,
+        enforce_effective_limit: bool = False,
+        ledger: bool = False,
+        choice_limit: int | None = None,
+        choice_source: str = CHOICE_SOURCE_FREE_ADD,
+        within: Callable[[Any], None] | None = None,
     ) -> ConsumeResult:
+        """See :meth:`SqliteRosterRepository.consume_law` for the contract.
+
+        ``within`` runs on this connection's open transaction (after the
+        roster item and ledger row, before ``commit``); a failure inside it
+        rolls the whole save back (5-19 / B1-F08).
+
+        Production adds a per-account advisory lock around the ledger so two
+        concurrent Free adds cannot both pass the ``choice_limit`` check
+        (B1-F05); the period row is still locked ``FOR UPDATE``.
+        """
+
         from psycopg.errors import UniqueViolation
 
         uid = as_user_id(user_id)
         clock = _utc_now(now)
-        with self._pool.connection() as conn:
+        with self._pool.connection() as conn, _SaveTransaction(conn) as tx:
             with conn.cursor(row_factory=self._dict_row) as cur:
+                if ledger:
+                    cur.execute(
+                        "SELECT pg_advisory_xact_lock(%s, %s)",
+                        (_CHOICE_LOCK_NS, _choice_lock_key(uid)),
+                    )
                 cur.execute(
                     _PERIOD_SELECT
                     + " WHERE user_id = %s AND period_start = %s FOR UPDATE",
@@ -193,7 +382,7 @@ class PostgresRosterRepository:
                 )
                 period_row = cur.fetchone()
                 if period_row is None:
-                    conn.commit()
+                    tx.commit()
                     return ConsumeResult(
                         status=RESULT_NEW_BLOCKED,
                         item=None,
@@ -209,21 +398,50 @@ class PostgresRosterRepository:
                 )
                 item_row = cur.fetchone()
                 item = item_from_mapping(item_row) if item_row is not None else None
-                used = self._count_consumed_locked(cur, uid, period_start)
-                remaining = remaining_capacity(period.law_limit, used)
+                cap = law_limit if enforce_effective_limit else period.law_limit
+                choices_used = self._count_choices_locked(cur, uid) if ledger else None
+                in_ledger = self._has_choice_locked(cur, uid, law_id) if ledger else False
+
+                def _result(
+                    status: str,
+                    row: RosterItem | None,
+                    *,
+                    recorded: bool = False,
+                    applied: bool = False,
+                ) -> ConsumeResult:
+                    used_now = (
+                        self._count_choices_locked(cur, uid)
+                        if ledger
+                        else self._count_consumed_locked(cur, uid, period_start)
+                    )
+                    return ConsumeResult(
+                        status=status,
+                        item=row,
+                        used=used_now,
+                        remaining=remaining_capacity(choice_limit if ledger else cap, used_now),
+                        period=period,
+                        choices_used=used_now if ledger else None,
+                        choice_limit=choice_limit if ledger else None,
+                        choice_recorded=recorded,
+                        within_applied=applied,
+                    )
+
+                def _apply_within() -> bool:
+                    # Same connection and transaction as the FOR UPDATE lock
+                    # and the ledger insert; committed or rolled back as one.
+                    if within is None:
+                        return False
+                    within(conn)
+                    return True
+
                 if (
                     item is not None
                     and item.consumed_at is not None
                     and item.removed_at is None
                 ):
-                    conn.commit()
-                    return ConsumeResult(
-                        status=RESULT_ALREADY_ACTIVE,
-                        item=item,
-                        used=used,
-                        remaining=remaining,
-                        period=period,
-                    )
+                    out = _result(RESULT_ALREADY_ACTIVE, item)
+                    tx.commit()
+                    return out
                 if (
                     item is not None
                     and item.consumed_at is not None
@@ -244,33 +462,28 @@ class PostgresRosterRepository:
                         (uid, period_start, law_id),
                     )
                     refreshed = item_from_mapping(cur.fetchone())
-                    conn.commit()
-                    return ConsumeResult(
-                        status=RESULT_RE_ADDED,
-                        item=refreshed,
-                        used=used,
-                        remaining=remaining,
-                        period=period,
-                    )
-                if not allow_new:
-                    conn.commit()
-                    return ConsumeResult(
-                        status=RESULT_NEW_BLOCKED,
-                        item=item,
-                        used=used,
-                        remaining=remaining,
-                        period=period,
-                    )
-                cap = period.law_limit
-                if cap is not None and used >= cap:
-                    conn.commit()
-                    return ConsumeResult(
-                        status=RESULT_ROSTER_FULL,
-                        item=item,
-                        used=used,
-                        remaining=0,
-                        period=period,
-                    )
+                    out = _result(RESULT_RE_ADDED, refreshed, applied=_apply_within())
+                    tx.commit()
+                    return out
+                readd_free = bool(ledger and in_ledger)
+                if not readd_free:
+                    if (
+                        ledger
+                        and choice_limit is not None
+                        and int(choices_used or 0) >= choice_limit
+                    ):
+                        out = _result(RESULT_FREE_CHOICES_EXHAUSTED, item)
+                        tx.commit()
+                        return out
+                    if not allow_new:
+                        out = _result(RESULT_NEW_BLOCKED, item)
+                        tx.commit()
+                        return out
+                    if cap is not None and self._count_consumed_locked(cur, uid, period_start) >= cap:
+                        out = _result(RESULT_ROSTER_FULL, item)
+                        tx.commit()
+                        return out
+                origin = ORIGIN_RE_ADD if readd_free else origin_for_new
                 if item is not None:
                     cur.execute(
                         """
@@ -279,7 +492,7 @@ class PostgresRosterRepository:
                             origin = %s, updated_at = %s
                         WHERE user_id = %s AND period_start = %s AND law_id = %s
                         """,
-                        (clock, origin_for_new, clock, uid, period_start, law_id),
+                        (clock, origin, clock, uid, period_start, law_id),
                     )
                 else:
                     try:
@@ -296,7 +509,7 @@ class PostgresRosterRepository:
                                 uid,
                                 period_start,
                                 law_id,
-                                origin_for_new,
+                                origin,
                                 clock,
                                 clock,
                                 clock,
@@ -326,7 +539,7 @@ class PostgresRosterRepository:
                             used = self._count_consumed_locked(
                                 retry, uid, period_start
                             )
-                            conn.commit()
+                            tx.commit()
                             if stored is not None and stored.consumed_at is not None:
                                 status = (
                                     RESULT_ALREADY_ACTIVE
@@ -349,15 +562,20 @@ class PostgresRosterRepository:
                     (uid, period_start, law_id),
                 )
                 stored_item = item_from_mapping(cur.fetchone())
-                used = self._count_consumed_locked(cur, uid, period_start)
-                conn.commit()
-                return ConsumeResult(
-                    status=RESULT_OK,
-                    item=stored_item,
-                    used=used,
-                    remaining=remaining_capacity(period.law_limit, used),
-                    period=period,
+                recorded = False
+                if ledger and not readd_free:
+                    recorded = self._record_choice_locked(
+                        cur, uid, law_id, source=choice_source, clock=clock
+                    )
+                applied = _apply_within()
+                out = _result(
+                    RESULT_RE_ADDED if readd_free else RESULT_OK,
+                    stored_item,
+                    recorded=recorded,
+                    applied=applied,
                 )
+                tx.commit()
+                return out
 
     @count_playground_repo_call(kind="write")
     def remove_law(
@@ -417,6 +635,7 @@ class PostgresRosterRepository:
         tier_snapshot: str | None,
         law_limit: int | None,
         clock: datetime,
+        carry: bool = False,
     ) -> PlaygroundPeriod:
         cur.execute(
             _PERIOD_SELECT + " WHERE user_id = %s AND period_start = %s FOR UPDATE",
@@ -450,6 +669,8 @@ class PostgresRosterRepository:
                 (uid, period_start),
             )
             existing = cur.fetchone()
+            if carry:
+                self._carry_active_items_locked(cur, uid, period_start, clock)
             self._close_older_active(cur, uid, period_start, clock)
             return period_from_mapping(existing)
         period = period_from_mapping(existing)
@@ -474,6 +695,11 @@ class PostgresRosterRepository:
             )
             return period_from_mapping(cur.fetchone())
         confirmed = clock if period.confirmed_at is None else period.confirmed_at
+        if carry and period.status == PERIOD_STATUS_DRAFT:
+            # Promoting a pre-existing draft under ``choices``: active items of
+            # the latest active period continue (5-23); recorded decisions on
+            # the draft are left as they are (ON CONFLICT DO NOTHING).
+            self._carry_active_items_locked(cur, uid, period_start, clock)
         cur.execute(
             """
             UPDATE user_playground_period

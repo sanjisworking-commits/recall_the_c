@@ -285,18 +285,18 @@ def test_expired_billing_is_plan_chooser_not_paused_home(tmp_path: Path) -> None
     assert LIVE_GATE.cta_href == PLAYGROUND_BILLING_PATH
     assert f"₹{CATALOG['plus'].price_inr:,}" in desk or f"₹{CATALOG['plus'].price_inr}" in desk
     assert f"₹{CATALOG['pro'].price_inr:,}" in desk or f"₹{CATALOG['pro'].price_inr}" in desk
-    assert f"₹{CATALOG['max'].price_inr:,}" in desk
+    assert f"₹{CATALOG['max'].price_inr:,}" not in desk  # B1-F09 (PR #230): Max is not sold anew; evidence record keeps its SHA
     assert f"{CATALOG['plus'].playground_law_limit} laws active per month" in desk
     assert f"{CATALOG['pro'].playground_law_limit} laws active per month" in desk
-    assert "Unlimited Playground" in desk
+    assert "Unlimited Playground" not in desk  # Max card absent
     assert "Subscribe to Plus" in desk
     assert "Subscribe to Pro" in desk
-    assert "Subscribe to Max" in desk
+    assert "Subscribe to Max" not in desk
     assert f'action="{CREATE_PATH}"' in desk
     assert 'name="csrf_token"' in desk
     assert 'name="tier" value="plus"' in desk
     assert 'name="tier" value="pro"' in desk
-    assert 'name="tier" value="max"' in desk
+    assert 'name="tier" value="max"' not in desk
     assert "/billing/subscriptions/change" not in desk
     assert "/resume" not in desk
     assert "Your Playground is paused" not in desk

@@ -75,6 +75,30 @@ def persist_entire_act_selection(repo, user_id: UUID | str, law_id: str, *, act=
     return rows
 
 
+def membership_and_selection_writer(repo, user_id: UUID | str, law_id: str, rows):
+    """The roster consume's ``within`` step (5-19 / B1-F08).
+
+    Returns a callable that writes the overlay membership and the
+    selection on the consume's own open transaction, so the permanent
+    choice, the active membership and the selected sections commit or
+    roll back together. Does not commit; does not consume anything.
+    """
+
+    identity = playground_law_source_identity(law_id)
+
+    def _write(conn) -> None:
+        repo.persist_membership_and_selection_in(
+            conn,
+            user_id,
+            identity.law_id,
+            rows,
+            source_version=identity.source_version,
+            law_source_hash=identity.identity_token,
+        )
+
+    return _write
+
+
 def playground_home_cards(summaries: list[PlaygroundSummary]) -> list[dict]:
     """Card view-models from DB summaries + catalogue/registry metadata."""
     cards: list[dict] = []

@@ -47,7 +47,8 @@ LEDE = (
     "Turning The NDPS Act, 1985 into a learning experience needs a plan. "
     "Reading it stays free."
 )
-NOTE = "Plus · Pro · Max — from ₹199 / month. Constitution learning stays free."
+# B1-F09 (PR #230): Max is not sold anew; evidence record keeps its SHA.
+NOTE = "Plus · Pro — from ₹199 / month. Constitution learning stays free."
 OLD_MARKERS = (
     "data-signed-in-add-desktop",
     "data-signed-in-add-phone",

@@ -517,7 +517,10 @@ def test_postgres_consume_locks_period_row():
 def test_alembic_head_and_rls():
     cfg = Config(str(ROOT / "alembic.ini"))
     heads = ScriptDirectory.from_config(cfg).get_heads()
-    assert heads == ["20260927_0027"]
+    # B1 (2026-11-03): the permanent-choice ledger migration 0028 revises 0027
+    # additively; the roster tables of 0024 are unchanged.
+    assert heads == ["20261103_0028"]
+    assert ScriptDirectory.from_config(cfg).get_revision("20261103_0028").down_revision == "20260927_0027"
     text = (
         ROOT / "alembic" / "versions" / "20260917_0024_playground_roster.py"
     ).read_text(encoding="utf-8")

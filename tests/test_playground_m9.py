@@ -54,7 +54,7 @@ from tests.test_playground_m8 import TODAY, _complete_six, _seed_progress
 from tests.test_roster_m5a import NOW, USER, _authed_client, _confirm_add, _subscribe
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED_HEAD = "20260927_0027"
+EXPECTED_HEAD = "20261103_0028"  # B1 (2026-11-03): 0028 adds the permanent-choice ledger; earlier revisions unchanged.
 MODES = PLAYGROUND_LEARN_MODES
 
 
@@ -156,7 +156,7 @@ def test_alembic_0027_parent_one_head_rls_and_sqlite_parity():
     cfg = Config(str(ROOT / "alembic.ini"))
     script = ScriptDirectory.from_config(cfg)
     assert script.get_heads() == [EXPECTED_HEAD]
-    rev = script.get_revision(EXPECTED_HEAD)
+    rev = script.get_revision("20260927_0027")
     assert rev.down_revision == "20260925_0026"
     path = ROOT / "alembic" / "versions" / "20260927_0027_playground_source_changes.py"
     text = path.read_text(encoding="utf-8")

@@ -198,7 +198,7 @@ def test_plus_subscriptions_reaches_manage_and_change_your_plan(tmp_path: Path) 
     assert PLUS_INCLUDED in desk
     assert PLUS_TAG["plus"] in _card(desk, "plus")
     assert PLUS_TAG["pro"] in _card(desk, "pro")
-    assert PLUS_TAG["max"] in _card(desk, "max")
+    assert 'data-tier="max"' not in desk  # B1-F09 (PR #230): Max is not sold anew; evidence record keeps its SHA
     assert "Upgrade applies immediately." not in desk
     assert "Downgrade takes effect" not in desk
     assert "RecallC Plus" in header
@@ -210,19 +210,19 @@ def test_plus_subscriptions_reaches_manage_and_change_your_plan(tmp_path: Path) 
     assert 'name="tier" value="plus"' not in desk
     assert f"₹{CATALOG['plus'].price_inr}" in desk
     assert f"₹{CATALOG['pro'].price_inr}" in desk
-    assert f"₹{CATALOG['max'].price_inr:,}" in desk
+    # B1-F09 (PR #230): Max is not sold anew; the Max card is absent.
+    assert f"₹{CATALOG['max'].price_inr:,}" not in desk
     assert f"{CATALOG['plus'].playground_law_limit} laws active per month" in desk
     assert f"{CATALOG['pro'].playground_law_limit} laws active per month" in desk
-    assert "Unlimited Playground" in desk
+    assert "Unlimited Playground" not in desk
     pro = _card(desk, "pro")
     assert f'action="{CHANGE_PATH}"' in pro
     assert 'name="csrf_token"' in pro
     assert 'name="tier" value="pro"' in pro
     assert "Switch to Pro" in pro
-    max_card = _card(desk, "max")
-    assert f'action="{CHANGE_PATH}"' in max_card
-    assert 'name="tier" value="max"' in max_card
-    assert "Switch to Max" in max_card
+    assert 'data-tier="max"' not in desk
+    assert 'name="tier" value="max"' not in desk
+    assert "Switch to Max" not in desk
     assert "Schedule " not in desk
     assert "The complete Constitution" in desk
     assert "Included with your account" in desk
@@ -264,7 +264,7 @@ def test_guest_and_free_pricing_are_unchanged(tmp_path: Path) -> None:
     assert "Change your plan" not in guest
     assert "₹199/month" in guest
     assert "₹399/month" in guest
-    assert "₹1,199/month" in guest
+    assert "₹1,199/month" not in guest  # B1-F09 (PR #230): Max is not sold anew; evidence record keeps its SHA
     assert "Sign in to subscribe" in guest
     assert "GST included" in guest
     assert "Playground plans" in guest
@@ -287,7 +287,8 @@ def test_pro_and_max_current_plan_are_not_plus_screen_07(tmp_path: Path) -> None
     assert 'data-plus-subscription="desktop"' not in pro_html
     assert "Change your plan" not in pro_html
     assert "Current plan" in pro_html
-    assert "Upgrade to Max" in pro_html
+    assert "Upgrade to Max" not in pro_html  # B1-F09 (PR #230): Max is not sold anew; evidence record keeps its SHA
+    assert "Upgrade to" not in pro_html
     assert "Switch to" not in pro_html
 
     max_c = TestClient(_mu_app(tmp_path / "max"))

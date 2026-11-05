@@ -612,7 +612,8 @@ def test_postgres_rollover_locks_period_row():
 
 def test_alembic_head_unchanged():
     cfg = Config(str(ROOT / "alembic.ini"))
-    assert ScriptDirectory.from_config(cfg).get_heads() == ["20260927_0027"]
+    # B1 (2026-11-03): 0028 adds the permanent-choice ledger; 0024–0027 unchanged.
+    assert ScriptDirectory.from_config(cfg).get_heads() == ["20261103_0028"]
 
 
 def _mu_settings() -> MultiUserSettings:

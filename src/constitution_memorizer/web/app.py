@@ -623,6 +623,16 @@ def create_app(
     app.state.article_entitlements_enabled = bool(settings.article_entitlements_enabled)
     app.state.pricing_enabled = bool(settings.pricing_enabled)
     app.state.playground_enabled = bool(getattr(settings, "playground_enabled", True))
+    # B1 tier-model activation flag (plan §4.5). Default ``monthly`` keeps
+    # behaviour identical to 3719b9f; ``choices`` activates the approved
+    # model. Permissions and copy only — never a migration or a row write.
+    from constitution_memorizer.entitlements.tier_model import (  # noqa: PLC0415
+        normalize_tier_model,
+    )
+
+    app.state.playground_tier_model = normalize_tier_model(
+        getattr(settings, "playground_tier_model", None)
+    )
     app.state.templates = templates
     from constitution_memorizer.admin.playground_diagnostics import (  # noqa: PLC0415
         log_commercial_startup_status,
@@ -783,7 +793,11 @@ def create_app(
             RosterService,
         )
 
-        app.state.roster = RosterService(PostgresRosterRepository(db_pool))
+        roster_repo = PostgresRosterRepository(db_pool)
+        app.state.roster_repo = roster_repo
+        app.state.roster = RosterService(
+            roster_repo, tier_model=app.state.playground_tier_model
+        )
     else:
         from constitution_memorizer.playground.db import (  # noqa: PLC0415
             ensure_sqlite_schema,
@@ -807,10 +821,15 @@ def create_app(
             ensure_sqlite_schema(conn)
             ensure_roster_sqlite_schema(conn)
             app.state.playground = SqlitePlaygroundRepository(conn)
-            app.state.roster = RosterService(SqliteRosterRepository(conn))
+            roster_repo = SqliteRosterRepository(conn)
+            app.state.roster_repo = roster_repo
+            app.state.roster = RosterService(
+                roster_repo, tier_model=app.state.playground_tier_model
+            )
         else:
             app.state.playground = None
             app.state.roster = None
+            app.state.roster_repo = None
 
     if db_pool is not None:
         from constitution_memorizer.subscriptions.postgres import (  # noqa: PLC0415
@@ -907,6 +926,8 @@ def create_app(
         charges=getattr(app.state, "subscription_charges", None),
         access_store=getattr(app.state, "access_store", None),
         legacy_store=legacy_store,
+        choices=getattr(app.state, "roster_repo", None),
+        tier_model=app.state.playground_tier_model,
     )
 
     device_repo = None
@@ -948,6 +969,20 @@ def create_app(
 
     app.mount("/static", StaticFiles(directory=str(STATIC_DIR)), name="static")
     install_auth_middleware(app)
+
+    @app.middleware("http")
+    async def tier_model_context(request: Request, call_next):
+        """Publish the activation flag to view helpers that have no Request."""
+        from constitution_memorizer.entitlements.tier_model import (  # noqa: PLC0415
+            reset_current_tier_model,
+            set_current_tier_model,
+        )
+
+        token = set_current_tier_model(app.state.playground_tier_model)
+        try:
+            return await call_next(request)
+        finally:
+            reset_current_tier_model(token)
 
     @app.middleware("http")
     async def feature_flag_gate(request: Request, call_next):
@@ -3953,11 +3988,32 @@ def create_app(
 
     @app.get("/api/explainers/{article_id}")
     async def explainer_svg(request: Request, article_id: str) -> FileResponse:
-        """Serve a registered Visual Explainer SVG (signed-in when multi-user)."""
+        """Serve a registered Visual Explainer SVG (signed-in when multi-user).
+
+        B1-F12: under the ``choices`` model the asset is Pro and above
+        (``can_open_visual_explainers``); a locked account gets a 403 lock
+        payload and never the SVG bytes. Guests are unchanged. Under
+        ``monthly`` the flag is True for every signed-in account.
+        """
         if app.state.multiuser_enabled and getattr(
             request.state, "current_user", None
         ) is None:
             raise HTTPException(status_code=403, detail="Sign in required")
+        if app.state.multiuser_enabled:
+            from constitution_memorizer.entitlements.dependencies import (  # noqa: PLC0415
+                get_entitlement_snapshot,
+            )
+
+            snapshot = get_entitlement_snapshot(request)
+            if not snapshot.can_open_visual_explainers:
+                return JSONResponse(  # type: ignore[return-value]
+                    {
+                        "ok": False,
+                        "error": "visual_explainers_locked",
+                        "required_tier": "pro",
+                    },
+                    status_code=403,
+                )
         asset = explainer_asset_path(article_id)
         if asset is None:
             raise HTTPException(status_code=404, detail="Explainer not found")

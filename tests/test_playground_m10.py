@@ -52,7 +52,7 @@ from constitution_memorizer.progress.repository import ProgressRepository
 from uuid import UUID
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED_HEAD = "20260927_0027"
+EXPECTED_HEAD = "20261103_0028"  # B1 (2026-11-03): 0028 adds the permanent-choice ledger; earlier revisions unchanged.
 MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
 _ROBOTS_HEADER = "noindex, nofollow"
 
@@ -62,7 +62,10 @@ def test_alembic_head_unchanged_by_m10():
     script = ScriptDirectory.from_config(cfg)
     assert script.get_heads() == [EXPECTED_HEAD]
     versions = ROOT / "alembic" / "versions"
-    assert not list(versions.glob("*0028*"))
+    # M10 added no migration. The only 0028 is B1's additive ledger (2026-11-03).
+    extra = [p.name for p in versions.glob("*0028*")]
+    assert extra == ["20261103_0028_playground_choice.py"], extra
+    assert script.get_revision(EXPECTED_HEAD).down_revision == "20260927_0027"
 
 
 def test_shared_seo_helpers_are_the_only_engine():

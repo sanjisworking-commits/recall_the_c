@@ -32,6 +32,11 @@ RESULT_RE_ADD_CONFIRM = "re_add"
 RESULT_INVALID_CANDIDATE = "invalid_candidate"
 RESULT_SLOT_LOCKED = "active_slot_locked"
 RESULT_ADJUSTMENT_REQUIRED = "rollover_adjustment_required"
+# ``choices`` model: a Free account has spent its three permanent choices and
+# the law is not in its ledger. Existing laws stay usable (B1-F02).
+RESULT_FREE_CHOICES_EXHAUSTED = "free_choices_exhausted"
+
+CHOICE_SOURCE_FREE_ADD = "free_add"
 
 DECISION_KEEP = "keep"
 DECISION_DECLINE = "decline"
@@ -40,6 +45,26 @@ ROSTER_ADD_CONFIRM = "add"
 
 BLOCK_ROSTER_FULL = "roster_full"
 BLOCK_PROGRESS_SAVED = "progress_saved"
+
+
+# B1-F07: a repository that *observed* its own rollback marks the exception
+# it re-raises. Only that evidence lets the HTTP layer say ``rolled_back``;
+# any other failure is classified by re-reading the exact requested state.
+_SAVE_ROLLED_BACK_ATTR = "playground_save_rolled_back"
+
+
+def mark_save_rolled_back(exc: BaseException) -> BaseException:
+    """Record on ``exc`` that the save transaction was rolled back."""
+
+    try:
+        setattr(exc, _SAVE_ROLLED_BACK_ATTR, True)
+    except Exception:  # noqa: BLE001 — exotic exception types; no evidence then
+        pass
+    return exc
+
+
+def save_was_rolled_back(exc: BaseException) -> bool:
+    return bool(getattr(exc, _SAVE_ROLLED_BACK_ATTR, False))
 
 
 def remaining_capacity(law_limit: int | None, used: int) -> int | None:
@@ -111,6 +136,16 @@ class ConsumeResult:
     remaining: int | None
     period: PlaygroundPeriod | None = None
 
+    # Permanent choices after this call (``choices`` model, Free only).
+    choices_used: int | None = None
+    choice_limit: int | None = None
+    # True when this call appended a ledger row (a new distinct Free choice).
+    choice_recorded: bool = False
+    # True when the caller's ``within`` step ran inside this transaction:
+    # the overlay membership and the selection were committed together
+    # with the roster item (and ledger row) — 5-19 / B1-F08.
+    within_applied: bool = False
+
     @property
     def ok(self) -> bool:
         return self.status in {RESULT_OK, RESULT_ALREADY_ACTIVE, RESULT_RE_ADDED}
@@ -128,6 +163,10 @@ class AddPreview:
     period: PlaygroundPeriod | None
     item: RosterItem | None
     confirmation_copy: str = ""
+    # ``choices`` model, Free only: ledger facts behind the decision.
+    choices_used: int | None = None
+    choice_limit: int | None = None
+    in_ledger: bool = False
 
 
 @dataclass(frozen=True)
@@ -138,6 +177,9 @@ class RosterCapacity:
     used: int
     remaining: int | None
     tier_snapshot: str | None
+    # ``choices`` model: True when ``used``/``remaining`` count permanent
+    # Free choices (ledger) rather than this month's consumed laws.
+    permanent: bool = False
 
 
 @dataclass(frozen=True)

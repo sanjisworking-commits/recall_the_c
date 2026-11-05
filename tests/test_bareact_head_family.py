@@ -314,7 +314,8 @@ def test_direct_add_url_is_the_act_page_with_the_sheet_open(tmp_path):
     assert 'id="pg-add-title" class="pg-add-title">Add to Playground</h1>' in dialog
     assert "Turning The UAPA, 1967 into a learning experience needs a plan." in dialog
     assert 'class="pg-add-primary" href="/playground">Unlock Playground</a>' in dialog
-    assert "Plus · Pro · Max — from ₹199 / month. Constitution learning stays free." in dialog
+    # B1-F09 (PR #230): Max is not sold anew; evidence record keeps its SHA.
+    assert "Plus · Pro — from ₹199 / month. Constitution learning stays free." in dialog
 
 
 def test_plus_add_sheet_keeps_the_confirm_and_scope_contract(tmp_path):

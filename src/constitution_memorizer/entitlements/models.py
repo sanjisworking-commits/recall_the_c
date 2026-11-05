@@ -32,6 +32,10 @@ BLOCK_DEVICE_LIMIT = "device_limit"
 BLOCK_DEVICE_REVOKED = "device_revoked"
 BLOCK_DEVICE_CONFIG_ERROR = "device_config_error"
 BLOCK_DEVICE_REPLACEMENT_LIMIT = "device_replacement_limit"
+# ``choices`` model only: a Free account that has spent its three permanent
+# law choices. Not an open-block: the account still opens the Playground
+# and its chosen laws; only a *new* distinct law is refused (B1-F02).
+BLOCK_FREE_CHOICES_EXHAUSTED = "free_choices_exhausted"
 
 PLAYGROUND_BLOCK_REASONS: frozenset[str] = frozenset(
     {
@@ -81,3 +85,16 @@ class EntitlementSnapshot:
     # Presentation-only. Authorization still uses can_open / can_consume.
     cancel_at_period_end: bool = False
     scheduled_tier: str | None = None
+    # B1 (tier-revision plan §3.1 B1-F01). Defaults reproduce ``monthly``
+    # (behaviour at 3719b9f): no choice ledger, no Calendar or Visualize gate.
+    tier_model: str = "monthly"
+    # Free accounts under ``choices``: 3. Paid, admin, local owner: None.
+    playground_choice_limit: int | None = None
+    # Distinct permanent choices recorded for this account (ledger count).
+    playground_choices_used: int = 0
+    # Why a *new* law is refused while the Playground itself stays open
+    # (``free_choices_exhausted``). ``None`` when new laws are allowed or the
+    # refusal is already expressed by ``playground_block_reason``.
+    playground_consume_block_reason: str | None = None
+    can_add_personal_calendar_tasks: bool = True
+    can_open_visual_explainers: bool = True

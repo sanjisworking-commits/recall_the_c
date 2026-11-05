@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 from datetime import datetime
+import contextvars
+import time
+from contextlib import contextmanager
 from typing import Any, Mapping
 from uuid import UUID, uuid4
 
@@ -20,6 +23,10 @@ from constitution_memorizer.subscriptions.models import (
     require_tier,
 )
 from constitution_memorizer.subscriptions.repository import (
+    _RECONCILE_LOCK_NS,
+    RECONCILE_LOCK_TIMEOUT_SECONDS,
+    ReconciliationBusy,
+    reconcile_lock_key,
     _UNSET,
     _metadata_dumps,
     _raise_integrity,
@@ -40,6 +47,15 @@ except ImportError:  # pragma: no cover
     Json = None  # type: ignore[misc, assignment]
 
 
+# B1-B02: while a reconciliation holds the per-subscription lock, the
+# connection that holds it is bound here and every repository call in that
+# scope reuses it. The holder therefore never checks out a *second* pooled
+# connection, and a waiter never holds one while waiting — so two parties on a
+# two-connection pool cannot deadlock each other.
+_BOUND_CONN: contextvars.ContextVar[Any] = contextvars.ContextVar("subscription_bound_conn", default=None)
+_LOCK_POLL_SECONDS = 0.05
+
+
 class PostgresSubscriptionRepository:
     def __init__(self, pool: Any) -> None:
         from psycopg.rows import dict_row
@@ -50,13 +66,77 @@ class PostgresSubscriptionRepository:
     def _one(
         self, sql: str, params: tuple[Any, ...]
     ) -> UserSubscription | None:
-        with self._pool.connection() as conn:
+        with self._connection() as conn:
             with conn.cursor(row_factory=self._dict_row) as cur:
                 cur.execute(sql, params)
                 row = cur.fetchone()
         if row is None:
             return None
         return subscription_from_mapping(row)
+
+    @contextmanager
+    def _connection(self):
+        """The bound lock-holder connection when inside ``serialize_subscription``
+        (no nested checkout), otherwise one checked out of the pool."""
+
+        bound = _BOUND_CONN.get()
+        if bound is not None:
+            try:
+                yield bound
+            except Exception:
+                try:
+                    bound.rollback()  # keep the bound session usable for the next call
+                except Exception:  # noqa: BLE001
+                    pass
+                raise
+            return
+        with self._pool.connection() as conn:
+            yield conn
+
+    @contextmanager
+    def serialize_subscription(self, provider_subscription_id: str):
+        """B1-B02: session-level advisory lock keyed on the provider subscription
+        id, acquired by polling ``pg_try_advisory_lock`` so that a waiter returns
+        its connection to the pool between attempts (bounded by
+        ``RECONCILE_LOCK_TIMEOUT_SECONDS``). The holder's connection is bound for
+        the scope and reused by every repository call inside it; the lock is
+        released explicitly on exit, and a connection whose unlock fails is
+        closed so the pool discards it rather than recycling a held lock."""
+
+        key = reconcile_lock_key(provider_subscription_id)
+        deadline = time.monotonic() + RECONCILE_LOCK_TIMEOUT_SECONDS
+        while True:
+            conn = self._pool.getconn()
+            try:
+                row = conn.execute(
+                    "SELECT pg_try_advisory_lock(%s, %s)", (_RECONCILE_LOCK_NS, key)
+                ).fetchone()
+                conn.commit()
+                acquired = bool(row[0]) if row is not None else False
+            except Exception:
+                self._pool.putconn(conn)
+                raise
+            if acquired:
+                break
+            self._pool.putconn(conn)  # never wait while holding a pooled connection
+            if time.monotonic() >= deadline:
+                raise ReconciliationBusy(provider_subscription_id)
+            time.sleep(_LOCK_POLL_SECONDS)
+        token = _BOUND_CONN.set(conn)
+        try:
+            yield
+        finally:
+            _BOUND_CONN.reset(token)
+            try:
+                conn.rollback()
+                conn.execute("SELECT pg_advisory_unlock(%s, %s)", (_RECONCILE_LOCK_NS, key))
+                conn.commit()
+            except Exception:  # noqa: BLE001 — do not recycle a connection that may still hold the lock
+                try:
+                    conn.close()
+                except Exception:  # noqa: BLE001
+                    pass
+            self._pool.putconn(conn)
 
     def get_current_subscription(self, user_id: UUID | str) -> UserSubscription | None:
         return self._one(
@@ -102,7 +182,7 @@ class PostgresSubscriptionRepository:
         )
 
     def list_subscription_history(self, user_id: UUID | str) -> list[UserSubscription]:
-        with self._pool.connection() as conn:
+        with self._connection() as conn:
             with conn.cursor(row_factory=self._dict_row) as cur:
                 cur.execute(
                     """
@@ -142,7 +222,7 @@ class PostgresSubscriptionRepository:
         meta = dict(provider_metadata or {})
         payload = Json(meta) if Json is not None else _metadata_dumps(meta)
         try:
-            with self._pool.connection() as conn:
+            with self._connection() as conn:
                 with conn.cursor(row_factory=self._dict_row) as cur:
                     cur.execute(
                         """
@@ -247,7 +327,7 @@ class PostgresSubscriptionRepository:
         meta = dict(next_meta or {})
         payload = Json(meta) if Json is not None else _metadata_dumps(meta)
         try:
-            with self._pool.connection() as conn:
+            with self._connection() as conn:
                 with conn.cursor(row_factory=self._dict_row) as cur:
                     cur.execute(
                         """
@@ -303,7 +383,7 @@ class PostgresSubscriptionRepository:
         if existing is None:
             raise InvalidSubscriptionValue("subscription not found for user")
         now = _utc_now()
-        with self._pool.connection() as conn:
+        with self._connection() as conn:
             with conn.cursor(row_factory=self._dict_row) as cur:
                 cur.execute(
                     """

@@ -907,7 +907,7 @@ def test_alembic_head_is_replacement_revision():
 
     cfg = Config(str(ROOT / "alembic.ini"))
     heads = ScriptDirectory.from_config(cfg).get_heads()
-    assert heads == ["20260927_0027"]
+    assert heads == ["20261103_0028"]  # B1 (2026-11-03): 0028 adds the permanent-choice ledger; earlier revisions unchanged.
 
 
 def test_no_roster_or_invented_support_address():

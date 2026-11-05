@@ -695,7 +695,8 @@ def test_guest_can_read_plans_but_cannot_mutate(tmp_path: Path):
     assert page.status_code == 200
     assert "₹199/month" in page.text
     assert "₹399/month" in page.text
-    assert "₹1,199/month" in page.text
+    # B1-F09 (PR #230): Max is not offered for new purchase.
+    assert "₹1,199/month" not in page.text
     assert "GST included" in page.text
     assert "Sign in to subscribe" in page.text
     assert "starting at" not in page.text.lower()
@@ -792,14 +793,25 @@ def test_http_create_checkout_complete_cancel_and_change(tmp_path: Path):
         },
     )
     assert app.state.subscriptions.get_current_subscription(USER).status == "active"
-    changed = client.post(
+    # B1-F09 (PR #230): Max is not offered for new purchase or plan change
+    # under either tier model; the request is refused before any provider call.
+    refused = client.post(
         "/billing/subscriptions/change",
         data={"csrf_token": csrf, "tier": "max", "plan_id": "plan_evil"},
         follow_redirects=False,
     )
+    assert refused.status_code == 303
+    assert "invalid_tier" in refused.headers["location"]
+    assert fake.updates == []
+    assert app.state.subscriptions.get_current_subscription(USER).tier == "plus"
+    changed = client.post(
+        "/billing/subscriptions/change",
+        data={"csrf_token": csrf, "tier": "pro", "plan_id": "plan_evil"},
+        follow_redirects=False,
+    )
     assert changed.status_code == 303
     assert fake.updates[-1]["schedule_change_at"] == SCHEDULE_NOW
-    assert app.state.subscriptions.get_current_subscription(USER).tier == "max"
+    assert app.state.subscriptions.get_current_subscription(USER).tier == "pro"
     down = client.post(
         "/billing/subscriptions/change",
         data={"csrf_token": csrf, "tier": "plus"},
@@ -808,10 +820,10 @@ def test_http_create_checkout_complete_cancel_and_change(tmp_path: Path):
     assert down.status_code == 303
     assert fake.updates[-1]["schedule_change_at"] == SCHEDULE_CYCLE_END
     current = app.state.subscriptions.get_current_subscription(USER)
-    assert current.tier == "max"
+    assert current.tier == "pro"
     same = client.post(
         "/billing/subscriptions/change",
-        data={"csrf_token": csrf, "tier": "max"},
+        data={"csrf_token": csrf, "tier": "pro"},
         follow_redirects=False,
     )
     assert same.status_code == 303
@@ -827,7 +839,7 @@ def test_http_create_checkout_complete_cancel_and_change(tmp_path: Path):
     assert current.cancel_at_period_end is True
     assert current.is_current is True
     page = client.get("/billing/subscriptions")
-    assert "max" in page.text.lower() or "Max" in page.text
+    assert "Pro" in page.text
     assert "Ends after the current paid cycle" in page.text
 
 
@@ -1089,7 +1101,7 @@ def test_manage_page_lifecycle_messages_and_resubscribe_options(tmp_path: Path):
     assert page.status_code == 200
     assert "Subscribe to Plus" in page.text
     assert "Subscribe to Pro" in page.text
-    assert "Subscribe to Max" in page.text
+    assert "Subscribe to Max" not in page.text  # B1-F09 (PR #230)
     assert "Previous subscription ended; subscribe again" in page.text
     assert "Resubscribe unavailable" not in page.text
 

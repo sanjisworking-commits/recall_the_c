@@ -1,7 +1,7 @@
 """Milestone 11: production hardening, legacy transition, release gate.
 
 Cross-cutting invariants only. Earlier milestones keep their own unit tests.
-Alembic head stays 20260927_0027. Legacy commercial tables are not dropped.
+Alembic head stays 20261103_0028 (B1 ledger; M11 added no migration). Legacy commercial tables are not dropped.
 """
 
 from __future__ import annotations
@@ -43,7 +43,7 @@ from constitution_memorizer.web.bare_acts import clear_bare_act_cache
 from tests.test_playground import _hydrate_spy
 
 ROOT = Path(__file__).resolve().parents[1]
-EXPECTED_HEAD = "20260927_0027"
+EXPECTED_HEAD = "20261103_0028"  # B1 (2026-11-03): 0028 adds the permanent-choice ledger; earlier revisions unchanged.
 MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
 ADMIN = UUID("55555555-5555-4555-8555-555555555555")
 USER_A = UUID("11111111-1111-4111-8111-111111111111")
@@ -307,7 +307,10 @@ def test_alembic_head_unchanged_and_one_head():
     script = ScriptDirectory.from_config(cfg)
     assert script.get_heads() == [EXPECTED_HEAD]
     versions = ROOT / "alembic" / "versions"
-    assert not list(versions.glob("*0028*"))
+    # M11 added no migration. The only 0028 is B1's additive ledger (2026-11-03).
+    extra = [p.name for p in versions.glob("*0028*")]
+    assert extra == ["20261103_0028_playground_choice.py"], extra
+    assert script.get_revision(EXPECTED_HEAD).down_revision == "20260927_0027"
 
 
 def test_m11_does_not_drop_legacy_tables():
@@ -460,7 +463,10 @@ def test_legacy_checkout_hidden_when_pricing_disabled(tmp_path: Path):
     billing = client.get("/billing/subscriptions")
     assert billing.status_code == 200
     text = billing.text.lower()
-    assert "plus" in text and "pro" in text and "max" in text
+    assert "plus" in text and "pro" in text
+    # B1-F09 (PR #230): Max is recognised for existing rows but no longer
+    # offered for purchase. The M11 evidence record keeps its own SHA.
+    assert "Subscribe to Max" not in billing.text and "₹1,199" not in billing.text
     assert "₹199" in billing.text
     assert "365-day" not in billing.text
     assert "180-Day" not in billing.text

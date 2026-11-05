@@ -48,6 +48,7 @@ from constitution_memorizer.entitlements.models import (
     BLOCK_DEVICE_LIMIT,
     BLOCK_DEVICE_REPLACEMENT_LIMIT,
     BLOCK_DEVICE_REVOKED,
+    BLOCK_FREE_CHOICES_EXHAUSTED,
     BLOCK_NOT_SUBSCRIBED,
     BLOCK_PAID_PERIOD_ENDED,
     BLOCK_PAYMENT_HALTED,
@@ -70,6 +71,7 @@ from constitution_memorizer.playground.http import (
 from constitution_memorizer.playground.roster.models import (
     BLOCK_PROGRESS_SAVED,
     BLOCK_ROSTER_FULL,
+    RESULT_FREE_CHOICES_EXHAUSTED,
     RESULT_NEW_BLOCKED,
     RESULT_ROSTER_FULL,
     ROSTER_ADD_CONFIRM,
@@ -217,7 +219,7 @@ def playground_access(request: Request) -> PlaygroundAccess:
             can_consume_new_law=True,
             local_owner=False,
         )
-    if snapshot.is_subscribed:
+    if _device_registration_applies(request, snapshot):
         snapshot = _ensure_device_and_refresh(request, snapshot)
     return _make_access(
         user_id=uid,
@@ -226,6 +228,18 @@ def playground_access(request: Request) -> PlaygroundAccess:
         can_consume_new_law=snapshot.can_consume_new_playground_law,
         local_owner=False,
     )
+
+
+def _device_registration_applies(request: Request, snapshot: EntitlementSnapshot) -> bool:
+    """B1-F13: device registration is paid-only unless the explicit policy
+    flag says ``all_accounts`` (decision 5-10 not applied this release). A
+    Free account under ``choices`` is therefore never registered by default."""
+
+    if snapshot.is_subscribed:
+        return True
+    settings = getattr(request.app.state, "multiuser_settings", None)
+    policy = str(getattr(settings, "playground_device_policy", "paid_only") or "paid_only")
+    return policy == "all_accounts" and bool(snapshot.can_open_playground)
 
 
 def playground_view_access(request: Request) -> PlaygroundAccess:
@@ -417,7 +431,10 @@ def _attach_current_period(request: Request, access: PlaygroundAccess) -> Playgr
 
     started = perf_counter()
     try:
-        capacity = roster.capacity(
+        # monthly: mutating capacity exactly as at 3719b9f.
+        # choices: read-only; a GET never creates or rewrites a period.
+        attach = getattr(roster, "capacity_for_request", None) or roster.capacity
+        capacity = attach(
             access.user_id,
             access.snapshot,
             local_owner=access.local_owner,
@@ -536,6 +553,26 @@ def _deny_open(
     )
 
 
+def _free_choices_exhausted(access: PlaygroundAccess) -> bool:
+    snapshot = access.snapshot
+    return bool(
+        snapshot is not None
+        and getattr(snapshot, "playground_consume_block_reason", None)
+        == BLOCK_FREE_CHOICES_EXHAUSTED
+    )
+
+
+def free_limit_page(
+    request: Request,
+    templates: Jinja2Templates,
+) -> Response:
+    return _render_gate(
+        request,
+        templates,
+        gate_view(reason=BLOCK_FREE_CHOICES_EXHAUSTED, cta_href=PLAYGROUND_PLANS_PATH),
+    )
+
+
 def _deny_new_law(
     request: Request,
     templates: Jinja2Templates,
@@ -543,6 +580,19 @@ def _deny_new_law(
     *,
     json_mode: bool,
 ) -> Response:
+    if _free_choices_exhausted(access):
+        record_roster_access_outcome(source="consume_deny")
+        if json_mode:
+            return JSONResponse(
+                {"ok": False, "error": BLOCK_FREE_CHOICES_EXHAUSTED},
+                status_code=403,
+            )
+        if request.method.upper() != "GET":
+            return RedirectResponse(
+                url=f"{home_path()}?blocked={BLOCK_FREE_CHOICES_EXHAUSTED}",
+                status_code=303,
+            )
+        return free_limit_page(request, templates)
     if json_mode:
         return JSONResponse(
             {"ok": False, "error": NEW_LAW_TEMPORARILY_UNAVAILABLE},
@@ -598,6 +648,8 @@ def _deny_inactive_law(
         law_state="historical",
     )
     if not access.can_consume_new_law:
+        if _free_choices_exhausted(access):
+            return free_limit_page(request, templates)
         return _gate_page(
             request,
             templates,
@@ -608,6 +660,8 @@ def _deny_inactive_law(
     snapshot = access.snapshot
     remaining = snapshot.playground_laws_remaining if snapshot is not None else None
     if remaining == 0:
+        if snapshot is not None and getattr(snapshot, "playground_choice_limit", None) is not None:
+            return free_limit_page(request, templates)
         return roster_full_page(request, templates, access)
     return _progress_saved_page(request, templates, law_id)
 
@@ -706,6 +760,13 @@ def consume_blocked_response(
         if json_mode:
             return JSONResponse({"ok": False, "error": BLOCK_ROSTER_FULL}, status_code=403)
         return roster_full_page(request, templates, access)
+    if result_status == RESULT_FREE_CHOICES_EXHAUSTED:
+        record_roster_access_outcome(source="consume_deny")
+        if json_mode:
+            return JSONResponse(
+                {"ok": False, "error": BLOCK_FREE_CHOICES_EXHAUSTED}, status_code=403
+            )
+        return free_limit_page(request, templates)
     if json_mode:
         return JSONResponse({"ok": False, "error": result_status}, status_code=400)
     raise PlaygroundLawError(result_status)
@@ -730,7 +791,7 @@ def _gate_page(
         cta_href = MANAGE_DEVICES_PATH
     elif reason == BLOCK_SIGN_IN_REQUIRED:
         cta_href = playground_login_href(local_next_path(next_url, home_path()))
-    elif reason == BLOCK_NOT_SUBSCRIBED:
+    elif reason in {BLOCK_NOT_SUBSCRIBED, BLOCK_FREE_CHOICES_EXHAUSTED}:
         cta_href = PLAYGROUND_PLANS_PATH
     elif reason == BLOCK_PAID_PERIOD_ENDED:
         cta_href = PLAYGROUND_BILLING_PATH
@@ -775,6 +836,74 @@ def _gate_page(
     return _render_gate(request, templates, gate, saved=saved, extra=extra)
 
 
+SAVE_FAILED = "save_failed"
+# Verified by re-read after the error: nothing of this save is present.
+OUTCOME_ROLLED_BACK = "rolled_back"
+# The save raised and the re-read itself failed: no claim either way.
+OUTCOME_UNKNOWN = "unknown"
+
+# Scoped to the law and its selection (the month's bookkeeping row may
+# exist; it holds no law, no choice and no selection).
+_SAVE_FAILED_COPY = {
+    OUTCOME_ROLLED_BACK: (
+        "This law was not added",
+        (
+            "The Playground could not complete this save and rolled it back.",
+            "The law was not added, none of the requested sections were saved "
+            "and no choice was used. Please try again.",
+        ),
+    ),
+    OUTCOME_UNKNOWN: (
+        "We could not confirm this save",
+        (
+            "The connection failed before this save could be confirmed.",
+            "Open the Playground and check this law and its sections before "
+            "trying again; repeating a completed save uses no extra choice.",
+        ),
+    ),
+}
+
+
+def save_failed_response(
+    request: Request,
+    templates: Jinja2Templates,
+    *,
+    json_mode: bool = False,
+    outcome: str = OUTCOME_ROLLED_BACK,
+) -> Response:
+    """B1-F07: a save point raised. ``rolled_back`` only when the repository
+    observed its own rollback; ``unknown`` when the acknowledgement was lost
+    and the re-read found the requested state absent, different or
+    unreadable. The response never claims a rollback nobody observed."""
+
+    if outcome not in _SAVE_FAILED_COPY:
+        outcome = OUTCOME_UNKNOWN
+    if playground_wants_json(request, json_mode):
+        return JSONResponse(
+            {"ok": False, "error": SAVE_FAILED, "outcome": outcome},
+            status_code=503,
+            headers={"X-Playground-Outcome": outcome},
+        )
+    title, lines = _SAVE_FAILED_COPY[outcome]
+    gate = replace_gate(
+        gate_view(reason=SAVE_FAILED),
+        title=title,
+        lines=lines,
+        cta_label="Back to Playground",
+        cta_href=home_path(),
+    )
+    response = _render_gate(request, templates, gate)
+    response.status_code = 503
+    response.headers["X-Playground-Outcome"] = outcome
+    return response
+
+
+def replace_gate(gate, **changes):
+    from dataclasses import replace  # noqa: PLC0415
+
+    return replace(gate, **changes)
+
+
 def new_law_home_notice(request: Request, access: PlaygroundAccess) -> str | None:
     """Optional home banner after a blocked add. Not a capacity message."""
 
@@ -782,6 +911,9 @@ def new_law_home_notice(request: Request, access: PlaygroundAccess) -> str | Non
         blocked = request.query_params.get("blocked")
         if blocked == NEW_LAW_TEMPORARILY_UNAVAILABLE:
             return _NEW_LAW_COPY["body"]
+        if blocked == BLOCK_FREE_CHOICES_EXHAUSTED and _free_choices_exhausted(access):
+            gate = gate_view(reason=BLOCK_FREE_CHOICES_EXHAUSTED)
+            return " ".join(part for part in (gate.title,) + gate.lines if part)
     return None
 
 

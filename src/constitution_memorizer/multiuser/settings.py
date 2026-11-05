@@ -134,6 +134,19 @@ class MultiUserSettings(BaseSettings):
     # Admin/support diagnostics remain on /admin.
     playground_enabled: bool = Field(default=True, alias="PLAYGROUND_ENABLED")
 
+    # Tier-model activation flag (B1). ``monthly`` = behaviour at 3719b9f
+    # (default). ``choices`` = three permanent Free law choices, unlimited
+    # Plus/Pro, Calendar create/edit for Plus+, Visualize for Pro+. Changes
+    # permissions and copy only; never migrates, deletes or rewrites rows.
+    playground_tier_model: str = Field(default="monthly", alias="PLAYGROUND_TIER_MODEL")
+
+    # Device-registration policy. ``paid_only`` (default, today's behaviour)
+    # registers an installation only for paid Playground accounts; Free
+    # accounts under ``choices`` are never registered unless ``all_accounts``.
+    playground_device_policy: str = Field(
+        default="paid_only", alias="PLAYGROUND_DEVICE_POLICY"
+    )
+
     # Admin console (/admin/*) and the Admin nav link. Gates the console
     # ONLY: an admin identity's full Recall entitlement follows its
     # user_roles row and is unaffected by this flag — removing the role
@@ -216,6 +229,27 @@ class MultiUserSettings(BaseSettings):
         if self.app_env == "test":
             return self.auth_phone_enabled
         return False
+
+    @field_validator("playground_tier_model", mode="before")
+    @classmethod
+    def _parse_tier_model(cls, value: object) -> object:
+        from constitution_memorizer.entitlements.tier_model import (  # noqa: PLC0415
+            normalize_tier_model,
+        )
+
+        return normalize_tier_model(value)
+
+    @field_validator("playground_device_policy", mode="before")
+    @classmethod
+    def _parse_device_policy(cls, value: object) -> object:
+        text = str(value or "").strip().lower()
+        if not text:
+            return "paid_only"
+        if text not in {"paid_only", "all_accounts"}:
+            raise ValueError(
+                "PLAYGROUND_DEVICE_POLICY must be 'paid_only' or 'all_accounts'"
+            )
+        return text
 
     @field_validator("playground_device_limit", mode="before")
     @classmethod

@@ -553,24 +553,28 @@ def test_t21_subscribe_gate_plans_come_from_catalogue(tmp_path: Path):
         catalogue_plan_views,
         gate_selector_plan_views,
     )
-    from constitution_memorizer.subscriptions.catalog import list_subscription_products
+    from constitution_memorizer.subscriptions.catalog import list_purchasable_products
 
     client, _repo = _m3_authed(tmp_path)
     home = client.get("/playground")
     _assert_subscribe_gate(home)
     plans_page = client.get("/playground?stage=plans")
     assert plans_page.status_code == 200
-    for product in list_subscription_products():
+    # B1-F09 (PR #230): the offer is the purchasable catalogue — Plus and Pro.
+    # Max is recognised for existing rows, never sold anew. The original R3
+    # evidence record keeps its own SHA.
+    for product in list_purchasable_products():
         assert f"₹{product.price_inr}" in plans_page.text
         assert catalogue_limit_label(product.playground_law_limit) in plans_page.text
         assert product.display_name in plans_page.text
+    assert "₹1199" not in plans_page.text and "Subscribe to Max" not in plans_page.text
     assert "₹149" not in plans_page.text
     assert PLAYGROUND_BILLING_PATH not in plans_page.text
     billed = catalogue_plan_views()
     assert billed
     assert all(plan.href == PLAYGROUND_BILLING_PATH for plan in billed)
     selectors = gate_selector_plan_views()
-    assert tuple(plan.tier for plan in selectors) == ("plus", "pro", "max")
+    assert tuple(plan.tier for plan in selectors) == ("plus", "pro")
     assert all("stage=plans&tier=" in plan.href for plan in selectors)
 
 

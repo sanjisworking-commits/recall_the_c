@@ -45,6 +45,19 @@ CREATE TABLE IF NOT EXISTS user_playground_roster_item (
 
 CREATE INDEX IF NOT EXISTS user_playground_roster_item_user_period
     ON user_playground_roster_item (user_id, period_start);
+
+CREATE TABLE IF NOT EXISTS user_playground_choice (
+    id TEXT NOT NULL PRIMARY KEY,
+    user_id TEXT NOT NULL,
+    law_id TEXT NOT NULL,
+    chosen_at TEXT NOT NULL,
+    source TEXT NOT NULL DEFAULT 'free_add'
+        CHECK (source IN ('free_add')),
+    UNIQUE (user_id, law_id)
+);
+
+CREATE INDEX IF NOT EXISTS user_playground_choice_user
+    ON user_playground_choice (user_id);
 """
 
 
