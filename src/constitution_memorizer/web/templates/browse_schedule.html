@@ -11,12 +11,10 @@
   </header>
 
   <div class="sched-body">
-    {% if schedule.cite %}
-    <p class="sched-ref">{{ schedule.cite }}</p>
-    {% endif %}
-
     {% for chunk in schedule.blocks %}
-      {% if chunk.t == 'h' %}
+      {% if chunk.t == 'ref' %}
+      <p class="sched-ref">{{ chunk.s }}</p>
+      {% elif chunk.t == 'h' %}
       <h2 class="sched-h">{{ chunk.s }}</h2>
       {% elif chunk.t == 'p' %}
       <p class="sched-p">{{ chunk.s }}</p>
@@ -26,13 +24,13 @@
         <span class="sched-sec-title">{{ chunk.title }}</span>
       </div>
       {% elif chunk.t == 'cl' %}
-      <div class="sched-cl" style="padding-left: {{ chunk.pad|default(0) }}px">
+      <div class="sched-cl" style="padding-left: {{ chunk.pad or '0px' }}">
         <span class="sched-cl-mark">{{ chunk.mark }}</span>
         <p class="sched-p">{{ chunk.s }}</p>
       </div>
       {% elif chunk.t == 'lead' %}
-      <p class="sched-lead" style="padding-left: {{ chunk.pad|default(0) }}px"><em>{{ chunk.lead }}</em> {{ chunk.s }}</p>
-      {% elif chunk.t == 'table' and chunk.kind == 'three' %}
+      <p class="sched-lead" style="padding-left: {{ chunk.pad or '0px' }}"><em>{{ chunk.lead }}</em> {{ chunk.s }}</p>
+      {% elif chunk.t == 'table' and chunk.three %}
       <div class="sched-table is-three">
         {% for row in chunk.rows %}
         <div class="sched-tr">
@@ -42,7 +40,7 @@
         </div>
         {% endfor %}
       </div>
-      {% elif chunk.t == 'table' and chunk.kind == 'two' %}
+      {% elif chunk.t == 'table' and chunk.two %}
       <div class="sched-table is-two">
         {% for row in chunk.rows %}
         <div class="sched-tr">
@@ -51,16 +49,16 @@
         </div>
         {% endfor %}
       </div>
-      {% elif chunk.t == 'table' and chunk.kind == 'pay' %}
+      {% elif chunk.t == 'table' and chunk.pay %}
       <div class="sched-table is-pay">
         {% for row in chunk.rows %}
         <div class="sched-tr">
-          <span class="sched-td-text">{{ row.a }}</span>
+          <span class="sched-td-text"><strong>{{ row.a }}</strong></span>
           <span class="sched-td-amt">{{ row.b }}</span>
         </div>
         {% endfor %}
       </div>
-      {% elif chunk.t == 'table' and chunk.kind == 'parts' %}
+      {% elif chunk.t == 'table' and chunk.parts %}
       <div class="sched-table is-parts">
         {% for row in chunk.rows %}
         <div class="sched-tr">
@@ -72,25 +70,25 @@
       {% elif chunk.t == 'list' %}
       <div class="sched-list" data-sched-list>
         <button type="button" class="sched-list-head" aria-expanded="{{ 'true' if chunk.open else 'false' }}" data-sched-list-toggle>
+          <span class="sched-list-eyebrow">List {{ chunk.id }}</span>
           <span>
-            <span class="sched-list-eyebrow">{{ chunk.eyebrow }}</span>
             <span class="sched-list-title">{{ chunk.title }}</span>
-            <span class="sched-list-count">{{ chunk['items']|length }} entries</span>
+            <span class="sched-list-count">{{ chunk.count }}</span>
           </span>
           <span class="sched-list-action" data-sched-list-label>{% if chunk.open %}Collapse ▴{% else %}Expand ▾{% endif %}</span>
         </button>
         <div class="sched-list-body"{% if not chunk.open %} hidden{% endif %}>
-          {% for item in chunk['items'] %}
+          {% for row in chunk.rows %}
           <div class="sched-tr">
-            <span class="sched-td-n is-accent">{{ item.n }}</span>
+            <span class="sched-td-n is-accent">{{ row.a }}</span>
             <div class="sched-td-text">
-              {{ item.s }}
-              {% if item.cls %}
+              {{ row.b }}
+              {% if row.hasSubs %}
               <div class="sched-list-cls">
-                {% for cl in item.cls %}
+                {% for sub in row.subs %}
                 <div class="sched-cl">
-                  <span class="sched-cl-mark">{{ cl.mark }}</span>
-                  <p class="sched-p">{{ cl.s }}</p>
+                  <span class="sched-cl-mark">{{ sub.m }}</span>
+                  <p class="sched-p">{{ sub.s }}</p>
                 </div>
                 {% endfor %}
               </div>
@@ -101,48 +99,42 @@
         </div>
       </div>
       {% elif chunk.t == 'langs' %}
-      <h2 class="sched-h">Languages</h2>
       <div class="sched-langs">
         {% for item in chunk['items'] %}
-        <div class="sched-lang{% if item.note %} has-note{% endif %}" tabindex="0"{% if item.note %} data-sched-tip="{{ item.note }}"{% endif %}>
+        <div class="sched-lang{% if item.hasNotes %} has-note{% endif %}" tabindex="0"{% if item.hasNotes %} data-sched-tip="{{ item.notes }}"{% endif %}>
           <span class="sched-lang-n">{{ item.n }}</span>
           <span class="sched-lang-name">{{ item.name }}</span>
           <span class="sched-lang-foot">
-            {% if item.added %}<span>Added {{ item.added }}</span>{% endif %}
-            {% if item.note %}<span class="sched-lang-i" aria-hidden="true">i</span>{% endif %}
+            {% if item.added %}<span>{{ item.added }}</span>{% endif %}
+            {% if item.hasNotes %}<span class="sched-lang-i" aria-hidden="true">i</span>{% endif %}
           </span>
         </div>
         {% endfor %}
       </div>
       {% elif chunk.t == 'oaths' %}
-      <h2 class="sched-h">Forms of Oaths or Affirmations</h2>
       <div class="sched-oaths">
         {% for item in chunk['items'] %}
         <article class="sched-oath">
           <p class="sched-oath-head">
-            <span class="sched-oath-form">{{ item.form }}</span>
-            <span class="sched-oath-who">{{ item.who }}</span>
+            <span class="sched-oath-form">{{ item.label }}</span>
+            <span class="sched-oath-who">{{ item.title }}</span>
           </p>
-          <p class="sched-oath-text">{{ item.text|safe }}</p>
+          <p class="sched-oath-text">{{ item.pre }} <span class="sched-oath-alt"><span>do swear in the name of God</span><span>solemnly affirm</span></span> {{ item.post }}</p>
           {% if item.note %}
           <p class="sched-oath-note">{{ item.note }}</p>
           {% endif %}
         </article>
         {% endfor %}
       </div>
+      {% elif chunk.t == 'notes' %}
+      <div class="sched-notes">
+        <p class="sched-notes-label">Amendment notes</p>
+        {% for note in chunk['items'] %}
+        <p class="sched-note">{{ note }}</p>
+        {% endfor %}
+      </div>
       {% endif %}
     {% endfor %}
-
-    {% if schedule.notes %}
-    <div class="sched-notes">
-      <p class="sched-notes-label">Amendment notes</p>
-      <ol>
-        {% for note in schedule.notes %}
-        <li>{{ note }}</li>
-        {% endfor %}
-      </ol>
-    </div>
-    {% endif %}
 
     <nav class="sched-adj" aria-label="Adjacent schedules">
       {% if schedule.prev_slug %}

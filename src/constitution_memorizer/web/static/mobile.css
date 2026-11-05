@@ -5543,6 +5543,16 @@
     grid-template-columns: 84px 1fr;
   }
 
+  .sched-list-head {
+    grid-template-columns: 56px 1fr auto;
+    gap: 8px;
+    padding: 12px 14px;
+  }
+
+  .sched-list-body .sched-tr {
+    padding: 10px 14px;
+  }
+
   .sched-langs {
     grid-template-columns: 1fr 1fr;
   }

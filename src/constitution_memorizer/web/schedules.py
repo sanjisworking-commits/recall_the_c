@@ -98,6 +98,10 @@ def build_schedule_view(_engine: Any, slug: str) -> BrowseScheduleView | None:
     body = load_schedule_bodies().get(card.slug) or {}
     blocks = list(body.get("blocks") or [])
     notes = [str(n) for n in (body.get("notes") or [])]
+    if not notes:
+        for block in blocks:
+            if block.get("t") == "notes" or block.get("isNotes"):
+                notes.extend(str(item) for item in (block.get("items") or []))
     return BrowseScheduleView(
         slug=card.slug,
         ord=card.ord,
