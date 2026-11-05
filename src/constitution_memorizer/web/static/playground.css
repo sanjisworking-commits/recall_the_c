@@ -3019,6 +3019,13 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   cursor: progress;
 }
 
+/* M2-R: the gate marker paragraph (data-playground-gate) repeats the sheet's
+   own heading word for word; inside the Add sheet it is a machine marker for
+   the tests and the no-JS page, not a second title. */
+.pg-sheet-panel[data-pg-add] > .pg-note[data-playground-gate] {
+  display: none;
+}
+
 @media (max-width: 560px) {
   .pg-sheet-panel[data-pg-add] {
     padding: 12px 18px calc(30px + env(safe-area-inset-bottom, 0px));
