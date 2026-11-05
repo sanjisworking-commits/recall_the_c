@@ -64,6 +64,7 @@ Future ideas: [`docs/FUTURE.md`](docs/FUTURE.md).
 | Native macOS reminders | `cursor/native-macos-reminders-1a75` | `--channel macos`; digest includes Memory dues; Browse due badges |
 | Browse card 1c | `cursor/browse-card-1c-1a75` | Corner ribbon, count line, In news pills, red Browse nav badge |
 | Schedules reference | `cursor/schedules-reference-1a75` | Twelve read-only Schedule cards after Part XXII; designed `/browse/schedules/{slug}` pages |
+| Schedules extract | `cursor/schedules-full-extract-1a75` | Official `schedules-text.js` fixture (Sixth 29/172, Ninth through 284) |
 
 ---
 

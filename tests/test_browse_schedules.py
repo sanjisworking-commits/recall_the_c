@@ -11,6 +11,7 @@ from constitution_memorizer.web.browse import load_browse_schedules_seed
 from constitution_memorizer.web.schedules import (
     browse_schedule_cards,
     build_schedule_view,
+    load_schedule_bodies,
 )
 
 MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
@@ -78,6 +79,7 @@ def test_browse_schedule_pages(tmp_path: Path):
     assert "The States and the Union territories" in first.text
     assert "Andhra Pradesh" in first.text
     assert "Read-only reference" in first.text
+    assert first.text.count("[Articles 1 and 4]") == 1
     assert 'href="/learn/' not in first.text
     assert 'href="/browse/schedules/second"' in first.text
 
@@ -85,11 +87,30 @@ def test_browse_schedule_pages(tmp_path: Path):
     assert seventh.status_code == 200
     assert "Union List" in seventh.text
     assert "Defence of India" in seventh.text
+    assert "100 entries" in seventh.text
+    assert "List I" in seventh.text
 
     eighth = client.get("/browse/schedules/eighth")
     assert eighth.status_code == 200
     assert "Assamese" in eighth.text
     assert "Konkani" in eighth.text
+    assert "Added 2003" in eighth.text
+
+    third = client.get("/browse/schedules/third")
+    assert third.status_code == 200
+    assert "Form I" in third.text
+    assert "do swear in the name of God" in third.text
+    assert "solemnly affirm" in third.text
+
+    sixth = client.get("/browse/schedules/sixth")
+    assert sixth.status_code == 200
+    assert "Autonomous districts and autonomous regions" in sixth.text
+    assert "20BA" in sixth.text
+
+    ninth = client.get("/browse/schedules/ninth")
+    assert ninth.status_code == 200
+    assert "The Bihar Land Reforms Act, 1950" in ninth.text
+    assert "284." in ninth.text
 
     legacy = client.get("/browse/schedule/first", follow_redirects=False)
     assert legacy.status_code == 301
@@ -111,7 +132,46 @@ def test_build_schedule_view_has_typed_blocks():
     assert first is not None
     kinds = {block.get("t") for block in first.blocks}
     assert "table" in kinds
+    assert "ref" in kinds
     assert first.cite == "[Articles 1 and 4]"
+    assert first.blocks[0]["s"] == "[Articles 1 and 4]"
     tenth = build_schedule_view(None, "tenth")
     assert tenth is not None
     assert any(block.get("title") == "Interpretation" for block in tenth.blocks)
+
+
+def test_sixth_and_ninth_match_official_extract():
+    sixth = build_schedule_view(None, "sixth")
+    assert sixth is not None
+    assert sum(1 for block in sixth.blocks if block.get("t") == "sec") == 29
+    assert sum(1 for block in sixth.blocks if block.get("t") == "cl") == 172
+
+    ninth = build_schedule_view(None, "ninth")
+    assert ninth is not None
+    paragraphs = [block.get("s") or "" for block in ninth.blocks if block.get("t") == "p"]
+    assert any(text.startswith("1.") for text in paragraphs)
+    assert any("284." in text for text in paragraphs)
+    assert len(paragraphs) >= 284
+
+    seventh = build_schedule_view(None, "seventh")
+    assert seventh is not None
+    lists = [block for block in seventh.blocks if block.get("t") == "list"]
+    assert [block.get("id") for block in lists] == ["I", "II", "III"]
+    assert [len(block.get("rows") or []) for block in lists] == [100, 61, 52]
+    assert lists[0].get("open") is True
+
+    bodies = load_schedule_bodies()
+    assert set(bodies) == {
+        "first",
+        "second",
+        "third",
+        "fourth",
+        "fifth",
+        "sixth",
+        "seventh",
+        "eighth",
+        "ninth",
+        "tenth",
+        "eleventh",
+        "twelfth",
+    }
