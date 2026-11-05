@@ -3427,6 +3427,10 @@ code {
   color: var(--mid);
 }
 
+.browse-schedule-grid {
+  margin-bottom: 18px;
+}
+
 .browse-article-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));

@@ -1555,6 +1555,11 @@
     gap: 10px;
   }
 
+  .browse-schedule-grid,
+  .browse-schedules-label-desktop {
+    display: none;
+  }
+
   .part-card {
     display: flex;
     flex-direction: column;
@@ -1733,6 +1738,10 @@
 
   body[data-mscreen="part"] .mobile-back {
     min-height: 36px;
+  }
+
+  body[data-mscreen="part"] .browse-schedule-page .eyebrow-desktop {
+    display: none;
   }
 
   body[data-mscreen="part"] .part-head {
@@ -5481,6 +5490,7 @@
   .mobile-sheet,
   .dash-upcoming,
   .browse-part-rail,
+  .browse-schedules-label-phone,
   .browse-rail-note,
   .revisions-mobile,
   .settings-account-row,

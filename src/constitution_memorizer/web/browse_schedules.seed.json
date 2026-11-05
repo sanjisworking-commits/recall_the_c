@@ -1,0 +1,91 @@
+[
+  {
+    "slug": "first",
+    "roman": "I",
+    "title": "The States and the Union territories",
+    "articles": "Articles 1 and 4",
+    "parent_id": "schedule-first",
+    "tables_tab": "states"
+  },
+  {
+    "slug": "second",
+    "roman": "II",
+    "title": "Provisions as to the President and the Governors, etc.",
+    "articles": "Articles 59(3), 65(3), 75(7), 97, 125, 148(3), 158(3), 164(5), 186 and 221",
+    "parent_id": "schedule-second"
+  },
+  {
+    "slug": "third",
+    "roman": "III",
+    "title": "Forms of Oaths or Affirmations",
+    "articles": "Articles 75(4), 99, 124(6), 148(2), 164(3), 188 and 219",
+    "parent_id": "schedule-third"
+  },
+  {
+    "slug": "fourth",
+    "roman": "IV",
+    "title": "Allocation of seats in the Council of States",
+    "articles": "Articles 4(1) and 80(2)",
+    "parent_id": "schedule-fourth"
+  },
+  {
+    "slug": "fifth",
+    "roman": "V",
+    "title": "Provisions as to the Administration and Control of Scheduled Areas and Scheduled Tribes",
+    "articles": "Article 244(1)",
+    "parent_id": "schedule-fifth",
+    "tables_tab": "schedules56"
+  },
+  {
+    "slug": "sixth",
+    "roman": "VI",
+    "title": "Provisions as to the Administration of Tribal Areas in Assam, Meghalaya, Tripura and Mizoram",
+    "articles": "Articles 244(2) and 275(1)",
+    "parent_id": "schedule-sixth",
+    "tables_tab": "schedules56"
+  },
+  {
+    "slug": "seventh",
+    "roman": "VII",
+    "title": "Union List, State List and Concurrent List",
+    "articles": "Article 246",
+    "parent_id": "schedule-seventh",
+    "tables_tab": "seventh"
+  },
+  {
+    "slug": "eighth",
+    "roman": "VIII",
+    "title": "Languages",
+    "articles": "Articles 344(1) and 351",
+    "parent_id": "schedule-eighth",
+    "tables_tab": "languages"
+  },
+  {
+    "slug": "ninth",
+    "roman": "IX",
+    "title": "Validation of certain Acts and Regulations",
+    "articles": "Article 31B",
+    "parent_id": "schedule-ninth"
+  },
+  {
+    "slug": "tenth",
+    "roman": "X",
+    "title": "Provisions as to disqualification on ground of defection",
+    "articles": "Articles 102(2) and 191(2)",
+    "parent_id": "schedule-tenth"
+  },
+  {
+    "slug": "eleventh",
+    "roman": "XI",
+    "title": "Powers, authority and responsibilities of Panchayats",
+    "articles": "Article 243G",
+    "parent_id": "schedule-eleventh"
+  },
+  {
+    "slug": "twelfth",
+    "roman": "XII",
+    "title": "Powers, authority and responsibilities of Municipalities, etc.",
+    "articles": "Article 243W",
+    "parent_id": "schedule-twelfth"
+  }
+]
