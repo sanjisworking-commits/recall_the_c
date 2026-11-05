@@ -935,6 +935,87 @@ def test_failed_first_save_at_month_boundary_leaves_only_the_bookkeeping_row(
     assert roster.choice_law_ids(USER) == frozenset({"stub-1", "ndps"})
 
 
+class _CommitThenLoseConnection(sqlite3.Connection):
+    """``commit()`` really commits, then raises once when armed: the commit
+    boundary, where the transaction is durable but the caller never hears so."""
+
+    armed = False
+
+    def commit(self):  # type: ignore[override]
+        super().commit()
+        if type(self).armed:
+            type(self).armed = False
+            raise sqlite3.OperationalError("connection lost after commit")
+
+
+def _client_with_connection_factory(tmp_path: Path, factory) -> TestClient:
+    from constitution_memorizer.progress.db import init_db
+
+    tmp_path.mkdir(parents=True, exist_ok=True)
+    conn = sqlite3.connect(str(tmp_path / "progress.db"), check_same_thread=False, factory=factory)
+    conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA foreign_keys = ON")
+    init_db(conn)
+    provider = FakeAuthProvider()
+    provider.seed_google_user(user_id=USER, email="b1@example.com", display_name="B1")
+    client = TestClient(
+        create_app(
+            units_path=MINI_UNITS,
+            db_path=tmp_path / "unused.db",
+            multiuser=True,
+            multiuser_settings=_mu_settings("choices"),
+            auth_provider=provider,
+            session_store=InMemorySessionStore(),
+            progress_repo=ProgressRepository(conn),
+            study_materials_dir=tmp_path / "study-materials",
+        )
+    )
+    _sign_in(client)
+    return client
+
+
+def test_exception_at_the_commit_boundary_is_never_reported_as_rolled_back(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    """B1-F07 (reviewer, commit boundary, SQLite): the real ``commit()``
+    succeeds and the connection then raises before returning. A later
+    ``rollback()`` returns normally because no transaction is open — that is
+    not evidence. The route must re-read the exact requested state, find it,
+    finish as a success, and the user never sees "not added"."""
+
+    client = _client_with_connection_factory(tmp_path / "commit-boundary", _CommitThenLoseConnection)
+    overlay = client.app.state.playground
+    real = overlay.persist_membership_and_selection_in
+
+    def write_then_arm_the_commit(conn, *args, **kwargs):
+        real(conn, *args, **kwargs)
+        _CommitThenLoseConnection.armed = True  # the consume's own commit is next
+
+    monkeypatch.setattr(overlay, "persist_membership_and_selection_in", write_then_arm_the_commit)
+    resp = _save_sections(client, "ndps", ["1"])
+    assert _CommitThenLoseConnection.armed is False  # the hook fired on that commit
+    assert resp.status_code == 303, resp.text[:300]
+    assert (resp.headers.get("location") or "").endswith(law_path("ndps"))
+    assert "X-Playground-Outcome" not in resp.headers
+    assert "was not added" not in resp.text and "rolled" not in resp.text
+    assert len(_ledger(client)) == 1  # exactly one choice spent
+    assert client.app.state.roster.is_law_active_this_period(USER, "ndps")
+    rows = selection_rows("ndps", ["1"], entire=False, act=require_playground_law("ndps"))
+    assert [s.source_locator for s in overlay.list_selection(USER, "ndps")] == [rows[0][0]]
+
+    # A pre-commit failure on the same connection class still rolls back properly.
+    def fail_before_commit(conn, *args, **kwargs):
+        real(conn, *args, **kwargs)
+        raise sqlite3.OperationalError("simulated failure before commit")
+
+    monkeypatch.setattr(overlay, "persist_membership_and_selection_in", fail_before_commit)
+    failed = _save_sections(client, "uapa", ["1"])
+    assert failed.status_code == 503
+    assert failed.headers.get("X-Playground-Outcome") == "rolled_back"
+    assert len(_ledger(client)) == 1
+    assert overlay.get_item(USER, "uapa") is None
+
+
 # ------------------------------------------------- Calendar and Visualize
 
 

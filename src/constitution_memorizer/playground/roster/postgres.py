@@ -7,7 +7,6 @@ the roster item and re-counts consumed rows before insert.
 from __future__ import annotations
 
 import hashlib
-from contextlib import contextmanager
 from datetime import date, datetime, timezone
 from typing import Any, Callable
 from uuid import UUID, uuid4
@@ -66,22 +65,37 @@ def _utc_now(now: datetime | None = None) -> datetime:
 _CHOICE_LOCK_NS = 872012
 
 
-@contextmanager
-def _rollback_evidence(conn: Any):
-    """B1-F07: on an error inside the save transaction, roll back on this
-    connection and mark the exception as an observed rollback. If the
-    rollback itself fails (connection gone) the exception carries no
-    evidence and the HTTP layer must re-read the exact state."""
+class _SaveTransaction:
+    """B1-F07 rollback evidence for one consume transaction.
 
-    try:
-        yield
-    except Exception as exc:
+    ``commit()`` records that commit has begun before calling the
+    connection. On an exception: a failure *before* commit began, followed
+    by a successful ``rollback()`` of that active transaction, marks the
+    exception as an observed rollback. Once commit has started nothing is
+    marked — a later ``rollback()`` returning normally proves nothing, so the
+    HTTP layer must re-read the exact requested state."""
+
+    def __init__(self, conn: Any) -> None:
+        self._conn = conn
+        self.commit_started = False
+
+    def commit(self) -> None:
+        self.commit_started = True
+        self._conn.commit()
+
+    def __enter__(self) -> "_SaveTransaction":
+        return self
+
+    def __exit__(self, exc_type, exc, tb) -> bool:
+        if exc is None:
+            return False
         try:
-            conn.rollback()
-        except Exception:  # noqa: BLE001
-            raise exc from None
-        mark_save_rolled_back(exc)
-        raise
+            self._conn.rollback()
+        except Exception:  # noqa: BLE001 — connection gone: no evidence
+            return False
+        if not self.commit_started:
+            mark_save_rolled_back(exc)
+        return False
 
 
 def _choice_lock_key(user_id: str) -> int:
@@ -354,7 +368,7 @@ class PostgresRosterRepository:
 
         uid = as_user_id(user_id)
         clock = _utc_now(now)
-        with self._pool.connection() as conn, _rollback_evidence(conn):
+        with self._pool.connection() as conn, _SaveTransaction(conn) as tx:
             with conn.cursor(row_factory=self._dict_row) as cur:
                 if ledger:
                     cur.execute(
@@ -368,7 +382,7 @@ class PostgresRosterRepository:
                 )
                 period_row = cur.fetchone()
                 if period_row is None:
-                    conn.commit()
+                    tx.commit()
                     return ConsumeResult(
                         status=RESULT_NEW_BLOCKED,
                         item=None,
@@ -426,7 +440,7 @@ class PostgresRosterRepository:
                     and item.removed_at is None
                 ):
                     out = _result(RESULT_ALREADY_ACTIVE, item)
-                    conn.commit()
+                    tx.commit()
                     return out
                 if (
                     item is not None
@@ -449,7 +463,7 @@ class PostgresRosterRepository:
                     )
                     refreshed = item_from_mapping(cur.fetchone())
                     out = _result(RESULT_RE_ADDED, refreshed, applied=_apply_within())
-                    conn.commit()
+                    tx.commit()
                     return out
                 readd_free = bool(ledger and in_ledger)
                 if not readd_free:
@@ -459,15 +473,15 @@ class PostgresRosterRepository:
                         and int(choices_used or 0) >= choice_limit
                     ):
                         out = _result(RESULT_FREE_CHOICES_EXHAUSTED, item)
-                        conn.commit()
+                        tx.commit()
                         return out
                     if not allow_new:
                         out = _result(RESULT_NEW_BLOCKED, item)
-                        conn.commit()
+                        tx.commit()
                         return out
                     if cap is not None and self._count_consumed_locked(cur, uid, period_start) >= cap:
                         out = _result(RESULT_ROSTER_FULL, item)
-                        conn.commit()
+                        tx.commit()
                         return out
                 origin = ORIGIN_RE_ADD if readd_free else origin_for_new
                 if item is not None:
@@ -525,7 +539,7 @@ class PostgresRosterRepository:
                             used = self._count_consumed_locked(
                                 retry, uid, period_start
                             )
-                            conn.commit()
+                            tx.commit()
                             if stored is not None and stored.consumed_at is not None:
                                 status = (
                                     RESULT_ALREADY_ACTIVE
@@ -560,7 +574,7 @@ class PostgresRosterRepository:
                     recorded=recorded,
                     applied=applied,
                 )
-                conn.commit()
+                tx.commit()
                 return out
 
     @count_playground_repo_call(kind="write")

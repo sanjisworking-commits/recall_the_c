@@ -18,6 +18,7 @@ from constitution_memorizer.subscriptions.catalog import (
     is_upgrade,
 )
 from constitution_memorizer.subscriptions.config import SubscriptionPlanIds
+from constitution_memorizer.subscriptions.repository import serialize_subscription
 from constitution_memorizer.subscriptions.errors import (
     ChangePlanRequiredError,
     CheckoutInProgressError,
@@ -235,10 +236,13 @@ class SubscriptionService:
         """
 
         current = self._require_provider_backed(user_id)
-        provider = self.fetch_provider_subscription(
-            current.provider_subscription_id or ""
-        )
-        return self.reconcile_fetched_subscription(current, provider)
+        provider_id = current.provider_subscription_id or ""
+        # B1-B02: same per-subscription lock as the webhook path; re-read
+        # the row inside it so a concurrent event's write is not clobbered.
+        with serialize_subscription(self._repo, provider_id):
+            fresh = self._repo.get_subscription(user_id, current.id)
+            provider = self.fetch_provider_subscription(provider_id)
+            return self.reconcile_fetched_subscription(fresh or current, provider)
 
     def reconcile_fetched_subscription(
         self,

@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Mapping
 
+from constitution_memorizer.subscriptions.repository import serialize_subscription
 from constitution_memorizer.subscriptions.charge_sync import ChargeRecorder
 from constitution_memorizer.subscriptions.errors import (
     SubscriptionConfigError,
@@ -236,6 +237,28 @@ class WebhookProcessor:
                 owned=True,
             )
 
+        # B1-B02: one reconciliation per provider subscription at a time.
+        # The local row is (re-)read inside the lock, the provider GET and
+        # the persist happen inside it, so two events (or an event and the
+        # admin reconcile) cannot land their writes in reverse GET order.
+        with serialize_subscription(self._subscriptions, provider_sub_id):
+            return self._reconcile_owned(
+                event,
+                event_name=event_name,
+                provider_sub_id=provider_sub_id,
+                payload=payload,
+                used_slot=used_slot,
+            )
+
+    def _reconcile_owned(
+        self,
+        event: Any,
+        *,
+        event_name: str,
+        provider_sub_id: str,
+        payload: Mapping[str, Any],
+        used_slot: str,
+    ) -> WebhookDeliveryResult:
         local = self._subscriptions.get_subscription_by_provider_id(provider_sub_id)
         if local is None:
             stored = self._events.mark_event_status(
@@ -269,6 +292,18 @@ class WebhookProcessor:
                 owned=True,
             )
 
+        if not local.is_current:
+            # B1-B03: a late event for a superseded row updates that archived
+            # row only (``update_subscription_state`` is keyed by row id and
+            # never writes ``is_current``); the current row is untouched.
+            logger.info(
+                "subscription webhook provider_event_id=%s event_name=%s "
+                "provider_subscription_id=%s superseded_row=%s current_row_untouched=true",
+                event.provider_event_id,
+                event_name,
+                provider_sub_id,
+                local.id,
+            )
         extra: dict[str, Any] = {}
         if event_name == "subscription.charged":
             extra["last_charge_event_id"] = event.provider_event_id

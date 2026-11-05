@@ -1006,6 +1006,165 @@ def test_concurrent_different_event_ids_match_provider_truth(tmp_path: Path):
     read.close()
 
 
+
+
+# --------------------------------------------------------------------------- #
+# B1-B02 / B1-B03 (PR #230)
+# --------------------------------------------------------------------------- #
+class _TruthProvider(FakeProvider):
+    """Provider whose truth the test changes between two GETs, and whose GET
+    for one event can be held until the other event has had its chance."""
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.hold_for: str | None = None
+        self.release = threading.Event()
+        self.entered = threading.Event()
+        self.order: list[tuple[str, str]] = []
+
+    def fetch_subscription(self, subscription_id: str) -> ProviderSubscription:
+        with self._lock:
+            held = self.hold_for
+            self.hold_for = None
+            # The GET's answer is fixed when the provider is asked…
+            snapshot = (self.status, self.current_end)
+            self.order.append((subscription_id, self.status))
+        if held is not None:
+            # …but this caller's response is delayed, so a later GET can be
+            # answered (with newer truth) before this one returns.
+            self.entered.set()
+            self.release.wait(timeout=1.5)  # the other event gets 1.5 s to overtake
+        return _sub(subscription_id, self.plan_id, snapshot[0], current_start=self.current_start, current_end=snapshot[1])
+
+
+def _file_sqlite(path: Path):
+    conn = sqlite3.connect(str(path), timeout=2, isolation_level=None, check_same_thread=False)
+    conn.row_factory = sqlite3.Row
+    conn.execute("PRAGMA busy_timeout=1000")
+    return conn
+
+
+def test_b02_interleaved_reconciliations_cannot_persist_the_older_provider_state(tmp_path: Path):
+    """B1-B02: event A's provider GET returns an older state but its write
+    would land *after* event B's newer write. The per-subscription lock holds
+    B until A has written, so B's GET sees — and persists — the newer truth."""
+
+    path = tmp_path / "b02.db"
+    setup = _file_sqlite(path)
+    ensure_sqlite_schema(setup)
+    _seed_active(SqliteSubscriptionRepository(setup), status="active")
+    setup.close()
+    fake = _TruthProvider()
+    fake.status = "pending"  # older truth, seen by A
+    fake.current_end = OCT
+    fake.hold_for = "A"
+    done = {}
+
+    def run(label: str, event_name: str):
+        conn = _file_sqlite(path)
+        processor, *_ = _processor(conn, fake)
+        raw = _raw(_event_payload(event_name))
+        done[label] = processor.process_delivery(raw, _sign_body(raw), f"evt_{label}")
+        conn.close()
+
+    # A enters its GET first and is held there.
+    fake.hold_for = "A"
+    a = threading.Thread(target=run, args=("A", "subscription.pending"))
+    a.start()
+    assert fake.entered.wait(timeout=3)
+    # The provider moves on: newer truth is active / paid through NOV.
+    with fake._lock:
+        fake.status = "active"
+        fake.current_end = NOV
+    b = threading.Thread(target=run, args=("B", "subscription.charged"))
+    b.start()
+    b.join(timeout=0.5)
+    assert b.is_alive()  # B is waiting on the per-subscription lock, not overtaking
+    fake.release.set()
+    a.join(timeout=5)
+    b.join(timeout=5)
+    assert not a.is_alive() and not b.is_alive()
+    assert done["A"].status_code == 200 and done["B"].status_code == 200
+    assert [status for _sid, status in fake.order] == ["pending", "active"]
+    read = _file_sqlite(path)
+    current = SqliteSubscriptionRepository(read).get_current_subscription(USER)
+    read.close()
+    assert current.status == "active"
+    assert current.billing_period_end == datetime.fromtimestamp(NOV, tz=timezone.utc)
+    assert current.provider_metadata.get("last_charge_event_id") == "evt_B"
+
+
+def test_b02_admin_reconcile_uses_the_same_lock_and_a_fresh_row():
+    conn, subs, events = _sqlite()
+    _seed_active(subs, status="active")
+    fake = FakeProvider()
+    fake.status = "halted"
+    service = SubscriptionService(subs, fake, PLAN_IDS, public_key_id=KEY_ID)
+    from constitution_memorizer.subscriptions.repository import _process_local_reconcile_lock
+
+    seen = {}
+    real_fetch = fake.fetch_subscription
+
+    def fetch_inside_lock(sub_id):
+        # The webhook path takes this same (non-reentrant) lock; if the admin
+        # reconcile holds it around its GET, a second acquire must time out.
+        lock = _process_local_reconcile_lock(sub_id)
+        acquired = lock.acquire(timeout=0.2)
+        if acquired:
+            lock.release()
+        seen["blocked"] = not acquired
+        return real_fetch(sub_id)
+
+    fake.fetch_subscription = fetch_inside_lock
+    stored = service.reconcile_current(USER)
+    assert stored.status == "halted"
+    assert seen.get("blocked") is True  # the GET ran while the subscription lock was held
+
+
+def test_b03_late_event_for_a_superseded_subscription_updates_only_the_archived_row():
+    """B1-B03: after resubscription the old row is archived (``is_current``
+    false). An ``activated`` / ``charged`` event for the old provider id must
+    update that archived row only and never flip ``is_current`` or touch the
+    current row's tier, status or period."""
+
+    conn, subs, events = _sqlite()
+    old = subs.create_subscription_record(
+        USER, tier="plus", status="cancelled", provider_subscription_id="sub_old",
+        provider_plan_id="plan_plus", provider_customer_id="cust_1",
+        billing_period_start=datetime.fromtimestamp(SEP, tz=timezone.utc),
+        billing_period_end=datetime.fromtimestamp(OCT, tz=timezone.utc), is_current=False,
+    )
+    new = subs.create_subscription_record(
+        USER, tier="pro", status="active", provider_subscription_id="sub_new",
+        provider_plan_id="plan_pro", provider_customer_id="cust_1",
+        billing_period_start=datetime.fromtimestamp(OCT, tz=timezone.utc),
+        billing_period_end=datetime.fromtimestamp(NOV, tz=timezone.utc), is_current=True,
+    )
+    fake = FakeProvider()
+    fake.status = "active"
+    fake.plan_id = "plan_plus"
+    fake.current_start = SEP
+    fake.current_end = OCT
+    processor, *_ = _processor(conn, fake)
+    for event_name, event_id in (("subscription.activated", "evt_old_1"), ("subscription.charged", "evt_old_2")):
+        raw = _raw(_event_payload(event_name, sub_id="sub_old"))
+        result = processor.process_delivery(raw, _sign_body(raw), event_id)
+        assert result.status_code == 200 and result.processing_status == "processed"
+    assert fake.fetches == ["sub_old", "sub_old"]
+
+    current = subs.get_current_subscription(USER)
+    assert current.id == new.id
+    assert (current.tier, current.status, current.is_current) == ("pro", "active", True)
+    assert current.provider_subscription_id == "sub_new"
+    assert current.billing_period_end == datetime.fromtimestamp(NOV, tz=timezone.utc)
+    assert "last_charge_event_id" not in current.provider_metadata
+    archived = subs.get_subscription_by_provider_id("sub_old")
+    assert archived.id == old.id and archived.is_current is False
+    assert archived.status == "active"  # provider truth recorded on the archived row only
+    assert archived.provider_metadata.get("last_charge_event_id") == "evt_old_2"
+    assert len([row for row in subs.list_subscription_history(USER) if row.is_current]) == 1
+
+
 # --------------------------------------------------------------------------- #
 # HTTP auto-renew + wiring
 # --------------------------------------------------------------------------- #

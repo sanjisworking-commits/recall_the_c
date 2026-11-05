@@ -23,6 +23,7 @@ from urllib.parse import urlparse
 from uuid import UUID
 
 import pytest
+from psycopg import Connection, OperationalError
 
 from constitution_memorizer.playground.roster.models import (
     ORIGIN_CARRY_FORWARD,
@@ -377,3 +378,74 @@ def test_plus_has_no_cap_and_a_stale_stored_limit_cannot_block(
     thirteenth = svc.confirm_add_law(USER, "stub-99", PLUS, now=NOW)
     assert thirteenth.status == RESULT_OK  # the effective limit, never the stored row
     assert len(svc.active_roster_items(USER, now=NOW)) == 13
+
+
+class _CommitThenLoseConnection(Connection):
+    """psycopg connection whose real ``commit()`` succeeds and then raises once
+    when armed — the commit boundary."""
+
+    armed = False
+
+    def commit(self) -> None:  # type: ignore[override]
+        super().commit()
+        if type(self).armed:
+            type(self).armed = False
+            raise OperationalError("connection lost after commit")
+
+
+@pytest.fixture()
+def commit_hook_pool():
+    from psycopg_pool import ConnectionPool
+
+    pool = ConnectionPool(
+        conninfo=PG_URL, min_size=1, max_size=4, open=True, connection_class=_CommitThenLoseConnection
+    )
+    try:
+        yield pool
+    finally:
+        pool.close()
+
+
+def test_exception_at_the_commit_boundary_carries_no_rollback_evidence(pool, repos, commit_hook_pool):
+    """B1-F07 (reviewer, commit boundary, Postgres): the consume's real commit
+    succeeds, the connection raises before returning, and ``rollback()``
+    afterwards returns normally. The exception must NOT be marked as an
+    observed rollback; the saved state is present and one choice was spent."""
+
+    from constitution_memorizer.playground.postgres import PostgresPlaygroundRepository
+    from constitution_memorizer.playground.roster.postgres import PostgresRosterRepository
+
+    roster_repo = PostgresRosterRepository(commit_hook_pool)
+    overlay = PostgresPlaygroundRepository(commit_hook_pool)
+    svc = _service(roster_repo)
+    rows = _rows("ndps", ["1"])
+    real = membership_and_selection_writer(overlay, USER, "ndps", rows)
+
+    def write_then_arm(conn) -> None:
+        real(conn)
+        _CommitThenLoseConnection.armed = True
+
+    with pytest.raises(OperationalError) as info:
+        svc.confirm_add_law(USER, "ndps", FREE, now=NOW, within=write_then_arm)
+    assert _CommitThenLoseConnection.armed is False
+    assert not save_was_rolled_back(info.value)  # commit had begun: no evidence
+    # The transaction was durable: exactly one choice, membership and the selection.
+    assert _ledger(pool) == ["ndps"]
+    assert svc.is_law_active_this_period(USER, "ndps", now=NOW)
+    assert [s.source_locator for s in overlay.list_selection(USER, "ndps")] == [r[0] for r in rows]
+    # The exact-state re-read the HTTP layer performs would therefore succeed;
+    # a repeat spends nothing more.
+    again = svc.confirm_add_law(USER, "ndps", FREE, now=NOW, within=real)
+    assert again.status == RESULT_ALREADY_ACTIVE and not again.choice_recorded
+    assert _ledger(pool) == ["ndps"]
+
+    # Pre-commit failure on the same connection class: evidence, rolled back.
+    def fail_before_commit(conn) -> None:
+        membership_and_selection_writer(overlay, USER, "uapa", _rows("uapa", ["1"]))(conn)
+        raise RuntimeError("simulated failure before commit")
+
+    with pytest.raises(RuntimeError) as info2:
+        svc.confirm_add_law(USER, "uapa", FREE, now=NOW, within=fail_before_commit)
+    assert save_was_rolled_back(info2.value)
+    assert _ledger(pool) == ["ndps"]
+    assert overlay.get_item(USER, "uapa") is None

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from contextlib import contextmanager
 from typing import Any, Mapping
 from uuid import UUID, uuid4
 
@@ -20,6 +21,8 @@ from constitution_memorizer.subscriptions.models import (
     require_tier,
 )
 from constitution_memorizer.subscriptions.repository import (
+    _RECONCILE_LOCK_NS,
+    reconcile_lock_key,
     _UNSET,
     _metadata_dumps,
     _raise_integrity,
@@ -57,6 +60,23 @@ class PostgresSubscriptionRepository:
         if row is None:
             return None
         return subscription_from_mapping(row)
+
+    @contextmanager
+    def serialize_subscription(self, provider_subscription_id: str):
+        """B1-B02: transaction-scoped advisory lock keyed on the provider
+        subscription id, held on its own pooled connection for the whole
+        provider GET + persist. Released at commit when the block exits;
+        the pool rolls back (and so releases) on an exception."""
+
+        with self._pool.connection() as conn:
+            conn.execute(
+                "SELECT pg_advisory_xact_lock(%s, %s)",
+                (_RECONCILE_LOCK_NS, reconcile_lock_key(provider_subscription_id)),
+            )
+            try:
+                yield
+            finally:
+                conn.commit()
 
     def get_current_subscription(self, user_id: UUID | str) -> UserSubscription | None:
         return self._one(

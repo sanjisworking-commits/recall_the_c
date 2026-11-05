@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import sqlite3
+import threading
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from typing import Any, Mapping
 from uuid import UUID, uuid4
@@ -116,9 +119,55 @@ def subscription_from_mapping(row: Mapping[str, Any]) -> UserSubscription:
     )
 
 
+# B1-B02: one reconciliation (provider GET + persist) per provider
+# subscription at a time. SQLite is a single-process store, so a process
+# local lock per provider subscription id is the serialisation; Postgres
+# uses a transaction-scoped advisory lock (see ``postgres.py``).
+_RECONCILE_LOCKS: dict[str, threading.Lock] = {}
+_RECONCILE_LOCKS_GUARD = threading.Lock()
+_RECONCILE_LOCK_NS = 872013  # pg_advisory_xact_lock namespace; not a secret
+
+
+def reconcile_lock_key(provider_subscription_id: str) -> int:
+    digest = hashlib.sha256(str(provider_subscription_id).encode("utf-8")).digest()[:4]
+    return int.from_bytes(digest, "big", signed=True)
+
+
+def _process_local_reconcile_lock(provider_subscription_id: str) -> threading.Lock:
+    key = str(provider_subscription_id)
+    with _RECONCILE_LOCKS_GUARD:
+        lock = _RECONCILE_LOCKS.get(key)
+        if lock is None:
+            lock = _RECONCILE_LOCKS[key] = threading.Lock()
+    return lock
+
+
+@contextmanager
+def serialize_subscription(repo: Any, provider_subscription_id: str | None):
+    """Hold the repository's per-subscription reconciliation lock (B1-B02).
+
+    Wrap the provider GET *and* the persist together, and re-read the local
+    row inside the lock. A repository without the method (test doubles)
+    serialises nothing."""
+
+    method = getattr(repo, "serialize_subscription", None)
+    if method is None or not provider_subscription_id:
+        yield
+        return
+    with method(str(provider_subscription_id)):
+        yield
+
+
 class SqliteSubscriptionRepository:
     def __init__(self, conn: sqlite3.Connection) -> None:
         self.conn = conn
+
+    @contextmanager
+    def serialize_subscription(self, provider_subscription_id: str):
+        """B1-B02: process-local lock per provider subscription id."""
+
+        with _process_local_reconcile_lock(provider_subscription_id):
+            yield
 
     def get_current_subscription(self, user_id: UUID | str) -> UserSubscription | None:
         row = self.conn.execute(

@@ -984,12 +984,25 @@ class SqliteRosterRepository:
                 started = False
             try:
                 yield
-                self._conn.commit()
             except Exception as exc:
+                # Failure *before commit began*: a successful rollback of
+                # this still-active transaction is evidence (B1-F07).
                 if started:
                     try:
                         self._conn.rollback()
                     except sqlite3.Error:
                         raise  # no rollback evidence: the caller re-reads
-                    mark_save_rolled_back(exc)  # B1-F07: observed rollback
+                    mark_save_rolled_back(exc)
+                raise
+            try:
+                self._conn.commit()
+            except Exception:
+                # Commit had begun: the transaction may or may not be
+                # durable. Never mark; a later rollback() returning
+                # normally proves nothing once commit started.
+                if started:
+                    try:
+                        self._conn.rollback()
+                    except sqlite3.Error:
+                        pass
                 raise
