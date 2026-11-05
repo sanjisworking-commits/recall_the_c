@@ -1,0 +1,9369 @@
+{
+ "label": "candidate",
+ "base": "http://127.0.0.1:8914",
+ "viewer": "pro",
+ "captured_at": "2026-11-05T18:33:53+0530",
+ "chrome": "Google Chrome 156.0.8078.80",
+ "rows": [
+  {
+   "key": "dashboard",
+   "route": "/dashboard",
+   "width": 561,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_dashboard_561x900_light.png",
+   "sha256": "cd5ce9206274abbdc56ce826fd9f6792f674089b538d24aa632bb09353832074",
+   "status_chain": [
+    [
+     "/dashboard",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/dashboard",
+    "title": "Dashboard \u00b7 Recall the C",
+    "mscreen": "today",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": "page",
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 493,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "dashboard",
+   "route": "/dashboard",
+   "width": 561,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_dashboard_561x900_dark.png",
+   "sha256": "f9cd30b4d0b20ea4c1a0ce97c00825185fb175fdda5459d74a8687addaa39339",
+   "status_chain": [
+    [
+     "/dashboard",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/dashboard",
+    "title": "Dashboard \u00b7 Recall the C",
+    "mscreen": "today",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": "page",
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 493,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "dashboard",
+   "route": "/dashboard",
+   "width": 640,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_dashboard_640x900_light.png",
+   "sha256": "730e679cabbe5442221b3b2c95602b8bc9ef278d3ee31b46db7281cf144f820a",
+   "status_chain": [
+    [
+     "/dashboard",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/dashboard",
+    "title": "Dashboard \u00b7 Recall the C",
+    "mscreen": "today",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": "page",
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 572,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "dashboard",
+   "route": "/dashboard",
+   "width": 640,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_dashboard_640x900_dark.png",
+   "sha256": "a535a7e773da12ade6c400f266478b705bf4f64dbc061e23e624ff5bbd4d17eb",
+   "status_chain": [
+    [
+     "/dashboard",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/dashboard",
+    "title": "Dashboard \u00b7 Recall the C",
+    "mscreen": "today",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": "page",
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 572,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "dashboard",
+   "route": "/dashboard",
+   "width": 720,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_dashboard_720x900_light.png",
+   "sha256": "9ad0909812da6003b740594bd9081f815a770f6b47e0dc1fdc1e5729d70d2651",
+   "status_chain": [
+    [
+     "/dashboard",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/dashboard",
+    "title": "Dashboard \u00b7 Recall the C",
+    "mscreen": "today",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": "page",
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 652,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "dashboard",
+   "route": "/dashboard",
+   "width": 720,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_dashboard_720x900_dark.png",
+   "sha256": "db6b894967fdd6f5d082de54e0337f64fe37b6458a58ca0b8cd012b31121fb06",
+   "status_chain": [
+    [
+     "/dashboard",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/dashboard",
+    "title": "Dashboard \u00b7 Recall the C",
+    "mscreen": "today",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": "page",
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 652,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "dashboard",
+   "route": "/dashboard",
+   "width": 899,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_dashboard_899x900_light.png",
+   "sha256": "1340420b4bd53875461f11dcdb7c9be55b8ce287aa8cba462630808860151d34",
+   "status_chain": [
+    [
+     "/dashboard",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/dashboard",
+    "title": "Dashboard \u00b7 Recall the C",
+    "mscreen": "today",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": "page",
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 831,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "dashboard",
+   "route": "/dashboard",
+   "width": 899,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_dashboard_899x900_dark.png",
+   "sha256": "c26fc6447fcf45b73e56b58a20dc928c03161ef14a649dcbd9007b53e02c2a33",
+   "status_chain": [
+    [
+     "/dashboard",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/dashboard",
+    "title": "Dashboard \u00b7 Recall the C",
+    "mscreen": "today",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": "page",
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 831,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "browse",
+   "route": "/browse",
+   "width": 561,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_browse_561x900_light.png",
+   "sha256": "13d1ea43e17d7d849d5bce043b58fd2a170dde2d1d52991306d91bf6bb3c1981",
+   "status_chain": [
+    [
+     "/browse",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/browse",
+    "title": "Browse the Constitution \u00b7 Recall the C",
+    "mscreen": "browse",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 493,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "browse",
+   "route": "/browse",
+   "width": 561,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_browse_561x900_dark.png",
+   "sha256": "ae50fe68b6100d37ae03c3ba1d155aedfdb294b256a0287a305b48cd5451dcf3",
+   "status_chain": [
+    [
+     "/browse",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/browse",
+    "title": "Browse the Constitution \u00b7 Recall the C",
+    "mscreen": "browse",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 493,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "browse",
+   "route": "/browse",
+   "width": 640,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_browse_640x900_light.png",
+   "sha256": "06edc4a2d36edf7a2b0a9546e47e6a3e4da670c309020e9c48f0e3ab808cfe9b",
+   "status_chain": [
+    [
+     "/browse",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/browse",
+    "title": "Browse the Constitution \u00b7 Recall the C",
+    "mscreen": "browse",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 572,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "browse",
+   "route": "/browse",
+   "width": 640,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_browse_640x900_dark.png",
+   "sha256": "79104fea5f3eee4bb246587e0707413299f2af76a15378d318cd0cf35a884db7",
+   "status_chain": [
+    [
+     "/browse",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/browse",
+    "title": "Browse the Constitution \u00b7 Recall the C",
+    "mscreen": "browse",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 572,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "browse",
+   "route": "/browse",
+   "width": 720,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_browse_720x900_light.png",
+   "sha256": "105e55994d9deed2657dd683cd5cb9a512b8cd31ba0fa7c73811a1fd65e6dd17",
+   "status_chain": [
+    [
+     "/browse",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/browse",
+    "title": "Browse the Constitution \u00b7 Recall the C",
+    "mscreen": "browse",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 652,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "browse",
+   "route": "/browse",
+   "width": 720,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_browse_720x900_dark.png",
+   "sha256": "d2efa7d3c9884b3888940c21871a3d7dd1ae2fccccf46ae1ccd24bc0c7d5b716",
+   "status_chain": [
+    [
+     "/browse",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/browse",
+    "title": "Browse the Constitution \u00b7 Recall the C",
+    "mscreen": "browse",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 652,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "browse",
+   "route": "/browse",
+   "width": 899,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_browse_899x900_light.png",
+   "sha256": "167995d6d14034508e8fa601f51fa7ba88c87a7dc3994e973f7acd4e4de966b2",
+   "status_chain": [
+    [
+     "/browse",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/browse",
+    "title": "Browse the Constitution \u00b7 Recall the C",
+    "mscreen": "browse",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 831,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "browse",
+   "route": "/browse",
+   "width": 899,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_browse_899x900_dark.png",
+   "sha256": "6043c7c1f85accffbec01306aed9334bbb7bfc5abeb672a8511a03d58a5a0111",
+   "status_chain": [
+    [
+     "/browse",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/browse",
+    "title": "Browse the Constitution \u00b7 Recall the C",
+    "mscreen": "browse",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 831,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "laws-ndps",
+   "route": "/laws/ndps",
+   "width": 561,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_laws-ndps_561x900_light.png",
+   "sha256": "a1cf14c26ae98d8ae04bddda37ea0fe6715c401ca7815bd90ac35319c5e19cfc",
+   "status_chain": [
+    [
+     "/laws/ndps",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/laws/ndps",
+    "title": "The Narcotic Drugs and Psychotropic Substances Act, 1985 | Recall the C",
+    "mscreen": "bareact",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 501,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "laws-ndps",
+   "route": "/laws/ndps",
+   "width": 561,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_laws-ndps_561x900_dark.png",
+   "sha256": "6f00cb191b5e573aeeb78e192a9452b112a275dbc28607d4b0498e54c596838b",
+   "status_chain": [
+    [
+     "/laws/ndps",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/laws/ndps",
+    "title": "The Narcotic Drugs and Psychotropic Substances Act, 1985 | Recall the C",
+    "mscreen": "bareact",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 501,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "laws-ndps",
+   "route": "/laws/ndps",
+   "width": 640,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_laws-ndps_640x900_light.png",
+   "sha256": "6565970142577012fe94eab097964f8f5df8650f20e63e4de7bbfef5937ba0a8",
+   "status_chain": [
+    [
+     "/laws/ndps",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/laws/ndps",
+    "title": "The Narcotic Drugs and Psychotropic Substances Act, 1985 | Recall the C",
+    "mscreen": "bareact",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 580,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "laws-ndps",
+   "route": "/laws/ndps",
+   "width": 640,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_laws-ndps_640x900_dark.png",
+   "sha256": "4d4b6606eedfc5ac37d64f23958aed344003844ea57e2c05530ad18832b35633",
+   "status_chain": [
+    [
+     "/laws/ndps",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/laws/ndps",
+    "title": "The Narcotic Drugs and Psychotropic Substances Act, 1985 | Recall the C",
+    "mscreen": "bareact",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 580,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "laws-ndps",
+   "route": "/laws/ndps",
+   "width": 720,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_laws-ndps_720x900_light.png",
+   "sha256": "fa099f3b028510ff9d4defff7c9d429e1919a17681a7d83fffa40414a2c292bf",
+   "status_chain": [
+    [
+     "/laws/ndps",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/laws/ndps",
+    "title": "The Narcotic Drugs and Psychotropic Substances Act, 1985 | Recall the C",
+    "mscreen": "bareact",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 660,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "laws-ndps",
+   "route": "/laws/ndps",
+   "width": 720,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_laws-ndps_720x900_dark.png",
+   "sha256": "f13de8f23c2bf9fe3beda01ad8cc98969d876a722cf1fce46906c4cbd79c507a",
+   "status_chain": [
+    [
+     "/laws/ndps",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/laws/ndps",
+    "title": "The Narcotic Drugs and Psychotropic Substances Act, 1985 | Recall the C",
+    "mscreen": "bareact",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 660,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "laws-ndps",
+   "route": "/laws/ndps",
+   "width": 899,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_laws-ndps_899x900_light.png",
+   "sha256": "62d19f0f56fea701f71a8f53dcd2b4301cdd65d015a4426708203d93d4a8474f",
+   "status_chain": [
+    [
+     "/laws/ndps",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/laws/ndps",
+    "title": "The Narcotic Drugs and Psychotropic Substances Act, 1985 | Recall the C",
+    "mscreen": "bareact",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 839,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "laws-ndps",
+   "route": "/laws/ndps",
+   "width": 899,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_laws-ndps_899x900_dark.png",
+   "sha256": "32a83337b26c4175b158e0718d38ae687c1b3e0a1c84f5a8f6a410c756c348f9",
+   "status_chain": [
+    [
+     "/laws/ndps",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/laws/ndps",
+    "title": "The Narcotic Drugs and Psychotropic Substances Act, 1985 | Recall the C",
+    "mscreen": "bareact",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 839,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "playground",
+   "route": "/playground",
+   "width": 561,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_playground_561x900_light.png",
+   "sha256": "061bc26e5dc33b23a23c50cf47c8f57fcaabd80b4800c7d41f6072db25e62d6b",
+   "status_chain": [
+    [
+     "/playground",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/playground",
+    "title": "Playground \u00b7 Recall the C",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 501,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "playground",
+   "route": "/playground",
+   "width": 561,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_playground_561x900_dark.png",
+   "sha256": "c42fa3ee9fc4672ebffe73acb4d9920e3c046e7ed569e79ed419c06db712d54c",
+   "status_chain": [
+    [
+     "/playground",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/playground",
+    "title": "Playground \u00b7 Recall the C",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 501,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "playground",
+   "route": "/playground",
+   "width": 640,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_playground_640x900_light.png",
+   "sha256": "59932294f01cba79bbb34adca6fe763c5bdf5ce9416ff0e68438e8613e3da439",
+   "status_chain": [
+    [
+     "/playground",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/playground",
+    "title": "Playground \u00b7 Recall the C",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 580,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "playground",
+   "route": "/playground",
+   "width": 640,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_playground_640x900_dark.png",
+   "sha256": "b2b031e61319af9b546753faec6cb4f92c74c482f94d3ecac8f51fd13682bc99",
+   "status_chain": [
+    [
+     "/playground",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/playground",
+    "title": "Playground \u00b7 Recall the C",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 580,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "playground",
+   "route": "/playground",
+   "width": 720,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_playground_720x900_light.png",
+   "sha256": "2c5f22f4eb8182fe135486cdde6ecca010bcd423b918255abbd599490b591419",
+   "status_chain": [
+    [
+     "/playground",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/playground",
+    "title": "Playground \u00b7 Recall the C",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 660,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "playground",
+   "route": "/playground",
+   "width": 720,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_playground_720x900_dark.png",
+   "sha256": "3351628ed960095b634a310249b4e1513923b9c38e02340afa7805127dee8acf",
+   "status_chain": [
+    [
+     "/playground",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/playground",
+    "title": "Playground \u00b7 Recall the C",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 660,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "playground",
+   "route": "/playground",
+   "width": 899,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_playground_899x900_light.png",
+   "sha256": "fac847e4dbbc35dd13a7d692b06b52243410f223404eba326d4913946bddf3ee",
+   "status_chain": [
+    [
+     "/playground",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/playground",
+    "title": "Playground \u00b7 Recall the C",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 839,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "playground",
+   "route": "/playground",
+   "width": 899,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_playground_899x900_dark.png",
+   "sha256": "9c09edd4b86d7af2f220fb42482ff75fb3da327f1e9fb39f9df512a798d09ffd",
+   "status_chain": [
+    [
+     "/playground",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/playground",
+    "title": "Playground \u00b7 Recall the C",
+    "mscreen": "playground",
+    "bodyClass": "playground-app is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 839,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "calendar",
+   "route": "/calendar",
+   "width": 561,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_calendar_561x900_light.png",
+   "sha256": "1665b8627b70524c8969b58c58b4c1938662cfba8832123efb8822fffd7295ad",
+   "status_chain": [
+    [
+     "/calendar",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/calendar",
+    "title": "November 2026 \u00b7 Calendar",
+    "mscreen": "revisions",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": "page",
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 493,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "calendar",
+   "route": "/calendar",
+   "width": 561,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_calendar_561x900_dark.png",
+   "sha256": "9cd97798b5a6cf77b998c48ee8529aaa4733a4a530a967f51bafb8fa4291d7cf",
+   "status_chain": [
+    [
+     "/calendar",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/calendar",
+    "title": "November 2026 \u00b7 Calendar",
+    "mscreen": "revisions",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": "page",
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 493,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "calendar",
+   "route": "/calendar",
+   "width": 640,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_calendar_640x900_light.png",
+   "sha256": "aabbd975341f3fe38f2aa4c83018b35c257c7e4a1b296572de4d64bb4e1f1731",
+   "status_chain": [
+    [
+     "/calendar",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/calendar",
+    "title": "November 2026 \u00b7 Calendar",
+    "mscreen": "revisions",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": "page",
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 572,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "calendar",
+   "route": "/calendar",
+   "width": 640,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_calendar_640x900_dark.png",
+   "sha256": "002f9ded1d3fe1da47a0e369c52f04946716c4d4fb57a32bdd7f593f7ba991ee",
+   "status_chain": [
+    [
+     "/calendar",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/calendar",
+    "title": "November 2026 \u00b7 Calendar",
+    "mscreen": "revisions",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": "page",
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 572,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "calendar",
+   "route": "/calendar",
+   "width": 720,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_calendar_720x900_light.png",
+   "sha256": "accb5f03a2e2dba3a883a1987966aa64272c24c1a71f588a8969b8f92fed299c",
+   "status_chain": [
+    [
+     "/calendar",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/calendar",
+    "title": "November 2026 \u00b7 Calendar",
+    "mscreen": "revisions",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": "page",
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 652,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "calendar",
+   "route": "/calendar",
+   "width": 720,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_calendar_720x900_dark.png",
+   "sha256": "9a9d600a21473ba03178200ca8aa64d07fc5853969fec1d9b5b114905fdff7c3",
+   "status_chain": [
+    [
+     "/calendar",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/calendar",
+    "title": "November 2026 \u00b7 Calendar",
+    "mscreen": "revisions",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": "page",
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 652,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "calendar",
+   "route": "/calendar",
+   "width": 899,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_calendar_899x900_light.png",
+   "sha256": "406c2547606af73ae1cf848de5286f818f95d387d48d0c37a4d59efec7ca2965",
+   "status_chain": [
+    [
+     "/calendar",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/calendar",
+    "title": "November 2026 \u00b7 Calendar",
+    "mscreen": "revisions",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": "page",
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 831,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "calendar",
+   "route": "/calendar",
+   "width": 899,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_calendar_899x900_dark.png",
+   "sha256": "4906a445e28601ebc1027d346201a7190dc22ec2693e420695c4e2c5db34c625",
+   "status_chain": [
+    [
+     "/calendar",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/calendar",
+    "title": "November 2026 \u00b7 Calendar",
+    "mscreen": "revisions",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": "page",
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 831,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "profile",
+   "route": "/profile",
+   "width": 561,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_profile_561x900_light.png",
+   "sha256": "64cc4a9de7359f3196fe30667409e5f365f87e5ea8bf60bc8cd5bcd3869cc479",
+   "status_chain": [
+    [
+     "/profile",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/profile",
+    "title": "Profile \u00b7 Recall the C",
+    "mscreen": "account",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": "page",
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 493,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "profile",
+   "route": "/profile",
+   "width": 561,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_profile_561x900_dark.png",
+   "sha256": "fdbe37015689a3ff6cfc0a4fd62f40c15755b59848b1a895c28ecd29c7f2d310",
+   "status_chain": [
+    [
+     "/profile",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/profile",
+    "title": "Profile \u00b7 Recall the C",
+    "mscreen": "account",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": "page",
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 493,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "profile",
+   "route": "/profile",
+   "width": 640,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_profile_640x900_light.png",
+   "sha256": "9ec34e2cb4fa8bcf56a55a59ef273270b9210ef7fe23a0b9126d5aa43a4abcd9",
+   "status_chain": [
+    [
+     "/profile",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/profile",
+    "title": "Profile \u00b7 Recall the C",
+    "mscreen": "account",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": "page",
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 572,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "profile",
+   "route": "/profile",
+   "width": 640,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_profile_640x900_dark.png",
+   "sha256": "d3099d450f3eb918da5e6d0b2d364597cf5a4f127edcc2045c6d9f431b580f55",
+   "status_chain": [
+    [
+     "/profile",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/profile",
+    "title": "Profile \u00b7 Recall the C",
+    "mscreen": "account",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": "page",
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 572,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "profile",
+   "route": "/profile",
+   "width": 720,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_profile_720x900_light.png",
+   "sha256": "689a0beef5d79cead2da21c4b99b621fe0d02922d46f3f9563794225f0ef079d",
+   "status_chain": [
+    [
+     "/profile",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/profile",
+    "title": "Profile \u00b7 Recall the C",
+    "mscreen": "account",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": "page",
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 652,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "profile",
+   "route": "/profile",
+   "width": 720,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_profile_720x900_dark.png",
+   "sha256": "56d4a95f6c4958b3466c18c61ef2bf4f13b69a19a88281ca20dbe87f987a5afe",
+   "status_chain": [
+    [
+     "/profile",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/profile",
+    "title": "Profile \u00b7 Recall the C",
+    "mscreen": "account",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": "page",
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 652,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "profile",
+   "route": "/profile",
+   "width": 899,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_profile_899x900_light.png",
+   "sha256": "0ee4ac2e298b88f063b0b8b7f183b5b15bda6afee56f302e0c51250988b39a14",
+   "status_chain": [
+    [
+     "/profile",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/profile",
+    "title": "Profile \u00b7 Recall the C",
+    "mscreen": "account",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": "page",
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 831,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "profile",
+   "route": "/profile",
+   "width": 899,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_profile_899x900_dark.png",
+   "sha256": "f56a124f1fe55e86d5bf95d11eaab0f0ee53d0adc6975be0de5ae3b18980a09c",
+   "status_chain": [
+    [
+     "/profile",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/profile",
+    "title": "Profile \u00b7 Recall the C",
+    "mscreen": "account",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": "page",
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 831,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "settings",
+   "route": "/settings",
+   "width": 561,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_settings_561x900_light.png",
+   "sha256": "7347649d07b7af3989522f499f69d059776d57d0ea64ffb72664863a3ef77b41",
+   "status_chain": [
+    [
+     "/settings",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/settings",
+    "title": "Settings \u00b7 Recall the C",
+    "mscreen": "settings",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": "page",
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 493,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "settings",
+   "route": "/settings",
+   "width": 561,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_settings_561x900_dark.png",
+   "sha256": "1601ce8017c4cac56507b1e3d474b07d940ba85e6ac8711a6ec35d76f000ddfd",
+   "status_chain": [
+    [
+     "/settings",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/settings",
+    "title": "Settings \u00b7 Recall the C",
+    "mscreen": "settings",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": "page",
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 493,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "settings",
+   "route": "/settings",
+   "width": 640,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_settings_640x900_light.png",
+   "sha256": "52e4137ff180ebefa4c9d370ecfed9351297708b42fefca53a6e6bccbf12bbd6",
+   "status_chain": [
+    [
+     "/settings",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/settings",
+    "title": "Settings \u00b7 Recall the C",
+    "mscreen": "settings",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": "page",
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 572,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "settings",
+   "route": "/settings",
+   "width": 640,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_settings_640x900_dark.png",
+   "sha256": "f3c744253e7c0468e928e82c9f9c33e92db799f9760eab09cc010973a2533554",
+   "status_chain": [
+    [
+     "/settings",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/settings",
+    "title": "Settings \u00b7 Recall the C",
+    "mscreen": "settings",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": "page",
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 572,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "settings",
+   "route": "/settings",
+   "width": 720,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_settings_720x900_light.png",
+   "sha256": "2a0b2fc7a77276cb5016dda3f0e4d2b6e11c854c12ecc7f260276e9028dd741e",
+   "status_chain": [
+    [
+     "/settings",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/settings",
+    "title": "Settings \u00b7 Recall the C",
+    "mscreen": "settings",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": "page",
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 652,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "settings",
+   "route": "/settings",
+   "width": 720,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_settings_720x900_dark.png",
+   "sha256": "532728801fc3668bc66960075c0069a63b93b67dbdbd2aab34d3b8c57985f7b2",
+   "status_chain": [
+    [
+     "/settings",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/settings",
+    "title": "Settings \u00b7 Recall the C",
+    "mscreen": "settings",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": "page",
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 652,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "settings",
+   "route": "/settings",
+   "width": 899,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_settings_899x900_light.png",
+   "sha256": "14b5b934f87f77336be619e0dfd4b4dee02816024336109058a01aea8ff038c5",
+   "status_chain": [
+    [
+     "/settings",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/settings",
+    "title": "Settings \u00b7 Recall the C",
+    "mscreen": "settings",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": "page",
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 831,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "settings",
+   "route": "/settings",
+   "width": 899,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_settings_899x900_dark.png",
+   "sha256": "02fe31561c797df2d2319ddb0659a81a23585c565d399c2767914ba1bbbe8b0d",
+   "status_chain": [
+    [
+     "/settings",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/settings",
+    "title": "Settings \u00b7 Recall the C",
+    "mscreen": "settings",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 57,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 57,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 57,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 57,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": "page",
+      "box": {
+       "x": 398,
+       "y": 57,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 57,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 831,
+      "y": 6,
+      "w": 52,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "billing",
+   "route": "/billing/subscriptions",
+   "width": 561,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_billing_561x900_light.png",
+   "sha256": "65dfcfed6844fe3c581d976425380f61ee7fa286a36e3fcaee8a1a2c4a658600",
+   "status_chain": [
+    [
+     "/billing/subscriptions",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/billing/subscriptions",
+    "title": "Playground plans \u00b7 Recall the C",
+    "mscreen": "purchase",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 501,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "billing",
+   "route": "/billing/subscriptions",
+   "width": 561,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_billing_561x900_dark.png",
+   "sha256": "92745d914734a1ab99ae8670e9c268ad399ae20c89dcf0b5bbbefc65696977f9",
+   "status_chain": [
+    [
+     "/billing/subscriptions",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/billing/subscriptions",
+    "title": "Playground plans \u00b7 Recall the C",
+    "mscreen": "purchase",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 501,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "billing",
+   "route": "/billing/subscriptions",
+   "width": 640,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_billing_640x900_light.png",
+   "sha256": "1d43587163fa208579c27d685226ecd79774d97a40b86ba5a205e4f53b7d4772",
+   "status_chain": [
+    [
+     "/billing/subscriptions",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/billing/subscriptions",
+    "title": "Playground plans \u00b7 Recall the C",
+    "mscreen": "purchase",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 580,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "billing",
+   "route": "/billing/subscriptions",
+   "width": 640,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_billing_640x900_dark.png",
+   "sha256": "0cd81f15a81fe3ac2c98f848d3a712279ca7b29f6430365703e1379d65a30193",
+   "status_chain": [
+    [
+     "/billing/subscriptions",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/billing/subscriptions",
+    "title": "Playground plans \u00b7 Recall the C",
+    "mscreen": "purchase",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 580,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "billing",
+   "route": "/billing/subscriptions",
+   "width": 720,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_billing_720x900_light.png",
+   "sha256": "886b3b22cd9566cd8238b75f5abd94c17eba121d147afb378d71a92451ac73e5",
+   "status_chain": [
+    [
+     "/billing/subscriptions",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/billing/subscriptions",
+    "title": "Playground plans \u00b7 Recall the C",
+    "mscreen": "purchase",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 660,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "billing",
+   "route": "/billing/subscriptions",
+   "width": 720,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_billing_720x900_dark.png",
+   "sha256": "a5cb439404f39c3f1425ab2360aa0cec1543c08aff6d53911f8a0b779cb48139",
+   "status_chain": [
+    [
+     "/billing/subscriptions",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/billing/subscriptions",
+    "title": "Playground plans \u00b7 Recall the C",
+    "mscreen": "purchase",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 660,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "billing",
+   "route": "/billing/subscriptions",
+   "width": 899,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_billing_899x900_light.png",
+   "sha256": "c48c1bce0a6f74382a57b1664cc5f229126621ddf0565089438dec0a533570c5",
+   "status_chain": [
+    [
+     "/billing/subscriptions",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/billing/subscriptions",
+    "title": "Playground plans \u00b7 Recall the C",
+    "mscreen": "purchase",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 839,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "billing",
+   "route": "/billing/subscriptions",
+   "width": 899,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_billing_899x900_dark.png",
+   "sha256": "302923694c4a86936fa2c42bacac34166844a59df667e1ca47ed4d5b54b11d5c",
+   "status_chain": [
+    [
+     "/billing/subscriptions",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/billing/subscriptions",
+    "title": "Playground plans \u00b7 Recall the C",
+    "mscreen": "purchase",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": "page",
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 839,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "search",
+   "route": "/search",
+   "width": 561,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_search_561x900_light.png",
+   "sha256": "508b07f5f8af67b9b8a11b8a84a4cab5919a456f1a612a8641ba65ec58ca1770",
+   "status_chain": [
+    [
+     "/search",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/search",
+    "title": "Search \u00b7 Recall the C",
+    "mscreen": "search",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 501,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "search",
+   "route": "/search",
+   "width": 561,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_search_561x900_dark.png",
+   "sha256": "3f73319f110ce336adb992032d23f845543f24bf04c9c8cba23bd8659f035a82",
+   "status_chain": [
+    [
+     "/search",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/search",
+    "title": "Search \u00b7 Recall the C",
+    "mscreen": "search",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 501,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "search",
+   "route": "/search",
+   "width": 640,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_search_640x900_light.png",
+   "sha256": "0d7d3e985c42abeec8152d3128798a58288141b72a5b1e3d4aa9fe2c35d4f805",
+   "status_chain": [
+    [
+     "/search",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/search",
+    "title": "Search \u00b7 Recall the C",
+    "mscreen": "search",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 580,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "search",
+   "route": "/search",
+   "width": 640,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_search_640x900_dark.png",
+   "sha256": "028702ee3fb6c91147fa272961e801d5ca7540922a7c9e444e53e82cc39f616d",
+   "status_chain": [
+    [
+     "/search",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/search",
+    "title": "Search \u00b7 Recall the C",
+    "mscreen": "search",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 580,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "search",
+   "route": "/search",
+   "width": 720,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_search_720x900_light.png",
+   "sha256": "e92e53825397252783f9be173b2d1b849da84211fc8bc470883d03955b211ca9",
+   "status_chain": [
+    [
+     "/search",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/search",
+    "title": "Search \u00b7 Recall the C",
+    "mscreen": "search",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 660,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "search",
+   "route": "/search",
+   "width": 720,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_search_720x900_dark.png",
+   "sha256": "9acd07052d1f1986d168f1a61d85671de941a2115b3ca25305c798b14aee5ad0",
+   "status_chain": [
+    [
+     "/search",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/search",
+    "title": "Search \u00b7 Recall the C",
+    "mscreen": "search",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 660,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "search",
+   "route": "/search",
+   "width": 899,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_search_899x900_light.png",
+   "sha256": "1e9f69db9eddc22a01676cc81bbd70a6269fd15773d4fd107d85776603bb55ec",
+   "status_chain": [
+    [
+     "/search",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/search",
+    "title": "Search \u00b7 Recall the C",
+    "mscreen": "search",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 839,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "search",
+   "route": "/search",
+   "width": 899,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_search_899x900_dark.png",
+   "sha256": "800e56453dfc9b015def6ab1732e8e46e71732fef2abd8e56dd6791fe50147c7",
+   "status_chain": [
+    [
+     "/search",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/search",
+    "title": "Search \u00b7 Recall the C",
+    "mscreen": "search",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 839,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "terms",
+   "route": "/terms",
+   "width": 561,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_terms_561x900_light.png",
+   "sha256": "b96b56fe93a905f46b8c89aef8bf2d7592f4d84a4361dc7735911bf4b7df24f8",
+   "status_chain": [
+    [
+     "/terms",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/terms",
+    "title": "Terms & Conditions \u00b7 Recall the C",
+    "mscreen": null,
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 501,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "terms",
+   "route": "/terms",
+   "width": 561,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_terms_561x900_dark.png",
+   "sha256": "fe55c66c9d47682c02749353a208659131f1dce678f220c57e478febe036fd03",
+   "status_chain": [
+    [
+     "/terms",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/terms",
+    "title": "Terms & Conditions \u00b7 Recall the C",
+    "mscreen": null,
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 501,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "terms",
+   "route": "/terms",
+   "width": 640,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_terms_640x900_light.png",
+   "sha256": "ec7ab15df1c7a30619ef4c07ea1d57062469a998bff1bfdcafd168c9426c1a19",
+   "status_chain": [
+    [
+     "/terms",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/terms",
+    "title": "Terms & Conditions \u00b7 Recall the C",
+    "mscreen": null,
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 580,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "terms",
+   "route": "/terms",
+   "width": 640,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_terms_640x900_dark.png",
+   "sha256": "25538c88971da1b66a9e5d3ea0b1f83f779268a64a9f590bbfdb84c8f7d780b8",
+   "status_chain": [
+    [
+     "/terms",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/terms",
+    "title": "Terms & Conditions \u00b7 Recall the C",
+    "mscreen": null,
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 580,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "terms",
+   "route": "/terms",
+   "width": 720,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_terms_720x900_light.png",
+   "sha256": "4838e31ca8682fbb5a9f6fad45cc4b3df1efd188ef2148d6699e9faa7330cc92",
+   "status_chain": [
+    [
+     "/terms",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/terms",
+    "title": "Terms & Conditions \u00b7 Recall the C",
+    "mscreen": null,
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 660,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "terms",
+   "route": "/terms",
+   "width": 720,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_terms_720x900_dark.png",
+   "sha256": "ed350acadb020caca9098823a480430986df699601a67c03a61420225f9e0ff0",
+   "status_chain": [
+    [
+     "/terms",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/terms",
+    "title": "Terms & Conditions \u00b7 Recall the C",
+    "mscreen": null,
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 660,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "terms",
+   "route": "/terms",
+   "width": 899,
+   "height": 900,
+   "theme": "light",
+   "file": "candidate_pro_terms_899x900_light.png",
+   "sha256": "8b28d87eb7f33146f16a9a9ce9cd9b0b557aca597648e69a7b5505156a584363",
+   "status_chain": [
+    [
+     "/terms",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/terms",
+    "title": "Terms & Conditions \u00b7 Recall the C",
+    "mscreen": null,
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 839,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "terms",
+   "route": "/terms",
+   "width": 899,
+   "height": 900,
+   "theme": "dark",
+   "file": "candidate_pro_terms_899x900_dark.png",
+   "sha256": "9378ea31c1e73fa6f11fdfbd69fe68275757fbfb1f37fd61298d854e2ecd3311",
+   "status_chain": [
+    [
+     "/terms",
+     200
+    ]
+   ],
+   "probe": {
+    "url": "/terms",
+    "title": "Terms & Conditions \u00b7 Recall the C",
+    "mscreen": null,
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 38
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 38
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 38
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 38
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 38
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 483,
+       "y": 52,
+       "w": 59,
+       "h": 38
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 839,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Pro",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  }
+ ]
+}
