@@ -1,0 +1,6815 @@
+{
+ "label": "m2r-free",
+ "base": "http://127.0.0.1:8916",
+ "viewer": "free",
+ "tier_model": "choices",
+ "captured_at": "2026-11-06T01:38:29+0530",
+ "chrome": "Google Chrome 156.0.8078.80",
+ "rows": [
+  {
+   "key": "free0-ndps",
+   "path": "/laws/ndps",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "setup": [],
+   "head": {
+    "url": "/laws/ndps",
+    "kind": "eligible_to_add",
+    "membership": "",
+    "primary": {
+     "t": "Add to Playground \u00b7 0 of 3 choices used",
+     "href": "/playground/laws/ndps/add",
+     "sheet": true,
+     "box": {
+      "x": 18,
+      "y": 146,
+      "w": 354,
+      "h": 48
+     }
+    },
+    "badge": null,
+    "note": null,
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "Add to Playground \u00b7 0 of 3 choices used",
+      "tag": "A",
+      "href": "/playground/laws/ndps/add",
+      "box": {
+       "x": 18,
+       "y": 146,
+       "w": 354,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": false,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-free_free_free0-ndps_390x844_light_head.png",
+     "sha256": "e2ba6856c18a5a2a9bb02a4c9223e31b4a9c16097fd085383bfbe4586faabfe8"
+    },
+    "sheet": {
+     "file": "m2r-free_free_free0-ndps_390x844_light_sheet.png",
+     "sha256": "e33e7f5ec61f9003ba41d5682c79dae50d822402d7e62ec0ae016c741f30e323"
+    },
+    "scope": {
+     "file": "m2r-free_free_free0-ndps_390x844_light_scope.png",
+     "sha256": "a62df685a253dd378a332f37045eac7de67af835738f452bb4482cc0f9d1db6c"
+    },
+    "fail": {
+     "file": "m2r-free_free_free0-ndps_390x844_light_fail-rolled_back.png",
+     "sha256": "ec87354dc412cde4db77e5bb63493d54c93c0906324725c4377679312ccaa005"
+    },
+    "retry": {
+     "file": "m2r-free_free_free0-ndps_390x844_light_retry-rolled_back.png",
+     "sha256": "a800ff46c8d674dfe594cc911547421ad6ceec3513580a7f3cbffed2bb9af8d9"
+    }
+   },
+   "sheet_opened": true,
+   "sheet": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "free_confirm",
+    "step": "confirm",
+    "headings": [
+     "Add to Playground"
+    ],
+    "texts": [
+     "RECALLC FREE \u00b7 PERMANENT CHOICE",
+     "The NDPS Act, 1985 becomes one of your Playground laws \u2014 learnable, verbatim. The reader itself never changes.",
+     "This uses 1 of your 3 law choices \u2014 2 will remain.",
+     "Removing it later will not restore the choice, though you can always add this law again."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "Add to Playground",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 34,
+       "y": 709,
+       "w": 322,
+       "h": 50
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Cancel",
+      "tag": "A",
+      "href": "/laws/ndps",
+      "box": {
+       "x": 34,
+       "y": 768,
+       "w": 322,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "labelledBy": "pg-add-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-sheet-close:\u2715",
+    "alert": null,
+    "panelBox": {
+     "x": 16,
+     "y": 477,
+     "w": 358,
+     "h": 367
+    },
+    "warning": "This uses 1 of your 3 law choices \u2014 2 will remain.",
+    "hasMonthEyebrow": false,
+    "eyebrow": "RECALLC FREE \u00b7 PERMANENT CHOICE",
+    "hasPrice": false,
+    "hScroll": false
+   },
+   "keyboard": {
+    "tabs": [
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add to Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Cancel",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add to Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Cancel",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add to Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Cancel",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add to Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     }
+    ],
+    "containment": true,
+    "outlined": 10,
+    "afterEscape": {
+     "inDialog": false,
+     "el": "A.ActHead-btn",
+     "text": "Add to Playground \u00b7 0 of 3 cho",
+     "focusVisible": true,
+     "outline": "2px solid",
+     "dialogOpen": false
+    },
+    "focusReturned": {
+     "isTrigger": true,
+     "text": "Add to Playground \u00b7 0 of 3 choices used"
+    }
+   },
+   "scope": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "free_confirm",
+    "step": "scope",
+    "headings": [
+     "Add The NDPS Act, 1985"
+    ],
+    "texts": [
+     "Choose how much of The NDPS Act, 1985 enters your recall schedule.",
+     "Nothing is scheduled yet \u2014 provisions activate the first time you learn them."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "Entire Act \u203a",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 34,
+       "y": 578,
+       "w": 322,
+       "h": 52
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Choose sections Pick sections \u2014 or open one and pick single clauses \u203a",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 34,
+       "y": 639,
+       "w": 322,
+       "h": 76
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Cancel",
+      "tag": "A",
+      "href": "/laws/ndps",
+      "box": {
+       "x": 34,
+       "y": 768,
+       "w": 322,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "labelledBy": "pg-add-scope-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-add-choice:Entire Act \u203a",
+    "alert": null,
+    "panelBox": {
+     "x": 16,
+     "y": 465,
+     "w": 358,
+     "h": 379
+    },
+    "warning": "This uses 1 of your 3 law choices \u2014 2 will remain.",
+    "hasMonthEyebrow": false,
+    "eyebrow": "RecallC Free \u00b7 permanent choice",
+    "hasPrice": false,
+    "hScroll": false,
+    "confirmClicked": true
+   },
+   "fail": {
+    "outcome": "rolled_back",
+    "entireClicked": true,
+    "intercepted": {
+     "url": "http://127.0.0.1:8916/playground/laws/ndps/add",
+     "method": "POST",
+     "hadAcceptJson": true
+    },
+    "panel": {
+     "open": true,
+     "dialogOpenAttr": true,
+     "kind": "free_confirm",
+     "step": "scope",
+     "headings": [
+      "Add The NDPS Act, 1985"
+     ],
+     "texts": [
+      "Choose how much of The NDPS Act, 1985 enters your recall schedule.",
+      "Couldn\u2019t add The NDPS Act, 1985. Nothing was changed.",
+      "Nothing is scheduled yet \u2014 provisions activate the first time you learn them."
+     ],
+     "controls": [
+      {
+       "kind": "panel",
+       "t": "Retry",
+       "tag": "BUTTON",
+       "href": null,
+       "box": {
+        "x": 52,
+        "y": 507,
+        "w": 65,
+        "h": 44
+       },
+       "meets44": true,
+       "fg": "#ffffff",
+       "bg": "#141414",
+       "ratio": 18.42,
+       "focusable": true
+      },
+      {
+       "kind": "panel",
+       "t": "Entire Act \u203a",
+       "tag": "BUTTON",
+       "href": null,
+       "box": {
+        "x": 34,
+        "y": 578,
+        "w": 322,
+        "h": 52
+       },
+       "meets44": true,
+       "fg": "#141414",
+       "bg": "#ffffff",
+       "ratio": 18.42,
+       "focusable": true
+      },
+      {
+       "kind": "panel",
+       "t": "Choose sections Pick sections \u2014 or open one and pick single clauses \u203a",
+       "tag": "BUTTON",
+       "href": null,
+       "box": {
+        "x": 34,
+        "y": 639,
+        "w": 322,
+        "h": 76
+       },
+       "meets44": true,
+       "fg": "#141414",
+       "bg": "#ffffff",
+       "ratio": 18.42,
+       "focusable": true
+      },
+      {
+       "kind": "panel",
+       "t": "Cancel",
+       "tag": "A",
+       "href": "/laws/ndps",
+       "box": {
+        "x": 34,
+        "y": 768,
+        "w": 322,
+        "h": 46
+       },
+       "meets44": true,
+       "fg": "#141414",
+       "bg": "#ffffff",
+       "ratio": 18.42,
+       "focusable": true
+      }
+     ],
+     "small": [],
+     "low": [],
+     "labelledBy": "pg-add-scope-title",
+     "ariaModal": "true",
+     "focusInside": true,
+     "focusOn": "BUTTON.pg-add-alert-btn:Retry",
+     "alert": {
+      "outcome": "rolled_back",
+      "role": "alert",
+      "text": "Couldn\u2019t add The NDPS Act, 1985. Nothing was changed.",
+      "controls": [
+       {
+        "kind": "alert",
+        "t": "Retry",
+        "tag": "BUTTON",
+        "href": null,
+        "box": {
+         "x": 52,
+         "y": 507,
+         "w": 65,
+         "h": 44
+        },
+        "meets44": true,
+        "fg": "#ffffff",
+        "bg": "#141414",
+        "ratio": 18.42,
+        "focusable": true
+       }
+      ]
+     },
+     "panelBox": {
+      "x": 16,
+      "y": 331,
+      "w": 358,
+      "h": 513
+     },
+     "warning": "This uses 1 of your 3 law choices \u2014 2 will remain.",
+     "hasMonthEyebrow": false,
+     "eyebrow": "RecallC Free \u00b7 permanent choice",
+     "hasPrice": false,
+     "hScroll": false
+    },
+    "focus": {
+     "inDialog": true,
+     "el": "BUTTON.pg-add-alert-btn",
+     "text": "Retry",
+     "focusVisible": true,
+     "outline": "2px solid",
+     "dialogOpen": true
+    },
+    "retry": {
+     "clicked": true,
+     "panel": {
+      "open": true,
+      "dialogOpenAttr": true,
+      "kind": "free_confirm",
+      "step": "scope",
+      "headings": [
+       "Add The NDPS Act, 1985"
+      ],
+      "texts": [
+       "Choose how much of The NDPS Act, 1985 enters your recall schedule.",
+       "Nothing is scheduled yet \u2014 provisions activate the first time you learn them."
+      ],
+      "controls": [
+       {
+        "kind": "panel",
+        "t": "Entire Act 128 learnable sections \u203a",
+        "tag": "BUTTON",
+        "href": null,
+        "box": {
+         "x": 34,
+         "y": 578,
+         "w": 322,
+         "h": 52
+        },
+        "meets44": true,
+        "fg": "#141414",
+        "bg": "#ffffff",
+        "ratio": 18.42,
+        "focusable": true
+       },
+       {
+        "kind": "panel",
+        "t": "Choose sections Pick sections \u2014 or open one and pick single clauses \u203a",
+        "tag": "BUTTON",
+        "href": null,
+        "box": {
+         "x": 34,
+         "y": 639,
+         "w": 322,
+         "h": 76
+        },
+        "meets44": true,
+        "fg": "#141414",
+        "bg": "#ffffff",
+        "ratio": 18.42,
+        "focusable": true
+       },
+       {
+        "kind": "panel",
+        "t": "Cancel",
+        "tag": "A",
+        "href": "/laws/ndps",
+        "box": {
+         "x": 34,
+         "y": 768,
+         "w": 322,
+         "h": 46
+        },
+        "meets44": true,
+        "fg": "#141414",
+        "bg": "#ffffff",
+        "ratio": 18.42,
+        "focusable": true
+       }
+      ],
+      "small": [],
+      "low": [],
+      "labelledBy": "pg-add-scope-title",
+      "ariaModal": "true",
+      "focusInside": true,
+      "focusOn": "BUTTON.pg-sheet-close:\u2715",
+      "alert": null,
+      "panelBox": {
+       "x": 16,
+       "y": 465,
+       "w": 358,
+       "h": 379
+      },
+      "warning": "This uses 1 of your 3 law choices \u2014 2 will remain.",
+      "hasMonthEyebrow": false,
+      "eyebrow": "RecallC Free \u00b7 permanent choice",
+      "hasPrice": false,
+      "hScroll": false
+     }
+    }
+   }
+  },
+  {
+   "key": "free0-ndps",
+   "path": "/laws/ndps",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "setup": [],
+   "head": {
+    "url": "/laws/ndps",
+    "kind": "eligible_to_add",
+    "membership": "",
+    "primary": {
+     "t": "Add to Playground \u00b7 0 of 3 choices used",
+     "href": "/playground/laws/ndps/add",
+     "sheet": true,
+     "box": {
+      "x": 18,
+      "y": 146,
+      "w": 354,
+      "h": 48
+     }
+    },
+    "badge": null,
+    "note": null,
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "Add to Playground \u00b7 0 of 3 choices used",
+      "tag": "A",
+      "href": "/playground/laws/ndps/add",
+      "box": {
+       "x": 18,
+       "y": 146,
+       "w": 354,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": false,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-free_free_free0-ndps_390x844_dark_head.png",
+     "sha256": "f0b5fa28264d479222223a837cbf04f6f9853b8c6e95b22e81e0f90707cf1633"
+    },
+    "sheet": {
+     "file": "m2r-free_free_free0-ndps_390x844_dark_sheet.png",
+     "sha256": "b67f62c5ed69d468fffbf7479ed0ba6b2f06e6d9a2dee211ac80d758c961e487"
+    },
+    "scope": {
+     "file": "m2r-free_free_free0-ndps_390x844_dark_scope.png",
+     "sha256": "dc3bb3e9a9b8437f85a321618b7f2a9946f2f804f33ae91fa3a72e645aaaeffb"
+    },
+    "fail": {
+     "file": "m2r-free_free_free0-ndps_390x844_dark_fail-rolled_back.png",
+     "sha256": "ee40984c367a26259e7b650a65a247e5098659776804b8557f86d835357e3c7a"
+    },
+    "retry": {
+     "file": "m2r-free_free_free0-ndps_390x844_dark_retry-rolled_back.png",
+     "sha256": "3daed1a62fd2ec85d1d9937162983866525753ad2d409f5fd514e4b9989439cc"
+    }
+   },
+   "sheet_opened": true,
+   "sheet": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "free_confirm",
+    "step": "confirm",
+    "headings": [
+     "Add to Playground"
+    ],
+    "texts": [
+     "RECALLC FREE \u00b7 PERMANENT CHOICE",
+     "The NDPS Act, 1985 becomes one of your Playground laws \u2014 learnable, verbatim. The reader itself never changes.",
+     "This uses 1 of your 3 law choices \u2014 2 will remain.",
+     "Removing it later will not restore the choice, though you can always add this law again."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "Add to Playground",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 34,
+       "y": 709,
+       "w": 322,
+       "h": 50
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ecebe6",
+      "ratio": 15.43,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Cancel",
+      "tag": "A",
+      "href": "/laws/ndps",
+      "box": {
+       "x": 34,
+       "y": 768,
+       "w": 322,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#ecebe6",
+      "bg": "#1a1917",
+      "ratio": 14.72,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "labelledBy": "pg-add-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-sheet-close:\u2715",
+    "alert": null,
+    "panelBox": {
+     "x": 16,
+     "y": 477,
+     "w": 358,
+     "h": 367
+    },
+    "warning": "This uses 1 of your 3 law choices \u2014 2 will remain.",
+    "hasMonthEyebrow": false,
+    "eyebrow": "RECALLC FREE \u00b7 PERMANENT CHOICE",
+    "hasPrice": false,
+    "hScroll": false
+   },
+   "keyboard": {
+    "tabs": [
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add to Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Cancel",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add to Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Cancel",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add to Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Cancel",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add to Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     }
+    ],
+    "containment": true,
+    "outlined": 10,
+    "afterEscape": {
+     "inDialog": false,
+     "el": "A.ActHead-btn",
+     "text": "Add to Playground \u00b7 0 of 3 cho",
+     "focusVisible": true,
+     "outline": "2px solid",
+     "dialogOpen": false
+    },
+    "focusReturned": {
+     "isTrigger": true,
+     "text": "Add to Playground \u00b7 0 of 3 choices used"
+    }
+   },
+   "scope": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "free_confirm",
+    "step": "scope",
+    "headings": [
+     "Add The NDPS Act, 1985"
+    ],
+    "texts": [
+     "Choose how much of The NDPS Act, 1985 enters your recall schedule.",
+     "Nothing is scheduled yet \u2014 provisions activate the first time you learn them."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "Entire Act \u203a",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 34,
+       "y": 578,
+       "w": 322,
+       "h": 52
+      },
+      "meets44": true,
+      "fg": "#ecebe6",
+      "bg": "#1a1917",
+      "ratio": 14.72,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Choose sections Pick sections \u2014 or open one and pick single clauses \u203a",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 34,
+       "y": 639,
+       "w": 322,
+       "h": 76
+      },
+      "meets44": true,
+      "fg": "#ecebe6",
+      "bg": "#1a1917",
+      "ratio": 14.72,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Cancel",
+      "tag": "A",
+      "href": "/laws/ndps",
+      "box": {
+       "x": 34,
+       "y": 768,
+       "w": 322,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#ecebe6",
+      "bg": "#1a1917",
+      "ratio": 14.72,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "labelledBy": "pg-add-scope-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-add-choice:Entire Act \u203a",
+    "alert": null,
+    "panelBox": {
+     "x": 16,
+     "y": 465,
+     "w": 358,
+     "h": 379
+    },
+    "warning": "This uses 1 of your 3 law choices \u2014 2 will remain.",
+    "hasMonthEyebrow": false,
+    "eyebrow": "RecallC Free \u00b7 permanent choice",
+    "hasPrice": false,
+    "hScroll": false,
+    "confirmClicked": true
+   },
+   "fail": {
+    "outcome": "rolled_back",
+    "entireClicked": true,
+    "intercepted": {
+     "url": "http://127.0.0.1:8916/playground/laws/ndps/add",
+     "method": "POST",
+     "hadAcceptJson": true
+    },
+    "panel": {
+     "open": true,
+     "dialogOpenAttr": true,
+     "kind": "free_confirm",
+     "step": "scope",
+     "headings": [
+      "Add The NDPS Act, 1985"
+     ],
+     "texts": [
+      "Choose how much of The NDPS Act, 1985 enters your recall schedule.",
+      "Couldn\u2019t add The NDPS Act, 1985. Nothing was changed.",
+      "Nothing is scheduled yet \u2014 provisions activate the first time you learn them."
+     ],
+     "controls": [
+      {
+       "kind": "panel",
+       "t": "Retry",
+       "tag": "BUTTON",
+       "href": null,
+       "box": {
+        "x": 52,
+        "y": 507,
+        "w": 65,
+        "h": 44
+       },
+       "meets44": true,
+       "fg": "#141414",
+       "bg": "#ecebe6",
+       "ratio": 15.43,
+       "focusable": true
+      },
+      {
+       "kind": "panel",
+       "t": "Entire Act \u203a",
+       "tag": "BUTTON",
+       "href": null,
+       "box": {
+        "x": 34,
+        "y": 578,
+        "w": 322,
+        "h": 52
+       },
+       "meets44": true,
+       "fg": "#ecebe6",
+       "bg": "#1a1917",
+       "ratio": 14.72,
+       "focusable": true
+      },
+      {
+       "kind": "panel",
+       "t": "Choose sections Pick sections \u2014 or open one and pick single clauses \u203a",
+       "tag": "BUTTON",
+       "href": null,
+       "box": {
+        "x": 34,
+        "y": 639,
+        "w": 322,
+        "h": 76
+       },
+       "meets44": true,
+       "fg": "#ecebe6",
+       "bg": "#1a1917",
+       "ratio": 14.72,
+       "focusable": true
+      },
+      {
+       "kind": "panel",
+       "t": "Cancel",
+       "tag": "A",
+       "href": "/laws/ndps",
+       "box": {
+        "x": 34,
+        "y": 768,
+        "w": 322,
+        "h": 46
+       },
+       "meets44": true,
+       "fg": "#ecebe6",
+       "bg": "#1a1917",
+       "ratio": 14.72,
+       "focusable": true
+      }
+     ],
+     "small": [],
+     "low": [],
+     "labelledBy": null,
+     "ariaModal": "true",
+     "focusInside": true,
+     "focusOn": "BUTTON.pg-add-alert-btn:Retry",
+     "alert": {
+      "outcome": "rolled_back",
+      "role": "alert",
+      "text": "Couldn\u2019t add The NDPS Act, 1985. Nothing was changed.",
+      "controls": [
+       {
+        "kind": "alert",
+        "t": "Retry",
+        "tag": "BUTTON",
+        "href": null,
+        "box": {
+         "x": 52,
+         "y": 507,
+         "w": 65,
+         "h": 44
+        },
+        "meets44": true,
+        "fg": "#141414",
+        "bg": "#ecebe6",
+        "ratio": 15.43,
+        "focusable": true
+       }
+      ]
+     },
+     "panelBox": {
+      "x": 16,
+      "y": 331,
+      "w": 358,
+      "h": 513
+     },
+     "warning": "This uses 1 of your 3 law choices \u2014 2 will remain.",
+     "hasMonthEyebrow": false,
+     "eyebrow": "RecallC Free \u00b7 permanent choice",
+     "hasPrice": false,
+     "hScroll": false
+    },
+    "focus": {
+     "inDialog": true,
+     "el": "BUTTON.pg-add-alert-btn",
+     "text": "Retry",
+     "focusVisible": true,
+     "outline": "2px solid",
+     "dialogOpen": true
+    },
+    "retry": {
+     "clicked": true,
+     "panel": {
+      "open": true,
+      "dialogOpenAttr": true,
+      "kind": "free_confirm",
+      "step": "scope",
+      "headings": [
+       "Add The NDPS Act, 1985"
+      ],
+      "texts": [
+       "Choose how much of The NDPS Act, 1985 enters your recall schedule.",
+       "Nothing is scheduled yet \u2014 provisions activate the first time you learn them."
+      ],
+      "controls": [
+       {
+        "kind": "panel",
+        "t": "Entire Act 128 learnable sections \u203a",
+        "tag": "BUTTON",
+        "href": null,
+        "box": {
+         "x": 34,
+         "y": 578,
+         "w": 322,
+         "h": 52
+        },
+        "meets44": true,
+        "fg": "#ecebe6",
+        "bg": "#1a1917",
+        "ratio": 14.72,
+        "focusable": true
+       },
+       {
+        "kind": "panel",
+        "t": "Choose sections Pick sections \u2014 or open one and pick single clauses \u203a",
+        "tag": "BUTTON",
+        "href": null,
+        "box": {
+         "x": 34,
+         "y": 639,
+         "w": 322,
+         "h": 76
+        },
+        "meets44": true,
+        "fg": "#ecebe6",
+        "bg": "#1a1917",
+        "ratio": 14.72,
+        "focusable": true
+       },
+       {
+        "kind": "panel",
+        "t": "Cancel",
+        "tag": "A",
+        "href": "/laws/ndps",
+        "box": {
+         "x": 34,
+         "y": 768,
+         "w": 322,
+         "h": 46
+        },
+        "meets44": true,
+        "fg": "#ecebe6",
+        "bg": "#1a1917",
+        "ratio": 14.72,
+        "focusable": true
+       }
+      ],
+      "small": [],
+      "low": [],
+      "labelledBy": "pg-add-scope-title",
+      "ariaModal": "true",
+      "focusInside": true,
+      "focusOn": "BUTTON.pg-sheet-close:\u2715",
+      "alert": null,
+      "panelBox": {
+       "x": 16,
+       "y": 465,
+       "w": 358,
+       "h": 379
+      },
+      "warning": "This uses 1 of your 3 law choices \u2014 2 will remain.",
+      "hasMonthEyebrow": false,
+      "eyebrow": "RecallC Free \u00b7 permanent choice",
+      "hasPrice": false,
+      "hScroll": false
+     }
+    }
+   }
+  },
+  {
+   "key": "free0-ndps",
+   "path": "/laws/ndps",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "setup": [],
+   "head": {
+    "url": "/laws/ndps",
+    "kind": "eligible_to_add",
+    "membership": "",
+    "primary": {
+     "t": "Add to Playground \u00b7 0 of 3 choices used",
+     "href": "/playground/laws/ndps/add",
+     "sheet": true,
+     "box": {
+      "x": 860,
+      "y": 157,
+      "w": 380,
+      "h": 48
+     }
+    },
+    "badge": null,
+    "note": null,
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "Add to Playground \u00b7 0 of 3 choices used",
+      "tag": "A",
+      "href": "/playground/laws/ndps/add",
+      "box": {
+       "x": 860,
+       "y": 157,
+       "w": 380,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": false,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-free_free_free0-ndps_1280x900_light_head.png",
+     "sha256": "3a5186106f6c715b74c0baafcf7e074ff640988d6bf12748c010133ab6f939b1"
+    },
+    "sheet": {
+     "file": "m2r-free_free_free0-ndps_1280x900_light_sheet.png",
+     "sha256": "b93cb272ef9ae12ebc05ae732272cca4f70e0f2f91d614bc46225ced3f972aea"
+    },
+    "scope": {
+     "file": "m2r-free_free_free0-ndps_1280x900_light_scope.png",
+     "sha256": "f1c58672fb4c3c04edaca1f6639f76f43daadb4c962f0a56790f0f50c4d4f632"
+    },
+    "fail": {
+     "file": "m2r-free_free_free0-ndps_1280x900_light_fail-rolled_back.png",
+     "sha256": "20f45fb8629c51d8d1e28b8e1a4190f01be82ce5940bb390b7e28c3d74c5764c"
+    },
+    "retry": {
+     "file": "m2r-free_free_free0-ndps_1280x900_light_retry-rolled_back.png",
+     "sha256": "c48eb00f23980af9c584f9390bf8b6e3760df857480837956453308d82a4fd5a"
+    }
+   },
+   "sheet_opened": true,
+   "sheet": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "free_confirm",
+    "step": "confirm",
+    "headings": [
+     "Add to Playground"
+    ],
+    "texts": [
+     "RECALLC FREE \u00b7 PERMANENT CHOICE",
+     "The NDPS Act, 1985 becomes one of your Playground laws \u2014 learnable, verbatim. The reader itself never changes.",
+     "This uses 1 of your 3 law choices \u2014 2 will remain.",
+     "Removing it later will not restore the choice, though you can always add this law again."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "Add to Playground",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 439,
+       "y": 504,
+       "w": 402,
+       "h": 50
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Cancel",
+      "tag": "A",
+      "href": "/laws/ndps",
+      "box": {
+       "x": 439,
+       "y": 563,
+       "w": 402,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "labelledBy": "pg-add-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-sheet-close:\u2715",
+    "alert": null,
+    "panelBox": {
+     "x": 410,
+     "y": 264,
+     "w": 460,
+     "h": 372
+    },
+    "warning": "This uses 1 of your 3 law choices \u2014 2 will remain.",
+    "hasMonthEyebrow": false,
+    "eyebrow": "RECALLC FREE \u00b7 PERMANENT CHOICE",
+    "hasPrice": false,
+    "hScroll": false
+   },
+   "keyboard": {
+    "tabs": [
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add to Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Cancel",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add to Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Cancel",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add to Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Cancel",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add to Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     }
+    ],
+    "containment": true,
+    "outlined": 10,
+    "afterEscape": {
+     "inDialog": false,
+     "el": "A.ActHead-btn",
+     "text": "Add to Playground \u00b7 0 of 3 cho",
+     "focusVisible": true,
+     "outline": "2px solid",
+     "dialogOpen": false
+    },
+    "focusReturned": {
+     "isTrigger": true,
+     "text": "Add to Playground \u00b7 0 of 3 choices used"
+    }
+   },
+   "scope": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "free_confirm",
+    "step": "scope",
+    "headings": [
+     "Add The NDPS Act, 1985"
+    ],
+    "texts": [
+     "Choose how much of The NDPS Act, 1985 enters your recall schedule.",
+     "Nothing is scheduled yet \u2014 provisions activate the first time you learn them."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "Entire Act \u203a",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 439,
+       "y": 375,
+       "w": 402,
+       "h": 52
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Choose sections Pick sections \u2014 or open one and pick single clauses \u203a",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 439,
+       "y": 436,
+       "w": 402,
+       "h": 76
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Cancel",
+      "tag": "A",
+      "href": "/laws/ndps",
+      "box": {
+       "x": 439,
+       "y": 549,
+       "w": 402,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "labelledBy": "pg-add-scope-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-add-choice:Entire Act \u203a",
+    "alert": null,
+    "panelBox": {
+     "x": 410,
+     "y": 278,
+     "w": 460,
+     "h": 344
+    },
+    "warning": "This uses 1 of your 3 law choices \u2014 2 will remain.",
+    "hasMonthEyebrow": false,
+    "eyebrow": "RecallC Free \u00b7 permanent choice",
+    "hasPrice": false,
+    "hScroll": false,
+    "confirmClicked": true
+   },
+   "fail": {
+    "outcome": "rolled_back",
+    "entireClicked": true,
+    "intercepted": {
+     "url": "http://127.0.0.1:8916/playground/laws/ndps/add",
+     "method": "POST",
+     "hadAcceptJson": true
+    },
+    "panel": {
+     "open": true,
+     "dialogOpenAttr": true,
+     "kind": "free_confirm",
+     "step": "scope",
+     "headings": [
+      "Add The NDPS Act, 1985"
+     ],
+     "texts": [
+      "Choose how much of The NDPS Act, 1985 enters your recall schedule.",
+      "Couldn\u2019t add The NDPS Act, 1985. Nothing was changed.",
+      "Nothing is scheduled yet \u2014 provisions activate the first time you learn them."
+     ],
+     "controls": [
+      {
+       "kind": "panel",
+       "t": "Retry",
+       "tag": "BUTTON",
+       "href": null,
+       "box": {
+        "x": 457,
+        "y": 361,
+        "w": 65,
+        "h": 44
+       },
+       "meets44": true,
+       "fg": "#ffffff",
+       "bg": "#141414",
+       "ratio": 18.42,
+       "focusable": true
+      },
+      {
+       "kind": "panel",
+       "t": "Entire Act \u203a",
+       "tag": "BUTTON",
+       "href": null,
+       "box": {
+        "x": 439,
+        "y": 432,
+        "w": 402,
+        "h": 52
+       },
+       "meets44": true,
+       "fg": "#141414",
+       "bg": "#ffffff",
+       "ratio": 18.42,
+       "focusable": true
+      },
+      {
+       "kind": "panel",
+       "t": "Choose sections Pick sections \u2014 or open one and pick single clauses \u203a",
+       "tag": "BUTTON",
+       "href": null,
+       "box": {
+        "x": 439,
+        "y": 493,
+        "w": 402,
+        "h": 76
+       },
+       "meets44": true,
+       "fg": "#141414",
+       "bg": "#ffffff",
+       "ratio": 18.42,
+       "focusable": true
+      },
+      {
+       "kind": "panel",
+       "t": "Cancel",
+       "tag": "A",
+       "href": "/laws/ndps",
+       "box": {
+        "x": 439,
+        "y": 606,
+        "w": 402,
+        "h": 46
+       },
+       "meets44": true,
+       "fg": "#141414",
+       "bg": "#ffffff",
+       "ratio": 18.42,
+       "focusable": true
+      }
+     ],
+     "small": [],
+     "low": [],
+     "labelledBy": null,
+     "ariaModal": "true",
+     "focusInside": true,
+     "focusOn": "BUTTON.pg-add-alert-btn:Retry",
+     "alert": {
+      "outcome": "rolled_back",
+      "role": "alert",
+      "text": "Couldn\u2019t add The NDPS Act, 1985. Nothing was changed.",
+      "controls": [
+       {
+        "kind": "alert",
+        "t": "Retry",
+        "tag": "BUTTON",
+        "href": null,
+        "box": {
+         "x": 457,
+         "y": 361,
+         "w": 65,
+         "h": 44
+        },
+        "meets44": true,
+        "fg": "#ffffff",
+        "bg": "#141414",
+        "ratio": 18.42,
+        "focusable": true
+       }
+      ]
+     },
+     "panelBox": {
+      "x": 410,
+      "y": 221,
+      "w": 460,
+      "h": 459
+     },
+     "warning": "This uses 1 of your 3 law choices \u2014 2 will remain.",
+     "hasMonthEyebrow": false,
+     "eyebrow": "RecallC Free \u00b7 permanent choice",
+     "hasPrice": false,
+     "hScroll": false
+    },
+    "focus": {
+     "inDialog": true,
+     "el": "BUTTON.pg-add-alert-btn",
+     "text": "Retry",
+     "focusVisible": true,
+     "outline": "2px solid",
+     "dialogOpen": true
+    },
+    "retry": {
+     "clicked": true,
+     "panel": {
+      "open": true,
+      "dialogOpenAttr": true,
+      "kind": "free_confirm",
+      "step": "scope",
+      "headings": [
+       "Add The NDPS Act, 1985"
+      ],
+      "texts": [
+       "Choose how much of The NDPS Act, 1985 enters your recall schedule.",
+       "Nothing is scheduled yet \u2014 provisions activate the first time you learn them."
+      ],
+      "controls": [
+       {
+        "kind": "panel",
+        "t": "Entire Act 128 learnable sections \u203a",
+        "tag": "BUTTON",
+        "href": null,
+        "box": {
+         "x": 439,
+         "y": 375,
+         "w": 402,
+         "h": 52
+        },
+        "meets44": true,
+        "fg": "#141414",
+        "bg": "#ffffff",
+        "ratio": 18.42,
+        "focusable": true
+       },
+       {
+        "kind": "panel",
+        "t": "Choose sections Pick sections \u2014 or open one and pick single clauses \u203a",
+        "tag": "BUTTON",
+        "href": null,
+        "box": {
+         "x": 439,
+         "y": 436,
+         "w": 402,
+         "h": 76
+        },
+        "meets44": true,
+        "fg": "#141414",
+        "bg": "#ffffff",
+        "ratio": 18.42,
+        "focusable": true
+       },
+       {
+        "kind": "panel",
+        "t": "Cancel",
+        "tag": "A",
+        "href": "/laws/ndps",
+        "box": {
+         "x": 439,
+         "y": 549,
+         "w": 402,
+         "h": 46
+        },
+        "meets44": true,
+        "fg": "#141414",
+        "bg": "#ffffff",
+        "ratio": 18.42,
+        "focusable": true
+       }
+      ],
+      "small": [],
+      "low": [],
+      "labelledBy": "pg-add-scope-title",
+      "ariaModal": "true",
+      "focusInside": true,
+      "focusOn": "BUTTON.pg-sheet-close:\u2715",
+      "alert": null,
+      "panelBox": {
+       "x": 410,
+       "y": 278,
+       "w": 460,
+       "h": 344
+      },
+      "warning": "This uses 1 of your 3 law choices \u2014 2 will remain.",
+      "hasMonthEyebrow": false,
+      "eyebrow": "RecallC Free \u00b7 permanent choice",
+      "hasPrice": false,
+      "hScroll": false
+     }
+    }
+   }
+  },
+  {
+   "key": "free0-ndps",
+   "path": "/laws/ndps",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "setup": [],
+   "head": {
+    "url": "/laws/ndps",
+    "kind": "eligible_to_add",
+    "membership": "",
+    "primary": {
+     "t": "Add to Playground \u00b7 0 of 3 choices used",
+     "href": "/playground/laws/ndps/add",
+     "sheet": true,
+     "box": {
+      "x": 860,
+      "y": 157,
+      "w": 380,
+      "h": 48
+     }
+    },
+    "badge": null,
+    "note": null,
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "Add to Playground \u00b7 0 of 3 choices used",
+      "tag": "A",
+      "href": "/playground/laws/ndps/add",
+      "box": {
+       "x": 860,
+       "y": 157,
+       "w": 380,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": false,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-free_free_free0-ndps_1280x900_dark_head.png",
+     "sha256": "093df43e1df1726cfba7b26595f444b39264b539b0c48dd50065b54d19bd1315"
+    },
+    "sheet": {
+     "file": "m2r-free_free_free0-ndps_1280x900_dark_sheet.png",
+     "sha256": "3923cf90d80c27cd868d3ac5bf1cb94025e23d5bb56307ab0b8617d6bb707bfa"
+    },
+    "scope": {
+     "file": "m2r-free_free_free0-ndps_1280x900_dark_scope.png",
+     "sha256": "014ab598b0bca7b5705c712dc8c87b4cac3cadd7ad497a8c17ac42b52753b03d"
+    },
+    "fail": {
+     "file": "m2r-free_free_free0-ndps_1280x900_dark_fail-rolled_back.png",
+     "sha256": "61c0b2f5b215ca65681c95c19155fb52f3bd9b8fac3e7a38ab8f55e42e866828"
+    },
+    "retry": {
+     "file": "m2r-free_free_free0-ndps_1280x900_dark_retry-rolled_back.png",
+     "sha256": "46e28bd96f2dac3a83363f99aed66392e4ce6799b0657764c71bb21fbc40344f"
+    }
+   },
+   "sheet_opened": true,
+   "sheet": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "free_confirm",
+    "step": "confirm",
+    "headings": [
+     "Add to Playground"
+    ],
+    "texts": [
+     "RECALLC FREE \u00b7 PERMANENT CHOICE",
+     "The NDPS Act, 1985 becomes one of your Playground laws \u2014 learnable, verbatim. The reader itself never changes.",
+     "This uses 1 of your 3 law choices \u2014 2 will remain.",
+     "Removing it later will not restore the choice, though you can always add this law again."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "Add to Playground",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 439,
+       "y": 504,
+       "w": 402,
+       "h": 50
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ecebe6",
+      "ratio": 15.43,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Cancel",
+      "tag": "A",
+      "href": "/laws/ndps",
+      "box": {
+       "x": 439,
+       "y": 563,
+       "w": 402,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#ecebe6",
+      "bg": "#1a1917",
+      "ratio": 14.72,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "labelledBy": "pg-add-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-sheet-close:\u2715",
+    "alert": null,
+    "panelBox": {
+     "x": 410,
+     "y": 264,
+     "w": 460,
+     "h": 372
+    },
+    "warning": "This uses 1 of your 3 law choices \u2014 2 will remain.",
+    "hasMonthEyebrow": false,
+    "eyebrow": "RECALLC FREE \u00b7 PERMANENT CHOICE",
+    "hasPrice": false,
+    "hScroll": false
+   },
+   "keyboard": {
+    "tabs": [
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add to Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Cancel",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add to Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Cancel",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add to Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Cancel",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add to Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     }
+    ],
+    "containment": true,
+    "outlined": 10,
+    "afterEscape": {
+     "inDialog": false,
+     "el": "A.ActHead-btn",
+     "text": "Add to Playground \u00b7 0 of 3 cho",
+     "focusVisible": true,
+     "outline": "2px solid",
+     "dialogOpen": false
+    },
+    "focusReturned": {
+     "isTrigger": true,
+     "text": "Add to Playground \u00b7 0 of 3 choices used"
+    }
+   },
+   "scope": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "free_confirm",
+    "step": "scope",
+    "headings": [
+     "Add The NDPS Act, 1985"
+    ],
+    "texts": [
+     "Choose how much of The NDPS Act, 1985 enters your recall schedule.",
+     "Nothing is scheduled yet \u2014 provisions activate the first time you learn them."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "Entire Act \u203a",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 439,
+       "y": 375,
+       "w": 402,
+       "h": 52
+      },
+      "meets44": true,
+      "fg": "#ecebe6",
+      "bg": "#1a1917",
+      "ratio": 14.72,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Choose sections Pick sections \u2014 or open one and pick single clauses \u203a",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 439,
+       "y": 436,
+       "w": 402,
+       "h": 76
+      },
+      "meets44": true,
+      "fg": "#ecebe6",
+      "bg": "#1a1917",
+      "ratio": 14.72,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Cancel",
+      "tag": "A",
+      "href": "/laws/ndps",
+      "box": {
+       "x": 439,
+       "y": 549,
+       "w": 402,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#ecebe6",
+      "bg": "#1a1917",
+      "ratio": 14.72,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "labelledBy": "pg-add-scope-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-add-choice:Entire Act \u203a",
+    "alert": null,
+    "panelBox": {
+     "x": 410,
+     "y": 278,
+     "w": 460,
+     "h": 344
+    },
+    "warning": "This uses 1 of your 3 law choices \u2014 2 will remain.",
+    "hasMonthEyebrow": false,
+    "eyebrow": "RecallC Free \u00b7 permanent choice",
+    "hasPrice": false,
+    "hScroll": false,
+    "confirmClicked": true
+   },
+   "fail": {
+    "outcome": "rolled_back",
+    "entireClicked": true,
+    "intercepted": {
+     "url": "http://127.0.0.1:8916/playground/laws/ndps/add",
+     "method": "POST",
+     "hadAcceptJson": true
+    },
+    "panel": {
+     "open": true,
+     "dialogOpenAttr": true,
+     "kind": "free_confirm",
+     "step": "scope",
+     "headings": [
+      "Add The NDPS Act, 1985"
+     ],
+     "texts": [
+      "Choose how much of The NDPS Act, 1985 enters your recall schedule.",
+      "Couldn\u2019t add The NDPS Act, 1985. Nothing was changed.",
+      "Nothing is scheduled yet \u2014 provisions activate the first time you learn them."
+     ],
+     "controls": [
+      {
+       "kind": "panel",
+       "t": "Retry",
+       "tag": "BUTTON",
+       "href": null,
+       "box": {
+        "x": 457,
+        "y": 361,
+        "w": 65,
+        "h": 44
+       },
+       "meets44": true,
+       "fg": "#141414",
+       "bg": "#ecebe6",
+       "ratio": 15.43,
+       "focusable": true
+      },
+      {
+       "kind": "panel",
+       "t": "Entire Act \u203a",
+       "tag": "BUTTON",
+       "href": null,
+       "box": {
+        "x": 439,
+        "y": 432,
+        "w": 402,
+        "h": 52
+       },
+       "meets44": true,
+       "fg": "#ecebe6",
+       "bg": "#1a1917",
+       "ratio": 14.72,
+       "focusable": true
+      },
+      {
+       "kind": "panel",
+       "t": "Choose sections Pick sections \u2014 or open one and pick single clauses \u203a",
+       "tag": "BUTTON",
+       "href": null,
+       "box": {
+        "x": 439,
+        "y": 493,
+        "w": 402,
+        "h": 76
+       },
+       "meets44": true,
+       "fg": "#ecebe6",
+       "bg": "#1a1917",
+       "ratio": 14.72,
+       "focusable": true
+      },
+      {
+       "kind": "panel",
+       "t": "Cancel",
+       "tag": "A",
+       "href": "/laws/ndps",
+       "box": {
+        "x": 439,
+        "y": 606,
+        "w": 402,
+        "h": 46
+       },
+       "meets44": true,
+       "fg": "#ecebe6",
+       "bg": "#1a1917",
+       "ratio": 14.72,
+       "focusable": true
+      }
+     ],
+     "small": [],
+     "low": [],
+     "labelledBy": null,
+     "ariaModal": "true",
+     "focusInside": true,
+     "focusOn": "BUTTON.pg-add-alert-btn:Retry",
+     "alert": {
+      "outcome": "rolled_back",
+      "role": "alert",
+      "text": "Couldn\u2019t add The NDPS Act, 1985. Nothing was changed.",
+      "controls": [
+       {
+        "kind": "alert",
+        "t": "Retry",
+        "tag": "BUTTON",
+        "href": null,
+        "box": {
+         "x": 457,
+         "y": 361,
+         "w": 65,
+         "h": 44
+        },
+        "meets44": true,
+        "fg": "#141414",
+        "bg": "#ecebe6",
+        "ratio": 15.43,
+        "focusable": true
+       }
+      ]
+     },
+     "panelBox": {
+      "x": 410,
+      "y": 221,
+      "w": 460,
+      "h": 459
+     },
+     "warning": "This uses 1 of your 3 law choices \u2014 2 will remain.",
+     "hasMonthEyebrow": false,
+     "eyebrow": "RecallC Free \u00b7 permanent choice",
+     "hasPrice": false,
+     "hScroll": false
+    },
+    "focus": {
+     "inDialog": true,
+     "el": "BUTTON.pg-add-alert-btn",
+     "text": "Retry",
+     "focusVisible": true,
+     "outline": "2px solid",
+     "dialogOpen": true
+    },
+    "retry": {
+     "clicked": true,
+     "panel": {
+      "open": true,
+      "dialogOpenAttr": true,
+      "kind": "free_confirm",
+      "step": "scope",
+      "headings": [
+       "Add The NDPS Act, 1985"
+      ],
+      "texts": [
+       "Choose how much of The NDPS Act, 1985 enters your recall schedule.",
+       "Nothing is scheduled yet \u2014 provisions activate the first time you learn them."
+      ],
+      "controls": [
+       {
+        "kind": "panel",
+        "t": "Entire Act 128 learnable sections \u203a",
+        "tag": "BUTTON",
+        "href": null,
+        "box": {
+         "x": 439,
+         "y": 375,
+         "w": 402,
+         "h": 52
+        },
+        "meets44": true,
+        "fg": "#ecebe6",
+        "bg": "#1a1917",
+        "ratio": 14.72,
+        "focusable": true
+       },
+       {
+        "kind": "panel",
+        "t": "Choose sections Pick sections \u2014 or open one and pick single clauses \u203a",
+        "tag": "BUTTON",
+        "href": null,
+        "box": {
+         "x": 439,
+         "y": 436,
+         "w": 402,
+         "h": 76
+        },
+        "meets44": true,
+        "fg": "#ecebe6",
+        "bg": "#1a1917",
+        "ratio": 14.72,
+        "focusable": true
+       },
+       {
+        "kind": "panel",
+        "t": "Cancel",
+        "tag": "A",
+        "href": "/laws/ndps",
+        "box": {
+         "x": 439,
+         "y": 549,
+         "w": 402,
+         "h": 46
+        },
+        "meets44": true,
+        "fg": "#ecebe6",
+        "bg": "#1a1917",
+        "ratio": 14.72,
+        "focusable": true
+       }
+      ],
+      "small": [],
+      "low": [],
+      "labelledBy": "pg-add-scope-title",
+      "ariaModal": "true",
+      "focusInside": true,
+      "focusOn": "BUTTON.pg-sheet-close:\u2715",
+      "alert": null,
+      "panelBox": {
+       "x": 410,
+       "y": 278,
+       "w": 460,
+       "h": 344
+      },
+      "warning": "This uses 1 of your 3 law choices \u2014 2 will remain.",
+      "hasMonthEyebrow": false,
+      "eyebrow": "RecallC Free \u00b7 permanent choice",
+      "hasPrice": false,
+      "hScroll": false
+     }
+    }
+   }
+  },
+  {
+   "key": "free0-ndps-unknown",
+   "path": "/laws/ndps",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "setup": [],
+   "head": {
+    "url": "/laws/ndps",
+    "kind": "eligible_to_add",
+    "membership": "",
+    "primary": {
+     "t": "Add to Playground \u00b7 0 of 3 choices used",
+     "href": "/playground/laws/ndps/add",
+     "sheet": true,
+     "box": {
+      "x": 18,
+      "y": 146,
+      "w": 354,
+      "h": 48
+     }
+    },
+    "badge": null,
+    "note": null,
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "Add to Playground \u00b7 0 of 3 choices used",
+      "tag": "A",
+      "href": "/playground/laws/ndps/add",
+      "box": {
+       "x": 18,
+       "y": 146,
+       "w": 354,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": false,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-free_free_free0-ndps-unknown_390x844_light_head.png",
+     "sha256": "e2ba6856c18a5a2a9bb02a4c9223e31b4a9c16097fd085383bfbe4586faabfe8"
+    },
+    "sheet": {
+     "file": "m2r-free_free_free0-ndps-unknown_390x844_light_sheet.png",
+     "sha256": "e33e7f5ec61f9003ba41d5682c79dae50d822402d7e62ec0ae016c741f30e323"
+    },
+    "scope": {
+     "file": "m2r-free_free_free0-ndps-unknown_390x844_light_scope.png",
+     "sha256": "7116c3fdbd4aac60d08c35bf03c5cc69ff24233a19bd4b4ea53141090fc36a99"
+    },
+    "fail": {
+     "file": "m2r-free_free_free0-ndps-unknown_390x844_light_fail-unknown.png",
+     "sha256": "3c3a7c30a1e04fe865f05036dfe6a80d2931af3f5ab2aef4da85d3495f8ec831"
+    },
+    "retry": {
+     "file": "m2r-free_free_free0-ndps-unknown_390x844_light_retry-unknown.png",
+     "sha256": "00a59c6bba1fcf41bb37b867957a008f2152fe2f36f3c7aa7e349369d094f0fa"
+    }
+   },
+   "sheet_opened": true,
+   "sheet": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "free_confirm",
+    "step": "confirm",
+    "headings": [
+     "Add to Playground"
+    ],
+    "texts": [
+     "RECALLC FREE \u00b7 PERMANENT CHOICE",
+     "The NDPS Act, 1985 becomes one of your Playground laws \u2014 learnable, verbatim. The reader itself never changes.",
+     "This uses 1 of your 3 law choices \u2014 2 will remain.",
+     "Removing it later will not restore the choice, though you can always add this law again."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "Add to Playground",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 34,
+       "y": 709,
+       "w": 322,
+       "h": 50
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Cancel",
+      "tag": "A",
+      "href": "/laws/ndps",
+      "box": {
+       "x": 34,
+       "y": 768,
+       "w": 322,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "labelledBy": "pg-add-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-sheet-close:\u2715",
+    "alert": null,
+    "panelBox": {
+     "x": 16,
+     "y": 477,
+     "w": 358,
+     "h": 367
+    },
+    "warning": "This uses 1 of your 3 law choices \u2014 2 will remain.",
+    "hasMonthEyebrow": false,
+    "eyebrow": "RECALLC FREE \u00b7 PERMANENT CHOICE",
+    "hasPrice": false,
+    "hScroll": false
+   },
+   "scope": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "free_confirm",
+    "step": "scope",
+    "headings": [
+     "Add The NDPS Act, 1985"
+    ],
+    "texts": [
+     "Choose how much of The NDPS Act, 1985 enters your recall schedule.",
+     "Nothing is scheduled yet \u2014 provisions activate the first time you learn them."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "Entire Act \u203a",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 34,
+       "y": 578,
+       "w": 322,
+       "h": 52
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Choose sections Pick sections \u2014 or open one and pick single clauses \u203a",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 34,
+       "y": 639,
+       "w": 322,
+       "h": 76
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Cancel",
+      "tag": "A",
+      "href": "/laws/ndps",
+      "box": {
+       "x": 34,
+       "y": 768,
+       "w": 322,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "labelledBy": "pg-add-scope-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-add-choice:Entire Act \u203a",
+    "alert": null,
+    "panelBox": {
+     "x": 16,
+     "y": 465,
+     "w": 358,
+     "h": 379
+    },
+    "warning": "This uses 1 of your 3 law choices \u2014 2 will remain.",
+    "hasMonthEyebrow": false,
+    "eyebrow": "RecallC Free \u00b7 permanent choice",
+    "hasPrice": false,
+    "hScroll": false,
+    "confirmClicked": true
+   },
+   "fail": {
+    "outcome": "unknown",
+    "entireClicked": true,
+    "intercepted": {
+     "url": "http://127.0.0.1:8916/playground/laws/ndps/add",
+     "method": "POST",
+     "hadAcceptJson": true
+    },
+    "panel": {
+     "open": true,
+     "dialogOpenAttr": true,
+     "kind": "free_confirm",
+     "step": "scope",
+     "headings": [
+      "Add The NDPS Act, 1985"
+     ],
+     "texts": [
+      "Choose how much of The NDPS Act, 1985 enters your recall schedule.",
+      "We couldn\u2019t confirm this save \u2014 the connection failed before Playground answered. The NDPS Act, 1985 may or may not have been added; check Playground before trying again.",
+      "Nothing is scheduled yet \u2014 provisions activate the first time you learn them."
+     ],
+     "controls": [
+      {
+       "kind": "panel",
+       "t": "Check and retry",
+       "tag": "BUTTON",
+       "href": null,
+       "box": {
+        "x": 52,
+        "y": 507,
+        "w": 127,
+        "h": 44
+       },
+       "meets44": true,
+       "fg": "#ffffff",
+       "bg": "#141414",
+       "ratio": 18.42,
+       "focusable": true
+      },
+      {
+       "kind": "panel",
+       "t": "Open Playground",
+       "tag": "A",
+       "href": "/playground",
+       "box": {
+        "x": 187,
+        "y": 507,
+        "w": 139,
+        "h": 44
+       },
+       "meets44": true,
+       "fg": "#141414",
+       "bg": "#ffffff",
+       "ratio": 18.42,
+       "focusable": true
+      },
+      {
+       "kind": "panel",
+       "t": "Entire Act \u203a",
+       "tag": "BUTTON",
+       "href": null,
+       "box": {
+        "x": 34,
+        "y": 578,
+        "w": 322,
+        "h": 52
+       },
+       "meets44": true,
+       "fg": "#141414",
+       "bg": "#ffffff",
+       "ratio": 18.42,
+       "focusable": true
+      },
+      {
+       "kind": "panel",
+       "t": "Choose sections Pick sections \u2014 or open one and pick single clauses \u203a",
+       "tag": "BUTTON",
+       "href": null,
+       "box": {
+        "x": 34,
+        "y": 639,
+        "w": 322,
+        "h": 76
+       },
+       "meets44": true,
+       "fg": "#141414",
+       "bg": "#ffffff",
+       "ratio": 18.42,
+       "focusable": true
+      },
+      {
+       "kind": "panel",
+       "t": "Cancel",
+       "tag": "A",
+       "href": "/laws/ndps",
+       "box": {
+        "x": 34,
+        "y": 768,
+        "w": 322,
+        "h": 46
+       },
+       "meets44": true,
+       "fg": "#141414",
+       "bg": "#ffffff",
+       "ratio": 18.42,
+       "focusable": true
+      }
+     ],
+     "small": [],
+     "low": [],
+     "labelledBy": "pg-add-scope-title",
+     "ariaModal": "true",
+     "focusInside": true,
+     "focusOn": "BUTTON.pg-add-alert-btn:Check and retry",
+     "alert": {
+      "outcome": "unknown",
+      "role": "alert",
+      "text": "We couldn\u2019t confirm this save \u2014 the connection failed before Playground answered. The NDPS Act, 1985 may or may not have been added; check Playground before trying again.",
+      "controls": [
+       {
+        "kind": "alert",
+        "t": "Check and retry",
+        "tag": "BUTTON",
+        "href": null,
+        "box": {
+         "x": 52,
+         "y": 507,
+         "w": 127,
+         "h": 44
+        },
+        "meets44": true,
+        "fg": "#ffffff",
+        "bg": "#141414",
+        "ratio": 18.42,
+        "focusable": true
+       },
+       {
+        "kind": "alert",
+        "t": "Open Playground",
+        "tag": "A",
+        "href": "/playground",
+        "box": {
+         "x": 187,
+         "y": 507,
+         "w": 139,
+         "h": 44
+        },
+        "meets44": true,
+        "fg": "#141414",
+        "bg": "#ffffff",
+        "ratio": 18.42,
+        "focusable": true
+       }
+      ]
+     },
+     "panelBox": {
+      "x": 16,
+      "y": 290,
+      "w": 358,
+      "h": 554
+     },
+     "warning": "This uses 1 of your 3 law choices \u2014 2 will remain.",
+     "hasMonthEyebrow": false,
+     "eyebrow": "RecallC Free \u00b7 permanent choice",
+     "hasPrice": false,
+     "hScroll": false
+    },
+    "focus": {
+     "inDialog": true,
+     "el": "BUTTON.pg-add-alert-btn",
+     "text": "Check and retry",
+     "focusVisible": false,
+     "outline": null,
+     "dialogOpen": true
+    },
+    "retry": {
+     "clicked": true,
+     "panel": {
+      "open": true,
+      "dialogOpenAttr": true,
+      "kind": "free_confirm",
+      "step": "scope",
+      "headings": [
+       "Add The NDPS Act, 1985"
+      ],
+      "texts": [
+       "Choose how much of The NDPS Act, 1985 enters your recall schedule.",
+       "Nothing is scheduled yet \u2014 provisions activate the first time you learn them."
+      ],
+      "controls": [
+       {
+        "kind": "panel",
+        "t": "Entire Act 128 learnable sections \u203a",
+        "tag": "BUTTON",
+        "href": null,
+        "box": {
+         "x": 34,
+         "y": 578,
+         "w": 322,
+         "h": 52
+        },
+        "meets44": true,
+        "fg": "#141414",
+        "bg": "#ffffff",
+        "ratio": 18.42,
+        "focusable": true
+       },
+       {
+        "kind": "panel",
+        "t": "Choose sections Pick sections \u2014 or open one and pick single clauses \u203a",
+        "tag": "BUTTON",
+        "href": null,
+        "box": {
+         "x": 34,
+         "y": 639,
+         "w": 322,
+         "h": 76
+        },
+        "meets44": true,
+        "fg": "#141414",
+        "bg": "#ffffff",
+        "ratio": 18.42,
+        "focusable": true
+       },
+       {
+        "kind": "panel",
+        "t": "Cancel",
+        "tag": "A",
+        "href": "/laws/ndps",
+        "box": {
+         "x": 34,
+         "y": 768,
+         "w": 322,
+         "h": 46
+        },
+        "meets44": true,
+        "fg": "#141414",
+        "bg": "#ffffff",
+        "ratio": 18.42,
+        "focusable": true
+       }
+      ],
+      "small": [],
+      "low": [],
+      "labelledBy": "pg-add-scope-title",
+      "ariaModal": "true",
+      "focusInside": true,
+      "focusOn": "BUTTON.pg-sheet-close:\u2715",
+      "alert": null,
+      "panelBox": {
+       "x": 16,
+       "y": 465,
+       "w": 358,
+       "h": 379
+      },
+      "warning": "This uses 1 of your 3 law choices \u2014 2 will remain.",
+      "hasMonthEyebrow": false,
+      "eyebrow": "RecallC Free \u00b7 permanent choice",
+      "hasPrice": false,
+      "hScroll": false
+     }
+    }
+   }
+  },
+  {
+   "key": "free0-ndps-unknown",
+   "path": "/laws/ndps",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "setup": [],
+   "head": {
+    "url": "/laws/ndps",
+    "kind": "eligible_to_add",
+    "membership": "",
+    "primary": {
+     "t": "Add to Playground \u00b7 0 of 3 choices used",
+     "href": "/playground/laws/ndps/add",
+     "sheet": true,
+     "box": {
+      "x": 860,
+      "y": 157,
+      "w": 380,
+      "h": 48
+     }
+    },
+    "badge": null,
+    "note": null,
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "Add to Playground \u00b7 0 of 3 choices used",
+      "tag": "A",
+      "href": "/playground/laws/ndps/add",
+      "box": {
+       "x": 860,
+       "y": 157,
+       "w": 380,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": false,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-free_free_free0-ndps-unknown_1280x900_light_head.png",
+     "sha256": "3a5186106f6c715b74c0baafcf7e074ff640988d6bf12748c010133ab6f939b1"
+    },
+    "sheet": {
+     "file": "m2r-free_free_free0-ndps-unknown_1280x900_light_sheet.png",
+     "sha256": "b93cb272ef9ae12ebc05ae732272cca4f70e0f2f91d614bc46225ced3f972aea"
+    },
+    "scope": {
+     "file": "m2r-free_free_free0-ndps-unknown_1280x900_light_scope.png",
+     "sha256": "1531960b774cb0a8a6c29293148252f1d367aa943ca25ddbded6284813a15e25"
+    },
+    "fail": {
+     "file": "m2r-free_free_free0-ndps-unknown_1280x900_light_fail-unknown.png",
+     "sha256": "8bf22c442d1ff13e43a6bc0239d8efb1457657f8ebc2472391cab58ef1bbf730"
+    },
+    "retry": {
+     "file": "m2r-free_free_free0-ndps-unknown_1280x900_light_retry-unknown.png",
+     "sha256": "c4ce0b24a8e470e589277c89264d7be5a3a397702ef3fb8b83366d5f9fbbb3cd"
+    }
+   },
+   "sheet_opened": true,
+   "sheet": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "free_confirm",
+    "step": "confirm",
+    "headings": [
+     "Add to Playground"
+    ],
+    "texts": [
+     "RECALLC FREE \u00b7 PERMANENT CHOICE",
+     "The NDPS Act, 1985 becomes one of your Playground laws \u2014 learnable, verbatim. The reader itself never changes.",
+     "This uses 1 of your 3 law choices \u2014 2 will remain.",
+     "Removing it later will not restore the choice, though you can always add this law again."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "Add to Playground",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 439,
+       "y": 504,
+       "w": 402,
+       "h": 50
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Cancel",
+      "tag": "A",
+      "href": "/laws/ndps",
+      "box": {
+       "x": 439,
+       "y": 563,
+       "w": 402,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "labelledBy": "pg-add-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-sheet-close:\u2715",
+    "alert": null,
+    "panelBox": {
+     "x": 410,
+     "y": 264,
+     "w": 460,
+     "h": 372
+    },
+    "warning": "This uses 1 of your 3 law choices \u2014 2 will remain.",
+    "hasMonthEyebrow": false,
+    "eyebrow": "RECALLC FREE \u00b7 PERMANENT CHOICE",
+    "hasPrice": false,
+    "hScroll": false
+   },
+   "scope": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "free_confirm",
+    "step": "scope",
+    "headings": [
+     "Add The NDPS Act, 1985"
+    ],
+    "texts": [
+     "Choose how much of The NDPS Act, 1985 enters your recall schedule.",
+     "Nothing is scheduled yet \u2014 provisions activate the first time you learn them."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "Entire Act \u203a",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 439,
+       "y": 375,
+       "w": 402,
+       "h": 52
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Choose sections Pick sections \u2014 or open one and pick single clauses \u203a",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 439,
+       "y": 436,
+       "w": 402,
+       "h": 76
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Cancel",
+      "tag": "A",
+      "href": "/laws/ndps",
+      "box": {
+       "x": 439,
+       "y": 549,
+       "w": 402,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "labelledBy": "pg-add-scope-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-add-choice:Entire Act \u203a",
+    "alert": null,
+    "panelBox": {
+     "x": 410,
+     "y": 278,
+     "w": 460,
+     "h": 344
+    },
+    "warning": "This uses 1 of your 3 law choices \u2014 2 will remain.",
+    "hasMonthEyebrow": false,
+    "eyebrow": "RecallC Free \u00b7 permanent choice",
+    "hasPrice": false,
+    "hScroll": false,
+    "confirmClicked": true
+   },
+   "fail": {
+    "outcome": "unknown",
+    "entireClicked": true,
+    "intercepted": {
+     "url": "http://127.0.0.1:8916/playground/laws/ndps/add",
+     "method": "POST",
+     "hadAcceptJson": true
+    },
+    "panel": {
+     "open": true,
+     "dialogOpenAttr": true,
+     "kind": "free_confirm",
+     "step": "scope",
+     "headings": [
+      "Add The NDPS Act, 1985"
+     ],
+     "texts": [
+      "Choose how much of The NDPS Act, 1985 enters your recall schedule.",
+      "We couldn\u2019t confirm this save \u2014 the connection failed before Playground answered. The NDPS Act, 1985 may or may not have been added; check Playground before trying again.",
+      "Nothing is scheduled yet \u2014 provisions activate the first time you learn them."
+     ],
+     "controls": [
+      {
+       "kind": "panel",
+       "t": "Check and retry",
+       "tag": "BUTTON",
+       "href": null,
+       "box": {
+        "x": 457,
+        "y": 382,
+        "w": 127,
+        "h": 44
+       },
+       "meets44": true,
+       "fg": "#ffffff",
+       "bg": "#141414",
+       "ratio": 18.42,
+       "focusable": true
+      },
+      {
+       "kind": "panel",
+       "t": "Open Playground",
+       "tag": "A",
+       "href": "/playground",
+       "box": {
+        "x": 592,
+        "y": 382,
+        "w": 139,
+        "h": 44
+       },
+       "meets44": true,
+       "fg": "#141414",
+       "bg": "#ffffff",
+       "ratio": 18.42,
+       "focusable": true
+      },
+      {
+       "kind": "panel",
+       "t": "Entire Act \u203a",
+       "tag": "BUTTON",
+       "href": null,
+       "box": {
+        "x": 439,
+        "y": 453,
+        "w": 402,
+        "h": 52
+       },
+       "meets44": true,
+       "fg": "#141414",
+       "bg": "#ffffff",
+       "ratio": 18.42,
+       "focusable": true
+      },
+      {
+       "kind": "panel",
+       "t": "Choose sections Pick sections \u2014 or open one and pick single clauses \u203a",
+       "tag": "BUTTON",
+       "href": null,
+       "box": {
+        "x": 439,
+        "y": 514,
+        "w": 402,
+        "h": 76
+       },
+       "meets44": true,
+       "fg": "#141414",
+       "bg": "#ffffff",
+       "ratio": 18.42,
+       "focusable": true
+      },
+      {
+       "kind": "panel",
+       "t": "Cancel",
+       "tag": "A",
+       "href": "/laws/ndps",
+       "box": {
+        "x": 439,
+        "y": 627,
+        "w": 402,
+        "h": 46
+       },
+       "meets44": true,
+       "fg": "#141414",
+       "bg": "#ffffff",
+       "ratio": 18.42,
+       "focusable": true
+      }
+     ],
+     "small": [],
+     "low": [],
+     "labelledBy": "pg-add-scope-title",
+     "ariaModal": "true",
+     "focusInside": true,
+     "focusOn": "BUTTON.pg-add-alert-btn:Check and retry",
+     "alert": {
+      "outcome": "unknown",
+      "role": "alert",
+      "text": "We couldn\u2019t confirm this save \u2014 the connection failed before Playground answered. The NDPS Act, 1985 may or may not have been added; check Playground before trying again.",
+      "controls": [
+       {
+        "kind": "alert",
+        "t": "Check and retry",
+        "tag": "BUTTON",
+        "href": null,
+        "box": {
+         "x": 457,
+         "y": 382,
+         "w": 127,
+         "h": 44
+        },
+        "meets44": true,
+        "fg": "#ffffff",
+        "bg": "#141414",
+        "ratio": 18.42,
+        "focusable": true
+       },
+       {
+        "kind": "alert",
+        "t": "Open Playground",
+        "tag": "A",
+        "href": "/playground",
+        "box": {
+         "x": 592,
+         "y": 382,
+         "w": 139,
+         "h": 44
+        },
+        "meets44": true,
+        "fg": "#141414",
+        "bg": "#ffffff",
+        "ratio": 18.42,
+        "focusable": true
+       }
+      ]
+     },
+     "panelBox": {
+      "x": 410,
+      "y": 200,
+      "w": 460,
+      "h": 499
+     },
+     "warning": "This uses 1 of your 3 law choices \u2014 2 will remain.",
+     "hasMonthEyebrow": false,
+     "eyebrow": "RecallC Free \u00b7 permanent choice",
+     "hasPrice": false,
+     "hScroll": false
+    },
+    "focus": {
+     "inDialog": true,
+     "el": "BUTTON.pg-add-alert-btn",
+     "text": "Check and retry",
+     "focusVisible": false,
+     "outline": null,
+     "dialogOpen": true
+    },
+    "retry": {
+     "clicked": true,
+     "panel": {
+      "open": true,
+      "dialogOpenAttr": true,
+      "kind": "free_confirm",
+      "step": "scope",
+      "headings": [
+       "Add The NDPS Act, 1985"
+      ],
+      "texts": [
+       "Choose how much of The NDPS Act, 1985 enters your recall schedule.",
+       "Nothing is scheduled yet \u2014 provisions activate the first time you learn them."
+      ],
+      "controls": [
+       {
+        "kind": "panel",
+        "t": "Entire Act 128 learnable sections \u203a",
+        "tag": "BUTTON",
+        "href": null,
+        "box": {
+         "x": 439,
+         "y": 375,
+         "w": 402,
+         "h": 52
+        },
+        "meets44": true,
+        "fg": "#141414",
+        "bg": "#ffffff",
+        "ratio": 18.42,
+        "focusable": true
+       },
+       {
+        "kind": "panel",
+        "t": "Choose sections Pick sections \u2014 or open one and pick single clauses \u203a",
+        "tag": "BUTTON",
+        "href": null,
+        "box": {
+         "x": 439,
+         "y": 436,
+         "w": 402,
+         "h": 76
+        },
+        "meets44": true,
+        "fg": "#141414",
+        "bg": "#ffffff",
+        "ratio": 18.42,
+        "focusable": true
+       },
+       {
+        "kind": "panel",
+        "t": "Cancel",
+        "tag": "A",
+        "href": "/laws/ndps",
+        "box": {
+         "x": 439,
+         "y": 549,
+         "w": 402,
+         "h": 46
+        },
+        "meets44": true,
+        "fg": "#141414",
+        "bg": "#ffffff",
+        "ratio": 18.42,
+        "focusable": true
+       }
+      ],
+      "small": [],
+      "low": [],
+      "labelledBy": "pg-add-scope-title",
+      "ariaModal": "true",
+      "focusInside": true,
+      "focusOn": "BUTTON.pg-sheet-close:\u2715",
+      "alert": null,
+      "panelBox": {
+       "x": 410,
+       "y": 278,
+       "w": 460,
+       "h": 344
+      },
+      "warning": "This uses 1 of your 3 law choices \u2014 2 will remain.",
+      "hasMonthEyebrow": false,
+      "eyebrow": "RecallC Free \u00b7 permanent choice",
+      "hasPrice": false,
+      "hScroll": false
+     }
+    }
+   }
+  },
+  {
+   "key": "free1-uapa",
+   "path": "/laws/uapa",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "setup": [
+    {
+     "add": "ndps",
+     "status": 303,
+     "location": "/playground/laws/ndps"
+    }
+   ],
+   "head": {
+    "url": "/laws/uapa",
+    "kind": "eligible_to_add",
+    "membership": "",
+    "primary": {
+     "t": "Add to Playground \u00b7 1 of 3 choices used",
+     "href": "/playground/laws/uapa/add",
+     "sheet": true,
+     "box": {
+      "x": 18,
+      "y": 146,
+      "w": 354,
+      "h": 48
+     }
+    },
+    "badge": null,
+    "note": null,
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "Add to Playground \u00b7 1 of 3 choices used",
+      "tag": "A",
+      "href": "/playground/laws/uapa/add",
+      "box": {
+       "x": 18,
+       "y": 146,
+       "w": 354,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": false,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-free_free_free1-uapa_390x844_light_head.png",
+     "sha256": "426c9d7248beeb78bbb03dee77074be4816b96c3b40a55d2a6bb1d7cbeca7055"
+    },
+    "sheet": {
+     "file": "m2r-free_free_free1-uapa_390x844_light_sheet.png",
+     "sha256": "d50abf631014a108e77144cea5a3ed40a6a73c2b29366a141d330932ae2f7c36"
+    }
+   },
+   "sheet_opened": true,
+   "sheet": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "free_confirm",
+    "step": "confirm",
+    "headings": [
+     "Add to Playground"
+    ],
+    "texts": [
+     "RECALLC FREE \u00b7 PERMANENT CHOICE",
+     "The UAPA, 1967 becomes one of your Playground laws \u2014 learnable, verbatim. The reader itself never changes.",
+     "This uses 1 of your 3 law choices \u2014 1 will remain.",
+     "Removing it later will not restore the choice, though you can always add this law again."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "Add to Playground",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 34,
+       "y": 709,
+       "w": 322,
+       "h": 50
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Cancel",
+      "tag": "A",
+      "href": "/laws/uapa",
+      "box": {
+       "x": 34,
+       "y": 768,
+       "w": 322,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "labelledBy": "pg-add-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-sheet-close:\u2715",
+    "alert": null,
+    "panelBox": {
+     "x": 16,
+     "y": 477,
+     "w": 358,
+     "h": 367
+    },
+    "warning": "This uses 1 of your 3 law choices \u2014 1 will remain.",
+    "hasMonthEyebrow": false,
+    "eyebrow": "RECALLC FREE \u00b7 PERMANENT CHOICE",
+    "hasPrice": false,
+    "hScroll": false
+   }
+  },
+  {
+   "key": "free1-uapa",
+   "path": "/laws/uapa",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "setup": [
+    {
+     "add": "ndps",
+     "status": 303,
+     "location": "/playground/laws/ndps"
+    }
+   ],
+   "head": {
+    "url": "/laws/uapa",
+    "kind": "eligible_to_add",
+    "membership": "",
+    "primary": {
+     "t": "Add to Playground \u00b7 1 of 3 choices used",
+     "href": "/playground/laws/uapa/add",
+     "sheet": true,
+     "box": {
+      "x": 18,
+      "y": 146,
+      "w": 354,
+      "h": 48
+     }
+    },
+    "badge": null,
+    "note": null,
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "Add to Playground \u00b7 1 of 3 choices used",
+      "tag": "A",
+      "href": "/playground/laws/uapa/add",
+      "box": {
+       "x": 18,
+       "y": 146,
+       "w": 354,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": false,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-free_free_free1-uapa_390x844_dark_head.png",
+     "sha256": "46131ee765e1df58c9e8f0d9a78299b37c5037bb1608212e3e79da44454f8c2f"
+    },
+    "sheet": {
+     "file": "m2r-free_free_free1-uapa_390x844_dark_sheet.png",
+     "sha256": "7a10264467231d62424c62922404e3817d6ae48bb4701deb50352dd914a5e1af"
+    }
+   },
+   "sheet_opened": true,
+   "sheet": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "free_confirm",
+    "step": "confirm",
+    "headings": [
+     "Add to Playground"
+    ],
+    "texts": [
+     "RECALLC FREE \u00b7 PERMANENT CHOICE",
+     "The UAPA, 1967 becomes one of your Playground laws \u2014 learnable, verbatim. The reader itself never changes.",
+     "This uses 1 of your 3 law choices \u2014 1 will remain.",
+     "Removing it later will not restore the choice, though you can always add this law again."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "Add to Playground",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 34,
+       "y": 709,
+       "w": 322,
+       "h": 50
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ecebe6",
+      "ratio": 15.43,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Cancel",
+      "tag": "A",
+      "href": "/laws/uapa",
+      "box": {
+       "x": 34,
+       "y": 768,
+       "w": 322,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#ecebe6",
+      "bg": "#1a1917",
+      "ratio": 14.72,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "labelledBy": "pg-add-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-sheet-close:\u2715",
+    "alert": null,
+    "panelBox": {
+     "x": 16,
+     "y": 477,
+     "w": 358,
+     "h": 367
+    },
+    "warning": "This uses 1 of your 3 law choices \u2014 1 will remain.",
+    "hasMonthEyebrow": false,
+    "eyebrow": "RECALLC FREE \u00b7 PERMANENT CHOICE",
+    "hasPrice": false,
+    "hScroll": false
+   }
+  },
+  {
+   "key": "free1-uapa",
+   "path": "/laws/uapa",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "setup": [
+    {
+     "add": "ndps",
+     "status": 303,
+     "location": "/playground/laws/ndps"
+    }
+   ],
+   "head": {
+    "url": "/laws/uapa",
+    "kind": "eligible_to_add",
+    "membership": "",
+    "primary": {
+     "t": "Add to Playground \u00b7 1 of 3 choices used",
+     "href": "/playground/laws/uapa/add",
+     "sheet": true,
+     "box": {
+      "x": 860,
+      "y": 157,
+      "w": 380,
+      "h": 48
+     }
+    },
+    "badge": null,
+    "note": null,
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "Add to Playground \u00b7 1 of 3 choices used",
+      "tag": "A",
+      "href": "/playground/laws/uapa/add",
+      "box": {
+       "x": 860,
+       "y": 157,
+       "w": 380,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": false,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-free_free_free1-uapa_1280x900_light_head.png",
+     "sha256": "3f4f0cab3df31e8e1eb61d491bda7d96986480d6ae23878b30bee75a8d6acfd4"
+    },
+    "sheet": {
+     "file": "m2r-free_free_free1-uapa_1280x900_light_sheet.png",
+     "sha256": "3c3a262e150a0a027ca19142f4516553f4eb6612bc8962950692d22b2d4800fe"
+    }
+   },
+   "sheet_opened": true,
+   "sheet": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "free_confirm",
+    "step": "confirm",
+    "headings": [
+     "Add to Playground"
+    ],
+    "texts": [
+     "RECALLC FREE \u00b7 PERMANENT CHOICE",
+     "The UAPA, 1967 becomes one of your Playground laws \u2014 learnable, verbatim. The reader itself never changes.",
+     "This uses 1 of your 3 law choices \u2014 1 will remain.",
+     "Removing it later will not restore the choice, though you can always add this law again."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "Add to Playground",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 439,
+       "y": 504,
+       "w": 402,
+       "h": 50
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Cancel",
+      "tag": "A",
+      "href": "/laws/uapa",
+      "box": {
+       "x": 439,
+       "y": 563,
+       "w": 402,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "labelledBy": "pg-add-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-sheet-close:\u2715",
+    "alert": null,
+    "panelBox": {
+     "x": 410,
+     "y": 264,
+     "w": 460,
+     "h": 372
+    },
+    "warning": "This uses 1 of your 3 law choices \u2014 1 will remain.",
+    "hasMonthEyebrow": false,
+    "eyebrow": "RECALLC FREE \u00b7 PERMANENT CHOICE",
+    "hasPrice": false,
+    "hScroll": false
+   }
+  },
+  {
+   "key": "free1-uapa",
+   "path": "/laws/uapa",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "setup": [
+    {
+     "add": "ndps",
+     "status": 303,
+     "location": "/playground/laws/ndps"
+    }
+   ],
+   "head": {
+    "url": "/laws/uapa",
+    "kind": "eligible_to_add",
+    "membership": "",
+    "primary": {
+     "t": "Add to Playground \u00b7 1 of 3 choices used",
+     "href": "/playground/laws/uapa/add",
+     "sheet": true,
+     "box": {
+      "x": 860,
+      "y": 157,
+      "w": 380,
+      "h": 48
+     }
+    },
+    "badge": null,
+    "note": null,
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "Add to Playground \u00b7 1 of 3 choices used",
+      "tag": "A",
+      "href": "/playground/laws/uapa/add",
+      "box": {
+       "x": 860,
+       "y": 157,
+       "w": 380,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": false,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-free_free_free1-uapa_1280x900_dark_head.png",
+     "sha256": "d5401aacf377c44242cbb32db20f9fbe86aae3eba4ab8dead401f0d9a847607f"
+    },
+    "sheet": {
+     "file": "m2r-free_free_free1-uapa_1280x900_dark_sheet.png",
+     "sha256": "3d7a1be01dd0092b5701786ba8c48ac67be43b8c093573314c7acf1c6091236d"
+    }
+   },
+   "sheet_opened": true,
+   "sheet": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "free_confirm",
+    "step": "confirm",
+    "headings": [
+     "Add to Playground"
+    ],
+    "texts": [
+     "RECALLC FREE \u00b7 PERMANENT CHOICE",
+     "The UAPA, 1967 becomes one of your Playground laws \u2014 learnable, verbatim. The reader itself never changes.",
+     "This uses 1 of your 3 law choices \u2014 1 will remain.",
+     "Removing it later will not restore the choice, though you can always add this law again."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "Add to Playground",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 439,
+       "y": 504,
+       "w": 402,
+       "h": 50
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ecebe6",
+      "ratio": 15.43,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Cancel",
+      "tag": "A",
+      "href": "/laws/uapa",
+      "box": {
+       "x": 439,
+       "y": 563,
+       "w": 402,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#ecebe6",
+      "bg": "#1a1917",
+      "ratio": 14.72,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "labelledBy": "pg-add-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-sheet-close:\u2715",
+    "alert": null,
+    "panelBox": {
+     "x": 410,
+     "y": 264,
+     "w": 460,
+     "h": 372
+    },
+    "warning": "This uses 1 of your 3 law choices \u2014 1 will remain.",
+    "hasMonthEyebrow": false,
+    "eyebrow": "RECALLC FREE \u00b7 PERMANENT CHOICE",
+    "hasPrice": false,
+    "hScroll": false
+   }
+  },
+  {
+   "key": "free2-pss",
+   "path": "/laws/pss",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "setup": [
+    {
+     "add": "uapa",
+     "status": 303,
+     "location": "/playground/laws/uapa"
+    }
+   ],
+   "head": {
+    "url": "/laws/pss",
+    "kind": "eligible_to_add",
+    "membership": "",
+    "primary": {
+     "t": "Add to Playground \u00b7 2 of 3 choices used",
+     "href": "/playground/laws/pss/add",
+     "sheet": true,
+     "box": {
+      "x": 18,
+      "y": 146,
+      "w": 354,
+      "h": 48
+     }
+    },
+    "badge": null,
+    "note": null,
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "Add to Playground \u00b7 2 of 3 choices used",
+      "tag": "A",
+      "href": "/playground/laws/pss/add",
+      "box": {
+       "x": 18,
+       "y": 146,
+       "w": 354,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": false,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-free_free_free2-pss_390x844_light_head.png",
+     "sha256": "712e556d624364415585dd9ed5a3507e3072c15f8f2a4c8f408b3936a79447e5"
+    }
+   }
+  },
+  {
+   "key": "free2-pss",
+   "path": "/laws/pss",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "setup": [
+    {
+     "add": "uapa",
+     "status": 303,
+     "location": "/playground/laws/uapa"
+    }
+   ],
+   "head": {
+    "url": "/laws/pss",
+    "kind": "eligible_to_add",
+    "membership": "",
+    "primary": {
+     "t": "Add to Playground \u00b7 2 of 3 choices used",
+     "href": "/playground/laws/pss/add",
+     "sheet": true,
+     "box": {
+      "x": 18,
+      "y": 146,
+      "w": 354,
+      "h": 48
+     }
+    },
+    "badge": null,
+    "note": null,
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "Add to Playground \u00b7 2 of 3 choices used",
+      "tag": "A",
+      "href": "/playground/laws/pss/add",
+      "box": {
+       "x": 18,
+       "y": 146,
+       "w": 354,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": false,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-free_free_free2-pss_390x844_dark_head.png",
+     "sha256": "50821428a4188cbb1438f703f1ed0620a153304e40ceb897b13b9463aa486b63"
+    }
+   }
+  },
+  {
+   "key": "free2-pss",
+   "path": "/laws/pss",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "setup": [
+    {
+     "add": "uapa",
+     "status": 303,
+     "location": "/playground/laws/uapa"
+    }
+   ],
+   "head": {
+    "url": "/laws/pss",
+    "kind": "eligible_to_add",
+    "membership": "",
+    "primary": {
+     "t": "Add to Playground \u00b7 2 of 3 choices used",
+     "href": "/playground/laws/pss/add",
+     "sheet": true,
+     "box": {
+      "x": 860,
+      "y": 157,
+      "w": 380,
+      "h": 48
+     }
+    },
+    "badge": null,
+    "note": null,
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "Add to Playground \u00b7 2 of 3 choices used",
+      "tag": "A",
+      "href": "/playground/laws/pss/add",
+      "box": {
+       "x": 860,
+       "y": 157,
+       "w": 380,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": false,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-free_free_free2-pss_1280x900_light_head.png",
+     "sha256": "5fa413dd52216331ed342c6908d6310ba209ce28e0cebf84f98d6e8ecc2842bc"
+    }
+   }
+  },
+  {
+   "key": "free2-pss",
+   "path": "/laws/pss",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "setup": [
+    {
+     "add": "uapa",
+     "status": 303,
+     "location": "/playground/laws/uapa"
+    }
+   ],
+   "head": {
+    "url": "/laws/pss",
+    "kind": "eligible_to_add",
+    "membership": "",
+    "primary": {
+     "t": "Add to Playground \u00b7 2 of 3 choices used",
+     "href": "/playground/laws/pss/add",
+     "sheet": true,
+     "box": {
+      "x": 860,
+      "y": 157,
+      "w": 380,
+      "h": 48
+     }
+    },
+    "badge": null,
+    "note": null,
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "Add to Playground \u00b7 2 of 3 choices used",
+      "tag": "A",
+      "href": "/playground/laws/pss/add",
+      "box": {
+       "x": 860,
+       "y": 157,
+       "w": 380,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": false,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-free_free_free2-pss_1280x900_dark_head.png",
+     "sha256": "c2d758b141d98c2464f6a9e9b92f4e35d95a349779495340a0614ba4bf674cce"
+    }
+   }
+  },
+  {
+   "key": "free3-active-ndps",
+   "path": "/laws/ndps",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "setup": [],
+   "head": {
+    "url": "/laws/ndps",
+    "kind": "already_active",
+    "membership": "in_playground",
+    "primary": {
+     "t": "Continue",
+     "href": "/playground/laws/ndps",
+     "sheet": false,
+     "box": {
+      "x": 283,
+      "y": 158,
+      "w": 75,
+      "h": 44
+     }
+    },
+    "badge": "Already in Playground",
+    "note": null,
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "Sections",
+      "tag": "A",
+      "href": "/playground/laws/ndps/sections",
+      "box": {
+       "x": 203,
+       "y": 158,
+       "w": 72,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#0e5b52",
+      "bg": "#ffffff",
+      "ratio": 7.96,
+      "focusable": true
+     },
+     {
+      "kind": "cta",
+      "t": "Continue",
+      "tag": "A",
+      "href": "/playground/laws/ndps",
+      "box": {
+       "x": 283,
+       "y": 158,
+       "w": 75,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#0e7569",
+      "ratio": 5.57,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": false,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-free_free_free3-active-ndps_390x844_light_head.png",
+     "sha256": "31c445d7e613268c4797b7ee79cfcdc9b466acfd3b33533d51c8b1f5a9dbe41a"
+    }
+   }
+  },
+  {
+   "key": "free3-active-ndps",
+   "path": "/laws/ndps",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "setup": [],
+   "head": {
+    "url": "/laws/ndps",
+    "kind": "already_active",
+    "membership": "in_playground",
+    "primary": {
+     "t": "Continue",
+     "href": "/playground/laws/ndps",
+     "sheet": false,
+     "box": {
+      "x": 283,
+      "y": 158,
+      "w": 75,
+      "h": 44
+     }
+    },
+    "badge": "Already in Playground",
+    "note": null,
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "Sections",
+      "tag": "A",
+      "href": "/playground/laws/ndps/sections",
+      "box": {
+       "x": 203,
+       "y": 158,
+       "w": 72,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#8fd4c8",
+      "bg": "#1e1e1d",
+      "ratio": 9.87,
+      "focusable": true
+     },
+     {
+      "kind": "cta",
+      "t": "Continue",
+      "tag": "A",
+      "href": "/playground/laws/ndps",
+      "box": {
+       "x": 283,
+       "y": 158,
+       "w": 75,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#2a9d8f",
+      "ratio": 5.54,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": false,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-free_free_free3-active-ndps_390x844_dark_head.png",
+     "sha256": "899ade1015c840c20e51118a1e0ad2df5bd4d017313a2769c0c9d0748fab0ea5"
+    }
+   }
+  },
+  {
+   "key": "free3-active-ndps",
+   "path": "/laws/ndps",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "setup": [],
+   "head": {
+    "url": "/laws/ndps",
+    "kind": "already_active",
+    "membership": "in_playground",
+    "primary": {
+     "t": "Continue",
+     "href": "/playground/laws/ndps",
+     "sheet": false,
+     "box": {
+      "x": 1152,
+      "y": 154,
+      "w": 75,
+      "h": 40
+     }
+    },
+    "badge": "Already in Playground",
+    "note": null,
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "Sections",
+      "tag": "A",
+      "href": "/playground/laws/ndps/sections",
+      "box": {
+       "x": 1069,
+       "y": 154,
+       "w": 72,
+       "h": 40
+      },
+      "meets44": false,
+      "fg": "#0e5b52",
+      "bg": "#ffffff",
+      "ratio": 7.96,
+      "focusable": true
+     },
+     {
+      "kind": "cta",
+      "t": "Continue",
+      "tag": "A",
+      "href": "/playground/laws/ndps",
+      "box": {
+       "x": 1152,
+       "y": 154,
+       "w": 75,
+       "h": 40
+      },
+      "meets44": false,
+      "fg": "#ffffff",
+      "bg": "#0e7569",
+      "ratio": 5.57,
+      "focusable": true
+     }
+    ],
+    "small": [
+     "Sections:72x40",
+     "Continue:75x40"
+    ],
+    "low": [],
+    "flatList": false,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-free_free_free3-active-ndps_1280x900_light_head.png",
+     "sha256": "7fd3c58a6808470ee1eb318e7a6a55cf282ddbc1921473513d2a8eeeb2d4ee32"
+    }
+   }
+  },
+  {
+   "key": "free3-active-ndps",
+   "path": "/laws/ndps",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "setup": [],
+   "head": {
+    "url": "/laws/ndps",
+    "kind": "already_active",
+    "membership": "in_playground",
+    "primary": {
+     "t": "Continue",
+     "href": "/playground/laws/ndps",
+     "sheet": false,
+     "box": {
+      "x": 1152,
+      "y": 154,
+      "w": 75,
+      "h": 40
+     }
+    },
+    "badge": "Already in Playground",
+    "note": null,
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "Sections",
+      "tag": "A",
+      "href": "/playground/laws/ndps/sections",
+      "box": {
+       "x": 1069,
+       "y": 154,
+       "w": 72,
+       "h": 40
+      },
+      "meets44": false,
+      "fg": "#8fd4c8",
+      "bg": "#1e1e1d",
+      "ratio": 9.87,
+      "focusable": true
+     },
+     {
+      "kind": "cta",
+      "t": "Continue",
+      "tag": "A",
+      "href": "/playground/laws/ndps",
+      "box": {
+       "x": 1152,
+       "y": 154,
+       "w": 75,
+       "h": 40
+      },
+      "meets44": false,
+      "fg": "#141414",
+      "bg": "#2a9d8f",
+      "ratio": 5.54,
+      "focusable": true
+     }
+    ],
+    "small": [
+     "Sections:72x40",
+     "Continue:75x40"
+    ],
+    "low": [],
+    "flatList": false,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-free_free_free3-active-ndps_1280x900_dark_head.png",
+     "sha256": "7bc22ea56e0d4ca69619eb48768cb7c9dd9d5f1cd86a16b2df9658e0367388a0"
+    }
+   }
+  },
+  {
+   "key": "free3-mtp",
+   "path": "/laws/mtp",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "setup": [],
+   "head": {
+    "url": "/laws/mtp",
+    "kind": "free_limit",
+    "membership": "playground_full",
+    "primary": {
+     "t": "All 3 law choices used",
+     "href": "/playground/laws/mtp/add",
+     "sheet": true,
+     "box": {
+      "x": 18,
+      "y": 176,
+      "w": 354,
+      "h": 48
+     }
+    },
+    "badge": "CHOICES USED",
+    "note": "Your three Playground laws are chosen. Plus and Pro add laws without limit.",
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "All 3 law choices used",
+      "tag": "A",
+      "href": "/playground/laws/mtp/add",
+      "box": {
+       "x": 18,
+       "y": 176,
+       "w": 354,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": true,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-free_free_free3-mtp_390x844_light_head.png",
+     "sha256": "1cafc6487d5127135a03efcff0b5d933e5a5e0556f244cf0790a4d5821d2d802"
+    }
+   }
+  },
+  {
+   "key": "free3-mtp",
+   "path": "/laws/mtp",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "setup": [],
+   "head": {
+    "url": "/laws/mtp",
+    "kind": "free_limit",
+    "membership": "playground_full",
+    "primary": {
+     "t": "All 3 law choices used",
+     "href": "/playground/laws/mtp/add",
+     "sheet": true,
+     "box": {
+      "x": 18,
+      "y": 176,
+      "w": 354,
+      "h": 48
+     }
+    },
+    "badge": "CHOICES USED",
+    "note": "Your three Playground laws are chosen. Plus and Pro add laws without limit.",
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "All 3 law choices used",
+      "tag": "A",
+      "href": "/playground/laws/mtp/add",
+      "box": {
+       "x": 18,
+       "y": 176,
+       "w": 354,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": true,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-free_free_free3-mtp_390x844_dark_head.png",
+     "sha256": "3684e61f4cfb03918567e9e3e4a3c0e00ad334efc28859caedecbc45ea835a1a"
+    }
+   }
+  },
+  {
+   "key": "free3-mtp",
+   "path": "/laws/mtp",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "setup": [],
+   "head": {
+    "url": "/laws/mtp",
+    "kind": "free_limit",
+    "membership": "playground_full",
+    "primary": {
+     "t": "All 3 law choices used",
+     "href": "/playground/laws/mtp/add",
+     "sheet": true,
+     "box": {
+      "x": 860,
+      "y": 158,
+      "w": 380,
+      "h": 48
+     }
+    },
+    "badge": "CHOICES USED",
+    "note": "Your three Playground laws are chosen. Plus and Pro add laws without limit.",
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "All 3 law choices used",
+      "tag": "A",
+      "href": "/playground/laws/mtp/add",
+      "box": {
+       "x": 860,
+       "y": 158,
+       "w": 380,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": true,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-free_free_free3-mtp_1280x900_light_head.png",
+     "sha256": "fc6be22691dd609a2133919eba67b030e859f5ba7cdb7bed227715a7b38cd276"
+    }
+   }
+  },
+  {
+   "key": "free3-mtp",
+   "path": "/laws/mtp",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "setup": [],
+   "head": {
+    "url": "/laws/mtp",
+    "kind": "free_limit",
+    "membership": "playground_full",
+    "primary": {
+     "t": "All 3 law choices used",
+     "href": "/playground/laws/mtp/add",
+     "sheet": true,
+     "box": {
+      "x": 860,
+      "y": 158,
+      "w": 380,
+      "h": 48
+     }
+    },
+    "badge": "CHOICES USED",
+    "note": "Your three Playground laws are chosen. Plus and Pro add laws without limit.",
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "All 3 law choices used",
+      "tag": "A",
+      "href": "/playground/laws/mtp/add",
+      "box": {
+       "x": 860,
+       "y": 158,
+       "w": 380,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": true,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-free_free_free3-mtp_1280x900_dark_head.png",
+     "sha256": "ee3ed3169329ade9b1ff52c98cdbff5b6fbb5bca6c235be4b4ebc4e066f6ef4b"
+    }
+   }
+  },
+  {
+   "key": "free3-readd-ndps",
+   "path": "/laws/ndps",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "setup": [
+    {
+     "remove": "ndps",
+     "status": 303,
+     "location": "/playground/roster"
+    }
+   ],
+   "head": {
+    "url": "/laws/ndps",
+    "kind": "re_add",
+    "membership": "removed_this_month",
+    "primary": {
+     "t": "Add again",
+     "href": "/playground/laws/ndps/add",
+     "sheet": true,
+     "box": {
+      "x": 18,
+      "y": 176,
+      "w": 354,
+      "h": 48
+     }
+    },
+    "badge": "PREVIOUSLY CHOSEN",
+    "note": "One of your chosen laws \u2014 adding it again uses no choice.",
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "Add again",
+      "tag": "A",
+      "href": "/playground/laws/ndps/add",
+      "box": {
+       "x": 18,
+       "y": 176,
+       "w": 354,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": false,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-free_free_free3-readd-ndps_390x844_light_head.png",
+     "sha256": "e72bab65eae58cc063847f810b8041aed3211269ec444726669c6e5bd6699e94"
+    },
+    "sheet": {
+     "file": "m2r-free_free_free3-readd-ndps_390x844_light_sheet.png",
+     "sha256": "190d6a6597910b4643dc548742c8304ec2d8800afec1a25ed085b62b5af072db"
+    },
+    "scope": {
+     "file": "m2r-free_free_free3-readd-ndps_390x844_light_scope.png",
+     "sha256": "94a5df3ec3e568f55019f60b65fa5a03b0381527eaa7e3ca0d33aadb8b2621eb"
+    }
+   },
+   "sheet_opened": true,
+   "sheet": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "free_readd",
+    "step": "confirm",
+    "headings": [
+     "Add The NDPS Act, 1985 again?"
+    ],
+    "texts": [
+     "One of your chosen laws \u2014 adding it again uses no choice.",
+     "Your saved progress comes back with it."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "Add again",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 34,
+       "y": 709,
+       "w": 322,
+       "h": 50
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Cancel",
+      "tag": "A",
+      "href": "/laws/ndps",
+      "box": {
+       "x": 34,
+       "y": 768,
+       "w": 322,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "labelledBy": "pg-add-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-sheet-close:\u2715",
+    "alert": null,
+    "panelBox": {
+     "x": 16,
+     "y": 591,
+     "w": 358,
+     "h": 253
+    },
+    "warning": null,
+    "hasMonthEyebrow": false,
+    "eyebrow": null,
+    "hasPrice": false,
+    "hScroll": false
+   },
+   "keyboard": {
+    "tabs": [
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add again",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Cancel",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add again",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Cancel",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add again",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Cancel",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add again",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     }
+    ],
+    "containment": true,
+    "outlined": 10,
+    "afterEscape": {
+     "inDialog": false,
+     "el": "A.ActHead-btn",
+     "text": "Add again",
+     "focusVisible": true,
+     "outline": "2px solid",
+     "dialogOpen": false
+    },
+    "focusReturned": {
+     "isTrigger": true,
+     "text": "Add again"
+    }
+   },
+   "scope": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "free_readd",
+    "step": "scope",
+    "headings": [
+     "Add The NDPS Act, 1985"
+    ],
+    "texts": [
+     "Choose how much of The NDPS Act, 1985 enters your recall schedule.",
+     "Nothing is scheduled yet \u2014 provisions activate the first time you learn them."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "Entire Act \u203a",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 34,
+       "y": 578,
+       "w": 322,
+       "h": 52
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Choose sections Pick sections \u2014 or open one and pick single clauses \u203a",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 34,
+       "y": 639,
+       "w": 322,
+       "h": 76
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Cancel",
+      "tag": "A",
+      "href": "/laws/ndps",
+      "box": {
+       "x": 34,
+       "y": 768,
+       "w": 322,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "labelledBy": "pg-add-scope-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-add-choice:Entire Act \u203a",
+    "alert": null,
+    "panelBox": {
+     "x": 16,
+     "y": 465,
+     "w": 358,
+     "h": 379
+    },
+    "warning": null,
+    "hasMonthEyebrow": false,
+    "eyebrow": null,
+    "hasPrice": false,
+    "hScroll": false,
+    "confirmClicked": true
+   }
+  },
+  {
+   "key": "free3-readd-ndps",
+   "path": "/laws/ndps",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "setup": [
+    {
+     "remove": "ndps",
+     "status": 303,
+     "location": "/playground/roster"
+    }
+   ],
+   "head": {
+    "url": "/laws/ndps",
+    "kind": "re_add",
+    "membership": "removed_this_month",
+    "primary": {
+     "t": "Add again",
+     "href": "/playground/laws/ndps/add",
+     "sheet": true,
+     "box": {
+      "x": 18,
+      "y": 176,
+      "w": 354,
+      "h": 48
+     }
+    },
+    "badge": "PREVIOUSLY CHOSEN",
+    "note": "One of your chosen laws \u2014 adding it again uses no choice.",
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "Add again",
+      "tag": "A",
+      "href": "/playground/laws/ndps/add",
+      "box": {
+       "x": 18,
+       "y": 176,
+       "w": 354,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": false,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-free_free_free3-readd-ndps_390x844_dark_head.png",
+     "sha256": "6595ae14d026957a347e06cc03aff46b9541b376fdceecd1c3fd826a1ce462ab"
+    },
+    "sheet": {
+     "file": "m2r-free_free_free3-readd-ndps_390x844_dark_sheet.png",
+     "sha256": "13709c711ff2e5dae53194b7c79c39d3f2dbbf41f20fa8a26e6735b9aa1db987"
+    },
+    "scope": {
+     "file": "m2r-free_free_free3-readd-ndps_390x844_dark_scope.png",
+     "sha256": "e7c00e1629d2c84dc54a994579168f49e5cb95cc037defdc4794ece9e0a7a6c6"
+    }
+   },
+   "sheet_opened": true,
+   "sheet": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "free_readd",
+    "step": "confirm",
+    "headings": [
+     "Add The NDPS Act, 1985 again?"
+    ],
+    "texts": [
+     "One of your chosen laws \u2014 adding it again uses no choice.",
+     "Your saved progress comes back with it."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "Add again",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 34,
+       "y": 709,
+       "w": 322,
+       "h": 50
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ecebe6",
+      "ratio": 15.43,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Cancel",
+      "tag": "A",
+      "href": "/laws/ndps",
+      "box": {
+       "x": 34,
+       "y": 768,
+       "w": 322,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#ecebe6",
+      "bg": "#1a1917",
+      "ratio": 14.72,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "labelledBy": "pg-add-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-sheet-close:\u2715",
+    "alert": null,
+    "panelBox": {
+     "x": 16,
+     "y": 591,
+     "w": 358,
+     "h": 253
+    },
+    "warning": null,
+    "hasMonthEyebrow": false,
+    "eyebrow": null,
+    "hasPrice": false,
+    "hScroll": false
+   },
+   "keyboard": {
+    "tabs": [
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add again",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Cancel",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add again",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Cancel",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add again",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Cancel",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add again",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     }
+    ],
+    "containment": true,
+    "outlined": 10,
+    "afterEscape": {
+     "inDialog": false,
+     "el": "A.ActHead-btn",
+     "text": "Add again",
+     "focusVisible": true,
+     "outline": "2px solid",
+     "dialogOpen": false
+    },
+    "focusReturned": {
+     "isTrigger": true,
+     "text": "Add again"
+    }
+   },
+   "scope": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "free_readd",
+    "step": "scope",
+    "headings": [
+     "Add The NDPS Act, 1985"
+    ],
+    "texts": [
+     "Choose how much of The NDPS Act, 1985 enters your recall schedule.",
+     "Nothing is scheduled yet \u2014 provisions activate the first time you learn them."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "Entire Act \u203a",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 34,
+       "y": 578,
+       "w": 322,
+       "h": 52
+      },
+      "meets44": true,
+      "fg": "#ecebe6",
+      "bg": "#1a1917",
+      "ratio": 14.72,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Choose sections Pick sections \u2014 or open one and pick single clauses \u203a",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 34,
+       "y": 639,
+       "w": 322,
+       "h": 76
+      },
+      "meets44": true,
+      "fg": "#ecebe6",
+      "bg": "#1a1917",
+      "ratio": 14.72,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Cancel",
+      "tag": "A",
+      "href": "/laws/ndps",
+      "box": {
+       "x": 34,
+       "y": 768,
+       "w": 322,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#ecebe6",
+      "bg": "#1a1917",
+      "ratio": 14.72,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "labelledBy": "pg-add-scope-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-add-choice:Entire Act \u203a",
+    "alert": null,
+    "panelBox": {
+     "x": 16,
+     "y": 465,
+     "w": 358,
+     "h": 379
+    },
+    "warning": null,
+    "hasMonthEyebrow": false,
+    "eyebrow": null,
+    "hasPrice": false,
+    "hScroll": false,
+    "confirmClicked": true
+   }
+  },
+  {
+   "key": "free3-readd-ndps",
+   "path": "/laws/ndps",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "setup": [
+    {
+     "remove": "ndps",
+     "status": 303,
+     "location": "/playground/roster"
+    }
+   ],
+   "head": {
+    "url": "/laws/ndps",
+    "kind": "re_add",
+    "membership": "removed_this_month",
+    "primary": {
+     "t": "Add again",
+     "href": "/playground/laws/ndps/add",
+     "sheet": true,
+     "box": {
+      "x": 860,
+      "y": 158,
+      "w": 380,
+      "h": 48
+     }
+    },
+    "badge": "PREVIOUSLY CHOSEN",
+    "note": "One of your chosen laws \u2014 adding it again uses no choice.",
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "Add again",
+      "tag": "A",
+      "href": "/playground/laws/ndps/add",
+      "box": {
+       "x": 860,
+       "y": 158,
+       "w": 380,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": false,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-free_free_free3-readd-ndps_1280x900_light_head.png",
+     "sha256": "fe9a077c6a6e63c15756d646d3af250641f1cea6dd13d33a6913b68ff76d73d2"
+    },
+    "sheet": {
+     "file": "m2r-free_free_free3-readd-ndps_1280x900_light_sheet.png",
+     "sha256": "7e539d9e46350e185f46ea7b6dc71cff00ae23f7a1fa3a04374c73872a15777c"
+    },
+    "scope": {
+     "file": "m2r-free_free_free3-readd-ndps_1280x900_light_scope.png",
+     "sha256": "2b85acca8bc86d5fc724dd42f0a33853a8842b1c45097e756462bd7c01178751"
+    }
+   },
+   "sheet_opened": true,
+   "sheet": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "free_readd",
+    "step": "confirm",
+    "headings": [
+     "Add The NDPS Act, 1985 again?"
+    ],
+    "texts": [
+     "One of your chosen laws \u2014 adding it again uses no choice.",
+     "Your saved progress comes back with it."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "Add again",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 439,
+       "y": 447,
+       "w": 402,
+       "h": 50
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Cancel",
+      "tag": "A",
+      "href": "/laws/ndps",
+      "box": {
+       "x": 439,
+       "y": 506,
+       "w": 402,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "labelledBy": "pg-add-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-sheet-close:\u2715",
+    "alert": null,
+    "panelBox": {
+     "x": 410,
+     "y": 321,
+     "w": 460,
+     "h": 258
+    },
+    "warning": null,
+    "hasMonthEyebrow": false,
+    "eyebrow": null,
+    "hasPrice": false,
+    "hScroll": false
+   },
+   "keyboard": {
+    "tabs": [
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add again",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Cancel",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add again",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Cancel",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add again",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Cancel",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add again",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     }
+    ],
+    "containment": true,
+    "outlined": 10,
+    "afterEscape": {
+     "inDialog": false,
+     "el": "A.ActHead-btn",
+     "text": "Add again",
+     "focusVisible": true,
+     "outline": "2px solid",
+     "dialogOpen": false
+    },
+    "focusReturned": {
+     "isTrigger": true,
+     "text": "Add again"
+    }
+   },
+   "scope": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "free_readd",
+    "step": "scope",
+    "headings": [
+     "Add The NDPS Act, 1985"
+    ],
+    "texts": [
+     "Choose how much of The NDPS Act, 1985 enters your recall schedule.",
+     "Nothing is scheduled yet \u2014 provisions activate the first time you learn them."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "Entire Act \u203a",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 439,
+       "y": 375,
+       "w": 402,
+       "h": 52
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Choose sections Pick sections \u2014 or open one and pick single clauses \u203a",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 439,
+       "y": 436,
+       "w": 402,
+       "h": 76
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Cancel",
+      "tag": "A",
+      "href": "/laws/ndps",
+      "box": {
+       "x": 439,
+       "y": 549,
+       "w": 402,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "labelledBy": "pg-add-scope-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-add-choice:Entire Act \u203a",
+    "alert": null,
+    "panelBox": {
+     "x": 410,
+     "y": 278,
+     "w": 460,
+     "h": 344
+    },
+    "warning": null,
+    "hasMonthEyebrow": false,
+    "eyebrow": null,
+    "hasPrice": false,
+    "hScroll": false,
+    "confirmClicked": true
+   }
+  },
+  {
+   "key": "free3-readd-ndps",
+   "path": "/laws/ndps",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "setup": [
+    {
+     "remove": "ndps",
+     "status": 303,
+     "location": "/playground/roster"
+    }
+   ],
+   "head": {
+    "url": "/laws/ndps",
+    "kind": "re_add",
+    "membership": "removed_this_month",
+    "primary": {
+     "t": "Add again",
+     "href": "/playground/laws/ndps/add",
+     "sheet": true,
+     "box": {
+      "x": 860,
+      "y": 158,
+      "w": 380,
+      "h": 48
+     }
+    },
+    "badge": "PREVIOUSLY CHOSEN",
+    "note": "One of your chosen laws \u2014 adding it again uses no choice.",
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "Add again",
+      "tag": "A",
+      "href": "/playground/laws/ndps/add",
+      "box": {
+       "x": 860,
+       "y": 158,
+       "w": 380,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": false,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-free_free_free3-readd-ndps_1280x900_dark_head.png",
+     "sha256": "1579d1c01e55e76c924a5b3b6b912fe643ff0374895d24c20c0337c95db5d404"
+    },
+    "sheet": {
+     "file": "m2r-free_free_free3-readd-ndps_1280x900_dark_sheet.png",
+     "sha256": "1852633be5544513ba460151643bb745081728dbc776b0623c6de9731f722393"
+    },
+    "scope": {
+     "file": "m2r-free_free_free3-readd-ndps_1280x900_dark_scope.png",
+     "sha256": "c27b0d9b0597aefe7e54e5e78d04ff4a7d66eb745e95ae306877c899ac8dcc34"
+    }
+   },
+   "sheet_opened": true,
+   "sheet": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "free_readd",
+    "step": "confirm",
+    "headings": [
+     "Add The NDPS Act, 1985 again?"
+    ],
+    "texts": [
+     "One of your chosen laws \u2014 adding it again uses no choice.",
+     "Your saved progress comes back with it."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "Add again",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 439,
+       "y": 447,
+       "w": 402,
+       "h": 50
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ecebe6",
+      "ratio": 15.43,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Cancel",
+      "tag": "A",
+      "href": "/laws/ndps",
+      "box": {
+       "x": 439,
+       "y": 506,
+       "w": 402,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#ecebe6",
+      "bg": "#1a1917",
+      "ratio": 14.72,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "labelledBy": "pg-add-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-sheet-close:\u2715",
+    "alert": null,
+    "panelBox": {
+     "x": 410,
+     "y": 321,
+     "w": 460,
+     "h": 258
+    },
+    "warning": null,
+    "hasMonthEyebrow": false,
+    "eyebrow": null,
+    "hasPrice": false,
+    "hScroll": false
+   },
+   "keyboard": {
+    "tabs": [
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add again",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Cancel",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add again",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Cancel",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add again",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Cancel",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add again",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     }
+    ],
+    "containment": true,
+    "outlined": 10,
+    "afterEscape": {
+     "inDialog": false,
+     "el": "A.ActHead-btn",
+     "text": "Add again",
+     "focusVisible": true,
+     "outline": "2px solid",
+     "dialogOpen": false
+    },
+    "focusReturned": {
+     "isTrigger": true,
+     "text": "Add again"
+    }
+   },
+   "scope": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "free_readd",
+    "step": "scope",
+    "headings": [
+     "Add The NDPS Act, 1985"
+    ],
+    "texts": [
+     "Choose how much of The NDPS Act, 1985 enters your recall schedule.",
+     "Nothing is scheduled yet \u2014 provisions activate the first time you learn them."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "Entire Act \u203a",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 439,
+       "y": 375,
+       "w": 402,
+       "h": 52
+      },
+      "meets44": true,
+      "fg": "#ecebe6",
+      "bg": "#1a1917",
+      "ratio": 14.72,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Choose sections Pick sections \u2014 or open one and pick single clauses \u203a",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 439,
+       "y": 436,
+       "w": 402,
+       "h": 76
+      },
+      "meets44": true,
+      "fg": "#ecebe6",
+      "bg": "#1a1917",
+      "ratio": 14.72,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Cancel",
+      "tag": "A",
+      "href": "/laws/ndps",
+      "box": {
+       "x": 439,
+       "y": 549,
+       "w": 402,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#ecebe6",
+      "bg": "#1a1917",
+      "ratio": 14.72,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "labelledBy": "pg-add-scope-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-add-choice:Entire Act \u203a",
+    "alert": null,
+    "panelBox": {
+     "x": 410,
+     "y": 278,
+     "w": 460,
+     "h": 344
+    },
+    "warning": null,
+    "hasMonthEyebrow": false,
+    "eyebrow": null,
+    "hasPrice": false,
+    "hScroll": false,
+    "confirmClicked": true
+   }
+  },
+  {
+   "key": "free3-limit-bns",
+   "path": "/laws/bns",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "setup": [],
+   "head": {
+    "url": "/laws/bns",
+    "kind": "free_limit",
+    "membership": "playground_full",
+    "primary": {
+     "t": "All 3 law choices used",
+     "href": "/playground/laws/bns/add",
+     "sheet": true,
+     "box": {
+      "x": 18,
+      "y": 153,
+      "w": 354,
+      "h": 48
+     }
+    },
+    "badge": "CHOICES USED",
+    "note": "Your three Playground laws are chosen. Plus and Pro add laws without limit.",
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "All 3 law choices used",
+      "tag": "A",
+      "href": "/playground/laws/bns/add",
+      "box": {
+       "x": 18,
+       "y": 153,
+       "w": 354,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": false,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-free_free_free3-limit-bns_390x844_light_head.png",
+     "sha256": "0cda4a862beb45a736d34ceefc4fd2f35007d4acb6dd33b507b1d82fe2f77336"
+    },
+    "sheet": {
+     "file": "m2r-free_free_free3-limit-bns_390x844_light_sheet.png",
+     "sha256": "9424ab2853de53d7d4ebca6a0e884dc8033d53d281953ba399d250e3f5bd5004"
+    }
+   },
+   "sheet_opened": true,
+   "sheet": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "free_limit",
+    "step": "confirm",
+    "headings": [
+     "All three law choices used"
+    ],
+    "texts": [
+     "Your chosen laws stay fully usable, and any of them can be added again at no cost. Plus and Pro add laws without limit."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "\u2715",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 322,
+       "y": 591,
+       "w": 44,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#ffffff",
+      "ratio": 3.24,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Subscribe to Plus",
+      "tag": "A",
+      "href": "/billing/subscriptions",
+      "box": {
+       "x": 34,
+       "y": 715,
+       "w": 145,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Subscribe to Pro",
+      "tag": "A",
+      "href": "/billing/subscriptions",
+      "box": {
+       "x": 182,
+       "y": 715,
+       "w": 140,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Close",
+      "tag": "A",
+      "href": "/laws/bns",
+      "box": {
+       "x": 34,
+       "y": 768,
+       "w": 322,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [
+     "\u2715=3.24"
+    ],
+    "labelledBy": "pg-add-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-sheet-close:\u2715",
+    "alert": null,
+    "panelBox": {
+     "x": 16,
+     "y": 583,
+     "w": 358,
+     "h": 261
+    },
+    "warning": null,
+    "hasMonthEyebrow": false,
+    "eyebrow": null,
+    "hasPrice": false,
+    "hScroll": false
+   },
+   "keyboard": {
+    "tabs": [
+     {
+      "inDialog": true,
+      "el": "A.pg-btn",
+      "text": "Subscribe to Plus",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-btn",
+      "text": "Subscribe to Pro",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Close",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-btn",
+      "text": "Subscribe to Plus",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-btn",
+      "text": "Subscribe to Pro",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Close",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-btn",
+      "text": "Subscribe to Plus",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-btn",
+      "text": "Subscribe to Pro",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     }
+    ],
+    "containment": true,
+    "outlined": 10,
+    "afterEscape": {
+     "inDialog": false,
+     "el": "A.ActHead-btn",
+     "text": "All 3 law choices used",
+     "focusVisible": true,
+     "outline": "2px solid",
+     "dialogOpen": false
+    },
+    "focusReturned": {
+     "isTrigger": true,
+     "text": "All 3 law choices used"
+    }
+   }
+  },
+  {
+   "key": "free3-limit-bns",
+   "path": "/laws/bns",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "setup": [],
+   "head": {
+    "url": "/laws/bns",
+    "kind": "free_limit",
+    "membership": "playground_full",
+    "primary": {
+     "t": "All 3 law choices used",
+     "href": "/playground/laws/bns/add",
+     "sheet": true,
+     "box": {
+      "x": 18,
+      "y": 153,
+      "w": 354,
+      "h": 48
+     }
+    },
+    "badge": "CHOICES USED",
+    "note": "Your three Playground laws are chosen. Plus and Pro add laws without limit.",
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "All 3 law choices used",
+      "tag": "A",
+      "href": "/playground/laws/bns/add",
+      "box": {
+       "x": 18,
+       "y": 153,
+       "w": 354,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": false,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-free_free_free3-limit-bns_390x844_dark_head.png",
+     "sha256": "ea4e8e3c2186c3cdc0dd33b111dd4d79d5cc027bc5f578dbba7c5a06b85d0bb9"
+    },
+    "sheet": {
+     "file": "m2r-free_free_free3-limit-bns_390x844_dark_sheet.png",
+     "sha256": "687d4aa5636864eec1c93d2f61f02347022a7f06520df964093faa629c8da9cd"
+    }
+   },
+   "sheet_opened": true,
+   "sheet": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "free_limit",
+    "step": "confirm",
+    "headings": [
+     "All three law choices used"
+    ],
+    "texts": [
+     "Your chosen laws stay fully usable, and any of them can be added again at no cost. Plus and Pro add laws without limit."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "\u2715",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 322,
+       "y": 591,
+       "w": 44,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#1a1917",
+      "ratio": 5.42,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Subscribe to Plus",
+      "tag": "A",
+      "href": "/billing/subscriptions",
+      "box": {
+       "x": 34,
+       "y": 715,
+       "w": 145,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#1a1917",
+      "bg": "#ecebe6",
+      "ratio": 14.72,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Subscribe to Pro",
+      "tag": "A",
+      "href": "/billing/subscriptions",
+      "box": {
+       "x": 182,
+       "y": 715,
+       "w": 140,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#1a1917",
+      "bg": "#ecebe6",
+      "ratio": 14.72,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Close",
+      "tag": "A",
+      "href": "/laws/bns",
+      "box": {
+       "x": 34,
+       "y": 768,
+       "w": 322,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#ecebe6",
+      "bg": "#1a1917",
+      "ratio": 14.72,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "labelledBy": "pg-add-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-sheet-close:\u2715",
+    "alert": null,
+    "panelBox": {
+     "x": 16,
+     "y": 583,
+     "w": 358,
+     "h": 261
+    },
+    "warning": null,
+    "hasMonthEyebrow": false,
+    "eyebrow": null,
+    "hasPrice": false,
+    "hScroll": false
+   },
+   "keyboard": {
+    "tabs": [
+     {
+      "inDialog": true,
+      "el": "A.pg-btn",
+      "text": "Subscribe to Plus",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-btn",
+      "text": "Subscribe to Pro",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Close",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-btn",
+      "text": "Subscribe to Plus",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-btn",
+      "text": "Subscribe to Pro",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Close",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-btn",
+      "text": "Subscribe to Plus",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-btn",
+      "text": "Subscribe to Pro",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     }
+    ],
+    "containment": true,
+    "outlined": 10,
+    "afterEscape": {
+     "inDialog": false,
+     "el": "A.ActHead-btn",
+     "text": "All 3 law choices used",
+     "focusVisible": true,
+     "outline": "2px solid",
+     "dialogOpen": false
+    },
+    "focusReturned": {
+     "isTrigger": true,
+     "text": "All 3 law choices used"
+    }
+   }
+  },
+  {
+   "key": "free3-limit-bns",
+   "path": "/laws/bns",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "setup": [],
+   "head": {
+    "url": "/laws/bns",
+    "kind": "free_limit",
+    "membership": "playground_full",
+    "primary": {
+     "t": "All 3 law choices used",
+     "href": "/playground/laws/bns/add",
+     "sheet": true,
+     "box": {
+      "x": 860,
+      "y": 158,
+      "w": 380,
+      "h": 48
+     }
+    },
+    "badge": "CHOICES USED",
+    "note": "Your three Playground laws are chosen. Plus and Pro add laws without limit.",
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "All 3 law choices used",
+      "tag": "A",
+      "href": "/playground/laws/bns/add",
+      "box": {
+       "x": 860,
+       "y": 158,
+       "w": 380,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": false,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-free_free_free3-limit-bns_1280x900_light_head.png",
+     "sha256": "a1456d159f1d9c5bac121a6764d017ee6629d2ca118514bd2c1380b17b50f852"
+    },
+    "sheet": {
+     "file": "m2r-free_free_free3-limit-bns_1280x900_light_sheet.png",
+     "sha256": "13693cd65d1cd5251645340c8a6a091ed65a5a05bd9d847c1eadc27d2358a151"
+    }
+   },
+   "sheet_opened": true,
+   "sheet": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "free_limit",
+    "step": "confirm",
+    "headings": [
+     "All three law choices used"
+    ],
+    "texts": [
+     "Your chosen laws stay fully usable, and any of them can be added again at no cost. Plus and Pro add laws without limit."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "\u2715",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 811,
+       "y": 343,
+       "w": 44,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#ffffff",
+      "ratio": 3.24,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Subscribe to Plus",
+      "tag": "A",
+      "href": "/billing/subscriptions",
+      "box": {
+       "x": 439,
+       "y": 446,
+       "w": 145,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Subscribe to Pro",
+      "tag": "A",
+      "href": "/billing/subscriptions",
+      "box": {
+       "x": 587,
+       "y": 446,
+       "w": 140,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Close",
+      "tag": "A",
+      "href": "/laws/bns",
+      "box": {
+       "x": 439,
+       "y": 499,
+       "w": 402,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [
+     "\u2715=3.24"
+    ],
+    "labelledBy": "pg-add-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-sheet-close:\u2715",
+    "alert": null,
+    "panelBox": {
+     "x": 410,
+     "y": 328,
+     "w": 460,
+     "h": 244
+    },
+    "warning": null,
+    "hasMonthEyebrow": false,
+    "eyebrow": null,
+    "hasPrice": false,
+    "hScroll": false
+   },
+   "keyboard": {
+    "tabs": [
+     {
+      "inDialog": true,
+      "el": "A.pg-btn",
+      "text": "Subscribe to Plus",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-btn",
+      "text": "Subscribe to Pro",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Close",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-btn",
+      "text": "Subscribe to Plus",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-btn",
+      "text": "Subscribe to Pro",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Close",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-btn",
+      "text": "Subscribe to Plus",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-btn",
+      "text": "Subscribe to Pro",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     }
+    ],
+    "containment": true,
+    "outlined": 10,
+    "afterEscape": {
+     "inDialog": false,
+     "el": "A.ActHead-btn",
+     "text": "All 3 law choices used",
+     "focusVisible": true,
+     "outline": "2px solid",
+     "dialogOpen": false
+    },
+    "focusReturned": {
+     "isTrigger": true,
+     "text": "All 3 law choices used"
+    }
+   }
+  },
+  {
+   "key": "free3-limit-bns",
+   "path": "/laws/bns",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "setup": [],
+   "head": {
+    "url": "/laws/bns",
+    "kind": "free_limit",
+    "membership": "playground_full",
+    "primary": {
+     "t": "All 3 law choices used",
+     "href": "/playground/laws/bns/add",
+     "sheet": true,
+     "box": {
+      "x": 860,
+      "y": 158,
+      "w": 380,
+      "h": 48
+     }
+    },
+    "badge": "CHOICES USED",
+    "note": "Your three Playground laws are chosen. Plus and Pro add laws without limit.",
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "All 3 law choices used",
+      "tag": "A",
+      "href": "/playground/laws/bns/add",
+      "box": {
+       "x": 860,
+       "y": 158,
+       "w": 380,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": false,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-free_free_free3-limit-bns_1280x900_dark_head.png",
+     "sha256": "a65a81873f03525bd5029329aae1cc15353662779f22c5446b7d10647b73baa8"
+    },
+    "sheet": {
+     "file": "m2r-free_free_free3-limit-bns_1280x900_dark_sheet.png",
+     "sha256": "f5bdbbc3562dadedfb81172ba832b58c1c968b0a19208f81d8639dbd06581141"
+    }
+   },
+   "sheet_opened": true,
+   "sheet": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "free_limit",
+    "step": "confirm",
+    "headings": [
+     "All three law choices used"
+    ],
+    "texts": [
+     "Your chosen laws stay fully usable, and any of them can be added again at no cost. Plus and Pro add laws without limit."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "\u2715",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 811,
+       "y": 343,
+       "w": 44,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#1a1917",
+      "ratio": 5.42,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Subscribe to Plus",
+      "tag": "A",
+      "href": "/billing/subscriptions",
+      "box": {
+       "x": 439,
+       "y": 446,
+       "w": 145,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#1a1917",
+      "bg": "#ecebe6",
+      "ratio": 14.72,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Subscribe to Pro",
+      "tag": "A",
+      "href": "/billing/subscriptions",
+      "box": {
+       "x": 587,
+       "y": 446,
+       "w": 140,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#1a1917",
+      "bg": "#ecebe6",
+      "ratio": 14.72,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Close",
+      "tag": "A",
+      "href": "/laws/bns",
+      "box": {
+       "x": 439,
+       "y": 499,
+       "w": 402,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#ecebe6",
+      "bg": "#1a1917",
+      "ratio": 14.72,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "labelledBy": "pg-add-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-sheet-close:\u2715",
+    "alert": null,
+    "panelBox": {
+     "x": 410,
+     "y": 328,
+     "w": 460,
+     "h": 244
+    },
+    "warning": null,
+    "hasMonthEyebrow": false,
+    "eyebrow": null,
+    "hasPrice": false,
+    "hScroll": false
+   },
+   "keyboard": {
+    "tabs": [
+     {
+      "inDialog": true,
+      "el": "A.pg-btn",
+      "text": "Subscribe to Plus",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-btn",
+      "text": "Subscribe to Pro",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Close",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-btn",
+      "text": "Subscribe to Plus",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-btn",
+      "text": "Subscribe to Pro",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Close",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-btn",
+      "text": "Subscribe to Plus",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-btn",
+      "text": "Subscribe to Pro",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     }
+    ],
+    "containment": true,
+    "outlined": 10,
+    "afterEscape": {
+     "inDialog": false,
+     "el": "A.ActHead-btn",
+     "text": "All 3 law choices used",
+     "focusVisible": true,
+     "outline": "2px solid",
+     "dialogOpen": false
+    },
+    "focusReturned": {
+     "isTrigger": true,
+     "text": "All 3 law choices used"
+    }
+   }
+  }
+ ],
+ "note": "free3-limit-bns rows recaptured on bd9347a after the gate-marker fix; all other rows on 877a7d3 (CSS-only difference: the hidden marker line)"
+}

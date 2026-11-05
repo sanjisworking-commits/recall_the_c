@@ -1,0 +1,1266 @@
+{
+ "label": "m2r-plus",
+ "base": "http://127.0.0.1:8916",
+ "viewer": "plus",
+ "tier_model": "choices",
+ "captured_at": "2026-11-06T01:43:55+0530",
+ "chrome": "Google Chrome 156.0.8078.80",
+ "rows": [
+  {
+   "key": "bnss",
+   "path": "/laws/bnss",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "setup": [],
+   "head": {
+    "url": "/laws/bnss",
+    "kind": "eligible_to_add",
+    "membership": "",
+    "primary": {
+     "t": "+ Add to Playground",
+     "href": "/playground/laws/bnss/add",
+     "sheet": true,
+     "box": {
+      "x": 18,
+      "y": 146,
+      "w": 354,
+      "h": 48
+     }
+    },
+    "badge": null,
+    "note": null,
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "+ Add to Playground",
+      "tag": "A",
+      "href": "/playground/laws/bnss/add",
+      "box": {
+       "x": 18,
+       "y": 146,
+       "w": 354,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": false,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-plus_plus_bnss_390x844_light_head.png",
+     "sha256": "89d8b6210cffd59f10ceea99f62cf6b0634da801ef20c59a3b00665d1a737ddc"
+    },
+    "sheet": {
+     "file": "m2r-plus_plus_bnss_390x844_light_sheet.png",
+     "sha256": "11ebc8464f70cf0c4be3be36b97739107649e8d00161fe7af3bbf4a90d490836"
+    },
+    "scope": {
+     "file": "m2r-plus_plus_bnss_390x844_light_scope.png",
+     "sha256": "50ec84f95891adbe3be678be95aa3931d6343e0c56fbe25bc31fbc5dc5b25fb4"
+    }
+   },
+   "sheet_opened": true,
+   "sheet": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "eligible_to_add",
+    "step": "confirm",
+    "headings": [
+     "Add to Playground"
+    ],
+    "texts": [
+     "NOVEMBER",
+     "The BNSS, 2023 joins this month's Playground \u2014 learnable, verbatim. The reader itself never changes."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "Add to Playground",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 34,
+       "y": 709,
+       "w": 322,
+       "h": 50
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Cancel",
+      "tag": "A",
+      "href": "/laws/bnss",
+      "box": {
+       "x": 34,
+       "y": 768,
+       "w": 322,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "labelledBy": "pg-add-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-sheet-close:\u2715",
+    "alert": null,
+    "panelBox": {
+     "x": 16,
+     "y": 573,
+     "w": 358,
+     "h": 271
+    },
+    "warning": null,
+    "hasMonthEyebrow": false,
+    "eyebrow": "NOVEMBER",
+    "hasPrice": false,
+    "hScroll": false
+   },
+   "keyboard": {
+    "tabs": [
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add to Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Cancel",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add to Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Cancel",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add to Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Cancel",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add to Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     }
+    ],
+    "containment": true,
+    "outlined": 10,
+    "afterEscape": {
+     "inDialog": false,
+     "el": "A.ActHead-btn",
+     "text": "+ Add to Playground",
+     "focusVisible": true,
+     "outline": "2px solid",
+     "dialogOpen": false
+    },
+    "focusReturned": {
+     "isTrigger": true,
+     "text": "+ Add to Playground"
+    }
+   },
+   "scope": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "eligible_to_add",
+    "step": "scope",
+    "headings": [
+     "Add The BNSS, 2023"
+    ],
+    "texts": [
+     "Choose how much of The BNSS, 2023 enters your recall schedule.",
+     "Nothing is scheduled yet \u2014 provisions activate the first time you learn them."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "Entire Act \u203a",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 34,
+       "y": 578,
+       "w": 322,
+       "h": 52
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Choose sections Pick sections \u2014 or open one and pick single clauses \u203a",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 34,
+       "y": 639,
+       "w": 322,
+       "h": 76
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Cancel",
+      "tag": "A",
+      "href": "/laws/bnss",
+      "box": {
+       "x": 34,
+       "y": 768,
+       "w": 322,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "labelledBy": "pg-add-scope-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-add-choice:Entire Act \u203a",
+    "alert": null,
+    "panelBox": {
+     "x": 16,
+     "y": 465,
+     "w": 358,
+     "h": 379
+    },
+    "warning": null,
+    "hasMonthEyebrow": false,
+    "eyebrow": "November",
+    "hasPrice": false,
+    "hScroll": false,
+    "confirmClicked": true
+   }
+  },
+  {
+   "key": "bnss",
+   "path": "/laws/bnss",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "setup": [],
+   "head": {
+    "url": "/laws/bnss",
+    "kind": "eligible_to_add",
+    "membership": "",
+    "primary": {
+     "t": "+ Add to Playground",
+     "href": "/playground/laws/bnss/add",
+     "sheet": true,
+     "box": {
+      "x": 18,
+      "y": 146,
+      "w": 354,
+      "h": 48
+     }
+    },
+    "badge": null,
+    "note": null,
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "+ Add to Playground",
+      "tag": "A",
+      "href": "/playground/laws/bnss/add",
+      "box": {
+       "x": 18,
+       "y": 146,
+       "w": 354,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": false,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-plus_plus_bnss_390x844_dark_head.png",
+     "sha256": "85a62c368ddd216aea3144f04c531c8d8ed844b29b33556c5bb986ae82c6abbd"
+    },
+    "sheet": {
+     "file": "m2r-plus_plus_bnss_390x844_dark_sheet.png",
+     "sha256": "2259077ae0b5ba9fd88c3cfe3eb7d35dffa8ebcd5d532b21f2b42040cbda6246"
+    },
+    "scope": {
+     "file": "m2r-plus_plus_bnss_390x844_dark_scope.png",
+     "sha256": "f8988ccdf4825ac0e036fdf9501e78574ea8461863266a93bcb71e5a6e456454"
+    }
+   },
+   "sheet_opened": true,
+   "sheet": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "eligible_to_add",
+    "step": "confirm",
+    "headings": [
+     "Add to Playground"
+    ],
+    "texts": [
+     "NOVEMBER",
+     "The BNSS, 2023 joins this month's Playground \u2014 learnable, verbatim. The reader itself never changes."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "Add to Playground",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 34,
+       "y": 709,
+       "w": 322,
+       "h": 50
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ecebe6",
+      "ratio": 15.43,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Cancel",
+      "tag": "A",
+      "href": "/laws/bnss",
+      "box": {
+       "x": 34,
+       "y": 768,
+       "w": 322,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#ecebe6",
+      "bg": "#1a1917",
+      "ratio": 14.72,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "labelledBy": "pg-add-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-sheet-close:\u2715",
+    "alert": null,
+    "panelBox": {
+     "x": 16,
+     "y": 573,
+     "w": 358,
+     "h": 271
+    },
+    "warning": null,
+    "hasMonthEyebrow": false,
+    "eyebrow": "NOVEMBER",
+    "hasPrice": false,
+    "hScroll": false
+   },
+   "keyboard": {
+    "tabs": [
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add to Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Cancel",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add to Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Cancel",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add to Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Cancel",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add to Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     }
+    ],
+    "containment": true,
+    "outlined": 10,
+    "afterEscape": {
+     "inDialog": false,
+     "el": "A.ActHead-btn",
+     "text": "+ Add to Playground",
+     "focusVisible": true,
+     "outline": "2px solid",
+     "dialogOpen": false
+    },
+    "focusReturned": {
+     "isTrigger": true,
+     "text": "+ Add to Playground"
+    }
+   },
+   "scope": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "eligible_to_add",
+    "step": "scope",
+    "headings": [
+     "Add The BNSS, 2023"
+    ],
+    "texts": [
+     "Choose how much of The BNSS, 2023 enters your recall schedule.",
+     "Nothing is scheduled yet \u2014 provisions activate the first time you learn them."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "Entire Act \u203a",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 34,
+       "y": 578,
+       "w": 322,
+       "h": 52
+      },
+      "meets44": true,
+      "fg": "#ecebe6",
+      "bg": "#1a1917",
+      "ratio": 14.72,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Choose sections Pick sections \u2014 or open one and pick single clauses \u203a",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 34,
+       "y": 639,
+       "w": 322,
+       "h": 76
+      },
+      "meets44": true,
+      "fg": "#ecebe6",
+      "bg": "#1a1917",
+      "ratio": 14.72,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Cancel",
+      "tag": "A",
+      "href": "/laws/bnss",
+      "box": {
+       "x": 34,
+       "y": 768,
+       "w": 322,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#ecebe6",
+      "bg": "#1a1917",
+      "ratio": 14.72,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "labelledBy": "pg-add-scope-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-add-choice:Entire Act \u203a",
+    "alert": null,
+    "panelBox": {
+     "x": 16,
+     "y": 465,
+     "w": 358,
+     "h": 379
+    },
+    "warning": null,
+    "hasMonthEyebrow": false,
+    "eyebrow": "November",
+    "hasPrice": false,
+    "hScroll": false,
+    "confirmClicked": true
+   }
+  },
+  {
+   "key": "bnss",
+   "path": "/laws/bnss",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "setup": [],
+   "head": {
+    "url": "/laws/bnss",
+    "kind": "eligible_to_add",
+    "membership": "",
+    "primary": {
+     "t": "+ Add to Playground",
+     "href": "/playground/laws/bnss/add",
+     "sheet": true,
+     "box": {
+      "x": 860,
+      "y": 157,
+      "w": 380,
+      "h": 48
+     }
+    },
+    "badge": null,
+    "note": null,
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "+ Add to Playground",
+      "tag": "A",
+      "href": "/playground/laws/bnss/add",
+      "box": {
+       "x": 860,
+       "y": 157,
+       "w": 380,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": false,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-plus_plus_bnss_1280x900_light_head.png",
+     "sha256": "0fb375b1cd4b4fbe79d50ec753cc261e974edf64bf99634f66c52d6567e03914"
+    },
+    "sheet": {
+     "file": "m2r-plus_plus_bnss_1280x900_light_sheet.png",
+     "sha256": "fa647b828abe0dacc44e4f9f566d45e520dbd696cb991a4f0a10c8e03bc72f9e"
+    },
+    "scope": {
+     "file": "m2r-plus_plus_bnss_1280x900_light_scope.png",
+     "sha256": "53932955d9e5ca2f93d4b2fa7528ff6d2ce0af1e50136176f466b63079c30c21"
+    }
+   },
+   "sheet_opened": true,
+   "sheet": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "eligible_to_add",
+    "step": "confirm",
+    "headings": [
+     "Add to Playground"
+    ],
+    "texts": [
+     "NOVEMBER",
+     "The BNSS, 2023 joins this month's Playground \u2014 learnable, verbatim. The reader itself never changes."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "Add to Playground",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 439,
+       "y": 455,
+       "w": 402,
+       "h": 50
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Cancel",
+      "tag": "A",
+      "href": "/laws/bnss",
+      "box": {
+       "x": 439,
+       "y": 514,
+       "w": 402,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "labelledBy": "pg-add-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-sheet-close:\u2715",
+    "alert": null,
+    "panelBox": {
+     "x": 410,
+     "y": 313,
+     "w": 460,
+     "h": 274
+    },
+    "warning": null,
+    "hasMonthEyebrow": false,
+    "eyebrow": "NOVEMBER",
+    "hasPrice": false,
+    "hScroll": false
+   },
+   "keyboard": {
+    "tabs": [
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add to Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Cancel",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add to Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Cancel",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add to Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Cancel",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add to Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     }
+    ],
+    "containment": true,
+    "outlined": 10,
+    "afterEscape": {
+     "inDialog": false,
+     "el": "A.ActHead-btn",
+     "text": "+ Add to Playground",
+     "focusVisible": true,
+     "outline": "2px solid",
+     "dialogOpen": false
+    },
+    "focusReturned": {
+     "isTrigger": true,
+     "text": "+ Add to Playground"
+    }
+   },
+   "scope": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "eligible_to_add",
+    "step": "scope",
+    "headings": [
+     "Add The BNSS, 2023"
+    ],
+    "texts": [
+     "Choose how much of The BNSS, 2023 enters your recall schedule.",
+     "Nothing is scheduled yet \u2014 provisions activate the first time you learn them."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "Entire Act \u203a",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 439,
+       "y": 375,
+       "w": 402,
+       "h": 52
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Choose sections Pick sections \u2014 or open one and pick single clauses \u203a",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 439,
+       "y": 436,
+       "w": 402,
+       "h": 76
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Cancel",
+      "tag": "A",
+      "href": "/laws/bnss",
+      "box": {
+       "x": 439,
+       "y": 549,
+       "w": 402,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "labelledBy": "pg-add-scope-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-add-choice:Entire Act \u203a",
+    "alert": null,
+    "panelBox": {
+     "x": 410,
+     "y": 278,
+     "w": 460,
+     "h": 344
+    },
+    "warning": null,
+    "hasMonthEyebrow": false,
+    "eyebrow": "November",
+    "hasPrice": false,
+    "hScroll": false,
+    "confirmClicked": true
+   }
+  },
+  {
+   "key": "bnss",
+   "path": "/laws/bnss",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "setup": [],
+   "head": {
+    "url": "/laws/bnss",
+    "kind": "eligible_to_add",
+    "membership": "",
+    "primary": {
+     "t": "+ Add to Playground",
+     "href": "/playground/laws/bnss/add",
+     "sheet": true,
+     "box": {
+      "x": 860,
+      "y": 157,
+      "w": 380,
+      "h": 48
+     }
+    },
+    "badge": null,
+    "note": null,
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "+ Add to Playground",
+      "tag": "A",
+      "href": "/playground/laws/bnss/add",
+      "box": {
+       "x": 860,
+       "y": 157,
+       "w": 380,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": false,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-plus_plus_bnss_1280x900_dark_head.png",
+     "sha256": "689c0d7db0058d34c6931efe3e1347e660e46d83b46e987407d888723063ee9c"
+    },
+    "sheet": {
+     "file": "m2r-plus_plus_bnss_1280x900_dark_sheet.png",
+     "sha256": "13428a3b7adacaddd7083190130380ac914569035627e41285433ee218400aec"
+    },
+    "scope": {
+     "file": "m2r-plus_plus_bnss_1280x900_dark_scope.png",
+     "sha256": "4362f10e9da96615769b297cdda2c71c8c24c28a2f308f4a3f32561ee9babd16"
+    }
+   },
+   "sheet_opened": true,
+   "sheet": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "eligible_to_add",
+    "step": "confirm",
+    "headings": [
+     "Add to Playground"
+    ],
+    "texts": [
+     "NOVEMBER",
+     "The BNSS, 2023 joins this month's Playground \u2014 learnable, verbatim. The reader itself never changes."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "Add to Playground",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 439,
+       "y": 455,
+       "w": 402,
+       "h": 50
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ecebe6",
+      "ratio": 15.43,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Cancel",
+      "tag": "A",
+      "href": "/laws/bnss",
+      "box": {
+       "x": 439,
+       "y": 514,
+       "w": 402,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#ecebe6",
+      "bg": "#1a1917",
+      "ratio": 14.72,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "labelledBy": "pg-add-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-sheet-close:\u2715",
+    "alert": null,
+    "panelBox": {
+     "x": 410,
+     "y": 313,
+     "w": 460,
+     "h": 274
+    },
+    "warning": null,
+    "hasMonthEyebrow": false,
+    "eyebrow": "NOVEMBER",
+    "hasPrice": false,
+    "hScroll": false
+   },
+   "keyboard": {
+    "tabs": [
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add to Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Cancel",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add to Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Cancel",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add to Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Cancel",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-add-primary",
+      "text": "Add to Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     }
+    ],
+    "containment": true,
+    "outlined": 10,
+    "afterEscape": {
+     "inDialog": false,
+     "el": "A.ActHead-btn",
+     "text": "+ Add to Playground",
+     "focusVisible": true,
+     "outline": "2px solid",
+     "dialogOpen": false
+    },
+    "focusReturned": {
+     "isTrigger": true,
+     "text": "+ Add to Playground"
+    }
+   },
+   "scope": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "eligible_to_add",
+    "step": "scope",
+    "headings": [
+     "Add The BNSS, 2023"
+    ],
+    "texts": [
+     "Choose how much of The BNSS, 2023 enters your recall schedule.",
+     "Nothing is scheduled yet \u2014 provisions activate the first time you learn them."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "Entire Act \u203a",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 439,
+       "y": 375,
+       "w": 402,
+       "h": 52
+      },
+      "meets44": true,
+      "fg": "#ecebe6",
+      "bg": "#1a1917",
+      "ratio": 14.72,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Choose sections Pick sections \u2014 or open one and pick single clauses \u203a",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 439,
+       "y": 436,
+       "w": 402,
+       "h": 76
+      },
+      "meets44": true,
+      "fg": "#ecebe6",
+      "bg": "#1a1917",
+      "ratio": 14.72,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Cancel",
+      "tag": "A",
+      "href": "/laws/bnss",
+      "box": {
+       "x": 439,
+       "y": 549,
+       "w": 402,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#ecebe6",
+      "bg": "#1a1917",
+      "ratio": 14.72,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "labelledBy": "pg-add-scope-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-add-choice:Entire Act \u203a",
+    "alert": null,
+    "panelBox": {
+     "x": 410,
+     "y": 278,
+     "w": 460,
+     "h": 344
+    },
+    "warning": null,
+    "hasMonthEyebrow": false,
+    "eyebrow": "November",
+    "hasPrice": false,
+    "hScroll": false,
+    "confirmClicked": true
+   }
+  }
+ ]
+}

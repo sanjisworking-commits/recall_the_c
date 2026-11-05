@@ -1,0 +1,978 @@
+{
+ "label": "m2r-guest",
+ "base": "http://127.0.0.1:8916",
+ "viewer": "guest",
+ "tier_model": "choices",
+ "captured_at": "2026-11-06T01:41:22+0530",
+ "chrome": "Google Chrome 156.0.8078.80",
+ "rows": [
+  {
+   "key": "ndps",
+   "path": "/laws/ndps",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "setup": [],
+   "head": {
+    "url": "/laws/ndps",
+    "kind": "guest",
+    "membership": "",
+    "primary": {
+     "t": "Sign in to use Playground",
+     "href": "/playground/laws/ndps/add",
+     "sheet": true,
+     "box": {
+      "x": 18,
+      "y": 146,
+      "w": 354,
+      "h": 48
+     }
+    },
+    "badge": null,
+    "note": "Sign in to add this law to Playground.",
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "Sign in to use Playground",
+      "tag": "A",
+      "href": "/playground/laws/ndps/add",
+      "box": {
+       "x": 18,
+       "y": 146,
+       "w": 354,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": false,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-guest_guest_ndps_390x844_light_head.png",
+     "sha256": "9f02122c4e9a95d8243b6b77fb5736d7ca590391a02a5e866e16529d8f9c5910"
+    },
+    "sheet": {
+     "file": "m2r-guest_guest_ndps_390x844_light_sheet.png",
+     "sha256": "522ab5b515eed5ee37c3094449514e69c8766cfb999e7efe7240d935ab78a2e4"
+    }
+   },
+   "sheet_opened": true,
+   "sheet": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "guest",
+    "step": "confirm",
+    "headings": [
+     "Add to Playground"
+    ],
+    "texts": [
+     "Playground needs an account. Reading The NDPS Act, 1985 stays free \u2014 sign in and you\u2019ll come right back here."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "\u2715",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 322,
+       "y": 605,
+       "w": 44,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#ffffff",
+      "ratio": 3.24,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Sign in",
+      "tag": "A",
+      "href": "/login?next=/playground/laws/ndps/add",
+      "box": {
+       "x": 34,
+       "y": 709,
+       "w": 322,
+       "h": 50
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Create an account",
+      "tag": "A",
+      "href": "/login?next=/playground/laws/ndps/add",
+      "box": {
+       "x": 34,
+       "y": 768,
+       "w": 322,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [
+     "\u2715=3.24"
+    ],
+    "labelledBy": "pg-add-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-sheet-close:\u2715",
+    "alert": null,
+    "panelBox": {
+     "x": 16,
+     "y": 597,
+     "w": 358,
+     "h": 247
+    },
+    "warning": null,
+    "hasMonthEyebrow": false,
+    "eyebrow": null,
+    "hasPrice": false,
+    "hScroll": false
+   },
+   "keyboard": {
+    "tabs": [
+     {
+      "inDialog": true,
+      "el": "A.pg-add-primary",
+      "text": "Sign in",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Create an account",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-primary",
+      "text": "Sign in",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Create an account",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-primary",
+      "text": "Sign in",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Create an account",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-primary",
+      "text": "Sign in",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     }
+    ],
+    "containment": true,
+    "outlined": 10,
+    "afterEscape": {
+     "inDialog": false,
+     "el": "A.ActHead-btn",
+     "text": "Sign in to use Playground",
+     "focusVisible": true,
+     "outline": "2px solid",
+     "dialogOpen": false
+    },
+    "focusReturned": {
+     "isTrigger": true,
+     "text": "Sign in to use Playground"
+    }
+   }
+  },
+  {
+   "key": "ndps",
+   "path": "/laws/ndps",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "setup": [],
+   "head": {
+    "url": "/laws/ndps",
+    "kind": "guest",
+    "membership": "",
+    "primary": {
+     "t": "Sign in to use Playground",
+     "href": "/playground/laws/ndps/add",
+     "sheet": true,
+     "box": {
+      "x": 18,
+      "y": 146,
+      "w": 354,
+      "h": 48
+     }
+    },
+    "badge": null,
+    "note": "Sign in to add this law to Playground.",
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "Sign in to use Playground",
+      "tag": "A",
+      "href": "/playground/laws/ndps/add",
+      "box": {
+       "x": 18,
+       "y": 146,
+       "w": 354,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": false,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-guest_guest_ndps_390x844_dark_head.png",
+     "sha256": "cc8847b99fb01f47ff07e2c4b50d861e28a975267d016a7591bdaadfca6ee4a1"
+    },
+    "sheet": {
+     "file": "m2r-guest_guest_ndps_390x844_dark_sheet.png",
+     "sha256": "eac72ad3e460bea7e73670fe33243aeaa2b7bc53e48fbfacd1f57a995627193a"
+    }
+   },
+   "sheet_opened": true,
+   "sheet": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "guest",
+    "step": "confirm",
+    "headings": [
+     "Add to Playground"
+    ],
+    "texts": [
+     "Playground needs an account. Reading The NDPS Act, 1985 stays free \u2014 sign in and you\u2019ll come right back here."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "\u2715",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 322,
+       "y": 605,
+       "w": 44,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#1a1917",
+      "ratio": 5.42,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Sign in",
+      "tag": "A",
+      "href": "/login?next=/playground/laws/ndps/add",
+      "box": {
+       "x": 34,
+       "y": 709,
+       "w": 322,
+       "h": 50
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ecebe6",
+      "ratio": 15.43,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Create an account",
+      "tag": "A",
+      "href": "/login?next=/playground/laws/ndps/add",
+      "box": {
+       "x": 34,
+       "y": 768,
+       "w": 322,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#ecebe6",
+      "bg": "#1a1917",
+      "ratio": 14.72,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "labelledBy": "pg-add-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-sheet-close:\u2715",
+    "alert": null,
+    "panelBox": {
+     "x": 16,
+     "y": 597,
+     "w": 358,
+     "h": 247
+    },
+    "warning": null,
+    "hasMonthEyebrow": false,
+    "eyebrow": null,
+    "hasPrice": false,
+    "hScroll": false
+   },
+   "keyboard": {
+    "tabs": [
+     {
+      "inDialog": true,
+      "el": "A.pg-add-primary",
+      "text": "Sign in",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Create an account",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-primary",
+      "text": "Sign in",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Create an account",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-primary",
+      "text": "Sign in",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Create an account",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-primary",
+      "text": "Sign in",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     }
+    ],
+    "containment": true,
+    "outlined": 10,
+    "afterEscape": {
+     "inDialog": false,
+     "el": "A.ActHead-btn",
+     "text": "Sign in to use Playground",
+     "focusVisible": true,
+     "outline": "2px solid",
+     "dialogOpen": false
+    },
+    "focusReturned": {
+     "isTrigger": true,
+     "text": "Sign in to use Playground"
+    }
+   }
+  },
+  {
+   "key": "ndps",
+   "path": "/laws/ndps",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "setup": [],
+   "head": {
+    "url": "/laws/ndps",
+    "kind": "guest",
+    "membership": "",
+    "primary": {
+     "t": "Sign in to use Playground",
+     "href": "/playground/laws/ndps/add",
+     "sheet": true,
+     "box": {
+      "x": 860,
+      "y": 130,
+      "w": 380,
+      "h": 48
+     }
+    },
+    "badge": null,
+    "note": "Sign in to add this law to Playground.",
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "Sign in to use Playground",
+      "tag": "A",
+      "href": "/playground/laws/ndps/add",
+      "box": {
+       "x": 860,
+       "y": 130,
+       "w": 380,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": false,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-guest_guest_ndps_1280x900_light_head.png",
+     "sha256": "cf9297614e0b75d17f6e5cc2b0c9e1642b07cf3ba0e292e13819ad1e47d3fdd4"
+    },
+    "sheet": {
+     "file": "m2r-guest_guest_ndps_1280x900_light_sheet.png",
+     "sha256": "d522040515312fa1a4ec32b15babdbbbf580f1e2726c42e89e7f308c1eedb68d"
+    }
+   },
+   "sheet_opened": true,
+   "sheet": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "guest",
+    "step": "confirm",
+    "headings": [
+     "Add to Playground"
+    ],
+    "texts": [
+     "Playground needs an account. Reading The NDPS Act, 1985 stays free \u2014 sign in and you\u2019ll come right back here."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "\u2715",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 811,
+       "y": 340,
+       "w": 44,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#ffffff",
+      "ratio": 3.24,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Sign in",
+      "tag": "A",
+      "href": "/login?next=/playground/laws/ndps/add",
+      "box": {
+       "x": 439,
+       "y": 443,
+       "w": 402,
+       "h": 50
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Create an account",
+      "tag": "A",
+      "href": "/login?next=/playground/laws/ndps/add",
+      "box": {
+       "x": 439,
+       "y": 502,
+       "w": 402,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ffffff",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [
+     "\u2715=3.24"
+    ],
+    "labelledBy": "pg-add-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-sheet-close:\u2715",
+    "alert": null,
+    "panelBox": {
+     "x": 410,
+     "y": 325,
+     "w": 460,
+     "h": 250
+    },
+    "warning": null,
+    "hasMonthEyebrow": false,
+    "eyebrow": null,
+    "hasPrice": false,
+    "hScroll": false
+   },
+   "keyboard": {
+    "tabs": [
+     {
+      "inDialog": true,
+      "el": "A.pg-add-primary",
+      "text": "Sign in",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Create an account",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-primary",
+      "text": "Sign in",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Create an account",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-primary",
+      "text": "Sign in",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Create an account",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-primary",
+      "text": "Sign in",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     }
+    ],
+    "containment": true,
+    "outlined": 10,
+    "afterEscape": {
+     "inDialog": false,
+     "el": "A.ActHead-btn",
+     "text": "Sign in to use Playground",
+     "focusVisible": true,
+     "outline": "2px solid",
+     "dialogOpen": false
+    },
+    "focusReturned": {
+     "isTrigger": true,
+     "text": "Sign in to use Playground"
+    }
+   }
+  },
+  {
+   "key": "ndps",
+   "path": "/laws/ndps",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "setup": [],
+   "head": {
+    "url": "/laws/ndps",
+    "kind": "guest",
+    "membership": "",
+    "primary": {
+     "t": "Sign in to use Playground",
+     "href": "/playground/laws/ndps/add",
+     "sheet": true,
+     "box": {
+      "x": 860,
+      "y": 130,
+      "w": 380,
+      "h": 48
+     }
+    },
+    "badge": null,
+    "note": "Sign in to add this law to Playground.",
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "Sign in to use Playground",
+      "tag": "A",
+      "href": "/playground/laws/ndps/add",
+      "box": {
+       "x": 860,
+       "y": 130,
+       "w": 380,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": false,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r-guest_guest_ndps_1280x900_dark_head.png",
+     "sha256": "ca4e0e26d43fb52e5b038ae5ccd77ea837b04ab778a1a41d643b558bb7d806bd"
+    },
+    "sheet": {
+     "file": "m2r-guest_guest_ndps_1280x900_dark_sheet.png",
+     "sha256": "5fda657babff7090fea3b26d54c8a848963831b74b87eb9f4dfc6bd639d40807"
+    }
+   },
+   "sheet_opened": true,
+   "sheet": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "guest",
+    "step": "confirm",
+    "headings": [
+     "Add to Playground"
+    ],
+    "texts": [
+     "Playground needs an account. Reading The NDPS Act, 1985 stays free \u2014 sign in and you\u2019ll come right back here."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "\u2715",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 811,
+       "y": 340,
+       "w": 44,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#1a1917",
+      "ratio": 5.42,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Sign in",
+      "tag": "A",
+      "href": "/login?next=/playground/laws/ndps/add",
+      "box": {
+       "x": 439,
+       "y": 443,
+       "w": 402,
+       "h": 50
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#ecebe6",
+      "ratio": 15.43,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Create an account",
+      "tag": "A",
+      "href": "/login?next=/playground/laws/ndps/add",
+      "box": {
+       "x": 439,
+       "y": 502,
+       "w": 402,
+       "h": 46
+      },
+      "meets44": true,
+      "fg": "#ecebe6",
+      "bg": "#1a1917",
+      "ratio": 14.72,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "labelledBy": "pg-add-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-sheet-close:\u2715",
+    "alert": null,
+    "panelBox": {
+     "x": 410,
+     "y": 325,
+     "w": 460,
+     "h": 250
+    },
+    "warning": null,
+    "hasMonthEyebrow": false,
+    "eyebrow": null,
+    "hasPrice": false,
+    "hScroll": false
+   },
+   "keyboard": {
+    "tabs": [
+     {
+      "inDialog": true,
+      "el": "A.pg-add-primary",
+      "text": "Sign in",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Create an account",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-primary",
+      "text": "Sign in",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Create an account",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-primary",
+      "text": "Sign in",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-secondary",
+      "text": "Create an account",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-primary",
+      "text": "Sign in",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     }
+    ],
+    "containment": true,
+    "outlined": 10,
+    "afterEscape": {
+     "inDialog": false,
+     "el": "A.ActHead-btn",
+     "text": "Sign in to use Playground",
+     "focusVisible": true,
+     "outline": "2px solid",
+     "dialogOpen": false
+    },
+    "focusReturned": {
+     "isTrigger": true,
+     "text": "Sign in to use Playground"
+    }
+   }
+  }
+ ]
+}
