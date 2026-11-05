@@ -514,7 +514,8 @@ def test_halted_subscription_uses_shared_predicate_and_existing_routes() -> None
     assert '[data-expired-subscription="desktop"]' in css
     assert ".halted-sub-desk" not in css
     base = BASE.read_text(encoding="utf-8")
-    assert "halted_billing" in base
+    assert "halted_billing" not in base  # M1-R (PR pg-m1r-shell-labels): the per-route header flag chain is gone
+    assert "shell_account_status" in base  # M1-R: one snapshot-driven label
     assert "halted_subscription" in base
     # M1-R (PR pg-m1r-shell-labels): the header label is one snapshot function in web/shell.py;
     # base.html no longer reads a per-route halted_header_status flag.

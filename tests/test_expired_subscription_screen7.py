@@ -495,7 +495,8 @@ def test_expired_subscription_uses_shared_predicate_and_existing_create() -> Non
     assert '[data-expired-subscription="desktop"]' in css
     assert 'data-plus-subscription="desktop"' in css
     base = BASE.read_text(encoding="utf-8")
-    assert "expired_billing" in base
+    assert "expired_billing" not in base  # M1-R (PR pg-m1r-shell-labels): the per-route header flag chain is gone
+    assert "shell_account_status" in base  # M1-R: one snapshot-driven label
     # M1-R (PR pg-m1r-shell-labels): the header label is one snapshot function in web/shell.py;
     # base.html no longer reads a per-route expired_header_status flag.
     assert "expired_header_status" not in base
@@ -503,7 +504,8 @@ def test_expired_subscription_uses_shared_predicate_and_existing_create() -> Non
     assert "snapshot_is_expired_subscriber(snapshot)" in shell
     assert "snapshot.playground_block_reason" in shell
     assert ").title" in shell
-    assert "plus_billing" in base
+    assert "plus_billing" not in base  # M1-R (PR pg-m1r-shell-labels): the per-route header flag chain is gone
+    assert "shell_account_status" in base  # M1-R: one snapshot-driven label
     checkout = CHECKOUT.read_text(encoding="utf-8")
     assert "data-expired-subscription" not in checkout
     assert SubscriptionPlanIds is not None

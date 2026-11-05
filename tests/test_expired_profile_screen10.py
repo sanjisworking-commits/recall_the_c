@@ -599,8 +599,10 @@ def test_expired_profile_marker_uses_shared_predicate() -> None:
     assert 'cta_label="Resume Playground"' in ended
     assert "cta_href=PLAYGROUND_BILLING_PATH" in ended
     base = BASE.read_text(encoding="utf-8")
-    assert "expired_profile_chrome" in base
-    assert "plus_profile_chrome" in base
+    assert "expired_profile_chrome" not in base  # M1-R (PR pg-m1r-shell-labels): the per-route header flag chain is gone
+    assert "shell_account_status" in base  # M1-R: one snapshot-driven label
+    assert "plus_profile_chrome" not in base  # M1-R (PR pg-m1r-shell-labels): the per-route header flag chain is gone
+    assert "shell_account_status" in base  # M1-R: one snapshot-driven label
     assert "playground.css?v=pg53" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-expired-profile="desktop"' in css

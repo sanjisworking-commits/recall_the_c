@@ -669,9 +669,12 @@ def test_halted_settings_marker_uses_shared_predicate() -> None:
     assert "def request_is_halted_subscriber" in DEPS.read_text(encoding="utf-8")
     assert 'subscription_status == "halted"' in DEPS.read_text(encoding="utf-8")
     base = BASE.read_text(encoding="utf-8")
-    assert "halted_settings_chrome" in base
-    assert "plus_settings_chrome" in base
-    assert "expired_settings_chrome" in base
+    assert "halted_settings_chrome" not in base  # M1-R (PR pg-m1r-shell-labels): the per-route header flag chain is gone
+    assert "shell_account_status" in base  # M1-R: one snapshot-driven label
+    assert "plus_settings_chrome" not in base  # M1-R (PR pg-m1r-shell-labels): the per-route header flag chain is gone
+    assert "shell_account_status" in base  # M1-R: one snapshot-driven label
+    assert "expired_settings_chrome" not in base  # M1-R (PR pg-m1r-shell-labels): the per-route header flag chain is gone
+    assert "shell_account_status" in base  # M1-R: one snapshot-driven label
     assert LIVE_HEADING not in base
     assert "/resume" not in base
     assert "playground.css?v=pg53" in base
