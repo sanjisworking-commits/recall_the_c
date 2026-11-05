@@ -10,3 +10,7 @@ These four files must sit in the same folder. The `.dc.html` files load `./suppo
 | [schedules-text.js](schedules-text.js) | Official Schedule extract (`export const SCHEDULES`) |
 
 `python scripts/build_schedules_json.py` copies that extract into `src/constitution_memorizer/web/schedules.json` for the FastAPI Browse pages.
+
+## Acceptance
+
+Shared Browse/Schedules acceptance on `main @ ea15591` (after PR #233): [`docs/design/acceptance/pr233-browse-schedules/ACCEPTANCE.md`](../acceptance/pr233-browse-schedules/ACCEPTANCE.md) — representative captures and probe manifests sit beside it. Carry that evidence forward by SHA; reopen it only when a Schedule page, its data (`schedules.json`), the renderer or shared CSS changes.
