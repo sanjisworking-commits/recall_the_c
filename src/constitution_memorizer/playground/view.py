@@ -83,7 +83,8 @@ CONSTITUTION_HOME_PATH = "/dashboard"
 MANAGE_DEVICES_PATH = "/profile/security/devices"
 BROWSE_LAWS_PATH = "/laws"
 SAVED_PROGRESS_HOME_LIMIT = 8
-_GATE_SELECTOR_TIERS = frozenset({"plus", "pro", "max"})
+# In-Gate plan selectors follow the purchase offer: Max is not sold anew.
+_GATE_SELECTOR_TIERS = frozenset({"plus", "pro"})
 
 TRUST_MARK = "Verbatim, always."
 TRUST_HOME = "Every provision you learn is the Bare Act text, word for word."

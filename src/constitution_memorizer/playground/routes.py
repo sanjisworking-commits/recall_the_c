@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import logging
+from dataclasses import dataclass
+from typing import Any
 
 from fastapi import APIRouter, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse, JSONResponse, RedirectResponse
@@ -10,6 +12,8 @@ from fastapi.templating import Jinja2Templates
 from starlette.responses import Response
 
 from constitution_memorizer.playground.access import (
+    OUTCOME_ROLLED_BACK,
+    OUTCOME_UNKNOWN,
     save_failed_response,
     SCOPE_ENTIRE,
     SCOPE_SECTIONS,
@@ -100,6 +104,7 @@ from constitution_memorizer.playground.service import (
     SelectionRejected,
     activate_law,
     mark_outdated,
+    membership_and_selection_writer,
     parse_selected_locator,
     persist_entire_act_selection,
     require_playground_law,
@@ -329,20 +334,76 @@ def _after_active_redirect(overlay, user_id, law_id: str) -> RedirectResponse:
     return RedirectResponse(url=sections_path(law_id), status_code=303)
 
 
-def _consume_or_rolled_back(request: Request, templates: Jinja2Templates, fn, *, json_mode: bool = False):
-    """B1-F07(a). Run one save-point write; if the repository raised inside
-    its transaction (it rolls back before re-raising), answer 503 with
-    ``outcome=rolled_back`` instead of an opaque 500. Errors *after* the
-    commit are not caught here: they are potentially committed and the
-    client must re-read membership (B1-F07(b))."""
+@dataclass(frozen=True)
+class _SaveOutcome:
+    """One save point's result. Exactly one of the three is meaningful."""
+
+    result: Any = None
+    response: Response | None = None
+    # The write raised but the re-read found the saved state present: the
+    # transaction committed and only the acknowledgement was lost.
+    committed_after_error: bool = False
+
+
+def _saved_state_present(roster, overlay, user_id, law_id: str, *, with_selection: bool) -> bool:
+    """Fresh re-read of what the save point writes: active membership and,
+    when the save carries the selection, a non-empty selection too. Used only
+    after an error, never to decide a normal response."""
+
+    if not roster.is_law_active_this_period(user_id, law_id):
+        return False
+    if not with_selection:
+        return True
+    if overlay.get_item(user_id, law_id) is None:
+        return False
+    return bool(overlay.list_selection(user_id, law_id))
+
+
+def _consume_or_rolled_back(
+    request: Request,
+    templates: Jinja2Templates,
+    fn,
+    *,
+    verify,
+    json_mode: bool = False,
+) -> _SaveOutcome:
+    """B1-F07. Run one save-point write and classify any failure by evidence.
+
+    A non-HTTP exception from ``fn`` proves nothing by itself: the server may
+    have committed before the acknowledgement was lost. ``verify()`` re-reads
+    the saved state (membership, and the selection when the save carries it)
+    on a fresh connection:
+
+    * absent  -> 503 ``outcome=rolled_back`` (verified: nothing was saved)
+    * present -> ``committed_after_error``; the caller finishes as a success
+    * the re-read itself fails -> 503 ``outcome=unknown`` (no rollback claim)
+    """
 
     try:
-        return fn(), None
+        return _SaveOutcome(result=fn())
     except HTTPException:
         raise
-    except Exception:  # noqa: BLE001 — the repository has rolled back
-        logger.exception("playground save rolled back")
-        return None, save_failed_response(request, templates, json_mode=json_mode)
+    except Exception:  # noqa: BLE001 — classified below by re-read
+        logger.exception("playground save raised; verifying outcome by re-read")
+    try:
+        committed = bool(verify())
+    except Exception:  # noqa: BLE001
+        logger.exception("playground save outcome unknown: re-read failed")
+        return _SaveOutcome(
+            response=save_failed_response(
+                request, templates, json_mode=json_mode, outcome=OUTCOME_UNKNOWN
+            )
+        )
+    if committed:
+        logger.warning(
+            "playground save committed; acknowledgement lost (verified by re-read)"
+        )
+        return _SaveOutcome(committed_after_error=True)
+    return _SaveOutcome(
+        response=save_failed_response(
+            request, templates, json_mode=json_mode, outcome=OUTCOME_ROLLED_BACK
+        )
+    )
 
 
 def _selection_mode_allowed(request: Request, access, roster, law_id: str) -> bool:
@@ -983,7 +1044,15 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                 raise HTTPException(status_code=404, detail="Law not found")
             except LocatorError:
                 raise HTTPException(status_code=400, detail="invalid_selection")
-            result, failed = _consume_or_rolled_back(
+            # ``choices``: the choice, the membership and the Entire Act
+            # selection are one transaction (5-19 / B1-F08). ``monthly``
+            # keeps the 3719b9f order (consume, then the overlay write).
+            within = (
+                membership_and_selection_writer(overlay, opened.user_id, law_id, rows)
+                if choices_model
+                else None
+            )
+            saved = _consume_or_rolled_back(
                 request,
                 templates,
                 lambda: roster.confirm_add_law(
@@ -993,10 +1062,20 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                     local_owner=opened.local_owner,
                     can_consume_new_law=opened.can_consume_new_law,
                     has_historical_overlay=overlay.get_item(opened.user_id, law_id) is not None,
+                    within=within,
+                ),
+                verify=lambda: _saved_state_present(
+                    roster, overlay, opened.user_id, law_id, with_selection=choices_model
                 ),
             )
-            if failed is not None:
-                return failed
+            if saved.response is not None:
+                return saved.response
+            if saved.committed_after_error:
+                if not choices_model:
+                    persist_entire_act_selection(overlay, opened.user_id, law_id, act=act)
+                _schedule_playground_calendar_sync(request, opened.user_id)
+                return RedirectResponse(url=law_path(law_id), status_code=303)
+            result = saved.result
             if result.status == RESULT_INELIGIBLE:
                 raise HTTPException(status_code=404, detail="Law not found")
             if not result.ok:
@@ -1004,9 +1083,11 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                     request, templates, opened, result.status
                 )
                 return denied
-            persist_entire_act_selection(
-                overlay, opened.user_id, law_id, act=act
-            )
+            if not result.within_applied:
+                # Already-active repeat (idempotent) or the ``monthly`` order.
+                persist_entire_act_selection(
+                    overlay, opened.user_id, law_id, act=act
+                )
             _schedule_playground_calendar_sync(request, opened.user_id)
             if result.status == RESULT_RE_ADDED:
                 return RedirectResponse(
@@ -1022,7 +1103,7 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             # choice and the membership are written by the sections save
             # point once at least one section is saved (B′).
             return RedirectResponse(url=sections_path(law_id), status_code=303)
-        result, failed = _consume_or_rolled_back(
+        saved = _consume_or_rolled_back(
             request,
             templates,
             lambda: roster.confirm_add_law(
@@ -1033,9 +1114,17 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                 can_consume_new_law=opened.can_consume_new_law,
                 has_historical_overlay=overlay.get_item(opened.user_id, law_id) is not None,
             ),
+            verify=lambda: _saved_state_present(
+                roster, overlay, opened.user_id, law_id, with_selection=False
+            ),
         )
-        if failed is not None:
-            return failed
+        if saved.response is not None:
+            return saved.response
+        if saved.committed_after_error:
+            activate_law(overlay, opened.user_id, law_id)
+            _schedule_playground_calendar_sync(request, opened.user_id)
+            return _after_active_redirect(overlay, opened.user_id, law_id)
+        result = saved.result
         if result.status == RESULT_INELIGIBLE:
             raise HTTPException(status_code=404, detail="Law not found")
         if not result.ok:
@@ -1399,14 +1488,16 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
             )
         except SelectionRejected:
             raise HTTPException(status_code=400, detail="invalid_selection") from None
+        written_in_tx = False
         if selection_mode:
-            # 5-19 B′ save point: at least one section, then the choice and
-            # the membership are written together; the selection follows in
-            # this same request. An abandoned picker writes nothing.
+            # 5-19 B′ save point: at least one section, then the permanent
+            # choice, the active membership and the selected sections are
+            # written in one transaction (B1-F08). An abandoned picker
+            # writes nothing.
             if not rows:
                 return RedirectResponse(url=sections_path(law_id), status_code=303)
             roster = require_roster_service(request)
-            result, failed = _consume_or_rolled_back(
+            saved = _consume_or_rolled_back(
                 request,
                 templates,
                 lambda: roster.confirm_add_law(
@@ -1416,19 +1507,31 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                     local_owner=opened.local_owner,
                     can_consume_new_law=opened.can_consume_new_law,
                     has_historical_overlay=overlay.get_item(opened.user_id, law_id) is not None,
+                    within=membership_and_selection_writer(
+                        overlay, opened.user_id, law_id, rows
+                    ),
+                ),
+                verify=lambda: _saved_state_present(
+                    roster, overlay, opened.user_id, law_id, with_selection=True
                 ),
             )
-            if failed is not None:
-                return failed  # type: ignore[return-value]
+            if saved.response is not None:
+                return saved.response  # type: ignore[return-value]
+            if saved.committed_after_error:
+                _schedule_playground_calendar_sync(request, opened.user_id)
+                return RedirectResponse(url=law_path(law_id), status_code=303)
+            result = saved.result
             if result.status == RESULT_INELIGIBLE:
                 raise HTTPException(status_code=404, detail="Law not found")
             if not result.ok:
                 return consume_blocked_response(  # type: ignore[return-value]
                     request, templates, opened, result.status
                 )
-        if overlay.get_item(opened.user_id, law_id) is None:
-            activate_law(overlay, opened.user_id, law_id)
-        overlay.replace_selection(opened.user_id, law_id, rows)
+            written_in_tx = result.within_applied
+        if not written_in_tx:
+            if overlay.get_item(opened.user_id, law_id) is None:
+                activate_law(overlay, opened.user_id, law_id)
+            overlay.replace_selection(opened.user_id, law_id, rows)
         _schedule_playground_calendar_sync(request, opened.user_id)
         return RedirectResponse(url=law_path(law_id), status_code=303)
 

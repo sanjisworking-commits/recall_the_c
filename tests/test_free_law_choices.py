@@ -689,6 +689,135 @@ def test_failed_save_is_reported_as_rolled_back(tmp_path: Path, monkeypatch: pyt
     assert _add_entire(client, "ndps").status_code == 303
 
 
+def test_first_section_save_is_atomic_when_the_selection_write_fails(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    """5-19 / B1-F08: the permanent choice, the active membership and the
+    selected sections are one transaction. A failure inside the selection
+    write rolls all three back (verified by re-read), and the retry consumes
+    exactly one choice."""
+
+    client = _client(tmp_path / "atomic")
+    before = _facts(client)
+    overlay = client.app.state.playground
+    real = overlay.persist_membership_and_selection_in
+    calls = {"n": 0}
+
+    def fail_after_writing(conn, user_id, law_id, rows, **kwargs):
+        calls["n"] += 1
+        real(conn, user_id, law_id, rows, **kwargs)  # rows are on the open transaction…
+        raise sqlite3.OperationalError("simulated failure writing the selection")
+
+    monkeypatch.setattr(overlay, "persist_membership_and_selection_in", fail_after_writing)
+    resp = _save_sections(client, "ndps", ["1"])
+    assert resp.status_code == 503
+    assert resp.headers.get("X-Playground-Outcome") == "rolled_back"
+    assert "We checked again" in resp.text
+    assert calls["n"] == 1
+    after = _facts(client)
+    assert after["choices"] == before["choices"] == []
+    assert after["items"] == before["items"] == []
+    assert overlay.get_item(USER, "ndps") is None
+    assert overlay.list_selection(USER, "ndps") == []
+    assert not client.app.state.roster.is_law_active_this_period(USER, "ndps")
+
+    monkeypatch.setattr(overlay, "persist_membership_and_selection_in", real)
+    retry = _save_sections(client, "ndps", ["1"])
+    assert retry.status_code == 303, retry.text[:200]
+    assert (retry.headers.get("location") or "").endswith(law_path("ndps"))
+    assert len(_ledger(client)) == 1
+    assert client.app.state.roster.is_law_active_this_period(USER, "ndps")
+    assert [row.source_locator for row in overlay.list_selection(USER, "ndps")]
+
+
+def test_entire_act_save_is_atomic_under_choices(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    client = _client(tmp_path / "entire-atomic")
+    overlay = client.app.state.playground
+    real = overlay.persist_membership_and_selection_in
+
+    def fail(conn, *args, **kwargs):
+        raise sqlite3.OperationalError("simulated failure writing the selection")
+
+    monkeypatch.setattr(overlay, "persist_membership_and_selection_in", fail)
+    resp = _add_entire(client, "ndps")
+    assert resp.status_code == 503
+    assert resp.headers.get("X-Playground-Outcome") == "rolled_back"
+    assert _ledger(client) == []
+    assert _facts(client)["items"] == []
+    assert overlay.get_item(USER, "ndps") is None
+
+    monkeypatch.setattr(overlay, "persist_membership_and_selection_in", real)
+    assert _add_entire(client, "ndps").status_code == 303
+    assert len(_ledger(client)) == 1
+    assert overlay.list_selection(USER, "ndps")
+    # The idempotent repeat takes the already-active path and rewrites nothing.
+    assert _add_entire(client, "ndps").status_code == 303
+    assert len(_ledger(client)) == 1
+
+
+def test_committed_save_with_lost_acknowledgement_is_verified_not_repeated(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    """B1-F07(b): the transaction committed, then the call failed before the
+    acknowledgement. The response must not claim a rollback; the re-read of
+    membership and selection shows the save present, so the request finishes
+    as the success it was and no second choice is spent."""
+
+    client = _client(tmp_path / "lost-ack")
+    repo = client.app.state.roster_repo
+    real = repo.consume_law
+
+    def commit_then_lose_connection(*args, **kwargs):
+        real(*args, **kwargs)  # item + ledger + membership + selection committed
+        raise sqlite3.OperationalError("connection lost before acknowledgement")
+
+    monkeypatch.setattr(repo, "consume_law", commit_then_lose_connection)
+    resp = _save_sections(client, "ndps", ["1"])
+    assert resp.status_code == 303, resp.text[:200]
+    assert (resp.headers.get("location") or "").endswith(law_path("ndps"))
+    assert "X-Playground-Outcome" not in resp.headers
+    assert len(_ledger(client)) == 1
+    assert client.app.state.roster.is_law_active_this_period(USER, "ndps")
+    assert client.app.state.playground.list_selection(USER, "ndps")
+
+    monkeypatch.setattr(repo, "consume_law", real)
+    again = _save_sections(client, "ndps", ["1", "2"])  # member now: plain selection update
+    assert again.status_code == 303
+    assert len(_ledger(client)) == 1
+    assert len(client.app.state.playground.list_selection(USER, "ndps")) == 2
+
+
+def test_save_outcome_is_unknown_when_the_reread_itself_fails(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    """No evidence, no claim: when the write raised and the re-read also
+    fails, the response says the outcome could not be confirmed instead of
+    asserting a rollback."""
+
+    client = _client(tmp_path / "unknown")
+    repo = client.app.state.roster_repo
+    roster = client.app.state.roster
+    real_active = roster.is_law_active_this_period
+    state = {"raised": False}
+
+    def boom(*args, **kwargs):
+        state["raised"] = True
+        raise sqlite3.OperationalError("connection dropped")
+
+    def flaky_reread(*args, **kwargs):
+        if state["raised"]:
+            raise sqlite3.OperationalError("re-read failed too")
+        return real_active(*args, **kwargs)
+
+    monkeypatch.setattr(repo, "consume_law", boom)
+    monkeypatch.setattr(roster, "is_law_active_this_period", flaky_reread)
+    resp = _save_sections(client, "ndps", ["1"])
+    assert resp.status_code == 503
+    assert resp.headers.get("X-Playground-Outcome") == "unknown"
+    assert "could not confirm" in resp.text
+    assert "Nothing was saved" not in resp.text
+
+
 # ------------------------------------------------- Calendar and Visualize
 
 
@@ -740,22 +869,49 @@ def test_visual_explainer_is_pro_only_under_choices(tmp_path: Path):
 # ------------------------------------------------------------- catalogue
 
 
-def test_max_is_not_purchasable_under_choices(tmp_path: Path):
-    client = _client(tmp_path / "cat")
+@pytest.mark.parametrize("model", ["choices", "monthly"])
+def test_max_is_not_purchasable_under_either_model(tmp_path: Path, model: str):
+    """B1-F09 (plan §4.6, not flag-gated): Max is absent from every new
+    purchase offer and refused at checkout and plan change under both
+    tier models. Existing Max subscriptions stay recognised (next test)."""
+
+    client = _client(tmp_path / f"cat-{model}", tier_model=model)
     page = client.get("/billing/subscriptions")
     assert page.status_code == 200
-    assert "Subscribe to Max" not in page.text
+    assert "Subscribe to Max" not in page.text and "₹1,199" not in page.text
     assert "Subscribe to Plus" in page.text and "Subscribe to Pro" in page.text
     payload = dict(_csrf(client))
     payload["tier"] = "max"
     resp = client.post("/billing/subscriptions/create", data=payload, follow_redirects=False)
     assert resp.status_code == 303
     assert "invalid_tier" in (resp.headers.get("location") or "")
-    gate = client.get("/playground?stage=plans")
-    assert "Max" not in gate.text.split("pg-gate-plans")[-1][:4000] if "pg-gate-plans" in gate.text else True
+    gate = client.get("/playground?stage=plans&tier=max")
+    assert gate.status_code == 200
+    assert "Subscribe to Max" not in gate.text and "Upgrade to Max" not in gate.text
+    assert "₹1199" not in gate.text and "₹1,199" not in gate.text
 
-    monthly = _client(tmp_path / "cat-monthly", tier_model="monthly")
-    assert "Subscribe to Max" in monthly.get("/billing/subscriptions").text
+    _subscribe(client, tier="plus")
+    change = client.post("/billing/subscriptions/change", data={**_csrf(client), "tier": "max"}, follow_redirects=False)
+    assert change.status_code == 303
+    assert "invalid_tier" in (change.headers.get("location") or "")
+    manage = client.get("/billing/subscriptions").text
+    assert "Upgrade to Max" not in manage and "Subscribe to Max" not in manage
+
+
+@pytest.mark.parametrize("model", ["choices", "monthly"])
+def test_existing_max_subscription_stays_recognised(tmp_path: Path, model: str):
+    """B1-F10: the purchase exclusion changes nothing for an account that
+    already holds a Max subscription row."""
+
+    client = _client(tmp_path / f"max-{model}", tier_model=model)
+    _subscribe(client, tier="max")
+    snapshot = client.app.state.entitlement_service.resolve(USER)
+    assert snapshot.tier == "max" and snapshot.is_subscribed
+    assert snapshot.playground_law_limit is None
+    manage = client.get("/billing/subscriptions")
+    assert manage.status_code == 200
+    assert "Max" in manage.text  # current plan is named
+    assert _add_entire(client, "ndps").status_code == 303
 
 
 def test_legacy_max_row_still_resolves_under_choices(tmp_path: Path):

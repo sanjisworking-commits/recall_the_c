@@ -53,7 +53,8 @@ LEDE = (
 MAP_LEDE_FULL = (
     "Turning The NDPS Act, 1985 into a learning experience needs a plan."
 )
-NOTE = "Plus · Pro · Max — from ₹199 / month. Constitution learning stays free."
+# B1-F09 (PR #230): Max is not sold anew; evidence record keeps its SHA.
+NOTE = "Plus · Pro — from ₹199 / month. Constitution learning stays free."
 GATE_TITLE = "Your RecallC account already includes the complete Constitution."
 FORBIDDEN = (
     "Already in Playground",

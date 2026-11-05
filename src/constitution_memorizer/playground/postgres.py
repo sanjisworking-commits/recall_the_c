@@ -242,6 +242,68 @@ class PostgresPlaygroundRepository:
                 )
                 conn.commit()
 
+    @count_playground_repo_call(kind="write")
+    def persist_membership_and_selection_in(
+        self,
+        conn,
+        user_id: UUID | str,
+        law_id: str,
+        rows: list[tuple[str, str, str]],
+        *,
+        source_version: str,
+        law_source_hash: str,
+    ) -> None:
+        """Overlay membership + selection on the caller's open transaction.
+
+        No commit here: ``conn`` is the pooled connection on which the roster
+        consume holds its ``FOR UPDATE`` (and ledger advisory) lock, so the
+        roster item, the ledger row, this membership row and the selection
+        commit or roll back as one save (5-19 / B1-F08).
+        """
+
+        uid = as_user_id(user_id)
+        now = datetime.now(timezone.utc)
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT 1 FROM user_playground_item WHERE user_id = %s AND law_id = %s FOR UPDATE",
+                (uid, law_id),
+            )
+            if cur.fetchone() is None:
+                cur.execute(
+                    """
+                    INSERT INTO user_playground_item (
+                        user_id, law_id, status, added_at, last_activity_at,
+                        source_version, law_source_hash
+                    ) VALUES (%s, %s, 'in_playground', %s, %s, %s, %s)
+                    """,
+                    (uid, law_id, now, now, source_version, law_source_hash),
+                )
+            cur.execute(
+                "DELETE FROM user_playground_selection WHERE user_id = %s AND law_id = %s",
+                (uid, law_id),
+            )
+            if rows:
+                cur.executemany(
+                    """
+                    INSERT INTO user_playground_selection (
+                        user_id, law_id, source_locator, selected_at,
+                        source_version, source_hash
+                    ) VALUES (%s, %s, %s, %s, %s, %s)
+                    """,
+                    [(uid, law_id, loc, now, ver, digest) for loc, ver, digest in rows],
+                )
+            cur.execute(
+                """
+                UPDATE user_playground_item
+                SET last_activity_at = %s, status = CASE
+                    WHEN %s > 0 THEN 'learning'
+                    ELSE 'in_playground'
+                END
+                WHERE user_id = %s AND law_id = %s
+                """,
+                (now, len(rows), uid, law_id),
+            )
+
     @count_playground_repo_call(kind="read", domain="progress")
     def get_progress(
         self, user_id: UUID | str, law_id: str, source_locator: str

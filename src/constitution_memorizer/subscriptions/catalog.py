@@ -16,10 +16,10 @@ SUBSCRIPTION_TIERS: frozenset[str] = frozenset({"plus", "pro", "max"})
 TIER_RANK: dict[str, int] = {"plus": 1, "pro": 2, "max": 3}
 
 # Tiers a client may buy. ``max`` stays a recognised, reconcilable tier for
-# legacy rows (B1-F10) but is absent from every purchase offer under the
-# ``choices`` model (B1-F09). Under ``monthly`` the offer is unchanged.
+# existing rows (B1-F10: legacy Max accounts and subscriptions resolve exactly
+# as before) but is absent from every *new* purchase offer and checkout
+# request under both tier models (B1-F09; plan §4.6, not flag-gated).
 PURCHASABLE_TIERS: frozenset[str] = frozenset({"plus", "pro"})
-_PURCHASABLE_TIERS_MONTHLY: frozenset[str] = frozenset({"plus", "pro", "max"})
 
 
 class TierNotPurchasable(LookupError):
@@ -122,15 +122,12 @@ def list_subscription_products() -> tuple[SubscriptionProduct, ...]:
 
 
 def purchasable_tiers(tier_model: str | None = None) -> frozenset[str]:
-    """Tiers offered for purchase under ``tier_model`` (request model when None)."""
+    """Tiers offered for new purchase. The offer is the same under both tier
+    models (``tier_model`` is accepted for call-site compatibility only):
+    Max is recognised for existing subscriptions, never sold anew."""
 
-    from constitution_memorizer.entitlements.tier_model import (  # noqa: PLC0415
-        current_tier_model,
-        is_choice_model,
-    )
-
-    model = tier_model if tier_model is not None else current_tier_model()
-    return PURCHASABLE_TIERS if is_choice_model(model) else _PURCHASABLE_TIERS_MONTHLY
+    del tier_model
+    return PURCHASABLE_TIERS
 
 
 def list_purchasable_products(

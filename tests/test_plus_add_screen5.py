@@ -531,7 +531,9 @@ def test_halted_expired_pro_free_guest_get_the_same_sheet_with_own_state(
         in free_sheet
     )
     assert '<a class="pg-add-primary" href="/playground">Unlock Playground</a>' in free_sheet
-    assert '<p class="pg-add-note">Plus · Pro · Max — ' in free_sheet
+    # B1-F09 (PR #230): Max is not sold anew; evidence record keeps its SHA.
+    assert '<p class="pg-add-note">Plus · Pro — ' in free_sheet
+    assert 'Max' not in free_sheet.split('pg-add-note', 1)[1].split('</p>', 1)[0]
     assert "/ month. Constitution learning stays free.</p>" in free_sheet
     assert ">Cancel<" not in free_sheet
     assert "data-pg-add-confirm" not in free_sheet

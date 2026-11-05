@@ -9,7 +9,7 @@ import sqlite3
 import threading
 from contextlib import contextmanager
 from datetime import date, datetime, timezone
-from typing import Any, Iterator, Protocol
+from typing import Any, Callable, Iterator, Protocol
 from uuid import UUID, uuid4
 
 from constitution_memorizer.playground.repo_counters import count_playground_repo_call
@@ -181,6 +181,7 @@ class RosterRepository(Protocol):
         ledger: bool = False,
         choice_limit: int | None = None,
         choice_source: str = CHOICE_SOURCE_FREE_ADD,
+        within: Callable[[Any], None] | None = None,
     ) -> ConsumeResult: ...
 
     def apply_rollover(
@@ -420,8 +421,16 @@ class SqliteRosterRepository:
         ledger: bool = False,
         choice_limit: int | None = None,
         choice_source: str = CHOICE_SOURCE_FREE_ADD,
+        within: Callable[[Any], None] | None = None,
     ) -> ConsumeResult:
         """Atomic consume / re-add.
+
+        ``within`` (5-19 / B1-F08): a callable run on this same open
+        transaction after the roster item (and ledger row) are written and
+        before the commit — the overlay membership and the selection. If it
+        raises, everything in the transaction rolls back together and the
+        error propagates; it is not run on blocked or already-active
+        outcomes. ``ConsumeResult.within_applied`` says whether it ran.
 
         ``enforce_effective_limit`` makes the cap the caller's ``law_limit``
         (the resolver's effective limit) instead of the stored row value, so a
@@ -466,7 +475,13 @@ class SqliteRosterRepository:
                 used = int(choices_used or 0)
                 remaining = remaining_capacity(choice_limit, used)
 
-            def _result(status: str, row: RosterItem | None, *, recorded: bool = False) -> ConsumeResult:
+            def _result(
+                status: str,
+                row: RosterItem | None,
+                *,
+                recorded: bool = False,
+                applied: bool = False,
+            ) -> ConsumeResult:
                 used_now = self._count_choices_locked(uid) if ledger else self._count_consumed_locked(uid, start)
                 return ConsumeResult(
                     status=status,
@@ -477,7 +492,16 @@ class SqliteRosterRepository:
                     choices_used=used_now if ledger else None,
                     choice_limit=choice_limit if ledger else None,
                     choice_recorded=recorded,
+                    within_applied=applied,
                 )
+
+            def _apply_within() -> bool:
+                # Same connection, same ``BEGIN IMMEDIATE``: the overlay write
+                # commits or rolls back with the roster item (B1-F08).
+                if within is None:
+                    return False
+                within(self._conn)
+                return True
 
             if item is not None and item.consumed_at is not None and item.removed_at is None:
                 return _result(RESULT_ALREADY_ACTIVE, item)
@@ -497,7 +521,7 @@ class SqliteRosterRepository:
                         (uid, start, law_id),
                     ).fetchone()
                 )
-                return _result(RESULT_RE_ADDED, refreshed)
+                return _result(RESULT_RE_ADDED, refreshed, applied=_apply_within())
             readd_free = bool(ledger and in_ledger)
             if not readd_free:
                 # Ledger exhaustion is reported as such even though the
@@ -568,7 +592,13 @@ class SqliteRosterRepository:
                 recorded = self._record_choice_locked(
                     uid, law_id, source=choice_source, stamp=stamp
                 )
-            return _result(RESULT_RE_ADDED if readd_free else RESULT_OK, stored_item, recorded=recorded)
+            applied = _apply_within()
+            return _result(
+                RESULT_RE_ADDED if readd_free else RESULT_OK,
+                stored_item,
+                recorded=recorded,
+                applied=applied,
+            )
 
     @count_playground_repo_call(kind="write")
     def remove_law(

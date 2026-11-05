@@ -121,6 +121,10 @@ class ConsumeResult:
     choice_limit: int | None = None
     # True when this call appended a ledger row (a new distinct Free choice).
     choice_recorded: bool = False
+    # True when the caller's ``within`` step ran inside this transaction:
+    # the overlay membership and the selection were committed together
+    # with the roster item (and ledger row) — 5-19 / B1-F08.
+    within_applied: bool = False
 
     @property
     def ok(self) -> bool:

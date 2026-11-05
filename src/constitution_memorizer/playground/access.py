@@ -837,7 +837,29 @@ def _gate_page(
 
 
 SAVE_FAILED = "save_failed"
+# Verified by re-read after the error: nothing of this save is present.
 OUTCOME_ROLLED_BACK = "rolled_back"
+# The save raised and the re-read itself failed: no claim either way.
+OUTCOME_UNKNOWN = "unknown"
+
+_SAVE_FAILED_COPY = {
+    OUTCOME_ROLLED_BACK: (
+        "Nothing was saved",
+        (
+            "The Playground could not complete this save and rolled it back.",
+            "We checked again: no law was added and no choice was used. "
+            "Please try again.",
+        ),
+    ),
+    OUTCOME_UNKNOWN: (
+        "We could not confirm this save",
+        (
+            "The connection failed while this save was being confirmed.",
+            "Open the Playground to see whether the law was added before "
+            "trying again; a repeat of a completed save uses no extra choice.",
+        ),
+    ),
+}
 
 
 def save_failed_response(
@@ -845,30 +867,33 @@ def save_failed_response(
     templates: Jinja2Templates,
     *,
     json_mode: bool = False,
+    outcome: str = OUTCOME_ROLLED_BACK,
 ) -> Response:
-    """B1-F07(a): the save transaction was verified rolled back (the
-    repository raised inside its transaction scope and rolled back before
-    this response is built). Nothing was saved; the client may say so."""
+    """B1-F07: a save point raised. ``outcome`` is what a re-read on a
+    fresh connection established afterwards — ``rolled_back`` only when
+    membership (and selection) are verified absent, ``unknown`` when the
+    re-read itself failed. The response never claims a rollback it has
+    not observed."""
 
+    if outcome not in _SAVE_FAILED_COPY:
+        outcome = OUTCOME_UNKNOWN
     if playground_wants_json(request, json_mode):
         return JSONResponse(
-            {"ok": False, "error": SAVE_FAILED, "outcome": OUTCOME_ROLLED_BACK},
+            {"ok": False, "error": SAVE_FAILED, "outcome": outcome},
             status_code=503,
-            headers={"X-Playground-Outcome": OUTCOME_ROLLED_BACK},
+            headers={"X-Playground-Outcome": outcome},
         )
+    title, lines = _SAVE_FAILED_COPY[outcome]
     gate = replace_gate(
         gate_view(reason=SAVE_FAILED),
-        title="Nothing was saved",
-        lines=(
-            "The Playground could not complete this save and rolled it back.",
-            "No law was added and no choice was used. Please try again.",
-        ),
+        title=title,
+        lines=lines,
         cta_label="Back to Playground",
         cta_href=home_path(),
     )
     response = _render_gate(request, templates, gate)
     response.status_code = 503
-    response.headers["X-Playground-Outcome"] = OUTCOME_ROLLED_BACK
+    response.headers["X-Playground-Outcome"] = outcome
     return response
 
 

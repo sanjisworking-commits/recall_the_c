@@ -536,11 +536,14 @@ class RosterService:
         local_owner: bool = False,
         can_consume_new_law: bool = True,
         has_historical_overlay: bool = False,
+        within: Callable[[Any], None] | None = None,
     ) -> ConsumeResult:
         """Save point. Under ``choices``: the effective limit (never the stored
         row) is enforced, and a Free account's add is ledger-aware — one
         ledger row per new distinct law, appended in the same transaction as
-        the roster item; a ledger law re-adds at no cost (B1-F03/F05/F18)."""
+        the roster item; a ledger law re-adds at no cost (B1-F03/F05/F18).
+        ``within`` runs inside that same transaction (overlay membership and
+        selection, 5-19 / B1-F08); see the repository contract."""
 
         if not is_playground_eligible_law(law_id):
             return ConsumeResult(
@@ -562,6 +565,7 @@ class RosterService:
                 allow_new=can_consume_new_law,
                 origin_for_new=origin,
                 now=now,
+                within=within,
             )
         _tier, effective_limit = self._commercial(snapshot, local_owner=local_owner)
         ledger = self._ledger_account(snapshot, local_owner=local_owner)
@@ -576,6 +580,7 @@ class RosterService:
             enforce_effective_limit=True,
             ledger=ledger,
             choice_limit=self._choice_limit(snapshot) if ledger else None,
+            within=within,
         )
 
     def remove_law_this_period(

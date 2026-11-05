@@ -36,7 +36,10 @@ from constitution_memorizer.playground.view import (
     gate_selector_plan_views,
     gate_view,
 )
-from constitution_memorizer.subscriptions.catalog import list_subscription_products
+from constitution_memorizer.subscriptions.catalog import (
+    list_purchasable_products,
+    list_subscription_products,
+)
 from constitution_memorizer.web.app import create_app
 from constitution_memorizer.web.guest_playground_intro import GUEST_PG_STEPS
 
@@ -339,10 +342,13 @@ def test_phone_free_gate_plans_lists_live_catalogue_without_selection(
     gate = _gate(html)
     assert 'data-pg-gate-stage="plans"' in html
     assert "data-pg-plans" in gate
-    products = list_subscription_products()
-    assert [row.tier for row in products] == ["plus", "pro", "max"]
+    # B1-F09 (PR #230): Max is not sold anew; evidence record keeps its SHA.
+    products = list_purchasable_products()
+    assert [row.tier for row in products] == ["plus", "pro"]
+    assert [row.tier for row in list_subscription_products()] == ["plus", "pro", "max"]
     views = gate_selector_plan_views()
-    assert tuple(plan.tier for plan in views) == ("plus", "pro", "max")
+    assert tuple(plan.tier for plan in views) == ("plus", "pro")
+    assert 'data-tier="max"' not in gate
     for plan in views:
         assert f'data-tier="{plan.tier}"' in gate
         assert plan.display_name in gate
@@ -358,7 +364,7 @@ def test_phone_free_gate_plans_lists_live_catalogue_without_selection(
     assert PLAYGROUND_BILLING_PATH not in gate
     assert "₹199" in gate
     assert "₹399" in gate
-    assert "₹1199" in gate
+    assert "₹1199" not in gate  # B1-F09 (PR #230): Max is not sold anew; evidence record keeps its SHA
     assert "Monthly. GST included." in gate
     assert calls == []
     billed = catalogue_plan_views()
@@ -370,7 +376,11 @@ def test_phone_free_gate_tier_selection_continue_has_no_handler(
 ) -> None:
     client = _free_client(tmp_path)
     products = {row.tier: row for row in list_subscription_products()}
-    for tier in ("plus", "pro", "max"):
+    # B1-F09 (PR #230): Max is not sold anew; evidence record keeps its SHA: ``tier=max`` no longer selects a plan.
+    unsold = client.get("/playground?stage=plans&tier=max")
+    assert unsold.status_code == 200
+    assert "data-pg-plan-selected" not in unescape(unsold.text) and "Continue with Max" not in unsold.text
+    for tier in ("plus", "pro"):
         calls = _watch_provider(client)
         before = _facts(client)
         page = client.get(f"/playground?stage=plans&tier={tier}")

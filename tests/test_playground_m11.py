@@ -463,7 +463,10 @@ def test_legacy_checkout_hidden_when_pricing_disabled(tmp_path: Path):
     billing = client.get("/billing/subscriptions")
     assert billing.status_code == 200
     text = billing.text.lower()
-    assert "plus" in text and "pro" in text and "max" in text
+    assert "plus" in text and "pro" in text
+    # B1-F09 (PR #230): Max is recognised for existing rows but no longer
+    # offered for purchase. The M11 evidence record keeps its own SHA.
+    assert "Subscribe to Max" not in billing.text and "₹1,199" not in billing.text
     assert "₹199" in billing.text
     assert "365-day" not in billing.text
     assert "180-Day" not in billing.text

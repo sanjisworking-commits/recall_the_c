@@ -440,6 +440,67 @@ class SqlitePlaygroundRepository:
         )
         self.conn.commit()
 
+    @count_playground_repo_call(kind="write")
+    def persist_membership_and_selection_in(
+        self,
+        conn,
+        user_id: UUID | str,
+        law_id: str,
+        rows: list[tuple[str, str, str]],
+        *,
+        source_version: str,
+        law_source_hash: str,
+    ) -> None:
+        """Overlay membership + selection on the caller's open transaction.
+
+        No commit here. ``conn`` is the shared SQLite connection on which the
+        roster repository holds its ``BEGIN IMMEDIATE``; the roster item, the
+        ledger row, this membership row and the selection commit or roll back
+        as one save (5-19 / B1-F08). Idempotent on an existing membership row;
+        the selection is replaced like :meth:`replace_selection`.
+        """
+
+        uid = as_user_id(user_id)
+        now = _utc_now_iso()
+        existing = conn.execute(
+            "SELECT 1 FROM user_playground_item WHERE user_id = ? AND law_id = ?",
+            (uid, law_id),
+        ).fetchone()
+        if existing is None:
+            conn.execute(
+                """
+                INSERT INTO user_playground_item (
+                    user_id, law_id, status, added_at, last_activity_at,
+                    source_version, law_source_hash
+                ) VALUES (?, ?, 'in_playground', ?, ?, ?, ?)
+                """,
+                (uid, law_id, now, now, source_version, law_source_hash),
+            )
+        conn.execute(
+            "DELETE FROM user_playground_selection WHERE user_id = ? AND law_id = ?",
+            (uid, law_id),
+        )
+        conn.executemany(
+            """
+            INSERT INTO user_playground_selection (
+                user_id, law_id, source_locator, selected_at,
+                source_version, source_hash
+            ) VALUES (?, ?, ?, ?, ?, ?)
+            """,
+            [(uid, law_id, loc, now, ver, digest) for loc, ver, digest in rows],
+        )
+        conn.execute(
+            """
+            UPDATE user_playground_item
+            SET last_activity_at = ?, status = CASE
+                WHEN ? > 0 THEN 'learning'
+                ELSE 'in_playground'
+            END
+            WHERE user_id = ? AND law_id = ?
+            """,
+            (now, len(rows), uid, law_id),
+        )
+
     @count_playground_repo_call(kind="read", domain="progress")
     def get_progress(
         self, user_id: UUID | str, law_id: str, source_locator: str

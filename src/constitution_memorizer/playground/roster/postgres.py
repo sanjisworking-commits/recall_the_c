@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import hashlib
 from datetime import date, datetime, timezone
-from typing import Any
+from typing import Any, Callable
 from uuid import UUID, uuid4
 
 from constitution_memorizer.playground.roster.decisions import plan_rollover_batch
@@ -317,8 +317,13 @@ class PostgresRosterRepository:
         ledger: bool = False,
         choice_limit: int | None = None,
         choice_source: str = CHOICE_SOURCE_FREE_ADD,
+        within: Callable[[Any], None] | None = None,
     ) -> ConsumeResult:
         """See :meth:`SqliteRosterRepository.consume_law` for the contract.
+
+        ``within`` runs on this connection's open transaction (after the
+        roster item and ledger row, before ``commit``); a failure inside it
+        rolls the whole save back (5-19 / B1-F08).
 
         Production adds a per-account advisory lock around the ledger so two
         concurrent Free adds cannot both pass the ``choice_limit`` check
@@ -363,7 +368,13 @@ class PostgresRosterRepository:
                 choices_used = self._count_choices_locked(cur, uid) if ledger else None
                 in_ledger = self._has_choice_locked(cur, uid, law_id) if ledger else False
 
-                def _result(status: str, row: RosterItem | None, *, recorded: bool = False) -> ConsumeResult:
+                def _result(
+                    status: str,
+                    row: RosterItem | None,
+                    *,
+                    recorded: bool = False,
+                    applied: bool = False,
+                ) -> ConsumeResult:
                     used_now = (
                         self._count_choices_locked(cur, uid)
                         if ledger
@@ -378,7 +389,16 @@ class PostgresRosterRepository:
                         choices_used=used_now if ledger else None,
                         choice_limit=choice_limit if ledger else None,
                         choice_recorded=recorded,
+                        within_applied=applied,
                     )
+
+                def _apply_within() -> bool:
+                    # Same connection and transaction as the FOR UPDATE lock
+                    # and the ledger insert; committed or rolled back as one.
+                    if within is None:
+                        return False
+                    within(conn)
+                    return True
 
                 if (
                     item is not None
@@ -408,7 +428,7 @@ class PostgresRosterRepository:
                         (uid, period_start, law_id),
                     )
                     refreshed = item_from_mapping(cur.fetchone())
-                    out = _result(RESULT_RE_ADDED, refreshed)
+                    out = _result(RESULT_RE_ADDED, refreshed, applied=_apply_within())
                     conn.commit()
                     return out
                 readd_free = bool(ledger and in_ledger)
@@ -513,10 +533,12 @@ class PostgresRosterRepository:
                     recorded = self._record_choice_locked(
                         cur, uid, law_id, source=choice_source, clock=clock
                     )
+                applied = _apply_within()
                 out = _result(
                     RESULT_RE_ADDED if readd_free else RESULT_OK,
                     stored_item,
                     recorded=recorded,
+                    applied=applied,
                 )
                 conn.commit()
                 return out
