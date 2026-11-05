@@ -125,7 +125,16 @@ def subscription_from_mapping(row: Mapping[str, Any]) -> UserSubscription:
 # uses a transaction-scoped advisory lock (see ``postgres.py``).
 _RECONCILE_LOCKS: dict[str, threading.Lock] = {}
 _RECONCILE_LOCKS_GUARD = threading.Lock()
-_RECONCILE_LOCK_NS = 872013  # pg_advisory_xact_lock namespace; not a secret
+_RECONCILE_LOCK_NS = 872013  # pg advisory-lock namespace; not a secret
+# Bounded wait for the per-subscription lock. A waiter that cannot get it in
+# time fails its own operation (the webhook answers 503 and the provider
+# retries) instead of holding resources indefinitely.
+RECONCILE_LOCK_TIMEOUT_SECONDS = 10.0
+
+
+class ReconciliationBusy(RuntimeError):
+    """Another reconciliation of the same provider subscription is in progress
+    and did not finish within the bounded wait."""
 
 
 def reconcile_lock_key(provider_subscription_id: str) -> int:
@@ -164,10 +173,15 @@ class SqliteSubscriptionRepository:
 
     @contextmanager
     def serialize_subscription(self, provider_subscription_id: str):
-        """B1-B02: process-local lock per provider subscription id."""
+        """B1-B02: process-local lock per provider subscription id (bounded)."""
 
-        with _process_local_reconcile_lock(provider_subscription_id):
+        lock = _process_local_reconcile_lock(provider_subscription_id)
+        if not lock.acquire(timeout=RECONCILE_LOCK_TIMEOUT_SECONDS):
+            raise ReconciliationBusy(provider_subscription_id)
+        try:
             yield
+        finally:
+            lock.release()
 
     def get_current_subscription(self, user_id: UUID | str) -> UserSubscription | None:
         row = self.conn.execute(

@@ -196,3 +196,79 @@ def test_b03_late_event_for_superseded_row_leaves_the_current_row_untouched(pool
     assert archived.id == old.id and archived.is_current is False
     assert archived.status == "active" and archived.provider_metadata.get("last_charge_event_id") == "pgb_old_2"
     assert sum(1 for row in subs.list_subscription_history(USER) if row.is_current) == 1
+
+
+def test_b02_webhook_and_admin_reconcile_finish_with_a_two_connection_pool(pool, clean):
+    """B1-B02 (reviewer): a webhook delivery and an admin reconciliation compete
+    for the same subscription on a pool of exactly two connections. Neither may
+    hold a pooled connection while waiting for the per-subscription lock — the
+    other party needs that connection for its own reads and writes — so both
+    must finish within the timeout and the row must end at the latest provider
+    state. A nested checkout (lock connection + working connection per party)
+    would exhaust the pool and deadlock here."""
+
+    from psycopg_pool import ConnectionPool
+
+    subs_seed = clean
+    subs_seed.create_subscription_record(
+        USER, tier="plus", status="active", provider_subscription_id="sub_pg_2",
+        provider_plan_id="plan_plus", provider_customer_id="cust_1",
+        billing_period_start=_ts(SEP), billing_period_end=_ts(OCT),
+    )
+    small = ConnectionPool(conninfo=PG_URL, min_size=1, max_size=2, open=True, timeout=5.0)
+    try:
+        fake = _TruthProvider()
+        fake.status = "pending"      # older truth, answered to the webhook (A)
+        fake.current_end = OCT
+        fake.hold_for = "A"
+        subs = PostgresSubscriptionRepository(small)
+        events = PostgresWebhookEventRepository(small)
+        service = SubscriptionService(subs, fake, PLAN_IDS, public_key_id=KEY_ID)
+        processor = WebhookProcessor(
+            events=events, subscriptions=subs, service=service,
+            secrets=WebhookSecrets(current=WHSEC, previous=None), charges=None,
+        )
+        done: dict[str, object] = {}
+        errors: list[str] = []
+
+        def webhook():
+            try:
+                raw = _raw(_event_payload("subscription.pending", sub_id="sub_pg_2"))
+                done["webhook"] = processor.process_delivery(raw, _sign_body(raw, WHSEC), "pgb_two_A")
+            except Exception as exc:  # noqa: BLE001
+                errors.append(f"webhook: {exc!r}")
+
+        def admin():
+            try:
+                done["admin"] = service.reconcile_current(USER)
+            except Exception as exc:  # noqa: BLE001
+                errors.append(f"admin: {exc!r}")
+
+        a = threading.Thread(target=webhook)
+        a.start()
+        assert fake.entered.wait(timeout=5)       # A holds the lock, inside its GET
+        with fake._lock:
+            fake.status = "active"                # provider moves on
+            fake.current_end = NOV
+        b = threading.Thread(target=admin)
+        b.start()
+        b.join(timeout=0.5)
+        assert b.is_alive()                       # B waits for the lock, not overtaking
+        fake.release.set()
+        a.join(timeout=15)
+        b.join(timeout=15)
+        assert not a.is_alive() and not b.is_alive(), "a party did not finish: pool deadlock"
+        assert errors == [], errors
+        assert done["webhook"].status_code == 200  # type: ignore[union-attr]
+        assert fake.order == ["pending", "active"]
+        current = subs.get_current_subscription(USER)
+        assert current.status == "active"
+        assert current.billing_period_end == _ts(NOV)
+        assert done["admin"].status == "active"  # type: ignore[union-attr]
+        with small.connection() as conn:
+            row = conn.execute(
+                "SELECT count(*) FROM pg_locks WHERE locktype = 'advisory' AND classid = 872013"
+            ).fetchone()
+        assert int(row[0]) == 0
+    finally:
+        small.close()
