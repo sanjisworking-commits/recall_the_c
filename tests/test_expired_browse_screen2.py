@@ -34,6 +34,7 @@ ROOT = Path(__file__).resolve().parents[1]
 UNITS = ROOT / "data" / "output" / "learning_units.json"
 BROWSE = ROOT / "src/constitution_memorizer/web/templates/browse_index.html"
 BASE = ROOT / "src/constitution_memorizer/web/templates/base.html"
+SHELL = ROOT / "src/constitution_memorizer/web/shell.py"  # M1-R (PR pg-m1r-shell-labels): header label source
 DEPS = ROOT / "src/constitution_memorizer/entitlements/dependencies.py"
 APP = ROOT / "src/constitution_memorizer/web/app.py"
 LANDING = ROOT / "src/constitution_memorizer/web/templates/landing.html"
@@ -177,7 +178,7 @@ def test_expired_browse_keeps_constitution_and_omits_free_strip(
     assert "/browse/article/" in panel
     assert "Sanjay" in header
     assert LIVE_EXPIRED_STATUS in header
-    assert "Free account" not in header
+    assert "RecallC Free" not in header
     assert "RecallC Plus" not in header
     assert 'href="/browse"' in header
     assert "is-active" in header
@@ -206,7 +207,7 @@ def test_free_plus_guest_halted_stay_separate_from_expired(tmp_path: Path) -> No
     assert "Free plan \u2014 pick any 3 Articles to learn." in strip
     assert "All 3 slots free." in strip
     assert 'class="browse-access-unlock" href="/playground">Unlock all</a>' in strip
-    assert "Free account" in _header(free_html)
+    assert "RecallC Free" in _header(free_html)
 
     plus = TestClient(_mu_app(tmp_path / "plus"))
     _sign_in(plus)
@@ -253,10 +254,19 @@ def test_expired_browse_uses_shared_predicate_not_a_template_flag() -> None:
     assert "Playground paused" not in browse
     assert LIVE_EXPIRED_STATUS not in browse
     base = BASE.read_text(encoding="utf-8")
-    assert "expired_browse" in base
-    assert "expired_header_status" in base
-    assert "RecallC Plus" in base
-    assert "Free account" in base
+    assert "shell_account_status" in base  # M1-R: one snapshot-driven label
+    # M1-R (PR pg-m1r-shell-labels): the header label is one snapshot function in web/shell.py;
+    # base.html no longer reads a per-route expired_header_status flag.
+    assert "expired_header_status" not in base
+    shell = SHELL.read_text(encoding="utf-8")
+    assert "snapshot_is_expired_subscriber(snapshot)" in shell
+    assert "snapshot.playground_block_reason" in shell
+    assert ").title" in shell
+    # M1-R (PR pg-m1r-shell-labels): tier literals live in web/shell.py (TIER_LABELS);
+    # base.html only carries the 'RecallC Free' fallback.
+    assert "RecallC Plus" not in base
+    assert '"plus": "RecallC Plus"' in shell
+    assert "RecallC Free" in base
     assert "Playground paused" not in base
     app = APP.read_text(encoding="utf-8")
     page = app.split("async def browse_index", 1)[1].split(
@@ -566,6 +576,6 @@ def test_free_browse_regression_1280(tmp_path: Path) -> None:
     assert "Free plan" in geo["stripText"]
     assert "All 3 slots free." in geo["stripText"]
     assert geo["unlockHref"] == "/playground"
-    assert geo["accountStatus"] == "Free account"
+    assert geo["accountStatus"] == "RecallC Free"
     assert shot_path.is_file()
     assert shot_path.stat().st_size > 1000

@@ -10408,9 +10408,10 @@ body.is-admin-previewing { padding-top: 40px; }
     flex: none;
   }
 
-  /* M1 guest shell: once the desktop header is present, guests never also get
-     the phone bar (the generic ≤720px rule would otherwise show both at 561–720). */
-  body.is-guest .mobile-tabbar {
+  /* M1 (guests) → M1-R (everyone): once the desktop header is present, no page
+     also gets the phone bar — the generic ≤720px rule would otherwise show both
+     at 561–720 (one navigation surface per page). */
+  .mobile-tabbar {
     display: none !important;
   }
 
@@ -10492,24 +10493,44 @@ body.is-admin-previewing { padding-top: 40px; }
 }
 
 @media (min-width: 561px) and (max-width: 899px) {
+  /* M1-R: the 60 px single-row header let the tabs or the avatar wrap under
+     the page title at 561–720 (avatar overlap, M1 §8). Brand and account slot
+     share the first row; the tabs take a full second row and scroll if needed. */
   .site-header {
     display: flex;
+    flex-wrap: wrap;
+    align-items: center;
     grid-template-columns: none;
-    padding: 0 16px;
+    height: auto;
+    min-height: 60px;
+    padding: 6px 16px 4px;
+    row-gap: 2px;
   }
 
   .brand {
     white-space: nowrap;
+    order: 0;
+  }
+
+  .site-header > .account-menu,
+  .site-header > .nav-signin {
+    order: 1;
+    margin-left: auto;
   }
 
   .nav.PrimaryTabs--top {
-    flex: 1 1 auto;
+    order: 2;
+    flex: 1 1 100%;
+    justify-content: flex-start;
     justify-self: stretch;
+    overflow-x: auto;
+    padding-bottom: 2px;
   }
 
   .PrimaryTabs--top .nav-link {
     padding: 0 10px;
     font-size: 13px;
+    white-space: nowrap;
   }
 }
 

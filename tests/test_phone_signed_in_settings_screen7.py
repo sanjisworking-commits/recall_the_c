@@ -51,7 +51,7 @@ TAB_HREFS = (
     ("Profile", "/profile"),
 )
 MOCK_SCREEN_COPY = (
-    "Free account",
+    "RecallC Free",
     "No plan yet",
     "See plans",
 )
@@ -208,7 +208,7 @@ def test_phone_free_settings_is_live_screen11_contract(tmp_path: Path) -> None:
     panel = _panel(html)
     assert "Sanjay" in panel
     assert "Signed in with Google" in panel
-    assert "Free account" not in panel
+    assert "RecallC Free" not in panel
     ident = panel.split("settings-account-row", 1)[1][:400]
     assert 'href="/profile"' in ident
     assert "Appearance, your learning plan, and your revision calendar." in panel
@@ -245,7 +245,7 @@ def test_phone_free_settings_is_live_screen11_contract(tmp_path: Path) -> None:
         assert f'href="{href}"' in panel
         assert client.get(href).status_code == 200
     assert "Bare Act text verbatim · Day 1 · 3 · 7 · 15 · 30 · 60" in panel
-    # M1 (DV-20): the header account slot carries "Free account" everywhere;
+    # M1 (DV-20): the header account slot carries "RecallC Free" everywhere;
     # the mock-copy check is scoped to the page body.
     for phrase in MOCK_SCREEN_COPY:
         assert phrase not in html.split("<main", 1)[1], phrase
@@ -318,9 +318,9 @@ def test_phone_free_settings_css_is_breakpoint_scoped() -> None:
     assert "@media (min-width: 561px)" in desk
     assert "max-width: 720px" in desk
     assert "font-size: 30px" in desk
-    assert "playground.css?v=pg52" in BASE.read_text(encoding="utf-8")
-    assert "styles.css?v=main88" in BASE.read_text(encoding="utf-8")
-    assert "mobile.css?v=mob107" in BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg53" in BASE.read_text(encoding="utf-8")
+    assert "styles.css?v=main89" in BASE.read_text(encoding="utf-8")
+    assert "mobile.css?v=mob108" in BASE.read_text(encoding="utf-8")
     assert "mobile.css?v=mob104" not in BASE.read_text(encoding="utf-8")
     src = SETTINGS.read_text(encoding="utf-8")
     for phrase in MOCK_SCREEN_COPY:
@@ -541,7 +541,7 @@ def test_phone_signed_in_settings_screen07_390x844(tmp_path: Path) -> None:
                 focusBlocks,
                 overflow: document.documentElement.scrollWidth
                   > document.documentElement.clientWidth,
-                hasFreeAccount: /Free account/.test(panel ? panel.innerText : ''),
+                hasFreeAccount: /RecallC Free/.test(panel ? panel.innerText : ''),
                 hasSynced: /Last synced/.test(cal ? cal.innerText : ''),
                 legalHrefs: legalLinks.map((el) => el.getAttribute('href')),
                 headingSize: panel && getComputedStyle(panel.querySelector(':scope > .display')).fontSize,
@@ -757,7 +757,7 @@ def test_phone_signed_in_settings_screen07_desktop_regression_1280(
                 ).display : null,
                 tabsDisplay: phone ? getComputedStyle(phone).display : null,
                 hasSettingsPill: (active || []).includes('Settings'),
-                hasFreeAccount: /Free account/.test(panel ? panel.innerText : ''),
+                hasFreeAccount: /RecallC Free/.test(panel ? panel.innerText : ''),
                 hasSynced: /Last synced/.test(cal ? cal.innerText : ''),
               };
             }"""

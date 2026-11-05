@@ -59,6 +59,7 @@ CAL = ROOT / "src/constitution_memorizer/web/templates/calendar.html"
 PROFILE = ROOT / "src/constitution_memorizer/web/templates/profile.html"
 SETTINGS = ROOT / "src/constitution_memorizer/web/templates/settings.html"
 BASE = ROOT / "src/constitution_memorizer/web/templates/base.html"
+SHELL = ROOT / "src/constitution_memorizer/web/shell.py"  # M1-R (PR pg-m1r-shell-labels): header label source
 DEPS = ROOT / "src/constitution_memorizer/entitlements/dependencies.py"
 ROUTES = ROOT / "src/constitution_memorizer/subscriptions/routes.py"
 PG_ROUTES = ROOT / "src/constitution_memorizer/playground/routes.py"
@@ -278,7 +279,7 @@ def test_expired_billing_is_plan_chooser_not_paused_home(tmp_path: Path) -> None
     assert ENDED_MESSAGE in desk
     assert LIVE_HEADING in header
     assert "RecallC Plus" not in header
-    assert "Free account" not in header
+    assert "RecallC Free" not in header
     assert 'href="/playground"' in header
     assert "is-active" in header.split('href="/playground"', 1)[1].split("</a>", 1)[0]
     assert PLAYGROUND_BILLING_PATH == "/billing/subscriptions"
@@ -495,7 +496,13 @@ def test_expired_subscription_uses_shared_predicate_and_existing_create() -> Non
     assert 'data-plus-subscription="desktop"' in css
     base = BASE.read_text(encoding="utf-8")
     assert "expired_billing" in base
-    assert "expired_header_status" in base
+    # M1-R (PR pg-m1r-shell-labels): the header label is one snapshot function in web/shell.py;
+    # base.html no longer reads a per-route expired_header_status flag.
+    assert "expired_header_status" not in base
+    shell = SHELL.read_text(encoding="utf-8")
+    assert "snapshot_is_expired_subscriber(snapshot)" in shell
+    assert "snapshot.playground_block_reason" in shell
+    assert ").title" in shell
     assert "plus_billing" in base
     checkout = CHECKOUT.read_text(encoding="utf-8")
     assert "data-expired-subscription" not in checkout

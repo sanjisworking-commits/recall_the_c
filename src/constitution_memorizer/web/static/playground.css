@@ -3067,8 +3067,7 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     color: var(--pg-muted);
   }
 
-  [data-phone-pg-gate="guest"] .pg-guest-gate-signin,
-  [data-phone-pg-gate="guest"] .pg-guest-gate-create {
+  [data-phone-pg-gate="guest"] .pg-guest-gate-signin {
     appearance: none;
     -webkit-appearance: none;
     display: flex;
@@ -3096,14 +3095,6 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     box-shadow: var(--pg-shadow-press-active);
   }
 
-  [data-phone-pg-gate="guest"] .pg-guest-gate-create {
-    height: 46px;
-    margin-top: 9px;
-    border: 1px solid var(--pg-hairline);
-    background: var(--pg-paper);
-    color: var(--pg-ink);
-    font-size: 14.5px;
-  }
 
   [data-phone-pg-gate="guest"] .pg-guest-gate-note {
     margin: 12px 0 0;

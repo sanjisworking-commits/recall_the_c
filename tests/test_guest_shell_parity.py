@@ -163,7 +163,14 @@ def test_guest_phone_bar_is_rendered_visible_on_settings_and_search() -> None:
     hide = css.index('body[data-mscreen="settings"] .mobile-tabbar {')
     override = css.index('body.is-guest[data-mscreen="settings"] .mobile-tabbar')
     assert override > hide
-    assert 'body.is-guest[data-mscreen="search"] .mobile-tabbar' in css
+    # M1-R (PR pg-m1r-shell-labels): Search shows the bar for everyone (one shared rule);
+    # Settings stays guest-only.
+    assert (
+        'body.is-guest[data-mscreen="settings"] .mobile-tabbar,\n'
+        '  body[data-mscreen="search"] .mobile-tabbar {\n'
+        '    display: grid;'
+    ) in css
+    assert 'body.is-guest[data-mscreen="search"]' not in css
     assert ".mobile-tabbar.is-guest" not in css
 
 
@@ -255,7 +262,7 @@ def test_signed_in_top_nav_and_account_slot(tmp_path: Path, route: str) -> None:
     assert "nav-signin" not in header and "guest-pill" not in header, route
     # DV-20: the account slot always carries the plan subtitle
     assert 'class="account-menu-btn-name">User A<' in header, route
-    assert 'class="account-menu-btn-status">Free account<' in header, route
+    assert 'class="account-menu-btn-status">RecallC Free<' in header, route
 
 
 def test_signed_in_free_phone_bar_unchanged_outside_special_screens(tmp_path: Path) -> None:

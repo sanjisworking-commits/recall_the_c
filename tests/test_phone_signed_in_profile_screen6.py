@@ -49,7 +49,7 @@ MOCK_SCREEN_COPY = (
     "No plan yet",
     "See plans",
     "2 of 3",
-    "Free account · Constitution learning included",
+    "RecallC Free · Constitution learning included",
 )
 FREE_SEL = (
     "[data-signed-in-profile]:not([data-plus-profile])"
@@ -291,9 +291,9 @@ def test_phone_free_profile_css_is_breakpoint_scoped() -> None:
     assert "@media (min-width: 561px)" in desk
     assert "minmax(0, 1fr) minmax(0, 1fr)" in desk
     assert "font-size: 28px" in desk
-    assert "playground.css?v=pg52" in BASE.read_text(encoding="utf-8")
-    assert "styles.css?v=main88" in BASE.read_text(encoding="utf-8")
-    assert "mobile.css?v=mob107" in BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg53" in BASE.read_text(encoding="utf-8")
+    assert "styles.css?v=main89" in BASE.read_text(encoding="utf-8")
+    assert "mobile.css?v=mob108" in BASE.read_text(encoding="utf-8")
     assert "mobile.css?v=mob104" not in BASE.read_text(encoding="utf-8")
     src = PROFILE.read_text(encoding="utf-8")
     for phrase in MOCK_SCREEN_COPY:
@@ -303,12 +303,14 @@ def test_phone_free_profile_css_is_breakpoint_scoped() -> None:
     assert "data-signed-in-pg-gate" in GATE.read_text(encoding="utf-8")
     guest_css = PG_CSS.read_text(encoding="utf-8")
     assert "Guest phone Profile (CTA map guest/06-screen)" in guest_css
-    first_bar = BASE.read_text(encoding="utf-8").split(
-        'class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom"', 2
-    )[2].split("</nav>", 1)[0]
+    # M1-R (PR pg-m1r-shell-labels): one signed-in phone bar (data-signed-in-phone-tabs)
+    # replaces the per-cohort bars; the active tab follows the shell_* flags, not path.startswith.
+    base_src = BASE.read_text(encoding="utf-8")
+    assert base_src.count("data-signed-in-phone-tabs") == 1
+    assert "data-signed-in-bareact-phone-tabs" not in base_src
+    first_bar = base_src.split("data-signed-in-phone-tabs", 1)[1].split("</nav>", 1)[0]
     assert 'href="/profile"' in first_bar
-    assert "path.startswith('/profile')" in first_bar
-    assert "data-plus-bareact-phone-tabs" not in first_bar
+    assert "{% if shell_profile %} is-active" in first_bar  # M1-R (PR pg-m1r-shell-labels): shell flag, not path
 
 
 def test_guest_plus_expired_halted_profiles_stay_separate(tmp_path: Path) -> None:
@@ -503,7 +505,7 @@ def test_phone_signed_in_profile_screen06_390x844(tmp_path: Path) -> None:
                 subTop: subBox && subBox.top,
                 overflow: document.documentElement.scrollWidth
                   > document.documentElement.clientWidth,
-                mockFree: /Free account · Constitution learning included/.test(
+                mockFree: /RecallC Free · Constitution learning included/.test(
                   panel ? panel.innerText : ''
                 ),
                 mockPlan: /No plan yet|See plans/.test(panel ? panel.innerText : ''),

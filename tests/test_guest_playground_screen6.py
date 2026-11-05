@@ -135,8 +135,11 @@ def test_screen6_phone_gate_defers_to_screen03_composition(tmp_path: Path) -> No
     phone = _phone_gate(html)
     assert "Sign in to use Playground" in phone
     assert GUEST_PG_TITLE not in phone
-    assert "Create an account" in phone
-    assert 'type="button"' in phone
+    # M1-R (PR pg-m1r-shell-labels): 5-11 decided — one Google anchor, no inert buttons.
+    assert "Continue with Google" in phone
+    assert 'href="/auth/google/start?next=%2Fplayground"' in phone
+    assert "Create an account" not in phone
+    assert 'type="button"' not in phone
     assert GUEST_PG_SIGNIN_HREF not in phone
     assert "data-hard-gate=\"true\"" in html
     intro = _intro(html)

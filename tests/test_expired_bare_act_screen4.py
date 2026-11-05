@@ -50,6 +50,7 @@ ROOT = Path(__file__).resolve().parents[1]
 UNITS = ROOT / "data" / "output" / "learning_units.json"
 BROWSE = ROOT / "src/constitution_memorizer/web/templates/browse_index.html"
 BASE = ROOT / "src/constitution_memorizer/web/templates/base.html"
+SHELL = ROOT / "src/constitution_memorizer/web/shell.py"  # M1-R (PR pg-m1r-shell-labels): header label source
 DEPS = ROOT / "src/constitution_memorizer/entitlements/dependencies.py"
 APP = ROOT / "src/constitution_memorizer/web/app.py"
 BARE_PAGE = ROOT / "src/constitution_memorizer/web/bare_act_page.py"
@@ -276,7 +277,7 @@ def test_expired_retained_ndps_uses_live_already_active_not_subscribed(
     assert "Subscribe to use Playground" not in head
     assert "Sign in to use Playground" not in head
     assert LIVE_EXPIRED_STATUS in header
-    assert "Free account" not in header
+    assert "RecallC Free" not in header
     assert "RecallC Plus" not in header
     assert "Sanjay" in header
     for phrase in INVENTED:
@@ -376,7 +377,7 @@ def test_free_plus_guest_halted_stay_separate_from_expired(tmp_path: Path) -> No
     assert 'data-pg-kind="subscribe"' in free_head
     assert "Subscribe to use Playground" in free_head
     assert "Already in Playground" not in free_head
-    assert "Free account" in _header(free_html)
+    assert "RecallC Free" in _header(free_html)
     assert LIVE_EXPIRED_STATUS not in _header(free_html)
 
     plus = TestClient(_mu_app(tmp_path / "plus"))
@@ -460,9 +461,19 @@ def test_expired_bareact_uses_shared_predicate_not_subscribed_gate() -> None:
     assert "Playground paused" not in bare
     assert LIVE_EXPIRED_STATUS not in bare
     base = BASE.read_text(encoding="utf-8")
-    assert "expired_bareact" in base
-    assert "expired_header_status" in base
-    assert "path == '/laws/ndps'" in base
+    # M1-R (PR pg-m1r-shell-labels): per-route flag chain removed from base.html.
+    assert "expired_bareact" not in base
+    # M1-R (PR pg-m1r-shell-labels): the header label is one snapshot function in web/shell.py;
+    # base.html no longer reads a per-route expired_header_status flag.
+    assert "expired_header_status" not in base
+    shell = SHELL.read_text(encoding="utf-8")
+    assert "snapshot_is_expired_subscriber(snapshot)" in shell
+    assert "snapshot.playground_block_reason" in shell
+    assert ").title" in shell
+    # M1-R (PR pg-m1r-shell-labels): D33 — Act pages light Browse via shell_browse,
+    # never a hard-coded /laws/ndps.
+    assert "/laws/ndps" not in base
+    assert "path.startswith('/laws')" in base
     assert "Playground paused" not in base
     app = APP.read_text(encoding="utf-8")
     page = app.split("async def law_detail_page", 1)[1].split(

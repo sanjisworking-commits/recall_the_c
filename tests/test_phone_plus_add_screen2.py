@@ -553,11 +553,11 @@ def test_phone_plus_add_css_is_breakpoint_scoped() -> None:
     assert "cancel_href" in confirm_src
     assert "reading_name|default(short_title) }} joins this month's Playground" in confirm_src
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg52" in base
+    assert "playground.css?v=pg53" in base
     assert "playground.css?v=pg49" not in base
     assert "playground.css?v=pg34" not in base
-    assert "styles.css?v=main88" in base
-    assert "mobile.css?v=mob107" in base
+    assert "styles.css?v=main89" in base
+    assert "mobile.css?v=mob108" in base
     assert "playground.js?v=pg12" in base
 
 
@@ -784,8 +784,8 @@ def test_phone_plus_add_screen02_390x844(tmp_path: Path) -> None:
                 panel: { top: p.top, left: p.left, width: p.width, bottom: p.bottom },
                 overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth,
                 tabFocused: Boolean(
-                  document.querySelector('[data-plus-bareact-phone-tabs]')
-                  && document.querySelector('[data-plus-bareact-phone-tabs]').contains(
+                  document.querySelector('[data-signed-in-phone-tabs]')
+                  && document.querySelector('[data-signed-in-phone-tabs]').contains(
                     document.activeElement
                   )
                 ),

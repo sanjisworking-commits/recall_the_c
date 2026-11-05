@@ -186,10 +186,12 @@
     color: var(--ink);
   }
 
-  /* M1 guest shell: guests keep the five tabs on Settings and Search
-     (signed-in screens keep their frozen behaviour above). */
+  /* M1 guest shell: guests keep the five tabs on Settings and Search. M1-R extends
+     Search to every signed-in page (one shared bar). Signed-in Settings keeps the
+     accepted screen-11 design ("Settings is not a tab destination"); focused
+     destinations (Article reader, Learn modes, checkout) stay bar-less. */
   body.is-guest[data-mscreen="settings"] .mobile-tabbar,
-  body.is-guest[data-mscreen="search"] .mobile-tabbar {
+  body[data-mscreen="search"] .mobile-tabbar {
     display: grid;
   }
 

@@ -47,7 +47,7 @@ MOCK_SCREEN_COPY = (
     "No plan yet",
     "See plans",
     "2 of 3",
-    "Free account · Constitution learning included",
+    "RecallC Free · Constitution learning included",
 )
 
 
@@ -395,7 +395,7 @@ def test_signed_in_profile_1280_and_phone(tmp_path: Path) -> None:
                 chipW: chip ? chip.getBoundingClientRect().width : null,
                 chipName: chipName && (chipName.textContent || '').trim(),
                 chipStatusDisplay: chipStatus ? getComputedStyle(chipStatus).display : "none",
-                mockFree: /Free account · Constitution learning included/.test(
+                mockFree: /RecallC Free · Constitution learning included/.test(
                   panel ? panel.innerText : ''
                 ),
                 mockPlan: /No plan yet|See plans/.test(panel ? panel.innerText : ''),

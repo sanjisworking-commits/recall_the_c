@@ -373,7 +373,7 @@ def test_expired_today_reaches_dashboard_with_today_selected(
     assert ">Today<" in header
     assert LIVE_HEADING in header
     assert "RecallC Plus" not in header
-    assert "Free account" not in header
+    assert "RecallC Free" not in header
     assert "Welcome, Sanjay." in html or "Good morning, Sanjay." in html
 
 
@@ -668,7 +668,7 @@ def test_expired_today_marker_uses_shared_predicate() -> None:
     base = BASE.read_text(encoding="utf-8")
     assert "expired_today_chrome" in base
     assert "plus_today_chrome" in base
-    assert "playground.css?v=pg52" in base
+    assert "playground.css?v=pg53" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-expired-today="desktop"' in css
     assert "expired/08-screen" in css

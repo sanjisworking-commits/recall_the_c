@@ -413,7 +413,7 @@ def test_halted_calendar_reaches_month_with_calendar_selected(
     assert LIVE_HEADING in header
     assert LIVE_EXPIRED not in header
     assert "RecallC Plus" not in header
-    assert "Free account" not in header
+    assert "RecallC Free" not in header
     day = user_today(_engine(client))
     assert f"{day.strftime('%B')} {day.year}" in html
     assert 'role="radiogroup"' in html
@@ -814,7 +814,7 @@ def test_halted_calendar_marker_uses_shared_predicate() -> None:
     assert "plus_calendar_chrome" in base
     assert "expired_calendar_chrome" in base
     assert LIVE_HEADING not in base
-    assert "playground.css?v=pg52" in base
+    assert "playground.css?v=pg53" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-halted-calendar="desktop"' in css
     assert "halted/09-screen" in css

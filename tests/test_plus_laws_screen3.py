@@ -34,6 +34,7 @@ ROOT = Path(__file__).resolve().parents[1]
 UNITS = ROOT / "data" / "output" / "learning_units.json"
 LAWS = ROOT / "src/constitution_memorizer/web/templates/laws.html"
 BASE = ROOT / "src/constitution_memorizer/web/templates/base.html"
+SHELL = ROOT / "src/constitution_memorizer/web/shell.py"  # M1-R (PR pg-m1r-shell-labels): header label source
 APP = ROOT / "src/constitution_memorizer/web/app.py"
 DEPS = ROOT / "src/constitution_memorizer/entitlements/dependencies.py"
 USER = UUID("11111111-1111-4111-8111-111111111111")
@@ -155,7 +156,7 @@ def test_plus_laws_keeps_accepted_index_from_real_subscription(tmp_path: Path) -
     assert f'href="{bns.href}"' in desk
     assert f'href="{ndps.href}"' in desk
     assert "RecallC Plus" in header
-    assert "Free account" not in header
+    assert "RecallC Free" not in header
     for phrase in INVENTED:
         assert phrase not in desk, phrase
     browse = client.get("/browse")
@@ -167,8 +168,10 @@ def test_plus_laws_keeps_accepted_index_from_real_subscription(tmp_path: Path) -
     assert 'data-plus-playground="desktop"' in playground.text
     bare = client.get("/laws/bns")
     assert bare.status_code == 200
-    assert "Free account" in _header(bare.text)
-    assert "RecallC Plus" not in _header(bare.text)
+    # M1-R (PR pg-m1r-shell-labels): the header label is route-independent — the Plus
+    # subscriber stays RecallC Plus on the BNS Act page (DV-20 fixed).
+    assert "RecallC Plus" in _header(bare.text)
+    assert "RecallC Free" not in _header(bare.text)
 
 
 def test_free_signed_in_laws_is_not_plus(tmp_path: Path) -> None:
@@ -178,7 +181,7 @@ def test_free_signed_in_laws_is_not_plus(tmp_path: Path) -> None:
     assert 'data-plus-laws="desktop"' not in html
     assert "data-signed-in-laws-desktop" in html
     header = _header(html)
-    assert "Free account" in header
+    assert "RecallC Free" in header
     assert "RecallC Plus" not in header
     desk = _desk(html)
     assert 'class="laws-back-link" href="/browse"' in desk
@@ -211,7 +214,10 @@ def test_halted_expired_and_pro_are_not_plus_screen_03(tmp_path: Path) -> None:
     _subscribe(pro, tier="pro")
     pro_html = pro.get("/laws").text
     assert 'data-plus-laws="desktop"' not in pro_html
-    assert "Free account" in _header(pro_html)
+    # M1-R (PR pg-m1r-shell-labels): DV-20 fixed — Pro is labelled RecallC Pro everywhere.
+    assert "RecallC Pro" in _header(pro_html)
+    assert "RecallC Plus" not in _header(pro_html)
+    assert "RecallC Free" not in _header(pro_html)
 
 
 def test_plus_laws_marker_uses_shared_predicate() -> None:
@@ -221,8 +227,15 @@ def test_plus_laws_marker_uses_shared_predicate() -> None:
     assert "data-signed-in-laws-desktop" in laws
     assert 'href="/browse"' in laws
     base = BASE.read_text(encoding="utf-8")
-    assert "plus_laws" in base
-    assert "RecallC Plus" in base
+    # M1-R (PR pg-m1r-shell-labels): per-route flag chain removed from base.html.
+    assert "plus_laws" not in base
+    # M1-R (PR pg-m1r-shell-labels): the account label is one snapshot function in
+    # web/shell.py (TIER_LABELS); base.html only calls the shell_account_status global.
+    assert "shell_account_status" in base
+    shell = SHELL.read_text(encoding="utf-8")
+    assert "def account_status_for_snapshot" in shell
+    assert "def shell_account_status" in shell
+    assert '"plus": "RecallC Plus"' in shell
     deps = DEPS.read_text(encoding="utf-8")
     assert "def request_is_active_plus" in deps
     assert 'snapshot.tier == "plus"' in deps

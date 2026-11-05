@@ -154,7 +154,7 @@ def test_subscriber_keeps_existing_playground_home(tmp_path: Path) -> None:
     assert "Browse laws" in html
     assert ">Unlock Playground<" not in html
     assert ">View Playground plans<" not in html
-    # Header may include the Free account label in the DOM; Screen 06 CSS
+    # Header may include the RecallC Free label in the DOM; Screen 06 CSS
     # hides it on the subscriber home.
 
 
@@ -426,7 +426,7 @@ def test_signed_in_pg_gate_1280_and_phone(tmp_path: Path) -> None:
     assert geo["halted"] is False
     assert geo["twoCol"] is True
     assert geo["name"] == "Sanjay"
-    assert geo["status"] == "Free account"
+    assert geo["status"] == "RecallC Free"
     assert geo["statusDisplay"] != "none"
     assert "invert" in (geo["markFilter"] or "")
     assert plans_url.startswith("/playground?stage=plans")

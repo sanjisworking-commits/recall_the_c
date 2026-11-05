@@ -230,7 +230,7 @@ def _assert_no_phone_twins(html: str) -> None:
 
 
 def _tabs(html: str) -> str:
-    return html.split("data-plus-bareact-phone-tabs", 1)[1].split("</nav>", 1)[0]
+    return html.split("data-signed-in-phone-tabs", 1)[1].split("</nav>", 1)[0]
 
 
 def _facts(client: TestClient) -> dict:
@@ -402,8 +402,7 @@ def test_phone_plus_roster_full_and_re_add_keep_live_kinds(tmp_path: Path) -> No
 
 def test_phone_plus_five_tabs_browse_active_only(tmp_path: Path) -> None:
     html = _plus_client(tmp_path).get("/laws/ndps").text
-    assert "data-plus-bareact-phone-tabs" in html
-    assert "data-signed-in-bareact-phone-tabs" not in html
+    assert "data-signed-in-phone-tabs" in html
     assert html.count('class="mobile-tabbar') == 1
     tabs = _tabs(html)
     for label, href in TAB_HREFS:
@@ -419,7 +418,6 @@ def test_phone_plus_five_tabs_browse_active_only(tmp_path: Path) -> None:
         assert "is-active" not in chunk
         assert "aria-current" not in chunk
     dash = _plus_client(tmp_path / "dash").get("/dashboard").text
-    assert "data-plus-bareact-phone-tabs" not in dash
 
 
 def test_phone_plus_css_scope_pins_and_desktop_04_untouched() -> None:
@@ -467,13 +465,17 @@ def test_phone_plus_css_scope_pins_and_desktop_04_untouched() -> None:
     pg_css = PG_CSS.read_text(encoding="utf-8")
     assert "data-plus-bareact" not in pg_css
     base = BASE.read_text(encoding="utf-8")
-    assert "data-plus-bareact-phone-tabs" in base
-    assert "signed_in_plus_bareact_phone" in base
-    assert "styles.css?v=main88" in base
+    assert "data-signed-in-phone-tabs" in base
+    # M1-R (PR pg-m1r-shell-labels): the per-cohort Act-page bar/flag is gone; one signed-in bar
+    # serves every cohort, so pin its single rendering and the flag's absence.
+    assert base.count("data-signed-in-phone-tabs") == 1
+    assert "signed_in_plus_bareact_phone" not in base
+    assert "data-plus-bareact-phone-tabs" not in base
+    assert "styles.css?v=main89" in base
     assert "styles.css?v=main87" not in base
-    assert "mobile.css?v=mob107" in base
+    assert "mobile.css?v=mob108" in base
     assert "mobile.css?v=mob106" not in base
-    assert "playground.css?v=pg52" in base
+    assert "playground.css?v=pg53" in base
     assert "mobile.js?v=mob30" in base
     bare = BARE.read_text(encoding="utf-8")
     assert "data-plus-bareact" in bare
@@ -494,15 +496,21 @@ def test_phone_plus_cohorts_and_other_laws_stay_separate(tmp_path: Path) -> None
     plus_html = plus.get("/laws/ndps").text
     assert "data-plus-bareact" in _head_attrs(plus_html)
     _assert_no_phone_twins(plus_html)
+    # M1-R (PR pg-m1r-shell-labels): Plus gets the one signed-in bar, not a Plus-only one.
+    assert plus_html.count('class="mobile-tabbar') == 1
+    assert "data-signed-in-phone-tabs" in plus_html
     bns = plus.get("/laws/bns").text
-    # The same head serves BNS with the viewer's Plus state; the Screen 01
-    # tab bar and header status stay NDPS-only.
+    # The same head serves BNS with the viewer's Plus state; the shared bar and
+    # the account label follow the viewer on every Act page.
     bns_attrs = _head_attrs(bns)
     assert 'data-act-head="bns"' in bns_attrs
     assert "data-plus-bareact" in bns_attrs
     _assert_generated_head(bns, "bns")
-    assert "data-plus-bareact-phone-tabs" not in bns
-    assert "RecallC Plus" not in bns.split("<header", 1)[1].split("</header>", 1)[0]
+    # M1-R (PR pg-m1r-shell-labels): the account label is one function of the snapshot (DV-20 fix),
+    # so a Plus viewer reads "RecallC Plus" on BNS too; the old test pinned the bug.
+    assert "RecallC Plus" in bns.split("<header", 1)[1].split("</header>", 1)[0]
+    assert bns.count('class="mobile-tabbar') == 1
+    assert "data-signed-in-phone-tabs" in bns
 
     free = TestClient(_mu_app(tmp_path / "free"))
     _sign_in(free)
@@ -510,8 +518,8 @@ def test_phone_plus_cohorts_and_other_laws_stay_separate(tmp_path: Path) -> None
     free_attrs = _head_attrs(free_html)
     assert "data-plus-bareact" not in free_attrs
     assert 'data-pg-kind="subscribe"' in free_attrs
-    assert "data-plus-bareact-phone-tabs" not in free_html
-    assert "data-signed-in-bareact-phone-tabs" in free_html
+    assert "data-signed-in-phone-tabs" in free_html
+    assert free_html.count('class="mobile-tabbar') == 1  # M1-R (PR pg-m1r-shell-labels): one bar
     _assert_generated_head(free_html)
     assert "Subscribe to use Playground" in _cta(free_html)
 
@@ -526,6 +534,10 @@ def test_phone_plus_cohorts_and_other_laws_stay_separate(tmp_path: Path) -> None
         )
     )
     guest_html = guest.get("/laws/ndps").text
+    # M1-R (PR pg-m1r-shell-labels): guests keep their own single bar, never the signed-in one.
+    assert "data-guest-phone-tabs" in guest_html
+    assert "data-signed-in-phone-tabs" not in guest_html
+    assert guest_html.count('class="mobile-tabbar') == 1
     guest_attrs = _head_attrs(guest_html)
     assert "data-plus-bareact" not in guest_attrs
     assert 'data-pg-kind="guest"' in guest_attrs
@@ -664,7 +676,7 @@ def test_phone_plus_bareact_screen01_390x844(tmp_path: Path) -> None:
               const head = document.querySelector('.ActHead[data-act-head="ndps"]');
               const band = head && head.querySelector('.ActHead-band');
               const header = document.querySelector('.site-header');
-              const tabs = document.querySelector('[data-plus-bareact-phone-tabs]');
+              const tabs = document.querySelector('[data-signed-in-phone-tabs]');
               const bars = [...document.querySelectorAll('.mobile-tabbar')];
               const visibleBars = bars.filter((el) => getComputedStyle(el).display !== 'none');
               const visibleActive = visibleBars.flatMap((bar) =>
@@ -928,7 +940,7 @@ def test_phone_plus_bareact_screen01_desktop_regression_1280(tmp_path: Path) -> 
         geo = page.evaluate(
             """() => {
               const head = document.querySelector('.ActHead[data-plus-bareact]');
-              const tabs = document.querySelector('[data-plus-bareact-phone-tabs]');
+              const tabs = document.querySelector('[data-signed-in-phone-tabs]');
               const header = document.querySelector('.site-header');
               const cluster = head && head.querySelector('.ActHead-cta');
               const box = cluster && cluster.getBoundingClientRect();

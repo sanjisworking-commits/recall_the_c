@@ -326,7 +326,7 @@ def test_halted_profile_reaches_profile_with_profile_selected(tmp_path: Path) ->
     assert LIVE_HEADING in header
     assert LIVE_EXPIRED not in header
     assert "RecallC Plus" not in header
-    assert "Free account" not in header
+    assert "RecallC Free" not in header
     identity = _identity(html)
     assert "Sanjay" in identity
     assert "Signed in with Google" in identity
@@ -682,7 +682,7 @@ def test_halted_profile_marker_uses_shared_predicate() -> None:
     assert "plus_profile_chrome" in base
     assert "expired_profile_chrome" in base
     assert LIVE_HEADING not in base
-    assert "playground.css?v=pg52" in base
+    assert "playground.css?v=pg53" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-halted-profile="desktop"' in css
     assert "halted/10-screen" in css

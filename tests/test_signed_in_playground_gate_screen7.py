@@ -257,7 +257,7 @@ def test_free_gate_intro_uses_viewer_table_copy(tmp_path: Path) -> None:
     assert FREE_GATE_HOW_STEPS == GUEST_PG_STEPS
     assert "Choose your laws each month" not in gate
     assert "data-guest-pg-intro" not in html
-    assert "Free account" in _header(html)
+    assert "RecallC Free" in _header(html)
     for phrase in INVENTED:
         assert phrase not in gate, phrase
 
@@ -523,7 +523,7 @@ def test_free_gate_marker_and_parser_are_presentation_only() -> None:
     assert parse_playground_gate_stage("plans", "gold") == (GATE_STAGE_PLANS, None)
     assert FREE_GATE_HOW_STEPS == GUEST_PG_STEPS
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg52" in base
+    assert "playground.css?v=pg53" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert "signedIn/07-screen" in css
     assert 'data-pg-gate-stage="plans"' in css
@@ -637,7 +637,7 @@ def test_free_gate_screen07_intro_1280(tmp_path: Path) -> None:
     assert geo["plans"] is False
     assert geo["stepCount"] == 4
     assert geo["steps"] == list(GUEST_PG_STEPS)
-    assert geo["status"] == "Free account"
+    assert geo["status"] == "RecallC Free"
     assert geo["continueBtn"] is False
     assert shot_path.exists() and shot_path.stat().st_size > 1000
 

@@ -336,7 +336,7 @@ def test_halted_settings_reaches_settings_with_live_header(tmp_path: Path) -> No
     assert LIVE_HEADING in header
     assert LIVE_EXPIRED not in header
     assert "RecallC Plus" not in header
-    assert "Free account" not in header
+    assert "RecallC Free" not in header
     assert 'href="/dashboard"' in html
     assert "← Today" in html
     assert 'class="settings-account-row" href="/profile"' in html
@@ -674,7 +674,7 @@ def test_halted_settings_marker_uses_shared_predicate() -> None:
     assert "expired_settings_chrome" in base
     assert LIVE_HEADING not in base
     assert "/resume" not in base
-    assert "playground.css?v=pg52" in base
+    assert "playground.css?v=pg53" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-halted-settings="desktop"' in css
     assert "halted/11-screen" in css

@@ -36,6 +36,7 @@ MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
 ROOT = Path(__file__).resolve().parents[1]
 CAL = ROOT / "src/constitution_memorizer/web/templates/calendar.html"
 BASE = ROOT / "src/constitution_memorizer/web/templates/base.html"
+SHELL = ROOT / "src/constitution_memorizer/web/shell.py"  # M1-R (PR pg-m1r-shell-labels): header label source
 DEPS = ROOT / "src/constitution_memorizer/entitlements/dependencies.py"
 APP = ROOT / "src/constitution_memorizer/web/app.py"
 PG_CSS = ROOT / "src/constitution_memorizer/web/static/playground.css"
@@ -225,7 +226,7 @@ def test_plus_calendar_reaches_month_with_calendar_selected(tmp_path: Path) -> N
     assert 'href="/calendar" class="nav-link is-active"' in header
     assert ">Calendar<" in header
     assert "RecallC Plus" in header
-    assert "Free account" not in header
+    assert "RecallC Free" not in header
     today = date.today()
     assert today.strftime("%B %Y") in html
     assert 'role="radiogroup"' in html
@@ -378,9 +379,14 @@ def test_plus_calendar_markup_preserves_routes_and_study_gates() -> None:
     assert "def request_is_active_plus" in DEPS.read_text(encoding="utf-8")
     assert 'snapshot.tier == "plus"' in DEPS.read_text(encoding="utf-8")
     base = BASE.read_text(encoding="utf-8")
-    assert "plus_calendar_chrome" in base
-    assert "RecallC Plus" in base
-    assert "playground.css?v=pg52" in base
+    # M1-R (PR pg-m1r-shell-labels): the account label is one snapshot function in
+    # web/shell.py (TIER_LABELS); base.html only calls the shell_account_status global.
+    assert "shell_account_status" in base
+    shell = SHELL.read_text(encoding="utf-8")
+    assert "def account_status_for_snapshot" in shell
+    assert "def shell_account_status" in shell
+    assert '"plus": "RecallC Plus"' in shell
+    assert "playground.css?v=pg53" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-plus-calendar="desktop"' in css
     plus_css = css.split("plus/09-screen", 1)[-1]

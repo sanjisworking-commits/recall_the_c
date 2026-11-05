@@ -41,6 +41,7 @@ ROOT = Path(__file__).resolve().parents[1]
 UNITS = ROOT / "data" / "output" / "learning_units.json"
 BROWSE = ROOT / "src/constitution_memorizer/web/templates/browse_index.html"
 BASE = ROOT / "src/constitution_memorizer/web/templates/base.html"
+SHELL = ROOT / "src/constitution_memorizer/web/shell.py"  # M1-R (PR pg-m1r-shell-labels): header label source
 DEPS = ROOT / "src/constitution_memorizer/entitlements/dependencies.py"
 APP = ROOT / "src/constitution_memorizer/web/app.py"
 LANDING = ROOT / "src/constitution_memorizer/web/templates/landing.html"
@@ -319,7 +320,7 @@ def test_halted_open_period_laws_keeps_catalogue_and_live_tags(tmp_path: Path) -
     assert f'href="{ndps.href}"' in desk
     assert LIVE_HALTED_STATUS in header
     assert LIVE_EXPIRED_STATUS not in header
-    assert "Free account" not in header
+    assert "RecallC Free" not in header
     assert "RecallC Plus" not in header
     assert "Sanjay" in header
     assert 'href="/browse"' in header
@@ -357,7 +358,7 @@ def test_halted_elapsed_period_stays_halted_on_laws(tmp_path: Path) -> None:
     assert 'data-plus-laws="desktop"' not in html
     assert LIVE_HALTED_STATUS in header
     assert LIVE_EXPIRED_STATUS not in header
-    assert "Free account" not in header
+    assert "RecallC Free" not in header
 
 
 def test_guest_free_plus_expired_paused_pending_pro_max_are_not_halted_laws(
@@ -371,7 +372,7 @@ def test_guest_free_plus_expired_paused_pending_pro_max_are_not_halted_laws(
     _sign_in(free)
     free_html = free.get("/laws").text
     assert 'data-halted-laws="desktop"' not in free_html
-    assert "Free account" in _header(free_html)
+    assert "RecallC Free" in _header(free_html)
 
     plus = TestClient(_mu_app(tmp_path / "plus"))
     _sign_in(plus)
@@ -443,11 +444,23 @@ def test_halted_laws_uses_shared_predicate() -> None:
     for phrase in INVENTED:
         assert phrase not in src, phrase
     base = BASE.read_text(encoding="utf-8")
-    assert "halted_laws" in base
-    assert "halted_header_status" in base
-    assert "expired_header_status" in base
-    assert "RecallC Plus" in base
-    assert "Free account" in base
+    # M1-R (PR pg-m1r-shell-labels): per-route flag chain removed from base.html.
+    assert "halted_laws" not in base
+    # M1-R (PR pg-m1r-shell-labels): the header label is one snapshot function in web/shell.py;
+    # base.html no longer reads a per-route halted_header_status flag.
+    assert "halted_header_status" not in base
+    shell = SHELL.read_text(encoding="utf-8")
+    assert "snapshot_is_halted_subscriber(snapshot)" in shell
+    assert "gate_view(reason=BLOCK_PAYMENT_HALTED).title" in shell
+    # M1-R (PR pg-m1r-shell-labels): expired label also comes from web/shell.py, not a base.html flag.
+    assert "expired_header_status" not in base
+    assert "snapshot_is_expired_subscriber(snapshot)" in shell
+    assert "snapshot.playground_block_reason" in shell
+    # M1-R (PR pg-m1r-shell-labels): tier literals live in web/shell.py (TIER_LABELS);
+    # base.html only carries the 'RecallC Free' fallback.
+    assert "RecallC Plus" not in base
+    assert '"plus": "RecallC Plus"' in shell
+    assert "RecallC Free" in base
     assert LIVE_HALTED_STATUS not in base
     app = APP.read_text(encoding="utf-8")
     page = app.split("async def laws_page", 1)[1].split(
@@ -470,7 +483,7 @@ def test_halted_laws_uses_shared_predicate() -> None:
     assert "data-halted-laws" not in PG_CSS.read_text(encoding="utf-8")
     assert "data-halted-laws" not in STYLES.read_text(encoding="utf-8")
     assert "data-halted-laws" not in MOBILE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg52" in BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg53" in BASE.read_text(encoding="utf-8")
 
 
 def test_plus_expired_and_halted_01_02_untouched() -> None:

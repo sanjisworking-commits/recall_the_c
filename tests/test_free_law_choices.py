@@ -288,7 +288,7 @@ def test_free_opens_playground_and_has_three_permanent_choices(tmp_path: Path):
     assert {row[1] for row in _ledger(client)} == {"ndps", "uapa", "pss"}
     assert all(row[3] == "free_add" for row in _ledger(client))
 
-    # Period row for a Free account: labelled, no cap (§4.10, B1-F16 check 2).
+    # Period row for a RecallC Free: labelled, no cap (§4.10, B1-F16 check 2).
     periods = _facts(client)["periods"]
     assert len(periods) == 1
     assert periods[0][2] == "free" and periods[0][3] is None

@@ -57,7 +57,7 @@ INVENTED = (
     "Premium",
     "Unlimited",
     "RecallC Plus",
-    "Free account",
+    "RecallC Free",
     "Start learning",
     "saved progress",
     "quota",

@@ -198,7 +198,7 @@ def test_signed_in_laws_desktop_chrome(tmp_path: Path) -> None:
     assert 'src="/static/main_logo.png"' in header
     assert "Recall the C" in header
     assert 'account-menu-btn-name">Sanjay<' in header
-    assert "Free account" in header
+    assert "RecallC Free" in header
     assert "Not signed in" not in header
     for label in ("Today", "Browse", "Playground", "Calendar", "Profile"):
         assert label in nav
@@ -527,7 +527,7 @@ def test_signed_in_laws_1280_filters_and_keeps_existing_heads(tmp_path: Path) ->
     assert geo["ndpsHref"] == "/laws/ndps"
     assert geo["bnsHref"] == "/laws/bns"
     assert geo["accountName"] == "Sanjay"
-    assert geo["accountStatus"] == "Free account"
+    assert geo["accountStatus"] == "RecallC Free"
     assert geo["navLabels"] == [
         "Today",
         "Browse",

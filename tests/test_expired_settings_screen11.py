@@ -322,7 +322,7 @@ def test_expired_settings_reaches_settings_with_live_header(tmp_path: Path) -> N
     assert "Settings" not in top_nav
     assert LIVE_HEADING in header
     assert "RecallC Plus" not in header
-    assert "Free account" not in header
+    assert "RecallC Free" not in header
     assert 'href="/dashboard"' in html
     assert "← Today" in html
     assert 'class="settings-account-row" href="/profile"' in html
@@ -570,7 +570,7 @@ def test_expired_settings_marker_uses_shared_predicate() -> None:
     base = BASE.read_text(encoding="utf-8")
     assert "expired_settings_chrome" in base
     assert "plus_settings_chrome" in base
-    assert "playground.css?v=pg52" in base
+    assert "playground.css?v=pg53" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-expired-settings="desktop"' in css
     assert "expired/11-screen" in css

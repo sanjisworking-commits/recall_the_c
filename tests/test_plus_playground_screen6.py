@@ -40,6 +40,7 @@ HOME = ROOT / "src/constitution_memorizer/web/templates/playground.html"
 PARTIALS = ROOT / "src/constitution_memorizer/web/templates/partials/playground.html"
 GATE = ROOT / "src/constitution_memorizer/web/templates/playground_gate.html"
 BASE = ROOT / "src/constitution_memorizer/web/templates/base.html"
+SHELL = ROOT / "src/constitution_memorizer/web/shell.py"  # M1-R (PR pg-m1r-shell-labels): header label source
 DEPS = ROOT / "src/constitution_memorizer/entitlements/dependencies.py"
 ROUTES = ROOT / "src/constitution_memorizer/playground/routes.py"
 VIEW = ROOT / "src/constitution_memorizer/playground/view.py"
@@ -182,7 +183,7 @@ def test_plus_empty_home_uses_month_capacity_and_browse_path(tmp_path: Path) -> 
     assert "data-guest-pg-intro" not in html
     header = _header(html)
     assert "RecallC Plus" in header
-    assert "Free account" not in header
+    assert "RecallC Free" not in header
     assert f'plus-pg-month plus-pg-desk-only">{MONTH}</h1>' in html
     assert f"Your {MONTH} Playground is empty" in html
     assert "Add laws you want to learn this month." in html
@@ -315,10 +316,21 @@ def test_plus_playground_marker_uses_shared_predicate() -> None:
     assert "sections_copy" in partials
     assert "plus=false" in partials
     base = BASE.read_text(encoding="utf-8")
-    assert "plus_playground" in base
-    assert "path.rstrip('/') == '/playground'" in base
-    assert "RecallC Plus" in base
-    assert "playground.css?v=pg52" in base
+    # M1-R (PR pg-m1r-shell-labels): per-route flag chain removed from base.html; the
+    # Playground tab lights from shell_playground (also active on /billing/subscriptions).
+    assert "plus_playground" not in base
+    assert (
+        "shell_playground = path.startswith('/playground') or path.startswith('/billing/subscriptions')"
+        in base
+    )
+    # M1-R (PR pg-m1r-shell-labels): the account label is one snapshot function in
+    # web/shell.py (TIER_LABELS); base.html only calls the shell_account_status global.
+    assert "shell_account_status" in base
+    shell = SHELL.read_text(encoding="utf-8")
+    assert "def account_status_for_snapshot" in shell
+    assert "def shell_account_status" in shell
+    assert '"plus": "RecallC Plus"' in shell
+    assert "playground.css?v=pg53" in base
     deps = DEPS.read_text(encoding="utf-8")
     assert "def request_is_active_plus" in deps
     assert 'snapshot.tier == "plus"' in deps

@@ -166,8 +166,8 @@
     </li>
     {% endfor %}
   </ul>
-  <button type="button" class="pg-guest-gate-signin">Sign in</button>
-  <button type="button" class="pg-guest-gate-create">Create an account</button>
+  {# M1-R (5-11): one Google action — sign-in creates the account; no second button. #}
+  <a class="pg-guest-gate-signin" href="/auth/google/start?next=%2Fplayground" data-guest-gate-google>Continue with Google</a>
   {% if footnote %}<p class="pg-guest-gate-note">{{ footnote }}</p>{% endif %}
 </section>
 {% endmacro %}

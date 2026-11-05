@@ -51,6 +51,7 @@ MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
 ROOT = Path(__file__).resolve().parents[1]
 PROFILE = ROOT / "src/constitution_memorizer/web/templates/profile.html"
 BASE = ROOT / "src/constitution_memorizer/web/templates/base.html"
+SHELL = ROOT / "src/constitution_memorizer/web/shell.py"  # M1-R (PR pg-m1r-shell-labels): header label source
 DEPS = ROOT / "src/constitution_memorizer/entitlements/dependencies.py"
 AUTH = ROOT / "src/constitution_memorizer/auth/routes.py"
 VIEW = ROOT / "src/constitution_memorizer/playground/view.py"
@@ -280,7 +281,7 @@ def test_plus_profile_reaches_profile_with_profile_selected(tmp_path: Path) -> N
     )
     assert ">Profile<" in header
     assert "RecallC Plus" in header
-    assert "Free account" not in header
+    assert "RecallC Free" not in header
     identity = _identity(html)
     assert "Sanjay" in identity
     assert "Signed in with Google" in identity
@@ -546,9 +547,14 @@ def test_plus_profile_marker_uses_shared_predicate() -> None:
     assert "8/10" not in overlay
     assert " = 10" not in overlay
     base = BASE.read_text(encoding="utf-8")
-    assert "plus_profile_chrome" in base
-    assert "RecallC Plus" in base
-    assert "playground.css?v=pg52" in base
+    # M1-R (PR pg-m1r-shell-labels): the account label is one snapshot function in
+    # web/shell.py (TIER_LABELS); base.html only calls the shell_account_status global.
+    assert "shell_account_status" in base
+    shell = SHELL.read_text(encoding="utf-8")
+    assert "def account_status_for_snapshot" in shell
+    assert "def shell_account_status" in shell
+    assert '"plus": "RecallC Plus"' in shell
+    assert "playground.css?v=pg53" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-plus-profile="desktop"' in css
     plus_css = css.split("plus/10-screen", 1)[-1]

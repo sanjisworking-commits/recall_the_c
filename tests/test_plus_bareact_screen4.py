@@ -37,6 +37,7 @@ MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
 ROOT = Path(__file__).resolve().parents[1]
 BARE = ROOT / "src/constitution_memorizer/web/templates/bare_act.html"
 BASE = ROOT / "src/constitution_memorizer/web/templates/base.html"
+SHELL = ROOT / "src/constitution_memorizer/web/shell.py"  # M1-R (PR pg-m1r-shell-labels): header label source
 APP = ROOT / "src/constitution_memorizer/web/app.py"
 PAGE = ROOT / "src/constitution_memorizer/web/bare_act_page.py"
 DEPS = ROOT / "src/constitution_memorizer/entitlements/dependencies.py"
@@ -251,7 +252,7 @@ def test_plus_bareact_add_path_for_eligible_law_not_in_playground(tmp_path: Path
     assert "Subscribe to use Playground" not in band
     assert "Sign in to use Playground" not in band
     assert "RecallC Plus" in header
-    assert "Free account" not in header
+    assert "RecallC Free" not in header
     for phrase in INVENTED:
         assert phrase not in band, phrase
     # The sheet is not served on the Act page; it opens from the CTA.
@@ -321,7 +322,7 @@ def test_free_and_guest_bareact_unchanged(tmp_path: Path) -> None:
     assert "Subscribe to use Playground" in free_band
     assert f'href="{add_path("ndps")}"' in free_band
     assert "Already in Playground" not in free_band
-    assert "Free account" in _header(free_html)
+    assert "RecallC Free" in _header(free_html)
     assert "RecallC Plus" not in _header(free_html)
 
     guest_html = TestClient(_mu_app(tmp_path / "guest")).get("/laws/ndps").text
@@ -373,7 +374,10 @@ def test_halted_expired_and_pro_are_not_plus_screen_04(tmp_path: Path) -> None:
     _assert_generated_head(pro_html)
     assert "+ Add to Playground" in _band(pro_html)
     assert "RecallC Plus" not in _header(pro_html)
-    assert "Free account" in _header(pro_html)
+    # M1-R (PR pg-m1r-shell-labels): DV-20 fixed — a Pro user is labelled RecallC Pro
+    # on every page; "Free account" / RecallC Free never shows for a subscriber.
+    assert "RecallC Pro" in _header(pro_html)
+    assert "RecallC Free" not in _header(pro_html)
 
 
 def test_plus_bareact_header_does_not_leak_to_other_law_routes(tmp_path: Path) -> None:
@@ -383,10 +387,11 @@ def test_plus_bareact_header_does_not_leak_to_other_law_routes(tmp_path: Path) -
     ndps = client.get("/laws/ndps")
     assert "RecallC Plus" in _header(ndps.text)
     bns = client.get("/laws/bns")
-    assert "RecallC Plus" not in _header(bns.text)
-    assert "Free account" in _header(bns.text)
-    # The same generated head serves BNS, carrying the viewer's Plus state;
-    # only the Screen 04 header status is NDPS-specific.
+    # M1-R (PR pg-m1r-shell-labels): the header label is route-independent (one
+    # snapshot function), so BNS shows RecallC Plus too — never RecallC Free (DV-20).
+    assert "RecallC Plus" in _header(bns.text)
+    assert "RecallC Free" not in _header(bns.text)
+    # The same generated head serves BNS, carrying the viewer's Plus state.
     bns_attrs = _head_attrs(bns.text)
     assert 'data-act-head="bns"' in bns_attrs
     assert "data-plus-bareact" in bns_attrs
@@ -416,9 +421,18 @@ def test_plus_bareact_marker_uses_shared_predicate() -> None:
     assert "pg.secondary_href" in bare
     assert "act.head_meta_label" in bare
     base = BASE.read_text(encoding="utf-8")
-    assert "plus_bareact" in base
-    assert "path == '/laws/ndps'" in base
+    # M1-R (PR pg-m1r-shell-labels): per-route flag chain removed from base.html;
+    # D33 — Act pages light Browse via shell_browse, never a hard-coded /laws/ndps.
+    assert "plus_bareact" not in base
+    assert "/laws/ndps" not in base
     assert "path.startswith('/laws')" in base
+    # M1-R (PR pg-m1r-shell-labels): the account label is one snapshot function in
+    # web/shell.py (TIER_LABELS); base.html only calls the shell_account_status global.
+    assert "shell_account_status" in base
+    shell = SHELL.read_text(encoding="utf-8")
+    assert "def account_status_for_snapshot" in shell
+    assert "def shell_account_status" in shell
+    assert '"plus": "RecallC Plus"' in shell
     deps = DEPS.read_text(encoding="utf-8")
     assert "def request_is_active_plus" in deps
     page_src = PAGE.read_text(encoding="utf-8")
