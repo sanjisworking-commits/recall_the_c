@@ -120,8 +120,6 @@ from constitution_memorizer.web.browse import (
     parse_news_articles,
     browse_due_total,
     browse_parts_sections,
-    browse_schedule_cards,
-    build_schedule_view,
     find_part_section,
     part_href,
     part_progress_summary,
@@ -132,6 +130,7 @@ from constitution_memorizer.web.browse import (
     load_reviewed_document,
 )
 from constitution_memorizer.web.explainers import explainer_asset_path, visual_explainer
+from constitution_memorizer.web.schedules import browse_schedule_cards, build_schedule_view
 from constitution_memorizer.planner.eligibility import is_unlearned
 from constitution_memorizer.planner.models import pace_label as plan_pace_label
 from constitution_memorizer.progress.repository import LEARN_MODES
@@ -2285,7 +2284,7 @@ def create_app(
             }
             for section in sections
         ]
-        schedule_cards = browse_schedule_cards(eng)
+        schedule_cards = browse_schedule_cards()
         started = time.perf_counter()
         response = templates.TemplateResponse(
             request,
@@ -2341,20 +2340,19 @@ def create_app(
         return response
 
     @app.get("/browse/schedule/{slug}", response_class=HTMLResponse)
+    async def browse_schedule_legacy(slug: str) -> RedirectResponse:
+        """Old singular path — keep so merged #229 links still resolve."""
+        return RedirectResponse(url=f"/browse/schedules/{slug}", status_code=301)
+
+    @app.get("/browse/schedules/{slug}", response_class=HTMLResponse)
     async def browse_schedule(request: Request, slug: str) -> HTMLResponse:
-        """One Constitution Schedule — title, Bare Act body, Tables, Learn units."""
-        eng = _engine()
-        if not getattr(request.state, "is_guest", False):
-            eng.bootstrap_request(
-                include_news=True,
-                include_account=entitlements_active(request),
-            )
+        """One Constitution Schedule — read-only Bare Act reference."""
         started = time.perf_counter()
-        view = build_schedule_view(eng, slug)
+        view = build_schedule_view(None, slug)
         record_request_timing("browse_build", started)
         if view is None:
             raise HTTPException(status_code=404, detail="Schedule not found")
-        access = access_summary(request, eng)
+        access = access_summary(request, _engine())
         started = time.perf_counter()
         response = templates.TemplateResponse(
             request,
@@ -2362,7 +2360,6 @@ def create_app(
             {
                 "schedule": view,
                 "access": access,
-                "row_is_muted": row_is_muted,
             },
         )
         record_request_timing("template", started)

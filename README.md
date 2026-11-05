@@ -63,6 +63,7 @@ Future ideas: [`docs/FUTURE.md`](docs/FUTURE.md).
 | Footer / laws / memory | `cursor/footer-laws-memory-1a75` | Footer tools; Relevant laws Browse; Memory log calendar + photos |
 | Native macOS reminders | `cursor/native-macos-reminders-1a75` | `--channel macos`; digest includes Memory dues; Browse due badges |
 | Browse card 1c | `cursor/browse-card-1c-1a75` | Corner ribbon, count line, In news pills, red Browse nav badge |
+| Schedules reference | `cursor/schedules-reference-1a75` | Twelve read-only Schedule cards after Part XXII; designed `/browse/schedules/{slug}` pages |
 
 ---
 
@@ -224,7 +225,8 @@ Backup: `bash scripts/mac/backup-progress.sh` → `~/Documents/ConstitutionMemor
 |-------|---------|
 | `/` | Home — due + continue |
 | `/learn/{unit_id}` | Six recall modes |
-| `/browse` | Parts → articles (due ribbons + In news) |
+| `/browse` | Parts → articles, then the twelve Schedules |
+| `/browse/schedules/{slug}` | One Schedule (read-only Bare Act reference) |
 | `/tables` | Quick-reference tables |
 | `/laws` | Relevant laws (Browse) |
 | `/memory` | Memory log calendar + revision sheets |
