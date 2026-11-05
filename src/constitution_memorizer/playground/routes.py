@@ -155,6 +155,8 @@ from constitution_memorizer.entitlements.models import (
 )
 from constitution_memorizer.playground.stage_timer import time_playground_stage
 from constitution_memorizer.playground.view import (
+    SHEET_KIND_FREE_CONFIRM,
+    SHEET_KIND_FREE_READD,
     add_confirm_copy,
     build_home_view,
     capacity_view,
@@ -517,6 +519,18 @@ def _add_page_context(
     halted_add = request_is_halted_subscriber(request)
     if (expired_add or halted_add) and kind == "already_active":
         kind = "resume"
+    # M2R-F02: a RecallC Free account under ``choices`` (permanent choices)
+    # gets the permanent-choice confirm or the no-cost re-add sheet. The Act
+    # head's own kind (``state.kind``) is unchanged.
+    free_choices = bool(
+        permanent
+        and access.snapshot is not None
+        and getattr(access.snapshot, "playground_choice_limit", None) is not None
+    )
+    if free_choices and kind == "eligible_to_add":
+        kind = SHEET_KIND_FREE_CONFIRM
+    elif free_choices and kind == "re_add":
+        kind = SHEET_KIND_FREE_READD
     login_href = playground_login_href(
         local_next_path(str(request.url.path), add_path(law_id))
     )
@@ -583,7 +597,9 @@ def _add_page_context(
         "lines": lines,
         "month_name": month,
         "short_title": short,
-        "action_label": "Add back" if re_add else "Add to Playground",
+        "action_label": (
+            "Add again" if kind == SHEET_KIND_FREE_READD else ("Add back" if re_add else "Add to Playground")
+        ),
         "confirm_value": ROSTER_ADD_CONFIRM,
         "cancel_href": f"/laws/{law_id}",
         "blocked_pending": kind == "pending" or (

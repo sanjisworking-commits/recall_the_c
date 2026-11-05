@@ -62,6 +62,7 @@ from constitution_memorizer.playground.urls import (
     source_review_section_path,
 )
 from constitution_memorizer.entitlements.tier_model import (
+    FREE_CHOICE_LIMIT,
     current_tier_model,
     is_choice_model,
 )
@@ -148,6 +149,18 @@ KIND_ELIGIBLE_TO_ADD = "eligible_to_add"
 # ``choices`` model: a Free account at three permanent choices looking at a
 # law outside its ledger (M2R-F01 ``free_limit``).
 KIND_FREE_LIMIT = "free_limit"
+# Add-sheet kinds (M2R-F02). Sheet-only: the Act head keeps ``eligible_to_add``
+# and ``re_add``; under ``choices`` a RecallC Free account's sheet is the
+# permanent-choice confirm or the no-cost re-add.
+SHEET_KIND_FREE_CONFIRM = "free_confirm"
+SHEET_KIND_FREE_READD = "free_readd"
+
+
+def free_add_label(used: int, limit: int | None) -> str:
+    """M2R-F01: the Free Act-head CTA names the account's used choices."""
+
+    cap = int(limit or FREE_CHOICE_LIMIT)
+    return f"Add to Playground · {max(0, int(used or 0))} of {cap} choices used"
 
 ACT_HEAD_KINDS = frozenset(
     {
@@ -518,20 +531,26 @@ def add_confirm_copy(
     permanent: bool = False,
 ) -> tuple[str, tuple[str, ...]]:
     if permanent:
-        # ``choices`` model, Free account: permanent choices, no month.
+        # ``choices`` model, RecallC Free: permanent choices, no month (M2R-F02,
+        # D3 copy). "n will remain" counts choices, never active laws. No
+        # revision-date promise until 5-12 is decided.
         if re_add:
             return (
-                f"Add {short_title} back to your Playground?",
-                ("Your progress will be saved.", "No choice is used."),
+                f"Add {short_title} again?",
+                (
+                    "One of your chosen laws — adding it again uses no choice.",
+                    "Your saved progress comes back with it.",
+                ),
             )
         remaining = 0 if remaining_after is None else remaining_after
+        cap = int(law_limit or FREE_CHOICE_LIMIT)
         lines = [
-            f"This will use 1 of your {law_limit} permanent Playground law choices.",
-            f"You'll have {remaining} choice{'s' if remaining != 1 else ''} remaining. Choices do not reset.",
+            f"This uses 1 of your {cap} law choices — {remaining} will remain.",
+            "Removing it later will not restore the choice, though you can always add this law again.",
         ]
         if historical:
             lines.append("Your saved progress comes with it.")
-        return f"Add {short_title} to your Playground?", tuple(lines)
+        return "Add to Playground", tuple(lines)
     if re_add:
         title = f"Add {short_title} back to {month_name}?"
         lines = (
@@ -1077,6 +1096,21 @@ def load_membership_index(access: Any, roster: Any, overlay: Any) -> MembershipI
     )
 
 
+def _gate_sentences(gate: Any) -> str:
+    """Gate title and lines as one readable note. A title without terminal
+    punctuation gets a full stop before the next sentence (D32)."""
+
+    parts: list[str] = []
+    for part in (getattr(gate, "title", ""),) + tuple(getattr(gate, "lines", ()) or ()):
+        text = str(part or "").strip()
+        if not text:
+            continue
+        if text[-1] not in ".!?…":
+            text += "."
+        parts.append(text)
+    return " ".join(parts)
+
+
 def _commercial_kind(access: Any) -> str | None:
     """Hard-gate / resume kinds from commercial + device, before roster."""
 
@@ -1120,6 +1154,12 @@ def law_membership(
         access.local_owner
         or (snapshot is not None and (snapshot.is_subscribed or snapshot.admin_override))
         or free_choices
+    )
+    choice_limit = (
+        getattr(snapshot, "playground_choice_limit", None) if snapshot is not None else None
+    )
+    choices_used = (
+        int(getattr(snapshot, "playground_choices_used", 0) or 0) if snapshot is not None else 0
     )
     can_consume = bool(access.can_consume_new_law or access.local_owner)
     skip = skips_add_confirm(access)
@@ -1222,7 +1262,7 @@ def law_membership(
             KIND_RESUME,
             primary_label="Resume Playground",
             primary_href=gate.cta_href or PLAYGROUND_BILLING_PATH,
-            secondary_copy=" ".join(part for part in (gate.title,) + gate.lines if part),
+            secondary_copy=_gate_sentences(gate),
             opens_sheet=True,
         )
     if blocked == KIND_DEVICE_BLOCKED:
@@ -1236,7 +1276,7 @@ def law_membership(
             KIND_DEVICE_BLOCKED,
             primary_label=gate.cta_label,
             primary_href=gate.cta_href,
-            secondary_copy=" ".join(part for part in (gate.title,) + gate.lines if part),
+            secondary_copy=_gate_sentences(gate),
         )
 
     in_ledger = False
@@ -1317,7 +1357,7 @@ def law_membership(
                 primary_href=add_path(law_id),
                 badge=MEMBERSHIP_REMOVED,
                 badge_label="Previously chosen",
-                secondary_copy="One of your chosen laws. No choice is used.",
+                secondary_copy="One of your chosen laws — adding it again uses no choice.",
                 opens_sheet=True,
             )
         return _state(
@@ -1337,7 +1377,7 @@ def law_membership(
             historical=historical,
             roster_full=True,
             consume=False,
-            primary_label="All 3 law choices used",
+            primary_label=f"All {int(choice_limit or FREE_CHOICE_LIMIT)} law choices used",
             primary_href=add_path(law_id),
             badge=MEMBERSHIP_FULL,
             badge_label="Choices used",
@@ -1370,6 +1410,21 @@ def law_membership(
                 badge_label="Progress saved",
                 secondary_copy="Adding new laws is temporarily unavailable",
             )
+        if free_choices:
+            return _state(
+                KIND_ELIGIBLE_TO_ADD,
+                historical=True,
+                consume=True,
+                primary_label=free_add_label(choices_used, choice_limit),
+                primary_href=add_path(law_id),
+                badge=MEMBERSHIP_SAVED,
+                badge_label="Progress saved",
+                opens_sheet=True,
+                secondary_copy=(
+                    "You studied this law previously. "
+                    "Your saved progress comes back with it."
+                ),
+            )
         return _state(
             KIND_ELIGIBLE_TO_ADD,
             historical=True,
@@ -1394,7 +1449,11 @@ def law_membership(
         )
     return _state(
         KIND_ELIGIBLE_TO_ADD,
-        primary_label="+ Add to Playground",
+        primary_label=(
+            free_add_label(choices_used, choice_limit)
+            if free_choices
+            else "+ Add to Playground"
+        ),
         opens_sheet=True,
         primary_href=add_path(law_id),
     )

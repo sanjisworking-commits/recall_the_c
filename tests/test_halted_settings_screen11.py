@@ -677,7 +677,7 @@ def test_halted_settings_marker_uses_shared_predicate() -> None:
     assert "shell_account_status" in base  # M1-R: one snapshot-driven label
     assert LIVE_HEADING not in base
     assert "/resume" not in base
-    assert "playground.css?v=pg54" in base
+    assert "playground.css?v=pg55" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-halted-settings="desktop"' in css
     assert "halted/11-screen" in css

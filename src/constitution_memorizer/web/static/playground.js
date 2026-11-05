@@ -284,6 +284,22 @@
           window.location.href = href;
         });
     });
+    // M2-R (D6): the Add flow swaps a freshly fetched panel into the open
+    // dialog (Retry re-reads the state) without closing and re-opening it.
+    dialog.addEventListener("pg-sheet:swap", function (event) {
+      var panel = event.detail && event.detail.panel;
+      if (!panel) {
+        return;
+      }
+      ensureCloseButton(panel);
+      demoteToPanel(panel);
+      dialog.replaceChildren(panel);
+      labelledBy(panel);
+      var nodes = focusables(dialog);
+      if (nodes[0]) {
+        nodes[0].focus();
+      }
+    });
     dialog.addEventListener("keydown", function (event) {
       if (event.key === "Escape") {
         dialog.close();
@@ -349,9 +365,199 @@
     }
   }
 
+  // M2R-F03 (D6): the scope step posts from inside the open dialog and
+  // reports a failed save in place, with the server's own verdict — the
+  // choice is never consumed twice because Retry re-reads the state rather
+  // than re-posting the form.
+  function addFailureCopy(outcome, name) {
+    if (outcome === "rolled_back") {
+      return "Couldn\u2019t add " + name + ". Nothing was changed.";
+    }
+    return (
+      "We couldn\u2019t confirm this save \u2014 the connection failed before Playground answered. " +
+      name + " may or may not have been added; check Playground before trying again."
+    );
+  }
+
+  function showAddFailure(root, outcome) {
+    var box = root.querySelector("[data-pg-add-alert]");
+    if (!box) {
+      return false;
+    }
+    var name = root.getAttribute("data-pg-law-name") || "this law";
+    box.replaceChildren();
+    var text = document.createElement("p");
+    text.className = "pg-add-alert-text";
+    text.textContent = addFailureCopy(outcome, name);
+    var actions = document.createElement("div");
+    actions.className = "pg-add-alert-actions";
+    var retry = document.createElement("button");
+    retry.type = "button";
+    retry.className = "pg-add-alert-btn";
+    retry.setAttribute("data-pg-add-retry", outcome);
+    retry.textContent = outcome === "rolled_back" ? "Retry" : "Check and retry";
+    actions.appendChild(retry);
+    if (outcome !== "rolled_back") {
+      var open = document.createElement("a");
+      open.className = "pg-add-alert-link";
+      open.href = "/playground";
+      open.textContent = "Open Playground";
+      actions.appendChild(open);
+    }
+    box.appendChild(text);
+    box.appendChild(actions);
+    box.setAttribute("data-outcome", outcome);
+    box.hidden = false;
+    retry.focus();
+    return true;
+  }
+
+  function swapOrNavigate(root, html, url) {
+    var host = root.closest("dialog");
+    var parsed = document.createElement("div");
+    parsed.innerHTML = html;
+    var panel = parsed.querySelector(".pg-sheet-panel");
+    if (panel && host) {
+      panel.classList.add("is-enhanced");
+      host.dispatchEvent(new CustomEvent("pg-sheet:swap", { detail: { panel: panel } }));
+      return;
+    }
+    window.location.assign(url);
+  }
+
+  // Retry re-reads: GET the Add sheet again (the server redirects to the law
+  // when the save did commit) and swap it in at the scope step.
+  function rereadAddSheet(root) {
+    var action = root.getAttribute("data-pg-add-action") || "";
+    if (!action) {
+      window.location.reload();
+      return;
+    }
+    var sep = action.indexOf("?") >= 0 ? "&" : "?";
+    fetch(action + sep + "step=scope", {
+      credentials: "same-origin",
+      headers: { Accept: "text/html", "X-Requested-With": "pg-sheet" },
+    })
+      .then(function (response) {
+        return response.text().then(function (html) {
+          return { ok: response.ok, redirected: response.redirected, url: response.url, html: html };
+        });
+      })
+      .then(function (out) {
+        if (out.redirected || !out.ok) {
+          window.location.assign(out.url || action);
+          return;
+        }
+        swapOrNavigate(root, out.html, out.url || action);
+      })
+      .catch(function () {
+        window.location.assign(action);
+      });
+  }
+
   function enhanceAddFlow() {
     document.querySelectorAll("[data-pg-add]").forEach(function (root) {
       root.classList.add("is-enhanced");
+    });
+    document.addEventListener("click", function (event) {
+      var retry = event.target.closest("[data-pg-add-retry]");
+      if (!retry) {
+        return;
+      }
+      var root = retry.closest("[data-pg-add]");
+      if (!root) {
+        return;
+      }
+      event.preventDefault();
+      retry.setAttribute("aria-busy", "true");
+      retry.disabled = true;
+      rereadAddSheet(root);
+    });
+    document.addEventListener("submit", function (event) {
+      var form = event.target.closest("[data-add-step='scope'] form");
+      if (!form || !window.fetch || !window.FormData) {
+        return;
+      }
+      var root = form.closest("[data-pg-add]");
+      // Only the in-dialog flow is enhanced: the standalone (no-JS or
+      // POST re-render) page keeps the plain form post and the server's
+      // save-failed page.
+      if (!root || !root.closest("dialog")) {
+        return;
+      }
+      var submitter = event.submitter;
+      if (!submitter || !submitter.name) {
+        return;
+      }
+      event.preventDefault();
+      if (root.getAttribute("data-pg-saving") === "true") {
+        return;
+      }
+      root.setAttribute("data-pg-saving", "true");
+      root.setAttribute("data-pg-add-action", form.getAttribute("action") || "");
+      submitter.setAttribute("aria-busy", "true");
+      var alertBox = root.querySelector("[data-pg-add-alert]");
+      if (alertBox) {
+        alertBox.hidden = true;
+        alertBox.replaceChildren();
+        alertBox.removeAttribute("data-outcome");
+      }
+      var data = new FormData(form);
+      data.append(submitter.name, submitter.value);
+      var body = new URLSearchParams();
+      data.forEach(function (value, key) {
+        body.append(key, value);
+      });
+      function done() {
+        root.removeAttribute("data-pg-saving");
+        submitter.removeAttribute("aria-busy");
+      }
+      fetch(form.getAttribute("action"), {
+        method: "POST",
+        credentials: "same-origin",
+        body: body,
+        headers: {
+          Accept: "application/json, text/html;q=0.9",
+          "X-Requested-With": "pg-sheet",
+        },
+      })
+        .then(function (response) {
+          var type = (response.headers.get("content-type") || "").toLowerCase();
+          if (type.indexOf("application/json") >= 0) {
+            return response.json().then(function (json) {
+              return { json: json, ok: response.ok, redirected: response.redirected, url: response.url };
+            });
+          }
+          return response.text().then(function (html) {
+            return { html: html, ok: response.ok, redirected: response.redirected, url: response.url };
+          });
+        })
+        .then(function (out) {
+          done();
+          if (out.json) {
+            if (out.json.ok === false && out.json.error === "save_failed") {
+              // The server's verdict: ``rolled_back`` only when it observed
+              // its own rollback; anything else is ``unknown``.
+              showAddFailure(root, out.json.outcome === "rolled_back" ? "rolled_back" : "unknown");
+              return;
+            }
+            // Any other JSON denial: re-read the sheet so the current state
+            // (limit reached, pending, already active) is what the user sees.
+            rereadAddSheet(root);
+            return;
+          }
+          if (out.redirected) {
+            window.location.assign(out.url);
+            return;
+          }
+          swapOrNavigate(root, out.html, out.url);
+        })
+        .catch(function () {
+          done();
+          // No answer at all: the transaction may have committed. Never claim
+          // "nothing was changed" here.
+          showAddFailure(root, "unknown");
+        });
     });
     document.addEventListener("submit", function (event) {
       var form = event.target.closest("[data-pg-add-confirm]");
