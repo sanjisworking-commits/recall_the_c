@@ -1,92 +1,168 @@
 {% extends "base.html" %}
-{% block title %}Schedule {{ schedule.roman }} · {{ schedule.title }} · Browse{% endblock %}
-{% block mobile_screen %}part{% endblock %}
+{% block title %}{{ schedule.ord }} Schedule · {{ schedule.title }} · Browse{% endblock %}
+{% block mobile_screen %}schedule{% endblock %}
 {% block content %}
-<section class="panel browse-article browse-schedule-page">
-  <div class="mobile-topbar">
-    <a class="mobile-back" href="/browse">← All Schedules</a>
-  </div>
+<section class="sched-page">
+  <header class="sched-head">
+    <a class="sched-back" href="/browse#schedules">← Browse</a>
+    <p class="sched-eyebrow">{{ schedule.ord }} Schedule</p>
+    <h1 class="sched-title">{{ schedule.title }}</h1>
+    <p class="sched-meta">{{ schedule.meta }}</p>
+  </header>
 
-  <p class="eyebrow">
-    <span class="eyebrow-desktop">Browse · The Schedules</span>
-    <span class="eyebrow-phone">The Schedules</span>
-  </p>
-  <h1 class="display">Schedule {{ schedule.roman }}</h1>
-  <p class="lede">{{ schedule.title }}</p>
-  {% if schedule.articles %}
-  <p class="browse-article-meta">{{ schedule.articles }}</p>
-  {% endif %}
-
-  <nav class="article-adjacent" aria-label="Adjacent schedules">
-    {% if schedule.prev_slug %}
-    <a class="article-adjacent-link is-prev" href="/browse/schedule/{{ schedule.prev_slug }}">← Schedule {{ schedule.prev_roman }}</a>
-    {% else %}
-    <span class="article-adjacent-link is-disabled">← First Schedule</span>
+  <div class="sched-body">
+    {% if schedule.cite %}
+    <p class="sched-ref">{{ schedule.cite }}</p>
     {% endif %}
-    <a class="article-adjacent-index" href="/browse">All Schedules</a>
-    {% if schedule.next_slug %}
-    <a class="article-adjacent-link is-next" href="/browse/schedule/{{ schedule.next_slug }}">Schedule {{ schedule.next_roman }} →</a>
-    {% else %}
-    <span class="article-adjacent-link is-disabled">Last Schedule →</span>
-    {% endif %}
-  </nav>
 
-  {% if schedule.learn_units %}
-  <h2 class="section-title">Learn</h2>
-  <p class="article-clause-label">Units</p>
-  <ul class="checklist article-clause-list">
-    {% for unit in schedule.learn_units %}
-    <li>
-      <a class="checklist-item" href="/learn/{{ unit.id }}">
-        <span class="article-clause-node" aria-hidden="true"></span>
-        <span class="checklist-title">{{ unit.display_title }}</span>
+    {% for chunk in schedule.blocks %}
+      {% if chunk.t == 'h' %}
+      <h2 class="sched-h">{{ chunk.s }}</h2>
+      {% elif chunk.t == 'p' %}
+      <p class="sched-p">{{ chunk.s }}</p>
+      {% elif chunk.t == 'sec' %}
+      <div class="sched-sec">
+        <span class="sched-sec-num">{{ chunk.num }}</span>
+        <span class="sched-sec-title">{{ chunk.title }}</span>
+      </div>
+      {% elif chunk.t == 'cl' %}
+      <div class="sched-cl" style="padding-left: {{ chunk.pad|default(0) }}px">
+        <span class="sched-cl-mark">{{ chunk.mark }}</span>
+        <p class="sched-p">{{ chunk.s }}</p>
+      </div>
+      {% elif chunk.t == 'lead' %}
+      <p class="sched-lead" style="padding-left: {{ chunk.pad|default(0) }}px"><em>{{ chunk.lead }}</em> {{ chunk.s }}</p>
+      {% elif chunk.t == 'table' and chunk.kind == 'three' %}
+      <div class="sched-table is-three">
+        {% for row in chunk.rows %}
+        <div class="sched-tr">
+          <span class="sched-td-n">{{ row.a }}</span>
+          <span class="sched-td-name">{{ row.b }}</span>
+          <span class="sched-td-text">{{ row.c }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% elif chunk.t == 'table' and chunk.kind == 'two' %}
+      <div class="sched-table is-two">
+        {% for row in chunk.rows %}
+        <div class="sched-tr">
+          <span class="sched-td-n is-accent">{{ row.a }}</span>
+          <span class="sched-td-text">{{ row.b }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% elif chunk.t == 'table' and chunk.kind == 'pay' %}
+      <div class="sched-table is-pay">
+        {% for row in chunk.rows %}
+        <div class="sched-tr">
+          <span class="sched-td-text">{{ row.a }}</span>
+          <span class="sched-td-amt">{{ row.b }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% elif chunk.t == 'table' and chunk.kind == 'parts' %}
+      <div class="sched-table is-parts">
+        {% for row in chunk.rows %}
+        <div class="sched-tr">
+          <span class="sched-td-part">{{ row.a }}</span>
+          <span class="sched-td-text">{{ row.b }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      {% elif chunk.t == 'list' %}
+      <div class="sched-list" data-sched-list>
+        <button type="button" class="sched-list-head" aria-expanded="{{ 'true' if chunk.open else 'false' }}" data-sched-list-toggle>
+          <span>
+            <span class="sched-list-eyebrow">{{ chunk.eyebrow }}</span>
+            <span class="sched-list-title">{{ chunk.title }}</span>
+            <span class="sched-list-count">{{ chunk['items']|length }} entries</span>
+          </span>
+          <span class="sched-list-action" data-sched-list-label>{% if chunk.open %}Collapse ▴{% else %}Expand ▾{% endif %}</span>
+        </button>
+        <div class="sched-list-body"{% if not chunk.open %} hidden{% endif %}>
+          {% for item in chunk['items'] %}
+          <div class="sched-tr">
+            <span class="sched-td-n is-accent">{{ item.n }}</span>
+            <div class="sched-td-text">
+              {{ item.s }}
+              {% if item.cls %}
+              <div class="sched-list-cls">
+                {% for cl in item.cls %}
+                <div class="sched-cl">
+                  <span class="sched-cl-mark">{{ cl.mark }}</span>
+                  <p class="sched-p">{{ cl.s }}</p>
+                </div>
+                {% endfor %}
+              </div>
+              {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% elif chunk.t == 'langs' %}
+      <h2 class="sched-h">Languages</h2>
+      <div class="sched-langs">
+        {% for item in chunk['items'] %}
+        <div class="sched-lang{% if item.note %} has-note{% endif %}" tabindex="0"{% if item.note %} data-sched-tip="{{ item.note }}"{% endif %}>
+          <span class="sched-lang-n">{{ item.n }}</span>
+          <span class="sched-lang-name">{{ item.name }}</span>
+          <span class="sched-lang-foot">
+            {% if item.added %}<span>Added {{ item.added }}</span>{% endif %}
+            {% if item.note %}<span class="sched-lang-i" aria-hidden="true">i</span>{% endif %}
+          </span>
+        </div>
+        {% endfor %}
+      </div>
+      {% elif chunk.t == 'oaths' %}
+      <h2 class="sched-h">Forms of Oaths or Affirmations</h2>
+      <div class="sched-oaths">
+        {% for item in chunk['items'] %}
+        <article class="sched-oath">
+          <p class="sched-oath-head">
+            <span class="sched-oath-form">{{ item.form }}</span>
+            <span class="sched-oath-who">{{ item.who }}</span>
+          </p>
+          <p class="sched-oath-text">{{ item.text|safe }}</p>
+          {% if item.note %}
+          <p class="sched-oath-note">{{ item.note }}</p>
+          {% endif %}
+        </article>
+        {% endfor %}
+      </div>
+      {% endif %}
+    {% endfor %}
+
+    {% if schedule.notes %}
+    <div class="sched-notes">
+      <p class="sched-notes-label">Amendment notes</p>
+      <ol>
+        {% for note in schedule.notes %}
+        <li>{{ note }}</li>
+        {% endfor %}
+      </ol>
+    </div>
+    {% endif %}
+
+    <nav class="sched-adj" aria-label="Adjacent schedules">
+      {% if schedule.prev_slug %}
+      <a class="sched-adj-card" href="/browse/schedules/{{ schedule.prev_slug }}">
+        <span class="sched-adj-eye">‹ Previous</span>
+        <span class="sched-adj-name">{{ schedule.prev_ord }} Schedule</span>
       </a>
-    </li>
-    {% endfor %}
-  </ul>
-  {% endif %}
-
-  {% if schedule.full_text %}
-  <p class="article-clause-label">Bare Act</p>
-  <div class="article-bare" data-bare-preview>
-    <article class="unit-text browse-article-text">{{ schedule.full_text }}</article>
-    <button type="button" class="article-bare-more" data-bare-expand>Read the full Schedule</button>
+      {% else %}
+      <span class="sched-adj-card is-empty" aria-hidden="true"></span>
+      {% endif %}
+      {% if schedule.next_slug %}
+      <a class="sched-adj-card" href="/browse/schedules/{{ schedule.next_slug }}">
+        <span class="sched-adj-eye">Next ›</span>
+        <span class="sched-adj-name">{{ schedule.next_ord }} Schedule</span>
+      </a>
+      {% else %}
+      <span class="sched-adj-card is-empty" aria-hidden="true"></span>
+      {% endif %}
+    </nav>
   </div>
-  {% elif not schedule.table_payload %}
-  <p class="empty">Full Bare Act wording for this Schedule is still being restored. The title and article references are current.</p>
-  {% endif %}
-
-  {% if schedule.table_payload %}
-  <p class="article-clause-label">{{ schedule.table_payload.title or 'Reference table' }}</p>
-  {% if schedule.table_payload.note %}
-  <p class="tables-note">{{ schedule.table_payload.note }}</p>
-  {% endif %}
-  {% for block in schedule.table_payload.tables %}
-  {% if block.label %}
-  <h3 class="tables-block-label">{{ block.label }}</h3>
-  {% endif %}
-  <div class="tables-frame">
-    <div
-      class="tables-grid tables-head"
-      style="grid-template-columns: {{ schedule.table_payload.grid }}"
-    >
-      {% for h in block.head %}
-      <div class="tables-cell">{{ h }}</div>
-      {% endfor %}
-    </div>
-    {% for row in block.rows %}
-    <div
-      class="tables-grid tables-row{% if row_is_muted(block, row) %} is-muted{% endif %}"
-      style="grid-template-columns: {{ schedule.table_payload.grid }}"
-    >
-      {% for cell in row %}
-      <div class="tables-cell">{{ cell }}</div>
-      {% endfor %}
-    </div>
-    {% endfor %}
-  </div>
-  {% endfor %}
-  {% endif %}
 </section>
 {% if is_guest|default(false) %}
 {% include "partials/guest_modal.html" %}

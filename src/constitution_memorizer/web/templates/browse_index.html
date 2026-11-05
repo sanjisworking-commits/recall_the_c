@@ -154,7 +154,7 @@
     <a class="browse-resource-card" href="/tables" role="listitem">
       <span class="browse-resource-copy">
         <span class="browse-resource-name">Tables</span>
-        <span class="browse-resource-desc">Schedules, Parts, writs</span>
+        <span class="browse-resource-desc">Parts, writs, amendments</span>
       </span>
       <span class="browse-resource-chevron" aria-hidden="true">›</span>
     </a>
@@ -208,25 +208,6 @@
   </div>
   {% endif %}
 
-  {% if schedule_cards %}
-  <p class="browse-constitution-label browse-schedules-label-phone">The Schedules</p>
-  <div class="browse-part-rail browse-schedule-rail">
-    {% for card in schedule_cards %}
-    <a class="part-card" href="{{ card.href }}">
-      <span class="part-card-top">
-        <span class="part-card-roman">Schedule {{ card.roman }}</span>
-        <span class="part-card-chevron" aria-hidden="true">›</span>
-      </span>
-      <span class="part-card-name">{{ card.title }}</span>
-      <span class="part-card-foot">
-        <span class="part-card-range">{{ card.articles }}</span>
-      </span>
-    </a>
-    {% endfor %}
-    <p class="browse-rail-note">{{ schedule_cards|length }} Schedules of the Constitution.</p>
-  </div>
-  {% endif %}
-
   {% for section in sections %}
   <section class="browse-part" aria-label="Part {{ section.part_number }}">
     <div class="browse-part-header">
@@ -254,15 +235,25 @@
   {% endfor %}
 
   {% if schedule_cards %}
-  <p class="browse-constitution-label browse-schedules-label-desktop">The Schedules</p>
-  <div class="browse-article-grid browse-schedule-grid">
-    {% for card in schedule_cards %}
-    <a class="browse-article-card" href="{{ card.href }}">
-      <span class="browse-article-num">Schedule {{ card.roman }}</span>
-      <span class="browse-article-title">{{ card.title }}</span>
-    </a>
-    {% endfor %}
-  </div>
+  <section class="browse-schedules-section" id="schedules" aria-label="Schedules">
+    <div class="browse-part-header">
+      <span class="browse-part-roman">Schedules</span>
+      <span class="browse-part-name">Twelve Schedules annexed to the Constitution</span>
+      <span class="browse-part-range">First – Twelfth</span>
+    </div>
+    <div class="browse-schedule-grid">
+      {% for card in schedule_cards %}
+      <a class="browse-schedule-card" href="{{ card.href }}">
+        <span class="browse-schedule-card-top">
+          <span class="browse-schedule-card-name">{{ card.ord }} Schedule</span>
+          <span class="browse-schedule-card-chevron" aria-hidden="true">›</span>
+        </span>
+        <span class="browse-schedule-card-title">{{ card.title }}</span>
+        <span class="browse-schedule-card-refs">{{ card.refs }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
   {% endif %}
 
   {% if present_marks %}

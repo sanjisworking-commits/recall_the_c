@@ -1,0 +1,2577 @@
+{
+  "first": {
+    "blocks": [
+      {
+        "t": "h",
+        "s": "I. The States"
+      },
+      {
+        "t": "table",
+        "kind": "three",
+        "rows": [
+          {
+            "a": "1",
+            "b": "Andhra Pradesh",
+            "c": "The territories specified in sub-section (1) of section 3 of the Andhra State Act, 1953, sub-section (1) of section 3 of the States Reorganisation Act, 1956, the First Schedule to the Andhra Pradesh and Madras (Alteration of Boundaries) Act, 1959, and the Schedule to the Andhra Pradesh and Mysore (Transfer of Territory) Act, 1968, but excluding the territories specified in the Second Schedule to the Andhra Pradesh and Madras (Alteration of Boundaries) Act, 1959 and the territories specified in section 3 of the Andhra Pradesh Reorganisation Act, 2014."
+          },
+          {
+            "a": "2",
+            "b": "Assam",
+            "c": "The territories which immediately before the commencement of this Constitution were comprised in the Province of Assam, the Khasi States and the Assam Tribal Areas, but excluding the territories specified in the Schedule to the Assam (Alteration of Boundaries) Act, 1951 and the territories specified in section 3 of the State of Nagaland Act, 1962 and the territories specified in sections 5, 6 and 7 of the North-Eastern Areas (Reorganisation) Act, 1971 and the territories referred to in Part I of the Second Schedule to the Constitution (One Hundredth Amendment) Act, 2015."
+          },
+          {
+            "a": "3",
+            "b": "Bihar",
+            "c": "The territories which immediately before the commencement of this Constitution were either comprised in the Province of Bihar or were being administered as if they formed part of that Province and the territories specified in clause (a) of sub-section (1) of section 3 of the Bihar and Uttar Pradesh (Alteration of Boundaries) Act, 1968, but excluding the territories specified in sub-section (1) of section 3 of the Bihar and West Bengal (Transfer of Territories) Act, 1956 and the territories specified in section 3 of the Bihar Reorganisation Act, 2000."
+          },
+          {
+            "a": "4",
+            "b": "Gujarat",
+            "c": "The territories referred to in sub-section (1) of section 3 of the Bombay Reorganisation Act, 1960."
+          },
+          {
+            "a": "5",
+            "b": "Kerala",
+            "c": "The territories specified in sub-section (1) of section 5 of the States Reorganisation Act, 1956."
+          },
+          {
+            "a": "6",
+            "b": "Madhya Pradesh",
+            "c": "The territories specified in sub-section (1) of section 9 of the States Reorganisation Act, 1956 and the First Schedule to the Rajasthan and Madhya Pradesh (Transfer of Territories) Act, 1959, but excluding the territories specified in section 3 of the Madhya Pradesh Reorganisation Act, 2000."
+          },
+          {
+            "a": "7",
+            "b": "Tamil Nadu",
+            "c": "The territories which immediately before the commencement of this Constitution were either comprised in the Province of Madras or were being administered as if they formed part of that Province and the territories specified in section 4 of the States Reorganisation Act, 1956, and the Second Schedule to the Andhra Pradesh and Madras (Alteration of Boundaries) Act, 1959, but excluding the territories specified in sub-section (1) of section 3 and sub-section (1) of section 4 of the Andhra State Act, 1953 and the territories specified in clause (b) of sub-section (1) of section 5, section 6 and clause (d) of sub-section (1) of section 7 of the States Reorganisation Act, 1956 and the territories specified in the First Schedule to the Andhra Pradesh and Madras (Alteration of Boundaries) Act, 1959."
+          },
+          {
+            "a": "8",
+            "b": "Maharashtra",
+            "c": "The territories specified in sub-section (1) of section 8 of the States Reorganisation Act, 1956, but excluding the territories referred to in sub-section (1) of section 3 of the Bombay Reorganisation Act, 1960."
+          },
+          {
+            "a": "9",
+            "b": "Karnataka",
+            "c": "The territories specified in sub-section (1) of section 7 of the States Reorganisation Act, 1956, but excluding the territory specified in the Schedule to the Andhra Pradesh and Mysore (Transfer of Territory) Act, 1968."
+          },
+          {
+            "a": "10",
+            "b": "Odisha",
+            "c": "The territories which immediately before the commencement of this Constitution were either comprised in the Province of Orissa or were being administered as if they formed part of that Province."
+          },
+          {
+            "a": "11",
+            "b": "Punjab",
+            "c": "The territories specified in section 11 of the States Reorganisation Act, 1956 and the territories referred to in Part II of the First Schedule to the Acquired Territories (Merger) Act, 1960, but excluding the territories referred to in Part II of the First Schedule to the Constitution (Ninth Amendment) Act, 1960 and the territories specified in sub-section (1) of section 3, section 4 and sub-section (1) of section 5 of the Punjab Reorganisation Act, 1966."
+          },
+          {
+            "a": "12",
+            "b": "Rajasthan",
+            "c": "The territories specified in section 10 of the States Reorganisation Act, 1956, but excluding the territories specified in the First Schedule to the Rajasthan and Madhya Pradesh (Transfer of Territories) Act, 1959."
+          },
+          {
+            "a": "13",
+            "b": "Uttar Pradesh",
+            "c": "The territories which immediately before the commencement of this Constitution were either comprised in the Province known as the United Provinces or were being administered as if they formed part of that Province and the territories specified in clause (b) of sub-section (1) of section 3 of the Bihar and Uttar Pradesh (Alteration of Boundaries) Act, 1968 and the territories specified in clause (b) of sub-section (1) of section 4 of the Haryana and Uttar Pradesh (Alteration of Boundaries) Act, 1979, but excluding the territories specified in clause (a) of sub-section (1) of section 3 of the Bihar and Uttar Pradesh (Alteration of Boundaries) Act, 1968, and the territories specified in section 3 of the Uttar Pradesh Reorganisation Act, 2000 and the territories specified in clause (a) of sub-section (1) of section 4 of the Haryana and Uttar Pradesh (Alteration of Boundaries) Act, 1979."
+          },
+          {
+            "a": "14",
+            "b": "West Bengal",
+            "c": "The territories which immediately before the commencement of this Constitution were either comprised in the Province of West Bengal or were being administered as if they formed part of that Province and the territory of Chandernagore as defined in clause (c) of section 2 of the Chandernagore (Merger) Act, 1954 and also the territories specified in sub-section (1) of section 3 of the Bihar and West Bengal (Transfer of Territories) Act, 1956 and the territories referred to in Part III of the First Schedule to the Acquired Territories (Merger) Act, 1960."
+          },
+          {
+            "a": "16",
+            "b": "Nagaland",
+            "c": "The territories specified in sub-section (1) of section 3 of the State of Nagaland Act, 1962."
+          },
+          {
+            "a": "17",
+            "b": "Haryana",
+            "c": "The territories specified in sub-section (1) of section 3 of the Punjab Reorganisation Act, 1966 and the territories specified in clause (a) of sub-section (1) of section 4 of the Haryana and Uttar Pradesh (Alteration of Boundaries) Act, 1979, but excluding the territories specified in clause (b) of sub-section (1) of section 4 of that Act."
+          },
+          {
+            "a": "18",
+            "b": "Himachal Pradesh",
+            "c": "The territories which immediately before the commencement of this Constitution were being administered as if they were Chief Commissioners' Provinces under the names of Himachal Pradesh and Bilaspur and the territories specified in sub-section (1) of section 5 of the Punjab Reorganisation Act, 1966."
+          },
+          {
+            "a": "19",
+            "b": "Manipur",
+            "c": "The territory which immediately before the commencement of this Constitution was being administered as if it were a Chief Commissioner's Province under the name of Manipur."
+          },
+          {
+            "a": "20",
+            "b": "Tripura",
+            "c": "The territory which immediately before the commencement of this Constitution was being administered as if it were a Chief Commissioner's Province under the name of Tripura."
+          },
+          {
+            "a": "21",
+            "b": "Meghalaya",
+            "c": "The territories specified in section 5 of the North-Eastern Areas (Reorganisation) Act, 1971."
+          },
+          {
+            "a": "22",
+            "b": "Sikkim",
+            "c": "The territories which immediately before the commencement of the Constitution (Thirty-sixth Amendment) Act, 1975, were comprised in Sikkim."
+          },
+          {
+            "a": "23",
+            "b": "Mizoram",
+            "c": "The territories specified in section 6 of the North-Eastern Areas (Reorganisation) Act, 1971."
+          },
+          {
+            "a": "24",
+            "b": "Arunachal Pradesh",
+            "c": "The territories specified in section 7 of the North-Eastern Areas (Reorganisation) Act, 1971."
+          },
+          {
+            "a": "25",
+            "b": "Goa",
+            "c": "The territories specified in section 3 of the Goa, Daman and Diu Reorganisation Act, 1987."
+          },
+          {
+            "a": "26",
+            "b": "Chhattisgarh",
+            "c": "The territories specified in section 3 of the Madhya Pradesh Reorganisation Act, 2000."
+          },
+          {
+            "a": "27",
+            "b": "Uttarakhand",
+            "c": "The territories specified in section 3 of the Uttar Pradesh Reorganisation Act, 2000."
+          },
+          {
+            "a": "28",
+            "b": "Jharkhand",
+            "c": "The territories specified in section 3 of the Bihar Reorganisation Act, 2000."
+          },
+          {
+            "a": "29",
+            "b": "Telangana",
+            "c": "The territories specified in section 3 of the Andhra Pradesh Reorganisation Act, 2014."
+          }
+        ]
+      },
+      {
+        "t": "h",
+        "s": "II. The Union Territories"
+      },
+      {
+        "t": "table",
+        "kind": "three",
+        "rows": [
+          {
+            "a": "1",
+            "b": "Delhi",
+            "c": "The territory which immediately before the commencement of this Constitution was comprised in the Chief Commissioner's Province of Delhi."
+          },
+          {
+            "a": "2",
+            "b": "The Andaman and Nicobar Islands",
+            "c": "The territory which immediately before the commencement of this Constitution was comprised in the Chief Commissioner's Province of the Andaman and Nicobar Islands."
+          },
+          {
+            "a": "3",
+            "b": "Lakshadweep",
+            "c": "The territory specified in section 6 of the States Reorganisation Act, 1956."
+          },
+          {
+            "a": "4",
+            "b": "Dadra and Nagar Haveli and Daman and Diu",
+            "c": "The territories specified in section 4 of the Goa, Daman and Diu Reorganisation Act, 1987 and the territory which immediately before the eleventh day of August, 1961 was comprised in Free Dadra and Nagar Haveli."
+          },
+          {
+            "a": "6",
+            "b": "Puducherry",
+            "c": "The territories which immediately before the sixteenth day of August, 1962, were comprised in the French Establishments in India known as Pondicherry, Karikal, Mahe and Yanam."
+          },
+          {
+            "a": "7",
+            "b": "Chandigarh",
+            "c": "The territories specified in section 4 of the Punjab Reorganisation Act, 1966."
+          },
+          {
+            "a": "8",
+            "b": "Jammu and Kashmir",
+            "c": "The territories specified in section 4 of the Jammu and Kashmir Reorganisation Act, 2019."
+          },
+          {
+            "a": "9",
+            "b": "Ladakh",
+            "c": "The territories specified in section 3 of the Jammu and Kashmir Reorganisation Act, 2019."
+          }
+        ]
+      }
+    ],
+    "notes": [
+      "Jammu and Kashmir (entry 15) omitted by the Jammu and Kashmir Reorganisation Act, 2019; the State is now Union territories of Jammu and Kashmir and Ladakh."
+    ]
+  },
+  "second": {
+    "blocks": [
+      {
+        "t": "sec",
+        "num": "A",
+        "title": "Provisions as to the President and the Governors of States"
+      },
+      {
+        "t": "cl",
+        "mark": "1.",
+        "s": "There shall be paid to the President and to the Governors of the States such emoluments, allowances and privileges as may from time to time be determined by Parliament by law and, until provision in that behalf is so made, such emoluments, allowances and privileges as are specified in this Schedule.",
+        "pad": 0
+      },
+      {
+        "t": "cl",
+        "mark": "2.",
+        "s": "There shall also be paid to the President and to the Governors of the States such other allowances and privileges as are specified in this Schedule.",
+        "pad": 0
+      },
+      {
+        "t": "p",
+        "s": "Until Parliament by law otherwise provides, there shall be paid to the President and to the Governors of States the following emoluments:"
+      },
+      {
+        "t": "table",
+        "kind": "pay",
+        "rows": [
+          {
+            "a": "The President",
+            "b": "5,00,000 rupees per mensem"
+          },
+          {
+            "a": "The Governor of a State",
+            "b": "3,50,000 rupees per mensem"
+          }
+        ]
+      },
+      {
+        "t": "sec",
+        "num": "C",
+        "title": "Provisions as to the Speaker and the Deputy Speaker of the House of the People and the Chairman and the Deputy Chairman of the Council of States and the Speaker and the Deputy Speaker of the Legislative Assembly and the Chairman and the Deputy Chairman of the Legislative Council of a State"
+      },
+      {
+        "t": "cl",
+        "mark": "7.",
+        "s": "There shall be paid to the Speaker of the House of the People and to the Chairman of the Council of States such salaries and allowances as may be respectively fixed by Parliament by law, and, until provision in that behalf is so made, such salaries as are specified in this Schedule.",
+        "pad": 0
+      },
+      {
+        "t": "cl",
+        "mark": "8.",
+        "s": "There shall be paid to the Speaker and the Deputy Speaker of the Legislative Assembly of a State, and to the Chairman and the Deputy Chairman of the Legislative Council of a State, such salaries and allowances as may be respectively fixed by the Legislature of the State by law, and, until provision in that behalf is so made, such salaries as are specified in this Schedule.",
+        "pad": 0
+      },
+      {
+        "t": "sec",
+        "num": "D",
+        "title": "Provisions as to the Judges of the Supreme Court and of the High Courts"
+      },
+      {
+        "t": "cl",
+        "mark": "9.",
+        "s": "There shall be paid to the Judges of the Supreme Court, in respect of time spent on actual service, salary at the following rates per mensem, that is to say:—",
+        "pad": 0
+      },
+      {
+        "t": "table",
+        "kind": "pay",
+        "rows": [
+          {
+            "a": "The Chief Justice",
+            "b": "2,80,000 rupees per mensem"
+          },
+          {
+            "a": "Any other Judge",
+            "b": "2,50,000 rupees per mensem"
+          }
+        ]
+      },
+      {
+        "t": "cl",
+        "mark": "10.",
+        "s": "Every Judge of the Supreme Court shall be entitled without payment of rent to the use of an official residence.",
+        "pad": 0
+      },
+      {
+        "t": "cl",
+        "mark": "11.",
+        "s": "There shall be paid to the Judges of High Courts, in respect of time spent on actual service, salary at the following rates per mensem, that is to say:—",
+        "pad": 0
+      },
+      {
+        "t": "table",
+        "kind": "pay",
+        "rows": [
+          {
+            "a": "The Chief Justice",
+            "b": "2,50,000 rupees per mensem"
+          },
+          {
+            "a": "Any other Judge",
+            "b": "2,25,000 rupees per mensem"
+          }
+        ]
+      },
+      {
+        "t": "sec",
+        "num": "E",
+        "title": "Provisions as to the Comptroller and Auditor-General of India"
+      },
+      {
+        "t": "cl",
+        "mark": "12.",
+        "s": "There shall be paid to the Comptroller and Auditor-General of India a salary at the rate of 2,50,000 rupees per mensem and he shall be entitled to such other allowances and privileges as may be determined by Parliament by law.",
+        "pad": 0
+      }
+    ],
+    "notes": [
+      "Part B omitted by the Constitution (Seventh Amendment) Act, 1956, s. 29 and Sch.",
+      "Salary figures in this Schedule have been revised by Parliament from time to time; the amounts shown follow the current statutory rates referenced in the notes to the official text."
+    ]
+  },
+  "third": {
+    "blocks": [
+      {
+        "t": "oaths",
+        "items": [
+          {
+            "form": "FORM I",
+            "who": "Form of oath of office for a Minister for the Union",
+            "text": "“I, A. B., <span class=\"sched-oath-alt\"><span>do swear in the name of God</span><span>solemnly affirm</span></span> that I will bear true faith and allegiance to the Constitution of India as by law established, that I will uphold the sovereignty and integrity of India, that I will faithfully and conscientiously discharge my duties as a Minister for the Union and that I will do right to all manner of people in accordance with the Constitution and the law, without fear or favour, affection or ill-will.”"
+          },
+          {
+            "form": "FORM II",
+            "who": "Form of oath of secrecy for a Minister for the Union",
+            "text": "“I, A.B., <span class=\"sched-oath-alt\"><span>do swear in the name of God</span><span>solemnly affirm</span></span> that I will not directly or indirectly communicate or reveal to any person or persons any matter which shall be brought under my consideration or shall become known to me as a Minister for the Union except as may be required for the due discharge of my duties as such Minister.”"
+          },
+          {
+            "form": "FORM III · A",
+            "who": "Form of oath or affirmation to be made by a candidate for election to Parliament",
+            "text": "“I, A.B., having been nominated as a candidate to fill a seat in the Council of States (or the House of the People) <span class=\"sched-oath-alt\"><span>do swear in the name of God</span><span>solemnly affirm</span></span> that I will bear true faith and allegiance to the Constitution of India as by law established and that I will uphold the sovereignty and integrity of India.”",
+            "note": "See also arts. 84 (a) and 173 (a)."
+          },
+          {
+            "form": "FORM III · B",
+            "who": "Form of oath or affirmation to be made by a member of Parliament",
+            "text": "“I, A.B., having been elected (or nominated) a member of the Council of States (or the House of the People) <span class=\"sched-oath-alt\"><span>do swear in the name of God</span><span>solemnly affirm</span></span> that I will bear true faith and allegiance to the Constitution of India as by law established, that I will uphold the sovereignty and integrity of India and that I will faithfully discharge the duty upon which I am about to enter.”"
+          },
+          {
+            "form": "FORM IV",
+            "who": "Form of oath or affirmation to be made by the Judges of the Supreme Court and the Comptroller and Auditor-General of India",
+            "text": "“I, A.B., having been appointed Chief Justice (or a Judge) of the Supreme Court of India (or Comptroller and Auditor-General of India) <span class=\"sched-oath-alt\"><span>do swear in the name of God</span><span>solemnly affirm</span></span> that I will bear true faith and allegiance to the Constitution of India as by law established, that I will uphold the sovereignty and integrity of India, that I will duly and faithfully and to the best of my ability, knowledge and judgment perform the duties of my office without fear or favour, affection or ill-will and that I will uphold the Constitution and the laws.”"
+          },
+          {
+            "form": "FORM V",
+            "who": "Form of oath of office for a Minister for a State",
+            "text": "“I, A.B., <span class=\"sched-oath-alt\"><span>do swear in the name of God</span><span>solemnly affirm</span></span> that I will bear true faith and allegiance to the Constitution of India as by law established, that I will uphold the sovereignty and integrity of India, that I will faithfully and conscientiously discharge my duties as a Minister for the State of …… and that I will do right to all manner of people in accordance with the Constitution and the law without fear or favour, affection or ill-will.”"
+          },
+          {
+            "form": "FORM VI",
+            "who": "Form of oath of secrecy for a Minister for a State",
+            "text": "“I, A.B., <span class=\"sched-oath-alt\"><span>do swear in the name of God</span><span>solemnly affirm</span></span> that I will not directly or indirectly communicate or reveal to any person or persons any matter which shall be brought under my consideration or shall become known to me as a Minister for the State of …… except as may be required for the due discharge of my duties as such Minister.”"
+          },
+          {
+            "form": "FORM VII · A",
+            "who": "Form of oath or affirmation to be made by a candidate for election to the Legislature of a State",
+            "text": "“I, A.B., having been nominated as a candidate to fill a seat in the Legislative Assembly (or Legislative Council) <span class=\"sched-oath-alt\"><span>do swear in the name of God</span><span>solemnly affirm</span></span> that I will bear true faith and allegiance to the Constitution of India as by law established and that I will uphold the sovereignty and integrity of India.”"
+          },
+          {
+            "form": "FORM VII · B",
+            "who": "Form of oath or affirmation to be made by a member of the Legislature of a State",
+            "text": "“I, A.B., having been elected (or nominated) a member of the Legislative Assembly (or Legislative Council) <span class=\"sched-oath-alt\"><span>do swear in the name of God</span><span>solemnly affirm</span></span> that I will bear true faith and allegiance to the Constitution of India as by law established, that I will uphold the sovereignty and integrity of India and that I will faithfully discharge the duty upon which I am about to enter.”"
+          },
+          {
+            "form": "FORM VIII",
+            "who": "Form of oath or affirmation to be made by the Judges of a High Court",
+            "text": "“I, A.B., having been appointed Chief Justice (or a Judge) of the High Court at (or of) …… <span class=\"sched-oath-alt\"><span>do swear in the name of God</span><span>solemnly affirm</span></span> that I will bear true faith and allegiance to the Constitution of India as by law established, that I will uphold the sovereignty and integrity of India, that I will duly and faithfully and to the best of my ability, knowledge and judgment perform the duties of my office without fear or favour, affection or ill-will and that I will uphold the Constitution and the laws.”"
+          }
+        ]
+      }
+    ],
+    "notes": [
+      "Ins. by the Constitution (Sixteenth Amendment) Act, 1963, s. 5 (w.e.f. 5-10-1963)."
+    ]
+  },
+  "fourth": {
+    "blocks": [
+      {
+        "t": "h",
+        "s": "Allocation of seats in the Council of States"
+      },
+      {
+        "t": "p",
+        "s": "To each State or Union territory specified in the first column of the following table, there shall be allotted the number of seats specified in the second column thereof opposite to that State or that Union territory, as the case may be:"
+      },
+      {
+        "t": "table",
+        "kind": "three",
+        "rows": [
+          {
+            "a": "1",
+            "b": "Andhra Pradesh",
+            "c": "11"
+          },
+          {
+            "a": "2",
+            "b": "Telangana",
+            "c": "7"
+          },
+          {
+            "a": "3",
+            "b": "Assam",
+            "c": "7"
+          },
+          {
+            "a": "4",
+            "b": "Bihar",
+            "c": "16"
+          },
+          {
+            "a": "5",
+            "b": "Jharkhand",
+            "c": "6"
+          },
+          {
+            "a": "6",
+            "b": "Goa",
+            "c": "1"
+          },
+          {
+            "a": "7",
+            "b": "Gujarat",
+            "c": "11"
+          },
+          {
+            "a": "8",
+            "b": "Haryana",
+            "c": "5"
+          },
+          {
+            "a": "9",
+            "b": "Kerala",
+            "c": "9"
+          },
+          {
+            "a": "10",
+            "b": "Madhya Pradesh",
+            "c": "11"
+          },
+          {
+            "a": "11",
+            "b": "Chhattisgarh",
+            "c": "5"
+          },
+          {
+            "a": "12",
+            "b": "Tamil Nadu",
+            "c": "18"
+          },
+          {
+            "a": "13",
+            "b": "Maharashtra",
+            "c": "19"
+          },
+          {
+            "a": "14",
+            "b": "Karnataka",
+            "c": "12"
+          },
+          {
+            "a": "15",
+            "b": "Odisha",
+            "c": "10"
+          },
+          {
+            "a": "16",
+            "b": "Punjab",
+            "c": "7"
+          },
+          {
+            "a": "17",
+            "b": "Rajasthan",
+            "c": "10"
+          },
+          {
+            "a": "18",
+            "b": "Uttar Pradesh",
+            "c": "31"
+          },
+          {
+            "a": "19",
+            "b": "Uttarakhand",
+            "c": "3"
+          },
+          {
+            "a": "20",
+            "b": "West Bengal",
+            "c": "16"
+          },
+          {
+            "a": "21",
+            "b": "Nagaland",
+            "c": "1"
+          },
+          {
+            "a": "22",
+            "b": "Himachal Pradesh",
+            "c": "3"
+          },
+          {
+            "a": "23",
+            "b": "Manipur",
+            "c": "1"
+          },
+          {
+            "a": "24",
+            "b": "Tripura",
+            "c": "1"
+          },
+          {
+            "a": "25",
+            "b": "Meghalaya",
+            "c": "1"
+          },
+          {
+            "a": "26",
+            "b": "Sikkim",
+            "c": "1"
+          },
+          {
+            "a": "27",
+            "b": "Mizoram",
+            "c": "1"
+          },
+          {
+            "a": "28",
+            "b": "Arunachal Pradesh",
+            "c": "1"
+          },
+          {
+            "a": "29",
+            "b": "Delhi",
+            "c": "3"
+          },
+          {
+            "a": "30",
+            "b": "Puducherry",
+            "c": "1"
+          },
+          {
+            "a": "31",
+            "b": "Jammu and Kashmir",
+            "c": "4"
+          },
+          {
+            "a": "",
+            "b": "Total",
+            "c": "233"
+          }
+        ]
+      }
+    ],
+    "notes": [
+      "Fourth Schedule subs. by the Constitution (Seventh Amendment) Act, 1956, s. 3(2) (w.e.f. 1-11-1956), and amended as States were reorganised."
+    ]
+  },
+  "fifth": {
+    "blocks": [
+      {
+        "t": "h",
+        "s": "PART A — GENERAL"
+      },
+      {
+        "t": "sec",
+        "num": "1",
+        "title": "Interpretation"
+      },
+      {
+        "t": "cl",
+        "mark": "1.",
+        "s": "In this Schedule, unless the context otherwise requires, the expression “State” does not include the States of Assam, Meghalaya, Tripura and Mizoram.",
+        "pad": 0
+      },
+      {
+        "t": "sec",
+        "num": "2",
+        "title": "Executive power of a State in Scheduled Areas"
+      },
+      {
+        "t": "cl",
+        "mark": "2.",
+        "s": "Subject to the provisions of this Schedule, the executive power of a State extends to the Scheduled Areas therein.",
+        "pad": 0
+      },
+      {
+        "t": "sec",
+        "num": "3",
+        "title": "Report by the Governor to the President regarding the administration of Scheduled Areas"
+      },
+      {
+        "t": "cl",
+        "mark": "3.",
+        "s": "The Governor of each State having Scheduled Areas therein shall annually, or whenever so required by the President, make a report to the President regarding the administration of the Scheduled Areas in that State and the executive power of the Union shall extend to the giving of directions to the State as to the administration of the said areas.",
+        "pad": 0
+      },
+      {
+        "t": "h",
+        "s": "PART B — ADMINISTRATION AND CONTROL OF SCHEDULED AREAS AND SCHEDULED TRIBES"
+      },
+      {
+        "t": "sec",
+        "num": "4",
+        "title": "Tribes Advisory Council"
+      },
+      {
+        "t": "cl",
+        "mark": "(1)",
+        "s": "There shall be established in each State having Scheduled Areas therein and, if the President so directs, also in any State having Scheduled Tribes but not Scheduled Areas therein, a Tribes Advisory Council consisting of not more than twenty members of whom, as nearly as may be, three-fourths shall be the representatives of the Scheduled Tribes in the Legislative Assembly of the State.",
+        "pad": 0
+      },
+      {
+        "t": "cl",
+        "mark": "(2)",
+        "s": "It shall be the duty of the Tribes Advisory Council to advise on such matters pertaining to the welfare and advancement of the Scheduled Tribes in the State as may be referred to them by the Governor.",
+        "pad": 0
+      },
+      {
+        "t": "sec",
+        "num": "5",
+        "title": "Law applicable to Scheduled Areas"
+      },
+      {
+        "t": "cl",
+        "mark": "(1)",
+        "s": "Notwithstanding anything in this Constitution, the Governor may by public notification direct that any particular Act of Parliament or of the Legislature of the State shall not apply to a Scheduled Area or any part thereof in the State or shall apply to a Scheduled Area or any part thereof in the State subject to such exceptions and modifications as he may specify in the notification.",
+        "pad": 0
+      },
+      {
+        "t": "cl",
+        "mark": "(2)",
+        "s": "The Governor may make regulations for the peace and good government of any area in a State which is for the time being a Scheduled Area.",
+        "pad": 0
+      },
+      {
+        "t": "h",
+        "s": "PART C — SCHEDULED AREAS"
+      },
+      {
+        "t": "sec",
+        "num": "6",
+        "title": "Scheduled Areas"
+      },
+      {
+        "t": "cl",
+        "mark": "(1)",
+        "s": "In this Constitution, the expression “Scheduled Areas” means such areas as the President may by order declare to be Scheduled Areas.",
+        "pad": 0
+      },
+      {
+        "t": "cl",
+        "mark": "(2)",
+        "s": "The President may at any time by order—",
+        "pad": 0
+      },
+      {
+        "t": "cl",
+        "mark": "(a)",
+        "s": "direct that the whole or any specified part of a Scheduled Area shall cease to be a Scheduled Area or a part of such an area;",
+        "pad": 32
+      },
+      {
+        "t": "cl",
+        "mark": "(b)",
+        "s": "increase the area of any Scheduled Area in a State after consultation with the Governor of that State;",
+        "pad": 32
+      },
+      {
+        "t": "cl",
+        "mark": "(c)",
+        "s": "alter, but only by way of rectification of boundaries, any Scheduled Area;",
+        "pad": 32
+      },
+      {
+        "t": "cl",
+        "mark": "(d)",
+        "s": "on any alteration of the boundaries of a State or on the admission into the Union or the establishment of a new State, declare any territory not previously included in any State to be, or to form part of, a Scheduled Area;",
+        "pad": 32
+      },
+      {
+        "t": "cl",
+        "mark": "(e)",
+        "s": "rescind, in relation to any State or States, any order or orders made under this paragraph, and in consultation with the Governor of the State concerned, make fresh orders redefining the areas which are to be Scheduled Areas;",
+        "pad": 32
+      },
+      {
+        "t": "p",
+        "s": "and any such order may contain such incidental and consequential provisions as the President may deem necessary and proper."
+      },
+      {
+        "t": "h",
+        "s": "PART D — AMENDMENT OF THE SCHEDULE"
+      },
+      {
+        "t": "sec",
+        "num": "7",
+        "title": "Amendment of the Schedule"
+      },
+      {
+        "t": "cl",
+        "mark": "(1)",
+        "s": "Parliament may from time to time by law amend by way of addition, variation or repeal any of the provisions of this Schedule and, when the Schedule is so amended, any reference to this Schedule in this Constitution shall be construed as a reference to such Schedule as so amended.",
+        "pad": 0
+      },
+      {
+        "t": "cl",
+        "mark": "(2)",
+        "s": "No such law as is mentioned in sub-paragraph (1) of this paragraph shall be deemed to be an amendment of this Constitution for the purposes of article 368.",
+        "pad": 0
+      }
+    ],
+    "notes": [
+      "Fifth Schedule: scheduled areas in States other than Assam, Meghalaya, Tripura and Mizoram (Art. 244(1))."
+    ]
+  },
+  "sixth": {
+    "blocks": [
+      {
+        "t": "p",
+        "s": "Provisions as to the Administration of Tribal Areas in the States of Assam, Meghalaya, Tripura and Mizoram."
+      },
+      {
+        "t": "sec",
+        "num": "1",
+        "title": "Autonomous districts and autonomous regions"
+      },
+      {
+        "t": "cl",
+        "mark": "(1)",
+        "s": "Subject to the provisions of this paragraph, the tribal areas in each item of Parts I, II and IIA and in Part III of the table appended to paragraph 20 of this Schedule shall be an autonomous district.",
+        "pad": 0
+      },
+      {
+        "t": "cl",
+        "mark": "(2)",
+        "s": "If there are different Scheduled Tribes in an autonomous district, the Governor may, by public notification, divide the area or areas inhabited by them into autonomous regions.",
+        "pad": 0
+      },
+      {
+        "t": "cl",
+        "mark": "(3)",
+        "s": "The Governor may, by public notification,—",
+        "pad": 0
+      },
+      {
+        "t": "cl",
+        "mark": "(a)",
+        "s": "include any area in any of the Parts of the said table;",
+        "pad": 32
+      },
+      {
+        "t": "cl",
+        "mark": "(b)",
+        "s": "exclude any area from any of the Parts of the said table;",
+        "pad": 32
+      },
+      {
+        "t": "cl",
+        "mark": "(c)",
+        "s": "create a new autonomous district;",
+        "pad": 32
+      },
+      {
+        "t": "cl",
+        "mark": "(d)",
+        "s": "increase the area of any autonomous district;",
+        "pad": 32
+      },
+      {
+        "t": "cl",
+        "mark": "(e)",
+        "s": "diminish the area of any autonomous district;",
+        "pad": 32
+      },
+      {
+        "t": "cl",
+        "mark": "(f)",
+        "s": "unite two or more autonomous districts or parts thereof so as to form one autonomous district;",
+        "pad": 32
+      },
+      {
+        "t": "cl",
+        "mark": "(ff)",
+        "s": "alter the name of any autonomous district;",
+        "pad": 32
+      },
+      {
+        "t": "cl",
+        "mark": "(g)",
+        "s": "define the boundaries of any autonomous district:",
+        "pad": 32
+      },
+      {
+        "t": "lead",
+        "lead": "Provided that",
+        "s": "no order shall be made by the Governor under clauses (c), (d), (e) and (f) of this sub-paragraph except after consideration of the report of a commission appointed under sub-paragraph (1) of paragraph 14 of this Schedule.",
+        "pad": 32
+      },
+      {
+        "t": "sec",
+        "num": "2",
+        "title": "Constitution of District Councils and Regional Councils"
+      },
+      {
+        "t": "cl",
+        "mark": "(1)",
+        "s": "There shall be a District Council for each autonomous district consisting of not more than thirty members, of whom not more than four persons shall be nominated by the Governor and the rest shall be elected on the basis of adult suffrage.",
+        "pad": 0
+      },
+      {
+        "t": "cl",
+        "mark": "(2)",
+        "s": "There shall be a separate Regional Council for each area constituted an autonomous region under sub-paragraph (2) of paragraph 1 of this Schedule.",
+        "pad": 0
+      },
+      {
+        "t": "cl",
+        "mark": "(3)",
+        "s": "Each District Council and each Regional Council shall be a body corporate by the name respectively of “the District Council of (name of district)” and “the Regional Council of (name of region)”, shall have perpetual succession and a common seal and shall by the said name sue and be sued.",
+        "pad": 0
+      },
+      {
+        "t": "sec",
+        "num": "3",
+        "title": "Powers of the District Councils and Regional Councils to make laws"
+      },
+      {
+        "t": "cl",
+        "mark": "(1)",
+        "s": "The Regional Council for an autonomous region in respect of all areas within such region and the District Council for an autonomous district in respect of all areas within the district except those which are under the authority of Regional Councils, if any, within the district shall have power to make laws with respect to—",
+        "pad": 0
+      },
+      {
+        "t": "cl",
+        "mark": "(a)",
+        "s": "the allotment, occupation or use, or the setting apart, of land, other than any land which is a reserved forest, for the purposes of agriculture or grazing or for residential or other non-agricultural purposes or for any other purpose likely to promote the interests of the inhabitants of any village or town;",
+        "pad": 32
+      },
+      {
+        "t": "cl",
+        "mark": "(b)",
+        "s": "the management of any forest not being a reserved forest;",
+        "pad": 32
+      },
+      {
+        "t": "cl",
+        "mark": "(c)",
+        "s": "the use of any canal or water-course for the purpose of agriculture;",
+        "pad": 32
+      },
+      {
+        "t": "cl",
+        "mark": "(d)",
+        "s": "the regulation of the practice of jhum or other forms of shifting cultivation;",
+        "pad": 32
+      },
+      {
+        "t": "cl",
+        "mark": "(e)",
+        "s": "the establishment of village or town committees or councils and their powers;",
+        "pad": 32
+      },
+      {
+        "t": "cl",
+        "mark": "(f)",
+        "s": "any other matter relating to village or town administration, including village or town police and public health and sanitation;",
+        "pad": 32
+      },
+      {
+        "t": "cl",
+        "mark": "(g)",
+        "s": "the appointment or succession of Chiefs or Headmen;",
+        "pad": 32
+      },
+      {
+        "t": "cl",
+        "mark": "(h)",
+        "s": "the inheritance of property;",
+        "pad": 32
+      },
+      {
+        "t": "cl",
+        "mark": "(i)",
+        "s": "marriage and divorce;",
+        "pad": 32
+      },
+      {
+        "t": "cl",
+        "mark": "(j)",
+        "s": "social customs.",
+        "pad": 32
+      },
+      {
+        "t": "sec",
+        "num": "20",
+        "title": "Tribal areas"
+      },
+      {
+        "t": "cl",
+        "mark": "(1)",
+        "s": "The areas specified in Parts I, II, IIA and III of the table below shall be the tribal areas within the State of Assam, the State of Meghalaya, the State of Tripura and the State of Mizoram.",
+        "pad": 0
+      },
+      {
+        "t": "table",
+        "kind": "parts",
+        "rows": [
+          {
+            "a": "Part I",
+            "b": "The North Cachar Hills District; The Karbi Anglong District; The Bodoland Territorial Area District."
+          },
+          {
+            "a": "Part II",
+            "b": "Khasi Hills District; Jaintia Hills District; Garo Hills District."
+          },
+          {
+            "a": "Part IIA",
+            "b": "Tripura Tribal Areas District."
+          },
+          {
+            "a": "Part III",
+            "b": "The Chakma District; The Mara District; The Lai District."
+          }
+        ]
+      }
+    ],
+    "notes": [
+      "Sixth Schedule: tribal areas of Assam, Meghalaya, Tripura and Mizoram (Arts. 244(2) and 275(1)). The full paragraph set (1–20B) is longer than this reading page; remaining paragraphs follow the official text."
+    ]
+  },
+  "seventh": {
+    "blocks": [
+      {
+        "t": "list",
+        "eyebrow": "LIST I",
+        "title": "Union List",
+        "open": true,
+        "items": [
+          {
+            "n": "1",
+            "s": "Defence of India and every part thereof including preparation for defence and all such acts as may be conducive in times of war to its prosecution and after its termination to effective demobilisation"
+          },
+          {
+            "n": "2",
+            "s": "Naval, military and air forces; any other armed forces of the Union"
+          },
+          {
+            "n": "2A",
+            "s": "Deployment of any armed force of the Union or any other force subject to the control of the Union or any contingent or unit thereof in any State in aid of the civil power; powers, jurisdiction, privileges and liabilities of the members of such forces while on such deployment"
+          },
+          {
+            "n": "3",
+            "s": "Delimitation of cantonment areas, local self-government in such areas, the constitution and powers within such areas of cantonment authorities and the regulation of house accommodation (including the control of rents) in such areas"
+          },
+          {
+            "n": "4",
+            "s": "Naval, military and air force works"
+          },
+          {
+            "n": "5",
+            "s": "Arms, firearms, ammunition and explosives"
+          },
+          {
+            "n": "6",
+            "s": "Atomic energy and mineral resources necessary for its production"
+          },
+          {
+            "n": "7",
+            "s": "Industries declared by Parliament by law to be necessary for the purpose of defence or for the prosecution of war"
+          },
+          {
+            "n": "8",
+            "s": "Central Bureau of Intelligence and Investigation"
+          },
+          {
+            "n": "9",
+            "s": "Preventive detention for reasons connected with Defence, Foreign Affairs, or the security of India; persons subjected to such detention"
+          },
+          {
+            "n": "10",
+            "s": "Foreign affairs; all matters which bring the Union into relation with any foreign country"
+          },
+          {
+            "n": "11",
+            "s": "Diplomatic, consular and trade representation"
+          },
+          {
+            "n": "12",
+            "s": "United Nations Organisation"
+          },
+          {
+            "n": "13",
+            "s": "Participation in international conferences, associations and other bodies and implementing of decisions made thereat"
+          },
+          {
+            "n": "14",
+            "s": "Entering into treaties and agreements with foreign countries and implementing of treaties, agreements and conventions with foreign countries"
+          },
+          {
+            "n": "15",
+            "s": "War and peace"
+          },
+          {
+            "n": "16",
+            "s": "Foreign jurisdiction"
+          },
+          {
+            "n": "17",
+            "s": "Citizenship, naturalisation and aliens"
+          },
+          {
+            "n": "18",
+            "s": "Extradition"
+          },
+          {
+            "n": "19",
+            "s": "Admission into, and emigration and expulsion from, India; passports and visas"
+          },
+          {
+            "n": "20",
+            "s": "Pilgrimages to places outside India"
+          },
+          {
+            "n": "21",
+            "s": "Piracies and crimes committed on the high seas or in the air; offences against the law of nations committed on land or the high seas or in the air"
+          },
+          {
+            "n": "22",
+            "s": "Railways"
+          },
+          {
+            "n": "23",
+            "s": "Highways declared by or under law made by Parliament to be national highways"
+          },
+          {
+            "n": "24",
+            "s": "Shipping and navigation on inland waterways, declared by Parliament by law to be national waterways, as regards mechanically propelled vessels; the rule of the road on such waterways"
+          },
+          {
+            "n": "25",
+            "s": "Maritime shipping and navigation, including shipping and navigation on tidal waters; provision of education and training for the mercantile marine and regulation of such education and training provided by States and other agencies"
+          },
+          {
+            "n": "26",
+            "s": "Lighthouses, including lightships, beacons and other provision for the safety of shipping and aircraft"
+          },
+          {
+            "n": "27",
+            "s": "Ports declared by or under law made by Parliament or existing law to be major ports, including their delimitation, and the constitution and powers of port authorities therein"
+          },
+          {
+            "n": "28",
+            "s": "Port quarantine, including hospitals connected therewith; seamen's and marine hospitals"
+          },
+          {
+            "n": "29",
+            "s": "Airways; aircraft and air navigation; provision of aerodromes; regulation and organisation of air traffic and of aerodromes; provision for aeronautical education and training and regulation of such education and training provided by States and other agencies"
+          },
+          {
+            "n": "30",
+            "s": "Carriage of passengers and goods by railway, sea or air, or by national waterways in mechanically propelled vessels"
+          },
+          {
+            "n": "31",
+            "s": "Posts and telegraphs; telephones, wireless, broadcasting and other like forms of communication"
+          },
+          {
+            "n": "32",
+            "s": "Property of the Union and the revenue therefrom, but as regards property situated in a State subject to legislation by the State, save in so far as Parliament by law otherwise provides"
+          },
+          {
+            "n": "33",
+            "s": "Omitted"
+          },
+          {
+            "n": "34",
+            "s": "Courts of wards for the estates of Rulers of Indian States"
+          },
+          {
+            "n": "35",
+            "s": "Public debt of the Union"
+          },
+          {
+            "n": "36",
+            "s": "Currency, coinage and legal tender; foreign exchange"
+          },
+          {
+            "n": "37",
+            "s": "Foreign loans"
+          },
+          {
+            "n": "38",
+            "s": "Reserve Bank of India"
+          },
+          {
+            "n": "39",
+            "s": "Post Office Savings Bank"
+          },
+          {
+            "n": "40",
+            "s": "Lotteries organised by the Government of India or the Government of a State"
+          },
+          {
+            "n": "41",
+            "s": "Trade and commerce with foreign countries; import and export across customs frontiers; definition of customs frontiers"
+          },
+          {
+            "n": "42",
+            "s": "Inter-State trade and commerce"
+          },
+          {
+            "n": "43",
+            "s": "Incorporation, regulation and winding up of trading corporations, including banking, insurance and financial corporations, but not including co-operative societies"
+          },
+          {
+            "n": "44",
+            "s": "Incorporation, regulation and winding up of corporations, whether trading or not, with objects not confined to one State, but not including universities"
+          },
+          {
+            "n": "45",
+            "s": "Banking"
+          },
+          {
+            "n": "46",
+            "s": "Bills of exchange, cheques, promissory notes and other like instruments"
+          },
+          {
+            "n": "47",
+            "s": "Insurance"
+          },
+          {
+            "n": "48",
+            "s": "Stock exchanges and futures markets"
+          },
+          {
+            "n": "49",
+            "s": "Patents, inventions and designs; copyright; trade-marks and merchandise marks"
+          },
+          {
+            "n": "50",
+            "s": "Establishment of standards of weight and measure"
+          },
+          {
+            "n": "51",
+            "s": "Establishment of standards of quality for goods to be exported out of India or transported from one State to another"
+          },
+          {
+            "n": "52",
+            "s": "Industries, the control of which by the Union is declared by Parliament by law to be expedient in the public interest"
+          },
+          {
+            "n": "53",
+            "s": "Regulation and development of oilfields and mineral oil resources; petroleum and petroleum products; other liquids and substances declared by Parliament by law to be dangerously inflammable"
+          },
+          {
+            "n": "54",
+            "s": "Regulation of mines and mineral development to the extent to which such regulation and development under the control of the Union is declared by Parliament by law to be expedient in the public interest"
+          },
+          {
+            "n": "55",
+            "s": "Regulation of labour and safety in mines and oilfields"
+          },
+          {
+            "n": "56",
+            "s": "Regulation and development of inter-State rivers and river valleys to the extent to which such regulation and development under the control of the Union is declared by Parliament by law to be expedient in the public interest"
+          },
+          {
+            "n": "57",
+            "s": "Fishing and fisheries beyond territorial waters"
+          },
+          {
+            "n": "58",
+            "s": "Manufacture, supply and distribution of salt by Union agencies; regulation and control of manufacture, supply and distribution of salt by other agencies"
+          },
+          {
+            "n": "59",
+            "s": "Cultivation, manufacture, and sale for export, of opium"
+          },
+          {
+            "n": "60",
+            "s": "Sanctioning of cinematograph films for exhibition"
+          },
+          {
+            "n": "61",
+            "s": "Industrial disputes concerning Union employees"
+          },
+          {
+            "n": "62",
+            "s": "The institutions known at the commencement of this Constitution as the National Library, the Indian Museum, the Imperial War Museum, the Victoria Memorial and the Indian War Memorial, and any other like institution financed by the Government of India wholly or in part and declared by Parliament by law to be an institution of national importance"
+          },
+          {
+            "n": "63",
+            "s": "The institutions known at the commencement of this Constitution as the Banaras Hindu University, the Aligarh Muslim University and the Delhi University; the University established in pursuance of Article 371E; any other institution declared by Parliament by law to be an institution of national importance"
+          },
+          {
+            "n": "64",
+            "s": "Institutions for scientific or technical education financed by the Government of India wholly or in part and declared by Parliament by law to be institutions of national importance"
+          },
+          {
+            "n": "65",
+            "s": "Union agencies and institutions for—(a) professional, vocational or technical training, including the training of police officers; or (b) the promotion of special studies or research; or (c) scientific or technical assistance in the investigation or detection of crime"
+          },
+          {
+            "n": "66",
+            "s": "Co-ordination and determination of standards in institutions for higher education or research and scientific and technical institutions"
+          },
+          {
+            "n": "67",
+            "s": "Ancient and historical monuments and records, and archaeological sites and remains, declared by or under law made by Parliament to be of national importance"
+          },
+          {
+            "n": "68",
+            "s": "The Survey of India, the Geological, Botanical, Zoological and Anthropological Surveys of India; Meteorological organisations"
+          },
+          {
+            "n": "69",
+            "s": "Census"
+          },
+          {
+            "n": "70",
+            "s": "Union Public Services; All-India Services; Union Public Service Commission"
+          },
+          {
+            "n": "71",
+            "s": "Union pensions, that is to say, pensions payable by the Government of India or out of the Consolidated Fund of India"
+          },
+          {
+            "n": "72",
+            "s": "Elections to Parliament, to the Legislatures of States and to the offices of President and Vice-President; the Election Commission"
+          },
+          {
+            "n": "73",
+            "s": "Salaries and allowances of members of Parliament, the Chairman and Deputy Chairman of the Council of States and the Speaker and Deputy Speaker of the House of the People"
+          },
+          {
+            "n": "74",
+            "s": "Powers, privileges and immunities of each House of Parliament and of the members and the Committees of each House; enforcement of attendance of persons for giving evidence or producing documents before committees of Parliament or commissions appointed by Parliament"
+          },
+          {
+            "n": "75",
+            "s": "Emoluments, allowances, privileges, and rights in respect of leave of absence, of the President and Governors; salaries and allowances of the Ministers for the Union; the salaries, allowances, and privileges of the Speaker and the Deputy Speaker of the House of the People and of the Chairman and the Deputy Chairman of the Council of States; the salaries, allowances and privileges of the members of Parliament; the salaries, allowances and privileges of the Comptroller and Auditor-General"
+          },
+          {
+            "n": "76",
+            "s": "Audit of the accounts of the Union and of the States"
+          },
+          {
+            "n": "77",
+            "s": "Constitution, organisation, jurisdiction and powers of the Supreme Court (including contempt of such Court), and the fees taken therein; persons entitled to practise before the Supreme Court"
+          },
+          {
+            "n": "78",
+            "s": "Constitution and organisation (including vacations) of the High Courts except provisions as to officers and servants of High Courts; persons entitled to practise before the High Courts"
+          },
+          {
+            "n": "79",
+            "s": "Extension of the jurisdiction of a High Court to, and exclusion of the jurisdiction of a High Court from, any Union territory"
+          },
+          {
+            "n": "80",
+            "s": "Extension of the powers and jurisdiction of members of a police force belonging to any State to any area outside that State, but not so as to enable the police of one State to exercise powers and jurisdiction in any area outside that State without the consent of the Government of the State in which such area is situated; extension of the powers and jurisdiction of members of a police force belonging to any State to railway areas outside that State"
+          },
+          {
+            "n": "81",
+            "s": "Inter-State migration; inter-State quarantine"
+          },
+          {
+            "n": "82",
+            "s": "Taxes on income other than agricultural income"
+          },
+          {
+            "n": "83",
+            "s": "Duties of customs including export duties"
+          },
+          {
+            "n": "84",
+            "s": "Duties of excise on tobacco and other goods manufactured or produced in India except—(a) alcoholic liquors for human consumption; (b) opium, Indian hemp and other narcotic drugs and narcotics, but including medicinal and toilet preparations containing alcohol or any substance included in sub-paragraph (b) of this entry"
+          },
+          {
+            "n": "85",
+            "s": "Corporation tax"
+          },
+          {
+            "n": "86",
+            "s": "Taxes on the capital value of the assets, exclusive of agricultural land, of individuals and companies; taxes on the capital of companies"
+          },
+          {
+            "n": "87",
+            "s": "Estate duty in respect of property other than agricultural land"
+          },
+          {
+            "n": "88",
+            "s": "Duties in respect of succession to property other than agricultural land"
+          },
+          {
+            "n": "89",
+            "s": "Terminal taxes on goods or passengers, carried by railway, sea or air; taxes on railway fares and freights"
+          },
+          {
+            "n": "90",
+            "s": "Taxes other than stamp duties on transactions in stock exchanges and futures markets"
+          },
+          {
+            "n": "91",
+            "s": "Rates of stamp duty in respect of bills of exchange, cheques, promissory notes, bills of lading, letters of credit, policies of insurance, transfer of shares, debentures, proxies and receipts"
+          },
+          {
+            "n": "92",
+            "s": "Taxes on the sale or purchase of newspapers and on advertisements published therein"
+          },
+          {
+            "n": "92A",
+            "s": "Taxes on the sale or purchase of goods other than newspapers, where such sale or purchase takes place in the course of inter-State trade or commerce"
+          },
+          {
+            "n": "92B",
+            "s": "Taxes on the consignments of goods (whether the consignment is to the person making it or to any other person), where such consignment takes place in the course of inter-State trade or commerce"
+          },
+          {
+            "n": "92C",
+            "s": "Taxes on services"
+          },
+          {
+            "n": "93",
+            "s": "Offences against laws with respect to any of the matters in this List"
+          },
+          {
+            "n": "94",
+            "s": "Inquiries, surveys and statistics for the purpose of any of the matters in this List"
+          },
+          {
+            "n": "95",
+            "s": "Jurisdiction and powers of all courts, except the Supreme Court, with respect to any of the matters in this List; admiralty jurisdiction"
+          },
+          {
+            "n": "96",
+            "s": "Fees in respect of any of the matters in this List, but not including fees taken in any court"
+          },
+          {
+            "n": "97",
+            "s": "Any other matter not enumerated in List II or List III including any tax not mentioned in either of those Lists"
+          }
+        ]
+      },
+      {
+        "t": "list",
+        "eyebrow": "LIST II",
+        "title": "State List",
+        "open": false,
+        "items": [
+          {
+            "n": "1",
+            "s": "Public order (but not including the use of any naval, military or air force or any other armed force of the Union or of any other force subject to the control of the Union or of any contingent or unit thereof in aid of the civil power)"
+          },
+          {
+            "n": "2",
+            "s": "Police (including railway and village police) subject to the provisions of entry 2A of List I"
+          },
+          {
+            "n": "3",
+            "s": "Officers and servants of the High Court; procedure in rent and revenue courts; fees taken in all courts except the Supreme Court"
+          },
+          {
+            "n": "4",
+            "s": "Prisons, reformatories, Borstal institutions and other institutions of a like nature, and persons detained therein; arrangements with other States for the use of prisons and other institutions"
+          },
+          {
+            "n": "5",
+            "s": "Local government, that is to say, the constitution and powers of municipal corporations, improvement trusts, district boards, mining settlement authorities and other local authorities for the purpose of local self-government or village administration"
+          },
+          {
+            "n": "6",
+            "s": "Public health and sanitation; hospitals and dispensaries"
+          },
+          {
+            "n": "7",
+            "s": "Pilgrimages, other than pilgrimages to places outside India"
+          },
+          {
+            "n": "8",
+            "s": "Intoxicating liquors, that is to say, the production, manufacture, possession, transport, purchase and sale of intoxicating liquors"
+          },
+          {
+            "n": "9",
+            "s": "Relief of the disabled and unemployable"
+          },
+          {
+            "n": "10",
+            "s": "Burials and burial grounds; cremations and cremation grounds"
+          },
+          {
+            "n": "11",
+            "s": "Omitted"
+          },
+          {
+            "n": "12",
+            "s": "Libraries, museums and other similar institutions controlled or financed by the State; ancient and historical monuments and records other than those declared by or under law made by Parliament to be of national importance"
+          },
+          {
+            "n": "13",
+            "s": "Communications, that is to say, roads, bridges, ferries, and other means of communication not specified in List I; municipal tramways; ropeways; inland waterways and traffic thereon subject to the provisions of List I and List III with regard to such waterways; vehicles other than mechanically propelled vehicles"
+          },
+          {
+            "n": "14",
+            "s": "Agriculture, including agricultural education and research, protection against pests and prevention of plant diseases"
+          },
+          {
+            "n": "15",
+            "s": "Preservation, protection and improvement of stock and prevention of animal diseases; veterinary training and practice"
+          },
+          {
+            "n": "16",
+            "s": "Pounds and the prevention of cattle trespass"
+          },
+          {
+            "n": "17",
+            "s": "Water, that is to say, water supplies, irrigation and canals, drainage and embankments, water storage and water power subject to the provisions of entry 56 of List I"
+          },
+          {
+            "n": "18",
+            "s": "Land, that is to say, rights in or over land, land tenures including the relation of landlord and tenant, and the collection of rents; transfer and alienation of agricultural land; land improvement and agricultural loans; colonization"
+          },
+          {
+            "n": "19",
+            "s": "Omitted"
+          },
+          {
+            "n": "20",
+            "s": "Omitted"
+          },
+          {
+            "n": "21",
+            "s": "Fisheries"
+          },
+          {
+            "n": "22",
+            "s": "Courts of wards subject to the provisions of entry 34 of List I; encumbered and attached estates"
+          },
+          {
+            "n": "23",
+            "s": "Regulation of mines and mineral development subject to the provisions of List I with respect to regulation and development under the control of the Union"
+          },
+          {
+            "n": "24",
+            "s": "Industries subject to the provisions of entries 7 and 52 of List I"
+          },
+          {
+            "n": "25",
+            "s": "Gas and gas-works"
+          },
+          {
+            "n": "26",
+            "s": "Trade and commerce within the State subject to the provisions of entry 33 of List III"
+          },
+          {
+            "n": "27",
+            "s": "Production, supply and distribution of goods subject to the provisions of entry 33 of List III"
+          },
+          {
+            "n": "28",
+            "s": "Markets and fairs"
+          },
+          {
+            "n": "29",
+            "s": "Omitted"
+          },
+          {
+            "n": "30",
+            "s": "Money-lending and money-lenders; relief of agricultural indebtedness"
+          },
+          {
+            "n": "31",
+            "s": "Inns and inn-keepers"
+          },
+          {
+            "n": "32",
+            "s": "Incorporation, regulation and winding up of corporations, other than those specified in List I, and universities; unincorporated trading, literary, scientific, religious and other societies and associations; co-operative societies"
+          },
+          {
+            "n": "33",
+            "s": "Theatres and dramatic performances; cinemas subject to the provisions of entry 60 of List I; sports, entertainments and amusements"
+          },
+          {
+            "n": "34",
+            "s": "Betting and gambling"
+          },
+          {
+            "n": "35",
+            "s": "Works, lands and buildings vested in or in the possession of the State"
+          },
+          {
+            "n": "36",
+            "s": "Omitted"
+          },
+          {
+            "n": "37",
+            "s": "Elections to the Legislature of the State subject to the provisions of any law made by Parliament"
+          },
+          {
+            "n": "38",
+            "s": "Salaries and allowances of members of the Legislature of the State, of the Speaker and Deputy Speaker of the Legislative Assembly and, if there is a Legislative Council, of the Chairman and Deputy Chairman thereof"
+          },
+          {
+            "n": "39",
+            "s": "Powers, privileges and immunities of the Legislative Assembly and of the members and the committees thereof, and, if there is a Legislative Council, of that Council and of the members and the committees thereof; enforcement of attendance of persons for giving evidence or producing documents before committees of the Legislature of the State"
+          },
+          {
+            "n": "40",
+            "s": "Salaries and allowances of Ministers for the State"
+          },
+          {
+            "n": "41",
+            "s": "State public services; State Public Service Commission"
+          },
+          {
+            "n": "42",
+            "s": "State pensions, that is to say, pensions payable by the State or out of the Consolidated Fund of the State"
+          },
+          {
+            "n": "43",
+            "s": "Public debt of the State"
+          },
+          {
+            "n": "44",
+            "s": "Treasure trove"
+          },
+          {
+            "n": "45",
+            "s": "Land revenue, including the assessment and collection of revenue, the maintenance of land records, survey for revenue purposes and records of rights, and alienation of revenue"
+          },
+          {
+            "n": "46",
+            "s": "Taxes on agricultural income"
+          },
+          {
+            "n": "47",
+            "s": "Duties in respect of succession to agricultural land"
+          },
+          {
+            "n": "48",
+            "s": "Estate duty in respect of agricultural land"
+          },
+          {
+            "n": "49",
+            "s": "Taxes on lands and buildings"
+          },
+          {
+            "n": "50",
+            "s": "Taxes on mineral rights subject to any limitations imposed by Parliament by law relating to mineral development"
+          },
+          {
+            "n": "51",
+            "s": "Duties of excise on the following goods manufactured or produced in the State and countervailing duties at the same or lower rates on similar goods manufactured or produced elsewhere in India:—(a) alcoholic liquors for human consumption; (b) opium, Indian hemp and other narcotic drugs and narcotics; but not including medicinal and toilet preparations containing alcohol or any substance included in sub-paragraph (b) of this entry"
+          },
+          {
+            "n": "52",
+            "s": "Taxes on the entry of goods into a local area for consumption, use or sale therein"
+          },
+          {
+            "n": "53",
+            "s": "Taxes on the consumption or sale of electricity"
+          },
+          {
+            "n": "54",
+            "s": "Taxes on the sale or purchase of goods other than newspapers, subject to the provisions of entry 92A of List I"
+          },
+          {
+            "n": "55",
+            "s": "Taxes on advertisements other than advertisements published in the newspapers and advertisements broadcast by radio or television"
+          },
+          {
+            "n": "56",
+            "s": "Taxes on goods and passengers carried by road or on inland waterways"
+          },
+          {
+            "n": "57",
+            "s": "Taxes on vehicles, whether mechanically propelled or not, suitable for use on roads, including tramcars subject to the provisions of entry 35 of List III"
+          },
+          {
+            "n": "58",
+            "s": "Taxes on animals and boats"
+          },
+          {
+            "n": "59",
+            "s": "Tolls"
+          },
+          {
+            "n": "60",
+            "s": "Taxes on professions, trades, callings and employments"
+          },
+          {
+            "n": "61",
+            "s": "Capitation taxes"
+          },
+          {
+            "n": "62",
+            "s": "Taxes on luxuries, including taxes on entertainments, amusements, betting and gambling"
+          },
+          {
+            "n": "63",
+            "s": "Rates of stamp duty in respect of documents other than those specified in the provisions of List I with regard to rates of stamp duty"
+          },
+          {
+            "n": "64",
+            "s": "Offences against laws with respect to any of the matters in this List"
+          },
+          {
+            "n": "65",
+            "s": "Jurisdiction and powers of all courts, except the Supreme Court, with respect to any of the matters in this List"
+          },
+          {
+            "n": "66",
+            "s": "Fees in respect of any of the matters in this List, but not including fees taken in any court"
+          }
+        ]
+      },
+      {
+        "t": "list",
+        "eyebrow": "LIST III",
+        "title": "Concurrent List",
+        "open": false,
+        "items": [
+          {
+            "n": "1",
+            "s": "Criminal law, including all matters included in the Indian Penal Code at the commencement of this Constitution but excluding offences against laws with respect to any of the matters specified in List I or List II and excluding the use of naval, military or air forces or any other armed forces of the Union in aid of the civil power"
+          },
+          {
+            "n": "2",
+            "s": "Criminal procedure, including all matters included in the Code of Criminal Procedure at the commencement of this Constitution"
+          },
+          {
+            "n": "3",
+            "s": "Preventive detention for reasons connected with the security of a State, the maintenance of public order, or the maintenance of supplies and services essential to the community; persons subjected to such detention"
+          },
+          {
+            "n": "4",
+            "s": "Removal from one State to another State of prisoners, accused persons and persons subjected to preventive detention for reasons specified in entry 3 of this List"
+          },
+          {
+            "n": "5",
+            "s": "Marriage and divorce; infants and minors; adoption; wills, intestacy and succession; joint family and partition; all matters in respect of which parties in judicial proceedings were immediately before the commencement of this Constitution subject to their personal law"
+          },
+          {
+            "n": "6",
+            "s": "Transfer of property other than agricultural land; registration of deeds and documents"
+          },
+          {
+            "n": "7",
+            "s": "Contracts, including partnership, agency, contracts of carriage, and other special forms of contracts, but not including contracts relating to agricultural land"
+          },
+          {
+            "n": "8",
+            "s": "Actionable wrongs"
+          },
+          {
+            "n": "9",
+            "s": "Bankruptcy and insolvency"
+          },
+          {
+            "n": "10",
+            "s": "Trust and Trustees"
+          },
+          {
+            "n": "11",
+            "s": "Administrators-general and official trustees"
+          },
+          {
+            "n": "11A",
+            "s": "Administration of Justice; constitution and organisation of all courts, except the Supreme Court and the High Courts"
+          },
+          {
+            "n": "12",
+            "s": "Evidence and oaths; recognition of laws, public acts and records, and judicial proceedings"
+          },
+          {
+            "n": "13",
+            "s": "Civil procedure, including all matters included in the Code of Civil Procedure at the commencement of this Constitution, limitation and arbitration"
+          },
+          {
+            "n": "14",
+            "s": "Contempt of court, but not including contempt of the Supreme Court"
+          },
+          {
+            "n": "15",
+            "s": "Vagrancy; nomadic and migratory tribes"
+          },
+          {
+            "n": "16",
+            "s": "Lunacy and mental deficiency, including places for the reception or treatment of lunatics and mental deficients"
+          },
+          {
+            "n": "17",
+            "s": "Prevention of cruelty to animals"
+          },
+          {
+            "n": "17A",
+            "s": "Forests"
+          },
+          {
+            "n": "17B",
+            "s": "Protection of wild animals and birds"
+          },
+          {
+            "n": "18",
+            "s": "Adulteration of foodstuffs and other goods"
+          },
+          {
+            "n": "19",
+            "s": "Drugs and poisons, subject to the provisions of entry 59 of List I with respect to opium"
+          },
+          {
+            "n": "20",
+            "s": "Economic and social planning"
+          },
+          {
+            "n": "20A",
+            "s": "Population control and family planning"
+          },
+          {
+            "n": "21",
+            "s": "Commercial and industrial monopolies, combines and trusts"
+          },
+          {
+            "n": "22",
+            "s": "Trade unions; industrial and labour disputes"
+          },
+          {
+            "n": "23",
+            "s": "Social security and social insurance; employment and unemployment"
+          },
+          {
+            "n": "24",
+            "s": "Welfare of labour including conditions of work, provident funds, employers' liability, workmen's compensation, invalidity and old age pensions and maternity benefits"
+          },
+          {
+            "n": "25",
+            "s": "Education, including technical education, medical education and universities, subject to the provisions of entries 63, 64, 65 and 66 of List I; vocational and technical training of labour"
+          },
+          {
+            "n": "26",
+            "s": "Legal, medical and other professions"
+          },
+          {
+            "n": "27",
+            "s": "Relief and rehabilitation of persons displaced from their original place of residence by reason of the setting up of the Dominions of India and Pakistan"
+          },
+          {
+            "n": "28",
+            "s": "Charities and charitable institutions, charitable and religious endowments and religious institutions"
+          },
+          {
+            "n": "29",
+            "s": "Prevention of the extension from one State to another of infectious or contagious diseases or pests affecting men, animals or plants"
+          },
+          {
+            "n": "30",
+            "s": "Vital statistics including registration of births and deaths"
+          },
+          {
+            "n": "31",
+            "s": "Ports other than those declared by or under law made by Parliament or existing law to be major ports"
+          },
+          {
+            "n": "32",
+            "s": "Shipping and navigation on inland waterways as regards mechanically propelled vessels, and the rule of the road on such waterways, and the carriage of passengers and goods on inland waterways subject to the provisions of List I with regard to national waterways"
+          },
+          {
+            "n": "33",
+            "s": "Trade and commerce in, and the production, supply and distribution of,—(a) the products of any industry where the control of such industry by the Union is declared by Parliament by law to be expedient in the public interest, and imported goods of the same kind as such products; (b) foodstuffs, including edible oilseeds and oils; (c) cattle fodder, including oilcakes and other concentrates; (d) raw cotton, whether ginned or unginned, and cotton seed; and (e) raw jute"
+          },
+          {
+            "n": "34",
+            "s": "Price control"
+          },
+          {
+            "n": "35",
+            "s": "Mechanically propelled vehicles including the principles on which taxes on such vehicles are to be levied"
+          },
+          {
+            "n": "36",
+            "s": "Factories"
+          },
+          {
+            "n": "37",
+            "s": "Boilers"
+          },
+          {
+            "n": "38",
+            "s": "Electricity"
+          },
+          {
+            "n": "39",
+            "s": "Newspapers, books and printing presses"
+          },
+          {
+            "n": "40",
+            "s": "Archaeological sites and remains other than those declared by or under law made by Parliament to be of national importance"
+          },
+          {
+            "n": "41",
+            "s": "Custody, management and disposal of property (including agricultural land) declared by law to be evacuee property"
+          },
+          {
+            "n": "42",
+            "s": "Acquisition and requisitioning of property"
+          },
+          {
+            "n": "43",
+            "s": "Recovery in a State of claims in respect of taxes and other public demands, including arrears of land-revenue and sums recoverable as such arrears, arising outside that State"
+          },
+          {
+            "n": "44",
+            "s": "Stamp duties other than duties or fees collected by means of judicial stamps, but not including rates of stamp duty"
+          },
+          {
+            "n": "45",
+            "s": "Inquiries and statistics for the purposes of any of the matters specified in List II or List III"
+          },
+          {
+            "n": "46",
+            "s": "Jurisdiction and powers of all courts, except the Supreme Court, with respect to any of the matters in this List"
+          },
+          {
+            "n": "47",
+            "s": "Fees in respect of any of the matters in this List, but not including fees taken in any court"
+          }
+        ]
+      }
+    ],
+    "notes": [
+      "Ins. by the Constitution (Forty-second Amendment) Act, 1976, s. 57 (w.e.f. 3-1-1977), and later amended."
+    ]
+  },
+  "eighth": {
+    "blocks": [
+      {
+        "t": "langs",
+        "items": [
+          {
+            "n": "1",
+            "name": "Assamese"
+          },
+          {
+            "n": "2",
+            "name": "Bengali"
+          },
+          {
+            "n": "3",
+            "name": "Bodo",
+            "added": "2003",
+            "note": "Ins. by the Constitution (Ninety-second Amendment) Act, 2003, s. 2 (w.e.f. 7-1-2004)."
+          },
+          {
+            "n": "4",
+            "name": "Dogri",
+            "added": "2003",
+            "note": "Ins. by the Constitution (Ninety-second Amendment) Act, 2003, s. 2 (w.e.f. 7-1-2004)."
+          },
+          {
+            "n": "5",
+            "name": "Gujarati"
+          },
+          {
+            "n": "6",
+            "name": "Hindi"
+          },
+          {
+            "n": "7",
+            "name": "Kannada"
+          },
+          {
+            "n": "8",
+            "name": "Kashmiri"
+          },
+          {
+            "n": "9",
+            "name": "Konkani",
+            "added": "1992",
+            "note": "Ins. by the Constitution (Seventy-first Amendment) Act, 1992, s. 2 (w.e.f. 31-8-1992). Entries 9 to 14 renumbered as entries 12 to 17 by the Constitution (Ninety-second Amendment) Act, 2003, s. 2 (w.e.f. 7-1-2004)."
+          },
+          {
+            "n": "10",
+            "name": "Maithili",
+            "added": "2003",
+            "note": "Ins. by the Constitution (Ninety-second Amendment) Act, 2003, s. 2 (w.e.f. 7-1-2004)."
+          },
+          {
+            "n": "11",
+            "name": "Malayalam"
+          },
+          {
+            "n": "12",
+            "name": "Manipuri",
+            "added": "1992",
+            "note": "Ins. by the Constitution (Seventy-first Amendment) Act, 1992, s. 2 (w.e.f. 31-8-1992)."
+          },
+          {
+            "n": "13",
+            "name": "Marathi"
+          },
+          {
+            "n": "14",
+            "name": "Nepali",
+            "added": "1992",
+            "note": "Ins. by the Constitution (Seventy-first Amendment) Act, 1992, s. 2 (w.e.f. 31-8-1992)."
+          },
+          {
+            "n": "15",
+            "name": "Odia",
+            "note": "Subs. by the Constitution (Ninety-sixth Amendment) Act, 2011, s. 2, for “Oriya” (w.e.f. 23-9-2011)."
+          },
+          {
+            "n": "16",
+            "name": "Punjabi"
+          },
+          {
+            "n": "17",
+            "name": "Sanskrit"
+          },
+          {
+            "n": "18",
+            "name": "Santali",
+            "added": "2003",
+            "note": "Ins. by the Constitution (Ninety-second Amendment) Act, 2003, s. 2 (w.e.f. 7-1-2004)."
+          },
+          {
+            "n": "19",
+            "name": "Sindhi",
+            "added": "1967",
+            "note": "Ins. by the Constitution (Twenty-first Amendment) Act, 1967, s. 2."
+          },
+          {
+            "n": "20",
+            "name": "Tamil"
+          },
+          {
+            "n": "21",
+            "name": "Telugu"
+          },
+          {
+            "n": "22",
+            "name": "Urdu"
+          }
+        ]
+      }
+    ],
+    "notes": []
+  },
+  "ninth": {
+    "blocks": [
+      {
+        "t": "p",
+        "s": "1. The Bihar Land Reforms Act, 1950 (Bihar Act XXX of 1950)."
+      },
+      {
+        "t": "p",
+        "s": "2. The Bombay Tenancy and Agricultural Lands Act, 1948 (Bombay Act LXVII of 1948)."
+      },
+      {
+        "t": "p",
+        "s": "3. The Bombay Maleki Tenure Abolition Act, 1949 (Bombay Act LXI of 1949)."
+      },
+      {
+        "t": "p",
+        "s": "4. The Bombay Taluqdari Tenure Abolition Act, 1949 (Bombay Act LXII of 1949)."
+      },
+      {
+        "t": "p",
+        "s": "5. The Panch Mahals Mehwassi Tenure Abolition Act, 1949 (Bombay Act LXIII of 1949)."
+      },
+      {
+        "t": "p",
+        "s": "6. The Bombay Khoti Abolition Act, 1950 (Bombay Act VI of 1950)."
+      },
+      {
+        "t": "p",
+        "s": "7. The Bombay Paragana and Kulkarni Watan Abolition Act, 1950 (Bombay Act LX of 1950)."
+      },
+      {
+        "t": "p",
+        "s": "8. The Madhya Pradesh Abolition of Proprietary Rights (Estates, Mahals, Alienated Lands) Act, 1950 (Madhya Pradesh Act I of 1951)."
+      },
+      {
+        "t": "p",
+        "s": "9. The Madras Estates (Abolition and Conversion into Ryotwari) Act, 1948 (Madras Act XXVI of 1948)."
+      },
+      {
+        "t": "p",
+        "s": "10. The Madras Estates (Abolition and Conversion into Ryotwari) Amendment Act, 1950 (Madras Act I of 1950)."
+      },
+      {
+        "t": "p",
+        "s": "11. The Uttar Pradesh Zamindari Abolition and Land Reforms Act, 1950 (Uttar Pradesh Act I of 1951)."
+      },
+      {
+        "t": "p",
+        "s": "12. The Hyderabad (Abolition of Jagirs) Regulation, 1358F (No. LXIX of 1358, Fasli)."
+      },
+      {
+        "t": "p",
+        "s": "13. The Hyderabad Jagirs (Commutation) Regulation, 1359F (No. XXV of 1359, Fasli)."
+      },
+      {
+        "t": "p",
+        "s": "14. The Bihar Displaced Persons Rehabilitation (Acquisition of Land) Act, 1950 (Bihar Act XXXVIII of 1950)."
+      },
+      {
+        "t": "p",
+        "s": "15. The United Provinces Land Acquisition (Rehabilitation of Refugees) Act, 1948 (U.P. Act XXVI of 1948)."
+      },
+      {
+        "t": "p",
+        "s": "16. The Resettlement of Displaced Persons (Land Acquisition) Act, 1948 (Act LX of 1948)."
+      },
+      {
+        "t": "p",
+        "s": "17. Sections 52A to 52G of the Insurance Act, 1938 (Act IV of 1938), as inserted by section 42 of the Insurance (Amendment) Act, 1950 (Act XLVII of 1950)."
+      },
+      {
+        "t": "p",
+        "s": "18. The Railway Companies (Emergency Provisions) Act, 1951 (Act LI of 1951)."
+      },
+      {
+        "t": "p",
+        "s": "19. Chapter III-A of the Industries (Development and Regulation) Act, 1951 (Act LXV of 1951)."
+      },
+      {
+        "t": "p",
+        "s": "20. The West Bengal Land Development and Planning Act, 1948 (West Bengal Act XXI of 1948), as amended by West Bengal Act XXIX of 1951."
+      },
+      {
+        "t": "p",
+        "s": "21. The Bombay Tenancy and Agricultural Lands Act, 1948. (Bombay Act LXVII of 1948)."
+      },
+      {
+        "t": "p",
+        "s": "22. The Bombay Taluqdari Tenure Abolition Act, 1949. (Bombay Act LXII of 1949)."
+      },
+      {
+        "t": "p",
+        "s": "23. The Panch Mahals Mehwassi Tenure Abolition Act, 1949. (Bombay Act LXIII of 1949)."
+      },
+      {
+        "t": "p",
+        "s": "24. The Bombay Paragana and Kulkarni Watan Abolition Act, 1950. (Bombay Act LX of 1950)."
+      },
+      {
+        "t": "p",
+        "s": "25. The Hyderabad Jagirs (Commutation) Regulation, 1359F (No. XXV of 1359, Fasli).]"
+      },
+      {
+        "t": "p",
+        "s": "26. Chapter III-A of the Industries (Development and Regulation) Act, 1951 (Act LXV of 1951), as inserted by section 13 of the Industries (Development and Regulation) Amendment Act, 1953 (Act XXVI of 1953)."
+      },
+      {
+        "t": "p",
+        "s": "27. The West Bengal Land Development and Planning Act, 1948 (West Bengal Act XXI of 1948), as amended by West Bengal Act XXIX of 1951.]"
+      },
+      {
+        "t": "p",
+        "s": "28. The Andhra Pradesh (Telangana Area) Tenancy and Agricultural Lands (Validation) Act, 1961 (Andhra Pradesh Act XXI of 1961)."
+      },
+      {
+        "t": "p",
+        "s": "29. The Andhra Pradesh (Telangana Area) Ijara and Kowli Land Cancellation of Irregular Pattas and Abolition of Concessional Assessment Act, 1961 (Andhra Pradesh Act XXXVI of 1961)."
+      },
+      {
+        "t": "p",
+        "s": "30. The Assam State Acquisition of Lands belonging to Religious or Charitable Institution of Public Nature Act, 1959 (Assam Act IX of 1961)."
+      },
+      {
+        "t": "p",
+        "s": "31. The Bihar Land Reforms (Amendment) Act, 1953 (Bihar Act XX of 1954)."
+      },
+      {
+        "t": "p",
+        "s": "32. The Bihar Land Reforms (Fixation of Ceiling Area and Acquisition of Surplus Land) Act, 1961 (Bihar Act XII of 1962), except section 28 of this Act."
+      },
+      {
+        "t": "p",
+        "s": "33. The Bombay Taluqdari Tenure Abolition (Amendment) Act, 1954 (Bombay Act I of 1955)."
+      },
+      {
+        "t": "p",
+        "s": "34. The Bombay Taluqdari Tenure Abolition (Amendment) Act, 1957 (Bombay Act XVIII of 1958)."
+      },
+      {
+        "t": "p",
+        "s": "35. The Bombay Inams (Kutch Area) Abolition Act, 1958 (Bombay Act XCVIII of 1958)."
+      },
+      {
+        "t": "p",
+        "s": "36. The Bombay Tenancy and Agricultural Lands (Gujarat Amendment) Act, 1960 (Gujarat Act XVI of 1960)."
+      },
+      {
+        "t": "p",
+        "s": "37. The Gujarat Agricultural Lands Ceiling Act, 1960 (Gujarat Act XXVI of 1961)."
+      },
+      {
+        "t": "p",
+        "s": "38. The Sagbara and Mehwassi Estates (Proprietary Rights Abolition, etc.) Regulation, 1962 (Gujarat Regulation I of 1962)."
+      }
+    ],
+    "notes": [
+      "Ninth Schedule (entries 1 to 13) added by the Constitution (First Amendment) Act, 1951, s. 14 (w.e.f. 18-6-1951)."
+    ]
+  },
+  "tenth": {
+    "blocks": [
+      {
+        "t": "h",
+        "s": "Provisions as to disqualification on ground of defection"
+      },
+      {
+        "t": "sec",
+        "num": "1",
+        "title": "Interpretation"
+      },
+      {
+        "t": "p",
+        "s": "In this Schedule, unless the context otherwise requires,—"
+      },
+      {
+        "t": "cl",
+        "mark": "(a)",
+        "s": "“House” means either House of Parliament or the Legislative Assembly or, as the case may be, either House of the Legislature of a State;",
+        "pad": 0
+      },
+      {
+        "t": "cl",
+        "mark": "(b)",
+        "s": "“legislature party”, in relation to a member of a House belonging to any political party in accordance with the provisions of paragraph 2 or *** paragraph 4, means the group consisting of all the members of that House for the time being belonging to that political party in accordance with the said provisions;",
+        "pad": 0
+      },
+      {
+        "t": "cl",
+        "mark": "(c)",
+        "s": "“original political party”, in relation to a member of a House, means the political party to which he belongs for the purposes of sub-paragraph (1) of paragraph 2;",
+        "pad": 0
+      },
+      {
+        "t": "cl",
+        "mark": "(d)",
+        "s": "“paragraph” means a paragraph of this Schedule.",
+        "pad": 0
+      },
+      {
+        "t": "sec",
+        "num": "2",
+        "title": "Disqualification on ground of defection"
+      },
+      {
+        "t": "cl",
+        "mark": "(1)",
+        "s": "Subject to the provisions of paragraphs 4 and 5, a member of a House belonging to any political party shall be disqualified for being a member of the House—",
+        "pad": 0
+      },
+      {
+        "t": "cl",
+        "mark": "(a)",
+        "s": "if he has voluntarily given up his membership of such political party; or",
+        "pad": 32
+      },
+      {
+        "t": "cl",
+        "mark": "(b)",
+        "s": "if he votes or abstains from voting in such House contrary to any direction issued by the political party to which he belongs or by any person or authority authorised by it in this behalf, without obtaining, in either case, the prior permission of such political party, person or authority and such voting or abstention has not been condoned by such political party, person or authority within fifteen days from the date of such voting or abstention.",
+        "pad": 32
+      },
+      {
+        "t": "lead",
+        "lead": "Explanation.—",
+        "s": "For the purposes of this sub-paragraph,—",
+        "pad": 0
+      },
+      {
+        "t": "cl",
+        "mark": "(a)",
+        "s": "an elected member of a House shall be deemed to belong to the political party, if any, by which he was set up as a candidate for election as such member;",
+        "pad": 32
+      },
+      {
+        "t": "cl",
+        "mark": "(b)",
+        "s": "a nominated member of a House shall, notwithstanding anything contained in sub-paragraph (1), be deemed to belong to the political party of which he becomes, or, as the case may be, first becomes, a member, before the expiry of six months from the date on which he takes his seat after being nominated.",
+        "pad": 32
+      },
+      {
+        "t": "cl",
+        "mark": "(2)",
+        "s": "An elected member of a House who has been elected as such otherwise than as a candidate set up by any political party shall be disqualified for being a member of the House if he joins any political party after such election.",
+        "pad": 0
+      },
+      {
+        "t": "cl",
+        "mark": "(3)",
+        "s": "A nominated member of a House shall be disqualified for being a member of the House if he joins any political party after the expiry of six months from the date on which he takes his seat after being nominated.",
+        "pad": 0
+      },
+      {
+        "t": "cl",
+        "mark": "(4)",
+        "s": "Notwithstanding anything contained in the foregoing provisions of this paragraph, a person who, on the commencement of the Constitution (Fifty-second Amendment) Act, 1985, is a member of a House (whether elected or nominated as such) shall,—",
+        "pad": 0
+      },
+      {
+        "t": "cl",
+        "mark": "(i)",
+        "s": "where he was a member of a political party immediately before such commencement, be deemed, for the purposes of sub-paragraph (1) of this paragraph, to have been elected as a member of such House as a candidate set up by such political party;",
+        "pad": 32
+      },
+      {
+        "t": "cl",
+        "mark": "(ii)",
+        "s": "in any other case, be deemed to be an elected member of the House who has been elected as such otherwise than as a candidate set up by any political party for the purposes of sub-paragraph (2) of this paragraph or, as the case may be, be deemed to be a nominated member of the House for the purposes of sub-paragraph (3) of this paragraph.",
+        "pad": 32
+      },
+      {
+        "t": "sec",
+        "num": "4",
+        "title": "Disqualification on ground of defection not to apply in case of merger"
+      },
+      {
+        "t": "cl",
+        "mark": "(1)",
+        "s": "A member of a House shall not be disqualified under sub-paragraph (1) of paragraph 2 where his original political party merges with another political party and he claims that he and any other members of his original political party—",
+        "pad": 0
+      },
+      {
+        "t": "cl",
+        "mark": "(a)",
+        "s": "have become members of such other political party or, as the case may be, of a new political party formed by such merger; or",
+        "pad": 32
+      },
+      {
+        "t": "cl",
+        "mark": "(b)",
+        "s": "have not accepted the merger and opted to function as a separate group,",
+        "pad": 32
+      },
+      {
+        "t": "p",
+        "s": "and from the time of such merger, such other political party or new political party or group, as the case may be, shall be deemed to be the political party to which he belongs for the purposes of sub-paragraph (1) of paragraph 2 and to be his original political party for the purposes of this sub-paragraph."
+      },
+      {
+        "t": "cl",
+        "mark": "(2)",
+        "s": "For the purposes of sub-paragraph (1) of this paragraph, the merger of the original political party of a member of a House shall be deemed to have taken place if, and only if, not less than two-thirds of the members of the legislature party concerned have agreed to such merger.",
+        "pad": 0
+      },
+      {
+        "t": "sec",
+        "num": "5",
+        "title": "Exemption"
+      },
+      {
+        "t": "p",
+        "s": "Notwithstanding anything contained in this Schedule, a person who has been elected to the office of the Speaker or the Deputy Speaker of the House of the People or the Deputy Chairman of the Council of States or the Chairman or the Deputy Chairman of the Legislative Council of a State or the Speaker or the Deputy Speaker of the Legislative Assembly of a State, shall not be disqualified under this Schedule,—"
+      },
+      {
+        "t": "cl",
+        "mark": "(a)",
+        "s": "if he, by reason of his election to such office, voluntarily gives up the membership of the political party to which he belonged immediately before such election and does not, so long as he continues to hold such office thereafter, rejoin that political party or become a member of another political party; or",
+        "pad": 0
+      },
+      {
+        "t": "cl",
+        "mark": "(b)",
+        "s": "if he, having given up by reason of his election to such office his membership of the political party to which he belonged immediately before such election, rejoins such political party after he ceases to hold such office.",
+        "pad": 0
+      },
+      {
+        "t": "sec",
+        "num": "6",
+        "title": "Decision on questions as to disqualification on ground of defection"
+      },
+      {
+        "t": "cl",
+        "mark": "(1)",
+        "s": "If any question arises as to whether a member of a House has become subject to disqualification under this Schedule, the question shall be referred for the decision of the Chairman or, as the case may be, the Speaker of such House and his decision shall be final.",
+        "pad": 0
+      },
+      {
+        "t": "lead",
+        "lead": "Provided that",
+        "s": "where the question which has arisen is as to whether the Chairman or the Speaker of a House has become subject to such disqualification, the question shall be referred for the decision of such member of the House as the House may elect in this behalf and his decision shall be final.",
+        "pad": 0
+      },
+      {
+        "t": "cl",
+        "mark": "(2)",
+        "s": "All proceedings under sub-paragraph (1) of this paragraph in relation to any question as to disqualification of a member of a House under this Schedule shall be deemed to be proceedings in Parliament within the meaning of article 122 or, as the case may be, proceedings in the Legislature of a State within the meaning of article 212.",
+        "pad": 0
+      },
+      {
+        "t": "sec",
+        "num": "7",
+        "title": "Bar of jurisdiction of courts"
+      },
+      {
+        "t": "p",
+        "s": "Notwithstanding anything in this Constitution, no court shall have any jurisdiction in respect of any matter connected with the disqualification of a member of a House under this Schedule."
+      },
+      {
+        "t": "sec",
+        "num": "8",
+        "title": "Rules"
+      },
+      {
+        "t": "cl",
+        "mark": "(1)",
+        "s": "Subject to the provisions of sub-paragraph (2) of this paragraph, the Chairman or the Speaker of a House may make rules for giving effect to the provisions of this Schedule, and in particular, and without prejudice to the generality of the foregoing, such rules may provide for—",
+        "pad": 0
+      },
+      {
+        "t": "cl",
+        "mark": "(a)",
+        "s": "the maintenance of registers or other records as to the political parties, if any, to which different members of the House belong;",
+        "pad": 32
+      },
+      {
+        "t": "cl",
+        "mark": "(b)",
+        "s": "the report which the leader of a legislature party in relation to a member of a House shall furnish with regard to any condonation of the nature referred to in clause (b) of sub-paragraph (1) of paragraph 2 in respect of such member, the time within which and the authority to whom such report shall be furnished;",
+        "pad": 32
+      },
+      {
+        "t": "cl",
+        "mark": "(c)",
+        "s": "the reports which a political party shall furnish in relation to petitions to the Chairman or the Speaker in relation to any question as to disqualification;",
+        "pad": 32
+      },
+      {
+        "t": "cl",
+        "mark": "(d)",
+        "s": "the procedure for deciding any question referred to in sub-paragraph (1) of paragraph 6 including the procedure for any inquiry which may be made for the purpose of deciding such question.",
+        "pad": 32
+      }
+    ],
+    "notes": [
+      "Tenth Schedule added by the Constitution (Fifty-second Amendment) Act, 1985, s. 6 (w.e.f. 1-3-1985).",
+      "Paragraph 3 omitted by the Constitution (Ninety-first Amendment) Act, 2003, s. 5 (w.e.f. 1-1-2004).",
+      "Paragraph 7 was held unconstitutional in Kihoto Hollohan v. Zachillhu (1992); it is printed as in the source."
+    ]
+  },
+  "eleventh": {
+    "blocks": [
+      {
+        "t": "table",
+        "kind": "two",
+        "rows": [
+          {
+            "a": "1",
+            "b": "Agriculture, including agricultural extension."
+          },
+          {
+            "a": "2",
+            "b": "Land improvement, implementation of land reforms, land consolidation and soil conservation."
+          },
+          {
+            "a": "3",
+            "b": "Minor irrigation, water management and watershed development."
+          },
+          {
+            "a": "4",
+            "b": "Animal husbandry, dairying and poultry."
+          },
+          {
+            "a": "5",
+            "b": "Fisheries."
+          },
+          {
+            "a": "6",
+            "b": "Social forestry and farm forestry."
+          },
+          {
+            "a": "7",
+            "b": "Minor forest produce."
+          },
+          {
+            "a": "8",
+            "b": "Small scale industries, including food processing industries."
+          },
+          {
+            "a": "9",
+            "b": "Khadi, village and cottage industries."
+          },
+          {
+            "a": "10",
+            "b": "Rural housing."
+          },
+          {
+            "a": "11",
+            "b": "Drinking water."
+          },
+          {
+            "a": "12",
+            "b": "Fuel and fodder."
+          },
+          {
+            "a": "13",
+            "b": "Roads, culverts, bridges, ferries, waterways and other means of communication."
+          },
+          {
+            "a": "14",
+            "b": "Rural electrification, including distribution of electricity."
+          },
+          {
+            "a": "15",
+            "b": "Non-conventional energy sources."
+          },
+          {
+            "a": "16",
+            "b": "Poverty alleviation programme."
+          },
+          {
+            "a": "17",
+            "b": "Education, including primary and secondary schools."
+          },
+          {
+            "a": "18",
+            "b": "Technical training and vocational education."
+          },
+          {
+            "a": "19",
+            "b": "Adult and non-formal education."
+          },
+          {
+            "a": "20",
+            "b": "Libraries."
+          },
+          {
+            "a": "21",
+            "b": "Cultural activities."
+          },
+          {
+            "a": "22",
+            "b": "Markets and fairs."
+          },
+          {
+            "a": "23",
+            "b": "Health and sanitation, including hospitals, primary health centres and dispensaries."
+          },
+          {
+            "a": "24",
+            "b": "Family welfare."
+          },
+          {
+            "a": "25",
+            "b": "Women and child development."
+          },
+          {
+            "a": "26",
+            "b": "Social welfare, including welfare of the handicapped and mentally retarded."
+          },
+          {
+            "a": "27",
+            "b": "Welfare of the weaker sections, and in particular, of the Scheduled Castes and the Scheduled Tribes."
+          },
+          {
+            "a": "28",
+            "b": "Public distribution system."
+          },
+          {
+            "a": "29",
+            "b": "Maintenance of community assets."
+          }
+        ]
+      }
+    ],
+    "notes": [
+      "Eleventh Schedule added by the Constitution (Seventy-third Amendment) Act, 1992, s. 4 (w.e.f. 24-4-1993)."
+    ]
+  },
+  "twelfth": {
+    "blocks": [
+      {
+        "t": "table",
+        "kind": "two",
+        "rows": [
+          {
+            "a": "1",
+            "b": "Urban planning including town planning."
+          },
+          {
+            "a": "2",
+            "b": "Regulation of land-use and construction of buildings."
+          },
+          {
+            "a": "3",
+            "b": "Planning for economic and social development."
+          },
+          {
+            "a": "4",
+            "b": "Roads and bridges."
+          },
+          {
+            "a": "5",
+            "b": "Water supply for domestic, industrial and commercial purposes."
+          },
+          {
+            "a": "6",
+            "b": "Public health, sanitation conservancy and solid waste management."
+          },
+          {
+            "a": "7",
+            "b": "Fire services."
+          },
+          {
+            "a": "8",
+            "b": "Urban forestry, protection of the environment and promotion of ecological aspects."
+          },
+          {
+            "a": "9",
+            "b": "Safeguarding the interests of weaker sections of society, including the handicapped and mentally retarded."
+          },
+          {
+            "a": "10",
+            "b": "Slum improvement and upgradation."
+          },
+          {
+            "a": "11",
+            "b": "Urban poverty alleviation."
+          },
+          {
+            "a": "12",
+            "b": "Provision of urban amenities and facilities such as parks, gardens, playgrounds."
+          },
+          {
+            "a": "13",
+            "b": "Promotion of cultural, educational and aesthetic aspects."
+          },
+          {
+            "a": "14",
+            "b": "Burials and burial grounds; cremations, cremation grounds; and electric crematoriums."
+          },
+          {
+            "a": "15",
+            "b": "Cattle pounds; prevention of cruelty to animals."
+          },
+          {
+            "a": "16",
+            "b": "Vital statistics including registration of births and deaths."
+          },
+          {
+            "a": "17",
+            "b": "Public amenities including street lighting, parking lots, bus stops and public conveniences."
+          },
+          {
+            "a": "18",
+            "b": "Regulation of slaughter houses and tanneries."
+          }
+        ]
+      }
+    ],
+    "notes": [
+      "Twelfth Schedule added by the Constitution (Seventy-fourth Amendment) Act, 1992, s. 4 (w.e.f. 1-6-1993)."
+    ]
+  }
+}

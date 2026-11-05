@@ -1,91 +1,110 @@
 [
   {
     "slug": "first",
+    "ord": "First",
     "roman": "I",
     "title": "The States and the Union territories",
-    "articles": "Articles 1 and 4",
-    "parent_id": "schedule-first",
-    "tables_tab": "states"
+    "refs": "Arts. 1, 4",
+    "meta": "Articles 1 and 4 · Read-only reference",
+    "cite": "[Articles 1 and 4]"
   },
   {
     "slug": "second",
+    "ord": "Second",
     "roman": "II",
-    "title": "Provisions as to the President and the Governors, etc.",
-    "articles": "Articles 59(3), 65(3), 75(7), 97, 125, 148(3), 158(3), 164(5), 186 and 221",
-    "parent_id": "schedule-second"
+    "title": "Emoluments, allowances and privileges",
+    "refs": "Arts. 59, 65, 75, 97, 125, 148, 158, 164, 186, 221",
+    "meta": "Articles 59, 65, 75, 97, 125, 148, 158, 164, 186 and 221 · Read-only reference",
+    "cite": "[Articles 59(3), 65(3), 75(7), 97, 125, 148(3), 158(3), 164(5), 186 and 221]"
   },
   {
     "slug": "third",
+    "ord": "Third",
     "roman": "III",
-    "title": "Forms of Oaths or Affirmations",
-    "articles": "Articles 75(4), 99, 124(6), 148(2), 164(3), 188 and 219",
-    "parent_id": "schedule-third"
+    "title": "Forms of oaths or affirmations",
+    "refs": "Arts. 75, 84, 99, 124, 148, 164, 173, 188, 219",
+    "meta": "Articles 75, 84, 99, 124, 148, 164, 173, 188 and 219 · Read-only reference",
+    "cite": "[Articles 75(4), 99, 124(6), 148(2), 164(3), 188 and 219]"
   },
   {
     "slug": "fourth",
+    "ord": "Fourth",
     "roman": "IV",
     "title": "Allocation of seats in the Council of States",
-    "articles": "Articles 4(1) and 80(2)",
-    "parent_id": "schedule-fourth"
+    "refs": "Arts. 4, 80",
+    "meta": "Articles 4 and 80 · Read-only reference",
+    "cite": "[Articles 4(1) and 80(2)]"
   },
   {
     "slug": "fifth",
+    "ord": "Fifth",
     "roman": "V",
-    "title": "Provisions as to the Administration and Control of Scheduled Areas and Scheduled Tribes",
-    "articles": "Article 244(1)",
-    "parent_id": "schedule-fifth",
-    "tables_tab": "schedules56"
+    "title": "Scheduled Areas and Scheduled Tribes",
+    "refs": "Art. 244",
+    "meta": "Article 244 · Read-only reference",
+    "cite": "[Article 244(1)]"
   },
   {
     "slug": "sixth",
+    "ord": "Sixth",
     "roman": "VI",
-    "title": "Provisions as to the Administration of Tribal Areas in Assam, Meghalaya, Tripura and Mizoram",
-    "articles": "Articles 244(2) and 275(1)",
-    "parent_id": "schedule-sixth",
-    "tables_tab": "schedules56"
+    "title": "Tribal areas in the North-East",
+    "refs": "Arts. 244, 275",
+    "meta": "Articles 244 and 275 · Read-only reference",
+    "cite": "[Articles 244(2) and 275(1)]"
   },
   {
     "slug": "seventh",
+    "ord": "Seventh",
     "roman": "VII",
-    "title": "Union List, State List and Concurrent List",
-    "articles": "Article 246",
-    "parent_id": "schedule-seventh",
-    "tables_tab": "seventh"
+    "title": "Union, State and Concurrent Lists",
+    "refs": "Art. 246",
+    "meta": "Article 246 · Read-only reference",
+    "cite": "[Article 246]"
   },
   {
     "slug": "eighth",
+    "ord": "Eighth",
     "roman": "VIII",
     "title": "Languages",
-    "articles": "Articles 344(1) and 351",
-    "parent_id": "schedule-eighth",
-    "tables_tab": "languages"
+    "refs": "Arts. 344, 351",
+    "meta": "Articles 344 and 351 · Read-only reference",
+    "cite": "[Articles 344(1) and 351]"
   },
   {
     "slug": "ninth",
+    "ord": "Ninth",
     "roman": "IX",
     "title": "Validation of certain Acts and Regulations",
-    "articles": "Article 31B",
-    "parent_id": "schedule-ninth"
+    "refs": "Art. 31B",
+    "meta": "Article 31B · Read-only reference",
+    "cite": "[Article 31B]"
   },
   {
     "slug": "tenth",
+    "ord": "Tenth",
     "roman": "X",
-    "title": "Provisions as to disqualification on ground of defection",
-    "articles": "Articles 102(2) and 191(2)",
-    "parent_id": "schedule-tenth"
+    "title": "Disqualification on ground of defection",
+    "refs": "Arts. 102, 191",
+    "meta": "Articles 102 and 191 · Read-only reference",
+    "cite": "[Articles 102(2) and 191(2)]"
   },
   {
     "slug": "eleventh",
+    "ord": "Eleventh",
     "roman": "XI",
-    "title": "Powers, authority and responsibilities of Panchayats",
-    "articles": "Article 243G",
-    "parent_id": "schedule-eleventh"
+    "title": "Powers and responsibilities of Panchayats",
+    "refs": "Art. 243G",
+    "meta": "Article 243G · Read-only reference",
+    "cite": "[Article 243G]"
   },
   {
     "slug": "twelfth",
+    "ord": "Twelfth",
     "roman": "XII",
-    "title": "Powers, authority and responsibilities of Municipalities, etc.",
-    "articles": "Article 243W",
-    "parent_id": "schedule-twelfth"
+    "title": "Powers and responsibilities of Municipalities",
+    "refs": "Art. 243W",
+    "meta": "Article 243W · Read-only reference",
+    "cite": "[Article 243W]"
   }
 ]
