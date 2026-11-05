@@ -842,21 +842,23 @@ OUTCOME_ROLLED_BACK = "rolled_back"
 # The save raised and the re-read itself failed: no claim either way.
 OUTCOME_UNKNOWN = "unknown"
 
+# Scoped to the law and its selection (the month's bookkeeping row may
+# exist; it holds no law, no choice and no selection).
 _SAVE_FAILED_COPY = {
     OUTCOME_ROLLED_BACK: (
-        "Nothing was saved",
+        "This law was not added",
         (
             "The Playground could not complete this save and rolled it back.",
-            "We checked again: no law was added and no choice was used. "
-            "Please try again.",
+            "The law was not added, none of the requested sections were saved "
+            "and no choice was used. Please try again.",
         ),
     ),
     OUTCOME_UNKNOWN: (
         "We could not confirm this save",
         (
-            "The connection failed while this save was being confirmed.",
-            "Open the Playground to see whether the law was added before "
-            "trying again; a repeat of a completed save uses no extra choice.",
+            "The connection failed before this save could be confirmed.",
+            "Open the Playground and check this law and its sections before "
+            "trying again; repeating a completed save uses no extra choice.",
         ),
     ),
 }
@@ -869,11 +871,10 @@ def save_failed_response(
     json_mode: bool = False,
     outcome: str = OUTCOME_ROLLED_BACK,
 ) -> Response:
-    """B1-F07: a save point raised. ``outcome`` is what a re-read on a
-    fresh connection established afterwards — ``rolled_back`` only when
-    membership (and selection) are verified absent, ``unknown`` when the
-    re-read itself failed. The response never claims a rollback it has
-    not observed."""
+    """B1-F07: a save point raised. ``rolled_back`` only when the repository
+    observed its own rollback; ``unknown`` when the acknowledgement was lost
+    and the re-read found the requested state absent, different or
+    unreadable. The response never claims a rollback nobody observed."""
 
     if outcome not in _SAVE_FAILED_COPY:
         outcome = OUTCOME_UNKNOWN

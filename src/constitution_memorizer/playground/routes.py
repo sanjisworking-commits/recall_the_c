@@ -62,6 +62,7 @@ from constitution_memorizer.playground.http import (
 )
 from constitution_memorizer.playground.locators import LocatorError, UnitLocator, parse_locator
 from constitution_memorizer.playground.roster.models import (
+    save_was_rolled_back,
     RESULT_FREE_CHOICES_EXHAUSTED,
     RESULT_ALREADY_ACTIVE,
     RESULT_INVALID_CANDIDATE,
@@ -345,18 +346,27 @@ class _SaveOutcome:
     committed_after_error: bool = False
 
 
-def _saved_state_present(roster, overlay, user_id, law_id: str, *, with_selection: bool) -> bool:
-    """Fresh re-read of what the save point writes: active membership and,
-    when the save carries the selection, a non-empty selection too. Used only
-    after an error, never to decide a normal response."""
+def _requested_state_present(
+    roster, overlay, user_id, law_id: str, *, expected_locators: frozenset[str] | None
+) -> bool:
+    """Fresh re-read of exactly what this request asked to save: active
+    membership and, when the save carries a selection, the stored selection
+    equal to the requested locators — not merely *some* selection, which
+    another device may have written. Used only after an error, never to
+    decide a normal response."""
 
     if not roster.is_law_active_this_period(user_id, law_id):
         return False
-    if not with_selection:
+    if expected_locators is None:
         return True
     if overlay.get_item(user_id, law_id) is None:
         return False
-    return bool(overlay.list_selection(user_id, law_id))
+    stored = frozenset(row.source_locator for row in overlay.list_selection(user_id, law_id))
+    return stored == expected_locators
+
+
+def _locators(rows) -> frozenset[str]:
+    return frozenset(str(row[0]) for row in rows)
 
 
 def _consume_or_rolled_back(
@@ -369,39 +379,42 @@ def _consume_or_rolled_back(
 ) -> _SaveOutcome:
     """B1-F07. Run one save-point write and classify any failure by evidence.
 
-    A non-HTTP exception from ``fn`` proves nothing by itself: the server may
-    have committed before the acknowledgement was lost. ``verify()`` re-reads
-    the saved state (membership, and the selection when the save carries it)
-    on a fresh connection:
-
-    * absent  -> 503 ``outcome=rolled_back`` (verified: nothing was saved)
-    * present -> ``committed_after_error``; the caller finishes as a success
-    * the re-read itself fails -> 503 ``outcome=unknown`` (no rollback claim)
+    * The repository observed its own rollback (the exception is marked by
+      :func:`mark_save_rolled_back`) -> 503 ``outcome=rolled_back``.
+    * Otherwise the acknowledgement may have been lost after a commit, so
+      ``verify()`` re-reads the *exact requested state* on a fresh connection:
+      present -> ``committed_after_error`` and the caller finishes as a
+      success; absent, different (another device's selection) or unreadable
+      -> 503 ``outcome=unknown``. Nothing is ever reported as rolled back
+      from a re-read alone.
     """
 
     try:
         return _SaveOutcome(result=fn())
     except HTTPException:
         raise
-    except Exception:  # noqa: BLE001 — classified below by re-read
-        logger.exception("playground save raised; verifying outcome by re-read")
+    except Exception as exc:  # noqa: BLE001 — classified below by evidence
+        if save_was_rolled_back(exc):
+            logger.exception("playground save rolled back (observed by the repository)")
+            return _SaveOutcome(
+                response=save_failed_response(
+                    request, templates, json_mode=json_mode, outcome=OUTCOME_ROLLED_BACK
+                )
+            )
+        logger.exception("playground save raised without rollback evidence; re-reading")
     try:
-        committed = bool(verify())
+        present = bool(verify())
     except Exception:  # noqa: BLE001
         logger.exception("playground save outcome unknown: re-read failed")
-        return _SaveOutcome(
-            response=save_failed_response(
-                request, templates, json_mode=json_mode, outcome=OUTCOME_UNKNOWN
-            )
-        )
-    if committed:
+        present = False
+    if present:
         logger.warning(
-            "playground save committed; acknowledgement lost (verified by re-read)"
+            "playground save committed; acknowledgement lost (requested state verified)"
         )
         return _SaveOutcome(committed_after_error=True)
     return _SaveOutcome(
         response=save_failed_response(
-            request, templates, json_mode=json_mode, outcome=OUTCOME_ROLLED_BACK
+            request, templates, json_mode=json_mode, outcome=OUTCOME_UNKNOWN
         )
     )
 
@@ -1064,8 +1077,12 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                     has_historical_overlay=overlay.get_item(opened.user_id, law_id) is not None,
                     within=within,
                 ),
-                verify=lambda: _saved_state_present(
-                    roster, overlay, opened.user_id, law_id, with_selection=choices_model
+                verify=lambda: _requested_state_present(
+                    roster,
+                    overlay,
+                    opened.user_id,
+                    law_id,
+                    expected_locators=_locators(rows) if choices_model else None,
                 ),
             )
             if saved.response is not None:
@@ -1114,8 +1131,8 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                 can_consume_new_law=opened.can_consume_new_law,
                 has_historical_overlay=overlay.get_item(opened.user_id, law_id) is not None,
             ),
-            verify=lambda: _saved_state_present(
-                roster, overlay, opened.user_id, law_id, with_selection=False
+            verify=lambda: _requested_state_present(
+                roster, overlay, opened.user_id, law_id, expected_locators=None
             ),
         )
         if saved.response is not None:
@@ -1511,8 +1528,8 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
                         overlay, opened.user_id, law_id, rows
                     ),
                 ),
-                verify=lambda: _saved_state_present(
-                    roster, overlay, opened.user_id, law_id, with_selection=True
+                verify=lambda: _requested_state_present(
+                    roster, overlay, opened.user_id, law_id, expected_locators=_locators(rows)
                 ),
             )
             if saved.response is not None:

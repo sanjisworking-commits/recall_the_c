@@ -28,6 +28,7 @@ from constitution_memorizer.playground.roster.models import (
     RESULT_OK,
     RESULT_RE_ADDED,
     RESULT_ROSTER_FULL,
+    mark_save_rolled_back,
     ConsumeResult,
     PlaygroundPeriod,
     RolloverResult,
@@ -984,10 +985,11 @@ class SqliteRosterRepository:
             try:
                 yield
                 self._conn.commit()
-            except Exception:
+            except Exception as exc:
                 if started:
                     try:
                         self._conn.rollback()
                     except sqlite3.Error:
-                        pass
+                        raise  # no rollback evidence: the caller re-reads
+                    mark_save_rolled_back(exc)  # B1-F07: observed rollback
                 raise

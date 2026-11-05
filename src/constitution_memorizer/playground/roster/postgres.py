@@ -7,6 +7,7 @@ the roster item and re-counts consumed rows before insert.
 from __future__ import annotations
 
 import hashlib
+from contextlib import contextmanager
 from datetime import date, datetime, timezone
 from typing import Any, Callable
 from uuid import UUID, uuid4
@@ -30,6 +31,7 @@ from constitution_memorizer.playground.roster.models import (
     PlaygroundPeriod,
     RolloverResult,
     RosterItem,
+    mark_save_rolled_back,
     remaining_capacity,
 )
 from constitution_memorizer.playground.roster.repository import (
@@ -62,6 +64,24 @@ def _utc_now(now: datetime | None = None) -> datetime:
 # Namespace for pg_advisory_xact_lock(namespace, key) around the per-account
 # permanent-choice ledger. Not a secret.
 _CHOICE_LOCK_NS = 872012
+
+
+@contextmanager
+def _rollback_evidence(conn: Any):
+    """B1-F07: on an error inside the save transaction, roll back on this
+    connection and mark the exception as an observed rollback. If the
+    rollback itself fails (connection gone) the exception carries no
+    evidence and the HTTP layer must re-read the exact state."""
+
+    try:
+        yield
+    except Exception as exc:
+        try:
+            conn.rollback()
+        except Exception:  # noqa: BLE001
+            raise exc from None
+        mark_save_rolled_back(exc)
+        raise
 
 
 def _choice_lock_key(user_id: str) -> int:
@@ -334,7 +354,7 @@ class PostgresRosterRepository:
 
         uid = as_user_id(user_id)
         clock = _utc_now(now)
-        with self._pool.connection() as conn:
+        with self._pool.connection() as conn, _rollback_evidence(conn):
             with conn.cursor(row_factory=self._dict_row) as cur:
                 if ledger:
                     cur.execute(

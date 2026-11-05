@@ -47,6 +47,26 @@ BLOCK_ROSTER_FULL = "roster_full"
 BLOCK_PROGRESS_SAVED = "progress_saved"
 
 
+# B1-F07: a repository that *observed* its own rollback marks the exception
+# it re-raises. Only that evidence lets the HTTP layer say ``rolled_back``;
+# any other failure is classified by re-reading the exact requested state.
+_SAVE_ROLLED_BACK_ATTR = "playground_save_rolled_back"
+
+
+def mark_save_rolled_back(exc: BaseException) -> BaseException:
+    """Record on ``exc`` that the save transaction was rolled back."""
+
+    try:
+        setattr(exc, _SAVE_ROLLED_BACK_ATTR, True)
+    except Exception:  # noqa: BLE001 — exotic exception types; no evidence then
+        pass
+    return exc
+
+
+def save_was_rolled_back(exc: BaseException) -> bool:
+    return bool(getattr(exc, _SAVE_ROLLED_BACK_ATTR, False))
+
+
 def remaining_capacity(law_limit: int | None, used: int) -> int | None:
     """Finite remaining slots, or None when the period is unlimited."""
 

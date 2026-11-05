@@ -41,6 +41,11 @@ from constitution_memorizer.playground.roster.models import (
 from constitution_memorizer.playground.roster.period import playground_month_bounds
 from constitution_memorizer.playground.roster.repository import SqliteRosterRepository
 from constitution_memorizer.playground.roster.service import RosterService
+from constitution_memorizer.playground.service import (
+    membership_and_selection_writer,
+    require_playground_law,
+    selection_rows,
+)
 from constitution_memorizer.playground.urls import (
     add_path,
     law_path,
@@ -670,7 +675,11 @@ def test_alembic_chain_head_is_the_ledger_and_downgrade_is_refused():
 # ------------------------------------------------------- failed request
 
 
-def test_failed_save_is_reported_as_rolled_back(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+def test_failure_without_rollback_evidence_is_reported_unknown(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+    """B1-F07: an exception the repository did not mark as an observed
+    rollback is classified by re-read; with the requested state absent the
+    answer is ``unknown`` — never ``rolled_back`` on inference."""
+
     client = _client(tmp_path / "rollback")
     before = _facts(client)
     repo = client.app.state.roster_repo
@@ -682,7 +691,8 @@ def test_failed_save_is_reported_as_rolled_back(tmp_path: Path, monkeypatch: pyt
     monkeypatch.setattr(repo, "consume_law", boom)
     resp = _add_entire(client, "ndps")
     assert resp.status_code == 503
-    assert resp.headers.get("X-Playground-Outcome") == "rolled_back"
+    assert resp.headers.get("X-Playground-Outcome") == "unknown"
+    assert "rolled it back" not in resp.text
     assert _facts(client)["choices"] == before["choices"]
     assert _facts(client)["items"] == before["items"]
     monkeypatch.setattr(repo, "consume_law", real)
@@ -711,8 +721,8 @@ def test_first_section_save_is_atomic_when_the_selection_write_fails(
     monkeypatch.setattr(overlay, "persist_membership_and_selection_in", fail_after_writing)
     resp = _save_sections(client, "ndps", ["1"])
     assert resp.status_code == 503
-    assert resp.headers.get("X-Playground-Outcome") == "rolled_back"
-    assert "We checked again" in resp.text
+    assert resp.headers.get("X-Playground-Outcome") == "rolled_back"  # observed by the repository
+    assert "This law was not added" in resp.text and "none of the requested sections were saved" in resp.text
     assert calls["n"] == 1
     after = _facts(client)
     assert after["choices"] == before["choices"] == []
@@ -815,7 +825,114 @@ def test_save_outcome_is_unknown_when_the_reread_itself_fails(
     assert resp.status_code == 503
     assert resp.headers.get("X-Playground-Outcome") == "unknown"
     assert "could not confirm" in resp.text
-    assert "Nothing was saved" not in resp.text
+    assert "was not added" not in resp.text
+
+
+def test_two_devices_different_sections_lost_ack_is_unknown_not_success(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    """B1-F07 (reviewer, two devices): A saves section 1 while B's save of
+    section 2 is in flight and B's call then fails without rollback evidence.
+    B must not read A's selection and call its own save a success: the stored
+    selection differs from what B requested, so B gets ``unknown`` and
+    section 2 is (correctly) not reported as saved."""
+
+    client = _client(tmp_path / "two-devices")
+    repo = client.app.state.roster_repo
+    overlay = client.app.state.playground
+    real = repo.consume_law
+    rows_a = selection_rows("ndps", ["1"], entire=False, act=require_playground_law("ndps"))
+
+    def device_a_commits_then_b_loses_the_ack(*args, **kwargs):
+        # Device A's save lands first (choice + membership + section 1)…
+        real(*args, **{**kwargs, "within": membership_and_selection_writer(overlay, USER, "ndps", rows_a)})
+        # …and device B's own call fails before any acknowledgement.
+        raise sqlite3.OperationalError("connection lost before acknowledgement")
+
+    monkeypatch.setattr(repo, "consume_law", device_a_commits_then_b_loses_the_ack)
+    resp_b = _save_sections(client, "ndps", ["2"])
+    assert resp_b.status_code == 503
+    assert resp_b.headers.get("X-Playground-Outcome") == "unknown"
+    assert "could not confirm" in resp_b.text
+    assert [r.source_locator for r in overlay.list_selection(USER, "ndps")] == [rows_a[0][0]]
+    assert len(_ledger(client)) == 1  # A's choice; B spent nothing extra
+
+
+def test_removal_between_commit_and_verification_is_unknown_not_rolled_back(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    """B1-F07 (reviewer, reverse case): the save committed, the law was then
+    removed before the re-read, and the acknowledgement was lost. The absent
+    membership is not evidence of a rollback — the response is ``unknown``."""
+
+    client = _client(tmp_path / "removed-between")
+    repo = client.app.state.roster_repo
+    roster = client.app.state.roster
+    overlay = client.app.state.playground
+    real = repo.consume_law
+
+    def commit_remove_then_lose_the_ack(*args, **kwargs):
+        real(*args, **kwargs)
+        snapshot = client.app.state.entitlement_service.resolve(USER)
+        roster.remove_law_this_period(USER, "ndps", snapshot)
+        raise sqlite3.OperationalError("connection lost before acknowledgement")
+
+    monkeypatch.setattr(repo, "consume_law", commit_remove_then_lose_the_ack)
+    resp = _save_sections(client, "ndps", ["1"])
+    assert resp.status_code == 503
+    assert resp.headers.get("X-Playground-Outcome") == "unknown"
+    assert "rolled it back" not in resp.text
+    assert not roster.is_law_active_this_period(USER, "ndps")
+    assert len(_ledger(client)) == 1  # the committed choice is real and kept
+    assert overlay.list_selection(USER, "ndps")  # the committed selection is real too
+
+
+def test_failed_first_save_at_month_boundary_leaves_only_the_bookkeeping_row(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+):
+    """Reviewer: the month bucket is committed separately before the consume.
+    After a failed first save of October, only that row may survive — capacity
+    and the visible active laws are unchanged, no law, choice or selection was
+    added, and the exception carries the observed-rollback mark."""
+
+    from constitution_memorizer.playground.repository import SqlitePlaygroundRepository
+    from constitution_memorizer.playground.roster.models import save_was_rolled_back
+
+    _allow_stubs(monkeypatch)
+    roster, conn = _roster(tmp_path / "boundary")
+    overlay = SqlitePlaygroundRepository(conn)
+    free = _snap(choice_limit=3)
+    assert roster.confirm_add_law(USER, "stub-1", free, now=NOW).status == RESULT_OK
+    oct_start, _ = playground_month_bounds(OCT_1)
+    before_capacity = roster.peek_capacity(USER, free, now=OCT_1)
+    before_active = {i.law_id for i in roster.active_roster_items(USER, now=OCT_1)}
+    before_ledger = roster.choice_law_ids(USER)
+    assert roster._repo.get_period(USER, oct_start) is None
+
+    rows = selection_rows("ndps", ["1"], entire=False, act=require_playground_law("ndps"))
+    real = membership_and_selection_writer(overlay, USER, "ndps", rows)
+
+    def failing(c):
+        real(c)
+        raise sqlite3.OperationalError("simulated failure writing the selection")
+
+    with pytest.raises(sqlite3.OperationalError) as info:
+        roster.confirm_add_law(USER, "ndps", free, now=OCT_1, within=failing)
+    assert save_was_rolled_back(info.value)
+
+    october = roster._repo.get_period(USER, oct_start)
+    assert october is not None and october.status == "active"  # bookkeeping row only
+    items = {i.law_id: i for i in roster._repo.list_items(USER, oct_start)}
+    assert set(items) == {"stub-1"} and items["stub-1"].origin == "carry_forward"
+    after_capacity = roster.peek_capacity(USER, free, now=OCT_1)
+    assert (after_capacity.used, after_capacity.remaining) == (before_capacity.used, before_capacity.remaining)
+    assert {i.law_id for i in roster.active_roster_items(USER, now=OCT_1)} == before_active == {"stub-1"}
+    assert roster.choice_law_ids(USER) == before_ledger == frozenset({"stub-1"})
+    assert overlay.get_item(USER, "ndps") is None and overlay.list_selection(USER, "ndps") == []
+    # The retry on the surviving bucket spends exactly one choice.
+    out = roster.confirm_add_law(USER, "ndps", free, now=OCT_1, within=real)
+    assert out.status == RESULT_OK and out.within_applied
+    assert roster.choice_law_ids(USER) == frozenset({"stub-1", "ndps"})
 
 
 # ------------------------------------------------- Calendar and Visualize

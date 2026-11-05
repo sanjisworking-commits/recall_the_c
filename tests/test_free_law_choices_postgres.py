@@ -30,6 +30,7 @@ from constitution_memorizer.playground.roster.models import (
     RESULT_FREE_CHOICES_EXHAUSTED,
     RESULT_OK,
     RESULT_RE_ADDED,
+    save_was_rolled_back,
 )
 from constitution_memorizer.playground.roster.period import playground_month_bounds
 from constitution_memorizer.playground.roster.service import RosterService
@@ -279,8 +280,9 @@ def test_within_failure_rolls_back_choice_membership_and_selection(pool, repos):
         real(conn)  # overlay rows written on the open transaction…
         raise RuntimeError("simulated failure writing the selection")
 
-    with pytest.raises(RuntimeError):
+    with pytest.raises(RuntimeError) as info:
         svc.confirm_add_law(USER, "ndps", FREE, now=NOW, within=failing)
+    assert save_was_rolled_back(info.value)  # B1-F07: observed rollback, marked
     assert _ledger(pool) == []
     assert _count(pool, "user_playground_roster_item") == 0
     assert _count(pool, "user_playground_item") == 0
