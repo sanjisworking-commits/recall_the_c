@@ -554,10 +554,10 @@ def test_phone_plus_profile_css_is_breakpoint_scoped() -> None:
     assert "reset_learning_progress" in post
     assert "delete_account" in post
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg53" in base
+    assert "playground.css?v=pg54" in base
     assert "playground.css?v=pg38" not in base
-    assert "styles.css?v=main89" in base
-    assert "mobile.css?v=mob108" in base
+    assert "styles.css?v=main90" in base
+    assert "mobile.css?v=mob109" in base
     assert "data-plus-profile-phone-tabs" not in base
     # M1-R (PR pg-m1r-shell-labels): one signed-in bar (data-signed-in-phone-tabs) renders first in
     # base.html, followed only by the guest bar; the active tab comes from the shell_* flag

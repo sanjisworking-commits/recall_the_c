@@ -855,10 +855,10 @@ def test_phone_expired_today_css_scope_pins_and_desktop_08_untouched() -> None:
     assert "def apply_expired_today_hero" in schedule
     assert "def reconcile_expired_playground_today" in schedule
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg53" in base
+    assert "playground.css?v=pg54" in base
     assert "playground.css?v=pg43" not in base
-    assert "styles.css?v=main89" in base
-    assert "mobile.css?v=mob108" in base
+    assert "styles.css?v=main90" in base
+    assert "mobile.css?v=mob109" in base
     assert "data-expired-today-phone-tabs" not in base
     # M1-R (PR pg-m1r-shell-labels): one signed-in bar (data-signed-in-phone-tabs) renders first in
     # base.html, followed only by the guest bar; the active tab comes from the shell_* flag

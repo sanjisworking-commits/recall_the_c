@@ -299,8 +299,10 @@ def test_phone_free_settings_css_is_breakpoint_scoped() -> None:
     assert ":not([data-halted-settings])" in phone_block
     assert "safe-area-inset-bottom" in phone_block
     assert "overflow-x: hidden" in phone_block
-    assert ".mobile-tabbar" in phone_block
-    assert "display: none" in phone_block.split(".mobile-tabbar", 1)[1].split("}", 1)[0]
+    # # M1-R close (owner decision 2026-11-06): the Free Settings block no longer hides the shared bar;
+    # the panel clears it with the tab-bar height instead.
+    assert ".mobile-tabbar" not in phone_block
+    assert "calc(var(--m-tabbar, 60px) + 28px + env(safe-area-inset-bottom, 0px))" in phone_block
     assert "grid-template-columns: repeat(5, 1fr)" not in phone_block
     assert ".lede" in phone_block
     assert "settings-saved" in phone_block
@@ -318,9 +320,9 @@ def test_phone_free_settings_css_is_breakpoint_scoped() -> None:
     assert "@media (min-width: 561px)" in desk
     assert "max-width: 720px" in desk
     assert "font-size: 30px" in desk
-    assert "playground.css?v=pg53" in BASE.read_text(encoding="utf-8")
-    assert "styles.css?v=main89" in BASE.read_text(encoding="utf-8")
-    assert "mobile.css?v=mob108" in BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg54" in BASE.read_text(encoding="utf-8")
+    assert "styles.css?v=main90" in BASE.read_text(encoding="utf-8")
+    assert "mobile.css?v=mob109" in BASE.read_text(encoding="utf-8")
     assert "mobile.css?v=mob104" not in BASE.read_text(encoding="utf-8")
     src = SETTINGS.read_text(encoding="utf-8")
     for phrase in MOCK_SCREEN_COPY:
@@ -630,7 +632,7 @@ def test_phone_signed_in_settings_screen07_390x844(tmp_path: Path) -> None:
     assert geo["plus"] is False
     assert geo["headerDisplay"] == "none"
     assert geo["topbarDisplay"] not in {None, "none"}
-    assert geo["tabsDisplay"] in {None, "none"}
+    assert geo["tabsDisplay"] == "grid"  # # M1-R close (owner decision 2026-11-06)
     assert geo["backText"] == "← Today"
     assert geo["backHref"] == "/dashboard"
     assert geo["identHref"] == "/profile"
@@ -680,7 +682,7 @@ def test_phone_signed_in_settings_screen07_390x844(tmp_path: Path) -> None:
     assert profile_path.rstrip("/") == "/profile"
     assert settings_path.rstrip("/") == "/settings"
     assert today_path.rstrip("/") == "/dashboard"
-    assert short["tabsDisplay"] in {None, "none"}
+    assert short["tabsDisplay"] == "grid"  # # M1-R close (owner decision 2026-11-06)
     assert short["overflow"] is False
     assert short["reportReachable"] is True
     assert short["signoutReachable"] is True

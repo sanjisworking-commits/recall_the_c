@@ -6794,7 +6794,7 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
    live GCal branches, live access-summary identity. Painted
    sequence stays the DOM sequence (identity, Study, Calendar,
    App, Account, Legal) so keyboard focus matches what is on
-   screen. No CSS order. Five-tab bar stays hidden. Guest /
+   screen. No CSS order. The shared five-tab bar shows (M1-R). Guest /
    Free / Expired / Halted / Pro stay on their own wrappers.
    Desktop Screen 11 ≥561 block above is unchanged. */
 @media (max-width: 560px) {
@@ -6802,12 +6802,7 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     .panel.settings {
     overflow-x: hidden;
     padding: 0 var(--m-gutter, 18px)
-      calc(28px + env(safe-area-inset-bottom, 0px));
-  }
-
-  body.is-authed[data-mscreen="settings"]:has([data-plus-settings="desktop"])
-    .mobile-tabbar {
-    display: none;
+      calc(var(--m-tabbar, 60px) + 28px + env(safe-area-inset-bottom, 0px));
   }
 
   body.is-authed[data-mscreen="settings"]:has([data-plus-settings="desktop"])
@@ -6952,7 +6947,7 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
    live GCal branches, live expired_header_status identity. Painted
    sequence stays the DOM sequence (identity, Study, Calendar,
    App, Account, Legal) so keyboard focus matches what is on
-   screen. No CSS order. Five-tab bar stays hidden. Guest /
+   screen. No CSS order. The shared five-tab bar shows (M1-R). Guest /
    Free / Plus / Halted / Pro stay on their own wrappers.
    Desktop Screen 11 ≥561 block above is unchanged. */
 @media (max-width: 560px) {
@@ -6960,12 +6955,7 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     .panel.settings {
     overflow-x: hidden;
     padding: 0 var(--m-gutter, 18px)
-      calc(28px + env(safe-area-inset-bottom, 0px));
-  }
-
-  body.is-authed[data-mscreen="settings"]:has([data-expired-settings="desktop"])
-    .mobile-tabbar {
-    display: none;
+      calc(var(--m-tabbar, 60px) + 28px + env(safe-area-inset-bottom, 0px));
   }
 
   body.is-authed[data-mscreen="settings"]:has([data-expired-settings="desktop"])

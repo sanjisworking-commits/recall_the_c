@@ -221,9 +221,11 @@ def test_css_hides_every_phone_bar_once_the_desktop_header_exists():
     assert "display: none !important" in rule
     assert "body.is-guest .mobile-tabbar {\n    display: none !important" not in css  # no longer guest-only
     mobile = MOBILE.read_text(encoding="utf-8")
-    assert 'body.is-guest[data-mscreen="settings"] .mobile-tabbar,\n  body[data-mscreen="search"] .mobile-tabbar {\n    display: grid;' in mobile
+    # # M1-R close (owner decision 2026-11-06): Settings shows the shared bar for everyone, not only guests.
+    assert 'body[data-mscreen="settings"] .mobile-tabbar,\n  body[data-mscreen="search"] .mobile-tabbar {\n    display: grid;' in mobile
+    assert 'body.is-guest[data-mscreen="settings"]' not in mobile
     base = BASE.read_text(encoding="utf-8")
-    for pin in ("styles.css?v=main89", "mobile.css?v=mob108", "playground.css?v=pg53"):
+    for pin in ("styles.css?v=main90", "mobile.css?v=mob109", "playground.css?v=pg54"):
         assert pin in base
 
 

@@ -670,7 +670,7 @@ def test_expired_today_marker_uses_shared_predicate() -> None:
     assert "shell_account_status" in base  # M1-R: one snapshot-driven label
     assert "plus_today_chrome" not in base  # M1-R (PR pg-m1r-shell-labels): the per-route header flag chain is gone
     assert "shell_account_status" in base  # M1-R: one snapshot-driven label
-    assert "playground.css?v=pg53" in base
+    assert "playground.css?v=pg54" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-expired-today="desktop"' in css
     assert "expired/08-screen" in css

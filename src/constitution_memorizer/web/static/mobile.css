@@ -148,7 +148,7 @@
     border: 0;
     font-size: 10.5px;
     font-weight: 600;
-    color: var(--mid);
+    color: var(--muted); /* M1-R: A02 contrast for everyone (5.33:1 light / 5.93:1 dark) */
     text-decoration: none;
   }
 
@@ -163,34 +163,23 @@
 
   /* Reading an Article is a destination, not a tab (design 04): the sticky
      "Learn this Article" action takes the bottom of the screen instead.
-     Search is a focused field — hide the bar there too. */
+     Focused destinations (gate, plan intro, checkout, signed-out, expired
+     notice) stay bar-less. */
   body[data-mscreen="article"] .mobile-tabbar,
-  body[data-mscreen="search"] .mobile-tabbar,
   body[data-mscreen="welcome"] .mobile-tabbar,
   body[data-mscreen="gate"] .mobile-tabbar,
   body[data-mscreen="planintro"] .mobile-tabbar,
   body[data-mscreen="purchase"] .mobile-tabbar,
   body[data-mscreen="signedout"] .mobile-tabbar,
-  body[data-mscreen="expired"] .mobile-tabbar,
-  body[data-mscreen="settings"] .mobile-tabbar {
+  body[data-mscreen="expired"] .mobile-tabbar {
     display: none;
   }
 
-  /* M1-A02 (guest shell only): inactive labels at 4.5:1 (--muted 5.33:1 light, 5.93:1 dark)
-     instead of --mid (3.24:1 light). Signed-in bars keep --mid pending the owner's decision. */
-  body.is-guest[data-mscreen] .mobile-tab {
-    color: var(--muted);
-  }
-
-  body.is-guest[data-mscreen] .mobile-tab.is-active {
-    color: var(--ink);
-  }
-
-  /* M1 guest shell: guests keep the five tabs on Settings and Search. M1-R extends
-     Search to every signed-in page (one shared bar). Signed-in Settings keeps the
-     accepted screen-11 design ("Settings is not a tab destination"); focused
-     destinations (Article reader, Learn modes, checkout) stay bar-less. */
-  body.is-guest[data-mscreen="settings"] .mobile-tabbar,
+  /* M1 (guests) → M1-R (everyone, owner decision 2026-11-06): the shared five-tab
+     bar shows on Settings and Search for every viewer. Settings is reached from
+     Profile, so Profile stays the current tab and users keep the same route back
+     to Browse, Playground or Calendar that guests have. */
+  body[data-mscreen="settings"] .mobile-tabbar,
   body[data-mscreen="search"] .mobile-tabbar {
     display: grid;
   }
@@ -6242,7 +6231,8 @@
    Guest / Plus / Expired / Halted keep the generic settings panel.
    Painted sequence stays the DOM sequence (identity, Study, Calendar,
    App, Account, Legal) so keyboard focus matches what is on screen.
-   The five-tab bar stays hidden; Settings is not a tab destination. */
+   M1-R (owner decision 2026-11-06): the shared five-tab bar shows here too,
+   with Profile current; the panel clears it at the bottom. */
 @media (max-width: 560px) {
   body.is-authed[data-mscreen="settings"]:has(
     [data-signed-in-settings]:not([data-plus-settings]):not([data-expired-settings]):not([data-halted-settings])
@@ -6254,13 +6244,7 @@
     [data-signed-in-settings]:not([data-plus-settings]):not([data-expired-settings]):not([data-halted-settings])
   ) .panel.settings {
     padding: 0 var(--m-gutter, 18px)
-      calc(28px + env(safe-area-inset-bottom, 0px));
-  }
-
-  body.is-authed[data-mscreen="settings"]:has(
-    [data-signed-in-settings]:not([data-plus-settings]):not([data-expired-settings]):not([data-halted-settings])
-  ) .mobile-tabbar {
-    display: none;
+      calc(var(--m-tabbar, 60px) + 28px + env(safe-area-inset-bottom, 0px));
   }
 
   [data-signed-in-settings]:not([data-plus-settings]):not([data-expired-settings]):not([data-halted-settings])

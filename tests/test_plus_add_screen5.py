@@ -614,7 +614,7 @@ def test_plus_add_marker_uses_shared_predicate() -> None:
     assert "data-pg-sheet-return" in js
     assert "pg-sheet" in js.split("X-Requested-With", 1)[1][:40]
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg53" in base
+    assert "playground.css?v=pg54" in base
     assert "playground.css?v=pg49" not in base
     assert "playground.css?v=pg34" not in base
     bare = BARE.read_text(encoding="utf-8")

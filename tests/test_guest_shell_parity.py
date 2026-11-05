@@ -158,18 +158,17 @@ def test_guest_phone_bar_omits_playground_when_feature_off(tmp_path: Path) -> No
 
 def test_guest_phone_bar_is_rendered_visible_on_settings_and_search() -> None:
     css = (STATIC / "mobile.css").read_text(encoding="utf-8")
-    # The generic rule still hides the bar on settings/search for signed-in screens;
-    # the guest override must come after it and restore the grid.
-    hide = css.index('body[data-mscreen="settings"] .mobile-tabbar {')
-    override = css.index('body.is-guest[data-mscreen="settings"] .mobile-tabbar')
-    assert override > hide
-    # M1-R (PR pg-m1r-shell-labels): Search shows the bar for everyone (one shared rule);
-    # Settings stays guest-only.
+    # # M1-R close (owner decision 2026-11-06): Settings and Search show the one shared bar for every
+    # viewer; the generic hide list no longer names settings and there is no guest-only override.
+    hide_rule = css.split('body[data-mscreen="article"] .mobile-tabbar,', 1)[1].split("}", 1)[0]
+    assert 'body[data-mscreen="settings"]' not in hide_rule
+    assert 'body[data-mscreen="search"]' not in hide_rule
     assert (
-        'body.is-guest[data-mscreen="settings"] .mobile-tabbar,\n'
+        'body[data-mscreen="settings"] .mobile-tabbar,\n'
         '  body[data-mscreen="search"] .mobile-tabbar {\n'
         '    display: grid;'
     ) in css
+    assert 'body.is-guest[data-mscreen="settings"] .mobile-tabbar' not in css
     assert 'body.is-guest[data-mscreen="search"]' not in css
     assert ".mobile-tabbar.is-guest" not in css
 
@@ -337,19 +336,27 @@ def test_asset_pins_were_bumped_for_shell_css(tmp_path: Path) -> None:
 # ───────────────────────── M1-A02: guest-shell targets and label contrast ─────────────────────────
 
 
-def test_guest_shell_accessibility_rules_are_scoped_to_guests() -> None:
+def test_shell_accessibility_rules_apply_to_everyone() -> None:
+    # # M1-R close (owner decision 2026-11-06): A02 (44 px targets, 4.5:1 inactive labels) now covers
+    # the whole shared shell; the M1 guest-only scope and the frozen 38 px / --mid rules are gone.
     styles = (STATIC / "styles.css").read_text(encoding="utf-8")
     mobile = (STATIC / "mobile.css").read_text(encoding="utf-8")
-    # desktop: 44 px targets for the guest nav links and the Sign in button
-    nav_rule = styles.split("body.is-guest .PrimaryTabs--top .nav-link {", 1)[1].split("}", 1)[0]
-    assert "height: 44px" in nav_rule and "color: var(--muted)" in nav_rule
+    shared_nav = styles.split("  .PrimaryTabs--top .nav-link {\n    display: inline-flex;", 1)[1].split("}", 1)[0]
+    assert "height: 44px" in shared_nav
+    assert "height: 38px" not in shared_nav
+    # no colour in the ≥561 rule: it would out-specify .nav-link.is-active (equal specificity,
+    # later in the file) and paint the active pill grey-on-ink (3.46:1) — caught by the probe
+    assert "color:" not in shared_nav
+    base_nav = styles.split("\n.nav-link {", 1)[1].split("}", 1)[0]
+    assert "color: var(--muted)" in base_nav
+    active_nav = styles.split("\n.nav-link.is-active {", 1)[1].split("}", 1)[0]
+    assert "color: var(--on-accent)" in active_nav
+    assert "body.is-guest .PrimaryTabs--top .nav-link" not in styles
     signin_rule = styles.split(".site-header > .nav-signin {", 1)[1].split("}", 1)[0]
     assert "min-height: 44px" in signin_rule
-    # phone: inactive labels use --muted (5.33:1 light / 5.93:1 dark) for guests only
-    tab_rule = mobile.split("body.is-guest[data-mscreen] .mobile-tab {", 1)[1].split("}", 1)[0]
-    assert "color: var(--muted)" in tab_rule
-    # the shared (signed-in) rules are untouched: still 38 px and --mid
-    shared_nav = styles.split("  .PrimaryTabs--top .nav-link {\n    display: inline-flex;", 1)[1].split("}", 1)[0]
-    assert "height: 38px" in shared_nav
+    acct_rule = styles.split(".account-menu-btn {", 1)[1].split("}", 1)[0]
+    assert "min-width: 44px" in acct_rule and "min-height: 44px" in acct_rule
     shared_tab = mobile.split("body[data-mscreen] .mobile-tab {", 1)[1].split("}", 1)[0]
-    assert "color: var(--mid)" in shared_tab
+    assert "color: var(--muted)" in shared_tab
+    assert "color: var(--mid)" not in shared_tab
+    assert "body.is-guest[data-mscreen] .mobile-tab" not in mobile
