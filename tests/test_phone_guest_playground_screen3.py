@@ -224,13 +224,17 @@ def test_phone_guest_playground_uses_live_gate_and_shared_values(
     for item in GUEST_GATE_VALUES:
         assert item.title in phone
         assert item.body in phone
-    assert ">Sign in<" in phone
-    assert "Create an account" in phone
-    assert 'type="button"' in phone
-    assert phone.count('type="button"') == 2
-    assert 'href="' not in phone
+    # M1-R (PR pg-m1r-shell-labels): 5-11 decided — one real Google action, no inert buttons.
+    assert ">Continue with Google<" in phone
+    assert ">Sign in<" not in phone
+    assert "Create an account" not in phone
+    assert "<button" not in phone
+    assert 'type="button"' not in phone
+    assert phone.count("<a ") == 1
+    assert phone.count('href="') == 1
+    assert 'class="pg-guest-gate-signin" href="/auth/google/start?next=%2Fplayground" data-guest-gate-google' in phone
     assert "<form" not in phone
-    assert "<a " not in phone
+    assert "/login" not in phone
     assert GUEST_PG_SIGNIN_HREF not in phone
     assert GUEST_GATE_FOOTNOTE in phone
     assert GUEST_GATE_FOOTNOTE in GUEST_PG_NOTE
@@ -242,17 +246,26 @@ def test_phone_guest_playground_uses_live_gate_and_shared_values(
     assert calls == []
 
 
-def test_phone_guest_playground_buttons_are_handlerless_in_source() -> None:
+def test_phone_guest_playground_has_one_google_action_in_source() -> None:
+    # M1-R (PR pg-m1r-shell-labels): 5-11 decided — the macro carries exactly one action,
+    # a real Google sign-in anchor; the two inert buttons are gone.
     src = PARTIAL.read_text(encoding="utf-8")
     macro = src.split("guest_phone_gate", 1)[1].split("{% macro how_it_works", 1)[0]
     assert 'data-phone-pg-gate="guest"' in macro
     assert "shared/05" in macro
-    assert 'type="button" class="pg-guest-gate-signin">Sign in<' in macro
-    assert 'type="button" class="pg-guest-gate-create">Create an account<' in macro
+    assert (
+        '<a class="pg-guest-gate-signin" href="/auth/google/start?next=%2Fplayground" '
+        'data-guest-gate-google>Continue with Google</a>'
+    ) in macro
+    assert macro.count("<a ") == 1
+    assert macro.count('href="') == 1
+    assert "<button" not in macro
+    assert 'type="button"' not in macro
+    assert "Create an account" not in macro
+    assert "pg-guest-gate-create" not in macro
     assert "login_href" not in macro
     assert "/login" not in macro
     assert "<form" not in macro
-    assert "<a " not in macro
     gate = GATE.read_text(encoding="utf-8")
     assert "guest_phone_gate(" in gate
     assert "data-guest-pg-intro" in gate
@@ -288,11 +301,11 @@ def test_phone_guest_playground_css_is_breakpoint_scoped() -> None:
     assert "@media (max-width: 560px)" in phone_block
     assert '[data-phone-pg-gate="guest"]' in phone_block
     assert "pg-guest-gate-signin" in phone_block
-    assert "pg-guest-gate-create" in phone_block
+    assert "pg-guest-gate-create" not in css  # M1-R (PR pg-m1r-shell-labels): second button and its rule removed
     hide = css.split("[data-phone-pg-gate=\"guest\"],", 1)[1].split("}", 1)[0]
     assert "display: none" in hide
     assert "data-guest-phone-tabs" in css  # M1: hard-gate hide exempts the shared guest bar
-    assert "playground.css?v=pg52" in BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg54" in BASE.read_text(encoding="utf-8")
     assert "playground.css?v=pg31" not in BASE.read_text(encoding="utf-8")
     assert "playground.css?v=pg30" not in BASE.read_text(encoding="utf-8")
     guest_title = css.split(".guest-pg-title {", 1)[1].split("}", 1)[0]
@@ -418,7 +431,7 @@ def test_phone_guest_playground_screen03_390x844(tmp_path: Path) -> None:
               const header = document.querySelector('.site-header');
               const tabs = document.querySelector('[data-guest-pg-phone-tabs]');
               const signin = phone && phone.querySelector('.pg-guest-gate-signin');
-              const create = phone && phone.querySelector('.pg-guest-gate-create');
+              const actions = phone ? phone.querySelectorAll('a, button, form') : [];
               const values = phone ? [...phone.querySelectorAll('.pg-guest-gate-value strong')].map(
                 (el) => el.textContent.trim()
               ) : [];
@@ -441,13 +454,8 @@ def test_phone_guest_playground_screen03_390x844(tmp_path: Path) -> None:
                   text: signin && signin.textContent.trim(),
                   width: signin ? signin.getBoundingClientRect().width : 0,
                 },
-                create: {
-                  tag: create && create.tagName,
-                  type: create && create.getAttribute('type'),
-                  href: create && create.getAttribute('href'),
-                  text: create && create.textContent.trim(),
-                  width: create ? create.getBoundingClientRect().width : 0,
-                },
+                actionCount: actions.length,
+                createInPhone: phone && phone.innerText.includes('Create an account'),
                 note: phone && phone.querySelector('.pg-guest-gate-note')
                   && phone.querySelector('.pg-guest-gate-note').textContent.trim(),
                 tabLabels: tabLinks.map((el) => el.textContent.replace(/\\s+/g, ' ').trim()),
@@ -459,14 +467,9 @@ def test_phone_guest_playground_screen03_390x844(tmp_path: Path) -> None:
         )
         page.evaluate("() => document.activeElement && document.activeElement.blur()")
         page.screenshot(path=str(shot_path), full_page=False)
-        n_before = len(requests)
-        page.locator("[data-phone-pg-gate='guest'] .pg-guest-gate-signin").click()
-        page.wait_for_timeout(250)
-        after_signin = page.evaluate("() => location.pathname")
-        page.locator("[data-phone-pg-gate='guest'] .pg-guest-gate-create").click()
-        page.wait_for_timeout(250)
-        after_create = page.evaluate("() => location.pathname")
-        extra = requests[n_before:]
+        # M1-R (PR pg-m1r-shell-labels): the action is a real Google link now, so the
+        # page is not clicked (that would leave /playground); its href is asserted instead.
+        extra = list(requests)
         browser.close()
 
     assert geo["phoneDisplay"] != "none"
@@ -478,16 +481,14 @@ def test_phone_guest_playground_screen03_390x844(tmp_path: Path) -> None:
     assert geo["title"] == LIVE.title
     assert geo["lede"] == LIVE.lines[0]
     assert geo["values"] == [item.title for item in GUEST_GATE_VALUES]
-    assert geo["signin"]["tag"] == "BUTTON"
-    assert geo["signin"]["type"] == "button"
-    assert geo["signin"]["href"] is None
-    assert geo["signin"]["text"] == "Sign in"
+    # M1-R (PR pg-m1r-shell-labels): one Google anchor, no second button.
+    assert geo["signin"]["tag"] == "A"
+    assert geo["signin"]["type"] is None
+    assert geo["signin"]["href"] == "/auth/google/start?next=%2Fplayground"
+    assert geo["signin"]["text"] == "Continue with Google"
     assert geo["signin"]["width"] >= 300
-    assert geo["create"]["tag"] == "BUTTON"
-    assert geo["create"]["type"] == "button"
-    assert geo["create"]["href"] is None
-    assert geo["create"]["text"] == "Create an account"
-    assert geo["create"]["width"] >= 300
+    assert geo["actionCount"] == 1
+    assert geo["createInPhone"] is False
     assert geo["note"] == GUEST_GATE_FOOTNOTE
     assert geo["tabLabels"] == ["Today", "Browse", "Playground", "Calendar", "Profile"]
     assert geo["tabHrefs"] == [
@@ -499,8 +500,6 @@ def test_phone_guest_playground_screen03_390x844(tmp_path: Path) -> None:
     ]
     assert geo["playgroundActive"] == "Playground"
     assert geo["plans"] is False
-    assert after_signin == "/playground"
-    assert after_create == "/playground"
     assert not any("/login" in item for item in extra)
     assert not any(item.startswith("POST ") for item in extra)
     assert shot_path.is_file()

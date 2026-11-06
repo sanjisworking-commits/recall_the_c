@@ -53,6 +53,7 @@ ROOT = Path(__file__).resolve().parents[1]
 UNITS = ROOT / "data" / "output" / "learning_units.json"
 BROWSE = ROOT / "src/constitution_memorizer/web/templates/browse_index.html"
 BASE = ROOT / "src/constitution_memorizer/web/templates/base.html"
+SHELL = ROOT / "src/constitution_memorizer/web/shell.py"  # M1-R (PR pg-m1r-shell-labels): header label source
 DEPS = ROOT / "src/constitution_memorizer/entitlements/dependencies.py"
 APP = ROOT / "src/constitution_memorizer/web/app.py"
 BARE_PAGE = ROOT / "src/constitution_memorizer/web/bare_act_page.py"
@@ -356,7 +357,7 @@ def test_halted_retained_ndps_uses_lifecycle_cta_not_continue(tmp_path: Path) ->
     assert "<dialog" not in html
     assert LIVE_HALTED_STATUS in header
     assert LIVE_EXPIRED_STATUS not in header
-    assert "Free account" not in header
+    assert "RecallC Free" not in header
     assert "RecallC Plus" not in header
     assert "Sanjay" in header
     assert 'href="/browse"' in header
@@ -426,7 +427,7 @@ def test_halted_elapsed_period_stays_halted_on_bareact(tmp_path: Path) -> None:
     assert "data-plus-bareact" not in html
     assert LIVE_HALTED_STATUS in header
     assert LIVE_EXPIRED_STATUS not in header
-    assert "Free account" not in header
+    assert "RecallC Free" not in header
     assert "Already in Playground" in desk
     assert 'class="ActHead-inpg"' in desk
     assert f'class="ActHead-inpg-continue" href="{PLAYGROUND_BILLING_PATH}"' in desk
@@ -500,7 +501,7 @@ def test_guest_free_plus_expired_paused_pending_pro_max_are_not_halted_bareact(
     free_desk = _band(free_html)
     assert 'data-pg-kind="subscribe"' in free_desk
     assert "Subscribe to use Playground" in free_desk
-    assert "Free account" in _header(free_html)
+    assert "RecallC Free" in _header(free_html)
     assert LIVE_HALTED_STATUS not in _header(free_html)
 
     plus = TestClient(_mu_app(tmp_path / "plus"))
@@ -601,9 +602,18 @@ def test_halted_bareact_uses_shared_predicate() -> None:
     for phrase in INVENTED:
         assert phrase not in bare, phrase
     base = BASE.read_text(encoding="utf-8")
-    assert "halted_bareact" in base
-    assert "halted_header_status" in base
-    assert "path == '/laws/ndps'" in base
+    # M1-R (PR pg-m1r-shell-labels): per-route flag chain removed from base.html.
+    assert "halted_bareact" not in base
+    # M1-R (PR pg-m1r-shell-labels): the header label is one snapshot function in web/shell.py;
+    # base.html no longer reads a per-route halted_header_status flag.
+    assert "halted_header_status" not in base
+    shell = SHELL.read_text(encoding="utf-8")
+    assert "snapshot_is_halted_subscriber(snapshot)" in shell
+    assert "gate_view(reason=BLOCK_PAYMENT_HALTED).title" in shell
+    # M1-R (PR pg-m1r-shell-labels): D33 — Act pages light Browse via shell_browse,
+    # never a hard-coded /laws/ndps.
+    assert "/laws/ndps" not in base
+    assert "path.startswith('/laws')" in base
     assert LIVE_HALTED_STATUS not in base
     app = APP.read_text(encoding="utf-8")
     page = app.split("async def law_detail_page", 1)[1].split(
@@ -634,8 +644,8 @@ def test_halted_bareact_uses_shared_predicate() -> None:
     assert "data-halted-bareact" not in STYLES.read_text(encoding="utf-8")
     assert "data-halted-bareact" not in MOBILE.read_text(encoding="utf-8")
     assert "Bare Act head (M2)" in STYLES.read_text(encoding="utf-8")
-    assert "playground.css?v=pg52" in BASE.read_text(encoding="utf-8")
-    assert "styles.css?v=main88" in BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg54" in BASE.read_text(encoding="utf-8")
+    assert "styles.css?v=main90" in BASE.read_text(encoding="utf-8")
     assert "def request_is_halted_subscriber" in DEPS.read_text(encoding="utf-8")
 
 

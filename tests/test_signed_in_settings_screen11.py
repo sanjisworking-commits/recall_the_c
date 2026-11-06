@@ -50,7 +50,7 @@ USER = UUID("11111111-1111-4111-8111-111111111111")
 TOKEN_KEY = Fernet.generate_key().decode()
 
 MOCK_SCREEN_COPY = (
-    "Free account",
+    "RecallC Free",
     "No plan yet",
     "See plans",
 )
@@ -127,12 +127,19 @@ def test_signed_in_settings_desktop_surface(tmp_path: Path) -> None:
     header = _header(html)
     top_nav = header.split("PrimaryTabs--top", 1)[1].split("</nav>", 1)[0]
     assert "Settings" not in top_nav
-    assert "nav-link is-active" not in top_nav
+    # M1-R (PR pg-m1r-shell-labels): Settings is still not a tab destination, but the one
+    # signed-in nav lights Profile on /settings* (shell_profile) — exactly one active tab.
+    active = [line for line in top_nav.splitlines() if "nav-link is-active" in line]
+    assert len(active) == 1
+    assert 'href="/profile"' in active[0]
+    assert html.count('class="mobile-tabbar') == 1
+    assert "data-signed-in-phone-tabs" in html
+    assert "data-guest-phone-tabs" not in html
     assert 'href="/dashboard"' in html
     assert "← Today" in html
     assert "Sanjay" in html
     assert "Signed in with Google" in html
-    # M1 (DV-20): the header account slot now carries "Free account" on every
+    # M1 (DV-20): the header account slot now carries "RecallC Free" on every
     # shared-shell page, so the mock-copy check is scoped to the page body.
     body = html.split("<main", 1)[1]
     for phrase in MOCK_SCREEN_COPY:
@@ -385,7 +392,7 @@ def test_signed_in_settings_1280_and_phone(tmp_path: Path) -> None:
                 saveText: save && (save.textContent || '').replace(/\\s+/g, ' ').trim(),
                 connectHref: connect && connect.getAttribute('href'),
                 connectText: connect && (connect.textContent || '').replace(/\\s+/g, ' ').trim(),
-                hasFreeAccount: /Free account/.test(panel ? panel.innerText : ''),
+                hasFreeAccount: /RecallC Free/.test(panel ? panel.innerText : ''),
                 hasSynced: /Last synced/.test(cal ? cal.innerText : ''),
                 hasSettingsPill: (active || []).includes('Settings'),
               };

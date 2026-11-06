@@ -430,21 +430,22 @@ def test_phone_free_today_css_is_breakpoint_scoped() -> None:
     )[1]
     assert "@media (min-width: 561px)" in desk
     assert "minmax(260px, 380px)" in desk
-    assert "playground.css?v=pg52" in BASE.read_text(encoding="utf-8")
-    assert "styles.css?v=main88" in BASE.read_text(encoding="utf-8")
-    assert "mobile.css?v=mob107" in BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg54" in BASE.read_text(encoding="utf-8")
+    assert "styles.css?v=main90" in BASE.read_text(encoding="utf-8")
+    assert "mobile.css?v=mob109" in BASE.read_text(encoding="utf-8")
     assert "mobile.css?v=mob104" not in BASE.read_text(encoding="utf-8")
     assert "action=\"/revision/start\"" in DASH.read_text(encoding="utf-8")
     assert "data-signed-in-today-phone" not in DASH.read_text(encoding="utf-8")
     assert "data-signed-in-today" not in ADD.read_text(encoding="utf-8")
     assert "data-signed-in-pg-gate" in GATE.read_text(encoding="utf-8")
-    first_bar = BASE.read_text(encoding="utf-8").split(
-        'class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom"', 2
-    )[2].split("</nav>", 1)[0]
+    # M1-R (PR pg-m1r-shell-labels): one signed-in phone bar (data-signed-in-phone-tabs)
+    # replaces the per-cohort bars; the active tab follows the shell_* flags, not path.startswith.
+    base_src = BASE.read_text(encoding="utf-8")
+    assert base_src.count("data-signed-in-phone-tabs") == 1
+    assert "data-signed-in-bareact-phone-tabs" not in base_src
+    first_bar = base_src.split("data-signed-in-phone-tabs", 1)[1].split("</nav>", 1)[0]
     assert 'href="/calendar"' in first_bar
-    assert "path.startswith('/dashboard')" in first_bar
-    assert "data-signed-in-bareact-phone-tabs" not in first_bar
-    assert "data-plus-bareact-phone-tabs" not in first_bar
+    assert "{% if shell_today %} is-active" in first_bar  # M1-R (PR pg-m1r-shell-labels): shell flag, not path
     pg = PG_CSS.read_text(encoding="utf-8")
     assert "data-signed-in-today" not in pg.split(
         "/* Plus desktop /dashboard Today", 1

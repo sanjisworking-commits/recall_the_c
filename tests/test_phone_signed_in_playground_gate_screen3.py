@@ -544,10 +544,10 @@ def test_phone_free_gate_css_is_breakpoint_scoped() -> None:
     assert ":not([data-guest-phone-tabs])" in hide
     assert "data-signed-in-pg-gate" not in hide
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg52" in base
+    assert "playground.css?v=pg54" in base
     assert "playground.css?v=pg33" not in base
-    assert "styles.css?v=main88" in base
-    assert "mobile.css?v=mob107" in base
+    assert "styles.css?v=main90" in base
+    assert "mobile.css?v=mob109" in base
     assert "data-signed-in-pg-gate" not in MOBILE.read_text(encoding="utf-8")
     js = PG_JS.read_text(encoding="utf-8")
     assert "data-pg-plan-continue" not in js
@@ -566,13 +566,14 @@ def test_phone_free_gate_css_is_breakpoint_scoped() -> None:
     assert "signed_in_free_pg_phone" not in access
     add = ADD.read_text(encoding="utf-8")
     assert 'href="/playground">Unlock Playground</a>' in add
-    first_bar = BASE.read_text(encoding="utf-8").split(
-        'class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom"', 2
-    )[2].split("</nav>", 1)[0]
+    # M1-R (PR pg-m1r-shell-labels): one signed-in phone bar (data-signed-in-phone-tabs)
+    # replaces the per-cohort bars; the active tab follows the shell_* flags, not path.startswith.
+    base_src = BASE.read_text(encoding="utf-8")
+    assert base_src.count("data-signed-in-phone-tabs") == 1
+    assert "data-signed-in-bareact-phone-tabs" not in base_src
+    first_bar = base_src.split("data-signed-in-phone-tabs", 1)[1].split("</nav>", 1)[0]
     assert 'href="/calendar"' in first_bar
-    assert "path.startswith('/profile')" in first_bar
-    assert "data-signed-in-bareact-phone-tabs" not in first_bar
-    assert "data-plus-bareact-phone-tabs" not in first_bar
+    assert "{% if shell_profile %} is-active" in first_bar  # M1-R (PR pg-m1r-shell-labels): shell flag, not path
     assert "data-guest-pg-phone-tabs" not in first_bar
 
 
@@ -1025,7 +1026,7 @@ def test_phone_signed_in_playground_gate_screen03_desktop_regression_1280(
     assert geo["columns"] and "300px" in geo["columns"]
     assert geo["tabsDisplay"] == "none"
     assert geo["headerDisplay"] != "none"
-    assert geo["status"] == "Free account"
+    assert geo["status"] == "RecallC Free"
     assert geo["continueBtn"] is False
     assert shot_path.is_file()
     assert shot_path.stat().st_size > 1000

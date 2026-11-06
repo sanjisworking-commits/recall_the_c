@@ -51,7 +51,7 @@ TAB_HREFS = (
     ("Profile", "/profile"),
 )
 MOCK_SCREEN_COPY = (
-    "Free account",
+    "RecallC Free",
     "No plan yet",
     "See plans",
 )
@@ -208,7 +208,7 @@ def test_phone_free_settings_is_live_screen11_contract(tmp_path: Path) -> None:
     panel = _panel(html)
     assert "Sanjay" in panel
     assert "Signed in with Google" in panel
-    assert "Free account" not in panel
+    assert "RecallC Free" not in panel
     ident = panel.split("settings-account-row", 1)[1][:400]
     assert 'href="/profile"' in ident
     assert "Appearance, your learning plan, and your revision calendar." in panel
@@ -245,7 +245,7 @@ def test_phone_free_settings_is_live_screen11_contract(tmp_path: Path) -> None:
         assert f'href="{href}"' in panel
         assert client.get(href).status_code == 200
     assert "Bare Act text verbatim · Day 1 · 3 · 7 · 15 · 30 · 60" in panel
-    # M1 (DV-20): the header account slot carries "Free account" everywhere;
+    # M1 (DV-20): the header account slot carries "RecallC Free" everywhere;
     # the mock-copy check is scoped to the page body.
     for phrase in MOCK_SCREEN_COPY:
         assert phrase not in html.split("<main", 1)[1], phrase
@@ -299,8 +299,10 @@ def test_phone_free_settings_css_is_breakpoint_scoped() -> None:
     assert ":not([data-halted-settings])" in phone_block
     assert "safe-area-inset-bottom" in phone_block
     assert "overflow-x: hidden" in phone_block
-    assert ".mobile-tabbar" in phone_block
-    assert "display: none" in phone_block.split(".mobile-tabbar", 1)[1].split("}", 1)[0]
+    # # M1-R close (owner decision 2026-11-06): the Free Settings block no longer hides the shared bar;
+    # the panel clears it with the tab-bar height instead.
+    assert ".mobile-tabbar" not in phone_block
+    assert "calc(var(--m-tabbar, 60px) + 28px + env(safe-area-inset-bottom, 0px))" in phone_block
     assert "grid-template-columns: repeat(5, 1fr)" not in phone_block
     assert ".lede" in phone_block
     assert "settings-saved" in phone_block
@@ -318,9 +320,9 @@ def test_phone_free_settings_css_is_breakpoint_scoped() -> None:
     assert "@media (min-width: 561px)" in desk
     assert "max-width: 720px" in desk
     assert "font-size: 30px" in desk
-    assert "playground.css?v=pg52" in BASE.read_text(encoding="utf-8")
-    assert "styles.css?v=main88" in BASE.read_text(encoding="utf-8")
-    assert "mobile.css?v=mob107" in BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg54" in BASE.read_text(encoding="utf-8")
+    assert "styles.css?v=main90" in BASE.read_text(encoding="utf-8")
+    assert "mobile.css?v=mob109" in BASE.read_text(encoding="utf-8")
     assert "mobile.css?v=mob104" not in BASE.read_text(encoding="utf-8")
     src = SETTINGS.read_text(encoding="utf-8")
     for phrase in MOCK_SCREEN_COPY:
@@ -541,7 +543,7 @@ def test_phone_signed_in_settings_screen07_390x844(tmp_path: Path) -> None:
                 focusBlocks,
                 overflow: document.documentElement.scrollWidth
                   > document.documentElement.clientWidth,
-                hasFreeAccount: /Free account/.test(panel ? panel.innerText : ''),
+                hasFreeAccount: /RecallC Free/.test(panel ? panel.innerText : ''),
                 hasSynced: /Last synced/.test(cal ? cal.innerText : ''),
                 legalHrefs: legalLinks.map((el) => el.getAttribute('href')),
                 headingSize: panel && getComputedStyle(panel.querySelector(':scope > .display')).fontSize,
@@ -630,7 +632,7 @@ def test_phone_signed_in_settings_screen07_390x844(tmp_path: Path) -> None:
     assert geo["plus"] is False
     assert geo["headerDisplay"] == "none"
     assert geo["topbarDisplay"] not in {None, "none"}
-    assert geo["tabsDisplay"] in {None, "none"}
+    assert geo["tabsDisplay"] == "grid"  # # M1-R close (owner decision 2026-11-06)
     assert geo["backText"] == "← Today"
     assert geo["backHref"] == "/dashboard"
     assert geo["identHref"] == "/profile"
@@ -680,7 +682,7 @@ def test_phone_signed_in_settings_screen07_390x844(tmp_path: Path) -> None:
     assert profile_path.rstrip("/") == "/profile"
     assert settings_path.rstrip("/") == "/settings"
     assert today_path.rstrip("/") == "/dashboard"
-    assert short["tabsDisplay"] in {None, "none"}
+    assert short["tabsDisplay"] == "grid"  # # M1-R close (owner decision 2026-11-06)
     assert short["overflow"] is False
     assert short["reportReachable"] is True
     assert short["signoutReachable"] is True
@@ -757,7 +759,7 @@ def test_phone_signed_in_settings_screen07_desktop_regression_1280(
                 ).display : null,
                 tabsDisplay: phone ? getComputedStyle(phone).display : null,
                 hasSettingsPill: (active || []).includes('Settings'),
-                hasFreeAccount: /Free account/.test(panel ? panel.innerText : ''),
+                hasFreeAccount: /RecallC Free/.test(panel ? panel.innerText : ''),
                 hasSynced: /Last synced/.test(cal ? cal.innerText : ''),
               };
             }"""

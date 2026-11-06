@@ -42,6 +42,7 @@ MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
 ROOT = Path(__file__).resolve().parents[1]
 DASH = ROOT / "src/constitution_memorizer/web/templates/dashboard.html"
 BASE = ROOT / "src/constitution_memorizer/web/templates/base.html"
+SHELL = ROOT / "src/constitution_memorizer/web/shell.py"  # M1-R (PR pg-m1r-shell-labels): header label source
 DEPS = ROOT / "src/constitution_memorizer/entitlements/dependencies.py"
 AUTH = ROOT / "src/constitution_memorizer/auth/routes.py"
 PG_CSS = ROOT / "src/constitution_memorizer/web/static/playground.css"
@@ -252,7 +253,7 @@ def test_plus_today_reaches_dashboard_with_today_selected(tmp_path: Path) -> Non
     assert 'href="/dashboard" class="nav-link is-active"' in header
     assert ">Today<" in header
     assert "RecallC Plus" in header
-    assert "Free account" not in header
+    assert "RecallC Free" not in header
     assert "Welcome, Sanjay." in html or "Good morning, Sanjay." in html
 
 
@@ -382,9 +383,14 @@ def test_plus_today_marker_uses_shared_predicate() -> None:
     assert "def request_is_active_plus" in DEPS.read_text(encoding="utf-8")
     assert 'snapshot.tier == "plus"' in DEPS.read_text(encoding="utf-8")
     base = BASE.read_text(encoding="utf-8")
-    assert "plus_today_chrome" in base
-    assert "RecallC Plus" in base
-    assert "playground.css?v=pg52" in base
+    # M1-R (PR pg-m1r-shell-labels): the account label is one snapshot function in
+    # web/shell.py (TIER_LABELS); base.html only calls the shell_account_status global.
+    assert "shell_account_status" in base
+    shell = SHELL.read_text(encoding="utf-8")
+    assert "def account_status_for_snapshot" in shell
+    assert "def shell_account_status" in shell
+    assert '"plus": "RecallC Plus"' in shell
+    assert "playground.css?v=pg54" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-plus-today="desktop"' in css
     plus_css = css.split("plus/08-screen", 1)[-1]

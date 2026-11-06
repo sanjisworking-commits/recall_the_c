@@ -38,6 +38,7 @@ ROOT = Path(__file__).resolve().parents[1]
 UNITS = ROOT / "data" / "output" / "learning_units.json"
 BROWSE = ROOT / "src/constitution_memorizer/web/templates/browse_index.html"
 BASE = ROOT / "src/constitution_memorizer/web/templates/base.html"
+SHELL = ROOT / "src/constitution_memorizer/web/shell.py"  # M1-R (PR pg-m1r-shell-labels): header label source
 DEPS = ROOT / "src/constitution_memorizer/entitlements/dependencies.py"
 APP = ROOT / "src/constitution_memorizer/web/app.py"
 VIEW = ROOT / "src/constitution_memorizer/playground/view.py"
@@ -246,7 +247,7 @@ def test_expired_laws_keeps_catalogue_and_live_playground_state(
     assert f'href="{bns.href}"' in desk
     assert f'href="{ndps.href}"' in desk
     assert LIVE_EXPIRED_STATUS in header
-    assert "Free account" not in header
+    assert "RecallC Free" not in header
     assert "RecallC Plus" not in header
     assert "Sanjay" in header
     assert 'href="/browse"' in header
@@ -290,7 +291,7 @@ def test_free_plus_guest_halted_stay_separate_from_expired(tmp_path: Path) -> No
     assert 'data-expired-laws="desktop"' not in free_html
     assert 'data-plus-laws="desktop"' not in free_html
     assert "data-signed-in-laws-desktop" in free_html
-    assert "Free account" in _header(free_html)
+    assert "RecallC Free" in _header(free_html)
     assert LIVE_EXPIRED_STATUS not in _header(free_html)
     assert "The Bharatiya Nyaya Sanhita, 2023" in _desk(free_html)
 
@@ -341,11 +342,21 @@ def test_expired_laws_uses_shared_predicate_not_a_template_flag() -> None:
     assert LIVE_EXPIRED_STATUS not in laws
     assert "Your plan expired" not in laws
     base = BASE.read_text(encoding="utf-8")
-    assert "expired_laws" in base
-    assert "expired_browse" in base
-    assert "expired_header_status" in base
-    assert "RecallC Plus" in base
-    assert "Free account" in base
+    # M1-R (PR pg-m1r-shell-labels): per-route flag chain removed from base.html.
+    assert "expired_laws" not in base
+    assert "shell_account_status" in base  # M1-R: one snapshot-driven label
+    # M1-R (PR pg-m1r-shell-labels): the header label is one snapshot function in web/shell.py;
+    # base.html no longer reads a per-route expired_header_status flag.
+    assert "expired_header_status" not in base
+    shell = SHELL.read_text(encoding="utf-8")
+    assert "snapshot_is_expired_subscriber(snapshot)" in shell
+    assert "snapshot.playground_block_reason" in shell
+    assert ").title" in shell
+    # M1-R (PR pg-m1r-shell-labels): tier literals live in web/shell.py (TIER_LABELS);
+    # base.html only carries the 'RecallC Free' fallback.
+    assert "RecallC Plus" not in base
+    assert '"plus": "RecallC Plus"' in shell
+    assert "RecallC Free" in base
     assert "Playground paused" not in base
     app = APP.read_text(encoding="utf-8")
     page = app.split("async def laws_page", 1)[1].split(

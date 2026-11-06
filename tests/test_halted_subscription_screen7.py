@@ -58,6 +58,7 @@ CAL = ROOT / "src/constitution_memorizer/web/templates/calendar.html"
 PROFILE = ROOT / "src/constitution_memorizer/web/templates/profile.html"
 SETTINGS = ROOT / "src/constitution_memorizer/web/templates/settings.html"
 BASE = ROOT / "src/constitution_memorizer/web/templates/base.html"
+SHELL = ROOT / "src/constitution_memorizer/web/shell.py"  # M1-R (PR pg-m1r-shell-labels): header label source
 DEPS = ROOT / "src/constitution_memorizer/entitlements/dependencies.py"
 ROUTES = ROOT / "src/constitution_memorizer/subscriptions/routes.py"
 PG_CSS = ROOT / "src/constitution_memorizer/web/static/playground.css"
@@ -285,7 +286,7 @@ def test_halted_billing_is_current_plan_not_paused_home(tmp_path: Path) -> None:
     assert LIVE_GATE.cta_href == PLAYGROUND_BILLING_PATH
     assert LIVE_HEADING in header
     assert "RecallC Plus" not in header
-    assert "Free account" not in header
+    assert "RecallC Free" not in header
     assert 'href="/playground"' in header
     assert "is-active" in header.split('href="/playground"', 1)[1].split("</a>", 1)[0]
     assert "Playground · Your plan" in desk
@@ -513,11 +514,17 @@ def test_halted_subscription_uses_shared_predicate_and_existing_routes() -> None
     assert '[data-expired-subscription="desktop"]' in css
     assert ".halted-sub-desk" not in css
     base = BASE.read_text(encoding="utf-8")
-    assert "halted_billing" in base
-    assert "halted_subscription" in base
-    assert "halted_header_status" in base
+    assert "halted_billing" not in base  # M1-R (PR pg-m1r-shell-labels): the per-route header flag chain is gone
+    assert "shell_account_status" in base  # M1-R: one snapshot-driven label
+    assert "halted_subscription" not in base  # M1-R (PR pg-m1r-shell-labels): the per-route header flag chain is gone
+    # M1-R (PR pg-m1r-shell-labels): the header label is one snapshot function in web/shell.py;
+    # base.html no longer reads a per-route halted_header_status flag.
+    assert "halted_header_status" not in base
+    shell = SHELL.read_text(encoding="utf-8")
+    assert "snapshot_is_halted_subscriber(snapshot)" in shell
+    assert "gate_view(reason=BLOCK_PAYMENT_HALTED).title" in shell
     assert LIVE_HEADING not in base
-    assert "playground.css?v=pg52" in base
+    assert "playground.css?v=pg54" in base
     checkout = CHECKOUT.read_text(encoding="utf-8")
     assert "data-halted-subscription" not in checkout
     assert "data-halted-subscription" not in MOBILE.read_text(encoding="utf-8")

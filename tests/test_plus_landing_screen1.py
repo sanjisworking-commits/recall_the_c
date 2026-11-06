@@ -37,7 +37,7 @@ INVENTED = (
     "Premium",
     "Unlimited",
     "RecallC Plus",
-    "Free account",
+    "RecallC Free",
     "Start learning",
     "Sign in",
 )
@@ -269,7 +269,7 @@ def test_plus_landing_1280(tmp_path: Path) -> None:
                 launchDisplay: launch ? getComputedStyle(launch).display : null,
                 hasHeader: !!header,
                 loginCount: document.querySelectorAll('a[href*="/login"]').length,
-                plusCopy: /Premium|Unlimited|RecallC Plus|Free account/.test(
+                plusCopy: /Premium|Unlimited|RecallC Plus|RecallC Free/.test(
                   document.body.innerText
                 ),
                 mark: (document.querySelector('.rc-desk-mark') || {}).textContent,

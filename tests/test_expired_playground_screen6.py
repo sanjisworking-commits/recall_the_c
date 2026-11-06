@@ -61,6 +61,7 @@ CAL = ROOT / "src/constitution_memorizer/web/templates/calendar.html"
 PROFILE = ROOT / "src/constitution_memorizer/web/templates/profile.html"
 SETTINGS = ROOT / "src/constitution_memorizer/web/templates/settings.html"
 BASE = ROOT / "src/constitution_memorizer/web/templates/base.html"
+SHELL = ROOT / "src/constitution_memorizer/web/shell.py"  # M1-R (PR pg-m1r-shell-labels): header label source
 DEPS = ROOT / "src/constitution_memorizer/entitlements/dependencies.py"
 ROUTES = ROOT / "src/constitution_memorizer/playground/routes.py"
 VIEW = ROOT / "src/constitution_memorizer/playground/view.py"
@@ -298,7 +299,7 @@ def test_expired_home_is_readonly_gate_view_not_hard_gate(tmp_path: Path) -> Non
     desk = _desk(html)
     assert LIVE_HEADING in header
     assert "RecallC Plus" not in header
-    assert "Free account" not in header
+    assert "RecallC Free" not in header
     assert 'href="/playground"' in header
     assert "is-active" in header.split('href="/playground"', 1)[1].split("</a>", 1)[0]
     assert f">{LIVE_HEADING}<" in desk
@@ -358,7 +359,7 @@ def test_guest_free_plus_halted_paused_stay_separate(tmp_path: Path) -> None:
     assert "data-signed-in-pg-gate" in free_html
     assert 'data-expired-playground="desktop"' not in free_html
     assert LIVE_HEADING not in free_html
-    assert "Free account" in _header(free_html) or "Unlock Playground" in free_html
+    assert "RecallC Free" in _header(free_html) or "Unlock Playground" in free_html
 
     plus = TestClient(_mu_app(tmp_path / "plus"))
     _sign_in(plus)
@@ -439,8 +440,15 @@ def test_expired_playground_uses_shared_predicate_and_gate_view() -> None:
     assert 'kind="expired"' in view
     assert 'kind="paused"' in view
     base = BASE.read_text(encoding="utf-8")
-    assert "expired_playground" in base
-    assert "expired_header_status" in base
+    # M1-R (PR pg-m1r-shell-labels): per-route flag chain removed from base.html.
+    assert "expired_playground" not in base
+    # M1-R (PR pg-m1r-shell-labels): the header label is one snapshot function in web/shell.py;
+    # base.html no longer reads a per-route expired_header_status flag.
+    assert "expired_header_status" not in base
+    shell = SHELL.read_text(encoding="utf-8")
+    assert "snapshot_is_expired_subscriber(snapshot)" in shell
+    assert "snapshot.playground_block_reason" in shell
+    assert ").title" in shell
     css = PG_CSS.read_text(encoding="utf-8")
     assert "[data-expired-pg-desktop]" in css
     assert "[data-expired-playground=\"desktop\"]" in css

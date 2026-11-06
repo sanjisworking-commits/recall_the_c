@@ -611,9 +611,11 @@ def test_fourth_tab_reads_calendar():
         Path(__file__).parent.parent
         / "src/constitution_memorizer/web/templates/base.html"
     ).read_text()
-    tabbar = base.split('class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom"', 2)[2].split(
-        "</nav>", 1
-    )[0]
+    # M1-R (PR pg-m1r-shell-labels): one signed-in bar (data-signed-in-phone-tabs); the
+    # per-cohort bareact bars are gone and the active tab follows the shell_* flags.
+    assert base.count("data-signed-in-phone-tabs") == 1
+    assert "bareact-phone-tabs" not in base
+    tabbar = base.split("data-signed-in-phone-tabs", 1)[1].split("</nav>", 1)[0]
     assert ">Today</a>" in tabbar or ">Today<" in tabbar
     assert ">Browse</a>" in tabbar or ">Browse<" in tabbar
     assert ">Playground</a>" in tabbar or ">Playground<" in tabbar
@@ -626,7 +628,7 @@ def test_fourth_tab_reads_calendar():
     assert 'href="/playground"' in tabbar
     assert 'href="/calendar"' in tabbar
     assert 'href="/profile"' in tabbar
-    assert "path.startswith('/profile')" in tabbar
+    assert "{% if shell_profile %} is-active" in tabbar  # M1-R (PR pg-m1r-shell-labels): shell flag, not path
     assert 'aria-current="page"' in tabbar
     # Calendar must not also light up on Profile.
     calendar_line = [line for line in tabbar.splitlines() if 'href="/calendar"' in line][0]
@@ -1233,9 +1235,11 @@ def test_signed_in_tabbar_ships_icons_and_keeps_label_contract():
         Path(__file__).parent.parent
         / "src/constitution_memorizer/web/templates/base.html"
     ).read_text()
-    tabbar = base.split('class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom"', 2)[2].split(
-        "</nav>", 1
-    )[0]
+    # M1-R (PR pg-m1r-shell-labels): one signed-in bar (data-signed-in-phone-tabs); the
+    # per-cohort bareact bars are gone and the active tab follows the shell_* flags.
+    assert base.count("data-signed-in-phone-tabs") == 1
+    assert "bareact-phone-tabs" not in base
+    tabbar = base.split("data-signed-in-phone-tabs", 1)[1].split("</nav>", 1)[0]
     assert ">Calendar</a>" in tabbar
     assert ">Profile</a>" in tabbar
     assert ">Playground</a>" in tabbar or ">Playground<" in tabbar

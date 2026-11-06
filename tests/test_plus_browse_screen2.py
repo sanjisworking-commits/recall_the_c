@@ -32,6 +32,7 @@ ROOT = Path(__file__).resolve().parents[1]
 UNITS = ROOT / "data" / "output" / "learning_units.json"
 BROWSE = ROOT / "src/constitution_memorizer/web/templates/browse_index.html"
 BASE = ROOT / "src/constitution_memorizer/web/templates/base.html"
+SHELL = ROOT / "src/constitution_memorizer/web/shell.py"  # M1-R (PR pg-m1r-shell-labels): header label source
 USER = UUID("11111111-1111-4111-8111-111111111111")
 INVENTED = (
     "Premium",
@@ -142,7 +143,7 @@ def test_plus_browse_omits_free_strip_from_real_subscription(tmp_path: Path) -> 
     assert '<span class="browse-resource-name">Laws</span>' in panel
     assert '<span class="browse-resource-name">Tables</span>' in panel
     assert "RecallC Plus" in header
-    assert "Free account" not in header
+    assert "RecallC Free" not in header
     for phrase in INVENTED:
         assert phrase not in panel, phrase
     assert "Unlock all" not in panel
@@ -164,7 +165,7 @@ def test_free_signed_in_browse_keeps_allowance_and_unlock(tmp_path: Path) -> Non
     assert "All 3 slots free." in strip
     assert 'class="browse-access-unlock" href="/playground">Unlock all</a>' in strip
     header = _header(html)
-    assert "Free account" in header
+    assert "RecallC Free" in header
     assert "RecallC Plus" not in header
 
 
@@ -200,9 +201,14 @@ def test_plus_browse_marker_is_conditional_in_templates() -> None:
     assert 'href="/laws"' in browse
     assert 'href="/tables"' in browse
     base = BASE.read_text(encoding="utf-8")
-    assert "plus_browse" in base
-    assert "RecallC Plus" in base
-    assert "Free account" in base
+    assert "shell_account_status" in base  # M1-R: one snapshot-driven label
+    # M1-R (PR pg-m1r-shell-labels): the tier literals live in web/shell.py (TIER_LABELS);
+    # base.html keeps only the RecallC Free fallback.
+    assert "RecallC Free" in base
+    assert "plus_browse" not in base
+    shell = SHELL.read_text(encoding="utf-8")
+    assert "def account_status_for_snapshot" in shell
+    assert '"plus": "RecallC Plus"' in shell
     for phrase in ("Premium", "Unlimited", "renews"):
         assert phrase not in browse
 

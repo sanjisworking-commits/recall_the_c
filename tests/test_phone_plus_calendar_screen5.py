@@ -593,16 +593,22 @@ def test_phone_plus_calendar_css_scope_pins_and_desktop_09_untouched() -> None:
         assert "plus_calendar" not in text
         assert "data-plus-calendar" not in text
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg52" in base
+    assert "playground.css?v=pg54" in base
     assert "playground.css?v=pg37" not in base
-    assert "styles.css?v=main88" in base
-    assert "mobile.css?v=mob107" in base
+    assert "styles.css?v=main90" in base
+    assert "mobile.css?v=mob109" in base
     assert "data-plus-calendar-phone-tabs" not in base
+    # M1-R (PR pg-m1r-shell-labels): one signed-in bar (data-signed-in-phone-tabs) renders first in
+    # base.html, followed only by the guest bar; the active tab comes from the shell_* flag
+    # that base.html derives from path.startswith('/calendar'), not from a per-cohort bar.
+    assert base.count('class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom"') == 2
     first_bar = base.split(
-        'class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom"', 2
-    )[2].split("</nav>", 1)[0]
+        'class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom"', 1
+    )[1].split("</nav>", 1)[0]
+    assert "data-signed-in-phone-tabs" in first_bar
     assert 'href="/calendar"' in first_bar
-    assert "path.startswith('/calendar')" in first_bar
+    assert "{% if shell_calendar %} is-active" in first_bar
+    assert "{% set shell_calendar = path.startswith('/calendar')" in base
     assert "data-plus-calendar-phone-tabs" not in first_bar
 
 

@@ -322,7 +322,7 @@ def test_expired_settings_reaches_settings_with_live_header(tmp_path: Path) -> N
     assert "Settings" not in top_nav
     assert LIVE_HEADING in header
     assert "RecallC Plus" not in header
-    assert "Free account" not in header
+    assert "RecallC Free" not in header
     assert 'href="/dashboard"' in html
     assert "← Today" in html
     assert 'class="settings-account-row" href="/profile"' in html
@@ -568,9 +568,11 @@ def test_expired_settings_marker_uses_shared_predicate() -> None:
     assert "def request_is_expired_subscriber" in DEPS.read_text(encoding="utf-8")
     assert "BLOCK_PAID_PERIOD_ENDED" in DEPS.read_text(encoding="utf-8")
     base = BASE.read_text(encoding="utf-8")
-    assert "expired_settings_chrome" in base
-    assert "plus_settings_chrome" in base
-    assert "playground.css?v=pg52" in base
+    assert "expired_settings_chrome" not in base  # M1-R (PR pg-m1r-shell-labels): the per-route header flag chain is gone
+    assert "shell_account_status" in base  # M1-R: one snapshot-driven label
+    assert "plus_settings_chrome" not in base  # M1-R (PR pg-m1r-shell-labels): the per-route header flag chain is gone
+    assert "shell_account_status" in base  # M1-R: one snapshot-driven label
+    assert "playground.css?v=pg54" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-expired-settings="desktop"' in css
     assert "expired/11-screen" in css

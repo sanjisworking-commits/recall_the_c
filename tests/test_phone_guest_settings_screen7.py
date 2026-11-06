@@ -352,13 +352,14 @@ def test_phone_guest_settings_today_goes_to_dashboard(tmp_path: Path) -> None:
 
 
 def test_phone_guest_settings_has_the_shared_five_tab_bar() -> None:
-    # M1 (owner-accepted): guests keep the five tabs on Settings; the signed-in
-    # settings screen keeps its frozen bar-less behaviour via the generic CSS.
+    # M1 (owner-accepted): guests keep the five tabs on Settings.
+    # # M1-R close (owner decision 2026-11-06): the same shared rule now shows the bar for signed-in Settings too.
     base = BASE.read_text(encoding="utf-8")
     assert "guest_settings" not in base
     assert "data-guest-phone-tabs" in base
     mobile = (BASE.parent.parent / "static" / "mobile.css").read_text(encoding="utf-8")
-    assert 'body.is-guest[data-mscreen="settings"] .mobile-tabbar' in mobile
+    assert 'body[data-mscreen="settings"] .mobile-tabbar,\n  body[data-mscreen="search"] .mobile-tabbar {\n    display: grid;' in mobile
+    assert 'body.is-guest[data-mscreen="settings"] .mobile-tabbar' not in mobile
 
 
 def test_phone_guest_settings_css_is_breakpoint_scoped() -> None:
@@ -372,7 +373,7 @@ def test_phone_guest_settings_css_is_breakpoint_scoped() -> None:
     assert "var(--ink)" in phone_block
     assert "var(--on-accent)" in phone_block
     assert "@media (min-width: 561px)" not in phone_block
-    assert "playground.css?v=pg52" in BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg54" in BASE.read_text(encoding="utf-8")
     assert "playground.css?v=pg31" not in BASE.read_text(encoding="utf-8")
 
 

@@ -37,6 +37,7 @@ ROOT = Path(__file__).resolve().parents[1]
 MANAGE = ROOT / "src/constitution_memorizer/web/templates/subscription_manage.html"
 CHECKOUT = ROOT / "src/constitution_memorizer/web/templates/subscription_checkout.html"
 BASE = ROOT / "src/constitution_memorizer/web/templates/base.html"
+SHELL = ROOT / "src/constitution_memorizer/web/shell.py"  # M1-R (PR pg-m1r-shell-labels): header label source
 DEPS = ROOT / "src/constitution_memorizer/entitlements/dependencies.py"
 ROUTES = ROOT / "src/constitution_memorizer/subscriptions/routes.py"
 PG_CSS = ROOT / "src/constitution_memorizer/web/static/playground.css"
@@ -202,7 +203,7 @@ def test_plus_subscriptions_reaches_manage_and_change_your_plan(tmp_path: Path) 
     assert "Upgrade applies immediately." not in desk
     assert "Downgrade takes effect" not in desk
     assert "RecallC Plus" in header
-    assert "Free account" not in header
+    assert "RecallC Free" not in header
     assert 'href="/playground" class="nav-link is-active"' in header
     assert 'data-plus-sub-current' in _card(desk, "plus")
     assert "Current plan" in _card(desk, "plus")
@@ -365,10 +366,17 @@ def test_plus_subscription_marker_uses_shared_predicate() -> None:
     assert "def request_is_active_plus" in DEPS.read_text(encoding="utf-8")
     assert 'snapshot.tier == "plus"' in DEPS.read_text(encoding="utf-8")
     base = BASE.read_text(encoding="utf-8")
-    assert "plus_billing" in base
-    assert "plus_subscription" in base
-    assert "RecallC Plus" in base
-    assert "playground.css?v=pg52" in base
+    # M1-R (PR pg-m1r-shell-labels): /billing/subscriptions lights the Playground tab
+    # via shell_playground; the header label no longer depends on plus_billing.
+    assert "path.startswith('/billing/subscriptions')" in base
+    # M1-R (PR pg-m1r-shell-labels): the account label is one snapshot function in
+    # web/shell.py (TIER_LABELS); base.html only calls the shell_account_status global.
+    assert "shell_account_status" in base
+    shell = SHELL.read_text(encoding="utf-8")
+    assert "def account_status_for_snapshot" in shell
+    assert "def shell_account_status" in shell
+    assert '"plus": "RecallC Plus"' in shell
+    assert "playground.css?v=pg54" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-plus-subscription="desktop"' in css
     assert "plus-sub-card" in css

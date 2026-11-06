@@ -179,7 +179,7 @@ def _band(html: str, slug: str = "ndps") -> str:
 
 
 def _tabs(html: str) -> str:
-    return html.split("data-signed-in-bareact-phone-tabs", 1)[1].split("</nav>", 1)[0]
+    return html.split("data-signed-in-phone-tabs", 1)[1].split("</nav>", 1)[0]
 
 
 def _sheet(html: str) -> str:
@@ -187,7 +187,7 @@ def _sheet(html: str) -> str:
 
 
 def _assert_no_old_markers(html: str) -> None:
-    scrubbed = html.replace("data-signed-in-bareact-phone-tabs", "")
+    scrubbed = html.replace("data-signed-in-phone-tabs", "")
     assert "data-signed-in-bareact-phone" not in scrubbed
     for marker in OLD_MARKERS:
         assert marker not in scrubbed, marker
@@ -290,7 +290,7 @@ def test_phone_signed_in_free_ndps_uses_subscribe_head(tmp_path: Path) -> None:
 
 def test_phone_signed_in_five_tabs_browse_active(tmp_path: Path) -> None:
     html = _free_client(tmp_path).get("/laws/ndps").text
-    assert "data-signed-in-bareact-phone-tabs" in html
+    assert "data-signed-in-phone-tabs" in html
     assert "data-guest-bareact-phone-tabs" not in html
     tabs = _tabs(html)
     labels = []
@@ -306,7 +306,6 @@ def test_phone_signed_in_five_tabs_browse_active(tmp_path: Path) -> None:
         chunk = tabs.split(f'href="{href}"', 1)[1].split("</a>", 1)[0]
         assert "is-active" not in chunk
     dash = _free_client(tmp_path / "dash").get("/dashboard").text
-    assert "data-signed-in-bareact-phone-tabs" not in dash
 
 
 def test_phone_signed_in_add_sheet_is_existing_subscribe_kind(tmp_path: Path) -> None:
@@ -443,9 +442,9 @@ def test_phone_signed_in_markers_and_pins() -> None:
     assert "data-signed-in-bareact-phone" not in bare
     assert "guest_screen4" not in bare
     base = BASE.read_text(encoding="utf-8")
-    assert "data-signed-in-bareact-phone-tabs" in base
-    assert "styles.css?v=main88" in base
-    assert "mobile.css?v=mob107" in base
+    assert "data-signed-in-phone-tabs" in base
+    assert "styles.css?v=main90" in base
+    assert "mobile.css?v=mob109" in base
     assert "mobile.css?v=mob106" not in base
     assert "styles.css?v=main87" not in base
     styles = STYLES.read_text(encoding="utf-8")
@@ -548,7 +547,7 @@ def test_phone_signed_in_bareact_screen01_390x844(tmp_path: Path) -> None:
             """() => {
               const head = document.querySelector('[data-act-head="ndps"]');
               const header = document.querySelector('.site-header');
-              const tabs = document.querySelector('[data-signed-in-bareact-phone-tabs]');
+              const tabs = document.querySelector('[data-signed-in-phone-tabs]');
               const cta = head && head.querySelector('.ActHead-btn');
               const back = head && head.querySelector('.ActHead-back');
               const chapters = head ? [...head.querySelectorAll('details.bareact-chapter')] : [];
@@ -709,7 +708,7 @@ def test_phone_signed_in_bareact_screen01_desktop_regression_1280(tmp_path: Path
         geo = page.evaluate(
             """() => {
               const head = document.querySelector('[data-act-head="ndps"]');
-              const tabs = document.querySelector('[data-signed-in-bareact-phone-tabs]');
+              const tabs = document.querySelector('[data-signed-in-phone-tabs]');
               const header = document.querySelector('.site-header');
               const cta = head && head.querySelector('.ActHead-btn');
               const nav = [...document.querySelectorAll('.PrimaryTabs--top .nav-link')].map(
@@ -757,7 +756,7 @@ def test_phone_signed_in_bareact_screen01_desktop_regression_1280(tmp_path: Path
     ]
     assert geo["title"] == TITLE
     assert geo["account"] == "Sanjay"
-    assert geo["status"] == "Free account"
+    assert geo["status"] == "RecallC Free"
     assert geo["already"] is False
     assert shot_path.is_file()
     assert shot_path.stat().st_size > 1000

@@ -360,11 +360,11 @@ def test_phone_signed_in_add_css_is_breakpoint_scoped() -> None:
     assert ":has([data-guest-add-phone])" not in css
     assert ":has([data-plus-add-phone])" not in css
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg52" in base
+    assert "playground.css?v=pg54" in base
     assert "playground.css?v=pg49" not in base
     assert "playground.css?v=pg32" not in base
-    assert "styles.css?v=main88" in base
-    assert "mobile.css?v=mob107" in base
+    assert "styles.css?v=main90" in base
+    assert "mobile.css?v=mob109" in base
     assert "playground.js?v=pg12" in base
     assert "mobile.js?v=mob30" in base
 
@@ -542,7 +542,7 @@ def test_phone_signed_in_add_screen02_390x844(tmp_path: Path) -> None:
                 (el) => el.textContent.trim() === 'Cancel'
               );
               const closeBtn = panel.querySelector('.pg-sheet-close');
-              const tabs = document.querySelector('[data-signed-in-bareact-phone-tabs]');
+              const tabs = document.querySelector('[data-signed-in-phone-tabs]');
               const handle = getComputedStyle(panel, '::before');
               const d = dialog.getBoundingClientRect();
               const p = panel.getBoundingClientRect();

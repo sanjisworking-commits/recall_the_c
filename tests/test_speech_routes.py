@@ -283,7 +283,7 @@ def test_guest_recite_audio_does_not_call_provider(tmp_path: Path) -> None:
 
 
 def test_signed_in_claimable_recite_omits_alignment(tmp_path: Path) -> None:
-    """Free accounts with remaining slots may Recite; alignment is Letters-only."""
+    """RecallC Frees with remaining slots may Recite; alignment is Letters-only."""
     provider = FakeSpeechProvider()
     client = _signed_in_client(tmp_path, provider)
     resp = client.post(

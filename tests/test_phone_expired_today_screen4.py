@@ -426,7 +426,6 @@ def _assert_generic_today_tabs(html: str) -> None:
     assert 'aria-current="page"' in tabs
     assert ">Today<" in tabs
     assert "data-expired-today-phone-tabs" not in html
-    assert "data-expired-bareact-phone-tabs" not in html
     assert "data-plus-today-phone-tabs" not in html
 
 
@@ -856,16 +855,22 @@ def test_phone_expired_today_css_scope_pins_and_desktop_08_untouched() -> None:
     assert "def apply_expired_today_hero" in schedule
     assert "def reconcile_expired_playground_today" in schedule
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg52" in base
+    assert "playground.css?v=pg54" in base
     assert "playground.css?v=pg43" not in base
-    assert "styles.css?v=main88" in base
-    assert "mobile.css?v=mob107" in base
+    assert "styles.css?v=main90" in base
+    assert "mobile.css?v=mob109" in base
     assert "data-expired-today-phone-tabs" not in base
+    # M1-R (PR pg-m1r-shell-labels): one signed-in bar (data-signed-in-phone-tabs) renders first in
+    # base.html, followed only by the guest bar; the active tab comes from the shell_* flag
+    # that base.html derives from path.startswith('/dashboard'), not from a per-cohort bar.
+    assert base.count('class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom"') == 2
     first_bar = base.split(
-        'class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom"', 2
-    )[2].split("</nav>", 1)[0]
+        'class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom"', 1
+    )[1].split("</nav>", 1)[0]
+    assert "data-signed-in-phone-tabs" in first_bar
     assert 'href="/calendar"' in first_bar
-    assert "path.startswith('/dashboard')" in first_bar
+    assert "{% if shell_today %} is-active" in first_bar
+    assert "{% set shell_today = path.startswith('/dashboard')" in base
     assert "data-expired-today-phone-tabs" not in first_bar
 
 

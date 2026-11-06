@@ -187,9 +187,9 @@ def _list(html: str, slug: str = "ndps") -> str:
 
 
 def _assert_no_old_markers(html: str) -> None:
-    # The phone tabbar marker `data-signed-in-bareact-phone-tabs` survives in
+    # The phone tabbar marker `data-signed-in-phone-tabs` survives in
     # base.html; only the deleted head twin shares its prefix.
-    scrubbed = html.replace("data-signed-in-bareact-phone-tabs", "")
+    scrubbed = html.replace("data-signed-in-phone-tabs", "")
     for marker in OLD_MARKERS:
         assert marker not in scrubbed, marker
 
@@ -375,7 +375,7 @@ def test_signed_in_bareact_desktop_chrome(tmp_path: Path) -> None:
     assert 'src="/static/main_logo.png"' in header
     assert "Recall the C" in header
     assert 'account-menu-btn-name">Sanjay<' in header
-    assert "Free account" in header
+    assert "RecallC Free" in header
     assert "Not signed in" not in header
     for label in ("Today", "Browse", "Playground", "Calendar", "Profile"):
         assert label in nav
@@ -461,7 +461,7 @@ def test_signed_in_bareact_does_not_touch_phone_or_accepted_screens(
     assert "<details" in head
     assert 'href="/laws/ndps/section/' in head
     assert 'class="ActHead-cta LawPlaygroundCta"' in head
-    assert "data-signed-in-bareact-phone-tabs" in html
+    assert "data-signed-in-phone-tabs" in html
     landing_html = client.get("/").text
     assert 'data-guest-landing="desktop"' in landing_html
     browse_html = client.get("/browse").text
@@ -699,7 +699,7 @@ def test_signed_in_bareact_1280_non_subscriber_cta_and_rows(
     assert geo["aboutBelowCta"] is True
     assert geo["aboutExpanded"] == "false"
     assert geo["accountName"] == "Sanjay"
-    assert geo["accountStatus"] == "Free account"
+    assert geo["accountStatus"] == "RecallC Free"
     assert geo["navLabels"] == [
         "Today",
         "Browse",

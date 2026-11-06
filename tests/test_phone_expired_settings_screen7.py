@@ -456,9 +456,9 @@ def test_phone_expired_settings_css_is_breakpoint_scoped() -> None:
     assert "safe-area-inset-bottom" in phone_block
     assert "overflow-x: hidden" in phone_block
     assert "overflow-wrap: anywhere" in phone_block
-    assert ".mobile-tabbar" in phone_block
-    tab_rule = phone_block.split(".mobile-tabbar", 1)[1].split("}", 1)[0]
-    assert "display: none" in tab_rule
+    # # M1-R close (owner decision 2026-11-06): this block no longer hides the shared bar; the panel clears it.
+    assert ".mobile-tabbar" not in phone_block
+    assert "calc(var(--m-tabbar, 60px) + 28px + env(safe-area-inset-bottom, 0px))" in phone_block
     assert "grid-template-columns: repeat(5, 1fr)" not in phone_block
     assert "position: fixed" not in phone_block
     assert "> .lede" in phone_block
@@ -518,10 +518,10 @@ def test_phone_expired_settings_css_is_breakpoint_scoped() -> None:
     )[0]
     assert "upsert_learning_plan" not in get
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg52" in base
+    assert "playground.css?v=pg54" in base
     assert "playground.css?v=pg46" not in base
-    assert "styles.css?v=main88" in base
-    assert "mobile.css?v=mob107" in base
+    assert "styles.css?v=main90" in base
+    assert "mobile.css?v=mob109" in base
     assert "data-expired-settings-phone-tabs" not in base
     # M1: the per-screen guest branches are gone; guests share one bar.
     assert "{% elif guest_settings %}" not in base
@@ -905,7 +905,7 @@ def test_phone_expired_settings_screen07_390x844(tmp_path: Path) -> None:
     assert geo["present"] is True
     assert geo["headerDisplay"] == "none"
     assert geo["topbarDisplay"] not in {None, "none"}
-    assert geo["tabsDisplay"] in {None, "none"}
+    assert geo["tabsDisplay"] == "grid"  # # M1-R close (owner decision 2026-11-06)
     assert geo["hasSettingsTab"] is False
     assert geo["backText"] == "← Today"
     assert geo["backHref"] == "/dashboard"
@@ -977,7 +977,7 @@ def test_phone_expired_settings_screen07_390x844(tmp_path: Path) -> None:
     assert profile_path.rstrip("/") == "/profile"
     assert settings_path.rstrip("/") == "/settings"
     assert today_path.rstrip("/") == "/dashboard"
-    assert short["tabs"]["display"] in {None, "none"}
+    assert short["tabs"]["display"] == "grid"  # # M1-R close (owner decision 2026-11-06)
     assert short["tabs"]["overflow"] is False
     assert short["motion"]["visible"] is True
     assert short["report"]["visible"] is True

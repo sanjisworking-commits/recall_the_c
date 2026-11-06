@@ -215,7 +215,7 @@ def _act_list(html: str) -> str:
 
 
 def _tabs(html: str) -> str:
-    return html.split("data-expired-bareact-phone-tabs", 1)[1].split("</nav>", 1)[0]
+    return html.split("data-signed-in-phone-tabs", 1)[1].split("</nav>", 1)[0]
 
 
 def _live_state(client: TestClient, law_id: str = "ndps"):
@@ -302,8 +302,7 @@ def test_phone_expired_enrolled_uses_resume_not_continue(tmp_path: Path) -> None
     assert "data-signed-in-bareact-phone>" not in html
     assert "data-guest-bareact-phone>" not in html
     assert "data-bareact-phone" not in html
-    assert "data-expired-bareact-phone-tabs" in html
-    assert "data-plus-bareact-phone-tabs" not in html
+    assert "data-signed-in-phone-tabs" in html
     assert f'<h1 class="ActHead-title">{act.title}</h1>' in head
     assert KICKER in head
     assert f'<p class="ActHead-meta">{act.head_meta_label}</p>' in head
@@ -405,9 +404,7 @@ def test_phone_expired_never_enrolled_is_resume_only(tmp_path: Path) -> None:
 
 def test_phone_expired_five_tabs_browse_active_only(tmp_path: Path) -> None:
     html = _expired_enrolled(tmp_path).get("/laws/ndps").text
-    assert "data-expired-bareact-phone-tabs" in html
-    assert "data-plus-bareact-phone-tabs" not in html
-    assert "data-signed-in-bareact-phone-tabs" not in html
+    assert "data-signed-in-phone-tabs" in html
     assert html.count('class="mobile-tabbar') == 1
     tabs = _tabs(html)
     for label, href in TAB_HREFS:
@@ -423,7 +420,6 @@ def test_phone_expired_five_tabs_browse_active_only(tmp_path: Path) -> None:
         assert "is-active" not in chunk
         assert "aria-current" not in chunk
     dash = _expired_enrolled(tmp_path / "dash").get("/dashboard").text
-    assert "data-expired-bareact-phone-tabs" not in dash
 
 
 def test_phone_expired_css_scope_pins_and_no_clone() -> None:
@@ -466,11 +462,15 @@ def test_phone_expired_css_scope_pins_and_no_clone() -> None:
     assert "data-bareact-phone" not in bare
     assert bare.count('class="panel ActHead') == 1
     base = BASE.read_text(encoding="utf-8")
-    assert "data-expired-bareact-phone-tabs" in base
-    assert "signed_in_expired_bareact_phone" in base
-    assert "styles.css?v=main88" in base
-    assert "mobile.css?v=mob107" in base
-    assert "playground.css?v=pg52" in base
+    assert "data-signed-in-phone-tabs" in base
+    # M1-R (PR pg-m1r-shell-labels): the per-cohort Act-page bar/flag is gone; one signed-in bar
+    # serves every cohort, so pin its single rendering and the flag's absence.
+    assert base.count("data-signed-in-phone-tabs") == 1
+    assert "signed_in_expired_bareact_phone" not in base
+    assert "data-expired-bareact-phone-tabs" not in base
+    assert "styles.css?v=main90" in base
+    assert "mobile.css?v=mob109" in base
+    assert "playground.css?v=pg54" in base
     assert "playground.css?v=pg40" not in base
     assert "playground.css?v=pg49" not in base
     app = APP.read_text(encoding="utf-8")
@@ -487,10 +487,10 @@ def test_phone_expired_css_scope_pins_and_no_clone() -> None:
 def test_phone_expired_cohorts_and_other_laws_stay_separate(tmp_path: Path) -> None:
     expired = _expired_enrolled(tmp_path / "expired")
     expired_html = expired.get("/laws/ndps").text
-    assert "data-expired-bareact-phone-tabs" in expired_html
-    assert "data-plus-bareact-phone" not in expired_html
+    assert "data-signed-in-phone-tabs" in expired_html
+    # M1-R (PR pg-m1r-shell-labels): cohort-exclusion replaced by the single shared bar.
+    assert expired_html.count('class="mobile-tabbar') == 1
     bns = expired.get("/laws/bns").text
-    assert "data-expired-bareact-phone-tabs" not in bns
     # The expired marker is the viewer's, carried by every Act's head (M2);
     # BNS is not retained, so it gets the resume button, not the chip.
     bns_head = _head(bns)
@@ -504,8 +504,9 @@ def test_phone_expired_cohorts_and_other_laws_stay_separate(tmp_path: Path) -> N
     added = _confirm_add(plus, "ndps")
     assert added.status_code in {200, 303}
     plus_html = plus.get("/laws/ndps").text
-    assert "data-plus-bareact-phone" in plus_html
-    assert "data-expired-bareact-phone-tabs" not in plus_html
+    # M1-R (PR pg-m1r-shell-labels): the Plus-only bar no longer exists; Plus gets the one signed-in bar.
+    assert plus_html.count('class="mobile-tabbar') == 1
+    assert "data-signed-in-phone-tabs" in plus_html
     plus_head = _head(plus_html)
     assert "data-plus-bareact" in plus_head
     assert "data-expired-bareact" not in plus_head
@@ -522,8 +523,8 @@ def test_phone_expired_cohorts_and_other_laws_stay_separate(tmp_path: Path) -> N
     free = TestClient(_mu_app(tmp_path / "free"))
     _sign_in(free)
     free_html = free.get("/laws/ndps").text
-    assert "data-signed-in-bareact-phone-tabs" in free_html
-    assert "data-expired-bareact-phone-tabs" not in free_html
+    assert "data-signed-in-phone-tabs" in free_html
+    assert free_html.count('class="mobile-tabbar') == 1  # M1-R (PR pg-m1r-shell-labels): one bar
     free_head = _head(free_html)
     assert "data-expired-bareact" not in free_head
     assert 'data-pg-kind="subscribe"' in free_head
@@ -540,7 +541,10 @@ def test_phone_expired_cohorts_and_other_laws_stay_separate(tmp_path: Path) -> N
         )
     )
     guest_html = guest.get("/laws/ndps").text
-    assert "data-expired-bareact-phone-tabs" not in guest_html
+    assert "data-signed-in-phone-tabs" not in guest_html
+    # M1-R (PR pg-m1r-shell-labels): guests keep their own single bar, never the signed-in one.
+    assert "data-guest-phone-tabs" in guest_html
+    assert guest_html.count('class="mobile-tabbar') == 1
     guest_head = _head(guest_html)
     assert "data-expired-bareact" not in guest_head
     assert 'data-pg-kind="guest"' in guest_head
@@ -558,7 +562,6 @@ def test_phone_expired_cohorts_and_other_laws_stay_separate(tmp_path: Path) -> N
     halted_html = halted.get("/laws/ndps").text
     halted_head = _head(halted_html)
     assert "data-halted-bareact" in halted_head
-    assert "data-expired-bareact-phone-tabs" not in halted_html
     assert "data-expired-bareact" not in halted_head
     assert 'class="ActHead-inpg"' in halted_head
     assert "<details" in _act_list(halted_html)
@@ -567,7 +570,6 @@ def test_phone_expired_cohorts_and_other_laws_stay_separate(tmp_path: Path) -> N
     _sign_in(pro)
     _subscribe(pro, tier="pro")
     pro_html = pro.get("/laws/ndps").text
-    assert "data-expired-bareact-phone-tabs" not in pro_html
     pro_head = _head(pro_html)
     assert "data-expired-bareact" not in pro_head
     assert "data-plus-bareact" not in pro_head
@@ -670,7 +672,7 @@ def test_phone_expired_bareact_screen01_390x844(tmp_path: Path) -> None:
               const band = head && head.querySelector('.ActHead-band');
               const list = head && head.querySelector('[data-act-list]');
               const header = document.querySelector('.site-header');
-              const tabs = document.querySelector('[data-expired-bareact-phone-tabs]');
+              const tabs = document.querySelector('[data-signed-in-phone-tabs]');
               const bars = [...document.querySelectorAll('.mobile-tabbar')];
               const visibleBars = bars.filter((el) => getComputedStyle(el).display !== 'none');
               const visibleActive = visibleBars.flatMap((bar) =>
@@ -931,7 +933,7 @@ def test_phone_expired_bareact_screen01_desktop_regression_1280(tmp_path: Path) 
         geo = page.evaluate(
             """() => {
               const head = document.querySelector('.ActHead[data-expired-bareact]');
-              const tabs = document.querySelector('[data-expired-bareact-phone-tabs]');
+              const tabs = document.querySelector('[data-signed-in-phone-tabs]');
               const header = document.querySelector('.site-header');
               const cluster = head && head.querySelector('.ActHead-inpg');
               const box = cluster && cluster.getBoundingClientRect();

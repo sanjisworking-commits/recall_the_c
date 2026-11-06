@@ -325,7 +325,7 @@ def test_signed_in_plus_expired_halted_get_their_own_state_cta(
     _sign_in(free)
     free_html = free.get("/laws/ndps").text
     assert "data-guest-phone-tabs" not in free_html
-    assert "data-signed-in-bareact-phone-tabs" in free_html
+    assert "data-signed-in-phone-tabs" in free_html
     assert free_html.count('class="panel ActHead') == 1
     assert "data-plus-bareact" not in free_html
     assert "data-expired-bareact" not in free_html
@@ -399,8 +399,8 @@ def test_phone_guest_markers_and_pins() -> None:
     assert "data-bareact-tabs" not in bare
     base = BASE.read_text(encoding="utf-8")
     assert "data-guest-phone-tabs" in base
-    assert "styles.css?v=main88" in base
-    assert "mobile.css?v=mob107" in base
+    assert "styles.css?v=main90" in base
+    assert "mobile.css?v=mob109" in base
     assert "styles.css?v=main87" not in base
     assert "mobile.css?v=mob106" not in base
     assert "mobile.css?v=mob99" not in base

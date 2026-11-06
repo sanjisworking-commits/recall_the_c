@@ -629,18 +629,23 @@ def test_phone_expired_profile_css_is_breakpoint_scoped() -> None:
     assert "reset_learning_progress" not in get
     assert "def request_is_expired_subscriber" in DEPS.read_text(encoding="utf-8")
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg52" in base
+    assert "playground.css?v=pg54" in base
     assert "playground.css?v=pg45" not in base
-    assert "styles.css?v=main88" in base
-    assert "mobile.css?v=mob107" in base
+    assert "styles.css?v=main90" in base
+    assert "mobile.css?v=mob109" in base
     assert "data-expired-profile-phone-tabs" not in base
+    # M1-R (PR pg-m1r-shell-labels): one signed-in bar (data-signed-in-phone-tabs) renders first in
+    # base.html, followed only by the guest bar; the active tab comes from the shell_* flag
+    # that base.html derives from path.startswith('/profile'), not from a per-cohort bar.
+    assert base.count('class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom"') == 2
     first_bar = base.split(
-        'class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom"', 2
-    )[2].split("</nav>", 1)[0]
+        'class="mobile-tabbar PrimaryTabs PrimaryTabs--bottom"', 1
+    )[1].split("</nav>", 1)[0]
+    assert "data-signed-in-phone-tabs" in first_bar
     assert 'href="/profile"' in first_bar
-    assert "path.startswith('/profile')" in first_bar
+    assert "{% if shell_profile %} is-active" in first_bar
+    assert "{% set shell_profile = path.startswith('/profile')" in base
     assert "data-expired-profile-phone-tabs" not in first_bar
-    assert "data-expired-bareact-phone-tabs" not in first_bar
 
 
 def _above_tab(page, selector: str) -> dict:

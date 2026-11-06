@@ -413,7 +413,7 @@ def test_halted_calendar_reaches_month_with_calendar_selected(
     assert LIVE_HEADING in header
     assert LIVE_EXPIRED not in header
     assert "RecallC Plus" not in header
-    assert "Free account" not in header
+    assert "RecallC Free" not in header
     day = user_today(_engine(client))
     assert f"{day.strftime('%B')} {day.year}" in html
     assert 'role="radiogroup"' in html
@@ -810,11 +810,14 @@ def test_halted_calendar_marker_uses_shared_predicate() -> None:
     assert "halted_calendar" not in google
     assert "expired_calendar" not in google
     base = BASE.read_text(encoding="utf-8")
-    assert "halted_calendar_chrome" in base
-    assert "plus_calendar_chrome" in base
-    assert "expired_calendar_chrome" in base
+    assert "halted_calendar_chrome" not in base  # M1-R (PR pg-m1r-shell-labels): the per-route header flag chain is gone
+    assert "shell_account_status" in base  # M1-R: one snapshot-driven label
+    assert "plus_calendar_chrome" not in base  # M1-R (PR pg-m1r-shell-labels): the per-route header flag chain is gone
+    assert "shell_account_status" in base  # M1-R: one snapshot-driven label
+    assert "expired_calendar_chrome" not in base  # M1-R (PR pg-m1r-shell-labels): the per-route header flag chain is gone
+    assert "shell_account_status" in base  # M1-R: one snapshot-driven label
     assert LIVE_HEADING not in base
-    assert "playground.css?v=pg52" in base
+    assert "playground.css?v=pg54" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-halted-calendar="desktop"' in css
     assert "halted/09-screen" in css

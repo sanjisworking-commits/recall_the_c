@@ -744,9 +744,9 @@ def test_t32_other_sql_errors_surface(
 
 def test_t33_r6_asset_pins() -> None:
     base = (TEMPLATES / "base.html").read_text(encoding="utf-8")
-    assert "styles.css?v=main88" in base
-    assert "mobile.css?v=mob107" in base
-    assert "playground.css?v=pg52" in base
+    assert "styles.css?v=main90" in base
+    assert "mobile.css?v=mob109" in base
+    assert "playground.css?v=pg54" in base
     assert "playground.js?v=pg12" in base
     dash = (TEMPLATES / "dashboard.html").read_text(encoding="utf-8")
     assert "data-today-source" in dash

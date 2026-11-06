@@ -64,6 +64,7 @@ CAL = ROOT / "src/constitution_memorizer/web/templates/calendar.html"
 PROFILE = ROOT / "src/constitution_memorizer/web/templates/profile.html"
 SETTINGS = ROOT / "src/constitution_memorizer/web/templates/settings.html"
 BASE = ROOT / "src/constitution_memorizer/web/templates/base.html"
+SHELL = ROOT / "src/constitution_memorizer/web/shell.py"  # M1-R (PR pg-m1r-shell-labels): header label source
 DEPS = ROOT / "src/constitution_memorizer/entitlements/dependencies.py"
 ROUTES = ROOT / "src/constitution_memorizer/playground/routes.py"
 VIEW = ROOT / "src/constitution_memorizer/playground/view.py"
@@ -311,7 +312,7 @@ def test_halted_home_is_readonly_gate_view_not_hard_gate(tmp_path: Path) -> None
     desk = _desk(html)
     assert LIVE_HEADING in header
     assert "RecallC Plus" not in header
-    assert "Free account" not in header
+    assert "RecallC Free" not in header
     assert 'href="/playground"' in header
     assert "is-active" in header.split('href="/playground"', 1)[1].split("</a>", 1)[0]
     assert f">{LIVE_HEADING}<" in desk
@@ -413,7 +414,7 @@ def test_guest_free_plus_expired_paused_pending_pro_max_are_not_halted_home(
     assert "data-signed-in-pg-gate" in free_html
     assert 'data-halted-playground="desktop"' not in free_html
     assert LIVE_HEADING not in free_html
-    assert "Free account" in _header(free_html) or "Unlock Playground" in free_html
+    assert "RecallC Free" in _header(free_html) or "Unlock Playground" in free_html
 
     plus = TestClient(_mu_app(tmp_path / "plus"))
     _sign_in(plus)
@@ -525,8 +526,14 @@ def test_halted_playground_uses_shared_predicate_and_gate_view() -> None:
     assert 'secondary_label="Back to Constitution"' in view
     assert 'kind="halted"' in view
     base = BASE.read_text(encoding="utf-8")
-    assert "halted_playground" in base
-    assert "halted_header_status" in base
+    # M1-R (PR pg-m1r-shell-labels): per-route flag chain removed from base.html.
+    assert "halted_playground" not in base
+    # M1-R (PR pg-m1r-shell-labels): the header label is one snapshot function in web/shell.py;
+    # base.html no longer reads a per-route halted_header_status flag.
+    assert "halted_header_status" not in base
+    shell = SHELL.read_text(encoding="utf-8")
+    assert "snapshot_is_halted_subscriber(snapshot)" in shell
+    assert "gate_view(reason=BLOCK_PAYMENT_HALTED).title" in shell
     css = PG_CSS.read_text(encoding="utf-8")
     assert "[data-halted-pg-desktop]" in css
     assert "[data-halted-pg-phone]" in css
@@ -541,7 +548,7 @@ def test_halted_playground_uses_shared_predicate_and_gate_view() -> None:
     # M1 (DV-20): styles.css no longer hides the account subtitle on Playground pages;
     # the predicate is exercised by playground.css (asserted above).
     assert ":has([data-expired-playground])" not in styles
-    assert "playground.css?v=pg52" in base
+    assert "playground.css?v=pg54" in base
     assert "data-halted-playground" not in MOBILE.read_text(encoding="utf-8")
     assert "data-halted-playground" not in GATE.read_text(encoding="utf-8")
 
