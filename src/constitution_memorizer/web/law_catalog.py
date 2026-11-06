@@ -95,6 +95,11 @@ class CatalogLaw:
     def is_current(self) -> bool:
         return self.status == "current"
 
+    @property
+    def card_meta_label(self) -> str:
+        """Index-card meta line; see :func:`card_meta_label`."""
+        return card_meta_label(self)
+
 
 @dataclass(frozen=True)
 class LawCatalog:
@@ -135,6 +140,29 @@ class LawCatalog:
         still findable by search. Out of the way, not out of the app.
         """
         return tuple(law for law in self.laws if not law.is_current)
+
+
+def card_meta_label(law: CatalogLaw) -> str:
+    """The meta line printed under a law's title on the Laws index.
+
+    M3 (Q3): a full Bare Act prints the **same** line its Act head prints
+    (``BareAct.head_meta_label`` — chapters · sections · schedule(s)); every
+    other law keeps ``scope_label`` from ``law_catalog.seed.json``. The head
+    label is read from the committed sitemap manifest (schema 3), never by
+    hydrating the Act: ``/laws`` reads catalogue and registry metadata only
+    (docs/law-loading.md). A missing or older manifest degrades to the seed's
+    ``scope_label`` rather than failing the page.
+    """
+    if law.primary_content != "full_act" or not law.full_act_ref:
+        return law.scope_label
+    from constitution_memorizer.web.sitemaps import load_law_sitemap_manifest
+
+    try:
+        entry = load_law_sitemap_manifest().get("laws", {}).get(law.full_act_ref) or {}
+    except FileNotFoundError:
+        return law.scope_label
+    label = str(entry.get("head_meta_label") or "").strip()
+    return label or law.scope_label
 
 
 def normalize_search(*parts: object) -> str:

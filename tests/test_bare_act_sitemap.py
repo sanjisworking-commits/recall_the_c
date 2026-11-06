@@ -339,7 +339,7 @@ def test_builder_emits_explicit_slug_and_source_version():
 
     builder = _builder_module()
     manifest = builder.build_manifest()
-    assert manifest["schema_version"] == builder.SCHEMA_VERSION == 2
+    assert manifest["schema_version"] == builder.SCHEMA_VERSION == 3  # M3: + head_meta_label
     assert set(manifest["laws"]) == set(BARE_ACTS)
     for slug, spec in BARE_ACTS.items():
         entry = manifest["laws"][slug]
@@ -348,6 +348,7 @@ def test_builder_emits_explicit_slug_and_source_version():
         assert entry["source_version"] == spec.source_version
         assert entry["runtime_identity"] == runtime_cache_identity(spec)
         assert entry["sections"] == [section.number for section in act.section_order]
+        assert entry["head_meta_label"] == act.head_meta_label and entry["head_meta_label"]
         assert entry["schedules"] == list(act.public_schedule_slugs)
         assert "last_modified" not in entry
         # Routable means navigable, not "is a table": main added list

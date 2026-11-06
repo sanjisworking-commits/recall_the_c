@@ -1,5 +1,5 @@
 {
-  "schema_version": 2,
+  "schema_version": 3,
   "laws": {
     "bns": {
       "slug": "bns",
@@ -371,7 +371,8 @@
         "357",
         "358"
       ],
-      "schedules": []
+      "schedules": [],
+      "head_meta_label": "20 Chapters · Sections 1–358"
     },
     "bnss": {
       "slug": "bnss",
@@ -918,7 +919,8 @@
       ],
       "schedules": [
         "first-schedule"
-      ]
+      ],
+      "head_meta_label": "39 Chapters · Sections 1–531 · Schedules"
     },
     "mtp": {
       "slug": "mtp",
@@ -941,7 +943,8 @@
         "7",
         "8"
       ],
-      "schedules": []
+      "schedules": [],
+      "head_meta_label": "Sections 1–8"
     },
     "ndps": {
       "slug": "ndps",
@@ -1090,7 +1093,8 @@
       ],
       "schedules": [
         "psychotropic-substances"
-      ]
+      ],
+      "head_meta_label": "8 Chapters · Sections 1–83 · Schedule"
     },
     "pota": {
       "slug": "pota",
@@ -1170,7 +1174,8 @@
       ],
       "schedules": [
         "schedule"
-      ]
+      ],
+      "head_meta_label": "6 Chapters · Sections 1–64 · Schedule"
     },
     "pss": {
       "slug": "pss",
@@ -1226,7 +1231,8 @@
         "37",
         "38"
       ],
-      "schedules": []
+      "schedules": [],
+      "head_meta_label": "8 Chapters · Sections 1–38"
     },
     "uapa": {
       "slug": "uapa",
@@ -1312,7 +1318,8 @@
         "second-schedule",
         "third-schedule",
         "fourth-schedule"
-      ]
+      ],
+      "head_meta_label": "7 Chapters · Sections 1–53 · Schedules"
     }
   }
 }

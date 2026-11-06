@@ -38,7 +38,7 @@ DEFAULT_OUT = (
     ROOT / "src" / "constitution_memorizer" / "web" / "law_sitemap_manifest.json"
 )
 
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3  # 3: + head_meta_label per law (M3, Laws card meta)
 
 
 def _source_digests(slug: str) -> list[dict[str, str]]:
@@ -74,6 +74,10 @@ def build_manifest() -> dict:
             "sources": _source_digests(slug),
             "sections": [section.number for section in act.section_order],
             "schedules": list(act.public_schedule_slugs),
+            # M3: the Act head's own meta line ("8 Chapters · Sections 1–83 ·
+            # Schedule"), stored so the Laws index can print it without
+            # hydrating the Act on the request path (docs/law-loading.md).
+            "head_meta_label": act.head_meta_label,
         }
     return {"schema_version": SCHEMA_VERSION, "laws": laws}
 
