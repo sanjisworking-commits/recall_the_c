@@ -138,7 +138,7 @@ def test_signed_in_browse_laws_and_tables_keep_existing_hrefs(tmp_path: Path) ->
     assert '<span class="browse-resource-name">Laws</span>' in row
     assert "Bare Acts &amp; statutes" in row
     assert '<span class="browse-resource-name">Tables</span>' in row
-    assert "Schedules, Parts, writs" in row
+    assert "Parts, writs, amendments" in row  # main @ ea15591 (PR #233): Tables card copy
     assert 'href="/laws"' in row
     assert 'href="/tables"' in row
     laws = client.get("/laws")
@@ -198,7 +198,7 @@ def test_signed_in_browse_article_cards_keep_existing_hrefs(tmp_path: Path) -> N
     html = client.get("/browse").text
     panel = _browse_panel(html)
     assert 'href="/browse/article/' in panel
-    assert "The Constitution, Part by Part. Open an Article, then learn any clause from inside it." in panel
+    assert "The Constitution, Part by Part, then the twelve Schedules. Open an Article or a Schedule, then learn from inside it." in panel
 
 
 def test_signed_in_browse_desktop_chrome(tmp_path: Path) -> None:

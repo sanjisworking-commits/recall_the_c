@@ -129,7 +129,7 @@ def test_screen2_laws_card_routes_to_the_laws_index(tmp_path: Path) -> None:
     assert '<span class="browse-resource-name">Laws</span>' in row
     assert "Bare Acts &amp; statutes" in row
     assert '<span class="browse-resource-name">Tables</span>' in row
-    assert "Schedules, Parts, writs" in row
+    assert "Parts, writs, amendments" in row  # main @ ea15591 (PR #233): Tables card copy
     assert 'href="/laws"' in row
     assert 'href="/tables"' in row
     css = (

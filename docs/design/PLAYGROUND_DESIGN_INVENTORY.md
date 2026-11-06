@@ -102,7 +102,7 @@ Those seven screens do **not** include Learn modes, clause picker, Today Playgro
 
 ---
 
-## 2. Production template inventory (81 active files)
+## 2. Production template inventory (83 active files)
 
 R1 T41 re-check (this file): **81 active templates, 0 unclassified.** The four class-C templates are named in §2.5. `playground_cloze.html` remains deleted (class E).
 
@@ -157,6 +157,7 @@ Restyle every non-conforming element against U1 tokens/components (V23). Closest
 | Template | Typical route |
 |---|---|
 | `browse_part.html` | `GET /browse/part/{slug}` |
+| `browse_schedule.html` | `GET /browse/schedules/{slug}` (main @ `ea15591`, PR #233; merged into the stack by M3's integration commit) |
 | `browse_article.html` | `GET /browse/article/{n}` |
 | `learn.html` | `GET /learn/{unit_id}` |
 | `choose.html` | `GET /learn/{clause_id}/choose` |
@@ -291,6 +292,7 @@ Paused / halted / expired `GET /playground` renders **read-only home** with bann
 | GET | `/laws/{id}/schedule/{slug}` | `bare_act_schedule.html` | B |
 | GET | `/browse` | `browse_index.html` | A verify |
 | GET | `/browse/part/{slug}` | `browse_part.html` | B |
+| GET | `/browse/schedules/{slug}` | `browse_schedule.html` | B (main, PR #233) |
 | GET | `/browse/article/{n}` | `browse_article.html` | B |
 | GET | `/learn` `/learn/{unit_id}` | `learn.html` | B |
 | GET | `/dashboard` | `dashboard.html` | A |

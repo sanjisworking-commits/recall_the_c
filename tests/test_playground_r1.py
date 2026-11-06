@@ -120,7 +120,7 @@ def test_t41_every_active_template_is_classified():
     }
     unclassified = sorted(disk - named)
     missing = sorted(named - disk)
-    assert len(disk) == 82, f"active templates changed: {len(disk)}"  # M2: + partials/playground_add_panel.html
+    assert len(disk) == 83, f"active templates changed: {len(disk)}"  # M2: + partials/playground_add_panel.html; main @ ea15591: + browse_schedule.html
     assert unclassified == [], f"unclassified templates: {unclassified}"
     assert missing == [], f"inventory names missing on disk: {missing}"
     assert "Unclassified templates" in inventory

@@ -168,7 +168,7 @@ def test_expired_browse_keeps_constitution_and_omits_free_strip(
     assert "data-guest-strip" not in html
     assert ">Browse the Constitution<" in panel
     assert (
-        "The Constitution, Part by Part. Open an Article, then learn any clause from inside it."
+        "The Constitution, Part by Part, then the twelve Schedules. Open an Article or a Schedule, then learn from inside it."
         in panel
     )
     assert 'href="/laws"' in panel
