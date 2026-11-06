@@ -1,0 +1,7155 @@
+{
+ "label": "m3merge-guest",
+ "base": "http://localhost:8918",
+ "viewer": "guest",
+ "captured_at": "2026-11-06T12:03:47+0530",
+ "chrome": "Google Chrome 156.0.8078.81",
+ "rows": [
+  {
+   "key": "browse",
+   "route": "/browse",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "file": "m3merge-guest_guest_browse_390x844_light.png",
+   "sha256": "58af6ba0b0df647a1ed463b92d9ca6d06023e589da905fcae25822a80d7506f7",
+   "status_chain": [
+    [
+     "/browse",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#fefefe",
+      "ratio": 18.24
+     },
+     {
+      "kind": "phonetab",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/browse",
+    "title": "Browse the Constitution \u00b7 Recall the C",
+    "mscreen": "browse",
+    "bodyClass": "is-guest",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     "data-guest-phone-tabs"
+    ],
+    "navSurfaces": 1,
+    "avatar": null,
+    "signin": {
+     "vis": false,
+     "text": "Sign in",
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     }
+    },
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   },
+   "profileTap": {
+    "url": "/profile",
+    "title": "Profile \u00b7 Recall the C",
+    "mscreen": "account",
+    "name": "Guest",
+    "email": null,
+    "bodyHasEmail": false,
+    "currentTab": [
+     "Profile"
+    ],
+    "signoutPresent": false,
+    "tappedAt": [
+     351,
+     814
+    ],
+    "tabHref": "/profile",
+    "file": "m3merge-guest_guest_browse_390x844_light_tap-profile.png",
+    "sha256": "cef3aa4750551ebb6b977b65237ece57356fec41eee81e084ff260d83f76e969"
+   }
+  },
+  {
+   "key": "browse",
+   "route": "/browse",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "file": "m3merge-guest_guest_browse_390x844_dark.png",
+   "sha256": "0e36a5b717868c3440f45657caab7e055df7a4ed2f2e4a31a74f69dde7cc6380",
+   "status_chain": [
+    [
+     "/browse",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#f2f2f0",
+      "bg": "#1e1e1d",
+      "ratio": 14.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/browse",
+    "title": "Browse the Constitution \u00b7 Recall the C",
+    "mscreen": "browse",
+    "bodyClass": "is-guest",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     "data-guest-phone-tabs"
+    ],
+    "navSurfaces": 1,
+    "avatar": null,
+    "signin": {
+     "vis": false,
+     "text": "Sign in",
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     }
+    },
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "browse",
+   "route": "/browse",
+   "width": 720,
+   "height": 900,
+   "theme": "light",
+   "file": "m3merge-guest_guest_browse_720x900_light.png",
+   "sha256": "2dc5f7afbfd2289582eb0e9a3b629a52c8bff76dc2680719fea4bda0119a2297",
+   "status_chain": [
+    [
+     "/browse",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "signin",
+      "t": "Sign in",
+      "href": "/login",
+      "current": false,
+      "box": {
+       "x": 627,
+       "y": 6,
+       "w": 77,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/browse",
+    "title": "Browse the Constitution \u00b7 Recall the C",
+    "mscreen": "browse",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": null,
+    "signin": {
+     "vis": true,
+     "text": "Sign in",
+     "box": {
+      "x": 627,
+      "y": 6,
+      "w": 77,
+      "h": 44
+     }
+    },
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "browse",
+   "route": "/browse",
+   "width": 720,
+   "height": 900,
+   "theme": "dark",
+   "file": "m3merge-guest_guest_browse_720x900_dark.png",
+   "sha256": "49797a8b46f812a4fa4c4caf999276e87d83124fe14993365587aea0bcad8b21",
+   "status_chain": [
+    [
+     "/browse",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "signin",
+      "t": "Sign in",
+      "href": "/login",
+      "current": false,
+      "box": {
+       "x": 627,
+       "y": 6,
+       "w": 77,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/browse",
+    "title": "Browse the Constitution \u00b7 Recall the C",
+    "mscreen": "browse",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": null,
+    "signin": {
+     "vis": true,
+     "text": "Sign in",
+     "box": {
+      "x": 627,
+      "y": 6,
+      "w": 77,
+      "h": 44
+     }
+    },
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "browse",
+   "route": "/browse",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "file": "m3merge-guest_guest_browse_1280x900_light.png",
+   "sha256": "34e07b674c880ee9ef053956cd586a4a6f14422e90a51577ea8c94d297839b30",
+   "status_chain": [
+    [
+     "/browse",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "signin",
+      "t": "Sign in",
+      "href": "/login",
+      "current": false,
+      "box": {
+       "x": 1163,
+       "y": 8,
+       "w": 77,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/browse",
+    "title": "Browse the Constitution \u00b7 Recall the C",
+    "mscreen": "browse",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": null,
+    "signin": {
+     "vis": true,
+     "text": "Sign in",
+     "box": {
+      "x": 1163,
+      "y": 8,
+      "w": 77,
+      "h": 44
+     }
+    },
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "browse",
+   "route": "/browse",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "file": "m3merge-guest_guest_browse_1280x900_dark.png",
+   "sha256": "8cc6202519c15facd3680a6632087033816354a88ee3dfedce32c361b85d7c7c",
+   "status_chain": [
+    [
+     "/browse",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "signin",
+      "t": "Sign in",
+      "href": "/login",
+      "current": false,
+      "box": {
+       "x": 1163,
+       "y": 8,
+       "w": 77,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/browse",
+    "title": "Browse the Constitution \u00b7 Recall the C",
+    "mscreen": "browse",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": null,
+    "signin": {
+     "vis": true,
+     "text": "Sign in",
+     "box": {
+      "x": 1163,
+      "y": 8,
+      "w": 77,
+      "h": 44
+     }
+    },
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "sched-eighth",
+   "route": "/browse/schedules/eighth",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "file": "m3merge-guest_guest_sched-eighth_390x844_light.png",
+   "sha256": "af28482867765e04ce06e362cab4bac6ce234d49cfcdc992aec3d40217346454",
+   "status_chain": [
+    [
+     "/browse/schedules/eighth",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#fefefe",
+      "ratio": 18.24
+     },
+     {
+      "kind": "phonetab",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/browse/schedules/eighth",
+    "title": "Eighth Schedule \u00b7 Languages \u00b7 Browse",
+    "mscreen": "schedule",
+    "bodyClass": "is-guest",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     "data-guest-phone-tabs"
+    ],
+    "navSurfaces": 1,
+    "avatar": null,
+    "signin": {
+     "vis": false,
+     "text": "Sign in",
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     }
+    },
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   },
+   "profileTap": {
+    "url": "/profile",
+    "title": "Profile \u00b7 Recall the C",
+    "mscreen": "account",
+    "name": "Guest",
+    "email": null,
+    "bodyHasEmail": false,
+    "currentTab": [
+     "Profile"
+    ],
+    "signoutPresent": false,
+    "tappedAt": [
+     351,
+     814
+    ],
+    "tabHref": "/profile",
+    "file": "m3merge-guest_guest_sched-eighth_390x844_light_tap-profile.png",
+    "sha256": "cef3aa4750551ebb6b977b65237ece57356fec41eee81e084ff260d83f76e969"
+   }
+  },
+  {
+   "key": "sched-eighth",
+   "route": "/browse/schedules/eighth",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "file": "m3merge-guest_guest_sched-eighth_390x844_dark.png",
+   "sha256": "81b395cfd416a66af3d907340f826296d32e85af0439bdc5abb6be4f7aea9f92",
+   "status_chain": [
+    [
+     "/browse/schedules/eighth",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#f2f2f0",
+      "bg": "#1e1e1d",
+      "ratio": 14.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/browse/schedules/eighth",
+    "title": "Eighth Schedule \u00b7 Languages \u00b7 Browse",
+    "mscreen": "schedule",
+    "bodyClass": "is-guest",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     "data-guest-phone-tabs"
+    ],
+    "navSurfaces": 1,
+    "avatar": null,
+    "signin": {
+     "vis": false,
+     "text": "Sign in",
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     }
+    },
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "sched-eighth",
+   "route": "/browse/schedules/eighth",
+   "width": 720,
+   "height": 900,
+   "theme": "light",
+   "file": "m3merge-guest_guest_sched-eighth_720x900_light.png",
+   "sha256": "60888134a4c0d9671e6aa4a7ee46ed55c1a70e0a38d492ba2e6afbbec3a4c3c6",
+   "status_chain": [
+    [
+     "/browse/schedules/eighth",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "signin",
+      "t": "Sign in",
+      "href": "/login",
+      "current": false,
+      "box": {
+       "x": 627,
+       "y": 6,
+       "w": 77,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/browse/schedules/eighth",
+    "title": "Eighth Schedule \u00b7 Languages \u00b7 Browse",
+    "mscreen": "schedule",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": null,
+    "signin": {
+     "vis": true,
+     "text": "Sign in",
+     "box": {
+      "x": 627,
+      "y": 6,
+      "w": 77,
+      "h": 44
+     }
+    },
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "sched-eighth",
+   "route": "/browse/schedules/eighth",
+   "width": 720,
+   "height": 900,
+   "theme": "dark",
+   "file": "m3merge-guest_guest_sched-eighth_720x900_dark.png",
+   "sha256": "2f22fbd1b2dad7afceff583b7ecfb9bc9ef515622a1149911702f11c8c97443d",
+   "status_chain": [
+    [
+     "/browse/schedules/eighth",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "signin",
+      "t": "Sign in",
+      "href": "/login",
+      "current": false,
+      "box": {
+       "x": 627,
+       "y": 6,
+       "w": 77,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/browse/schedules/eighth",
+    "title": "Eighth Schedule \u00b7 Languages \u00b7 Browse",
+    "mscreen": "schedule",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": null,
+    "signin": {
+     "vis": true,
+     "text": "Sign in",
+     "box": {
+      "x": 627,
+      "y": 6,
+      "w": 77,
+      "h": 44
+     }
+    },
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "sched-eighth",
+   "route": "/browse/schedules/eighth",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "file": "m3merge-guest_guest_sched-eighth_1280x900_light.png",
+   "sha256": "39f1ff41a851fb5ca1e0df113c9e6b3f516c3945231d5e8dc468b09f5bf7e009",
+   "status_chain": [
+    [
+     "/browse/schedules/eighth",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "signin",
+      "t": "Sign in",
+      "href": "/login",
+      "current": false,
+      "box": {
+       "x": 1163,
+       "y": 8,
+       "w": 77,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/browse/schedules/eighth",
+    "title": "Eighth Schedule \u00b7 Languages \u00b7 Browse",
+    "mscreen": "schedule",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": null,
+    "signin": {
+     "vis": true,
+     "text": "Sign in",
+     "box": {
+      "x": 1163,
+      "y": 8,
+      "w": 77,
+      "h": 44
+     }
+    },
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "sched-eighth",
+   "route": "/browse/schedules/eighth",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "file": "m3merge-guest_guest_sched-eighth_1280x900_dark.png",
+   "sha256": "6ab9ba835b83304cc3bda8d90ab0d943286be187ced891b759803e19b5b1484d",
+   "status_chain": [
+    [
+     "/browse/schedules/eighth",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "signin",
+      "t": "Sign in",
+      "href": "/login",
+      "current": false,
+      "box": {
+       "x": 1163,
+       "y": 8,
+       "w": 77,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/browse/schedules/eighth",
+    "title": "Eighth Schedule \u00b7 Languages \u00b7 Browse",
+    "mscreen": "schedule",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": null,
+    "signin": {
+     "vis": true,
+     "text": "Sign in",
+     "box": {
+      "x": 1163,
+      "y": 8,
+      "w": 77,
+      "h": 44
+     }
+    },
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "laws",
+   "route": "/laws",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "file": "m3merge-guest_guest_laws_390x844_light.png",
+   "sha256": "f783e318e5cd2c68cf673480f7a81a876867b61200182357022eac205b04871d",
+   "status_chain": [
+    [
+     "/laws",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#fefefe",
+      "ratio": 18.24
+     },
+     {
+      "kind": "phonetab",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/laws",
+    "title": "Laws of India | Recall the C",
+    "mscreen": "laws",
+    "bodyClass": "is-guest",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     "data-guest-phone-tabs"
+    ],
+    "navSurfaces": 1,
+    "avatar": null,
+    "signin": {
+     "vis": false,
+     "text": "Sign in",
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     }
+    },
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   },
+   "profileTap": {
+    "url": "/profile",
+    "title": "Profile \u00b7 Recall the C",
+    "mscreen": "account",
+    "name": "Guest",
+    "email": null,
+    "bodyHasEmail": false,
+    "currentTab": [
+     "Profile"
+    ],
+    "signoutPresent": false,
+    "tappedAt": [
+     351,
+     814
+    ],
+    "tabHref": "/profile",
+    "file": "m3merge-guest_guest_laws_390x844_light_tap-profile.png",
+    "sha256": "cef3aa4750551ebb6b977b65237ece57356fec41eee81e084ff260d83f76e969"
+   }
+  },
+  {
+   "key": "laws",
+   "route": "/laws",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "file": "m3merge-guest_guest_laws_390x844_dark.png",
+   "sha256": "2acc909f4fe40a726cd35e43f110715d7ab56afb2fa27b180dc3eb5154b2142f",
+   "status_chain": [
+    [
+     "/laws",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#f2f2f0",
+      "bg": "#1e1e1d",
+      "ratio": 14.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/laws",
+    "title": "Laws of India | Recall the C",
+    "mscreen": "laws",
+    "bodyClass": "is-guest",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     "data-guest-phone-tabs"
+    ],
+    "navSurfaces": 1,
+    "avatar": null,
+    "signin": {
+     "vis": false,
+     "text": "Sign in",
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     }
+    },
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "laws",
+   "route": "/laws",
+   "width": 720,
+   "height": 900,
+   "theme": "light",
+   "file": "m3merge-guest_guest_laws_720x900_light.png",
+   "sha256": "6718a7ef88b0ea74fad00361f4465f9b8450535a0d6993e2efc3e66e2358c14a",
+   "status_chain": [
+    [
+     "/laws",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "signin",
+      "t": "Sign in",
+      "href": "/login",
+      "current": false,
+      "box": {
+       "x": 627,
+       "y": 6,
+       "w": 77,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/laws",
+    "title": "Laws of India | Recall the C",
+    "mscreen": "laws",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": null,
+    "signin": {
+     "vis": true,
+     "text": "Sign in",
+     "box": {
+      "x": 627,
+      "y": 6,
+      "w": 77,
+      "h": 44
+     }
+    },
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "laws",
+   "route": "/laws",
+   "width": 720,
+   "height": 900,
+   "theme": "dark",
+   "file": "m3merge-guest_guest_laws_720x900_dark.png",
+   "sha256": "50c0280506e7da785e1df15e1f2ee0437d9752fe8da6abf367b3f38cb0e19bd5",
+   "status_chain": [
+    [
+     "/laws",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "signin",
+      "t": "Sign in",
+      "href": "/login",
+      "current": false,
+      "box": {
+       "x": 627,
+       "y": 6,
+       "w": 77,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/laws",
+    "title": "Laws of India | Recall the C",
+    "mscreen": "laws",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": null,
+    "signin": {
+     "vis": true,
+     "text": "Sign in",
+     "box": {
+      "x": 627,
+      "y": 6,
+      "w": 77,
+      "h": 44
+     }
+    },
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "laws",
+   "route": "/laws",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "file": "m3merge-guest_guest_laws_1280x900_light.png",
+   "sha256": "ce0c295f81be843b15c00ddbb7acf1947112b9d353e10ab9d52e55fb5d65aed2",
+   "status_chain": [
+    [
+     "/laws",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "signin",
+      "t": "Sign in",
+      "href": "/login",
+      "current": false,
+      "box": {
+       "x": 1163,
+       "y": 8,
+       "w": 77,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/laws",
+    "title": "Laws of India | Recall the C",
+    "mscreen": "laws",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": null,
+    "signin": {
+     "vis": true,
+     "text": "Sign in",
+     "box": {
+      "x": 1163,
+      "y": 8,
+      "w": 77,
+      "h": 44
+     }
+    },
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "laws",
+   "route": "/laws",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "file": "m3merge-guest_guest_laws_1280x900_dark.png",
+   "sha256": "ff8c30c32eab354cb65379af9525c5d051e47f612d2cc35ead7adca3ec44c3ab",
+   "status_chain": [
+    [
+     "/laws",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "signin",
+      "t": "Sign in",
+      "href": "/login",
+      "current": false,
+      "box": {
+       "x": 1163,
+       "y": 8,
+       "w": 77,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/laws",
+    "title": "Laws of India | Recall the C",
+    "mscreen": "laws",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": null,
+    "signin": {
+     "vis": true,
+     "text": "Sign in",
+     "box": {
+      "x": 1163,
+      "y": 8,
+      "w": 77,
+      "h": 44
+     }
+    },
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "laws-ndps",
+   "route": "/laws/ndps",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "file": "m3merge-guest_guest_laws-ndps_390x844_light.png",
+   "sha256": "9f02122c4e9a95d8243b6b77fb5736d7ca590391a02a5e866e16529d8f9c5910",
+   "status_chain": [
+    [
+     "/laws/ndps",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#fefefe",
+      "ratio": 18.24
+     },
+     {
+      "kind": "phonetab",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/laws/ndps",
+    "title": "The Narcotic Drugs and Psychotropic Substances Act, 1985 | Recall the C",
+    "mscreen": "bareact",
+    "bodyClass": "is-guest",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     "data-guest-phone-tabs"
+    ],
+    "navSurfaces": 1,
+    "avatar": null,
+    "signin": {
+     "vis": false,
+     "text": "Sign in",
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     }
+    },
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   },
+   "profileTap": {
+    "url": "/profile",
+    "title": "Profile \u00b7 Recall the C",
+    "mscreen": "account",
+    "name": "Guest",
+    "email": null,
+    "bodyHasEmail": false,
+    "currentTab": [
+     "Profile"
+    ],
+    "signoutPresent": false,
+    "tappedAt": [
+     351,
+     814
+    ],
+    "tabHref": "/profile",
+    "file": "m3merge-guest_guest_laws-ndps_390x844_light_tap-profile.png",
+    "sha256": "cef3aa4750551ebb6b977b65237ece57356fec41eee81e084ff260d83f76e969"
+   }
+  },
+  {
+   "key": "laws-ndps",
+   "route": "/laws/ndps",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "file": "m3merge-guest_guest_laws-ndps_390x844_dark.png",
+   "sha256": "cc8847b99fb01f47ff07e2c4b50d861e28a975267d016a7591bdaadfca6ee4a1",
+   "status_chain": [
+    [
+     "/laws/ndps",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#f2f2f0",
+      "bg": "#1e1e1d",
+      "ratio": 14.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/laws/ndps",
+    "title": "The Narcotic Drugs and Psychotropic Substances Act, 1985 | Recall the C",
+    "mscreen": "bareact",
+    "bodyClass": "is-guest",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     "data-guest-phone-tabs"
+    ],
+    "navSurfaces": 1,
+    "avatar": null,
+    "signin": {
+     "vis": false,
+     "text": "Sign in",
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     }
+    },
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "laws-ndps",
+   "route": "/laws/ndps",
+   "width": 720,
+   "height": 900,
+   "theme": "light",
+   "file": "m3merge-guest_guest_laws-ndps_720x900_light.png",
+   "sha256": "f61519fd00e1b841bef42bba044c555bd1183e35f54c6658235ca9367b1a11d3",
+   "status_chain": [
+    [
+     "/laws/ndps",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "signin",
+      "t": "Sign in",
+      "href": "/login",
+      "current": false,
+      "box": {
+       "x": 627,
+       "y": 6,
+       "w": 77,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/laws/ndps",
+    "title": "The Narcotic Drugs and Psychotropic Substances Act, 1985 | Recall the C",
+    "mscreen": "bareact",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": null,
+    "signin": {
+     "vis": true,
+     "text": "Sign in",
+     "box": {
+      "x": 627,
+      "y": 6,
+      "w": 77,
+      "h": 44
+     }
+    },
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "laws-ndps",
+   "route": "/laws/ndps",
+   "width": 720,
+   "height": 900,
+   "theme": "dark",
+   "file": "m3merge-guest_guest_laws-ndps_720x900_dark.png",
+   "sha256": "056a91f0a1d33b3babef3e36fbd918db18925020818d19058df15d49aab6dc04",
+   "status_chain": [
+    [
+     "/laws/ndps",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "signin",
+      "t": "Sign in",
+      "href": "/login",
+      "current": false,
+      "box": {
+       "x": 627,
+       "y": 6,
+       "w": 77,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/laws/ndps",
+    "title": "The Narcotic Drugs and Psychotropic Substances Act, 1985 | Recall the C",
+    "mscreen": "bareact",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": null,
+    "signin": {
+     "vis": true,
+     "text": "Sign in",
+     "box": {
+      "x": 627,
+      "y": 6,
+      "w": 77,
+      "h": 44
+     }
+    },
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "laws-ndps",
+   "route": "/laws/ndps",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "file": "m3merge-guest_guest_laws-ndps_1280x900_light.png",
+   "sha256": "cf9297614e0b75d17f6e5cc2b0c9e1642b07cf3ba0e292e13819ad1e47d3fdd4",
+   "status_chain": [
+    [
+     "/laws/ndps",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "signin",
+      "t": "Sign in",
+      "href": "/login",
+      "current": false,
+      "box": {
+       "x": 1163,
+       "y": 8,
+       "w": 77,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/laws/ndps",
+    "title": "The Narcotic Drugs and Psychotropic Substances Act, 1985 | Recall the C",
+    "mscreen": "bareact",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": null,
+    "signin": {
+     "vis": true,
+     "text": "Sign in",
+     "box": {
+      "x": 1163,
+      "y": 8,
+      "w": 77,
+      "h": 44
+     }
+    },
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "laws-ndps",
+   "route": "/laws/ndps",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "file": "m3merge-guest_guest_laws-ndps_1280x900_dark.png",
+   "sha256": "ca4e0e26d43fb52e5b038ae5ccd77ea837b04ab778a1a41d643b558bb7d806bd",
+   "status_chain": [
+    [
+     "/laws/ndps",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "signin",
+      "t": "Sign in",
+      "href": "/login",
+      "current": false,
+      "box": {
+       "x": 1163,
+       "y": 8,
+       "w": 77,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/laws/ndps",
+    "title": "The Narcotic Drugs and Psychotropic Substances Act, 1985 | Recall the C",
+    "mscreen": "bareact",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": null,
+    "signin": {
+     "vis": true,
+     "text": "Sign in",
+     "box": {
+      "x": 1163,
+      "y": 8,
+      "w": 77,
+      "h": 44
+     }
+    },
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "dashboard",
+   "route": "/dashboard",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "file": "m3merge-guest_guest_dashboard_390x844_light.png",
+   "sha256": "41fe10de3aacf75644e51e2776417a98bc71885d634bc157ba8c9519f39e69ff",
+   "status_chain": [
+    [
+     "/dashboard",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": true,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#fefefe",
+      "ratio": 18.24
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/dashboard",
+    "title": "Dashboard \u00b7 Recall the C",
+    "mscreen": "today",
+    "bodyClass": "is-guest",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": "page",
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     "data-guest-phone-tabs"
+    ],
+    "navSurfaces": 1,
+    "avatar": null,
+    "signin": {
+     "vis": false,
+     "text": "Sign in",
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     }
+    },
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   },
+   "profileTap": {
+    "url": "/profile",
+    "title": "Profile \u00b7 Recall the C",
+    "mscreen": "account",
+    "name": "Guest",
+    "email": null,
+    "bodyHasEmail": false,
+    "currentTab": [
+     "Profile"
+    ],
+    "signoutPresent": false,
+    "tappedAt": [
+     351,
+     814
+    ],
+    "tabHref": "/profile",
+    "file": "m3merge-guest_guest_dashboard_390x844_light_tap-profile.png",
+    "sha256": "cef3aa4750551ebb6b977b65237ece57356fec41eee81e084ff260d83f76e969"
+   }
+  },
+  {
+   "key": "dashboard",
+   "route": "/dashboard",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "file": "m3merge-guest_guest_dashboard_390x844_dark.png",
+   "sha256": "57e008209b2e00b138239559c2453ffb55eaf0f83b5e899513159075980fdc32",
+   "status_chain": [
+    [
+     "/dashboard",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": true,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#f2f2f0",
+      "bg": "#1e1e1d",
+      "ratio": 14.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/dashboard",
+    "title": "Dashboard \u00b7 Recall the C",
+    "mscreen": "today",
+    "bodyClass": "is-guest",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": "page",
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     "data-guest-phone-tabs"
+    ],
+    "navSurfaces": 1,
+    "avatar": null,
+    "signin": {
+     "vis": false,
+     "text": "Sign in",
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     }
+    },
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "dashboard",
+   "route": "/dashboard",
+   "width": 720,
+   "height": 900,
+   "theme": "light",
+   "file": "m3merge-guest_guest_dashboard_720x900_light.png",
+   "sha256": "35c30a44f2c30e5c0b1a32e108bb4f8adf0508f03602ba6bbf8783220fdde8f2",
+   "status_chain": [
+    [
+     "/dashboard",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": true,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "signin",
+      "t": "Sign in",
+      "href": "/login",
+      "current": false,
+      "box": {
+       "x": 627,
+       "y": 6,
+       "w": 77,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/dashboard",
+    "title": "Dashboard \u00b7 Recall the C",
+    "mscreen": "today",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": "page",
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": null,
+    "signin": {
+     "vis": true,
+     "text": "Sign in",
+     "box": {
+      "x": 627,
+      "y": 6,
+      "w": 77,
+      "h": 44
+     }
+    },
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "dashboard",
+   "route": "/dashboard",
+   "width": 720,
+   "height": 900,
+   "theme": "dark",
+   "file": "m3merge-guest_guest_dashboard_720x900_dark.png",
+   "sha256": "ed2c4f8f015d581140ccf7ae4ff002fe7d2ac39ba5d22137d806d78c4216f39a",
+   "status_chain": [
+    [
+     "/dashboard",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": true,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "signin",
+      "t": "Sign in",
+      "href": "/login",
+      "current": false,
+      "box": {
+       "x": 627,
+       "y": 6,
+       "w": 77,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/dashboard",
+    "title": "Dashboard \u00b7 Recall the C",
+    "mscreen": "today",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": "page",
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": null,
+    "signin": {
+     "vis": true,
+     "text": "Sign in",
+     "box": {
+      "x": 627,
+      "y": 6,
+      "w": 77,
+      "h": 44
+     }
+    },
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "dashboard",
+   "route": "/dashboard",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "file": "m3merge-guest_guest_dashboard_1280x900_light.png",
+   "sha256": "6ec43d69cbec90176518f6e8a07e6e03217a4b9f5c927a43248f2030dbde2838",
+   "status_chain": [
+    [
+     "/dashboard",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": true,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "signin",
+      "t": "Sign in",
+      "href": "/login",
+      "current": false,
+      "box": {
+       "x": 1163,
+       "y": 8,
+       "w": 77,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/dashboard",
+    "title": "Dashboard \u00b7 Recall the C",
+    "mscreen": "today",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": "page",
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": null,
+    "signin": {
+     "vis": true,
+     "text": "Sign in",
+     "box": {
+      "x": 1163,
+      "y": 8,
+      "w": 77,
+      "h": 44
+     }
+    },
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "dashboard",
+   "route": "/dashboard",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "file": "m3merge-guest_guest_dashboard_1280x900_dark.png",
+   "sha256": "387e46e289f624d6c4af4367a47ac8c071a894fc9d8a42b103e5b8e3ce4c531c",
+   "status_chain": [
+    [
+     "/dashboard",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": true,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "signin",
+      "t": "Sign in",
+      "href": "/login",
+      "current": false,
+      "box": {
+       "x": 1163,
+       "y": 8,
+       "w": 77,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/dashboard",
+    "title": "Dashboard \u00b7 Recall the C",
+    "mscreen": "today",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": "page",
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": null,
+    "signin": {
+     "vis": true,
+     "text": "Sign in",
+     "box": {
+      "x": 1163,
+      "y": 8,
+      "w": 77,
+      "h": 44
+     }
+    },
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "settings",
+   "route": "/settings",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "file": "m3merge-guest_guest_settings_390x844_light.png",
+   "sha256": "ed44bf4e31fc6a1c18a1d2368656d4646d288b7b90c4113011d8b0052f9b2dcf",
+   "status_chain": [
+    [
+     "/settings",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/profile",
+      "current": true,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#fefefe",
+      "ratio": 18.24
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/settings",
+    "title": "Settings \u00b7 Recall the C",
+    "mscreen": "settings",
+    "bodyClass": "is-guest",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": "page",
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     "data-guest-phone-tabs"
+    ],
+    "navSurfaces": 1,
+    "avatar": null,
+    "signin": {
+     "vis": false,
+     "text": "Sign in",
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     }
+    },
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   },
+   "profileTap": {
+    "url": "/profile",
+    "title": "Profile \u00b7 Recall the C",
+    "mscreen": "account",
+    "name": "Guest",
+    "email": null,
+    "bodyHasEmail": false,
+    "currentTab": [
+     "Profile"
+    ],
+    "signoutPresent": false,
+    "tappedAt": [
+     351,
+     814
+    ],
+    "tabHref": "/profile",
+    "file": "m3merge-guest_guest_settings_390x844_light_tap-profile.png",
+    "sha256": "cef3aa4750551ebb6b977b65237ece57356fec41eee81e084ff260d83f76e969"
+   }
+  },
+  {
+   "key": "settings",
+   "route": "/settings",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "file": "m3merge-guest_guest_settings_390x844_dark.png",
+   "sha256": "3b9f20098cfe9893235d05bbf209db65f957b894a2300246fbb014b26f12a7fb",
+   "status_chain": [
+    [
+     "/settings",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/profile",
+      "current": true,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#f2f2f0",
+      "bg": "#1e1e1d",
+      "ratio": 14.96
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/settings",
+    "title": "Settings \u00b7 Recall the C",
+    "mscreen": "settings",
+    "bodyClass": "is-guest",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": "page",
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     "data-guest-phone-tabs"
+    ],
+    "navSurfaces": 1,
+    "avatar": null,
+    "signin": {
+     "vis": false,
+     "text": "Sign in",
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     }
+    },
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "settings",
+   "route": "/settings",
+   "width": 720,
+   "height": 900,
+   "theme": "light",
+   "file": "m3merge-guest_guest_settings_720x900_light.png",
+   "sha256": "1210196443cdf0cb1802e2019472a8e2367a907e3a50b77bfd5dfef77ff6d514",
+   "status_chain": [
+    [
+     "/settings",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": true,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42
+     },
+     {
+      "kind": "signin",
+      "t": "Sign in",
+      "href": "/login",
+      "current": false,
+      "box": {
+       "x": 627,
+       "y": 6,
+       "w": 77,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/settings",
+    "title": "Settings \u00b7 Recall the C",
+    "mscreen": "settings",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": "page",
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": null,
+    "signin": {
+     "vis": true,
+     "text": "Sign in",
+     "box": {
+      "x": 627,
+      "y": 6,
+      "w": 77,
+      "h": 44
+     }
+    },
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "settings",
+   "route": "/settings",
+   "width": 720,
+   "height": 900,
+   "theme": "dark",
+   "file": "m3merge-guest_guest_settings_720x900_dark.png",
+   "sha256": "59ea1f32c823d56cb230dcaadce8998330bcf3f37fc0ae5cbffe2950b7821ff7",
+   "status_chain": [
+    [
+     "/settings",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": true,
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44
+     },
+     {
+      "kind": "signin",
+      "t": "Sign in",
+      "href": "/login",
+      "current": false,
+      "box": {
+       "x": 627,
+       "y": 6,
+       "w": 77,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/settings",
+    "title": "Settings \u00b7 Recall the C",
+    "mscreen": "settings",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 16,
+       "y": 52,
+       "w": 80,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 98,
+       "y": 52,
+       "w": 87,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 187,
+       "y": 52,
+       "w": 111,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 300,
+       "y": 52,
+       "w": 96,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": "page",
+      "box": {
+       "x": 398,
+       "y": 52,
+       "w": 83,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": null,
+    "signin": {
+     "vis": true,
+     "text": "Sign in",
+     "box": {
+      "x": 627,
+      "y": 6,
+      "w": 77,
+      "h": 44
+     }
+    },
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "settings",
+   "route": "/settings",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "file": "m3merge-guest_guest_settings_1280x900_light.png",
+   "sha256": "f1e273b4cf338e627f7c559859d18e73be0f94afd2bf370630fbddbb232b7e1a",
+   "status_chain": [
+    [
+     "/settings",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": true,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42
+     },
+     {
+      "kind": "signin",
+      "t": "Sign in",
+      "href": "/login",
+      "current": false,
+      "box": {
+       "x": 1163,
+       "y": 8,
+       "w": 77,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/settings",
+    "title": "Settings \u00b7 Recall the C",
+    "mscreen": "settings",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": "page",
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": null,
+    "signin": {
+     "vis": true,
+     "text": "Sign in",
+     "box": {
+      "x": 1163,
+      "y": 8,
+      "w": 77,
+      "h": 44
+     }
+    },
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "settings",
+   "route": "/settings",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "file": "m3merge-guest_guest_settings_1280x900_dark.png",
+   "sha256": "fe5162f08238a4832265504f5337fdeb47f44110c6b9261ed3c6b2d40be798f0",
+   "status_chain": [
+    [
+     "/settings",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": false,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": true,
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44
+     },
+     {
+      "kind": "signin",
+      "t": "Sign in",
+      "href": "/login",
+      "current": false,
+      "box": {
+       "x": 1163,
+       "y": 8,
+       "w": 77,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/settings",
+    "title": "Settings \u00b7 Recall the C",
+    "mscreen": "settings",
+    "bodyClass": "is-guest",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 379,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": null,
+      "box": {
+       "x": 471,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 572,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 697,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": "page",
+      "box": {
+       "x": 808,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": null,
+    "signin": {
+     "vis": true,
+     "text": "Sign in",
+     "box": {
+      "x": 1163,
+      "y": 8,
+      "w": 77,
+      "h": 44
+     }
+    },
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  }
+ ]
+}

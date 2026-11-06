@@ -1,0 +1,3659 @@
+{
+ "label": "m3base-free",
+ "base": "http://localhost:8918",
+ "viewer": "free",
+ "captured_at": "2026-11-06T12:05:39+0530",
+ "chrome": "Google Chrome 156.0.8078.81",
+ "rows": [
+  {
+   "key": "browse",
+   "route": "/browse",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "file": "m3base-free_free_browse_390x844_light.png",
+   "sha256": "35644a098107639f5c49595e5ceee6319b1a6e7b1d671ecc93a13beb9cf4cd7e",
+   "status_chain": [
+    [
+     "/browse",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#fefefe",
+      "ratio": 18.24
+     },
+     {
+      "kind": "phonetab",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/browse",
+    "title": "Browse the Constitution \u00b7 Recall the C",
+    "mscreen": "browse",
+    "bodyClass": "is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     "data-signed-in-phone-tabs"
+    ],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "SECTION.panel browse",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Free",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   },
+   "focusTrail": [
+    {
+     "el": "A.mobile-icon-btn",
+     "text": "Search",
+     "href": "/search",
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 246,
+      "y": 12,
+      "w": 44,
+      "h": 44
+     },
+     "inViewport": true
+    },
+    {
+     "el": "BUTTON.mobile-chip-btn",
+     "text": "Marks",
+     "href": null,
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 296,
+      "y": 16,
+      "w": 76,
+      "h": 36
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.browse-resource-card",
+     "text": "Laws Bare Acts & statutes \u203a",
+     "href": "/laws",
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 18,
+      "y": 68,
+      "w": 173,
+      "h": 61
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.browse-resource-card",
+     "text": "Tables Parts, writs, amendments \u203a",
+     "href": "/tables",
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 199,
+      "y": 68,
+      "w": 173,
+      "h": 61
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.part-card",
+     "text": "PART I \u203a The Union And Its Territory Art",
+     "href": "/browse/part/i",
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 18,
+      "y": 169,
+      "w": 354,
+      "h": 118
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.part-card",
+     "text": "PART II \u203a Citizenship Articles 5\u201311 Not ",
+     "href": "/browse/part/ii",
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 18,
+      "y": 297,
+      "w": 354,
+      "h": 118
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.part-card",
+     "text": "PART III \u203a Fundamental Rights Articles 1",
+     "href": "/browse/part/iii",
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 18,
+      "y": 425,
+      "w": 354,
+      "h": 118
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.part-card",
+     "text": "PART IV \u203a Directive Principles Of State ",
+     "href": "/browse/part/iv",
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 18,
+      "y": 553,
+      "w": 354,
+      "h": 118
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.part-card",
+     "text": "PART V \u203a The Union Articles 52\u2013151 \u00b7 5 C",
+     "href": "/browse/part/v",
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 18,
+      "y": 681,
+      "w": 354,
+      "h": 118
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.part-card",
+     "text": "PART VI \u203a The States Articles 152\u2013243ZR ",
+     "href": "/browse/part/vi",
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 18,
+      "y": 809,
+      "w": 354,
+      "h": 118
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.part-card",
+     "text": "PART VII \u203a States in Part B of the First",
+     "href": "/browse/part/vii",
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 18,
+      "y": 937,
+      "w": 354,
+      "h": 141
+     },
+     "inViewport": false
+    },
+    {
+     "el": "A.part-card",
+     "text": "PART VIII \u203a The Union Territories Articl",
+     "href": "/browse/part/viii",
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 18,
+      "y": 1088,
+      "w": 354,
+      "h": 118
+     },
+     "inViewport": false
+    },
+    {
+     "el": "A.part-card",
+     "text": "PART IX \u203a The Panchayats Articles 243\u201324",
+     "href": "/browse/part/ix",
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 18,
+      "y": 1216,
+      "w": 354,
+      "h": 118
+     },
+     "inViewport": false
+    },
+    {
+     "el": "A.part-card",
+     "text": "PART IXA \u203a The Municipalities Articles 2",
+     "href": "/browse/part/ixa",
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 18,
+      "y": 1344,
+      "w": 354,
+      "h": 118
+     },
+     "inViewport": false
+    }
+   ],
+   "phoneBarTrail": [
+    {
+     "el": "A.mobile-tab.is-active",
+     "text": "Browse",
+     "href": "/browse",
+     "shell": "phonebar",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 78,
+      "y": 784,
+      "w": 78,
+      "h": 60
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.mobile-tab",
+     "text": "Playground",
+     "href": "/playground",
+     "shell": "phonebar",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 156,
+      "y": 784,
+      "w": 78,
+      "h": 60
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.mobile-tab",
+     "text": "Calendar",
+     "href": "/calendar",
+     "shell": "phonebar",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 234,
+      "y": 784,
+      "w": 78,
+      "h": 60
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.mobile-tab",
+     "text": "Profile",
+     "href": "/profile",
+     "shell": "phonebar",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 312,
+      "y": 784,
+      "w": 78,
+      "h": 60
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.mobile-tab",
+     "text": "Calendar",
+     "href": "/calendar",
+     "shell": "phonebar",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 234,
+      "y": 784,
+      "w": 78,
+      "h": 60
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.mobile-tab",
+     "text": "Playground",
+     "href": "/playground",
+     "shell": "phonebar",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 156,
+      "y": 784,
+      "w": 78,
+      "h": 60
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.mobile-tab.is-active",
+     "text": "Browse",
+     "href": "/browse",
+     "shell": "phonebar",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 78,
+      "y": 784,
+      "w": 78,
+      "h": 60
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.mobile-tab",
+     "text": "Today",
+     "href": "/dashboard",
+     "shell": "phonebar",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 0,
+      "y": 784,
+      "w": 78,
+      "h": 60
+     },
+     "inViewport": true
+    }
+   ]
+  },
+  {
+   "key": "browse",
+   "route": "/browse",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "file": "m3base-free_free_browse_390x844_dark.png",
+   "sha256": "125049cb6387dd6281f7b992180901f1931c1155850aeafdb35dbf971e011136",
+   "status_chain": [
+    [
+     "/browse",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#f2f2f0",
+      "bg": "#1e1e1d",
+      "ratio": 14.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/browse",
+    "title": "Browse the Constitution \u00b7 Recall the C",
+    "mscreen": "browse",
+    "bodyClass": "is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     "data-signed-in-phone-tabs"
+    ],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "SECTION.panel browse",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Free",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "browse",
+   "route": "/browse",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "file": "m3base-free_free_browse_1280x900_light.png",
+   "sha256": "da895921666040d2ab0047bb94f8b62467724bbb31c21626ccdb21f2ff579b98",
+   "status_chain": [
+    [
+     "/browse",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 342,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 435,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 535,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 661,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 771,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": false,
+      "box": {
+       "x": 867,
+       "y": 8,
+       "w": 70,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "account",
+      "t": "Playground Tester RecallC Free",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1060,
+       "y": 5,
+       "w": 180,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#000000",
+      "bg": "#ffffff",
+      "ratio": 21
+     },
+     {
+      "kind": "chip",
+      "t": "RecallC Free",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1114,
+       "y": 31,
+       "w": 118,
+       "h": 14
+      },
+      "meets44": false,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/browse",
+    "title": "Browse the Constitution \u00b7 Recall the C",
+    "mscreen": "browse",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 342,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 435,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 535,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 661,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 771,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 867,
+       "y": 8,
+       "w": 70,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 1060,
+      "y": 5,
+      "w": 180,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "SPAN.account-menu-btn-name",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Free",
+     "vis": true
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   },
+   "focusTrail": [
+    {
+     "el": "A.brand",
+     "text": "Recall the C",
+     "href": "/dashboard",
+     "shell": "header",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 40,
+      "y": 15,
+      "w": 131,
+      "h": 30
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.nav-link",
+     "text": "Today",
+     "href": "/dashboard",
+     "shell": "header",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 342,
+      "y": 8,
+      "w": 90,
+      "h": 44
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.nav-link.is-active",
+     "text": "Browse",
+     "href": "/browse",
+     "shell": "header",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 435,
+      "y": 8,
+      "w": 99,
+      "h": 44
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.nav-link",
+     "text": "Playground",
+     "href": "/playground",
+     "shell": "header",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 535,
+      "y": 8,
+      "w": 124,
+      "h": 44
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.nav-link",
+     "text": "Calendar",
+     "href": "/calendar",
+     "shell": "header",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 661,
+      "y": 8,
+      "w": 108,
+      "h": 44
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.nav-link",
+     "text": "Profile",
+     "href": "/profile",
+     "shell": "header",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 771,
+      "y": 8,
+      "w": 94,
+      "h": 44
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.nav-link",
+     "text": "Pricing",
+     "href": "/pricing",
+     "shell": "header",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 867,
+      "y": 8,
+      "w": 70,
+      "h": 44
+     },
+     "inViewport": true
+    },
+    {
+     "el": "BUTTON.account-menu-btn",
+     "text": "Playground Tester RecallC Free",
+     "href": null,
+     "shell": "header",
+     "focusVisible": true,
+     "outline": "2px solid rgb(14, 117, 105)",
+     "boxShadow": null,
+     "box": {
+      "x": 1060,
+      "y": 5,
+      "w": 180,
+      "h": 48
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.browse-access-unlock",
+     "text": "Unlock all",
+     "href": "/playground",
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 1182,
+      "y": 148,
+      "w": 58,
+      "h": 20
+     },
+     "inViewport": true
+    }
+   ]
+  },
+  {
+   "key": "browse",
+   "route": "/browse",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "file": "m3base-free_free_browse_1280x900_dark.png",
+   "sha256": "dafefd48b07249fd98fc8624418dc60344fec0c8baa5a92f30fff7fdf77818cf",
+   "status_chain": [
+    [
+     "/browse",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 342,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 435,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 535,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 661,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 771,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": false,
+      "box": {
+       "x": 867,
+       "y": 8,
+       "w": 70,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "account",
+      "t": "Playground Tester RecallC Free",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1060,
+       "y": 5,
+       "w": 180,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#1e1e1d",
+      "ratio": 16.68
+     },
+     {
+      "kind": "chip",
+      "t": "RecallC Free",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1114,
+       "y": 31,
+       "w": 118,
+       "h": 14
+      },
+      "meets44": false,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/browse",
+    "title": "Browse the Constitution \u00b7 Recall the C",
+    "mscreen": "browse",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 342,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 435,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 535,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 661,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 771,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 867,
+       "y": 8,
+       "w": 70,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 1060,
+      "y": 5,
+      "w": 180,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "SPAN.account-menu-btn-name",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Free",
+     "vis": true
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "laws",
+   "route": "/laws",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "file": "m3base-free_free_laws_390x844_light.png",
+   "sha256": "e4cd8507752956dc450e0d4b715e28ac6dfea7086f1f23ba764083f71f5e2c3b",
+   "status_chain": [
+    [
+     "/laws",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#fefefe",
+      "ratio": 18.24
+     },
+     {
+      "kind": "phonetab",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/laws",
+    "title": "Laws of India | Recall the C",
+    "mscreen": "laws",
+    "bodyClass": "is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     "data-signed-in-phone-tabs"
+    ],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "SECTION.panel laws",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Free",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   },
+   "focusTrail": [
+    {
+     "el": "A.mobile-back",
+     "text": "\u2190 Browse",
+     "href": "/browse",
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 18,
+      "y": 6,
+      "w": 56,
+      "h": 44
+     },
+     "inViewport": true
+    },
+    {
+     "el": "BUTTON.mobile-icon-btn",
+     "text": "Search",
+     "href": null,
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 328,
+      "y": 6,
+      "w": 44,
+      "h": 44
+     },
+     "inViewport": true
+    },
+    {
+     "el": "BUTTON.laws-chip",
+     "text": "All",
+     "href": null,
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 18,
+      "y": 58,
+      "w": 40,
+      "h": 32
+     },
+     "inViewport": true
+    },
+    {
+     "el": "BUTTON.laws-chip",
+     "text": "Criminal",
+     "href": null,
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 66,
+      "y": 58,
+      "w": 72,
+      "h": 32
+     },
+     "inViewport": true
+    },
+    {
+     "el": "BUTTON.laws-chip",
+     "text": "Constitutional",
+     "href": null,
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 146,
+      "y": 58,
+      "w": 103,
+      "h": 32
+     },
+     "inViewport": true
+    },
+    {
+     "el": "BUTTON.laws-chip",
+     "text": "Administrative",
+     "href": null,
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 256,
+      "y": 58,
+      "w": 105,
+      "h": 32
+     },
+     "inViewport": true
+    },
+    {
+     "el": "BUTTON.laws-chip",
+     "text": "Environmental",
+     "href": null,
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 369,
+      "y": 58,
+      "w": 106,
+      "h": 32
+     },
+     "inViewport": true
+    },
+    {
+     "el": "BUTTON.laws-chip",
+     "text": "Financial",
+     "href": null,
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 158,
+      "y": 58,
+      "w": 75,
+      "h": 32
+     },
+     "inViewport": true
+    },
+    {
+     "el": "BUTTON.laws-chip",
+     "text": "Health",
+     "href": null,
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 241,
+      "y": 58,
+      "w": 62,
+      "h": 32
+     },
+     "inViewport": true
+    },
+    {
+     "el": "BUTTON.laws-chip.is-status",
+     "text": "Repealed",
+     "href": null,
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 310,
+      "y": 58,
+      "w": 76,
+      "h": 32
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.laws-index-card-link",
+     "text": "CRIMINAL \u00b7 FULL ACT \u203a The Bharatiya Nyay",
+     "href": "/laws/bns",
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 35,
+      "y": 120,
+      "w": 320,
+      "h": 72
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.pg-btn",
+     "text": "Subscribe to use Playground",
+     "href": "/playground/laws/bns/add",
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": "rgba(0, 0, 0, 0.28) 0px 2px 0px 0px",
+     "box": {
+      "x": 35,
+      "y": 235,
+      "w": 215,
+      "h": 44
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.laws-index-card-link",
+     "text": "CRIMINAL \u00b7 FULL ACT \u203a The Bharatiya Naga",
+     "href": "/laws/bnss",
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 35,
+      "y": 320,
+      "w": 320,
+      "h": 94
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.pg-btn",
+     "text": "Subscribe to use Playground",
+     "href": "/playground/laws/bnss/add",
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": "rgba(0, 0, 0, 0.28) 0px 2px 0px 0px",
+     "box": {
+      "x": 35,
+      "y": 458,
+      "w": 215,
+      "h": 44
+     },
+     "inViewport": true
+    }
+   ],
+   "phoneBarTrail": [
+    {
+     "el": "A.mobile-tab.is-active",
+     "text": "Browse",
+     "href": "/browse",
+     "shell": "phonebar",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 78,
+      "y": 784,
+      "w": 78,
+      "h": 60
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.mobile-tab",
+     "text": "Playground",
+     "href": "/playground",
+     "shell": "phonebar",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 156,
+      "y": 784,
+      "w": 78,
+      "h": 60
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.mobile-tab",
+     "text": "Calendar",
+     "href": "/calendar",
+     "shell": "phonebar",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 234,
+      "y": 784,
+      "w": 78,
+      "h": 60
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.mobile-tab",
+     "text": "Profile",
+     "href": "/profile",
+     "shell": "phonebar",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 312,
+      "y": 784,
+      "w": 78,
+      "h": 60
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.mobile-tab",
+     "text": "Calendar",
+     "href": "/calendar",
+     "shell": "phonebar",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 234,
+      "y": 784,
+      "w": 78,
+      "h": 60
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.mobile-tab",
+     "text": "Playground",
+     "href": "/playground",
+     "shell": "phonebar",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 156,
+      "y": 784,
+      "w": 78,
+      "h": 60
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.mobile-tab.is-active",
+     "text": "Browse",
+     "href": "/browse",
+     "shell": "phonebar",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 78,
+      "y": 784,
+      "w": 78,
+      "h": 60
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.mobile-tab",
+     "text": "Today",
+     "href": "/dashboard",
+     "shell": "phonebar",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 0,
+      "y": 784,
+      "w": 78,
+      "h": 60
+     },
+     "inViewport": true
+    }
+   ]
+  },
+  {
+   "key": "laws",
+   "route": "/laws",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "file": "m3base-free_free_laws_390x844_dark.png",
+   "sha256": "2ced897e793db41ef10487219d7b07f67bef3aead2380beedd166ba1e8feffbb",
+   "status_chain": [
+    [
+     "/laws",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#f2f2f0",
+      "bg": "#1e1e1d",
+      "ratio": 14.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/laws",
+    "title": "Laws of India | Recall the C",
+    "mscreen": "laws",
+    "bodyClass": "is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     "data-signed-in-phone-tabs"
+    ],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "SECTION.panel laws",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Free",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "laws",
+   "route": "/laws",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "file": "m3base-free_free_laws_1280x900_light.png",
+   "sha256": "5c00637755924f4385d66d12fbb78294697030d5f87509bfe6e3bc3abca8ac26",
+   "status_chain": [
+    [
+     "/laws",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 342,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 435,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 535,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 661,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 771,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": false,
+      "box": {
+       "x": 867,
+       "y": 8,
+       "w": 70,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "account",
+      "t": "Playground Tester RecallC Free",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1060,
+       "y": 5,
+       "w": 180,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#000000",
+      "bg": "#ffffff",
+      "ratio": 21
+     },
+     {
+      "kind": "chip",
+      "t": "RecallC Free",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1114,
+       "y": 31,
+       "w": 118,
+       "h": 14
+      },
+      "meets44": false,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/laws",
+    "title": "Laws of India | Recall the C",
+    "mscreen": "laws",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 342,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 435,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 535,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 661,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 771,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 867,
+       "y": 8,
+       "w": 70,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 1060,
+      "y": 5,
+      "w": 180,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "SPAN.account-menu-btn-name",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Free",
+     "vis": true
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   },
+   "focusTrail": [
+    {
+     "el": "A.brand",
+     "text": "Recall the C",
+     "href": "/dashboard",
+     "shell": "header",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 40,
+      "y": 15,
+      "w": 131,
+      "h": 30
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.nav-link",
+     "text": "Today",
+     "href": "/dashboard",
+     "shell": "header",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 342,
+      "y": 8,
+      "w": 90,
+      "h": 44
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.nav-link.is-active",
+     "text": "Browse",
+     "href": "/browse",
+     "shell": "header",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 435,
+      "y": 8,
+      "w": 99,
+      "h": 44
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.nav-link",
+     "text": "Playground",
+     "href": "/playground",
+     "shell": "header",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 535,
+      "y": 8,
+      "w": 124,
+      "h": 44
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.nav-link",
+     "text": "Calendar",
+     "href": "/calendar",
+     "shell": "header",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 661,
+      "y": 8,
+      "w": 108,
+      "h": 44
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.nav-link",
+     "text": "Profile",
+     "href": "/profile",
+     "shell": "header",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 771,
+      "y": 8,
+      "w": 94,
+      "h": 44
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.nav-link",
+     "text": "Pricing",
+     "href": "/pricing",
+     "shell": "header",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 867,
+      "y": 8,
+      "w": 70,
+      "h": 44
+     },
+     "inViewport": true
+    },
+    {
+     "el": "BUTTON.account-menu-btn",
+     "text": "Playground Tester RecallC Free",
+     "href": null,
+     "shell": "header",
+     "focusVisible": true,
+     "outline": "2px solid rgb(14, 117, 105)",
+     "boxShadow": null,
+     "box": {
+      "x": 1060,
+      "y": 5,
+      "w": 180,
+      "h": 48
+     },
+     "inViewport": true
+    },
+    {
+     "el": "A.laws-back-link",
+     "text": "Browse",
+     "href": "/browse",
+     "shell": "page",
+     "focusVisible": true,
+     "outline": "2px solid rgb(20, 20, 20)",
+     "boxShadow": null,
+     "box": {
+      "x": 40,
+      "y": 82,
+      "w": 58,
+      "h": 32
+     },
+     "inViewport": true
+    }
+   ]
+  },
+  {
+   "key": "laws",
+   "route": "/laws",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "file": "m3base-free_free_laws_1280x900_dark.png",
+   "sha256": "7d960f2918c0ca26a424775a16ad73ec1450a431928efdec94b955342a7804fa",
+   "status_chain": [
+    [
+     "/laws",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 342,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 435,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 535,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 661,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 771,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": false,
+      "box": {
+       "x": 867,
+       "y": 8,
+       "w": 70,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "account",
+      "t": "Playground Tester RecallC Free",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1060,
+       "y": 5,
+       "w": 180,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#1e1e1d",
+      "ratio": 16.68
+     },
+     {
+      "kind": "chip",
+      "t": "RecallC Free",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1114,
+       "y": 31,
+       "w": 118,
+       "h": 14
+      },
+      "meets44": false,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/laws",
+    "title": "Laws of India | Recall the C",
+    "mscreen": "laws",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 342,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 435,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 535,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 661,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 771,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 867,
+       "y": 8,
+       "w": 70,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 1060,
+      "y": 5,
+      "w": 180,
+      "h": 48
+     },
+     "hitOnButton": true,
+     "hitTag": "SPAN.account-menu-btn-name",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Free",
+     "vis": true
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "laws-ndps",
+   "route": "/laws/ndps",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "file": "m3base-free_free_laws-ndps_390x844_light.png",
+   "sha256": "0ccb84649d3883c346bc671b72799dd837a34d12507b664b0a206a93b4d72ed9",
+   "status_chain": [
+    [
+     "/laws/ndps",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#fefefe",
+      "ratio": 18.24
+     },
+     {
+      "kind": "phonetab",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#fefefe",
+      "ratio": 5.28
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/laws/ndps",
+    "title": "The Narcotic Drugs and Psychotropic Substances Act, 1985 | Recall the C",
+    "mscreen": "bareact",
+    "bodyClass": "is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     "data-signed-in-phone-tabs"
+    ],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "DIV.ActHead-band",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Free",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "laws-ndps",
+   "route": "/laws/ndps",
+   "width": 390,
+   "height": 844,
+   "theme": "dark",
+   "file": "m3base-free_free_laws-ndps_390x844_dark.png",
+   "sha256": "24889b556f2c1bf13a72f6b45d57d1fe6cdf004adfe6a711a095afad70b99154",
+   "status_chain": [
+    [
+     "/laws/ndps",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#f2f2f0",
+      "bg": "#1e1e1d",
+      "ratio": 14.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.96
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/laws/ndps",
+    "title": "The Narcotic Drugs and Psychotropic Substances Act, 1985 | Recall the C",
+    "mscreen": "bareact",
+    "bodyClass": "is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 78,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 156,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 234,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 312,
+       "y": 784,
+       "w": 78,
+       "h": 60
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     "data-signed-in-phone-tabs"
+    ],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "DIV.ActHead-band",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Free",
+     "vis": false
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "laws-ndps",
+   "route": "/laws/ndps",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "file": "m3base-free_free_laws-ndps_1280x900_light.png",
+   "sha256": "e2676161d730bdb119019c1344131d892dda052e73b0b1a82b70baf111ff4d17",
+   "status_chain": [
+    [
+     "/laws/ndps",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 342,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 435,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 535,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 661,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 771,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "topnav",
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": false,
+      "box": {
+       "x": 867,
+       "y": 8,
+       "w": 70,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     },
+     {
+      "kind": "account",
+      "t": "Playground Tester RecallC Free",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1068,
+       "y": 8,
+       "w": 172,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#000000",
+      "bg": "#ffffff",
+      "ratio": 21
+     },
+     {
+      "kind": "chip",
+      "t": "RecallC Free",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1114,
+       "y": 31,
+       "w": 118,
+       "h": 14
+      },
+      "meets44": false,
+      "fg": "#6b6b6b",
+      "bg": "#ffffff",
+      "ratio": 5.33
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/laws/ndps",
+    "title": "The Narcotic Drugs and Psychotropic Substances Act, 1985 | Recall the C",
+    "mscreen": "bareact",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 342,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 435,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 535,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 661,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 771,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 867,
+       "y": 8,
+       "w": 70,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 1068,
+      "y": 8,
+      "w": 172,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "SPAN.account-menu-btn-name",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Free",
+     "vis": true
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "laws-ndps",
+   "route": "/laws/ndps",
+   "width": 1280,
+   "height": 900,
+   "theme": "dark",
+   "file": "m3base-free_free_laws-ndps_1280x900_dark.png",
+   "sha256": "145a3cb50ca3e4f9b0b680475dae049ca7f778c10bd1d2030d7ba4e8f28127c5",
+   "status_chain": [
+    [
+     "/laws/ndps",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "topnav",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 342,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 435,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#f2f2f0",
+      "ratio": 16.44
+     },
+     {
+      "kind": "topnav",
+      "t": "Playground",
+      "href": "/playground",
+      "current": false,
+      "box": {
+       "x": 535,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 661,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Profile",
+      "href": "/profile",
+      "current": false,
+      "box": {
+       "x": 771,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "topnav",
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": false,
+      "box": {
+       "x": 867,
+       "y": 8,
+       "w": 70,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     },
+     {
+      "kind": "account",
+      "t": "Playground Tester RecallC Free",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1068,
+       "y": 8,
+       "w": 172,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#1e1e1d",
+      "ratio": 16.68
+     },
+     {
+      "kind": "chip",
+      "t": "RecallC Free",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1114,
+       "y": 31,
+       "w": 118,
+       "h": 14
+      },
+      "meets44": false,
+      "fg": "#9a9a9a",
+      "bg": "#1e1e1d",
+      "ratio": 5.93
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/laws/ndps",
+    "title": "The Narcotic Drugs and Psychotropic Substances Act, 1985 | Recall the C",
+    "mscreen": "bareact",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": true,
+    "topNav": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 342,
+       "y": 8,
+       "w": 90,
+       "h": 44
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "page",
+      "box": {
+       "x": 435,
+       "y": 8,
+       "w": 99,
+       "h": 44
+      }
+     },
+     {
+      "t": "Playground",
+      "href": "/playground",
+      "current": null,
+      "box": {
+       "x": 535,
+       "y": 8,
+       "w": 124,
+       "h": 44
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 661,
+       "y": 8,
+       "w": 108,
+       "h": 44
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/profile",
+      "current": null,
+      "box": {
+       "x": 771,
+       "y": 8,
+       "w": 94,
+       "h": 44
+      }
+     },
+     {
+      "t": "Pricing",
+      "href": "/pricing",
+      "current": null,
+      "box": {
+       "x": 867,
+       "y": 8,
+       "w": 70,
+       "h": 44
+      }
+     }
+    ],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 1068,
+      "y": 8,
+      "w": 172,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "SPAN.account-menu-btn-name",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": {
+     "text": "RecallC Free",
+     "vis": true
+    },
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, viewport-fit=cover",
+    "hScroll": false
+   }
+  }
+ ]
+}
