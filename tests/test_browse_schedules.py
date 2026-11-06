@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 
 from fastapi.testclient import TestClient
@@ -175,3 +176,18 @@ def test_sixth_and_ninth_match_official_extract():
         "eleventh",
         "twelfth",
     }
+
+
+def test_schedule_page_wrapper_has_no_horizontal_negative_margin():
+    """PR #233 acceptance 4.1: `.sched-page { margin: -8px -4px 0 }` widened every
+    Schedule page by 8 px, so the document scrolled sideways at >= 720 px."""
+    css = (
+        Path(__file__).resolve().parents[1]
+        / "src/constitution_memorizer/web/static/styles.css"
+    ).read_text(encoding="utf-8")
+    match = re.search(r"\.sched-page \{(?P<body>[^}]*)\}", css)
+    assert match, ".sched-page rule missing from styles.css"
+    margin = re.search(r"margin:\s*([^;]+);", match.group("body"))
+    assert margin, ".sched-page must declare its margin explicitly"
+    parts = margin.group(1).split()
+    assert len(parts) == 3 and parts[1] == "0", margin.group(0)
