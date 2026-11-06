@@ -474,7 +474,7 @@ def test_guest_free_plus_expired_paused_pending_are_not_halted_add(
     guest_html = TestClient(_mu_app(tmp_path / "guest")).get(add_path("ndps")).text
     assert 'data-pg-kind="guest"' in _sheet_tag(guest_html)
     assert "data-guest-add-gate" in _sheet(guest_html)
-    assert ">Sign in</a>" in _sheet(guest_html)
+    assert ">Continue with Google</a>" in _sheet(guest_html)  # M2-R (5-11)
     assert "data-halted-add" not in guest_html
     assert "data-halted-bareact" not in guest_html
     assert LIVE_HEADING not in guest_html

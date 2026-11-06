@@ -23,14 +23,14 @@
   {% if kind == "guest" %}
   <h1 id="pg-add-title" class="pg-add-title">Add to Playground</h1>
   <p class="pg-add-lede">Playground needs an account. Reading {{ reading_name|default(short_title) }} stays free — sign in and you’ll come right back here.</p>
-  <a class="pg-add-primary" href="{{ login_href }}" data-guest-add-gate>Sign in</a>
-  <a class="pg-add-secondary" href="{{ login_href }}" data-guest-add-gate>Create an account</a>
+  {# M2-R (5-11): one Google action — sign-in creates the account; next returns to this Act's Add dialog. #}
+  <a class="pg-add-primary" href="{{ google_href }}" data-guest-add-gate data-guest-add-google>Continue with Google</a>
 
   {% elif kind == "subscribe" %}
   <h1 id="pg-add-title" class="pg-add-title">Add to Playground</h1>
   <p class="pg-add-lede">Turning {{ reading_name|default(short_title) }} into a learning experience needs a plan. Reading it stays free.</p>
   <a class="pg-add-primary" href="/playground">Unlock Playground</a>
-  <p class="pg-add-note">{% for plan in catalogue_plans %}{{ plan.tier|capitalize }}{% if not loop.last %} · {% endif %}{% endfor %}{% if catalogue_plans and from_price %} — {% endif %}{% if from_price %}{{ from_price }} / month.{% endif %} Constitution learning stays free.</p>
+  <p class="pg-add-note">{% for plan in catalogue_plans %}{{ plan.tier|capitalize }}{% if not loop.last %} · {% endif %}{% endfor %}{% if catalogue_plans %}. {% endif %}Constitution learning stays free.</p>{# 5-1 (owner 2026-11-06): no price on upgrade sheets until pricing is approved. #}
 
   {% elif kind == "resume" %}
   <h1 id="pg-add-title" class="pg-add-title">{{ title }}</h1>

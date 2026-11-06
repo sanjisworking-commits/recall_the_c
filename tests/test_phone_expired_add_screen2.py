@@ -563,7 +563,7 @@ def test_phone_expired_add_cohorts_stay_separate(tmp_path: Path) -> None:
     guest_sheet = _sheet(guest_html)
     assert 'data-pg-kind="guest"' in guest_sheet
     assert "data-expired-add" not in guest_sheet
-    assert "Create an account" in guest_sheet
+    assert "Continue with Google" in guest_sheet  # M2-R (5-11)
 
     halted = TestClient(_mu_app(tmp_path / "halted"))
     _sign_in(halted)

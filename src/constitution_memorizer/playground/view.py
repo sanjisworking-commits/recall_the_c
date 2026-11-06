@@ -1220,7 +1220,8 @@ def law_membership(
             KIND_SUBSCRIBE,
             primary_label="Subscribe to use Playground",
             primary_href=add_path(law_id),
-            secondary_copy=f"Unlock Playground · {catalogue_from_price()} / month.",
+            # 5-1 (owner 2026-11-06): no price on upgrade surfaces until approved.
+            secondary_copy="Unlock Playground to add this law.",
             opens_sheet=True,
         )
     if blocked == KIND_RESUME:
@@ -1324,7 +1325,7 @@ def law_membership(
                 KIND_SUBSCRIBE,
                 primary_label="Subscribe to use Playground",
                 primary_href=add_path(law_id),
-                secondary_copy=f"Unlock Playground · {catalogue_from_price()} / month.",
+                secondary_copy="Unlock Playground to add this law.",
                 opens_sheet=True,
             )
         href = law_path(law_id)

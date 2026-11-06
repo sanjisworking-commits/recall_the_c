@@ -420,3 +420,34 @@ def test_device_blocked_and_resume_notes_are_punctuated():
     paused = _gate_sentences(gate_view(reason=BLOCK_SUBSCRIPTION_PAUSED))
     assert ". " in paused or paused.endswith(".")
     assert "reached Your" not in device
+
+
+def test_guest_sheet_offers_one_google_action_back_to_the_act(tmp_path: Path):
+    """5-11 (owner, 2026-11-06): the guest Add sheet has one action, "Continue
+    with Google"; signing in creates the account and ``next`` returns to this
+    Act's Add dialog. No second button, no form."""
+    client = _client(tmp_path, sign_in=False)
+    html = client.get(add_path("ndps")).text
+    panel = _panel(html)
+    assert 'data-pg-kind="guest"' in html
+    assert panel.count("data-guest-add-gate") == 1
+    href = "/auth/google/start?next=%2Fplayground%2Flaws%2Fndps%2Fadd"
+    assert (
+        f'<a class="pg-add-primary" href="{href}" data-guest-add-gate data-guest-add-google>Continue with Google</a>'
+    ) in panel
+    for gone in ("Create an account", ">Sign in<", "pg-add-secondary", "/login?next=", "<form", "<button"):
+        assert gone not in panel, gone
+
+
+def test_upgrade_surfaces_print_no_price_until_pricing_is_approved(tmp_path: Path):
+    """5-1 (owner, 2026-11-06): neither the Free subscribe sheet nor the
+    Act-head Free note prints "from ₹…" under ``monthly``."""
+    client = _client(tmp_path, tier_model="monthly")
+    head = client.get("/laws/ndps").text
+    assert '<p class="ActHead-note">Unlock Playground to add this law.</p>' in head
+    assert "from ₹" not in head
+    html = client.get(add_path("ndps")).text
+    assert 'data-pg-kind="subscribe"' in html
+    sheet = _panel(html)
+    assert "Plus · Pro. Constitution learning stays free." in sheet
+    assert "₹" not in sheet

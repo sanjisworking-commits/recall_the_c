@@ -26,8 +26,11 @@ Representative subset; the full scenario runs (every state × 390/1280 × light/
 | `m2r-free_free_free3-readd-ndps_390x844_dark_sheet.png` | `13709c711ff2e5da…` |
 | `m2r-free_free_free3-readd-ndps_1280x900_light_sheet.png` | `7e539d9e46350e18…` |
 | `m2r-free_free_free3-readd-ndps_1280x900_light_scope.png` | `2b85acca8bc86d5f…` |
-| `m2r-guest_guest_ndps_390x844_light_sheet.png` | `522ab5b515eed5ee…` |
 | `m2r-plus_plus_bnss_1280x900_light_sheet.png` | `fa647b828abe0dac…` |
 | `m2r-plus_plus_bnss_390x844_dark_sheet.png` | `2259077ae0b5ba9f…` |
-| `m2r-monthly_free_bnss_1280x900_light_head.png` | `be3c60de3fb503a1…` |
-| `m2r-monthly_free_bnss_1280x900_light_sheet.png` | `3052e9470ac54780…` |
+| `m2r2-guest_guest_ndps_390x844_light_sheet.png` | `6b4e7880510041bf…` |
+| `m2r2-guest_guest_ndps_1280x900_dark_sheet.png` | `360021e3a83bdd93…` |
+| `m2r2-monthly_free_bnss_1280x900_light_head.png` | `89cd43992d0f2bb6…` |
+| `m2r2-monthly_free_bnss_1280x900_light_sheet.png` | `7a4858b5030f5145…` |
+
+`m2r2-*` files and `manifest-guest.json` / `manifest-monthly.json` were re-captured after the owner decisions of 2026-11-06 (5-11: one "Continue with Google" action on the guest sheet; 5-1: no price on the subscribe sheet or the Act-head Free note); the superseded guest sheet and monthly head/sheet captures remain in git history at `8c6b542`.

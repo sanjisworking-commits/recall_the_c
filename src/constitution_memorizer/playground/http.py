@@ -1,6 +1,7 @@
 """Request helpers shared by Playground routes and public Bare Act pages."""
 
 from __future__ import annotations
+from urllib.parse import quote
 
 from fastapi import HTTPException, Request
 from fastapi.responses import RedirectResponse
@@ -30,6 +31,13 @@ def local_next_path(next_url: str, fallback: str = "/playground") -> str:
 
 def playground_login_href(next_url: str) -> str:
     return f"/login?next={local_next_path(next_url)}"
+
+
+def playground_google_href(next_url: str) -> str:
+    """M2-R (5-11, owner 2026-11-06): the one Google action on the guest Add
+    sheet. Signing in creates the account; ``next`` is a same-origin path so the
+    user comes back to the same Act (its Add dialog)."""
+    return f"/auth/google/start?next={quote(local_next_path(next_url), safe='')}"
 
 
 def require_playground_repo(request: Request):

@@ -444,8 +444,8 @@ def test_guest_free_plus_halted_pending_stay_separate(tmp_path: Path) -> None:
     guest_sheet = _sheet(guest_html)
     assert 'data-pg-kind="guest"' in guest_sheet
     assert "data-guest-add-gate" in guest_sheet
-    assert ">Sign in<" in guest_sheet
-    assert "Create an account" in guest_sheet
+    assert ">Continue with Google<" in guest_sheet  # M2-R (5-11)
+    assert "Create an account" not in guest_sheet
     assert "data-expired-add" not in guest_sheet
     assert "data-expired-bareact" not in _head(guest_html)
     assert LIVE_HEADING not in guest_html

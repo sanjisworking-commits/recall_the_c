@@ -2,8 +2,8 @@
 
 M2: one Add sheet per state (§2.1), drawn over the generated Act head and
 raised as a bottom sheet at phone width by CSS alone; the phone twin with its
-inert buttons is gone, so Sign in / Create an account are real links to the
-login gate on both widths. Guest GET /playground/laws/ndps/add is checked
+inert buttons is gone. M2-R (5-11): the sheet offers one Google action, a
+real link to /auth/google/start on both widths that returns to this Act. Guest GET /playground/laws/ndps/add is checked
 here. Signed-in Unlock, Plus confirm, Expired/Halted recovery, and Guest 03
 stay unchanged.
 """
@@ -16,6 +16,7 @@ import time
 from datetime import datetime, timezone
 from html import unescape
 from pathlib import Path
+from urllib.parse import quote
 from uuid import UUID
 
 import pytest
@@ -41,7 +42,7 @@ BASE = ROOT / "src/constitution_memorizer/web/templates/base.html"
 PG_CSS = ROOT / "src/constitution_memorizer/web/static/playground.css"
 PG_JS = ROOT / "src/constitution_memorizer/web/static/playground.js"
 USER = UUID("11111111-1111-4111-8111-111111111111")
-LOGIN_NEXT = f"/login?next={add_path('ndps')}"
+GOOGLE_NEXT = "/auth/google/start?next=" + quote(add_path("ndps"), safe="")  # M2-R (5-11)
 NDPS = get_bare_act("ndps")
 GUEST_ADD_TITLE = "Add to Playground"
 READING_NAME = playground_bare_act_spec("ndps").short_name
@@ -199,20 +200,21 @@ def test_phone_guest_add_sheet_is_guest_kind_with_source_copy(tmp_path: Path) ->
     assert GUEST_LEDE in sheet
     assert f'<p class="pg-add-lede">{GUEST_LEDE}</p>' in sheet
     assert MAP_LEDE_LOWER_THE not in sheet
-    assert ">Sign in<" in sheet
-    assert "Create an account" in sheet
+    assert ">Continue with Google<" in sheet
+    assert "Create an account" not in sheet
+    assert ">Sign in<" not in sheet
     assert ">Cancel<" not in sheet
     assert "data-pg-sheet-close" not in sheet
     assert "Sign in to use Playground" not in sheet
-    # Both gates are real links to the login gate (the phone twin's inert
-    # buttons are gone) and nothing on the sheet can write.
-    assert sheet.count("data-guest-add-gate") == 2
-    assert sheet.count(f'href="{LOGIN_NEXT}"') == 2
-    assert f'<a class="pg-add-primary" href="{LOGIN_NEXT}" data-guest-add-gate>Sign in</a>' in sheet
+    # M2-R (5-11): one Google action, a real link (the phone twin's inert
+    # buttons are gone), and nothing on the sheet can write.
+    assert sheet.count("data-guest-add-gate") == 1
+    assert sheet.count(f'href="{GOOGLE_NEXT}"') == 1
     assert (
-        f'<a class="pg-add-secondary" href="{LOGIN_NEXT}" data-guest-add-gate>Create an account</a>'
+        f'<a class="pg-add-primary" href="{GOOGLE_NEXT}" data-guest-add-gate data-guest-add-google>Continue with Google</a>'
     ) in sheet
-    assert sheet.count("<a ") == 2
+    assert "pg-add-secondary" not in sheet
+    assert sheet.count("<a ") == 1
     assert "<form" not in sheet
     assert "<button" not in sheet
     assert 'type="button"' not in sheet
@@ -230,8 +232,8 @@ def test_phone_guest_add_sheet_is_guest_kind_with_source_copy(tmp_path: Path) ->
     fetched_sheet = _sheet(fetched)
     assert 'data-pg-kind="guest"' in fetched_sheet
     assert f'<p class="pg-add-lede">{GUEST_LEDE}</p>' in fetched_sheet
-    assert fetched_sheet.count(f'href="{LOGIN_NEXT}"') == 2
-    assert fetched_sheet.count("data-guest-add-gate") == 2
+    assert fetched_sheet.count(f'href="{GOOGLE_NEXT}"') == 1  # M2-R (5-11)
+    assert fetched_sheet.count("data-guest-add-gate") == 1
     assert "<form" not in fetched_sheet
     assert _facts(client) == before
 
@@ -261,12 +263,12 @@ def test_guest_add_sheet_source_is_one_block_with_real_links() -> None:
     guest = panel.split('{% if kind == "guest" %}', 1)[1].split("{% elif", 1)[0]
     assert 'class="pg-add-title">Add to Playground<' in guest
     assert "reading_name|default(short_title)" in guest
-    assert guest.count("login_href") == 2
-    assert guest.count("data-guest-add-gate") == 2
-    assert '<a class="pg-add-primary" href="{{ login_href }}" data-guest-add-gate>Sign in</a>' in guest
+    assert guest.count("google_href") == 1 and "login_href" not in guest
+    assert guest.count("data-guest-add-gate") == 1
     assert (
-        '<a class="pg-add-secondary" href="{{ login_href }}" data-guest-add-gate>Create an account</a>'
+        '<a class="pg-add-primary" href="{{ google_href }}" data-guest-add-gate data-guest-add-google>Continue with Google</a>'
     ) in guest
+    assert "Create an account" not in guest and "pg-add-secondary" not in guest
     assert "cancel_href" not in guest
     assert "data-pg-sheet-close" not in guest
     assert "<form" not in guest
@@ -478,14 +480,7 @@ def test_phone_guest_add_screen02_390x844(tmp_path: Path) -> None:
                   form: Boolean(signin.closest('form')),
                   width: signin.getBoundingClientRect().width,
                 },
-                create: {
-                  tag: create.tagName,
-                  href: create.getAttribute('href'),
-                  text: create.textContent.trim(),
-                  gate: create.hasAttribute('data-guest-add-gate'),
-                  form: Boolean(create.closest('form')),
-                  width: create.getBoundingClientRect().width,
-                },
+                create: create ? { tag: create.tagName } : null,
                 cancel: [...panel.querySelectorAll('a, button')].some((a) => a.textContent.trim() === 'Cancel'),
                 dialog: { top: d.top, left: d.left, width: d.width, height: d.height },
                 panel: { top: p.top, left: p.left, width: p.width, bottom: p.bottom },
@@ -500,18 +495,9 @@ def test_phone_guest_add_screen02_390x844(tmp_path: Path) -> None:
         page.evaluate("() => document.activeElement && document.activeElement.blur()")
         page.screenshot(path=str(shot_path), full_page=False)
 
-        n_before_click = len(requests)
-        page.locator("[data-pg-add] .pg-add-primary").click()
-        page.wait_for_url("**/login**", timeout=8000)
-        signin_url = page.url
-        extra = requests[n_before_click:]
-
-        page.goto(f"{origin}/laws/ndps", wait_until="networkidle")
-        page.locator(".ActHead .ActHead-btn").click()
-        page.wait_for_selector("[data-pg-add][data-pg-kind='guest']", timeout=8000)
-        page.locator("[data-pg-add] .pg-add-secondary").click()
-        page.wait_for_url("**/login**", timeout=8000)
-        create_url = page.url
+        # M2-R (5-11): the one action is a plain link to /auth/google/start
+        # (href asserted from `geo`); opening the sheet never POSTs.
+        extra = list(requests)
 
         page.goto(f"{origin}/laws/ndps", wait_until="networkidle")
         page.locator(".ActHead .ActHead-btn").click()
@@ -557,17 +543,12 @@ def test_phone_guest_add_screen02_390x844(tmp_path: Path) -> None:
     assert geo["title"] == GUEST_ADD_TITLE
     assert geo["lede"] == GUEST_LEDE
     assert geo["signin"]["tag"] == "A"
-    assert geo["signin"]["href"] == LOGIN_NEXT
-    assert geo["signin"]["text"] == "Sign in"
+    assert geo["signin"]["href"] == GOOGLE_NEXT
+    assert geo["signin"]["text"] == "Continue with Google"
     assert geo["signin"]["gate"] is True
     assert geo["signin"]["form"] is False
     assert geo["signin"]["width"] >= 300
-    assert geo["create"]["tag"] == "A"
-    assert geo["create"]["href"] == LOGIN_NEXT
-    assert geo["create"]["text"] == "Create an account"
-    assert geo["create"]["gate"] is True
-    assert geo["create"]["form"] is False
-    assert geo["create"]["width"] >= 300
+    assert geo["create"] is None  # M2-R (5-11): no second action
     assert geo["cancel"] is False
     assert geo["dialog"]["width"] >= 300
     assert geo["panel"]["width"] >= 300
@@ -576,10 +557,6 @@ def test_phone_guest_add_screen02_390x844(tmp_path: Path) -> None:
     assert geo["overflow"] is False
     assert geo["backgroundTitle"] == NDPS.title
     assert geo["confirm"] is False
-    assert "/login" in signin_url
-    assert add_path("ndps") in signin_url
-    assert "/login" in create_url
-    assert add_path("ndps") in create_url
     assert not any(item.startswith("POST ") for item in extra)
     assert closed["open"] is False
     assert closed["url"] == "/laws/ndps"
@@ -648,9 +625,9 @@ def test_phone_guest_add_screen02_desktop_regression_1280(tmp_path: Path) -> Non
     assert geo["panelDisplay"] != "none"
     assert geo["title"] == GUEST_ADD_TITLE
     assert geo["lede"] == GUEST_LEDE
-    assert geo["labels"] == ["Sign in", "Create an account"]
-    assert geo["tags"] == ["A", "A"]
-    assert geo["hrefs"] == [LOGIN_NEXT, LOGIN_NEXT]
+    assert geo["labels"] == ["Continue with Google"]
+    assert geo["tags"] == ["A"]
+    assert geo["hrefs"] == [GOOGLE_NEXT]
     assert geo["closeDisplay"] != "none"
     assert geo["notFullBleed"] is True
     assert geo["centered"] is True

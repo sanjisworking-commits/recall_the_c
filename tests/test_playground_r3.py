@@ -523,7 +523,9 @@ def test_d35_guest_add_sheet_preserves_next(tmp_path: Path):
     assert page.status_code == 200
     assert 'data-pg-kind="guest"' in page.text
     assert "Add to Playground" in page.text
-    assert f"/login?next={add_path('ndps')}" in page.text
+    # M2-R (5-11): the one Google action carries this Act's Add path as next.
+    assert "/auth/google/start?next=%2Fplayground%2Flaws%2Fndps%2Fadd" in page.text
+    assert f"/login?next={add_path('ndps')}" not in page.text
     # M2 Q4: opened by URL, the guest sheet is a dialog over the Act page
     # (no hard-gated shell of its own); the in-page fetch keeps the gate.
     assert "data-pg-sheet-direct" in page.text and 'data-act-head="ndps"' in page.text

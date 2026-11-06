@@ -1,10 +1,10 @@
 {
- "label": "m2r-guest",
- "base": "http://127.0.0.1:8916",
+ "label": "m2r2-guest",
+ "base": "http://localhost:8916",
  "viewer": "guest",
  "tier_model": "choices",
- "captured_at": "2026-11-06T01:41:22+0530",
- "chrome": "Google Chrome 156.0.8078.80",
+ "captured_at": "2026-11-06T10:02:43+0530",
+ "chrome": "Google Chrome 156.0.8078.81",
  "rows": [
   {
    "key": "ndps",
@@ -56,12 +56,12 @@
    },
    "shots": {
     "head": {
-     "file": "m2r-guest_guest_ndps_390x844_light_head.png",
+     "file": "m2r2-guest_guest_ndps_390x844_light_head.png",
      "sha256": "9f02122c4e9a95d8243b6b77fb5736d7ca590391a02a5e866e16529d8f9c5910"
     },
     "sheet": {
-     "file": "m2r-guest_guest_ndps_390x844_light_sheet.png",
-     "sha256": "522ab5b515eed5ee37c3094449514e69c8766cfb999e7efe7240d935ab78a2e4"
+     "file": "m2r2-guest_guest_ndps_390x844_light_sheet.png",
+     "sha256": "6b4e7880510041bff536042743e2723b845138576f04aabb711bf47a1670e4d7"
     }
    },
    "sheet_opened": true,
@@ -84,7 +84,7 @@
       "href": null,
       "box": {
        "x": 322,
-       "y": 605,
+       "y": 660,
        "w": 44,
        "h": 44
       },
@@ -96,35 +96,18 @@
      },
      {
       "kind": "panel",
-      "t": "Sign in",
+      "t": "Continue with Google",
       "tag": "A",
-      "href": "/login?next=/playground/laws/ndps/add",
+      "href": "/auth/google/start?next=%2Fplayground%2Flaws%2Fndps%2Fadd",
       "box": {
        "x": 34,
-       "y": 709,
+       "y": 764,
        "w": 322,
        "h": 50
       },
       "meets44": true,
       "fg": "#ffffff",
       "bg": "#141414",
-      "ratio": 18.42,
-      "focusable": true
-     },
-     {
-      "kind": "panel",
-      "t": "Create an account",
-      "tag": "A",
-      "href": "/login?next=/playground/laws/ndps/add",
-      "box": {
-       "x": 34,
-       "y": 768,
-       "w": 322,
-       "h": 46
-      },
-      "meets44": true,
-      "fg": "#141414",
-      "bg": "#ffffff",
       "ratio": 18.42,
       "focusable": true
      }
@@ -140,9 +123,9 @@
     "alert": null,
     "panelBox": {
      "x": 16,
-     "y": 597,
+     "y": 652,
      "w": 358,
-     "h": 247
+     "h": 192
     },
     "warning": null,
     "hasMonthEyebrow": false,
@@ -155,15 +138,7 @@
      {
       "inDialog": true,
       "el": "A.pg-add-primary",
-      "text": "Sign in",
-      "focusVisible": true,
-      "outline": "2px solid",
-      "dialogOpen": true
-     },
-     {
-      "inDialog": true,
-      "el": "A.pg-add-secondary",
-      "text": "Create an account",
+      "text": "Continue with Google",
       "focusVisible": true,
       "outline": "2px solid",
       "dialogOpen": true
@@ -179,15 +154,7 @@
      {
       "inDialog": true,
       "el": "A.pg-add-primary",
-      "text": "Sign in",
-      "focusVisible": true,
-      "outline": "2px solid",
-      "dialogOpen": true
-     },
-     {
-      "inDialog": true,
-      "el": "A.pg-add-secondary",
-      "text": "Create an account",
+      "text": "Continue with Google",
       "focusVisible": true,
       "outline": "2px solid",
       "dialogOpen": true
@@ -203,15 +170,7 @@
      {
       "inDialog": true,
       "el": "A.pg-add-primary",
-      "text": "Sign in",
-      "focusVisible": true,
-      "outline": "2px solid",
-      "dialogOpen": true
-     },
-     {
-      "inDialog": true,
-      "el": "A.pg-add-secondary",
-      "text": "Create an account",
+      "text": "Continue with Google",
       "focusVisible": true,
       "outline": "2px solid",
       "dialogOpen": true
@@ -227,7 +186,31 @@
      {
       "inDialog": true,
       "el": "A.pg-add-primary",
-      "text": "Sign in",
+      "text": "Continue with Google",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-primary",
+      "text": "Continue with Google",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
       "focusVisible": true,
       "outline": "2px solid",
       "dialogOpen": true
@@ -299,12 +282,12 @@
    },
    "shots": {
     "head": {
-     "file": "m2r-guest_guest_ndps_390x844_dark_head.png",
+     "file": "m2r2-guest_guest_ndps_390x844_dark_head.png",
      "sha256": "cc8847b99fb01f47ff07e2c4b50d861e28a975267d016a7591bdaadfca6ee4a1"
     },
     "sheet": {
-     "file": "m2r-guest_guest_ndps_390x844_dark_sheet.png",
-     "sha256": "eac72ad3e460bea7e73670fe33243aeaa2b7bc53e48fbfacd1f57a995627193a"
+     "file": "m2r2-guest_guest_ndps_390x844_dark_sheet.png",
+     "sha256": "f6544dbd284a3519aa6cb743b632374a6f8f2c649d551c1fea743c9326ebe300"
     }
    },
    "sheet_opened": true,
@@ -327,7 +310,7 @@
       "href": null,
       "box": {
        "x": 322,
-       "y": 605,
+       "y": 660,
        "w": 44,
        "h": 44
       },
@@ -339,12 +322,12 @@
      },
      {
       "kind": "panel",
-      "t": "Sign in",
+      "t": "Continue with Google",
       "tag": "A",
-      "href": "/login?next=/playground/laws/ndps/add",
+      "href": "/auth/google/start?next=%2Fplayground%2Flaws%2Fndps%2Fadd",
       "box": {
        "x": 34,
-       "y": 709,
+       "y": 764,
        "w": 322,
        "h": 50
       },
@@ -352,23 +335,6 @@
       "fg": "#141414",
       "bg": "#ecebe6",
       "ratio": 15.43,
-      "focusable": true
-     },
-     {
-      "kind": "panel",
-      "t": "Create an account",
-      "tag": "A",
-      "href": "/login?next=/playground/laws/ndps/add",
-      "box": {
-       "x": 34,
-       "y": 768,
-       "w": 322,
-       "h": 46
-      },
-      "meets44": true,
-      "fg": "#ecebe6",
-      "bg": "#1a1917",
-      "ratio": 14.72,
       "focusable": true
      }
     ],
@@ -381,9 +347,9 @@
     "alert": null,
     "panelBox": {
      "x": 16,
-     "y": 597,
+     "y": 652,
      "w": 358,
-     "h": 247
+     "h": 192
     },
     "warning": null,
     "hasMonthEyebrow": false,
@@ -396,15 +362,7 @@
      {
       "inDialog": true,
       "el": "A.pg-add-primary",
-      "text": "Sign in",
-      "focusVisible": true,
-      "outline": "2px solid",
-      "dialogOpen": true
-     },
-     {
-      "inDialog": true,
-      "el": "A.pg-add-secondary",
-      "text": "Create an account",
+      "text": "Continue with Google",
       "focusVisible": true,
       "outline": "2px solid",
       "dialogOpen": true
@@ -420,15 +378,7 @@
      {
       "inDialog": true,
       "el": "A.pg-add-primary",
-      "text": "Sign in",
-      "focusVisible": true,
-      "outline": "2px solid",
-      "dialogOpen": true
-     },
-     {
-      "inDialog": true,
-      "el": "A.pg-add-secondary",
-      "text": "Create an account",
+      "text": "Continue with Google",
       "focusVisible": true,
       "outline": "2px solid",
       "dialogOpen": true
@@ -444,15 +394,7 @@
      {
       "inDialog": true,
       "el": "A.pg-add-primary",
-      "text": "Sign in",
-      "focusVisible": true,
-      "outline": "2px solid",
-      "dialogOpen": true
-     },
-     {
-      "inDialog": true,
-      "el": "A.pg-add-secondary",
-      "text": "Create an account",
+      "text": "Continue with Google",
       "focusVisible": true,
       "outline": "2px solid",
       "dialogOpen": true
@@ -468,7 +410,31 @@
      {
       "inDialog": true,
       "el": "A.pg-add-primary",
-      "text": "Sign in",
+      "text": "Continue with Google",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-primary",
+      "text": "Continue with Google",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
       "focusVisible": true,
       "outline": "2px solid",
       "dialogOpen": true
@@ -540,12 +506,12 @@
    },
    "shots": {
     "head": {
-     "file": "m2r-guest_guest_ndps_1280x900_light_head.png",
+     "file": "m2r2-guest_guest_ndps_1280x900_light_head.png",
      "sha256": "cf9297614e0b75d17f6e5cc2b0c9e1642b07cf3ba0e292e13819ad1e47d3fdd4"
     },
     "sheet": {
-     "file": "m2r-guest_guest_ndps_1280x900_light_sheet.png",
-     "sha256": "d522040515312fa1a4ec32b15babdbbbf580f1e2726c42e89e7f308c1eedb68d"
+     "file": "m2r2-guest_guest_ndps_1280x900_light_sheet.png",
+     "sha256": "5a1f15a7f89bb958dcd8c307fe872b76516fc37fc1234d85ba9cebc71c8ae492"
     }
    },
    "sheet_opened": true,
@@ -568,7 +534,7 @@
       "href": null,
       "box": {
        "x": 811,
-       "y": 340,
+       "y": 367,
        "w": 44,
        "h": 44
       },
@@ -580,35 +546,18 @@
      },
      {
       "kind": "panel",
-      "t": "Sign in",
+      "t": "Continue with Google",
       "tag": "A",
-      "href": "/login?next=/playground/laws/ndps/add",
+      "href": "/auth/google/start?next=%2Fplayground%2Flaws%2Fndps%2Fadd",
       "box": {
        "x": 439,
-       "y": 443,
+       "y": 471,
        "w": 402,
        "h": 50
       },
       "meets44": true,
       "fg": "#ffffff",
       "bg": "#141414",
-      "ratio": 18.42,
-      "focusable": true
-     },
-     {
-      "kind": "panel",
-      "t": "Create an account",
-      "tag": "A",
-      "href": "/login?next=/playground/laws/ndps/add",
-      "box": {
-       "x": 439,
-       "y": 502,
-       "w": 402,
-       "h": 46
-      },
-      "meets44": true,
-      "fg": "#141414",
-      "bg": "#ffffff",
       "ratio": 18.42,
       "focusable": true
      }
@@ -624,9 +573,9 @@
     "alert": null,
     "panelBox": {
      "x": 410,
-     "y": 325,
+     "y": 352,
      "w": 460,
-     "h": 250
+     "h": 195
     },
     "warning": null,
     "hasMonthEyebrow": false,
@@ -639,15 +588,7 @@
      {
       "inDialog": true,
       "el": "A.pg-add-primary",
-      "text": "Sign in",
-      "focusVisible": true,
-      "outline": "2px solid",
-      "dialogOpen": true
-     },
-     {
-      "inDialog": true,
-      "el": "A.pg-add-secondary",
-      "text": "Create an account",
+      "text": "Continue with Google",
       "focusVisible": true,
       "outline": "2px solid",
       "dialogOpen": true
@@ -663,15 +604,7 @@
      {
       "inDialog": true,
       "el": "A.pg-add-primary",
-      "text": "Sign in",
-      "focusVisible": true,
-      "outline": "2px solid",
-      "dialogOpen": true
-     },
-     {
-      "inDialog": true,
-      "el": "A.pg-add-secondary",
-      "text": "Create an account",
+      "text": "Continue with Google",
       "focusVisible": true,
       "outline": "2px solid",
       "dialogOpen": true
@@ -687,15 +620,7 @@
      {
       "inDialog": true,
       "el": "A.pg-add-primary",
-      "text": "Sign in",
-      "focusVisible": true,
-      "outline": "2px solid",
-      "dialogOpen": true
-     },
-     {
-      "inDialog": true,
-      "el": "A.pg-add-secondary",
-      "text": "Create an account",
+      "text": "Continue with Google",
       "focusVisible": true,
       "outline": "2px solid",
       "dialogOpen": true
@@ -711,7 +636,31 @@
      {
       "inDialog": true,
       "el": "A.pg-add-primary",
-      "text": "Sign in",
+      "text": "Continue with Google",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-primary",
+      "text": "Continue with Google",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
       "focusVisible": true,
       "outline": "2px solid",
       "dialogOpen": true
@@ -783,12 +732,12 @@
    },
    "shots": {
     "head": {
-     "file": "m2r-guest_guest_ndps_1280x900_dark_head.png",
+     "file": "m2r2-guest_guest_ndps_1280x900_dark_head.png",
      "sha256": "ca4e0e26d43fb52e5b038ae5ccd77ea837b04ab778a1a41d643b558bb7d806bd"
     },
     "sheet": {
-     "file": "m2r-guest_guest_ndps_1280x900_dark_sheet.png",
-     "sha256": "5fda657babff7090fea3b26d54c8a848963831b74b87eb9f4dfc6bd639d40807"
+     "file": "m2r2-guest_guest_ndps_1280x900_dark_sheet.png",
+     "sha256": "360021e3a83bdd93490d93906285d8c77444ec8cfdebb3b8e0ed8464e6b2d60c"
     }
    },
    "sheet_opened": true,
@@ -811,7 +760,7 @@
       "href": null,
       "box": {
        "x": 811,
-       "y": 340,
+       "y": 367,
        "w": 44,
        "h": 44
       },
@@ -823,12 +772,12 @@
      },
      {
       "kind": "panel",
-      "t": "Sign in",
+      "t": "Continue with Google",
       "tag": "A",
-      "href": "/login?next=/playground/laws/ndps/add",
+      "href": "/auth/google/start?next=%2Fplayground%2Flaws%2Fndps%2Fadd",
       "box": {
        "x": 439,
-       "y": 443,
+       "y": 471,
        "w": 402,
        "h": 50
       },
@@ -836,23 +785,6 @@
       "fg": "#141414",
       "bg": "#ecebe6",
       "ratio": 15.43,
-      "focusable": true
-     },
-     {
-      "kind": "panel",
-      "t": "Create an account",
-      "tag": "A",
-      "href": "/login?next=/playground/laws/ndps/add",
-      "box": {
-       "x": 439,
-       "y": 502,
-       "w": 402,
-       "h": 46
-      },
-      "meets44": true,
-      "fg": "#ecebe6",
-      "bg": "#1a1917",
-      "ratio": 14.72,
       "focusable": true
      }
     ],
@@ -865,9 +797,9 @@
     "alert": null,
     "panelBox": {
      "x": 410,
-     "y": 325,
+     "y": 352,
      "w": 460,
-     "h": 250
+     "h": 195
     },
     "warning": null,
     "hasMonthEyebrow": false,
@@ -880,15 +812,7 @@
      {
       "inDialog": true,
       "el": "A.pg-add-primary",
-      "text": "Sign in",
-      "focusVisible": true,
-      "outline": "2px solid",
-      "dialogOpen": true
-     },
-     {
-      "inDialog": true,
-      "el": "A.pg-add-secondary",
-      "text": "Create an account",
+      "text": "Continue with Google",
       "focusVisible": true,
       "outline": "2px solid",
       "dialogOpen": true
@@ -904,15 +828,7 @@
      {
       "inDialog": true,
       "el": "A.pg-add-primary",
-      "text": "Sign in",
-      "focusVisible": true,
-      "outline": "2px solid",
-      "dialogOpen": true
-     },
-     {
-      "inDialog": true,
-      "el": "A.pg-add-secondary",
-      "text": "Create an account",
+      "text": "Continue with Google",
       "focusVisible": true,
       "outline": "2px solid",
       "dialogOpen": true
@@ -928,15 +844,7 @@
      {
       "inDialog": true,
       "el": "A.pg-add-primary",
-      "text": "Sign in",
-      "focusVisible": true,
-      "outline": "2px solid",
-      "dialogOpen": true
-     },
-     {
-      "inDialog": true,
-      "el": "A.pg-add-secondary",
-      "text": "Create an account",
+      "text": "Continue with Google",
       "focusVisible": true,
       "outline": "2px solid",
       "dialogOpen": true
@@ -952,7 +860,31 @@
      {
       "inDialog": true,
       "el": "A.pg-add-primary",
-      "text": "Sign in",
+      "text": "Continue with Google",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-primary",
+      "text": "Continue with Google",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
       "focusVisible": true,
       "outline": "2px solid",
       "dialogOpen": true

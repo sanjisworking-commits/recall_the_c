@@ -48,7 +48,7 @@ LEDE = (
     "Reading it stays free."
 )
 # B1-F09 (PR #230): Max is not sold anew; evidence record keeps its SHA.
-NOTE = "Plus · Pro — from ₹199 / month. Constitution learning stays free."
+NOTE = "Plus · Pro. Constitution learning stays free."  # 5-1: no price until approved
 OLD_MARKERS = (
     "data-signed-in-add-desktop",
     "data-signed-in-add-phone",
@@ -319,9 +319,9 @@ def test_signed_in_add_does_not_change_guest_or_other_kinds(tmp_path: Path) -> N
     assert 'data-pg-kind="guest"' in guest_sheet
     assert f'<h1 id="pg-add-title" class="pg-add-title">{TITLE}</h1>' in guest_sheet
     assert "Playground needs an account. Reading The NDPS Act, 1985 stays free" in guest_sheet
-    assert 'class="pg-add-primary" href="/login?next=' in guest_sheet
-    assert "data-guest-add-gate>Sign in</a>" in guest_sheet
-    assert "data-guest-add-gate>Create an account</a>" in guest_sheet
+    assert 'class="pg-add-primary" href="/auth/google/start?next=' in guest_sheet
+    assert "data-guest-add-google>Continue with Google</a>" in guest_sheet
+    assert "Create an account" not in guest_sheet  # M2-R (5-11)
     assert PRIMARY not in guest_sheet
     assert NOTE not in guest_sheet
     client = TestClient(_mu_app(tmp_path))
@@ -462,7 +462,7 @@ def test_signed_in_add_1280_gate_and_close(tmp_path: Path) -> None:
                   full: panel.innerText.includes('Playground full'),
                   pending: panel.innerText.includes('temporarily unavailable'),
                   entire: panel.innerText.includes('Entire Act'),
-                  signin: panel.innerText.includes('Create an account'),
+                  signin: panel.innerText.includes('Continue with Google'),
                   cancel: panel.innerText.includes('Cancel'),
                 },
                 background: Boolean(head),

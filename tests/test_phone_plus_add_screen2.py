@@ -108,7 +108,7 @@ LEGACY_MARKERS = (
     'data-expired-add="desktop"',
     'data-halted-add="desktop"',
     "plus-add-",
-    "guest-add-(?!gate)",
+    "guest-add-(?!gate|google)",  # M2-R (5-11): data-guest-add-google is the one Google action
     "signed-add-",
     "expired-add-",
     "halted-add-",
@@ -570,8 +570,8 @@ def test_guest_free_expired_halted_pro_other_law_get_the_same_sheet(
     _assert_act_page_underneath(guest_html, "ndps")
     assert 'data-pg-kind="guest"' in _panel_attrs(guest_html)
     guest_sheet = _sheet(guest_html)
-    assert 'data-guest-add-gate>Sign in</a>' in guest_sheet
-    assert 'data-guest-add-gate>Create an account</a>' in guest_sheet
+    assert 'data-guest-add-google>Continue with Google</a>' in guest_sheet  # M2-R (5-11)
+    assert "Create an account" not in guest_sheet
     assert f"Reading {NDPS_READING_NAME} stays free" in guest_sheet
     assert LEDE not in guest_sheet
 

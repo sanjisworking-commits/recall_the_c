@@ -85,7 +85,7 @@ LEGACY_MARKERS = (
     'data-expired-add="desktop"',
     'data-halted-add="desktop"',
     "plus-add-",
-    "guest-add-(?!gate)",
+    "guest-add-(?!gate|google)",  # M2-R (5-11): data-guest-add-google is the one Google action
     "signed-add-",
     "expired-add-",
     "halted-add-",
@@ -532,9 +532,9 @@ def test_halted_expired_pro_free_guest_get_the_same_sheet_with_own_state(
     )
     assert '<a class="pg-add-primary" href="/playground">Unlock Playground</a>' in free_sheet
     # B1-F09 (PR #230): Max is not sold anew; evidence record keeps its SHA.
-    assert '<p class="pg-add-note">Plus · Pro — ' in free_sheet
+    assert '<p class="pg-add-note">Plus · Pro. ' in free_sheet  # 5-1: no price until approved
     assert 'Max' not in free_sheet.split('pg-add-note', 1)[1].split('</p>', 1)[0]
-    assert "/ month. Constitution learning stays free.</p>" in free_sheet
+    assert "Plus · Pro. Constitution learning stays free.</p>" in free_sheet and "₹" not in free_sheet
     assert ">Cancel<" not in free_sheet
     assert "data-pg-add-confirm" not in free_sheet
 
@@ -548,12 +548,13 @@ def test_halted_expired_pro_free_guest_get_the_same_sheet_with_own_state(
         f"Playground needs an account. Reading {NDPS_READING_NAME} stays free — sign in and you’ll come right back here."
         in guest_sheet
     )
-    login_href = f"/login?next={add_path('ndps')}"
-    assert f'<a class="pg-add-primary" href="{login_href}" data-guest-add-gate>Sign in</a>' in guest_sheet
+    # M2-R (5-11): one Google action carrying this Act's Add path as next.
+    google_href = "/auth/google/start?next=%2Fplayground%2Flaws%2Fndps%2Fadd"
     assert (
-        f'<a class="pg-add-secondary" href="{login_href}" data-guest-add-gate>Create an account</a>'
+        f'<a class="pg-add-primary" href="{google_href}" data-guest-add-gate data-guest-add-google>Continue with Google</a>'
         in guest_sheet
     )
+    assert "Create an account" not in guest_sheet and "pg-add-secondary" not in guest_sheet
     assert "data-pg-add-confirm" not in guest_sheet
 
 
