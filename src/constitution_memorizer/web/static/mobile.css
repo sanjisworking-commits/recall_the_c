@@ -1562,6 +1562,20 @@
     gap: 10px;
   }
 
+  .browse-schedules-label-desktop {
+    display: none;
+  }
+
+  .browse-schedule-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .browse-schedule-card {
+    padding: 10px 10px 12px;
+  }
+
   .part-card {
     display: flex;
     flex-direction: column;
@@ -1740,6 +1754,10 @@
 
   body[data-mscreen="part"] .mobile-back {
     min-height: 36px;
+  }
+
+  body[data-mscreen="part"] .browse-schedule-page .eyebrow-desktop {
+    display: none;
   }
 
   body[data-mscreen="part"] .part-head {
@@ -5512,6 +5530,96 @@
   html:not(.rtc-anim) .rc-pulse,
   html:not(.rtc-anim) .learn-recite-bar {
     animation: none !important;
+  }
+}
+
+@media (max-width: 560px) {
+  body[data-mscreen="schedule"] .sheet {
+    padding: 0;
+  }
+
+  .sched-page {
+    margin: 0;
+  }
+
+  .sched-head {
+    padding: 2px 18px 22px;
+  }
+
+  .sched-back {
+    min-height: 44px;
+  }
+
+  .sched-title {
+    font-size: 24px;
+  }
+
+  .sched-body {
+    padding: 20px 18px 40px;
+  }
+
+  .sched-h,
+  .sched-sec-title {
+    font-size: 16px;
+  }
+
+  .sched-sec-title {
+    font-size: 17px;
+  }
+
+  .sched-p,
+  .sched-lead {
+    font-size: 14px;
+  }
+
+  .sched-table.is-three .sched-tr {
+    grid-template-columns: 28px 1fr;
+  }
+
+  .sched-table.is-three .sched-td-text {
+    grid-column: 2;
+  }
+
+  .sched-table.is-two .sched-tr {
+    grid-template-columns: 32px 1fr;
+  }
+
+  .sched-table.is-pay {
+    margin-left: 38px;
+  }
+
+  .sched-table.is-parts .sched-tr {
+    grid-template-columns: 84px 1fr;
+  }
+
+  .sched-list-head {
+    grid-template-columns: 56px 1fr auto;
+    gap: 8px;
+    padding: 12px 14px;
+  }
+
+  .sched-list-body .sched-tr {
+    padding: 10px 14px;
+  }
+
+  .sched-langs {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .sched-lang {
+    min-height: 72px;
+  }
+
+  .sched-lang-name {
+    font-size: 17px;
+  }
+
+  .sched-oath {
+    padding: 14px 16px;
+  }
+
+  .sched-oath-text {
+    font-size: 15.5px;
   }
 }
 

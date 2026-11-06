@@ -112,7 +112,7 @@
 
   <h1 class="display">Browse the Constitution</h1>
   <p class="lede">
-    The Constitution, Part by Part. Open an Article, then learn any clause from inside it.
+    The Constitution, Part by Part, then the twelve Schedules. Open an Article or a Schedule, then learn from inside it.
   </p>
 
   {% if is_guest|default(false) %}
@@ -158,7 +158,7 @@
     <a class="browse-resource-card" href="/tables" role="listitem">
       <span class="browse-resource-copy">
         <span class="browse-resource-name">Tables</span>
-        <span class="browse-resource-desc">Schedules, Parts, writs</span>
+        <span class="browse-resource-desc">Parts, writs, amendments</span>
       </span>
       <span class="browse-resource-chevron" aria-hidden="true">›</span>
     </a>
@@ -237,6 +237,28 @@
   {% else %}
   <p class="empty">No articles available to browse.</p>
   {% endfor %}
+
+  {% if schedule_cards %}
+  <section class="browse-schedules-section" id="schedules" aria-label="Schedules">
+    <div class="browse-part-header">
+      <span class="browse-part-roman">Schedules</span>
+      <span class="browse-part-name">Twelve Schedules annexed to the Constitution</span>
+      <span class="browse-part-range">First – Twelfth</span>
+    </div>
+    <div class="browse-schedule-grid">
+      {% for card in schedule_cards %}
+      <a class="browse-schedule-card" href="{{ card.href }}">
+        <span class="browse-schedule-card-top">
+          <span class="browse-schedule-card-name">{{ card.ord }} Schedule</span>
+          <span class="browse-schedule-card-chevron" aria-hidden="true">›</span>
+        </span>
+        <span class="browse-schedule-card-title">{{ card.title }}</span>
+        <span class="browse-schedule-card-refs">{{ card.refs }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
 
   {% if present_marks %}
   {# Design 15: marks live in a sheet on the phone so they cost the Articles

@@ -131,7 +131,7 @@ def test_browse_index_phone_cards_match_redesign(tmp_path: Path):
     assert '<span class="browse-resource-name">Laws</span>' in row
     assert "Bare Acts &amp; statutes" in row
     assert '<span class="browse-resource-name">Tables</span>' in row
-    assert "Schedules, Parts, writs" in row
+    assert "Parts, writs, amendments" in row
     base = client.get("/static/styles.css").text
     grid = base.split(".browse-resource-grid {", 1)[1].split("}", 1)[0]
     assert "display: grid" in grid

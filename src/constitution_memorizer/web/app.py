@@ -32,6 +32,7 @@ from fastapi.responses import (
 )
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from psycopg_pool import PoolTimeout
 
 from constitution_memorizer.admin.dependencies import admin_hint
 from constitution_memorizer.admin.routes import create_admin_router
@@ -130,6 +131,7 @@ from constitution_memorizer.web.browse import (
     load_reviewed_document,
 )
 from constitution_memorizer.web.explainers import explainer_asset_path, visual_explainer
+from constitution_memorizer.web.schedules import browse_schedule_cards, build_schedule_view
 from constitution_memorizer.planner.eligibility import is_unlearned
 from constitution_memorizer.planner.models import pace_label as plan_pace_label
 from constitution_memorizer.progress.repository import LEARN_MODES
@@ -294,11 +296,23 @@ STATIC_DIR = WEB_DIR / "static"
 
 @asynccontextmanager
 async def _app_lifespan(app: FastAPI):
-    """Open the shared Postgres pool before traffic; close it on shutdown."""
+    """Open the shared Postgres pool before traffic; close it on shutdown.
+
+    A warm-up timeout must not kill the process: Railway only stops the old
+    replica after /healthz succeeds, and a full session-mode pooler would
+    otherwise deadlock the deploy in a crash loop.
+    """
     pool = getattr(app.state, "db_pool", None)
     try:
         if pool is not None:
-            pool.open(wait=True, timeout=POOL_OPEN_TIMEOUT_SECONDS)
+            try:
+                pool.open(wait=True, timeout=POOL_OPEN_TIMEOUT_SECONDS)
+            except PoolTimeout:
+                logger.error(
+                    "Postgres pool warm-up timed out after %.0fs; "
+                    "serving /healthz and retrying connections on demand",
+                    POOL_OPEN_TIMEOUT_SECONDS,
+                )
         yield
     finally:
         if pool is not None:
@@ -2619,6 +2633,7 @@ def create_app(
             }
             for section in sections
         ]
+        schedule_cards = browse_schedule_cards()
         started = time.perf_counter()
         response = templates.TemplateResponse(
             request,
@@ -2626,6 +2641,7 @@ def create_app(
             {
                 "sections": sections,
                 "part_cards": part_cards,
+                "schedule_cards": schedule_cards,
                 "has_reviewed": app.state.reviewed is not None,
                 "parts_source": parts_source,
                 "present_marks": present_browse_marks(sections),
@@ -2672,6 +2688,32 @@ def create_app(
                 "present_marks": present_browse_marks([section]),
                 "access": access,
                 "claimed_articles": claimed,
+            },
+        )
+        record_request_timing("template", started)
+        return response
+
+    @app.get("/browse/schedule/{slug}", response_class=HTMLResponse)
+    async def browse_schedule_legacy(slug: str) -> RedirectResponse:
+        """Old singular path — keep so merged #229 links still resolve."""
+        return RedirectResponse(url=f"/browse/schedules/{slug}", status_code=301)
+
+    @app.get("/browse/schedules/{slug}", response_class=HTMLResponse)
+    async def browse_schedule(request: Request, slug: str) -> HTMLResponse:
+        """One Constitution Schedule — read-only Bare Act reference."""
+        started = time.perf_counter()
+        view = build_schedule_view(None, slug)
+        record_request_timing("browse_build", started)
+        if view is None:
+            raise HTTPException(status_code=404, detail="Schedule not found")
+        access = access_summary(request, _engine())
+        started = time.perf_counter()
+        response = templates.TemplateResponse(
+            request,
+            "browse_schedule.html",
+            {
+                "schedule": view,
+                "access": access,
             },
         )
         record_request_timing("template", started)
