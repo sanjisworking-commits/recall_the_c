@@ -3,9 +3,11 @@
 Authorized: ChatGPT. Authenticated multiuser GET /laws after a real Plus
 subscription is halted. Catalogue, filters, search, and live IN PLAYGROUND
 tags stay. Header status comes from gate_view(BLOCK_PAYMENT_HALTED).title
-even when the paid period has elapsed. No Playground /learn hrefs.
-Guest, Free, Plus, Expired, paused, pending, Pro/Max, phone, Plus 01–11,
-Expired 01–11, and Halted 01–02 stay unchanged. No new route.
+even when the paid period has elapsed. No Playground /learn hrefs. M3 (Q3 /
+F04): one Laws body for every viewer and width; a card prints at most its
+status badge, never a CTA. Guest, Free, Plus, Expired, paused, pending,
+Pro/Max, Plus 01–11, Expired 01–11, and Halted 01–02 stay unchanged. No new
+route.
 """
 
 from __future__ import annotations
@@ -194,8 +196,9 @@ def _catalog_html(desk: str) -> str:
 
 
 def _cta_kind(desk: str, law_id: str) -> str | None:
+    # M3 (F04): the badge-only wrapper keeps the CTA's data attributes.
     match = re.search(
-        rf'<div class="LawPlaygroundCta"[^>]*data-law-id="{re.escape(law_id)}"[^>]*>',
+        rf'<div class="LawPlaygroundCta LawPlaygroundCta--badge"[^>]*data-law-id="{re.escape(law_id)}"[^>]*>',
         desk,
     )
     if match is None:
@@ -328,6 +331,11 @@ def test_halted_open_period_laws_keeps_catalogue_and_live_tags(tmp_path: Path) -
     assert not re.search(r"/playground/laws/[^\"']+/learn", desk)
     assert "+ Add to Playground" not in desk
     assert 'data-pg-kind="eligible_to_add"' not in desk
+    # M3 (F04): no card carries a Playground CTA — badge only.
+    for gone in ("pg-btn", "pg-lede", "pg-actions", "data-pg-sheet",
+                 "Add to Playground", "Unlock Playground", "Subscribe to use Playground"):
+        assert gone not in desk, gone
+    assert desk.count('class="LawPlaygroundCta"') == 0
     for law_id in RETAINED:
         assert client.app.state.roster.is_law_active_this_period(USER, law_id)
         assert _cta_kind(desk, law_id) == "already_active"
@@ -366,7 +374,18 @@ def test_guest_free_plus_expired_paused_pending_pro_max_are_not_halted_laws(
 ) -> None:
     guest_html = TestClient(_mu_app(tmp_path / "guest")).get("/laws").text
     assert 'data-halted-laws="desktop"' not in guest_html
-    assert "data-guest-laws-desktop" in guest_html
+    # M3 (Q3): one catalogue body for the guest too — no guest fixture body,
+    # and no Playground badge or CTA for a guest.
+    assert guest_html.count("data-laws-index") == 1
+    assert "data-guest-laws-desktop" not in guest_html
+    # M3 (F04): a guest card has no badge, button or full CTA — the badge-only
+    # wrapper printed for the guest state is empty.
+    assert "LawStatusBadge" not in guest_html
+    assert "pg-btn" not in guest_html
+    assert guest_html.count('class="LawPlaygroundCta"') == 0
+    assert len(re.findall(
+        r'LawPlaygroundCta--badge"[^>]*data-pg-kind="guest"[^>]*>\s*</div>', guest_html
+    )) == guest_html.count("LawPlaygroundCta--badge")
 
     free = TestClient(_mu_app(tmp_path / "free"))
     _sign_in(free)
@@ -407,15 +426,16 @@ def test_guest_free_plus_expired_paused_pending_pro_max_are_not_halted_laws(
     _subscribe(pending, status="pending")
     assert 'data-halted-laws="desktop"' not in pending.get("/laws").text
 
-    pro = TestClient(_mu_app(tmp_path / "pro"))
-    _sign_in(pro)
-    _subscribe(pro, tier="pro", status="active")
-    assert 'data-halted-laws="desktop"' not in pro.get("/laws").text
-
-    mx = TestClient(_mu_app(tmp_path / "max"))
-    _sign_in(mx)
-    _subscribe(mx, tier="max", status="active")
-    assert 'data-halted-laws="desktop"' not in mx.get("/laws").text
+    # M3 (F03): Pro and Max are live subscribers with their own labels.
+    for tier, label in (("pro", "RecallC Pro"), ("max", "RecallC Max")):
+        sub = TestClient(_mu_app(tmp_path / tier))
+        _sign_in(sub)
+        _subscribe(sub, tier=tier, status="active")
+        sub_html = sub.get("/laws").text
+        assert 'data-halted-laws="desktop"' not in sub_html, tier
+        assert 'data-plus-laws="desktop"' not in sub_html, tier
+        assert label in _header(sub_html), tier
+        assert "RecallC Free" not in _header(sub_html), tier
 
 
 def test_halted_laws_get_is_mutation_free(tmp_path: Path) -> None:
@@ -438,7 +458,9 @@ def test_halted_laws_uses_shared_predicate() -> None:
     assert "expired_laws" in src
     assert "halted_laws" in src
     assert 'data-halted-laws="desktop"' in src
-    assert "playground_cta(pg_state)" in src
+    # M3 (F04): the index prints the badge-only macro, never the CTA macro.
+    assert "playground_status_badge(pg_state)" in src
+    assert "playground_cta(" not in src
     assert "IN PLAYGROUND" not in src
     assert LIVE_HALTED_STATUS not in src
     for phrase in INVENTED:
@@ -607,6 +629,7 @@ def test_halted_laws_1280(tmp_path: Path) -> None:
                 (el) => el.getAttribute('href')
               );
               const add = signed && signed.innerText.includes('+ Add to Playground');
+              const ctaButtons = signed.querySelectorAll('.LawPlaygroundCta .pg-btn, .LawPlaygroundCta .pg-actions, [data-pg-sheet]').length; // M3 (F04)
               return {
                 present: Boolean(desk),
                 plusPresent: Boolean(plus),
@@ -619,6 +642,7 @@ def test_halted_laws_1280(tmp_path: Path) -> None:
                 badges,
                 learn,
                 add,
+                ctaButtons,
                 accountName: document.querySelector('.account-menu-btn-name').textContent.trim(),
                 accountStatus: document.querySelector('.account-menu-btn-status').textContent.trim(),
               };
@@ -640,6 +664,7 @@ def test_halted_laws_1280(tmp_path: Path) -> None:
     assert set(RETAINED) <= set(geo["badges"])
     assert geo["learn"] == []
     assert geo["add"] is False
+    assert geo["ctaButtons"] == 0  # M3 (F04)
     assert geo["accountName"] == "Sanjay"
     assert geo["accountStatus"] == LIVE_HALTED_STATUS
     assert shot_path.is_file()

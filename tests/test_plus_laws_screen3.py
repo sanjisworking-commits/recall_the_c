@@ -4,7 +4,9 @@ Authorized: ChatGPT. Authenticated multiuser GET /laws with a real active
 Plus subscription. Same accepted Laws index as Free signed-in Screen 03.
 Header status uses RecallC Plus from EntitlementSnapshot via
 request_is_active_plus. No Free strip on this page; no invented Plus copy,
-routes, or law-card treatments. Screen 04 Bare Act heads stay unchanged.
+routes, or law-card treatments. M3 (Q3 / F04): one Laws body for every
+viewer; a card prints at most its status badge, never an Add CTA (that lives
+on the Act head). Screen 04 Bare Act heads stay unchanged.
 """
 
 from __future__ import annotations
@@ -159,6 +161,10 @@ def test_plus_laws_keeps_accepted_index_from_real_subscription(tmp_path: Path) -
     assert "RecallC Free" not in header
     for phrase in INVENTED:
         assert phrase not in desk, phrase
+    # M3 (F04): no card carries a Playground CTA on any tier — Plus included.
+    for gone in ("pg-btn", "pg-lede", "pg-actions", "data-pg-sheet",
+                 "Add to Playground", "Unlock Playground", "Subscribe to use Playground"):
+        assert gone not in desk, gone
     browse = client.get("/browse")
     assert browse.status_code == 200
     assert "Browse the Constitution" in browse.text
@@ -191,7 +197,20 @@ def test_free_signed_in_laws_is_not_plus(tmp_path: Path) -> None:
 def test_guest_laws_is_unchanged(tmp_path: Path) -> None:
     html = TestClient(_mu_app(tmp_path)).get("/laws").text
     assert 'data-plus-laws="desktop"' not in html
-    assert "data-guest-laws-desktop" in html
+    # M3 (Q3 / F04): the guest sees the same one catalogue body, without the
+    # signed-in marker and without any Playground badge or CTA.
+    assert html.count("data-laws-index") == 1
+    assert "data-laws-body" in html
+    assert "data-guest-laws-desktop" not in html
+    guest_html = html
+    # M3 (F04): a guest card has no badge, button or full CTA — the badge-only
+    # wrapper printed for the guest state is empty.
+    assert "LawStatusBadge" not in guest_html
+    assert "pg-btn" not in guest_html
+    assert guest_html.count('class="LawPlaygroundCta"') == 0
+    assert len(re.findall(
+        r'LawPlaygroundCta--badge"[^>]*data-pg-kind="guest"[^>]*>\s*</div>', guest_html
+    )) == guest_html.count("LawPlaygroundCta--badge")
     assert "RecallC Plus" not in html
     assert "data-signed-in-laws-desktop" not in html
 
@@ -321,7 +340,8 @@ def test_plus_laws_1280(tmp_path: Path) -> None:
               const mark = document.querySelector('.brand-mark');
               const header = document.querySelector('.site-header');
               const back = signed && signed.querySelector('.laws-back-link');
-              const phoneHead = signed && signed.querySelector('.laws-index-head');
+              // M3 (Q5): no phone head / search toggle / mobile-back remain.
+              const legacyHead = signed && signed.querySelector('.laws-index-head, [data-laws-search-toggle], .mobile-back');
               const search = signed && signed.querySelector('#laws-q');
               const searchWrap = signed && signed.querySelector('[data-laws-search]');
               const chips = signed ? [...signed.querySelectorAll('.laws-chip')].map((el) => ({
@@ -354,7 +374,8 @@ def test_plus_laws_1280(tmp_path: Path) -> None:
                 headerH: hr.height,
                 backHref: back && back.getAttribute('href'),
                 backDisplay: back && getComputedStyle(back).display,
-                phoneHeadDisplay: phoneHead && getComputedStyle(phoneHead).display,
+                legacyHead: !!legacyHead,
+                ctaButtonCount: signed ? signed.querySelectorAll('.LawPlaygroundCta .pg-btn, .LawPlaygroundCta .pg-actions, [data-pg-sheet]').length : null,
                 heading: heading && heading.textContent.trim(),
                 headingSize: heading && getComputedStyle(heading).fontSize,
                 kicker: signed && signed.querySelector('.laws-index-kicker').textContent.trim(),
@@ -410,14 +431,18 @@ def test_plus_laws_1280(tmp_path: Path) -> None:
               const plus = document.querySelector('[data-plus-laws="desktop"]');
               const back = desk.querySelector('.laws-back-link');
               const copy = desk.querySelector('.laws-index-copy');
-              const head = desk.querySelector('.laws-index-head');
+              // M3 (Q5): one body on the phone — hero + visible search, no head.
+              const legacyHead = desk.querySelector('.laws-index-head, [data-laws-search-toggle], .mobile-back');
+              const search = desk.querySelector('[data-laws-search]');
               const catalog = desk.querySelector('.laws-catalog');
               const vis = (el) => el && getComputedStyle(el).display !== 'none';
               return {
                 plusPresent: Boolean(plus),
+                bodies: document.querySelectorAll('[data-laws-index]').length,
                 backShown: vis(back),
                 copyShown: vis(copy),
-                headShown: vis(head),
+                legacyHead: !!legacyHead,
+                searchShown: vis(search),
                 cols: getComputedStyle(catalog).gridTemplateColumns.split(' ').length,
               };
             }"""
@@ -432,7 +457,8 @@ def test_plus_laws_1280(tmp_path: Path) -> None:
     assert geo["headerH"] == pytest.approx(60, abs=2)
     assert geo["backHref"] == "/browse"
     assert geo["backDisplay"] != "none"
-    assert geo["phoneHeadDisplay"] == "none"
+    assert geo["legacyHead"] is False  # M3 (Q5)
+    assert geo["ctaButtonCount"] == 0  # M3 (F04)
     assert geo["heading"] == "Laws"
     assert geo["headingSize"] == "30px"
     assert geo["kicker"] == "Browse"
@@ -472,9 +498,13 @@ def test_plus_laws_1280(tmp_path: Path) -> None:
     assert "/laws/bns" in bns_url
     assert "/laws/ndps" in ndps_url
     assert phone["plusPresent"] is True
-    assert phone["backShown"] is False
-    assert phone["copyShown"] is False
-    assert phone["headShown"] is True
+    # M3 (Q3 / Q5): the phone shows the same body — back link, hero copy and
+    # the search field; no phone head exists.
+    assert phone["bodies"] == 1
+    assert phone["backShown"] is True
+    assert phone["copyShown"] is True
+    assert phone["legacyHead"] is False
+    assert phone["searchShown"] is True
     assert phone["cols"] == 1
     assert shot_path.is_file()
     assert shot_path.stat().st_size > 1000

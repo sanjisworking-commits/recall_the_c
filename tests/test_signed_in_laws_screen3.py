@@ -2,8 +2,10 @@
 
 Authorized: ChatGPT. Authenticated multiuser GET /laws keeps the shared
 laws.html production catalogue, chips, Bare Act-head hrefs, and Playground
-state. Desktop layout is reconciled to signedIn/03. Phone /laws, signed-in
-Landing, and signed-in Browse are unchanged.
+state. Desktop layout is reconciled to signedIn/03. M3 (Q3 / Q5 / F04): one
+body for every viewer and width (no phone head or search toggle), the search
+field always visible, and a card carries at most its status badge — never a
+Playground CTA. Signed-in Landing is unchanged.
 """
 
 from __future__ import annotations
@@ -130,7 +132,16 @@ def test_signed_in_laws_back_goes_to_browse_index(tmp_path: Path) -> None:
     _sign_in(client)
     desk = _desk(client.get("/laws").text)
     assert 'class="laws-back-link" href="/browse"' in desk
-    assert 'class="mobile-back" href="/browse">← Browse' in desk
+    # M3 (Q5): one back link serves both widths — the phone "← Browse" row
+    # is gone, and mobile.css shows the shared link as a 44 px target.
+    assert desk.count('class="laws-back-link"') == 1
+    assert "mobile-back" not in desk
+    assert 'class="laws-index-head"' not in desk
+    phone_back = MOBILE.read_text(encoding="utf-8").split(
+        'body[data-mscreen="laws"] .laws-back-link {', 1
+    )[1].split("}", 1)[0]
+    assert "display: inline-flex" in phone_back
+    assert "min-height: 44px" in phone_back
     browse = client.get("/browse", follow_redirects=False)
     assert browse.status_code == 200
     assert "Browse the Constitution" in browse.text
@@ -182,7 +193,14 @@ def test_signed_in_laws_cards_keep_existing_bare_act_heads(tmp_path: Path) -> No
         page = client.get(href, follow_redirects=False)
         assert page.status_code == 200, href
         assert "bareact" in page.text or "data-mscreen" in page.text
+    # M3 (F04): a card prints at most its Playground status badge — the same
+    # wrapper and data attributes as the CTA, but no button, lede or sheet.
     assert "LawPlaygroundCta" in desk
+    assert 'class="LawPlaygroundCta LawPlaygroundCta--badge"' in desk
+    assert desk.count('class="LawPlaygroundCta"') == 0
+    for gone in ("pg-btn", "pg-lede", "pg-actions", "data-pg-sheet",
+                 "Subscribe to use Playground", "Unlock Playground", "Add to Playground"):
+        assert gone not in desk, gone
     assert "Already in Playground" in Path(
         ROOT / "src/constitution_memorizer/playground/view.py"
     ).read_text(encoding="utf-8")
@@ -211,29 +229,34 @@ def test_signed_in_laws_desktop_chrome(tmp_path: Path) -> None:
     assert "nav-signin" not in header
     assert 'class="nav-link is-active"' in nav or "is-active" in nav
     css = STYLES.read_text(encoding="utf-8")
+    # M3 (Q3): one desktop rule-set for guests and accounts — the signed-in
+    # block now applies as body[data-mscreen="laws"]; no viewer-scoped copy.
+    assert 'body.is-authed[data-mscreen="laws"]' not in css
+    assert 'body.is-guest[data-mscreen="laws"]' not in css
     authed_mark = css.split(
-        'body.is-authed[data-mscreen="laws"] .brand-mark {', 1
+        'body[data-mscreen="laws"] .brand-mark {', 1
     )[1].split("}", 1)[0]
     assert "invert(1)" in authed_mark
     title = css.split(
-        'body.is-authed[data-mscreen="laws"] .laws-index-copy .laws-index-title {',
+        'body[data-mscreen="laws"] .laws-index-copy .laws-index-title {',
         1,
     )[1].split("}", 1)[0]
     assert "30px" in title
     assert "font-weight: 600" in title
     search = css.split(
-        'body.is-authed[data-mscreen="laws"] .laws-search {', 1
+        'body[data-mscreen="laws"] .laws-search {', 1
     )[1].split("}", 1)[0]
     assert "300px" in search
     catalog = css.split(
-        'body.is-authed[data-mscreen="laws"] .laws-catalog {', 1
+        'body[data-mscreen="laws"] .laws-catalog {', 1
     )[1].split("}", 1)[0]
     assert "1fr 1fr" in catalog
     assert "1000px" in catalog
-    phone_hide = css.split(
-        "body.is-authed[data-mscreen=\"laws\"] .laws-back-link,", 1
-    )[1].split("}", 1)[0]
-    assert "display: none" in phone_hide
+    # M3 (Q5): the back link is no longer hidden on the phone — one link for
+    # both widths; desktop styles it inline, mobile.css gives it 44 px.
+    back = css.split('body[data-mscreen="laws"] .laws-back-link {', 1)[1].split("}", 1)[0]
+    assert "display: inline-flex" in back
+    assert "display: none" not in back
     shell = css.split("/* R1 desktop shell", 1)[1]
     assert "position: absolute" not in shell
     assert "left: 50%" not in shell
@@ -249,7 +272,13 @@ def test_signed_in_laws_desktop_chrome(tmp_path: Path) -> None:
 
 def test_signed_in_laws_does_not_touch_phone_landing_or_browse() -> None:
     mobile = MOBILE.read_text(encoding="utf-8")
-    assert 'body[data-mscreen="laws"] .laws-index-head' in mobile
+    # M3 (Q5): the phone head rules are replaced by hero rules (kicker, title,
+    # lede, visible search); cards and chips keep their phone styling.
+    assert ".laws-index-head" not in mobile
+    assert "data-laws-search-toggle" not in mobile
+    assert 'body[data-mscreen="laws"] .laws-index-hero {' in mobile
+    assert 'body[data-mscreen="laws"] .laws-index-kicker {' in mobile
+    assert 'body[data-mscreen="laws"] .laws-search {' in mobile
     assert 'body[data-mscreen="laws"] .laws-index-card' in mobile
     assert 'body[data-mscreen="laws"] .laws-chip-strip' in mobile
     landing = LANDING.read_text(encoding="utf-8")
@@ -257,7 +286,8 @@ def test_signed_in_laws_does_not_touch_phone_landing_or_browse() -> None:
     assert "Explore the Constitution" in landing
     browse = BROWSE.read_text(encoding="utf-8")
     assert "data-signed-in-browse-strip" in browse
-    assert "Unlock all" in browse
+    assert "View Playground" in browse  # M3 (Q4): the Free summary's action
+    assert "Unlock all" not in browse
 
 
 def _serve(app, host: str = "127.0.0.1") -> tuple[int, object]:
@@ -333,7 +363,8 @@ def test_signed_in_laws_1280_filters_and_keeps_existing_heads(tmp_path: Path) ->
               const mark = document.querySelector('.brand-mark');
               const header = document.querySelector('.site-header');
               const back = desk.querySelector('.laws-back-link');
-              const phoneHead = desk.querySelector('.laws-index-head');
+              // M3 (Q5): no phone head / search toggle / mobile-back remain.
+              const legacyHead = desk.querySelector('.laws-index-head, [data-laws-search-toggle], .mobile-back');
               const search = desk.querySelector('#laws-q');
               const searchWrap = desk.querySelector('[data-laws-search]');
               const chips = [...desk.querySelectorAll('.laws-chip')].map((el) => ({
@@ -370,7 +401,7 @@ def test_signed_in_laws_1280_filters_and_keeps_existing_heads(tmp_path: Path) ->
                 guestPresent: !!guest,
                 backHref: back.getAttribute('href'),
                 backDisplay: getComputedStyle(back).display,
-                phoneHeadDisplay: getComputedStyle(phoneHead).display,
+                legacyHead: !!legacyHead,
                 heading: heading.textContent.trim(),
                 headingSize: getComputedStyle(heading).fontSize,
                 kicker: desk.querySelector('.laws-index-kicker').textContent.trim(),
@@ -397,6 +428,8 @@ def test_signed_in_laws_1280_filters_and_keeps_existing_heads(tmp_path: Path) ->
                 pageBg,
                 headerBg,
                 playgroundCtaCount: desk.querySelectorAll('.LawPlaygroundCta').length,
+                badgeOnlyCount: desk.querySelectorAll('.LawPlaygroundCta.LawPlaygroundCta--badge').length,
+                ctaButtonCount: desk.querySelectorAll('.LawPlaygroundCta .pg-btn, .LawPlaygroundCta .pg-actions, [data-pg-sheet]').length,
               };
             }"""
         )
@@ -477,17 +510,18 @@ def test_signed_in_laws_1280_filters_and_keeps_existing_heads(tmp_path: Path) ->
               const desk = document.querySelector('[data-signed-in-laws-desktop]');
               const back = desk.querySelector('.laws-back-link');
               const copy = desk.querySelector('.laws-index-copy');
-              const head = desk.querySelector('.laws-index-head');
-              const toggle = desk.querySelector('[data-laws-search-toggle]');
+              // M3 (Q5): one body on the phone — hero + visible search, no head/toggle.
+              const legacyHead = desk.querySelector('.laws-index-head, [data-laws-search-toggle], .mobile-back');
               const search = desk.querySelector('[data-laws-search]');
               const catalog = desk.querySelector('.laws-catalog');
               const vis = (el) => el && getComputedStyle(el).display !== 'none';
               return {
+                bodies: document.querySelectorAll('[data-laws-index]').length,
                 backShown: vis(back),
                 copyShown: vis(copy),
-                headShown: vis(head),
-                toggleShown: vis(toggle),
+                legacyHead: !!legacyHead,
                 searchHidden: search.hasAttribute('hidden'),
+                searchShown: vis(search),
                 cols: getComputedStyle(catalog).gridTemplateColumns.split(' ').length,
                 ndpsHref: desk.querySelector('a[href="/laws/ndps"]') &&
                   desk.querySelector('a[href="/laws/ndps"]').getAttribute('href'),
@@ -506,7 +540,7 @@ def test_signed_in_laws_1280_filters_and_keeps_existing_heads(tmp_path: Path) ->
     assert geo["guestPresent"] is False
     assert geo["backHref"] == "/browse"
     assert geo["backDisplay"] != "none"
-    assert geo["phoneHeadDisplay"] == "none"
+    assert geo["legacyHead"] is False  # M3 (Q5)
     assert geo["heading"] == "Laws"
     assert geo["headingSize"] == "30px"
     assert geo["kicker"] == "Browse"
@@ -536,7 +570,11 @@ def test_signed_in_laws_1280_filters_and_keeps_existing_heads(tmp_path: Path) ->
         "Profile",
     ]
     assert geo["browseActive"] == "Browse"
+    # M3 (F04): status badges only — every CTA wrapper is the badge variant,
+    # and no card carries a button, lede or sheet opener.
     assert geo["playgroundCtaCount"] >= 1
+    assert geo["badgeOnlyCount"] == geo["playgroundCtaCount"]
+    assert geo["ctaButtonCount"] == 0
     page_rgb = tuple(
         int(x.strip())
         for x in geo["pageBg"]
@@ -572,11 +610,14 @@ def test_signed_in_laws_1280_filters_and_keeps_existing_heads(tmp_path: Path) ->
     assert len(restored["ids"]) == len(geo["visibleIds"])
     assert "/laws/ndps" in ndps_url
     assert "/laws/bns" in bns_url
-    assert phone["backShown"] is False
-    assert phone["copyShown"] is False
-    assert phone["headShown"] is True
-    assert phone["toggleShown"] is True
-    assert phone["searchHidden"] is True
+    # M3 (Q3 / Q5): the phone shows the same body — back link, hero copy and
+    # the search field; no phone head or toggle exists.
+    assert phone["bodies"] == 1
+    assert phone["backShown"] is True
+    assert phone["copyShown"] is True
+    assert phone["legacyHead"] is False
+    assert phone["searchHidden"] is False
+    assert phone["searchShown"] is True
     assert phone["cols"] == 1
     assert phone["ndpsHref"] == "/laws/ndps"
     assert phone["bnsHref"] == "/laws/bns"

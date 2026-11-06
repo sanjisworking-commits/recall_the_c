@@ -301,7 +301,10 @@ def test_signed_in_bareact_back_goes_to_laws_index(tmp_path: Path) -> None:
     laws = client.get("/laws", follow_redirects=False)
     assert laws.status_code == 200
     assert "data-signed-in-laws-desktop" in laws.text
+    # M3 (Q3 / Q5): one Laws body for every viewer; no phone search toggle.
+    assert laws.text.count("data-laws-index") == 1
     assert "data-guest-laws-desktop" not in laws.text
+    assert "data-laws-search-toggle" not in laws.text
 
 
 def test_signed_in_bareact_rows_are_generated_from_the_act(tmp_path: Path) -> None:
@@ -425,8 +428,11 @@ def test_signed_in_bareact_desktop_chrome(tmp_path: Path) -> None:
     about_tap = m2.split(".ActHead-about {", 1)[1].split("}", 1)[0]
     assert "min-height: 44px" in about_tap
     assert "margin: 0 0 -10px" in about_tap and "padding: 10px 0" in about_tap
+    # M3 (Q3): the Laws desktop rule-set applies to every viewer as
+    # body[data-mscreen="laws"]; no viewer-scoped copy remains.
+    assert 'body.is-authed[data-mscreen="laws"]' not in css
     laws_title = css.split(
-        'body.is-authed[data-mscreen="laws"] .laws-index-copy .laws-index-title {',
+        'body[data-mscreen="laws"] .laws-index-copy .laws-index-title {',
         1,
     )[1].split("}", 1)[0]
     assert "30px" in laws_title
@@ -445,7 +451,8 @@ def test_signed_in_bareact_does_not_touch_phone_or_accepted_screens(
     assert "Explore the Constitution" in landing
     browse = BROWSE.read_text(encoding="utf-8")
     assert "data-signed-in-browse-strip" in browse
-    assert "Unlock all" in browse
+    assert "View Playground" in browse  # M3 (Q4): the Free summary's action
+    assert "Unlock all" not in browse
     laws = LAWS.read_text(encoding="utf-8")
     assert "data-signed-in-laws-desktop" in laws
     assert "data-act-head" not in laws

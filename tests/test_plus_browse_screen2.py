@@ -2,9 +2,11 @@
 
 Authorized: ChatGPT. Authenticated multiuser GET /browse with a real active
 Plus subscription. Same accepted Browse visual system as Free signed-in
-Screen 02; Free 3-Article strip and Unlock all are omitted. Header status
-uses the existing RecallC Plus product string from EntitlementSnapshot.
-No invented Plus copy, routes, or Browse redesign.
+Screen 02; the Free summary ("Free plan — every Article, progress saved." +
+View Playground) is omitted. Header status uses the existing RecallC Plus
+product string from EntitlementSnapshot. M3 (F03): Pro and Max are
+subscribers too and never receive the Free summary either. M3 (Q1): one
+Browse body for both widths. No invented Plus copy, routes, or redesign.
 """
 
 from __future__ import annotations
@@ -41,6 +43,7 @@ INVENTED = (
     "Unlock all",
     "Free plan",
     "All 3 slots",
+    "View Playground",  # M3 (Q4): the Free summary's action never prints for a subscriber
     "Start learning",
 )
 
@@ -117,8 +120,9 @@ def _header(html: str) -> str:
 
 
 def _browse_panel(html: str) -> str:
+    # M3 (Q5): the Marks sheet is gone; the panel runs to the page footer.
     return html.split('<section class="panel browse"', 1)[1].split(
-        "mobile-sheet", 1
+        "<footer", 1
     )[0]
 
 
@@ -155,15 +159,17 @@ def test_plus_browse_omits_free_strip_from_real_subscription(tmp_path: Path) -> 
     assert laws.status_code == 200
 
 
-def test_free_signed_in_browse_keeps_allowance_and_unlock(tmp_path: Path) -> None:
+def test_free_signed_in_browse_keeps_free_summary_and_view_playground(tmp_path: Path) -> None:
     client = TestClient(_mu_app(tmp_path))
     _sign_in(client)
     html = client.get("/browse").text
     assert 'data-plus-browse="desktop"' not in html
     strip = html.split("data-signed-in-browse-strip", 1)[1].split("</div>", 1)[0]
-    assert "Free plan \u2014 pick any 3 Articles to learn." in strip
-    assert "All 3 slots free." in strip
-    assert 'class="browse-access-unlock" href="/playground">Unlock all</a>' in strip
+    # M3 (Q4): the Free summary — no Article allowance, no price, one action.
+    assert "Free plan \u2014 every Article, progress saved." in strip
+    assert 'class="browse-access-unlock" href="/playground">View Playground</a>' in strip
+    assert "3 Articles" not in strip
+    assert "Unlock all" not in strip
     header = _header(html)
     assert "RecallC Free" in header
     assert "RecallC Plus" not in header
@@ -185,19 +191,34 @@ def test_halted_and_pro_are_not_plus_screen_02(tmp_path: Path) -> None:
     halted_html = halted.get("/browse").text
     assert 'data-plus-browse="desktop"' not in halted_html
 
-    pro = TestClient(_mu_app(tmp_path / "pro"))
-    _sign_in(pro)
-    _subscribe(pro, tier="pro")
-    pro_html = pro.get("/browse").text
-    assert 'data-plus-browse="desktop"' not in pro_html
-    assert "data-signed-in-browse-strip" in pro_html
+    # M3 (F03): Pro and Max are not Plus (no Plus marker), but they are
+    # subscribers — the Free summary never prints for them either.
+    for tier, label in (("pro", "RecallC Pro"), ("max", "RecallC Max")):
+        sub = TestClient(_mu_app(tmp_path / tier))
+        _sign_in(sub)
+        _subscribe(sub, tier=tier)
+        sub_html = sub.get("/browse").text
+        assert 'data-plus-browse="desktop"' not in sub_html, tier
+        assert "data-signed-in-browse-strip" not in sub_html, tier
+        assert "browse-access-unlock" not in sub_html, tier
+        assert "data-guest-strip" not in sub_html, tier
+        sub_panel = _browse_panel(sub_html)
+        for phrase in INVENTED:
+            assert phrase not in sub_panel, (tier, phrase)
+        assert label in _header(sub_html), tier
+        assert "RecallC Free" not in _header(sub_html), tier
 
 
 def test_plus_browse_marker_is_conditional_in_templates() -> None:
     browse = BROWSE.read_text(encoding="utf-8")
     assert "plus_browse" in browse
     assert 'data-plus-browse="desktop"' in browse
-    assert "Unlock all" in browse
+    # M3 (Q4 / F03): the Free summary is gated by the snapshot's Free
+    # partition (free_browse), never by "not Plus" — and prints View Playground.
+    assert "{% elif free_browse|default(false) %}" in browse
+    assert "View Playground" in browse
+    assert "Unlock all" not in browse
+    assert "not plus_browse" not in browse
     assert 'href="/laws"' in browse
     assert 'href="/tables"' in browse
     base = BASE.read_text(encoding="utf-8")
@@ -293,7 +314,7 @@ def test_plus_browse_1280(tmp_path: Path) -> None:
               const heading = document.querySelector('.browse > .display');
               const lede = document.querySelector('.browse > .lede');
               const partHead = document.querySelector('[data-browse-part-heading]');
-              const partRail = document.querySelector('.browse-part-rail');
+              const partRail = document.querySelector('.browse-part-rail'); // M3 (Q1): retired, null
               const article = document.querySelector('.browse-article-card[href], .browse-card-link');
               const fallback = document.querySelector('.account-avatar-fallback');
               const mobileHead = document.querySelector('.mobile-screen-head');
@@ -352,7 +373,7 @@ def test_plus_browse_1280(tmp_path: Path) -> None:
                 navLabels: [...document.querySelectorAll('.PrimaryTabs--top .nav-link')].map(
                   (el) => el.textContent.replace(/\\s+/g, ' ').trim()
                 ),
-                plusCopy: /Premium|Unlimited|Free plan|Unlock all|All 3 slots/.test(panelText),
+                plusCopy: /Premium|Unlimited|Free plan|Unlock all|All 3 slots|View Playground/.test(panelText),
               };
             }"""
         )
@@ -429,9 +450,10 @@ def test_plus_browse_1280(tmp_path: Path) -> None:
     assert abs(geo["lawsW"] - geo["tablesW"]) <= 2
     assert geo["gridW"] == pytest.approx(760, abs=8)
     assert geo["articleHref"] and geo["articleHref"].startswith("/browse/article/")
-    assert geo["partTag"] == "DIV"
-    assert geo["partParent"] != "A"
-    assert geo["partRailDisplay"] == "none"
+    # M3 (Q1 / F02): the Part header is a <button> in an <h2>; the rail is gone.
+    assert geo["partTag"] == "BUTTON"
+    assert geo["partParent"] == "H2"
+    assert geo["partRailDisplay"] is None
     assert geo["mobileHeadDisplay"] == "none"
     assert geo["fallbackW"] == pytest.approx(36, abs=1)
     assert geo["fallbackH"] == pytest.approx(36, abs=1)
@@ -462,10 +484,12 @@ def test_plus_browse_1280(tmp_path: Path) -> None:
     assert "data-signed-in-pg-gate" not in playground_html
     assert phone["hasStrip"] is False
     assert phone["plusPresent"] is True
-    assert phone["displayShown"] is False
-    assert phone["legendShown"] is False
-    assert phone["partShown"] is False
-    assert phone["railShown"] is True
+    # M3 (Q1 / Q5): one body on the phone — heading, legend and Parts show;
+    # the rail no longer exists; the head stays (search icon only).
+    assert phone["displayShown"] is True
+    assert phone["legendShown"] is True
+    assert phone["partShown"] is True
+    assert phone["railShown"] is None
     assert phone["headShown"] is True
     assert shot_path.is_file()
     assert shot_path.stat().st_size > 1000

@@ -363,10 +363,10 @@ def test_phone_signed_in_add_css_is_breakpoint_scoped() -> None:
     assert "playground.css?v=pg55" in base
     assert "playground.css?v=pg49" not in base
     assert "playground.css?v=pg32" not in base
-    assert "styles.css?v=main90" in base
-    assert "mobile.css?v=mob109" in base
+    assert "styles.css?v=main91" in base
+    assert "mobile.css?v=mob110" in base
     assert "playground.js?v=pg13" in base
-    assert "mobile.js?v=mob30" in base
+    assert "mobile.js?v=mob31" in base
 
 
 def test_guest_plus_expired_halted_add_sheets_stay_separate(tmp_path: Path) -> None:

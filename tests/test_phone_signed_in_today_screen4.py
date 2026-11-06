@@ -431,8 +431,8 @@ def test_phone_free_today_css_is_breakpoint_scoped() -> None:
     assert "@media (min-width: 561px)" in desk
     assert "minmax(260px, 380px)" in desk
     assert "playground.css?v=pg55" in BASE.read_text(encoding="utf-8")
-    assert "styles.css?v=main90" in BASE.read_text(encoding="utf-8")
-    assert "mobile.css?v=mob109" in BASE.read_text(encoding="utf-8")
+    assert "styles.css?v=main91" in BASE.read_text(encoding="utf-8")
+    assert "mobile.css?v=mob110" in BASE.read_text(encoding="utf-8")
     assert "mobile.css?v=mob104" not in BASE.read_text(encoding="utf-8")
     assert "action=\"/revision/start\"" in DASH.read_text(encoding="utf-8")
     assert "data-signed-in-today-phone" not in DASH.read_text(encoding="utf-8")

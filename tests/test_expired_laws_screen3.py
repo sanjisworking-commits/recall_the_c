@@ -4,8 +4,10 @@ Authorized: ChatGPT. Authenticated multiuser GET /laws with a real expired
 subscription whose paid period has ended. The catalogue stays fully
 browseable. Per-law Playground badges come from playground_states after a
 real roster/add seed, then expire. Header status comes from the live
-paid-period-ended gate title. Guest, Free, Plus, halted, phone, Plus 01–11,
-and Expired 01–02 stay unchanged.
+paid-period-ended gate title. M3 (Q3 / F04): one Laws body for every viewer
+and width; a card prints at most its status badge (same wrapper and data
+attributes as the retired per-card CTA), never a button. Guest, Free, Plus,
+halted, Plus 01–11, and Expired 01–02 stay unchanged.
 """
 
 from __future__ import annotations
@@ -195,8 +197,9 @@ def _catalog_html(desk: str) -> str:
 
 
 def _cta_kind(desk: str, law_id: str) -> str | None:
+    # M3 (F04): the badge-only wrapper keeps the CTA's data attributes.
     match = re.search(
-        rf'<div class="LawPlaygroundCta"[^>]*data-law-id="{re.escape(law_id)}"[^>]*>',
+        rf'<div class="LawPlaygroundCta LawPlaygroundCta--badge"[^>]*data-law-id="{re.escape(law_id)}"[^>]*>',
         desk,
     )
     if match is None:
@@ -257,6 +260,13 @@ def test_expired_laws_keeps_catalogue_and_live_playground_state(
     assert "PaymentStateBanner" not in html
     assert "+ Add to Playground" not in desk
     assert 'data-pg-kind="eligible_to_add"' not in desk
+    # M3 (F04): no card carries a Playground CTA — badge only, no button,
+    # lede, sheet opener or resume/subscribe copy.
+    for gone in ("pg-btn", "pg-lede", "pg-actions", "data-pg-sheet",
+                 "Add to Playground", "Unlock Playground", "Subscribe to use Playground",
+                 "Resume Playground"):
+        assert gone not in desk, gone
+    assert desk.count('class="LawPlaygroundCta"') == 0
     for law_id in RETAINED:
         assert client.app.state.roster.is_law_active_this_period(USER, law_id)
         assert _cta_kind(desk, law_id) == "already_active"
@@ -266,9 +276,14 @@ def test_expired_laws_keeps_catalogue_and_live_playground_state(
         )
     assert desk.count('data-status="in_playground"') == len(RETAINED)
     assert desk.count("Already in Playground") == len(RETAINED)
+    # A law outside the roster keeps its live state on the wrapper but prints
+    # no badge and no action (M3 F04).
     assert _cta_kind(desk, "pss") == "resume"
     assert 'data-law-id="pss" data-pg-kind="already_active"' not in desk
     assert 'data-law-id="mtp" data-pg-kind="already_active"' not in desk
+    pss = desk.split('data-law-id="pss" data-pg-kind="resume"', 1)[1].split("</div>", 1)[0]
+    assert "LawStatusBadge" not in pss
+    assert "<button" not in pss and "<a " not in pss
     assert "IN PLAYGROUND" not in LAWS.read_text(encoding="utf-8")
     browse = client.get("/browse")
     assert browse.status_code == 200
@@ -281,8 +296,18 @@ def test_free_plus_guest_halted_stay_separate_from_expired(tmp_path: Path) -> No
     guest = TestClient(_mu_app(tmp_path / "guest"))
     guest_html = guest.get("/laws").text
     assert 'data-expired-laws="desktop"' not in guest_html
-    assert "data-guest-laws-desktop" in guest_html
+    # M3 (Q3): one catalogue body for the guest too — no guest fixture body.
+    assert guest_html.count("data-laws-index") == 1
+    assert "data-guest-laws-desktop" not in guest_html
     assert "data-signed-in-laws-desktop" not in guest_html
+    # M3 (F04): a guest card has no badge, button or full CTA — the badge-only
+    # wrapper printed for the guest state is empty.
+    assert "LawStatusBadge" not in guest_html
+    assert "pg-btn" not in guest_html
+    assert guest_html.count('class="LawPlaygroundCta"') == 0
+    assert len(re.findall(
+        r'LawPlaygroundCta--badge"[^>]*data-pg-kind="guest"[^>]*>\s*</div>', guest_html
+    )) == guest_html.count("LawPlaygroundCta--badge")
     assert "RecallC Plus" not in guest_html
 
     free = TestClient(_mu_app(tmp_path / "free"))
@@ -304,8 +329,15 @@ def test_free_plus_guest_halted_stay_separate_from_expired(tmp_path: Path) -> No
     assert "RecallC Plus" in _header(plus_html)
     assert LIVE_EXPIRED_STATUS not in _header(plus_html)
     plus_desk = _desk(plus_html)
-    assert "+ Add to Playground" in plus_desk
+    # M3 (F04): Plus gets no per-card Add CTA either — the Add action lives
+    # on the Act head, and the index card shows no badge for an unadded law.
+    assert "Add to Playground" not in plus_desk
+    assert "pg-btn" not in plus_desk
     assert 'data-pg-kind="already_active"' not in plus_desk
+    assert 'data-status="in_playground"' not in plus_desk
+    plus_head = plus.get("/laws/bns").text
+    assert 'data-act-head="bns"' in plus_head
+    assert "Add to Playground" in plus_head
 
     halted = TestClient(_mu_app(tmp_path / "halted"))
     _sign_in(halted)
@@ -333,9 +365,13 @@ def test_expired_laws_uses_shared_predicate_not_a_template_flag() -> None:
     assert "plus_laws" in laws
     assert 'data-plus-laws="desktop"' in laws
     assert "data-signed-in-laws-desktop" in laws
-    assert "data-guest-laws-desktop" in laws
+    # M3 (Q3 / F04): one body (no guest fixture body) and the badge-only macro.
+    assert laws.count("data-laws-index") == 1
+    assert "data-guest-laws-desktop" not in laws
+    assert "guest_screen3_laws" not in laws
     assert 'href="/browse"' in laws
-    assert "playground_cta(pg_state)" in laws
+    assert "playground_status_badge(pg_state)" in laws
+    assert "playground_cta(" not in laws
     assert "IN PLAYGROUND" not in laws
     assert "Your Playground is paused" not in laws
     assert "Playground paused" not in laws
@@ -438,7 +474,7 @@ def _serve(app, host: str = "127.0.0.1") -> tuple[int, object]:
     return port, server
 
 
-def test_expired_phone_laws_unchanged(tmp_path: Path) -> None:
+def test_expired_phone_laws_is_the_one_body(tmp_path: Path) -> None:
     pytest.importorskip("playwright")
     from playwright.sync_api import sync_playwright
 
@@ -476,14 +512,18 @@ def test_expired_phone_laws_unchanged(tmp_path: Path) -> None:
               const expired = document.querySelector('[data-expired-laws="desktop"]');
               const back = desk && desk.querySelector('.laws-back-link');
               const copy = desk && desk.querySelector('.laws-index-copy');
-              const head = desk && desk.querySelector('.laws-index-head');
+              // M3 (Q5): one body on the phone — hero + visible search, no head.
+              const legacyHead = desk && desk.querySelector('.laws-index-head, [data-laws-search-toggle], .mobile-back');
+              const search = desk && desk.querySelector('[data-laws-search]');
               const catalog = desk && desk.querySelector('.laws-catalog');
               const vis = (el) => el && getComputedStyle(el).display !== 'none';
               return {
                 expiredPresent: Boolean(expired),
+                bodies: document.querySelectorAll('[data-laws-index]').length,
                 backShown: vis(back),
                 copyShown: vis(copy),
-                headShown: vis(head),
+                legacyHead: !!legacyHead,
+                searchShown: vis(search),
                 cols: catalog
                   ? getComputedStyle(catalog).gridTemplateColumns.split(' ').length
                   : null,
@@ -492,9 +532,13 @@ def test_expired_phone_laws_unchanged(tmp_path: Path) -> None:
         )
         browser.close()
     assert phone["expiredPresent"] is True
-    assert phone["backShown"] is False
-    assert phone["copyShown"] is False
-    assert phone["headShown"] is True
+    # M3 (Q3 / Q5): the phone shows the same body — back link, hero copy and
+    # the search field; no phone head exists.
+    assert phone["bodies"] == 1
+    assert phone["backShown"] is True
+    assert phone["copyShown"] is True
+    assert phone["legacyHead"] is False
+    assert phone["searchShown"] is True
     assert phone["cols"] == 1
 
 
@@ -551,7 +595,8 @@ def test_expired_laws_1280(tmp_path: Path) -> None:
               const mark = document.querySelector('.brand-mark');
               const header = document.querySelector('.site-header');
               const back = signed && signed.querySelector('.laws-back-link');
-              const phoneHead = signed && signed.querySelector('.laws-index-head');
+              // M3 (Q5): no phone head / search toggle / mobile-back remain.
+              const legacyHead = signed && signed.querySelector('.laws-index-head, [data-laws-search-toggle], .mobile-back');
               const search = signed && signed.querySelector('#laws-q');
               const searchWrap = signed && signed.querySelector('[data-laws-search]');
               const chips = signed ? [...signed.querySelectorAll('.laws-chip')].map((el) => ({
@@ -600,7 +645,8 @@ def test_expired_laws_1280(tmp_path: Path) -> None:
                 headerH: hr.height,
                 backHref: back && back.getAttribute('href'),
                 backDisplay: back && getComputedStyle(back).display,
-                phoneHeadDisplay: phoneHead && getComputedStyle(phoneHead).display,
+                legacyHead: !!legacyHead,
+                ctaButtonCount: signed.querySelectorAll('.LawPlaygroundCta .pg-btn, .LawPlaygroundCta .pg-actions, [data-pg-sheet]').length,
                 heading: heading && heading.textContent.trim(),
                 headingSize: heading && getComputedStyle(heading).fontSize,
                 kicker: signed && signed.querySelector('.laws-index-kicker').textContent.trim(),
@@ -661,7 +707,7 @@ def test_expired_laws_1280(tmp_path: Path) -> None:
     assert geo["headerH"] == pytest.approx(60, abs=2)
     assert geo["backHref"] == "/browse"
     assert geo["backDisplay"] != "none"
-    assert geo["phoneHeadDisplay"] == "none"
+    assert geo["legacyHead"] is False  # M3 (Q5)
     assert geo["heading"] == "Laws"
     assert geo["headingSize"] == "30px"
     assert geo["kicker"] == "Browse"
@@ -687,6 +733,7 @@ def test_expired_laws_1280(tmp_path: Path) -> None:
     assert geo["invented"] is False
     assert geo["banner"] is False
     assert geo["addShown"] is False
+    assert geo["ctaButtonCount"] == 0  # M3 (F04): badges only, no card CTA
     assert geo["navLabels"] == [
         "Today",
         "Browse",

@@ -774,7 +774,9 @@ def test_reset_progress_returns_to_the_first_run_screen(tmp_path: Path):
 
 def test_browse_free_plan_banner(tmp_path: Path):
     """diff.md item 4: Browse's free-plan block reads as the design's banner —
-    one line of state, one bordered Unlock all — with main's states intact."""
+    one line of state, one bordered action. M3 (Q4): the line is the Free
+    summary ("every Article, progress saved") and the action is View Playground;
+    no Article allowance, no price."""
     provider = FakeAuthProvider()
     provider.seed_google_user(
         user_id=UUID("11111111-1111-4111-8111-111111111111"),
@@ -800,9 +802,17 @@ def test_browse_free_plan_banner(tmp_path: Path):
     )
     html = client.get("/browse").text
     strip = html.split("data-signed-in-browse-strip", 1)[1].split("</div>", 1)[0]
-    assert "Free plan \u2014 pick any 3 Articles to learn." in strip
-    assert "All 3 slots free." in strip
-    assert 'class="browse-access-unlock" href="/playground">Unlock all</a>' in strip
+    # M3 (Q4): Free summary copy — one sentence, one action.
+    assert (
+        '<p class="browse-access-status">Free plan \u2014 every Article, progress saved.</p>'
+        in strip
+    )
+    assert 'class="browse-access-unlock" href="/playground">View Playground</a>' in strip
+    assert "3 Articles" not in strip
+    assert "slots" not in strip
+    assert "Unlock all" not in html
+    assert "Preview only" not in html
+    assert "browse-access-label" not in html
     assert "Unlock every Article \u2192" not in html
     assert 'href="/pricing">Unlock all' not in html
 

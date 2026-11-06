@@ -2,10 +2,11 @@
 
 Authorized: ChatGPT. Authenticated multiuser GET /browse after a real Plus
 subscription is halted. Constitution browsing stays fully available. The
-Free-plan strip is omitted. Header status comes from
-gate_view(BLOCK_PAYMENT_HALTED).title even when the paid period has elapsed.
-Guest, Free, Plus, Expired, paused, pending, Pro/Max, phone, Plus 01–11,
-Expired 01–11, and Halted 01 stay unchanged. No new route.
+Free summary is omitted (M3 Q4: the snapshot's Free partition excludes halted
+subscribers). Header status comes from gate_view(BLOCK_PAYMENT_HALTED).title
+even when the paid period has elapsed. Guest, Free, Plus, Expired, paused,
+pending, Pro/Max, Plus 01–11, Expired 01–11, and Halted 01 stay unchanged;
+M3 (Q1) gives the phone the same Browse body. No new route.
 """
 
 from __future__ import annotations
@@ -145,8 +146,9 @@ def _header(html: str) -> str:
 
 
 def _browse_panel(html: str) -> str:
+    # M3 (Q5): the Marks sheet is gone; the panel runs to the page footer.
     return html.split('<section class="panel browse"', 1)[1].split(
-        "mobile-sheet", 1
+        "<footer", 1
     )[0]
 
 
@@ -305,8 +307,10 @@ def test_guest_free_plus_expired_paused_pending_pro_max_are_not_halted_browse(
     free_html = free.get("/browse").text
     assert 'data-halted-browse="desktop"' not in free_html
     strip = free_html.split("data-signed-in-browse-strip", 1)[1].split("</div>", 1)[0]
-    assert "Free plan" in strip
-    assert "Unlock all" in strip
+    # M3 (Q4): the Free summary copy and its one action.
+    assert "Free plan \u2014 every Article, progress saved." in strip
+    assert "View Playground" in strip
+    assert "Unlock all" not in strip
     assert "RecallC Free" in _header(free_html)
 
     plus = TestClient(_mu_app(tmp_path / "plus"))
@@ -334,25 +338,47 @@ def test_guest_free_plus_expired_paused_pending_pro_max_are_not_halted_browse(
     assert LIVE_EXPIRED_STATUS in _header(expired_html)
     assert LIVE_HALTED_STATUS not in _header(expired_html)
 
+    # M3 (Q4): the Free summary follows the shell label's partition exactly.
+    # Paused resolves as Free (label "RecallC Free") and keeps the summary.
     paused = TestClient(_mu_app(tmp_path / "paused"))
     _sign_in(paused)
     _subscribe(paused, status="paused")
-    assert 'data-halted-browse="desktop"' not in paused.get("/browse").text
+    paused_html = paused.get("/browse").text
+    assert 'data-halted-browse="desktop"' not in paused_html
+    assert 'data-expired-browse="desktop"' not in paused_html
+    assert "data-signed-in-browse-strip" in paused_html
+    assert "View Playground" in paused_html
+    assert "RecallC Free" in _header(paused_html)
+    assert LIVE_HALTED_STATUS not in _header(paused_html)
 
+    # Pending inside a live billing period (the frozen test clock) resolves as
+    # a subscriber — label "RecallC Plus" — so, like the label, no Free summary.
     pending = TestClient(_mu_app(tmp_path / "pending"))
     _sign_in(pending)
     _subscribe(pending, status="pending")
-    assert 'data-halted-browse="desktop"' not in pending.get("/browse").text
+    pending_html = pending.get("/browse").text
+    pending_snap = pending.app.state.entitlement_service.resolve(USER)
+    assert pending_snap.is_subscribed is True
+    assert 'data-halted-browse="desktop"' not in pending_html
+    assert 'data-expired-browse="desktop"' not in pending_html
+    assert "data-signed-in-browse-strip" not in pending_html
+    assert "RecallC Plus" in _header(pending_html)
+    assert "RecallC Free" not in _header(pending_html)
+    assert LIVE_HALTED_STATUS not in _header(pending_html)
 
-    pro = TestClient(_mu_app(tmp_path / "pro"))
-    _sign_in(pro)
-    _subscribe(pro, tier="pro", status="active")
-    assert 'data-halted-browse="desktop"' not in pro.get("/browse").text
-
-    mx = TestClient(_mu_app(tmp_path / "max"))
-    _sign_in(mx)
-    _subscribe(mx, tier="max", status="active")
-    assert 'data-halted-browse="desktop"' not in mx.get("/browse").text
+    # M3 (F03): Pro and Max are live subscribers — never halted, and never
+    # shown the Free summary either.
+    for tier, label in (("pro", "RecallC Pro"), ("max", "RecallC Max")):
+        sub = TestClient(_mu_app(tmp_path / tier))
+        _sign_in(sub)
+        _subscribe(sub, tier=tier, status="active")
+        sub_html = sub.get("/browse").text
+        assert 'data-halted-browse="desktop"' not in sub_html, tier
+        assert "data-signed-in-browse-strip" not in sub_html, tier
+        assert "browse-access-unlock" not in sub_html, tier
+        assert "Free plan" not in _browse_panel(sub_html), tier
+        assert label in _header(sub_html), tier
+        assert "RecallC Free" not in _header(sub_html), tier
 
 
 def test_halted_browse_get_is_mutation_free(tmp_path: Path) -> None:
@@ -375,13 +401,17 @@ def test_halted_browse_uses_shared_predicate() -> None:
     assert "expired_browse" in src
     assert "halted_browse" in src
     assert 'data-halted-browse="desktop"' in src
-    assert "not halted_browse|default(false)" in src
+    # M3 (Q4): the template no longer hand-rolls "not halted" — the Free
+    # summary is gated by one flag whose predicate excludes halted subscribers.
+    assert "{% elif free_browse|default(false) %}" in src
+    assert "not halted_browse" not in src
     desk_line = [
         line for line in src.splitlines() if 'data-plus-browse="desktop"' in line
     ][0]
     assert "halted_browse" in desk_line
     assert "mobile-screen-head" in src
-    assert "Unlock all" in src
+    assert "View Playground" in src
+    assert "Unlock all" not in src
     assert 'href="/laws"' in src
     assert 'href="/tables"' in src
     for phrase in INVENTED:
@@ -416,6 +446,13 @@ def test_halted_browse_uses_shared_predicate() -> None:
     assert "def snapshot_is_halted_subscriber" not in page
     assert "BLOCK_PAYMENT_HALTED" in page
     assert "gate_view" in page
+    # M3 (Q4): the Free summary's flag comes from the shared Free predicate,
+    # whose partition excludes halted subscribers.
+    assert "request_is_free_account" in page
+    assert '"free_browse": free_browse' in page
+    deps = DEPS.read_text(encoding="utf-8")
+    free = deps.split("def snapshot_is_free_account", 1)[1].split("\ndef ", 1)[0]
+    assert "not snapshot_is_halted_subscriber(snapshot)" in free
     home = app.split("async def home", 1)[1].split("eng = _engine()", 1)[0]
     assert "request_is_halted_subscriber" in home
     assert '"halted_landing": halted_landing' in home
@@ -553,7 +590,7 @@ def test_halted_browse_1280(tmp_path: Path) -> None:
                 mobileHeadDisplay: mobileHead ? getComputedStyle(mobileHead).display : null,
                 partRailDisplay: partRail ? getComputedStyle(partRail).display : null,
                 newsLabel: news ? news.innerText.replace(/\\s+/g, ' ').trim() : null,
-                invented: /Your payment failed|Fix your payment|Resume billing|Subscription halted|Playground unavailable|Unlock all|Free plan/.test(panelText),
+                invented: /Your payment failed|Fix your payment|Resume billing|Subscription halted|Playground unavailable|Unlock all|Free plan|View Playground/.test(panelText),
                 billingCount: document.querySelectorAll('section.browse a[href*="/billing"]').length,
               };
             }"""
@@ -577,7 +614,7 @@ def test_halted_browse_1280(tmp_path: Path) -> None:
     assert geo["accountName"] == "Sanjay"
     assert geo["accountStatus"] == LIVE_HALTED_STATUS
     assert geo["mobileHeadDisplay"] == "none"
-    assert geo["partRailDisplay"] == "none"
+    assert geo["partRailDisplay"] is None  # M3 (Q1): the rail is retired
     assert geo["newsLabel"] and "In news" in geo["newsLabel"]
     assert shot_path.is_file()
     assert shot_path.stat().st_size > 1000

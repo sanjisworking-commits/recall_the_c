@@ -471,12 +471,12 @@ def test_phone_plus_css_scope_pins_and_desktop_04_untouched() -> None:
     assert base.count("data-signed-in-phone-tabs") == 1
     assert "signed_in_plus_bareact_phone" not in base
     assert "data-plus-bareact-phone-tabs" not in base
-    assert "styles.css?v=main90" in base
+    assert "styles.css?v=main91" in base
     assert "styles.css?v=main87" not in base
-    assert "mobile.css?v=mob109" in base
+    assert "mobile.css?v=mob110" in base
     assert "mobile.css?v=mob106" not in base
     assert "playground.css?v=pg55" in base
-    assert "mobile.js?v=mob30" in base
+    assert "mobile.js?v=mob31" in base
     bare = BARE.read_text(encoding="utf-8")
     assert "data-plus-bareact" in bare
     _assert_no_phone_twins(bare)

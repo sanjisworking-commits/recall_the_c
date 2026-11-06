@@ -2,9 +2,11 @@
 
 Authorized: ChatGPT. Authenticated multiuser GET /browse with a real expired
 subscription whose paid period has ended. Constitution browsing stays fully
-available. The Free-plan strip is omitted because expired is not Free.
-Header status comes from the live paid-period-ended gate title. Guest, Free,
-Plus, halted, phone, Plus 01–11, and Expired 01 stay unchanged.
+available. The Free summary is omitted because expired is not Free (M3 Q4:
+the snapshot's Free partition excludes expired subscribers). Header status
+comes from the live paid-period-ended gate title. M3 (Q1): one Browse body
+for both widths. Guest, Free, Plus, halted, Plus 01–11, and Expired 01 stay
+unchanged.
 """
 
 from __future__ import annotations
@@ -63,6 +65,7 @@ INVENTED = (
     "Unlock all",
     "Free plan",
     "All 3 slots",
+    "View Playground",  # M3 (Q4): the Free summary's action never prints for expired
     "Start learning",
 )
 
@@ -141,8 +144,9 @@ def _header(html: str) -> str:
 
 
 def _browse_panel(html: str) -> str:
+    # M3 (Q5): the Marks sheet is gone; the panel runs to the page footer.
     return html.split('<section class="panel browse"', 1)[1].split(
-        "mobile-sheet", 1
+        "<footer", 1
     )[0]
 
 
@@ -204,9 +208,11 @@ def test_free_plus_guest_halted_stay_separate_from_expired(tmp_path: Path) -> No
     assert 'data-expired-browse="desktop"' not in free_html
     assert 'data-plus-browse="desktop"' not in free_html
     strip = free_html.split("data-signed-in-browse-strip", 1)[1].split("</div>", 1)[0]
-    assert "Free plan \u2014 pick any 3 Articles to learn." in strip
-    assert "All 3 slots free." in strip
-    assert 'class="browse-access-unlock" href="/playground">Unlock all</a>' in strip
+    # M3 (Q4): the Free summary copy and its one action.
+    assert "Free plan \u2014 every Article, progress saved." in strip
+    assert 'class="browse-access-unlock" href="/playground">View Playground</a>' in strip
+    assert "3 Articles" not in strip
+    assert "Unlock all" not in strip
     assert "RecallC Free" in _header(free_html)
 
     plus = TestClient(_mu_app(tmp_path / "plus"))
@@ -245,8 +251,12 @@ def test_expired_browse_uses_shared_predicate_not_a_template_flag() -> None:
     assert 'data-expired-browse="desktop"' in browse
     assert "plus_browse" in browse
     assert 'data-plus-browse="desktop"' in browse
-    assert "not expired_browse|default(false)" in browse
-    assert "Unlock all" in browse
+    # M3 (Q4): the template no longer hand-rolls "not expired" — the Free
+    # summary is gated by one flag whose predicate excludes expired subscribers.
+    assert "{% elif free_browse|default(false) %}" in browse
+    assert "not expired_browse" not in browse
+    assert "View Playground" in browse
+    assert "Unlock all" not in browse
     assert 'href="/laws"' in browse
     assert 'href="/tables"' in browse
     assert "Your plan expired" not in browse
@@ -276,12 +286,17 @@ def test_expired_browse_uses_shared_predicate_not_a_template_flag() -> None:
     assert "request_is_active_plus" in page
     assert '"expired_browse": expired_browse' in page
     assert "def snapshot_is_expired_subscriber" not in page
+    # M3 (Q4): the Free summary's flag comes from the shared Free predicate.
+    assert "request_is_free_account" in page
+    assert '"free_browse": free_browse' in page
     home = app.split("async def home", 1)[1].split("eng = _engine()", 1)[0]
     assert "request_is_expired_subscriber" in home
     assert '"expired_landing": expired_landing' in home
     deps = DEPS.read_text(encoding="utf-8")
     assert "def request_is_expired_subscriber" in deps
     assert "BLOCK_PAID_PERIOD_ENDED" in deps
+    free = deps.split("def snapshot_is_free_account", 1)[1].split("\ndef ", 1)[0]
+    assert "not snapshot_is_expired_subscriber(snapshot)" in free
 
 
 def test_plus_screens_and_expired_01_untouched() -> None:
@@ -333,7 +348,7 @@ def _serve(app, host: str = "127.0.0.1") -> tuple[int, object]:
     return port, server
 
 
-def test_expired_phone_browse_unchanged(tmp_path: Path) -> None:
+def test_expired_phone_browse_is_the_one_body(tmp_path: Path) -> None:
     pytest.importorskip("playwright")
     from playwright.sync_api import sync_playwright
 
@@ -390,10 +405,12 @@ def test_expired_phone_browse_unchanged(tmp_path: Path) -> None:
         browser.close()
     assert phone["hasStrip"] is False
     assert phone["expiredPresent"] is True
-    assert phone["displayShown"] is False
-    assert phone["legendShown"] is False
-    assert phone["partShown"] is False
-    assert phone["railShown"] is True
+    # M3 (Q1 / Q5): one body on the phone — heading, legend and Parts show;
+    # the rail no longer exists; the head stays (search icon only).
+    assert phone["displayShown"] is True
+    assert phone["legendShown"] is True
+    assert phone["partShown"] is True
+    assert phone["railShown"] is None
     assert phone["headShown"] is True
 
 
@@ -470,7 +487,7 @@ def test_expired_browse_1280(tmp_path: Path) -> None:
                 mobileHeadDisplay: mobileHead ? getComputedStyle(mobileHead).display : null,
                 partRailDisplay: partRail ? getComputedStyle(partRail).display : null,
                 newsLabel: news ? news.innerText.replace(/\\s+/g, ' ').trim() : null,
-                invented: /Your plan expired|Resume subscription|Resume Playground|Premium|Unlimited|Unlock all|Free plan|All 3 slots/.test(panelText),
+                invented: /Your plan expired|Resume subscription|Resume Playground|Premium|Unlimited|Unlock all|Free plan|All 3 slots|View Playground/.test(panelText),
                 billingCount: document.querySelectorAll('a[href*="/billing"]').length,
               };
             }"""
@@ -500,7 +517,7 @@ def test_expired_browse_1280(tmp_path: Path) -> None:
     assert geo["accountName"] == "Sanjay"
     assert geo["accountStatus"] == LIVE_EXPIRED_STATUS
     assert geo["mobileHeadDisplay"] == "none"
-    assert geo["partRailDisplay"] == "none"
+    assert geo["partRailDisplay"] is None  # M3 (Q1): the rail is retired
     assert geo["newsLabel"] and "In news" in geo["newsLabel"]
     assert "/laws" in laws_url
     assert tables_href == "/tables"
@@ -573,8 +590,10 @@ def test_free_browse_regression_1280(tmp_path: Path) -> None:
     assert geo["expiredPresent"] is False
     assert geo["plusPresent"] is False
     assert geo["hasStrip"] is True
-    assert "Free plan" in geo["stripText"]
-    assert "All 3 slots free." in geo["stripText"]
+    # M3 (Q4): Free summary copy.
+    assert "Free plan — every Article, progress saved." in geo["stripText"]
+    assert "View Playground" in geo["stripText"]
+    assert "All 3 slots" not in geo["stripText"]
     assert geo["unlockHref"] == "/playground"
     assert geo["accountStatus"] == "RecallC Free"
     assert shot_path.is_file()
