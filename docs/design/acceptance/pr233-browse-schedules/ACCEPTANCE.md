@@ -6,7 +6,7 @@
 | Scope | the twelve `/browse/schedules/<slug>` pages, the Browse index's twelve Schedule cards, the legacy `/browse/schedule/<slug>` redirect, the 404 for an unknown slug, plus a focused shared-shell regression check (PR #233 touches `base.html`, `styles.css`, `mobile.css`) |
 | Method | local dev server on the `main` checkout (fake Google provider, throwaway SQLite); headless Chrome over CDP with the M1-R probe (`capture_m1r.py` from PR #232): navigation surfaces, phone tabs, avatar, header overlaps, horizontal scroll, 44×44 targets, computed contrast; guest at 390 / 720 / 1280 × light / dark (84 rows), Free signed-in at 390 / 1280 light (28 rows); block counts compared with `schedules.json`; the list toggle and language notes exercised in the browser pane; `tests/test_browse_schedules.py`, `tests/test_settings_phone.py`, `tests/test_web_sprint30.py` run on `ea15591` (27 passed) |
 | Evidence | representative captures and both probe manifests in this folder (see `README.md`); full set reproducible with the tool |
-| Status | **LOCAL** — accepted for shared Browse/Schedule content with the exceptions in §4; hosted check NOT RUN |
+| Status | **LOCAL** — the passing checks (§1–§3) are recommended for owner sign-off as the local visual baseline on `main @ ea15591` (reviewer disposition, 2026-11-06); §4.1 stays **FAIL** on this SHA, with the fix in draft PR #236; hosted check NOT RUN |
 
 Status vocabulary (owner, 2026-11-06): **PASS on `ea15591`** = measured on this SHA; **carried forward** names the SHA whose evidence stands; **FAIL** = defect found on this SHA.
 
@@ -50,6 +50,8 @@ Tier variants: the Schedule pages carry no tier-dependent action. The only guest
 ### 4.1 FAIL — 4 px horizontal scroll on every Schedule page at ≥ 720 px (pre-existing, from `e84e179`)
 `.sched-page { margin: -8px -4px 0 }` (styles.css ≈ 3488, introduced by `e84e179` "Rebuild Browse Schedule cards to the Nov 2026 reference design", i.e. before PR #233) makes the section 1288 px wide in a 1280 px viewport (`scrollWidth 1284`), so `document.documentElement.scrollWidth > innerWidth` on all twelve pages at 720 and 1280, light and dark. The phone rule (`mobile.css` ≈ 5492, `.sched-page { margin: 0 }`) hides it below 561 px, which is why 390 is clean. `/browse` itself is clean at every width. **Fix:** drop the horizontal part of the negative margin (`margin: -8px 0 0`) or clip the wrapper (`overflow-x: clip` on `.sched-page`/`.sheet`); one line, not applied here (acceptance record only).
 
+**Fix (2026-11-06):** draft PR #236 — `fix/schedules-desktop-overflow` @ `e73bd41`, branched from `ea15591`, base `main`: `.sched-page { margin: -8px 0 0 }`, stylesheet pin `main73 → main74`, regression test `tests/test_browse_schedules.py::test_schedule_page_wrapper_has_no_horizontal_negative_margin`. Re-measured on that branch with the same probe: `/browse`, all twelve Schedule routes, the legacy redirect and the 404 at 720 and 1280 × light and dark — **60 rows, 0 with `scrollWidth > innerWidth`** (52 on `ea15591`); spot check on the Eighth Schedule: `scrollWidth` 1280 at 1280 and 720 at 720. One representative capture and the full manifest live in that PR under `fix-4-1/`. No tier variant was captured (the rule is tier-independent and the shell is untouched). This FAIL stands for `ea15591` and closes when PR #236 merges; no other row of this record changes.
+
 ### 4.2 Observation — Sixth Schedule table
 The extract's Sixth Schedule table (paragraph 20) renders through the clause renderer rather than as a `table` block; content is complete (counts match). No action.
 
@@ -61,3 +63,9 @@ The Eighth Schedule note text lives in `data-sched-tip` and is shown as CSS gene
 
 ## 5. Not run
 Hosted / staging check (no deployment in scope); automated accessibility scan; screen reader.
+
+## 6. Reuse (reviewer disposition, 2026-11-06)
+- **Carry forward by SHA** from this record: the Browse Schedule cards, the twelve routes, the legacy redirect and 404, each checked content structure (§1) and the keyboard interactions (Seventh Schedule toggle, Eighth Schedule notes). Later PRs cite `ea15591` and review only the component they change.
+- **Reopen** a row only when the page, its data (`schedules.json` / the seed), or a shared dependency (`base.html`, `styles.css`, `mobile.css`, `schedules.js`) changes its rendering or behaviour. Automated permission checks continue for every tier regardless.
+- **Combined SHA:** this record was taken on `main`; the M1-R shell (`d7d3c30`, PR #232) and M2-R (`bd9347a`, PR #235) were taken on the stacked Playground branches, which do not yet contain `ea15591` (checked 2026-11-06: not an ancestor of `pg-m1r-shell-labels` or `pg-m2r-act-head`). When they first come together, run one focused shell-and-Schedule check on the combined SHA (shell probe on `/browse` and one Schedule page at 390 / 720 / 1280, plus the §1 block counts); after that, reopen only on change.
+- **Follow-up still open:** §4.3 (Eighth Schedule language notes have no accessible name or description for screen readers).
