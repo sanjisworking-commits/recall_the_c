@@ -4,7 +4,7 @@
 |---|---|
 | Branch / PR | `pg-m3-browse-laws`, cut from `pg-m2r-act-head` @ `9c47d1e`; draft PR #237 (base `pg-m2r-act-head`) — https://github.com/sanjisworking-commits/recall_the_c/pull/237 |
 | Integration commit | `945a67f` = merge of `main` @ `ea15591` into `9c47d1e` (no M3 edit; conflicts were the asset pins in `base.html` and the two pin tests, resolved to the stack's pins plus main's new `schedules.js?v=sched1` include); `149047a` re-pins seven stack tests to main's Browse copy and classifies `browse_schedule.html` |
-| Candidate (rendered source) | `08f2055` — the Browse / Laws implementation (plus `94a5aa3` card meta, which it builds on); tests in `4a3b0fd` and the re-pin commit that follows |
+| Candidate (rendered source) | `08f2055` — the Browse / Laws implementation (plus `94a5aa3` card meta, which it builds on) and `8ce26f0` (empty badge wrapper); **tested SHA `55da7eb`** (tests `4a3b0fd`, re-pins `8c161c1`) |
 | Checklist | `docs/design/milestones/M3.md` @ `aad33e0` (PR #218) as corrected by the tier-revision plan §3.4; owner decisions of 2026-11-06 (§6) |
 | Flag | `PLAYGROUND_TIER_MODEL` stays `monthly` by default; M3 prints no Playground allowance copy under either model (read-back rows under both) |
 | Tooling | `docs/design/proto-comparison-2026-10-19/m1r/tools/capture_m1r.py` (route probe: navigation surfaces, phone bar, label, hScroll, 44 px targets, composited contrast, Tab trails); `…/m3/tools/readback_m3.py` (nine account states × two tier models through the app's own TestClient); `…/m3/tools/keyboard_m3.py` (headless CDP: Tab to a Part toggle, Enter / Space, legend filter + Clear); dev launchers `playground-m3-<tier>` (monthly, port 8918) and `playground-m3-<tier>-choices` |
@@ -50,7 +50,7 @@ Untouched: the article reader, the Part reader body, `/search`, `/tables`, the A
 | Re-pinned screen modules (18 files; reasons in `M3-test-changes.md` §E) | 211 passed, 23 skipped (Playwright, not installed locally) |
 | Guard set that must stay green unchanged (`test_laws_request_bootstrap`, `test_laws_request_breakdown`, `test_law_loading`, `test_law_catalog`, the six `test_browse_*` structure/marks modules, `test_browse_schedules`, `test_shell_m1r`, `test_footer_laws_memory`, `test_feature_flags_memory_laws`, `test_act_head_m2r`, `test_bareact_head_family`, `test_playground_r1`) | 203 passed |
 | Full suite on the candidate before the last four re-pins (`test_ndps_reader` lede, `test_playground` Laws-hub CTA → badge, `test_signed_in_playground_gate_screen7` "View Playground" ×2) | 7 failed = 3 known `test_devices_m4c.py` baseline + those 4; 4054 passed, 176 skipped |
-| Full suite on the tested SHA (after the re-pins and the badge-wrapper `|trim`) | _see the PR's acceptance comment for the final count on the tested SHA_ |
+| Full suite on the tested SHA `55da7eb` (after the re-pins and the badge-wrapper `|trim`) | **3 failed (the known `tests/test_devices_m4c.py` baseline), 4058 passed, 176 skipped** (8 min 17 s) |
 
 No behaviour test was weakened; the three `test_devices_m4c.py` failures are the documented baseline shared by every branch.
 
