@@ -8,7 +8,7 @@
 | Checklist | plan §3.3 (M1R-F01 label, M1R-F02 one Google action, M1R-F03 D33) + owner criteria 2026-11-05 (one navigation surface, five usable phone tabs, avatar visible and clickable; 390 / 561–720 / 1280; light + dark) |
 | Original M1 evidence | `docs/design/milestones/M1-evidence.md` — **untouched**, pinned to its own SHA |
 | Tooling | `docs/design/proto-comparison-2026-10-19/m1r/tools/capture_m1r.py` (headless Chrome over CDP; dev fake-Google sign-in in-process, cookie never written); dev server `playground-m1r-<tier>` on 8914 |
-| Status | LOCAL / PRELIMINARY — hosted checks NOT RUN (no deployment). Evidence policy (owner, 2026-11-06): each row below states **PASS on this SHA** or **carried forward from an earlier SHA**. |
+| Status | LOCAL / PRELIMINARY — hosted checks NOT RUN (no deployment). Evidence policy (owner, 2026-11-06): each row below states **PASS on this SHA** or **carried forward from an earlier SHA**. **Reviewer disposition (2026-11-06): ready for owner sign-off as the local visual baseline of the shared shell on tested `d7d3c30`** (head `e6f9110`, CI: 3 known `test_devices_m4c.py` failures / 4007 passed); §10 covers phone Profile access, the Settings tab bar, tier labels, keyboard focus, contrast and 44 px targets. Reuse it by SHA wherever this shell is used. |
 
 ## 1. What changed (scope diff)
 - `web/shell.py` (new): `account_status_for_snapshot` / `shell_account_status` — the header account-slot label as one function of the entitlement snapshot: `RecallC Free` · `RecallC Plus` · `RecallC Pro` · `RecallC Max` (legacy holders); halted and expired keep their status titles (`gate_view(...).title`, unchanged text) until 5-20 / M8-R. Registered as a Jinja global in `web/app.py`.
@@ -562,4 +562,6 @@ After each 320/390 light probe the Profile tab's centre was clicked with a real 
 | Hosted / staging checks | NOT RUN (no deployment authorised) |
 | Dev avatar placeholder (`https://example.com/a.png`) | dev fixture, unchanged |
 | DV-22 brand mark, Playground tab glyph | M9 |
-| M2-R | queued; separate branch |
+| M2-R | draft PR #235 (`pg-m2r-act-head`, stacked on this branch); its evidence carries this shell forward from `d7d3c30` |
+| Owner sign-off | **Recommended** (reviewer disposition, 2026-11-06) as the local shared-shell baseline on `d7d3c30`. Reopen only when `web/shell.py`, `base.html`, the shell CSS/JS, their data or a shared dependency changes the shell's rendering or behaviour; automated permission checks continue for every tier regardless. |
+| Combined SHA with Browse/Schedules | `main @ ea15591` (PR #233; acceptance record in PR #234, overflow fix in PR #236) is not yet an ancestor of this branch. When they first come together, run one focused shell-and-Schedule check on the combined SHA; afterwards reopen shared evidence only on change. |
