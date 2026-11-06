@@ -198,7 +198,6 @@ from constitution_memorizer.web.bare_act_page import (
     bare_act_page_context,
     halted_law_presentation,
 )
-from constitution_memorizer.web.guest_laws_index import GUEST_LAWS_CARDS, GUEST_LAWS_CHIPS
 from constitution_memorizer.web.laws_data import get_law
 from constitution_memorizer.web.memory_calendar import build_memory_month, schedule_chip_states
 from constitution_memorizer.web.progress_stats import progress_dashboard
@@ -2593,12 +2592,17 @@ def create_app(
             get_entitlement_snapshot,
             request_is_active_plus,
             request_is_expired_subscriber,
+            request_is_free_account,
             request_is_halted_subscriber,
         )
+        from constitution_memorizer.playground.http import playground_google_href
 
         plus_browse = request_is_active_plus(request)
         expired_browse = request_is_expired_subscriber(request)
         halted_browse = request_is_halted_subscriber(request)
+        # M3 (Q4): the Free summary's audience is the snapshot's "RecallC
+        # Free" partition, never "not Plus" — Pro and Max are subscribers.
+        free_browse = request_is_free_account(request)
         expired_header_status = ""
         halted_header_status = ""
         if expired_browse or halted_browse:
@@ -2619,20 +2623,9 @@ def create_app(
                 halted_header_status = gate_view(
                     reason=BLOCK_PAYMENT_HALTED
                 ).title
-        # Phone Browse is Part-first (design 02): each Part card carries its own
-        # progress and due count, and opens a Part page instead of scrolling.
-        today = date.today()
-        cont_id = continue_unit_id(eng, as_of=today)
-        part_cards = [
-            {
-                "section": section,
-                "href": part_href(section.part_number),
-                "summary": part_progress_summary(
-                    eng, section, today=today, continue_id=cont_id
-                ),
-            }
-            for section in sections
-        ]
+        # M3 (Q1): one Browse body for both widths — the phone Part-card rail
+        # (and its per-Part progress work) is retired; /browse/part/{slug}
+        # stays reachable by URL and from the article reader.
         schedule_cards = browse_schedule_cards()
         started = time.perf_counter()
         response = templates.TemplateResponse(
@@ -2640,7 +2633,6 @@ def create_app(
             "browse_index.html",
             {
                 "sections": sections,
-                "part_cards": part_cards,
                 "schedule_cards": schedule_cards,
                 "has_reviewed": app.state.reviewed is not None,
                 "parts_source": parts_source,
@@ -2650,6 +2642,9 @@ def create_app(
                 "plus_browse": plus_browse,
                 "expired_browse": expired_browse,
                 "halted_browse": halted_browse,
+                "free_browse": free_browse,
+                # M3 (5-11): the guest strip's one Google action returns here.
+                "guest_google_href": playground_google_href("/browse"),
                 "expired_header_status": expired_header_status,
                 "halted_header_status": halted_header_status,
             },
@@ -3298,8 +3293,6 @@ def create_app(
             "playground_states": playground_states,
             "initial_status": request.query_params.get("status") or "",
             "has_repealed": bool(catalog.repealed_laws),
-            "guest_screen3_laws": GUEST_LAWS_CARDS,
-            "guest_screen3_chips": GUEST_LAWS_CHIPS,
             "plus_laws": plus_laws,
             "expired_laws": expired_laws,
             "halted_laws": halted_laws,

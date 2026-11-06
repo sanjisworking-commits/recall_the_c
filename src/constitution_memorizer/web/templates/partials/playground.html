@@ -145,6 +145,15 @@
 {% endif %}
 {% endmacro %}
 
+{# M3 (F04): the Laws index prints a law's Playground *status* only — the same
+   wrapper and data attributes as playground_cta, the same badge, and no
+   button, lede or sheet opener. The CTA itself lives on the Act head. #}
+{% macro playground_status_badge(state) %}
+{% if playground_enabled|default(true) and state and state.eligible and state.kind != 'unavailable' %}
+<div class="LawPlaygroundCta LawPlaygroundCta--badge" data-law-id="{{ state.law_id }}" data-pg-kind="{{ state.kind }}" data-membership="{{ state.badge }}">{{ status_badge(state.badge, state.badge_label) }}</div>
+{% endif %}
+{% endmacro %}
+
 {% macro guest_phone_gate(gate, values, footnote) %}
 {# Shared Gate guest intro (cta-map-mobile shared/05, guest/03-screen). #}
 <section class="pg-guest-gate" data-phone-pg-gate="guest" aria-labelledby="pg-gate-title">

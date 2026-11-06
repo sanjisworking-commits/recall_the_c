@@ -3542,6 +3542,54 @@ code {
   font-size: 13px;
 }
 
+/* M3 (Q1 / F02): the Part header is an <h2> holding one real button that
+   collapses only that Part's grid. The Schedules section keeps the plain
+   .browse-part-header div, so everything new is scoped to the toggle. */
+h2.browse-part-header {
+  margin-top: 0;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.browse-part-toggle {
+  flex: 1 1 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  appearance: none;
+}
+
+.browse-part-toggle:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.browse-part-chevron {
+  flex: 0 0 auto;
+  align-self: center;
+  color: var(--muted);
+  transition: transform 0.15s ease;
+}
+
+.browse-part-toggle[aria-expanded="false"] .browse-part-chevron {
+  transform: rotate(-90deg);
+}
+
+.browse-part-body[hidden] {
+  display: none;
+}
+
 .browse-chapter {
   margin-top: 16px;
 }
@@ -4648,44 +4696,13 @@ code {
   font-size: clamp(28px, 4vw, 34px);
 }
 
-.laws-index-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0 0 12px;
-}
 
-.laws-index-head .mobile-back {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  min-width: 44px;
-  padding: 0;
-  border: 0;
-  background: none;
-  font: inherit;
-  font-size: 13px;
-  color: var(--muted);
-  text-decoration: none;
-}
 
 .laws-index-title {
   flex: 1;
   margin: 0;
 }
 
-.laws-index-head .mobile-icon-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  flex: 0 0 auto;
-  border: 0;
-  background: none;
-  color: var(--ink);
-  cursor: pointer;
-}
 
 .laws-search {
   margin: 0 0 12px;
@@ -4801,6 +4818,11 @@ code {
   margin: 24px 0 0;
   font-size: 14px;
   color: var(--muted);
+}
+
+/* M3 (F04): a card prints at most its Playground status badge. */
+.LawPlaygroundCta--badge:empty {
+  display: none;
 }
 
 .laws-empty[hidden] {
@@ -11086,14 +11108,8 @@ body.is-admin-previewing { padding-top: 40px; }
   }
 }
 
-/* Signed-in Browse index (CTA map signedIn/02-screen). Desktop only; phone
-   Browse stays on the existing part-card rail in mobile.css. */
-@media (max-width: 560px) {
-  body.is-authed[data-mscreen="browse"] .browse-access-summary {
-    display: none;
-  }
-}
-
+/* Signed-in Browse index (CTA map signedIn/02-screen). M3: one body for both
+   widths — the Free summary shows on the phone too (Q4). */
 @media (min-width: 561px) {
   body.is-authed[data-mscreen="browse"] .page-wrap,
   body.is-authed[data-mscreen="browse"] .sheet {
@@ -11229,196 +11245,31 @@ body.is-admin-previewing { padding-top: 40px; }
   }
 }
 
-/* Guest Laws index (CTA map guest/03-screen). Desktop only; phone /laws
-   keeps the existing catalogue, chips, and expandable search. */
-@media (max-width: 560px) {
-  [data-guest-laws-desktop] {
-    display: none !important;
-  }
-}
-
+/* Laws index (CTA map guest/03 + signedIn/03). M3: one body for every viewer
+   and width — this desktop rule-set applies to guests and accounts alike;
+   phone sizing lives in mobile.css. */
 @media (min-width: 561px) {
-  body.is-guest[data-mscreen="laws"] .brand-mark {
-    filter: invert(1);
-  }
-
-  body.is-guest[data-mscreen="laws"] .page-wrap,
-  body.is-guest[data-mscreen="laws"] .sheet {
+  body[data-mscreen="laws"] .page-wrap,
+  body[data-mscreen="laws"] .sheet {
     background: var(--page);
   }
 
-  body.is-guest[data-mscreen="laws"] .panel.laws {
-    max-width: none;
-    padding: 22px 40px 64px;
-  }
-
-  body.is-guest[data-mscreen="laws"] [data-laws-phone] {
-    display: none !important;
-  }
-
-  body.is-guest[data-mscreen="laws"] .site-footer,
-  body.is-guest[data-mscreen="laws"] .sheet-footnote {
-    display: none;
-  }
-
-  body.is-guest[data-mscreen="laws"] .laws-back-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    margin: 0 0 18px;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--muted);
-    text-decoration: none;
-  }
-
-  body.is-guest[data-mscreen="laws"] .laws-back-link:hover {
-    color: var(--ink);
-  }
-
-  body.is-guest[data-mscreen="laws"] .laws-index-hero {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
-    grid-template-rows: auto auto auto;
-    column-gap: 32px;
-    row-gap: 0;
-    margin: 0 0 26px;
-  }
-
-  body.is-guest[data-mscreen="laws"] .laws-index-copy {
-    display: contents;
-  }
-
-  body.is-guest[data-mscreen="laws"] .laws-index-kicker {
-    grid-column: 1;
-    margin: 0 0 6px;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--mid);
-  }
-
-  body.is-guest[data-mscreen="laws"] .laws-index-title {
-    grid-column: 1;
-    margin: 0 0 8px;
-    font-size: 32px;
-    font-weight: 500;
-    letter-spacing: -0.02em;
-  }
-
-  body.is-guest[data-mscreen="laws"] .laws-index-lede {
-    grid-column: 1;
-    margin: 0;
-    font-size: 14.5px;
-    line-height: 1.45;
-    color: var(--muted);
-  }
-
-  body.is-guest[data-mscreen="laws"] .laws-search {
-    grid-column: 2;
-    grid-row: 2 / span 2;
-    align-self: center;
-    display: flex;
-    align-items: center;
-    margin: 0;
-    height: 42px;
-    padding: 0 14px;
-    border: 1px solid var(--hairline);
-    border-radius: 12px;
-    background: var(--paper);
-  }
-
-  body.is-guest[data-mscreen="laws"] .laws-search[hidden] {
-    display: flex;
-  }
-
-  body.is-guest[data-mscreen="laws"] .laws-search-icon {
-    display: flex;
-    margin-right: 8px;
-    color: var(--muted);
-    pointer-events: none;
-  }
-
-  body.is-guest[data-mscreen="laws"] .laws-search-input {
-    width: 100%;
-    height: 40px;
-    padding: 0;
-    border: 0;
-    border-radius: 0;
-    background: transparent;
-    font-size: 14px;
-  }
-
-  body.is-guest[data-mscreen="laws"] .laws-search-input::placeholder {
-    color: var(--muted);
-  }
-
-  body.is-guest[data-mscreen="laws"] .laws-chip-strip {
-    margin: 0 0 24px;
-  }
-
-  body.is-guest[data-mscreen="laws"] .laws-catalog {
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-
-  body.is-guest[data-mscreen="laws"] .laws-index-card {
-    padding: 18px 20px 20px;
-    background: var(--paper);
-  }
-
-  body.is-guest[data-mscreen="laws"] .LawPlaygroundCta {
-    display: none;
-  }
-}
-
-@media (min-width: 561px) and (max-width: 1279px) {
-  body.is-guest[data-mscreen="laws"] .panel.laws {
-    padding: 20px max(28px, calc((100% - 1180px) / 2)) 64px;
-  }
-}
-
-/* Signed-in Laws index (CTA map signedIn/03-screen). Desktop only; phone
-   /laws keeps the existing catalogue, chips, and expandable search. */
-@media (max-width: 560px) {
-  body.is-authed[data-mscreen="laws"] .laws-back-link,
-  body.is-authed[data-mscreen="laws"] .laws-index-copy,
-  body.is-authed[data-mscreen="laws"] .laws-search-icon {
-    display: none !important;
-  }
-
-  body.is-authed[data-mscreen="laws"] .laws-index-hero {
-    display: contents;
-  }
-}
-
-@media (min-width: 561px) {
-  body.is-authed[data-mscreen="laws"] .page-wrap,
-  body.is-authed[data-mscreen="laws"] .sheet {
-    background: var(--page);
-  }
-
-  body.is-authed[data-mscreen="laws"] .panel.laws {
+  body[data-mscreen="laws"] .panel.laws {
     max-width: none;
     padding: 22px 40px 60px;
   }
 
   /* Same mark as dark chrome: invert of /static/main_logo.png, not a new glyph. */
-  body.is-authed[data-mscreen="laws"] .brand-mark {
+  body[data-mscreen="laws"] .brand-mark {
     filter: invert(1);
   }
 
-  body.is-authed[data-mscreen="laws"] .laws-index-head {
+  body[data-mscreen="laws"] .site-footer,
+  body[data-mscreen="laws"] .sheet-footnote {
     display: none;
   }
 
-  body.is-authed[data-mscreen="laws"] .site-footer,
-  body.is-authed[data-mscreen="laws"] .sheet-footnote {
-    display: none;
-  }
-
-  body.is-authed[data-mscreen="laws"] .laws-back-link {
+  body[data-mscreen="laws"] .laws-back-link {
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -11430,23 +11281,23 @@ body.is-admin-previewing { padding-top: 40px; }
     text-decoration: none;
   }
 
-  body.is-authed[data-mscreen="laws"] .laws-back-link:hover {
+  body[data-mscreen="laws"] .laws-back-link:hover {
     color: var(--ink);
   }
 
-  body.is-authed[data-mscreen="laws"] .laws-index-hero {
+  body[data-mscreen="laws"] .laws-index-hero {
     display: flex;
     align-items: flex-end;
     gap: 24px;
     margin: 0 0 16px;
   }
 
-  body.is-authed[data-mscreen="laws"] .laws-index-copy {
+  body[data-mscreen="laws"] .laws-index-copy {
     flex: 1 1 auto;
     min-width: 0;
   }
 
-  body.is-authed[data-mscreen="laws"] .laws-index-kicker {
+  body[data-mscreen="laws"] .laws-index-kicker {
     margin: 0 0 4px;
     font-size: 10.5px;
     font-weight: 600;
@@ -11455,7 +11306,7 @@ body.is-admin-previewing { padding-top: 40px; }
     color: var(--mid);
   }
 
-  body.is-authed[data-mscreen="laws"] .laws-index-copy .laws-index-title {
+  body[data-mscreen="laws"] .laws-index-copy .laws-index-title {
     margin: 0 0 4px;
     font-size: 30px;
     font-weight: 600;
@@ -11463,14 +11314,14 @@ body.is-admin-previewing { padding-top: 40px; }
     letter-spacing: 0;
   }
 
-  body.is-authed[data-mscreen="laws"] .laws-index-lede {
+  body[data-mscreen="laws"] .laws-index-lede {
     margin: 0;
     font-size: 13.5px;
     line-height: 1.45;
     color: var(--muted);
   }
 
-  body.is-authed[data-mscreen="laws"] .laws-search {
+  body[data-mscreen="laws"] .laws-search {
     display: flex;
     flex: 0 0 300px;
     align-items: center;
@@ -11486,18 +11337,14 @@ body.is-admin-previewing { padding-top: 40px; }
     box-sizing: border-box;
   }
 
-  body.is-authed[data-mscreen="laws"] .laws-search[hidden] {
-    display: flex !important;
-  }
-
-  body.is-authed[data-mscreen="laws"] .laws-search-icon {
+  body[data-mscreen="laws"] .laws-search-icon {
     display: flex;
     margin-right: 8px;
     color: var(--muted);
     pointer-events: none;
   }
 
-  body.is-authed[data-mscreen="laws"] .laws-search-input {
+  body[data-mscreen="laws"] .laws-search-input {
     width: 100%;
     height: 40px;
     padding: 0;
@@ -11507,29 +11354,29 @@ body.is-admin-previewing { padding-top: 40px; }
     font-size: 13.5px;
   }
 
-  body.is-authed[data-mscreen="laws"] .laws-search-input::placeholder {
+  body[data-mscreen="laws"] .laws-search-input::placeholder {
     color: var(--muted);
   }
 
-  body.is-authed[data-mscreen="laws"] .laws-chip-strip {
+  body[data-mscreen="laws"] .laws-chip-strip {
     flex-wrap: wrap;
     overflow: visible;
     gap: 8px;
     margin: 0 0 18px;
   }
 
-  body.is-authed[data-mscreen="laws"] .laws-catalog {
+  body[data-mscreen="laws"] .laws-catalog {
     grid-template-columns: 1fr 1fr;
     gap: 10px;
     max-width: 1000px;
   }
 
-  body.is-authed[data-mscreen="laws"] .laws-index-card {
+  body[data-mscreen="laws"] .laws-index-card {
     padding: 16px 18px;
     background: var(--paper);
   }
 
-  body.is-authed[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) {
+  body[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
     grid-template-rows: auto auto auto;
@@ -11537,17 +11384,17 @@ body.is-admin-previewing { padding-top: 40px; }
     align-items: center;
   }
 
-  body.is-authed[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) .laws-index-card-link,
-  body.is-authed[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) .laws-index-head-row {
+  body[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) .laws-index-card-link,
+  body[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) .laws-index-head-row {
     display: contents;
   }
 
-  body.is-authed[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) .laws-index-tag {
+  body[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) .laws-index-tag {
     grid-column: 1;
     grid-row: 1;
   }
 
-  body.is-authed[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) .LawPlaygroundCta {
+  body[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) .LawPlaygroundCta {
     grid-column: 2;
     grid-row: 1;
     justify-self: start;
@@ -11555,32 +11402,22 @@ body.is-admin-previewing { padding-top: 40px; }
     margin: 0;
   }
 
-  body.is-authed[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) .laws-index-chevron {
+  body[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) .laws-index-chevron {
     grid-column: 3;
     grid-row: 1;
   }
 
-  body.is-authed[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) .laws-index-name {
+  body[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) .laws-index-name {
     grid-column: 1 / -1;
     grid-row: 2;
   }
 
-  body.is-authed[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) .laws-index-meta {
+  body[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) .laws-index-meta {
     grid-column: 1 / -1;
     grid-row: 3;
   }
 
-  body.is-authed[data-mscreen="laws"] .LawPlaygroundCta .pg-lede,
-  body.is-authed[data-mscreen="laws"] .LawPlaygroundCta .pg-actions,
-  body.is-authed[data-mscreen="laws"] .LawPlaygroundCta .pg-btn {
-    display: none;
-  }
-
-  body.is-authed[data-mscreen="laws"] .LawPlaygroundCta:not(:has(.LawStatusBadge)) {
-    display: none;
-  }
-
-  body.is-authed[data-mscreen="laws"] .laws-index-card .LawStatusBadge[data-status="in_playground"] {
+  body[data-mscreen="laws"] .laws-index-card .LawStatusBadge[data-status="in_playground"] {
     height: auto;
     gap: 0;
     padding: 2px 8px;
@@ -11595,18 +11432,18 @@ body.is-admin-previewing { padding-top: 40px; }
     white-space: nowrap;
   }
 
-  body.is-authed[data-mscreen="laws"] .laws-index-card .LawStatusBadge[data-status="in_playground"] .LawStatusBadge-mark {
+  body[data-mscreen="laws"] .laws-index-card .LawStatusBadge[data-status="in_playground"] .LawStatusBadge-mark {
     display: none;
   }
 
-  body.is-authed[data-mscreen="laws"] .account-avatar,
-  body.is-authed[data-mscreen="laws"] .account-avatar-fallback {
+  body[data-mscreen="laws"] .account-avatar,
+  body[data-mscreen="laws"] .account-avatar-fallback {
     width: 36px;
     height: 36px;
     border-radius: 11px;
   }
 
-  body.is-authed[data-mscreen="laws"] .account-avatar-fallback {
+  body[data-mscreen="laws"] .account-avatar-fallback {
     background: var(--ink);
     color: var(--on-accent);
     border-color: var(--ink);
@@ -11617,7 +11454,7 @@ body.is-admin-previewing { padding-top: 40px; }
 }
 
 @media (min-width: 561px) and (max-width: 1279px) {
-  body.is-authed[data-mscreen="laws"] .panel.laws {
+  body[data-mscreen="laws"] .panel.laws {
     padding: 22px max(28px, calc((100% - 1180px) / 2)) 60px;
   }
 }

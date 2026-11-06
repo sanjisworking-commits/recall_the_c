@@ -3024,6 +3024,21 @@
       event.stopPropagation();
       applyFilter(trigger.getAttribute("data-browse-filter"));
     });
+
+    // M3 (Q1 / F02): a Part header collapses only its own grid. Nothing is
+    // persisted; without this script every Part is simply open.
+    panel.addEventListener("click", (event) => {
+      const toggle = event.target.closest("[data-browse-part-toggle]");
+      if (!toggle || !panel.contains(toggle)) {
+        return;
+      }
+      const expanded = toggle.getAttribute("aria-expanded") === "true";
+      toggle.setAttribute("aria-expanded", expanded ? "false" : "true");
+      const body = document.getElementById(toggle.getAttribute("aria-controls") || "");
+      if (body) {
+        body.hidden = expanded;
+      }
+    });
   }
 
   function wait(ms) {

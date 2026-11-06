@@ -1155,25 +1155,8 @@
   }
 
   function initLawsIndex() {
-    var nodes = document.querySelectorAll("[data-laws-index]");
-    if (!nodes.length) return;
-    var desktopGuest =
-      document.body.classList.contains("is-guest") &&
-      document.body.getAttribute("data-mscreen") === "laws" &&
-      window.matchMedia &&
-      window.matchMedia("(min-width: 561px)").matches;
-    var root = nodes[0];
-    for (var i = 0; i < nodes.length; i++) {
-      var guestDesk = nodes[i].hasAttribute("data-guest-laws-desktop");
-      if (desktopGuest && guestDesk) {
-        root = nodes[i];
-        break;
-      }
-      if (!desktopGuest && !guestDesk) {
-        root = nodes[i];
-        break;
-      }
-    }
+    // M3: one Laws body for every viewer and width.
+    var root = document.querySelector("[data-laws-index]");
     if (!root) return;
 
     var cards = Array.prototype.slice.call(root.querySelectorAll("[data-law-id]"));
@@ -1181,8 +1164,6 @@
       root.querySelectorAll("[data-laws-chip], [data-laws-status]")
     );
     var empty = root.querySelector("[data-laws-empty]");
-    var toggle = root.querySelector("[data-laws-search-toggle]");
-    var searchWrap = root.querySelector("[data-laws-search]");
     var input = root.querySelector("input.laws-search-input") || root.querySelector("#laws-q");
     var knownSubjects = {};
     chips.forEach(function (chip) {
@@ -1195,17 +1176,6 @@
     var status = root.getAttribute("data-initial-status") || "";
     if (status) subject = "";
     var query = root.getAttribute("data-initial-q") || "";
-
-    function setExpanded(open) {
-      if (!toggle || !searchWrap) return;
-      toggle.setAttribute("aria-expanded", open ? "true" : "false");
-      if (open) {
-        searchWrap.removeAttribute("hidden");
-        if (input) input.focus();
-      } else {
-        searchWrap.setAttribute("hidden", "");
-      }
-    }
 
     function syncUrl() {
       var url = new URL(window.location.href);
@@ -1282,13 +1252,6 @@
       });
     });
 
-    if (toggle) {
-      toggle.addEventListener("click", function () {
-        var open = toggle.getAttribute("aria-expanded") === "true";
-        setExpanded(!open);
-      });
-    }
-
     if (input) {
       input.addEventListener("input", function () {
         query = input.value;
@@ -1296,13 +1259,6 @@
       });
     }
 
-    document.addEventListener("keydown", function (event) {
-      if (event.key !== "Escape") return;
-      if (!toggle || toggle.getAttribute("aria-expanded") !== "true") return;
-      setExpanded(false);
-    });
-
-    if (normalizeLawsQuery(query)) setExpanded(true);
     applyFilter();
     revealPressedChip();
   }
