@@ -1,0 +1,1183 @@
+{
+ "sha": "4a3b0fd",
+ "rows": [
+  {
+   "sha": "4a3b0fd",
+   "tier_model": "monthly",
+   "state": "guest",
+   "route": "/browse",
+   "status_chain": [
+    200
+   ],
+   "sha256": "e4414bbb288675d7",
+   "header_status": "",
+   "markers": [],
+   "banner": "guest-strip",
+   "banner_text": "> Reading as a guest. Sign in to save your progress. Continue with Google",
+   "banner_links": [
+    "/auth/google/start?next=%2Fbrowse"
+   ],
+   "part_toggles": 24,
+   "part_rail": false,
+   "marks_sheet": false,
+   "schedule_cards": 12,
+   "article_cards": 491
+  },
+  {
+   "sha": "4a3b0fd",
+   "tier_model": "monthly",
+   "state": "guest",
+   "route": "/laws",
+   "status_chain": [
+    200
+   ],
+   "sha256": "dfd4097d83304e0b",
+   "header_status": "",
+   "markers": [],
+   "sections": 1,
+   "cards": 19,
+   "cta_buttons": 0,
+   "cta_wrappers": 12,
+   "status_badges": [],
+   "badge_labels": [],
+   "search_visible": true,
+   "search_toggle": false,
+   "chips": [
+    "All",
+    "Criminal",
+    "Constitutional",
+    "Administrative",
+    "Environmental",
+    "Financial",
+    "Health",
+    "Repealed"
+   ],
+   "metas": [
+    "20 Chapters · Sections 1–358",
+    "39 Chapters · Sections 1–531 · Schedules",
+    "6 Chapters · Sections 1–64 · Schedule",
+    "8 Chapters · Sections 1–83 · Schedule",
+    "7 Chapters · Sections 1–53 · Schedules",
+    "8 Chapters · Sections 1–38",
+    "Sections 1–8",
+    "Arts 5, 6, 7, 8, 9, 10, 11"
+   ],
+   "price": false,
+   "phrases": []
+  },
+  {
+   "sha": "4a3b0fd",
+   "tier_model": "monthly",
+   "state": "free",
+   "route": "/browse",
+   "status_chain": [
+    200
+   ],
+   "sha256": "0f61cfdc4d8edfe5",
+   "header_status": "RecallC Free",
+   "markers": [],
+   "banner": "free-summary",
+   "banner_text": "> Free plan — every Article, progress saved. View Playground",
+   "banner_links": [
+    "/playground"
+   ],
+   "part_toggles": 24,
+   "part_rail": false,
+   "marks_sheet": false,
+   "schedule_cards": 12,
+   "article_cards": 491
+  },
+  {
+   "sha": "4a3b0fd",
+   "tier_model": "monthly",
+   "state": "free",
+   "route": "/laws",
+   "status_chain": [
+    200
+   ],
+   "sha256": "7387f2dc9bd212a2",
+   "header_status": "RecallC Free",
+   "markers": [
+    "data-signed-in-laws-desktop"
+   ],
+   "sections": 1,
+   "cards": 19,
+   "cta_buttons": 0,
+   "cta_wrappers": 12,
+   "status_badges": [],
+   "badge_labels": [],
+   "search_visible": true,
+   "search_toggle": false,
+   "chips": [
+    "All",
+    "Criminal",
+    "Constitutional",
+    "Administrative",
+    "Environmental",
+    "Financial",
+    "Health",
+    "Repealed"
+   ],
+   "metas": [
+    "20 Chapters · Sections 1–358",
+    "39 Chapters · Sections 1–531 · Schedules",
+    "6 Chapters · Sections 1–64 · Schedule",
+    "8 Chapters · Sections 1–83 · Schedule",
+    "7 Chapters · Sections 1–53 · Schedules",
+    "8 Chapters · Sections 1–38",
+    "Sections 1–8",
+    "Arts 5, 6, 7, 8, 9, 10, 11"
+   ],
+   "price": false,
+   "phrases": []
+  },
+  {
+   "sha": "4a3b0fd",
+   "tier_model": "monthly",
+   "state": "plus",
+   "route": "/browse",
+   "status_chain": [
+    200
+   ],
+   "sha256": "3c40181d113715d1",
+   "header_status": "RecallC Plus",
+   "markers": [
+    "data-plus-browse"
+   ],
+   "banner": "none",
+   "banner_text": "",
+   "banner_links": [],
+   "part_toggles": 24,
+   "part_rail": false,
+   "marks_sheet": false,
+   "schedule_cards": 12,
+   "article_cards": 491
+  },
+  {
+   "sha": "4a3b0fd",
+   "tier_model": "monthly",
+   "state": "plus",
+   "route": "/laws",
+   "status_chain": [
+    200
+   ],
+   "sha256": "0726196db0207215",
+   "header_status": "RecallC Plus",
+   "markers": [
+    "data-signed-in-laws-desktop",
+    "data-plus-laws"
+   ],
+   "sections": 1,
+   "cards": 19,
+   "cta_buttons": 0,
+   "cta_wrappers": 12,
+   "status_badges": [],
+   "badge_labels": [],
+   "search_visible": true,
+   "search_toggle": false,
+   "chips": [
+    "All",
+    "Criminal",
+    "Constitutional",
+    "Administrative",
+    "Environmental",
+    "Financial",
+    "Health",
+    "Repealed"
+   ],
+   "metas": [
+    "20 Chapters · Sections 1–358",
+    "39 Chapters · Sections 1–531 · Schedules",
+    "6 Chapters · Sections 1–64 · Schedule",
+    "8 Chapters · Sections 1–83 · Schedule",
+    "7 Chapters · Sections 1–53 · Schedules",
+    "8 Chapters · Sections 1–38",
+    "Sections 1–8",
+    "Arts 5, 6, 7, 8, 9, 10, 11"
+   ],
+   "price": false,
+   "phrases": []
+  },
+  {
+   "sha": "4a3b0fd",
+   "tier_model": "monthly",
+   "state": "pro",
+   "route": "/browse",
+   "status_chain": [
+    200
+   ],
+   "sha256": "c5a9d319fd888b58",
+   "header_status": "RecallC Pro",
+   "markers": [],
+   "banner": "none",
+   "banner_text": "",
+   "banner_links": [],
+   "part_toggles": 24,
+   "part_rail": false,
+   "marks_sheet": false,
+   "schedule_cards": 12,
+   "article_cards": 491
+  },
+  {
+   "sha": "4a3b0fd",
+   "tier_model": "monthly",
+   "state": "pro",
+   "route": "/laws",
+   "status_chain": [
+    200
+   ],
+   "sha256": "ed115e4f6a058507",
+   "header_status": "RecallC Pro",
+   "markers": [
+    "data-signed-in-laws-desktop"
+   ],
+   "sections": 1,
+   "cards": 19,
+   "cta_buttons": 0,
+   "cta_wrappers": 12,
+   "status_badges": [],
+   "badge_labels": [],
+   "search_visible": true,
+   "search_toggle": false,
+   "chips": [
+    "All",
+    "Criminal",
+    "Constitutional",
+    "Administrative",
+    "Environmental",
+    "Financial",
+    "Health",
+    "Repealed"
+   ],
+   "metas": [
+    "20 Chapters · Sections 1–358",
+    "39 Chapters · Sections 1–531 · Schedules",
+    "6 Chapters · Sections 1–64 · Schedule",
+    "8 Chapters · Sections 1–83 · Schedule",
+    "7 Chapters · Sections 1–53 · Schedules",
+    "8 Chapters · Sections 1–38",
+    "Sections 1–8",
+    "Arts 5, 6, 7, 8, 9, 10, 11"
+   ],
+   "price": false,
+   "phrases": []
+  },
+  {
+   "sha": "4a3b0fd",
+   "tier_model": "monthly",
+   "state": "max",
+   "route": "/browse",
+   "status_chain": [
+    200
+   ],
+   "sha256": "373a72fc5836cbc6",
+   "header_status": "RecallC Max",
+   "markers": [],
+   "banner": "none",
+   "banner_text": "",
+   "banner_links": [],
+   "part_toggles": 24,
+   "part_rail": false,
+   "marks_sheet": false,
+   "schedule_cards": 12,
+   "article_cards": 491
+  },
+  {
+   "sha": "4a3b0fd",
+   "tier_model": "monthly",
+   "state": "max",
+   "route": "/laws",
+   "status_chain": [
+    200
+   ],
+   "sha256": "614a1a992307a47e",
+   "header_status": "RecallC Max",
+   "markers": [
+    "data-signed-in-laws-desktop"
+   ],
+   "sections": 1,
+   "cards": 19,
+   "cta_buttons": 0,
+   "cta_wrappers": 12,
+   "status_badges": [],
+   "badge_labels": [],
+   "search_visible": true,
+   "search_toggle": false,
+   "chips": [
+    "All",
+    "Criminal",
+    "Constitutional",
+    "Administrative",
+    "Environmental",
+    "Financial",
+    "Health",
+    "Repealed"
+   ],
+   "metas": [
+    "20 Chapters · Sections 1–358",
+    "39 Chapters · Sections 1–531 · Schedules",
+    "6 Chapters · Sections 1–64 · Schedule",
+    "8 Chapters · Sections 1–83 · Schedule",
+    "7 Chapters · Sections 1–53 · Schedules",
+    "8 Chapters · Sections 1–38",
+    "Sections 1–8",
+    "Arts 5, 6, 7, 8, 9, 10, 11"
+   ],
+   "price": false,
+   "phrases": []
+  },
+  {
+   "sha": "4a3b0fd",
+   "tier_model": "monthly",
+   "state": "paused",
+   "route": "/browse",
+   "status_chain": [
+    200
+   ],
+   "sha256": "f6013cdd537e96d8",
+   "header_status": "RecallC Free",
+   "markers": [],
+   "banner": "free-summary",
+   "banner_text": "> Free plan — every Article, progress saved. View Playground",
+   "banner_links": [
+    "/playground"
+   ],
+   "part_toggles": 24,
+   "part_rail": false,
+   "marks_sheet": false,
+   "schedule_cards": 12,
+   "article_cards": 491
+  },
+  {
+   "sha": "4a3b0fd",
+   "tier_model": "monthly",
+   "state": "paused",
+   "route": "/laws",
+   "status_chain": [
+    200
+   ],
+   "sha256": "64f029383ce47098",
+   "header_status": "RecallC Free",
+   "markers": [
+    "data-signed-in-laws-desktop"
+   ],
+   "sections": 1,
+   "cards": 19,
+   "cta_buttons": 0,
+   "cta_wrappers": 12,
+   "status_badges": [],
+   "badge_labels": [],
+   "search_visible": true,
+   "search_toggle": false,
+   "chips": [
+    "All",
+    "Criminal",
+    "Constitutional",
+    "Administrative",
+    "Environmental",
+    "Financial",
+    "Health",
+    "Repealed"
+   ],
+   "metas": [
+    "20 Chapters · Sections 1–358",
+    "39 Chapters · Sections 1–531 · Schedules",
+    "6 Chapters · Sections 1–64 · Schedule",
+    "8 Chapters · Sections 1–83 · Schedule",
+    "7 Chapters · Sections 1–53 · Schedules",
+    "8 Chapters · Sections 1–38",
+    "Sections 1–8",
+    "Arts 5, 6, 7, 8, 9, 10, 11"
+   ],
+   "price": false,
+   "phrases": []
+  },
+  {
+   "sha": "4a3b0fd",
+   "tier_model": "monthly",
+   "state": "pending",
+   "route": "/browse",
+   "status_chain": [
+    200
+   ],
+   "sha256": "4ba1c32bd8ff0efb",
+   "header_status": "RecallC Plus",
+   "markers": [],
+   "banner": "none",
+   "banner_text": "",
+   "banner_links": [],
+   "part_toggles": 24,
+   "part_rail": false,
+   "marks_sheet": false,
+   "schedule_cards": 12,
+   "article_cards": 491
+  },
+  {
+   "sha": "4a3b0fd",
+   "tier_model": "monthly",
+   "state": "pending",
+   "route": "/laws",
+   "status_chain": [
+    200
+   ],
+   "sha256": "5bf77225d82b2bd6",
+   "header_status": "RecallC Plus",
+   "markers": [
+    "data-signed-in-laws-desktop"
+   ],
+   "sections": 1,
+   "cards": 19,
+   "cta_buttons": 0,
+   "cta_wrappers": 12,
+   "status_badges": [],
+   "badge_labels": [],
+   "search_visible": true,
+   "search_toggle": false,
+   "chips": [
+    "All",
+    "Criminal",
+    "Constitutional",
+    "Administrative",
+    "Environmental",
+    "Financial",
+    "Health",
+    "Repealed"
+   ],
+   "metas": [
+    "20 Chapters · Sections 1–358",
+    "39 Chapters · Sections 1–531 · Schedules",
+    "6 Chapters · Sections 1–64 · Schedule",
+    "8 Chapters · Sections 1–83 · Schedule",
+    "7 Chapters · Sections 1–53 · Schedules",
+    "8 Chapters · Sections 1–38",
+    "Sections 1–8",
+    "Arts 5, 6, 7, 8, 9, 10, 11"
+   ],
+   "price": false,
+   "phrases": []
+  },
+  {
+   "sha": "4a3b0fd",
+   "tier_model": "monthly",
+   "state": "expired",
+   "route": "/browse",
+   "status_chain": [
+    200
+   ],
+   "sha256": "e32cc0eb34aed513",
+   "header_status": "Your Playground is paused",
+   "markers": [
+    "data-expired-browse"
+   ],
+   "banner": "none",
+   "banner_text": "",
+   "banner_links": [],
+   "part_toggles": 24,
+   "part_rail": false,
+   "marks_sheet": false,
+   "schedule_cards": 12,
+   "article_cards": 491
+  },
+  {
+   "sha": "4a3b0fd",
+   "tier_model": "monthly",
+   "state": "expired",
+   "route": "/laws",
+   "status_chain": [
+    200
+   ],
+   "sha256": "5e97edf3e390aed7",
+   "header_status": "Your Playground is paused",
+   "markers": [
+    "data-signed-in-laws-desktop",
+    "data-expired-laws"
+   ],
+   "sections": 1,
+   "cards": 19,
+   "cta_buttons": 0,
+   "cta_wrappers": 12,
+   "status_badges": [],
+   "badge_labels": [],
+   "search_visible": true,
+   "search_toggle": false,
+   "chips": [
+    "All",
+    "Criminal",
+    "Constitutional",
+    "Administrative",
+    "Environmental",
+    "Financial",
+    "Health",
+    "Repealed"
+   ],
+   "metas": [
+    "20 Chapters · Sections 1–358",
+    "39 Chapters · Sections 1–531 · Schedules",
+    "6 Chapters · Sections 1–64 · Schedule",
+    "8 Chapters · Sections 1–83 · Schedule",
+    "7 Chapters · Sections 1–53 · Schedules",
+    "8 Chapters · Sections 1–38",
+    "Sections 1–8",
+    "Arts 5, 6, 7, 8, 9, 10, 11"
+   ],
+   "price": false,
+   "phrases": []
+  },
+  {
+   "sha": "4a3b0fd",
+   "tier_model": "monthly",
+   "state": "halted",
+   "route": "/browse",
+   "status_chain": [
+    200
+   ],
+   "sha256": "b738c212ba154ec7",
+   "header_status": "Payment retries have stopped",
+   "markers": [
+    "data-halted-browse"
+   ],
+   "banner": "none",
+   "banner_text": "",
+   "banner_links": [],
+   "part_toggles": 24,
+   "part_rail": false,
+   "marks_sheet": false,
+   "schedule_cards": 12,
+   "article_cards": 491
+  },
+  {
+   "sha": "4a3b0fd",
+   "tier_model": "monthly",
+   "state": "halted",
+   "route": "/laws",
+   "status_chain": [
+    200
+   ],
+   "sha256": "5a3cf136ed5fab4d",
+   "header_status": "Payment retries have stopped",
+   "markers": [
+    "data-signed-in-laws-desktop",
+    "data-halted-laws"
+   ],
+   "sections": 1,
+   "cards": 19,
+   "cta_buttons": 0,
+   "cta_wrappers": 12,
+   "status_badges": [],
+   "badge_labels": [],
+   "search_visible": true,
+   "search_toggle": false,
+   "chips": [
+    "All",
+    "Criminal",
+    "Constitutional",
+    "Administrative",
+    "Environmental",
+    "Financial",
+    "Health",
+    "Repealed"
+   ],
+   "metas": [
+    "20 Chapters · Sections 1–358",
+    "39 Chapters · Sections 1–531 · Schedules",
+    "6 Chapters · Sections 1–64 · Schedule",
+    "8 Chapters · Sections 1–83 · Schedule",
+    "7 Chapters · Sections 1–53 · Schedules",
+    "8 Chapters · Sections 1–38",
+    "Sections 1–8",
+    "Arts 5, 6, 7, 8, 9, 10, 11"
+   ],
+   "price": false,
+   "phrases": []
+  },
+  {
+   "sha": "4a3b0fd",
+   "tier_model": "choices",
+   "state": "guest",
+   "route": "/browse",
+   "status_chain": [
+    200
+   ],
+   "sha256": "e4414bbb288675d7",
+   "header_status": "",
+   "markers": [],
+   "banner": "guest-strip",
+   "banner_text": "> Reading as a guest. Sign in to save your progress. Continue with Google",
+   "banner_links": [
+    "/auth/google/start?next=%2Fbrowse"
+   ],
+   "part_toggles": 24,
+   "part_rail": false,
+   "marks_sheet": false,
+   "schedule_cards": 12,
+   "article_cards": 491
+  },
+  {
+   "sha": "4a3b0fd",
+   "tier_model": "choices",
+   "state": "guest",
+   "route": "/laws",
+   "status_chain": [
+    200
+   ],
+   "sha256": "dfd4097d83304e0b",
+   "header_status": "",
+   "markers": [],
+   "sections": 1,
+   "cards": 19,
+   "cta_buttons": 0,
+   "cta_wrappers": 12,
+   "status_badges": [],
+   "badge_labels": [],
+   "search_visible": true,
+   "search_toggle": false,
+   "chips": [
+    "All",
+    "Criminal",
+    "Constitutional",
+    "Administrative",
+    "Environmental",
+    "Financial",
+    "Health",
+    "Repealed"
+   ],
+   "metas": [
+    "20 Chapters · Sections 1–358",
+    "39 Chapters · Sections 1–531 · Schedules",
+    "6 Chapters · Sections 1–64 · Schedule",
+    "8 Chapters · Sections 1–83 · Schedule",
+    "7 Chapters · Sections 1–53 · Schedules",
+    "8 Chapters · Sections 1–38",
+    "Sections 1–8",
+    "Arts 5, 6, 7, 8, 9, 10, 11"
+   ],
+   "price": false,
+   "phrases": []
+  },
+  {
+   "sha": "4a3b0fd",
+   "tier_model": "choices",
+   "state": "free",
+   "route": "/browse",
+   "status_chain": [
+    200
+   ],
+   "sha256": "47ffbcc09885c1d9",
+   "header_status": "RecallC Free",
+   "markers": [],
+   "banner": "free-summary",
+   "banner_text": "> Free plan — every Article, progress saved. View Playground",
+   "banner_links": [
+    "/playground"
+   ],
+   "part_toggles": 24,
+   "part_rail": false,
+   "marks_sheet": false,
+   "schedule_cards": 12,
+   "article_cards": 491
+  },
+  {
+   "sha": "4a3b0fd",
+   "tier_model": "choices",
+   "state": "free",
+   "route": "/laws",
+   "status_chain": [
+    200
+   ],
+   "sha256": "7f67a714bc2b1811",
+   "header_status": "RecallC Free",
+   "markers": [
+    "data-signed-in-laws-desktop"
+   ],
+   "sections": 1,
+   "cards": 19,
+   "cta_buttons": 0,
+   "cta_wrappers": 12,
+   "status_badges": [],
+   "badge_labels": [],
+   "search_visible": true,
+   "search_toggle": false,
+   "chips": [
+    "All",
+    "Criminal",
+    "Constitutional",
+    "Administrative",
+    "Environmental",
+    "Financial",
+    "Health",
+    "Repealed"
+   ],
+   "metas": [
+    "20 Chapters · Sections 1–358",
+    "39 Chapters · Sections 1–531 · Schedules",
+    "6 Chapters · Sections 1–64 · Schedule",
+    "8 Chapters · Sections 1–83 · Schedule",
+    "7 Chapters · Sections 1–53 · Schedules",
+    "8 Chapters · Sections 1–38",
+    "Sections 1–8",
+    "Arts 5, 6, 7, 8, 9, 10, 11"
+   ],
+   "price": false,
+   "phrases": []
+  },
+  {
+   "sha": "4a3b0fd",
+   "tier_model": "choices",
+   "state": "plus",
+   "route": "/browse",
+   "status_chain": [
+    200
+   ],
+   "sha256": "05485ade5f87e838",
+   "header_status": "RecallC Plus",
+   "markers": [
+    "data-plus-browse"
+   ],
+   "banner": "none",
+   "banner_text": "",
+   "banner_links": [],
+   "part_toggles": 24,
+   "part_rail": false,
+   "marks_sheet": false,
+   "schedule_cards": 12,
+   "article_cards": 491
+  },
+  {
+   "sha": "4a3b0fd",
+   "tier_model": "choices",
+   "state": "plus",
+   "route": "/laws",
+   "status_chain": [
+    200
+   ],
+   "sha256": "3e09f9e3149fd18c",
+   "header_status": "RecallC Plus",
+   "markers": [
+    "data-signed-in-laws-desktop",
+    "data-plus-laws"
+   ],
+   "sections": 1,
+   "cards": 19,
+   "cta_buttons": 0,
+   "cta_wrappers": 12,
+   "status_badges": [],
+   "badge_labels": [],
+   "search_visible": true,
+   "search_toggle": false,
+   "chips": [
+    "All",
+    "Criminal",
+    "Constitutional",
+    "Administrative",
+    "Environmental",
+    "Financial",
+    "Health",
+    "Repealed"
+   ],
+   "metas": [
+    "20 Chapters · Sections 1–358",
+    "39 Chapters · Sections 1–531 · Schedules",
+    "6 Chapters · Sections 1–64 · Schedule",
+    "8 Chapters · Sections 1–83 · Schedule",
+    "7 Chapters · Sections 1–53 · Schedules",
+    "8 Chapters · Sections 1–38",
+    "Sections 1–8",
+    "Arts 5, 6, 7, 8, 9, 10, 11"
+   ],
+   "price": false,
+   "phrases": []
+  },
+  {
+   "sha": "4a3b0fd",
+   "tier_model": "choices",
+   "state": "pro",
+   "route": "/browse",
+   "status_chain": [
+    200
+   ],
+   "sha256": "556ff41fd9acb642",
+   "header_status": "RecallC Pro",
+   "markers": [],
+   "banner": "none",
+   "banner_text": "",
+   "banner_links": [],
+   "part_toggles": 24,
+   "part_rail": false,
+   "marks_sheet": false,
+   "schedule_cards": 12,
+   "article_cards": 491
+  },
+  {
+   "sha": "4a3b0fd",
+   "tier_model": "choices",
+   "state": "pro",
+   "route": "/laws",
+   "status_chain": [
+    200
+   ],
+   "sha256": "22540484ed30a75b",
+   "header_status": "RecallC Pro",
+   "markers": [
+    "data-signed-in-laws-desktop"
+   ],
+   "sections": 1,
+   "cards": 19,
+   "cta_buttons": 0,
+   "cta_wrappers": 12,
+   "status_badges": [],
+   "badge_labels": [],
+   "search_visible": true,
+   "search_toggle": false,
+   "chips": [
+    "All",
+    "Criminal",
+    "Constitutional",
+    "Administrative",
+    "Environmental",
+    "Financial",
+    "Health",
+    "Repealed"
+   ],
+   "metas": [
+    "20 Chapters · Sections 1–358",
+    "39 Chapters · Sections 1–531 · Schedules",
+    "6 Chapters · Sections 1–64 · Schedule",
+    "8 Chapters · Sections 1–83 · Schedule",
+    "7 Chapters · Sections 1–53 · Schedules",
+    "8 Chapters · Sections 1–38",
+    "Sections 1–8",
+    "Arts 5, 6, 7, 8, 9, 10, 11"
+   ],
+   "price": false,
+   "phrases": []
+  },
+  {
+   "sha": "4a3b0fd",
+   "tier_model": "choices",
+   "state": "max",
+   "route": "/browse",
+   "status_chain": [
+    200
+   ],
+   "sha256": "56b3f836dd766c34",
+   "header_status": "RecallC Max",
+   "markers": [],
+   "banner": "none",
+   "banner_text": "",
+   "banner_links": [],
+   "part_toggles": 24,
+   "part_rail": false,
+   "marks_sheet": false,
+   "schedule_cards": 12,
+   "article_cards": 491
+  },
+  {
+   "sha": "4a3b0fd",
+   "tier_model": "choices",
+   "state": "max",
+   "route": "/laws",
+   "status_chain": [
+    200
+   ],
+   "sha256": "b8b6bc76f471a3e3",
+   "header_status": "RecallC Max",
+   "markers": [
+    "data-signed-in-laws-desktop"
+   ],
+   "sections": 1,
+   "cards": 19,
+   "cta_buttons": 0,
+   "cta_wrappers": 12,
+   "status_badges": [],
+   "badge_labels": [],
+   "search_visible": true,
+   "search_toggle": false,
+   "chips": [
+    "All",
+    "Criminal",
+    "Constitutional",
+    "Administrative",
+    "Environmental",
+    "Financial",
+    "Health",
+    "Repealed"
+   ],
+   "metas": [
+    "20 Chapters · Sections 1–358",
+    "39 Chapters · Sections 1–531 · Schedules",
+    "6 Chapters · Sections 1–64 · Schedule",
+    "8 Chapters · Sections 1–83 · Schedule",
+    "7 Chapters · Sections 1–53 · Schedules",
+    "8 Chapters · Sections 1–38",
+    "Sections 1–8",
+    "Arts 5, 6, 7, 8, 9, 10, 11"
+   ],
+   "price": false,
+   "phrases": []
+  },
+  {
+   "sha": "4a3b0fd",
+   "tier_model": "choices",
+   "state": "paused",
+   "route": "/browse",
+   "status_chain": [
+    200
+   ],
+   "sha256": "36960da2614257cb",
+   "header_status": "RecallC Free",
+   "markers": [],
+   "banner": "free-summary",
+   "banner_text": "> Free plan — every Article, progress saved. View Playground",
+   "banner_links": [
+    "/playground"
+   ],
+   "part_toggles": 24,
+   "part_rail": false,
+   "marks_sheet": false,
+   "schedule_cards": 12,
+   "article_cards": 491
+  },
+  {
+   "sha": "4a3b0fd",
+   "tier_model": "choices",
+   "state": "paused",
+   "route": "/laws",
+   "status_chain": [
+    200
+   ],
+   "sha256": "1dba0bdd4020c212",
+   "header_status": "RecallC Free",
+   "markers": [
+    "data-signed-in-laws-desktop"
+   ],
+   "sections": 1,
+   "cards": 19,
+   "cta_buttons": 0,
+   "cta_wrappers": 12,
+   "status_badges": [],
+   "badge_labels": [],
+   "search_visible": true,
+   "search_toggle": false,
+   "chips": [
+    "All",
+    "Criminal",
+    "Constitutional",
+    "Administrative",
+    "Environmental",
+    "Financial",
+    "Health",
+    "Repealed"
+   ],
+   "metas": [
+    "20 Chapters · Sections 1–358",
+    "39 Chapters · Sections 1–531 · Schedules",
+    "6 Chapters · Sections 1–64 · Schedule",
+    "8 Chapters · Sections 1–83 · Schedule",
+    "7 Chapters · Sections 1–53 · Schedules",
+    "8 Chapters · Sections 1–38",
+    "Sections 1–8",
+    "Arts 5, 6, 7, 8, 9, 10, 11"
+   ],
+   "price": false,
+   "phrases": []
+  },
+  {
+   "sha": "4a3b0fd",
+   "tier_model": "choices",
+   "state": "pending",
+   "route": "/browse",
+   "status_chain": [
+    200
+   ],
+   "sha256": "f3bed3ccf879307a",
+   "header_status": "RecallC Plus",
+   "markers": [],
+   "banner": "none",
+   "banner_text": "",
+   "banner_links": [],
+   "part_toggles": 24,
+   "part_rail": false,
+   "marks_sheet": false,
+   "schedule_cards": 12,
+   "article_cards": 491
+  },
+  {
+   "sha": "4a3b0fd",
+   "tier_model": "choices",
+   "state": "pending",
+   "route": "/laws",
+   "status_chain": [
+    200
+   ],
+   "sha256": "fac1820e94a941ee",
+   "header_status": "RecallC Plus",
+   "markers": [
+    "data-signed-in-laws-desktop"
+   ],
+   "sections": 1,
+   "cards": 19,
+   "cta_buttons": 0,
+   "cta_wrappers": 12,
+   "status_badges": [],
+   "badge_labels": [],
+   "search_visible": true,
+   "search_toggle": false,
+   "chips": [
+    "All",
+    "Criminal",
+    "Constitutional",
+    "Administrative",
+    "Environmental",
+    "Financial",
+    "Health",
+    "Repealed"
+   ],
+   "metas": [
+    "20 Chapters · Sections 1–358",
+    "39 Chapters · Sections 1–531 · Schedules",
+    "6 Chapters · Sections 1–64 · Schedule",
+    "8 Chapters · Sections 1–83 · Schedule",
+    "7 Chapters · Sections 1–53 · Schedules",
+    "8 Chapters · Sections 1–38",
+    "Sections 1–8",
+    "Arts 5, 6, 7, 8, 9, 10, 11"
+   ],
+   "price": false,
+   "phrases": []
+  },
+  {
+   "sha": "4a3b0fd",
+   "tier_model": "choices",
+   "state": "expired",
+   "route": "/browse",
+   "status_chain": [
+    200
+   ],
+   "sha256": "cad026e31f96e6f8",
+   "header_status": "Your Playground is paused",
+   "markers": [
+    "data-expired-browse"
+   ],
+   "banner": "none",
+   "banner_text": "",
+   "banner_links": [],
+   "part_toggles": 24,
+   "part_rail": false,
+   "marks_sheet": false,
+   "schedule_cards": 12,
+   "article_cards": 491
+  },
+  {
+   "sha": "4a3b0fd",
+   "tier_model": "choices",
+   "state": "expired",
+   "route": "/laws",
+   "status_chain": [
+    200
+   ],
+   "sha256": "13d3c7606bc9410f",
+   "header_status": "Your Playground is paused",
+   "markers": [
+    "data-signed-in-laws-desktop",
+    "data-expired-laws"
+   ],
+   "sections": 1,
+   "cards": 19,
+   "cta_buttons": 0,
+   "cta_wrappers": 12,
+   "status_badges": [],
+   "badge_labels": [],
+   "search_visible": true,
+   "search_toggle": false,
+   "chips": [
+    "All",
+    "Criminal",
+    "Constitutional",
+    "Administrative",
+    "Environmental",
+    "Financial",
+    "Health",
+    "Repealed"
+   ],
+   "metas": [
+    "20 Chapters · Sections 1–358",
+    "39 Chapters · Sections 1–531 · Schedules",
+    "6 Chapters · Sections 1–64 · Schedule",
+    "8 Chapters · Sections 1–83 · Schedule",
+    "7 Chapters · Sections 1–53 · Schedules",
+    "8 Chapters · Sections 1–38",
+    "Sections 1–8",
+    "Arts 5, 6, 7, 8, 9, 10, 11"
+   ],
+   "price": false,
+   "phrases": []
+  },
+  {
+   "sha": "4a3b0fd",
+   "tier_model": "choices",
+   "state": "halted",
+   "route": "/browse",
+   "status_chain": [
+    200
+   ],
+   "sha256": "b156976468dc2232",
+   "header_status": "Payment retries have stopped",
+   "markers": [
+    "data-halted-browse"
+   ],
+   "banner": "none",
+   "banner_text": "",
+   "banner_links": [],
+   "part_toggles": 24,
+   "part_rail": false,
+   "marks_sheet": false,
+   "schedule_cards": 12,
+   "article_cards": 491
+  },
+  {
+   "sha": "4a3b0fd",
+   "tier_model": "choices",
+   "state": "halted",
+   "route": "/laws",
+   "status_chain": [
+    200
+   ],
+   "sha256": "6e3611e453c2496b",
+   "header_status": "Payment retries have stopped",
+   "markers": [
+    "data-signed-in-laws-desktop",
+    "data-halted-laws"
+   ],
+   "sections": 1,
+   "cards": 19,
+   "cta_buttons": 0,
+   "cta_wrappers": 12,
+   "status_badges": [],
+   "badge_labels": [],
+   "search_visible": true,
+   "search_toggle": false,
+   "chips": [
+    "All",
+    "Criminal",
+    "Constitutional",
+    "Administrative",
+    "Environmental",
+    "Financial",
+    "Health",
+    "Repealed"
+   ],
+   "metas": [
+    "20 Chapters · Sections 1–358",
+    "39 Chapters · Sections 1–531 · Schedules",
+    "6 Chapters · Sections 1–64 · Schedule",
+    "8 Chapters · Sections 1–83 · Schedule",
+    "7 Chapters · Sections 1–53 · Schedules",
+    "8 Chapters · Sections 1–38",
+    "Sections 1–8",
+    "Arts 5, 6, 7, 8, 9, 10, 11"
+   ],
+   "price": false,
+   "phrases": []
+  }
+ ]
+}
