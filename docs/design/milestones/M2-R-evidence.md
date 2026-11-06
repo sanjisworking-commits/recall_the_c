@@ -3,12 +3,12 @@
 | Item | Value |
 |---|---|
 | Branch / PR | `pg-m2r-act-head` from `pg-m1r-shell-labels` @ `e6f9110` (stacked on M1-R so the shared `base.html` pins do not conflict); draft PR #235 — https://github.com/sanjisworking-commits/recall_the_c/pull/235 (base `pg-m1r-shell-labels`) |
-| Tested SHA | `877a7d3` (source + tests; full suite) and `bd9347a` (adds one CSS rule: the gate-marker line is hidden inside Add sheets; full suite re-run: **3 failed (known `tests/test_devices_m4c.py` baseline), 4025 passed, 163 skipped, 14 deselected** (6 min 56 s)) |
+| Tested SHA | `877a7d3` (source + tests; full suite) and `bd9347a` (adds one CSS rule: the gate-marker line is hidden inside Add sheets; full suite re-run: **3 failed (known `tests/test_devices_m4c.py` baseline), 4025 passed, 163 skipped, 14 deselected** (6 min 56 s)). Head `b91cc1c` (empty `[ci full]` commit on `bd9347a`): GitHub CI run 42103176722 — **4025 passed, 3 failed (the same baseline), 163 skipped, 14 deselected** |
 | Checklist | tier-revision plan §3.2 — M2R-F01…F05, M2R-T01, D31, D32, D3, D6 — and §3.6 for every new state; owner authorisation 2026-11-06 ("M2-R can proceed on a separate branch… confirming a permanent Free choice, cancelling before save, re-adding a previously chosen law, blocking a fourth distinct law") |
 | Flag | `PLAYGROUND_TIER_MODEL` stays `monthly` by default; every new state renders only under `choices`; the default is captured unchanged (§4, last row) |
 | Original M2 evidence | `docs/design/milestones/M2-evidence.md` — **untouched**, pinned to its own SHA |
 | Tooling | `docs/design/proto-comparison-2026-10-19/m2r/tools/capture_m2r.py` (scenario-driven: state changes through the app's own POSTs from the signed-in session, sheet click, keyboard trace, CDP Fetch-injected failure JSON); dev servers `playground-m2r-<tier>` (choices) and `playground-m2r-<tier>-monthly` on 8916 |
-| Status | LOCAL / PRELIMINARY — hosted checks NOT RUN (no deployment). Per the 2026-11-06 evidence policy every row states **PASS on this SHA** or **carried forward from an earlier SHA**. |
+| Status | LOCAL / PRELIMINARY — hosted checks NOT RUN (no deployment). Per the 2026-11-06 evidence policy every row states **PASS on this SHA** or **carried forward from an earlier SHA**. **Reviewer disposition (2026-11-06): the four Free journeys PASS locally on `bd9347a`.** Carry forward the shared Act body; review only the CTA or dialog where behaviour differs (new permanent choice, cancel before save, re-add at capacity, fourth-law block). The guest two-action sheet and the pricing copy stay explicit owner decisions (§7). |
 
 ## 1. What changed (scope diff)
 | Criterion | Change | Files |
@@ -70,15 +70,16 @@ Each cell: head kind and label; sheet kind and step with keyboard focus inside t
 | Shared shell on the Act page | M1-R `d7d3c30` | Untouched. |
 | Plus/Pro confirm sheet | M2 `a146dff` | Unchanged; re-captured under `choices` (`plus/bnss`) to show it. |
 | Free under `monthly` (subscribe sheet) | M2 `a146dff` | Unchanged; re-captured on the monthly server (`monthly/bnss`). |
+| Browse / Schedules | `main @ ea15591` (PR #234 record) | Not in this branch yet: `ea15591` is not an ancestor of `pg-m2r-act-head`. When the branches first combine, run one focused shell-and-Schedule check on the combined SHA; afterwards reopen only on change. |
 
 ## 7. Exceptions / notes for the owner
 | ID | Note | Decision needed |
 |---|---|---|
 | 5-12 | No revision-date copy anywhere in the Free sheets ("Your saved progress comes back with it." only). | None until 5-12 is decided. |
-| 5-1 | The `free_limit` sheet prints no price; the monthly `subscribe` sheet and the Act-head Free note still print "from ₹199 / month" (M2, unchanged, visible only under `monthly`). | Confirm the asymmetry is acceptable until 5-1, or extend the no-price rule to the monthly surfaces. |
+| 5-1 | The `free_limit` sheet prints no price; the monthly `subscribe` sheet and the Act-head Free note still print "from ₹199 / month" (M2, unchanged, visible only under `monthly`). | **Explicit owner decision** (held open by the reviewer, 2026-11-06): confirm the asymmetry is acceptable until 5-1, or extend the no-price rule to the monthly surfaces. |
 | 5-20 | Expired / halted / device-blocked CTAs unchanged. | — |
 | Injected failures | The banner captures were produced by answering the scope POST with the server's own JSON shape through CDP request interception (nothing reached the server); the server verdicts themselves are covered by the two JSON tests and B1's rollback suite. | None. |
-| Guest Add sheet | still offers "Sign in" + "Create an account" (two actions); 5-11's one-Google-action rule was applied to the Playground gate in M1-R, not to this sheet. | Extend 5-11 here, or leave. |
+| Guest Add sheet | still offers "Sign in" + "Create an account" (two actions); 5-11's one-Google-action rule was applied to the Playground gate in M1-R, not to this sheet. | **Explicit owner decision** (held open by the reviewer, 2026-11-06): extend 5-11 here, or leave. |
 
 ## 8. Not run
 Hosted / staging checks; automated accessibility scan; screen reader; Playwright-based geometry tests (skip locally).
@@ -90,4 +91,5 @@ Hosted / staging checks; automated accessibility scan; screen reader; Playwright
 | Local validation | this document — LOCAL / PRELIMINARY |
 | Staging deployment / hosted acceptance | NOT RUN (not authorised) |
 | Activation | blocked by 5-6b; flag `monthly` by default |
+| Reviewer disposition | 2026-11-06: four Free journeys PASS locally on `bd9347a`; shared Act body carried forward; guest sheet and pricing copy remain explicit owner decisions |
 | Owner milestone decision | Pending |
