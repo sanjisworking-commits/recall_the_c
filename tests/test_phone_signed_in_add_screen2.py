@@ -54,7 +54,7 @@ MAP_LEDE_FULL = (
     "Turning The NDPS Act, 1985 into a learning experience needs a plan."
 )
 # B1-F09 (PR #230): Max is not sold anew; evidence record keeps its SHA.
-NOTE = "Plus · Pro — from ₹199 / month. Constitution learning stays free."
+NOTE = "Plus · Pro. Constitution learning stays free."  # 5-1: no price until approved
 GATE_TITLE = "Your RecallC account already includes the complete Constitution."
 FORBIDDEN = (
     "Already in Playground",
@@ -249,7 +249,7 @@ def test_phone_signed_in_add_sheet_unlocks_via_playground(tmp_path: Path) -> Non
     assert "Turning NDPS Act into" not in panel
     assert f'<p class="pg-add-note">{NOTE}</p>' in panel
     assert catalogue_from_price() == "from ₹199"
-    assert catalogue_from_price() in NOTE
+    assert catalogue_from_price() not in NOTE  # 5-1: no price on upgrade sheets
     assert f'<a class="pg-add-primary" href="{home_path()}">{PRIMARY}</a>' in panel
     assert 'href="/billing/subscriptions"' not in panel
     assert 'href="/playground?stage=plans"' not in panel
@@ -309,7 +309,7 @@ def test_phone_signed_in_add_source_has_no_billing_or_cancel() -> None:
     assert "reading_name" in subscribe
     assert f'<a class="pg-add-primary" href="/playground">{PRIMARY}</a>' in subscribe
     assert "catalogue_plans" in subscribe
-    assert "from_price" in subscribe
+    assert "from_price" not in subscribe  # 5-1
     assert "Constitution learning stays free." in subscribe
     assert "billing" not in subscribe
     assert "cancel_href" not in subscribe
@@ -360,12 +360,12 @@ def test_phone_signed_in_add_css_is_breakpoint_scoped() -> None:
     assert ":has([data-guest-add-phone])" not in css
     assert ":has([data-plus-add-phone])" not in css
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg54" in base
+    assert "playground.css?v=pg55" in base
     assert "playground.css?v=pg49" not in base
     assert "playground.css?v=pg32" not in base
     assert "styles.css?v=main90" in base
     assert "mobile.css?v=mob109" in base
-    assert "playground.js?v=pg12" in base
+    assert "playground.js?v=pg13" in base
     assert "mobile.js?v=mob30" in base
 
 
@@ -375,8 +375,8 @@ def test_guest_plus_expired_halted_add_sheets_stay_separate(tmp_path: Path) -> N
     _assert_no_old_markers(guest_html)
     assert 'data-pg-kind="guest"' in _sheet_attrs(guest_html)
     guest_panel = _sheet(guest_html)
-    assert "data-guest-add-gate>Sign in</a>" in guest_panel
-    assert "data-guest-add-gate>Create an account</a>" in guest_panel
+    assert "data-guest-add-google>Continue with Google</a>" in guest_panel
+    assert "Create an account" not in guest_panel  # M2-R (5-11)
     assert PRIMARY not in guest_panel
     assert NOTE not in guest_panel
 

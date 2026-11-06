@@ -55,7 +55,7 @@ from constitution_memorizer.web.bare_act_page import bare_act_page_context
 from constitution_memorizer.web.bare_acts import get_bare_act
 from constitution_memorizer.playground.http import (
     local_next_path,
-    playground_login_href,
+    playground_google_href,
     playground_user_id,
     require_playground_repo,
     require_roster_service,
@@ -155,11 +155,12 @@ from constitution_memorizer.entitlements.models import (
 )
 from constitution_memorizer.playground.stage_timer import time_playground_stage
 from constitution_memorizer.playground.view import (
+    SHEET_KIND_FREE_CONFIRM,
+    SHEET_KIND_FREE_READD,
     add_confirm_copy,
     build_home_view,
     capacity_view,
     catalog_titles,
-    catalogue_from_price,
     catalogue_plan_views,
     entire_act_meta,
     gate_view,
@@ -517,7 +518,21 @@ def _add_page_context(
     halted_add = request_is_halted_subscriber(request)
     if (expired_add or halted_add) and kind == "already_active":
         kind = "resume"
-    login_href = playground_login_href(
+    # M2R-F02: a RecallC Free account under ``choices`` (permanent choices)
+    # gets the permanent-choice confirm or the no-cost re-add sheet. The Act
+    # head's own kind (``state.kind``) is unchanged.
+    free_choices = bool(
+        permanent
+        and access.snapshot is not None
+        and getattr(access.snapshot, "playground_choice_limit", None) is not None
+    )
+    if free_choices and kind == "eligible_to_add":
+        kind = SHEET_KIND_FREE_CONFIRM
+    elif free_choices and kind == "re_add":
+        kind = SHEET_KIND_FREE_READD
+    # M2-R (5-11, owner 2026-11-06): the guest sheet has one Google action that
+    # returns to this Act's Add dialog once the account exists.
+    google_href = playground_google_href(
         local_next_path(str(request.url.path), add_path(law_id))
     )
     plans = catalogue_plan_views(
@@ -583,7 +598,9 @@ def _add_page_context(
         "lines": lines,
         "month_name": month,
         "short_title": short,
-        "action_label": "Add back" if re_add else "Add to Playground",
+        "action_label": (
+            "Add again" if kind == SHEET_KIND_FREE_READD else ("Add back" if re_add else "Add to Playground")
+        ),
         "confirm_value": ROSTER_ADD_CONFIRM,
         "cancel_href": f"/laws/{law_id}",
         "blocked_pending": kind == "pending" or (
@@ -600,9 +617,8 @@ def _add_page_context(
         "skip_confirm": skip,
         "re_add": re_add,
         "entire_meta": entire_meta,
-        "login_href": login_href,
+        "google_href": google_href,
         "reading_name": reading_name,
-        "from_price": catalogue_from_price(),
         "catalogue_plans": plans,
         "hard_gate": kind in {"guest", "subscribe", "device_blocked", "unavailable"},
         "plus_add": plus_add,

@@ -518,8 +518,8 @@ def test_phone_expired_add_css_scope_pins_and_no_clone() -> None:
     base = BASE.read_text(encoding="utf-8")
     assert "styles.css?v=main90" in base
     assert "mobile.css?v=mob109" in base
-    assert "playground.css?v=pg54" in base
-    assert "playground.js?v=pg12" in base
+    assert "playground.css?v=pg55" in base
+    assert "playground.js?v=pg13" in base
     assert "playground.css?v=pg41" not in base
     assert "playground.css?v=pg49" not in base
 
@@ -563,7 +563,7 @@ def test_phone_expired_add_cohorts_stay_separate(tmp_path: Path) -> None:
     guest_sheet = _sheet(guest_html)
     assert 'data-pg-kind="guest"' in guest_sheet
     assert "data-expired-add" not in guest_sheet
-    assert "Create an account" in guest_sheet
+    assert "Continue with Google" in guest_sheet  # M2-R (5-11)
 
     halted = TestClient(_mu_app(tmp_path / "halted"))
     _sign_in(halted)

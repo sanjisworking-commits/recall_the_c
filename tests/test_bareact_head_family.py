@@ -315,7 +315,9 @@ def test_direct_add_url_is_the_act_page_with_the_sheet_open(tmp_path):
     assert "Turning The UAPA, 1967 into a learning experience needs a plan." in dialog
     assert 'class="pg-add-primary" href="/playground">Unlock Playground</a>' in dialog
     # B1-F09 (PR #230): Max is not sold anew; evidence record keeps its SHA.
-    assert "Plus · Pro — from ₹199 / month. Constitution learning stays free." in dialog
+    # 5-1 (owner 2026-11-06): no price on upgrade sheets until pricing is approved.
+    assert "Plus · Pro. Constitution learning stays free." in dialog
+    assert "₹" not in dialog
 
 
 def test_plus_add_sheet_keeps_the_confirm_and_scope_contract(tmp_path):
@@ -401,7 +403,7 @@ def test_head_and_sheet_styles_replaced_the_per_surface_blocks():
         ):
             assert stale not in sheet, stale
     base = (TEMPLATES / "base.html").read_text(encoding="utf-8")
-    for pin in ("styles.css?v=main90", "mobile.css?v=mob109", "playground.css?v=pg54", "playground.js?v=pg12", "mobile.js?v=mob30"):
+    for pin in ("styles.css?v=main90", "mobile.css?v=mob109", "playground.css?v=pg55", "playground.js?v=pg13", "mobile.js?v=mob30"):
         assert pin in base, pin
 
 
@@ -478,4 +480,4 @@ def test_the_sheet_trigger_shows_an_opening_state_and_sends_one_request():
     busy = css.split('[data-pg-sheet][aria-busy="true"],', 1)[1].split("}", 1)[0]
     assert "cursor: progress" in busy and "pointer-events: none" in busy
     base = (TEMPLATES / "base.html").read_text(encoding="utf-8")
-    assert "playground.css?v=pg54" in base and "playground.js?v=pg12" in base
+    assert "playground.css?v=pg55" in base and "playground.js?v=pg13" in base

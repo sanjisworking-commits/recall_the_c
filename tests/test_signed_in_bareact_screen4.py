@@ -55,7 +55,7 @@ OLD_MARKERS = (
     "data-bareact-tabs",
     "This Act has no Schedules.",
 )
-FREE_NOTE = "Unlock Playground · from ₹199 / month."
+FREE_NOTE = "Unlock Playground to add this law."  # 5-1: no price until approved
 
 
 @pytest.fixture(autouse=True)

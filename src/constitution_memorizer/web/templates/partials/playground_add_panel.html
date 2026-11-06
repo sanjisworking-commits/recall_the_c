@@ -12,6 +12,7 @@
   data-step="{{ step }}"
   data-skip-confirm="{{ 'true' if skip_confirm else 'false' }}"
   data-roster-confirm="{{ law_id }}"
+  data-pg-law-name="{{ reading_name|default(short_title) }}"
   {% if expired_add|default(false) %}data-expired-add{% endif %}
   {% if halted_add|default(false) %}data-halted-add{% endif %}
   {# Standalone (no-JS POST re-render, or the sheet fetch before the script
@@ -22,14 +23,14 @@
   {% if kind == "guest" %}
   <h1 id="pg-add-title" class="pg-add-title">Add to Playground</h1>
   <p class="pg-add-lede">Playground needs an account. Reading {{ reading_name|default(short_title) }} stays free — sign in and you’ll come right back here.</p>
-  <a class="pg-add-primary" href="{{ login_href }}" data-guest-add-gate>Sign in</a>
-  <a class="pg-add-secondary" href="{{ login_href }}" data-guest-add-gate>Create an account</a>
+  {# M2-R (5-11): one Google action — sign-in creates the account; next returns to this Act's Add dialog. #}
+  <a class="pg-add-primary" href="{{ google_href }}" data-guest-add-gate data-guest-add-google>Continue with Google</a>
 
   {% elif kind == "subscribe" %}
   <h1 id="pg-add-title" class="pg-add-title">Add to Playground</h1>
   <p class="pg-add-lede">Turning {{ reading_name|default(short_title) }} into a learning experience needs a plan. Reading it stays free.</p>
   <a class="pg-add-primary" href="/playground">Unlock Playground</a>
-  <p class="pg-add-note">{% for plan in catalogue_plans %}{{ plan.tier|capitalize }}{% if not loop.last %} · {% endif %}{% endfor %}{% if catalogue_plans and from_price %} — {% endif %}{% if from_price %}{{ from_price }} / month.{% endif %} Constitution learning stays free.</p>
+  <p class="pg-add-note">{% for plan in catalogue_plans %}{{ plan.tier|capitalize }}{% if not loop.last %} · {% endif %}{% endfor %}{% if catalogue_plans %}. {% endif %}Constitution learning stays free.</p>{# 5-1 (owner 2026-11-06): no price on upgrade sheets until pricing is approved. #}
 
   {% elif kind == "resume" %}
   <h1 id="pg-add-title" class="pg-add-title">{{ title }}</h1>
@@ -58,22 +59,22 @@
   <p class="pg-note" data-playground-gate="new_law_temporarily_unavailable">Adding new laws is temporarily unavailable</p>
   <p class="pg-add-lede">You can continue your current Playground.</p>
   <a class="pg-add-primary" href="/billing/subscriptions">Manage subscription</a>
-  <a class="pg-add-secondary" href="/playground">Cancel</a>
+  {# D31 (M2-R): Cancel closes the sheet onto the Act it was opened from. #}
+  <a class="pg-add-secondary" href="{{ cancel_href }}" data-pg-sheet-close>Cancel</a>
 
   {% elif blocked_free_limit or kind == "free_limit" %}
   <h1 id="pg-add-title" class="pg-add-title">All three law choices used</h1>
   <p class="pg-note" data-playground-gate="free_choices_exhausted">All three law choices used</p>
   <p class="pg-add-lede">Your chosen laws stay fully usable, and any of them can be added again at no cost. Plus and Pro add laws without limit.</p>
+  {# M2R-F02 free_limit: no removal advice, no rollover link, no price until 5-1. #}
   {% if catalogue_plans %}
   <div class="pg-plan-list">
     {% for plan in catalogue_plans %}
-    <a class="pg-btn" href="{{ plan.href }}">{{ plan.cta_label }} · {{ plan.price_label }}</a>
+    <a class="pg-btn" href="{{ plan.href }}">{{ plan.cta_label }}</a>
     {% endfor %}
   </div>
   {% endif %}
-  <p class="pg-actions">
-    <a class="pg-btn pg-btn--ghost" href="/playground">Back to Playground</a>
-  </p>
+  <a class="pg-add-secondary" href="{{ cancel_href }}" data-pg-sheet-close>Close</a>
 
   {% elif blocked_full or kind == "roster_full" %}
   <h1 id="pg-add-title" class="pg-add-title">Playground full this month</h1>
@@ -93,12 +94,31 @@
 
   {% else %}
   <div data-add-step="confirm" {% if step == "scope" or skip_confirm %}hidden{% endif %}>
+    {% if kind == "free_confirm" %}
+    {# M2R-F02 free_confirm (D3): a permanent choice, no month, the warning
+       names what removal does not restore. #}
+    <p class="pg-eyebrow">RecallC Free · permanent choice</p>
+    <h1 id="pg-add-title" class="pg-add-title">{{ title }}</h1>
+    <p class="pg-add-lede">{{ reading_name|default(short_title) }} becomes one of your Playground laws — learnable, verbatim. The reader itself never changes.</p>
+    {% if lines %}<p class="pg-add-warning" data-pg-free-warning>{{ lines[0] }}</p>{% endif %}
+    {% for line in lines[1:] %}
+    <p class="pg-add-note pg-add-note--left">{{ line }}</p>
+    {% endfor %}
+    {% elif kind == "free_readd" %}
+    {# M2R-F02 free_readd: one of the account's chosen laws, no choice used,
+       no revision-date promise (5-12). #}
+    <h1 id="pg-add-title" class="pg-add-title">Add {{ reading_name|default(short_title) }} again?</h1>
+    {% for line in lines %}
+    <p class="pg-add-lede{% if not loop.first %} pg-add-lede--tight{% endif %}">{{ line }}</p>
+    {% endfor %}
+    {% else %}
     <p class="pg-eyebrow">{{ month_name }}</p>
     <h1 id="pg-add-title" class="pg-add-title">Add to Playground</h1>
     <p class="pg-add-lede">{{ reading_name|default(short_title) }} joins this month's Playground — learnable, verbatim. The reader itself never changes.</p>
     {% for line in lines %}
     <p class="pg-add-note pg-add-note--left">{{ line }}</p>
     {% endfor %}
+    {% endif %}
     <form method="post" action="/playground/laws/{{ law_id }}/add" data-pg-add-confirm>
       <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
       <input type="hidden" name="confirm" value="{{ confirm_value }}">
@@ -110,6 +130,11 @@
   <div data-add-step="scope" {% if step != "scope" and not skip_confirm %}hidden{% endif %}>
     <h1 id="pg-add-scope-title" class="pg-add-title">Add {{ reading_name|default(short_title) }}</h1>
     <p class="pg-add-lede">Choose how much of {{ reading_name|default(short_title) }} enters your recall schedule.</p>
+    {# M2R-F03 (D6): the save-failure banner. Filled by playground.js from the
+       server's outcome — ``rolled_back`` (nothing was changed) or ``unknown``
+       (the acknowledgement was lost); Retry re-reads the state. Without the
+       script the POST lands on the server's own save-failed page. #}
+    <div class="pg-add-alert" role="alert" data-pg-add-alert hidden></div>
     <form method="post" action="/playground/laws/{{ law_id }}/add">
       <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
       <input type="hidden" name="confirm" value="{{ confirm_value }}">

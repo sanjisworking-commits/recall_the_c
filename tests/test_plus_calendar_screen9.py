@@ -386,7 +386,7 @@ def test_plus_calendar_markup_preserves_routes_and_study_gates() -> None:
     assert "def account_status_for_snapshot" in shell
     assert "def shell_account_status" in shell
     assert '"plus": "RecallC Plus"' in shell
-    assert "playground.css?v=pg54" in base
+    assert "playground.css?v=pg55" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-plus-calendar="desktop"' in css
     plus_css = css.split("plus/09-screen", 1)[-1]

@@ -2940,6 +2940,92 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
   margin-bottom: 8px;
 }
 
+/* M2-R: Free permanent-choice warning (D3) and the save-failure banner (D6).
+   Tokens only, so both themes read; every control in the banner is ≥ 44 px. */
+.pg-add-warning {
+  margin: 0 0 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--pg-hairline);
+  border-left: 4px solid var(--pg-ink);
+  border-radius: 10px;
+  background: var(--pg-wash);
+  color: var(--pg-ink);
+  font-size: 13px;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+.pg-add-lede--tight {
+  margin-top: -10px;
+}
+
+.pg-add-alert {
+  margin: 0 0 14px;
+  padding: 12px 14px;
+  border: 1px solid var(--pg-hairline);
+  border-left: 4px solid var(--pg-ink);
+  border-radius: 10px;
+  background: var(--pg-wash);
+  color: var(--pg-ink);
+}
+
+.pg-add-alert[hidden] {
+  display: none;
+}
+
+.pg-add-alert-text {
+  margin: 0 0 10px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+.pg-add-alert-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pg-add-alert-btn,
+.pg-add-alert-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.pg-add-alert-btn {
+  border: 0;
+  background: var(--pg-ink);
+  color: var(--on-accent);
+}
+
+.pg-add-alert-link {
+  border: 1px solid var(--pg-hairline);
+  background: var(--pg-paper);
+  color: var(--pg-ink);
+}
+
+.pg-add-choice[aria-busy="true"] {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+/* M2-R: the gate marker paragraph (data-playground-gate) repeats the sheet's
+   own heading word for word; inside the Add sheet it is a machine marker for
+   the tests and the no-JS page, not a second title. */
+.pg-sheet-panel[data-pg-add] > .pg-note[data-playground-gate] {
+  display: none;
+}
+
 @media (max-width: 560px) {
   .pg-sheet-panel[data-pg-add] {
     padding: 12px 18px calc(30px + env(safe-area-inset-bottom, 0px));

@@ -13,6 +13,7 @@ import socket
 import threading
 import time
 from pathlib import Path
+from urllib.parse import quote
 
 import pytest
 from fastapi.testclient import TestClient
@@ -30,7 +31,7 @@ from constitution_memorizer.web.bare_acts import get_bare_act
 
 MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
 ROOT = Path(__file__).resolve().parents[1]
-LOGIN_NEXT = f"/login?next={add_path('ndps')}"
+GOOGLE_NEXT = "/auth/google/start?next=" + quote(add_path("ndps"), safe="")  # M2-R (5-11)
 NDPS = get_bare_act("ndps")
 GUEST_ADD_TITLE = "Add to Playground"
 READING_NAME = playground_bare_act_spec("ndps").short_name
@@ -97,12 +98,13 @@ def test_screen5_sheet_copy_and_gate_actions(tmp_path: Path) -> None:
     assert "Playground needs an account" in sheet
     assert "stays free" in sheet
     assert "come right back here" in sheet
-    assert sheet.count("data-guest-add-gate") == 2
-    assert sheet.count(f'href="{LOGIN_NEXT}"') == 2
-    assert f'<a class="pg-add-primary" href="{LOGIN_NEXT}" data-guest-add-gate>Sign in</a>' in sheet
+    # M2-R (5-11): one Google action; sign-in creates the account.
+    assert sheet.count("data-guest-add-gate") == 1
+    assert sheet.count(f'href="{GOOGLE_NEXT}"') == 1
     assert (
-        f'<a class="pg-add-secondary" href="{LOGIN_NEXT}" data-guest-add-gate>Create an account</a>'
+        f'<a class="pg-add-primary" href="{GOOGLE_NEXT}" data-guest-add-gate data-guest-add-google>Continue with Google</a>'
     ) in sheet
+    assert "Create an account" not in sheet and "pg-add-secondary" not in sheet
     assert ">Cancel<" not in sheet
     assert "data-pg-sheet-close" not in sheet
     assert 'type="button"' not in sheet  # the phone twin's inert buttons are gone
@@ -172,8 +174,8 @@ def test_screen5_in_page_fetch_returns_the_panel_alone(tmp_path: Path) -> None:
     sheet = _sheet(html)
     assert 'data-pg-kind="guest"' in sheet
     assert f'<h1 id="pg-add-title" class="pg-add-title">{GUEST_ADD_TITLE}</h1>' in sheet
-    assert sheet.count("data-guest-add-gate") == 2
-    assert sheet.count(f'href="{LOGIN_NEXT}"') == 2
+    assert sheet.count("data-guest-add-gate") == 1  # M2-R (5-11)
+    assert sheet.count(f'href="{GOOGLE_NEXT}"') == 1
     assert ">Cancel<" not in sheet
     assert "<form" not in sheet
 
@@ -257,8 +259,6 @@ def test_screen5_1280_dialog_gate_and_close(tmp_path: Path) -> None:
     artifact_dir.mkdir(parents=True, exist_ok=True)
     shot_path = artifact_dir / "guest_add_screen5_1280.png"
     close_path = artifact_dir / "guest_add_screen5_closed_ndps.png"
-    signin_path = artifact_dir / "guest_add_screen5_gate_signin.png"
-    create_path = artifact_dir / "guest_add_screen5_gate_create.png"
     origin = f"http://127.0.0.1:{port}"
 
     with sync_playwright() as pw:
@@ -310,20 +310,9 @@ def test_screen5_1280_dialog_gate_and_close(tmp_path: Path) -> None:
         page.evaluate("() => document.activeElement && document.activeElement.blur()")
         page.screenshot(path=str(shot_path), full_page=False)
 
-        page.locator("[data-pg-add] .pg-add-primary").click()
-        page.wait_for_url("**/login**", timeout=8000)
-        signin_url = page.url
-        signin_html = page.content()
-        page.screenshot(path=str(signin_path), full_page=False)
-
-        open_dialog()
-        page.locator("[data-pg-add] .pg-add-secondary").click()
-        page.wait_for_url("**/login**", timeout=8000)
-        create_url = page.url
-        create_html = page.content()
-        page.screenshot(path=str(create_path), full_page=False)
-
-        open_dialog()
+        # M2-R (5-11): the one action is a plain link to /auth/google/start
+        # (its href is asserted from `geo`; the provider redirect is not
+        # followed here).
         page.locator("[data-pg-sheet-close]").click()
         closed = page.evaluate(
             """() => {
@@ -354,11 +343,10 @@ def test_screen5_1280_dialog_gate_and_close(tmp_path: Path) -> None:
                 panelDisplay: getComputedStyle(panel).display,
                 title: panel.querySelector('h1').textContent.trim(),
                 hasCancel: [...panel.querySelectorAll('a, button')].some((a) => a.textContent.trim() === 'Cancel'),
-                createVisible: create.offsetParent !== null && create.textContent.trim() === 'Create an account',
+                createVisible: Boolean(create),
                 signinTag: signin.tagName,
                 signinHref: signin.getAttribute('href'),
-                createTag: create.tagName,
-                createHref: create.getAttribute('href'),
+                signinText: signin.textContent.trim(),
                 bottomSheet: p.bottom >= 840 && p.width >= 300,
               };
             }"""
@@ -371,21 +359,15 @@ def test_screen5_1280_dialog_gate_and_close(tmp_path: Path) -> None:
     assert geo["eyebrow"] is False
     assert geo["title"] == GUEST_ADD_TITLE
     assert READING_NAME in geo["lede"]
-    assert geo["labels"] == ["Sign in", "Create an account"]
-    assert geo["tags"] == ["A", "A"]
-    assert geo["hrefs"] == [LOGIN_NEXT, LOGIN_NEXT]
-    assert geo["classes"] == ["pg-add-primary", "pg-add-secondary"]
+    assert geo["labels"] == ["Continue with Google"]
+    assert geo["tags"] == ["A"]
+    assert geo["hrefs"] == [GOOGLE_NEXT]
+    assert geo["classes"] == ["pg-add-primary"]
     assert geo["hasClose"] is True  # the ✕ playground.js injects
     assert geo["cancel"] is False
     assert geo["leaked"]["already"] is False
     assert geo["leaked"]["sections"] is False
     assert geo["leaked"]["continue"] is False
-    assert "/login" in signin_url
-    assert add_path("ndps") in signin_url
-    assert "data-auth-grid" in signin_html
-    assert "/login" in create_url
-    assert add_path("ndps") in create_url
-    assert "data-auth-grid" in create_html
     assert closed["open"] is False
     assert closed["url"] == "/laws/ndps"
     assert closed["head"] is True
@@ -393,10 +375,9 @@ def test_screen5_1280_dialog_gate_and_close(tmp_path: Path) -> None:
     assert phone_geo["panelDisplay"] != "none"
     assert phone_geo["title"] == GUEST_ADD_TITLE
     assert phone_geo["hasCancel"] is False
-    assert phone_geo["createVisible"] is True
+    assert phone_geo["createVisible"] is False  # M2-R (5-11): no second action
     assert phone_geo["signinTag"] == "A"
-    assert phone_geo["signinHref"] == LOGIN_NEXT
-    assert phone_geo["createTag"] == "A"
-    assert phone_geo["createHref"] == LOGIN_NEXT
+    assert phone_geo["signinHref"] == GOOGLE_NEXT
+    assert phone_geo["signinText"] == "Continue with Google"
     assert phone_geo["bottomSheet"] is True
     assert shot_path.is_file()

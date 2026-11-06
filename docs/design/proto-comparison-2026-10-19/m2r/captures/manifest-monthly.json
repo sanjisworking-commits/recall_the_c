@@ -1,0 +1,612 @@
+{
+ "label": "m2r2-monthly",
+ "base": "http://localhost:8916",
+ "viewer": "free",
+ "tier_model": "monthly",
+ "captured_at": "2026-11-06T10:03:53+0530",
+ "chrome": "Google Chrome 156.0.8078.81",
+ "rows": [
+  {
+   "key": "bnss",
+   "path": "/laws/bnss",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "setup": [],
+   "head": {
+    "url": "/laws/bnss",
+    "kind": "subscribe",
+    "membership": "",
+    "primary": {
+     "t": "Subscribe to use Playground",
+     "href": "/playground/laws/bnss/add",
+     "sheet": true,
+     "box": {
+      "x": 18,
+      "y": 146,
+      "w": 354,
+      "h": 48
+     }
+    },
+    "badge": null,
+    "note": "Unlock Playground to add this law.",
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "Subscribe to use Playground",
+      "tag": "A",
+      "href": "/playground/laws/bnss/add",
+      "box": {
+       "x": 18,
+       "y": 146,
+       "w": 354,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": false,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r2-monthly_free_bnss_390x844_light_head.png",
+     "sha256": "f4c43328d890d5ed6a78b40aeb4b4d317c068aec3583179b0b93edc8fa61aaa1"
+    },
+    "sheet": {
+     "file": "m2r2-monthly_free_bnss_390x844_light_sheet.png",
+     "sha256": "cd584e60a760160f7996a0056326f0a1e0d77dff19cdbeda3c23ad0e1dd8f070"
+    },
+    "scope": {
+     "file": "m2r2-monthly_free_bnss_390x844_light_scope.png",
+     "sha256": "9bd512ea8d85c6f66c50b9f0a937ba0ce2afe0c1c0703fe812315d6b712d6991"
+    }
+   },
+   "sheet_opened": true,
+   "sheet": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "subscribe",
+    "step": "confirm",
+    "headings": [
+     "Add to Playground"
+    ],
+    "texts": [
+     "Turning The BNSS, 2023 into a learning experience needs a plan. Reading it stays free.",
+     "Plus \u00b7 Pro. Constitution learning stays free."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "\u2715",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 322,
+       "y": 631,
+       "w": 44,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#ffffff",
+      "ratio": 3.24,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Unlock Playground",
+      "tag": "A",
+      "href": "/playground",
+      "box": {
+       "x": 34,
+       "y": 735,
+       "w": 322,
+       "h": 50
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [
+     "\u2715=3.24"
+    ],
+    "labelledBy": "pg-add-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-sheet-close:\u2715",
+    "alert": null,
+    "panelBox": {
+     "x": 16,
+     "y": 623,
+     "w": 358,
+     "h": 221
+    },
+    "warning": null,
+    "hasMonthEyebrow": false,
+    "eyebrow": null,
+    "hasPrice": false,
+    "hScroll": false
+   },
+   "keyboard": {
+    "tabs": [
+     {
+      "inDialog": true,
+      "el": "A.pg-add-primary",
+      "text": "Unlock Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-primary",
+      "text": "Unlock Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-primary",
+      "text": "Unlock Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-primary",
+      "text": "Unlock Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-primary",
+      "text": "Unlock Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     }
+    ],
+    "containment": true,
+    "outlined": 10,
+    "afterEscape": {
+     "inDialog": false,
+     "el": "A.ActHead-btn",
+     "text": "Subscribe to use Playground",
+     "focusVisible": true,
+     "outline": "2px solid",
+     "dialogOpen": false
+    },
+    "focusReturned": {
+     "isTrigger": true,
+     "text": "Subscribe to use Playground"
+    }
+   },
+   "scope": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "subscribe",
+    "step": "confirm",
+    "headings": [
+     "Add to Playground"
+    ],
+    "texts": [
+     "Turning The BNSS, 2023 into a learning experience needs a plan. Reading it stays free.",
+     "Plus \u00b7 Pro. Constitution learning stays free."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "\u2715",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 322,
+       "y": 631,
+       "w": 44,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#ffffff",
+      "ratio": 3.24,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Unlock Playground",
+      "tag": "A",
+      "href": "/playground",
+      "box": {
+       "x": 34,
+       "y": 735,
+       "w": 322,
+       "h": 50
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [
+     "\u2715=3.24"
+    ],
+    "labelledBy": "pg-add-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-sheet-close:\u2715",
+    "alert": null,
+    "panelBox": {
+     "x": 16,
+     "y": 623,
+     "w": 358,
+     "h": 221
+    },
+    "warning": null,
+    "hasMonthEyebrow": false,
+    "eyebrow": null,
+    "hasPrice": false,
+    "hScroll": false,
+    "confirmClicked": false
+   }
+  },
+  {
+   "key": "bnss",
+   "path": "/laws/bnss",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "setup": [],
+   "head": {
+    "url": "/laws/bnss",
+    "kind": "subscribe",
+    "membership": "",
+    "primary": {
+     "t": "Subscribe to use Playground",
+     "href": "/playground/laws/bnss/add",
+     "sheet": true,
+     "box": {
+      "x": 860,
+      "y": 130,
+      "w": 380,
+      "h": 48
+     }
+    },
+    "badge": null,
+    "note": "Unlock Playground to add this law.",
+    "controls": [
+     {
+      "kind": "cta",
+      "t": "Subscribe to use Playground",
+      "tag": "A",
+      "href": "/playground/laws/bnss/add",
+      "box": {
+       "x": 860,
+       "y": 130,
+       "w": 380,
+       "h": 48
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [],
+    "flatList": false,
+    "hScroll": false
+   },
+   "shots": {
+    "head": {
+     "file": "m2r2-monthly_free_bnss_1280x900_light_head.png",
+     "sha256": "89cd43992d0f2bb6c8f3105df01b70fedfc9a850be5bcc7b1d9f83e6328fb083"
+    },
+    "sheet": {
+     "file": "m2r2-monthly_free_bnss_1280x900_light_sheet.png",
+     "sha256": "7a4858b5030f5145557f9a28d93fa7042192f3d578d86c9e8f4c64f31e6bcc31"
+    },
+    "scope": {
+     "file": "m2r2-monthly_free_bnss_1280x900_light_scope.png",
+     "sha256": "510dec8bef6e606855c60420e72df44cd68f79877f7b5be38e5230e8f824598e"
+    }
+   },
+   "sheet_opened": true,
+   "sheet": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "subscribe",
+    "step": "confirm",
+    "headings": [
+     "Add to Playground"
+    ],
+    "texts": [
+     "Turning The BNSS, 2023 into a learning experience needs a plan. Reading it stays free.",
+     "Plus \u00b7 Pro. Constitution learning stays free."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "\u2715",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 811,
+       "y": 352,
+       "w": 44,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#ffffff",
+      "ratio": 3.24,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Unlock Playground",
+      "tag": "A",
+      "href": "/playground",
+      "box": {
+       "x": 439,
+       "y": 456,
+       "w": 402,
+       "h": 50
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [
+     "\u2715=3.24"
+    ],
+    "labelledBy": "pg-add-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-sheet-close:\u2715",
+    "alert": null,
+    "panelBox": {
+     "x": 410,
+     "y": 337,
+     "w": 460,
+     "h": 225
+    },
+    "warning": null,
+    "hasMonthEyebrow": false,
+    "eyebrow": null,
+    "hasPrice": false,
+    "hScroll": false
+   },
+   "keyboard": {
+    "tabs": [
+     {
+      "inDialog": true,
+      "el": "A.pg-add-primary",
+      "text": "Unlock Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-primary",
+      "text": "Unlock Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-primary",
+      "text": "Unlock Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-primary",
+      "text": "Unlock Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "A.pg-add-primary",
+      "text": "Unlock Playground",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     },
+     {
+      "inDialog": true,
+      "el": "BUTTON.pg-sheet-close",
+      "text": "\u2715",
+      "focusVisible": true,
+      "outline": "2px solid",
+      "dialogOpen": true
+     }
+    ],
+    "containment": true,
+    "outlined": 10,
+    "afterEscape": {
+     "inDialog": false,
+     "el": "A.ActHead-btn",
+     "text": "Subscribe to use Playground",
+     "focusVisible": true,
+     "outline": "2px solid",
+     "dialogOpen": false
+    },
+    "focusReturned": {
+     "isTrigger": true,
+     "text": "Subscribe to use Playground"
+    }
+   },
+   "scope": {
+    "open": true,
+    "dialogOpenAttr": true,
+    "kind": "subscribe",
+    "step": "confirm",
+    "headings": [
+     "Add to Playground"
+    ],
+    "texts": [
+     "Turning The BNSS, 2023 into a learning experience needs a plan. Reading it stays free.",
+     "Plus \u00b7 Pro. Constitution learning stays free."
+    ],
+    "controls": [
+     {
+      "kind": "panel",
+      "t": "\u2715",
+      "tag": "BUTTON",
+      "href": null,
+      "box": {
+       "x": 811,
+       "y": 352,
+       "w": 44,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#ffffff",
+      "ratio": 3.24,
+      "focusable": true
+     },
+     {
+      "kind": "panel",
+      "t": "Unlock Playground",
+      "tag": "A",
+      "href": "/playground",
+      "box": {
+       "x": 439,
+       "y": 456,
+       "w": 402,
+       "h": 50
+      },
+      "meets44": true,
+      "fg": "#ffffff",
+      "bg": "#141414",
+      "ratio": 18.42,
+      "focusable": true
+     }
+    ],
+    "small": [],
+    "low": [
+     "\u2715=3.24"
+    ],
+    "labelledBy": "pg-add-title",
+    "ariaModal": "true",
+    "focusInside": true,
+    "focusOn": "BUTTON.pg-sheet-close:\u2715",
+    "alert": null,
+    "panelBox": {
+     "x": 410,
+     "y": 337,
+     "w": 460,
+     "h": 225
+    },
+    "warning": null,
+    "hasMonthEyebrow": false,
+    "eyebrow": null,
+    "hasPrice": false,
+    "hScroll": false,
+    "confirmClicked": false
+   }
+  }
+ ]
+}

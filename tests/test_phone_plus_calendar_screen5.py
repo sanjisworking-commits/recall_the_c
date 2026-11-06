@@ -593,7 +593,7 @@ def test_phone_plus_calendar_css_scope_pins_and_desktop_09_untouched() -> None:
         assert "plus_calendar" not in text
         assert "data-plus-calendar" not in text
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg54" in base
+    assert "playground.css?v=pg55" in base
     assert "playground.css?v=pg37" not in base
     assert "styles.css?v=main90" in base
     assert "mobile.css?v=mob109" in base

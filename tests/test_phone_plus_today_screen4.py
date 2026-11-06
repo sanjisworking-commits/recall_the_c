@@ -632,7 +632,7 @@ def test_phone_plus_today_css_scope_pins_and_desktop_08_untouched() -> None:
     for phrase in TEMPLATE_INVENTED:
         assert phrase not in dash, phrase
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg54" in base
+    assert "playground.css?v=pg55" in base
     assert "playground.css?v=pg37" not in base
     assert "playground.css?v=pg36" not in base
     assert "styles.css?v=main90" in base

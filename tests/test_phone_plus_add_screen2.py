@@ -108,7 +108,7 @@ LEGACY_MARKERS = (
     'data-expired-add="desktop"',
     'data-halted-add="desktop"',
     "plus-add-",
-    "guest-add-(?!gate)",
+    "guest-add-(?!gate|google)",  # M2-R (5-11): data-guest-add-google is the one Google action
     "signed-add-",
     "expired-add-",
     "halted-add-",
@@ -553,12 +553,12 @@ def test_phone_plus_add_css_is_breakpoint_scoped() -> None:
     assert "cancel_href" in confirm_src
     assert "reading_name|default(short_title) }} joins this month's Playground" in confirm_src
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg54" in base
+    assert "playground.css?v=pg55" in base
     assert "playground.css?v=pg49" not in base
     assert "playground.css?v=pg34" not in base
     assert "styles.css?v=main90" in base
     assert "mobile.css?v=mob109" in base
-    assert "playground.js?v=pg12" in base
+    assert "playground.js?v=pg13" in base
 
 
 def test_guest_free_expired_halted_pro_other_law_get_the_same_sheet(
@@ -570,8 +570,8 @@ def test_guest_free_expired_halted_pro_other_law_get_the_same_sheet(
     _assert_act_page_underneath(guest_html, "ndps")
     assert 'data-pg-kind="guest"' in _panel_attrs(guest_html)
     guest_sheet = _sheet(guest_html)
-    assert 'data-guest-add-gate>Sign in</a>' in guest_sheet
-    assert 'data-guest-add-gate>Create an account</a>' in guest_sheet
+    assert 'data-guest-add-google>Continue with Google</a>' in guest_sheet  # M2-R (5-11)
+    assert "Create an account" not in guest_sheet
     assert f"Reading {NDPS_READING_NAME} stays free" in guest_sheet
     assert LEDE not in guest_sheet
 

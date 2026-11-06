@@ -470,7 +470,7 @@ def test_phone_expired_css_scope_pins_and_no_clone() -> None:
     assert "data-expired-bareact-phone-tabs" not in base
     assert "styles.css?v=main90" in base
     assert "mobile.css?v=mob109" in base
-    assert "playground.css?v=pg54" in base
+    assert "playground.css?v=pg55" in base
     assert "playground.css?v=pg40" not in base
     assert "playground.css?v=pg49" not in base
     app = APP.read_text(encoding="utf-8")

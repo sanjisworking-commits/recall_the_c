@@ -49,7 +49,7 @@ PRIMARY = "Subscribe to use Playground"
 GUEST_PRIMARY = "Sign in to use Playground"
 GUEST_NOTE = "Sign in to add this law to Playground."
 # The state's explanatory line under the Free button: the plan price.
-FREE_NOTE = "Unlock Playground · from ₹199 / month."
+FREE_NOTE = "Unlock Playground to add this law."  # 5-1: no price until approved
 FORBIDDEN = (
     "Already in Playground",
     ">Sections</a>",
