@@ -150,7 +150,7 @@
    button, lede or sheet opener. The CTA itself lives on the Act head. #}
 {% macro playground_status_badge(state) %}
 {% if playground_enabled|default(true) and state and state.eligible and state.kind != 'unavailable' %}
-<div class="LawPlaygroundCta LawPlaygroundCta--badge" data-law-id="{{ state.law_id }}" data-pg-kind="{{ state.kind }}" data-membership="{{ state.badge }}">{{ status_badge(state.badge, state.badge_label) }}</div>
+<div class="LawPlaygroundCta LawPlaygroundCta--badge" data-law-id="{{ state.law_id }}" data-pg-kind="{{ state.kind }}" data-membership="{{ state.badge }}">{{ status_badge(state.badge, state.badge_label)|trim }}</div>
 {% endif %}
 {% endmacro %}
 
