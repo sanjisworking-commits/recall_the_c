@@ -635,6 +635,14 @@ def cmd_serve(args: argparse.Namespace, config: PipelineConfig) -> int:
         "yes",
         "on",
     }
+    # Railway injects RAILWAY_ENVIRONMENT. Use the boot-safe ASGI wrapper so
+    # /healthz is reachable even if this process was started via `cli serve`.
+    if os.environ.get("RAILWAY_ENVIRONMENT"):
+        from constitution_memorizer.web.asgi import app as hosted_app
+
+        print(f"Serving hosted UI on http://{args.host}:{port}")
+        uvicorn.run(hosted_app, host=args.host, port=port, log_level="info")
+        return 0
     app = create_app(
         units_path=units_path,
         db_path=db_path,

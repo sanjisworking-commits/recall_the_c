@@ -1,7 +1,9 @@
 [deploy]
-# Railway's service probe. The app also serves /health for local checks.
+# Overrides the dashboard start command for every builder (Railpack and Nixpacks).
+# The memorize_the_c service does not use Railpack, so railpack.json alone never
+# reached it — it kept running `cli serve`, which loads create_app before bind.
+startCommand = "sh -c 'exec python -m uvicorn constitution_memorizer.web.asgi:app --host 0.0.0.0 --port ${PORT:-8080}'"
 healthcheckPath = "/healthz"
 healthcheckTimeout = 300
 restartPolicyType = "ON_FAILURE"
-# Release the previous replica (and its pooler slots) once the new one is live.
 overlapSeconds = 15

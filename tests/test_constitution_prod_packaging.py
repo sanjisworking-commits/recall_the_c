@@ -186,6 +186,14 @@ def test_railway_probe_config_matches_healthz():
     assert 'healthcheckPath = "/healthz"' in railway
     assert "healthcheckTimeout" in railway
     assert "restartPolicyType" in railway
+    assert "constitution_memorizer.web.asgi:app" in railway
+    assert "sh -c" in railway
     nixpacks = (ROOT / "nixpacks.toml").read_text(encoding="utf-8")
     assert 'providers = ["python"]' in nixpacks
     assert "${PORT:-8080}" in nixpacks
+
+
+def test_cli_serve_uses_boot_safe_app_on_railway():
+    source = (ROOT / "src/constitution_memorizer/cli.py").read_text(encoding="utf-8")
+    assert "RAILWAY_ENVIRONMENT" in source
+    assert "constitution_memorizer.web.asgi" in source
