@@ -8,7 +8,7 @@
 | Flag | `PLAYGROUND_TIER_MODEL` stays `monthly` by default; Today renders identically under `choices` (§0 read-back) |
 | Tooling | `…/m1r/tools/capture_m1r.py` (route probe); `…/m4/tools/readback_m4.py` (nine states × two models × first run / after one real Learn → Done, through the app's TestClient); `…/m4/tools/serve_populated_m4.py` (serves a populated Today — one completed Article, two clauses due — for signed-in captures); dev launchers `playground-m4-<tier>[-choices]` (port 8920) |
 | Candidate (rendered source) | `3e06fb0` (template, context, both stylesheets, pins `main92` / `mob111`) + the 320 px greeting follow-up that follows it; tests `2c26faf` (`tests/test_today_family.py`, 39 tests; nine re-pointed assertions; 32 pin files) |
-| Status | LOCAL / PRELIMINARY — hosted checks NOT RUN (no deployment). Every row states **PASS on this SHA**, **carried forward from SHA**, **BLOCKED** or **NOT RUN**. |
+| Status | LOCAL / PRELIMINARY — hosted checks NOT RUN (no deployment). Every row states **PASS on this SHA**, **carried forward from SHA**, **BLOCKED** or **NOT RUN**. "Ready for local acceptance review" (PR comment, 2026-11-07) is a review recommendation; the accepted-baseline row is added only on the owner's explicit acceptance. |
 
 ## 0. Baseline before edit — `6186863` (`m4/01-baseline-6186863/`)
 
@@ -51,6 +51,10 @@ Untouched: `web/entitlements.py`, the entitlement snapshot and flag, `auth/route
 | Today cohort + stack guards (`test_dashboard`, `test_guest_first_ux`, `test_multiuser_auth`, `test_multiuser_isolation`, the twelve `*today_screen*` modules, `test_root_assets`, `test_browse_laws_family`, `test_shell_m1r`, `test_playground_r1`, `test_act_head_m2r`) | 221 passed, 14 skipped (Playwright, not installed locally) |
 | Full suite on the candidate | **3 failed (the known `tests/test_devices_m4c.py` baseline: `test_existing_registered_device_stays_allowed_at_churn_cap`, `test_admin_reset_does_not_erase_replacement_history`, `test_admin_clears_replacement_lock_with_audit`), 4097 passed, 176 skipped** (8 min 48 s; run on `2c26faf` before the CSS-only `dc50253`) |
 
+| GitHub run on head `e9ca1e4` (run 42355818704; the unit step executed because the commit count 909 is divisible by 3) | **3 failed, 4096 passed, 163 skipped, 14 deselected** (17 min 32 s). The three failures are the documented `tests/test_devices_m4c.py` baseline (`test_admin_clears_replacement_lock_with_audit`, `test_admin_reset_does_not_erase_replacement_history`, `test_existing_registered_device_stays_allowed_at_churn_cap`); the job therefore concludes `failure` as on every branch of the stack. Recorded separately from the local run above. |
+
+Count difference between the local and the GitHub run, verified by collected IDs (2026-11-07): both collect 4276 tests. CI runs `pytest -m "not integration"` and deselects the 14 `integration`-marked tests; run locally those 14 give 1 passed (`tests/test_docling_integration.py::test_docling_extract_smoke`) and 13 skipped (`test_free_law_choices_postgres.py` ×10, `test_subscription_billing_postgres.py` ×3 — `PLAYGROUND_PG_TEST_URL` not set). Hence local 4097 = CI 4096 + the docling smoke test, and local 176 skipped = CI 163 + the 13 Postgres skips.
+
 No behaviour test was weakened (`M4-test-changes.md`).
 
 ## 3. Gate — the Free promise reaches Today (M4-F08)
@@ -75,10 +79,28 @@ Probe facts on every captured row: one navigation surface; one phone bar at 320 
 - Prototype fidelity: guest Today matches the 18 Oct frames (`proto_phone_today_guest.png`, `proto_desk_today_guest.png`) in structure and copy direction — greeting, date line with the guest note, "Nothing due yet.", one primary action; the app keeps its working starter rows (§0.2a, Q1) and uses the hero CTA for "Browse" rather than a second button. Signed-in first run keeps the accepted content, now in the prototype's card language on desktop. Populated Today unchanged; the desktop counter follows the prototype's "n of m reviewed".
 - Accepted deviations: the prototype's "STATE Due / All done" toggle is not built (no working counterpart, Q6); the prototype's guest card copy "Sign in to save 3 Articles…" is superseded by the owner's copy (D20).
 - `hScroll` false at 320 / 390 / 720 / 1280 (every row); 44 px: every control ≥ 44 px (CTA 48 px desktop / 52 px phone, Google action 44 px, starter rows 52–58 px, phone tabs 60 px); contrast ≥ 5.28:1 on every measured target; focus rings on every Tab stop; dark theme = palette tokens only (captures in both themes).
-- NOT RUN: real 200 % zoom (the browser pane could not composite frames this session; 320 px captures stand in for reflow), automated accessibility scan, screen reader.
+- NOT RUN: real 200 % zoom, automated accessibility scan, screen reader (the browser pane could not composite frames this session). The 320 px captures (guest and Free, light and dark, `hScroll` false, theme toggle kept on the greeting row) provide supporting reflow evidence; they are not a zoom test.
 
 ## 6. Decisions (owner, 2026-11-07, via the M4 question set)
 Q1 keep and restyle the accepted dashboard content (guests keep the starter rows, not the plan / tour rows); **Q2 brand-new accounts keep "Welcome, {name}."**, everyone else and guests follow the prototype greeting, date line on every cohort; Q3 one Continue-with-Google action, hero CTA → `/browse` for guests, "Nothing due yet."; Q4 dead Free chip and plan row deleted, lapse banner reworded to the all-Articles rule; Q5 two-column desktop first run at ≥ 900 px; Q6 "n of m reviewed" counter yes, STATE toggle no; Q7 no tier body on Today. Record wording: Free = every Article with saved progress and "three permanent law choices per account" (no allowance copy is printed on Today).
 
 ## 7. Not run
 Hosted / staging checks; automated accessibility scan; screen reader; real 200 % zoom; a Plus populated capture with a Playground node (read-back row + existing screen tests instead, reduced policy).
+
+## 8. Browser-profile files committed in `490f930` (removed in `f181079`)
+
+The capture tool writes a throwaway headless-Chrome profile beside its output. The first M4 commit picked up ten files from three such profiles; `f181079` removed them from the index and added `.chrome-profile*/` to `.gitignore`. They remain reachable in the branch history unless it is rewritten (a force-push, which this session's policy blocked — owner decision before merge).
+
+Paths (under `docs/design/proto-comparison-2026-10-19/m4/01-baseline-6186863/`), from `git ls-tree -r --name-only 490f930`:
+
+| Path | Bytes | What the recorded inspection found |
+|---|---|---|
+| `guest/.chrome-profile/Local State` · `free/.chrome-profile/Local State` · `free-populated/.chrome-profile/Local State` | 4118 · 4116 · 4120 | Chrome preferences JSON (96 leaf keys: metrics, variations, tab stats, profile info-cache). Keys whose names suggest secrets were read: `local.password_hash_data_list` = `[]`; `profile.info_cache.Default.gaia_id` = `""`, `user_name` = `""`, `name` = `"Your Chrome"`, `signin.with_credential_provider` = `false`; `session_id_generator_last_value` and `signin.active_accounts_last_emitted` are Chrome counters. No string value matches `http`, `127.0.0.1`, `localhost`, `8920` or `8921`. |
+| `guest/…/Variations` · `free/…/Variations` · `free-populated/…/Variations` | 85 each | two metric keys: `user_experience_metrics.stability.exited_cleanly`, `variations_crash_streak`. |
+| `free/.chrome-profile/Breadcrumbs` | 526 | one text line: `0:00:04 Tab1 RenderProcessGone`. |
+| `guest/.chrome-profile/Default/Reporting and NEL-journal` | 21032 | a SQLite rollback journal, not a database (it does not open as one): printable strings ≥ 4 characters extracted — only the schemas of `meta`, `nel_policies`, `reporting_endpoints`, `reporting_endpoint_groups`; zero occurrences of `127.0.0.1`, `localhost`, `8920`, `http`. |
+| `free/…/Reporting and NEL-journal` · `free-populated/…/Reporting and NEL-journal` | 0 | empty. |
+
+Not present in the commit: `Cookies`, `Login Data`, `Web Data`, `Sessions/`, `Network/`, any `.ldb` file.
+
+Method: `git ls-tree -r --name-only 490f930` for the paths and `git cat-file -s` for sizes; the JSON files parsed in full with every leaf key listed and the name-flagged values read; the text files read; the binary journal identified by its header and searched by printable-string extraction. **Limit:** string extraction from a binary journal cannot prove the absence of every sensitive byte sequence. **Conclusion: no credentials, tokens or session data found by the recorded inspection.**
