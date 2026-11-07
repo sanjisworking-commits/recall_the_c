@@ -15,7 +15,7 @@ MINI_UNITS = Path(__file__).parent / "fixtures" / "learning" / "mini_units.json"
 
 
 def test_asgi_module_does_not_import_cli():
-    source = (ROOT / "src/constitution_memorizer/web/asgi.py").read_text(encoding="utf-8")
+    source = (ROOT / "src/constitution_memorizer/asgi.py").read_text(encoding="utf-8")
     tree = ast.parse(source)
     imported: set[str] = set()
     for node in ast.walk(tree):
@@ -50,7 +50,7 @@ def test_python_version_is_pinned_for_railpack():
     assert pinned == "3.12.11"
     railpack = (ROOT / "railpack.json").read_text(encoding="utf-8")
     assert '"python": "3.12.11"' in railpack
-    assert "constitution_memorizer.web.asgi:app" in railpack
+    assert "constitution_memorizer.asgi:app" in railpack
     assert "sh -c" in railpack
     assert "${PORT:-8080}" in railpack
 
@@ -147,7 +147,7 @@ def test_earliest_upcoming_revision_without_sqlite_conn(tmp_path: Path):
 def test_hosted_app_serves_healthz_when_boot_fails(monkeypatch):
     from fastapi.testclient import TestClient
 
-    from constitution_memorizer.web import asgi as asgi_mod
+    from constitution_memorizer import asgi as asgi_mod
 
     def boom() -> None:
         raise RuntimeError("simulated boot failure")
@@ -158,6 +158,8 @@ def test_hosted_app_serves_healthz_when_boot_fails(monkeypatch):
         assert healthz.status_code == 200
         assert healthz.json() == {"status": "ok"}
         assert client.get("/health").status_code == 200
+        assert client.get("/").status_code == 200
+        assert client.get("/").json() == {"status": "ok"}
 
 
 def test_healthz_responds_before_create_app_finishes(monkeypatch):
@@ -165,7 +167,7 @@ def test_healthz_responds_before_create_app_finishes(monkeypatch):
 
     from fastapi.testclient import TestClient
 
-    from constitution_memorizer.web import asgi as asgi_mod
+    from constitution_memorizer import asgi as asgi_mod
 
     release = threading.Event()
 
@@ -178,6 +180,7 @@ def test_healthz_responds_before_create_app_finishes(monkeypatch):
         healthz = client.get("/healthz")
         assert healthz.status_code == 200
         assert healthz.json() == {"status": "ok"}
+        assert client.get("/").status_code == 200
         release.set()
 
 
@@ -186,14 +189,44 @@ def test_railway_probe_config_matches_healthz():
     assert 'healthcheckPath = "/healthz"' in railway
     assert "healthcheckTimeout" in railway
     assert "restartPolicyType" in railway
-    assert "constitution_memorizer.web.asgi:app" in railway
+    assert "constitution_memorizer.asgi:app" in railway
+    assert "PYTHONPATH=src" in railway
     assert "sh -c" in railway
     nixpacks = (ROOT / "nixpacks.toml").read_text(encoding="utf-8")
     assert 'providers = ["python"]' in nixpacks
+    assert "constitution_memorizer.asgi:app" in nixpacks
     assert "${PORT:-8080}" in nixpacks
+    procfile = (ROOT / "Procfile").read_text(encoding="utf-8")
+    assert "constitution_memorizer.asgi:app" in procfile
 
 
 def test_cli_serve_uses_boot_safe_app_on_railway():
     source = (ROOT / "src/constitution_memorizer/cli.py").read_text(encoding="utf-8")
     assert "RAILWAY_ENVIRONMENT" in source
-    assert "constitution_memorizer.web.asgi" in source
+    assert "constitution_memorizer.asgi" in source
+
+
+def test_hosted_asgi_import_does_not_load_web_app():
+    """Uvicorn must bind before web.app import; a subprocess keeps sys.modules clean."""
+    import os
+    import subprocess
+    import sys
+
+    script = (
+        "import sys\n"
+        "import constitution_memorizer.asgi  # noqa: F401\n"
+        "loaded = [n for n in sys.modules if n == 'constitution_memorizer.web.app' "
+        "or n.startswith('constitution_memorizer.web.app.')]\n"
+        "raise SystemExit(0 if not loaded else 'loaded ' + ','.join(loaded))\n"
+    )
+    env = os.environ.copy()
+    env["PYTHONPATH"] = "src" + ((":" + env["PYTHONPATH"]) if env.get("PYTHONPATH") else "")
+    proc = subprocess.run(
+        [sys.executable, "-c", script],
+        cwd=str(ROOT),
+        env=env,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert proc.returncode == 0, proc.stdout + proc.stderr
