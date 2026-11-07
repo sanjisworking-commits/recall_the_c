@@ -264,7 +264,7 @@ def test_guest_cannot_persist_playground(tmp_path: Path):
     listed = client.get("/playground", follow_redirects=False)
     assert listed.status_code == 200
     assert "Sign in to use Playground" in listed.text
-    assert "/login?next=/playground" in listed.text
+    assert "/auth/google/start?next=%2Fplayground" in listed.text  # M5 Q9: one Google action
 
 
 def test_add_to_playground_is_idempotent(tmp_path: Path):

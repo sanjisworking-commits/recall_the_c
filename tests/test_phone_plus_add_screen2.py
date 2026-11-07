@@ -553,11 +553,11 @@ def test_phone_plus_add_css_is_breakpoint_scoped() -> None:
     assert "cancel_href" in confirm_src
     assert "reading_name|default(short_title) }} joins this month's Playground" in confirm_src
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg55" in base
+    assert "playground.css?v=pg56" in base
     assert "playground.css?v=pg49" not in base
     assert "playground.css?v=pg34" not in base
-    assert "styles.css?v=main92" in base
-    assert "mobile.css?v=mob111" in base
+    assert "styles.css?v=main93" in base
+    assert "mobile.css?v=mob112" in base
     assert "playground.js?v=pg13" in base
 
 

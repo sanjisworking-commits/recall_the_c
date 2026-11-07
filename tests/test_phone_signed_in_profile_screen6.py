@@ -46,10 +46,7 @@ TAB_HREFS = (
     ("Profile", "/profile"),
 )
 MOCK_SCREEN_COPY = (
-    "No plan yet",
-    "See plans",
     "2 of 3",
-    "RecallC Free · Constitution learning included",
 )
 FREE_SEL = (
     "[data-signed-in-profile]:not([data-plus-profile])"
@@ -208,16 +205,16 @@ def test_phone_free_profile_is_live_screen10_contract(tmp_path: Path) -> None:
     assert 'data-phone-profile="guest"' not in html
     panel = _panel(html)
     assert "Sanjay" in panel
-    assert "Signed in with Google" in panel
+    assert "RecallC Free · Constitution learning included" in panel  # M5 Q1 identity meta
     assert 'href="/profile?edit=name"' in panel
     assert "Edit name" in panel
     assert "data-profile-identity" in panel
     assert "data-profile-account" in panel
     assert "data-profile-subscription" in panel
     assert "Playground" in panel
-    assert "Subscribe to add Bare Acts to a monthly Playground." in panel
-    assert ">Subscribe<" in panel
-    assert f'href="{PLAYGROUND_BILLING_PATH}"' in panel
+    assert "Playground learning needs a paid plan. Plus and Pro add Bare Acts to your Playground." in panel
+    assert ">See plans ›<" in panel  # M5 Q1
+    assert 'href="/playground?stage=plans"' in panel  # M5 Q1: Free goes to the plans stage
     assert PLAYGROUND_BILLING_PATH == "/billing/subscriptions"
     account = _account_list(html)
     assert 'href="/profile"' in account
@@ -291,9 +288,9 @@ def test_phone_free_profile_css_is_breakpoint_scoped() -> None:
     assert "@media (min-width: 561px)" in desk
     assert "minmax(0, 1fr) minmax(0, 1fr)" in desk
     assert "font-size: 28px" in desk
-    assert "playground.css?v=pg55" in BASE.read_text(encoding="utf-8")
-    assert "styles.css?v=main92" in BASE.read_text(encoding="utf-8")
-    assert "mobile.css?v=mob111" in BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg56" in BASE.read_text(encoding="utf-8")
+    assert "styles.css?v=main93" in BASE.read_text(encoding="utf-8")
+    assert "mobile.css?v=mob112" in BASE.read_text(encoding="utf-8")
     assert "mobile.css?v=mob104" not in BASE.read_text(encoding="utf-8")
     src = PROFILE.read_text(encoding="utf-8")
     for phrase in MOCK_SCREEN_COPY:

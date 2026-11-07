@@ -892,14 +892,16 @@ def test_multiuser_settings_drop_study_reminders(tmp_path: Path) -> None:
     html = client.get("/settings").text
     assert "Study reminders" not in html
     assert "notification_frequency" not in html
+    # M5 (Q5): the multiuser Settings POST validates CSRF; the token comes from the cookie.
+    csrf = client.cookies.get("rtc_csrf") or ""
     resp = client.post(
-        "/settings", data={"news_articles": "19, 21"}, follow_redirects=False
+        "/settings", data={"news_articles": "19, 21", "csrf_token": csrf}, follow_redirects=False
     )
     assert resp.status_code == 303
     # An explicitly invalid frequency is still rejected, not ignored.
     bad = client.post(
         "/settings",
-        data={"notification_frequency": "bogus", "news_articles": ""},
+        data={"notification_frequency": "bogus", "news_articles": "", "csrf_token": csrf},
         follow_redirects=False,
     )
     assert bad.status_code == 400

@@ -78,8 +78,6 @@ INVENTED = (
     "8/10",
     "2 of 3",
     "renews 1 October",
-    "See plans",
-    "No plan yet",
 )
 INVENTED_MARKUP = INVENTED + ("September 2026",)
 
@@ -284,7 +282,7 @@ def test_plus_profile_reaches_profile_with_profile_selected(tmp_path: Path) -> N
     assert "RecallC Free" not in header
     identity = _identity(html)
     assert "Sanjay" in identity
-    assert "Signed in with Google" in identity
+    assert "RecallC Plus · Playground included" in identity  # M5 Q1 identity meta
     assert "renews 1 October" not in identity
     account = _account_list(html)
     assert 'href="/profile"' in account
@@ -441,7 +439,7 @@ def test_guest_free_pro_profile_are_not_plus_screen_10(tmp_path: Path) -> None:
     assert 'data-plus-profile="desktop"' not in free_html
     assert "data-signed-in-profile" in free_html
     assert "RecallC Plus" not in _header(free_html)
-    assert ">Subscribe<" in free_html
+    assert ">See plans ›<" in free_html  # M5 Q1: the Free card links to the plans stage
     assert "Change plan" not in free_html
 
     pro = TestClient(_mu_app(tmp_path / "pro"))
@@ -554,7 +552,7 @@ def test_plus_profile_marker_uses_shared_predicate() -> None:
     assert "def account_status_for_snapshot" in shell
     assert "def shell_account_status" in shell
     assert '"plus": "RecallC Plus"' in shell
-    assert "playground.css?v=pg55" in base
+    assert "playground.css?v=pg56" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-plus-profile="desktop"' in css
     plus_css = css.split("plus/10-screen", 1)[-1]

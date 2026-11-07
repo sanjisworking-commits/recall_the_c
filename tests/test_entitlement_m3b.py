@@ -308,7 +308,10 @@ def test_guest_playground_gets_redirect_to_login(tmp_path: Path, path: str):
     response = client.get(path, follow_redirects=False)
     assert response.status_code == 200
     assert "Sign in to use Playground" in response.text
-    assert f"/login?next={path}" in response.text
+    # M5 (Q9): the desktop intro's one Google action returns to the requested page.
+    from urllib.parse import quote
+
+    assert f"/auth/google/start?next={quote(path, safe='')}" in response.text
     assert "/billing/subscriptions" not in response.text.split("EntitlementGate", 1)[-1][:1200]
     assert 'data-hard-gate="true"' in response.text
     json_get = client.get(path, headers={"Accept": "application/json"}, follow_redirects=False)

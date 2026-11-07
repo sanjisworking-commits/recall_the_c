@@ -54,8 +54,6 @@ HIDDEN = (
     "data-text-size-step",
     'data-settings-group="study"',
     'data-settings-group="calendar"',
-    "data-report-open",
-    'data-report-section="Settings"',
     "Subscribe",
     "View plans",
     "Manage subscription",
@@ -276,37 +274,36 @@ def test_phone_guest_settings_copy_and_controls(tmp_path: Path) -> None:
     assert calls == []
 
 
-def test_phone_guest_settings_identity_signin_is_handlerless() -> None:
+def test_phone_guest_settings_identity_signin_is_one_google_action() -> None:
+    # M5 (Q2, 5-11): the identity row's action signs in with Google and returns here.
     src = SETTINGS.read_text(encoding="utf-8")
     identity = _identity(src)
-    assert 'type="button"' in identity
     assert "data-guest-settings-identity-signin" in identity
-    assert ">Sign in<" in identity
-    assert "href=" not in identity
+    assert 'href="/auth/google/start?next=%2Fsettings"' in identity
+    assert ">Continue with Google<" in identity
     assert "<form" not in identity
     assert "/login" not in identity
     assert "data-report-open" not in identity
 
 
-def test_phone_guest_settings_account_signin_is_handlerless() -> None:
+def test_phone_guest_settings_account_signin_is_one_google_action() -> None:
     src = SETTINGS.read_text(encoding="utf-8")
-    account = src.split('data-guest-settings-signin', 1)[1].split("</button>", 1)[0]
-    assert 'type="button"' in src.split("data-guest-settings-signin", 1)[0][-80:]
-    assert ">Sign in<" in account or "Sign in" in account
-    assert "href=" not in account
+    account = src.split('data-guest-settings-signin', 1)[1].split("</a>", 1)[0]
+    assert 'href="/auth/google/start?next=%2Fsettings"' in src.split("data-guest-settings-signin", 1)[0][-120:]
+    assert "Continue with Google" in account
     assert "<form" not in account
     assert "/login" not in account
 
 
-def test_phone_guest_settings_report_is_handlerless() -> None:
+def test_phone_guest_settings_report_opens_the_report_dialog() -> None:
+    # M5 (Q2): the guest row opens the same report dialog as the signed-in row.
     src = SETTINGS.read_text(encoding="utf-8")
     guest_report = src.split("data-guest-settings-report", 1)[1].split("</button>", 1)[0]
     assert "Report an issue" in guest_report
     assert "href=" not in guest_report
     assert "mailto:" not in guest_report
-    assert "data-report-open" not in guest_report
-    assert 'data-report-section="Settings"' not in guest_report
-    signed = src.split('data-report-open data-report-section="Settings"', 1)[1]
+    assert 'data-report-open data-report-section="Settings"' in guest_report
+    signed = src.split('data-guest-settings-report', 1)[1].split('data-report-open data-report-section="Settings"', 2)[-1]
     assert "Report an issue" in signed.split("</button>", 1)[0]
 
 
@@ -373,7 +370,7 @@ def test_phone_guest_settings_css_is_breakpoint_scoped() -> None:
     assert "var(--ink)" in phone_block
     assert "var(--on-accent)" in phone_block
     assert "@media (min-width: 561px)" not in phone_block
-    assert "playground.css?v=pg55" in BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg56" in BASE.read_text(encoding="utf-8")
     assert "playground.css?v=pg31" not in BASE.read_text(encoding="utf-8")
 
 

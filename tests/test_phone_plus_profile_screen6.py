@@ -59,8 +59,6 @@ RENDER_INVENTED = (
     "Unlock all",
     "8/10",
     "2 of 3",
-    "See plans",
-    "No plan yet",
     "/billing/manage",
     "/pricing",
 )
@@ -237,9 +235,7 @@ def _assert_no_invented(html: str) -> None:
     text = unescape(html)
     for phrase in RENDER_INVENTED:
         assert phrase not in text, phrase
-    assert ">Subscribe<" not in text
-
-
+    assert ">See plans ›<" not in text  # M5 Q1: the Free card links to the plans stage
 def test_phone_plus_profile_is_live_screen10_contract(tmp_path: Path) -> None:
     client = _plus_client(tmp_path)
     before = _facts(client)
@@ -258,7 +254,7 @@ def test_phone_plus_profile_is_live_screen10_contract(tmp_path: Path) -> None:
     panel = _panel(html)
     identity = _identity(html)
     assert "Sanjay" in identity
-    assert "Signed in with Google" in identity
+    assert "RecallC Plus · Playground included" in identity  # M5 Q1 identity meta
     assert "RecallC Core" not in identity
     assert "renews" not in identity.lower()
     assert 'href="/profile?edit=name"' in identity
@@ -294,7 +290,7 @@ def test_phone_plus_profile_is_live_screen10_contract(tmp_path: Path) -> None:
     assert f'href="{PLAYGROUND_BILLING_PATH}"' in sub
     assert PLAYGROUND_BILLING_PATH == "/billing/subscriptions"
     assert "Subscribe to add Bare Acts" not in sub
-    assert ">Subscribe<" not in sub
+    assert ">See plans ›<" not in sub  # M5 Q1: the Free card links to the plans stage
     assert "Current paid period ends 15 October" in sub
     assert "Google" in panel
     assert "a@example.com" in panel
@@ -356,9 +352,7 @@ def test_phone_plus_profile_cancel_at_period_end_stays_truthful(
     assert "Cancels at the end of the current paid period" in html
     assert "Change plan" in html
     assert "RecallC Core" not in html
-    assert ">Subscribe<" not in html
-
-
+    assert ">See plans ›<" not in html  # M5 Q1: the Free card links to the plans stage
 def test_phone_plus_profile_edit_name_and_destinations(tmp_path: Path) -> None:
     client = _plus_client(tmp_path)
     edit = client.get("/profile?edit=name")
@@ -443,15 +437,14 @@ def test_guest_free_expired_halted_pro_profiles_stay_separate(
     free_html = free.get("/profile").text
     assert "data-signed-in-profile" in free_html
     assert "data-plus-profile" not in free_html
-    assert ">Subscribe<" in free_html
+    assert ">See plans ›<" in free_html  # M5 Q1: the Free card links to the plans stage
     assert "Change plan" not in free_html
 
     plus = _plus_client(tmp_path / "plus")
     plus_html = plus.get("/profile").text
     assert 'data-plus-profile="desktop"' in plus_html
     assert "Change plan" in plus_html
-    assert ">Subscribe<" not in plus_html
-
+    assert ">See plans ›<" not in plus_html  # M5 Q1: the Free card links to the plans stage
     expired = TestClient(_mu_app(tmp_path / "expired"))
     _sign_in(expired)
     _subscribe(expired)
@@ -554,10 +547,10 @@ def test_phone_plus_profile_css_is_breakpoint_scoped() -> None:
     assert "reset_learning_progress" in post
     assert "delete_account" in post
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg55" in base
+    assert "playground.css?v=pg56" in base
     assert "playground.css?v=pg38" not in base
-    assert "styles.css?v=main92" in base
-    assert "mobile.css?v=mob111" in base
+    assert "styles.css?v=main93" in base
+    assert "mobile.css?v=mob112" in base
     assert "data-plus-profile-phone-tabs" not in base
     # M1-R (PR pg-m1r-shell-labels): one signed-in bar (data-signed-in-phone-tabs) renders first in
     # base.html, followed only by the guest bar; the active tab comes from the shell_* flag

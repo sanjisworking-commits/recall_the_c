@@ -700,6 +700,9 @@ def _render_gate(
         "current_plan_tier": "",
         "guest_gate_values": (),
         "guest_gate_footnote": "",
+        # M5 (Q7): the plans form posts to the existing subscription routes,
+        # which validate this token against the rtc_csrf cookie.
+        "csrf_token": request.cookies.get("rtc_csrf") or "",
     }
     if extra:
         context.update(extra)
@@ -812,9 +815,16 @@ def _gate_page(
             saved = saved_progress_summary(overlay, uid)
     extra: dict[str, Any] = {}
     if reason == BLOCK_SIGN_IN_REQUIRED:
+        from constitution_memorizer.playground.http import playground_google_href
+
         extra = {
             "guest_gate_values": GUEST_GATE_VALUES,
             "guest_gate_footnote": GUEST_GATE_FOOTNOTE,
+            # M5 (Q9): the desktop intro's one Google action returns the
+            # reader to the page they asked for, as the /login link did.
+            "guest_google_href": playground_google_href(
+                local_next_path(next_url, home_path())
+            ),
         }
     if reason == BLOCK_NOT_SUBSCRIBED:
         stage, selected_tier = parse_playground_gate_stage_from_request(request)
@@ -834,6 +844,23 @@ def _gate_page(
             "current_plan_tier": current_tier,
         }
     return _render_gate(request, templates, gate, saved=saved, extra=extra)
+
+
+def plans_stage_page(request: Request, templates: Jinja2Templates) -> Response:
+    """M5 (Q8, owner 2026-11-07): the plans stage for a signed-in account that
+    can open the Playground (Free under ``choices``, or a paid holder). It is
+    presentation only — the plans form posts to the subscription routes, which
+    decide eligibility themselves: a current subscriber's Continue goes to the
+    change-plan route, never to ``create``.
+    """
+
+    return _gate_page(
+        request,
+        templates,
+        reason=BLOCK_NOT_SUBSCRIBED,
+        consume_blocked=False,
+        next_url=home_path(),
+    )
 
 
 SAVE_FAILED = "save_failed"

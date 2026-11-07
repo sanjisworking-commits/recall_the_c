@@ -85,8 +85,6 @@ INVENTED = (
     "Unlock all",
     "8/10",
     "2 of 3",
-    "See plans",
-    "No plan yet",
 )
 INVENTED_MARKUP = INVENTED + ("September 2026", "new spaces open")
 
@@ -458,7 +456,7 @@ def test_guest_free_plus_pro_max_halted_paused_pending_are_not_expired_profile(
     assert 'data-expired-profile="desktop"' not in free_html
     assert "data-signed-in-profile" in free_html
     assert LIVE_HEADING not in _header(free_html)
-    assert ">Subscribe<" in free_html
+    assert ">See plans ›<" in free_html  # M5 Q1: the Free card links to the plans stage
     assert "Change plan" not in free_html
     assert "PAUSED" not in free_html
 
@@ -603,7 +601,7 @@ def test_expired_profile_marker_uses_shared_predicate() -> None:
     assert "shell_account_status" in base  # M1-R: one snapshot-driven label
     assert "plus_profile_chrome" not in base  # M1-R (PR pg-m1r-shell-labels): the per-route header flag chain is gone
     assert "shell_account_status" in base  # M1-R: one snapshot-driven label
-    assert "playground.css?v=pg55" in base
+    assert "playground.css?v=pg56" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-expired-profile="desktop"' in css
     assert "expired/10-screen" in css

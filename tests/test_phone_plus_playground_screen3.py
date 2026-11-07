@@ -474,9 +474,13 @@ def test_guest_free_expired_halted_pro_stay_separate(tmp_path: Path) -> None:
     assert 'data-plus-playground="desktop"' not in free_html
 
     plus = _plus_client(tmp_path / "plus")
+    # M5 Q8: a subscriber reaches the plans stage too; its form uses the change flow.
     plans = unescape(plus.get("/playground?stage=plans&tier=pro").text)
-    assert "data-signed-in-pg-gate" not in plans
-    assert "data-plus-playground-phone" in plans
+    assert 'data-pg-plan-form="change"' in plans
+    assert "data-pg-plan-current" in plans
+    home = unescape(plus.get("/playground").text)
+    assert "data-signed-in-pg-gate" not in home
+    assert "data-plus-playground-phone" in home
 
     expired = TestClient(_mu_app(tmp_path / "expired"))
     _sign_in(expired)
@@ -555,10 +559,10 @@ def test_phone_plus_css_scope_pins_and_desktop_06_untouched() -> None:
     routes = ROUTES.read_text(encoding="utf-8")
     assert '"plus_playground": request_is_active_plus(request)' in routes
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg55" in base
+    assert "playground.css?v=pg56" in base
     assert "playground.css?v=pg35" not in base
-    assert "styles.css?v=main92" in base
-    assert "mobile.css?v=mob111" in base
+    assert "styles.css?v=main93" in base
+    assert "mobile.css?v=mob112" in base
     assert "data-plus-playground-phone-tabs" not in base
 
 

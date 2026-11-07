@@ -164,7 +164,7 @@ def test_authenticated_users_can_open_devices_regardless_of_billing(tmp_path: Pa
     client, _repo = _authed_client(tmp_path)
     free = client.get(DEVICES_PATH)
     assert free.status_code == 200
-    assert "Your devices" in free.text
+    assert ">Devices</h1>" in free.text  # M5 Q6
     assert "0 of 2 devices" in free.text
     created = _add_subscription(client, status="active")
     assert client.get(DEVICES_PATH).status_code == 200
@@ -173,7 +173,7 @@ def test_authenticated_users_can_open_devices_regardless_of_billing(tmp_path: Pa
     )
     expired = client.get(DEVICES_PATH)
     assert expired.status_code == 200
-    assert "Your devices" in expired.text
+    assert ">Devices</h1>" in expired.text
 
 
 def test_profile_links_to_security_devices(tmp_path: Path):
@@ -314,7 +314,7 @@ def test_current_revoked_installation_is_labelled_removed(tmp_path: Path):
     _devices(client).revoke_device(USER, device.id)
     page = client.get(DEVICES_PATH)
     assert "This device · Removed" in page.text
-    assert "Active devices" in page.text
+    assert ">Registered</p>" in page.text  # M5 Q6
     assert "Removed devices" in page.text
     assert "0 of 2 devices" in page.text
 

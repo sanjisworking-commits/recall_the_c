@@ -119,10 +119,10 @@ def test_screen6_copy_single_signin_and_existing_auth_path(tmp_path: Path) -> No
     for step in GUEST_PG_STEPS:
         assert step in intro
     assert GUEST_PG_NOTE in intro
-    assert ">Sign in<" in intro
+    assert ">Continue with Google<" in intro  # M5 Q9: one Google action on desktop too
     assert intro.count("guest-pg-signin") == 1
     assert f'href="{GUEST_PG_SIGNIN_HREF}"' in intro
-    assert GUEST_PG_SIGNIN_HREF == "/login?next=/playground"
+    assert GUEST_PG_SIGNIN_HREF == "/auth/google/start?next=%2Fplayground"
     assert "Back to Constitution" not in intro
     assert "Already in Playground" not in intro
     assert "LawCard" not in intro
@@ -140,7 +140,7 @@ def test_screen6_phone_gate_defers_to_screen03_composition(tmp_path: Path) -> No
     assert 'href="/auth/google/start?next=%2Fplayground"' in phone
     assert "Create an account" not in phone
     assert 'type="button"' not in phone
-    assert GUEST_PG_SIGNIN_HREF not in phone
+    assert phone.count(GUEST_PG_SIGNIN_HREF) == 1  # the phone macro carries the same single action
     assert "data-hard-gate=\"true\"" in html
     intro = _intro(html)
     assert f'href="{GUEST_PG_SIGNIN_HREF}"' in intro

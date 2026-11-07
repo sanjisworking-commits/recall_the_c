@@ -166,7 +166,7 @@ def test_settings_shows_learning_plan_and_saves_auto(tmp_path: Path):
     assert "Auto Plan" in page.text
     saved = client.post(
         "/settings/learning-plan",
-        data={"mode": "auto", "daily_target": "5"},
+        data={"csrf_token": client.cookies.get("rtc_csrf") or "", "mode": "auto", "daily_target": "5"},
         follow_redirects=False,
     )
     assert saved.status_code == 303
@@ -241,11 +241,11 @@ def test_free_account_cannot_enable_auto_plan(tmp_path: Path):
     client = _client(tmp_path, entitlements=True)
     _sign_in(client)
     page = client.get("/settings")
-    assert "Part of unlocking every Article" in page.text
+    assert "Auto Plan is part of Plus and Pro." in page.text  # M5 Q4 copy
     assert 'value="auto" disabled' in page.text
     client.post(
         "/settings/learning-plan",
-        data={"mode": "auto", "daily_target": "7"},
+        data={"csrf_token": client.cookies.get("rtc_csrf") or "", "mode": "auto", "daily_target": "7"},
         follow_redirects=False,
     )
     plan = _engine(client).get_learning_plan()
@@ -266,13 +266,13 @@ def test_admin_can_save_auto_plan_and_switch_to_self_paced(tmp_path: Path):
     assert "Intensive · 7" in page.text
     assert "Full Recall access · Admin" in page.text
     assert "Paid plan" not in page.text
-    assert "Part of unlocking every Article" not in page.text
+    assert "Auto Plan is part of Plus and Pro." not in page.text  # M5 Q4 copy
     assert 'value="auto" disabled' not in page.text
 
     for target in (3, 5, 7):
         saved = client.post(
             "/settings/learning-plan",
-            data={"mode": "auto", "daily_target": str(target)},
+            data={"csrf_token": client.cookies.get("rtc_csrf") or "", "mode": "auto", "daily_target": str(target)},
             follow_redirects=False,
         )
         assert saved.status_code == 303
@@ -282,7 +282,7 @@ def test_admin_can_save_auto_plan_and_switch_to_self_paced(tmp_path: Path):
 
     back = client.post(
         "/settings/learning-plan",
-        data={"mode": "self_paced"},
+        data={"csrf_token": client.cookies.get("rtc_csrf") or "", "mode": "self_paced"},
         follow_redirects=False,
     )
     assert back.status_code == 303
@@ -304,7 +304,7 @@ def test_admin_auto_plan_generates_new_capacity(tmp_path: Path):
     user_id = _session_user_id(client)
     client.post(
         "/settings/learning-plan",
-        data={"mode": "auto", "daily_target": "5"},
+        data={"csrf_token": client.cookies.get("rtc_csrf") or "", "mode": "auto", "daily_target": "5"},
         follow_redirects=False,
     )
     eng = _engine(client)
@@ -348,12 +348,12 @@ def test_one_admin_learning_plan_does_not_affect_another(tmp_path: Path):
     )
     client_a.post(
         "/settings/learning-plan",
-        data={"mode": "auto", "daily_target": "7"},
+        data={"csrf_token": client_a.cookies.get("rtc_csrf") or "", "mode": "auto", "daily_target": "7"},
         follow_redirects=False,
     )
     client_b.post(
         "/settings/learning-plan",
-        data={"mode": "auto", "daily_target": "3"},
+        data={"csrf_token": client_b.cookies.get("rtc_csrf") or "", "mode": "auto", "daily_target": "3"},
         follow_redirects=False,
     )
     row_a = _plan_row(repo, ADMIN_A)
@@ -369,7 +369,7 @@ def test_entitlement_preview_does_not_mutate_admin_learning_plan(tmp_path: Path)
     user_id = _session_user_id(client)
     client.post(
         "/settings/learning-plan",
-        data={"mode": "auto", "daily_target": "5"},
+        data={"csrf_token": client.cookies.get("rtc_csrf") or "", "mode": "auto", "daily_target": "5"},
         follow_redirects=False,
     )
     assert _engine(client).get_learning_plan().daily_target == 5
@@ -390,7 +390,7 @@ def test_entitlement_preview_does_not_mutate_admin_learning_plan(tmp_path: Path)
     # A Settings POST while simulating another tier must not rewrite the row.
     client.post(
         "/settings/learning-plan",
-        data={"mode": "self_paced"},
+        data={"csrf_token": client.cookies.get("rtc_csrf") or "", "mode": "self_paced"},
         follow_redirects=False,
     )
     plan = _engine(client).get_learning_plan()
@@ -404,7 +404,7 @@ def test_entitlement_preview_does_not_mutate_admin_learning_plan(tmp_path: Path)
     assert 'value="auto" disabled' not in free_preview.text
     client.post(
         "/settings/learning-plan",
-        data={"mode": "auto", "daily_target": "3"},
+        data={"csrf_token": client.cookies.get("rtc_csrf") or "", "mode": "auto", "daily_target": "3"},
         follow_redirects=False,
     )
     plan = _engine(client).get_learning_plan()
@@ -440,7 +440,7 @@ def test_grant_holder_can_enable_auto_plan_without_a_purchase(tmp_path: Path):
     assert "Full Recall access · Admin" not in page.text
     client.post(
         "/settings/learning-plan",
-        data={"mode": "auto", "daily_target": "5"},
+        data={"csrf_token": client.cookies.get("rtc_csrf") or "", "mode": "auto", "daily_target": "5"},
         follow_redirects=False,
     )
     plan = _engine(client).get_learning_plan()
@@ -485,7 +485,7 @@ def test_segmented_pace_still_saves_both_directions(tmp_path: Path):
     assert (
         client.post(
             "/settings/learning-plan",
-            data={"mode": "auto", "daily_target": "7"},
+            data={"csrf_token": client.cookies.get("rtc_csrf") or "", "mode": "auto", "daily_target": "7"},
             follow_redirects=False,
         ).status_code
         == 303
@@ -497,7 +497,7 @@ def test_segmented_pace_still_saves_both_directions(tmp_path: Path):
     assert (
         client.post(
             "/settings/learning-plan",
-            data={"mode": "self_paced"},
+            data={"csrf_token": client.cookies.get("rtc_csrf") or "", "mode": "self_paced"},
             follow_redirects=False,
         ).status_code
         == 303

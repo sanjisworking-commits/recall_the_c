@@ -663,6 +663,18 @@ def create_playground_router(templates: Jinja2Templates) -> APIRouter:
         blocked = _denied(access)
         if blocked is not None:
             return blocked  # type: ignore[return-value]
+        if (
+            (request.query_params.get("stage") or "").strip().lower() == "plans"
+            and getattr(access, "can_open", False)
+        ):
+            # M5 (Q8, owner boundary): only accounts that can open the Playground
+            # (Free under `choices`, paid holders) reach the plans stage here;
+            # paused, expired and halted keep today's read-only home and their
+            # Resume / Manage flows. Eligibility is decided by the subscription
+            # routes the form posts to.
+            from constitution_memorizer.playground.access import plans_stage_page
+
+            return plans_stage_page(request, templates)  # type: ignore[return-value]
         overlay = require_playground_repo(request)
         roster = require_roster_service(request)
         with time_playground_stage("playground_home_build"):

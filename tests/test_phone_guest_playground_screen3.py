@@ -235,7 +235,7 @@ def test_phone_guest_playground_uses_live_gate_and_shared_values(
     assert 'class="pg-guest-gate-signin" href="/auth/google/start?next=%2Fplayground" data-guest-gate-google' in phone
     assert "<form" not in phone
     assert "/login" not in phone
-    assert GUEST_PG_SIGNIN_HREF not in phone
+    assert phone.count(GUEST_PG_SIGNIN_HREF) == 1  # M5 Q9: desktop and phone share the one Google action
     assert GUEST_GATE_FOOTNOTE in phone
     assert GUEST_GATE_FOOTNOTE in GUEST_PG_NOTE
     for phrase in FREE_FORBIDDEN:
@@ -305,7 +305,7 @@ def test_phone_guest_playground_css_is_breakpoint_scoped() -> None:
     hide = css.split("[data-phone-pg-gate=\"guest\"],", 1)[1].split("}", 1)[0]
     assert "display: none" in hide
     assert "data-guest-phone-tabs" in css  # M1: hard-gate hide exempts the shared guest bar
-    assert "playground.css?v=pg55" in BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg56" in BASE.read_text(encoding="utf-8")
     assert "playground.css?v=pg31" not in BASE.read_text(encoding="utf-8")
     assert "playground.css?v=pg30" not in BASE.read_text(encoding="utf-8")
     guest_title = css.split(".guest-pg-title {", 1)[1].split("}", 1)[0]

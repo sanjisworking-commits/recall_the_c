@@ -28,7 +28,7 @@ GUEST_PG_NOTE = (
     "the full Constitution learning experience, free. Reading the Bare Acts "
     "stays free for everyone."
 )
-GUEST_PG_SIGNIN_HREF = "/login?next=/playground"
+GUEST_PG_SIGNIN_HREF = "/auth/google/start?next=%2Fplayground"  # M5 (Q9, 5-11): one Google action on desktop too
 
 
 class GuestGateValue(NamedTuple):

@@ -50,9 +50,9 @@ USER = UUID("11111111-1111-4111-8111-111111111111")
 TOKEN_KEY = Fernet.generate_key().decode()
 
 MOCK_SCREEN_COPY = (
-    "RecallC Free",
-    "No plan yet",
-    "See plans",
+    # M5 (owner, 2026-11-07): the identity row reads "RecallC Free · Signed in
+    # with Google" and the Auto Plan note links "See plans ›" — both decided.
+    "Unlock all",
 )
 
 
