@@ -76,8 +76,6 @@ RENDER_INVENTED = (
     "Unlock all",
     "8/10",
     "2 of 3",
-    "See plans",
-    "No plan yet",
     "/billing/manage",
     "uses this Playground month",
     "RecallC Core",
@@ -279,7 +277,7 @@ def _assert_no_invented(html: str) -> None:
     text = unescape(html)
     for phrase in RENDER_INVENTED:
         assert phrase not in text, phrase
-    assert ">Subscribe<" not in text
+    assert ">See plans ›<" not in text  # M5 Q1: the Free card links to the plans stage
     assert "Change plan" not in text
 
 
@@ -480,7 +478,7 @@ def test_guest_free_plus_halted_pro_paused_pending_stay_separate(
     free_html = unescape(free.get("/profile").text)
     assert "data-signed-in-profile" in free_html
     assert "data-expired-profile" not in free_html
-    assert ">Subscribe<" in free_html
+    assert ">See plans ›<" in free_html  # M5 Q1: the Free card links to the plans stage
     assert "Change plan" not in free_html
     assert "Resume Playground" not in free_html
 
@@ -629,10 +627,10 @@ def test_phone_expired_profile_css_is_breakpoint_scoped() -> None:
     assert "reset_learning_progress" not in get
     assert "def request_is_expired_subscriber" in DEPS.read_text(encoding="utf-8")
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg55" in base
+    assert "playground.css?v=pg56" in base
     assert "playground.css?v=pg45" not in base
-    assert "styles.css?v=main92" in base
-    assert "mobile.css?v=mob111" in base
+    assert "styles.css?v=main93" in base
+    assert "mobile.css?v=mob112" in base
     assert "data-expired-profile-phone-tabs" not in base
     # M1-R (PR pg-m1r-shell-labels): one signed-in bar (data-signed-in-phone-tabs) renders first in
     # base.html, followed only by the guest bar; the active tab comes from the shell_* flag

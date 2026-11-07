@@ -44,10 +44,7 @@ PROFILE = ROOT / "src/constitution_memorizer/web/templates/profile.html"
 USER = UUID("11111111-1111-4111-8111-111111111111")
 
 MOCK_SCREEN_COPY = (
-    "No plan yet",
-    "See plans",
     "2 of 3",
-    "RecallC Free · Constitution learning included",
 )
 
 
@@ -130,9 +127,9 @@ def test_signed_in_free_profile_desktop_surface(tmp_path: Path) -> None:
     assert "data-profile-account" in html
     assert "data-profile-subscription" in html
     assert ">Playground<" in html
-    assert "Subscribe to add Bare Acts to a monthly Playground." in html
-    assert ">Subscribe<" in html
-    assert f'href="{PLAYGROUND_BILLING_PATH}"' in html
+    assert "Playground learning needs a paid plan. Plus and Pro add Bare Acts to your Playground." in html  # M5 Q1
+    assert ">See plans ›<" in html
+    assert 'href="/playground?stage=plans"' in html  # M5 Q1: Free goes to the plans stage
     assert PLAYGROUND_BILLING_PATH == "/billing/subscriptions"
     for phrase in MOCK_SCREEN_COPY:
         assert phrase not in html, phrase

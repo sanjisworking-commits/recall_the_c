@@ -644,8 +644,8 @@ def test_halted_bareact_uses_shared_predicate() -> None:
     assert "data-halted-bareact" not in STYLES.read_text(encoding="utf-8")
     assert "data-halted-bareact" not in MOBILE.read_text(encoding="utf-8")
     assert "Bare Act head (M2)" in STYLES.read_text(encoding="utf-8")
-    assert "playground.css?v=pg55" in BASE.read_text(encoding="utf-8")
-    assert "styles.css?v=main92" in BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg56" in BASE.read_text(encoding="utf-8")
+    assert "styles.css?v=main93" in BASE.read_text(encoding="utf-8")
     assert "def request_is_halted_subscriber" in DEPS.read_text(encoding="utf-8")
 
 

@@ -57,8 +57,7 @@ INVENTED = (
     "Recall access · active",
     "Premium",
     "Unlock all",
-    "No plan yet",
-    "See plans",
+    # M5 (owner, 2026-11-07): "See plans ›" is now the decided Settings link.
     "8/10",
     "renews 1 October",
     "RecallC Free",
@@ -66,7 +65,7 @@ INVENTED = (
     "Change plan",
 )
 LOCKED_COPY = (
-    "Part of unlocking every Article — your saved history is never deleted."
+    "Auto Plan is part of Plus and Pro. Your saved history is never deleted."
 )
 
 
@@ -212,7 +211,7 @@ def _watch_ensure(client: TestClient) -> list[str]:
 
 def _plus_css() -> str:
     css = PG_CSS.read_text(encoding="utf-8")
-    return css.split("is plus/07-screen:", 1)[1].split("expired/11-screen", 1)[0]
+    return css.split("is plus/07-screen:", 1)[1].split("expired/11-screen", 1)[0].split("M5 · Account", 1)[0]
 
 
 def test_phone_plus_settings_is_live_screen11_contract(tmp_path: Path) -> None:
@@ -236,7 +235,7 @@ def test_phone_plus_settings_is_live_screen11_contract(tmp_path: Path) -> None:
     assert status
     assert status != "Recall access · active"
     # Entitlements-off Google seed: live fallback, not a forced product string.
-    assert status == "Signed in with Google"
+    assert status == "RecallC Plus · Signed in with Google"  # M5 Q4: shell label + method
     src = SETTINGS.read_text(encoding="utf-8")
     ident_src = src.split("settings-account-status", 1)[1].split(
         "settings-account-chevron", 1
@@ -409,10 +408,10 @@ def test_phone_plus_settings_css_is_breakpoint_scoped() -> None:
     assert 'action="/logout"' in src
     assert "data-plan-autosubmit" in src
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg55" in base
+    assert "playground.css?v=pg56" in base
     assert "playground.css?v=pg39" not in base
-    assert "styles.css?v=main92" in base
-    assert "mobile.css?v=mob111" in base
+    assert "styles.css?v=main93" in base
+    assert "mobile.css?v=mob112" in base
     assert "data-plus-settings-phone-tabs" not in base
     # M1: the per-screen guest branches are gone; guests share one bar.
     assert "{% elif guest_settings %}" not in base

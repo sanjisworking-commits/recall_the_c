@@ -62,11 +62,8 @@ FORBIDDEN = (
     "View plans",
     "Manage subscription",
     "Resume Playground",
-    "See plans",
     "Change plan",
     "Guest · Reading only",
-    GUEST_PROFILE_SIGNIN_HREF,
-    "data-report-open",
 )
 
 
@@ -234,11 +231,11 @@ def test_phone_guest_profile_copy_and_controls(tmp_path: Path) -> None:
     assert GUEST_PROFILE_LEDE in phone
     assert GUEST_PROFILE_BARE_ACTS_LABEL in phone
     assert f'href="{GUEST_PROFILE_BARE_ACTS_HREF}"' in phone
-    assert GUEST_PROFILE_BARE_ACTS_HREF == "/laws/ndps"
+    assert GUEST_PROFILE_BARE_ACTS_HREF == "/laws"
     assert GUEST_PROFILE_REPORT in phone
-    assert ">Sign in<" in phone
-    assert phone.count('type="button"') == 2
-    assert GUEST_PROFILE_SIGNIN_HREF not in phone
+    assert ">Continue with Google<" in phone  # M5 Q2
+    assert phone.count('type="button"') == 1  # the report button; sign-in is an anchor
+    assert GUEST_PROFILE_SIGNIN_HREF in phone
     assert "/login" not in phone
     assert "<form" not in phone
     assert 'href="/browse"' not in phone
@@ -252,22 +249,26 @@ def test_phone_guest_profile_copy_and_controls(tmp_path: Path) -> None:
     assert calls == []
 
 
-def test_phone_guest_profile_buttons_are_handlerless_in_source() -> None:
+def test_phone_guest_profile_block_has_real_actions_in_source() -> None:
+    # M5 (Q2, 5-11): one shared block — a Google action that returns to Profile
+    # and a report button that opens the report dialog.
     src = PROFILE.read_text(encoding="utf-8")
+    block = src.split("{% macro guest_profile_block(variant) %}", 1)[1].split("{% endmacro %}", 1)[0]
+    assert f'class="guest-profile-signin" href="/auth/google/start?next=%2Fprofile" data-guest-gate-google>Continue with Google<' in block
+    assert 'type="button" class="guest-profile-report" data-report-open data-report-section="Profile">' in block
+    assert GUEST_PROFILE_REPORT in block
+    assert f'href="{GUEST_PROFILE_BARE_ACTS_HREF}"' in block
+    assert "/login" not in block
     phone = src.split('data-phone-profile="guest"', 1)[1].split("</section>", 1)[0]
-    assert 'type="button" class="guest-profile-signin">Sign in<' in phone
-    assert 'type="button" class="guest-profile-report">' in phone
-    assert GUEST_PROFILE_REPORT in phone
-    assert f'href="{GUEST_PROFILE_BARE_ACTS_HREF}"' in phone
-    assert "/login" not in phone
+    assert "guest_profile_block('phone')" in phone
     assert "<form" not in phone
     assert "data-report-open" not in phone
     desk = src.split("data-guest-profile-desktop", 1)[1].split(
         "data-phone-profile", 1
     )[0]
-    assert f'href="{GUEST_PROFILE_SIGNIN_HREF}"' in desk
-    assert "<a class=\"guest-profile-signin\"" in desk
-    assert 'type="button"' not in desk
+    assert "guest_profile_block('desktop')" in desk  # M5 Q2: one shared block for both wrappers
+    assert f'href="{GUEST_PROFILE_SIGNIN_HREF}"' in block
+    assert "<a class=\"guest-profile-signin\"" in block
 
 
 def test_phone_guest_five_tabs_profile_active(tmp_path: Path) -> None:
@@ -306,7 +307,7 @@ def test_phone_guest_profile_css_is_breakpoint_scoped() -> None:
     hide = css.split('@media (min-width: 561px) {\n  [data-phone-profile="guest"] {', 1)[1].split("}", 1)[0]
     assert "display: none" in hide
     assert "data-guest-profile-phone-tabs" not in css  # M1 removed the per-screen bar
-    assert "playground.css?v=pg55" in BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg56" in BASE.read_text(encoding="utf-8")
     assert "playground.css?v=pg31" not in BASE.read_text(encoding="utf-8")
     assert "playground.css?v=pg30" not in BASE.read_text(encoding="utf-8")
     guest_title = css.split(".guest-profile-title {", 1)[1].split("}", 1)[0]
@@ -386,13 +387,14 @@ def test_phone_guest_profile_gets_are_mutation_free(tmp_path: Path) -> None:
     assert _facts(client) == before
 
 
-def test_desktop_guest_profile_signin_still_uses_login(tmp_path: Path) -> None:
+def test_desktop_guest_profile_signin_uses_google(tmp_path: Path) -> None:
     html = _guest_client(tmp_path).get("/profile").text
     desk = _desk(html)
     assert f'href="{GUEST_PROFILE_SIGNIN_HREF}"' in desk
     assert GUEST_PROFILE_META in desk
     assert f'href="{GUEST_PROFILE_BARE_ACTS_HREF}"' in desk
-    assert 'type="button"' not in desk
+    # M5 Q2: the only button is the report dialog opener; sign-in is an anchor.
+    assert desk.count('type="button"') == 1 and "data-report-open" in desk
 
 
 def _serve(app, host: str = "127.0.0.1") -> tuple[int, object]:

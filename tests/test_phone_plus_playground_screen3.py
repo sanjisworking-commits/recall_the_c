@@ -555,10 +555,10 @@ def test_phone_plus_css_scope_pins_and_desktop_06_untouched() -> None:
     routes = ROUTES.read_text(encoding="utf-8")
     assert '"plus_playground": request_is_active_plus(request)' in routes
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg55" in base
+    assert "playground.css?v=pg56" in base
     assert "playground.css?v=pg35" not in base
-    assert "styles.css?v=main92" in base
-    assert "mobile.css?v=mob111" in base
+    assert "styles.css?v=main93" in base
+    assert "mobile.css?v=mob112" in base
     assert "data-plus-playground-phone-tabs" not in base
 
 

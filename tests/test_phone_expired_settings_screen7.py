@@ -70,15 +70,13 @@ INVENTED = (
     "Resume Playground",
     "Premium",
     "Unlock all",
-    "No plan yet",
-    "See plans",
     "8/10",
     "Change plan",
     "Recall access · active",
 )
 INVENTED_MARKUP = INVENTED + ("Your Playground is paused", "RecallC Plus")
 LOCKED_COPY = (
-    "Part of unlocking every Article — your saved history is never deleted."
+    "Auto Plan is part of Plus and Pro. Your saved history is never deleted."
 )
 
 
@@ -266,7 +264,7 @@ def _watch_ensure(client: TestClient) -> list[str]:
 
 def _expired_css() -> str:
     css = PG_CSS.read_text(encoding="utf-8")
-    return css.split("is expired/07-screen:", 1)[1].split("expired/01-screen", 1)[0]
+    return css.split("is expired/07-screen:", 1)[1].split("expired/01-screen", 1)[0].split("M5 · Account", 1)[0]
 
 
 def test_phone_expired_settings_is_live_screen11_contract(tmp_path: Path) -> None:
@@ -310,7 +308,7 @@ def test_phone_expired_settings_is_live_screen11_contract(tmp_path: Path) -> Non
     plan_form = src.split('action="/settings/learning-plan"', 1)[1].split(
         "</form>", 1
     )[0]
-    assert 'name="csrf_token"' not in plan_form
+    assert 'name="csrf_token"' in plan_form  # M5 Q5: the plan form carries the token
     assert "Self-paced" in study
     assert "Auto Plan" in study
     assert 'id="pace-self-paced"' in study
@@ -323,8 +321,8 @@ def test_phone_expired_settings_is_live_screen11_contract(tmp_path: Path) -> Non
     assert "Intensive · 7" not in study
     assert 'id="target-5"' not in study
     assert LOCKED_COPY in study
-    assert 'href="/pricing"' in study
-    assert "Unlock every Article →" in study
+    assert 'href="/playground?stage=plans"' in study
+    assert "See plans ›" in study  # M5 Q4
     assert "can_auto_plan|default(false)" in src
     assert "expired_settings" not in src.split('data-settings-group="study"', 1)[1].split(
         'data-settings-group="calendar"', 1
@@ -518,10 +516,10 @@ def test_phone_expired_settings_css_is_breakpoint_scoped() -> None:
     )[0]
     assert "upsert_learning_plan" not in get
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg55" in base
+    assert "playground.css?v=pg56" in base
     assert "playground.css?v=pg46" not in base
-    assert "styles.css?v=main92" in base
-    assert "mobile.css?v=mob111" in base
+    assert "styles.css?v=main93" in base
+    assert "mobile.css?v=mob112" in base
     assert "data-expired-settings-phone-tabs" not in base
     # M1: the per-screen guest branches are gone; guests share one bar.
     assert "{% elif guest_settings %}" not in base
@@ -645,7 +643,7 @@ def _geo_script() -> str:
               const autoPace = study && study.querySelector('#pace-auto');
               const selfLabel = study && study.querySelector('label[for="pace-self-paced"]');
               const locked = study && study.querySelector('.settings-plan-locked');
-              const pricing = locked && locked.querySelector('a[href="/pricing"]');
+              const pricing = locked && locked.querySelector('a[href="/playground?stage=plans"]');
               const toggle = cal && cal.querySelector('[data-gcal-toggle]');
               const deskCopy = panel && panel.querySelector('.settings-desk-copy');
               const connectRow = panel && panel.querySelector('.gcal-connect-row');
@@ -1039,7 +1037,7 @@ def test_phone_expired_settings_screen07_desktop_regression_1280(
               const selfPace = study && study.querySelector('#pace-self-paced');
               const autoPace = study && study.querySelector('#pace-auto');
               const locked = study && study.querySelector('.settings-plan-locked');
-              const pricing = locked && locked.querySelector('a[href="/pricing"]');
+              const pricing = locked && locked.querySelector('a[href="/playground?stage=plans"]');
               const selfLabel = study && study.querySelector('label[for="pace-self-paced"]');
               const back = expired && expired.querySelector('.si-settings-desk-back a');
               const nav = document.querySelector('.PrimaryTabs--top');
