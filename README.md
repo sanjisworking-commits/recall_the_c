@@ -65,6 +65,7 @@ Future ideas: [`docs/FUTURE.md`](docs/FUTURE.md).
 | Browse card 1c | `cursor/browse-card-1c-1a75` | Corner ribbon, count line, In news pills, red Browse nav badge |
 | Schedules reference | `cursor/schedules-reference-1a75` | Twelve read-only Schedule cards after Part XXII; designed `/browse/schedules/{slug}` pages |
 | Schedules extract | `cursor/schedules-full-extract-1a75` | Official `schedules-text.js` fixture (Sixth 29/172, Ninth through 284) |
+| Railway boot | `cursor/railway-crash-boot-1a75` | Hosted ASGI serves `/healthz` even if `create_app` fails; `$PORT` expands via `sh -c` |
 
 ---
 

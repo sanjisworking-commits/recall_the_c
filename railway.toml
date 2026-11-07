@@ -1,3 +1,7 @@
 [deploy]
 # Railway's service probe. The app also serves /health for local checks.
 healthcheckPath = "/healthz"
+healthcheckTimeout = 300
+restartPolicyType = "ON_FAILURE"
+# Release the previous replica (and its pooler slots) once the new one is live.
+overlapSeconds = 15

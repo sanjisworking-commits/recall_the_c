@@ -51,6 +51,8 @@ def test_python_version_is_pinned_for_railpack():
     railpack = (ROOT / "railpack.json").read_text(encoding="utf-8")
     assert '"python": "3.12.11"' in railpack
     assert "constitution_memorizer.web.asgi:app" in railpack
+    assert "sh -c" in railpack
+    assert "${PORT:-8080}" in railpack
 
 
 def test_package_data_includes_nested_templates():
@@ -140,3 +142,31 @@ def test_earliest_upcoming_revision_without_sqlite_conn(tmp_path: Path):
     engine.mark_done(unit_id, as_of=date(2026, 8, 1))
     upcoming = earliest_upcoming_revision(engine, as_of=date(2026, 8, 1))
     assert upcoming is None or isinstance(upcoming, date)
+
+
+def test_hosted_app_serves_healthz_when_boot_fails(monkeypatch):
+    from fastapi.testclient import TestClient
+
+    from constitution_memorizer.web import asgi as asgi_mod
+    from constitution_memorizer.web import app as web_app
+
+    def boom(**_kwargs):
+        raise RuntimeError("simulated boot failure")
+
+    monkeypatch.setattr(web_app, "create_app", boom)
+    app = asgi_mod.load_hosted_app()
+    client = TestClient(app)
+    healthz = client.get("/healthz")
+    assert healthz.status_code == 200
+    assert healthz.json() == {"status": "ok"}
+    assert client.get("/health").status_code == 200
+
+
+def test_railway_probe_config_matches_healthz():
+    railway = (ROOT / "railway.toml").read_text(encoding="utf-8")
+    assert 'healthcheckPath = "/healthz"' in railway
+    assert "healthcheckTimeout" in railway
+    assert "restartPolicyType" in railway
+    nixpacks = (ROOT / "nixpacks.toml").read_text(encoding="utf-8")
+    assert 'providers = ["python"]' in nixpacks
+    assert "${PORT:-8080}" in nixpacks

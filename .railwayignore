@@ -1,0 +1,4 @@
+# Prototype Playground sources — runtime reads schedules.json from the package.
+docs/design/schedules/*.html
+docs/design/schedules/*.js
+docs/design/schedules/support.js

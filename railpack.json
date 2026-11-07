@@ -4,6 +4,6 @@
     "python": "3.12.11"
   },
   "deploy": {
-    "startCommand": "python -m uvicorn constitution_memorizer.web.asgi:app --host 0.0.0.0 --port $PORT"
+    "startCommand": "sh -c 'exec python -m uvicorn constitution_memorizer.web.asgi:app --host 0.0.0.0 --port ${PORT:-8080}'"
   }
 }

@@ -1,0 +1,5 @@
+# Keep Nixpacks on Python even when prototype JS/HTML sits in docs/.
+providers = ["python"]
+
+[start]
+cmd = "sh -c 'exec python -m uvicorn constitution_memorizer.web.asgi:app --host 0.0.0.0 --port ${PORT:-8080}'"
