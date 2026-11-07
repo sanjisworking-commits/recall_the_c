@@ -14167,3 +14167,184 @@ html:not(.rtc-anim) .continue-card {
     margin-top: 0;
   }
 }
+
+/* ── M5 · Account, Devices and Plans (owner decisions 2026-11-07) ─────────── */
+@media (min-width: 561px) {
+  /* Q1: identity, subscription, account are now direct grid children; the
+     desktop keeps identity + account left and the subscription card right. */
+  [data-signed-in-profile] .pg-profile-grid[data-profile-grid="m5"] {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-areas:
+      "identity subscription"
+      "account subscription";
+    row-gap: 20px;
+  }
+
+  [data-signed-in-profile] .pg-profile-grid[data-profile-grid="m5"] > .pg-profile-identity {
+    grid-area: identity;
+    margin: 0;
+  }
+
+  [data-signed-in-profile] .pg-profile-grid[data-profile-grid="m5"] > [data-profile-subscription] {
+    grid-area: subscription;
+    align-self: start;
+  }
+
+  [data-signed-in-profile] .pg-profile-grid[data-profile-grid="m5"] > .si-profile-account {
+    grid-area: account;
+  }
+
+  /* Q6: Devices in the Profile grid language — one column of cards. */
+  body.is-authed[data-mscreen="account"]:has([data-devices-page]) .page-wrap,
+  body.is-authed[data-mscreen="account"]:has([data-devices-page]) .sheet,
+  body.is-authed[data-mscreen="account"]:has([data-devices-page]) .main {
+    background: var(--page);
+  }
+
+  body.is-authed[data-mscreen="account"]:has([data-devices-page]) .site-footer,
+  body.is-authed[data-mscreen="account"]:has([data-devices-page]) .sheet-footnote {
+    display: none;
+  }
+
+  [data-devices-page].profile-panel {
+    max-width: none;
+    padding: 26px 40px 60px;
+    background: transparent;
+  }
+
+  [data-devices-page] .mobile-topbar {
+    display: none;
+  }
+
+  [data-devices-page] .devices-back-link {
+    display: inline-block;
+    margin: 0 0 14px;
+    font-size: 13.5px;
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  [data-devices-page] .devices-back-link:hover,
+  [data-devices-page] .devices-back-link:focus-visible {
+    color: var(--ink);
+    text-decoration: underline;
+  }
+
+  [data-devices-page] .eyebrow {
+    margin: 0 2px 6px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  [data-devices-page] .display {
+    margin: 0 0 8px;
+    font-size: 30px;
+  }
+
+  [data-devices-page] .pg-devices-lede {
+    margin: 0 0 6px;
+    max-width: 640px;
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  [data-devices-page] .devices-count {
+    margin: 0 0 22px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ink);
+  }
+
+  [data-devices-page] .devices-grid {
+    display: grid;
+    gap: 22px;
+    max-width: 640px;
+  }
+
+  [data-devices-page] .pg-eyebrow {
+    margin: 0 2px 8px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  [data-devices-page] .devices-list {
+    display: grid;
+    gap: 12px;
+  }
+
+  [data-devices-page] .device-card {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    margin: 0;
+    padding: 16px 18px;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+  }
+
+  [data-devices-page] .device-card.is-empty {
+    display: block;
+  }
+
+  [data-devices-page] .device-card.is-removed {
+    opacity: 0.72;
+  }
+
+  [data-devices-page] .device-main {
+    flex: 1 1 260px;
+    min-width: 0;
+  }
+
+  [data-devices-page] .device-name {
+    margin: 0 0 4px;
+    font-size: 15.5px;
+    font-weight: 600;
+  }
+
+  [data-devices-page] .device-current-chip {
+    display: inline-block;
+    margin-left: 8px;
+    padding: 2px 8px;
+    border: 1px solid var(--hairline);
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--muted);
+    vertical-align: middle;
+  }
+
+  [data-devices-page] .device-meta {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  [data-devices-page] .device-actions {
+    flex: 0 0 auto;
+  }
+
+  [data-devices-page] .device-actions .pg-btn {
+    min-height: 44px;
+  }
+
+  [data-devices-page] .device-confirm {
+    max-width: 640px;
+    margin: 0 0 22px;
+    padding: 18px;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+  }
+}
+

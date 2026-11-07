@@ -684,6 +684,20 @@ def create_auth_router(templates: Jinja2Templates) -> APIRouter:
             identity_meta = "Signed in with phone"
         else:
             identity_meta = "Signed in"
+        # M5 (Q1, owner 2026-11-07): the account label the shell prints, with
+        # what the account includes. Halted / expired keep the sign-in line —
+        # the header already carries their status title.
+        if not halted_profile and not expired_profile:
+            from constitution_memorizer.web.shell import shell_account_status
+
+            label = shell_account_status(request)
+            if label:
+                included = (
+                    "Playground included"
+                    if getattr(snapshot, "is_subscribed", False)
+                    else "Constitution learning included"
+                )
+                identity_meta = f"{label} · {included}"
         if plus_profile:
             playground_card = plus_profile_subscription_card(
                 playground_card,

@@ -181,7 +181,24 @@ def can_use_auto_plan(request: object) -> bool:
     if has_active_recall_access(request):
         return True
     user = getattr(getattr(request, "state", None), "current_user", None)
-    return user is not None and is_subscribed(user)
+    if user is None:
+        return False
+    if is_subscribed(user):
+        return True
+    # M5 (Q4, owner 2026-11-07): a paid Playground tier on the entitlement
+    # snapshot counts as the paid tier this capability was always meant for.
+    # Halted and paid-period-ended rows are not active paid access. No new
+    # restriction is added: Free, admin and grant outcomes are unchanged.
+    try:
+        from constitution_memorizer.entitlements.dependencies import get_entitlement_snapshot
+
+        snapshot = get_entitlement_snapshot(request)
+    except Exception:  # noqa: BLE001 — never let the capability check fail the page
+        return False
+    if not getattr(snapshot, "is_subscribed", False) or not getattr(snapshot, "tier", None):
+        return False
+    reason = str(getattr(snapshot, "playground_block_reason", None) or "")
+    return reason not in {"payment_halted", "paid_period_ended"}
 
 
 def learning_entitlement_args(request: object, engine: object) -> dict:
