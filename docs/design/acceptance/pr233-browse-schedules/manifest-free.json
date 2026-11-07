@@ -1,0 +1,3355 @@
+{
+ "label": "p233-free",
+ "base": "http://127.0.0.1:8915",
+ "viewer": "free",
+ "captured_at": "2026-11-06T01:12:34+0530",
+ "chrome": "Google Chrome 156.0.8078.80",
+ "rows": [
+  {
+   "key": "browse",
+   "route": "/browse",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "file": "p233-free_free_browse_390x844_light.png",
+   "sha256": "7d1a1ed412c946880918d1ad110b7a77793418f85d87351864ebc17ca595fa21",
+   "status_chain": [
+    [
+     "/browse",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 98,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#fefefe",
+      "ratio": 18.24
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 195,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/progress",
+      "current": false,
+      "box": {
+       "x": 293,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [
+     "phonetab:Today:#8f8f8d/#fefefe=3.21",
+     "phonetab:Calendar:#8f8f8d/#fefefe=3.21",
+     "phonetab:Profile:#8f8f8d/#fefefe=3.21"
+    ],
+    "url": "/browse",
+    "title": "Browse the Constitution \u00b7 Recall the C",
+    "mscreen": "browse",
+    "bodyClass": "is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "class",
+      "box": {
+       "x": 98,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 195,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/progress",
+      "current": null,
+      "box": {
+       "x": 293,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     ""
+    ],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "SECTION.panel browse",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "browse",
+   "route": "/browse",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "file": "p233-free_free_browse_1280x900_light.png",
+   "sha256": "325290aef1c9a60509412b3dc4f36ff9bca8f7b885fbf2557d10639b74c14b1a",
+   "status_chain": [
+    [
+     "/browse",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "account",
+      "t": "",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1186,
+       "y": 19,
+       "w": 44,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#000000",
+      "bg": "#ffffff",
+      "ratio": 21
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/browse",
+    "title": "Browse the Constitution \u00b7 Recall the C",
+    "mscreen": "browse",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 0,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 1186,
+      "y": 19,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "sched-first",
+   "route": "/browse/schedules/first",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "file": "p233-free_free_sched-first_390x844_light.png",
+   "sha256": "bb3ffd7dd92562642474f0c0ed6901e0f461618b6c3952f70a089ce46cf8d45a",
+   "status_chain": [
+    [
+     "/browse/schedules/first",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 98,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#fefefe",
+      "ratio": 18.24
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 195,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/progress",
+      "current": false,
+      "box": {
+       "x": 293,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [
+     "phonetab:Today:#8f8f8d/#fefefe=3.21",
+     "phonetab:Calendar:#8f8f8d/#fefefe=3.21",
+     "phonetab:Profile:#8f8f8d/#fefefe=3.21"
+    ],
+    "url": "/browse/schedules/first",
+    "title": "First Schedule \u00b7 The States and the Union territories \u00b7 Browse",
+    "mscreen": "schedule",
+    "bodyClass": "is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "class",
+      "box": {
+       "x": 98,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 195,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/progress",
+      "current": null,
+      "box": {
+       "x": 293,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     ""
+    ],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "HEADER.sched-head",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "sched-first",
+   "route": "/browse/schedules/first",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "file": "p233-free_free_sched-first_1280x900_light.png",
+   "sha256": "1cc8c9bf9be2ee8d032a9d12985bbb3651a91db9765c1bad5df86e75dcf57db1",
+   "status_chain": [
+    [
+     "/browse/schedules/first",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "account",
+      "t": "",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1186,
+       "y": 19,
+       "w": 44,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#000000",
+      "bg": "#ffffff",
+      "ratio": 21
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/browse/schedules/first",
+    "title": "First Schedule \u00b7 The States and the Union territories \u00b7 Browse",
+    "mscreen": "schedule",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 0,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 1186,
+      "y": 19,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
+    "hScroll": true
+   }
+  },
+  {
+   "key": "sched-second",
+   "route": "/browse/schedules/second",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "file": "p233-free_free_sched-second_390x844_light.png",
+   "sha256": "dce9ab0a35dcf25fa332aaa24aa0dd634c3df24179f51e4893ccbc0e497723c4",
+   "status_chain": [
+    [
+     "/browse/schedules/second",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 98,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#fefefe",
+      "ratio": 18.24
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 195,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/progress",
+      "current": false,
+      "box": {
+       "x": 293,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [
+     "phonetab:Today:#8f8f8d/#fefefe=3.21",
+     "phonetab:Calendar:#8f8f8d/#fefefe=3.21",
+     "phonetab:Profile:#8f8f8d/#fefefe=3.21"
+    ],
+    "url": "/browse/schedules/second",
+    "title": "Second Schedule \u00b7 Emoluments, allowances and privileges \u00b7 Browse",
+    "mscreen": "schedule",
+    "bodyClass": "is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "class",
+      "box": {
+       "x": 98,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 195,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/progress",
+      "current": null,
+      "box": {
+       "x": 293,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     ""
+    ],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "HEADER.sched-head",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "sched-second",
+   "route": "/browse/schedules/second",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "file": "p233-free_free_sched-second_1280x900_light.png",
+   "sha256": "57175c701012e98d1873a47c969ce37f8b14bfb1f8caa75052c587647e70e706",
+   "status_chain": [
+    [
+     "/browse/schedules/second",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "account",
+      "t": "",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1186,
+       "y": 19,
+       "w": 44,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#000000",
+      "bg": "#ffffff",
+      "ratio": 21
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/browse/schedules/second",
+    "title": "Second Schedule \u00b7 Emoluments, allowances and privileges \u00b7 Browse",
+    "mscreen": "schedule",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 0,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 1186,
+      "y": 19,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
+    "hScroll": true
+   }
+  },
+  {
+   "key": "sched-third",
+   "route": "/browse/schedules/third",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "file": "p233-free_free_sched-third_390x844_light.png",
+   "sha256": "195c82d4ad08d954b90a32bd13ceaae5bcc4edb49a4e81294f12de7d84526fa9",
+   "status_chain": [
+    [
+     "/browse/schedules/third",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 98,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#fefefe",
+      "ratio": 18.24
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 195,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/progress",
+      "current": false,
+      "box": {
+       "x": 293,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [
+     "phonetab:Today:#8f8f8d/#fefefe=3.21",
+     "phonetab:Calendar:#8f8f8d/#fefefe=3.21",
+     "phonetab:Profile:#8f8f8d/#fefefe=3.21"
+    ],
+    "url": "/browse/schedules/third",
+    "title": "Third Schedule \u00b7 Forms of oaths or affirmations \u00b7 Browse",
+    "mscreen": "schedule",
+    "bodyClass": "is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "class",
+      "box": {
+       "x": 98,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 195,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/progress",
+      "current": null,
+      "box": {
+       "x": 293,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     ""
+    ],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "HEADER.sched-head",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "sched-third",
+   "route": "/browse/schedules/third",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "file": "p233-free_free_sched-third_1280x900_light.png",
+   "sha256": "a4cf99ce52d426a965c35d5f63135cffd058ad381ec1fbf7fac848a09f763f45",
+   "status_chain": [
+    [
+     "/browse/schedules/third",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "account",
+      "t": "",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1186,
+       "y": 19,
+       "w": 44,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#000000",
+      "bg": "#ffffff",
+      "ratio": 21
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/browse/schedules/third",
+    "title": "Third Schedule \u00b7 Forms of oaths or affirmations \u00b7 Browse",
+    "mscreen": "schedule",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 0,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 1186,
+      "y": 19,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
+    "hScroll": true
+   }
+  },
+  {
+   "key": "sched-fourth",
+   "route": "/browse/schedules/fourth",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "file": "p233-free_free_sched-fourth_390x844_light.png",
+   "sha256": "0315a196851a97846680887bc6e18dcab96f9ace06b070d5a49aaee0f0d5d0a2",
+   "status_chain": [
+    [
+     "/browse/schedules/fourth",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 98,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#fefefe",
+      "ratio": 18.24
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 195,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/progress",
+      "current": false,
+      "box": {
+       "x": 293,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [
+     "phonetab:Today:#8f8f8d/#fefefe=3.21",
+     "phonetab:Calendar:#8f8f8d/#fefefe=3.21",
+     "phonetab:Profile:#8f8f8d/#fefefe=3.21"
+    ],
+    "url": "/browse/schedules/fourth",
+    "title": "Fourth Schedule \u00b7 Allocation of seats in the Council of States \u00b7 Browse",
+    "mscreen": "schedule",
+    "bodyClass": "is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "class",
+      "box": {
+       "x": 98,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 195,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/progress",
+      "current": null,
+      "box": {
+       "x": 293,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     ""
+    ],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "HEADER.sched-head",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "sched-fourth",
+   "route": "/browse/schedules/fourth",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "file": "p233-free_free_sched-fourth_1280x900_light.png",
+   "sha256": "d7484412db7fc70341f390c6e9af99946e563c46623f16794f7d00941027de9f",
+   "status_chain": [
+    [
+     "/browse/schedules/fourth",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "account",
+      "t": "",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1186,
+       "y": 19,
+       "w": 44,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#000000",
+      "bg": "#ffffff",
+      "ratio": 21
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/browse/schedules/fourth",
+    "title": "Fourth Schedule \u00b7 Allocation of seats in the Council of States \u00b7 Browse",
+    "mscreen": "schedule",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 0,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 1186,
+      "y": 19,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
+    "hScroll": true
+   }
+  },
+  {
+   "key": "sched-fifth",
+   "route": "/browse/schedules/fifth",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "file": "p233-free_free_sched-fifth_390x844_light.png",
+   "sha256": "8efa2eff2c03a660f23cafcefdd9129eca48a85bf2a5a9431bcefcbe82a029cd",
+   "status_chain": [
+    [
+     "/browse/schedules/fifth",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 98,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#fefefe",
+      "ratio": 18.24
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 195,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/progress",
+      "current": false,
+      "box": {
+       "x": 293,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [
+     "phonetab:Today:#8f8f8d/#fefefe=3.21",
+     "phonetab:Calendar:#8f8f8d/#fefefe=3.21",
+     "phonetab:Profile:#8f8f8d/#fefefe=3.21"
+    ],
+    "url": "/browse/schedules/fifth",
+    "title": "Fifth Schedule \u00b7 Scheduled Areas and Scheduled Tribes \u00b7 Browse",
+    "mscreen": "schedule",
+    "bodyClass": "is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "class",
+      "box": {
+       "x": 98,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 195,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/progress",
+      "current": null,
+      "box": {
+       "x": 293,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     ""
+    ],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "HEADER.sched-head",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "sched-fifth",
+   "route": "/browse/schedules/fifth",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "file": "p233-free_free_sched-fifth_1280x900_light.png",
+   "sha256": "af4cd5b37d6f0643ef66606737d0a5671aa2bb0916abecd4133426cf33ed543c",
+   "status_chain": [
+    [
+     "/browse/schedules/fifth",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "account",
+      "t": "",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1186,
+       "y": 19,
+       "w": 44,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#000000",
+      "bg": "#ffffff",
+      "ratio": 21
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/browse/schedules/fifth",
+    "title": "Fifth Schedule \u00b7 Scheduled Areas and Scheduled Tribes \u00b7 Browse",
+    "mscreen": "schedule",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 0,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 1186,
+      "y": 19,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
+    "hScroll": true
+   }
+  },
+  {
+   "key": "sched-sixth",
+   "route": "/browse/schedules/sixth",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "file": "p233-free_free_sched-sixth_390x844_light.png",
+   "sha256": "e02923c7b6174d8db71871b8f22b07224f3c9633c699c7a7330ab9cf98c28b89",
+   "status_chain": [
+    [
+     "/browse/schedules/sixth",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 98,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#fefefe",
+      "ratio": 18.24
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 195,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/progress",
+      "current": false,
+      "box": {
+       "x": 293,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [
+     "phonetab:Today:#8f8f8d/#fefefe=3.21",
+     "phonetab:Calendar:#8f8f8d/#fefefe=3.21",
+     "phonetab:Profile:#8f8f8d/#fefefe=3.21"
+    ],
+    "url": "/browse/schedules/sixth",
+    "title": "Sixth Schedule \u00b7 Tribal areas in the North-East \u00b7 Browse",
+    "mscreen": "schedule",
+    "bodyClass": "is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "class",
+      "box": {
+       "x": 98,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 195,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/progress",
+      "current": null,
+      "box": {
+       "x": 293,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     ""
+    ],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "HEADER.sched-head",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "sched-sixth",
+   "route": "/browse/schedules/sixth",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "file": "p233-free_free_sched-sixth_1280x900_light.png",
+   "sha256": "cc5fc58808f41b392c983ce1ca893050767200057ac21f97c3216340a44fefc3",
+   "status_chain": [
+    [
+     "/browse/schedules/sixth",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "account",
+      "t": "",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1186,
+       "y": 19,
+       "w": 44,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#000000",
+      "bg": "#ffffff",
+      "ratio": 21
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/browse/schedules/sixth",
+    "title": "Sixth Schedule \u00b7 Tribal areas in the North-East \u00b7 Browse",
+    "mscreen": "schedule",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 0,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 1186,
+      "y": 19,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
+    "hScroll": true
+   }
+  },
+  {
+   "key": "sched-seventh",
+   "route": "/browse/schedules/seventh",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "file": "p233-free_free_sched-seventh_390x844_light.png",
+   "sha256": "79e033b1be547c75e4962b56956153a48db5b177982bfea8a3f82c1d94b2511c",
+   "status_chain": [
+    [
+     "/browse/schedules/seventh",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 98,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#fefefe",
+      "ratio": 18.24
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 195,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/progress",
+      "current": false,
+      "box": {
+       "x": 293,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [
+     "phonetab:Today:#8f8f8d/#fefefe=3.21",
+     "phonetab:Calendar:#8f8f8d/#fefefe=3.21",
+     "phonetab:Profile:#8f8f8d/#fefefe=3.21"
+    ],
+    "url": "/browse/schedules/seventh",
+    "title": "Seventh Schedule \u00b7 Union, State and Concurrent Lists \u00b7 Browse",
+    "mscreen": "schedule",
+    "bodyClass": "is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "class",
+      "box": {
+       "x": 98,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 195,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/progress",
+      "current": null,
+      "box": {
+       "x": 293,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     ""
+    ],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "HEADER.sched-head",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "sched-seventh",
+   "route": "/browse/schedules/seventh",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "file": "p233-free_free_sched-seventh_1280x900_light.png",
+   "sha256": "f90255ffb72e4f32165169fafa49be54a603a2022d348e4acb4dba0d2cbc92ca",
+   "status_chain": [
+    [
+     "/browse/schedules/seventh",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "account",
+      "t": "",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1186,
+       "y": 19,
+       "w": 44,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#000000",
+      "bg": "#ffffff",
+      "ratio": 21
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/browse/schedules/seventh",
+    "title": "Seventh Schedule \u00b7 Union, State and Concurrent Lists \u00b7 Browse",
+    "mscreen": "schedule",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 0,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 1186,
+      "y": 19,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
+    "hScroll": true
+   }
+  },
+  {
+   "key": "sched-eighth",
+   "route": "/browse/schedules/eighth",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "file": "p233-free_free_sched-eighth_390x844_light.png",
+   "sha256": "12e08db738b9a7cd293cc76d2c79e5741ab52b15375bea7fd973f0e78e525596",
+   "status_chain": [
+    [
+     "/browse/schedules/eighth",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 98,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#fefefe",
+      "ratio": 18.24
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 195,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/progress",
+      "current": false,
+      "box": {
+       "x": 293,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [
+     "phonetab:Today:#8f8f8d/#fefefe=3.21",
+     "phonetab:Calendar:#8f8f8d/#fefefe=3.21",
+     "phonetab:Profile:#8f8f8d/#fefefe=3.21"
+    ],
+    "url": "/browse/schedules/eighth",
+    "title": "Eighth Schedule \u00b7 Languages \u00b7 Browse",
+    "mscreen": "schedule",
+    "bodyClass": "is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "class",
+      "box": {
+       "x": 98,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 195,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/progress",
+      "current": null,
+      "box": {
+       "x": 293,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     ""
+    ],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "HEADER.sched-head",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "sched-eighth",
+   "route": "/browse/schedules/eighth",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "file": "p233-free_free_sched-eighth_1280x900_light.png",
+   "sha256": "5c28ec9e5911dceb333cbb0b97fa3787dbe58f4f98b7221898fa2ac44b199ff5",
+   "status_chain": [
+    [
+     "/browse/schedules/eighth",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "account",
+      "t": "",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1186,
+       "y": 19,
+       "w": 44,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#000000",
+      "bg": "#ffffff",
+      "ratio": 21
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/browse/schedules/eighth",
+    "title": "Eighth Schedule \u00b7 Languages \u00b7 Browse",
+    "mscreen": "schedule",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 0,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 1186,
+      "y": 19,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
+    "hScroll": true
+   }
+  },
+  {
+   "key": "sched-ninth",
+   "route": "/browse/schedules/ninth",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "file": "p233-free_free_sched-ninth_390x844_light.png",
+   "sha256": "2a2b362391176eec76942fd97291258d12180d996099ad8c511d45c06864d2fc",
+   "status_chain": [
+    [
+     "/browse/schedules/ninth",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 98,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#fefefe",
+      "ratio": 18.24
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 195,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/progress",
+      "current": false,
+      "box": {
+       "x": 293,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [
+     "phonetab:Today:#8f8f8d/#fefefe=3.21",
+     "phonetab:Calendar:#8f8f8d/#fefefe=3.21",
+     "phonetab:Profile:#8f8f8d/#fefefe=3.21"
+    ],
+    "url": "/browse/schedules/ninth",
+    "title": "Ninth Schedule \u00b7 Validation of certain Acts and Regulations \u00b7 Browse",
+    "mscreen": "schedule",
+    "bodyClass": "is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "class",
+      "box": {
+       "x": 98,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 195,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/progress",
+      "current": null,
+      "box": {
+       "x": 293,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     ""
+    ],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "HEADER.sched-head",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "sched-ninth",
+   "route": "/browse/schedules/ninth",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "file": "p233-free_free_sched-ninth_1280x900_light.png",
+   "sha256": "050fc53d4dd6e92f78bee495d37744a84e34e01e5569dd4d07a2c738d3a172ed",
+   "status_chain": [
+    [
+     "/browse/schedules/ninth",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "account",
+      "t": "",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1186,
+       "y": 19,
+       "w": 44,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#000000",
+      "bg": "#ffffff",
+      "ratio": 21
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/browse/schedules/ninth",
+    "title": "Ninth Schedule \u00b7 Validation of certain Acts and Regulations \u00b7 Browse",
+    "mscreen": "schedule",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 0,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 1186,
+      "y": 19,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
+    "hScroll": true
+   }
+  },
+  {
+   "key": "sched-tenth",
+   "route": "/browse/schedules/tenth",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "file": "p233-free_free_sched-tenth_390x844_light.png",
+   "sha256": "6235c6c59d180ed35901dc7bbe1555daf56a443fd3d9026e76d5651b468832dc",
+   "status_chain": [
+    [
+     "/browse/schedules/tenth",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 98,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#fefefe",
+      "ratio": 18.24
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 195,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/progress",
+      "current": false,
+      "box": {
+       "x": 293,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [
+     "phonetab:Today:#8f8f8d/#fefefe=3.21",
+     "phonetab:Calendar:#8f8f8d/#fefefe=3.21",
+     "phonetab:Profile:#8f8f8d/#fefefe=3.21"
+    ],
+    "url": "/browse/schedules/tenth",
+    "title": "Tenth Schedule \u00b7 Disqualification on ground of defection \u00b7 Browse",
+    "mscreen": "schedule",
+    "bodyClass": "is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "class",
+      "box": {
+       "x": 98,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 195,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/progress",
+      "current": null,
+      "box": {
+       "x": 293,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     ""
+    ],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "HEADER.sched-head",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "sched-tenth",
+   "route": "/browse/schedules/tenth",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "file": "p233-free_free_sched-tenth_1280x900_light.png",
+   "sha256": "739dc9918b6d24bb0fb40fef7b7fb14a846c1f29261950cbf41b1126169ebb21",
+   "status_chain": [
+    [
+     "/browse/schedules/tenth",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "account",
+      "t": "",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1186,
+       "y": 19,
+       "w": 44,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#000000",
+      "bg": "#ffffff",
+      "ratio": 21
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/browse/schedules/tenth",
+    "title": "Tenth Schedule \u00b7 Disqualification on ground of defection \u00b7 Browse",
+    "mscreen": "schedule",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 0,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 1186,
+      "y": 19,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
+    "hScroll": true
+   }
+  },
+  {
+   "key": "sched-eleventh",
+   "route": "/browse/schedules/eleventh",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "file": "p233-free_free_sched-eleventh_390x844_light.png",
+   "sha256": "06ad7a62dee915eeb5979369a99e6ccec113768cb3625f5eb66b644df0cd7b2b",
+   "status_chain": [
+    [
+     "/browse/schedules/eleventh",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 98,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#fefefe",
+      "ratio": 18.24
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 195,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/progress",
+      "current": false,
+      "box": {
+       "x": 293,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [
+     "phonetab:Today:#8f8f8d/#fefefe=3.21",
+     "phonetab:Calendar:#8f8f8d/#fefefe=3.21",
+     "phonetab:Profile:#8f8f8d/#fefefe=3.21"
+    ],
+    "url": "/browse/schedules/eleventh",
+    "title": "Eleventh Schedule \u00b7 Powers and responsibilities of Panchayats \u00b7 Browse",
+    "mscreen": "schedule",
+    "bodyClass": "is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "class",
+      "box": {
+       "x": 98,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 195,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/progress",
+      "current": null,
+      "box": {
+       "x": 293,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     ""
+    ],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "HEADER.sched-head",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "sched-eleventh",
+   "route": "/browse/schedules/eleventh",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "file": "p233-free_free_sched-eleventh_1280x900_light.png",
+   "sha256": "08611cfb6a05391b779a3f1ebbd88d922ca17b0de458b311eee8e2d840d5c5b8",
+   "status_chain": [
+    [
+     "/browse/schedules/eleventh",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "account",
+      "t": "",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1186,
+       "y": 19,
+       "w": 44,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#000000",
+      "bg": "#ffffff",
+      "ratio": 21
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/browse/schedules/eleventh",
+    "title": "Eleventh Schedule \u00b7 Powers and responsibilities of Panchayats \u00b7 Browse",
+    "mscreen": "schedule",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 0,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 1186,
+      "y": 19,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
+    "hScroll": true
+   }
+  },
+  {
+   "key": "sched-twelfth",
+   "route": "/browse/schedules/twelfth",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "file": "p233-free_free_sched-twelfth_390x844_light.png",
+   "sha256": "bdc54a3004e029f970d9e3d26db9d8166e8f2317774c38b51c6020834a0e1598",
+   "status_chain": [
+    [
+     "/browse/schedules/twelfth",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 98,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#fefefe",
+      "ratio": 18.24
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 195,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/progress",
+      "current": false,
+      "box": {
+       "x": 293,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [
+     "phonetab:Today:#8f8f8d/#fefefe=3.21",
+     "phonetab:Calendar:#8f8f8d/#fefefe=3.21",
+     "phonetab:Profile:#8f8f8d/#fefefe=3.21"
+    ],
+    "url": "/browse/schedules/twelfth",
+    "title": "Twelfth Schedule \u00b7 Powers and responsibilities of Municipalities \u00b7 Browse",
+    "mscreen": "schedule",
+    "bodyClass": "is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "class",
+      "box": {
+       "x": 98,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 195,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/progress",
+      "current": null,
+      "box": {
+       "x": 293,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     ""
+    ],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "HEADER.sched-head",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "sched-twelfth",
+   "route": "/browse/schedules/twelfth",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "file": "p233-free_free_sched-twelfth_1280x900_light.png",
+   "sha256": "9b0cefdd86df0fb4e84b278a81c42480eff0bb7f80ff85dc1a1e2d06cdad5c40",
+   "status_chain": [
+    [
+     "/browse/schedules/twelfth",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "account",
+      "t": "",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1186,
+       "y": 19,
+       "w": 44,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#000000",
+      "bg": "#ffffff",
+      "ratio": 21
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/browse/schedules/twelfth",
+    "title": "Twelfth Schedule \u00b7 Powers and responsibilities of Municipalities \u00b7 Browse",
+    "mscreen": "schedule",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 0,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 1186,
+      "y": 19,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
+    "hScroll": true
+   }
+  },
+  {
+   "key": "sched-legacy-redirect",
+   "route": "/browse/schedule/sixth",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "file": "p233-free_free_sched-legacy-redirect_390x844_light.png",
+   "sha256": "e02923c7b6174d8db71871b8f22b07224f3c9633c699c7a7330ab9cf98c28b89",
+   "status_chain": [
+    [
+     "/browse/schedule/sixth",
+     301
+    ],
+    [
+     "http://127.0.0.1:8915/browse/schedules/sixth",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "phonetab",
+      "t": "Today",
+      "href": "/dashboard",
+      "current": false,
+      "box": {
+       "x": 0,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     },
+     {
+      "kind": "phonetab",
+      "t": "Browse",
+      "href": "/browse",
+      "current": true,
+      "box": {
+       "x": 98,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#141414",
+      "bg": "#fefefe",
+      "ratio": 18.24
+     },
+     {
+      "kind": "phonetab",
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": false,
+      "box": {
+       "x": 195,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     },
+     {
+      "kind": "phonetab",
+      "t": "Profile",
+      "href": "/progress",
+      "current": false,
+      "box": {
+       "x": 293,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      },
+      "meets44": true,
+      "fg": "#8f8f8d",
+      "bg": "#fefefe",
+      "ratio": 3.21
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [
+     "phonetab:Today:#8f8f8d/#fefefe=3.21",
+     "phonetab:Calendar:#8f8f8d/#fefefe=3.21",
+     "phonetab:Profile:#8f8f8d/#fefefe=3.21"
+    ],
+    "url": "/browse/schedules/sixth",
+    "title": "Sixth Schedule \u00b7 Tribal areas in the North-East \u00b7 Browse",
+    "mscreen": "schedule",
+    "bodyClass": "is-authed",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 1,
+    "phoneBar": [
+     {
+      "t": "Today",
+      "href": "/dashboard",
+      "current": null,
+      "box": {
+       "x": 0,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Browse",
+      "href": "/browse",
+      "current": "class",
+      "box": {
+       "x": 98,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Calendar",
+      "href": "/calendar",
+      "current": null,
+      "box": {
+       "x": 195,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     },
+     {
+      "t": "Profile",
+      "href": "/progress",
+      "current": null,
+      "box": {
+       "x": 293,
+       "y": 788,
+       "w": 98,
+       "h": 56
+      }
+     }
+    ],
+    "phoneBarAttrs": [
+     ""
+    ],
+    "navSurfaces": 1,
+    "avatar": {
+     "vis": false,
+     "box": {
+      "x": 0,
+      "y": 0,
+      "w": 0,
+      "h": 0
+     },
+     "hitOnButton": false,
+     "hitTag": "HEADER.sched-head",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
+    "hScroll": false
+   }
+  },
+  {
+   "key": "sched-legacy-redirect",
+   "route": "/browse/schedule/sixth",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "file": "p233-free_free_sched-legacy-redirect_1280x900_light.png",
+   "sha256": "cc5fc58808f41b392c983ce1ca893050767200057ac21f97c3216340a44fefc3",
+   "status_chain": [
+    [
+     "/browse/schedule/sixth",
+     301
+    ],
+    [
+     "http://127.0.0.1:8915/browse/schedules/sixth",
+     200
+    ]
+   ],
+   "probe": {
+    "targets": [
+     {
+      "kind": "account",
+      "t": "",
+      "href": null,
+      "current": false,
+      "box": {
+       "x": 1186,
+       "y": 19,
+       "w": 44,
+       "h": 44
+      },
+      "meets44": true,
+      "fg": "#000000",
+      "bg": "#ffffff",
+      "ratio": 21
+     }
+    ],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/browse/schedules/sixth",
+    "title": "Sixth Schedule \u00b7 Tribal areas in the North-East \u00b7 Browse",
+    "mscreen": "schedule",
+    "bodyClass": "is-authed",
+    "headerVisible": true,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 1,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 0,
+    "avatar": {
+     "vis": true,
+     "box": {
+      "x": 1186,
+      "y": 19,
+      "w": 44,
+      "h": 44
+     },
+     "hitOnButton": true,
+     "hitTag": "IMG.account-avatar",
+     "img": true,
+     "label": "Account menu"
+    },
+    "signin": null,
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover",
+    "hScroll": true
+   }
+  },
+  {
+   "key": "sched-unknown",
+   "route": "/browse/schedules/thirteenth",
+   "width": 390,
+   "height": 844,
+   "theme": "light",
+   "file": "p233-free_free_sched-unknown_390x844_light.png",
+   "sha256": "1d54a938530ac4059d7db6fb3c5ff491cba35dfd6f3c6b06786f629d236bff1e",
+   "status_chain": [
+    [
+     "/browse/schedules/thirteenth",
+     404
+    ]
+   ],
+   "probe": {
+    "targets": [],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/browse/schedules/thirteenth",
+    "title": "",
+    "mscreen": null,
+    "bodyClass": "",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 0,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 0,
+    "avatar": null,
+    "signin": null,
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": null,
+    "hScroll": false
+   }
+  },
+  {
+   "key": "sched-unknown",
+   "route": "/browse/schedules/thirteenth",
+   "width": 1280,
+   "height": 900,
+   "theme": "light",
+   "file": "p233-free_free_sched-unknown_1280x900_light.png",
+   "sha256": "a7bf2d569e242f68ad8b97e07c582ce9742d9d085a1988886b477e21a559cd46",
+   "status_chain": [
+    [
+     "/browse/schedules/thirteenth",
+     404
+    ]
+   ],
+   "probe": {
+    "targets": [],
+    "smallTargets": [],
+    "lowContrast": [],
+    "url": "/browse/schedules/thirteenth",
+    "title": "",
+    "mscreen": null,
+    "bodyClass": "",
+    "headerVisible": false,
+    "topNavVisible": false,
+    "topNav": [],
+    "phoneBarsInDom": 0,
+    "phoneBarsVisible": 0,
+    "phoneBar": [],
+    "phoneBarAttrs": [],
+    "navSurfaces": 0,
+    "avatar": null,
+    "signin": null,
+    "chip": null,
+    "headerOverlaps": [],
+    "viewport": null,
+    "hScroll": false
+   }
+  }
+ ]
+}
