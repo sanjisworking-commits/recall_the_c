@@ -9,6 +9,10 @@ Branch `pg-m4-today`; record in `docs/design/milestones/M4-evidence.md`.
 | `01-baseline-6186863/free-populated/` | Free with one completed Article and two clauses due, served by `tools/serve_populated_m4.py` |
 | `01-baseline-6186863/readback/` | `readback.md` / `readback.json`: nine account states × `monthly` / `choices` × first run / after one real Learn → Done |
 | `01-baseline-6186863/routes.json` | the single-route list passed to `capture_m1r.py --routes` |
+| `02-candidate-3e06fb0/guest/` | candidate guest `/dashboard` at 320×568, 390×844, 720×900 and 1280×900, light + dark (the 320 / 390 rows re-captured after the narrow-width greeting fix that follows `3e06fb0`) |
+| `02-candidate-3e06fb0/free/` | candidate Free first run, same grid, signed in through the dev launcher |
+| `02-candidate-3e06fb0/free-populated/` | candidate Free populated (served by `tools/serve_populated_m4.py`), 390 / 1280 × light / dark — the desktop path header now reads "0 of 1 reviewed" |
+| `02-candidate-3e06fb0/readback/` | the nine-state read-back on the candidate (legacy-copy scan limited to `<main>`; the shell's own Sign in link is M1-R's) |
 
 Tools (run from the repository root with the project venv):
 

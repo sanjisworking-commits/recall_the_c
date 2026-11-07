@@ -134,7 +134,8 @@ def today_row(html: str) -> dict:
         "strip": 'class="dash-strip"' in html,
         "upcoming": 'class="dash-upcoming"' in html,
         "lapse_banner": 'class="lapse-banner"' in html,
-        "legacy_copy": sorted({p for p in LEGACY if p in html}),
+        # The page body only: the shell's own "Sign in" link (M1-R) is not Today's.
+        "legacy_copy": sorted({p for p in LEGACY if p in _between(html, "<main", "</main>")}),
         "settings_links": html.count('href="/settings"'),
         "sha256": hashlib.sha256(html.encode()).hexdigest()[:16],
     }
