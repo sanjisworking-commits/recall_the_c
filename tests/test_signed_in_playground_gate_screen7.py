@@ -461,7 +461,8 @@ def test_guest_plus_expired_halted_paused_pending_stay_separate(
 def test_desktop_entry_points_open_playground_gate(tmp_path: Path) -> None:
     client = _free_client(tmp_path)
     browse = client.get("/browse").text
-    assert 'class="browse-access-unlock" href="/playground">Unlock all</a>' in browse
+    # M3 (Q4 / owner copy 2026-11-06): the Free summary's link reads "View Playground".
+    assert 'class="browse-access-unlock" href="/playground">View Playground</a>' in browse
     header = _header(client.get("/dashboard").text)
     assert 'href="/playground"' in header
     assert ">Playground<" in header
@@ -529,7 +530,7 @@ def test_free_gate_marker_and_parser_are_presentation_only() -> None:
     assert 'data-pg-gate-stage="plans"' in css
     assert "data-pg-plan-continue" in css
     assert "data-signed-in-pg-gate" not in MOBILE.read_text(encoding="utf-8")
-    assert 'href="/playground">Unlock all</a>' in BROWSE.read_text(encoding="utf-8")
+    assert 'href="/playground">View Playground</a>' in BROWSE.read_text(encoding="utf-8")  # M3 (Q4)
     add = ADD.read_text(encoding="utf-8")
     sheet = add.split("data-pg-add", 1)[1]
     assert 'href="/playground">Unlock Playground</a>' in sheet

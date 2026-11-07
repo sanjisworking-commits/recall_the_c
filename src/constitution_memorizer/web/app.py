@@ -32,6 +32,7 @@ from fastapi.responses import (
 )
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
+from psycopg_pool import PoolTimeout
 
 from constitution_memorizer.admin.dependencies import admin_hint
 from constitution_memorizer.admin.routes import create_admin_router
@@ -130,6 +131,7 @@ from constitution_memorizer.web.browse import (
     load_reviewed_document,
 )
 from constitution_memorizer.web.explainers import explainer_asset_path, visual_explainer
+from constitution_memorizer.web.schedules import browse_schedule_cards, build_schedule_view
 from constitution_memorizer.planner.eligibility import is_unlearned
 from constitution_memorizer.planner.models import pace_label as plan_pace_label
 from constitution_memorizer.progress.repository import LEARN_MODES
@@ -196,7 +198,6 @@ from constitution_memorizer.web.bare_act_page import (
     bare_act_page_context,
     halted_law_presentation,
 )
-from constitution_memorizer.web.guest_laws_index import GUEST_LAWS_CARDS, GUEST_LAWS_CHIPS
 from constitution_memorizer.web.laws_data import get_law
 from constitution_memorizer.web.memory_calendar import build_memory_month, schedule_chip_states
 from constitution_memorizer.web.progress_stats import progress_dashboard
@@ -294,11 +295,23 @@ STATIC_DIR = WEB_DIR / "static"
 
 @asynccontextmanager
 async def _app_lifespan(app: FastAPI):
-    """Open the shared Postgres pool before traffic; close it on shutdown."""
+    """Open the shared Postgres pool before traffic; close it on shutdown.
+
+    A warm-up timeout must not kill the process: Railway only stops the old
+    replica after /healthz succeeds, and a full session-mode pooler would
+    otherwise deadlock the deploy in a crash loop.
+    """
     pool = getattr(app.state, "db_pool", None)
     try:
         if pool is not None:
-            pool.open(wait=True, timeout=POOL_OPEN_TIMEOUT_SECONDS)
+            try:
+                pool.open(wait=True, timeout=POOL_OPEN_TIMEOUT_SECONDS)
+            except PoolTimeout:
+                logger.error(
+                    "Postgres pool warm-up timed out after %.0fs; "
+                    "serving /healthz and retrying connections on demand",
+                    POOL_OPEN_TIMEOUT_SECONDS,
+                )
         yield
     finally:
         if pool is not None:
@@ -2579,12 +2592,17 @@ def create_app(
             get_entitlement_snapshot,
             request_is_active_plus,
             request_is_expired_subscriber,
+            request_is_free_account,
             request_is_halted_subscriber,
         )
+        from constitution_memorizer.playground.http import playground_google_href
 
         plus_browse = request_is_active_plus(request)
         expired_browse = request_is_expired_subscriber(request)
         halted_browse = request_is_halted_subscriber(request)
+        # M3 (Q4): the Free summary's audience is the snapshot's "RecallC
+        # Free" partition, never "not Plus" — Pro and Max are subscribers.
+        free_browse = request_is_free_account(request)
         expired_header_status = ""
         halted_header_status = ""
         if expired_browse or halted_browse:
@@ -2605,27 +2623,17 @@ def create_app(
                 halted_header_status = gate_view(
                     reason=BLOCK_PAYMENT_HALTED
                 ).title
-        # Phone Browse is Part-first (design 02): each Part card carries its own
-        # progress and due count, and opens a Part page instead of scrolling.
-        today = date.today()
-        cont_id = continue_unit_id(eng, as_of=today)
-        part_cards = [
-            {
-                "section": section,
-                "href": part_href(section.part_number),
-                "summary": part_progress_summary(
-                    eng, section, today=today, continue_id=cont_id
-                ),
-            }
-            for section in sections
-        ]
+        # M3 (Q1): one Browse body for both widths — the phone Part-card rail
+        # (and its per-Part progress work) is retired; /browse/part/{slug}
+        # stays reachable by URL and from the article reader.
+        schedule_cards = browse_schedule_cards()
         started = time.perf_counter()
         response = templates.TemplateResponse(
             request,
             "browse_index.html",
             {
                 "sections": sections,
-                "part_cards": part_cards,
+                "schedule_cards": schedule_cards,
                 "has_reviewed": app.state.reviewed is not None,
                 "parts_source": parts_source,
                 "present_marks": present_browse_marks(sections),
@@ -2634,6 +2642,9 @@ def create_app(
                 "plus_browse": plus_browse,
                 "expired_browse": expired_browse,
                 "halted_browse": halted_browse,
+                "free_browse": free_browse,
+                # M3 (5-11): the guest strip's one Google action returns here.
+                "guest_google_href": playground_google_href("/browse"),
                 "expired_header_status": expired_header_status,
                 "halted_header_status": halted_header_status,
             },
@@ -2672,6 +2683,32 @@ def create_app(
                 "present_marks": present_browse_marks([section]),
                 "access": access,
                 "claimed_articles": claimed,
+            },
+        )
+        record_request_timing("template", started)
+        return response
+
+    @app.get("/browse/schedule/{slug}", response_class=HTMLResponse)
+    async def browse_schedule_legacy(slug: str) -> RedirectResponse:
+        """Old singular path — keep so merged #229 links still resolve."""
+        return RedirectResponse(url=f"/browse/schedules/{slug}", status_code=301)
+
+    @app.get("/browse/schedules/{slug}", response_class=HTMLResponse)
+    async def browse_schedule(request: Request, slug: str) -> HTMLResponse:
+        """One Constitution Schedule — read-only Bare Act reference."""
+        started = time.perf_counter()
+        view = build_schedule_view(None, slug)
+        record_request_timing("browse_build", started)
+        if view is None:
+            raise HTTPException(status_code=404, detail="Schedule not found")
+        access = access_summary(request, _engine())
+        started = time.perf_counter()
+        response = templates.TemplateResponse(
+            request,
+            "browse_schedule.html",
+            {
+                "schedule": view,
+                "access": access,
             },
         )
         record_request_timing("template", started)
@@ -3256,8 +3293,6 @@ def create_app(
             "playground_states": playground_states,
             "initial_status": request.query_params.get("status") or "",
             "has_repealed": bool(catalog.repealed_laws),
-            "guest_screen3_laws": GUEST_LAWS_CARDS,
-            "guest_screen3_chips": GUEST_LAWS_CHIPS,
             "plus_laws": plus_laws,
             "expired_laws": expired_laws,
             "halted_laws": halted_laws,

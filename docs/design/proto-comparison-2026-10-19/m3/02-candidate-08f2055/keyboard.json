@@ -1,0 +1,196 @@
+{
+ "base": "http://127.0.0.1:8918",
+ "captured_at": "2026-11-06T12:31:21+0530",
+ "rows": [
+  {
+   "width": 390,
+   "height": 844,
+   "reached_toggle": {
+    "tabs": 7,
+    "focusedIsToggle": true,
+    "focusedIndex": 0,
+    "active": "BUTTON.browse-part-toggle",
+    "first": {
+     "expanded": "true",
+     "bodyHidden": false,
+     "bodyDisplay": "block",
+     "outline": "solid 2px",
+     "focusVisible": true,
+     "box": [
+      354,
+      52
+     ]
+    },
+    "second": {
+     "expanded": "true",
+     "bodyHidden": false,
+     "bodyDisplay": "block",
+     "outline": "none 3px",
+     "focusVisible": false,
+     "box": [
+      354,
+      52
+     ]
+    },
+    "toggles": 24
+   },
+   "after_enter": {
+    "focusedIsToggle": true,
+    "focusedIndex": 0,
+    "active": "BUTTON.browse-part-toggle",
+    "first": {
+     "expanded": "false",
+     "bodyHidden": true,
+     "bodyDisplay": "none",
+     "outline": "solid 2px",
+     "focusVisible": true,
+     "box": [
+      354,
+      52
+     ]
+    },
+    "second": {
+     "expanded": "true",
+     "bodyHidden": false,
+     "bodyDisplay": "block",
+     "outline": "none 3px",
+     "focusVisible": false,
+     "box": [
+      354,
+      52
+     ]
+    },
+    "toggles": 24
+   },
+   "after_space": {
+    "focusedIsToggle": true,
+    "focusedIndex": 0,
+    "active": "BUTTON.browse-part-toggle",
+    "first": {
+     "expanded": "true",
+     "bodyHidden": false,
+     "bodyDisplay": "block",
+     "outline": "solid 2px",
+     "focusVisible": true,
+     "box": [
+      354,
+      52
+     ]
+    },
+    "second": {
+     "expanded": "true",
+     "bodyHidden": false,
+     "bodyDisplay": "block",
+     "outline": "none 3px",
+     "focusVisible": false,
+     "box": [
+      354,
+      52
+     ]
+    },
+    "toggles": 24
+   },
+   "legend": {
+    "pressed": "true",
+    "hiddenWhileFiltered": 490,
+    "afterClear": 0,
+    "cleared": "false"
+   }
+  },
+  {
+   "width": 1280,
+   "height": 900,
+   "reached_toggle": {
+    "tabs": 13,
+    "focusedIsToggle": true,
+    "focusedIndex": 0,
+    "active": "BUTTON.browse-part-toggle",
+    "first": {
+     "expanded": "true",
+     "bodyHidden": false,
+     "bodyDisplay": "block",
+     "outline": "solid 2px",
+     "focusVisible": true,
+     "box": [
+      1200,
+      44
+     ]
+    },
+    "second": {
+     "expanded": "true",
+     "bodyHidden": false,
+     "bodyDisplay": "block",
+     "outline": "none 3px",
+     "focusVisible": false,
+     "box": [
+      1200,
+      44
+     ]
+    },
+    "toggles": 24
+   },
+   "after_enter": {
+    "focusedIsToggle": true,
+    "focusedIndex": 0,
+    "active": "BUTTON.browse-part-toggle",
+    "first": {
+     "expanded": "false",
+     "bodyHidden": true,
+     "bodyDisplay": "none",
+     "outline": "solid 2px",
+     "focusVisible": true,
+     "box": [
+      1200,
+      44
+     ]
+    },
+    "second": {
+     "expanded": "true",
+     "bodyHidden": false,
+     "bodyDisplay": "block",
+     "outline": "none 3px",
+     "focusVisible": false,
+     "box": [
+      1200,
+      44
+     ]
+    },
+    "toggles": 24
+   },
+   "after_space": {
+    "focusedIsToggle": true,
+    "focusedIndex": 0,
+    "active": "BUTTON.browse-part-toggle",
+    "first": {
+     "expanded": "true",
+     "bodyHidden": false,
+     "bodyDisplay": "block",
+     "outline": "solid 2px",
+     "focusVisible": true,
+     "box": [
+      1200,
+      44
+     ]
+    },
+    "second": {
+     "expanded": "true",
+     "bodyHidden": false,
+     "bodyDisplay": "block",
+     "outline": "none 3px",
+     "focusVisible": false,
+     "box": [
+      1200,
+      44
+     ]
+    },
+    "toggles": 24
+   },
+   "legend": {
+    "pressed": "true",
+    "hiddenWhileFiltered": 490,
+    "afterClear": 0,
+    "cleared": "false"
+   }
+  }
+ ]
+}

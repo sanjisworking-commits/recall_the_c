@@ -10,5 +10,6 @@ Source of truth for Sprints 6–20 UI work. Open the App file in a browser (need
 | [PLAYGROUND-FINISH-HANDOFF.md](PLAYGROUND-FINISH-HANDOFF.md) | Production closeout after R7 (U0–U8). Not a prototype. Stage 2 stays parked |
 | [Playground.dc.html](Playground.dc.html) | Playground UX state demonstrator (scenarios × screens, mobile/desktop, light/dark) — design only, 0 Stage 1 points; see [PLAYGROUND-HANDOFF.md](PLAYGROUND-HANDOFF.md) |
 | [support.js](support.js) | Prototype runtime (required to open the `.dc.html` files) |
+| [schedules/](schedules/) | Official Schedule extract + Playground screens (`schedules-text.js` beside the `.dc.html` files) |
 
 **Tokens (Sprint 6):** ink `#141414`, muted `#6b6b6b`, faint `#9a9a9a`, hairline `#dcdcdc`, page `#ececea`, paper `#fff`, accent `#141414`, destructive `#B42318`. Fonts: Fraunces + Source Sans 3. Square corners; outer sheet shadow only (sheet chrome lands in Sprint 7).

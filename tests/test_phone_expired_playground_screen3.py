@@ -615,8 +615,8 @@ def test_phone_expired_css_scope_pins_banner_once_and_desktop_06_untouched() -> 
     base = BASE.read_text(encoding="utf-8")
     assert "playground.css?v=pg55" in base
     assert "playground.css?v=pg42" not in base
-    assert "styles.css?v=main90" in base
-    assert "mobile.css?v=mob109" in base
+    assert "styles.css?v=main91" in base
+    assert "mobile.css?v=mob110" in base
     assert "data-expired-pg-phone-tabs" not in base
     assert "data-signed-in-phone-tabs" in base
 

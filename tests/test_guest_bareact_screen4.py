@@ -128,7 +128,10 @@ def test_screen4_back_returns_to_laws(tmp_path: Path) -> None:
     assert '<a class="ActHead-back" href="/laws">← Laws</a>' in band
     laws = client.get("/laws", follow_redirects=False)
     assert laws.status_code == 200
-    assert "data-guest-laws-desktop" in laws.text
+    # M3 (Q3 / Q5): one Laws body for every viewer; no phone search toggle.
+    assert laws.text.count("data-laws-index") == 1
+    assert "data-guest-laws-desktop" not in laws.text
+    assert "data-laws-search-toggle" not in laws.text
 
 
 def test_screen4_copy_and_single_playground_cta(tmp_path: Path) -> None:
@@ -220,7 +223,10 @@ def test_screen4_one_head_serves_both_widths_and_other_screens(tmp_path: Path) -
     browse = client.get("/browse").text
     assert "Browse the Constitution" in browse
     laws = client.get("/laws").text
-    assert "data-guest-laws-desktop" in laws
+    # M3 (Q3 / Q5): one Laws body for every viewer; no phone search toggle.
+    assert laws.count("data-laws-index") == 1
+    assert "data-guest-laws-desktop" not in laws
+    assert "data-laws-search-toggle" not in laws
     assert "ActHead" not in laws
     bns = client.get("/laws/bns").text
     bns_act = get_bare_act("bns")

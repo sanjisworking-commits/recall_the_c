@@ -39,23 +39,12 @@
     {% if cards %}
     <div class="browse-article-grid">
       {% for card in cards %}
-      {# Entitlement markers (design 02): saved cards get an ink border +
-         teal label; at the cap, unsaved cards read "Preview only" and dim,
-         but stay fully clickable — the boundary is on saving, not reading. #}
-      {% set marker_state = '' %}
-      {% if access and access.enabled and access.is_free %}
-        {% if card.article_number|string in claimed_articles %}
-          {% set marker_state = 'saved' %}
-        {% elif access.cap_reached %}
-          {% set marker_state = 'preview' %}
-        {% endif %}
-      {% endif %}
+      {# M3: the Free Article allowance markers ("Saved" / "Preview only") are
+         gone — every signed-in account reads and learns every Article. #}
       {% set card_classes = 'browse-article-card'
          ~ (' is-tracked' if card.tracked else ' is-untracked')
          ~ (' has-due' if card.due_count else '')
-         ~ (' has-tray' if card.marks else '')
-         ~ (' is-saved' if marker_state == 'saved' else '')
-         ~ (' is-preview' if marker_state == 'preview' else '') %}
+         ~ (' has-tray' if card.marks else '') %}
       {% if card.marks %}
       <div
         class="{{ card_classes }}"
@@ -79,11 +68,6 @@
           {{ card.due_count }} unit{% if card.due_count != 1 %}s{% endif %} due
         </span>
         {% endif %}
-        {% if marker_state == 'saved' %}
-        <span class="browse-access-label">Saved</span>
-        {% elif marker_state == 'preview' %}
-        <span class="browse-access-label">Preview only</span>
-        {% endif %}
       </a>
       {% if card.marks %}
         {{ mark_tray(card) }}
@@ -94,56 +78,34 @@
     {% endif %}
 {%- endmacro %}
 <section class="panel browse" data-parts-source="{{ parts_source|default('unknown') }}"{% if plus_browse|default(false) %} data-plus-browse="desktop"{% endif %}{% if expired_browse|default(false) %} data-expired-browse="desktop"{% endif %}{% if halted_browse|default(false) %} data-halted-browse="desktop"{% endif %}>
-  {# Phone header: title, search, Marks (signed-in) or Sign in (guest). #}
-  <div class="mobile-screen-head">
-    <h2 class="mobile-screen-title">Browse</h2>
+  {# Phone header (M3 Q5): the search icon only. The "Browse" title, the guest
+     Sign in chip and the Marks sheet are gone — one body for both widths, the
+     marks filter lives in the inline legend. #}
+  <div class="mobile-screen-head mobile-screen-head--tools">
     <a class="mobile-icon-btn" href="/search" aria-label="Search">
       <svg width="19" height="19" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><circle cx="8.5" cy="8.5" r="5.5"></circle><path d="M12.6 12.6 17 17"></path></svg>
     </a>
-    {% if is_guest|default(false) %}
-    <a class="mobile-chip-btn browse-signin-chip" href="/login?next=/browse">Sign in</a>
-    {% elif present_marks %}
-    <button type="button" class="mobile-chip-btn" data-sheet-open="marks-sheet">
-      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" aria-hidden="true"><path d="M2 4.5h12M4.5 8h7M6.5 11.5h3"></path></svg>
-      Marks
-    </button>
-    {% endif %}
   </div>
 
   <h1 class="display">Browse the Constitution</h1>
   <p class="lede">
-    The Constitution, Part by Part. Open an Article, then learn any clause from inside it.
+    The Constitution, Part by Part, then the twelve Schedules. Open an Article or a Schedule, then learn from inside it.
   </p>
 
+  {# Banner slot by viewer (M3 Q4 / D19 / 5-11): the guest strip with one
+     Google action that returns here; the Free summary for RecallC Free
+     accounts only (the snapshot's partition — never Plus, Pro or Max);
+     nothing for subscribers; expired and halted keep their header status.
+     No Article restriction, no Playground allowance sentence, no price. #}
   {% if is_guest|default(false) %}
   <div class="guest-strip" data-guest-strip>
-    <p>Reading as a guest. Sign in to save 3 Articles to Recall for free — progress, streaks and revision scheduling come with it.</p>
-    <a class="guest-strip-signin" href="/login" data-guest-gate>Sign in</a>
+    <p>Reading as a guest. Sign in to save your progress.</p>
+    <a class="guest-strip-signin" href="{{ guest_google_href|default('/auth/google/start?next=%2Fbrowse') }}" data-guest-gate-google>Continue with Google</a>
   </div>
-  {% elif current_user and not plus_browse|default(false) and not expired_browse|default(false) and not halted_browse|default(false) %}
-  {# Signed-in desktop Browse (signedIn/02): existing free-plan copy + Unlock
-     all. Unlock all opens the existing Playground Gate. Active Plus omits
-     this Free allowance/upgrade strip (plus/02). Expired former subscribers
-     are not Free — omit the allowance copy (expired/02). Halted subscribers
-     are not Free either (halted/02). Phone hides it too. #}
+  {% elif free_browse|default(false) %}
   <div class="browse-access-summary" data-signed-in-browse-strip>
-    <p class="browse-access-status">
-      {% if access and access.enabled and access.is_free %}
-      {% if access.legacy_over_cap %}
-      Free plan — your {{ access.claimed_count }} saved Articles stay fully open.
-      {% elif access.cap_reached %}
-      Free plan — 3 of 3 Articles saved. The three you picked stay fully open.
-      {% else %}
-      {% set words = {1: 'One slot', 2: 'Two slots', 3: 'All 3 slots'} %}
-      Free plan — pick any 3 Articles to learn.
-      {{ words.get(access.free_slots_remaining, access.free_slots_remaining|string ~ ' slots') }} free.
-      {% endif %}
-      {% else %}
-      Free plan — pick any 3 Articles to learn.
-      All 3 slots free.
-      {% endif %}
-    </p>
-    <a class="browse-access-unlock" href="/playground">Unlock all</a>
+    <p class="browse-access-status">Free plan — every Article, progress saved.</p>
+    <a class="browse-access-unlock" href="/playground">View Playground</a>
   </div>
   {% endif %}
 
@@ -158,7 +120,7 @@
     <a class="browse-resource-card" href="/tables" role="listitem">
       <span class="browse-resource-copy">
         <span class="browse-resource-name">Tables</span>
-        <span class="browse-resource-desc">Schedules, Parts, writs</span>
+        <span class="browse-resource-desc">Parts, writs, amendments</span>
       </span>
       <span class="browse-resource-chevron" aria-hidden="true">›</span>
     </a>
@@ -180,45 +142,23 @@
   </div>
   {% endif %}
 
-  {% if part_cards %}
+  {% if sections %}
   <p class="browse-constitution-label">The Constitution</p>
-  <div class="browse-part-rail">
-    {% for entry in part_cards %}
-    {% set section = entry.section %}
-    {% set marks = [] %}
-    {% for card in section.cards %}{% for key in card.marks %}{% if key not in marks %}{% set _ = marks.append(key) %}{% endif %}{% endfor %}{% endfor %}
-    {% for chapter in section.chapters %}{% for card in chapter.cards %}{% for key in card.marks %}{% if key not in marks %}{% set _ = marks.append(key) %}{% endif %}{% endfor %}{% endfor %}{% endfor %}
-    <a class="part-card{% if entry.summary.due_count %} has-due{% endif %}{% if entry.summary.learned %} is-started{% endif %}"
-       href="{{ entry.href }}"
-       data-browse-marks="{{ marks | join(' ') }}">
-      <span class="part-card-top">
-        <span class="part-card-roman">Part {{ section.part_number }}</span>
-        {% if entry.summary.due_count %}
-        <span class="part-card-due">{{ entry.summary.due_count }} due</span>
-        {% endif %}
-        <span class="part-card-chevron" aria-hidden="true">›</span>
-      </span>
-      <span class="part-card-name">{{ section.part_title }}</span>
-      <span class="part-card-foot">
-        <span class="part-card-range">{% if section.article_range == '—' %}{{ section.note or 'Repealed' }}{% elif section.chapters %}Articles {{ section.article_range }} · {{ section.chapters|length }} Chapter{{ 's' if section.chapters|length != 1 }}{% else %}Articles {{ section.article_range }}{% endif %}</span>
-        <span class="part-card-learned{% if entry.summary.learned %} is-started{% endif %}">{{ entry.summary.label }}</span>
-      </span>
-      <span class="part-card-track" aria-hidden="true">
-        <span class="part-card-fill" style="width: {{ entry.summary.percent }}%"></span>
-      </span>
-    </a>
-    {% endfor %}
-    <p class="browse-rail-note">{{ part_cards|length }} Parts, Chapters where the Constitution has them.</p>
-  </div>
   {% endif %}
 
   {% for section in sections %}
-  <section class="browse-part" aria-label="Part {{ section.part_number }}">
-    <div class="browse-part-header" data-browse-part-heading>
-      <span class="browse-part-roman">Part {{ section.part_number }}</span>
-      <span class="browse-part-name">{{ section.part_title }}</span>
-      <span class="browse-part-range">Articles {{ section.article_range }}</span>
-    </div>
+  {# M3 (Q1 / F02): each Part header is a real button that collapses only its
+     own grid; open by default, so the page without JS is the open state. #}
+  <section class="browse-part" aria-label="Part {{ section.part_number }}" data-browse-part="{{ section.part_number }}">
+    <h2 class="browse-part-header">
+      <button type="button" class="browse-part-toggle" data-browse-part-heading data-browse-part-toggle aria-expanded="true" aria-controls="browse-part-{{ loop.index }}-body">
+        <span class="browse-part-roman">Part {{ section.part_number }}</span>
+        <span class="browse-part-name">{{ section.part_title }}</span>
+        <span class="browse-part-range">Articles {{ section.article_range }}</span>
+        <svg class="browse-part-chevron" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 6l5 5 5-5"></path></svg>
+      </button>
+    </h2>
+    <div class="browse-part-body" id="browse-part-{{ loop.index }}-body">
     {% if section.note %}
     <p class="browse-part-note">{{ section.note }}</p>
     {% endif %}
@@ -233,35 +173,34 @@
       {{ article_grid(chapter.cards) }}
     </section>
     {% endfor %}
+    </div>
   </section>
   {% else %}
   <p class="empty">No articles available to browse.</p>
   {% endfor %}
 
-  {% if present_marks %}
-  {# Design 15: marks live in a sheet on the phone so they cost the Articles
-     no screen space. Same registry, same filter keys as the desktop legend. #}
-  <div class="mobile-sheet" id="marks-sheet" hidden data-sheet>
-    <div class="mobile-sheet-scrim" data-sheet-close></div>
-    <div class="mobile-sheet-panel" role="dialog" aria-modal="true" aria-label="Marks">
-      <div class="mobile-sheet-head">
-        <p class="mobile-sheet-title">Marks</p>
-        <button type="button" class="mobile-sheet-clear" data-marks-filter="">Clear</button>
-      </div>
-      {% for spec in present_marks %}
-      <button type="button" class="mobile-sheet-row browse-mark-{{ spec.key }}" data-marks-filter="{{ spec.key }}" aria-pressed="false">
-        <span class="mobile-sheet-row-icon">{{ mark_icon(spec.key, 16) }}</span>
-        <span class="mobile-sheet-row-copy">
-          <span class="mobile-sheet-row-name">{{ spec.legend_label }}</span>
-          {% if spec.title != spec.legend_label %}<span class="mobile-sheet-row-desc">{{ spec.title }}</span>{% endif %}
-        </span>
-        <span class="mobile-sheet-row-tick" aria-hidden="true">✓</span>
-      </button>
-      {% endfor %}
-      <p class="mobile-sheet-note">New marks join this list without taking screen space from the Articles.</p>
+  {% if schedule_cards %}
+  <section class="browse-schedules-section" id="schedules" aria-label="Schedules">
+    <div class="browse-part-header">
+      <span class="browse-part-roman">Schedules</span>
+      <span class="browse-part-name">Twelve Schedules annexed to the Constitution</span>
+      <span class="browse-part-range">First – Twelfth</span>
     </div>
-  </div>
+    <div class="browse-schedule-grid">
+      {% for card in schedule_cards %}
+      <a class="browse-schedule-card" href="{{ card.href }}">
+        <span class="browse-schedule-card-top">
+          <span class="browse-schedule-card-name">{{ card.ord }} Schedule</span>
+          <span class="browse-schedule-card-chevron" aria-hidden="true">›</span>
+        </span>
+        <span class="browse-schedule-card-title">{{ card.title }}</span>
+        <span class="browse-schedule-card-refs">{{ card.refs }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
   {% endif %}
+
 </section>
 {% if is_guest|default(false) %}
 {% include "partials/guest_modal.html" %}

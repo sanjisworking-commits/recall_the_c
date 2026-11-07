@@ -1,7 +1,9 @@
 """Guest Browse index Screen 2 (desktop CTA map guest/02-screen).
 
 Authorized: ChatGPT plan + Sanjali. Guest `/browse` is this Constitution
-index only. Phone Browse (part-card rail, mobile head) is unchanged.
+index only. M3 (Q1 / Q4 / Q5): one body for both widths — the phone Part-card
+rail and Marks sheet are retired, Part headers are collapse toggles, and the
+guest strip carries one Google action that returns to /browse.
 """
 
 from __future__ import annotations
@@ -75,8 +77,9 @@ def _guest_strip(html: str) -> str:
 
 
 def _browse_panel(html: str) -> str:
+    # M3 (Q5): the Marks sheet is gone, so the panel runs to the guest modal.
     return html.split('<section class="panel browse"', 1)[1].split(
-        "mobile-sheet", 1
+        "data-guest-modal", 1
     )[0]
 
 
@@ -89,8 +92,10 @@ def test_screen2_guest_strip_is_under_the_heading(tmp_path: Path) -> None:
     assert strip != -1
     assert heading < strip
     body = _guest_strip(html)
-    assert "Reading as a guest" in body
-    assert "Sign in to save 3 Articles" in body
+    # M3 (Q4 / 5-11): no Article allowance, no price — one sentence, one action.
+    assert "<p>Reading as a guest. Sign in to save your progress.</p>" in body
+    assert "3 Articles" not in body
+    assert "₹" not in body
     assert "guest-strip-dismiss" not in _guest_strip(html)
     assert "data-guest-strip-dismiss" not in html
 
@@ -99,8 +104,19 @@ def test_screen2_strip_signin_routes_to_the_gate(tmp_path: Path) -> None:
     client = _guest_client(tmp_path)
     html = client.get("/browse").text
     strip = _guest_strip(html)
-    assert 'href="/login"' in strip
-    assert 'data-guest-gate' in strip
+    # M3 (5-11): the strip's one action starts Google sign-in and returns to
+    # /browse; it no longer detours through the /login gate.
+    assert (
+        '<a class="guest-strip-signin" href="/auth/google/start?next=%2Fbrowse" '
+        'data-guest-gate-google>Continue with Google</a>'
+    ) in strip
+    assert 'href="/login"' not in strip
+    assert 'data-guest-gate>' not in strip
+    assert 'data-guest-gate ' not in strip
+    start = client.get("/auth/google/start?next=%2Fbrowse", follow_redirects=False)
+    assert start.status_code == 303
+    assert start.cookies.get("rtc_oauth_state")
+    assert start.cookies.get("rtc_auth_next").strip('"') == "/browse"  # cookie jar quotes the path
     gate = client.get("/login", follow_redirects=False)
     assert gate.status_code == 200
     assert "<title>Sign in" in gate.text
@@ -116,8 +132,15 @@ def test_screen2_strip_is_the_only_desktop_signin_entry(tmp_path: Path) -> None:
     assert header.count("nav-signin") == 1
     assert 'href="/login"' not in nav
     strip = _guest_strip(html)
-    assert strip.count('href="/login"') == 1
-    assert 'class="guest-strip-signin"' in strip
+    # M3 (5-11): the strip's single entry is the Google action, and it is the
+    # only sign-in entry in the Browse panel body.
+    assert strip.count('href="/auth/google/start?next=%2Fbrowse"') == 1
+    assert strip.count('class="guest-strip-signin"') == 1
+    assert 'href="/login"' not in strip
+    panel = _browse_panel(html)
+    assert panel.count("/auth/google/start") == 1
+    assert 'href="/login' not in panel
+    assert "browse-signin-chip" not in html
 
 
 def test_screen2_laws_card_routes_to_the_laws_index(tmp_path: Path) -> None:
@@ -129,7 +152,7 @@ def test_screen2_laws_card_routes_to_the_laws_index(tmp_path: Path) -> None:
     assert '<span class="browse-resource-name">Laws</span>' in row
     assert "Bare Acts &amp; statutes" in row
     assert '<span class="browse-resource-name">Tables</span>' in row
-    assert "Schedules, Parts, writs" in row
+    assert "Parts, writs, amendments" in row  # main @ ea15591 (PR #233): Tables card copy
     assert 'href="/laws"' in row
     assert 'href="/tables"' in row
     css = (
@@ -169,15 +192,24 @@ def test_screen2_legend_filters_marks_and_keeps_pressed_state(tmp_path: Path) ->
 def test_screen2_part_heading_rows_are_not_links(tmp_path: Path) -> None:
     html = _guest_client(tmp_path).get("/browse").text
     assert "data-browse-part-heading" in html
-    chunks = html.split('data-browse-part-heading')[1:]
-    assert chunks
-    for chunk in chunks[:4]:
-        block = chunk.split("</div>", 1)[0]
+    # M3 (Q1 / F02): a Part header is a <button> inside an <h2> that collapses
+    # its own grid — still never a link, and open by default.
+    heads = html.split('<h2 class="browse-part-header">')[1:]
+    assert heads
+    assert len(heads) == html.count("data-browse-part-heading")
+    for chunk in heads[:4]:
+        block = chunk.split("</button>", 1)[0]
+        assert block.lstrip().startswith(
+            '<button type="button" class="browse-part-toggle" data-browse-part-heading '
+            'data-browse-part-toggle aria-expanded="true" aria-controls="browse-part-'
+        )
         assert "<a " not in block
         assert "href=" not in block
         assert "browse-part-roman" in block
         assert "browse-part-name" in block
         assert "browse-part-range" in block
+        controls = block.split('aria-controls="', 1)[1].split('"', 1)[0]
+        assert f'<div class="browse-part-body" id="{controls}">' in chunk
 
 
 def test_screen2_desktop_header_and_guest_account_menu(tmp_path: Path) -> None:
@@ -218,20 +250,38 @@ def test_screen2_desktop_header_and_guest_account_menu(tmp_path: Path) -> None:
     assert 'href="/settings"' in footer  # Settings stays reachable for guests
 
 
-def test_screen2_does_not_change_mobile_browse_part_cards(tmp_path: Path) -> None:
+def test_screen2_phone_browse_is_the_one_body(tmp_path: Path) -> None:
+    # M3 (Q1 / Q5): the phone Part-card rail, its progress track, the "Browse"
+    # title chip row and the guest Sign in chip are retired — the phone gets
+    # the same body as the desktop, with a search-icon-only head.
     html = _guest_client(tmp_path).get("/browse").text
-    assert 'class="browse-part-rail"' in html
-    assert "part-card-track" in html
-    assert 'class="mobile-screen-head"' in html
+    assert "browse-part-rail" not in html
+    assert "part-card" not in html
+    assert "browse-rail-note" not in html
+    assert 'class="mobile-screen-head mobile-screen-head--tools"' in html
+    assert '<h2 class="mobile-screen-title">Browse</h2>' not in html
+    assert "browse-signin-chip" not in html
+    assert "data-sheet-open" not in html
+    assert "marks-sheet" not in html
+    assert html.count("data-browse-part-toggle") == html.count('class="browse-part-body"')
+    assert html.count("data-browse-part-toggle") >= 1
+    assert 'class="browse-article-grid"' in html
     assert "data-guest-phone-tabs" in html  # M1: shared five-tab bar
     assert 'class="mobile-tabbar is-guest"' not in html
     css = (
         ROOT / "src/constitution_memorizer/web/static/mobile.css"
     ).read_text(encoding="utf-8")
-    assert (
-        'body[data-mscreen="browse"] .browse > .display' in css
-    )
-    assert ".part-card-track" in css
+    assert 'body[data-mscreen="browse"] .browse > .display' in css
+    assert 'body[data-mscreen="browse"] .browse-part-toggle' in css
+    assert 'body[data-mscreen="browse"] .browse-article-grid' in css
+    assert ".part-card" not in css
+    assert ".browse-part-rail" not in css
+    for selector in (".display", ".lede", ".browse-legend", ".browse-part"):
+        rule = css.split(f'body[data-mscreen="browse"] .browse > {selector} {{', 1)
+        if len(rule) == 1:
+            rule = css.split(f'body[data-mscreen="browse"] {selector} {{', 1)
+        assert len(rule) == 2, selector
+        assert "display: none" not in rule[1].split("}", 1)[0], selector
 
 
 def _serve(app, host: str = "127.0.0.1") -> tuple[int, object]:
@@ -292,7 +342,7 @@ def test_screen2_1280_matches_prototype_screenshot(tmp_path: Path) -> None:
               const tables = document.querySelector('.browse-resource-card[href="/tables"]');
               const heading = document.querySelector('.browse > .display');
               const partHead = document.querySelector('[data-browse-part-heading]');
-              const partRail = document.querySelector('.browse-part-rail');
+              const partRail = document.querySelector('.browse-part-rail'); // M3 (Q1): retired, null
               const chip = document.querySelector('[data-guest-account-menu] .account-menu-btn');
               const mobileHead = document.querySelector('.mobile-screen-head');
               const visibleLogin = [...document.querySelectorAll('a[href^="/login"]')].filter((el) => {
@@ -475,7 +525,8 @@ def test_screen2_1280_matches_prototype_screenshot(tmp_path: Path) -> None:
     assert geo["headingText"] == "Browse the Constitution"
     assert geo["headingY"] > geo["headerH"]
     assert geo["stripY"] > geo["headingY"]
-    assert geo["signinHref"] == "/login"
+    # M3 (5-11): the strip's one action is Google sign-in returning to /browse.
+    assert geo["signinHref"] == "/auth/google/start?next=%2Fbrowse"
     assert geo["lawsHref"] == "/laws"
     assert geo["tablesHref"] == "/tables"
     assert geo["lawsX"] < geo["tablesX"]
@@ -483,9 +534,10 @@ def test_screen2_1280_matches_prototype_screenshot(tmp_path: Path) -> None:
     assert abs(geo["lawsW"] - geo["tablesW"]) <= 2
     assert geo["gridW"] / geo["stripW"] == pytest.approx(2 / 3, abs=0.03)
     assert geo["stripRight"] - geo["tablesRight"] > geo["stripW"] * 0.25
-    assert geo["partTag"] == "DIV"
-    assert geo["partParent"] != "A"
-    assert geo["partRailDisplay"] == "none"
+    # M3 (Q1 / F02): the Part header is a <button> in an <h2>; the rail is gone.
+    assert geo["partTag"] == "BUTTON"
+    assert geo["partParent"] == "H2"
+    assert geo["partRailDisplay"] is None
     assert geo["mobileHeadDisplay"] == "none"
     assert geo["visibleLogin"] == ["/login"]
     assert "rgb(20, 20, 20)" in geo["browseBg"] or "rgb(0, 0, 0)" in geo["browseBg"]

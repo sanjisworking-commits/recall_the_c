@@ -154,7 +154,10 @@ def test_screen6_does_not_change_other_screens(tmp_path: Path) -> None:
     browse = client.get("/browse").text
     assert "Browse the Constitution" in browse
     laws = client.get("/laws").text
-    assert "data-guest-laws-desktop" in laws
+    # M3 (Q3 / Q5): one Laws body for every viewer; no phone search toggle.
+    assert laws.count("data-laws-index") == 1
+    assert "data-guest-laws-desktop" not in laws
+    assert "data-laws-search-toggle" not in laws
     ndps = client.get("/laws/ndps").text
     assert 'data-act-head="ndps"' in ndps
     assert "data-guest-pg-intro" not in ndps

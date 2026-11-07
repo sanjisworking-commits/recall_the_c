@@ -314,7 +314,10 @@ def test_one_head_serves_both_widths_and_other_laws(tmp_path: Path) -> None:
     landing = client.get("/").text
     assert 'data-guest-landing="desktop"' in landing
     laws = client.get("/laws").text
-    assert "data-guest-laws-desktop" in laws
+    # M3 (Q3 / Q5): one Laws body for every viewer; no phone search toggle.
+    assert laws.count("data-laws-index") == 1
+    assert "data-guest-laws-desktop" not in laws
+    assert "data-laws-search-toggle" not in laws
     assert "ActHead" not in laws
 
 
@@ -399,8 +402,8 @@ def test_phone_guest_markers_and_pins() -> None:
     assert "data-bareact-tabs" not in bare
     base = BASE.read_text(encoding="utf-8")
     assert "data-guest-phone-tabs" in base
-    assert "styles.css?v=main90" in base
-    assert "mobile.css?v=mob109" in base
+    assert "styles.css?v=main91" in base
+    assert "mobile.css?v=mob110" in base
     assert "styles.css?v=main87" not in base
     assert "mobile.css?v=mob106" not in base
     assert "mobile.css?v=mob99" not in base

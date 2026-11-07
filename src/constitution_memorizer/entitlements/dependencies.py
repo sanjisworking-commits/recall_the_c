@@ -322,6 +322,32 @@ def request_is_halted_subscriber(request: object, *, now: datetime | None = None
     return snapshot_is_halted_subscriber(get_entitlement_snapshot(request, now=now))
 
 
+def snapshot_is_free_account(snapshot: EntitlementSnapshot) -> bool:
+    """A signed-in RecallC Free account — the audience of Free-only copy.
+
+    M3 (Q4): the same partition the shared shell uses for its ``RecallC
+    Free`` label (``web/shell.py``): authenticated, not a halted or expired
+    subscriber, and not holding a live subscription of any tier (Plus, Pro
+    and legacy Max are never Free, whatever ``request_is_active_plus``
+    says). Paused and pending accounts resolve as Free, as the label does.
+    """
+
+    return bool(
+        snapshot.is_authenticated
+        and not snapshot_is_halted_subscriber(snapshot)
+        and not snapshot_is_expired_subscriber(snapshot)
+        and not (snapshot.is_subscribed and snapshot.tier)
+    )
+
+
+def request_is_free_account(request: object, *, now: datetime | None = None) -> bool:
+    """Resolve once via ``get_entitlement_snapshot``. Guests are never Free accounts."""
+
+    if getattr(getattr(request, "state", None), "current_user", None) is None:
+        return False
+    return snapshot_is_free_account(get_entitlement_snapshot(request, now=now))
+
+
 def invalidate_entitlement_snapshot(request: object) -> None:
     state = getattr(request, "state", None)
     if state is not None and hasattr(state, "entitlement_snapshot"):

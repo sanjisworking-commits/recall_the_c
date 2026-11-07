@@ -107,19 +107,49 @@ def test_browse_part_route_404s_on_unknown_part(tmp_path: Path):
 
 
 def test_browse_index_links_every_part_to_its_page(tmp_path: Path):
+    """M3 (Q1): the index no longer carries the Part-card rail. Every Part is a
+    collapse toggle (open by default) over its own grid, and /browse/part/{slug}
+    stays reachable by URL and from the article reader's back link."""
     client, engine, _ = _client(tmp_path)
     html = client.get("/browse").text
-    assert "browse-part-rail" in html
-    for section in browse_parts_sections(engine, None):
-        assert part_href(section.part_number) in html
+    assert "browse-part-rail" not in html
+    assert "part-card" not in html
+    sections = browse_parts_sections(engine, None)
+    assert sections
+    assert html.count("data-browse-part-toggle") == len(sections)
+    assert html.count('class="browse-part-body"') == len(sections)
+    for index, section in enumerate(sections, start=1):
+        body_id = f"browse-part-{index}-body"
+        assert (
+            '<button type="button" class="browse-part-toggle" data-browse-part-heading '
+            f'data-browse-part-toggle aria-expanded="true" aria-controls="{body_id}">'
+        ) in html
+        assert f'<div class="browse-part-body" id="{body_id}">' in html
+        assert f'data-browse-part="{section.part_number}"' in html
+        page = client.get(part_href(section.part_number))
+        assert page.status_code == 200
+        cards = list(section.cards) + [c for ch in section.chapters for c in ch.cards]
+        if cards:
+            article = client.get(cards[0].href).text
+            assert f'href="{part_href(section.part_number)}"' in article
 
 
-def test_browse_index_phone_cards_match_redesign(tmp_path: Path):
-    """Phone Browse is Part cards + the Laws/Tables row, not the article grid."""
+def test_browse_index_phone_is_the_one_body(tmp_path: Path):
+    """M3 (Q1 / Q5): phone Browse is the one body — collapsible Parts over the
+    article grid plus the Laws/Tables row — not a Part-card rail or Marks sheet."""
     client, _, _ = _client(tmp_path)
     html = client.get("/browse").text
-    assert 'class="browse-part-rail"' in html
-    assert "part-card-track" in html
+    assert "browse-part-rail" not in html
+    assert "part-card" not in html
+    assert "browse-rail-note" not in html
+    assert "data-sheet-open" not in html
+    assert "marks-sheet" not in html
+    assert '<h2 class="mobile-screen-title">Browse</h2>' not in html
+    assert 'class="mobile-screen-head mobile-screen-head--tools"' in html
+    assert 'class="browse-article-grid"' in html
+    toggles = html.count("data-browse-part-toggle")
+    assert toggles >= 1
+    assert html.count('data-browse-part-toggle aria-expanded="true"') == toggles
     assert 'class="browse-resource-grid"' in html
     assert "browse-reference" not in html
     assert 'href="/laws"' in html
@@ -131,19 +161,24 @@ def test_browse_index_phone_cards_match_redesign(tmp_path: Path):
     assert '<span class="browse-resource-name">Laws</span>' in row
     assert "Bare Acts &amp; statutes" in row
     assert '<span class="browse-resource-name">Tables</span>' in row
-    assert "Schedules, Parts, writs" in row
+    assert "Parts, writs, amendments" in row
     base = client.get("/static/styles.css").text
     grid = base.split(".browse-resource-grid {", 1)[1].split("}", 1)[0]
     assert "display: grid" in grid
     css = client.get("/static/mobile.css").text
-    card = css.split(".part-card {", 1)[1].split("}", 1)[0]
-    assert "border-radius: var(--rc-radius-card)" in card
-    track = css.split(".part-card-track {", 1)[1].split("}", 1)[0]
-    assert "height: 4px" in track
-    fill = css.split(".part-card-fill {", 1)[1].split("}", 1)[0]
-    assert "var(--rc-teal)" in fill
-    due = css.split(".part-card-due {", 1)[1].split("}", 1)[0]
-    assert "var(--rc-teal-tint)" in due
+    # M3 (Q1): no rail styles remain; the phone styles the one body's
+    # 44 px collapse toggles, a two-column grid and a search-icon-only head.
+    assert ".part-card" not in css
+    assert ".browse-part-rail" not in css
+    toggle = css.split('body[data-mscreen="browse"] .browse-part-toggle {', 1)[1].split("}", 1)[0]
+    assert "min-height: 44px" in toggle
+    grid2 = css.split('body[data-mscreen="browse"] .browse-article-grid {', 1)[1].split("}", 1)[0]
+    assert "repeat(2, minmax(0, 1fr))" in grid2
+    head = css.split('body[data-mscreen="browse"] .mobile-screen-head--tools {', 1)[1].split("}", 1)[0]
+    assert "justify-content: flex-end" in head
+    for selector in (".browse > .display", ".browse > .lede", ".browse-legend", ".browse-part"):
+        rule = css.split(f'body[data-mscreen="browse"] {selector} {{', 1)[1].split("}", 1)[0]
+        assert "display: none" not in rule, selector
 
 
 def test_browse_part_rows_use_node_status(tmp_path: Path):

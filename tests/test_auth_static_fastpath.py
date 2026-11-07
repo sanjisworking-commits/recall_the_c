@@ -82,6 +82,12 @@ def test_static_and_health_skip_session_store(tmp_path: Path):
 
     health = client.get("/health")
     assert health.status_code == 200
+    assert health.json() == {"status": "ok"}
+    assert store.get_calls == after_login
+
+    healthz = client.get("/healthz")
+    assert healthz.status_code == 200
+    assert healthz.json() == {"status": "ok"}
     assert store.get_calls == after_login
 
     sitemap = client.get("/sitemap.xml")

@@ -131,9 +131,13 @@ def test_article_124_omits_struck_down_njac_wording():
         "of India and, until Parliament by law prescribes a larger number, of not "
         "more than seven other Judges.\n"
         "(2) Every Judge of the Supreme Court shall be appointed by the President "
-        "by warrant under his hand and seal and shall hold office until he attains "
-        "the age of sixty-five years:\n"
-        "[Provided that]—\n"
+        "by warrant under his hand and seal after consultation with such of the "
+        "Judges of the Supreme Court and of the High Courts in the States as the "
+        "President may deem necessary for the purpose and shall hold office until "
+        "he attains the age of sixty-five years:\n"
+        "Provided that in the case of appointment of a Judge other than the Chief "
+        "Justice, the Chief Justice of India shall always be consulted:\n"
+        "Provided further that—\n"
         "(a) a Judge may, by writing under his hand addressed to the President, "
         "resign his office;\n"
         "(b) a Judge may be removed from his office in the manner provided in "
@@ -145,21 +149,18 @@ def test_article_124_omits_struck_down_njac_wording():
     reviewed, _ = apply_corrections(_sample_doc(), corrections)
     art = next(a for p in reviewed.parts for a in p.articles if a.id == "article-124")
     assert "National Judicial Appointments" not in art.body_text
-    assert "after consultation" not in art.body_text
-    assert "[Provided that]—" in art.body_text
-    assert (
-        "by warrant under his hand and seal and shall hold office until he attains"
-        in art.body_text
-    )
+    assert "after consultation with such of the Judges" in art.body_text
+    assert "Chief Justice of India shall always be consulted" in art.body_text
+    assert "Provided further that—" in art.body_text
 
     units = {u.id: u for u in generate_learning_units(reviewed).units}
     clause1 = units["article-124-clause-1"]
     assert "seven other Judges" in clause1.text
     clause2 = units["article-124-clause-2"]
     assert "National Judicial Appointments" not in clause2.text
-    assert "after consultation" not in clause2.text
-    assert "seal and shall hold office" in clause2.text
-    assert "[Provided that]—" in clause2.text
+    assert "after consultation with such of the Judges" in clause2.text
+    assert "Chief Justice of India shall always be consulted" in clause2.text
+    assert "Provided further that—" in clause2.text
 
 
 def test_seven_annotation_uses_hidden_tip_element():

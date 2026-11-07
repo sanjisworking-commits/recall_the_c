@@ -3542,6 +3542,54 @@ code {
   font-size: 13px;
 }
 
+/* M3 (Q1 / F02): the Part header is an <h2> holding one real button that
+   collapses only that Part's grid. The Schedules section keeps the plain
+   .browse-part-header div, so everything new is scoped to the toggle. */
+h2.browse-part-header {
+  margin-top: 0;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.browse-part-toggle {
+  flex: 1 1 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px;
+  width: 100%;
+  min-height: 44px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  appearance: none;
+}
+
+.browse-part-toggle:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.browse-part-chevron {
+  flex: 0 0 auto;
+  align-self: center;
+  color: var(--muted);
+  transition: transform 0.15s ease;
+}
+
+.browse-part-toggle[aria-expanded="false"] .browse-part-chevron {
+  transform: rotate(-90deg);
+}
+
+.browse-part-body[hidden] {
+  display: none;
+}
+
 .browse-chapter {
   margin-top: 16px;
 }
@@ -3628,6 +3676,515 @@ code {
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--mid);
+}
+
+.browse-schedules-section {
+  margin: 8px 0 24px;
+}
+
+.browse-schedule-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 8px;
+  margin: 0 0 18px;
+}
+
+.browse-schedule-card {
+  display: flex;
+  flex-direction: column;
+  min-height: 64px;
+  padding: 12px 12px 14px;
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.browse-schedule-card:hover {
+  background: var(--wash);
+}
+
+.browse-schedule-card-top {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.browse-schedule-card-name {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.browse-schedule-card-chevron {
+  font-size: 15px;
+  color: var(--faint);
+}
+
+.browse-schedule-card-title {
+  margin-top: 4px;
+  font-size: 12.5px;
+  line-height: 1.35;
+  color: var(--ink);
+}
+
+.browse-schedule-card-refs {
+  margin-top: auto;
+  padding-top: 10px;
+  font-size: 11px;
+  color: var(--mid);
+}
+
+.sched-page {
+  margin: -8px -4px 0;
+}
+
+.sched-head {
+  background: var(--page);
+  border-bottom: 1px solid var(--hairline);
+  padding: 22px 40px;
+}
+
+.sched-back {
+  display: inline-flex;
+  align-items: center;
+  min-height: 32px;
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: none;
+}
+
+.sched-back:hover {
+  color: var(--ink);
+}
+
+.sched-eyebrow {
+  margin: 10px 0 6px;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #6e82c8;
+}
+
+.sched-title {
+  margin: 0 0 8px;
+  max-width: 720px;
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.sched-meta {
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.sched-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 760px;
+  padding: 28px 40px 40px;
+}
+
+.sched-ref {
+  margin: 0;
+  font-size: 12.5px;
+  font-style: italic;
+  color: var(--muted);
+}
+
+.sched-h {
+  margin: 14px 0 0;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.sched-p {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.sched-sec {
+  display: grid;
+  grid-template-columns: minmax(36px, auto) 1fr;
+  gap: 14px;
+  margin-top: 24px;
+  padding-top: 12px;
+  border-top: 1px solid #e6e6e6;
+}
+
+.sched-sec-num {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  color: #6e82c8;
+}
+
+.sched-sec-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.sched-cl {
+  display: grid;
+  grid-template-columns: minmax(36px, auto) 1fr;
+  gap: 14px;
+  margin-bottom: 6px;
+}
+
+.sched-cl-mark {
+  font-size: 13.5px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.sched-lead {
+  margin: 0 0 8px;
+  font-size: 14.5px;
+  line-height: 1.6;
+}
+
+.sched-lead em {
+  font-style: italic;
+  color: #4a4a4a;
+}
+
+.sched-table {
+  border-top: 1px solid var(--ink);
+}
+
+.sched-table .sched-tr {
+  display: grid;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid #e6e6e6;
+}
+
+.sched-table.is-three .sched-tr {
+  grid-template-columns: 32px 150px 1fr;
+}
+
+.sched-table.is-two .sched-tr {
+  grid-template-columns: 40px 1fr;
+  padding: 10px 0;
+}
+
+.sched-table.is-pay {
+  max-width: 420px;
+  margin-left: 46px;
+}
+
+.sched-table.is-pay .sched-tr {
+  grid-template-columns: 1fr auto;
+}
+
+.sched-table.is-parts .sched-tr {
+  grid-template-columns: 110px 1fr;
+  padding: 12px 0;
+}
+
+.sched-td-n {
+  color: var(--mid);
+  font-variant-numeric: tabular-nums;
+}
+
+.sched-td-n.is-accent,
+.sched-table.is-two .sched-td-n {
+  font-family: var(--font-display);
+  font-weight: 600;
+  color: #6e82c8;
+}
+
+.sched-td-name {
+  font-weight: 600;
+}
+
+.sched-td-text {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.sched-td-amt {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.sched-td-part {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #6e82c8;
+}
+
+.sched-list {
+  border: 1px solid var(--ink);
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--paper);
+}
+
+.sched-list-head {
+  display: grid;
+  grid-template-columns: 72px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 18px;
+  border: 0;
+  background: var(--paper);
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sched-list-eyebrow {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #6e82c8;
+}
+
+.sched-list-title {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.sched-list-count {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.sched-list-action {
+  align-self: center;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.sched-list-body {
+  border-top: 1px solid var(--ink);
+  padding: 0;
+}
+
+.sched-list-body .sched-tr {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 12px;
+  padding: 10px 18px;
+  border-bottom: 1px solid #e6e6e6;
+}
+
+.sched-list-cls {
+  margin-top: 6px;
+  padding-left: 8px;
+}
+
+.sched-list-cls .sched-cl {
+  grid-template-columns: 28px 1fr;
+}
+
+.sched-langs {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.sched-lang {
+  position: relative;
+  min-height: 84px;
+  padding: 12px 14px;
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  background: var(--paper);
+}
+
+.sched-lang:hover,
+.sched-lang:focus {
+  border-color: var(--ink);
+  outline: none;
+}
+
+.sched-lang-n {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #6e82c8;
+}
+
+.sched-lang-name {
+  display: block;
+  margin-top: 2px;
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 600;
+}
+
+.sched-lang-foot {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 11px;
+  color: var(--mid);
+}
+
+.sched-lang-i {
+  display: inline-grid;
+  place-items: center;
+  width: 14px;
+  height: 14px;
+  border: 1px solid var(--mid);
+  border-radius: 50%;
+  font-size: 9px;
+  font-style: italic;
+}
+
+.sched-lang.has-note[data-open="true"]::after,
+.sched-tip {
+  content: attr(data-sched-tip);
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: calc(100% + 6px);
+  z-index: 2;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: #141414;
+  color: #fff;
+  font-size: 11.5px;
+  line-height: 1.45;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+  white-space: pre-wrap;
+}
+
+.sched-oaths {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sched-oath {
+  padding: 18px 22px;
+  border: 1px solid var(--hairline);
+  border-radius: 14px;
+  background: var(--paper);
+}
+
+.sched-oath-head {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  margin: 0 0 10px;
+}
+
+.sched-oath-form {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #6e82c8;
+}
+
+.sched-oath-who {
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.sched-oath-text {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 17px;
+  line-height: 1.55;
+}
+
+.sched-oath-alt {
+  display: inline-flex;
+  flex-direction: column;
+  font-size: 0.72em;
+  font-style: italic;
+  color: #4a4a4a;
+  vertical-align: middle;
+}
+
+.sched-oath-alt span:first-child {
+  text-decoration: underline;
+  text-decoration-color: #9a9a9a;
+}
+
+.sched-oath-note {
+  margin: 10px 0 0;
+  font-size: 11.5px;
+  color: var(--mid);
+}
+
+.sched-notes {
+  margin-top: 18px;
+}
+
+.sched-notes-label {
+  margin: 0 0 8px;
+  font-size: 10.5px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mid);
+}
+
+.sched-note {
+  margin: 0 0 6px;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--muted);
+  text-wrap: pretty;
+}
+
+.sched-adj {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 18px;
+  padding-top: 16px;
+  border-top: 1px solid #e6e6e6;
+}
+
+.sched-adj-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 12px 14px;
+  border: 1px solid var(--hairline);
+  border-radius: 12px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.sched-adj-card.is-empty {
+  visibility: hidden;
+}
+
+.sched-adj-eye {
+  font-size: 10.5px;
+  color: var(--mid);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.sched-adj-name {
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .browse-article-grid {
@@ -4139,44 +4696,13 @@ code {
   font-size: clamp(28px, 4vw, 34px);
 }
 
-.laws-index-head {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin: 0 0 12px;
-}
 
-.laws-index-head .mobile-back {
-  display: inline-flex;
-  align-items: center;
-  min-height: 44px;
-  min-width: 44px;
-  padding: 0;
-  border: 0;
-  background: none;
-  font: inherit;
-  font-size: 13px;
-  color: var(--muted);
-  text-decoration: none;
-}
 
 .laws-index-title {
   flex: 1;
   margin: 0;
 }
 
-.laws-index-head .mobile-icon-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  flex: 0 0 auto;
-  border: 0;
-  background: none;
-  color: var(--ink);
-  cursor: pointer;
-}
 
 .laws-search {
   margin: 0 0 12px;
@@ -4292,6 +4818,11 @@ code {
   margin: 24px 0 0;
   font-size: 14px;
   color: var(--muted);
+}
+
+/* M3 (F04): a card prints at most its Playground status badge. */
+.LawPlaygroundCta--badge:empty {
+  display: none;
 }
 
 .laws-empty[hidden] {
@@ -10577,14 +11108,8 @@ body.is-admin-previewing { padding-top: 40px; }
   }
 }
 
-/* Signed-in Browse index (CTA map signedIn/02-screen). Desktop only; phone
-   Browse stays on the existing part-card rail in mobile.css. */
-@media (max-width: 560px) {
-  body.is-authed[data-mscreen="browse"] .browse-access-summary {
-    display: none;
-  }
-}
-
+/* Signed-in Browse index (CTA map signedIn/02-screen). M3: one body for both
+   widths — the Free summary shows on the phone too (Q4). */
 @media (min-width: 561px) {
   body.is-authed[data-mscreen="browse"] .page-wrap,
   body.is-authed[data-mscreen="browse"] .sheet {
@@ -10720,196 +11245,31 @@ body.is-admin-previewing { padding-top: 40px; }
   }
 }
 
-/* Guest Laws index (CTA map guest/03-screen). Desktop only; phone /laws
-   keeps the existing catalogue, chips, and expandable search. */
-@media (max-width: 560px) {
-  [data-guest-laws-desktop] {
-    display: none !important;
-  }
-}
-
+/* Laws index (CTA map guest/03 + signedIn/03). M3: one body for every viewer
+   and width — this desktop rule-set applies to guests and accounts alike;
+   phone sizing lives in mobile.css. */
 @media (min-width: 561px) {
-  body.is-guest[data-mscreen="laws"] .brand-mark {
-    filter: invert(1);
-  }
-
-  body.is-guest[data-mscreen="laws"] .page-wrap,
-  body.is-guest[data-mscreen="laws"] .sheet {
+  body[data-mscreen="laws"] .page-wrap,
+  body[data-mscreen="laws"] .sheet {
     background: var(--page);
   }
 
-  body.is-guest[data-mscreen="laws"] .panel.laws {
-    max-width: none;
-    padding: 22px 40px 64px;
-  }
-
-  body.is-guest[data-mscreen="laws"] [data-laws-phone] {
-    display: none !important;
-  }
-
-  body.is-guest[data-mscreen="laws"] .site-footer,
-  body.is-guest[data-mscreen="laws"] .sheet-footnote {
-    display: none;
-  }
-
-  body.is-guest[data-mscreen="laws"] .laws-back-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    margin: 0 0 18px;
-    font-size: 13px;
-    font-weight: 500;
-    color: var(--muted);
-    text-decoration: none;
-  }
-
-  body.is-guest[data-mscreen="laws"] .laws-back-link:hover {
-    color: var(--ink);
-  }
-
-  body.is-guest[data-mscreen="laws"] .laws-index-hero {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(260px, 340px);
-    grid-template-rows: auto auto auto;
-    column-gap: 32px;
-    row-gap: 0;
-    margin: 0 0 26px;
-  }
-
-  body.is-guest[data-mscreen="laws"] .laws-index-copy {
-    display: contents;
-  }
-
-  body.is-guest[data-mscreen="laws"] .laws-index-kicker {
-    grid-column: 1;
-    margin: 0 0 6px;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--mid);
-  }
-
-  body.is-guest[data-mscreen="laws"] .laws-index-title {
-    grid-column: 1;
-    margin: 0 0 8px;
-    font-size: 32px;
-    font-weight: 500;
-    letter-spacing: -0.02em;
-  }
-
-  body.is-guest[data-mscreen="laws"] .laws-index-lede {
-    grid-column: 1;
-    margin: 0;
-    font-size: 14.5px;
-    line-height: 1.45;
-    color: var(--muted);
-  }
-
-  body.is-guest[data-mscreen="laws"] .laws-search {
-    grid-column: 2;
-    grid-row: 2 / span 2;
-    align-self: center;
-    display: flex;
-    align-items: center;
-    margin: 0;
-    height: 42px;
-    padding: 0 14px;
-    border: 1px solid var(--hairline);
-    border-radius: 12px;
-    background: var(--paper);
-  }
-
-  body.is-guest[data-mscreen="laws"] .laws-search[hidden] {
-    display: flex;
-  }
-
-  body.is-guest[data-mscreen="laws"] .laws-search-icon {
-    display: flex;
-    margin-right: 8px;
-    color: var(--muted);
-    pointer-events: none;
-  }
-
-  body.is-guest[data-mscreen="laws"] .laws-search-input {
-    width: 100%;
-    height: 40px;
-    padding: 0;
-    border: 0;
-    border-radius: 0;
-    background: transparent;
-    font-size: 14px;
-  }
-
-  body.is-guest[data-mscreen="laws"] .laws-search-input::placeholder {
-    color: var(--muted);
-  }
-
-  body.is-guest[data-mscreen="laws"] .laws-chip-strip {
-    margin: 0 0 24px;
-  }
-
-  body.is-guest[data-mscreen="laws"] .laws-catalog {
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
-  }
-
-  body.is-guest[data-mscreen="laws"] .laws-index-card {
-    padding: 18px 20px 20px;
-    background: var(--paper);
-  }
-
-  body.is-guest[data-mscreen="laws"] .LawPlaygroundCta {
-    display: none;
-  }
-}
-
-@media (min-width: 561px) and (max-width: 1279px) {
-  body.is-guest[data-mscreen="laws"] .panel.laws {
-    padding: 20px max(28px, calc((100% - 1180px) / 2)) 64px;
-  }
-}
-
-/* Signed-in Laws index (CTA map signedIn/03-screen). Desktop only; phone
-   /laws keeps the existing catalogue, chips, and expandable search. */
-@media (max-width: 560px) {
-  body.is-authed[data-mscreen="laws"] .laws-back-link,
-  body.is-authed[data-mscreen="laws"] .laws-index-copy,
-  body.is-authed[data-mscreen="laws"] .laws-search-icon {
-    display: none !important;
-  }
-
-  body.is-authed[data-mscreen="laws"] .laws-index-hero {
-    display: contents;
-  }
-}
-
-@media (min-width: 561px) {
-  body.is-authed[data-mscreen="laws"] .page-wrap,
-  body.is-authed[data-mscreen="laws"] .sheet {
-    background: var(--page);
-  }
-
-  body.is-authed[data-mscreen="laws"] .panel.laws {
+  body[data-mscreen="laws"] .panel.laws {
     max-width: none;
     padding: 22px 40px 60px;
   }
 
   /* Same mark as dark chrome: invert of /static/main_logo.png, not a new glyph. */
-  body.is-authed[data-mscreen="laws"] .brand-mark {
+  body[data-mscreen="laws"] .brand-mark {
     filter: invert(1);
   }
 
-  body.is-authed[data-mscreen="laws"] .laws-index-head {
+  body[data-mscreen="laws"] .site-footer,
+  body[data-mscreen="laws"] .sheet-footnote {
     display: none;
   }
 
-  body.is-authed[data-mscreen="laws"] .site-footer,
-  body.is-authed[data-mscreen="laws"] .sheet-footnote {
-    display: none;
-  }
-
-  body.is-authed[data-mscreen="laws"] .laws-back-link {
+  body[data-mscreen="laws"] .laws-back-link {
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -10921,23 +11281,23 @@ body.is-admin-previewing { padding-top: 40px; }
     text-decoration: none;
   }
 
-  body.is-authed[data-mscreen="laws"] .laws-back-link:hover {
+  body[data-mscreen="laws"] .laws-back-link:hover {
     color: var(--ink);
   }
 
-  body.is-authed[data-mscreen="laws"] .laws-index-hero {
+  body[data-mscreen="laws"] .laws-index-hero {
     display: flex;
     align-items: flex-end;
     gap: 24px;
     margin: 0 0 16px;
   }
 
-  body.is-authed[data-mscreen="laws"] .laws-index-copy {
+  body[data-mscreen="laws"] .laws-index-copy {
     flex: 1 1 auto;
     min-width: 0;
   }
 
-  body.is-authed[data-mscreen="laws"] .laws-index-kicker {
+  body[data-mscreen="laws"] .laws-index-kicker {
     margin: 0 0 4px;
     font-size: 10.5px;
     font-weight: 600;
@@ -10946,7 +11306,7 @@ body.is-admin-previewing { padding-top: 40px; }
     color: var(--mid);
   }
 
-  body.is-authed[data-mscreen="laws"] .laws-index-copy .laws-index-title {
+  body[data-mscreen="laws"] .laws-index-copy .laws-index-title {
     margin: 0 0 4px;
     font-size: 30px;
     font-weight: 600;
@@ -10954,14 +11314,14 @@ body.is-admin-previewing { padding-top: 40px; }
     letter-spacing: 0;
   }
 
-  body.is-authed[data-mscreen="laws"] .laws-index-lede {
+  body[data-mscreen="laws"] .laws-index-lede {
     margin: 0;
     font-size: 13.5px;
     line-height: 1.45;
     color: var(--muted);
   }
 
-  body.is-authed[data-mscreen="laws"] .laws-search {
+  body[data-mscreen="laws"] .laws-search {
     display: flex;
     flex: 0 0 300px;
     align-items: center;
@@ -10977,18 +11337,14 @@ body.is-admin-previewing { padding-top: 40px; }
     box-sizing: border-box;
   }
 
-  body.is-authed[data-mscreen="laws"] .laws-search[hidden] {
-    display: flex !important;
-  }
-
-  body.is-authed[data-mscreen="laws"] .laws-search-icon {
+  body[data-mscreen="laws"] .laws-search-icon {
     display: flex;
     margin-right: 8px;
     color: var(--muted);
     pointer-events: none;
   }
 
-  body.is-authed[data-mscreen="laws"] .laws-search-input {
+  body[data-mscreen="laws"] .laws-search-input {
     width: 100%;
     height: 40px;
     padding: 0;
@@ -10998,29 +11354,29 @@ body.is-admin-previewing { padding-top: 40px; }
     font-size: 13.5px;
   }
 
-  body.is-authed[data-mscreen="laws"] .laws-search-input::placeholder {
+  body[data-mscreen="laws"] .laws-search-input::placeholder {
     color: var(--muted);
   }
 
-  body.is-authed[data-mscreen="laws"] .laws-chip-strip {
+  body[data-mscreen="laws"] .laws-chip-strip {
     flex-wrap: wrap;
     overflow: visible;
     gap: 8px;
     margin: 0 0 18px;
   }
 
-  body.is-authed[data-mscreen="laws"] .laws-catalog {
+  body[data-mscreen="laws"] .laws-catalog {
     grid-template-columns: 1fr 1fr;
     gap: 10px;
     max-width: 1000px;
   }
 
-  body.is-authed[data-mscreen="laws"] .laws-index-card {
+  body[data-mscreen="laws"] .laws-index-card {
     padding: 16px 18px;
     background: var(--paper);
   }
 
-  body.is-authed[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) {
+  body[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
     grid-template-rows: auto auto auto;
@@ -11028,17 +11384,17 @@ body.is-admin-previewing { padding-top: 40px; }
     align-items: center;
   }
 
-  body.is-authed[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) .laws-index-card-link,
-  body.is-authed[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) .laws-index-head-row {
+  body[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) .laws-index-card-link,
+  body[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) .laws-index-head-row {
     display: contents;
   }
 
-  body.is-authed[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) .laws-index-tag {
+  body[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) .laws-index-tag {
     grid-column: 1;
     grid-row: 1;
   }
 
-  body.is-authed[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) .LawPlaygroundCta {
+  body[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) .LawPlaygroundCta {
     grid-column: 2;
     grid-row: 1;
     justify-self: start;
@@ -11046,32 +11402,22 @@ body.is-admin-previewing { padding-top: 40px; }
     margin: 0;
   }
 
-  body.is-authed[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) .laws-index-chevron {
+  body[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) .laws-index-chevron {
     grid-column: 3;
     grid-row: 1;
   }
 
-  body.is-authed[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) .laws-index-name {
+  body[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) .laws-index-name {
     grid-column: 1 / -1;
     grid-row: 2;
   }
 
-  body.is-authed[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) .laws-index-meta {
+  body[data-mscreen="laws"] article.laws-index-card:has(.LawStatusBadge) .laws-index-meta {
     grid-column: 1 / -1;
     grid-row: 3;
   }
 
-  body.is-authed[data-mscreen="laws"] .LawPlaygroundCta .pg-lede,
-  body.is-authed[data-mscreen="laws"] .LawPlaygroundCta .pg-actions,
-  body.is-authed[data-mscreen="laws"] .LawPlaygroundCta .pg-btn {
-    display: none;
-  }
-
-  body.is-authed[data-mscreen="laws"] .LawPlaygroundCta:not(:has(.LawStatusBadge)) {
-    display: none;
-  }
-
-  body.is-authed[data-mscreen="laws"] .laws-index-card .LawStatusBadge[data-status="in_playground"] {
+  body[data-mscreen="laws"] .laws-index-card .LawStatusBadge[data-status="in_playground"] {
     height: auto;
     gap: 0;
     padding: 2px 8px;
@@ -11086,18 +11432,18 @@ body.is-admin-previewing { padding-top: 40px; }
     white-space: nowrap;
   }
 
-  body.is-authed[data-mscreen="laws"] .laws-index-card .LawStatusBadge[data-status="in_playground"] .LawStatusBadge-mark {
+  body[data-mscreen="laws"] .laws-index-card .LawStatusBadge[data-status="in_playground"] .LawStatusBadge-mark {
     display: none;
   }
 
-  body.is-authed[data-mscreen="laws"] .account-avatar,
-  body.is-authed[data-mscreen="laws"] .account-avatar-fallback {
+  body[data-mscreen="laws"] .account-avatar,
+  body[data-mscreen="laws"] .account-avatar-fallback {
     width: 36px;
     height: 36px;
     border-radius: 11px;
   }
 
-  body.is-authed[data-mscreen="laws"] .account-avatar-fallback {
+  body[data-mscreen="laws"] .account-avatar-fallback {
     background: var(--ink);
     color: var(--on-accent);
     border-color: var(--ink);
@@ -11108,7 +11454,7 @@ body.is-admin-previewing { padding-top: 40px; }
 }
 
 @media (min-width: 561px) and (max-width: 1279px) {
-  body.is-authed[data-mscreen="laws"] .panel.laws {
+  body[data-mscreen="laws"] .panel.laws {
     padding: 22px max(28px, calc((100% - 1180px) / 2)) 60px;
   }
 }

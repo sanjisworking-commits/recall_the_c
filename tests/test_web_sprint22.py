@@ -103,6 +103,6 @@ def test_explain_back_css(mini_client: TestClient):
     assert ".explain-back-input" in css
     assert "background: var(--paper)" in css
     assert ".explain-back-clear" in css
-    js = mini_client.get("/static/app.js?v=main62").text
+    js = mini_client.get("/static/app.js?v=main63").text
     assert "initExplainBack" in js
     assert "500" in js

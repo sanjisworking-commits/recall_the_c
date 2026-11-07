@@ -403,7 +403,7 @@ def test_head_and_sheet_styles_replaced_the_per_surface_blocks():
         ):
             assert stale not in sheet, stale
     base = (TEMPLATES / "base.html").read_text(encoding="utf-8")
-    for pin in ("styles.css?v=main90", "mobile.css?v=mob109", "playground.css?v=pg55", "playground.js?v=pg13", "mobile.js?v=mob30"):
+    for pin in ("styles.css?v=main91", "mobile.css?v=mob110", "playground.css?v=pg55", "playground.js?v=pg13", "mobile.js?v=mob31"):
         assert pin in base, pin
 
 

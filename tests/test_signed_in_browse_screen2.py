@@ -1,9 +1,11 @@
 """Signed-in desktop Browse (CTA map signedIn/02-screen).
 
 Authorized: ChatGPT. Authenticated multiuser GET /browse keeps the same
-browse_index.html as guests, with the existing free-plan strip, Unlock all
-→ Gate, Laws → /laws, and legend chips as filters. Phone Browse (part-card
-rail, mobile head) is unchanged. Article cards and Tables keep existing
+browse_index.html as guests, with the Free summary ("Free plan — every
+Article, progress saved." + View Playground → the Gate), Laws → /laws, and
+legend chips as filters. M3 (Q1 / Q4): one body for both widths — the phone
+Part-card rail is retired, Part headers are collapse toggles, and the Free
+summary shows on the phone too. Article cards and Tables keep existing
 hrefs. Signed-in Landing is not reopened.
 """
 
@@ -93,8 +95,9 @@ def _primary_nav(html: str) -> str:
 
 
 def _browse_panel(html: str) -> str:
+    # M3 (Q5): the Marks sheet is gone; the panel runs to the page footer.
     return html.split('<section class="panel browse"', 1)[1].split(
-        "mobile-sheet", 1
+        "<footer", 1
     )[0]
 
 
@@ -116,9 +119,16 @@ def test_signed_in_browse_strip_uses_existing_copy_and_unlocks_gate(
     assert heading < strip_at
     assert "data-guest-strip" not in html
     strip = _strip(html)
-    assert "Free plan \u2014 pick any 3 Articles to learn." in strip
-    assert "All 3 slots free." in strip
-    assert 'class="browse-access-unlock" href="/playground">Unlock all</a>' in strip
+    # M3 (Q4): the Free summary — no Article allowance, no price, one action.
+    assert (
+        '<p class="browse-access-status">Free plan \u2014 every Article, progress saved.</p>'
+        in strip
+    )
+    assert 'class="browse-access-unlock" href="/playground">View Playground</a>' in strip
+    assert "3 Articles" not in strip
+    assert "slots" not in strip
+    assert "Unlock all" not in strip
+    assert "₹" not in strip
     assert 'href="/pricing"' not in strip
     gate = client.get("/playground", follow_redirects=False)
     assert gate.status_code == 200
@@ -138,7 +148,7 @@ def test_signed_in_browse_laws_and_tables_keep_existing_hrefs(tmp_path: Path) ->
     assert '<span class="browse-resource-name">Laws</span>' in row
     assert "Bare Acts &amp; statutes" in row
     assert '<span class="browse-resource-name">Tables</span>' in row
-    assert "Schedules, Parts, writs" in row
+    assert "Parts, writs, amendments" in row  # main @ ea15591 (PR #233): Tables card copy
     assert 'href="/laws"' in row
     assert 'href="/tables"' in row
     laws = client.get("/laws")
@@ -176,20 +186,34 @@ def test_signed_in_browse_legend_uses_in_news_and_filters_only(
     assert 'aria-pressed="false"' in legend
 
 
-def test_signed_in_browse_part_rows_have_no_handler(tmp_path: Path) -> None:
+def test_signed_in_browse_part_rows_are_collapse_toggles_not_links(tmp_path: Path) -> None:
+    # M3 (Q1 / F02): a Part header is a <button> in an <h2> that collapses only
+    # its own grid (app.js); it is never a link, and open by default.
     client = TestClient(_mu_app(tmp_path))
     _sign_in(client)
     html = client.get("/browse").text
     assert "data-browse-part-heading" in html
-    chunks = html.split("data-browse-part-heading")[1:]
-    assert chunks
-    for chunk in chunks[:4]:
-        block = chunk.split("</div>", 1)[0]
+    heads = html.split('<h2 class="browse-part-header">')[1:]
+    assert heads
+    assert len(heads) == html.count("data-browse-part-toggle")
+    for chunk in heads[:4]:
+        block = chunk.split("</button>", 1)[0]
+        assert block.lstrip().startswith('<button type="button" class="browse-part-toggle"')
+        assert 'aria-expanded="true"' in block
         assert "<a " not in block
         assert "href=" not in block
         assert "browse-part-roman" in block
         assert "browse-part-name" in block
         assert "browse-part-range" in block
+        controls = block.split('aria-controls="', 1)[1].split('"', 1)[0]
+        assert f'<div class="browse-part-body" id="{controls}">' in chunk
+    js = (ROOT / "src/constitution_memorizer/web/static/app.js").read_text(encoding="utf-8")
+    handler = js.split('closest("[data-browse-part-toggle]")', 1)[1].split("});", 1)[0]
+    assert 'getAttribute("aria-expanded") === "true"' in handler
+    assert 'toggle.setAttribute("aria-expanded"' in handler
+    assert 'getElementById(toggle.getAttribute("aria-controls")' in handler
+    assert "body.hidden = expanded" in handler
+    assert "localStorage" not in handler
 
 
 def test_signed_in_browse_article_cards_keep_existing_hrefs(tmp_path: Path) -> None:
@@ -198,7 +222,7 @@ def test_signed_in_browse_article_cards_keep_existing_hrefs(tmp_path: Path) -> N
     html = client.get("/browse").text
     panel = _browse_panel(html)
     assert 'href="/browse/article/' in panel
-    assert "The Constitution, Part by Part. Open an Article, then learn any clause from inside it." in panel
+    assert "The Constitution, Part by Part, then the twelve Schedules. Open an Article or a Schedule, then learn from inside it." in panel
 
 
 def test_signed_in_browse_desktop_chrome(tmp_path: Path) -> None:
@@ -250,10 +274,17 @@ def test_signed_in_browse_desktop_chrome(tmp_path: Path) -> None:
         "    background: var(--ink);\n"
         "    color: var(--on-accent);"
     ) in css
-    phone_hide = css.split(
-        "body.is-authed[data-mscreen=\"browse\"] .browse-access-summary {", 1
+    # M3 (Q4): the Free summary is no longer hidden below 561px — the one
+    # body shows it on the phone too (mobile.css lays it out as a flex row).
+    assert css.count('body.is-authed[data-mscreen="browse"] .browse-access-summary {') == 1
+    summary = css.split(
+        'body.is-authed[data-mscreen="browse"] .browse-access-summary {', 1
     )[1].split("}", 1)[0]
-    assert "display: none" in phone_hide
+    assert "display: none" not in summary
+    phone_summary = MOBILE.read_text(encoding="utf-8").split(
+        'body[data-mscreen="browse"] .browse-access-summary {', 1
+    )[1].split("}", 1)[0]
+    assert "display: flex" in phone_summary
     shell = css.split("/* R1 desktop shell", 1)[1]
     assert "position: absolute" not in shell
     assert "left: 50%" not in shell
@@ -263,7 +294,12 @@ def test_signed_in_browse_does_not_touch_phone_or_landing() -> None:
     mobile = MOBILE.read_text(encoding="utf-8")
     assert 'body[data-mscreen="browse"] .browse > .display' in mobile
     assert 'body[data-mscreen="browse"] .browse-part' in mobile
-    assert ".part-card-track" in mobile
+    # M3 (Q1): the phone rail and its progress track are retired; the phone
+    # styles the one body's collapse toggles and two-column grid instead.
+    assert ".part-card" not in mobile
+    assert ".browse-part-rail" not in mobile
+    assert 'body[data-mscreen="browse"] .browse-part-toggle' in mobile
+    assert 'body[data-mscreen="browse"] .browse-article-grid' in mobile
     landing = LANDING.read_text(encoding="utf-8")
     assert 'data-guest-landing="desktop"' in landing
     assert "Explore the Constitution" in landing
@@ -347,7 +383,7 @@ def test_signed_in_browse_1280_matches_desktop_shot(tmp_path: Path) -> None:
               const heading = document.querySelector('.browse > .display');
               const lede = document.querySelector('.browse > .lede');
               const partHead = document.querySelector('[data-browse-part-heading]');
-              const partRail = document.querySelector('.browse-part-rail');
+              const partRail = document.querySelector('.browse-part-rail'); // M3 (Q1): retired, null
               const article = document.querySelector('.browse-article-card[href], .browse-card-link');
               const fallback = document.querySelector('.account-avatar-fallback');
               const mobileHead = document.querySelector('.mobile-screen-head');
@@ -511,10 +547,11 @@ def test_signed_in_browse_1280_matches_desktop_shot(tmp_path: Path) -> None:
     assert geo["ledeSize"] == "14.5px"
     assert geo["headingY"] > geo["headerH"]
     assert geo["stripY"] > geo["headingY"]
-    assert "Free plan" in geo["stripText"]
-    assert "Unlock all" in geo["stripText"]
+    # M3 (Q4): Free summary copy and its one action.
+    assert "Free plan — every Article, progress saved." in geo["stripText"]
+    assert "Unlock all" not in geo["stripText"]
     assert geo["unlockHref"] == "/playground"
-    assert geo["unlockText"] == "Unlock all"
+    assert geo["unlockText"] == "View Playground"
     assert geo["lawsHref"] == "/laws"
     assert geo["tablesHref"] == "/tables"
     assert geo["lawsX"] < geo["tablesX"]
@@ -522,9 +559,10 @@ def test_signed_in_browse_1280_matches_desktop_shot(tmp_path: Path) -> None:
     assert abs(geo["lawsW"] - geo["tablesW"]) <= 2
     assert geo["gridW"] == pytest.approx(760, abs=8)
     assert geo["articleHref"] and geo["articleHref"].startswith("/browse/article/")
-    assert geo["partTag"] == "DIV"
-    assert geo["partParent"] != "A"
-    assert geo["partRailDisplay"] == "none"
+    # M3 (Q1 / F02): the Part header is a <button> in an <h2>; the rail is gone.
+    assert geo["partTag"] == "BUTTON"
+    assert geo["partParent"] == "H2"
+    assert geo["partRailDisplay"] is None
     assert geo["mobileHeadDisplay"] == "none"
     assert geo["fallbackW"] == pytest.approx(36, abs=1)
     assert geo["fallbackH"] == pytest.approx(36, abs=1)
@@ -565,11 +603,14 @@ def test_signed_in_browse_1280_matches_desktop_shot(tmp_path: Path) -> None:
         assert swapped["vis"] == "true"
         assert swapped["filter"] == "visualise"
         assert cleared is None
-    assert phone["stripDisplay"] == "none"
-    assert phone["displayShown"] is False
-    assert phone["legendShown"] is False
-    assert phone["partShown"] is False
-    assert phone["railShown"] is True
+    # M3 (Q1 / Q4 / Q5): one body on the phone — the Free summary, heading,
+    # legend and Parts all show; the rail no longer exists; the head stays
+    # (search icon only).
+    assert phone["stripDisplay"] == "flex"
+    assert phone["displayShown"] is True
+    assert phone["legendShown"] is True
+    assert phone["partShown"] is True
+    assert phone["railShown"] is None
     assert phone["headShown"] is True
     assert phone["lawsHref"] == "/laws"
     assert phone["tablesHref"] == "/tables"

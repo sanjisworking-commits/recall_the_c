@@ -267,7 +267,9 @@ def test_index_html_always_contains_every_production_law(tmp_path: Path):
     assert "Not started" not in html
     assert "Coming soon" not in html
     assert "law-practice-note" not in html
-    assert "Bare Acts" not in html
+    # M3: one Laws body for every viewer — the lede ("Bare Acts and statutes.")
+    # is the only place the phrase appears; the legacy section label is gone.
+    assert html.count("Bare Acts") == 1 and "Bare Acts and statutes." in html
     assert "Mapped to Articles" not in html
     assert "No laws found" in html
 

@@ -119,7 +119,6 @@
     padding-bottom: calc(var(--m-actionbar) + 24px);
   }
 
-
   /* ── Tab bar (all designs that show one) ────────────────────────────────
      Five icons + 10.5px/600 labels. Active is ink; no top-rule. Guests
      share the same bar (M1). */
@@ -1485,16 +1484,29 @@
     box-shadow: 0 1px 0 rgba(0, 0, 0, 0.14);
   }
 
-  /* ══ 02 · Browse — Parts ═══════════════════════════════════════════════ */
-  body[data-mscreen="browse"] .browse > .display,
-  body[data-mscreen="browse"] .browse > .lede,
-  body[data-mscreen="browse"] .browse-legend,
-  body[data-mscreen="browse"] .browse-part {
-    display: none;
+  /* ══ 02 · Browse — one body for both widths (M3) ═══════════════════════ */
+  body[data-mscreen="browse"] .mobile-screen-head--tools {
+    justify-content: flex-end;
+    padding: 2px 0 6px;
+  }
+
+  body[data-mscreen="browse"] .browse > .display {
+    margin: 0 0 6px;
+    font-size: 26px;
+    line-height: 1.15;
+  }
+
+  body[data-mscreen="browse"] .browse > .lede {
+    margin: 0 0 14px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--muted);
   }
 
   body[data-mscreen="browse"] .guest-strip {
-    display: block;
+    display: flex;
+    align-items: center;
+    gap: 12px;
     padding: 13px 15px;
     margin: 0 0 12px;
     border: 1px solid var(--rc-hairline);
@@ -1509,7 +1521,17 @@
     text-wrap: pretty;
   }
 
-  body[data-mscreen="browse"] .guest-strip-signin,
+  /* The one Google action (5-11): a black pill, 44 px tall. */
+  body[data-mscreen="browse"] .guest-strip-signin {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 0 14px;
+    font-size: 13px;
+    border-radius: 10px;
+  }
+
   body[data-mscreen="browse"] .guest-strip-dismiss {
     display: none;
   }
@@ -1556,121 +1578,18 @@
     white-space: nowrap;
   }
 
-  .browse-part-rail {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  .part-card {
-    display: flex;
-    flex-direction: column;
-    padding: 15px 16px 14px;
-    border: 1px solid var(--rc-hairline);
-    border-radius: var(--rc-radius-card);
-    background: var(--rc-paper);
-    color: var(--rc-ink);
-    text-decoration: none;
-  }
-
-  .part-card.has-due {
-    border: 1.5px solid var(--rc-ink);
-    box-shadow: 0 5px 16px color-mix(in srgb, var(--rc-ink) 8%, transparent);
-  }
-
-  .part-card.is-mark-hidden {
+  .browse-schedules-label-desktop {
     display: none;
   }
 
-  .part-card-top {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 5px;
-  }
-
-  .part-card-roman {
-    font-size: 10.5px;
-    font-weight: 600;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--mid);
-  }
-
-  .part-card-due {
-    display: inline-flex;
-    align-items: center;
-    height: 20px;
-    padding: 0 8px;
-    border-radius: 10px;
-    background: var(--rc-teal-tint);
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--rc-teal);
-  }
-
-  .part-card-dot {
-    display: none;
-  }
-
-  .part-card-chevron {
-    margin-left: auto;
-    font-size: 15px;
-    color: var(--faint);
-  }
-
-  .part-card-name {
-    margin-bottom: 4px;
-    font-family: var(--font-display);
-    font-size: 19px;
-    font-weight: 500;
-    line-height: 1.2;
-  }
-
-  .part-card-foot {
-    display: flex;
-    align-items: baseline;
+  .browse-schedule-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     gap: 8px;
   }
 
-  .part-card-range {
-    font-size: 12.5px;
-    color: var(--muted);
-  }
-
-  .part-card-learned {
-    margin-left: auto;
-    font-size: 11.5px;
-    color: var(--faint);
-  }
-
-  .part-card-learned.is-started {
-    font-weight: 600;
-    color: var(--rc-teal);
-  }
-
-  .part-card-track {
-    display: block;
-    height: 4px;
-    margin-top: 10px;
-    overflow: hidden;
-    border-radius: 2px;
-    background: var(--track);
-  }
-
-  .part-card-fill {
-    display: block;
-    height: 4px;
-    border-radius: 2px;
-    background: var(--rc-teal);
-  }
-
-  .browse-rail-note {
-    margin: 6px 2px 0;
-    font-size: 11.5px;
-    line-height: 1.6;
-    color: var(--faint);
-    text-wrap: pretty;
+  .browse-schedule-card {
+    padding: 10px 10px 12px;
   }
 
   .browse-resource-grid {
@@ -1712,6 +1631,60 @@
     color: var(--mid);
   }
 
+  /* M3: inline marks legend (the sheet is retired) — 44 px pressable items. */
+  body[data-mscreen="browse"] .browse-legend {
+    display: flex;
+    flex-direction: row; /* styles.css stacks it below 520 px; one row here */
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 10px;
+    margin: 0 0 14px;
+  }
+
+  body[data-mscreen="browse"] .browse-legend-item {
+    min-height: 44px;
+    padding: 0 10px;
+  }
+
+  /* M3: collapsible Part headers over a two-column article grid. */
+  body[data-mscreen="browse"] .browse-part {
+    margin-bottom: 18px;
+  }
+
+  body[data-mscreen="browse"] .browse-part-header {
+    padding-bottom: 6px;
+    margin-bottom: 10px;
+  }
+
+  body[data-mscreen="browse"] .browse-part-toggle {
+    min-height: 44px;
+    gap: 6px 8px;
+  }
+
+  body[data-mscreen="browse"] .browse-part-roman {
+    font-size: 18px;
+  }
+
+  body[data-mscreen="browse"] .browse-part-name {
+    flex: 1 1 100%;
+    order: 3;
+    font-size: 12.5px;
+  }
+
+  body[data-mscreen="browse"] .browse-part-range {
+    margin-left: auto;
+    font-size: 11.5px;
+  }
+
+  body[data-mscreen="browse"] .browse-article-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  body[data-mscreen="browse"] .browse-article-card {
+    min-width: 0;
+  }
+
   /* ══ 03 / 16 / 18 · Part — Articles ════════════════════════════════════ */
   body[data-mscreen="part"] .panel {
     padding-top: 2px;
@@ -1740,6 +1713,10 @@
 
   body[data-mscreen="part"] .mobile-back {
     min-height: 36px;
+  }
+
+  body[data-mscreen="part"] .browse-schedule-page .eyebrow-desktop {
+    display: none;
   }
 
   body[data-mscreen="part"] .part-head {
@@ -3254,8 +3231,6 @@
     font-weight: 500;
   }
 
-
-
   .learn-revision-badge {
     margin: 10px 0 0;
     padding: 2px 8px;
@@ -4005,7 +3980,6 @@
   body.is-recording[data-mscreen="learn"] .learn-recite-bar:nth-child(12) {
     animation: rcBar 1.06s ease 0.77s infinite;
   }
-
 
   /* Monospace on the phone, per the design: fixed advance widths line the
      initials into columns, which is what makes the scaffold scannable. The
@@ -5196,7 +5170,6 @@
     box-shadow: none;
   }
 
-  body[data-mscreen="browse"] .part-card,
   body[data-mscreen="browse"] .browse-resource-card,
   body[data-mscreen="browse"] .guest-strip,
   body[data-mscreen="browse"] .browse-access-summary,
@@ -5312,15 +5285,73 @@
     box-shadow: none;
   }
 
-  /* ── Laws index — catalogue cards, chips, expandable search ─────────── */
+  /* ── Laws index (M3: one body) — back link, kicker/title/lede, a visible
+     search field, catalogue chips and cards ────────────────────────────── */
 
-  body[data-mscreen="laws"] .laws-index-head {
-    margin: 0 0 8px;
+  body[data-mscreen="laws"] .laws-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 44px;
+    font-size: 13px;
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  body[data-mscreen="laws"] .laws-index-hero {
+    display: block;
+    margin: 0 0 12px;
+  }
+
+  body[data-mscreen="laws"] .laws-index-kicker {
+    margin: 0 0 2px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mid);
   }
 
   body[data-mscreen="laws"] .laws-index-title {
+    margin: 0;
     font-size: 23px;
     font-weight: 500;
+  }
+
+  body[data-mscreen="laws"] .laws-index-lede {
+    margin: 4px 0 12px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  body[data-mscreen="laws"] .laws-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 44px;
+    margin: 0 0 12px;
+    padding: 0 12px;
+    border: 1px solid var(--rc-hairline);
+    border-radius: var(--rc-radius-card);
+    background: var(--rc-paper);
+  }
+
+  body[data-mscreen="laws"] .laws-search-icon {
+    display: flex;
+    color: var(--muted);
+  }
+
+  body[data-mscreen="laws"] .laws-search-input {
+    height: 42px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    font-size: 15px;
+  }
+
+  body[data-mscreen="laws"] .LawPlaygroundCta--badge {
+    margin-top: 8px;
   }
 
   body[data-mscreen="laws"] .laws-chip-strip {
@@ -5515,6 +5546,96 @@
   }
 }
 
+@media (max-width: 560px) {
+  body[data-mscreen="schedule"] .sheet {
+    padding: 0;
+  }
+
+  .sched-page {
+    margin: 0;
+  }
+
+  .sched-head {
+    padding: 2px 18px 22px;
+  }
+
+  .sched-back {
+    min-height: 44px;
+  }
+
+  .sched-title {
+    font-size: 24px;
+  }
+
+  .sched-body {
+    padding: 20px 18px 40px;
+  }
+
+  .sched-h,
+  .sched-sec-title {
+    font-size: 16px;
+  }
+
+  .sched-sec-title {
+    font-size: 17px;
+  }
+
+  .sched-p,
+  .sched-lead {
+    font-size: 14px;
+  }
+
+  .sched-table.is-three .sched-tr {
+    grid-template-columns: 28px 1fr;
+  }
+
+  .sched-table.is-three .sched-td-text {
+    grid-column: 2;
+  }
+
+  .sched-table.is-two .sched-tr {
+    grid-template-columns: 32px 1fr;
+  }
+
+  .sched-table.is-pay {
+    margin-left: 38px;
+  }
+
+  .sched-table.is-parts .sched-tr {
+    grid-template-columns: 84px 1fr;
+  }
+
+  .sched-list-head {
+    grid-template-columns: 56px 1fr auto;
+    gap: 8px;
+    padding: 12px 14px;
+  }
+
+  .sched-list-body .sched-tr {
+    padding: 10px 14px;
+  }
+
+  .sched-langs {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .sched-lang {
+    min-height: 72px;
+  }
+
+  .sched-lang-name {
+    font-size: 17px;
+  }
+
+  .sched-oath {
+    padding: 14px 16px;
+  }
+
+  .sched-oath-text {
+    font-size: 15.5px;
+  }
+}
+
 /* Desktop keeps the deck out of the way entirely. */
 @media (min-width: 561px) {
   .learn-mode-bar,
@@ -5529,8 +5650,6 @@
   .mobile-actionbar,
   .mobile-sheet,
   .dash-upcoming,
-  .browse-part-rail,
-  .browse-rail-note,
   .revisions-mobile,
   .settings-account-row,
   .settings-group-eyebrow,

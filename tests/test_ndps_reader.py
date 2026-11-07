@@ -388,7 +388,8 @@ def test_laws_lists_bare_acts_above_mapped_articles(tmp_path: Path):
     assert "Right to Information Act" in html
     assert "Not started" not in html
     assert "Coming soon" not in html
-    assert "Bare Acts" not in html
+    # M3 (Q3): one Laws body for every viewer — "Bare Acts" appears once, in the lede.
+    assert html.count("Bare Acts") == 1 and "Bare Acts and statutes." in html
     assert "Mapped to Articles" not in html
 
 

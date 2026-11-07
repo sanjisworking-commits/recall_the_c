@@ -298,15 +298,24 @@ def test_bare_act_head_has_add_button_for_eligible_laws(tmp_path: Path):
 
 
 def test_laws_hub_cta_matches_eligibility(tmp_path: Path):
-    page = _client(tmp_path).get("/laws")
+    # M3 (F04): the Laws index prints a law's Playground *status* only; the
+    # Add CTA lives on the Act head. Eligible laws carry the badge wrapper
+    # with their state, ineligible laws carry nothing.
+    client = _client(tmp_path)
+    page = client.get("/laws")
     assert page.status_code == 200
     html = page.text
     for law_id in ELIGIBLE_LAWS:
         catalog = playground_catalogue_law(law_id)
         assert catalog is not None
-        card = html.split(f'data-law-id="{catalog.id}"', 1)[1]
-        assert "Add to Playground" in card.split("</article>", 1)[0]
+        card = html.split(f'data-law-id="{catalog.id}"', 1)[1].split("</article>", 1)[0]
+        assert 'class="LawPlaygroundCta LawPlaygroundCta--badge"' in card
+        assert f'data-law-id="{law_id}" data-pg-kind="eligible_to_add"' in card
+        assert "Add to Playground" not in card and "pg-btn" not in card
+        head = client.get(f"/laws/{law_id}").text
+        assert "Add to Playground" in head and add_path(law_id) in head
     pota = html.split('data-law-id="pota"', 1)[1]
+    assert "LawPlaygroundCta" not in pota.split("</a>", 1)[0]
     assert "Add to Playground" not in pota.split("</a>", 1)[0]
 
 

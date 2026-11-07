@@ -27,6 +27,11 @@ _REPO_CHAPTERS_SEED = (
     Path(__file__).resolve().parents[3] / "data" / "reference" / "browse_chapters.seed.json"
 )
 _CWD_CHAPTERS_SEED = Path.cwd() / "data" / "reference" / "browse_chapters.seed.json"
+_PACKAGE_SCHEDULES_SEED = Path(__file__).resolve().parent / "browse_schedules.seed.json"
+_REPO_SCHEDULES_SEED = (
+    Path(__file__).resolve().parents[3] / "data" / "reference" / "browse_schedules.seed.json"
+)
+_CWD_SCHEDULES_SEED = Path.cwd() / "data" / "reference" / "browse_schedules.seed.json"
 from constitution_memorizer.web.amendments import (
     Amendment,
     ArticleAmendments,
@@ -320,6 +325,16 @@ def load_browse_chapters_seed(path: Path | None = None) -> list[dict]:
         for row in _load_seed_rows(candidates)
         if row.get("part") and row.get("roman")
     ]
+
+
+def load_browse_schedules_seed(path: Path | None = None) -> list[dict]:
+    """Load the twelve Constitution Schedule rows for Browse."""
+    candidates = (
+        [path]
+        if path is not None
+        else [_PACKAGE_SCHEDULES_SEED, _REPO_SCHEDULES_SEED, _CWD_SCHEDULES_SEED]
+    )
+    return [row for row in _load_seed_rows(candidates) if row.get("slug")]
 
 
 def _suffix_in_band(suffix: str, suffix_min: str | None, suffix_max: str | None) -> bool:
@@ -1060,3 +1075,5 @@ def article_phone_meta(
         unit_count=len(learn_units),
         amendment_count=amendment_count,
     )
+
+

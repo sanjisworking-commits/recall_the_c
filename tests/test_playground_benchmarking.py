@@ -1997,14 +1997,14 @@ def test_page_weight_parse_stylesheet_and_script():
     html = """
     <html><head>
     <link rel="stylesheet" href="/static/styles.css?v=main85">
-    <script src="/static/app.js?v=main62" defer></script>
+    <script src="/static/app.js?v=main63" defer></script>
     </head></html>
     """
     assets = iter_html_assets(html)
     hrefs = [row["url"] for row in assets if row["kind"] == "stylesheet"]
     srcs = [row["url"] for row in assets if row["kind"] == "script"]
     assert hrefs == ["/static/styles.css?v=main85"]
-    assert srcs == ["/static/app.js?v=main62"]
+    assert srcs == ["/static/app.js?v=main63"]
     assert page_weight_catalog_key(hrefs[0]) == "/static/styles.css"
     assert page_weight_catalog_key("/static/styles.css?v=other") == "/static/styles.css"
 

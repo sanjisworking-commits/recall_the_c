@@ -520,8 +520,8 @@ def test_phone_expired_settings_css_is_breakpoint_scoped() -> None:
     base = BASE.read_text(encoding="utf-8")
     assert "playground.css?v=pg55" in base
     assert "playground.css?v=pg46" not in base
-    assert "styles.css?v=main90" in base
-    assert "mobile.css?v=mob109" in base
+    assert "styles.css?v=main91" in base
+    assert "mobile.css?v=mob110" in base
     assert "data-expired-settings-phone-tabs" not in base
     # M1: the per-screen guest branches are gone; guests share one bar.
     assert "{% elif guest_settings %}" not in base

@@ -1,0 +1,3 @@
+[deploy]
+# Railway's service probe. The app also serves /health for local checks.
+healthcheckPath = "/healthz"

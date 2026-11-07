@@ -134,17 +134,17 @@ def test_settings_assets_and_hooks(tmp_path: Path):
     # T33: R6 bumped styles.css main74→main75 and mobile.css mob95→mob96.
     client = _client(tmp_path)
     html = client.get("/browse").text
-    assert "styles.css?v=main90" in html
-    assert "mobile.css?v=mob109" in html
-    assert "app.js?v=main62" in html
-    css = client.get("/static/mobile.css?v=mob109").text
+    assert "styles.css?v=main91" in html
+    assert "mobile.css?v=mob110" in html
+    assert "app.js?v=main63" in html
+    css = client.get("/static/mobile.css?v=mob110").text
     assert 'body[data-mscreen="settings"] .mobile-tabbar' in css
     assert 'body[data-mscreen="settings"] .settings-desk-copy' in css
     assert ".settings-toggle" in css
     styles = client.get("/static/styles.css?v=main62").text
     assert "--bare-size" in styles
     assert "var(--bare-size" in styles
-    js = client.get("/static/app.js?v=main62").text
+    js = client.get("/static/app.js?v=main63").text
     assert "cm-text-size" in js
     assert "data-gcal-toggle" in js
     assert "data-plan-autosubmit" in js
