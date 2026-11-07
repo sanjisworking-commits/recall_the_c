@@ -148,18 +148,37 @@ def test_hosted_app_serves_healthz_when_boot_fails(monkeypatch):
     from fastapi.testclient import TestClient
 
     from constitution_memorizer.web import asgi as asgi_mod
-    from constitution_memorizer.web import app as web_app
 
-    def boom(**_kwargs):
+    def boom() -> None:
         raise RuntimeError("simulated boot failure")
 
-    monkeypatch.setattr(web_app, "create_app", boom)
-    app = asgi_mod.load_hosted_app()
-    client = TestClient(app)
-    healthz = client.get("/healthz")
-    assert healthz.status_code == 200
-    assert healthz.json() == {"status": "ok"}
-    assert client.get("/health").status_code == 200
+    monkeypatch.setattr(asgi_mod, "create_hosted_app", boom)
+    with TestClient(asgi_mod.BootSafeASGI()) as client:
+        healthz = client.get("/healthz")
+        assert healthz.status_code == 200
+        assert healthz.json() == {"status": "ok"}
+        assert client.get("/health").status_code == 200
+
+
+def test_healthz_responds_before_create_app_finishes(monkeypatch):
+    import threading
+
+    from fastapi.testclient import TestClient
+
+    from constitution_memorizer.web import asgi as asgi_mod
+
+    release = threading.Event()
+
+    def blocked() -> None:
+        release.wait(timeout=5)
+        raise RuntimeError("still booting")
+
+    monkeypatch.setattr(asgi_mod, "create_hosted_app", blocked)
+    with TestClient(asgi_mod.BootSafeASGI()) as client:
+        healthz = client.get("/healthz")
+        assert healthz.status_code == 200
+        assert healthz.json() == {"status": "ok"}
+        release.set()
 
 
 def test_railway_probe_config_matches_healthz():
