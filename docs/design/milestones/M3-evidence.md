@@ -8,7 +8,7 @@
 | Checklist | `docs/design/milestones/M3.md` @ `aad33e0` (PR #218) as corrected by the tier-revision plan §3.4; owner decisions of 2026-11-06 (§6) |
 | Flag | `PLAYGROUND_TIER_MODEL` stays `monthly` by default; M3 prints no Playground allowance copy under either model (read-back rows under both) |
 | Tooling | `docs/design/proto-comparison-2026-10-19/m1r/tools/capture_m1r.py` (route probe: navigation surfaces, phone bar, label, hScroll, 44 px targets, composited contrast, Tab trails); `…/m3/tools/readback_m3.py` (nine account states × two tier models through the app's own TestClient); `…/m3/tools/keyboard_m3.py` (headless CDP: Tab to a Part toggle, Enter / Space, legend filter + Clear); dev launchers `playground-m3-<tier>` (monthly, port 8918) and `playground-m3-<tier>-choices` |
-| Status | LOCAL / PRELIMINARY — hosted checks NOT RUN (no deployment). Every row states **PASS on this SHA**, **carried forward from SHA**, **BLOCKED** or **NOT RUN**. |
+| Status | LOCAL / PRELIMINARY — hosted checks NOT RUN (no deployment). Every row states **PASS on this SHA**, **carried forward from SHA**, **BLOCKED** or **NOT RUN**. **Accepted as the reusable local baseline for Browse, the Laws catalogue and the shell on these surfaces, on tested `55da7eb` (owner-forwarded review, 2026-11-07)**; §8 records the sign-off, its CI qualification and what stays open. |
 
 ## 0. Gate 2 — combined baseline on `945a67f` (before any M3 edit)
 
@@ -115,3 +115,16 @@ Probe facts on every captured row: one navigation surface; one phone bar at 390;
 
 ## 7. Not run
 Hosted / staging checks; automated accessibility scan; screen reader; real 200 % zoom; a six-mode click-through of gate 1 in the browser pane (the automated flow covers the handlers).
+
+## 8. Owner sign-off (owner-forwarded review, 2026-11-07)
+
+| Item | Record |
+|---|---|
+| Decision | **Accepted** as the reusable local baseline: the passing M3 checks (§2 tests, §3 gate 1 under both tier models, §4 route matrix, §5 visual / a11y) on tested `55da7eb`. Shared Browse, catalogue and shell evidence is carried forward by SHA; reopen only an affected component or a visible tier difference (see `evidence-carry-forward` policy, 2026-11-06). |
+| CI qualification | PR head `5b7679c` (docs only, on top of `55da7eb`): workflow run 42183014839 **succeeded with the unit-test step skipped** (the gate runs pytest only on `workflow_dispatch`, a `[ci full]` commit message, or a commit count divisible by 3); the run on `55da7eb` (42181990900) was cancelled by the concurrency rule when `5b7679c` was pushed. The executed full-suite evidence is therefore the local run on `55da7eb` (§2: 3 known `test_devices_m4c.py` failures / 4058 passed / 176 skipped). The commit that records this section carries `[ci full]` so GitHub executes the unit job on the final head; its result is recorded below once it finishes. |
+| GitHub unit run on the final head | PENDING at the time of writing — see the row appended by the follow-up commit. |
+| Schedule overflow | stays **open as a follow-up**: on this branch the excess width is hidden by the stack's `overflow-x: hidden` wrappers (§0). Apply PR #236 (`e73bd41`) when that fix is integrated, then rerun the focused width probe and move the row to PASS on that SHA. |
+| NOT RUN (recorded, unchanged) | real 200 % zoom, automated accessibility scan, screen reader, hosted / staging checks (§7). |
+| Wording follow-up | guest legend "News" vs signed-in "In news" (§6 open point): to be standardised in the next UI batch that touches the Browse legend. |
+| Next milestone | M4 — Today (`/dashboard`): remaining scope and tier-specific states, carrying forward the accepted shell (`d7d3c30`) and this Browse / catalogue baseline (`55da7eb`). |
+
