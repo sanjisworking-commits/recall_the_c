@@ -1,0 +1,17 @@
+{
+  "name": "Recall the C",
+  "install": "sudo apt-get update && sudo apt-get install -y python3.12-venv && python3.12 -m venv .venv && . .venv/bin/activate && python -m pip install -U pip && pip install -r requirements-ci.txt && pip install -e .",
+  "terminals": [
+    {
+      "name": "web",
+      "command": ". .venv/bin/activate && python -m constitution_memorizer.cli serve --host 127.0.0.1 --port 8001",
+      "description": "Recall the C single-user learning UI (SQLite). Open http://127.0.0.1:8001/"
+    }
+  ],
+  "ports": [
+    {
+      "name": "web",
+      "port": 8001
+    }
+  ]
+}
