@@ -17,6 +17,17 @@ ROOT = Path(__file__).resolve().parents[1]
 APP_JS = ROOT / "src" / "constitution_memorizer" / "web" / "static" / "app.js"
 
 
+def _init_learn_source(source: str) -> str:
+    """The body of ``initLearn``, up to the next top-level function.
+
+    Bounded by shape rather than by whichever function happens to follow it: a
+    named neighbour silently turns this slice into "the rest of the file" the
+    day that neighbour is renamed or removed, and every assertion below reads
+    as passing while checking nothing.
+    """
+    return source.split("function initLearn()", 1)[1].split("\n  function ", 1)[0]
+
+
 def _sqlite_client(tmp_path: Path) -> TestClient:
     return TestClient(
         create_app(
@@ -97,17 +108,13 @@ def test_app_js_intercepts_mode_tabs_and_updates_url():
     assert 'closest("[data-learn-mode]")' in source
     assert "aria-selected" in source
     assert "learn.dataset.mode" in source
-    learn_src = source.split("function initLearn()", 1)[1].split(
-        "function initBrowseArticle()", 1
-    )[0]
+    learn_src = _init_learn_source(source)
     assert "pushState" not in learn_src
 
 
 def test_app_js_posts_seen_with_formdata_append():
     source = APP_JS.read_text(encoding="utf-8")
-    learn_src = source.split("function initLearn()", 1)[1].split(
-        "function initBrowseArticle()", 1
-    )[0]
+    learn_src = _init_learn_source(source)
     assert 'body.append("mode", mode)' in learn_src
     assert "FormData({mode})" not in learn_src
     assert "new FormData({mode})" not in learn_src
@@ -120,9 +127,7 @@ def test_app_js_posts_seen_with_formdata_append():
 
 def test_app_js_merges_seen_and_keeps_done_server_authoritative():
     source = APP_JS.read_text(encoding="utf-8")
-    learn_src = source.split("function initLearn()", 1)[1].split(
-        "function initBrowseArticle()", 1
-    )[0]
+    learn_src = _init_learn_source(source)
     assert "confirmedModes.add(item)" in learn_src
     assert "confirmedModes =" not in learn_src.replace(
         "const confirmedModes = parseModes", ""
@@ -158,9 +163,7 @@ def _locked_methods_left_label(confirmed_count: int) -> str | None:
 
 def test_locked_done_label_progresses_and_ignores_stale():
     source = APP_JS.read_text(encoding="utf-8")
-    learn_src = source.split("function initLearn()", 1)[1].split(
-        "function initBrowseArticle()", 1
-    )[0]
+    learn_src = _init_learn_source(source)
     assert "function lockedMethodsLeftLabel" in learn_src
     assert "function applyLockedDoneLabel" in learn_src
     # Label counts required visits across the local set: guests use
@@ -197,9 +200,7 @@ def test_locked_done_label_progresses_and_ignores_stale():
 
 def test_app_js_resets_destination_and_stops_recite():
     source = APP_JS.read_text(encoding="utf-8")
-    learn_src = source.split("function initLearn()", 1)[1].split(
-        "function initBrowseArticle()", 1
-    )[0]
+    learn_src = _init_learn_source(source)
     assert 'prevMode === "recite"' in learn_src
     assert "recite.reset()" in learn_src
     assert "cloze.reset()" in learn_src
@@ -215,9 +216,7 @@ def test_app_js_gates_modes_on_completed_attempts():
     source = APP_JS.read_text(encoding="utf-8")
     # Canonical partition mirror: only Read marks on tab visit.
     assert 'AUTO_SEEN_MODES = new Set(["read"])' in source
-    learn_src = source.split("function initLearn()", 1)[1].split(
-        "function initBrowseArticle()", 1
-    )[0]
+    learn_src = _init_learn_source(source)
     assert "function markModeAttempted" in learn_src
     assert "AUTO_SEEN_MODES.has(nextMode)" in learn_src
     assert "function applyQuizPayload" in learn_src

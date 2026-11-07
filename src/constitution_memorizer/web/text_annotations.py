@@ -1,4 +1,9 @@
-"""Word-level Bare Act footnotes for Learn Read/Card hover."""
+"""Bare Act footnotes for the Constitution's reading surfaces.
+
+Anchors and notes are rendered in the shape the Bare Act reader uses, so both
+read the same way: the marked run is underlined in place and its note goes to
+one card at the foot of the reading column.
+"""
 
 from __future__ import annotations
 
@@ -222,61 +227,84 @@ def _sanitize_id_part(value: str) -> str:
     cleaned = re.sub(r"[^a-zA-Z0-9_-]+", "-", value.strip()).strip("-").lower()
     return cleaned or "x"
 
+@dataclass(frozen=True)
+class FootnoteNote:
+    """One note, rendered into the page's footnote apparatus.
 
-def _plain_tip_fallback(ann: TextAnnotation, notes: dict[str, NoteRecord]) -> str:
-    """Plain-text tip for title/data-note attributes (no nested controls)."""
-    if ann.content:
-        parts: list[str] = []
-        for node in ann.content:
-            if isinstance(node, ContentText):
-                parts.append(node.value)
-            else:
-                parts.append(node.label)
-        return "".join(parts).strip()
-    return ann.note
-
-
-def render_tip_inner(
-    ann: TextAnnotation,
-    notes: dict[str, NoteRecord],
-    *,
-    id_prefix: str,
-) -> str:
+    Shaped like ``bare_acts.Footnote`` — ``id`` and ``text`` — so both readers
+    feed the same ``partials/bare_act_footnotes.html``. ``text`` is a ``Markup``
+    here because a note may itself cite another note; every part of it is
+    escaped where it is built.
     """
-    Render tip body HTML from structured nodes or legacy note.
 
-    All text is escaped. note_ref becomes a button + nested tip (one level).
-    Missing note_id renders the label as plain escaped text (no button).
+    id: str
+    text: Markup
+
+
+@dataclass(frozen=True)
+class AnnotatedText:
+    """Annotated body text and the notes its anchors point at.
+
+    The two travel together on purpose: the anchor ids and the note ids are
+    minted in one pass, so a template cannot render one without the other and
+    leave anchors describing nothing.
+    """
+
+    html: Markup
+    footnotes: tuple[FootnoteNote, ...] = ()
+
+
+def _anchor(note_id: str, inner: str, *, focusable: bool = True) -> str:
+    """The one footnote anchor shape, shared with the Bare Act reader.
+
+    Deliberately identical to the ``fn_anchor`` macro: ``tabindex`` with no
+    role, because this is a run of statute text carrying a note, not a control,
+    and the accessible name should stay the text itself.
+
+    Anchors inside a note body are rendered ``tabindex="-1"``: that copy lives
+    in the visually-hidden notes block, and a tab stop the eye cannot find is
+    worse than no tab stop. The card re-enables them when it shows the note.
+    """
+    tabindex = "0" if focusable else "-1"
+    return (
+        f'<span class="bareact-fn" tabindex="{tabindex}" '
+        f'data-bareact-fn="{note_id}" aria-describedby="fn-{note_id}">'
+        f"{inner}</span>"
+    )
+
+
+def render_note_body(
+    ann: TextAnnotation, notes: dict[str, NoteRecord]
+) -> tuple[Markup, tuple[FootnoteNote, ...]]:
+    """A note's own text, plus the notes it cites.
+
+    All text is escaped. A ``note_ref`` becomes an anchor inside the note, so a
+    note citing an amendment is read exactly the way body text citing one is —
+    same anchor, same card. Missing ``note_id`` renders the label as plain text.
     """
     if not ann.content:
-        return html.escape(ann.note)
+        return Markup(html.escape(ann.note)), ()
 
     chunks: list[str] = []
-    nested_index = 0
+    cited: list[FootnoteNote] = []
     for node in ann.content:
         if isinstance(node, ContentText):
             chunks.append(html.escape(node.value))
             continue
-        record = notes.get(node.note_id)
         label = html.escape(node.label)
+        record = notes.get(node.note_id)
         if record is None:
-            logger.warning("Missing annotation note_id %r; rendering plain label", node.note_id)
+            logger.warning(
+                "Missing annotation note_id %r; rendering plain label", node.note_id
+            )
             chunks.append(label)
             continue
-        nested_index += 1
-        tip_id = (
-            f"{_sanitize_id_part(id_prefix)}-nested-"
-            f"{_sanitize_id_part(node.note_id)}-{nested_index}"
+        nested_id = _sanitize_id_part(node.note_id)
+        chunks.append(_anchor(nested_id, label, focusable=False))
+        cited.append(
+            FootnoteNote(id=nested_id, text=Markup(html.escape(record.note)))
         )
-        note_body = html.escape(record.note)
-        chunks.append(
-            f'<button type="button" class="bare-fn-nested-trigger" '
-            f'aria-expanded="false" aria-controls="{tip_id}">'
-            f"{label}</button>"
-            f'<span id="{tip_id}" class="bare-fn-nested-tip" role="tooltip" hidden>'
-            f"{note_body}</span>"
-        )
-    return "".join(chunks)
+    return Markup("".join(chunks)), tuple(cited)
 
 
 def annotate_plain_text(
@@ -285,42 +313,41 @@ def annotate_plain_text(
     *,
     notes: dict[str, NoteRecord] | None = None,
     unit_id: str | None = None,
-) -> Markup:
+) -> AnnotatedText:
     """
-    Escape plain Bare Act text and wrap the first whole-word hit of each target.
+    Escape plain Bare Act text and anchor the first whole-word hit of each target.
 
-    Tip copy lives in a ``hidden`` ``.bare-fn-tip`` element (shown by CSS/JS on
-    hover/focus/tap). Memorized modes keep ``unit.text`` plain.
+    Returns the marked-up text together with the notes it refers to; the caller
+    renders those through the footnote partial. Memorized modes keep
+    ``unit.text`` plain.
     """
     if not text:
-        return Markup("")
+        return AnnotatedText(Markup(""))
     if not annotations:
-        return Markup(html.escape(text))
+        return AnnotatedText(Markup(html.escape(text)))
 
     note_map = notes or {}
+    prefix = _sanitize_id_part(unit_id or "fn")
     remaining = text
     chunks: list[str] = []
+    collected: list[FootnoteNote] = []
+    seen: set[str] = set()
+
     for index, ann in enumerate(annotations):
         pattern = re.compile(rf"(?<!\w)({re.escape(ann.target)})(?!\w)")
         match = pattern.search(remaining)
         if match is None:
             continue
         chunks.append(html.escape(remaining[: match.start()]))
-        word = html.escape(match.group(1))
-        plain = _plain_tip_fallback(ann, note_map)
-        tip_attr = html.escape(plain, quote=True)
-        id_prefix = f"{unit_id or 'fn'}-fn-{index}"
-        tip_body = render_tip_inner(ann, note_map, id_prefix=id_prefix)
-        # Structured tips omit title= (nested controls are not expressible there).
-        title_attr = "" if ann.content else f' title="{tip_attr}"'
-        chunks.append(
-            f'<span class="bare-fn" tabindex="0" data-note="{tip_attr}"'
-            f"{title_attr}>"
-            f'<span class="bare-fn-word">{word}</span>'
-            f'<sup class="bare-fn-mark" aria-hidden="true">*</sup>'
-            f'<span class="bare-fn-tip" role="tooltip" hidden>{tip_body}</span>'
-            "</span>"
-        )
+        note_id = f"{prefix}-note-{index}"
+        body, cited = render_note_body(ann, note_map)
+        chunks.append(_anchor(note_id, html.escape(match.group(1))))
+        for note in (FootnoteNote(id=note_id, text=body), *cited):
+            if note.id in seen:
+                continue
+            seen.add(note.id)
+            collected.append(note)
         remaining = remaining[match.end() :]
+
     chunks.append(html.escape(remaining))
-    return Markup("".join(chunks))
+    return AnnotatedText(Markup("".join(chunks)), tuple(collected))
