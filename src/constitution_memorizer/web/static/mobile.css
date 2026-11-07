@@ -6568,6 +6568,13 @@
     color: var(--mid);
   }
 
+  /* The long guest date line wraps inside its column instead of pushing the
+     theme toggle onto a second row at 320 px. */
+  body.is-guest[data-mscreen="today"] .dash-greeting > div {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
   body[data-mscreen="today"] .dash-firstrun-side {
     margin: 0;
   }
