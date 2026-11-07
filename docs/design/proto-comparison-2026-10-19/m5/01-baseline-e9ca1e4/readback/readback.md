@@ -1,4 +1,4 @@
-# M5 read-back · account family · SHA `1b7d245`
+# M5 read-back · account family · SHA `f8d18bb`
 
 ## profile (`/profile`)
 
@@ -25,26 +25,26 @@
 
 ## settings (`/settings`)
 
-| state | tier_model | status | location | header_status | google_hrefs | login_hrefs | legacy_copy | markers | identity_name | identity_status | pace_note | pace_note_href | auto_plan_controls_enabled | study_card_guest | csrf_in_plan_form |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| guest | monthly | 200 |  |  | [] | [] | [] | ['data-phone-settings="guest"'] | Guest | Guest · Reading only |  |  | False | False | False |
-| free | monthly | 200 |  | RecallC Free | [] | [] | [] | ['data-signed-in-settings'] | Sanjay | Signed in with Google |  |  | True | False | True |
-| plus | monthly | 200 |  | RecallC Plus | [] | [] | [] | ['data-signed-in-settings', 'data-plus-settings="desktop"'] | Sanjay | Signed in with Google |  |  | True | False | True |
-| pro | monthly | 200 |  | RecallC Pro | [] | [] | [] | ['data-signed-in-settings'] | Sanjay | Signed in with Google |  |  | True | False | True |
-| max | monthly | 200 |  | RecallC Max | [] | [] | [] | ['data-signed-in-settings'] | Sanjay | Signed in with Google |  |  | True | False | True |
-| paused | monthly | 200 |  | RecallC Free | [] | [] | [] | ['data-signed-in-settings'] | Sanjay | Signed in with Google |  |  | True | False | True |
-| pending | monthly | 200 |  | RecallC Plus | [] | [] | [] | ['data-signed-in-settings'] | Sanjay | Signed in with Google |  |  | True | False | True |
-| expired | monthly | 200 |  | Your Playground is paused | [] | [] | [] | ['data-signed-in-settings', 'data-expired-settings="desktop"'] | Sanjay | Your Playground is paused |  |  | True | False | True |
-| halted | monthly | 200 |  | Payment retries have stopped | [] | [] | [] | ['data-signed-in-settings', 'data-halted-settings="desktop"'] | Sanjay | Payment retries have stopped |  |  | True | False | True |
-| guest | choices | 200 |  |  | [] | [] | [] | ['data-phone-settings="guest"'] | Guest | Guest · Reading only |  |  | False | False | False |
-| free | choices | 200 |  | RecallC Free | [] | [] | [] | ['data-signed-in-settings'] | Sanjay | Signed in with Google |  |  | True | False | True |
-| plus | choices | 200 |  | RecallC Plus | [] | [] | [] | ['data-signed-in-settings', 'data-plus-settings="desktop"'] | Sanjay | Signed in with Google |  |  | True | False | True |
-| pro | choices | 200 |  | RecallC Pro | [] | [] | [] | ['data-signed-in-settings'] | Sanjay | Signed in with Google |  |  | True | False | True |
-| max | choices | 200 |  | RecallC Max | [] | [] | [] | ['data-signed-in-settings'] | Sanjay | Signed in with Google |  |  | True | False | True |
-| paused | choices | 200 |  | RecallC Free | [] | [] | [] | ['data-signed-in-settings'] | Sanjay | Signed in with Google |  |  | True | False | True |
-| pending | choices | 200 |  | RecallC Plus | [] | [] | [] | ['data-signed-in-settings'] | Sanjay | Signed in with Google |  |  | True | False | True |
-| expired | choices | 200 |  | Your Playground is paused | [] | [] | [] | ['data-signed-in-settings', 'data-expired-settings="desktop"'] | Sanjay | Your Playground is paused |  |  | True | False | True |
-| halted | choices | 200 |  | Payment retries have stopped | [] | [] | [] | ['data-signed-in-settings', 'data-halted-settings="desktop"'] | Sanjay | Payment retries have stopped |  |  | True | False | True |
+| state | tier_model | status | location | header_status | google_hrefs | login_hrefs | legacy_copy | markers | identity_name | identity_status | pace_note | pace_note_href | auto_plan_controls_enabled | study_card_guest | csrf_in_plan_form | csrf_in_settings_form |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| guest | monthly | 200 |  |  | [] | [] | [] | ['data-phone-settings="guest"'] | Guest | Guest · Reading only |  |  | False | False | False | False |
+| free | monthly | 200 |  | RecallC Free | [] | [] | [] | ['data-signed-in-settings'] | Sanjay | Signed in with Google |  |  | True | False | False | False |
+| plus | monthly | 200 |  | RecallC Plus | [] | [] | [] | ['data-signed-in-settings', 'data-plus-settings="desktop"'] | Sanjay | Signed in with Google |  |  | True | False | False | False |
+| pro | monthly | 200 |  | RecallC Pro | [] | [] | [] | ['data-signed-in-settings'] | Sanjay | Signed in with Google |  |  | True | False | False | False |
+| max | monthly | 200 |  | RecallC Max | [] | [] | [] | ['data-signed-in-settings'] | Sanjay | Signed in with Google |  |  | True | False | False | False |
+| paused | monthly | 200 |  | RecallC Free | [] | [] | [] | ['data-signed-in-settings'] | Sanjay | Signed in with Google |  |  | True | False | False | False |
+| pending | monthly | 200 |  | RecallC Plus | [] | [] | [] | ['data-signed-in-settings'] | Sanjay | Signed in with Google |  |  | True | False | False | False |
+| expired | monthly | 200 |  | Your Playground is paused | [] | [] | [] | ['data-signed-in-settings', 'data-expired-settings="desktop"'] | Sanjay | Your Playground is paused |  |  | True | False | False | False |
+| halted | monthly | 200 |  | Payment retries have stopped | [] | [] | [] | ['data-signed-in-settings', 'data-halted-settings="desktop"'] | Sanjay | Payment retries have stopped |  |  | True | False | False | False |
+| guest | choices | 200 |  |  | [] | [] | [] | ['data-phone-settings="guest"'] | Guest | Guest · Reading only |  |  | False | False | False | False |
+| free | choices | 200 |  | RecallC Free | [] | [] | [] | ['data-signed-in-settings'] | Sanjay | Signed in with Google |  |  | True | False | False | False |
+| plus | choices | 200 |  | RecallC Plus | [] | [] | [] | ['data-signed-in-settings', 'data-plus-settings="desktop"'] | Sanjay | Signed in with Google |  |  | True | False | False | False |
+| pro | choices | 200 |  | RecallC Pro | [] | [] | [] | ['data-signed-in-settings'] | Sanjay | Signed in with Google |  |  | True | False | False | False |
+| max | choices | 200 |  | RecallC Max | [] | [] | [] | ['data-signed-in-settings'] | Sanjay | Signed in with Google |  |  | True | False | False | False |
+| paused | choices | 200 |  | RecallC Free | [] | [] | [] | ['data-signed-in-settings'] | Sanjay | Signed in with Google |  |  | True | False | False | False |
+| pending | choices | 200 |  | RecallC Plus | [] | [] | [] | ['data-signed-in-settings'] | Sanjay | Signed in with Google |  |  | True | False | False | False |
+| expired | choices | 200 |  | Your Playground is paused | [] | [] | [] | ['data-signed-in-settings', 'data-expired-settings="desktop"'] | Sanjay | Your Playground is paused |  |  | True | False | False | False |
+| halted | choices | 200 |  | Payment retries have stopped | [] | [] | [] | ['data-signed-in-settings', 'data-halted-settings="desktop"'] | Sanjay | Payment retries have stopped |  |  | True | False | False | False |
 
 ## devices (`/profile/security/devices`)
 

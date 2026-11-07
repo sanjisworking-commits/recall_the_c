@@ -149,7 +149,9 @@ def settings_row(html: str) -> dict:
         "pace_note_href": (re.search(r'href="([^"]*)"', note) or [None, ""])[1],
         "auto_plan_controls_enabled": 'name="daily_target" value="5" disabled' not in main and "segmented-input" in main,
         "study_card_guest": "appear once you sign in" in main,
-        "csrf_in_plan_form": bool(re.search(r'action="/settings/learning-plan"[^>]*>.*?csrf_token', main, re.S)),
+        # Token inside the form element itself, not anywhere later on the page.
+        "csrf_in_plan_form": "csrf_token" in _between(main, 'action="/settings/learning-plan"', "</form>"),
+        "csrf_in_settings_form": "csrf_token" in _between(main, 'action="/settings"', "</form>"),
     })
     return row
 
