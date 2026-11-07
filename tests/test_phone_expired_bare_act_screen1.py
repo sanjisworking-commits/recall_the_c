@@ -468,8 +468,8 @@ def test_phone_expired_css_scope_pins_and_no_clone() -> None:
     assert base.count("data-signed-in-phone-tabs") == 1
     assert "signed_in_expired_bareact_phone" not in base
     assert "data-expired-bareact-phone-tabs" not in base
-    assert "styles.css?v=main91" in base
-    assert "mobile.css?v=mob110" in base
+    assert "styles.css?v=main92" in base
+    assert "mobile.css?v=mob111" in base
     assert "playground.css?v=pg55" in base
     assert "playground.css?v=pg40" not in base
     assert "playground.css?v=pg49" not in base

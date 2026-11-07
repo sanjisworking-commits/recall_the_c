@@ -96,8 +96,8 @@ CLASS_C_STATES = (
 
 def test_t33_r7_asset_pins() -> None:
     html = BASE.read_text(encoding="utf-8")
-    assert "styles.css?v=main91" in html
-    assert "mobile.css?v=mob110" in html
+    assert "styles.css?v=main92" in html
+    assert "mobile.css?v=mob111" in html
     assert "playground.css?v=pg55" in html
     assert "playground.js?v=pg13" in html
     assert "playground.css?v=pg37" not in html

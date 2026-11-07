@@ -6547,3 +6547,39 @@
     box-sizing: border-box;
   }
 }
+
+/* ── M4 · Today phone additions (owner decisions 2026-11-07) ─────────────
+   Guest ring in place of the "?" mark; the guest date line ("· Reading as a
+   guest") shown like the signed-in one; the desktop-only path counter hidden. */
+@media (max-width: 560px) {
+  body[data-mscreen="today"] .dash-avatar-guest {
+    display: inline-block;
+    width: 36px;
+    height: 36px;
+    border: 1.5px dashed var(--faint);
+    border-radius: 50%;
+    background: transparent;
+  }
+
+  body.is-guest[data-mscreen="today"] .dash-date {
+    display: block;
+    margin: 1px 0 0;
+    font-size: 12px;
+    color: var(--mid);
+  }
+
+  /* The long guest date line wraps inside its column instead of pushing the
+     theme toggle onto a second row at 320 px. */
+  body.is-guest[data-mscreen="today"] .dash-greeting > div {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  body[data-mscreen="today"] .dash-firstrun-side {
+    margin: 0;
+  }
+
+  body[data-mscreen="today"] .rc-path-count {
+    display: none;
+  }
+}

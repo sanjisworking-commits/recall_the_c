@@ -134,10 +134,10 @@ def test_settings_assets_and_hooks(tmp_path: Path):
     # T33: R6 bumped styles.css main74→main75 and mobile.css mob95→mob96.
     client = _client(tmp_path)
     html = client.get("/browse").text
-    assert "styles.css?v=main91" in html
-    assert "mobile.css?v=mob110" in html
+    assert "styles.css?v=main92" in html
+    assert "mobile.css?v=mob111" in html
     assert "app.js?v=main63" in html
-    css = client.get("/static/mobile.css?v=mob110").text
+    css = client.get("/static/mobile.css?v=mob111").text
     assert 'body[data-mscreen="settings"] .mobile-tabbar' in css
     assert 'body[data-mscreen="settings"] .settings-desk-copy' in css
     assert ".settings-toggle" in css

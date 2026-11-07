@@ -92,3 +92,6 @@ artifacts/playground-page-weight-*.json
 # Stage 2 S2-0 WS11 T21 operator cold-start JSON
 artifacts/playground-cold-start.json
 artifacts/playground-cold-start-*.json
+
+# Headless-Chrome profiles written beside capture output
+.chrome-profile*/

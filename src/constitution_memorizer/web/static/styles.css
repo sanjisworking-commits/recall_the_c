@@ -13873,3 +13873,297 @@ html:not(.rtc-anim) .continue-card {
 }
 
 
+
+/* ── M4 · Today (owner decisions 2026-11-07) ──────────────────────────────
+   Q5: the first-run screen laid out at desktop width — until now every
+   `.dash-firstrun-*` rule lived in the phone sheet, so guests and new accounts
+   saw bare text and inline links at 1280. Q6: the desktop path header carries
+   "n of m reviewed". The guest Today takes the same page treatment as the
+   signed-in desktop Today. Phone rules are untouched (mobile.css). */
+@media (min-width: 561px) {
+  body.is-guest[data-mscreen="today"]:has([data-guest-today]) .page-wrap,
+  body.is-guest[data-mscreen="today"]:has([data-guest-today]) .sheet,
+  body.is-guest[data-mscreen="today"]:has([data-guest-today]) .main {
+    background: var(--page);
+  }
+
+  body.is-guest[data-mscreen="today"]:has([data-guest-today]) .site-footer,
+  body.is-guest[data-mscreen="today"]:has([data-guest-today]) .sheet-footnote {
+    display: none;
+  }
+
+  [data-guest-today].dashboard-panel {
+    max-width: none;
+    padding: 26px 40px 60px;
+    background: transparent;
+  }
+
+  [data-guest-today] .dash-greeting {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 22px;
+  }
+
+  [data-guest-today] .dash-greeting > div {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  [data-guest-today] .dash-hello {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: 0;
+    line-height: 1.15;
+  }
+
+  [data-guest-today] .dash-date {
+    display: block;
+    margin: 1px 0 0;
+    font-size: 13px;
+    font-weight: 400;
+    color: var(--muted);
+  }
+
+  [data-guest-today] .dash-greeting-settings {
+    display: none;
+  }
+
+  .dash-avatar-guest {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border: 1.5px dashed var(--faint);
+    border-radius: 50%;
+    background: transparent;
+  }
+
+  /* First run: the same card language as the populated Today. */
+  .dash-firstrun-hero {
+    margin: 0;
+    padding: 20px;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: 16px;
+  }
+
+  .dash-firstrun-eyebrow {
+    margin: 0 0 14px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--mid);
+  }
+
+  .dash-firstrun-section {
+    margin: 0 4px 10px;
+  }
+
+  .dash-firstrun-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .dash-firstrun-ring {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    width: 64px;
+    height: 64px;
+    border: 2.5px dashed var(--faint);
+    border-radius: 50%;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--done-locked-fg);
+  }
+
+  .dash-firstrun-copy {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .dash-firstrun-title {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 1.2;
+  }
+
+  .dash-firstrun-sub {
+    margin: 4px 0 0;
+    font-size: 13.5px;
+    line-height: 1.45;
+    color: var(--mid);
+    text-wrap: pretty;
+  }
+
+  .dash-firstrun-cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 48px;
+    margin-top: 18px;
+    border: 0;
+    border-radius: 12px;
+    background: var(--ink);
+    color: var(--on-accent);
+    font-size: 15px;
+    font-weight: 600;
+    text-decoration: none;
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.28);
+  }
+
+  .dash-firstrun-note {
+    margin: 10px 2px 0;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--mid);
+    text-align: center;
+    text-wrap: pretty;
+  }
+
+  .dash-firstrun-side {
+    margin-top: 22px;
+  }
+
+  .dash-firstrun-list {
+    margin: 0;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  .dash-firstrun-actions {
+    margin-top: 14px;
+  }
+
+  .dash-firstrun-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 58px;
+    padding: 10px 18px;
+    border-bottom: 1px solid var(--page);
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .dash-firstrun-item.is-compact {
+    min-height: 52px;
+    padding: 8px 18px;
+  }
+
+  .dash-firstrun-item:last-child {
+    border-bottom: 0;
+  }
+
+  .dash-firstrun-item:hover .dash-firstrun-item-title,
+  .dash-firstrun-item:focus-visible .dash-firstrun-item-title {
+    text-decoration: underline;
+  }
+
+  .dash-firstrun-item-copy {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .dash-firstrun-item-title {
+    display: block;
+    font-size: 14.5px;
+    font-weight: 500;
+  }
+
+  .dash-firstrun-item-sub {
+    display: block;
+    margin-top: 1px;
+    font-size: 12px;
+    color: var(--mid);
+  }
+
+  .dash-firstrun-item-note {
+    flex: 0 0 auto;
+    font-size: 12px;
+    color: var(--mid);
+  }
+
+  .dash-firstrun-chev {
+    flex: 0 0 auto;
+    font-size: 13px;
+    color: var(--faint);
+  }
+
+  .dash-firstrun-signin {
+    margin: 14px 0 0;
+    padding: 16px 18px;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+  }
+
+  .dash-firstrun-signin-body {
+    margin: 0;
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--mid);
+    text-wrap: pretty;
+  }
+
+  .dash-firstrun-signin-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 44px;
+    margin-top: 12px;
+    border: 1px solid var(--hairline);
+    border-radius: 11px;
+    background: var(--paper);
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .dash-firstrun-signin-btn:hover,
+  .dash-firstrun-signin-btn:focus-visible {
+    border-color: var(--ink);
+  }
+
+  /* Q6: "n of m reviewed" on the path header, right-aligned. */
+  .dash-path-card .rc-path-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .rc-path-count {
+    font-size: 11.5px;
+    font-weight: 500;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--muted);
+  }
+}
+
+@media (min-width: 900px) {
+  .dash-firstrun {
+    display: grid;
+    grid-template-columns: minmax(280px, 380px) minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+  }
+
+  .dash-firstrun-side {
+    margin-top: 0;
+  }
+}
