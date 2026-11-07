@@ -6,16 +6,21 @@ on:
       - main
       - "cursor/**"
   pull_request:
+  workflow_dispatch:
 
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
+  # One live run per branch, whether the event is a push or the pull request
+  # for that same branch: a push to a PR branch used to start two runs in two
+  # groups. On a pull_request event head_ref is the source branch name; on a
+  # push event ref_name is the branch name.
+  group: ci-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
   test:
     name: Unit tests
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -23,7 +28,13 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          # Pinned to the patch release Railway and .python-version use, so CI
+          # cannot drift to a newer interpreter than production.
+          python-version: "3.12.11"
+          cache: pip
+          cache-dependency-path: |
+            pyproject.toml
+            requirements-ci.txt
 
       - name: Install CI dependencies
         run: |
@@ -32,4 +43,61 @@ jobs:
           pip install -e .
 
       - name: Run unit tests
-        run: pytest -m "not integration" -q --tb=short
+        # The whole suite minus the one `integration` test (it needs Docling
+        # and the corpus PDF). Nothing else is filtered or skipped.
+        run: pytest -m "not integration" -q --tb=short -p no:cacheprovider
+
+  package:
+    # Production installs the package as a non-editable wheel and starts
+    # uvicorn from the repository root (Railway build command:
+    # `pip install -r requirements-web.txt && pip install . --no-deps`).
+    # The test job's editable install cannot catch a file the wheel leaves
+    # out, which has caused a production 500 before. This job installs
+    # exactly the way production does and imports the ASGI app.
+    name: Package install
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12.11"
+          cache: pip
+          cache-dependency-path: |
+            pyproject.toml
+            requirements-web.txt
+
+      - name: Build the wheel
+        run: |
+          python -m pip install --upgrade pip
+          pip wheel . --no-deps --wheel-dir dist
+
+      - name: Install the wheel the way Railway does
+        run: |
+          python -m venv /tmp/prod-venv
+          /tmp/prod-venv/bin/python -m pip install --upgrade pip
+          /tmp/prod-venv/bin/pip install -r requirements-web.txt
+          /tmp/prod-venv/bin/pip install dist/*.whl --no-deps
+
+      - name: Import the ASGI app from the repository root
+        env:
+          APP_ENV: test
+          MULTIUSER_ENABLED: "false"
+        run: |
+          /tmp/prod-venv/bin/python - <<'PY'
+          import importlib, pathlib
+          import constitution_memorizer
+          location = pathlib.Path(constitution_memorizer.__file__).resolve()
+          assert "site-packages" in str(location), f"not the installed wheel: {location}"
+          module = importlib.import_module("constitution_memorizer.web.asgi")
+          assert module.app is not None
+          print("ASGI app created from", location)
+          PY
+
+      - name: Packaged data contract
+        run: |
+          /tmp/prod-venv/bin/pip install "pytest>=7.0.0"
+          /tmp/prod-venv/bin/pytest tests/test_constitution_prod_packaging.py -q --tb=short -p no:cacheprovider
