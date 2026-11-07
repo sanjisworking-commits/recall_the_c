@@ -474,9 +474,13 @@ def test_guest_free_expired_halted_pro_stay_separate(tmp_path: Path) -> None:
     assert 'data-plus-playground="desktop"' not in free_html
 
     plus = _plus_client(tmp_path / "plus")
+    # M5 Q8: a subscriber reaches the plans stage too; its form uses the change flow.
     plans = unescape(plus.get("/playground?stage=plans&tier=pro").text)
-    assert "data-signed-in-pg-gate" not in plans
-    assert "data-plus-playground-phone" in plans
+    assert 'data-pg-plan-form="change"' in plans
+    assert "data-pg-plan-current" in plans
+    home = unescape(plus.get("/playground").text)
+    assert "data-signed-in-pg-gate" not in home
+    assert "data-plus-playground-phone" in home
 
     expired = TestClient(_mu_app(tmp_path / "expired"))
     _sign_in(expired)

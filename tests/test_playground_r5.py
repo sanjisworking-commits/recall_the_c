@@ -131,7 +131,8 @@ def test_t26_subscription_card_chips_and_device_copy():
         )
     )
     assert free.chip == ""
-    assert free.cta_label == "Subscribe"
+    assert free.cta_label == "See plans ›"  # M5 Q1
+    assert free.title == "No paid subscription"
     guest = playground_subscription_card(
         _snapshot(is_authenticated=False, is_subscribed=False)
     )
@@ -400,7 +401,7 @@ def test_d107_d109_profile_subscription_and_devices(tmp_path: Path):
     assert devices.status_code == 200
     assert "data-device-count" in devices.text
     assert " of " in devices.text
-    assert "Active devices" in devices.text
+    assert ">Registered</p>" in devices.text  # M5 Q6
 
 
 def test_d108_paused_and_hold_chips(tmp_path: Path):
