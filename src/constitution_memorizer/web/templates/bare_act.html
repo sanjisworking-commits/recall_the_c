@@ -168,6 +168,7 @@
           {# Our limitation, stated as ours — the Act is complete, the renderer is
              not. `unsupported_reason` is developer copy and stays out of the UI. #}
           <span class="bareact-schedule-unavailable">Not yet browsable in the app</span>
+          {% if schedule.reader_note %}<span class="bareact-schedule-unavailable">{{ schedule.reader_note }}</span>{% endif %}
           {% endif %}
         </span>
         <span class="bareact-chapter-range">{{ schedule.range_label }}</span>
