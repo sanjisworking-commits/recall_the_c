@@ -503,7 +503,9 @@ def starter_rows(engine: ReminderEngine) -> list[dict[str, str]]:
     return rows
 
 
-def build_guest_dashboard_context(engine: ReminderEngine) -> dict[str, Any]:
+def build_guest_dashboard_context(
+    engine: ReminderEngine, *, as_of: date | None = None
+) -> dict[str, Any]:
     """Today for a signed-out reader — diff.md item 2's guest branch.
 
     The design branches the first-run screen by tier instead of sending guests
@@ -515,9 +517,15 @@ def build_guest_dashboard_context(engine: ReminderEngine) -> dict[str, Any]:
     A guest has no stored progress, so has_started is false by construction
     and the screen is corpus plus copy; no per-user read happens at all.
     """
+    # M4 (owner, 2026-11-07): the prototype greeting — "Good morning." over the
+    # date line, "· Reading as a guest" appended to it — and one Google action
+    # (5-11) in the sign-in card. Signing in returns the reader to Today.
+    from constitution_memorizer.playground.http import playground_google_href
+
+    today = as_of or date.today()
     return {
-        # No account, so no avatar and no profile — the header falls back to
-        # the guest "?" mark. The key must be present: the template's Jinja
+        # No account, so no avatar and no profile — the header draws the
+        # guest ring. The key must be present: the template's Jinja
         # environment is strict about undefined names.
         "user": None,
         "dashboard_state": "ok",
@@ -526,8 +534,10 @@ def build_guest_dashboard_context(engine: ReminderEngine) -> dict[str, Any]:
         "starter_rows": starter_rows(engine),
         "display_label": "",
         "first_name": "",
-        "greeting": "Welcome.",
-        "subtext": "Reading as a guest",
+        "greeting": "Good morning.",
+        "subtext": "",
+        "today_date_label": f"{today.strftime('%A')} {today.day} {today.strftime('%B')}",
+        "guest_google_href": playground_google_href("/dashboard"),
         "daily_goal_streak": 0,
         "access": None,
         "subscription": None,
