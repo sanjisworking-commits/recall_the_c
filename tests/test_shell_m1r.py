@@ -225,7 +225,7 @@ def test_css_hides_every_phone_bar_once_the_desktop_header_exists():
     assert 'body[data-mscreen="settings"] .mobile-tabbar,\n  body[data-mscreen="search"] .mobile-tabbar {\n    display: grid;' in mobile
     assert 'body.is-guest[data-mscreen="settings"]' not in mobile
     base = BASE.read_text(encoding="utf-8")
-    for pin in ("styles.css?v=main91", "mobile.css?v=mob110", "playground.css?v=pg55"):
+    for pin in ("styles.css?v=main92", "mobile.css?v=mob111", "playground.css?v=pg55"):
         assert pin in base
 
 

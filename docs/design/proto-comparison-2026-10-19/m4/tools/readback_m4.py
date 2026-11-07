@@ -120,7 +120,7 @@ def today_row(html: str) -> dict:
         "firstrun_cta": _first(firstrun, r'class="dash-firstrun-cta" href="[^"]*">(.*?)</a>'),
         "firstrun_cta_href": (re.search(r'class="dash-firstrun-cta" href="([^"]*)"', firstrun) or [None, ""])[1],
         "firstrun_note": _first(firstrun, r'class="dash-firstrun-note">(.*?)</p>'),
-        "starter_rows": firstrun.count('class="dash-firstrun-item '),
+        "starter_rows": firstrun.count('class="dash-firstrun-item"'),
         "plan_tour_rows": firstrun.count('class="dash-firstrun-item is-compact"'),
         "signin_block": _text(signin_block),
         "signin_hrefs": re.findall(r'href="([^"]+)"', signin_block),

@@ -361,7 +361,8 @@ def test_phone_free_today_destinations_and_get_is_mutation_free(
 def test_guest_plus_expired_halted_today_stay_separate(tmp_path: Path) -> None:
     guest = TestClient(_guest_app(tmp_path / "guest")).get("/dashboard").text
     assert "data-signed-in-today" not in guest
-    assert "Welcome." in guest
+    assert "Good morning." in guest  # M4: prototype guest greeting
+    assert "· Reading as a guest" in guest
     assert "Good morning, Sanjay." not in guest
     assert 'data-today-mode="firstrun"' in guest
 
@@ -431,8 +432,8 @@ def test_phone_free_today_css_is_breakpoint_scoped() -> None:
     assert "@media (min-width: 561px)" in desk
     assert "minmax(260px, 380px)" in desk
     assert "playground.css?v=pg55" in BASE.read_text(encoding="utf-8")
-    assert "styles.css?v=main91" in BASE.read_text(encoding="utf-8")
-    assert "mobile.css?v=mob110" in BASE.read_text(encoding="utf-8")
+    assert "styles.css?v=main92" in BASE.read_text(encoding="utf-8")
+    assert "mobile.css?v=mob111" in BASE.read_text(encoding="utf-8")
     assert "mobile.css?v=mob104" not in BASE.read_text(encoding="utf-8")
     assert "action=\"/revision/start\"" in DASH.read_text(encoding="utf-8")
     assert "data-signed-in-today-phone" not in DASH.read_text(encoding="utf-8")

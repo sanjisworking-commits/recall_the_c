@@ -48,6 +48,9 @@ def _settings(**overrides) -> MultiUserSettings:
     return MultiUserSettings(_env_file=None, **base)
 
 
+GOOGLE_DASH = 'href="/auth/google/start?next=%2Fdashboard"'  # M4 guest action
+
+
 def _client(
     tmp_path: Path,
     provider: FakeAuthProvider | None = None,
@@ -237,8 +240,10 @@ def test_guest_dashboard_progress_and_settings(tmp_path: Path):
     # diff.md item 2: the guest branch of the first-run screen, not a gate
     # page. Still an inline invitation to sign in, still no redirect wall.
     assert 'data-today-mode="firstrun"' in dash.text
-    assert "Sign in to save 3 Articles to Recall for free" in dash.text
-    assert 'href="/login?next=/dashboard"' in dash.text
+    # M4 (5-11, owner 2026-11-07): one Google action, no "3 Articles" promise.
+    assert "Sign in to save your progress." in dash.text
+    assert GOOGLE_DASH in dash.text
+    assert "/login?next=/dashboard" not in dash.text
     prog = client.get("/progress")
     assert prog.status_code == 200
     assert "Sign in to save your learning" in prog.text
@@ -370,7 +375,7 @@ def test_logout_signed_out_page(tmp_path: Path):
     assert "signed out" in page.text.lower()
     gate = client.get("/dashboard")
     assert gate.status_code == 200
-    assert "Sign in to save 3 Articles to Recall for free" in gate.text
+    assert "Sign in to save your progress." in gate.text  # M4 guest copy
 
 
 def test_auth_transition_and_profile_pages(tmp_path: Path):
@@ -564,13 +569,21 @@ def test_first_run_guest_branch(tmp_path: Path):
     html = client.get("/dashboard").text
 
     assert 'data-today-mode="firstrun"' in html
-    assert ">?</span>" in html  # the "?" avatar stands in for initials
-    assert "Reading as a guest" in html
+    # M4 (owner 2026-11-07): the prototype's guest ring, "Good morning." over
+    # the date line, "Nothing due yet.", the hero CTA opening Browse, and one
+    # Google action in the sign-in card (5-11). No "3 Articles" promise.
+    assert 'class="dash-avatar dash-avatar-guest"' in html
+    assert ">?</span>" not in html
+    assert "Good morning." in html
+    assert "· Reading as a guest" in html
+    assert "Nothing due yet." in html
     assert "rc-streak" not in html
-    # The CTA goes through sign-in; Browse is what a signed-in user gets.
-    assert '<a class="dash-firstrun-cta" href="/login?next=/dashboard">' in html
+    assert '<a class="dash-firstrun-cta" href="/browse">' in html
     assert "you\u2019ll be asked to sign in so your progress is saved" in html
-    assert "Sign in to save 3 Articles to Recall for free" in html
+    assert "Sign in to save your progress." in html
+    main = html.split("<main", 1)[1].split("</main>", 1)[0]
+    assert main.count(GOOGLE_DASH) == 1
+    assert "3 Articles" not in main and "/login" not in main  # the shell's own Sign in is M1-R's
     # Plan and tour are account surfaces; a guest has no account to plan for.
     assert "Set a learning plan" not in html
     assert "Take the two-minute tour" not in html
@@ -632,8 +645,8 @@ def test_sign_in_from_first_run_returns_to_it(tmp_path: Path):
         display_name="",
     )
     client = _client(tmp_path, provider)
-    # The screen's own sign-in link is what the guest follows.
-    assert 'href="/login?next=/dashboard"' in client.get("/dashboard").text
+    # The screen's own sign-in action is what the guest follows (M4: Google).
+    assert GOOGLE_DASH in client.get("/dashboard").text
 
     start = client.get("/auth/google/start?next=/dashboard", follow_redirects=False)
     state = start.cookies.get("rtc_oauth_state")

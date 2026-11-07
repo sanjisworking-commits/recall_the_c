@@ -765,7 +765,8 @@ def test_guest_free_plus_halted_pro_today_are_not_expired_phone_04(
     guest = TestClient(_guest_app(tmp_path / "guest")).get("/dashboard").text
     assert 'data-expired-today="desktop"' not in guest
     assert "data-signed-in-today" not in guest
-    assert "Welcome." in guest
+    assert "Good morning." in guest  # M4: prototype guest greeting
+    assert "· Reading as a guest" in guest
 
     free = TestClient(_mu_app(tmp_path / "free"))
     _sign_in(free)
@@ -857,8 +858,8 @@ def test_phone_expired_today_css_scope_pins_and_desktop_08_untouched() -> None:
     base = BASE.read_text(encoding="utf-8")
     assert "playground.css?v=pg55" in base
     assert "playground.css?v=pg43" not in base
-    assert "styles.css?v=main91" in base
-    assert "mobile.css?v=mob110" in base
+    assert "styles.css?v=main92" in base
+    assert "mobile.css?v=mob111" in base
     assert "data-expired-today-phone-tabs" not in base
     # M1-R (PR pg-m1r-shell-labels): one signed-in bar (data-signed-in-phone-tabs) renders first in
     # base.html, followed only by the guest bar; the active tab comes from the shell_* flag
