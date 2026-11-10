@@ -281,7 +281,7 @@ def test_phone_free_gate_intro_is_live_not_subscribed_copy(tmp_path: Path) -> No
     assert ">Unlock Playground<" not in gate
     assert INTRO_CTA in gate
     assert f'href="{PLAYGROUND_PLANS_PATH}"' in gate
-    assert PLAYGROUND_BILLING_PATH not in gate
+    assert f'href="{PLAYGROUND_BILLING_PATH}' not in gate  # M5 Q7: the form posts there; no link
     assert "data-pg-plans" not in gate
     assert "data-pg-plan-continue" not in html
     assert "Included with your account" not in html
@@ -354,14 +354,16 @@ def test_phone_free_gate_plans_lists_live_catalogue_without_selection(
         assert plan.display_name in gate
         assert plan.price_label in gate
         assert plan.limit_label in gate
-        assert plan.href in gate
+        assert f'type="radio" name="tier" value="{plan.tier}"' in gate  # M5 Q7: radio group
         assert PLAYGROUND_BILLING_PATH not in plan.href
         assert f"stage=plans&tier={plan.tier}" in plan.href
     assert "data-pg-plan-selected" not in gate
-    assert "data-pg-plan-continue" not in html
+    # M5 Q7: Continue is always in the form; the required radios block an empty submit.
+    assert "data-pg-plan-continue" in html
+    assert ">Continue<" in html
     assert "Continue with" not in html
     assert INTRO_CTA not in gate
-    assert PLAYGROUND_BILLING_PATH not in gate
+    assert f'href="{PLAYGROUND_BILLING_PATH}' not in gate  # M5 Q7: the form posts there; no link
     assert "₹199" in gate
     assert "₹399" in gate
     assert "₹1199" not in gate  # B1-F09 (PR #230): Max is not sold anew; evidence record keeps its SHA
@@ -371,7 +373,7 @@ def test_phone_free_gate_plans_lists_live_catalogue_without_selection(
     assert all(plan.href == PLAYGROUND_BILLING_PATH for plan in billed)
 
 
-def test_phone_free_gate_tier_selection_continue_has_no_handler(
+def test_phone_free_gate_tier_selection_continue_submits_the_plans_form(
     tmp_path: Path,
 ) -> None:
     client = _free_client(tmp_path)
@@ -393,22 +395,21 @@ def test_phone_free_gate_tier_selection_continue_has_no_handler(
         assert 'data-pg-gate-stage="plans"' in html
         selected = gate.split(f'data-tier="{tier}"', 1)[1].split("data-tier=", 1)[0]
         assert "data-pg-plan-selected" in selected
-        assert 'aria-current="true"' in selected
-        assert 'aria-pressed="true"' in selected
-        assert 'type="button"' in gate
+        assert "required checked" in selected  # M5 Q7: the selected radio
+        assert 'type="submit"' in gate  # M5 Q7
         assert "data-pg-plan-continue" in gate
         assert f">{label}<" in gate
         continue_html = gate.split("data-pg-plan-continue", 1)[1].split("</button>", 1)[0]
         assert "href=" not in continue_html
-        assert "<form" not in gate
-        assert 'action="' not in gate
+        assert gate.count("<form") == 1  # M5 Q7: the plans form
+        assert 'action="/billing/subscriptions/create"' in gate  # M5 Q7: no subscription → create
         assert "/checkout" not in gate
-        assert PLAYGROUND_BILLING_PATH not in gate
+        assert f'href="{PLAYGROUND_BILLING_PATH}' not in gate  # M5 Q7: the form posts there; no link
         assert _facts(client) == before
         assert calls == []
 
 
-def test_phone_free_gate_invalid_tier_stays_plans_without_cta(tmp_path: Path) -> None:
+def test_phone_free_gate_invalid_tier_stays_plans_without_selection(tmp_path: Path) -> None:
     client = _free_client(tmp_path)
     page = client.get("/playground?stage=plans&tier=gold")
     assert page.status_code == 200
@@ -417,7 +418,9 @@ def test_phone_free_gate_invalid_tier_stays_plans_without_cta(tmp_path: Path) ->
     assert 'data-pg-gate-stage="plans"' in html
     assert "data-pg-plans" in gate
     assert "data-pg-plan-selected" not in gate
-    assert "data-pg-plan-continue" not in html
+    # M5 Q7: Continue is always in the form; the required radios block an empty submit.
+    assert "data-pg-plan-continue" in html
+    assert ">Continue<" in html
     assert "Continue with" not in html
 
 
@@ -457,8 +460,10 @@ def test_guest_plus_expired_halted_paused_stay_separate(tmp_path: Path) -> None:
     plus_html = unescape(plus.get("/playground").text)
     assert 'data-plus-playground="desktop"' in plus_html
     assert "data-signed-in-pg-gate" not in plus_html
+    # M5 Q8: a subscriber reaches the plans stage too; Continue uses the change flow.
     plus_plans = unescape(plus.get("/playground?stage=plans&tier=pro").text)
-    assert "data-signed-in-pg-gate" not in plus_plans
+    assert 'data-pg-plan-form="change"' in plus_plans
+    assert "data-pg-plan-current" in plus_plans
 
     expired = TestClient(_mu_app(tmp_path / "expired"))
     _sign_in(expired)
@@ -544,10 +549,10 @@ def test_phone_free_gate_css_is_breakpoint_scoped() -> None:
     assert ":not([data-guest-phone-tabs])" in hide
     assert "data-signed-in-pg-gate" not in hide
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg55" in base
+    assert "playground.css?v=pg56" in base
     assert "playground.css?v=pg33" not in base
-    assert "styles.css?v=main92" in base
-    assert "mobile.css?v=mob111" in base
+    assert "styles.css?v=main93" in base
+    assert "mobile.css?v=mob112" in base
     assert "data-signed-in-pg-gate" not in MOBILE.read_text(encoding="utf-8")
     js = PG_JS.read_text(encoding="utf-8")
     assert "data-pg-plan-continue" not in js

@@ -4575,6 +4575,9 @@ _T8_GATE_CONTEXT_KEYS = frozenset(
         "current_plan_tier",
         "guest_gate_values",
         "guest_gate_footnote",
+        # M5: the plans form's token and the guest intro's deep-link Google action
+        "csrf_token",
+        "guest_google_href",
     }
 )
 

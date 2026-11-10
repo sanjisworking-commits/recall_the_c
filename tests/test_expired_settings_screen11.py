@@ -71,15 +71,14 @@ ACTIVE_END = datetime(2026, 10, 15, tzinfo=timezone.utc)
 LIVE_GATE = gate_view(reason=BLOCK_PAID_PERIOD_ENDED)
 LIVE_HEADING = LIVE_GATE.title
 LOCKED_COPY = (
-    "Part of unlocking every Article — your saved history is never deleted."
+    "Auto Plan is part of Plus and Pro. Your saved history is never deleted."
 )
 INVENTED = (
     "Plan ended 31 August",
     "Resume your Playground",
     "Premium",
     "Unlock all",
-    "No plan yet",
-    "See plans",
+    # M5 (owner, 2026-11-07): "See plans ›" is now the decided Settings link.
     "8/10",
 )
 INVENTED_MARKUP = INVENTED + ("Your Playground is paused", "RecallC Plus")
@@ -349,8 +348,8 @@ def test_expired_settings_learning_plan_follows_can_auto_plan(
     assert "disabled" in study.split('id="pace-auto"', 1)[1].split(">", 1)[0]
     assert 'class="segmented is-disabled"' in study
     assert LOCKED_COPY in study
-    assert 'href="/pricing"' in study
-    assert "Unlock every Article →" in study
+    assert 'href="/playground?stage=plans"' in study
+    assert "See plans ›" in study  # M5 Q4
     assert "id=\"target-5\"" not in study
     assert "Steady · 3" not in study
     assert 'action="/settings/learning-plan"' in html
@@ -539,8 +538,8 @@ def test_expired_settings_marker_uses_shared_predicate() -> None:
     assert "{{ expired_header_status }}" in settings
     assert "{{ access.status_line }}" in settings
     assert LOCKED_COPY in settings
-    assert 'href="/pricing"' in settings
-    assert "Unlock every Article →" in settings
+    assert 'href="/playground?stage=plans"' in settings
+    assert "See plans ›" in settings  # M5 Q4
     assert 'action="/settings/learning-plan"' in settings
     assert 'href="/calendar/google/connect"' in settings
     assert 'href="/privacy#google-calendar"' in settings
@@ -572,7 +571,7 @@ def test_expired_settings_marker_uses_shared_predicate() -> None:
     assert "shell_account_status" in base  # M1-R: one snapshot-driven label
     assert "plus_settings_chrome" not in base  # M1-R (PR pg-m1r-shell-labels): the per-route header flag chain is gone
     assert "shell_account_status" in base  # M1-R: one snapshot-driven label
-    assert "playground.css?v=pg55" in base
+    assert "playground.css?v=pg56" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-expired-settings="desktop"' in css
     assert "expired/11-screen" in css
@@ -799,7 +798,7 @@ def test_expired_settings_screen11_1280(tmp_path: Path) -> None:
               const selfPace = study && study.querySelector('#pace-self-paced');
               const autoPace = study && study.querySelector('#pace-auto');
               const locked = study && study.querySelector('.settings-plan-locked');
-              const pricing = locked && locked.querySelector('a[href="/pricing"]');
+              const pricing = locked && locked.querySelector('a[href="/playground?stage=plans"]');
               const identStatus = ident && ident.querySelector('.settings-account-status');
               const status = document.querySelector('.account-menu-btn-status');
               const back = expired && expired.querySelector('.si-settings-desk-back a');

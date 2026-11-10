@@ -21,7 +21,8 @@
       <span class="settings-account-name">Guest</span>
       <span class="settings-account-status">Guest · Reading only</span>
     </span>
-    <button type="button" class="settings-account-signin" data-guest-settings-identity-signin>Sign in</button>
+    {# M5 (Q2, 5-11): one Google action; signing in returns to Settings. #}
+    <a class="settings-account-signin" href="/auth/google/start?next=%2Fsettings" data-guest-settings-identity-signin data-guest-gate-google>Continue with Google</a>
   </article>
   {% else %}
   <a class="settings-account-row" href="/profile">
@@ -36,14 +37,13 @@
       <span class="settings-account-status">{{ halted_header_status }}</span>
       {% elif expired_settings|default(false) and expired_header_status %}
       <span class="settings-account-status">{{ expired_header_status }}</span>
-      {% elif current_user and access and access.enabled %}
+      {% elif current_user and access and access.enabled and access.access_source in ('admin', 'admin_grant', 'promotion') %}
       <span class="settings-account-status">{{ access.status_line }}</span>
-      {% elif current_user and current_user.provider == 'google' %}
-      <span class="settings-account-status">Signed in with Google</span>
-      {% elif current_user and current_user.phone %}
-      <span class="settings-account-status">Signed in with phone</span>
       {% elif current_user %}
-      <span class="settings-account-status">Signed in</span>
+      {# M5 (Q4): the shell's account label, then the sign-in method. The
+         legacy Constitution-pass status line is retired — every signed-in
+         account has every Article. #}
+      <span class="settings-account-status">{{ shell_account_status(request) }} · {% if current_user.provider == 'google' %}Signed in with Google{% elif current_user.phone %}Signed in with phone{% else %}Signed in{% endif %}</span>
       {% endif %}
     </span>
     <span class="settings-account-chevron" aria-hidden="true">›</span>
@@ -61,18 +61,20 @@
   <p class="settings-saved" role="status">Settings saved.</p>
   {% endif %}
 
-  {% if access and access.enabled and access.is_free %}
-  <p class="settings-access-line">
-    Recall access · {{ access.status_line }}
-    · <a href="/profile">Manage in Profile</a>
-  </p>
-  {% endif %}
 
   {# ── STUDY ─────────────────────────────────────────────────────────── #}
   {# diff.md item 8: hidden for guests rather than shown disabled — there is
      no plan to set without an account, and a page of dead controls reads as
      a broken page rather than a locked one. #}
-  {% if not is_guest %}
+  {% if is_guest %}
+  {# M5 (DV-7): the prototype's guest STUDY card in place of hidden controls. #}
+  <div class="settings-group" data-settings-group="study-guest">
+    <p class="settings-group-eyebrow">Study</p>
+    <div class="settings-card">
+      <p class="settings-note settings-guest-study">Learning plan and revision calendar appear once you sign in.</p>
+    </div>
+  </div>
+  {% else %}
   <div class="settings-group" data-settings-group="study">
     <p class="settings-group-eyebrow">Study</p>
     <h2 class="section-title settings-desk-title">Learning plan</h2>
@@ -85,6 +87,7 @@
     {% endif %}
     {% if current_user or not multiuser_enabled|default(false) %}
     <form class="settings-form settings-plan-form settings-card" method="post" action="/settings/learning-plan" data-plan-autosubmit>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
     {% else %}
     <div class="settings-form settings-plan-form settings-card">
     {% endif %}
@@ -141,10 +144,8 @@
       </div>
       {% else %}
       <p class="settings-note settings-plan-locked">
-        Part of unlocking every Article — your saved history is never deleted.
-        {% if pricing_enabled|default(false) %}
-        <a href="/pricing">Unlock every Article →</a>
-        {% endif %}
+        Auto Plan is part of Plus and Pro. Your saved history is never deleted.
+        <a href="/playground?stage=plans">See plans ›</a>
       </p>
       {% endif %}
 
@@ -459,16 +460,16 @@
         <span class="settings-account-chevron" aria-hidden="true">›</span>
       </a>
       {% else %}
-      <button type="button" class="settings-row settings-row-link" data-guest-settings-signin>
+      <a class="settings-row settings-row-link" href="/auth/google/start?next=%2Fsettings" data-guest-settings-signin data-guest-gate-google>
         <span class="settings-row-copy">
-          <span class="settings-row-label">Sign in</span>
+          <span class="settings-row-label">Continue with Google</span>
         </span>
         <span class="settings-account-chevron" aria-hidden="true">›</span>
-      </button>
+      </a>
       {% endif %}
       {% if multiuser_enabled|default(false) %}
       {% if is_guest %}
-      <button type="button" class="settings-row settings-row-link" data-guest-settings-report>
+      <button type="button" class="settings-row settings-row-link" data-guest-settings-report data-report-open data-report-section="Settings">
         <span class="settings-row-copy">
           <span class="settings-row-label">Report an issue</span>
         </span>
@@ -509,6 +510,7 @@
      revision-calendar cadence above instead. Browse — In news used to share
      this form; it is a site-wide setting, so it now lives at /admin/content. #}
   <form class="settings-form" method="post" action="/settings">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
     <h2 class="section-title">Study reminders</h2>
     <p class="settings-note">
       Reminders use the same Constitution due list as Home, plus Memory log reviews that are due or overdue.

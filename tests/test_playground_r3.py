@@ -571,7 +571,8 @@ def test_t21_subscribe_gate_plans_come_from_catalogue(tmp_path: Path):
         assert product.display_name in plans_page.text
     assert "₹1199" not in plans_page.text and "Subscribe to Max" not in plans_page.text
     assert "₹149" not in plans_page.text
-    assert PLAYGROUND_BILLING_PATH not in plans_page.text
+    # M5 Q7: the plans form posts to the subscription routes; no link to the manage page.
+    assert f'href="{PLAYGROUND_BILLING_PATH}' not in plans_page.text
     billed = catalogue_plan_views()
     assert billed
     assert all(plan.href == PLAYGROUND_BILLING_PATH for plan in billed)

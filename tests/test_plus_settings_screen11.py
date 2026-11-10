@@ -62,8 +62,7 @@ TOKEN_KEY = Fernet.generate_key().decode()
 INVENTED = (
     "Premium",
     "Unlock all",
-    "No plan yet",
-    "See plans",
+    # M5 (owner, 2026-11-07): "See plans ›" is now the decided Settings link.
     "8/10",
     "renews 1 October",
 )
@@ -306,7 +305,7 @@ def test_plus_settings_marker_uses_shared_predicate() -> None:
     assert "def account_status_for_snapshot" in shell
     assert "def shell_account_status" in shell
     assert '"plus": "RecallC Plus"' in shell
-    assert "playground.css?v=pg55" in base
+    assert "playground.css?v=pg56" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-plus-settings="desktop"' in css
     plus_css = css.split("plus/11-screen", 1)[-1]

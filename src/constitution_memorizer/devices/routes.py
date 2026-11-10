@@ -71,6 +71,13 @@ def create_device_router(templates: Jinja2Templates) -> APIRouter:
                 "revoked_devices": revoked,
                 "active_count": len(active),
                 "device_limit": service.device_limit,
+                # M5 (Q6): the lede states the allowance without promising
+                # registration to Free — a device is registered the first time
+                # the Playground is used on it while a paid plan is active.
+                "device_lede": (
+                    f"Your plan supports the Playground on up to {service.device_limit} registered devices. "
+                    "A device is registered the first time you use the Playground on it while a paid plan is active."
+                ),
                 "confirm_current": confirm_current,
                 "removed": request.query_params.get("removed") == "1",
                 "csrf_token": request.cookies.get("rtc_csrf") or "",

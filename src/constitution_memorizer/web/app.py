@@ -11,6 +11,7 @@ from zoneinfo import ZoneInfo
 from uuid import uuid4
 from pathlib import Path
 
+from constitution_memorizer.auth.dependencies import require_csrf
 from fastapi import (
     Depends,
     FastAPI,
@@ -2426,7 +2427,17 @@ def create_app(
         _sync_auto_roadmap(request, eng)
         return RedirectResponse(url=_home_url(), status_code=303)
 
-    @app.post("/settings/learning-plan")
+    async def _settings_csrf(
+        request: Request, csrf_token: str | None = Form(default=None)
+    ) -> None:
+        """M5 (Q5, owner 2026-11-07): server-side CSRF on the two Settings
+        POSTs, the same check every other account form uses. The single-user
+        install has neither a session nor a CSRF cookie, so it is exempt."""
+        if not getattr(request.app.state, "multiuser_enabled", False):
+            return
+        require_csrf(request, csrf_token)
+
+    @app.post("/settings/learning-plan", dependencies=[Depends(_settings_csrf)])
     async def settings_learning_plan(
         request: Request,
         mode: str = Form("self_paced"),
@@ -3957,7 +3968,7 @@ def create_app(
             },
         )
 
-    @app.post("/settings")
+    @app.post("/settings", dependencies=[Depends(_settings_csrf)])
     async def settings_save(
         notification_frequency: str | None = Form(None),
     ) -> RedirectResponse:

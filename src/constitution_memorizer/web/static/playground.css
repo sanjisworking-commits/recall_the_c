@@ -7173,3 +7173,442 @@ html:has(.pg-complete.pg-surface--fixed-dark) .PlaygroundShell {
     scroll-margin-bottom: calc(28px + env(safe-area-inset-bottom, 0px));
   }
 }
+
+/* ── M5 · Account, Devices and Plans (owner decisions 2026-11-07) ─────────── */
+/* M5 (Q3, owner 2026-11-07): Phone Halted Profile shares the phone Expired
+   Profile rules — same panel and account list, the ON HOLD card from
+   playground_subscription_card. Generated from the Phone Expired Profile
+   block by substituting the marker; keep the two in step. */
+@media (max-width: 560px) {
+  body.is-authed[data-mscreen="account"]:has([data-halted-profile="desktop"])
+    .profile-panel {
+    overflow-x: hidden;
+    padding: 8px var(--m-gutter, 18px)
+      calc(var(--m-tabbar, 60px) + 28px + env(safe-area-inset-bottom, 0px));
+  }
+
+  body.is-authed[data-mscreen="account"]:has([data-halted-profile="desktop"])
+    .mobile-tabbar {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    position: fixed;
+  }
+
+  body.is-authed[data-mscreen="account"]:has([data-halted-profile="desktop"])
+    .mobile-tab.is-active {
+    color: var(--pg-ink);
+  }
+
+  body.is-authed[data-mscreen="account"]:has([data-halted-profile="desktop"])
+    .mobile-tab.is-active
+    .mobile-tab-icon {
+    fill: currentColor;
+  }
+
+  [data-halted-profile="desktop"] > .mobile-topbar,
+  [data-halted-profile="desktop"] > .lede,
+  [data-halted-profile="desktop"] .profile-settings-link,
+  [data-halted-profile="desktop"] .slots-title,
+  [data-halted-profile="desktop"] .slots-title + .muted,
+  [data-halted-profile="desktop"] .settings-note,
+  [data-halted-profile="desktop"] h2.section-title:has(+ .slots-title),
+  [data-halted-profile="desktop"] h2.section-title:has(+ .settings-note) {
+    display: none;
+  }
+
+  [data-halted-profile="desktop"] > .display {
+    margin: 0 0 14px;
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: 0;
+  }
+
+  [data-halted-profile="desktop"] .pg-profile-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  [data-halted-profile="desktop"] .pg-profile-grid > div:first-child {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    min-width: 0;
+  }
+
+  [data-halted-profile="desktop"] .pg-profile-identity,
+  [data-halted-profile="desktop"] .si-profile-account,
+  [data-halted-profile="desktop"] [data-profile-subscription],
+  [data-halted-profile="desktop"] .pg-sub-card,
+  [data-halted-profile="desktop"] .pg-account-list {
+    margin: 0;
+    min-width: 0;
+  }
+
+  [data-halted-profile="desktop"] .pg-eyebrow {
+    margin: 0 2px 8px;
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mid);
+  }
+
+  [data-halted-profile="desktop"] .pg-profile-identity {
+    gap: 12px;
+    align-items: flex-start;
+    padding: 14px 16px;
+    background: var(--rc-paper, var(--paper));
+    border: 1px solid var(--rc-hairline, var(--hairline));
+    border-radius: 14px;
+  }
+
+  [data-halted-profile="desktop"] .pg-profile-identity .dash-avatar,
+  [data-halted-profile="desktop"] .pg-profile-identity .dash-avatar-fallback {
+    width: 36px;
+    height: 36px;
+    border: 0;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--on-accent);
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+    flex: none;
+  }
+
+  [data-halted-profile="desktop"] .profile-name {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+
+  [data-halted-profile="desktop"] .pg-profile-identity-copy .muted {
+    margin: 1px 0 0;
+    font-size: 12.5px;
+    color: var(--mid);
+  }
+
+  [data-halted-profile="desktop"] .pg-profile-identity-copy p:has(.link-btn) {
+    display: block;
+    margin: 6px 0 0;
+  }
+
+  [data-halted-profile="desktop"] .pg-profile-identity-copy .link-btn {
+    font-size: 12.5px;
+    font-weight: 600;
+  }
+
+  [data-halted-profile="desktop"] .pg-account-list {
+    background: var(--rc-paper, var(--paper));
+    border: 1px solid var(--rc-hairline, var(--hairline));
+    border-radius: 14px;
+    overflow: hidden;
+  }
+
+  [data-halted-profile="desktop"] .pg-account-list a,
+  [data-halted-profile="desktop"] .pg-account-list .pg-account-row {
+    min-height: 52px;
+    padding: 0 18px;
+    font-size: 14.5px;
+  }
+
+  [data-halted-profile="desktop"] .si-profile-desk-only {
+    display: flex !important;
+    width: 100%;
+    margin: 0;
+    border: 0;
+    border-top: 1px solid var(--rc-hairline, var(--hairline));
+    border-radius: 0;
+    background: transparent;
+    font: inherit;
+    font-size: 14.5px;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  [data-halted-profile="desktop"] .pg-account-list .si-profile-account-signout {
+    color: var(--destructive);
+  }
+
+  [data-halted-profile="desktop"] .account-actions > li:has([data-open-signout]) {
+    display: none;
+  }
+
+  [data-halted-profile="desktop"] .pg-sub-card {
+    padding: 16px 18px;
+    background: var(--rc-paper, var(--paper));
+    border: 1px solid var(--rc-hairline, var(--hairline));
+    border-radius: 14px;
+  }
+
+  [data-halted-profile="desktop"] .pg-sub-card-head h2 {
+    font-size: 19px;
+    font-weight: 500;
+  }
+
+  [data-halted-profile="desktop"] .pg-sub-card .pg-lede {
+    margin: 0 0 14px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--muted);
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+
+  [data-halted-profile="desktop"] .pg-sub-card .pg-btn--ghost {
+    height: 44px;
+    min-height: 44px;
+    min-width: 44px;
+    width: auto;
+    max-width: 100%;
+    padding: 0 14px;
+    border-radius: 10px;
+    border-color: var(--pg-teal-border);
+    color: var(--pg-teal-dark);
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: none;
+  }
+
+  [data-halted-profile="desktop"] .signin-method-row,
+  [data-halted-profile="desktop"] .account-action,
+  [data-halted-profile="desktop"] .pg-sub-card .pg-btn--ghost,
+  [data-halted-profile="desktop"] .pg-account-list a,
+  [data-halted-profile="desktop"] .pg-account-list .pg-account-row {
+    scroll-margin-bottom: calc(
+      var(--m-tabbar, 60px) + 28px + env(safe-area-inset-bottom, 0px)
+    );
+  }
+
+  [data-halted-profile="desktop"] .signin-method-row {
+    min-height: 52px;
+  }
+
+  [data-halted-profile="desktop"] .account-action {
+    min-height: 52px;
+  }
+}
+
+/* M5 (Q3): Phone Halted Settings shares the phone Expired Settings rules
+   (marker substituted; keep in step with the Phone Expired Settings block). */
+@media (max-width: 560px) {
+  body.is-authed[data-mscreen="settings"]:has([data-halted-settings="desktop"])
+    .panel.settings {
+    overflow-x: hidden;
+    padding: 0 var(--m-gutter, 18px)
+      calc(var(--m-tabbar, 60px) + 28px + env(safe-area-inset-bottom, 0px));
+  }
+
+  body.is-authed[data-mscreen="settings"]:has([data-halted-settings="desktop"])
+    .settings > .display {
+    margin: 0 0 14px;
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: 0;
+  }
+
+  body.is-authed[data-mscreen="settings"]:has([data-halted-settings="desktop"])
+    .settings > .lede {
+    display: block;
+    margin: 8px 2px 4px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--muted, var(--mid));
+  }
+
+  body.is-authed[data-mscreen="settings"]:has([data-halted-settings="desktop"])
+    .settings-saved {
+    display: block;
+    margin: 8px 2px 12px;
+    font-size: 13px;
+    color: var(--browse-due, var(--mid));
+  }
+
+  body.is-authed[data-mscreen="settings"]:has([data-halted-settings="desktop"])
+    .settings-account-row {
+    gap: 12px;
+    padding: 14px 16px;
+    margin-bottom: 4px;
+    background: var(--rc-paper, var(--paper));
+    border: 1px solid var(--rc-hairline, var(--hairline));
+    border-radius: 14px;
+  }
+
+  body.is-authed[data-mscreen="settings"]:has([data-halted-settings="desktop"])
+    .settings-account-avatar,
+  body.is-authed[data-mscreen="settings"]:has([data-halted-settings="desktop"])
+    .settings-account-avatar.is-fallback {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: var(--ink);
+    color: var(--on-accent);
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  body.is-authed[data-mscreen="settings"]:has([data-halted-settings="desktop"])
+    .settings-account-name {
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  body.is-authed[data-mscreen="settings"]:has([data-halted-settings="desktop"])
+    .settings-account-status {
+    font-size: 12.5px;
+    color: var(--mid);
+  }
+
+  body.is-authed[data-mscreen="settings"]:has([data-halted-settings="desktop"])
+    .segmented-input:checked + .segmented-btn,
+  body.is-authed[data-mscreen="settings"]:has([data-halted-settings="desktop"])
+    .settings-theme-btn.is-active {
+    background: var(--ink);
+    border-color: var(--ink);
+    box-shadow: none;
+    color: var(--on-accent);
+    font-weight: 600;
+  }
+
+  body.is-authed[data-mscreen="settings"]:has([data-halted-settings="desktop"])
+    .settings-card,
+  body.is-authed[data-mscreen="settings"]:has([data-halted-settings="desktop"])
+    .settings-form.settings-card {
+    border-radius: 14px;
+  }
+
+  body.is-authed[data-mscreen="settings"]:has([data-halted-settings="desktop"])
+    .settings-plan-locked {
+    overflow-wrap: anywhere;
+  }
+
+  body.is-authed[data-mscreen="settings"]:has([data-halted-settings="desktop"])
+    .settings-row-link.is-danger {
+    color: var(--destructive);
+    font-weight: 500;
+  }
+
+  body.is-authed[data-mscreen="settings"]:has([data-halted-settings="desktop"])
+    .mobile-back,
+  body.is-authed[data-mscreen="settings"]:has([data-halted-settings="desktop"])
+    .segmented-btn,
+  body.is-authed[data-mscreen="settings"]:has([data-halted-settings="desktop"])
+    .settings-theme-btn,
+  body.is-authed[data-mscreen="settings"]:has([data-halted-settings="desktop"])
+    .settings-toggle,
+  body.is-authed[data-mscreen="settings"]:has([data-halted-settings="desktop"])
+    .settings-stepper-btn,
+  body.is-authed[data-mscreen="settings"]:has([data-halted-settings="desktop"])
+    .settings-row-link {
+    min-height: 44px;
+  }
+
+  body.is-authed[data-mscreen="settings"]:has([data-halted-settings="desktop"])
+    .mobile-back,
+  body.is-authed[data-mscreen="settings"]:has([data-halted-settings="desktop"])
+    .settings-toggle,
+  body.is-authed[data-mscreen="settings"]:has([data-halted-settings="desktop"])
+    .settings-stepper-btn {
+    min-width: 44px;
+  }
+
+  body.is-authed[data-mscreen="settings"]:has([data-halted-settings="desktop"])
+    [data-experience-row="motion"],
+  body.is-authed[data-mscreen="settings"]:has([data-halted-settings="desktop"])
+    [data-settings-group="account"],
+  body.is-authed[data-mscreen="settings"]:has([data-halted-settings="desktop"])
+    .settings-verbatim,
+  body.is-authed[data-mscreen="settings"]:has([data-halted-settings="desktop"])
+    .settings > .section-title,
+  body.is-authed[data-mscreen="settings"]:has([data-halted-settings="desktop"])
+    .settings > .settings-note {
+    scroll-margin-bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* Q7: the plan cards are a radio group inside one form. The radio itself is
+   visually hidden; the label is the card; :has(:checked) draws the selection
+   and :focus-visible the keyboard ring. One column at every width — Continue
+   sits under the cards. */
+.pg-plan-fieldset {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  min-width: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.pg-plan-fieldset > legend {
+  padding: 0;
+  margin: 0 0 4px;
+}
+
+label.pg-plan-card {
+  position: relative;
+  display: block;
+  margin: 0;
+  cursor: pointer;
+  color: inherit;
+}
+
+label.pg-plan-card > span {
+  display: block;
+}
+
+.pg-plan-radio {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+label.pg-plan-card:has(.pg-plan-radio:checked) {
+  border-color: var(--pg-ink);
+}
+
+label.pg-plan-card:has(.pg-plan-radio:focus-visible) {
+  outline: 2px solid var(--pg-ink);
+  outline-offset: 2px;
+}
+
+.pg-plan-form .pg-plan-actions {
+  margin: 14px 0 0;
+}
+
+.pg-plan-form .pg-plan-actions .pg-btn {
+  width: 100%;
+  min-height: 48px;
+  box-sizing: border-box;
+}
+
+@media (min-width: 561px) {
+  .EntitlementGate[data-signed-in-pg-gate][data-pg-gate-stage="plans"] {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "kicker"
+      "title"
+      "lede"
+      "plans";
+    max-width: 640px;
+  }
+
+  .EntitlementGate[data-signed-in-pg-gate][data-pg-gate-stage="plans"] > .pg-plan-stage {
+    display: block !important;
+  }
+}
+

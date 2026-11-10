@@ -18,7 +18,8 @@
     </ol>
   </div>
   <aside class="guest-pg-card">
-    <a class="guest-pg-signin" href="{{ gate.cta_href }}">Sign in</a>
+    {# M5 (Q9, 5-11): the same single Google action as the phone gate. #}
+    <a class="guest-pg-signin" href="{{ guest_google_href|default('/auth/google/start?next=%2Fplayground') }}" data-guest-gate-google>Continue with Google</a>
     <p class="guest-pg-note">You'll come straight back to this page. Signing in also unlocks the full Constitution learning experience, free. Reading the Bare Acts stays free for everyone.</p>
   </aside>
 </section>
@@ -52,28 +53,40 @@
   </div>
   {% endif %}
   {% if gate_stage == 'plans' and gate_selector_plans %}
-  <div class="pg-plan-stage" data-pg-plans>
-    <p class="pg-eyebrow">Playground plans</p>
+  {# M5 (Q7 / Q8, owner 2026-11-07): the plan cards are a radio group inside
+     one form. Continue posts to the existing subscription routes — create for
+     an account without a subscription, change for a current subscriber — which
+     validate CSRF, eligibility and the purchasable tiers themselves. Catalogue
+     prices are shown as current configuration (not a pricing decision). #}
+  <form class="pg-plan-stage pg-plan-form" method="post" action="{% if current_plan_tier %}/billing/subscriptions/change{% else %}/billing/subscriptions/create{% endif %}" data-pg-plans data-pg-plan-form="{% if current_plan_tier %}change{% else %}create{% endif %}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token|default('') }}">
+    <fieldset class="pg-plan-fieldset">
+    <legend class="pg-eyebrow">Playground plans</legend>
     {% for plan in gate_selector_plans %}
     {% set is_current = current_plan_tier and plan.tier == current_plan_tier %}
     {% set is_selected = selected_tier and plan.tier == selected_tier %}
     {% if is_current %}
-    <article class="pg-plan-card is-disabled{% if is_selected %} is-selected{% endif %}" data-tier="{{ plan.tier }}" data-pg-plan-current{% if is_selected %} data-pg-plan-selected aria-current="true"{% endif %}>
+    <article class="pg-plan-card is-disabled" data-tier="{{ plan.tier }}" data-pg-plan-current aria-current="true">
       <p class="pg-plan-name">{{ plan.display_name }}</p>
       <p class="pg-plan-price">{{ plan.price_label }} <span>/ month</span></p>
       <p class="pg-lede">{{ plan.limit_label }}</p>
       <p class="pg-plan-current">Current plan</p>
     </article>
     {% else %}
-    <a class="pg-plan-card{% if is_selected %} is-selected{% endif %}" href="{{ plan.href }}" data-tier="{{ plan.tier }}" aria-pressed="{{ 'true' if is_selected else 'false' }}"{% if is_selected %} data-pg-plan-selected aria-current="true"{% endif %}>
-      <p class="pg-plan-name">{{ plan.display_name }}</p>
-      <p class="pg-plan-price">{{ plan.price_label }} <span>/ month</span></p>
-      <p class="pg-lede">{{ plan.limit_label }}</p>
-    </a>
+    <label class="pg-plan-card{% if is_selected %} is-selected{% endif %}" data-tier="{{ plan.tier }}"{% if is_selected %} data-pg-plan-selected{% endif %}>
+      <input class="pg-plan-radio" type="radio" name="tier" value="{{ plan.tier }}" required{% if is_selected %} checked{% endif %} data-pg-plan-option>
+      <span class="pg-plan-name">{{ plan.display_name }}</span>
+      <span class="pg-plan-price">{{ plan.price_label }} <span>/ month</span></span>
+      <span class="pg-lede">{{ plan.limit_label }}</span>
+    </label>
     {% endif %}
     {% endfor %}
-    {% if gate.from_price %}<p class="pg-note">Monthly. GST included. {{ gate.from_price }}.</p>{% endif %}
-  </div>
+    </fieldset>
+    <p class="pg-note">Monthly. GST included.</p>
+    <p class="pg-actions pg-plan-actions">
+      <button type="submit" class="pg-btn" data-pg-plan-continue>{{ gate_continue_label or 'Continue' }}</button>
+    </p>
+  </form>
   {% elif gate.show_plans and gate.plans %}
   <div class="pg-plan-stage" data-pg-plans>
     <p class="pg-eyebrow">Playground plans</p>
@@ -85,14 +98,10 @@
       <p class="pg-actions"><a class="pg-btn" href="{{ plan.href }}">{{ plan.cta_label }}</a></p>
     </article>
     {% endfor %}
-    {% if gate.from_price %}<p class="pg-note">Monthly. GST included. {{ gate.from_price }}.</p>{% endif %}
+    <p class="pg-note">Monthly. GST included.</p>
   </div>
   {% endif %}
-  {% if gate_stage == 'plans' and gate_continue_label %}
-  <p class="pg-actions">
-    <button type="button" class="pg-btn" data-pg-plan-continue>{{ gate_continue_label }}</button>
-  </p>
-  {% elif gate_stage != 'plans' %}
+  {% if gate_stage != 'plans' %}
   <p class="pg-actions">
     {% if gate.cta_label and gate.cta_href %}
     <a class="pg-btn" href="{{ gate.cta_href }}">{{ gate.cta_label }}</a>

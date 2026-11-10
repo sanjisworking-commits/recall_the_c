@@ -561,7 +561,7 @@ def test_admin_auto_start_spans_beyond_free_article_cap(tmp_path: Path):
         repo.claim_article(user_id, article)
     saved = client.post(
         "/settings/learning-plan",
-        data={"mode": "auto", "daily_target": "7"},
+        data={"csrf_token": client.cookies.get("rtc_csrf") or "", "mode": "auto", "daily_target": "7"},
         follow_redirects=False,
     )
     assert saved.status_code == 303
@@ -677,7 +677,7 @@ def test_settings_plan_status_reads_as_a_sentence_before_activation(tmp_path: Pa
     # Save through the real route so the roadmap is built, as it is in the app.
     saved = client.post(
         "/settings/learning-plan",
-        data={"mode": "auto", "daily_target": "3"},
+        data={"csrf_token": client.cookies.get("rtc_csrf") or "", "mode": "auto", "daily_target": "3"},
         follow_redirects=False,
     )
     assert saved.status_code == 303

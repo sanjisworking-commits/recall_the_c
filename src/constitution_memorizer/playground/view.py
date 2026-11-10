@@ -752,8 +752,10 @@ def playground_subscription_card(snapshot: Any | None) -> PlaygroundSubscription
         choice_limit = getattr(snapshot, "playground_choice_limit", None)
         if choice_limit is not None:
             used_choices = int(getattr(snapshot, "playground_choices_used", 0) or 0)
+            # M5 (owner, 2026-11-07): "no paid subscription" — never "no
+            # entitlement"; the Free account keeps every Constitution Article.
             return PlaygroundSubscriptionCard(
-                title="Playground",
+                title="No paid subscription",
                 chip="FREE",
                 chip_kind="none",
                 body=(
@@ -762,18 +764,18 @@ def playground_subscription_card(snapshot: Any | None) -> PlaygroundSubscription
                 ),
                 stat_big=f"{used_choices}/{choice_limit}",
                 stat_label="law choices",
-                cta_label="View Playground plans",
+                cta_label="See plans ›",
                 cta_href=PLAYGROUND_PLANS_PATH,
             )
         return PlaygroundSubscriptionCard(
-            title="Playground",
+            title="No paid subscription",
             chip="",
             chip_kind="none",
-            body="Subscribe to add Bare Acts to a monthly Playground.",
+            body="Playground learning needs a paid plan. Plus and Pro add Bare Acts to your Playground.",
             stat_big="",
             stat_label="",
-            cta_label="Subscribe",
-            cta_href=PLAYGROUND_BILLING_PATH,
+            cta_label="See plans ›",
+            cta_href=PLAYGROUND_PLANS_PATH,
         )
     renew = f" Current paid period ends {period}." if period else ""
     stat_big = "∞" if limit is None else str(limit)

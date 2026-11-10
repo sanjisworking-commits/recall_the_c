@@ -1,14 +1,19 @@
 {% extends "base.html" %}
-{% block title %}Your devices · {{ app_name|default('Recall the C') }}{% endblock %}
+{% block title %}Devices · {{ app_name|default('Recall the C') }}{% endblock %}
 {% block mobile_screen %}account{% endblock %}
 {% block content %}
-<section class="panel profile-panel">
+{# M5 (Q6, owner 2026-11-07): the prototype's Devices page — title, allowance
+   lede, REGISTERED cards with Remove, a designed empty state — over the same
+   endpoints (list, remove, confirm-current). No tier gate: account security. #}
+<section class="panel profile-panel devices-panel" data-devices-page data-signed-in-devices>
   <div class="mobile-topbar">
     <a class="mobile-back" href="/profile">← Profile</a>
   </div>
-  <p class="eyebrow">Security</p>
-  <h1 class="display">Your devices</h1>
-  <p class="lede pg-devices-lede" data-device-count>{{ active_count }} of {{ device_limit }} devices</p>
+  <a class="devices-back-link si-profile-desk-only" href="/profile">← Profile</a>
+  <p class="eyebrow">Account</p>
+  <h1 class="display">Devices</h1>
+  <p class="lede pg-devices-lede" data-device-lede>{{ device_lede }}</p>
+  <p class="devices-count" data-device-count>{{ active_count }} of {{ device_limit }} devices</p>
 
   {% if removed %}
   <div class="auth-banner is-ok" role="status">
@@ -31,62 +36,69 @@
   </article>
   {% endif %}
 
-  <h2 class="section-title">Active devices</h2>
-  {% if active_devices %}
-  {% for device in active_devices %}
-  <article class="device-row{% if device.is_current %} is-current{% endif %}">
-    <div class="device-main">
-      <p class="device-name">{{ device.display_name or 'Device' }}</p>
-      <p class="device-meta">
-        <span>{{ device.platform_label }}</span>
-        · Last seen {{ device.last_seen_at.strftime('%d %b %Y %H:%M') }}
-        {% if device.first_registered_at %}
-        · Registered {{ device.first_registered_at.strftime('%d %b %Y') }}
+  <div class="devices-grid">
+  <section class="devices-section" data-devices-registered>
+    <p class="pg-eyebrow">Registered</p>
+    {% if active_devices %}
+    <div class="devices-list">
+    {% for device in active_devices %}
+    <article class="pg-sub-card device-card{% if device.is_current %} is-current{% endif %}" data-device-id="{{ device.id }}">
+      <div class="device-main">
+        <p class="device-name">{{ device.display_name or 'Device' }}{% if device.current_label %} <span class="device-current-chip">{{ device.current_label }}</span>{% endif %}</p>
+        <p class="device-meta">
+          <span>{{ device.platform_label }}</span>
+          · Last seen {{ device.last_seen_at.strftime('%d %b %Y %H:%M') }}
+          {% if device.first_registered_at %}
+          · Registered {{ device.first_registered_at.strftime('%d %b %Y') }}
+          {% endif %}
+        </p>
+      </div>
+      <div class="device-actions">
+        {% if device.is_current %}
+        <a class="pg-btn pg-btn--ghost" href="/profile/security/devices?confirm={{ device.id }}">Remove this device</a>
+        {% else %}
+        <form method="post" action="/profile/security/devices/{{ device.id }}/remove">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+          <button class="pg-btn pg-btn--ghost" type="submit">Remove</button>
+        </form>
         {% endif %}
-        · {{ device.status_label }}
-      </p>
-      {% if device.current_label %}
-      <p class="device-current">{{ device.current_label }}</p>
-      {% endif %}
+      </div>
+    </article>
+    {% endfor %}
     </div>
-    <div class="device-actions">
-      {% if device.is_current %}
-      <a class="btn btn-ghost" href="/profile/security/devices?confirm={{ device.id }}">Remove this device</a>
-      {% else %}
-      <form method="post" action="/profile/security/devices/{{ device.id }}/remove">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
-        <button class="btn btn-ghost" type="submit">Remove</button>
-      </form>
-      {% endif %}
-    </div>
-  </article>
-  {% endfor %}
-  {% else %}
-  <p class="muted">No active devices. A device is registered the first time Playground is used while subscribed.</p>
-  {% endif %}
+    {% else %}
+    <article class="pg-sub-card device-card is-empty" data-devices-empty>
+      <p class="device-name">No devices registered yet.</p>
+      <p class="device-meta">{{ device_lede }}</p>
+    </article>
+    {% endif %}
+  </section>
 
   {% if revoked_devices %}
-  <h2 class="section-title">Removed devices</h2>
-  <div class="pg-account-list" data-device-revoked>
-  {% for device in revoked_devices %}
-  <article class="device-row is-removed{% if device.is_current %} is-current{% endif %}">
-    <div class="device-main">
-      <p class="device-name">{{ device.display_name or 'Device' }}</p>
-      <p class="device-meta">
-        <span>{{ device.platform_label }}</span>
-        · Last seen {{ device.last_seen_at.strftime('%d %b %Y %H:%M') }}
-        {% if device.first_registered_at %}
-        · Registered {{ device.first_registered_at.strftime('%d %b %Y') }}
+  <section class="devices-section" data-device-revoked>
+    <p class="pg-eyebrow">Removed devices</p>
+    <div class="devices-list">
+    {% for device in revoked_devices %}
+    <article class="pg-sub-card device-card is-removed{% if device.is_current %} is-current{% endif %}" data-device-id="{{ device.id }}">
+      <div class="device-main">
+        <p class="device-name">{{ device.display_name or 'Device' }}</p>
+        <p class="device-meta">
+          <span>{{ device.platform_label }}</span>
+          · Last seen {{ device.last_seen_at.strftime('%d %b %Y %H:%M') }}
+          {% if device.first_registered_at %}
+          · Registered {{ device.first_registered_at.strftime('%d %b %Y') }}
+          {% endif %}
+          · {{ device.status_label }}
+        </p>
+        {% if device.current_label %}
+        <p class="device-current">{{ device.current_label }}</p>
         {% endif %}
-        · {{ device.status_label }}
-      </p>
-      {% if device.current_label %}
-      <p class="device-current">{{ device.current_label }}</p>
-      {% endif %}
+      </div>
+    </article>
+    {% endfor %}
     </div>
-  </article>
-  {% endfor %}
-  </div>
+  </section>
   {% endif %}
+  </div>
 </section>
 {% endblock %}

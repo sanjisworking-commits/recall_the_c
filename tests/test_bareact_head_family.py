@@ -403,7 +403,7 @@ def test_head_and_sheet_styles_replaced_the_per_surface_blocks():
         ):
             assert stale not in sheet, stale
     base = (TEMPLATES / "base.html").read_text(encoding="utf-8")
-    for pin in ("styles.css?v=main92", "mobile.css?v=mob111", "playground.css?v=pg55", "playground.js?v=pg13", "mobile.js?v=mob31"):
+    for pin in ("styles.css?v=main93", "mobile.css?v=mob112", "playground.css?v=pg56", "playground.js?v=pg13", "mobile.js?v=mob31"):
         assert pin in base, pin
 
 
@@ -480,4 +480,4 @@ def test_the_sheet_trigger_shows_an_opening_state_and_sends_one_request():
     busy = css.split('[data-pg-sheet][aria-busy="true"],', 1)[1].split("}", 1)[0]
     assert "cursor: progress" in busy and "pointer-events: none" in busy
     base = (TEMPLATES / "base.html").read_text(encoding="utf-8")
-    assert "playground.css?v=pg55" in base and "playground.js?v=pg13" in base
+    assert "playground.css?v=pg56" in base and "playground.js?v=pg13" in base

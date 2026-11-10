@@ -125,11 +125,11 @@ def test_screen10_identity_info_report_and_existing_auth_path(tmp_path: Path) ->
     assert GUEST_PROFILE_LEDE in desk
     assert GUEST_PROFILE_BARE_ACTS_LABEL in desk
     assert f'href="{GUEST_PROFILE_BARE_ACTS_HREF}"' in desk
-    assert GUEST_PROFILE_BARE_ACTS_HREF == "/laws/ndps"
-    assert ">Sign in<" in desk
+    assert GUEST_PROFILE_BARE_ACTS_HREF == "/laws"
+    assert ">Continue with Google<" in desk  # M5 Q2
     assert desk.count("guest-profile-signin") == 1
     assert f'href="{GUEST_PROFILE_SIGNIN_HREF}"' in desk
-    assert GUEST_PROFILE_SIGNIN_HREF == "/login?next=/profile"
+    assert GUEST_PROFILE_SIGNIN_HREF == "/auth/google/start?next=%2Fprofile"
     assert GUEST_PROFILE_REPORT in desk
     assert "guest-profile-report" in desk
     assert 'href=' not in desk.split("guest-profile-report", 1)[1].split("</div>", 1)[0]
@@ -152,8 +152,8 @@ def test_screen10_phone_is_guest_06_composition(tmp_path: Path) -> None:
     assert GUEST_PROFILE_BARE_ACTS_LABEL in phone
     assert f'href="{GUEST_PROFILE_BARE_ACTS_HREF}"' in phone
     assert GUEST_PROFILE_REPORT in phone
-    assert 'type="button"' in phone
-    assert GUEST_PROFILE_SIGNIN_HREF not in phone
+    assert 'type="button"' in phone  # the report button
+    assert GUEST_PROFILE_SIGNIN_HREF in phone  # M5 Q2: the phone block carries the Google action too
     assert "Guest · Reading only" not in phone
     assert 'href="/laws"' not in phone.replace(
         f'href="{GUEST_PROFILE_BARE_ACTS_HREF}"', ""

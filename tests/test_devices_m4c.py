@@ -313,14 +313,17 @@ def test_non_events_do_not_increment_replacement_count(tmp_path: Path):
 def test_existing_registered_device_stays_allowed_at_churn_cap(tmp_path: Path):
     service = _svc(tmp_path)
     first, fifth = _cycle_three_replacements(service)
-    allowed = service.inspect_current_device(USER, "tok-a")
+    # M5: every read runs on the fixture clock — the replacement window is a
+    # rolling 30 days, so a real-clock read stops counting the seeded rows
+    # once NOW is more than 30 days old (the three failures of 2026-10/11).
+    allowed = service.inspect_current_device(USER, "tok-a", now=NOW)
     assert allowed.current_device_registered is True
     assert allowed.current_device_allowed is True
     assert allowed.block_reason is None
-    capped = service.inspect_current_device(USER, "tok-new")
+    capped = service.inspect_current_device(USER, "tok-new", now=NOW)
     assert capped.block_reason == "device_limit"
     service.revoke_device(USER, fifth.current_device_id, now=NOW)
-    blocked = service.inspect_current_device(USER, "tok-new")
+    blocked = service.inspect_current_device(USER, "tok-new", now=NOW)
     assert blocked.block_reason == BLOCK_DEVICE_REPLACEMENT_LIMIT
     still_a = service.ensure_current_device(
         USER, "tok-a", auth_session_id="sess-a", commercially_eligible=True, now=NOW
@@ -525,13 +528,17 @@ def test_admin_reset_does_not_erase_replacement_history(tmp_path: Path):
     assert all(row.is_revoked for row in service.list_devices(USER))
     assert len(service.list_devices(USER)) == len(devices_before)
     blocked = service.ensure_current_device(
-        USER, "tok-after-reset", auth_session_id="sess-n", commercially_eligible=True
+        USER, "tok-after-reset", auth_session_id="sess-n", commercially_eligible=True, now=NOW
     )
     assert blocked.block_reason == BLOCK_DEVICE_REPLACEMENT_LIMIT
 
 
-def test_admin_clears_replacement_lock_with_audit(tmp_path: Path):
+def test_admin_clears_replacement_lock_with_audit(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     client, repo = _admin_app(tmp_path)
+    # M5: the admin route has no clock parameter; it clears replacements inside
+    # the rolling 30-day window ending now. Pin the repository clock to the
+    # fixture's NOW so the seeded rows are inside that window.
+    monkeypatch.setattr("constitution_memorizer.devices.repository._utc_now", lambda: NOW)
     _seed_user_profile(repo, USER, "member@example.com")
     service: DeviceService = client.app.state.device_service
     first, fifth = _cycle_three_replacements(service)

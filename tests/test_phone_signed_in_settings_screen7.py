@@ -51,9 +51,9 @@ TAB_HREFS = (
     ("Profile", "/profile"),
 )
 MOCK_SCREEN_COPY = (
-    "RecallC Free",
-    "No plan yet",
-    "See plans",
+    # M5 (owner, 2026-11-07): the identity row reads "RecallC Free · Signed in
+    # with Google" and the Auto Plan note links "See plans ›" — both decided.
+    "Unlock all",
 )
 LEGAL_HREFS = ("/terms", "/privacy", "/grievance")
 FREE_SEL = (
@@ -207,8 +207,7 @@ def test_phone_free_settings_is_live_screen11_contract(tmp_path: Path) -> None:
     assert 'data-phone-settings="guest"' not in html
     panel = _panel(html)
     assert "Sanjay" in panel
-    assert "Signed in with Google" in panel
-    assert "RecallC Free" not in panel
+    assert "RecallC Free · Signed in with Google" in panel  # M5 Q4 identity line
     ident = panel.split("settings-account-row", 1)[1][:400]
     assert 'href="/profile"' in ident
     assert "Appearance, your learning plan, and your revision calendar." in panel
@@ -320,9 +319,9 @@ def test_phone_free_settings_css_is_breakpoint_scoped() -> None:
     assert "@media (min-width: 561px)" in desk
     assert "max-width: 720px" in desk
     assert "font-size: 30px" in desk
-    assert "playground.css?v=pg55" in BASE.read_text(encoding="utf-8")
-    assert "styles.css?v=main92" in BASE.read_text(encoding="utf-8")
-    assert "mobile.css?v=mob111" in BASE.read_text(encoding="utf-8")
+    assert "playground.css?v=pg56" in BASE.read_text(encoding="utf-8")
+    assert "styles.css?v=main93" in BASE.read_text(encoding="utf-8")
+    assert "mobile.css?v=mob112" in BASE.read_text(encoding="utf-8")
     assert "mobile.css?v=mob104" not in BASE.read_text(encoding="utf-8")
     src = SETTINGS.read_text(encoding="utf-8")
     for phrase in MOCK_SCREEN_COPY:

@@ -330,7 +330,7 @@ def test_plus_playground_marker_uses_shared_predicate() -> None:
     assert "def account_status_for_snapshot" in shell
     assert "def shell_account_status" in shell
     assert '"plus": "RecallC Plus"' in shell
-    assert "playground.css?v=pg55" in base
+    assert "playground.css?v=pg56" in base
     deps = DEPS.read_text(encoding="utf-8")
     assert "def request_is_active_plus" in deps
     assert 'snapshot.tier == "plus"' in deps
