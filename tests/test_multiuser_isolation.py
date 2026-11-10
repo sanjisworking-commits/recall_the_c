@@ -181,12 +181,9 @@ def test_logout_a_does_not_invalidate_b(tmp_path: Path):
     # Guests see an inline gate (not a redirect wall); B remains signed in.
     gate = client_a.get("/dashboard")
     assert gate.status_code == 200
-    assert "Sign in to save 3 Articles to Recall for free" in gate.text
+    assert "Sign in to save your progress." in gate.text  # M4 guest copy
     assert client_b.get("/dashboard").status_code == 200
-    assert (
-        "Sign in to save 3 Articles to Recall for free"
-        not in client_b.get("/dashboard").text
-    )
+    assert "Sign in to save your progress." not in client_b.get("/dashboard").text
 
 
 def test_url_cannot_spoof_user(tmp_path: Path):
