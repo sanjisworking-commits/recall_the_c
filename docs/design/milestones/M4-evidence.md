@@ -8,7 +8,7 @@
 | Flag | `PLAYGROUND_TIER_MODEL` stays `monthly` by default; Today renders identically under `choices` (§0 read-back) |
 | Tooling | `…/m1r/tools/capture_m1r.py` (route probe); `…/m4/tools/readback_m4.py` (nine states × two models × first run / after one real Learn → Done, through the app's TestClient); `…/m4/tools/serve_populated_m4.py` (serves a populated Today — one completed Article, two clauses due — for signed-in captures); dev launchers `playground-m4-<tier>[-choices]` (port 8920) |
 | Candidate (rendered source) | `3e06fb0` (template, context, both stylesheets, pins `main92` / `mob111`) + the 320 px greeting follow-up that follows it; tests `2c26faf` (`tests/test_today_family.py`, 39 tests; nine re-pointed assertions; 32 pin files) |
-| Status | LOCAL / PRELIMINARY — hosted checks NOT RUN (no deployment). Every row states **PASS on this SHA**, **carried forward from SHA**, **BLOCKED** or **NOT RUN**. "Ready for local acceptance review" (PR comment, 2026-11-07) is a review recommendation; the accepted-baseline row is added only on the owner's explicit acceptance. |
+| Status | LOCAL / PRELIMINARY — hosted checks NOT RUN (no deployment). Every row states **PASS on this SHA**, **carried forward from SHA**, **BLOCKED** or **NOT RUN**. **Accepted as the reusable local Today baseline on candidate `3e06fb0` / tests `2c26faf` (owner-forwarded review, 2026-11-10; §9).** |
 
 ## 0. Baseline before edit — `6186863` (`m4/01-baseline-6186863/`)
 
@@ -104,3 +104,14 @@ Paths (under `docs/design/proto-comparison-2026-10-19/m4/01-baseline-6186863/`),
 Not present in the commit: `Cookies`, `Login Data`, `Web Data`, `Sessions/`, `Network/`, any `.ldb` file.
 
 Method: `git ls-tree -r --name-only 490f930` for the paths and `git cat-file -s` for sizes; the JSON files parsed in full with every leaf key listed and the name-flagged values read; the text files read; the binary journal identified by its header and searched by printable-string extraction. **Limit:** string extraction from a binary journal cannot prove the absence of every sensitive byte sequence. **Conclusion: no credentials, tokens or session data found by the recorded inspection.**
+
+## 9. Owner sign-off (owner-forwarded review, 2026-11-10)
+
+| Item | Record |
+|---|---|
+| Decision | **Accepted** as the reusable local baseline for Today (`/dashboard`): the §4 route matrix, §3 gate and §5 visual / a11y rows on candidate `3e06fb0` (+ `dc50253`) with tests `2c26faf`. Reuse by SHA; reopen only when the Today template, context, their stylesheets or a shared dependency changes the rendering or behaviour. The shared shell, Browse and Today screenshot matrices are not repeated for later milestones (owner, 2026-11-10). |
+| Executed runs | local 3 / 4097 / 176 on `2c26faf` (the three = the device baseline of the time); GitHub 42355818704 on `e9ca1e4`: 3 / 4096 / 163 / 14 deselected (§2). The device baseline is retired from `1b7d245` (M5) onward; this record keeps its lines as observed. |
+| Browser-profile files | §8 stands (no credentials, tokens or session data found by the recorded inspection); a history rewrite before merge remains the owner's decision. |
+| NOT RUN | real 200 % zoom (320 px captures as supporting reflow evidence), automated accessibility scan, screen reader, hosted / staging. |
+| Separate decisions | merge, deployment and entitlement activation. |
+
