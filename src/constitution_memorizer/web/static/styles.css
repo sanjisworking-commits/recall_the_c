@@ -3486,7 +3486,9 @@ code {
 }
 
 .sched-page {
-  margin: -8px -4px 0;
+  /* Vertical pull only: a horizontal negative margin made every Schedule page
+     scroll sideways by 4 px at >= 720 px (PR #233 acceptance, finding 4.1). */
+  margin: -8px 0 0;
 }
 
 .sched-head {
