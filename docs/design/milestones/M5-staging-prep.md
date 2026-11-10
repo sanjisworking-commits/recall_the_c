@@ -9,7 +9,7 @@ Owner instruction (2026-11-10): verify the staging target read-only, complete A5
 | Item | Value |
 |---|---|
 | Candidate | PR #240, branch `pg-m5-account`, head `8ccddc2` = the last reviewed SHA (the only commits after the source commit `d2d6436` are tests `8aa3f0f`, `7d75338`, `6a807a0` and the evidence commit `8ccddc2`; the working tree held only uncommitted documentation and the dark halted captures, committed after this record). The deployment SHA would be `8ccddc2`. |
-| CI | `workflow_dispatch` on `pg-m5-account`, run 42765509117 on `8ccddc2` — https://github.com/sanjisworking-commits/recall_the_c/actions/runs/42765509117 — pytest **executed** (`Decision: run=true (workflow_dispatch)`). Result: **PENDING** — in progress at the time of this commit; recorded by the follow-up commit once it completes. |
+| CI | `workflow_dispatch` on `pg-m5-account`, run 42765509117 on `8ccddc2` — https://github.com/sanjisworking-commits/recall_the_c/actions/runs/42765509117 — pytest **executed** (`Decision: run=true (workflow_dispatch)`). Result: **conclusion `success`** — `Decision: run=true (workflow_dispatch)` — pytest: **0 failed, 4160 passed, 163 skipped, 14 deselected** (14 min 14 s). Consistent with the local 0 / 4161 / 176 on `6a807a0`: CI deselects the 14 integration-marked tests, of which one (the docling smoke test) passes locally and thirteen (the Postgres suites) skip locally; the code under test is identical (`8ccddc2` adds documentation only on top of `6a807a0`). |
 | Local full suite | 0 failed / 4161 passed / 176 skipped on `6a807a0` (`M5-evidence.md` §2), recorded separately from CI. |
 
 ## 2. Staging target — verified read-only
