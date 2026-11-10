@@ -10,7 +10,7 @@ Branch `pg-m5-account` (PR #240); record in `docs/design/milestones/M5-evidence.
 | `02-candidate-d2d6436/guest/` | candidate guest Profile, Settings, Devices (redirect), gate and plans at 320 / 390 / 1280, light + dark |
 | `02-candidate-d2d6436/free/` | candidate Free, same grid, signed in through the dev launcher |
 | `02-candidate-d2d6436/plus/` | candidate Plus at 390 / 1280, light + dark: Playground first (registers the device on the dev server), then Profile, Devices (populated), the change-plan stage (`?stage=plans&tier=pro`) and Settings |
-| `02-candidate-d2d6436/halted/` | candidate halted Profile and Settings at 390 / 1280, light (the phone halted rules) |
+| `02-candidate-d2d6436/halted/`, `halted-dark/` | candidate halted Profile and Settings at 390 / 1280, light (2026-11-07) and dark (2026-11-10; no earlier dark evidence of the expired or halted phone screens existed) |
 | `02-candidate-d2d6436/readback/` | the nine-state read-back on the candidate under both tier models |
 | `02-candidate-d2d6436/routes*.json` | the route lists used for each cohort |
 
