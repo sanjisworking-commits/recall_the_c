@@ -1,5 +1,17 @@
 # Keep Nixpacks on Python even when prototype JS/HTML sits in docs/.
+#
+# Root requirements.txt is Docling-only (PDF extraction). Nixpacks prefers
+# that file over pyproject.toml, so a default install leaves /app/.venv
+# without uvicorn — the memorize_the_c crash:
+#   /app/.venv/bin/python: No module named uvicorn
 providers = ["python"]
+
+[phases.install]
+cmds = [
+  "python -m pip install --upgrade pip",
+  "python -m pip install -r requirements-web.txt",
+  "python -m pip install . --no-deps",
+]
 
 [start]
 cmd = "sh -c 'PYTHONPATH=src${PYTHONPATH:+:$PYTHONPATH} exec python -m uvicorn constitution_memorizer.asgi:app --host 0.0.0.0 --port ${PORT:-8080}'"
