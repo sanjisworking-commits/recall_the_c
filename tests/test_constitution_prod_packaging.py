@@ -196,6 +196,16 @@ def test_railway_probe_config_matches_healthz():
     assert 'providers = ["python"]' in nixpacks
     assert "constitution_memorizer.asgi:app" in nixpacks
     assert "${PORT:-8080}" in nixpacks
+    assert "requirements-web.txt" in nixpacks
+    assert "pip install . --no-deps" in nixpacks
+    # Nixpacks would otherwise install this Docling-only file and skip uvicorn.
+    requirements = [
+        line.strip().lower()
+        for line in (ROOT / "requirements.txt").read_text(encoding="utf-8").splitlines()
+        if line.strip() and not line.strip().startswith("#")
+    ]
+    assert any(line.startswith("docling") for line in requirements)
+    assert not any(line.startswith("uvicorn") for line in requirements)
     procfile = (ROOT / "Procfile").read_text(encoding="utf-8")
     assert "constitution_memorizer.asgi:app" in procfile
 

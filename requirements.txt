@@ -1,4 +1,6 @@
 # PDF extraction only (Bare Act → constitution.json).
 # Not required for serve, corrections, or generate-units.
+# Hosted web (Railway Nixpacks) must use requirements-web.txt — this file
+# does not install uvicorn/FastAPI.
 #   pip install -e ".[pdf]"
 docling>=2.0.0
