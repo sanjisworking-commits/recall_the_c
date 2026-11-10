@@ -30,6 +30,17 @@ APP_JS = ROOT / "src" / "constitution_memorizer" / "web" / "static" / "app.js"
 MOBILE_JS = ROOT / "src" / "constitution_memorizer" / "web" / "static" / "mobile.js"
 
 
+def _init_learn_source(source: str) -> str:
+    """The body of ``initLearn``, up to the next top-level function.
+
+    Bounded by shape rather than by whichever function happens to follow it: a
+    named neighbour silently turns this slice into "the rest of the file" the
+    day that neighbour is renamed or removed, and every assertion below reads
+    as passing while checking nothing.
+    """
+    return source.split("function initLearn()", 1)[1].split("\n  function ", 1)[0]
+
+
 def _client(tmp_path: Path, *, multiuser: bool = False) -> TestClient:
     kwargs: dict = {
         "units_path": MINI_UNITS,
@@ -553,9 +564,7 @@ def test_exit_guard_leaves_in_unit_navigation_alone():
 def test_mode_switching_still_cannot_fire_popstate():
     """The sentinel only works because nothing else pushes history."""
     source = APP_JS.read_text(encoding="utf-8")
-    learn_src = source.split("function initLearn()", 1)[1].split(
-        "function initBrowseArticle()", 1
-    )[0]
+    learn_src = _init_learn_source(source)
     assert "pushState" not in learn_src
     assert "history.replaceState" in learn_src
     assert "pushState" not in MOBILE_JS.read_text(encoding="utf-8")
