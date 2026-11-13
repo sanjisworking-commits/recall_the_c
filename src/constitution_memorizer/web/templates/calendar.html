@@ -164,12 +164,21 @@
         <option value="my">My material</option>
       </select>
     </label>
+    {# M6 (Q2): this is the legend a signed-in account sees on the desktop month
+       (the base legend below is hidden for signed-in month views): the two
+       personal-material states, then the roadmap's six Constitution states in
+       the roadmap's order, then the Auto Plan "Review" item only when the month
+       draws a review-capacity chip. Overdue serves both chip families. #}
     <div class="cal-si-legend" aria-label="Legend">
       <span class="calendar-legend-item"><span class="calendar-swatch is-my-material" aria-hidden="true"></span>My material</span>
       <span class="calendar-legend-item"><span class="calendar-swatch is-due-today" aria-hidden="true"></span>Due today</span>
-      <span class="calendar-legend-item"><span class="calendar-swatch is-overdue" aria-hidden="true"></span>Overdue</span>
       <span class="calendar-legend-item"><span class="calendar-swatch is-memorized" aria-hidden="true"></span>Memorized</span>
+      <span class="calendar-legend-item"><span class="calendar-swatch is-review-done" aria-hidden="true"></span>Review done</span>
+      <span class="calendar-legend-item"><span class="calendar-swatch is-due" aria-hidden="true"></span>Review due</span>
       <span class="calendar-legend-item"><span class="calendar-swatch is-scheduled" aria-hidden="true"></span>Scheduled</span>
+      <span class="calendar-legend-item"><span class="calendar-swatch is-new-planned" aria-hidden="true"></span>New</span>
+      <span class="calendar-legend-item"><span class="calendar-swatch is-overdue" aria-hidden="true"></span>Overdue</span>
+      {% if calendar.has_review_capacity %}<span class="calendar-legend-item"><span class="calendar-swatch is-review-capacity" aria-hidden="true"></span>Review</span>{% endif %}
     </div>
     <span class="cal-si-onlyyou" title="Personal study material is visible only to your account.">
       <svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="4" y="9" width="12" height="8" rx="1.5"></rect><path d="M7 9V6a3 3 0 0 1 6 0v3"></path></svg>
