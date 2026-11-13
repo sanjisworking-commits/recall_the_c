@@ -75,10 +75,20 @@ def test_f01_guest_calendar_is_the_sign_in_gate(tmp_path: Path) -> None:
 # --------------------------------------------------------------------------- #
 # F02 — legends                                                                #
 # --------------------------------------------------------------------------- #
+VISIBLE_LEGEND = ["My material", "Due today", *ROADMAP_LEGEND]
+
+
 def test_f02_desktop_month_legend_is_the_roadmap_list_without_capacity_chips(tmp_path: Path) -> None:
     html = _client(tmp_path, "free").get("/calendar").text
     main = _main(html)
+    # the legend a signed-in account sees is the toolbar legend; the base legend
+    # is hidden for signed-in month views by styles.css and keeps the same six items
+    assert _legend(main, "cal-si-legend") == VISIBLE_LEGEND
     assert _legend(main, "calendar-legend") == ROADMAP_LEGEND
+    css = (ROOT / "src" / "constitution_memorizer" / "web" / "static" / "styles.css").read_text(encoding="utf-8")
+    assert "[data-signed-in-calendar]:not(.is-week) .calendar-legend {\n    display: none;" in css
+    toolbar = main.split('class="cal-si-legend"', 1)[1].split("</div>", 1)[0]
+    assert "is-review-capacity" not in toolbar
     assert "is-review-capacity" not in main.split('class="calendar-legend"', 1)[1].split("</div>", 1)[0]
     assert _legend(main, "cal-m-legend") == ["Today", "Overdue", "Scheduled", "Done", "New"]
     week = _main(_client(tmp_path, "free").get(f"/calendar?view=week&date={date.today().isoformat()}").text)
@@ -87,7 +97,7 @@ def test_f02_desktop_month_legend_is_the_roadmap_list_without_capacity_chips(tmp
 
 def test_f02_legend_adds_the_review_capacity_item_only_when_drawn(tmp_path: Path) -> None:
     template_src = TEMPLATE.read_text(encoding="utf-8")
-    assert "{% if calendar.has_review_capacity %}" in template_src
+    assert template_src.count("{% if calendar.has_review_capacity %}") == 2  # toolbar legend + base legend
     today = date.today()
     day = CalendarDay(day=today.day, iso=today.isoformat(), is_today=True, is_past=False,
                       chips=[CalendarChip(kind="review_capacity", unit_id="", label="REVIEW · 1", title="1 revision on this day")])
@@ -361,8 +371,10 @@ def test_f11_overdue_legend_matches_the_month_grid(tmp_path: Path) -> None:
         classes.setdefault(unit, []).append(cls)
     assert "is-due is-overdue" in classes["article-14"], classes
     assert "is-due" in classes["article-21"] and not any("is-overdue" in c for c in classes["article-21"]), classes
-    legend = main.split('class="calendar-legend"', 1)[1].split("</div>", 1)[0]
-    assert 'calendar-swatch is-overdue' in legend and 'calendar-swatch is-due' in legend
+    legend = main.split('class="cal-si-legend"', 1)[1].split("</div>", 1)[0]
+    assert 'calendar-swatch is-overdue' in legend and 'calendar-swatch is-due"' in legend
+    # the Auto Plan "Review" item is listed exactly when the grid draws a review-capacity chip
+    assert ("is-review-capacity" in legend) is ("is-review-capacity" in grid)
     css = (ROOT / "src" / "constitution_memorizer" / "web" / "static" / "styles.css").read_text(encoding="utf-8")
     assert ".calendar-chip.is-overdue {" in css and ".calendar-swatch.is-overdue {" in css
     # the week view names the same day Overdue
