@@ -149,7 +149,7 @@ def test_signed_in_free_calendar_marks_desktop_surface(tmp_path: Path) -> None:
     assert ">Playground<" in html
     assert ">My material<" in html
     assert "Add task" in html
-    assert 'href="/playground"' in html.split("data-cal-continue-recall", 1)[1][:80]
+    assert 'href="/dashboard"' in html.split("data-cal-continue-recall", 1)[1][:80]  # M6 Q5: Continue today's Recall → Today
     assert "Continue today’s Recall" in html or "Continue today's Recall" in html
     assert "NDPS" not in html
     assert "Section 8" not in html
@@ -239,7 +239,7 @@ def test_signed_in_calendar_does_not_touch_accepted_screens() -> None:
     cal = CAL.read_text(encoding="utf-8")
     assert "data-signed-in-calendar" in cal
     assert "Study archive" not in cal
-    assert 'href="/playground"' in cal
+    assert 'href="/dashboard"' in cal  # M6 Q5: Continue today's Recall → Today
     assert "Add task" in cal
     assert "data-cal-filter" in cal
     assert "NDPS Act" not in cal
@@ -264,7 +264,7 @@ def test_signed_in_calendar_does_not_touch_accepted_screens() -> None:
     generic, _, rest = mobile.partition("is signedIn/05-screen:")
     assert "data-signed-in-calendar" not in generic
     phone_block = rest.split("/* R1 — Playground phone shell", 1)[0]
-    assert ":not([data-plus-calendar])" in phone_block
+    assert ":not([data-paid-calendar])" in phone_block  # M6 Q3: keyed on the shared paid marker
     assert ":not([data-expired-calendar])" in phone_block
     assert ":not([data-halted-calendar])" in phone_block
     assert 'data-plus-calendar="desktop"' not in phone_block

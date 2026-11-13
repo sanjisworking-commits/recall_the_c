@@ -443,8 +443,8 @@ def test_phone_signed_in_markers_and_pins() -> None:
     assert "guest_screen4" not in bare
     base = BASE.read_text(encoding="utf-8")
     assert "data-signed-in-phone-tabs" in base
-    assert "styles.css?v=main93" in base
-    assert "mobile.css?v=mob112" in base
+    assert "styles.css?v=main94" in base
+    assert "mobile.css?v=mob113" in base
     assert "mobile.css?v=mob106" not in base
     assert "styles.css?v=main87" not in base
     styles = STYLES.read_text(encoding="utf-8")
