@@ -3010,6 +3010,8 @@ def create_app(
         plus_calendar = False
         halted_calendar = False
         expired_calendar = False
+        paid_calendar = False
+        can_add_material = False
         halted_header_status = ""
         expired_header_status = ""
         if not is_guest:
@@ -3023,6 +3025,19 @@ def create_app(
             plus_calendar = request_is_active_plus(request)
             halted_calendar = request_is_halted_subscriber(request)
             expired_calendar = request_is_expired_subscriber(request)
+            # M6 (Q3 / Q1, owner 2026-11-11): one paid marker for every active
+            # paid tier (Plus keeps its own marker too), and the personal-
+            # material capability the create entry points render on. The
+            # server gate in study_archive.py stays the authority.
+            _snap = get_entitlement_snapshot(request)
+            paid_calendar = bool(
+                getattr(_snap, "is_subscribed", False)
+                and str(getattr(_snap, "tier", "") or "") in {"plus", "pro", "max"}
+                and getattr(_snap, "can_open_playground", False)
+                and not halted_calendar
+                and not expired_calendar
+            )
+            can_add_material = bool(getattr(_snap, "can_add_personal_calendar_tasks", True))
             if halted_calendar or expired_calendar:
                 from constitution_memorizer.entitlements.models import BLOCK_PAYMENT_HALTED
                 from constitution_memorizer.playground.view import gate_view
@@ -3130,6 +3145,8 @@ def create_app(
                 "revisions": revisions,
                 "pace_label": pace,
                 "plus_calendar": plus_calendar,
+                "paid_calendar": paid_calendar,
+                "can_add_material": can_add_material,
                 "halted_calendar": halted_calendar,
                 "halted_header_status": halted_header_status,
                 "expired_calendar": expired_calendar,

@@ -91,6 +91,9 @@ class CalendarMonth:
     memorized_count: int
     review_done_count: int
     scheduled_count: int
+    # M6 (Q2): the desktop legend lists the Auto Plan "Review" (capacity)
+    # item only when the month actually draws such a chip.
+    has_review_capacity: bool = False
 
 
 def _shift_month(year: int, month: int, delta: int) -> tuple[int, int]:
@@ -460,6 +463,9 @@ def build_calendar_month(
         memorized_count=memorized_count,
         review_done_count=review_done_count,
         scheduled_count=scheduled_count,
+        has_review_capacity=any(
+            chip.kind == "review_capacity" for day in days for chip in day.chips
+        ),
     )
 
 

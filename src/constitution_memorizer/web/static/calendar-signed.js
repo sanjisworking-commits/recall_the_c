@@ -287,6 +287,7 @@
   if (initial) showPanel(initial);
 
   root.addEventListener("click", (event) => {
+    if (event.target.closest("[data-cal-upgrade]")) return;
     const add = event.target.closest("[data-study-add],[data-study-date]");
     if (add) {
       event.preventDefault();
@@ -355,6 +356,20 @@
 
   $$("[data-study-close]", document).forEach((btn) => {
     btn.addEventListener("click", () => btn.closest("dialog")?.close());
+  });
+
+  // M6 (Q1): the gated create entries open the upgrade sheet instead of the
+  // editor. showModal() contains focus and closes on Esc; focus returns to
+  // the entry that opened it.
+  const upgrade = document.getElementById("cal-si-upgrade");
+  $$("[data-cal-upgrade]", document).forEach((btn) => {
+    btn.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      if (!upgrade) return;
+      upgrade.showModal();
+      upgrade.addEventListener("close", () => btn.focus(), { once: true });
+    });
   });
 
   viewer?.addEventListener("close", () => {

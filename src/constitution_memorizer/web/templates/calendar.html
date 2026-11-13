@@ -2,7 +2,7 @@
 {% block title %}{{ calendar.title }} · Calendar{% endblock %}
 {% block mobile_screen %}revisions{% endblock %}
 {% block content %}
-<section class="panel calendar{% if calendar_view|default('month') == 'week' %} is-week{% endif %}"{% if current_user and not is_guest|default(false) %} data-signed-in-calendar data-cal-today="{{ calendar.today.isoformat() }}"{% if study_token|default('') %} data-study-token="{{ study_token }}"{% endif %}{% endif %}{% if plus_calendar|default(false) %} data-plus-calendar="desktop"{% endif %}{% if halted_calendar|default(false) %} data-halted-calendar="desktop"{% endif %}{% if expired_calendar|default(false) %} data-expired-calendar="desktop"{% endif %}>
+<section class="panel calendar{% if calendar_view|default('month') == 'week' %} is-week{% endif %}"{% if current_user and not is_guest|default(false) %} data-signed-in-calendar data-cal-today="{{ calendar.today.isoformat() }}"{% if study_token|default('') %} data-study-token="{{ study_token }}"{% endif %}{% endif %}{% if plus_calendar|default(false) %} data-plus-calendar="desktop"{% endif %}{% if paid_calendar|default(false) %} data-paid-calendar="desktop"{% endif %}{% if halted_calendar|default(false) %} data-halted-calendar="desktop"{% endif %}{% if expired_calendar|default(false) %} data-expired-calendar="desktop"{% endif %}>
   {# Design 19: the desktop month grid does not survive 390 px, so the phone
      gets its own grid over the same calendar.days. Rendered for EVERY month —
      gating this on `revisions` (which is today-only) made the nav arrows lead
@@ -104,7 +104,7 @@
     </div>
     {% endif %}
 
-    <p class="revisions-note" data-calendar-gcal-footnote>Recall schedules revision for you — 1 → 3 → 7 → 15 → 30 → 60 days. With Google Calendar on in Settings, these land in your calendar too — Playground due work as the pending rung only.</p>
+    <p class="revisions-note" data-calendar-gcal-footnote>Recall schedules revision for you — 1 → 3 → 7 → 15 → 30 → 60 days (your own study material: 3 → 7 → 15 → 30 → 60). With Google Calendar on in Settings, these land in your calendar too — Playground due work as the pending rung only.</p>
   </div>
 
   <div class="calendar-header">
@@ -175,8 +175,13 @@
       <svg width="12" height="12" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="4" y="9" width="12" height="8" rx="1.5"></rect><path d="M7 9V6a3 3 0 0 1 6 0v3"></path></svg>
       Only you
     </span>
-    {% if study_token|default('') %}
+    {# M6 (Q1, owner 2026-11-11): the create entry points render on the
+       capability; without it one entry opens the upgrade sheet. The API gate
+       in study_archive.py stays authoritative either way. #}
+    {% if study_token|default('') and can_add_material|default(true) %}
     <button type="button" class="cal-si-add-task" data-study-add>Add task</button>
+    {% elif study_token|default('') %}
+    <button type="button" class="cal-si-add-task" data-cal-upgrade aria-haspopup="dialog" aria-controls="cal-si-upgrade">Add task</button>
     {% endif %}
   </div>
   {% if study_overdue|default([]) %}
@@ -207,7 +212,10 @@
     <span class="calendar-legend-item"><span class="calendar-swatch is-due" aria-hidden="true"></span>Review due</span>
     <span class="calendar-legend-item"><span class="calendar-swatch is-scheduled" aria-hidden="true"></span>Scheduled</span>
     <span class="calendar-legend-item"><span class="calendar-swatch is-new-planned" aria-hidden="true"></span>New</span>
+    <span class="calendar-legend-item"><span class="calendar-swatch is-overdue" aria-hidden="true"></span>Overdue</span>
+    {% if calendar.has_review_capacity %}
     <span class="calendar-legend-item"><span class="calendar-swatch is-review-capacity" aria-hidden="true"></span>Review</span>
+    {% endif %}
   </div>
 
   <div class="cal-si-desk">
@@ -227,7 +235,7 @@
       >
         <div class="calendar-daynum">
           <span class="calendar-daynum-n">{{ day.day }}</span>
-          {% if current_user and not is_guest|default(false) and study_token|default('') and day.iso <= calendar.today.isoformat() %}
+          {% if current_user and not is_guest|default(false) and study_token|default('') and can_add_material|default(true) and day.iso <= calendar.today.isoformat() %}
           <button type="button" class="cal-si-cell-add" data-study-date="{{ day.iso }}" aria-label="Add study material for {{ day.iso }}">+</button>
           {% endif %}
         </div>
@@ -246,21 +254,21 @@
         {% set chip_src = 'playground' if chip.category else 'constitution' %}
         {% if chip.href %}
         <a
-          class="calendar-chip is-{{ chip.kind | replace('_', '-') }}{% if chip.category %} is-law-revision{% endif %}"
+          class="calendar-chip is-{{ chip.kind | replace('_', '-') }}{% if chip.kind == 'due' and day.is_past %} is-overdue{% endif %}{% if chip.category %} is-law-revision{% endif %}"
           href="{{ chip.href }}"
           title="{{ chip.title }}"
           data-cal-source="{{ chip_src }}"
         >{{ chip.label }}</a>
         {% elif chip.unit_id %}
         <a
-          class="calendar-chip is-{{ chip.kind | replace('_', '-') }}"
+          class="calendar-chip is-{{ chip.kind | replace('_', '-') }}{% if chip.kind == 'due' and day.is_past %} is-overdue{% endif %}"
           href="/learn/{{ chip.unit_id }}"
           title="{{ chip.title }}"
           data-cal-source="{{ chip_src }}"
         >{{ chip.label }}</a>
         {% else %}
         <span
-          class="calendar-chip is-{{ chip.kind | replace('_', '-') }}"
+          class="calendar-chip is-{{ chip.kind | replace('_', '-') }}{% if chip.kind == 'due' and day.is_past %} is-overdue{% endif %}"
           title="{{ chip.title }}"
           data-cal-source="{{ chip_src }}"
         >{{ chip.label }}</span>
@@ -305,9 +313,11 @@
       {% endif %}
     </div>
     {% endfor %}
-    <a class="cal-si-continue" data-cal-continue-recall href="/playground">Continue today’s Recall →</a>
-    {% if study_token|default('') %}
+    <a class="cal-si-continue" data-cal-continue-recall href="/dashboard">Continue today’s Recall →</a>
+    {% if study_token|default('') and can_add_material|default(true) %}
     <button type="button" class="cal-si-day-add" data-cal-day-add data-study-date="{{ calendar.today.isoformat() }}">+ Add study material for this day</button>
+    {% elif study_token|default('') %}
+    <button type="button" class="cal-si-day-add" data-cal-upgrade aria-haspopup="dialog" aria-controls="cal-si-upgrade">+ Add study material for this day</button>
     {% endif %}
   </aside>
   {% endif %}
@@ -357,7 +367,19 @@
   </div>
   {% endif %}
 </section>
-{% if current_user and not is_guest|default(false) and study_token|default('') %}
+{% if current_user and not is_guest|default(false) and study_token|default('') and not can_add_material|default(true) %}
+{# M6 (Q1): the M6-R upgrade sheet on every create entry point. One action,
+   no price. A native modal dialog: focus is contained and Esc closes it. #}
+<dialog id="cal-si-upgrade" class="cal-si-dialog cal-si-upgrade" aria-labelledby="cal-si-upgrade-title" data-cal-upgrade-sheet>
+  <div class="cal-si-dialog-head">
+    <h2 id="cal-si-upgrade-title">Personal tasks are part of Plus</h2>
+    <button type="button" data-study-close aria-label="Close">×</button>
+  </div>
+  <p class="cal-si-upgrade-body">Plus and Pro add your own study material to the Calendar. Everything you already saved stays here — read it, mark it revised, download it.</p>
+  <p class="cal-si-upgrade-actions"><a class="cal-si-upgrade-cta" href="/playground?stage=plans">See plans ›</a></p>
+</dialog>
+{% endif %}
+{% if current_user and not is_guest|default(false) and study_token|default('') and can_add_material|default(true) %}
 <dialog id="cal-si-editor" class="cal-si-dialog" aria-labelledby="cal-si-editor-title">
   <div class="cal-si-dialog-head">
     <h2 id="cal-si-editor-title">Add study material</h2>
@@ -381,6 +403,10 @@
     </div>
   </form>
 </dialog>
+{% endif %}
+{# M6 (Q1, 5-6a): the viewer, its controls and the script stay for every signed-in account —
+   existing material is read, marked revised and downloaded whatever the create capability. #}
+{% if current_user and not is_guest|default(false) and study_token|default('') %}
 <dialog id="cal-si-viewer" class="cal-si-dialog cal-si-viewer" aria-labelledby="cal-si-view-title">
   <div class="cal-si-dialog-head">
     <div>
@@ -395,7 +421,9 @@
       <div id="cal-si-assets"></div>
       <h3>Revision dates</h3>
       <div id="cal-si-reviews"></div>
+      {% if can_add_material|default(true) %}{# M6 (Q1): edit is a write; the API answers 403 without the capability #}
       <button type="button" id="cal-si-edit">Edit / add attachments</button>
+      {% endif %}
       <p id="cal-si-view-error" role="alert" hidden></p>
     </aside>
     <div id="cal-si-preview" aria-live="polite"></div>
@@ -406,6 +434,6 @@
   <button type="button" data-cal-toast-undo>Undo</button>
   <button type="button" data-cal-toast-dismiss aria-label="Dismiss">×</button>
 </div>
-<script src="/static/calendar-signed.js?v=cal2" defer></script>
+<script src="/static/calendar-signed.js?v=cal3" defer></script>
 {% endif %}
 {% endblock %}
