@@ -577,9 +577,7 @@ def test_phone_expired_calendar_due_chip_cannot_reach_learning(
     if bare.status_code == 200:
         assert "data-pg-workspace" not in bare.text
         assert "data-pg-picker" not in bare.text
-    assert 'data-cal-continue-recall href="/dashboard"' in html or (  # M6 Q5: Continue today's Recall → Today
-        'href="/playground"' in html.split("data-cal-continue-recall", 1)[1][:80]
-    )
+    assert 'data-cal-continue-recall href="/dashboard"' in html  # M6 Q5: Continue today's Recall → Today (former `or` branch removed)
     home = client.get("/playground")
     assert home.status_code == 200
     assert 'data-expired-playground="desktop"' in home.text
