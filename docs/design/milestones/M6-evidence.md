@@ -38,7 +38,7 @@ Free month and week at 390 / 1280, light + dark; read-back of the nine states un
 | Full suite, local (`pytest tests`) | `eaec5e3` | **4229 passed / 177 skipped / 0 failed** (13 min 16 s; started 2026-11-13 17:01 UTC; log `fullsuite-eaec5e3.log` in the session scratchpad) |
 | CI (`workflow_dispatch`, pytest executed) | `81e2fa5` | run 43467013779 — **cancelled** before a result (conclusion `cancelled`; superseded by the dispatch on `eaec5e3`) |
 | CI (`workflow_dispatch`, pytest executed) | `eaec5e3` | run 43468411439 — https://github.com/sanjisworking-commits/recall_the_c/actions/runs/43468411439 — pytest **executed** (`Decision: run=true (commit count 924 % 3 == 0)`), job *Unit tests* **success**: **4228 passed / 164 skipped / 14 deselected / 0 failed** (13 min 07 s). Consistent with the local run: CI deselects the 14 integration-marked tests, of which one (the docling smoke test) passes locally and thirteen (the Postgres suites) skip locally |
-| CI (`pull_request`, automatic) | `eaec5e3` | run 43468419394 — in progress at the time of this record (its unit step follows the workflow's own rule; the dispatched run above is the executed record) |
+| CI (`pull_request`, automatic) | `eaec5e3` | run 43468419394 — success, pytest **executed** (`Decision: run=true (commit count 924 % 3 == 0)`): 4228 passed / 164 skipped / 14 deselected / 0 failed (13 min 52 s) — a second executed run on the same SHA |
 
 New modules: `tests/test_calendar_family.py` (63 tests, F01–F12) and `tests/test_phone_halted_calendar_screen5.py` (6 tests, one Playwright-gated and skipped locally). Every changed assertion is listed in `M6-test-changes.md`; none was weakened.
 
@@ -100,3 +100,33 @@ Q1–Q7 as recorded in `M6.md` §4. During implementation two findings were reso
 ## 8. Owner sign-off
 
 None recorded. Owner sign-off is recorded only against an explicit acceptance instruction; this record is local evidence. "270 passing cohort tests is a useful checkpoint, not yet M6 acceptance" (owner, 2026-11-13) — the gates above, the full suite and the executed CI run are the checkpoint offered for that decision.
+
+## 9. SHA traceability and finding dispositions (owner-forwarded review, 2026-11-14)
+
+Check requested: that the captured source candidate `ac8ff53` is contained in the tested SHA `eaec5e3`, and what changed from `eaec5e3` to the PR head `1c5e99e`.
+
+| Question | Observed (`git`, 2026-11-14) |
+|---|---|
+| Is `ac8ff53` in `eaec5e3`? | Yes — `git merge-base --is-ancestor ac8ff53 eaec5e3` succeeds; `eaec5e3` is the single commit after it. |
+| What separates them? | `tests/test_calendar_family.py` only (15 insertions, 3 deletions); `git diff ac8ff53 eaec5e3 -- src` is empty. The captures were served from the `eaec5e3` tree, so captured source = tested source. |
+| Is `eaec5e3` in `1c5e99e`? | Yes — `1c5e99e` is the single commit after it; local head, `origin/pg-m6-calendar` and the PR head are all `1c5e99e`. |
+| What changed `eaec5e3` → `1c5e99e`? | 39 files, all added, all under `docs/design/`: 22 PNG captures, 11 JSON (manifests, read-back, route lists), 5 Markdown (`M6.md`, `M6-evidence.md`, `M6-test-changes.md`, the read-back table, the `m6/README.md`) and **one Python file**, `docs/design/proto-comparison-2026-10-19/m6/tools/capture_sheet_m6.py`. |
+| Any application, test or configuration change? | None — `git diff eaec5e3 1c5e99e -- src tests pyproject.toml .github railpack.json alembic` is empty. |
+| Is the Python file executable code in the product? | No. It is an evidence tool: not imported by `src` or `tests` (0 references), outside pytest's `testpaths = ["tests"]`, not part of the deployed package. It is nevertheless code, so it was checked: `py_compile` passes; the committed blob equals the file that produced the two sheet captures (written 22:18 IST, captures 22:34 IST on 2026-11-13); both PNGs match the SHA-256 values in `manifest-sheet.json`; `exceptions: []` in both rows. |
+| Checks on the final head | Calendar cohort re-run on `1c5e99e`: **340 passed / 15 skipped / 0 failed** (99.5 s). The full suite and the executed CI results on `eaec5e3` carry forward to `1c5e99e` because no collected or executed file differs. |
+| CI on `1c5e99e` | run 43470996541 (`pull_request`) — conclusion success, but pytest **did not run** (`Decision: run=false (commit count not divisible by 3)`); it is not counted as an executed run. |
+
+Verdict: the change set from `eaec5e3` to `1c5e99e` is documentation and evidence, plus one evidence tool that no product or test code loads. PASS on `1c5e99e` for the cohort; full suite and executed CI carried from `eaec5e3`.
+
+Dispositions recommended in the same review (recorded as recommendations; none changes code in M6):
+
+| Finding | Disposition |
+|---|---|
+| Base legend `.calendar-legend` hidden for signed-in month views | Keep while single-user mode uses it. |
+| `review_capacity` chips on Free accounts | Track for the entitlement review; a capacity indicator alone does not establish access to the paid Auto Plan. |
+| No live Playground chip capture; no "Review done" chip capture | Seeded test coverage accepted for this milestone; the two visual-evidence gaps stay recorded as gaps (§7). |
+| Upgrade-sheet close control 33 × 36 px | Not a blocker on size alone; enlarge with the next relevant UI batch unless usability testing identifies a problem. |
+| Hosted checks and accessibility checks | Stay open. Every NOT RUN entry in §5 and §7 is retained; local acceptance does not imply they passed. |
+
+Sign-off status: the review **recommends** accepting M6 as the reusable local Calendar baseline once traceability is confirmed. That is a recommendation, not an acceptance instruction, so §8 is unchanged: no owner sign-off is recorded. Hosted acceptance stays separate; no merge, deployment or `choices` activation is authorised by this record.
+
