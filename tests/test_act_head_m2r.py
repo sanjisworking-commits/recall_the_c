@@ -398,7 +398,7 @@ def test_failure_banner_styles_and_pins():
         block = css.split(rule, 1)[1].split("}", 1)[0]
         assert "var(--pg-" in block and "#" not in block  # tokens only: both themes
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg56" in base and "playground.js?v=pg13" in base
+    assert "playground.css?v=pg57" in base and "playground.js?v=pg13" in base
     panel = PANEL.read_text(encoding="utf-8")
     assert 'data-pg-add-alert hidden' in panel and 'role="alert"' in panel
 

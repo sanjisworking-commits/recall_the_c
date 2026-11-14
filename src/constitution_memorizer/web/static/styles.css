@@ -568,6 +568,17 @@ html[data-theme="dark"] .theme-toggle {
   padding: 1px 5px;
 }
 
+/* M6 (Q2, owner 2026-11-11): a Constitution review whose day has passed renders
+   the legend's Overdue state (amber, like the week card and the phone bar);
+   is-due keeps the accent for today's reviews. */
+.calendar-chip.is-overdue {
+  background: var(--paper);
+  border: 2px solid var(--amber, #b45309);
+  color: var(--amber, #b45309);
+  font-weight: 700;
+  padding: 1px 5px;
+}
+
 .calendar-chip.is-scheduled {
   background: var(--paper);
   border: 1px dashed var(--faint);

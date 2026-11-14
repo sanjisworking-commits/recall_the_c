@@ -387,9 +387,7 @@ def test_phone_expired_calendar_empty_has_no_invented_chips(tmp_path: Path) -> N
     assert "Article 20" not in phone
     assert "1 → 3 → 7 → 15 → 30 → 60" in phone
     desk = html.split("calendar-header", 1)[1]
-    assert 'data-cal-continue-recall href="/playground"' in desk or (
-        'href="/playground"' in desk and "data-cal-continue-recall" in desk
-    )
+    assert 'data-cal-continue-recall href="/dashboard"' in desk  # M6 Q5: Continue today's Recall → Today (the former `or` branch matched any /playground link)
 
 
 def test_phone_expired_calendar_mixed_due_today_keeps_constitution_today_card(
@@ -434,7 +432,7 @@ def test_phone_expired_calendar_mixed_due_today_keeps_constitution_today_card(
     assert "cal-m-today-continue" not in day_html
     assert 'href="/learn/clause-1"' in day_html
     desk = html.split("calendar-header", 1)[1]
-    assert "/playground" in desk.split("data-cal-continue-recall", 1)[1][:80]
+    assert "/dashboard" in desk.split("data-cal-continue-recall", 1)[1][:80]  # M6 Q5: Continue today's Recall → Today
     assert 'data-cal-source="playground"' in desk
     assert 'data-cal-source="constitution"' in desk
 
@@ -579,9 +577,7 @@ def test_phone_expired_calendar_due_chip_cannot_reach_learning(
     if bare.status_code == 200:
         assert "data-pg-workspace" not in bare.text
         assert "data-pg-picker" not in bare.text
-    assert 'data-cal-continue-recall href="/playground"' in html or (
-        'href="/playground"' in html.split("data-cal-continue-recall", 1)[1][:80]
-    )
+    assert 'data-cal-continue-recall href="/dashboard"' in html  # M6 Q5: Continue today's Recall → Today (former `or` branch removed)
     home = client.get("/playground")
     assert home.status_code == 200
     assert 'data-expired-playground="desktop"' in home.text
@@ -705,7 +701,7 @@ def test_phone_expired_calendar_css_scope_pins_and_desktop_09_untouched() -> Non
     today_card = phone.split("data-today-list", 1)[1]
     assert "cal-m-today-continue" in today_card
     desk_cal = cal.split("calendar-header", 1)[1]
-    assert 'href="/playground"' in desk_cal
+    assert 'href="/dashboard"' in desk_cal  # M6 Q5: Continue today's Recall → Today
     assert "data-cal-continue-recall" in desk_cal
     app = APP.read_text(encoding="utf-8")
     assert "build_revisions_view" in app
@@ -715,10 +711,10 @@ def test_phone_expired_calendar_css_scope_pins_and_desktop_09_untouched() -> Non
         assert "expired_calendar" not in text
         assert "data-expired-calendar" not in text
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg56" in base
+    assert "playground.css?v=pg57" in base
     assert "playground.css?v=pg44" not in base
-    assert "styles.css?v=main93" in base
-    assert "mobile.css?v=mob112" in base
+    assert "styles.css?v=main94" in base
+    assert "mobile.css?v=mob113" in base
     assert "data-expired-calendar-phone-tabs" not in base
     # M1-R (PR pg-m1r-shell-labels): one signed-in bar (data-signed-in-phone-tabs) renders first in
     # base.html, followed only by the guest bar; the active tab comes from the shell_* flag

@@ -419,7 +419,7 @@ def test_halted_calendar_reaches_month_with_calendar_selected(
     assert 'role="radiogroup"' in html
     assert 'href="/calendar?view=week' in html
     assert ">Playground<" in html
-    assert 'href="/playground"' in html.split("data-cal-continue-recall", 1)[1][:80]
+    assert 'href="/dashboard"' in html.split("data-cal-continue-recall", 1)[1][:80]  # M6 Q5: Continue today's Recall → Today
 
 
 def test_halted_calendar_canonical_month_uses_live_state(
@@ -483,7 +483,7 @@ def test_halted_calendar_canonical_month_uses_live_state(
     assert law_path("ndps") in panel_hrefs
     assert all("/learn/" not in href for href in panel_hrefs)
     continue_chunk = html.split("data-cal-continue-recall", 1)[1][:80]
-    assert 'href="/playground"' in continue_chunk
+    assert 'href="/dashboard"' in continue_chunk  # M6 Q5: Continue today's Recall → Today
     assert "Manage subscription" not in continue_chunk
     for phrase in INVENTED:
         assert phrase not in html, phrase
@@ -678,7 +678,7 @@ def test_halted_elapsed_period_stays_halted_on_calendar(
     assert "Resume Playground" not in html
     assert LIVE_EXPIRED not in html
     continue_chunk = html.split("data-cal-continue-recall", 1)[1][:80]
-    assert 'href="/playground"' in continue_chunk
+    assert 'href="/dashboard"' in continue_chunk  # M6 Q5: Continue today's Recall → Today
 
 
 def test_guest_free_plus_expired_paused_pending_are_not_halted_calendar(
@@ -781,7 +781,7 @@ def test_halted_calendar_marker_uses_shared_predicate() -> None:
     assert "Manage subscription" not in cal
     assert "Payment retries have stopped" not in cal
     assert "{{ chip.href }}" in cal
-    assert 'href="/playground"' in cal
+    assert 'href="/dashboard"' in cal  # M6 Q5: Continue today's Recall → Today
     assert "/resume" not in cal
     app = APP.read_text(encoding="utf-8")
     page = app.split("async def calendar_page", 1)[1].split("async def progress_page", 1)[0]
@@ -817,13 +817,13 @@ def test_halted_calendar_marker_uses_shared_predicate() -> None:
     assert "expired_calendar_chrome" not in base  # M1-R (PR pg-m1r-shell-labels): the per-route header flag chain is gone
     assert "shell_account_status" in base  # M1-R: one snapshot-driven label
     assert LIVE_HEADING not in base
-    assert "playground.css?v=pg56" in base
+    assert "playground.css?v=pg57" in base
     css = PG_CSS.read_text(encoding="utf-8")
     assert 'data-halted-calendar="desktop"' in css
     assert "halted/09-screen" in css
     assert 'data-expired-calendar="desktop"' in css
     assert "expired/09-screen" in css
-    assert 'data-plus-calendar="desktop"' in css
+    assert 'data-paid-calendar="desktop"' in css  # M6 Q3: the Plus rules key on the shared paid marker
     halted_css = css.split("halted/09-screen", 1)[1].split("plus/10-screen", 1)[0]
     assert "var(--pg-teal)" in halted_css
     assert "#0e7569" not in halted_css
