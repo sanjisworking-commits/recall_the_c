@@ -8,7 +8,7 @@
 | Captures | `m6/02-candidate-ac8ff53/` (served from the `eaec5e3` tree, whose source equals `ac8ff53`) |
 | Tooling | `m1r/tools/capture_m1r.py` (route probe); `m6/tools/readback_m6.py` (nine states × two models × two flags × month / week through the app's TestClient); `m6/tools/serve_populated_m6.py` (progress rows seeded through the engine's repository; no payment or entitlement change); `m6/tools/capture_sheet_m6.py` (opens the upgrade sheet through CDP and records open / focus / Tab / Esc / exceptions) |
 | Flags | `PLAYGROUND_TIER_MODEL` unset (`monthly`) on every dev launcher and populated server except the `-choices` launcher used for the gated rows; `ARTICLE_ENTITLEMENTS_ENABLED` off on the servers, both values in the read-back and the tests |
-| Owner instructions in force | plan decisions Q1–Q7 (2026-11-11); verification list (2026-11-13); local acceptance separate from hosted; no merge, deployment or entitlement activation |
+| Owner instructions in force | plan decisions Q1–Q7 (2026-11-11); verification list (2026-11-13); traceability check (2026-11-14, §9); local acceptance (2026-11-15, §8); local acceptance separate from hosted; no merge, deployment or entitlement activation |
 
 ## 0. Baseline before edit — `4221d53` (`m6/01-baseline-4221d53/`)
 
@@ -97,9 +97,20 @@ Q1–Q7 as recorded in `M6.md` §4. During implementation two findings were reso
 - Open points carried: 5-6b (gated existing material) and 5-17 (date rules) stay deferred; `review_capacity` chips are drawn for Free accounts although Auto Plan is paid (pre-existing, outside M6 — flagged for the owner); the base legend `.calendar-legend` is dead markup for signed-in month views (kept for the single-user mode; could be retired); the sheet's close control is 33 × 36 px.
 - The pull-request CI run on `eaec5e3` (43468419394) runs the unit step only when its own rule says so; the dispatched run is the executed one.
 
-## 8. Owner sign-off
+## 8. Owner sign-off — local (owner instruction, 2026-11-15)
 
-None recorded. Owner sign-off is recorded only against an explicit acceptance instruction; this record is local evidence. "270 passing cohort tests is a useful checkpoint, not yet M6 acceptance" (owner, 2026-11-13) — the gates above, the full suite and the executed CI run are the checkpoint offered for that decision.
+| Item | Record |
+|---|---|
+| Instruction | "I accept M6 for local Calendar fidelity and the functionality covered by its recorded tests. Record acceptance at PR head `d3d2a2e`, referencing tested SHA `eaec5e3` and captured source `ac8ff53`. Retain the documented findings and NOT RUN checks. Hosted acceptance remains pending. Reopen local evidence only where subsequent changes affect it." … "No merge, deployment or `choices` activation." (received 2026-11-15 inside the owner-forwarded review note that followed the traceability check of §9). |
+| Decision | **Accepted (local)** as the reusable local Calendar baseline — `/calendar` month and week, phone and desktop, by tier — for Calendar fidelity and the functionality covered by the recorded tests. Accepted at PR head `d3d2a2e`; tested SHA `eaec5e3` (full suite local 4229 passed / 177 skipped / 0 failed; executed CI runs 43468411439 and 43468419394, 4228 passed / 164 skipped / 14 deselected); captured source `ac8ff53` (`m6/02-candidate-ac8ff53/`); cohort 340 passed / 15 skipped on `1c5e99e`. `d3d2a2e` and the commit that records this sign-off change documentation only. |
+| Scope of the acceptance | What the recorded tests and captures cover (§2–§5). It does not extend to anything listed as NOT RUN, NOT CAPTURED or deferred. |
+| Findings retained | Every entry of §7 and the dispositions of §9 stand as written: the base legend kept for single-user mode; `review_capacity` chips on Free accounts tracked for the entitlement review; the missing live Playground-chip and "Review done" captures kept as visual-evidence gaps; the 33 × 36 px sheet close control to be enlarged with the next relevant UI batch; 5-6b and 5-17 deferred. |
+| NOT RUN retained | Hosted S6; automated accessibility scan; screen reader; real zoom; Google Calendar connect / disconnect beyond its unit tests. Local acceptance does not imply any of them passed. |
+| Hosted acceptance | **pending — separate and not given**: staging database availability and A5 container access remain BLOCKED (`M5-staging-prep.md`). |
+| Reuse rule | Reuse by SHA. Reopen the local evidence only where a subsequent change affects it: `calendar.html`, `web/app.py::calendar_page`, `web/calendar_view.py`, `calendar-signed.js`, `study_archive.py`, the Calendar blocks of `styles.css` / `mobile.css` / `playground.css`, the entitlement snapshot's `can_add_personal_calendar_tasks`, or a shared dependency (shell, pins) that changes the Calendar's rendering or behaviour. |
+| Separate decisions | Merge order of the stack, deployment, `choices` activation — none authorised by this record. |
+
+History: until 2026-11-15 this section read "None recorded"; the review of 2026-11-14 (§9) recommended acceptance, which was not treated as an instruction.
 
 ## 9. SHA traceability and finding dispositions (owner-forwarded review, 2026-11-14)
 
@@ -128,5 +139,5 @@ Dispositions recommended in the same review (recorded as recommendations; none c
 | Upgrade-sheet close control 33 × 36 px | Not a blocker on size alone; enlarge with the next relevant UI batch unless usability testing identifies a problem. |
 | Hosted checks and accessibility checks | Stay open. Every NOT RUN entry in §5 and §7 is retained; local acceptance does not imply they passed. |
 
-Sign-off status: the review **recommends** accepting M6 as the reusable local Calendar baseline once traceability is confirmed. That is a recommendation, not an acceptance instruction, so §8 is unchanged: no owner sign-off is recorded. Hosted acceptance stays separate; no merge, deployment or `choices` activation is authorised by this record.
+Sign-off status as of 2026-11-14: the review **recommends** accepting M6 as the reusable local Calendar baseline once traceability is confirmed. That was a recommendation, not an acceptance instruction, so no sign-off was recorded on that date. The explicit instruction followed on 2026-11-15 and is recorded in §8. Hosted acceptance stays separate; no merge, deployment or `choices` activation is authorised by this record.
 
