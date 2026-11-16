@@ -516,7 +516,7 @@ def test_phone_expired_settings_css_is_breakpoint_scoped() -> None:
     )[0]
     assert "upsert_learning_plan" not in get
     base = BASE.read_text(encoding="utf-8")
-    assert "playground.css?v=pg58" in base
+    assert "playground.css?v=pg59" in base
     assert "playground.css?v=pg46" not in base
     assert "styles.css?v=main94" in base
     assert "mobile.css?v=mob113" in base
